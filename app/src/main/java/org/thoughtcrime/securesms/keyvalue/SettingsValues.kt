@@ -22,6 +22,7 @@ import org.signal.storage.keyvalue.longValue
 import org.signal.storage.keyvalue.stringValue
 import org.signal.storage.protos.SignalStoreList
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.backup.proto.SharedPreference
 import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference
 import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.Environment
@@ -549,36 +550,52 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
   }
 
   /**
-   * V1 backups made before these settings moved into this store carry them as shared prefs rather than key-values. The shared-prefs
-   * migration has already run by the time a restore happens, so the restored prefs need to be re-read afterwards or the user silently
-   * loses their privacy and security choices.
+   * Older Molly backups carry migrated settings as SharedPreference frames. Apply each frame as it is read so any later KeyValue
+   * frame in the same backup naturally takes precedence, matching the order used by the legacy exporter.
    */
-  fun restoreLegacySharedPrefsAfterBackupRestore() {
-    Log.i(TAG, "Restoring legacy privacy settings from shared prefs.")
+  fun legacySharedPreferenceToKeyValue(preference: SharedPreference): KeyValueDataSet? {
+    val dataSet = KeyValueDataSet()
 
-    val writer = store.beginWrite()
-
-    val booleanKeys = mapOf(
-      "pref_screen_security" to SCREEN_SECURITY_ENABLED,
-      "pref_incognito_keyboard" to INCOGNITO_KEYBOARD_ENABLED,
-      "pref_read_receipts" to READ_RECEIPTS_ENABLED,
-      "pref_typing_indicators" to TYPING_INDICATORS_ENABLED,
-      "pref_show_unidentifed_delivery_indicators" to SHOW_UNIDENTIFIED_DELIVERY_INDICATORS,
-      "pref_universal_unidentified_access" to UNIVERSAL_UNIDENTIFIED_ACCESS,
-      "pref_turn_only" to ALWAYS_RELAY_CALLS
-    )
-
-    for ((legacyKey, key) in booleanKeys) {
-      if (LegacySharedPrefs.contains(context, legacyKey)) {
-        writer.putBoolean(key, LegacySharedPrefs.getBoolean(context, legacyKey, false))
+    when (preference.key) {
+      "pref_language" -> preference.value_?.let { dataSet.putString(LANGUAGE, it) }
+      "pref_theme" -> preference.value_?.let { dataSet.putString(THEME, it) }
+      "pref_message_body_text_size" -> preference.value_?.let { dataSet.putInteger(MESSAGE_FONT_SIZE, it.toIntOrNull() ?: 16) }
+      "pref_system_emoji" -> preference.booleanValue?.let { dataSet.putBoolean(PREFER_SYSTEM_EMOJI, it) }
+      "pref_enter_sends" -> preference.booleanValue?.let { dataSet.putBoolean(ENTER_KEY_SENDS, it) }
+      "pref_backup_enabled" -> preference.booleanValue?.let { dataSet.putBoolean(BACKUPS_ENABLED, it) }
+      "pref_delivery_report_sms" -> preference.booleanValue?.let { dataSet.putBoolean(SMS_DELIVERY_REPORTS_ENABLED, it) }
+      "pref_wifi_sms" -> preference.booleanValue?.let { dataSet.putBoolean(WIFI_CALLING_COMPATIBILITY_MODE_ENABLED, it) }
+      "pref_key_enable_notifications" -> preference.booleanValue?.let { dataSet.putBoolean(MESSAGE_NOTIFICATIONS_ENABLED, it) }
+      "pref_key_vibrate" -> preference.booleanValue?.let { dataSet.putBoolean(MESSAGE_VIBRATE_ENABLED, it) }
+      "pref_led_color" -> preference.value_?.let { dataSet.putString(MESSAGE_LED_COLOR, it) }
+      "pref_led_blink" -> preference.value_?.let { dataSet.putString(MESSAGE_LED_BLINK_PATTERN, it) }
+      "pref_key_inthread_notifications" -> preference.booleanValue?.let { dataSet.putBoolean(MESSAGE_IN_CHAT_SOUNDS_ENABLED, it) }
+      "pref_repeat_alerts" -> preference.value_?.let { dataSet.putInteger(MESSAGE_REPEAT_ALERTS, it.toIntOrNull() ?: 0) }
+      "pref_notification_privacy" -> preference.value_?.let { dataSet.putString(MESSAGE_NOTIFICATION_PRIVACY, it) }
+      "pref_call_notifications" -> preference.booleanValue?.let { dataSet.putBoolean(CALL_NOTIFICATIONS_ENABLED, it) }
+      "pref_call_vibrate" -> preference.booleanValue?.let { dataSet.putBoolean(CALL_VIBRATE_ENABLED, it) }
+      "pref_enable_new_contacts_notifications" -> preference.booleanValue?.let { dataSet.putBoolean(NOTIFY_WHEN_CONTACT_JOINS_SIGNAL, it) }
+      "pref_screen_security" -> preference.booleanValue?.let { dataSet.putBoolean(SCREEN_SECURITY_ENABLED, it) }
+      "pref_incognito_keyboard" -> preference.booleanValue?.let { dataSet.putBoolean(INCOGNITO_KEYBOARD_ENABLED, it) }
+      "pref_read_receipts" -> preference.booleanValue?.let { dataSet.putBoolean(READ_RECEIPTS_ENABLED, it) }
+      "pref_typing_indicators" -> preference.booleanValue?.let { dataSet.putBoolean(TYPING_INDICATORS_ENABLED, it) }
+      "pref_show_unidentifed_delivery_indicators" -> preference.booleanValue?.let {
+        dataSet.putBoolean(SHOW_UNIDENTIFIED_DELIVERY_INDICATORS, it)
+      }
+      "pref_universal_unidentified_access" -> preference.booleanValue?.let { dataSet.putBoolean(UNIVERSAL_UNIDENTIFIED_ACCESS, it) }
+      "pref_turn_only" -> preference.booleanValue?.let { dataSet.putBoolean(ALWAYS_RELAY_CALLS, it) }
+      "pref_media_download_mobile" -> if (preference.isStringSetValue == true) {
+        dataSet.putBlob(MEDIA_DOWNLOAD_MOBILE, SignalStoreList(contents = preference.stringSetValue.toList()).encode())
+      }
+      "pref_media_download_wifi" -> if (preference.isStringSetValue == true) {
+        dataSet.putBlob(MEDIA_DOWNLOAD_WIFI, SignalStoreList(contents = preference.stringSetValue.toList()).encode())
+      }
+      "pref_media_download_roaming" -> if (preference.isStringSetValue == true) {
+        dataSet.putBlob(MEDIA_DOWNLOAD_ROAMING, SignalStoreList(contents = preference.stringSetValue.toList()).encode())
       }
     }
 
-    if (LegacySharedPrefs.contains(context, "pref_notification_privacy")) {
-      writer.putString(MESSAGE_NOTIFICATION_PRIVACY, LegacySharedPrefs.getString(context, "pref_notification_privacy", "none"))
-    }
-
-    writer.commit()
+    return dataSet.takeIf { it.values.isNotEmpty() }
   }
 
   /**

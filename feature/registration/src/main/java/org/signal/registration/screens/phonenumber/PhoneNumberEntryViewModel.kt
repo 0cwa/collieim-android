@@ -123,6 +123,7 @@ class PhoneNumberEntryViewModel(
       is PhoneNumberEntryScreenEvents.NextClicked -> {
         val accountId = state.enteredAccountId
         if (accountId != null) {
+          repository.enableNetworkForRegistration()
           parentEventEmitter.navigateTo(RegistrationRoute.SignalLoginCredentialEntry(accountId))
         } else {
           val normalized = state.withNormalizedNationalNumber()
@@ -133,6 +134,7 @@ class PhoneNumberEntryViewModel(
         stateEmitter(state.copy(dialogs = state.dialogs.copy(confirmNumber = false)))
       }
       is PhoneNumberEntryScreenEvents.PhoneNumberConfirmed -> {
+        repository.enableNetworkForRegistration()
         var localState = state.copy(showSpinner = true, dialogs = state.dialogs.copy(confirmNumber = false))
         stateEmitter(localState)
         localState = applyPhoneNumberSubmitted(localState, parentEventEmitter)
@@ -151,6 +153,7 @@ class PhoneNumberEntryViewModel(
         parentEventEmitter.navigateTo(RegistrationRoute.LinkAccount())
       }
       is PhoneNumberEntryScreenEvents.RegisterWithoutNumber -> {
+        repository.enableNetworkForRegistration()
         if (state.sawArchiveRestoreSelectionScreen) {
           parentEventEmitter.navigateTo(RegistrationRoute.SignalLoginCredentialEntry())
         } else {

@@ -153,16 +153,11 @@ class LinkDeviceViewModel : ViewModel() {
     pollJob?.cancel()
   }
 
-<<<<<<< MOLLY
-  fun requestLinkWithoutQrCode(value: Boolean) {
-=======
   fun onDeviceLimitReached() {
     _state.update { it.copy(oneTimeEvent = OneTimeEvent.SnackbarDeviceLimitReached) }
   }
 
-  fun markQrEducationSheetSeen() {
-    SignalStore.uiHints.markHasSeenLinkDeviceQrEducationSheet()
->>>>>>> SIGNAL
+  fun requestLinkWithoutQrCode(value: Boolean) {
     _state.update {
       it.copy(linkWithoutQrCode = value)
     }

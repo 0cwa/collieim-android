@@ -10,16 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import org.signal.core.models.media.Media;
 import org.signal.core.models.recipients.RecipientId;
 import org.thoughtcrime.securesms.R;
-import org.signal.core.models.media.Media;
 import org.thoughtcrime.securesms.mediasend.v2.gallery.MediaGalleryFragment;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
-=======
->>>>>>> SIGNAL
 
 public final class WallpaperImageSelectionActivity extends AppCompatActivity
         implements MediaGalleryFragment.Callbacks

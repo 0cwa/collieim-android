@@ -1,6 +1,5 @@
 package org.thoughtcrime.securesms.components.settings.app.privacy
 
-<<<<<<< MOLLY
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Build
@@ -15,8 +14,10 @@ import androidx.biometric.BiometricManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
-import org.signal.core.ui.util.ThemeUtil
+import org.signal.core.ui.util.ExpirationUtil
+import org.signal.core.ui.util.SpanUtil
 import org.signal.core.util.logging.Log
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.ChangePassphraseDialogFragment
 import org.thoughtcrime.securesms.PassphraseActivity
 import org.thoughtcrime.securesms.R
@@ -35,45 +36,29 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.preferences.widgets.PassphraseLockTriggerPreference
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.ConversationUtil
-import org.thoughtcrime.securesms.util.ExpirationUtil
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
-import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.WindowUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.LayoutFactory
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import kotlin.time.Duration.Companion.seconds
-=======
-import androidx.compose.runtime.Composable
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import org.signal.appsettings.routes.AppSettingsRoute
-import org.signal.core.ui.compose.ComposeFragment
-import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.components.settings.app.appSettingsRouter
-import org.thoughtcrime.securesms.util.navigation.safeNavigate
->>>>>>> SIGNAL
+import org.signal.appsettings.R as AppSettingsR
 
-/**
- * Fragment host for [PrivacySettingsEntry] until app settings moves to Nav3. Only translates routes into the nav graph.
- */
-class PrivacySettingsFragment : ComposeFragment() {
+private val TAG = Log.tag(PrivacySettingsFragment::class.java)
 
-  private val args: PrivacySettingsFragmentArgs by navArgs()
-  private val appSettingsRouter by appSettingsRouter(onNavigateToScreen = ::navigateToScreen)
+class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privacy) {
 
-<<<<<<< MOLLY
   private val passphraseLockTriggerValues by lazy { resources.getStringArray(R.array.pref_passphrase_lock_trigger_entries) }
   private val passphraseLockTriggerLabels by lazy { resources.getStringArray(R.array.pref_passphrase_lock_trigger_values) }
 
   private lateinit var viewModel: PrivacySettingsViewModel
 
   private val incognitoSummary: CharSequence by lazy {
-    SpannableStringBuilder(getString(R.string.preferences__this_setting_is_not_a_guarantee))
+    SpannableStringBuilder(getString(AppSettingsR.string.preferences__this_setting_is_not_a_guarantee))
       .append(" ")
       .append(
         SpanUtil.learnMore(requireContext(), ThemeUtil.getThemedColor(requireContext(), R.attr.signal_text_primary)) {
-          CommunicationActions.openBrowserLink(requireContext(), getString(R.string.preferences__incognito_keyboard_learn_more))
+          CommunicationActions.openBrowserLink(requireContext(), getString(AppSettingsR.string.preferences__incognito_keyboard_learn_more))
         }
       )
   }
@@ -99,20 +84,22 @@ class PrivacySettingsFragment : ComposeFragment() {
   private fun getConfiguration(state: PrivacySettingsState): DSLConfiguration {
     return configure {
 
-      sectionHeaderPref(R.string.PrivacySettingsFragment__messaging)
+      sectionHeaderPref(AppSettingsR.string.PrivacySettingsFragment__messaging)
 
-      clickPref(
-        title = DSLSettingsText.from(R.string.preferences_app_protection__phone_number),
-        summary = DSLSettingsText.from(R.string.preferences_app_protection__choose_who_can_see),
-        onClick = {
-          Navigation.findNavController(requireView())
-            .safeNavigate(R.id.action_privacySettingsFragment_to_phoneNumberPrivacySettingsFragment)
-        }
-      )
+      if (state.hasPhoneNumber) {
+        clickPref(
+          title = DSLSettingsText.from(AppSettingsR.string.preferences_app_protection__phone_number),
+          summary = DSLSettingsText.from(R.string.preferences_app_protection__choose_who_can_see),
+          onClick = {
+            Navigation.findNavController(requireView())
+              .safeNavigate(R.id.action_privacySettingsFragment_to_phoneNumberPrivacySettingsFragment)
+          }
+        )
+      }
 
       switchPref(
-        title = DSLSettingsText.from(R.string.preferences__read_receipts),
-        summary = DSLSettingsText.from(R.string.preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts),
+        title = DSLSettingsText.from(AppSettingsR.string.preferences__read_receipts),
+        summary = DSLSettingsText.from(AppSettingsR.string.preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts),
         isChecked = state.readReceipts,
         isEnabled = SignalStore.account.isPrimaryDevice,
         onClick = {
@@ -121,8 +108,8 @@ class PrivacySettingsFragment : ComposeFragment() {
       )
 
       switchPref(
-        title = DSLSettingsText.from(R.string.preferences__typing_indicators),
-        summary = DSLSettingsText.from(R.string.preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators),
+        title = DSLSettingsText.from(AppSettingsR.string.preferences__typing_indicators),
+        summary = DSLSettingsText.from(AppSettingsR.string.preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators),
         isChecked = state.typingIndicators,
         isEnabled = SignalStore.account.isPrimaryDevice,
         onClick = {
@@ -152,7 +139,7 @@ class PrivacySettingsFragment : ComposeFragment() {
       )
 
       clickPref(
-        title = DSLSettingsText.from(R.string.preferences__change_passphrase),
+        title = DSLSettingsText.from(AppSettingsR.string.preferences__change_passphrase),
         isEnabled = state.passphraseLock,
         onClick = {
           val dialog = ChangePassphraseDialogFragment.newInstance()
@@ -199,8 +186,8 @@ class PrivacySettingsFragment : ComposeFragment() {
       sectionHeaderPref(R.string.BlockedUsersActivity__blocked_users)
 
       clickPref(
-        title = DSLSettingsText.from(R.string.PrivacySettingsFragment__blocked),
-        summary = DSLSettingsText.from(resources.getQuantityString(R.plurals.PrivacySettingsFragment__d_contacts, state.blockedCount, state.blockedCount)),
+        title = DSLSettingsText.from(AppSettingsR.string.PrivacySettingsFragment__blocked),
+        summary = DSLSettingsText.from(resources.getQuantityString(AppSettingsR.plurals.PrivacySettingsFragment__d_contacts, state.blockedCount, state.blockedCount)),
         onClick = {
           Navigation.findNavController(requireView())
             .safeNavigate(R.id.action_privacySettingsFragment_to_blockedUsersActivity)
@@ -225,8 +212,8 @@ class PrivacySettingsFragment : ComposeFragment() {
           value = DSLSettingsText.from(ExpirationUtil.getExpirationAbbreviatedDisplayValue(requireContext(), state.universalExpireTimer)),
           contentDescription = DSLSettingsText.from(ExpirationUtil.getExpirationDisplayValue(requireContext(), state.universalExpireTimer)),
           clickPreference = ClickPreference(
-            title = DSLSettingsText.from(R.string.PrivacySettingsFragment__default_timer_for_new_changes),
-            summary = DSLSettingsText.from(R.string.PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you),
+            title = DSLSettingsText.from(AppSettingsR.string.PrivacySettingsFragment__default_timer_for_new_changes),
+            summary = DSLSettingsText.from(AppSettingsR.string.PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you),
             onClick = {
               NavHostFragment.findNavController(this@PrivacySettingsFragment).safeNavigate(R.id.action_privacySettingsFragment_to_disappearingMessagesTimerSelectFragment)
             }
@@ -236,10 +223,10 @@ class PrivacySettingsFragment : ComposeFragment() {
 
       dividerPref()
 
-      sectionHeaderPref(R.string.PrivacySettingsFragment__app_security)
+      sectionHeaderPref(AppSettingsR.string.PrivacySettingsFragment__app_security)
 
       switchPref(
-        title = DSLSettingsText.from(R.string.preferences_app_protection__screen_lock),
+        title = DSLSettingsText.from(AppSettingsR.string.preferences_app_protection__screen_lock),
         summary = DSLSettingsText.from(R.string.PrivacySettingsFragment__lock_molly_access_with_fingerprint_or_face_recognition),
         isChecked = state.biometricScreenLock,
         onClick = {
@@ -248,8 +235,8 @@ class PrivacySettingsFragment : ComposeFragment() {
       )
 
       switchPref(
-        title = DSLSettingsText.from(R.string.preferences__screen_security),
-        summary = DSLSettingsText.from(R.string.PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app),
+        title = DSLSettingsText.from(AppSettingsR.string.preferences__screen_security),
+        summary = DSLSettingsText.from(AppSettingsR.string.PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app),
         isChecked = state.screenSecurity || ScreenLockController.alwaysSetSecureFlagOnResume,
         isEnabled = !ScreenLockController.alwaysSetSecureFlagOnResume,
         onClick = {
@@ -259,8 +246,8 @@ class PrivacySettingsFragment : ComposeFragment() {
       )
 
       switchPref(
-        title = DSLSettingsText.from(R.string.preferences__incognito_keyboard),
-        summary = DSLSettingsText.from(R.string.preferences__request_keyboard_to_disable),
+        title = DSLSettingsText.from(AppSettingsR.string.preferences__incognito_keyboard),
+        summary = DSLSettingsText.from(AppSettingsR.string.preferences__request_keyboard_to_disable),
         isChecked = state.incognitoKeyboard,
         onClick = {
           viewModel.setIncognitoKeyboard(!state.incognitoKeyboard)
@@ -275,7 +262,7 @@ class PrivacySettingsFragment : ComposeFragment() {
 
       clickPref(
         title = DSLSettingsText.from(R.string.preferences__advanced),
-        summary = DSLSettingsText.from(R.string.PrivacySettingsFragment__signal_message_and_calls),
+        summary = DSLSettingsText.from(AppSettingsR.string.PrivacySettingsFragment__signal_message_and_calls),
         onClick = {
           Navigation.findNavController(requireView()).safeNavigate(R.id.action_privacySettingsFragment_to_advancedPrivacySettingsFragment)
         }
@@ -303,7 +290,7 @@ class PrivacySettingsFragment : ComposeFragment() {
               biometricEnrollment.launch(getIntentForBiometricEnrollment())
             } catch (e: ActivityNotFoundException) {
               Log.w(TAG, "Failed to navigate to system settings.", e)
-              Toast.makeText(requireContext(), R.string.PrivacySettingsFragment__failed_to_navigate_to_system_settings, Toast.LENGTH_SHORT).show()
+              Toast.makeText(requireContext(), AppSettingsR.string.PrivacySettingsFragment__failed_to_navigate_to_system_settings, Toast.LENGTH_SHORT).show()
             }
           } else {
             Toast.makeText(context, R.string.PrivacySettingsFragment__please_first_setup_your_biometrics_in_android_settings, Toast.LENGTH_LONG).show()
@@ -382,24 +369,4 @@ class PrivacySettingsFragment : ComposeFragment() {
       valueText.contentDescription = model.contentDescription.resolve(context)
     }
   }
-=======
-  private fun navigateToScreen(route: AppSettingsRoute) {
-    when (route) {
-      AppSettingsRoute.PrivacyRoute.PhoneNumberPrivacy -> findNavController().safeNavigate(R.id.action_privacySettingsFragment_to_phoneNumberPrivacySettingsFragment)
-      AppSettingsRoute.PrivacyRoute.BlockedUsers -> findNavController().safeNavigate(R.id.action_privacySettingsFragment_to_blockedUsersActivity)
-      AppSettingsRoute.PrivacyRoute.ExpiringMessages -> findNavController().safeNavigate(R.id.action_privacySettingsFragment_to_disappearingMessagesTimerSelectFragment)
-      AppSettingsRoute.PrivacyRoute.ScreenLock -> findNavController().safeNavigate(R.id.action_privacySettingsFragment_to_screenLockSettingsFragment)
-      AppSettingsRoute.PrivacyRoute.Advanced -> findNavController().safeNavigate(R.id.action_privacySettingsFragment_to_advancedPrivacySettingsFragment)
-      else -> error("Unexpected route: ${route.javaClass.name}")
-    }
-  }
-
-  @Composable
-  override fun FragmentContent() {
-    PrivacySettingsEntry(
-      scrollToPaymentLock = args.showPaymentLock,
-      parentEventEmitter = appSettingsRouter::onEvent
-    )
-  }
->>>>>>> SIGNAL
 }

@@ -44,12 +44,7 @@ import org.signal.core.ui.compose.Texts
 import org.signal.core.ui.viewModel
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.util.CommunicationActions
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.util.SecurePreferenceManager
-import org.thoughtcrime.securesms.util.viewModel
-=======
 import org.signal.core.ui.R as CoreUiR
->>>>>>> SIGNAL
 
 /**
  * Displays advanced privacy controls such as call relaying and
@@ -58,17 +53,7 @@ import org.signal.core.ui.R as CoreUiR
 class AdvancedPrivacySettingsFragment : ComposeFragment() {
 
   private val viewModel: AdvancedPrivacySettingsViewModel by viewModel {
-<<<<<<< MOLLY
-    val repository = AdvancedPrivacySettingsRepository(requireContext())
-    val preferences = SecurePreferenceManager.getSecurePreferences(requireContext())
-
-    AdvancedPrivacySettingsViewModel(
-      preferences,
-      repository
-    )
-=======
     AdvancedPrivacySettingsViewModel(AdvancedPrivacySettingsRepository())
->>>>>>> SIGNAL
   }
 
   private var networkReceiver: NetworkReceiver? = null

@@ -47,7 +47,6 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 import java.math.BigDecimal
 import java.util.Currency
 
-@Ignore
 @RunWith(AndroidJUnit4::class)
 class MessageBackupsCheckoutActivityTest {
 
@@ -71,6 +70,7 @@ class MessageBackupsCheckoutActivityTest {
     coEvery { AppDependencies.billingApi.launchBillingFlow(any()) } returns Unit
   }
 
+  @Ignore
   @Test
   fun e2e_paid_happy_path() {
     val scenario = launchCheckoutFlow()
@@ -114,6 +114,7 @@ class MessageBackupsCheckoutActivityTest {
     )
   }
 
+  @Ignore
   @Test
   fun e2e_free_happy_path() {
     val scenario = launchCheckoutFlow()

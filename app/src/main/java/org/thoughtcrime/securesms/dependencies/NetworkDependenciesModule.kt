@@ -77,14 +77,17 @@ import javax.net.ssl.X509TrustManager
 class NetworkDependenciesModule(
   private val application: Application,
   private val provider: AppDependencies.Provider,
-  private val authWebSocket: SignalWebSocket.AuthenticatedWebSocket,
-  private val unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket,
+  private val authWebSocketSupplier: () -> SignalWebSocket.AuthenticatedWebSocket,
+  private val unauthWebSocketSupplier: () -> SignalWebSocket.UnauthenticatedWebSocket,
   private val libsignalNetworkSupplier: Supplier<Network>
 ) {
 
   companion object {
     private val TAG = "NetworkDependencies"
   }
+
+  private val authWebSocket by lazy(authWebSocketSupplier)
+  private val unauthWebSocket by lazy(unauthWebSocketSupplier)
 
   val signalServiceNetworkAccess: SignalServiceNetworkAccess by lazy {
     provider.provideSignalServiceNetworkAccess()

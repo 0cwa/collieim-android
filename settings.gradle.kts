@@ -12,15 +12,24 @@ pluginManagement {
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
+    // Collie native repository: reviewed source input, NOT PUBLISHED.
+    exclusiveContent {
+      forRepository {
+        maven {
+          name = "CollieNativeInputs"
+          url = uri("https://repo.collie.im/native-inputs/v1/maven/")
+          metadataSources { mavenPom(); ignoreGradleMetadataRedirection() }
+        }
+      }
+      filter {
+        includeModule("im.collie.native", "libsignal-android")
+        includeModule("im.collie.native", "libsignal-client")
+        includeModule("im.collie.native", "ringrtc-android")
+      }
+    }
     google {
       content {
         includeGroupByRegex("(com\\.(android|google)|androidx?)(\\..*)?")
-      }
-    }
-    mavenLocal {
-      content {
-        includeGroup("im.molly")
-        includeGroup("org.signal")
       }
     }
     maven {
@@ -61,17 +70,7 @@ dependencyResolutionManagement {
   }
 }
 
-// To build libsignal from source, set the libsignalClientPath property in gradle.properties.
-val libsignalClientPath = if (extra.has("libsignalClientPath")) extra.get("libsignalClientPath") else null
-if (libsignalClientPath is String) {
-  includeBuild(rootDir.resolve(libsignalClientPath + "/java")) {
-    name = "libsignal-client"
-    dependencySubstitution {
-      substitute(module("im.molly:libsignal-client")).using(project(":client"))
-      substitute(module("im.molly:libsignal-android")).using(project(":android"))
-    }
-  }
-}
+// Native inputs use the pinned public repository; no external source includeBuild.
 
 // Main app
 include(":app")

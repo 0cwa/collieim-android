@@ -372,8 +372,8 @@ object RemoteConfig {
   private fun loadOverrides() {
     overrideValues = emptyMap()
 
-    // Read through the config rather than the delegate, which would re-enter the init() we're in the middle of.
-    if (configsByKey[INTERNAL_USER_KEY]?.resolve() != true) {
+    // MOLLY: internalUser comes from the build, not the service, and reads no remote value, so it can't re-enter init().
+    if (!internalUser) {
       return
     }
 

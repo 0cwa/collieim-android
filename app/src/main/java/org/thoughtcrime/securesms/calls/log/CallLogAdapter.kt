@@ -7,12 +7,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.widget.TextViewCompat
 import com.bumptech.glide.Glide
-<<<<<<< MOLLY
+import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.util.ThemeUtil
 import com.google.android.material.R as MaterialR
-=======
-import org.signal.core.models.recipients.RecipientId
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.database.CallTable
 import org.thoughtcrime.securesms.database.MessageTypes

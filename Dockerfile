@@ -17,8 +17,8 @@ FROM base AS workspace
 LABEL im.molly.artifacts.m2.path="/root/.m2/repository/"
 
 # Install Android SDK
-ARG ANDROID_SDK_DIST="commandlinetools-linux-13114758_latest.zip"
-ARG ANDROID_SDK_SHA256="7ec965280a073311c339e571cd5de778b9975026cfcbe79f2b1cdcb1e15317ee"
+ARG ANDROID_SDK_DIST="commandlinetools-linux-14742923_latest.zip"
+ARG ANDROID_SDK_SHA256="04453066b540409d975c676d781da1477479dde3761310f1a7eb92a1dfb15af7"
 ENV ANDROID_HOME=/opt/android-sdk
 ENV PATH="$PATH:$ANDROID_HOME/cmdline-tools/latest/bin"
 
@@ -40,7 +40,7 @@ ENV ANDROID_NDK_HOME="$ANDROID_HOME/ndk/$NDK_VERSION"
 ARG BUILD_TOOLS_VERSION="36.0.0"
 RUN sdkmanager "build-tools;${BUILD_TOOLS_VERSION}"
 
-ARG COMPILE_SDK="android-36.1"
+ARG COMPILE_SDK="android-37.0"
 RUN sdkmanager "platforms;${COMPILE_SDK}"
 
 # Cache gradle wrapper

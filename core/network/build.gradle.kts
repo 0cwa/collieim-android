@@ -8,11 +8,7 @@ import org.gradle.api.tasks.SourceSetContainer
 plugins {
   id("java-library")
   id("org.jetbrains.kotlin.jvm")
-<<<<<<< MOLLY
-=======
   alias(libs.plugins.kotlinx.serialization)
-  id("ktlint")
->>>>>>> SIGNAL
   id("com.squareup.wire")
 }
 
@@ -55,6 +51,7 @@ dependencies {
   implementation(project(":core:serialization"))
 
   testImplementation(testLibs.junit.junit)
+  testImplementation(testLibs.mockk)
   testImplementation(testLibs.assertk)
   testImplementation(testLibs.conscrypt.openjdk.uber)
   testImplementation(testLibs.mockk)

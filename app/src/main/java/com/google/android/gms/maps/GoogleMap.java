@@ -90,6 +90,15 @@ public class GoogleMap {
 
   public void setMapType (int type) { }
 
+  /** Keeps the camera target and map controls inside the unobscured viewport. */
+  public void setPadding(int left, int top, int right, int bottom) {
+    mapView.setPadding(left, top, right, bottom);
+    mapView.setMapCenterOffset((left - right) / 2, (top - bottom) / 2);
+    mapView.getZoomController().getDisplay().setAdditionalPixelMargins(left, top, right, bottom);
+    mapView.requestLayout();
+    mapView.invalidate();
+  }
+
   public boolean setMapStyle(MapStyleOptions loadRawResourceStyle) {
     return false;
   }
@@ -108,7 +117,9 @@ public class GoogleMap {
   }
 
   private void updateCameraPosition() {
-    IGeoPoint geoPoint = mapView.getMapCenter();
+    IGeoPoint geoPoint = mapView.getProjection().fromPixels(
+        mapView.getWidth() / 2 + mapView.getMapCenterOffsetX(),
+        mapView.getHeight() / 2 + mapView.getMapCenterOffsetY(), null, false);
     LatLng    center   = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
     cameraPosition = new CameraPosition(center, (float) mapView.getZoomLevelDouble());
   }

@@ -373,7 +373,7 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
   var messageNotificationPriority: Int by integerValue(MESSAGE_NOTIFICATION_PRIORITY, NotificationCompat.PRIORITY_HIGH)
 
   var messageNotificationsPrivacy: NotificationPrivacyPreference
-    get() = NotificationPrivacyPreference(getString(MESSAGE_NOTIFICATION_PRIVACY, "none"))
+    get() = NotificationPrivacyPreference(getString(MESSAGE_NOTIFICATION_PRIVACY, "all"))
     set(value) {
       putString(MESSAGE_NOTIFICATION_PRIVACY, value.toString())
     }

@@ -45,7 +45,6 @@ import androidx.annotation.Nullable;
 
 import org.signal.core.util.ServiceUtil;
 import org.signal.core.util.ThreadUtil;
-import org.signal.core.ui.biometrics.BiometricDeviceAuthentication;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.biometric.BiometricDialogFragment;
 import org.thoughtcrime.securesms.crypto.InvalidPassphraseException;
@@ -238,25 +237,11 @@ public class PassphrasePromptActivity extends PassphraseActivity {
 
   private void initializeResources() {
     passphraseAuthContainer = findViewById(R.id.password_auth_container);
-<<<<<<< MOLLY
     headerText              = findViewById(R.id.header_text);
     passphraseLayout        = findViewById(R.id.passphrase_layout);
     passphraseInput         = findViewById(R.id.passphrase_input);
     okButton                = findViewById(R.id.ok_button);
     successView             = findViewById(R.id.success);
-=======
-    unlockView              = findViewById(R.id.unlock_view);
-    lockScreenButton        = findViewById(R.id.lock_screen_button);
-    learnMoreText           = findViewById(R.id.learn_more_text);
-    biometricManager        = BiometricManager.from(this);
-    biometricPrompt         = new BiometricPrompt(this, new BiometricAuthenticationListener());
-    BiometricPrompt.PromptInfo biometricPromptInfo = BiometricDeviceAuthentication.createPromptInfoBuilder()
-                                                                                  .setTitle(getString(R.string.PassphrasePromptActivity_unlock_signal))
-                                                                                  .build();
-    biometricAuth = new BiometricDeviceAuthentication(biometricManager, biometricPrompt, biometricPromptInfo);
-    setSupportActionBar(toolbar);
-    getSupportActionBar().setTitle("");
->>>>>>> SIGNAL
 
     SpannableString hint = new SpannableString(getString(R.string.PassphrasePromptActivity_enter_passphrase));
     hint.setSpan(new RelativeSizeSpan(0.9f), 0, hint.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);

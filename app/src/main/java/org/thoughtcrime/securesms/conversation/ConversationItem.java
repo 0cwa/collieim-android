@@ -1204,7 +1204,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
       SpannableString italics        = new SpannableString(deletedMessage);
       italics.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC), 0, deletedMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       int textColor = hasWallpaper ? colorizer.getOutgoingDeleteTextColor(context)
-                                   : ContextCompat.getColor(context, R.color.signal_text_primary);
+                                   : ThemeUtil.getThemedColor(context, R.attr.signal_text_primary);
       italics.setSpan(new ForegroundColorSpan(textColor),
                       0,
                       deletedMessage.length(),
@@ -1660,8 +1660,12 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
 
     linkPreviewActionStub.setVisibility(View.VISIBLE);
     button.setText(label);
-    button.setTextColor(ContextCompat.getColor(context, messageRecord.isOutgoing() ? org.signal.core.ui.R.color.signal_light_colorOnPrimary : org.signal.core.ui.R.color.signal_colorOnPrimaryContainer));
-    button.setBackgroundColor(ContextCompat.getColor(context, messageRecord.isOutgoing() ? org.signal.core.ui.R.color.signal_light_colorTransparent2 : org.signal.core.ui.R.color.signal_colorOnPrimary));
+    button.setTextColor(messageRecord.isOutgoing()
+                        ? ContextCompat.getColor(context, org.signal.core.ui.R.color.signal_light_colorOnPrimary)
+                        : ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorOnPrimaryContainer));
+    button.setBackgroundColor(messageRecord.isOutgoing()
+                              ? ContextCompat.getColor(context, org.signal.core.ui.R.color.signal_light_colorTransparent2)
+                              : ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorOnPrimary));
     button.setOnClickListener(onClickListener);
   }
 

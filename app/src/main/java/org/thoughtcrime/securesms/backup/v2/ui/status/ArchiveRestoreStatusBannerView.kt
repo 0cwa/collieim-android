@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,6 +38,7 @@ import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.SignalIcons
+import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.util.mebiBytes
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.RestoreState
@@ -71,7 +71,7 @@ fun ArchiveRestoreStatusBanner(
     modifier = Modifier
       .padding(contentPadding)
       .background(
-        color = colorResource(CoreUiR.color.signal_colorSurface2),
+        color = SignalTheme.colors.colorSurface2,
         shape = RoundedCornerShape(24.dp)
       )
       .fillMaxWidth()

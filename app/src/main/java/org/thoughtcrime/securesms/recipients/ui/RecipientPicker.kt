@@ -58,6 +58,7 @@ import org.thoughtcrime.securesms.recipients.ui.RecipientPicker.DisplayMode.Comp
 import org.thoughtcrime.securesms.recipients.ui.RecipientPicker.KeyboardType
 import java.util.Optional
 import java.util.function.Consumer
+import org.signal.core.ui.R as CoreUiR
 
 private typealias AndroidKeyboardType = androidx.compose.ui.text.input.KeyboardType
 

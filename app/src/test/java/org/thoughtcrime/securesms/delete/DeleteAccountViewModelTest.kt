@@ -11,6 +11,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNull
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -50,7 +51,6 @@ class DeleteAccountViewModelTest {
 
     every { repository.isPhoneNumberless() } returns false
     every { repository.getUsername() } returns null
-    every { repository.getFormattedWalletBalance() } returns null
     every { repository.getRegionDisplayName(any()) } returns ""
     every { repository.getRegionDisplayName("US") } returns "United States"
     every { repository.getRegionCountryCode("US") } returns 1
@@ -64,12 +64,10 @@ class DeleteAccountViewModelTest {
   }
 
   @Test
-  fun `a wallet balance is read out of the repository up front`() = runTest(testDispatcher) {
-    every { repository.getFormattedWalletBalance() } returns "0.1000 MOB"
-
+  fun `wallet balance is absent when payments are disabled`() = runTest(testDispatcher) {
     val viewModel = createViewModel()
 
-    assertThat(viewModel.state.value.walletBalance).isEqualTo("0.1000 MOB")
+    assertThat(viewModel.state.value.walletBalance).isNull()
   }
 
   @Test

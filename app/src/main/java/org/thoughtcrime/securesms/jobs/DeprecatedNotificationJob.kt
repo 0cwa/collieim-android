@@ -47,7 +47,7 @@ class DeprecatedNotificationJob private constructor(parameters: Parameters) : Jo
   override fun run(): Result {
     if (NotificationChannels.getInstance().areNotificationsEnabled()) {
       Log.d(TAG, "Showing deprecated notification for website APK")
-      val intent = Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.install_url)))
+      val intent = Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(org.signal.core.util.R.string.install_url)))
 
       val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
       val builder = NotificationCompat.Builder(context, NotificationChannels.getInstance().APP_ALERTS)

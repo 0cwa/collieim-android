@@ -185,7 +185,7 @@ class ChatColors(
     @JvmStatic
     fun forChatColor(id: Id, chatColor: ChatColor): ChatColors {
       if (chatColor.singleColor == null && chatColor.linearGradient == null) {
-        return ChatColorsPalette.Bubbles.ULTRAMARINE
+        return ChatColorsPalette.Bubbles.autoDefault
       }
 
       return if (chatColor.linearGradient != null) {
@@ -201,7 +201,7 @@ class ChatColors(
 
         forColor(id, singleColor)
       } else {
-        ChatColorsPalette.Bubbles.ULTRAMARINE
+        ChatColorsPalette.Bubbles.autoDefault
       }
     }
 

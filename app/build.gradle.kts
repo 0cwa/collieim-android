@@ -176,8 +176,8 @@ android {
   defaultConfig {
     val sourceVersionNameWithRevision = "${canonicalVersionName}-${mollyRevision}-port-unvalidated"
 
-    versionCode = (canonicalVersionCode * maxHotfixVersions) + mollyRevision + currentHotfixVersion
-    versionName = if (ciEnabled) requireCommitTag() else sourceVersionNameWithRevision
+    versionCode = providers.gradleProperty("releaseVersionCode").orNull?.toInt()?.also { require(it > 177702) { "Release versionCode must exceed published RC1 and all later reservations" } } ?: ((canonicalVersionCode * maxHotfixVersions) + mollyRevision + currentHotfixVersion)
+    versionName = providers.gradleProperty("releaseVersionName").orNull ?: (if (ciEnabled) requireCommitTag() else sourceVersionNameWithRevision)
 
     minSdk = libs.versions.minSdk.get().toInt()
     targetSdk = libs.versions.targetSdk.get().toInt()
@@ -642,6 +642,4 @@ fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").
 
 // Publication migration gate: remove only with reviewed public native inputs and
 // direct-source acceptance. The legacy operator route is retained in engineering.
-if (gradle.startParameter.taskNames.any { it.contains("Release", ignoreCase = true) }) {
-  throw GradleException("Direct release build BLOCKED: publish and verify locked native inputs first; see BUILD.md")
-}
+throw GradleException("Direct Android builds BLOCKED: publish and verify locked native inputs first; see BUILD.md")

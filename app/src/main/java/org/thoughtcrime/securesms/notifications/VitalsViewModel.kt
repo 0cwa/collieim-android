@@ -15,12 +15,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.DeviceSpecificNotificationConfig.ShowCondition
-<<<<<<< MOLLY
-=======
-import org.thoughtcrime.securesms.util.ConnectivityWarning
-import org.thoughtcrime.securesms.util.NetworkUtil
-import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
->>>>>>> SIGNAL
 import java.util.concurrent.TimeUnit
 
 /**
@@ -75,34 +69,6 @@ class VitalsViewModel(private val context: Application) : AndroidViewModel(conte
         return@fromCallable State.PROMPT_GENERAL_BATTERY_SAVER_DIALOG
       }
 
-<<<<<<< MOLLY
-=======
-      if (havingDelayedNotifications && SlowNotificationHeuristics.shouldPromptUserForDelayedNotificationLogs()) {
-        return@fromCallable State.PROMPT_DEBUGLOGS_FOR_NOTIFICATIONS
-      }
-
-      val timeSinceLastConnection = System.currentTimeMillis() - SignalStore.misc.lastWebSocketConnectTime
-      val timeSinceLastConnectionWarning = System.currentTimeMillis() - SignalStore.misc.lastConnectivityWarningTime
-      val connectedToWebSocket = AppDependencies.webSocketObserver.value == WebSocketConnectionState.CONNECTED
-      val isRegistered = SignalStore.account.isRegistered && !SignalStore.account.isUnauthorizedReceived
-
-      if (ConnectivityWarning.isEnabled && timeSinceLastConnection > ConnectivityWarning.threshold && timeSinceLastConnectionWarning > 14.days.inWholeMilliseconds && NetworkUtil.isConnected(context) && isRegistered && !connectedToWebSocket) {
-        return@fromCallable if (ConnectivityWarning.isDebugPromptEnabled) {
-          State.PROMPT_DEBUGLOGS_FOR_CONNECTIVITY_WARNING
-        } else {
-          State.PROMPT_CONNECTIVITY_WARNING
-        }
-      }
-
-      if (LogDatabase.getInstance(context).crashes.anyMatch(patterns = CrashConfig.patterns, promptThreshold = System.currentTimeMillis() - 14.days.inWholeMilliseconds)) {
-        val timeSinceLastPrompt = System.currentTimeMillis() - SignalStore.uiHints.lastCrashPrompt
-
-        if (timeSinceLastPrompt > 1.days.inWholeMilliseconds) {
-          return@fromCallable State.PROMPT_DEBUGLOGS_FOR_CRASH
-        }
-      }
-
->>>>>>> SIGNAL
       return@fromCallable State.NONE
     }.subscribeOn(Schedulers.io())
   }

@@ -22,11 +22,7 @@ import org.thoughtcrime.securesms.jobs.CallLogEventSendJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceReadUpdateJob;
 import org.thoughtcrime.securesms.jobs.SendReadReceiptJob;
 import org.thoughtcrime.securesms.notifications.v2.ConversationId;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.service.ExportedBroadcastReceiver;
-=======
->>>>>>> SIGNAL
 
 import java.util.ArrayList;
 import java.util.LinkedList;

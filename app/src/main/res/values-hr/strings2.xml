@@ -118,4 +118,7 @@
     <string name="LinkDeviceFragment__once_linked_new_messages_sync_across_devices">Nakon povezivanja se nove poruke sinkroniziraju na svim uređajima, ali se povijest prijašnjih poruka neće prenijeti.</string>
     <string name="LinkDeviceFragment__molly_supports_linking_to_other_android_devices">Molly podržava povezivanje s drugim Android uređajima koji pokreću Molly, kao i računala i iPad koji pokreću Signal.</string>
     <string name="LinkDeviceFragment__for_android_devices_visit_s_to_install_molly">Za Android uređaje: Za instaliranje aplikacije Molly posjeti %s.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Obavijesti me kada…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services se trenutno ažurira ili je nedostupno. Pokušajte ponovno kasnije.</string>
+    <string name="please_wait">Molimo pričekajte…</string>
 </resources>

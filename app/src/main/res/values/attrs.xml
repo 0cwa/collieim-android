@@ -17,7 +17,6 @@
 
     <!-- From light_colors.xml, dark_colors.xml -->
     <attr name="conversation_toolbar_color" format="color" />
-    <attr name="signal_accent_primary" format="color" />
     <attr name="signal_background_primary" format="color" />
     <attr name="signal_background_secondary" format="color" />
     <attr name="signal_background_dialog" format="color" />
@@ -407,4 +406,5 @@
     <declare-styleable name="InsetAwareConstraintLayout">
         <attr name="animateKeyboardChanges" format="boolean" />
     </declare-styleable>
+    <attr name="custom_pref_toggle" format="string"/>
 </resources>

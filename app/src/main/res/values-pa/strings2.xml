@@ -131,4 +131,7 @@
     <string name="BlockUnblockDialog_your_chat_history_with_s_will_be_deleted_and_s_will_be_removed_from_your_phone_contacts">%1$s ਨਾਲ ਤੁਹਾਡੀ ਚੈਟ ਨੂੰ ਹਟਾਇਆ ਜਾਵੇਗਾ ਅਤੇ %1$s ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਸੰਪਰਕਾਂ ਵਿੱਚੋਂ ਹਟਾਇਆ ਜਾਵੇਗਾ।</string>
     <string name="BackupsPreferenceFragment__number_of_backups_to_retain">ਰੱਖਣ ਲਈ ਬੈਕਅੱਪ ਦੀ ਗਿਣਤੀ</string>
     <string name="BiometricDialogFragment__please_confirm_it_is_really_you_to_access_molly">ਤਸਦੀਕ ਕਰੋ ਕਿ ਇਹ ਤੁਸੀਂ ਹੀ ਹੋ, ਜੋ Molly ਵਰਤ ਰਹੇ ਹੋ</string>
+    <string name="NotificationsSettingsFragment__notify_when">ਸੂਚਨਾ ਦਿਓ ਜਦੋਂ…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play ਸੇਵਾਵਾਂ ਅਪਡੇਟ ਹੋ ਰਹੀਆਂ ਹਨ ਜਾਂ ਅਸਥਾਈ ਤੌਰ ’ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹਨ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ ਕਰੋ।</string>
+    <string name="please_wait">ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ…</string>
 </resources>

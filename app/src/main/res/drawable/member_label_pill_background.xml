@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-<<<<<<< MOLLY:app/src/main/res/drawable/terminated_pill_background.xml
-    <corners android:radius="8dp" />
-    <solid android:color="?attr/colorSurfaceVariant" />
-=======
-    <solid android:color="@color/white" />
-    <corners android:radius="100dp" />
->>>>>>> SIGNAL:app/src/main/res/drawable/member_label_pill_background.xml
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/white"/>
+    <corners android:radius="100dp"/>
 </shape>

@@ -227,9 +227,6 @@
   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">એવું લાગે છે કે તમે Signal ડિવાઇસને લિંક કરવાનો પ્રયાસ કરી રહ્યાં છો. ચાલુ રાખો પર ટેપ કરો અને પછી \"નવું ડિવાઇસ લિંક કરો\" પર ટેપ કરો અને ફરીથી QR કોડ સ્કેન કરો.</string>
   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">ચાલુ રાખો</string>
-<<<<<<< MOLLY
-</resources>
-=======
 
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">એકાઉન્ટ ટ્રાન્સફર કરી શકતા નથી</string>
@@ -264,4 +261,3 @@
     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
     <string name="MediaEditScreen__d_of_d">%2$dમાંથી %1$d</string>
 </resources>
->>>>>>> SIGNAL

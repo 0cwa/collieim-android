@@ -7,4 +7,7 @@
     <string name="app_icon_label_music">సంగీతం</string>
     <string name="arrays__none">ఏదీ లేదు</string>
     <string name="preferences_network__proxy">ప్రాక్సీ</string>
+    <string name="NotificationsSettingsFragment__notify_when">ఎప్పుడు తెలియజేయండి…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">గూగల్ ేవలను నవీకరించుటకు లేదా తాత్కాలికంగా అందుబాటులో చేస్తున్నారు. మళ్ళి ప్రయత్నించండి.</string>
+    <string name="please_wait">దయచేసి వేచి ఉండండి…</string>
 </resources>

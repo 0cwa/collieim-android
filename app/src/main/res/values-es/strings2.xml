@@ -170,4 +170,7 @@
     <string name="preferences__follow_system">Seguir al sistema</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Usar los colores del sistema para el tema de la aplicación</string>
     <string name="preferences_appearance__dynamic_colors">Colores dinámicos</string>
+    <string name="NotificationsSettingsFragment__notify_when">Notificarme cuando…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Servicios de Google Play se está actualizando o está temporalmente no disponible. Inténtalo de nuevo.</string>
+    <string name="please_wait">Espera un momento…</string>
 </resources>

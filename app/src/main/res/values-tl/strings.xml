@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-<<<<<<< MOLLY
-  --><!-- smartling.instruction_comments_enabled = on --><resources>
-=======
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
->>>>>>> SIGNAL
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -40,13 +34,10 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Nag-u-update ang Molly…</string>
 
     <!-- ApplicationPreferencesActivity -->
-<<<<<<< MOLLY
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Hindi ka pa nagset ng passphrase!</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">I-disable ang passphrase?</string>
     <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Permanente nitong i-u-unlock ang Molly at ang message notifications.</string>
     <string name="ApplicationPreferencesActivity_disable">I-disable</string>
-=======
->>>>>>> SIGNAL
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Nagka-error sa pagkonekta sa server!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">Required ang PIN para sa registration lock. Para mag-disable ng PIN, paki disable muna ang registration lock.</string>
     <string name="ApplicationPreferencesActivity_pin_created">Nalikha na ang PIN.</string>
@@ -435,10 +426,6 @@
     <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">Mukhang hindi suportado ng device na ito ang mga pag-dial na aksyon.</string>
     <!-- The content description for button to send a message in a conversation -->
     <string name="ConversationActivity_send_message_content_description">Mag-send ng message</string>
-<<<<<<< MOLLY
-    <string name="ConversationActivity_lets_switch_to_signal">Lumipat tayo sa Molly %1$s</string>
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_specify_recipient">Pumili ng kontak</string>
     <string name="ConversationActivity_unable_to_record_audio">Hindi makapag-record ng audio!</string>
     <string name="ConversationActivity_you_cant_send_messages_to_this_group">Hindi ka maaaring mag-send ng messages sa group na ito dahil hindi ka na member.</string>
@@ -463,16 +450,6 @@
     <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Kailangan ng Molly ng access sa microphone para makapag-record ng voice message.</string>
     <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Kailangan ng Molly ang pahintulot sa Mikropono upang makapagpadala ng mensaheng audio, ngunit permanente itong ipinagbabawal. Pumunta sa app settings, piliin ang \"Mga Pahintulot\", at i-enable ang \"Mikropono\".</string>
 
-<<<<<<< MOLLY
-    <string name="ConversationActivity_signal_needs_the_microphone_and_camera_permissions_in_order_to_call_s">Kailangan ng Molly ang pahintulot sa Mikropono at Camera upang matawagan si %1$s, ngunit ito ay permaneteng ipinagbabawal. Pumunta sa app settings, piliin ang \"Pahintulot\", at i-enable ang \"Mikropono\" at \"Camera\".</string>
-    <string name="ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera">Upang makakuha ng larawan at video, payagan ang Molly na gamitin ang camera.</string>
-    <string name="ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video">Kailangan ng Molly ang pahintulot sa Camera upang makakuha ng mga larawan at video, ngunit ito ay permaneteng ipinagbabawal. Pumunta sa app settings, piliin ang \"Pahintulot\", at i-enable ang \"Camera\".</string>
-    <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">Kailangan ng Molly ang pahintulot sa Camera upang makakuha ng mga larawan o video</string>
-    <string name="ConversationActivity_enable_the_microphone_permission_to_capture_videos_with_sound">I-enable ang pahintulot sa mikropono upang makakuha ng mga video na may tunog.</string>
-    <string name="ConversationActivity_signal_needs_recording_permissions_to_capture_video">Kailangan ng Molly ng mga pahintulot sa mikropono upang makapag-record ng mga video.</string>
-
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d sa %2$d</string>
     <string name="ConversationActivity_no_results">Walang resulta</string>
@@ -507,19 +484,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Hindi na suportado sa Signal ang SMS messaging. I-invite si %1$s sa Signal para mapanatili ang convo niyo dito.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-<<<<<<< MOLLY
     <string name="ConversationActivity__this_person_is_no_longer_using_signal">Hindi na gumagamit ng Molly ang taong ito. I-invite siya sa Molly para mapanatili ang convo niyo rito.</string>
-    <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Imbitahan sa Molly</string>
-    <!-- Snackbar message shown after dismissing the full screen sms export megaphone indicating we\'ll do it again soon -->
-    <string name="ConversationActivity__you_will_be_reminded_again_soon">I-re-remind ka ulit sa susunod tungkol dito.</string>
-=======
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Hindi na gumagamit ng Signal ang taong ito. I-invite siya sa Signal para mapanatili ang convo niyo rito.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Hindi gumagamit ng Signal ang taong ito. I-invite siya sa Signal para mapanatili ang usapan niyo rito.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Imbitahan sa Signal</string>
->>>>>>> SIGNAL
+    <string name="ConversationActivity__invite_to_signal">Imbitahan sa Molly</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Hindi ka makakapag-record ng voice message habang tumatawag.</string>
 
@@ -1416,69 +1385,6 @@
     <string name="ManageGroupActivity_add_group_description">Mag-add ng group description…</string>
 
     <!-- RemoteRestoreActivity -->
-<<<<<<< MOLLY
-    <!-- Progress dialog label when downloading a backup -->
-    <string name="RemoteRestoreActivity__downloading_backup">Dina-download ang backup…</string>
-    <!-- Progress dialog label when restoring a backup -->
-    <string name="RemoteRestoreActivity__restoring_messages">Nire-restore ang messages…</string>
-    <!-- Progress dialog label when finishing a backup restore -->
-    <string name="RemoteRestoreActivity__finishing_restore">Tinatapos…</string>
-    <!-- Progress dialog label while awaiting updates -->
-    <string name="RemoteRestoreActivity__restoring">Nagre-restore…</string>
-    <!-- Progress readout for dialog while downloading or restoring a backup. First placeholder is the formatted size of the backup downloaded, the second is formatted total amount to go, and the last is a percentage. -->
-    <string name="RemoteRestoreActivity__s_of_s_s">%1$s ng %2$s (%3$s)</string>
-    <!-- Feature list media label for paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_media">Lahat ng iyong media</string>
-    <!-- Feature list media label for free tier. Placeholder is days, and is currently fixed at 30. -->
-    <string name="RemoteRestoreActivity__your_last_d_days_of_media">Ang last %1$d days ng iyong media</string>
-    <!-- Feature list message label for free and paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_messages">Lahat ng iyong messages</string>
-    <!-- Screen title for restoring from backup -->
-    <string name="RemoteRestoreActivity__restore_from_backup">Mag-restore mula sa backup</string>
-    <!-- Section title for explaining what your backup includes -->
-    <string name="RemoteRestoreActivity__your_backup_includes">Kasama sa backup mo ang:</string>
-    <!-- Primary action button copy for starting restoration -->
-    <string name="RemoteRestoreActivity__restore_backup">Mag-restore ng backup</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made. %1$s is replaced with the date (e.g. March 5, 2024) and %2$s is replaced with the time (e.g. 9:00am) -->
-    <string name="RemoteRestoreActivity__backup_created_at">Huli kang nag-backup noong %1$s nang %2$s.</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made and size. %1$s is replaced with the date (e.g. March 5, 2024), %2$s is replaced with the time (e.g. 9:00am), %3$1 is replaced with size (e.g., 1.2GB) -->
-    <string name="RemoteRestoreActivity__backup_created_at_with_size">Huli kang nag-backup noong %1$s sa ganap na %2$s. Ang iyong backup size ay %3$s.</string>
-    <!-- Progress dialog label while fetching backup info if we don\'t already have it -->
-    <string name="RemoteRestoreActivity__fetching_backup_details">Kinukuha ang backup details…</string>
-    <!-- Text label button to skip restore from remote -->
-    <string name="RemoteRestoreActivity__skip_restore">I-skip ang restore</string>
-    <!-- Dialog title displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__couldnt_transfer">Hindi matapos ang paglipat</string>
-    <!-- Dialog title displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_title">Hindi ma-restore ang backup</string>
-    <!-- Dialog body displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_body">Nagkaroon ng error habang sinusubukang i-restore ang backup mo. Hindi na maaaring i-recover ang backup mo. Paki contact ang support para makakuha ng tulong.</string>
-    <!-- Dialog action button that will link users to a flow to contact support, displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_contact_button">Kontakin ang Support</string>
-    <!-- Dialog message displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__error_occurred">Nagkaroon ng error at hindi mailipat ang account mo. Subukan ulit sa pamamagitan ng pagpili ng paraan ng paglipat.</string>
-    <!-- Dialog title displayed when remote restore failed because of an outdated backup version. -->
-    <string name="RemoteRestoreActivity__couldnt_restore">Hindi ma-restore ang backup na ito</string>
-    <!-- Dialog message explaining that an update to Signal is required to restore the backup. -->
-    <string name="RemoteRestoreActivity__update_latest">Hindi ma-restore ng Molly version na ito ang backup mo. Mag-update sa latest version at subukan ulit.</string>
-    <!-- Text on button that when pressed will redirect them to update Signal -->
-    <string name="RemoteRestoreActivity__update_signal">I-update ang Molly</string>
-    <!-- Text label button to dismiss the dialog -->
-    <string name="RemoteRestoreActivity__not_now">Hindi na muna</string>
-    <!-- Text shown on restore screen as information on what will happen if you skip -->
-    <string name="RemoteRestoreActivity__your_media_will_restore_in_the_background">Ire-restore ang iyong media sa background. Kung hindi ka mag-restore ngayon, hindi mo na ito magagawa sa susunod.</string>
-    <!-- Dialog title -->
-    <string name="RestoreActivity__no_longer_registered_title">Hindi na registered ang device na ito</string>
-    <!-- Dialog message -->
-    <string name="RestoreActivity__no_longer_registered_message">Maaaring dahil ibang device ang ginamit mo sa pag-register ng iyong Signal account.</string>
-
-    <!-- GroupMentionSettingDialog -->
-    <string name="GroupMentionSettingDialog_notify_me_for_mentions">I-notify ako sa Mentions</string>
-    <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">Gusto mo bang makatanggap ng notifications kapag na-mention ka sa muted chats?</string>
-    <string name="GroupMentionSettingDialog_always_notify_me">I-notify ako palagi</string>
-    <string name="GroupMentionSettingDialog_dont_notify_me">\'Wag akong i-notify</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ManageProfileFragment -->
     <string name="ManageProfileFragment_badges">Badges</string>
@@ -1608,32 +1514,6 @@
     <!-- Button inside an alert dialog confirming the deletion of their draft -->
     <string name="InputPanel__discard">I-discard</string>
 
-<<<<<<< MOLLY
-    <!-- InviteActivity -->
-    <string name="InviteActivity_share">Ibahagi</string>
-    <string name="InviteActivity_share_with_contacts">Ibahagi sa mga kontak</string>
-    <string name="InviteActivity_share_via">I-share via…</string>
-
-    <string name="InviteActivity_cancel">Kanselahin</string>
-    <string name="InviteActivity_sending">Ipinapadala…</string>
-    <string name="InviteActivity_invitations_sent">Naipadala na ang mga imbitasyon!</string>
-    <string name="InviteActivity_invite_to_signal">Imbitahan sa Molly</string>
-    <string name="InviteActivity_send_sms">Mag-send ng SMS (%1$d)</string>
-    <plurals name="InviteActivity_send_sms_invites">
-        <item quantity="one">Mapadala ng %1$d SMS na imbitasyon?</item>
-        <item quantity="other">Mapadala ng %1$d SMS na imbitasyon?</item>
-    </plurals>
-    <string name="InviteActivity_lets_switch_to_signal">Lumipat tayo sa Molly: %1$s</string>
-    <!-- Toast shown when Signal is unable to find an external app to share the Invite text string to -->
-    <string name="InviteActivity_no_app_to_share_to">Mukhang wala kang anumang app na maaaring bahaginan.</string>
-
-    <!-- LearnMoreTextView -->
-    <string name="LearnMoreTextView_learn_more">Matuto pa</string>
-
-    <string name="SpanUtil__read_more">Magbasa pa</string>
-
-=======
->>>>>>> SIGNAL
     <!-- LongMessageActivity -->
     <string name="LongMessageActivity_unable_to_find_message">Hindi mahanap ang mensahe</string>
     <string name="LongMessageActivity_message_from_s">Mensahe mula kay %1$s</string>
@@ -2066,13 +1946,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-<<<<<<< MOLLY
-    <string name="MessageRecord__you_will_no_longer_be_able_to_send_sms_messages_from_signal_soon">Malapit ka nang hindi makapag-send ng SMS messages mula sa Signal. I-invite si %1$s sa Signal para mapanatili ang convo niyo dito.</string>
-    <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
     <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Hindi ka na pwedeng mag-send ng SMS messages sa Molly. I-invite si %1$s sa Molly para mapanatili ang convo niyo dito.</string>
-=======
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Hindi ka na pwedeng mag-send ng SMS messages sa Signal. I-invite si %1$s sa Signal para mapanatili ang convo niyo dito.</string>
->>>>>>> SIGNAL
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Payment: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2187,16 +2061,7 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Mag-link ng Signal na device?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Para mag-link ng desktop o iPad sa Signal account na ito, pumunta sa Linked Devices at i-tap ang \"Mag-link ng Bagong Device\" at i-scan ulit ang QR code. Siguraduhing i-scan lang ang QR codes na direktang nanggaling sa Signal.</string>
 
-<<<<<<< MOLLY
-    <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">Kailangan ng Molly ang pahintulot sa Camera upang makapag-scan ng QR code, ngunit ito ay permanenteng ipinagbabawal. Pumunta sa app settings, piliin ang \"Mga Pahintulot\", at i-enable ang \"Camera\".</string>
-    <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">Hindi makapag-scan ng QR code nang walang pahintulot sa Camera.</string>
-
-    <!-- OutdatedBuildReminder -->
-    <string name="OutdatedBuildReminder_update_now">I-update na</string>
     <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Itong version ng Molly ay mage-expire ngayon. Mag-update sa most recent version.</string>
-=======
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Itong version ng Signal ay mage-expire ngayon. Mag-update sa most recent version.</string>
->>>>>>> SIGNAL
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
         <item quantity="one">Mag-e-expire na bukas ang version na ito ng Molly. Mag-update sa pinakabagong version.</item>
         <item quantity="other">Mag-e-expire na ang version na ito ng Molly pagkatapos ng %1$d araw. Mag-update sa pinakabagong version.</item>
@@ -2311,10 +2176,6 @@
 
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">I-tap dito upang buksan ang iyong video</string>
-<<<<<<< MOLLY
-    <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Para matawagan si %1$s, kailangan ng Molly ng access sa iyong camera</string>
-=======
->>>>>>> SIGNAL
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
     <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
     <string name="WebRtcCallActivity__calling">Calling…</string>
@@ -2649,45 +2510,12 @@
 
     <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
     <string name="RegistrationActivity_additional_verification_required">Kailangan ng additional verification</string>
-<<<<<<< MOLLY
-    <!-- Dialog message shown when we need to verify sms and carrier rates may apply. -->
-    <string name="RegistrationActivity_a_verification_code_will_be_sent_to_this_number">Magse-send ng verification code sa number na ito. Maaaring magkaroon ng carrier charges.</string>
-    <!-- Text explaining to users that they will be receiving a verification for their phone number and that carrier rates could apply -->
-    <string name="RegistrationActivity_you_will_receive_a_verification_code">Makakatanggap ka ng verification code. Maaaring mailapat ang mga singilin ng Carrier.</string>
-    <!-- Hint text to select a country -->
-    <string name="RegistrationActivity_select_a_country">Pumili ng bansa</string>
-    <!-- Hint text explaining that this is where the country code should go -->
-    <string name="RegistrationActivity_default_country_code">0</string>
-    <string name="RegistrationActivity_you_will_receive_a_call_to_verify_this_number">Makakatanggap ka ng tawag upang beripikahin ang numerong ito.</string>
-    <string name="RegistrationActivity_edit_number">I-edit ang numero</string>
-    <string name="RegistrationActivity_missing_google_play_services">Nawawala ang Google Play Services</string>
-    <string name="RegistrationActivity_this_device_is_missing_google_play_services">Nawawala sa device na ito ang Google Play Services. Maaari mo pa ring gamitin ang Molly, ngunit ang configuration na ito ay maaaring magresulta sa kabawasan sa pagiging maaasahan o paggana.\n\nKung ikaw ay advanced na user, hindi gumagamit ng aftermarket na Android ROM, o kaya\'y naniniwala kang hindi mo dapat ito nakikita, makipag-ugnayan sa support@molly.im para makatulong kami sa pag-troubleshoot.</string>
-    <string name="RegistrationActivity_i_understand">Nauunawaan ko</string>
-    <string name="RegistrationActivity_play_services_error">Nagka-error sa Play Services</string>
-    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Ang Google Play Services ay nag-u-update o kaya\'y pansamantalang hindi available. Pakisubukang muli.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">Kinakailangan ng Signal ng pahintulot para ma-access ang contacts at media para maka-connect ka sa friends mo at makapag-send ng message. Ina-upload ang contacts mo gamit ang private contact discovery ng Signal, kung saan end-to-end encrypted ang mga ito at hindi kailanman makikita ng Signal service.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">Kinakailangan ng Signal ng pahintulot para ma-access ang contacts para maka-connect ka sa friends mo. Ina-upload ang contacts mo gamit ang private contact discovery ng Signal, kung saan end-to-end encrypted ang mga ito at hindi kailanman makikita ng Signal service.</string>
-=======
->>>>>>> SIGNAL
     <string name="RegistrationActivity_rate_limited_to_service">Nakagawa ka ng napakaraming pagtatangkang irehistro ang numerong ito. Pakiusap na subukang muli kinalaunan.</string>
     <string name="RegistrationActivity_unable_to_connect_to_service">Hindi makakonekta sa serbisyo. Pakisuri ang koneksyon ng network at subukang muli.</string>
     <!-- Dialog error message shown when we are unable to send an SMS to the user\'s number -->
     <string name="RegistrationActivity_sms_provider_error">Hindi kami makapag-send ng text sa number mo. Subukan ulit pagkatapos ng ilang oras.</string>
     <!-- Generic error when the app is unable to request an SMS code for an unknown reason. -->
     <string name="RegistrationActivity_unable_to_request_verification_code">Hindi makapag-request ng verification code. Paki-check ng iyong network connection at subukan ulit.</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_non_standard_number_format">Non-standard number format</string>
-    <!-- Dialog message shown to confirm when entering phone number (first placeholder) is normalized and formatted differently by the app (second placeholder). -->
-    <string name="RegistrationActivity_the_number_you_entered_appears_to_be_a_non_standard">Ang number na nilagay mo (%1$s) ay mukhang isang non-standard format.\n\nDid you mean %2$s?</string>
-    <string name="RegistrationActivity_signal_android_phone_number_format">Molly Android - Phone Number Format</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via voice call.-->
-    <string name="RegistrationActivity_call_requested">Call requested</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via SMS.-->
-    <string name="RegistrationActivity_sms_requested">Nag-request ng SMS</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code (through an unspecified channel).-->
-    <string name="RegistrationActivity_code_requested">Nag-request ng verification code</string>
-=======
->>>>>>> SIGNAL
     <plurals name="RegistrationActivity_debug_log_hint">
         <item quantity="one">Ikaw ngayon ay %1$d layong-hakbang na lang sa pagsusumite ng debug log.</item>
         <item quantity="other">%1$d hakbang ka pa para makapagsumite ng debug log.</item>
@@ -2736,19 +2564,6 @@
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
-<<<<<<< MOLLY
-
-    <!-- SharedContactDetailsActivity -->
-    <string name="SharedContactDetailsActivity_add_to_contacts">Idagdag sa Mga Kontak</string>
-    <string name="SharedContactDetailsActivity_invite_to_signal">Imbitahan sa Molly</string>
-    <string name="SharedContactDetailsActivity_signal_message">Mensahe sa Signal</string>
-    <string name="SharedContactDetailsActivity_signal_call">Tawag sa Signal</string>
-
-    <!-- SharedContactView -->
-    <string name="SharedContactView_add_to_contacts">Idagdag sa Mga Kontak</string>
-    <string name="SharedContactView_invite_to_signal">Imbitahan sa Molly</string>
-    <string name="SharedContactView_message">Mensahe sa Signal</string>
-=======
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
@@ -2758,14 +2573,13 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Idagdag sa Mga Kontak</string>
-    <string name="SharedContactView_invite_to_signal">Imbitahan sa Signal</string>
+    <string name="SharedContactView_invite_to_signal">Imbitahan sa Molly</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Message</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
     <string name="SharedContactView_add_to_group">I-add sa group</string>
     <!-- Confirmation dialog body when adding the person on a shared contact card to the current group. %1$s is the person\'s name, %2$s is the group name -->
     <string name="SharedContactView_add_s_to_s">I-add si %1$s sa \"%2$s\"?</string>
->>>>>>> SIGNAL
 
     <!-- SignalBottomActionBar -->
     <!-- Text to describe a button that will show more options -->
@@ -3083,12 +2897,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">Aming numerong pangkaligtasan sa Signal:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">Mukhang wala kang anumang app na maaaring bahaginan.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">Walang tumutugmang numerong pangkaligtasan na nahanap sa clipboard</string>
-<<<<<<< MOLLY
     <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Kailangan ng Molly ang pahintulot sa Camera upang makapag-scan ng QR code, ngunit ito ay permanenteng ipinagbabawal. Pumunta sa app settings, piliin ang \"Mga Pahintulot\", at i-enable ang \"Camera\".</string>
-    <string name="VerifyIdentityActivity_unable_to_scan_qr_code_without_camera_permission">Hindi makapag-scan ng QR code nang walang pahintulot sa Camera.</string>
-=======
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Kailangan ng Signal ang pahintulot sa Camera upang makapag-scan ng QR code, ngunit ito ay permanenteng ipinagbabawal. Pumunta sa app settings, piliin ang \"Mga Pahintulot\", at i-enable ang \"Camera\".</string>
->>>>>>> SIGNAL
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">Kailangan mo munang mag-exchange ng messages para makita ang safety number ni %1$s.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">Gagawa ng safety number para sa taong ito pagkatapos n\'yong magpalitan ng messages.</string>
@@ -3244,15 +3053,8 @@
     <string name="NotificationChannel_additional_message_notifications">Karagdagang message notifications</string>
     <!-- Notification channel name for notifications sent when a device has been linked -->
     <string name="NotificationChannel_new_linked_device">Bagong linked device</string>
-<<<<<<< MOLLY
-
-    <!-- QuickResponseService -->
-    <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Ang mabilisang tugon ay hindi gagana kapag naka-lock ang Molly!</string>
-    <string name="QuickResponseService_problem_sending_message">May problema sa pagpapadala ng mensahe!</string>
-=======
     <!-- Notification channel name for unread reminder notifications -->
     <string name="NotificationChannel_unread_reminders">Unread reminders</string>
->>>>>>> SIGNAL
 
     <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
     <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">Hindi makapagsulat sa storage!</string>
@@ -3405,14 +3207,6 @@
     <string name="EnclaveFailureReminder_update_signal">I-update ang Signal app para patuloy na magamit ang payments. Maaaring hindi updated ang balance mo.</string>
     <!-- Banner button to update now -->
 
-<<<<<<< MOLLY
-    <!-- WebRtcCallActivity -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone">To answer the call, bigyan ng access ang Molly sa iyong microphone.</string>
-    <!-- Message shown in permission dialog when attempting to answer a video call without camera or microphone permissions already granted. -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone_and_camera">Para sagutin ang video call, bigyan ng access ang Molly sa microphone at camera mo.</string>
-    <string name="WebRtcCallActivity_signal_requires_microphone_and_camera_permissions_in_order_to_make_or_receive_calls">Kailangan ng Molly ang pahintulot sa Mikropono at Camera upang tumawag at sumagot ng tawag, ngunit ito ay permanenteng ipinagbabawal. Pumunta sa app settings, piliin ang \"Mga Pahintulot\", at i-enable ang \"Mikropono\" at \"Camera\".</string>
-=======
->>>>>>> SIGNAL
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Answered on a linked device.</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">Declined on a linked device.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">Busy on a linked device.</string>
@@ -3506,24 +3300,6 @@
     <!-- Text asking for user\'s contact permission -->
     <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">Magbigay ng access sa contacts mo. Encrypted ang contacts mo at hindi ito makikita ng Signal service.</string>
 
-<<<<<<< MOLLY
-    <!-- contact_selection_list_fragment -->
-    <string name="contact_selection_list_fragment__signal_needs_access_to_your_contacts_in_order_to_display_them">Kailangan ng Molly ng access sa iyong mga kontak upang maipakita ang mga ito.</string>
-    <string name="contact_selection_list_fragment__show_contacts">Ipakita ang mga kontak</string>
-
-    <!-- contact_selection_list_item -->
-    <plurals name="contact_selection_list_item__number_of_members">
-        <item quantity="one">%1$d member</item>
-        <item quantity="other">%1$d members</item>
-    </plurals>
-    <!-- Displays number of viewers for a story -->
-    <plurals name="contact_selection_list_item__number_of_viewers">
-        <item quantity="one">%1$d viewer</item>
-        <item quantity="other">%1$d viewers</item>
-    </plurals>
-
-=======
->>>>>>> SIGNAL
     <!-- conversation_activity -->
     <string name="conversation_activity__type_message_push">Mensahe sa Signal</string>
     <!-- Option in send button context menu to schedule the message instead of sending it directly -->
@@ -3752,7 +3528,6 @@
     <string name="EditProfileFragment__group_name">Pangalan ng grupo</string>
     <string name="EditProfileFragment__group_description">Group description</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-<<<<<<< MOLLY
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
     <string name="EditProfileFragment_deprecated_dialog_title">I-update ang Molly</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
@@ -3765,8 +3540,6 @@
     <string name="EditProfileFragment_unregistered_dialog_body">Hindi na registered ang device na ito. Mag-register ulit para gumawa ng changes sa account mo.</string>
     <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
     <string name="EditProfileFragment_unregistered_dialog_reregister_button">Mag-register ulit</string>
-=======
->>>>>>> SIGNAL
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">I-save</string>
@@ -3962,45 +3735,13 @@
     <string name="preferences__led_color_unknown">Hindi alam</string>
     <string name="preferences__silent">Tahimik</string>
     <string name="preferences__advanced">Advanced</string>
-<<<<<<< MOLLY
     <string name="preferences__donate_to_signal">Mag-donate sa Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Pagkapribado</string>
-=======
-    <string name="preferences__donate_to_signal">Mag-donate sa Signal</string>
->>>>>>> SIGNAL
     <!-- Preference label for stories -->
     <string name="preferences__stories">Stories</string>
     <string name="preferences__payments">Payments</string>
     <string name="preferences__linked_devices">Mga naka-link na device</string>
-<<<<<<< MOLLY
-    <string name="preferences__light_theme">Maliwanag</string>
-    <string name="preferences__dark_theme">Madilim</string>
-    <string name="preferences__appearance">Hitsura</string>
-    <string name="preferences__theme">Tema</string>
-    <string name="preferences__chat_color_and_wallpaper">Chat color at wallpaper</string>
-    <!-- Clickable settings text allowing the user to change the icon visible on their phone\'s home screen. -->
-    <string name="preferences__app_icon">App Icon</string>
-    <!-- Approval for changing the app icon. -->
-    <string name="preferences__app_icon_dialog_ok">OK</string>
-    <!-- Cancelling the operation of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_cancel">I-cancel</string>
-    <!-- Title for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_title">Baguhin ang app icon at gawin ang pangalang \"%1$s\"</string>
-    <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Kailangang isara ang Molly para mapalitan ang app icon at pangalan. Palaging ipapakita ng notifications ang default na icon at pangalan ng Molly.</string>
-    <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Pumili ng app icon at pangalan na makikita sa home screen at app drawer ng phone mo. Palaging ipapakita ng notifications ang default na icon at pangalan ng Molly. Matuto pa</string>
-    <!-- Visible warning label for the limitations of changing the app icon. -->
-    <string name="preferences__app_icon_warning">Ang app icons at names ay makikita sa home screen at app drawer.</string>
-    <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Palaging ipapakita ng notifications ang default na icon at pangalan ng Molly.</string>
-    <!--Call to action to get more information about the limitations of the change app icon functionality. -->
-    <string name="preferences__app_icon_learn_more">Matuto pa</string>
-    <!--Text description of a graphic illustrating the limitations of the app icon change. -->
-    <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Isang graphic na naglalarawan kung saan makikita ang replacement app icon.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences__disable_pin">I-disable ang PIN</string>
     <string name="preferences__enable_pin">I-enable ang PIN</string>
     <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">Kung idi-disable mo ang iyong PIN, mawawala ang lahat ng data kapag ikaw ay nag-register ulit sa Signal unless manually kang nag-back up and restore. Hindi mo pwedeng i-turn on ang Registration Lock habang naka-disable ang PIN.</string>
@@ -4183,17 +3924,9 @@
     <string name="PaymentsTransferFragment__next">Susunod</string>
     <string name="PaymentsTransferFragment__invalid_address">Invalid address</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">I-check ang wallet address kung saan mo sinusubukang mag-transfer and try again.</string>
-<<<<<<< MOLLY
     <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Hindi ka pwedeng mag-transfer sa sarili mong Molly wallet address. I-enter sa isang supported exchange ang wallet address mula sa account mo.</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Para mag-scan ng isang QR code, kailangan ng Molly ng access sa iyong camera.</string>
-    <string name="PaymentsTransferFragment__signal_needs_the_camera_permission_to_capture_qr_code_go_to_settings">Kailangan ng Molly ang Camera permission para ma-capture ang QR code. Pumunta sa settings, i-select ang \"Permissions\", at i-enable ang \"Camera\".</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Para mag-scan ng isang QR code, kailangan ng Molly ng access sa iyong camera.</string>
-    <string name="PaymentsTransferFragment__settings">Settings</string>
-=======
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Hindi ka pwedeng mag-transfer sa sarili mong Signal wallet address. I-enter sa isang supported exchange ang wallet address mula sa account mo.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Para mag-scan ng isang QR code, kailangan ng Signal ng access sa iyong camera.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Para mag-scan ng isang QR code, kailangan ng Signal ng access sa iyong camera.</string>
->>>>>>> SIGNAL
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">I-scan ang Address QR Code</string>
@@ -4607,61 +4340,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Tawagan ako (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">I-resend ang Code (%1$02d:%2$02d)</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_contact_signal_support">Makipag-ugnayan sa Suporta ng Molly</string>
     <string name="RegistrationActivity_code_support_subject">Pagpaparehistro sa Molly - Verification Code para sa Android</string>
-=======
-    <string name="RegistrationActivity_code_support_subject">Pagpaparehistro sa Signal - Verification Code para sa Android</string>
->>>>>>> SIGNAL
     <string name="RegistrationActivity_incorrect_code">Maling kodigo</string>
     <string name="BackupUtil_never">Hindi kailanman</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Hindi alam</string>
-<<<<<<< MOLLY
-    <!-- Phone number heading displayed as a screen title -->
-    <string name="preferences_app_protection__phone_number">Phone number</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
     <string name="preferences_app_protection__choose_who_can_see">Piliin kung sinong pwedeng makakita ng phone number mo at kung sinong pwedeng kumontak sa \'yo sa Molly gamit ito.</string>
-    <!-- Section title above two radio buttons for enabling and disabling phone number display -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_see_my_number_heading">Sinong makakakita ng number ko</string>
-    <!-- Subtext below radio buttons when who can see my number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_on_description">Makikita ng lahat ng tao at groups na mine-message mo ang iyong phone number.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_on_description">Hindi magiging visible sa kahit na sino ang phone number mo maliban na lamang kung naka-save ito sa kanilang phone contacts.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_off_description">Hindi magiging visible sa sinuman ang phone number mo.</string>
-    <!-- Section title above two radio buttons for enabling and disabling whether users can find me by my phone number  -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_find_me_by_number_heading">Sinong makakahanap sa \'kin gamit ang number ko</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to everyone -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_on_description">Makikita ka sa Signal at pwede kang i-chat ng sinumang mayroong phone number mo.</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_off_description">Walang makakakita na nasa Signal ka maliban sa mga taong minessage o naka-chat mo.</string>
-    <!-- Snackbar text when pressing invalid radio item -->
-    <string name="PhoneNumberPrivacySettingsFragment__to_change_this_setting">"Para baguhin ang setting na ito, i-set sa \"Nobody\" ang \"Who can see my number\"."</string>
-    <!-- Dialog title shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_title">Sigurado ka na ba?</string>
-    <!-- Dialog warning message shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_message">Mahihirapan ang mga taong mahanap ka dito sa Signal kapag ginawa mong \"Wala\" ang setting ng \"Sinong makakahanap sa \'kin gamit ang phone number ko\".</string>
-    <!-- Dialog button text for canceling change action -->
-    <string name="PhoneNumberPrivacySettingsFragment__cancel">I-cancel</string>
-    <string name="PhoneNumberPrivacy_everyone">Everyone</string>
-    <string name="PhoneNumberPrivacy_nobody">Nobody</string>
-    <string name="preferences_app_protection__screen_lock">Lock ng Screen</string>
-    <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">I-lock ang access sa Signal gamit ang lock ng screen o fingerprint ng Android</string>
-    <string name="preferences_app_protection__screen_lock_inactivity_timeout">Timeout ng kawalang-aktibidad para sa lock ng screen</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
     <string name="preferences_app_protection__to_use_screen_lock">Para gamitin ang screen lock, mag-set ng PIN, pattern, o password sa device na ito.</string>
-    <string name="preferences_app_protection__signal_pin">PIN ng Signal</string>
-    <string name="preferences_app_protection__create_a_pin">Lumikha ng PIN</string>
-    <string name="preferences_app_protection__change_your_pin">Baguhin ang iyong PIN</string>
-    <string name="preferences_app_protection__pin_reminders">PIN reminders</string>
-    <string name="preferences_app_protection__turn_off">Patayin</string>
-    <string name="preferences_app_protection__confirm_pin">Kumpirmahin ang PIN</string>
-    <string name="preferences_app_protection__confirm_your_signal_pin">Kumpirmahin ang PIN ng iyong Signal</string>
-    <string name="preferences_app_protection__make_sure_you_memorize_or_securely_store_your_pin">Siguraduhing memorize mo o naka-store securely ang iyong PIN dahil hindi na ito mare-recover. Kung makalimutan mo ang iyong PIN, pwedeng mawala ang data mo kapag nag-register ka ulit ng iyong Signal account.</string>
-    <string name="preferences_app_protection__incorrect_pin_try_again">Hindi tama ang PIN. Subukang muli.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Bigo na paganahin ang registration lock.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Bigo na patayin ang registration lock?</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Kailangan mong ilagay ang iyong Lock PIN sa Pagpaparehistro</string>
@@ -4684,31 +4371,6 @@
     <string name="prompt_passphrase_activity__try_again">Subukang muli</string>
 
     <!-- ScreenLockSettingsFragment -->
-<<<<<<< MOLLY
-    <!-- Text shown when screen lock is not enabled -->
-    <string name="ScreenLockSettingsFragment__off">Naka-off</string>
-    <!-- Text shown with toggle that when switched on will enable screen lock -->
-    <string name="ScreenLockSettingsFragment__use_screen_lock">Gamitin ang screen lock</string>
-    <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Kakailanganin ang Android device lock settings mo para ma-unlock ang Molly kapag umalis o lumipat ka sa ibang app. Kapag naka-lock ang Molly, hindi ipapakita ng notification previews ang message content.</string>
-    <!-- Title text explaining when users should start the screen lock -->
-    <string name="ScreenLockSettingsFragment__start_screen_lock">Simulan ang screen lock</string>
-    <!-- Option text explaining that screen lock should start immediately -->
-    <string name="ScreenLockSettingsFragment__immediately">Kaagad</string>
-    <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_1_min">Pagkatapos ng 1 minuto</string>
-    <!-- Option text explaining that screen lock should start after 5 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_5_min">Pagkatapos ng 5 minuto</string>
-    <!-- Option text explaining that screen lock should start after 30 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_30_min">Pagkatapos ng 30 minuto</string>
-    <!-- Option text explaining that screen lock should start at a custom time set by the user -->
-    <string name="ScreenLockSettingsFragment__custom_time">Custom time</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Gamitin ang Molly screen lock</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">I-off ang Molly screen lock</string>
-=======
->>>>>>> SIGNAL
 
     <string name="Recipient_unknown">Hindi alam</string>
     <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
@@ -4754,18 +4416,6 @@
     <!-- NewDeviceTransferInstructionsFragment -->
 
     <!-- NewDeviceTransferSetupFragment -->
-<<<<<<< MOLLY
-    <string name="NewDeviceTransferSetup__preparing_to_connect_to_old_android_device">Preparing to connect to old Andoid device…</string>
-    <string name="NewDeviceTransferSetup__take_a_moment_should_be_ready_soon">Taking a moment, should be ready soon</string>
-    <string name="NewDeviceTransferSetup__waiting_for_old_device_to_connect">Waiting for old Android device to connect…</string>
-    <string name="NewDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_old_device">Kailangan ng Molly ang location permission para ma-discover at maka-connect sa old Android device mo.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_old_device">Kailangan ng Molly ang enabled location services para ma-discover at maka-connect sa old Android device mo.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_old_device">Kailangan ng Molly ang naka-turn on na Wi-Fi access para ma-discover at maka-connect sa old Android device mo. Dapat naka-turn on ang WiFi pero hindi naman kailangan na connected ito sa isang Wi-Fi network.</string>
-    <string name="NewDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Sorry, hindi supported ng iyong device ang Wi-Fi Direct. Gumagamit ang Molly ng Wi-Fi Direct para ma-discover at maka-connect sa old Android device mo. Pwede kang mag-restore ng backup para ma-restore ang iyong account mula sa old Android device mo.</string>
-    <string name="NewDeviceTransferSetup__restore_a_backup">Mag-restore ng backup</string>
-    <string name="NewDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">An unexpected error occurred while attempting to connect to your old Android device.</string>
-=======
->>>>>>> SIGNAL
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">Searching for new Android device…</string>
@@ -5418,44 +5068,6 @@
     <string name="ExpireTimerSettingsFragment__custom_time">Custom time</string>
     <string name="ExpireTimerSettingsFragment__save">I-save</string>
 
-<<<<<<< MOLLY
-    <string name="CustomExpireTimerSelectorView__seconds">seconds</string>
-    <string name="CustomExpireTimerSelectorView__minutes">minutes</string>
-    <string name="CustomExpireTimerSelectorView__hours">hours</string>
-    <string name="CustomExpireTimerSelectorView__days">days</string>
-    <string name="CustomExpireTimerSelectorView__weeks">weeks</string>
-
-    <!-- HelpSettingsFragment -->
-    <string name="HelpSettingsFragment__support_center">Support center</string>
-    <string name="HelpSettingsFragment__contact_us">Kontakin kami</string>
-    <string name="HelpSettingsFragment__version">Bersyon</string>
-    <!-- Displayed when copying help screen text to the clipboard -->
-    <string name="HelpSettingsFragment__copied_to_clipboard">Kinopya sa clipboard</string>
-    <string name="HelpSettingsFragment__debug_log">Debug log</string>
-    <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
-    <string name="HelpSettingsFragment__licenses">Licenses</string>
-    <string name="HelpSettingsFragment__terms_amp_privacy_policy">Mga Tuntunin at Patakaran sa Privacy</string>
-    <string name="HelpFragment__copyright_signal_messenger">Copyright Molly Messenger</string>
-    <string name="HelpFragment__licenced_under_the_agplv3">Licensed under the GNU AGPLv3</string>
-    <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="HelpSettingsFragment__signal_is_a_501c3">Ang Signal ay isang nonprofit</string>
-
-    <!-- DataAndStorageSettingsFragment -->
-    <string name="DataAndStorageSettingsFragment__media_quality">Media quality</string>
-    <!-- Category title for the quality of the media to be sent -->
-    <string name="DataAndStorageSettingsFragment__sent_media_quality">Sent media quality</string>
-    <string name="DataAndStorageSettingsFragment__sending_high_quality_media_will_use_more_data">Ang pag-send ng high quality media will use more data.</string>
-    <!-- Disclaimer shown under the media auto-download settings. Placeholder is a formatted size like "100 KB". -->
-    <string name="DataAndStorageSettingsFragment__voice_messages_and_stickers_under_size_are_always_auto_downloaded">Ang voice messages at stickers (sa ilalim ng %1$s) ay palaging naka-auto-download.</string>
-    <string name="DataAndStorageSettingsFragment__calls">Mga Tawag</string>
-    <!-- Title of a toggle that keeps Signal connected in the background via a persistent foreground service instead of using FCM push messages -->
-    <string name="DataAndStorageSettingsFragment__stay_connected_in_background">Panatilihing naka-connect sa background</string>
-    <!-- Body of a confirmation dialog shown when a user tries to enable the "Stay connected in background" setting -->
-    <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">Maaaring tumaas ang konsumo ng battery kapag palaging naka-connect ang app kahit nasa background ito. Hindi ito kinakailangan sa karamihan ng devices. I-enable lamang ito kung ikaw ay nakakaranas ng notification issues.</string>
-    <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
-    <string name="DataAndStorageSettingsFragment__enable">I-enable</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
@@ -6133,15 +5745,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">On until %1$s</string>
 
-<<<<<<< MOLLY
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Failed to open picker.</string>
     <!-- Banner title when notification permission is disabled -->
     <string name="NotificationSettingsFragment__to_enable_notifications">Para i-enable ang notifications, kailangan ng Molly ang iyong pahintulot para i-display ito.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">I-on</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Ito ang opisyal at natatanging chat mula sa Signal</string>
@@ -7769,7 +7378,6 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Hindi ka makapag-subscribe sa Signal Secure backups dahil hindi sinusuportahan ng phone mo ang Google Play services. Kontakin ang phone manufacturer para makakuha ng tulong.</string>
 
-<<<<<<< MOLLY
     <!-- ManageStorageSettingsFragment -->
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
     <string name="ManageStorageSettingsFragment_chat_limit">Chat limits</string>
@@ -7792,14 +7400,12 @@
     <!-- Dialog message for paid tier pending dialog -->
     <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Magagamit lamang ang storage optimization sa paid tier ng Signal Secure Backups. Pinoproseso pa ang backups subscription mo at hindi pa ito active. Subukan ulit mamaya.</string>
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media will be removed from your on-device backup</string>
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Ang media ay tatanggalin mula sa on-device backup mo</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Turning on \"Optimize Signal storage\" will offload old media from your device. You can download it again any time. It will also remove old media from your on-device backup.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Sa pag-on ng \"I-optimize ang Signal storage\", mao-offload ang lumang media mula sa device mo. Maaari mo itong i-download ulit anumang oras. Tatanggalin din nito ang lumang media mula sa on-device backup mo.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">I-on</string>
 
-=======
->>>>>>> SIGNAL
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Mag-upgrade para ma-enable ang feature na ito</string>
@@ -8232,13 +7838,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Panatilihing ligtas ang iyong key</string>
     <!-- Bottom sheet subtitle -->
-<<<<<<< MOLLY
     <string name="MessageBackupsKeyRecordScreen__signal_will_not">Hindi ka matutulungan ng Molly na i-restore ang backup mo kapag nawala mo ang iyong key. Ilagay ito sa ligtas na lugar, at huwag itong i-share sa iba.</string>
-    <!-- Checkbox label -->
-    <string name="MessageBackupsKeyRecordScreen__ive_recorded_my_key">Na-record ko na ang aking key</string>
-=======
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Hindi ka matutulungan ng Signal na i-restore ang backup mo kapag nawala mo ang iyong key. Ilagay ito sa ligtas na lugar, at huwag itong i-share sa iba.</string>
->>>>>>> SIGNAL
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Magpatuloy</string>
     <!-- Sheet secondary action button label -->
@@ -8375,244 +7975,6 @@
     <string name="MessageBackupsTypeSelectionScreen__current_plan">Current plan</string>
 
     <!-- ConfirmBackupCancellationDialog -->
-<<<<<<< MOLLY
-    <!-- Dialog title -->
-    <string name="ConfirmBackupCancellationDialog__confirm_cancellation">I-confirm ang cancellation</string>
-    <!-- Dialog body -->
-    <string name="ConfirmBackupCancellationDialog__you_wont_be_charged_again">Hindi ka na ulit sisingilin. Ititigil ang backups sa katapusan ng iyong billing cycle. Pagkatapos ng araw na iyon, magkakaroon ka ng 30 araw para i-download ang media na kasalukuyang bina-back up mo.</string>
-    <!-- Action button label to cancel subscription and download now -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_now">I-confirm at i-download ngayon</string>
-    <!-- Action button label to cancel subscription and download later -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_later">I-confirm at i-download mamaya</string>
-    <!-- Action button label to keep current subscription -->
-    <string name="ConfirmBackupCancellationDialog__keep_subscription">Panatilihin ang subscription</string>
-
-    <!-- Accessible content description for the reminder view, describing the icon in the view. -->
-    <string name="ReminderView_icon_content_description">Reminder icon</string>
-
-    <!-- Row title for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_i_have_my_old_phone">Nasa akin ang lumang phone ko</string>
-    <!-- Row subtitle for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_scan_qr">I-scan ang QR code mula sa current Signal account mo para makapagsimula agad</string>
-
-    <!-- Row title for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Wala sa akin ang lumang phone ko</string>
-    <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">O nag-iinstall ka ulit ng Molly sa parehong device</string>
-
-    <!-- Screen title for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__restore_or_transfer_account">I-restore o ilipat ang account</string>
-    <!-- Screen subtitle for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__get_your_signal_account">Ilagay ang Signal account at message history mo sa device na ito.</string>
-    <!-- Option title for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_signal_backup">I-restore ang Signal backup</string>
-    <!-- Option subtitle for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_your_text_messages_and_media_from">I-restore ang text messages at media mo mula sa iyong Signal backup plan.</string>
-    <!-- Option title for restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_on_device_backup">I-restore ang on-device backup</string>
-    <!-- Option subtitle fdor restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_your_messages_from">I-restore ang messages mo mula sa backup na naka-save sa iyong device.</string>
-    <!-- Option title for restoring via a local backup file -->
-    <string name="SelectRestoreMethodFragment__from_a_backup_file">Mula sa isang backup file</string>
-    <!-- Option subtitle for restoring via a local backup -->
-    <string name="SelectRestoreMethodFragment__choose_a_backup_youve_saved">Pumili ng backup na na-save mo</string>
-    <!-- Option title for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__from_your_old_phone">Mula sa lumang phone mo</string>
-    <!-- Option subtitle for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__transfer_directly_from_old">Direktang ilipat mula sa lumang Android mo</string>
-    <!-- Dialog title shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_title">I-skip ang pag-restore?</string>
-    <!-- Dialog message shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_warning">Kung hindi ka mag-restore ngayon, hindi mo na ito magagawa mamaya. Kung i-enable mo ulit ang backups pagkatapos mong laktawan ang pag-restore, ang current backup mo ay mapapalitan ng bagong messaging history mo.</string>
-    <!-- Dialog confirm text shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore">I-skip ang restore</string>
-
-    <!-- Screen title for restore via local backup -->
-    <string name="RestoreLocalBackup_title">I-restore ang local backup</string>
-    <!-- Screen subtitle for restore via local backup -->
-    <string name="RestoreLocalBackup_subtitle">I-restore ang messages mo mula sa backup na naka-save sa iyong device. Kung hindi ka mag-restore ngayon, hindi mo na ito magagawa sa susunod.</string>
-
-    <!-- Screen title for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_title">Ilagay ang iyong recovery key</string>
-    <!-- Screen subtitle for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_subtitle">Ang backup key mo ay isang 64-character code na kinakailangan para ma-recover ang iyong account at data.</string>
-    <!-- Button to skip entering recovery key and resuming normal registration flow -->
-    <string name="EnterBackupKey_no_backup_key">Walang recovery key?</string>
-    <!-- Recovery key text field hint -->
-    <string name="EnterBackupKey_backup_key">Recovery key</string>
-    <!-- Recovery key not known bottom sheet info paragraph 1 -->
-    <string name="EnterBackupKey_no_key_paragraph_1">Hindi mare-recover ang backups kapag wala ang 64-character recovery code nito. Kapag nawala mo ang iyong backup key, hindi ka matutulungan ng Signal na i-restore ang backup mo.</string>
-    <!-- Recovery key not known bottom sheet info paragraph 2 -->
-    <string name="EnterBackupKey_no_key_paragraph_2">Kung nasa \'yo ang lumang device mo, pwede mong tignan ang iyong recovery key sa Settings &gt; Backups. Pagkatapos ay i-tap ang Tingnan ang recovery key.</string>
-    <!-- Recovery key not known bottom sheet button to learn more about it -->
-    <string name="EnterBackupKey_learn_more">Matuto pa</string>
-    <!-- Recovery key not known bottom sheet button to skip recovery key entry and resume normal reregistration -->
-    <string name="EnterBackupKey_skip_and_dont_restore">I-skip at huwag i-restore</string>
-    <!-- Dialog title shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_title">Mali ang recovery key</string>
-    <!-- Dialog message shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_message">Siguraduhing nagre-register ka gamit ang parehong phone number at 64-character recovery key na sinave mo noong in-enable mo ang Signal Secure Backups. Hindi mare-recover ang backups kapag wala ang key na ito.</string>
-    <!-- Dialog positive button text to try entering their recovery key again -->
-    <string name="EnterBackupKey_try_again">Subukang muli</string>
-    <!-- Dialog negative button text to get help with recovery key -->
-    <string name="EnterBackupKey_backup_key_help">Tulong sa recovery key</string>
-    <!-- Text field error text when the recovery key provided has been confirmed invalid -->
-    <string name="EnterBackupKey_incorrect_backup_key_error">Mali ang recovery key</string>
-    <!-- Text field error text when the recovery key is too long -->
-    <string name="EnterBackupKey_too_long_error">Masyadong mahaba (%1$d/%2$d)</string>
-    <!-- Text field error when the recovery key is invalid -->
-    <string name="EnterBackupKey_invalid_backup_key_error">Invalid ang recovery key</string>
-    <!-- Dialog title shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_not_found">Hindi mahanap ang backup</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_you_entered_is_correct_but_no_backup">Tama ang backup key na inilagay mo, pero walang backup na nauugnay dito. Kung nasa \'yo pa rin ang lumang phone mo, siguraduhing naka-enable ang backups at nakumpleto na ang pag-back up, at subukan ulit.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">Maaaring maling recovery key ang nailagay mo, o hindi ka pa nakapag-back up sa lumang device mo.\n\nSiguraduhing nagre-register ka gamit ang parehong phone number at recovery key na sinave mo noong in-enable mo ang Signal Secure Backups, at kumpirmahing nakapag-backup ka na sa lumang device mo.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_check_rate_limited">Naubusan ka na ng recovery key attempts. Para sa iyong seguridad, limitado ang attempts na maaari mong gawin. Maghintay ng isang oras at subukan ulit.</string>
-    <!-- Dialog button shown during registration and trying to restore a remote backup to instead skip said backup process -->
-    <string name="EnterBackupKey_skip_restore">I-skip ang restore</string>
-    <!-- Dialog title text when encountering backup restore network error -->
-    <string name="EnterBackupKey_cant_restore_backup">Hindi ma-restore ang backup</string>
-    <!-- Dialog body text when encountering backup restore network error -->
-    <string name="EnterBackupKey_your_backup_cant_be_restored_right_now">Hindi ma-restore ang backup mo ngayon. I-check ang iyong internet connection at subukan ulit. </string>
-    <!-- Dialog button text to contact support on network error -->
-    <string name="EnterBackupKey_contact_support">Kontakin ang Support</string>
-
-    <!-- Email subject when contacting support on a restore backup network issue -->
-    <string name="EnterBackupKey_network_failure_support_email">Network error sa pag-restore ng Signal Android Backup</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_network_failure_support_email_filter" translatable="false">Android SignalBackups Import Failed</string> -->
-    <!-- Email subject when contacting support on a permanent backup import failure -->
-    <string name="EnterBackupKey_permanent_failure_support_email">Permanenteng pagkabigo sa pag-restore ng Signal Android Backup</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_permanent_failure_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
-
-    <!-- EnterLocalBackupKeyScreen: Screen title for entering recovery key for local backup restore -->
-    <string name="EnterLocalBackupKeyScreen__enter_your_recovery_key">Ilagay ang iyong recovery key</string>
-    <!-- EnterLocalBackupKeyScreen: Screen subtitle explaining what the recovery key is -->
-    <string name="EnterLocalBackupKeyScreen__your_recovery_key_is_a_64_character_code">Ang backup key mo ay isang 64-character code na kinakailangan para ma-recover ang iyong account at data.</string>
-    <!-- EnterLocalBackupKeyScreen: Button text when user does not have a recovery key -->
-    <string name="EnterLocalBackupKeyScreen__no_recovery_key">Walang recovery key?</string>
-    <!-- EnterLocalBackupKeyScreen: Button to proceed to next step -->
-    <string name="EnterLocalBackupKeyScreen__next">Susunod</string>
-
-    <!-- RestoreLocalBackupDialog: Error message when the selected archive fails to load -->
-    <string name="RestoreLocalBackupDialog__failed_to_load_archive">Failed ang pag-load ng archive. Pumili ng ibang directory.</string>
-    <!-- RestoreLocalBackupDialog: Dismiss button for dialog -->
-    <string name="RestoreLocalBackupDialog__ok">OK</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore">I-skip ang pag-restore?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user about the consequences of skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore_body">Kung hindi ka mag-restore ngayon, hindi mo na ito magagawa mamaya. Kung i-enable mo ulit ang backups pagkatapos mong laktawan ang pag-restore, ang current backup mo ay mapapalitan ng bagong messaging history mo.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the skip restore dialog -->
-    <string name="RestoreLocalBackupDialog__skip_restore_confirm">I-skip ang restore</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm restoring a backup from a different account -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account">I-restore sa bagong account?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user that the backup was created with a different account and they will lose group memberships -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account_body">Ginawa sa ibang Signal account ang backup na nire-restore mo. Pwede mong i-restore ang backup na ito sa bagong account, pero hindi ka na magiging member ng anumang group na ni-restore.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the restore to new account dialog -->
-    <string name="RestoreLocalBackupDialog__restore">I-restore</string>
-
-    <!-- RestoreLocalBackupActivity: Toast message when backup restore fails -->
-    <string name="RestoreLocalBackupActivity__backup_restore_failed">Failed ang pag-restore ng backup</string>
-    <!-- RestoreLocalBackupActivity: Screen title shown during restore -->
-    <string name="RestoreLocalBackupActivity__restoring_backup">Nire-restore ang backup</string>
-    <!-- RestoreLocalBackupActivity: Screen subtitle explaining restore duration -->
-    <string name="RestoreLocalBackupActivity__depending_on_the_size">Depende sa laki ng backup mo, maaari itong tumagal ng ilang minuto.</string>
-    <!-- RestoreLocalBackupActivity: Status text while restoring messages -->
-    <string name="RestoreLocalBackupActivity__restoring_messages">Nire-restore ang messages…</string>
-    <!-- RestoreLocalBackupActivity: Status text while finalizing restore -->
-    <string name="RestoreLocalBackupActivity__finalizing">Finalizing…</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore is complete -->
-    <string name="RestoreLocalBackupActivity__restore_complete">Restore complete</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore fails -->
-    <string name="RestoreLocalBackupActivity__restore_failed">Failed ang pag-restore</string>
-    <!-- RestoreLocalBackupActivity: Progress text showing bytes read of total with percentage, e.g. "1.2 MB of 5.0 MB (24%)" -->
-    <string name="RestoreLocalBackupActivity__s_of_s_d_percent">%1$s ng %2$s (%3$d%%)</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__cant_restore_backup">Hindi ma-restore ang backup</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__error_occurred_while_restoring">Nagkaroon ng error habang sinusubukang i-restore ang backup mo. Hindi na maaaring i-recover ang backup mo. Paki contact ang support para makakuha ng tulong.</string>
-
-    <!-- RestoreLocalBackupActivity: Label for the button that opens the contact support form -->
-    <string name="RestoreLocalBackupActivity__contact_support">Kontakin ang Support</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when on-device backups could not be automatically re-enabled -->
-    <string name="RestoreLocalBackupActivity__turn_on_on_device_backups">I-on ang on-device backups?</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when on-device backups could not be automatically re-enabled, prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__to_continue_using_on_device_backups">Para patuloy na magamit ang on-device backup, kailangan mo itong i-enable sa account na ito. Pwede mo itong gawin anumang oras sa Settings &gt; Backups.</string>
-
-    <!-- RestoreLocalBackupActivity: Confirm button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__turn_on_now">I-on</string>
-
-    <!-- RestoreLocalBackupActivity: Dismiss button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__not_now">Hindi na muna</string>
-
-    <!-- RestoreLocalBackupActivity: Body text for the dialog shown after a successful restore, prompting the user to choose a backup folder -->
-    <string name="RestoreLocalBackupActivity__choose_a_folder_for_backups">Para magpatuloy sa paggamit ng on-device backups, pumili ng folder sa iyong device kung saan ise-save ang bagong backups.</string>
-
-    <!-- RestoreLocalBackupActivity: Positive button label for the dialog shown after a successful restore; keeps the current backup folder -->
-    <string name="RestoreLocalBackupActivity__use_current_folder">Gamitin ang current folder</string>
-
-    <!-- RestoreLocalBackupActivity: Neutral button label for the dialog shown after a successful restore; opens folder picker to select a different backup location -->
-    <string name="RestoreLocalBackupActivity__choose_new_folder">Pumili ng bagong folder</string>
-
-    <!-- RestoreLocalBackupActivity: Negative button label for the dialog shown after a successful restore; disables on-device backups -->
-    <string name="RestoreLocalBackupActivity__disable_backups">I-disable ang backups</string>
-
-    <!-- SelectInstructionsSheet: Title for the select backup folder instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_folder">Piliin ang backup folder mo</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the select this folder button -->
-    <string name="SelectInstructionsSheet__tap_select_this_folder">I-tap ang \"Piliin ang folder na ito\"</string>
-    <!-- SelectInstructionsSheet: Instruction not to select individual files -->
-    <string name="SelectInstructionsSheet__do_not_select_individual_files">Huwag pumili ng individual files</string>
-    <!-- SelectInstructionsSheet: Title for the select backup file instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_file">Piliin ang backup file mo</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the backup file saved to device -->
-    <string name="SelectInstructionsSheet__tap_on_the_backup_file">I-tap ang backup file na naka-save sa device mo</string>
-    <!-- SelectInstructionsSheet: Subtitle explaining how to access backup after tapping continue -->
-    <string name="SelectInstructionsSheet__after_tapping_continue">Pagkatapos i-tap ang \"Magpatuloy,\" gawin ang sumusunod para ma-access ang backup mo:</string>
-    <!-- SelectInstructionsSheet: Instruction to select the top-level backup folder -->
-    <string name="SelectInstructionsSheet__select_the_top_level_folder">Piliin ang top-level folder kung saan nakalagay ang backup mo</string>
-    <!-- SelectInstructionsSheet: Continue button text -->
-    <string name="SelectInstructionsSheet__continue_button">Magpatuloy</string>
-
-    <!-- SelectLocalBackupScreen: Screen title for restoring on-device backup -->
-    <string name="SelectLocalBackupScreen__restore_on_device_backup">I-restore ang on-device backup</string>
-    <!-- SelectLocalBackupScreen: Screen subtitle explaining the restore process -->
-    <string name="SelectLocalBackupScreen__restore_your_messages_from_the_backup_folder">I-restore ang messages mo mula sa backup folder na naka-save sa iyong device. Kung hindi ka mag-restore ngayon, hindi mo na ito magagawa sa susunod.</string>
-    <!-- SelectLocalBackupScreen: Button to initiate backup restoration -->
-    <string name="SelectLocalBackupScreen__restore_backup">Mag-restore ng backup</string>
-    <!-- SelectLocalBackupScreen: Button to choose an earlier backup when current is latest -->
-    <string name="SelectLocalBackupScreen__choose_an_earlier_backup">Pumili ng mas lumang backup</string>
-    <!-- SelectLocalBackupScreen: Button to choose a different backup -->
-    <string name="SelectLocalBackupScreen__choose_a_different_backup">Pumili ng ibang backup</string>
-    <!-- SelectLocalBackupScreen: Label for latest backup card -->
-    <string name="SelectLocalBackupScreen__your_latest_backup">Ang latest backup mo:</string>
-    <!-- SelectLocalBackupScreen: Label for non-latest backup card -->
-    <string name="SelectLocalBackupScreen__your_backup">Ang backup mo:</string>
-
-    <!-- SelectLocalBackupSheet: Title for backup selection bottom sheet -->
-    <string name="SelectLocalBackupSheet__choose_a_backup_to_restore">Pumili ng backup na ire-restore</string>
-    <!-- SelectLocalBackupSheet: Subtitle warning about choosing an older backup -->
-    <string name="SelectLocalBackupSheet__choosing_an_older_backup">Maaaring mawalang messages o media kapag pumili ka ng mas lumang backup.</string>
-    <!-- SelectLocalBackupSheet: Continue button text -->
-    <string name="SelectLocalBackupSheet__continue_button">Magpatuloy</string>
-
-    <!-- SelectLocalBackupTypeScreen: Screen title for selecting backup type -->
-    <string name="SelectLocalBackupTypeScreen__restore_on_device_backup">I-restore ang on-device backup</string>
-    <!-- SelectLocalBackupTypeScreen: Screen subtitle explaining restore options -->
-    <string name="SelectLocalBackupTypeScreen__restore_your_messages_from_the_backup">I-restore ang messages mo mula sa backup na naka-save sa iyong device. Kung hindi ka mag-restore ngayon, hindi mo na ito magagawa sa susunod.</string>
-    <!-- SelectLocalBackupTypeScreen: Button for users who saved backup as single file -->
-    <string name="SelectLocalBackupTypeScreen__i_saved_my_backup_as_a_single_file">Nai-save ko ang aking backup bilang isang single file</string>
-    <!-- SelectLocalBackupTypeScreen: Card title for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__choose_backup_folder">Pumili ng backup folder</string>
-    <!-- SelectLocalBackupTypeScreen: Card description for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__select_the_folder_on_your_device">Piliin ang folder sa device mo kung saan nakalagay ang backup mo</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Email subject when contacting support on a create backup failure -->
     <string name="BackupAlertBottomSheet_network_failure_support_email">May network error sa pag-restore ng Signal Android Backup</string>

@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-<<<<<<< MOLLY
-  --><!-- smartling.instruction_comments_enabled = on --><resources>
-=======
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
->>>>>>> SIGNAL
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -40,13 +34,10 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Molly se aktualizuje…</string>
 
     <!-- ApplicationPreferencesActivity -->
-<<<<<<< MOLLY
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Dosud nemáte nastavené heslo!</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Zakázat heslo?</string>
     <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tímto trvale odemknete Molly a upozornění na zprávy.</string>
     <string name="ApplicationPreferencesActivity_disable">Deaktivovat</string>
-=======
->>>>>>> SIGNAL
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Chyba při připojování k serveru!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">PIN je vyžadován pro zámek registrace. Nejprve prosím zakažte zámek registrace, aby bylo možné PIN deaktivovat.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN vytvořen.</string>
@@ -443,10 +434,6 @@
     <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">Toto zařízení zřejmě neumí vytáčet telefonní čísla.</string>
     <!-- The content description for button to send a message in a conversation -->
     <string name="ConversationActivity_send_message_content_description">Odeslat zprávu</string>
-<<<<<<< MOLLY
-    <string name="ConversationActivity_lets_switch_to_signal">Přejít na Molly: %1$s</string>
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_specify_recipient">Vyberte prosím kontakt</string>
     <string name="ConversationActivity_unable_to_record_audio">Nemohu nahrávat audio!</string>
     <string name="ConversationActivity_you_cant_send_messages_to_this_group">Do této skupiny nemůžete zasílat zprávy, jelikož už nejste jejím členem.</string>
@@ -471,16 +458,6 @@
     <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Aplikace Molly potřebuje pro nahrání hlasové zprávy povolit přístup k mikrofonu.</string>
     <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Molly potřebuje oprávnění pro přístup k mikrofonu, aby mohl poslat audio zprávu, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Mikrofon\".</string>
 
-<<<<<<< MOLLY
-    <string name="ConversationActivity_signal_needs_the_microphone_and_camera_permissions_in_order_to_call_s">Molly potřebuje oprávnění pro přístup k mikrofonu a fotoaparátu, abyste mohli volat %1$s, ale tato oprávnění jsou nyní zakázána. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Mikrofon\" a \"Fotoaparát\".</string>
-    <string name="ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera">Pro pořizování fotografií nebo videa potřebuje Molly přístup k fotoaparátu.</string>
-    <string name="ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video">Molly potřebuje oprávnění pro přístup k fotoaparátu, aby mohl pořizovat fotografie nebo video, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Fotoaparát\".</string>
-    <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">Molly potřebuje přístup k fotoaparátu, aby mohl pořizovat fotografie nebo videa.</string>
-    <string name="ConversationActivity_enable_the_microphone_permission_to_capture_videos_with_sound">Povolte oprávnění k mikrofonu pro nahrávání videa se zvukem.</string>
-    <string name="ConversationActivity_signal_needs_recording_permissions_to_capture_video">Molly potřebuje oprávnění k mikrofonu pro nahrávání videa.</string>
-
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d z %2$d</string>
     <string name="ConversationActivity_no_results">Žádné výsledky.</string>
@@ -515,19 +492,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Zasílání SMS zpráv již není aplikací Signal podporováno. Pozvěte kontakt %1$s do aplikace Signal a pokračujte v konverzaci zde.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-<<<<<<< MOLLY
     <string name="ConversationActivity__this_person_is_no_longer_using_signal">Tato osoba již Molly nepoužívá. Pozvěte ji do aplikace Molly a pokračujte v konverzaci zde.</string>
-    <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Pozvat do Molly</string>
-    <!-- Snackbar message shown after dismissing the full screen sms export megaphone indicating we\'ll do it again soon -->
-    <string name="ConversationActivity__you_will_be_reminded_again_soon">Brzy vám to znovu připomeneme.</string>
-=======
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Tato osoba již Signal nepoužívá. Pozvěte ji do aplikace Signal a pokračujte v konverzaci zde.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Tato osoba nepoužívá Signal. Pozvěte ji a pokračujte v konverzaci zde.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Pozvat do Signal</string>
->>>>>>> SIGNAL
+    <string name="ConversationActivity__invite_to_signal">Pozvat do Molly</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Během hovoru nelze nahrát hlasovou zprávu.</string>
 
@@ -1502,69 +1471,6 @@
     <string name="ManageGroupActivity_add_group_description">Přidejte popisek skupiny…</string>
 
     <!-- RemoteRestoreActivity -->
-<<<<<<< MOLLY
-    <!-- Progress dialog label when downloading a backup -->
-    <string name="RemoteRestoreActivity__downloading_backup">Stahování zálohy…</string>
-    <!-- Progress dialog label when restoring a backup -->
-    <string name="RemoteRestoreActivity__restoring_messages">Obnovování zpráv…</string>
-    <!-- Progress dialog label when finishing a backup restore -->
-    <string name="RemoteRestoreActivity__finishing_restore">Dokončování…</string>
-    <!-- Progress dialog label while awaiting updates -->
-    <string name="RemoteRestoreActivity__restoring">Obnovování…</string>
-    <!-- Progress readout for dialog while downloading or restoring a backup. First placeholder is the formatted size of the backup downloaded, the second is formatted total amount to go, and the last is a percentage. -->
-    <string name="RemoteRestoreActivity__s_of_s_s">%1$s z %2$s (%3$s)</string>
-    <!-- Feature list media label for paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_media">Všechna vaše média</string>
-    <!-- Feature list media label for free tier. Placeholder is days, and is currently fixed at 30. -->
-    <string name="RemoteRestoreActivity__your_last_d_days_of_media">Vaše média za posledních %1$d dní</string>
-    <!-- Feature list message label for free and paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_messages">Všechny vaše zprávy</string>
-    <!-- Screen title for restoring from backup -->
-    <string name="RemoteRestoreActivity__restore_from_backup">Obnovit ze zálohy</string>
-    <!-- Section title for explaining what your backup includes -->
-    <string name="RemoteRestoreActivity__your_backup_includes">Vaše záloha obsahuje:</string>
-    <!-- Primary action button copy for starting restoration -->
-    <string name="RemoteRestoreActivity__restore_backup">Obnovit zálohu</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made. %1$s is replaced with the date (e.g. March 5, 2024) and %2$s is replaced with the time (e.g. 9:00am) -->
-    <string name="RemoteRestoreActivity__backup_created_at">Poslední záloha proběhla dne %1$s v %2$s.</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made and size. %1$s is replaced with the date (e.g. March 5, 2024), %2$s is replaced with the time (e.g. 9:00am), %3$1 is replaced with size (e.g., 1.2GB) -->
-    <string name="RemoteRestoreActivity__backup_created_at_with_size">Poslední záloha proběhla dne %1$s v %2$s. Velikost vaší zálohy je %3$s.</string>
-    <!-- Progress dialog label while fetching backup info if we don\'t already have it -->
-    <string name="RemoteRestoreActivity__fetching_backup_details">Načítají se údaje o zálohování…</string>
-    <!-- Text label button to skip restore from remote -->
-    <string name="RemoteRestoreActivity__skip_restore">Přeskočit obnovení</string>
-    <!-- Dialog title displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__couldnt_transfer">Přenos se nepodařilo dokončit</string>
-    <!-- Dialog title displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_title">Zálohu nelze obnovit</string>
-    <!-- Dialog body displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_body">Při obnovování zálohy se vyskytla chyba. Vaši zálohu nelze obnovit. Kontaktujte prosím podporu.</string>
-    <!-- Dialog action button that will link users to a flow to contact support, displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_contact_button">Kontaktovat podporu</string>
-    <!-- Dialog message displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__error_occurred">Vyskytla se chyba a váš účet nebylo možné převést. Vyberte způsob přenosu a zkuste to znovu.</string>
-    <!-- Dialog title displayed when remote restore failed because of an outdated backup version. -->
-    <string name="RemoteRestoreActivity__couldnt_restore">Tuto zálohu se nepodařilo obnovit</string>
-    <!-- Dialog message explaining that an update to Signal is required to restore the backup. -->
-    <string name="RemoteRestoreActivity__update_latest">Tato verze aplikace Molly nedokáže zálohu obnovit. Aktualizujte na nejnovější verzi a zkuste to znovu.</string>
-    <!-- Text on button that when pressed will redirect them to update Signal -->
-    <string name="RemoteRestoreActivity__update_signal">Aktualizovat Molly</string>
-    <!-- Text label button to dismiss the dialog -->
-    <string name="RemoteRestoreActivity__not_now">Nyní ne</string>
-    <!-- Text shown on restore screen as information on what will happen if you skip -->
-    <string name="RemoteRestoreActivity__your_media_will_restore_in_the_background">Vaše média se obnoví na pozadí. Pokud se rozhodnete nyní neobnovovat, nebude to už později možné.</string>
-    <!-- Dialog title -->
-    <string name="RestoreActivity__no_longer_registered_title">Toto zařízení již není registrované</string>
-    <!-- Dialog message -->
-    <string name="RestoreActivity__no_longer_registered_message">Je to pravděpodobně proto, že jste účet Signal zaregistrovali na jiném zařízení.</string>
-
-    <!-- GroupMentionSettingDialog -->
-    <string name="GroupMentionSettingDialog_notify_me_for_mentions">Upozornit mne na zmínky</string>
-    <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">Přijímat oznámení, když vás někdo zmíní ve ztlumených chatech?</string>
-    <string name="GroupMentionSettingDialog_always_notify_me">Vždy mne upozornit</string>
-    <string name="GroupMentionSettingDialog_dont_notify_me">Neupozorňovat mne</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ManageProfileFragment -->
     <string name="ManageProfileFragment_badges">Odznaky</string>
@@ -1702,34 +1608,6 @@
     <!-- Button inside an alert dialog confirming the deletion of their draft -->
     <string name="InputPanel__discard">Zahodit</string>
 
-<<<<<<< MOLLY
-    <!-- InviteActivity -->
-    <string name="InviteActivity_share">Sdílet</string>
-    <string name="InviteActivity_share_with_contacts">Sdílet s kontakty</string>
-    <string name="InviteActivity_share_via">Sdílet přes…</string>
-
-    <string name="InviteActivity_cancel">Storno</string>
-    <string name="InviteActivity_sending">Odesílaní…</string>
-    <string name="InviteActivity_invitations_sent">Pozvánka odeslána!</string>
-    <string name="InviteActivity_invite_to_signal">Pozvat do Molly</string>
-    <string name="InviteActivity_send_sms">Poslat SMS (%1$d)</string>
-    <plurals name="InviteActivity_send_sms_invites">
-        <item quantity="one">Poslat %1$d SMS pozvánku?</item>
-        <item quantity="few">Poslat %1$d SMS pozvánky?</item>
-        <item quantity="many">Poslat %1$d SMS pozvánek?</item>
-        <item quantity="other">Poslat %1$d SMS pozvánek?</item>
-    </plurals>
-    <string name="InviteActivity_lets_switch_to_signal">Přejít na Molly: %1$s</string>
-    <!-- Toast shown when Signal is unable to find an external app to share the Invite text string to -->
-    <string name="InviteActivity_no_app_to_share_to">Zdá se, že nemáte žádnou aplikaci pro sdílení.</string>
-
-    <!-- LearnMoreTextView -->
-    <string name="LearnMoreTextView_learn_more">Zjistit více</string>
-
-    <string name="SpanUtil__read_more">Číst dále</string>
-
-=======
->>>>>>> SIGNAL
     <!-- LongMessageActivity -->
     <string name="LongMessageActivity_unable_to_find_message">Nepodařilo se nalézt zprávu</string>
     <string name="LongMessageActivity_message_from_s">Zpráva od %1$s</string>
@@ -2192,13 +2070,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-<<<<<<< MOLLY
-    <string name="MessageRecord__you_will_no_longer_be_able_to_send_sms_messages_from_signal_soon">Zprávy SMS již brzy nebude možné z aplikace Signal posílat. Pozvěte kontakt %1$s do aplikace Signal a pokračujte v konverzaci zde.</string>
-    <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
     <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">V aplikaci Molly již nelze odesílat zprávy SMS. Pozvěte kontakt %1$s do aplikace Molly a pokračujte v konverzaci zde.</string>
-=======
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">V aplikaci Signal již nelze odesílat zprávy SMS. Pozvěte kontakt %1$s do aplikace Signal a pokračujte v konverzaci zde.</string>
->>>>>>> SIGNAL
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Platba: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2323,16 +2195,7 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Propojit zařízení Signal?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Pokud chcete s tímto účtem Signal propojit stolní počítač nebo iPad, přejděte do části Propojená zařízení, klepněte na Propojit nové zařízení a znovu naskenujte QR kód. Ujistěte se, že skenujete pouze QR kódy, které pocházejí přímo z aplikace Signal.</string>
 
-<<<<<<< MOLLY
-    <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">Molly potřebuje oprávnění pro přístup k fotoaparátu, aby mohl naskenovat QR kód, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Fotoaparát\".</string>
-    <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">Nelze naskenovat QR kód bez přístupu k fotoaparátu.</string>
-
-    <!-- OutdatedBuildReminder -->
-    <string name="OutdatedBuildReminder_update_now">Aktualizovat nyní</string>
     <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Tato verze aplikace Molly dnes vyprší. Aktualizujte na nejnovější verzi.</string>
-=======
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Tato verze aplikace Signal dnes vyprší. Aktualizujte na nejnovější verzi.</string>
->>>>>>> SIGNAL
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
         <item quantity="one">Platnost této verze aplikace Molly vyprší zítra. Aktualizujte na nejnovější verzi.</item>
         <item quantity="few">Platnost této verze aplikace Molly vyprší za %1$d dny. Aktualizujte na nejnovější verzi.</item>
@@ -2451,10 +2314,6 @@
 
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Klepnutím sem zapnete své video</string>
-<<<<<<< MOLLY
-    <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Molly potřebuje přístup k vašemu fotoaparátu pro volání %1$s</string>
-=======
->>>>>>> SIGNAL
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
     <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
     <string name="WebRtcCallActivity__calling">Volání…</string>
@@ -2831,45 +2690,12 @@
 
     <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
     <string name="RegistrationActivity_additional_verification_required">Je vyžadováno další ověření</string>
-<<<<<<< MOLLY
-    <!-- Dialog message shown when we need to verify sms and carrier rates may apply. -->
-    <string name="RegistrationActivity_a_verification_code_will_be_sent_to_this_number">Na toto číslo bude zaslán ověřovací kód. Zaslání může být zpoplatněno.</string>
-    <!-- Text explaining to users that they will be receiving a verification for their phone number and that carrier rates could apply -->
-    <string name="RegistrationActivity_you_will_receive_a_verification_code">Bude vám zaslán ověřovací kód. Zaslání může být zpoplatněno.</string>
-    <!-- Hint text to select a country -->
-    <string name="RegistrationActivity_select_a_country">Zvolte zemi</string>
-    <!-- Hint text explaining that this is where the country code should go -->
-    <string name="RegistrationActivity_default_country_code">0</string>
-    <string name="RegistrationActivity_you_will_receive_a_call_to_verify_this_number">Zavoláme vám pro ověření tohoto čísla</string>
-    <string name="RegistrationActivity_edit_number">Upravit číslo</string>
-    <string name="RegistrationActivity_missing_google_play_services">Chybí Google Play služba</string>
-    <string name="RegistrationActivity_this_device_is_missing_google_play_services">Toto zařízení nepodporuje službu Google Play. Můžete stále používat Molly, ale tato konfigurace může mít za následek snížení spolehlivosti nebo výkonu.\n\n Jestli nejste zkušený uživatel, nepoužíváte alternativní Android ROM nebo si myslíte, že je to chyba, kontaktujte support@molly.im pro pomoc s řešením tohoto problému.</string>
-    <string name="RegistrationActivity_i_understand">Rozumím</string>
-    <string name="RegistrationActivity_play_services_error">Chyba Google Play</string>
-    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Služba Google Play se aktualizuje nebo je dočasně nedostupná. Zkuste to prosím znovu.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">Signal potřebuje oprávnění pro přístup ke kontaktům a médiím, abyste se mohli spojit s přáteli a posílat zprávy. Vaše kontakty jsou nahrávány pomocí soukromého zjišťování kontaktů služby Signal, což znamená, že jsou end-to-end šifrovány a pro Signal nejsou nikdy viditelné.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">Signal potřebuje oprávnění pro přístup ke kontaktům, abyste se mohli spojit s přáteli a posílat zprávy. Vaše kontakty jsou nahrávány pomocí soukromého zjišťování kontaktů služby Signal, což znamená, že jsou end-to-end šifrovány a pro Signal nejsou nikdy viditelné.</string>
-=======
->>>>>>> SIGNAL
     <string name="RegistrationActivity_rate_limited_to_service">Učinili jste příliš mnoho pokusů zaregistrovat toto číslo. Zkuste to prosím znovu později.</string>
     <string name="RegistrationActivity_unable_to_connect_to_service">Nelze se připojit k službě. Prosím zkontrolujte připojení k internetu a poté to zkuste znovu.</string>
     <!-- Dialog error message shown when we are unable to send an SMS to the user\'s number -->
     <string name="RegistrationActivity_sms_provider_error">Na vaše číslo se nepodařilo odeslat SMS. Zkuste to prosím znovu za několik hodin.</string>
     <!-- Generic error when the app is unable to request an SMS code for an unknown reason. -->
     <string name="RegistrationActivity_unable_to_request_verification_code">Ověřovací kód nelze vyžádat. Zkontrolujte připojení k internetu a zkuste to znovu.</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_non_standard_number_format">Nestandardní formát čísla</string>
-    <!-- Dialog message shown to confirm when entering phone number (first placeholder) is normalized and formatted differently by the app (second placeholder). -->
-    <string name="RegistrationActivity_the_number_you_entered_appears_to_be_a_non_standard">Zadané číslo (%1$s) má zřejmě nestandardní formát.\n\nMysleli jste %2$s?</string>
-    <string name="RegistrationActivity_signal_android_phone_number_format">Molly pro Android - Formát telefonního čísla</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via voice call.-->
-    <string name="RegistrationActivity_call_requested">Vyžádané volání</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via SMS.-->
-    <string name="RegistrationActivity_sms_requested">SMS vyžádána</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code (through an unspecified channel).-->
-    <string name="RegistrationActivity_code_requested">Ověřovací kód vyžádán</string>
-=======
->>>>>>> SIGNAL
     <plurals name="RegistrationActivity_debug_log_hint">
         <item quantity="one">Zbývá vám %1$d krok k odeslání ladícího logu.</item>
         <item quantity="few">Zbývají vám %1$d kroky k odeslání ladícího logu.</item>
@@ -2920,19 +2746,6 @@
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
-<<<<<<< MOLLY
-
-    <!-- SharedContactDetailsActivity -->
-    <string name="SharedContactDetailsActivity_add_to_contacts">Přidat do kontaktů</string>
-    <string name="SharedContactDetailsActivity_invite_to_signal">Pozvat do Molly</string>
-    <string name="SharedContactDetailsActivity_signal_message">Zpráva Signal</string>
-    <string name="SharedContactDetailsActivity_signal_call">Signal volání</string>
-
-    <!-- SharedContactView -->
-    <string name="SharedContactView_add_to_contacts">Přidat do kontaktů</string>
-    <string name="SharedContactView_invite_to_signal">Pozvat do Molly</string>
-    <string name="SharedContactView_message">Zpráva Signal</string>
-=======
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
@@ -2942,14 +2755,13 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Přidat do kontaktů</string>
-    <string name="SharedContactView_invite_to_signal">Pozvat do Signal</string>
+    <string name="SharedContactView_invite_to_signal">Pozvat do Molly</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Zpráva</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
     <string name="SharedContactView_add_to_group">Přidat do skupiny</string>
     <!-- Confirmation dialog body when adding the person on a shared contact card to the current group. %1$s is the person\'s name, %2$s is the group name -->
     <string name="SharedContactView_add_s_to_s">Přidat %1$s do „%2$s“?</string>
->>>>>>> SIGNAL
 
     <!-- SignalBottomActionBar -->
     <!-- Text to describe a button that will show more options -->
@@ -3439,15 +3251,8 @@
     <string name="NotificationChannel_additional_message_notifications">Další oznámení týkající se zpráv</string>
     <!-- Notification channel name for notifications sent when a device has been linked -->
     <string name="NotificationChannel_new_linked_device">Nové propojené zařízení</string>
-<<<<<<< MOLLY
-
-    <!-- QuickResponseService -->
-    <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Rychlá odpověď není dostupná, pokud je Molly uzamčen!</string>
-    <string name="QuickResponseService_problem_sending_message">Problém při odesílání zprávy!</string>
-=======
     <!-- Notification channel name for unread reminder notifications -->
     <string name="NotificationChannel_unread_reminders">Připomínky nepřečtených zpráv</string>
->>>>>>> SIGNAL
 
     <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
     <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">Nelze zapisovat do úložiště.</string>
@@ -3610,14 +3415,6 @@
     <string name="EnclaveFailureReminder_update_signal">Aktualizací aplikace Signal můžete pokračovat v používání plateb. Váš zůstatek nemusí být aktuální.</string>
     <!-- Banner button to update now -->
 
-<<<<<<< MOLLY
-    <!-- WebRtcCallActivity -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone">Chcete-li přijmout hovor, umožněte aplikaci Molly přístup k mikrofonu.</string>
-    <!-- Message shown in permission dialog when attempting to answer a video call without camera or microphone permissions already granted. -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone_and_camera">Chcete-li přijmout videohovor, umožněte aplikaci Molly přístup k mikrofonu a fotoaparátu.</string>
-    <string name="WebRtcCallActivity_signal_requires_microphone_and_camera_permissions_in_order_to_make_or_receive_calls">Molly potřebuje oprávnění pro přístup k mikrofonu a fotoaparátu, abyste mohli volat nebo přijímat hovory, ale tato oprávnění jsou nyní zakázána. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Mikrofon\" a \"Fotoaparát\".</string>
-=======
->>>>>>> SIGNAL
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Odpovězeno na propojeném zařízení.</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">Odmítnuto na propojeném zařízení.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">Obsazeno na propojeném zařízení.</string>
@@ -3713,28 +3510,6 @@
     <!-- Text asking for user\'s contact permission -->
     <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">Povolte přístup ke svým kontaktům. Vaše kontakty jsou šifrované a nejsou ve službě Signal viditelné.</string>
 
-<<<<<<< MOLLY
-    <!-- contact_selection_list_fragment -->
-    <string name="contact_selection_list_fragment__signal_needs_access_to_your_contacts_in_order_to_display_them">Molly potřebuje přístup k vašim kontaktům, aby je mohl zobrazit.</string>
-    <string name="contact_selection_list_fragment__show_contacts">Zobrazit kontakty</string>
-
-    <!-- contact_selection_list_item -->
-    <plurals name="contact_selection_list_item__number_of_members">
-        <item quantity="one">%1$d člen</item>
-        <item quantity="few">%1$d členové</item>
-        <item quantity="many">%1$d členů</item>
-        <item quantity="other">%1$d členů</item>
-    </plurals>
-    <!-- Displays number of viewers for a story -->
-    <plurals name="contact_selection_list_item__number_of_viewers">
-        <item quantity="one">%1$d zobrazení</item>
-        <item quantity="few">%1$d zobrazení</item>
-        <item quantity="many">%1$d zobrazení</item>
-        <item quantity="other">%1$d zobrazení</item>
-    </plurals>
-
-=======
->>>>>>> SIGNAL
     <!-- conversation_activity -->
     <string name="conversation_activity__type_message_push">Zpráva Signal</string>
     <!-- Option in send button context menu to schedule the message instead of sending it directly -->
@@ -3975,7 +3750,6 @@
     <string name="EditProfileFragment__group_name">Název skupiny</string>
     <string name="EditProfileFragment__group_description">Popisek skupiny</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-<<<<<<< MOLLY
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
     <string name="EditProfileFragment_deprecated_dialog_title">Aktualizovat Molly</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
@@ -3988,8 +3762,6 @@
     <string name="EditProfileFragment_unregistered_dialog_body">Toto zařízení již není registrované. Chcete-li provést změny ve svém účtu, znovu ho zaregistrujte.</string>
     <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
     <string name="EditProfileFragment_unregistered_dialog_reregister_button">Znovu se zaregistrovat</string>
-=======
->>>>>>> SIGNAL
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Uložit</string>
@@ -4189,45 +3961,13 @@
     <string name="preferences__led_color_unknown">Neznámý</string>
     <string name="preferences__silent">Ticho</string>
     <string name="preferences__advanced">Rozšířené možnosti</string>
-<<<<<<< MOLLY
     <string name="preferences__donate_to_signal">Podpořte Molly finančně</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Soukromí</string>
-=======
-    <string name="preferences__donate_to_signal">Podpořte Signal finančně</string>
->>>>>>> SIGNAL
     <!-- Preference label for stories -->
     <string name="preferences__stories">Příběhy</string>
     <string name="preferences__payments">Platby</string>
     <string name="preferences__linked_devices">Propojená zařízení</string>
-<<<<<<< MOLLY
-    <string name="preferences__light_theme">Světlý</string>
-    <string name="preferences__dark_theme">Tmavý</string>
-    <string name="preferences__appearance">Vzhled</string>
-    <string name="preferences__theme">Motiv</string>
-    <string name="preferences__chat_color_and_wallpaper">Barva chatu a tapeta</string>
-    <!-- Clickable settings text allowing the user to change the icon visible on their phone\'s home screen. -->
-    <string name="preferences__app_icon">Ikona aplikace</string>
-    <!-- Approval for changing the app icon. -->
-    <string name="preferences__app_icon_dialog_ok">OK</string>
-    <!-- Cancelling the operation of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_cancel">Zrušit</string>
-    <!-- Title for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_title">Změnit ikonu a název aplikace na „%1$s“</string>
-    <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Aby bylo možné ikonu a název aplikace Molly změnit, bude nutné ji zavřít. Oznámení budou vždy zobrazovat výchozí ikonu a název Molly.</string>
-    <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Vyberte si ikonu a název aplikace, které se budou zobrazovat na domovské obrazovce vašeho telefonu a ve složce s aplikacemi. Oznámení budou vždy zobrazovat výchozí ikonu a název Molly. Více informací</string>
-    <!-- Visible warning label for the limitations of changing the app icon. -->
-    <string name="preferences__app_icon_warning">Ikony a názvy aplikací se zobrazují na domovské obrazovce a ve složce s aplikacemi.</string>
-    <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Oznámení budou vždy zobrazovat výchozí ikonu a název Molly.</string>
-    <!--Call to action to get more information about the limitations of the change app icon functionality. -->
-    <string name="preferences__app_icon_learn_more">Více informací</string>
-    <!--Text description of a graphic illustrating the limitations of the app icon change. -->
-    <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafika znázorňující, kde se bude nová ikona aplikace zobrazovat.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences__disable_pin">Deaktivovat PIN</string>
     <string name="preferences__enable_pin">Povolit PIN</string>
     <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">Pokud PIN deaktivujete, tak při opětovné registraci Signal ztratíte všechna data, jestliže si je ručně nezazálohujete a neobnovíte. Když je PIN deaktivován, nemůžete si zapnout zámek registrace.</string>
@@ -4410,17 +4150,9 @@
     <string name="PaymentsTransferFragment__next">Další</string>
     <string name="PaymentsTransferFragment__invalid_address">Neplatná adresa</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">Zkontrolujte adresu peněženky, na kterou se pokoušíte převést, a zkuste to znovu.</string>
-<<<<<<< MOLLY
     <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Nelze převést na svou vlastní adresu peněženky Molly. Zadejte adresu peněženky ze svého účtu na podporované burze.</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Molly potřebuje přístup ke kameře pro naskenování QR kódu.</string>
-    <string name="PaymentsTransferFragment__signal_needs_the_camera_permission_to_capture_qr_code_go_to_settings">Signál vyžaduje povolení kamery k zachycení QR kódu. Přejděte do nastavení, vyberte možnost \"Oprávnění\" a povolte možnost \"Fotoaparát\".</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">K naskenování QR kódu potřebuje Molly přístup ke kameře.</string>
-    <string name="PaymentsTransferFragment__settings">Nastavení</string>
-=======
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Nelze převést na svou vlastní adresu peněženky Signal. Zadejte adresu peněženky ze svého účtu na podporované burze.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Signal potřebuje přístup ke kameře pro naskenování QR kódu.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">K naskenování QR kódu potřebuje Signal přístup ke kameře.</string>
->>>>>>> SIGNAL
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Naskenujte QR kód adresy</string>
@@ -4852,61 +4584,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Zavolejte mi (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Znovu odeslat kód (%1$02d:%2$02d)</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_contact_signal_support">Kontaktujte podporu Molly</string>
     <string name="RegistrationActivity_code_support_subject">Registrace Molly - ověřovací kód pro Android</string>
-=======
-    <string name="RegistrationActivity_code_support_subject">Registrace Signal - ověřovací kód pro Android</string>
->>>>>>> SIGNAL
     <string name="RegistrationActivity_incorrect_code">Špatný kód</string>
     <string name="BackupUtil_never">Nikdy</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Neznámý</string>
-<<<<<<< MOLLY
-    <!-- Phone number heading displayed as a screen title -->
-    <string name="preferences_app_protection__phone_number">Telefonní číslo</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
     <string name="preferences_app_protection__choose_who_can_see">Zvolte si, kdo uvidí vaše telefonní číslo a kdo vás pomocí něj může v aplikaci Molly kontaktovat.</string>
-    <!-- Section title above two radio buttons for enabling and disabling phone number display -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_see_my_number_heading">Kdo uvidí moje číslo</string>
-    <!-- Subtext below radio buttons when who can see my number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_on_description">Vaše telefonní číslo bude viditelné pro lidi a skupiny, se kterými si píšete.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_on_description">Vaše telefonní číslo nikdo neuvidí, pokud ho nemá uložené v kontaktech svého telefonu.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_off_description">Vaše telefonní číslo nikdo neuvidí.</string>
-    <!-- Section title above two radio buttons for enabling and disabling whether users can find me by my phone number  -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_find_me_by_number_heading">Kdo mě může najít podle čísla</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to everyone -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_on_description">Každý, kdo má vaše telefonní číslo, uvidí, že používáte Signal, a může s vámi začít chatovat.</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_off_description">Nikdo neuvidí, že používáte Signal, dokud mu nenapíšete nebo pokud s ním už nejste v existujícím chatu.</string>
-    <!-- Snackbar text when pressing invalid radio item -->
-    <string name="PhoneNumberPrivacySettingsFragment__to_change_this_setting">"Pokud toto nastavení chcete změnit, nastavte možnost Kdo uvidí moje číslo na Nikdo."</string>
-    <!-- Dialog title shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_title">Jste si jisti?</string>
-    <!-- Dialog warning message shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_message">Nastavením položky „Kdo mě může najít podle čísla“ na „Nikdo“ ztížíte lidem, aby vás ve službě Signal našli.</string>
-    <!-- Dialog button text for canceling change action -->
-    <string name="PhoneNumberPrivacySettingsFragment__cancel">Zrušit</string>
-    <string name="PhoneNumberPrivacy_everyone">Všichni</string>
-    <string name="PhoneNumberPrivacy_nobody">Nikdo</string>
-    <string name="preferences_app_protection__screen_lock">Zámek obrazovky</string>
-    <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">Zamknout přístup k Signal zámkem obrazovky Androidu nebo otiskem prstu</string>
-    <string name="preferences_app_protection__screen_lock_inactivity_timeout">Časový limit neaktivity zámku obrazovky</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
     <string name="preferences_app_protection__to_use_screen_lock">Pro využití zámku obrazovky nastavte v tomto zařízení PIN, vzorec nebo heslo.</string>
-    <string name="preferences_app_protection__signal_pin">Signal PIN</string>
-    <string name="preferences_app_protection__create_a_pin">Vytvořit PIN</string>
-    <string name="preferences_app_protection__change_your_pin">Změnit váš PIN</string>
-    <string name="preferences_app_protection__pin_reminders">Připomínání PIN</string>
-    <string name="preferences_app_protection__turn_off">Vypnout</string>
-    <string name="preferences_app_protection__confirm_pin">Potvrďte PIN</string>
-    <string name="preferences_app_protection__confirm_your_signal_pin">Potvrdit váš Singal PIN</string>
-    <string name="preferences_app_protection__make_sure_you_memorize_or_securely_store_your_pin">Ujistěte se, že si PIN pamatujete nebo ho máte bezpečně uložený, protože jej nelze obnovit. Pokud váš PIN zapomenete, můžete při opakované registraci Signal účtu přijít o data.</string>
-    <string name="preferences_app_protection__incorrect_pin_try_again">Nesprávný PIN. Zkuste to znovu.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Aktivace zámku registrace se nezdařila.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Zablokování zámku registrace se nezdařilo.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Musíte zadat PIN zámku registrace</string>
@@ -4929,31 +4615,6 @@
     <string name="prompt_passphrase_activity__try_again">Zkusit znovu</string>
 
     <!-- ScreenLockSettingsFragment -->
-<<<<<<< MOLLY
-    <!-- Text shown when screen lock is not enabled -->
-    <string name="ScreenLockSettingsFragment__off">Vypnuto</string>
-    <!-- Text shown with toggle that when switched on will enable screen lock -->
-    <string name="ScreenLockSettingsFragment__use_screen_lock">Použít zámek obrazovky</string>
-    <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Pro odemknutí aplikace Molly při jejím vypnutí nebo přepnutí bude nutné nastavení zámku v zařízení se systémem Android. Při uzamčení se v náhledech oznámení nezobrazuje obsah zprávy.</string>
-    <!-- Title text explaining when users should start the screen lock -->
-    <string name="ScreenLockSettingsFragment__start_screen_lock">Zámek úvodní obrazovky</string>
-    <!-- Option text explaining that screen lock should start immediately -->
-    <string name="ScreenLockSettingsFragment__immediately">Okamžitě</string>
-    <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_1_min">Po 1 minutě</string>
-    <!-- Option text explaining that screen lock should start after 5 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_5_min">Po 5 minutách</string>
-    <!-- Option text explaining that screen lock should start after 30 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_30_min">Po 30 minutách</string>
-    <!-- Option text explaining that screen lock should start at a custom time set by the user -->
-    <string name="ScreenLockSettingsFragment__custom_time">Vlastní čas</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Použít zámek obrazovky aplikace Molly</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Vypněte zámek obrazovky aplikace Molly</string>
-=======
->>>>>>> SIGNAL
 
     <string name="Recipient_unknown">Neznámý</string>
     <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
@@ -4999,18 +4660,6 @@
     <!-- NewDeviceTransferInstructionsFragment -->
 
     <!-- NewDeviceTransferSetupFragment -->
-<<<<<<< MOLLY
-    <string name="NewDeviceTransferSetup__preparing_to_connect_to_old_android_device">Připravuji na připojení ke starému Android zařízení…</string>
-    <string name="NewDeviceTransferSetup__take_a_moment_should_be_ready_soon">Chvíli to potrvá, brzy to bude připravené</string>
-    <string name="NewDeviceTransferSetup__waiting_for_old_device_to_connect">Čekám na připojení starého Android zařízení…</string>
-    <string name="NewDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_old_device">Molly potřebuji oprávnění pro přístup k poloze pro nalezení a připojení ke staršímu Android zařízení.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_old_device">Molly potřebuje povolené služby polohy pro nalezení a připojení ke starému Android zařízení.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_old_device">Molly potřebuje zapnutou Wi-Fi pro nalezení a připojení ke starému Android zařízení. Wi-Fi musí být zapnuté, ale nemusí být připojené k žádné Wi-Fi síti.</string>
-    <string name="NewDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Omlouváme se, ale vypadá to, že toto zařízení nepodporuje Wi-Fi Direct. Molly používá Wi-Fi Direct pro nalezení staršího Android zařízení a připojení se k němu. Můžete stále obnovit zálohu pro obnovení vašeho původního účtu na starém Android zařízení.</string>
-    <string name="NewDeviceTransferSetup__restore_a_backup">Obnovit zálohu</string>
-    <string name="NewDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Nastala neočekávaná chyba při pokusu o připojení ke starému Android zařízení.</string>
-=======
->>>>>>> SIGNAL
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">Hledám nové Android zařízení…</string>
@@ -5693,44 +5342,6 @@
     <string name="ExpireTimerSettingsFragment__custom_time">Vlastní čas</string>
     <string name="ExpireTimerSettingsFragment__save">Uložit</string>
 
-<<<<<<< MOLLY
-    <string name="CustomExpireTimerSelectorView__seconds">vteřiny</string>
-    <string name="CustomExpireTimerSelectorView__minutes">minuty</string>
-    <string name="CustomExpireTimerSelectorView__hours">hodiny</string>
-    <string name="CustomExpireTimerSelectorView__days">dny</string>
-    <string name="CustomExpireTimerSelectorView__weeks">týdny</string>
-
-    <!-- HelpSettingsFragment -->
-    <string name="HelpSettingsFragment__support_center">Centrum podpory</string>
-    <string name="HelpSettingsFragment__contact_us">Kontaktujte nás</string>
-    <string name="HelpSettingsFragment__version">Verze</string>
-    <!-- Displayed when copying help screen text to the clipboard -->
-    <string name="HelpSettingsFragment__copied_to_clipboard">Zkopírováno do schránky</string>
-    <string name="HelpSettingsFragment__debug_log">Ladící log</string>
-    <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
-    <string name="HelpSettingsFragment__licenses">Licence</string>
-    <string name="HelpSettingsFragment__terms_amp_privacy_policy">Podmínky a zásady ochrany osobních údajů</string>
-    <string name="HelpFragment__copyright_signal_messenger">Copyright Molly Messenger</string>
-    <string name="HelpFragment__licenced_under_the_agplv3">Licencováno pod GNU AGPLv3</string>
-    <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="HelpSettingsFragment__signal_is_a_501c3">Signal je nezisková organizace</string>
-
-    <!-- DataAndStorageSettingsFragment -->
-    <string name="DataAndStorageSettingsFragment__media_quality">Kvalita médií</string>
-    <!-- Category title for the quality of the media to be sent -->
-    <string name="DataAndStorageSettingsFragment__sent_media_quality">Kvalita odeslaných médií</string>
-    <string name="DataAndStorageSettingsFragment__sending_high_quality_media_will_use_more_data">Odesílání médií ve vysoké kvalitě spotřebovává více dat.</string>
-    <!-- Disclaimer shown under the media auto-download settings. Placeholder is a formatted size like "100 KB". -->
-    <string name="DataAndStorageSettingsFragment__voice_messages_and_stickers_under_size_are_always_auto_downloaded">Hlasové zprávy a nálepky (do %1$s) se vždy stahují automaticky.</string>
-    <string name="DataAndStorageSettingsFragment__calls">Volání</string>
-    <!-- Title of a toggle that keeps Signal connected in the background via a persistent foreground service instead of using FCM push messages -->
-    <string name="DataAndStorageSettingsFragment__stay_connected_in_background">Ponechat připojení na pozadí</string>
-    <!-- Body of a confirmation dialog shown when a user tries to enable the "Stay connected in background" setting -->
-    <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">Trvalé připojení na pozadí pravděpodobně povede ke zvýšené spotřebě baterie. U většiny zařízení to není nutné. Tuto možnost povolte pouze v případě, že máte problémy s doručováním oznámení.</string>
-    <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
-    <string name="DataAndStorageSettingsFragment__enable">Povolit</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
@@ -6424,15 +6035,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Zapnuto do %1$s</string>
 
-<<<<<<< MOLLY
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Nepodařilo se otevřít picker.</string>
     <!-- Banner title when notification permission is disabled -->
     <string name="NotificationSettingsFragment__to_enable_notifications">Aby bylo možné oznámení zapnout, Molly potřebuje povolení k jejich zobrazování.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Zapnout</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Toto je jediný oficiální chat od Signal</string>
@@ -8122,7 +7730,6 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Nemůžete si předplatit zabezpečené zálohy Signal, protože váš telefon nepodporuje služby Google Play. Obraťte se na výrobce telefonu a požádejte o pomoc.</string>
 
-<<<<<<< MOLLY
     <!-- ManageStorageSettingsFragment -->
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
     <string name="ManageStorageSettingsFragment_chat_limit">Limity délky historie chatu</string>
@@ -8145,14 +7752,12 @@
     <!-- Dialog message for paid tier pending dialog -->
     <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Optimalizaci úložiště lze použít pouze s placenou verzí zabezpečeného zálohování služby Signal. Vaše předplatné zálohování se stále zpracovává a není ještě aktivní. Zkuste to prosím znovu později.</string>
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media will be removed from your on-device backup</string>
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Ze zálohy ve vašem zařízení budou odebrána média</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Turning on \"Optimize Signal storage\" will offload old media from your device. You can download it again any time. It will also remove old media from your on-device backup.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Zapnutím funkce Optimalizovat úložiště Signal dojde k odložení starších médií z vašeho zařízení. Kdykoliv si je můžete opět stáhnout. Tím se stará média odeberou i ze zálohy ve vašem zařízení.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Zapnout</string>
 
-=======
->>>>>>> SIGNAL
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Pro tuto funkci je nutná aktualizace</string>
@@ -8599,13 +8204,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Uchovávejte svůj klíč v bezpečí</string>
     <!-- Bottom sheet subtitle -->
-<<<<<<< MOLLY
     <string name="MessageBackupsKeyRecordScreen__signal_will_not">Pokud klíč ztratíte, Molly vám s obnovením zálohy nemůže pomoct. Uložte jej na bezpečném místě a nesdělujte jej ostatním.</string>
-    <!-- Checkbox label -->
-    <string name="MessageBackupsKeyRecordScreen__ive_recorded_my_key">Zaznamenal/a jsem svůj klíč</string>
-=======
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Pokud klíč ztratíte, Signal vám s obnovením zálohy nemůže pomoct. Uložte jej na bezpečném místě a nesdělujte jej ostatním.</string>
->>>>>>> SIGNAL
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Pokračovat</string>
     <!-- Sheet secondary action button label -->
@@ -8746,244 +8345,6 @@
     <string name="MessageBackupsTypeSelectionScreen__current_plan">Současný plán</string>
 
     <!-- ConfirmBackupCancellationDialog -->
-<<<<<<< MOLLY
-    <!-- Dialog title -->
-    <string name="ConfirmBackupCancellationDialog__confirm_cancellation">Potvrdit zrušení</string>
-    <!-- Dialog body -->
-    <string name="ConfirmBackupCancellationDialog__you_wont_be_charged_again">Nebudou vám účtovány žádné další poplatky. Zálohování bude vypnuto na konci vašeho zúčtovacího období. Poté budete mít 30 dní na stažení médií, která právě zálohujete.</string>
-    <!-- Action button label to cancel subscription and download now -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_now">Potvrdit a stáhnout teď</string>
-    <!-- Action button label to cancel subscription and download later -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_later">Potvrdit a stáhnout později</string>
-    <!-- Action button label to keep current subscription -->
-    <string name="ConfirmBackupCancellationDialog__keep_subscription">Ponechat předplatné</string>
-
-    <!-- Accessible content description for the reminder view, describing the icon in the view. -->
-    <string name="ReminderView_icon_content_description">Ikona připomenutí</string>
-
-    <!-- Row title for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_i_have_my_old_phone">Mám svůj starý telefon</string>
-    <!-- Row subtitle for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_scan_qr">Naskenujte QR kód ze svého aktuálního účtu Signal a účet můžete hned začít používat</string>
-
-    <!-- Row title for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Nemám svůj starý telefon</string>
-    <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">Nebo přeinstalováváte aplikaci Molly na stejném zařízení</string>
-
-    <!-- Screen title for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__restore_or_transfer_account">Obnovení nebo přenos účtu</string>
-    <!-- Screen subtitle for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__get_your_signal_account">Přeneste svůj účet Signal a historii zpráv do tohoto zařízení.</string>
-    <!-- Option title for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_signal_backup">Obnovit zálohu Signal</string>
-    <!-- Option subtitle for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_your_text_messages_and_media_from">Obnovte textové zprávy a média ze svého plánu zálohování Signal.</string>
-    <!-- Option title for restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_on_device_backup">Obnovení zálohy uložené v zařízení</string>
-    <!-- Option subtitle fdor restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_your_messages_from">Obnovte své zprávy ze zálohy uložené ve vašem zařízení.</string>
-    <!-- Option title for restoring via a local backup file -->
-    <string name="SelectRestoreMethodFragment__from_a_backup_file">Ze záložního souboru</string>
-    <!-- Option subtitle for restoring via a local backup -->
-    <string name="SelectRestoreMethodFragment__choose_a_backup_youve_saved">Vyberte uloženou zálohu</string>
-    <!-- Option title for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__from_your_old_phone">Ze starého telefonu</string>
-    <!-- Option subtitle for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__transfer_directly_from_old">Přenos přímo ze starého systému Android</string>
-    <!-- Dialog title shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_title">Přeskočit obnovení?</string>
-    <!-- Dialog message shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_warning">Pokud nyní obnovení přeskočíte, nebude to už později možné. Pokud zálohování po přeskočení obnovení znovu povolíte, bude vaše aktuální záloha nahrazena novou historií zpráv.</string>
-    <!-- Dialog confirm text shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore">Přeskočit obnovení</string>
-
-    <!-- Screen title for restore via local backup -->
-    <string name="RestoreLocalBackup_title">Obnovit místní zálohu</string>
-    <!-- Screen subtitle for restore via local backup -->
-    <string name="RestoreLocalBackup_subtitle">Obnovte své zprávy ze zálohy uložené v tomto zařízení. Pokud je neobnovíte teď, nebude to už později možné.</string>
-
-    <!-- Screen title for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_title">Zadejte svůj klíč pro obnovení</string>
-    <!-- Screen subtitle for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_subtitle">Klíč pro obnovrní je 64místný kód potřebný k obnovení účtu a dat.</string>
-    <!-- Button to skip entering recovery key and resuming normal registration flow -->
-    <string name="EnterBackupKey_no_backup_key">Žádný klíč pro obnovení?</string>
-    <!-- Recovery key text field hint -->
-    <string name="EnterBackupKey_backup_key">Klíč pro obnovení</string>
-    <!-- Recovery key not known bottom sheet info paragraph 1 -->
-    <string name="EnterBackupKey_no_key_paragraph_1">Bez 64místného kódu pro obnovení nelze zálohy obnovit. Pokud jste klíč pro obnovení ztratili, nemůže vám služba Signal s obnovením zálohy pomoci.</string>
-    <!-- Recovery key not known bottom sheet info paragraph 2 -->
-    <string name="EnterBackupKey_no_key_paragraph_2">Pokud máte staré zařízení, můžete si klíč pro obnovení zobrazit v Nastavení &gt; Zálohy. Poté klepněte na Zobrazit klíč pro obnovení.</string>
-    <!-- Recovery key not known bottom sheet button to learn more about it -->
-    <string name="EnterBackupKey_learn_more">Zjistit více</string>
-    <!-- Recovery key not known bottom sheet button to skip recovery key entry and resume normal reregistration -->
-    <string name="EnterBackupKey_skip_and_dont_restore">Přeskočit a neobnovovat</string>
-    <!-- Dialog title shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_title">Nesprávný klíč pro obnovení</string>
-    <!-- Dialog message shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_message">Ujistěte se, že se registrujete stejným telefonním číslem a 64místným klíčem pro obnovení, který jste si uložili při povolení Zabepečeného zálohování služby Signal. Bez tohoto klíče nelze zálohy obnovit.</string>
-    <!-- Dialog positive button text to try entering their recovery key again -->
-    <string name="EnterBackupKey_try_again">Zkusit znovu</string>
-    <!-- Dialog negative button text to get help with recovery key -->
-    <string name="EnterBackupKey_backup_key_help">Nápověda ke klíči pro obnovení</string>
-    <!-- Text field error text when the recovery key provided has been confirmed invalid -->
-    <string name="EnterBackupKey_incorrect_backup_key_error">Nesprávný klíč pro obnovení</string>
-    <!-- Text field error text when the recovery key is too long -->
-    <string name="EnterBackupKey_too_long_error">Příliš dlouhé (%1$d/%2$d)</string>
-    <!-- Text field error when the recovery key is invalid -->
-    <string name="EnterBackupKey_invalid_backup_key_error">Neplatný klíč pro obnovení</string>
-    <!-- Dialog title shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_not_found">Záloha nebyla nalezena</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_you_entered_is_correct_but_no_backup">Vámi zadaný klíč pro obnovení je správný, ale není k němu přiřazena žádná záloha. Pokud stále máte starý telefon, zkontrolujte, zda je povoleno zálohování a zda záloha byla dokončena, a zkuste to znovu.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">Je možné, že jste špatně zadali klíč pro obnovení, nebo jste na starém zařízení nedokončili alespoň jednu zálohu.\n\nUjistěte se, že se registrujete stejným telefonním číslem a klíčem pro obnovení, které jste si uložili při povolení Zabezpečené zálohy Signal, a potvrďte, že vaše staré zařízení dokončilo zálohování.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_check_rate_limited">Došel počet pokusů pro obnovení pomocí klíče. V zájmu vaší bezpečnosti je počet pokusů, které můžete provést, omezen. Počkejte hodinu a zkuste to znovu.</string>
-    <!-- Dialog button shown during registration and trying to restore a remote backup to instead skip said backup process -->
-    <string name="EnterBackupKey_skip_restore">Přeskočit obnovení</string>
-    <!-- Dialog title text when encountering backup restore network error -->
-    <string name="EnterBackupKey_cant_restore_backup">Zálohu nelze obnovit</string>
-    <!-- Dialog body text when encountering backup restore network error -->
-    <string name="EnterBackupKey_your_backup_cant_be_restored_right_now">Vaši zálohu nyní nelze obnovit. Zkontrolujte připojení k internetu a zkuste to znovu. </string>
-    <!-- Dialog button text to contact support on network error -->
-    <string name="EnterBackupKey_contact_support">Kontaktovat podporu</string>
-
-    <!-- Email subject when contacting support on a restore backup network issue -->
-    <string name="EnterBackupKey_network_failure_support_email">Chyba sítě při obnově zálohy Signal v systému Android</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_network_failure_support_email_filter" translatable="false">Android SignalBackups Import Failed</string> -->
-    <!-- Email subject when contacting support on a permanent backup import failure -->
-    <string name="EnterBackupKey_permanent_failure_support_email">Opakovaně neúspěšné obnovení zálohy Signal v systému Android</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_permanent_failure_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
-
-    <!-- EnterLocalBackupKeyScreen: Screen title for entering recovery key for local backup restore -->
-    <string name="EnterLocalBackupKeyScreen__enter_your_recovery_key">Zadejte svůj klíč pro obnovení</string>
-    <!-- EnterLocalBackupKeyScreen: Screen subtitle explaining what the recovery key is -->
-    <string name="EnterLocalBackupKeyScreen__your_recovery_key_is_a_64_character_code">Klíč pro obnovrní je 64místný kód potřebný k obnovení účtu a dat.</string>
-    <!-- EnterLocalBackupKeyScreen: Button text when user does not have a recovery key -->
-    <string name="EnterLocalBackupKeyScreen__no_recovery_key">Žádný klíč pro obnovení?</string>
-    <!-- EnterLocalBackupKeyScreen: Button to proceed to next step -->
-    <string name="EnterLocalBackupKeyScreen__next">Další</string>
-
-    <!-- RestoreLocalBackupDialog: Error message when the selected archive fails to load -->
-    <string name="RestoreLocalBackupDialog__failed_to_load_archive">Archiv se nepodařilo načíst. Vyberte prosím jinou složku.</string>
-    <!-- RestoreLocalBackupDialog: Dismiss button for dialog -->
-    <string name="RestoreLocalBackupDialog__ok">OK</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore">Přeskočit obnovení?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user about the consequences of skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore_body">Pokud nyní obnovení přeskočíte, nebude to už později možné. Pokud zálohování po přeskočení obnovení znovu povolíte, bude vaše aktuální záloha nahrazena novou historií zpráv.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the skip restore dialog -->
-    <string name="RestoreLocalBackupDialog__skip_restore_confirm">Přeskočit obnovení</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm restoring a backup from a different account -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account">Obnovit do nového účtu?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user that the backup was created with a different account and they will lose group memberships -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account_body">Záloha, kterou obnovujete, byla vytvořena pomocí jiného účtu Signal. Můžete ji obnovit do nového účtu, ale už nebudete členem žádné z těchto původních skupin.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the restore to new account dialog -->
-    <string name="RestoreLocalBackupDialog__restore">Obnovit</string>
-
-    <!-- RestoreLocalBackupActivity: Toast message when backup restore fails -->
-    <string name="RestoreLocalBackupActivity__backup_restore_failed">Obnovení zálohy se nezdařilo</string>
-    <!-- RestoreLocalBackupActivity: Screen title shown during restore -->
-    <string name="RestoreLocalBackupActivity__restoring_backup">Obnovování zálohy</string>
-    <!-- RestoreLocalBackupActivity: Screen subtitle explaining restore duration -->
-    <string name="RestoreLocalBackupActivity__depending_on_the_size">V závislosti na velikosti zálohy to může trvat několik minut.</string>
-    <!-- RestoreLocalBackupActivity: Status text while restoring messages -->
-    <string name="RestoreLocalBackupActivity__restoring_messages">Obnovování zpráv…</string>
-    <!-- RestoreLocalBackupActivity: Status text while finalizing restore -->
-    <string name="RestoreLocalBackupActivity__finalizing">Dokončování…</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore is complete -->
-    <string name="RestoreLocalBackupActivity__restore_complete">Obnovení dokončeno</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore fails -->
-    <string name="RestoreLocalBackupActivity__restore_failed">Obnovení se nezdařilo</string>
-    <!-- RestoreLocalBackupActivity: Progress text showing bytes read of total with percentage, e.g. "1.2 MB of 5.0 MB (24%)" -->
-    <string name="RestoreLocalBackupActivity__s_of_s_d_percent">%1$s z %2$s (%3$d %%)</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__cant_restore_backup">Zálohu nelze obnovit</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__error_occurred_while_restoring">Při obnovování zálohy se vyskytla chyba. Vaši zálohu nelze obnovit. Kontaktujte prosím podporu.</string>
-
-    <!-- RestoreLocalBackupActivity: Label for the button that opens the contact support form -->
-    <string name="RestoreLocalBackupActivity__contact_support">Kontaktovat podporu</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when on-device backups could not be automatically re-enabled -->
-    <string name="RestoreLocalBackupActivity__turn_on_on_device_backups">Zapnout zálohování v zařízení?</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when on-device backups could not be automatically re-enabled, prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__to_continue_using_on_device_backups">Chcete-li i nadále používat zálohování v zařízení, musíte jej pro tento účet povolit. Můžete tak kdykoliv učinit v Nastavení &gt; Zálohování.</string>
-
-    <!-- RestoreLocalBackupActivity: Confirm button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__turn_on_now">Zapnout nyní</string>
-
-    <!-- RestoreLocalBackupActivity: Dismiss button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__not_now">Nyní ne</string>
-
-    <!-- RestoreLocalBackupActivity: Body text for the dialog shown after a successful restore, prompting the user to choose a backup folder -->
-    <string name="RestoreLocalBackupActivity__choose_a_folder_for_backups">Chcete-li nadále používat zálohování v zařízení, vyberte v zařízení složku, do které se budou nové zálohy ukládat.</string>
-
-    <!-- RestoreLocalBackupActivity: Positive button label for the dialog shown after a successful restore; keeps the current backup folder -->
-    <string name="RestoreLocalBackupActivity__use_current_folder">Použít aktuální složku</string>
-
-    <!-- RestoreLocalBackupActivity: Neutral button label for the dialog shown after a successful restore; opens folder picker to select a different backup location -->
-    <string name="RestoreLocalBackupActivity__choose_new_folder">Vybrat novou složku</string>
-
-    <!-- RestoreLocalBackupActivity: Negative button label for the dialog shown after a successful restore; disables on-device backups -->
-    <string name="RestoreLocalBackupActivity__disable_backups">Vypnout zálohování</string>
-
-    <!-- SelectInstructionsSheet: Title for the select backup folder instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_folder">Vyberte složku se zálohou</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the select this folder button -->
-    <string name="SelectInstructionsSheet__tap_select_this_folder">Klepněte na Vybrat tuto složku</string>
-    <!-- SelectInstructionsSheet: Instruction not to select individual files -->
-    <string name="SelectInstructionsSheet__do_not_select_individual_files">Nevybírejte jednotlivé soubory</string>
-    <!-- SelectInstructionsSheet: Title for the select backup file instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_file">Vyberte soubor zálohy</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the backup file saved to device -->
-    <string name="SelectInstructionsSheet__tap_on_the_backup_file">Klepněte na soubor zálohy, který máte uložený ve svém zařízení</string>
-    <!-- SelectInstructionsSheet: Subtitle explaining how to access backup after tapping continue -->
-    <string name="SelectInstructionsSheet__after_tapping_continue">Po klepnutí na Pokračovat postupujte takto:</string>
-    <!-- SelectInstructionsSheet: Instruction to select the top-level backup folder -->
-    <string name="SelectInstructionsSheet__select_the_top_level_folder">Vyberte složku nejvyšší úrovně, ve které je uložena vaše záloha</string>
-    <!-- SelectInstructionsSheet: Continue button text -->
-    <string name="SelectInstructionsSheet__continue_button">Pokračovat</string>
-
-    <!-- SelectLocalBackupScreen: Screen title for restoring on-device backup -->
-    <string name="SelectLocalBackupScreen__restore_on_device_backup">Obnovení zálohy uložené v zařízení</string>
-    <!-- SelectLocalBackupScreen: Screen subtitle explaining the restore process -->
-    <string name="SelectLocalBackupScreen__restore_your_messages_from_the_backup_folder">Obnovte své zprávy ze složky se zálohou uložené ve vašem zařízení. Pokud je neobnovíte teď, nebude to už později možné.</string>
-    <!-- SelectLocalBackupScreen: Button to initiate backup restoration -->
-    <string name="SelectLocalBackupScreen__restore_backup">Obnovit zálohu</string>
-    <!-- SelectLocalBackupScreen: Button to choose an earlier backup when current is latest -->
-    <string name="SelectLocalBackupScreen__choose_an_earlier_backup">Vyberte starší zálohu</string>
-    <!-- SelectLocalBackupScreen: Button to choose a different backup -->
-    <string name="SelectLocalBackupScreen__choose_a_different_backup">Vyberte jinou zálohu</string>
-    <!-- SelectLocalBackupScreen: Label for latest backup card -->
-    <string name="SelectLocalBackupScreen__your_latest_backup">Vaše poslední záloha:</string>
-    <!-- SelectLocalBackupScreen: Label for non-latest backup card -->
-    <string name="SelectLocalBackupScreen__your_backup">Vaše záloha:</string>
-
-    <!-- SelectLocalBackupSheet: Title for backup selection bottom sheet -->
-    <string name="SelectLocalBackupSheet__choose_a_backup_to_restore">Vyberte zálohu pro obnovení</string>
-    <!-- SelectLocalBackupSheet: Subtitle warning about choosing an older backup -->
-    <string name="SelectLocalBackupSheet__choosing_an_older_backup">Výběr starší zálohy může vést ke ztrátě zpráv nebo médií.</string>
-    <!-- SelectLocalBackupSheet: Continue button text -->
-    <string name="SelectLocalBackupSheet__continue_button">Pokračovat</string>
-
-    <!-- SelectLocalBackupTypeScreen: Screen title for selecting backup type -->
-    <string name="SelectLocalBackupTypeScreen__restore_on_device_backup">Obnovení zálohy uložené v zařízení</string>
-    <!-- SelectLocalBackupTypeScreen: Screen subtitle explaining restore options -->
-    <string name="SelectLocalBackupTypeScreen__restore_your_messages_from_the_backup">Obnovte své zprávy ze zálohy uložené ve vašem zařízení. Pokud je neobnovíte teď, nebude to už později možné.</string>
-    <!-- SelectLocalBackupTypeScreen: Button for users who saved backup as single file -->
-    <string name="SelectLocalBackupTypeScreen__i_saved_my_backup_as_a_single_file">Zálohu jsem uložil/a jako jeden soubor</string>
-    <!-- SelectLocalBackupTypeScreen: Card title for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__choose_backup_folder">Vyberte složku se zálohou</string>
-    <!-- SelectLocalBackupTypeScreen: Card description for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__select_the_folder_on_your_device">Vyberte složku ve svém zařízení, ve které je uložena záloha</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Email subject when contacting support on a create backup failure -->
     <string name="BackupAlertBottomSheet_network_failure_support_email">Chyba sítě při exportu zálohy Signal Android</string>

@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-<<<<<<< MOLLY
-  --><!-- smartling.instruction_comments_enabled = on --><resources>
-=======
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
->>>>>>> SIGNAL
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -40,13 +34,10 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Molly يېڭىلىنىۋاتىدۇ…</string>
 
     <!-- ApplicationPreferencesActivity -->
-<<<<<<< MOLLY
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">سىز تېخى ئىم ئىبارىسى بېكىتمىدىڭىز!</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">ئىم ئىبارىسى چەكلەمدۇ؟</string>
     <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">بۇ Molly ۋە ئۇچۇر ئۇقتۇرۇش قۇلۇپىنى مەڭگۈ ئوچۇق قويىدۇ.</string>
     <string name="ApplicationPreferencesActivity_disable">چەكلە</string>
-=======
->>>>>>> SIGNAL
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">مۇلازىمېتىرغا باغلىنىش خاتالىقى!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">تىزىملىتىش قۇلۇپى ئۈچۈن PIN تەلەپ قىلىنىدۇ. PIN نى چەكلەش ئۈچۈن، ئالدى بىلەن تىزىملاش قۇلۇپىنى چەكلەڭ.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN قۇرۇلدى.</string>
@@ -431,10 +422,6 @@
     <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">بۇ ئۈسكۈنە نومۇر بۇراش مەشغۇلاتىنى قوللىمايدىغاندەك قىلىدۇ.</string>
     <!-- The content description for button to send a message in a conversation -->
     <string name="ConversationActivity_send_message_content_description">ئۇچۇر ئەۋەت</string>
-<<<<<<< MOLLY
-    <string name="ConversationActivity_lets_switch_to_signal">Molly دا پاراڭلىشايلى%1$s</string>
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_specify_recipient">بىر ئالاقىلەشكۈچى تاللاڭ</string>
     <string name="ConversationActivity_unable_to_record_audio">ئاۋازنى ئۈنگە ئالالمايدۇ!</string>
     <string name="ConversationActivity_you_cant_send_messages_to_this_group">بۇ گۇرۇپپىغا ئۇچۇر ئەۋەتەلەيسىز، چۈنكى سىز ئەمدى بۇ گۇرۇپپىنىڭ ئەزاسى ئەمەس.</string>
@@ -459,16 +446,6 @@
     <string name="ConversationActivity_signal_needs_microphone_access_voice_message">ئاۋازلىق ئۇچۇر خاتىرىلەش ئۈچۈن Molly مىكروفون ئىجازىتىنى لازىم قىلىدۇ.</string>
     <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">ئۈنلىك ئۇچۇر يوللاش ئۈچۈن Molly مىكروفون ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىدىن «ھوقۇقلار» نى تاللاپ ۋە «مىكروفون» نى قوزغىتىڭ.</string>
 
-<<<<<<< MOLLY
-    <string name="ConversationActivity_signal_needs_the_microphone_and_camera_permissions_in_order_to_call_s">%1$s گە چاقىرىق قىلىش ئۈچۈن Molly مىكروفون ۋە كامېرا ھوقۇقىنى ئىشلىتىشى كېرەك، لېكىن ئۇ ھوقۇقلار مەڭگۈلۈك چەكلەنگەن. ئەپ تەڭشىكىگە كىرىپ، «ھوقۇقلار» نى تاللاپ، «مىكروفون» ۋە «كامېرا» نى قوزغىتىڭ.</string>
-    <string name="ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera">رەسىم ۋە سىنغا ئېلىش ئۈچۈن ، Molly نىڭ كامېرانى زىيارەت قىلىشىغا يول قويۇڭ.</string>
-    <string name="ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video">رەسىم تارتىش ياكى سىنغا ئېلىش ئۈچۈن Molly كامېرا ھوقۇقىغا موھتاج ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشەكلىرىدىن، «ھوقۇقلار» نى تاللاپ ۋە «كامېرا» نى قوزغىتىڭ.</string>
-    <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">رەسىم تارتىش ياكى سىنغا ئېلىش ئۈچۈن Molly كامېرا ھوقۇقىغا موھتاج</string>
-    <string name="ConversationActivity_enable_the_microphone_permission_to_capture_videos_with_sound">ئاۋازلىق سىنغا ئېلىش ئۈچۈن مىكروفون ھوقۇقىنى قوزغىتىڭ.</string>
-    <string name="ConversationActivity_signal_needs_recording_permissions_to_capture_video">سىنغا ئېلىش ئۈچۈن Molly غا مىكروفون ئىجازىتى لازىم.</string>
-
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d نىڭ%2$d</string>
     <string name="ConversationActivity_no_results">نەتىجە يوق</string>
@@ -503,19 +480,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal ئەمدى SMS ئۇچۇرلىشىش ئىقتىدارىنى قوللىمايدۇ. «%1$s» نى Signal غا تەكلىپ قىلىپ داۋاملىق پاراڭلاشسىڭىز بولىدۇ.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-<<<<<<< MOLLY
     <string name="ConversationActivity__this_person_is_no_longer_using_signal">بۇ كىشى Molly نى ئەمدى ئىشلەتمەيدۇ. ئۇلارنى Molly غا تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
-    <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Molly ئىشلىتىش تەكلىپى</string>
-    <!-- Snackbar message shown after dismissing the full screen sms export megaphone indicating we\'ll do it again soon -->
-    <string name="ConversationActivity__you_will_be_reminded_again_soon">سىزنى پات يېقىندا قايتا ئەسكەرتىمىز.</string>
-=======
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">بۇ كىشى Signal نى ئەمدى ئىشلەتمەيدۇ. ئۇلارنى Signal غا تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">بۇ ئادەم Signal ئىشلەتمەيدۇ. ئۇلارنى بۇ يەرگە تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Signal ئىشلىتىش تەكلىپى</string>
->>>>>>> SIGNAL
+    <string name="ConversationActivity__invite_to_signal">Molly ئىشلىتىش تەكلىپى</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">تېلېفوندا پاراڭلىشىۋاتقاندا ئاۋازلىق ئۇچۇرنى خاتىرىلىيەلمەيدۇ.</string>
 
@@ -1373,69 +1342,6 @@
     <string name="ManageGroupActivity_add_group_description">گۇرۇپپا تونۇشتۇرۇشى قوش…</string>
 
     <!-- RemoteRestoreActivity -->
-<<<<<<< MOLLY
-    <!-- Progress dialog label when downloading a backup -->
-    <string name="RemoteRestoreActivity__downloading_backup">زاپاس مەلۇماتنى چۈشۈرۈۋاتىدۇ…</string>
-    <!-- Progress dialog label when restoring a backup -->
-    <string name="RemoteRestoreActivity__restoring_messages">ئۇچۇرلارنى ئەسلىگە كەلتۈرىۋاتىدۇ…</string>
-    <!-- Progress dialog label when finishing a backup restore -->
-    <string name="RemoteRestoreActivity__finishing_restore">تاماملاۋاتىدۇ…</string>
-    <!-- Progress dialog label while awaiting updates -->
-    <string name="RemoteRestoreActivity__restoring">ئەسلىگە كەلتۈرىۋاتىدۇ…</string>
-    <!-- Progress readout for dialog while downloading or restoring a backup. First placeholder is the formatted size of the backup downloaded, the second is formatted total amount to go, and the last is a percentage. -->
-    <string name="RemoteRestoreActivity__s_of_s_s">%2$s نىڭ %1$s چۈشۈپ بولدى (ئومۇمىي %3$s)</string>
-    <!-- Feature list media label for paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_media">بارلىق مېدىيالىرىڭىز</string>
-    <!-- Feature list media label for free tier. Placeholder is days, and is currently fixed at 30. -->
-    <string name="RemoteRestoreActivity__your_last_d_days_of_media">سىزنىڭ ئەڭ ئاخىرقى %1$d كۈنلۈك مېدىيا</string>
-    <!-- Feature list message label for free and paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_messages">بارلىق ئۇچۇرلىرىڭىز</string>
-    <!-- Screen title for restoring from backup -->
-    <string name="RemoteRestoreActivity__restore_from_backup">زاپاستىن ئەسلىگە كەلتۈرىدۇ</string>
-    <!-- Section title for explaining what your backup includes -->
-    <string name="RemoteRestoreActivity__your_backup_includes">زاپاسلىغان مەلۇماتلار تۆۋەندىكىلەرنى ئۆز ئىچىگە ئالىدۇ:</string>
-    <!-- Primary action button copy for starting restoration -->
-    <string name="RemoteRestoreActivity__restore_backup">زاپاسنى ئەسلىگە كەلتۈرۈش</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made. %1$s is replaced with the date (e.g. March 5, 2024) and %2$s is replaced with the time (e.g. 9:00am) -->
-    <string name="RemoteRestoreActivity__backup_created_at">ئاخىرقى قېتىملىق زاپاسلاش %1$s %2$s دە ئېلىپ بېرىلغان.</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made and size. %1$s is replaced with the date (e.g. March 5, 2024), %2$s is replaced with the time (e.g. 9:00am), %3$1 is replaced with size (e.g., 1.2GB) -->
-    <string name="RemoteRestoreActivity__backup_created_at_with_size">ئاخىرقى قېتىملىق زاپاسلاش %1$s ، %2$s ئېلىپ بېرىلغان. زاپاسلاش سىغىمىڭىز: %3$s.</string>
-    <!-- Progress dialog label while fetching backup info if we don\'t already have it -->
-    <string name="RemoteRestoreActivity__fetching_backup_details">زاپاسلاش تەپسىلاتلىرىنى قوبۇللاش…</string>
-    <!-- Text label button to skip restore from remote -->
-    <string name="RemoteRestoreActivity__skip_restore">ئەسلىگە كەلتۈرۈشتى ئاتلاڭ</string>
-    <!-- Dialog title displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__couldnt_transfer">يۆتكەشنى تاماملىيالمىدى</string>
-    <!-- Dialog title displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_title">زاپاسلاشنى ئەسلىگە كەلتۈرەلمىدى</string>
-    <!-- Dialog body displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_body">زاپىسىڭىزنى ئەسلىگە كەلتۈرۈۋاتقاندا بىر خاتالىق كۆرۈلدى. زاپىسىڭىزنى ئەسلىگە كەلتۈرگىلى بولمايدۇ. ياردەمچى خادىم بىلەن ئالاقىلىشىپ ياردەم سوراڭ.</string>
-    <!-- Dialog action button that will link users to a flow to contact support, displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_contact_button">ياردەم خادىمى بىلەن ئالاقىلىشىش</string>
-    <!-- Dialog message displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__error_occurred">بىر خاتالىق كۆرۈلدى ۋە ھېساباتىڭىزنى يۆتكىگىلى بولمىدى. يۆتكەش ئۇسۇلىڭىزنى تاللاش ئارقىلىق قايتا سىناڭ.</string>
-    <!-- Dialog title displayed when remote restore failed because of an outdated backup version. -->
-    <string name="RemoteRestoreActivity__couldnt_restore">بۇ زاپاسلاشنى ئەسلىگە كەلتۈرەلمىدى</string>
-    <!-- Dialog message explaining that an update to Signal is required to restore the backup. -->
-    <string name="RemoteRestoreActivity__update_latest">سىگنالنىڭ بۇ نەشرى زاپاسلاشنى ئەسلىگە كەلتۈرەلمىدى. ئەڭ يېڭى نەشرىگە يېڭىلاپ قايتا سىناڭ.</string>
-    <!-- Text on button that when pressed will redirect them to update Signal -->
-    <string name="RemoteRestoreActivity__update_signal">Molly نى يېڭىلا</string>
-    <!-- Text label button to dismiss the dialog -->
-    <string name="RemoteRestoreActivity__not_now">ھازىر ئەمەس</string>
-    <!-- Text shown on restore screen as information on what will happen if you skip -->
-    <string name="RemoteRestoreActivity__your_media_will_restore_in_the_background">مېدىيا ئارقا سۇپىدا ئەسلىگە كېلىدۇ. ئەگەر ھازىر ئەسلىگە كەلتۈرمەسلىكنى تاللىسىڭىز ، كېيىن ئەسلىگە كەلتۈرەلمەيسىز.</string>
-    <!-- Dialog title -->
-    <string name="RestoreActivity__no_longer_registered_title">بۇ ئۈسكۈنە تىزىملاشتىن قالغان</string>
-    <!-- Dialog message -->
-    <string name="RestoreActivity__no_longer_registered_message">بۇنىڭ سەۋەبى سىز Signal ھېساباتىڭىزنى باشقا بىر ئۈسكۈنىدە تىزىملاتقان بولۇشىڭىز مۇمكىن.</string>
-
-    <!-- GroupMentionSettingDialog -->
-    <string name="GroupMentionSettingDialog_notify_me_for_mentions">ئاتالسام ئەسكەرتسۇن</string>
-    <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">ئۈنسىز پاراڭلاردا تىلغا ئېلىنغاندا ئۇقتۇرۇش تاپشۇرۇۋالامسىز؟</string>
-    <string name="GroupMentionSettingDialog_always_notify_me">ھەمىشە ماڭا ئۇقتۇرۇش قىلىنسۇن</string>
-    <string name="GroupMentionSettingDialog_dont_notify_me">ماڭا ئۇقتۇرۇش قىلىنمىسۇن</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ManageProfileFragment -->
     <string name="ManageProfileFragment_badges">ئىزناكلار</string>
@@ -1561,31 +1467,6 @@
     <!-- Button inside an alert dialog confirming the deletion of their draft -->
     <string name="InputPanel__discard">تاشلىۋەت</string>
 
-<<<<<<< MOLLY
-    <!-- InviteActivity -->
-    <string name="InviteActivity_share">ھەمبەھىرلە</string>
-    <string name="InviteActivity_share_with_contacts">ئالاقەداشلار بىلەن ھەمبەھىر</string>
-    <string name="InviteActivity_share_via">… بىلەن ھەمبەھىر</string>
-
-    <string name="InviteActivity_cancel">ۋاز كەچ</string>
-    <string name="InviteActivity_sending">ئەۋەتىلىۋاتىدۇ…</string>
-    <string name="InviteActivity_invitations_sent">تەكلىپ يوللاندى!</string>
-    <string name="InviteActivity_invite_to_signal">Molly ئىشلىتىش تەكلىپى</string>
-    <string name="InviteActivity_send_sms">SMS (%1$d) يوللاش</string>
-    <plurals name="InviteActivity_send_sms_invites">
-        <item quantity="other">%1$d SMS تەكلىپى يوللامسىز؟</item>
-    </plurals>
-    <string name="InviteActivity_lets_switch_to_signal">Molly دا پاراڭلىشايلى:%1$s</string>
-    <!-- Toast shown when Signal is unable to find an external app to share the Invite text string to -->
-    <string name="InviteActivity_no_app_to_share_to">قارىغاندا ھەمبەھىرلەيدىغان ئەپ يوقتەك تۇرىدۇ.</string>
-
-    <!-- LearnMoreTextView -->
-    <string name="LearnMoreTextView_learn_more">كۆپرەك ئۆگىنىش</string>
-
-    <string name="SpanUtil__read_more">تېخىمۇ كۆپ</string>
-
-=======
->>>>>>> SIGNAL
     <!-- LongMessageActivity -->
     <string name="LongMessageActivity_unable_to_find_message">ئۇچۇر تېپىلمىدى</string>
     <string name="LongMessageActivity_message_from_s">%1$s نىڭ ئۇچۇرى</string>
@@ -2003,13 +1884,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-<<<<<<< MOLLY
-    <string name="MessageRecord__you_will_no_longer_be_able_to_send_sms_messages_from_signal_soon">پات ئارىدىن باشلاپ Signal دا SMS ئۇچۇرى يوللىغىلى بولمايدۇ. «%1$s» نى Signal غا تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
-    <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
     <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Molly دا ئەمدى SMS ئۇچۇرى يوللىيالمايسىز. «%1$s» نى Molly غا تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
-=======
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Signal دا ئەمدى SMS ئۇچۇرى يوللىيالمايسىز. «%1$s» نى Signal غا تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
->>>>>>> SIGNAL
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">چىقىم: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2119,16 +1994,7 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">بىر Signal ئۈسكۈنىسى ئۇلامسىز؟</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">ئۈستەل يۈزى ياكى iPad نى بۇ سىگنال ھېساباتىغا ئۇلاش ئۈچۈن ، «ئۇلانغان ئۈسكۈنىلەر»گە كىرىپ «بىر يېڭى ئۈسكۈنىنى ئۇلاش» نى چېكىپ ، QR كودىنى قايتا سكاننېرلاڭ. پەقەت Signal دىنلا كەلگەن QR كودىنى سكاننېرلاڭ.</string>
 
-<<<<<<< MOLLY
-    <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">QR كودىنى سايىلەش ئۈچۈن Molly كامېرا ھوقۇقىغا موھتاج ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشەكلىرىدىن، «ھوقۇقلار» نى تاللاپ ۋە «كامېرا» نى قوزغىتىڭ. </string>
-    <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">كامېرا ھوقۇقى بولمىغاچقا QR كودىنى سايىلىغىلى بولمىدى</string>
-
-    <!-- OutdatedBuildReminder -->
-    <string name="OutdatedBuildReminder_update_now">ھازىر يېڭىلاڭ</string>
     <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">بۇ Molly نەشرىنىڭ ۋاقتى بۈگۈن توشىدۇ. ئەڭ يېڭى نەشرىگە يېڭىلاڭ.</string>
-=======
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">بۇ Signal نەشرىنىڭ ۋاقتى بۈگۈن توشىدۇ. ئەڭ يېڭى نەشرىگە يېڭىلاڭ.</string>
->>>>>>> SIGNAL
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
         <item quantity="other">Molly نىڭ بۇ نەشرىنىڭ %1$d كۈندىن كېيىن ۋاقتى توشىدۇ. ئەڭ يېڭى نەشرىگە يېڭىلاڭ.</item>
     </plurals>
@@ -2241,10 +2107,6 @@
 
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">بۇ جاي چېكىلسە سىن ئېچىلىدۇ</string>
-<<<<<<< MOLLY
-    <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">%1$sنى چاقىرىش ئۈچۈن Molly كامېرانى ئىشلىتەلىشى كېرەك</string>
-=======
->>>>>>> SIGNAL
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
     <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
     <string name="WebRtcCallActivity__calling">چاقىرىۋاتىدۇ…</string>
@@ -2558,45 +2420,12 @@
 
     <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
     <string name="RegistrationActivity_additional_verification_required">قوشۇمچە دەلىللەش تەلەپ قىلىنىدۇ</string>
-<<<<<<< MOLLY
-    <!-- Dialog message shown when we need to verify sms and carrier rates may apply. -->
-    <string name="RegistrationActivity_a_verification_code_will_be_sent_to_this_number">دەلىللەش كودى بۇ نومۇرغا يوللىنىدۇ. ئۇچۇر ھەققى چىقىشى مۇمكىن.</string>
-    <!-- Text explaining to users that they will be receiving a verification for their phone number and that carrier rates could apply -->
-    <string name="RegistrationActivity_you_will_receive_a_verification_code">سىز بىر دەلىللەش كودى تاپشۇرۇۋالىسىز. كۆچمە خەۋەرلىشىش ھەققى ئېلىنىشى مۇمكىن.</string>
-    <!-- Hint text to select a country -->
-    <string name="RegistrationActivity_select_a_country">بىر دۆلەتنى تاللاڭ</string>
-    <!-- Hint text explaining that this is where the country code should go -->
-    <string name="RegistrationActivity_default_country_code">0</string>
-    <string name="RegistrationActivity_you_will_receive_a_call_to_verify_this_number">بۇ نومۇرنى دەلىللەش ئۈچۈن بىر تېلېفون تاپشۇرۇۋالىسىز.</string>
-    <string name="RegistrationActivity_edit_number">نومۇرنى تەھرىرلەش</string>
-    <string name="RegistrationActivity_missing_google_play_services">Google Play مۇلازىمەتلىرى كەم</string>
-    <string name="RegistrationActivity_this_device_is_missing_google_play_services">بۇ ئۈسكۈنىدە Google Play مۇلازىمىتى كەم ئىكەن. شۇنداقتىمۇ سىز يەنىلا Molly نى ئىشلىتەلەيسىز، ئەمما بۇ سەپلىمە تۆۋەنلىتىلگەن ئىشەنچ ياكى ئىقتىدارنى كەلتۈرۈپ چىقىرىشى مۇمكىن.\n\nئەگەر سىز تەجرىبىلىك ئىشلەتكۈچى بولمىسىڭىز، ياكى بازارغا سېلىنغان Android ROM نى ئىشلەتمىگەن بولسىڭىز ياكى بۇنى خاتالىق دەپ كۆرۈۋاتقانلىقىڭىزغا ئىشەنسىڭىز، كاشىلا تېپىشىمىزغا ياردەم قىلىش ئۈچۈن support@molly.im بىلەن ئالاقىلىشىڭ.</string>
-    <string name="RegistrationActivity_i_understand">چۈشەندىم</string>
-    <string name="RegistrationActivity_play_services_error">Play مۇلازىمەتلىرى خاتالىقى</string>
-    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play مۇلازىمەتلىرى يېڭىلىنىۋاتىدۇ ياكى ئۇلارنى ۋاقىتلىق ئىشلەتكىلى بولمايدۇ. سەل تۇرۇپ قايتا سىناڭ.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">دوستلىرىڭىز بىلەن ئالاقە قىلىش ۋە ئۇلارغا ئۇچۇر يوللاش ئۈچۈن Signal ئالاقىداشلار ۋە مېدىيا ھوقۇقىنى تەلەپ قىلىدۇ. ئالاقىداشلىرىڭىز Signal نىڭ «شەخسىي ئالاقىداشلارنى بايقاش» ئىقتىدارى ئارقىلىق يۈكلەنگەن بولۇپ، ئۇلار تېرمىنالدىن تېرمىنالغا مەخپىيەلەشتۈرۈلگەن، Signal مۇلازىمىتى ئۇلارنى كۆرەلمەيدۇ.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">دوستلىرىڭىز بىلەن ئۇلىنىش ئۈچۈن Signal ئالاقىداشلار ھوقۇقىنى تەلەپ قىلىدۇ. ئالاقىداشلىرىڭىز Signal نىڭ «شەخسىي ئالاقىداشلارنى بايقاش» ئىقتىدارى ئارقىلىق يۈكلەنگەن بولۇپ، ئۇلار تېرمىنالدىن تېرمىنالغا مەخپىيەلەشتۈرۈلگەن، Signal مۇلازىمىتى ئۇلارنى كۆرەلمەيدۇ.</string>
-=======
->>>>>>> SIGNAL
     <string name="RegistrationActivity_rate_limited_to_service">سىز بۇ نومۇرنى تىزىملىتىشقا بەك كۆپ قېتىم ئۇرۇندىڭىز. كېيىنرەك قايتا سىناڭ.</string>
     <string name="RegistrationActivity_unable_to_connect_to_service">مۇلازىمەتكە ئۇلانغىلى بولمىدى. تور ئۇلىنىشىنى تەكشۈرۈپ قايتا سىناڭ.</string>
     <!-- Dialog error message shown when we are unable to send an SMS to the user\'s number -->
     <string name="RegistrationActivity_sms_provider_error">بىز سىزنىڭ تېلېفون نۇمۇرىڭىزغا SMS قىسقا ئۇچۇرى يوللىيالمىدۇق. بىرقانچە سائەتتىن كېيىن قايتا سىناڭ.</string>
     <!-- Generic error when the app is unable to request an SMS code for an unknown reason. -->
     <string name="RegistrationActivity_unable_to_request_verification_code">دەلىللەش كودى تەلەپ قىلالمىدى. تور ئۇلىنىشىنى تەكشۈرۈپ قايتا سىناڭ.</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_non_standard_number_format">ئۆلچەملىك بولمىغان نومۇر فورماتى</string>
-    <!-- Dialog message shown to confirm when entering phone number (first placeholder) is normalized and formatted differently by the app (second placeholder). -->
-    <string name="RegistrationActivity_the_number_you_entered_appears_to_be_a_non_standard">سىز كىرگۈزگەن سان (%1$s) ئۆلچەملىك بولمىغان فورماتتىكى ساندەك قىلىدۇ.\n\n%2$s دېمەكچىمۇ؟</string>
-    <string name="RegistrationActivity_signal_android_phone_number_format">Molly Android - تېلېفون نومۇرى فورماتى</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via voice call.-->
-    <string name="RegistrationActivity_call_requested">چاقىرىق تەلەپ قىلىندى</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via SMS.-->
-    <string name="RegistrationActivity_sms_requested">SMS تەلەپ قىلىنىدۇ</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code (through an unspecified channel).-->
-    <string name="RegistrationActivity_code_requested">دەلىللەش كودى تەلەپ قىلىنىدۇ</string>
-=======
->>>>>>> SIGNAL
     <plurals name="RegistrationActivity_debug_log_hint">
         <item quantity="other">خاتالىق خاتىرىسىنى يوللىشىڭىزغا يەنە %1$d قەدەم قالدى.</item>
     </plurals>
@@ -2644,19 +2473,6 @@
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
-<<<<<<< MOLLY
-
-    <!-- SharedContactDetailsActivity -->
-    <string name="SharedContactDetailsActivity_add_to_contacts">ئالاقەداشلارغا قوش</string>
-    <string name="SharedContactDetailsActivity_invite_to_signal">Molly ئىشلىتىش تەكلىپى</string>
-    <string name="SharedContactDetailsActivity_signal_message">Signal ئۇچۇرى</string>
-    <string name="SharedContactDetailsActivity_signal_call">‫Signal چاقىرىقى</string>
-
-    <!-- SharedContactView -->
-    <string name="SharedContactView_add_to_contacts">ئالاقەداشلارغا قوش</string>
-    <string name="SharedContactView_invite_to_signal">Molly ئىشلىتىش تەكلىپى</string>
-    <string name="SharedContactView_message">Signal ئۇچۇرى</string>
-=======
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
@@ -2666,14 +2482,13 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">ئالاقەداشلارغا قوش</string>
-    <string name="SharedContactView_invite_to_signal">Signal ئىشلىتىش تەكلىپى</string>
+    <string name="SharedContactView_invite_to_signal">Molly ئىشلىتىش تەكلىپى</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">ئۇچۇر</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
     <string name="SharedContactView_add_to_group">گۇرۇپپىغا قوشۇش</string>
     <!-- Confirmation dialog body when adding the person on a shared contact card to the current group. %1$s is the person\'s name, %2$s is the group name -->
     <string name="SharedContactView_add_s_to_s">%1$s نى «%2$s» غا قوشامسىز؟</string>
->>>>>>> SIGNAL
 
     <!-- SignalBottomActionBar -->
     <!-- Text to describe a button that will show more options -->
@@ -2985,12 +2800,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">Signal بىخەتەرلىك نومۇرىمىز:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">قارىغاندا ھەمبەھىرلەيدىغان ئەپ يوقتەك تۇرىدۇ.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">چاپلاش تاختىسىدا سېلىشتۇرغۇدەك بىر بىخەتەرلىك نومۇرى تېپىلمىدى</string>
-<<<<<<< MOLLY
     <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">QR كودىنى سايىلەش ئۈچۈن Molly كامېرا ھوقۇقىغا موھتاج ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشەكلىرىدىن، «ھوقۇقلار» نى تاللاپ ۋە «كامېرا» نى قوزغىتىڭ. </string>
-    <string name="VerifyIdentityActivity_unable_to_scan_qr_code_without_camera_permission">كامېرا ھوقۇقى بولمىسا QR كودىنى سايىلىغىلى بولمايدۇ</string>
-=======
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">QR كودىنى سايىلەش ئۈچۈن Signal كامېرا ھوقۇقىغا موھتاج ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشەكلىرىدىن، «ھوقۇقلار» نى تاللاپ ۋە «كامېرا» نى قوزغىتىڭ. </string>
->>>>>>> SIGNAL
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view"> %1$sنىڭ بىخەتەرلىك نومۇرىنى كۆرۈش ئۈچۈن. ئاۋۋال ئۇنىڭ بىلەن ئۇچۇر ئالماشتۇرىشىڭىز كېرەك.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">سىز بىلەن ئۇچۇر ئالماشتۇرغاندىن كىيىن بۇ كىشىگە مۇناسىۋەتلىك بىر بىخەتەرلىك نومۇرى يارىتىلىدۇ.</string>
@@ -3144,15 +2954,8 @@
     <string name="NotificationChannel_additional_message_notifications">قوشۇمچە ئۇچۇر ئۇقتۇرۇشلىرى</string>
     <!-- Notification channel name for notifications sent when a device has been linked -->
     <string name="NotificationChannel_new_linked_device">يېڭى ئۇلانغان ئۈسكۈنە</string>
-<<<<<<< MOLLY
-
-    <!-- QuickResponseService -->
-    <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Molly قۇلۇپلانغاندا تېز ئىنكاسنى ئىشلەتكىلى بولمايدۇ!</string>
-    <string name="QuickResponseService_problem_sending_message">ئۇچۇر يوللاشتا مەسىلە كۆرۈلدى!</string>
-=======
     <!-- Notification channel name for unread reminder notifications -->
     <string name="NotificationChannel_unread_reminders">ئوقۇلمىغان ئۇچۇرلار ئەسكەرتىشلىرى</string>
->>>>>>> SIGNAL
 
     <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
     <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">ساقلىغۇچقا يازالمىدىم!</string>
@@ -3300,14 +3103,6 @@
     <string name="EnclaveFailureReminder_update_signal">پۇل تۆلەش ئىقتىدارىنى داۋاملىق ئىشلىتىش ئۈچۈن Signal نى يېڭىلاڭ. قالدۇق سوممىڭىز ئەڭ يېڭى ھالەتتە بولماسلىقى مۇمكىن.</string>
     <!-- Banner button to update now -->
 
-<<<<<<< MOLLY
-    <!-- WebRtcCallActivity -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone">چاقىرىققا جاۋاب بېرىش ئۈچۈن، Molly مىكروفون ھوقۇقىنى تەلەپ قىلىدۇ.</string>
-    <!-- Message shown in permission dialog when attempting to answer a video call without camera or microphone permissions already granted. -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone_and_camera">ۋىدېيولۇق چاقىرىققا جاۋاب قايتۇرۇش ئۈچۈن Molly غا مىكروفون ۋە كامېرا ئىجازىتىنى بېرىڭ.</string>
-    <string name="WebRtcCallActivity_signal_requires_microphone_and_camera_permissions_in_order_to_make_or_receive_calls">سۆزلىشىشتە Molly مىكروفون ۋە كامېرا ئىجازىتىگە ئېھتىياجلىق، ئەمما ئۇلار رەت قىلىندى. ئەپ تەڭشىكىدىن، «ھوقۇقلار» نى تاللاپ ۋە «مىكروفون» ۋە «كامېرا» نى قوزغىتىڭ.</string>
-=======
->>>>>>> SIGNAL
     <string name="WebRtcCallActivity__answered_on_a_linked_device">باغلانغان بىر ئۈسكۈنىدە جاۋاب قايتۇردى.</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">باغلانغان بىر ئۈسكۈنىدە رەت قىلدى.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">باغلانغان بىر ئۈسكۈنىدە ئالدىراش.</string>
@@ -3400,22 +3195,6 @@
     <!-- Text asking for user\'s contact permission -->
     <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">ئالاقىداش ھوقۇقىغا ئىجازەت قىلىڭ. ئالاقىداشلىرىڭىز مەخپىيلەشتۈرۈلگەن بولۇپ، Signal مۇلازىمىتىگە كۆرۈنمەيدۇ.</string>
 
-<<<<<<< MOLLY
-    <!-- contact_selection_list_fragment -->
-    <string name="contact_selection_list_fragment__signal_needs_access_to_your_contacts_in_order_to_display_them">Molly ئۇلارنى كۆرسىتىش ئۈچۈن ئالاقەداشلىرىڭىزنى زىيارەت قىلىشى كېرەك.</string>
-    <string name="contact_selection_list_fragment__show_contacts">ئالاقەداشنى كۆرسەت</string>
-
-    <!-- contact_selection_list_item -->
-    <plurals name="contact_selection_list_item__number_of_members">
-        <item quantity="other">%1$d ئەزا</item>
-    </plurals>
-    <!-- Displays number of viewers for a story -->
-    <plurals name="contact_selection_list_item__number_of_viewers">
-        <item quantity="other">%1$d كۆرۈرمەن</item>
-    </plurals>
-
-=======
->>>>>>> SIGNAL
     <!-- conversation_activity -->
     <string name="conversation_activity__type_message_push">Signal ئۇچۇرى</string>
     <!-- Option in send button context menu to schedule the message instead of sending it directly -->
@@ -3638,7 +3417,6 @@
     <string name="EditProfileFragment__group_name">گۇرۇپپا ئاتى</string>
     <string name="EditProfileFragment__group_description">گۇرۇپپا تونۇشتۇرۇشى</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-<<<<<<< MOLLY
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
     <string name="EditProfileFragment_deprecated_dialog_title">Molly نى يېڭىلا</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
@@ -3651,8 +3429,6 @@
     <string name="EditProfileFragment_unregistered_dialog_body">بۇ ئۈسكۈنە تىزىملاشتىن قالغان. قايتا تىزىملاتسىڭىز ھېساباتىڭىزدا ئۆزگىرىشلەر يۈز بېرىدۇ.</string>
     <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
     <string name="EditProfileFragment_unregistered_dialog_reregister_button">قايتا تىزىملاش</string>
-=======
->>>>>>> SIGNAL
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">ساقلا</string>
@@ -3846,45 +3622,13 @@
     <string name="preferences__led_color_unknown">نامەلۇم</string>
     <string name="preferences__silent">تىنچ</string>
     <string name="preferences__advanced">ئالىي</string>
-<<<<<<< MOLLY
     <string name="preferences__donate_to_signal">‫Molly غا ئىئانە قىلىڭ</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">مەخپىيەتلىك</string>
-=======
-    <string name="preferences__donate_to_signal">‫Signal غا ئىئانە قىلىڭ</string>
->>>>>>> SIGNAL
     <!-- Preference label for stories -->
     <string name="preferences__stories">ھېكايىلەر</string>
     <string name="preferences__payments">چىقىملار</string>
     <string name="preferences__linked_devices">باغلانغان ئۈسكۈنىلەر</string>
-<<<<<<< MOLLY
-    <string name="preferences__light_theme">يورۇق</string>
-    <string name="preferences__dark_theme">قاراڭغۇ</string>
-    <string name="preferences__appearance">كۆرۈنۈش</string>
-    <string name="preferences__theme">تېما</string>
-    <string name="preferences__chat_color_and_wallpaper">پاراڭ رەڭگى ۋە تام قەغەز</string>
-    <!-- Clickable settings text allowing the user to change the icon visible on their phone\'s home screen. -->
-    <string name="preferences__app_icon">ئەپ سىنبەلگىسى</string>
-    <!-- Approval for changing the app icon. -->
-    <string name="preferences__app_icon_dialog_ok">بولىدۇ</string>
-    <!-- Cancelling the operation of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_cancel">بىكار قىلىش</string>
-    <!-- Title for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_title">ئەپ سىنبەلگىسى ۋە نامىنى «%1$s» غا ئۆزگەرتىش</string>
-    <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">ئەپ سىنبەلگىسى ۋە نامىنى ئۆزگەرتىش ئۈچۈن Molly نى ئېتىش كېرەك. ئۇقتۇرۇشلار ھەمىشە سۈكۈتتىكى Molly سىنبەلگىسى ۋە نامىنى كۆرسىتىدۇ.</string>
-    <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">تېلېفونىڭىزنىڭ باش بەت ئېكرانىدا ۋە ئەپ تارتمىسىدا كۆرۈنىدىغان ئەپ سىنبەلگىسى ۋە ئەپ نامى تاللاڭ. ئۇقتۇرۇشلار ھەمىشە سۈكۈتتىكى Molly سىنبەلگىسى ۋە نامىنى كۆرسىتىدۇ. تەپسىلاتى</string>
-    <!-- Visible warning label for the limitations of changing the app icon. -->
-    <string name="preferences__app_icon_warning">ئەپ سىنبەلگىسى ۋە ئەپ نامى باش بەت ئېكرانى ۋە ئەپ تارتمىسىدا كۆرۈنىدۇ.</string>
-    <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">ئۇقتۇرۇشلار ھەمىشە سۈكۈتتىكى Molly سىنبەلگىسى ۋە نامىنى كۆرسىتىدۇ.</string>
-    <!--Call to action to get more information about the limitations of the change app icon functionality. -->
-    <string name="preferences__app_icon_learn_more">تەپسىلاتى</string>
-    <!--Text description of a graphic illustrating the limitations of the app icon change. -->
-    <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">ئەپ سىنبەلگىسىنىڭ كۆرۈلۈش ئورنىنى گرافىكلىك چۈشەندۈرۈۋاتىدۇ.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences__disable_pin">PIN چەكلە</string>
     <string name="preferences__enable_pin">PIN نى قوزغات</string>
     <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">ئەگەر PIN نى چەكلىسىڭىز، Signal غا قايتا تىزىملاتقاندا ئۆزىڭىز زاپاسلاپ ۋە ئەسلىگە كەلتۈرمىگۈچە ھەممە سانلىق مەلۇماتلىرىڭىز يوقىلىدۇ، PIN چەكلەنسە تىزىملىتىش قۇلۇپىنى ئاچالمايسىز.</string>
@@ -4067,17 +3811,9 @@
     <string name="PaymentsTransferFragment__next">كېيىنكى</string>
     <string name="PaymentsTransferFragment__invalid_address">ئىناۋەتسىز ئادرېس</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">سىز يۆتكىمەكچى بولغان ھەميان ئادرېسىنى تەكشۈرۈڭ ۋە قايتا سىناڭ.</string>
-<<<<<<< MOLLY
     <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">ئۆزىڭىزنىڭ Molly ھەميان ئادرېسىغا يۆتكىيەلمەيسىز. قوللايدىغان ئالماشتۇرغۇچىدىكى ھېساباتىڭىزدىن ھەميان ئادرېسىنى كىرگۈزۈڭ.</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR كودىنى سايىلەش ئۈچۈن Molly كامېرانى زىيارەت قىلالىشى كېرەك.</string>
-    <string name="PaymentsTransferFragment__signal_needs_the_camera_permission_to_capture_qr_code_go_to_settings">‫QR كودىنى تۇتۇش ئۈچۈن Molly كامېرا ھوقۇقىغا موھتاج ، تەڭشەكلەرگە بېرىڭ، «ھوقۇقلار» نى تاللاپ ۋە «كامېرا» نى قوزغىتىڭ.</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR كودىنى سايىلەش ئۈچۈن Molly كامېرانى زىيارەت قىلالىشى كېرەك.</string>
-    <string name="PaymentsTransferFragment__settings">تەڭشەكلەر</string>
-=======
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">ئۆزىڭىزنىڭ Signal ھەميان ئادرېسىغا يۆتكىيەلمەيسىز. قوللايدىغان ئالماشتۇرغۇچىدىكى ھېساباتىڭىزدىن ھەميان ئادرېسىنى كىرگۈزۈڭ.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR كودىنى سايىلەش ئۈچۈن Signal كامېرانى زىيارەت قىلالىشى كېرەك.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR كودىنى سايىلەش ئۈچۈن Signal كامېرانى زىيارەت قىلالىشى كېرەك.</string>
->>>>>>> SIGNAL
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">ئادرېس QR كودىنى سايىلە</string>
@@ -4482,61 +4218,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">بۇ ۋاقىتتا ماڭا تېلېفون قىلىنسۇن (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">كودنى قايتا يوللاش (%1$02d:%2$02d)</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_contact_signal_support">Molly قوللىغۇچىلىرى  بىلەن ئالاقىلىشىڭ</string>
     <string name="RegistrationActivity_code_support_subject">Molly تىزىملىتىش - Android ئۈچۈن دەلىللەش كودى</string>
-=======
-    <string name="RegistrationActivity_code_support_subject">Signal تىزىملىتىش - Android ئۈچۈن دەلىللەش كودى</string>
->>>>>>> SIGNAL
     <string name="RegistrationActivity_incorrect_code">خاتا كود</string>
     <string name="BackupUtil_never">ھەرگىز</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">نامەلۇم</string>
-<<<<<<< MOLLY
-    <!-- Phone number heading displayed as a screen title -->
-    <string name="preferences_app_protection__phone_number">تېلېفون نومۇرىڭىز</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
     <string name="preferences_app_protection__choose_who_can_see">تېلېفون نومۇرىڭىزنى كۆرسە بولىدىغان كىشىلەرنى ۋە تېلېفون نومۇرىڭىز ئارقىلىق سىز بىلەن Molly دا ئالاقىلاشسا بولىدىغان كىشىلەرنى تاللاڭ.</string>
-    <!-- Section title above two radio buttons for enabling and disabling phone number display -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_see_my_number_heading">تېلېفون نومۇرۇمنى كۆرسە بولىدىغانلار</string>
-    <!-- Subtext below radio buttons when who can see my number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_on_description">تېلېفون نومۇرىڭىزنى سىز ئۇچۇر يوللىغان كىشىلەر ۋە گۇرۇپپىدىكىلەر كۆرەلەيدۇ.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_on_description">تېلېفون نومۇرىڭىزنى ئۆزىنىڭ ئالاقىداشلار تىزىملىكىدە ساقلىمىغانلا بولسا، ھېچكىم تېلېفون نومۇرىڭىزنى كۆرەلمەيدۇ.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_off_description">تېلېفون نومۇرىڭىزنى ھېچكىم كۆرەلمەيدۇ.</string>
-    <!-- Section title above two radio buttons for enabling and disabling whether users can find me by my phone number  -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_find_me_by_number_heading">تېلېفون نومۇرۇم بىلەن مېنى تاپالايدىغانلار</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to everyone -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_on_description">تېلېفون نومۇرىڭىز بار ھەرقانداق كىشى سىزنىڭ Signal دا ئىكەنلىكىڭىزنى كۆرەلەيدۇ ۋە سىز بىلەن پاراڭ باشلىيالايدۇ.</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_off_description">ئەگەر باشقىلارغا ئۇچۇر يوللىسىمىڭىز ياكى باشقىلار بىلەن بۇرۇندىنلا مەۋجۇت پارىڭىڭىز بولمىسا، باشقىلار سىزنىڭ Signal دا ئىكەنلىكىڭىزنى كۆرەلمەيدۇ.</string>
-    <!-- Snackbar text when pressing invalid radio item -->
-    <string name="PhoneNumberPrivacySettingsFragment__to_change_this_setting">"بۇ تەڭشەكنى ئۆزگەرتىش ئۈچۈن «تېلېفون نومۇرۇمنى كۆرەلەيدىغانلار» نى «ھېچكىم» گە تەڭشەڭ."</string>
-    <!-- Dialog title shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_title">جەزملەشتۈرەمسىز؟</string>
-    <!-- Dialog warning message shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_message">«مېنى نومۇرۇم بىلەن تاپالايدىغانلار» نى «ھېچكىم» گە تەڭشەپ قويسىڭىز، باشقىلارنىڭ سىزنى Signal دا تېپىشى تەس بولىدۇ.</string>
-    <!-- Dialog button text for canceling change action -->
-    <string name="PhoneNumberPrivacySettingsFragment__cancel">بىكار قىلىش</string>
-    <string name="PhoneNumberPrivacy_everyone">ھەممىسى</string>
-    <string name="PhoneNumberPrivacy_nobody">ھېچكىم</string>
-    <string name="preferences_app_protection__screen_lock">ئېكران قۇلۇپى</string>
-    <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">Signal زىيارىتىنى Android ئېكران قۇلۇپى ياكى بارماق ئىزى بىلەن قۇلۇپلا </string>
-    <string name="preferences_app_protection__screen_lock_inactivity_timeout">ئېكران قۇلۇپى ۋاقتى توشتى</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
     <string name="preferences_app_protection__to_use_screen_lock">ئېكران قۇلۇپىنى ئىشلىتىش ئۈچۈن بۇ ئۈسكۈنىگە PIN نومۇر ، ئەندىزە ياكى پارول بەلگىلەڭ.</string>
-    <string name="preferences_app_protection__signal_pin">Signal PIN</string>
-    <string name="preferences_app_protection__create_a_pin">بىر PIN قۇر</string>
-    <string name="preferences_app_protection__change_your_pin">PIN نىڭنى ئۆزگەرت</string>
-    <string name="preferences_app_protection__pin_reminders">PIN ئەسكەرتكۈچىلىرى</string>
-    <string name="preferences_app_protection__turn_off">تاقا</string>
-    <string name="preferences_app_protection__confirm_pin">PIN نى جەزىملەڭ</string>
-    <string name="preferences_app_protection__confirm_your_signal_pin">Signal PIN نىڭىزنى جەزىملەڭ</string>
-    <string name="preferences_app_protection__make_sure_you_memorize_or_securely_store_your_pin">PIN نى ئەسلىگە كەلتۈرگىلى بولمىغاچقا، ئۇنى ئەستە ساقلىۋالغىنىڭىزغا ياكى بىخەتەر بىر يەردە ساقلىغىنىڭىزغا كاپالەتلىك قىلىڭ. ئەگەر Signal ھېسابىڭىزنى قايتىدىن تىزىملاتسىڭىز، مەلۇماتلىرىڭىزنى يوقىتىشىڭىز مۈمكىن.</string>
-    <string name="preferences_app_protection__incorrect_pin_try_again">PIN  خاتا، قايتا سىناڭ.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences_app_protection__failed_to_enable_registration_lock">تىزىملىتىش قۇلۇپىنى قوزغاتقىلى بولمىدى.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">تىزىملىتىش قۇلۇپىنى ئاكتىپسىزلىغىلى بولمىدى.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">سىز چۇقۇم تىزىملىتىش قۇلۇپى PIN ڭىزنى كىرگۈزۈشىڭىز كېرەك</string>
@@ -4604,18 +4294,6 @@
     <!-- NewDeviceTransferInstructionsFragment -->
 
     <!-- NewDeviceTransferSetupFragment -->
-<<<<<<< MOLLY
-    <string name="NewDeviceTransferSetup__preparing_to_connect_to_old_android_device">كونا Android ئۈسكۈنىگە باغلاشقا تەييارلىنىۋاتىدۇ…</string>
-    <string name="NewDeviceTransferSetup__take_a_moment_should_be_ready_soon">سەل كۈتۈڭ، تېزلا تەييار بولىدۇ</string>
-    <string name="NewDeviceTransferSetup__waiting_for_old_device_to_connect">كونا Android ئۈسكۈنىنىڭ باغلىنىشىنى كۈتۈۋاتىدۇ…</string>
-    <string name="NewDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_old_device">Molly كونا Android ئۈسكۈنىنى بايقاپ ۋە باغلىنىشى ئۈچۈن ئورۇن ھوقۇقىغا ئېھتىياجلىق.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_old_device">Molly كونا Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن ئورۇن مۇلازىمىتى قوزغىتىلغان بولۇشى كېرەك.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_old_device">Molly كونا Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن Wi-Fi قوزغىتىلغان بولۇشى كېرەك. Wi-Fi قوزغىتىلغان بولۇشى ئەمما Wi-Fi تورغا باغلانمىغان بولسىمۇ بولىدۇ.</string>
-    <string name="NewDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">كەچۈرۈڭ، بۇ ئۈسكۈنە Wi-Fi Direct نى قوللىمايدىغاندەك قىلىدۇ. Molly كونا Android ئۈسكۈنىڭىزنى Wi-Fi Direct ئارقىلىق بايقاپ ۋە باغلىنىدۇ. سىز Android ئۈسكۈنىڭىزدىن ھېساباتنى ئەسلىگە قايتۈرۈش ئارقىلىق زاپاستىن ئەسلىگە قايتۇرالايسىز.</string>
-    <string name="NewDeviceTransferSetup__restore_a_backup">زاپاستىن ئەسلىگە قايتۇر</string>
-    <string name="NewDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">كونا Android ئۈسكۈنىڭىزگە باغلىنىشنى سىناۋاتقاندا كۈتۈلمىگەن خاتالىققا يولۇقتى.</string>
-=======
->>>>>>> SIGNAL
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">يېڭى Android ئۈسكۈنە ئىزدەۋاتىدۇ…</string>
@@ -5253,44 +4931,6 @@
     <string name="ExpireTimerSettingsFragment__custom_time">ئىختىيارىچە ۋاقىت</string>
     <string name="ExpireTimerSettingsFragment__save">ساقلا</string>
 
-<<<<<<< MOLLY
-    <string name="CustomExpireTimerSelectorView__seconds">سېكۇنت</string>
-    <string name="CustomExpireTimerSelectorView__minutes">مىنۇت</string>
-    <string name="CustomExpireTimerSelectorView__hours">سائەت</string>
-    <string name="CustomExpireTimerSelectorView__days">كۈن</string>
-    <string name="CustomExpireTimerSelectorView__weeks">ھەپتە</string>
-
-    <!-- HelpSettingsFragment -->
-    <string name="HelpSettingsFragment__support_center">قوللاش مەركىزى</string>
-    <string name="HelpSettingsFragment__contact_us">بىز بىلەن ئالاقىلىشىڭ</string>
-    <string name="HelpSettingsFragment__version">نەشر</string>
-    <!-- Displayed when copying help screen text to the clipboard -->
-    <string name="HelpSettingsFragment__copied_to_clipboard">چاپلاش تاختىسىغا كۆچۈرۈلدى</string>
-    <string name="HelpSettingsFragment__debug_log">سازلاش خاتىرىسى</string>
-    <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
-    <string name="HelpSettingsFragment__licenses">ئىجازەتنامە</string>
-    <string name="HelpSettingsFragment__terms_amp_privacy_policy">شەرتلەر &amp;  مەخپىيەتلىك تۈزۈمى</string>
-    <string name="HelpFragment__copyright_signal_messenger">‫Molly Messenger نەشر ھوقۇقىغا ئىگە</string>
-    <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 غا ئ‍اساسەن ئىجازەت قىلىنغان</string>
-    <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="HelpSettingsFragment__signal_is_a_501c3">Signal پايدا ئالمايدىغان بىر تەشكىلات</string>
-
-    <!-- DataAndStorageSettingsFragment -->
-    <string name="DataAndStorageSettingsFragment__media_quality">ۋاسىتە سۈپىتى</string>
-    <!-- Category title for the quality of the media to be sent -->
-    <string name="DataAndStorageSettingsFragment__sent_media_quality">ۋاسىتە سۈپىتىنى ئەۋەت</string>
-    <string name="DataAndStorageSettingsFragment__sending_high_quality_media_will_use_more_data">يۇقىرى سۈپەتلىك ۋاسىتە يوللىسىڭىز كۆپرەك مەلۇمات ئىشلىتىسىز</string>
-    <!-- Disclaimer shown under the media auto-download settings. Placeholder is a formatted size like "100 KB". -->
-    <string name="DataAndStorageSettingsFragment__voice_messages_and_stickers_under_size_are_always_auto_downloaded">ئاۋازلىق ئۇچۇرلار ۋە چاپلاقلار (ھەجىمى %1$s دىن كىچىك) ھەمىشە ئاپتوماتىك چۈشۈرۈلىدۇ.</string>
-    <string name="DataAndStorageSettingsFragment__calls">چاقىرىشلار</string>
-    <!-- Title of a toggle that keeps Signal connected in the background via a persistent foreground service instead of using FCM push messages -->
-    <string name="DataAndStorageSettingsFragment__stay_connected_in_background">ئارقا سۇپىدا ئۇچۇق ھالەتتە تۇرۇش</string>
-    <!-- Body of a confirmation dialog shown when a user tries to enable the "Stay connected in background" setting -->
-    <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">ئەپ ئارقا سۇپىدا ئوچۇق ھالەتتە تۇرغاندا باتارىيەنىڭ تۈگۈشىنى تېزلەشتۈرۈۋېتىشى مۇمكىن. بۇ مۇتلەق كۆپ قىسىم ئۈسكۈنىلەر ئۈچۈن لازىم ئەمەس. بۇنى پەقەت ئۇقتۇرۇش تاپشۇرۇۋېلىشتا مەسىلە كۆرۈلگەندىلا ئاندىن قوزغىتىڭ.</string>
-    <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
-    <string name="DataAndStorageSettingsFragment__enable">قوزغىتىش</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
@@ -7556,7 +7196,6 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">تېلېفونىڭىزGoogle Play مۇلازىمىتىنى قوللىمىغاچقا، Signal بىخەتەر زاپاسلانمىللىرىغا مۇشتەرى بولالمايسىز. ياردەم ئۈچۈن تېلېفون ئىشلەپچىقارغۇچى بىلەن ئالاقىلىشىڭ.</string>
 
-<<<<<<< MOLLY
     <!-- ManageStorageSettingsFragment -->
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
     <string name="ManageStorageSettingsFragment_chat_limit">پاراڭ چېكى</string>
@@ -7579,14 +7218,12 @@
     <!-- Dialog message for paid tier pending dialog -->
     <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">ساقلاشنى ئەلالاشتۇرۇش، پەقەت Signal بىخەتەر زاپاسلانمىللىرىنىڭ ھەقلىق دەرىجىسى بىلەنلا ئىشلىتىلىدۇ. زاپاسلاش مۇشتەرىلىكىڭىز يەنىلا بىر تەرەپ قىلىنىۋاتىدۇ، تېخى قوزغىتىلمىدى. كېيىن قايتا سىناڭ.</string>
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media will be removed from your on-device backup</string>
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">مېدىيا سىزنىڭ ئۈسكۈنىدىكى زاپىسىڭىزدىن چىقىرىۋېتىلىدۇ</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Turning on \"Optimize Signal storage\" will offload old media from your device. You can download it again any time. It will also remove old media from your on-device backup.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">«Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارىنى ئېچىپ قويسىڭىز، ئۇ كونا مېديارىڭىزنى ئۈسكىنىڭىزدىن ۋاقىتلىق چۈشۈرۈۋېتىدۇ. سىز ئۇنى ھەرقانداق ۋاقىتتا قايتا يۈكلىيەلەيسىز. ھەمدە بۇ سىزنىڭ كونا مېدىيارىڭىزنى ئۈسكۈنىدىكى زاپىسىڭىزدىن چىقىرىۋېتىلىدۇ.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">ئېچىش</string>
 
-=======
->>>>>>> SIGNAL
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">بۇ ئىقتىدارنى قوزغىتىش ئۈچۈن يېڭىلاڭ</string>

@@ -119,4 +119,7 @@
     <string name="DozeReminder_disable_battery_restrictions">Deshabilita les restriccions de la bateria</string>
     <string name="preferences__follow_system">Mimetitza el sistema</string>
     <string name="MollySocketLink_experienced_a_network_error_please_try_again">S\'ha produït un error de xarxa. Si us plau, torneu-ho a provar.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Notifica quan…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">El Google Play Services s\'està actualitzant o no està disponible. Torneu a provar-ho.</string>
+    <string name="please_wait">Espereu, si us plau…</string>
 </resources>

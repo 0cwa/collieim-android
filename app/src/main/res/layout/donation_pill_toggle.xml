@@ -27,12 +27,8 @@
         app:icon="@drawable/ic_check_20"
         app:iconGravity="textStart"
         app:iconSize="20dp"
-<<<<<<< MOLLY
         app:iconTint="?attr/colorOnSurface"
-=======
-        app:iconTint="@color/signal_colorOnSurface"
         app:layout_constrainedWidth="true"
->>>>>>> SIGNAL
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/center_guide"
         app:layout_constraintHorizontal_bias="1"
@@ -49,15 +45,7 @@
         android:maxLines="1"
         android:text="@string/DonationPillToggle__one_time"
         android:textAppearance="@style/Signal.Text.LabelLarge"
-<<<<<<< MOLLY
         android:textColor="?attr/colorOnSurface"
-        app:backgroundTint="@color/donation_pill_toggle_background_tint"
-        app:iconGravity="textStart"
-        app:iconSize="20dp"
-        android:visibility="visible"
-        app:iconTint="?attr/colorOnSurface"
-=======
-        android:textColor="@color/signal_colorOnSurface"
         android:visibility="visible"
         app:autoSizeMaxTextSize="14sp"
         app:autoSizeMinTextSize="10dp"
@@ -66,8 +54,7 @@
         app:backgroundTint="@color/donation_pill_toggle_background_tint"
         app:iconGravity="textStart"
         app:iconSize="20dp"
-        app:iconTint="@color/signal_colorOnSurface"
->>>>>>> SIGNAL
+        app:iconTint="?attr/colorOnSurface"
         app:layout_constraintBottom_toBottomOf="@id/one_time_start_invisible"
         app:layout_constraintEnd_toStartOf="@id/center_guide"
         app:layout_constraintStart_toStartOf="@id/one_time_start_invisible"
@@ -114,12 +101,8 @@
         app:icon="@drawable/ic_check_20"
         app:iconGravity="textStart"
         app:iconSize="20dp"
-<<<<<<< MOLLY
         app:iconTint="?attr/colorOnSurface"
-=======
-        app:iconTint="@color/signal_colorOnSurface"
         app:layout_constrainedWidth="true"
->>>>>>> SIGNAL
         app:layout_constraintBottom_toBottomOf="@id/one_time_start_invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"

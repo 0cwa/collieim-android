@@ -169,4 +169,7 @@
     <string name="preferences_appearance__dynamic_colors">மாறும் வண்ணங்கள்</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">பயன்பாட்டின் கருப்பொருளுக்கு கணினி வண்ணங்களைப் பயன்படுத்தவும்</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">இந்தச் சாதனத்தில் Google Play சேவைகளின் நிறுவப்பட்ட பதிப்பு காலாவதியானது.</string>
+    <string name="NotificationsSettingsFragment__notify_when">எப்போது அறிவிக்கவும்…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play சேவைகள் புதுப்பித்தல் அல்லது தற்காலிகமாக கிடைக்கவில்லை. தயவு செய்து மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="please_wait">தயவுசெய்து காத்திருங்கள்…</string>
 </resources>

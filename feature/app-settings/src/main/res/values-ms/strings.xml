@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Hidupkan Kunci Pendaftaran?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Matikan Kunci Pendaftaran?</string>
@@ -508,7 +507,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Gunakan kunci skrin</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Tetapan kunci peranti Android anda diperlukan untuk membuka kunci Signal apabila anda meninggalkan atau menukar aplikasi. Apabila dikunci, pratonton pemberitahuan tidak akan menunjukkan kandungan mesej.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Tetapan kunci peranti Android anda diperlukan untuk membuka kunci Molly apabila anda meninggalkan atau menukar aplikasi. Apabila dikunci, pratonton pemberitahuan tidak akan menunjukkan kandungan mesej.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Mulakan kunci skrin</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +519,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Masa tersuai</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Gunakan kunci skrin Signal</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Gunakan kunci skrin Molly</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Matikan kunci skrin Signal</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Matikan kunci skrin Molly</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Bantu</string>
@@ -535,7 +534,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Lesen</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Terma &amp; Dasar Privasi</string>
-    <string name="HelpFragment__copyright_signal_messenger">Hak Cipta Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Hak Cipta Molly Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Berlesen di bawah GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal ialah organisasi bukan untung</string>
@@ -544,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Ikon dan nama aplikasi boleh dilihat pada skrin utama dan laci aplikasi.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Pemberitahuan akan sentiasa memaparkan ikon dan nama Signal lalai.</string>
+    <string name="preferences__app_icon_notification_warning">Pemberitahuan akan sentiasa memaparkan ikon dan nama Molly lalai.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafik yang menggambarkan tempat ikon aplikasi ganti akan kelihatan.</string>
 
@@ -564,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Tukar ikon dan nama aplikasi kepada \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Signal perlu ditutup untuk menukar ikon dan nama aplikasi. Pemberitahuan akan sentiasa memaparkan ikon dan nama Signal lalai.</string>
+    <string name="preferences__app_icon_dialog_description">Molly perlu ditutup untuk menukar ikon dan nama aplikasi. Pemberitahuan akan sentiasa memaparkan ikon dan nama Molly lalai.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Pilih ikon dan nama aplikasi, yang akan kelihatan pada skrin utama telefon anda dan laci aplikasi. Pemberitahuan akan sentiasa memaparkan ikon dan nama Signal lalai. Ketahui lebih lanjut</string>
+    <string name="preferences__app_icon_warning_learn_more">Pilih ikon dan nama aplikasi, yang akan kelihatan pada skrin utama telefon anda dan laci aplikasi. Pemberitahuan akan sentiasa memaparkan ikon dan nama Molly lalai. Ketahui lebih lanjut</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Ketahui lebih lanjut</string>
 

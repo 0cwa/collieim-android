@@ -134,4 +134,7 @@
     <string name="NotificationsSettingsFragment__push_notifications">התראות</string>
     <string name="NotificationsSettingsFragment__select_your_preferred_service_for_push_notifications">בחר בשירות המועדף להתראות. אם לא זמין, האפליקציה תשתמש בוובסוקט כדי לוודא שהתראות נשלחות.</string>
     <string name="NotificationsSettingsFragment__delivery_service">שירות שליחה</string>
+    <string name="NotificationsSettingsFragment__notify_when">יידע כאשר…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">שירותי Google Play מתעדכנים או שהם בלתי זמינים באופן זמני. אנא נסה שוב.</string>
+    <string name="please_wait">אנא המתן…</string>
 </resources>

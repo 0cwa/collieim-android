@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-<<<<<<< MOLLY
-  --><!-- smartling.instruction_comments_enabled = on --><resources>
-=======
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
->>>>>>> SIGNAL
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -40,13 +34,10 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Molly sedang mengemas kini…</string>
 
     <!-- ApplicationPreferencesActivity -->
-<<<<<<< MOLLY
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Anda belum lagi menetapkan frasa laluan!</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Menyahdayakan frasa laluan?</string>
     <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Ini akan membuka kunci Molly dan pemberitahuan mesej secara kekal.</string>
     <string name="ApplicationPreferencesActivity_disable">Nyahdayakan</string>
-=======
->>>>>>> SIGNAL
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Ralat ketika menyambung ke pelayan!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">PIN diperlukan untuk kunci pendaftaran. Untuk nyahdayakan PIN, sila nyahdayakan kunci pendaftaran terlebih dahulu.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN dicipta.</string>
@@ -431,10 +422,6 @@
     <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">Peranti ini tidak menyokong tindakan dail.</string>
     <!-- The content description for button to send a message in a conversation -->
     <string name="ConversationActivity_send_message_content_description">Menghantar mesej</string>
-<<<<<<< MOLLY
-    <string name="ConversationActivity_lets_switch_to_signal">Mari beralih kepada Molly %1$s</string>
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_specify_recipient">Sila pilih kenalan</string>
     <string name="ConversationActivity_unable_to_record_audio">Tidak dapat merakam audio!</string>
     <string name="ConversationActivity_you_cant_send_messages_to_this_group">Anda tidak boleh menghantar mesej ke group ini kerana anda bukan lagi ahli.</string>
@@ -459,16 +446,6 @@
     <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Molly perlukan akses mikrofon untuk merakam mesej suara.</string>
     <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Molly memerlukan kebenaran Mikrofon untuk menghantar mesej audio, tetapi telah ditolak secara kekal. Sila terus ke menu tetapan aplikasi, pilih \"Kebenaran\", dan dayakan \"Mikrofon\".</string>
 
-<<<<<<< MOLLY
-    <string name="ConversationActivity_signal_needs_the_microphone_and_camera_permissions_in_order_to_call_s">Molly memerlukan kebenaran Mikrofon dan Kamera untuk memanggil %1$s, tetapi telah ditolak secara kekal. Sila terus ke menu tetapan aplikasi, pilih \"Kebenaran\", dan dayakan \"Mikrofon\" dan \"Kamera\".</string>
-    <string name="ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera">Untuk menangkap foto dan video, benarkan Molly untuk mengakses kamera anda.</string>
-    <string name="ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video">Molly memerlukan kebenaran Kamera untuk menangkap foto dan video, tetapi telah ditolak secara kekal. Sila terus ke menu tetapan aplikasi, pilih \"Kebenaran\", dan dayakan \"Kamera\".</string>
-    <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">Molly memerlukan kebenaran Kamera untuk menangkap foto dan video</string>
-    <string name="ConversationActivity_enable_the_microphone_permission_to_capture_videos_with_sound">Dayakan kebenaran mikrofon untuk rakam video dengan bunyi</string>
-    <string name="ConversationActivity_signal_needs_recording_permissions_to_capture_video">Molly memerlukan kebenaran mikrofon untuk merakam video.</string>
-
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_quoted_contact_message">%1$s%2$s</string>
     <string name="ConversationActivity_search_position">%1$d daripada %2$d</string>
     <string name="ConversationActivity_no_results">Tiada keputusan</string>
@@ -503,19 +480,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Pemesejan SMS tidak lagi disokong dalam Signal. Jemput %1$s ke Signal untuk meneruskan perbualan di sini.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-<<<<<<< MOLLY
     <string name="ConversationActivity__this_person_is_no_longer_using_signal">Orang ini tidak lagi menggunakan Molly. Jemput ke Molly untuk meneruskan perbualan di sini.</string>
-    <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Jemput ke Molly</string>
-    <!-- Snackbar message shown after dismissing the full screen sms export megaphone indicating we\'ll do it again soon -->
-    <string name="ConversationActivity__you_will_be_reminded_again_soon">Anda akan diingatkan semula tidak lama lagi.</string>
-=======
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Orang ini tidak lagi menggunakan Signal. Jemput ke Signal untuk meneruskan perbualan di sini.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Orang ini tidak menggunakan Signal. Jemput mereka untuk kekalkan perbualan di sini.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Jemput ke Signal</string>
->>>>>>> SIGNAL
+    <string name="ConversationActivity__invite_to_signal">Jemput ke Molly</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Tidak boleh merakam mesej suara semasa panggilan.</string>
 
@@ -1373,69 +1342,6 @@
     <string name="ManageGroupActivity_add_group_description">Tambah penerangan kumpulan…</string>
 
     <!-- RemoteRestoreActivity -->
-<<<<<<< MOLLY
-    <!-- Progress dialog label when downloading a backup -->
-    <string name="RemoteRestoreActivity__downloading_backup">Memuat turun sandaran…</string>
-    <!-- Progress dialog label when restoring a backup -->
-    <string name="RemoteRestoreActivity__restoring_messages">Memulihkan mesej…</string>
-    <!-- Progress dialog label when finishing a backup restore -->
-    <string name="RemoteRestoreActivity__finishing_restore">Menyelesaikan…</string>
-    <!-- Progress dialog label while awaiting updates -->
-    <string name="RemoteRestoreActivity__restoring">Memulihkan…</string>
-    <!-- Progress readout for dialog while downloading or restoring a backup. First placeholder is the formatted size of the backup downloaded, the second is formatted total amount to go, and the last is a percentage. -->
-    <string name="RemoteRestoreActivity__s_of_s_s">%1$s daripada %2$s (%3$s)</string>
-    <!-- Feature list media label for paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_media">Semua media anda</string>
-    <!-- Feature list media label for free tier. Placeholder is days, and is currently fixed at 30. -->
-    <string name="RemoteRestoreActivity__your_last_d_days_of_media">%1$d hari terakhir media anda</string>
-    <!-- Feature list message label for free and paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_messages">Semua mesej anda</string>
-    <!-- Screen title for restoring from backup -->
-    <string name="RemoteRestoreActivity__restore_from_backup">Pulihkan dari sandaran</string>
-    <!-- Section title for explaining what your backup includes -->
-    <string name="RemoteRestoreActivity__your_backup_includes">Sandaran anda termasuk:</string>
-    <!-- Primary action button copy for starting restoration -->
-    <string name="RemoteRestoreActivity__restore_backup">Memulihkan sandaran</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made. %1$s is replaced with the date (e.g. March 5, 2024) and %2$s is replaced with the time (e.g. 9:00am) -->
-    <string name="RemoteRestoreActivity__backup_created_at">Sandaran terakhir anda telah dibuat pada %1$s pada %2$s.</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made and size. %1$s is replaced with the date (e.g. March 5, 2024), %2$s is replaced with the time (e.g. 9:00am), %3$1 is replaced with size (e.g., 1.2GB) -->
-    <string name="RemoteRestoreActivity__backup_created_at_with_size">Sandaran terakhir anda telah dibuat pada %1$s pada %2$s. Saiz sandaran anda ialah %3$s.</string>
-    <!-- Progress dialog label while fetching backup info if we don\'t already have it -->
-    <string name="RemoteRestoreActivity__fetching_backup_details">Mengambil butiran sandaran…</string>
-    <!-- Text label button to skip restore from remote -->
-    <string name="RemoteRestoreActivity__skip_restore">Langkau pemulihan</string>
-    <!-- Dialog title displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__couldnt_transfer">Tidak dapat menyelesaikan pemindahan</string>
-    <!-- Dialog title displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_title">Tidak dapat memulihkan sandaran</string>
-    <!-- Dialog body displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_body">Ralat berlaku semasa memulihkan sandaran anda. Sandaran anda tidak boleh dipulihkan. Sila hubungi sokongan untuk bantuan.</string>
-    <!-- Dialog action button that will link users to a flow to contact support, displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_contact_button">Hubungi sokongan</string>
-    <!-- Dialog message displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__error_occurred">Ralat berlaku dan akaun anda tidak dapat dipindahkan. Cuba lagi dengan memilih kaedah pemindahan anda.</string>
-    <!-- Dialog title displayed when remote restore failed because of an outdated backup version. -->
-    <string name="RemoteRestoreActivity__couldnt_restore">Tidak dapat memulihkan sandaran ini</string>
-    <!-- Dialog message explaining that an update to Signal is required to restore the backup. -->
-    <string name="RemoteRestoreActivity__update_latest">Versi Molly ini tidak dapat memulihkan sandaran anda. Kemas kini kepada versi terkini dan cuba lagi.</string>
-    <!-- Text on button that when pressed will redirect them to update Signal -->
-    <string name="RemoteRestoreActivity__update_signal">Kemas Kini Molly</string>
-    <!-- Text label button to dismiss the dialog -->
-    <string name="RemoteRestoreActivity__not_now">Bukan sekarang</string>
-    <!-- Text shown on restore screen as information on what will happen if you skip -->
-    <string name="RemoteRestoreActivity__your_media_will_restore_in_the_background">Media anda akan dipulihkan di latar belakang. Jika anda memilih untuk tidak memulihkan sekarang, anda tidak akan dapat memulihkannya kemudian.</string>
-    <!-- Dialog title -->
-    <string name="RestoreActivity__no_longer_registered_title">Peranti tidak lagi didaftarkan</string>
-    <!-- Dialog message -->
-    <string name="RestoreActivity__no_longer_registered_message">Ini mungkin kerana anda mendaftarkan akaun Signal anda pada peranti lain.</string>
-
-    <!-- GroupMentionSettingDialog -->
-    <string name="GroupMentionSettingDialog_notify_me_for_mentions">Maklumkan saya untuk Sebutan</string>
-    <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">Terima pemberitahuan apabila anda disebut dalam sembang yang diredam?</string>
-    <string name="GroupMentionSettingDialog_always_notify_me">Sentiasa memaklumkan saya</string>
-    <string name="GroupMentionSettingDialog_dont_notify_me">Jangan maklumkan saya</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ManageProfileFragment -->
     <string name="ManageProfileFragment_badges">Lencana</string>
@@ -1561,31 +1467,6 @@
     <!-- Button inside an alert dialog confirming the deletion of their draft -->
     <string name="InputPanel__discard">Buang</string>
 
-<<<<<<< MOLLY
-    <!-- InviteActivity -->
-    <string name="InviteActivity_share">Kongsi</string>
-    <string name="InviteActivity_share_with_contacts">Kongsikan dengan kenalan</string>
-    <string name="InviteActivity_share_via">Kongsi melalui…</string>
-
-    <string name="InviteActivity_cancel">Batal</string>
-    <string name="InviteActivity_sending">Menghantar…</string>
-    <string name="InviteActivity_invitations_sent">Jemputan dihantar!</string>
-    <string name="InviteActivity_invite_to_signal">Jemput ke Molly</string>
-    <string name="InviteActivity_send_sms">Hantar SMS (%1$d)</string>
-    <plurals name="InviteActivity_send_sms_invites">
-        <item quantity="other">Hantar %1$d jemputan SMS?</item>
-    </plurals>
-    <string name="InviteActivity_lets_switch_to_signal">Mari tukar ke Molly: %1$s</string>
-    <!-- Toast shown when Signal is unable to find an external app to share the Invite text string to -->
-    <string name="InviteActivity_no_app_to_share_to">Nampaknya anda tidak mempunyai sebarang aplikasi untuk dikongsi.</string>
-
-    <!-- LearnMoreTextView -->
-    <string name="LearnMoreTextView_learn_more">Ketahui lebih lanjut</string>
-
-    <string name="SpanUtil__read_more">Baca lagi</string>
-
-=======
->>>>>>> SIGNAL
     <!-- LongMessageActivity -->
     <string name="LongMessageActivity_unable_to_find_message">Mesej tidak dapat mencari</string>
     <string name="LongMessageActivity_message_from_s">Mesej daripada %1$s</string>
@@ -2003,13 +1884,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-<<<<<<< MOLLY
-    <string name="MessageRecord__you_will_no_longer_be_able_to_send_sms_messages_from_signal_soon">Anda tidak lagi boleh menghantar mesej SMS daripada Signal tidak lama lagi. Jemput %1$s ke Signal untuk meneruskan perbualan di sini.</string>
-    <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
     <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Anda tidak lagi boleh menghantar mesej SMS dalam Molly. Jemput %1$s ke Molly untuk meneruskan perbualan di sini.</string>
-=======
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Anda tidak lagi boleh menghantar mesej SMS dalam Signal. Jemput %1$s ke Signal untuk meneruskan perbualan di sini.</string>
->>>>>>> SIGNAL
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Pembayaran: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2119,16 +1994,7 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Memautkan satu peranti Signal?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Untuk memautkan desktop atau iPad ke akaun Signal ini, pergi ke Peranti Dipautkan, kemudian ketik \"Pautkan Peranti Baharu\" dan imbas semula kod QR. Pastikan anda hanya mengimbas kod QR yang diberikan secara terus oleh Signal.</string>
 
-<<<<<<< MOLLY
-    <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">Molly memerlukan kebenaran Kamera untuk mengimbas kod QR, tetapi telah ditolak secara kekal. Sila terus ke menu tetapan aplikasi, pilih \"Kebenaran\", dan dayakan \"Kamera\".</string>
-    <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">Tidak dapat mengimbas kod QR tanpa kebenaran Kamera</string>
-
-    <!-- OutdatedBuildReminder -->
-    <string name="OutdatedBuildReminder_update_now">Update sekarang</string>
     <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Versi Molly ini akan tamat tempoh hari ini. Kemas kini ke versi terkini.</string>
-=======
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Versi Signal ini akan tamat tempoh hari ini. Kemas kini ke versi terkini.</string>
->>>>>>> SIGNAL
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
         <item quantity="other">Versi Molly ini akan tamat tempoh dalam %1$d hari. Kemas kini ke versi terkini.</item>
     </plurals>
@@ -2241,10 +2107,6 @@
 
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Ketik sini untuk dayakan video anda</string>
-<<<<<<< MOLLY
-    <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Untuk memanggil %1$s, Molly memerlukan akses kepada kamera anda</string>
-=======
->>>>>>> SIGNAL
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
     <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
     <string name="WebRtcCallActivity__calling">Memanggil…</string>
@@ -2558,45 +2420,12 @@
 
     <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
     <string name="RegistrationActivity_additional_verification_required">Pengesahan tambahan diperlukan</string>
-<<<<<<< MOLLY
-    <!-- Dialog message shown when we need to verify sms and carrier rates may apply. -->
-    <string name="RegistrationActivity_a_verification_code_will_be_sent_to_this_number">Kod pengesahan akan dihantar ke nombor ini. Kadar pembawa mungkin dikenakan.</string>
-    <!-- Text explaining to users that they will be receiving a verification for their phone number and that carrier rates could apply -->
-    <string name="RegistrationActivity_you_will_receive_a_verification_code">Anda akan terima satu kod pengesahan. Kadar caj telekomunikasi mungkin dikenakan.</string>
-    <!-- Hint text to select a country -->
-    <string name="RegistrationActivity_select_a_country">Pilih negara</string>
-    <!-- Hint text explaining that this is where the country code should go -->
-    <string name="RegistrationActivity_default_country_code">0</string>
-    <string name="RegistrationActivity_you_will_receive_a_call_to_verify_this_number">Anda akan menerima panggilan untuk mengesahkan nombor ini.</string>
-    <string name="RegistrationActivity_edit_number">Edit nombor</string>
-    <string name="RegistrationActivity_missing_google_play_services">Kehilangan Perkhidmatan Google Play</string>
-    <string name="RegistrationActivity_this_device_is_missing_google_play_services">Peranti ini kehilangan Perkhidmatan Google Play. Anda masih boleh gunakan Molly, tetapi konfigurasi ini boleh menyebabkan kebolehpercayaan atau prestasi yang kurang.\n\nKalau anda bukan pengguna lanjutan, tidak menjalankan ROM Android selepas jualan, atau anda percaya melihat ini kerana ralat, sila hubungi support@molly.im untuk penyelesaian masalah.</string>
-    <string name="RegistrationActivity_i_understand">Saya faham</string>
-    <string name="RegistrationActivity_play_services_error">Ralat Perkhidmatan Play</string>
-    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Perkhidmatan Google Play sedang dikemas kini atau tidak tersedia sementara waktu. Sila cuba sekali lagi.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">Signal memerlukan kebenaran dari kenalan dan pihak media untuk membantu anda berhubung dengan rakan dan menghantar mesej. Kenalan anda dimuat naik menggunakan penemuan kenalan peribadi Signal, yang bermaksud mereka dienkripsikan dari hujung ke hujung dan tidak dipaparkan kepada perkhidmatan Signal.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">Signal memerlukan kebenaran perhubungan untuk membantu anda berhubung dengan kenalan anda. Maklumat kenalan anda akan dimuat naik menggunakan ciri penerokaan kenalan peribadi Signal, yang bermakna ia dienkripsi hujung ke hujung dan tidak ditunjukkan kepada perkhidmatan Signal.</string>
-=======
->>>>>>> SIGNAL
     <string name="RegistrationActivity_rate_limited_to_service">Anda telah membuat terlalu banyak percubaan untuk mendaftar nombor ini. Sila cuba lagi kemudian.</string>
     <string name="RegistrationActivity_unable_to_connect_to_service">Perkhidmatan tidak dapat disambungkan. Sila semak sambungan rangkaian dan cuba lagi.</string>
     <!-- Dialog error message shown when we are unable to send an SMS to the user\'s number -->
     <string name="RegistrationActivity_sms_provider_error">Kami tidak dapat menghantar SMS ke nombor anda. Sila cuba lagi dalam beberapa jam.</string>
     <!-- Generic error when the app is unable to request an SMS code for an unknown reason. -->
     <string name="RegistrationActivity_unable_to_request_verification_code">Tidak dapat meminta kod pengesahan. Sila periksa sambungan rangkaian anda dan cuba lagi.</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_non_standard_number_format">Format nombor bukan standard</string>
-    <!-- Dialog message shown to confirm when entering phone number (first placeholder) is normalized and formatted differently by the app (second placeholder). -->
-    <string name="RegistrationActivity_the_number_you_entered_appears_to_be_a_non_standard">Nombor yang anda telah masukkan (%1$s) adalah dalam format bukan standard.\n\nAdakah anda maksudkan %2$s?</string>
-    <string name="RegistrationActivity_signal_android_phone_number_format">Molly Android - Format Nombor Telefon</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via voice call.-->
-    <string name="RegistrationActivity_call_requested">Panggilan diminta</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via SMS.-->
-    <string name="RegistrationActivity_sms_requested">SMS diminta</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code (through an unspecified channel).-->
-    <string name="RegistrationActivity_code_requested">Kod pengesahan diminta</string>
-=======
->>>>>>> SIGNAL
     <plurals name="RegistrationActivity_debug_log_hint">
         <item quantity="other">Anda kini %1$d langkah daripada menghantar log nyahpepijat.</item>
     </plurals>
@@ -2644,19 +2473,6 @@
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
-<<<<<<< MOLLY
-
-    <!-- SharedContactDetailsActivity -->
-    <string name="SharedContactDetailsActivity_add_to_contacts">Tambah kepada Kenalan</string>
-    <string name="SharedContactDetailsActivity_invite_to_signal">Jemput ke Molly</string>
-    <string name="SharedContactDetailsActivity_signal_message">Mesej Signal</string>
-    <string name="SharedContactDetailsActivity_signal_call">Panggilan Signal</string>
-
-    <!-- SharedContactView -->
-    <string name="SharedContactView_add_to_contacts">Tambah kepada Kenalan</string>
-    <string name="SharedContactView_invite_to_signal">Jemput ke Molly</string>
-    <string name="SharedContactView_message">Mesej Signal</string>
-=======
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
@@ -2666,14 +2482,13 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Tambah kepada Kenalan</string>
-    <string name="SharedContactView_invite_to_signal">Jemput ke Signal</string>
+    <string name="SharedContactView_invite_to_signal">Jemput ke Molly</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Mesej</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
     <string name="SharedContactView_add_to_group">Tambah ke dalam kumpulan</string>
     <!-- Confirmation dialog body when adding the person on a shared contact card to the current group. %1$s is the person\'s name, %2$s is the group name -->
     <string name="SharedContactView_add_s_to_s">Tambah %1$s ke \"%2$s\"?</string>
->>>>>>> SIGNAL
 
     <!-- SignalBottomActionBar -->
     <!-- Text to describe a button that will show more options -->
@@ -2985,12 +2800,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">Nombor keselamatan Signal kami:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">Nampaknya anda tidak mempunyai sebarang aplikasi untuk dikongsi.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">Tiada nombor keselamatan untuk membandingkan ditemui di papan klip</string>
-<<<<<<< MOLLY
     <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Molly memerlukan kebenaran Kamera untuk mengimbas kod QR, tetapi telah ditolak secara kekal. Sila terus ke menu tetapan aplikasi, pilih \"Kebenaran\", dan dayakan \"Kamera\".</string>
-    <string name="VerifyIdentityActivity_unable_to_scan_qr_code_without_camera_permission">Kod QR tidak dapat diimbas tanpa kebenaran Kamera</string>
-=======
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Signal memerlukan kebenaran Kamera untuk mengimbas kod QR, tetapi telah ditolak secara kekal. Sila terus ke menu tetapan aplikasi, pilih \"Kebenaran\", dan dayakan \"Kamera\".</string>
->>>>>>> SIGNAL
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">Anda mesti saling bermesej terlebih dahulu untuk melihat nombor keselamatan %1$s.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">Nombor keselamatan akan dicipta dengan orang ini selepas anda saling bertukar mesej dengan mereka.</string>
@@ -3144,15 +2954,8 @@
     <string name="NotificationChannel_additional_message_notifications">Pemberitahuan mesej tambahan</string>
     <!-- Notification channel name for notifications sent when a device has been linked -->
     <string name="NotificationChannel_new_linked_device">Peranti terpaut baharu</string>
-<<<<<<< MOLLY
-
-    <!-- QuickResponseService -->
-    <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Respons pantas tidak tersedia apabila Molly dikunci!</string>
-    <string name="QuickResponseService_problem_sending_message">Masalah menghantar mesej!</string>
-=======
     <!-- Notification channel name for unread reminder notifications -->
     <string name="NotificationChannel_unread_reminders">Peringatan yang belum dibaca</string>
->>>>>>> SIGNAL
 
     <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
     <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">Tidak dapat menulis ke storan!</string>
@@ -3300,14 +3103,6 @@
     <string name="EnclaveFailureReminder_update_signal">Kemas kini Signal untuk terus menggunakan pembayaran. Baki anda mungkin tidak dikemas kini.</string>
     <!-- Banner button to update now -->
 
-<<<<<<< MOLLY
-    <!-- WebRtcCallActivity -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone">Untuk menjawab panggilan, berikan Molly akses kepada mikrofon anda.</string>
-    <!-- Message shown in permission dialog when attempting to answer a video call without camera or microphone permissions already granted. -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone_and_camera">Untuk menjawab panggilan video, berikan Molly akses kepada mikrofon dan kamera anda.</string>
-    <string name="WebRtcCallActivity_signal_requires_microphone_and_camera_permissions_in_order_to_make_or_receive_calls">Molly memerlukan kebenaran Mikrofon dan Kamera untuk memanggil atau menerima panggilan, tetapi telah ditolak secara kekal. Sila terus ke menu tetapan aplikasi, pilih \"Kebenaran\", dan dayakan \"Mikrofon\" dan \"Kamera\".</string>
-=======
->>>>>>> SIGNAL
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Dijawab pada peranti yang dipautkan.</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">Ditolak pada peranti yang dipautkan.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">Sibuk pada peranti yang dipautkan.</string>
@@ -3400,22 +3195,6 @@
     <!-- Text asking for user\'s contact permission -->
     <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">Benarkan akses kepada kenalan anda. Kenalan anda disulitkan dan tidak kelihatan kepada perkhidmatan Signal.</string>
 
-<<<<<<< MOLLY
-    <!-- contact_selection_list_fragment -->
-    <string name="contact_selection_list_fragment__signal_needs_access_to_your_contacts_in_order_to_display_them">Molly memerlukan akses kepada kenalan anda untuk memaparkannya.</string>
-    <string name="contact_selection_list_fragment__show_contacts">Tunjukkan Kenalan</string>
-
-    <!-- contact_selection_list_item -->
-    <plurals name="contact_selection_list_item__number_of_members">
-        <item quantity="other">%1$d ahli</item>
-    </plurals>
-    <!-- Displays number of viewers for a story -->
-    <plurals name="contact_selection_list_item__number_of_viewers">
-        <item quantity="other">%1$d tontonan</item>
-    </plurals>
-
-=======
->>>>>>> SIGNAL
     <!-- conversation_activity -->
     <string name="conversation_activity__type_message_push">Mesej Signal</string>
     <!-- Option in send button context menu to schedule the message instead of sending it directly -->
@@ -3638,7 +3417,6 @@
     <string name="EditProfileFragment__group_name">Nama kumpulan</string>
     <string name="EditProfileFragment__group_description">Penerangan kumpulan</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-<<<<<<< MOLLY
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
     <string name="EditProfileFragment_deprecated_dialog_title">Kemas Kini Molly</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
@@ -3651,8 +3429,6 @@
     <string name="EditProfileFragment_unregistered_dialog_body">Peranti tidak lagi didaftarkan. Daftar semula untuk membuat perubahan pada akaun anda.</string>
     <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
     <string name="EditProfileFragment_unregistered_dialog_reregister_button">Daftar semula</string>
-=======
->>>>>>> SIGNAL
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Simpan</string>
@@ -3846,45 +3622,13 @@
     <string name="preferences__led_color_unknown">Tidak diketahui</string>
     <string name="preferences__silent">Senyap</string>
     <string name="preferences__advanced">Lanjutan</string>
-<<<<<<< MOLLY
     <string name="preferences__donate_to_signal">Derma kepada Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Privasi</string>
-=======
-    <string name="preferences__donate_to_signal">Derma kepada Signal</string>
->>>>>>> SIGNAL
     <!-- Preference label for stories -->
     <string name="preferences__stories">Cerita</string>
     <string name="preferences__payments">Pembayaran</string>
     <string name="preferences__linked_devices">Peranti dipaut</string>
-<<<<<<< MOLLY
-    <string name="preferences__light_theme">Cerah</string>
-    <string name="preferences__dark_theme">Gelap</string>
-    <string name="preferences__appearance">Penampilan</string>
-    <string name="preferences__theme">Tema</string>
-    <string name="preferences__chat_color_and_wallpaper">Warna &amp; hiasan dinding</string>
-    <!-- Clickable settings text allowing the user to change the icon visible on their phone\'s home screen. -->
-    <string name="preferences__app_icon">Ikon Aplikasi</string>
-    <!-- Approval for changing the app icon. -->
-    <string name="preferences__app_icon_dialog_ok">OK</string>
-    <!-- Cancelling the operation of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_cancel">Batal</string>
-    <!-- Title for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_title">Tukar ikon dan nama aplikasi kepada \"%1$s\"</string>
-    <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly perlu ditutup untuk menukar ikon dan nama aplikasi. Pemberitahuan akan sentiasa memaparkan ikon dan nama Molly lalai.</string>
-    <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Pilih ikon dan nama aplikasi, yang akan kelihatan pada skrin utama telefon anda dan laci aplikasi. Pemberitahuan akan sentiasa memaparkan ikon dan nama Molly lalai. Ketahui lebih lanjut</string>
-    <!-- Visible warning label for the limitations of changing the app icon. -->
-    <string name="preferences__app_icon_warning">Ikon dan nama aplikasi boleh dilihat pada skrin utama dan laci aplikasi.</string>
-    <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Pemberitahuan akan sentiasa memaparkan ikon dan nama Molly lalai.</string>
-    <!--Call to action to get more information about the limitations of the change app icon functionality. -->
-    <string name="preferences__app_icon_learn_more">Ketahui lebih lanjut</string>
-    <!--Text description of a graphic illustrating the limitations of the app icon change. -->
-    <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafik yang menggambarkan tempat ikon aplikasi ganti akan kelihatan.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences__disable_pin">Nyahdayakan PIN</string>
     <string name="preferences__enable_pin">Dayakan PIN</string>
     <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">Sekiranya anda menyahdayakan PIN, anda akan kehilangan semua data apabila anda mendaftar semula Signal melainkan anda membuat sandaran dan pemulihan secara manual. Anda tidak dapat menghidupkan Kunci Pendaftaran semasa PIN dinyahdayakan.</string>
@@ -4067,17 +3811,9 @@
     <string name="PaymentsTransferFragment__next">Seterusnya</string>
     <string name="PaymentsTransferFragment__invalid_address">Alamat tidak sah</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">Periksa alamat dompet yang anda cuba pindah ke dan cuba lagi.</string>
-<<<<<<< MOLLY
     <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Anda tidak boleh memindahkan bayaran ke alamat dompet Molly anda sendiri. Masukkan alamat dompet daripada akaun anda di pertukaran yang disokong.</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Untuk mengimbas kod QR, Molly memerlukan akses kepada kamera.</string>
-    <string name="PaymentsTransferFragment__signal_needs_the_camera_permission_to_capture_qr_code_go_to_settings">Molly memerlukan kebenaran Kamera untuk menangkap kod QR. Pergi ke tetapan, pilih \"Kebenaran\", dan dayakan \"Kamera\".</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Untuk mengimbas kod QR, Molly memerlukan akses kepada kamera.</string>
-    <string name="PaymentsTransferFragment__settings">Tetapan</string>
-=======
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Anda tidak boleh memindahkan bayaran ke alamat dompet Signal anda sendiri. Masukkan alamat dompet daripada akaun anda di pertukaran yang disokong.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Untuk mengimbas kod QR, Signal memerlukan akses kepada kamera.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Untuk mengimbas kod QR, Signal memerlukan akses kepada kamera.</string>
->>>>>>> SIGNAL
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Imbas Kod QR Alamat</string>
@@ -4482,61 +4218,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Hubungi saya (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Hantar semula Kod (%1$02d:%2$02d)</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_contact_signal_support">Hubungi Sokongan Molly</string>
     <string name="RegistrationActivity_code_support_subject">Pendaftaran Molly - Kod Pengesahan untuk Android</string>
-=======
-    <string name="RegistrationActivity_code_support_subject">Pendaftaran Signal - Kod Pengesahan untuk Android</string>
->>>>>>> SIGNAL
     <string name="RegistrationActivity_incorrect_code">Kod salah</string>
     <string name="BackupUtil_never">Tidak pernah</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Tidak diketahui</string>
-<<<<<<< MOLLY
-    <!-- Phone number heading displayed as a screen title -->
-    <string name="preferences_app_protection__phone_number">Nombor telefon</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
     <string name="preferences_app_protection__choose_who_can_see">Pilih siapa yang boleh melihat nombor telefon anda dan siapa yang boleh menghubungi nombor anda di Molly.</string>
-    <!-- Section title above two radio buttons for enabling and disabling phone number display -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_see_my_number_heading">Siapa boleh lihat nombor saya</string>
-    <!-- Subtext below radio buttons when who can see my number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_on_description">Nombor telefon anda akan dapat dilihat oleh semua orang dan kumpulan yang anda hantar mesej.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_on_description">Nombor telefon anda tidak akan kelihatan kepada sesiapa melainkan mereka menyimpannya dalam kenalan telefon.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_off_description">Nombor telefon anda tidak akan kelihatan kepada sesiapa.</string>
-    <!-- Section title above two radio buttons for enabling and disabling whether users can find me by my phone number  -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_find_me_by_number_heading">Siapa boleh cari saya dengan nombor</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to everyone -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_on_description">Sesiapa yang mempunyai nombor telefon anda akan dapat melihat anda di Signal dan boleh mula bersembang dengan anda.</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_off_description">Tiada sesiapa boleh melihat anda di Signal melainkan anda menghantar mesej kepada mereka atau mempunyai sembang sedia ada dengan mereka.</string>
-    <!-- Snackbar text when pressing invalid radio item -->
-    <string name="PhoneNumberPrivacySettingsFragment__to_change_this_setting">"Untuk menukar tetapan ini, tetapkan \"Siapa yang boleh lihat nombor saya\" kepada \"Tiada sesiapa\"."</string>
-    <!-- Dialog title shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_title">Adakah anda pasti?</string>
-    <!-- Dialog warning message shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_message">Menetapkan \"Siapa boleh cari saya dengan nombor telefon\" kepada \"Tiada sesiapa\" akan menyukarkan orang ramai untuk cari anda di Signal.</string>
-    <!-- Dialog button text for canceling change action -->
-    <string name="PhoneNumberPrivacySettingsFragment__cancel">Batal</string>
-    <string name="PhoneNumberPrivacy_everyone">Semua orang</string>
-    <string name="PhoneNumberPrivacy_nobody">Tiada sesiapa</string>
-    <string name="preferences_app_protection__screen_lock">Kunci skrin</string>
-    <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">Kunci akses Signal dengan kunci skrin Android atau cap jari</string>
-    <string name="preferences_app_protection__screen_lock_inactivity_timeout">Kunci skrin tidak aktif tamat masa</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
     <string name="preferences_app_protection__to_use_screen_lock">Untuk menggunakan kunci skrin, tetapkan PIN, corak atau kata laluan pada peranti ini.</string>
-    <string name="preferences_app_protection__signal_pin">PIN Signal</string>
-    <string name="preferences_app_protection__create_a_pin">Cipta PIN</string>
-    <string name="preferences_app_protection__change_your_pin">Tukar PIN anda</string>
-    <string name="preferences_app_protection__pin_reminders">Peringatan PIN</string>
-    <string name="preferences_app_protection__turn_off">Matikan</string>
-    <string name="preferences_app_protection__confirm_pin">Sahkan PIN</string>
-    <string name="preferences_app_protection__confirm_your_signal_pin">Sahkan PIN Signal anda</string>
-    <string name="preferences_app_protection__make_sure_you_memorize_or_securely_store_your_pin">Pastikan anda menghafal atau menyimpan PIN anda dengan selamat kerana PIN tidak dapat dipulihkan. Sekiranya anda terlupa PIN anda, anda mungkin kehilangan data apabila mendaftar semula akaun Signal anda.</string>
-    <string name="preferences_app_protection__incorrect_pin_try_again">PIN tidak betul. Cuba lagi.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Gagal mendayakan kunci pendaftaran.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Gagal untuk menyahdayakan kunci pendaftaran.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Anda mesti masukkan PIN Kunci Pendaftaran anda</string>
@@ -4559,31 +4249,6 @@
     <string name="prompt_passphrase_activity__try_again">Cuba lagi</string>
 
     <!-- ScreenLockSettingsFragment -->
-<<<<<<< MOLLY
-    <!-- Text shown when screen lock is not enabled -->
-    <string name="ScreenLockSettingsFragment__off">Mati</string>
-    <!-- Text shown with toggle that when switched on will enable screen lock -->
-    <string name="ScreenLockSettingsFragment__use_screen_lock">Gunakan kunci skrin</string>
-    <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Tetapan kunci peranti Android anda diperlukan untuk membuka kunci Molly apabila anda meninggalkan atau menukar aplikasi. Apabila dikunci, pratonton pemberitahuan tidak akan menunjukkan kandungan mesej.</string>
-    <!-- Title text explaining when users should start the screen lock -->
-    <string name="ScreenLockSettingsFragment__start_screen_lock">Mulakan kunci skrin</string>
-    <!-- Option text explaining that screen lock should start immediately -->
-    <string name="ScreenLockSettingsFragment__immediately">Serta merta</string>
-    <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_1_min">Selepas 1 minit</string>
-    <!-- Option text explaining that screen lock should start after 5 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_5_min">Selepas 5 minit</string>
-    <!-- Option text explaining that screen lock should start after 30 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_30_min">Selepas 30 minit</string>
-    <!-- Option text explaining that screen lock should start at a custom time set by the user -->
-    <string name="ScreenLockSettingsFragment__custom_time">Masa tersuai</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Gunakan kunci skrin Molly</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Matikan kunci skrin Molly</string>
-=======
->>>>>>> SIGNAL
 
     <string name="Recipient_unknown">Tidak diketahui</string>
     <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
@@ -4629,18 +4294,6 @@
     <!-- NewDeviceTransferInstructionsFragment -->
 
     <!-- NewDeviceTransferSetupFragment -->
-<<<<<<< MOLLY
-    <string name="NewDeviceTransferSetup__preparing_to_connect_to_old_android_device">Bersedia untuk menyambung ke peranti Android lama…</string>
-    <string name="NewDeviceTransferSetup__take_a_moment_should_be_ready_soon">Sebentar, akan tersedia sebentar lagi</string>
-    <string name="NewDeviceTransferSetup__waiting_for_old_device_to_connect">Menunggu peranti Android lama untuk disambungkan…</string>
-    <string name="NewDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_old_device">Molly memerlukan kebenaran lokasi untuk menemui dan menyambung ke peranti Android lama anda.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_old_device">Molly memerlukan perkhidmatan lokasi didayakan untuk menemui dan menyambung dengan peranti Android lama anda.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_old_device">Molly memerlukan Wi-Fi untuk menemui dan menyambung dengan peranti Android lama anda. Wi-Fi perlu dihidupkan tetapi tidak perlu disambungkan ke rangkaian Wi-Fi.</string>
-    <string name="NewDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Maaf, nampaknya peranti ini tidak menyokong Wi-Fi Direct. Molly menggunakan Wi-Fi Direct untuk menemui dan menyambung dengan peranti Android lama anda. Anda masih boleh memulihkan sandaran untuk memulihkan akaun anda daripada peranti Android lama anda.</string>
-    <string name="NewDeviceTransferSetup__restore_a_backup">Pulihkan sandaran</string>
-    <string name="NewDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Ralat yang tidak dijangka berlaku semasa cuba menyambung ke peranti Android lama anda.</string>
-=======
->>>>>>> SIGNAL
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">Mencari peranti Android baharu…</string>
@@ -5278,44 +4931,6 @@
     <string name="ExpireTimerSettingsFragment__custom_time">Masa tersuai</string>
     <string name="ExpireTimerSettingsFragment__save">Simpan</string>
 
-<<<<<<< MOLLY
-    <string name="CustomExpireTimerSelectorView__seconds">saat</string>
-    <string name="CustomExpireTimerSelectorView__minutes">minit</string>
-    <string name="CustomExpireTimerSelectorView__hours">jam</string>
-    <string name="CustomExpireTimerSelectorView__days">hari</string>
-    <string name="CustomExpireTimerSelectorView__weeks">minggu</string>
-
-    <!-- HelpSettingsFragment -->
-    <string name="HelpSettingsFragment__support_center">Pusat sokongan</string>
-    <string name="HelpSettingsFragment__contact_us">Hubungi kami</string>
-    <string name="HelpSettingsFragment__version">Versi</string>
-    <!-- Displayed when copying help screen text to the clipboard -->
-    <string name="HelpSettingsFragment__copied_to_clipboard">Disalin ke papan klip</string>
-    <string name="HelpSettingsFragment__debug_log">Log Nyahpepijat</string>
-    <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
-    <string name="HelpSettingsFragment__licenses">Lesen</string>
-    <string name="HelpSettingsFragment__terms_amp_privacy_policy">Terma &amp; Dasar Privasi</string>
-    <string name="HelpFragment__copyright_signal_messenger">Hak Cipta Molly Messenger</string>
-    <string name="HelpFragment__licenced_under_the_agplv3">Berlesen di bawah GNU AGPLv3</string>
-    <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="HelpSettingsFragment__signal_is_a_501c3">Signal ialah organisasi bukan untung</string>
-
-    <!-- DataAndStorageSettingsFragment -->
-    <string name="DataAndStorageSettingsFragment__media_quality">Kualiti media</string>
-    <!-- Category title for the quality of the media to be sent -->
-    <string name="DataAndStorageSettingsFragment__sent_media_quality">Kualiti media yang dihantar</string>
-    <string name="DataAndStorageSettingsFragment__sending_high_quality_media_will_use_more_data">Menghantar media berkualiti tinggi akan menggunakan lebih banyak data.</string>
-    <!-- Disclaimer shown under the media auto-download settings. Placeholder is a formatted size like "100 KB". -->
-    <string name="DataAndStorageSettingsFragment__voice_messages_and_stickers_under_size_are_always_auto_downloaded">Mesej suara dan pelekat (di bawah %1$s) sentiasa dimuat turun secara automatik.</string>
-    <string name="DataAndStorageSettingsFragment__calls">Panggilan</string>
-    <!-- Title of a toggle that keeps Signal connected in the background via a persistent foreground service instead of using FCM push messages -->
-    <string name="DataAndStorageSettingsFragment__stay_connected_in_background">Kekal bersambung di latar belakang</string>
-    <!-- Body of a confirmation dialog shown when a user tries to enable the "Stay connected in background" setting -->
-    <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">Kekal bersambung semasa berada di latar belakang berkemungkinan menyebabkan penggunaan bateri yang lebih tinggi. Ini tidak diperlukan untuk kebanyakan peranti. Hanya aktifkan ini jika anda mengalami masalah dengan pemberitahuan.</string>
-    <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
-    <string name="DataAndStorageSettingsFragment__enable">Dayakan</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
@@ -5985,15 +5600,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Hidupkan sehingga %1$s</string>
 
-<<<<<<< MOLLY
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Gagal untuk membuka pemilih.</string>
     <!-- Banner title when notification permission is disabled -->
     <string name="NotificationSettingsFragment__to_enable_notifications">Untuk mendayakan pemberitahuan, Molly memerlukan kebenaran untuk memaparkannya.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Hidupkan</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Ini adalah satu-satunya sembang rasmi Signal</string>
@@ -7590,7 +7202,6 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Anda tidak boleh melanggan Sandaran Selamat Signal kerana telefon anda tidak menyokong perkhidmatan Google Play. Hubungi pengeluar telefon untuk bantuan.</string>
 
-<<<<<<< MOLLY
     <!-- ManageStorageSettingsFragment -->
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
     <string name="ManageStorageSettingsFragment_chat_limit">Had sembang</string>
@@ -7613,14 +7224,12 @@
     <!-- Dialog message for paid tier pending dialog -->
     <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Pengoptimuman storan hanya boleh digunakan dengan Sandaran Selamat Signal berbayar. Langganan sandaran anda masih diproses dan belum lagi aktif. Sila cuba lagi nanti.</string>
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media will be removed from your on-device backup</string>
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media akan dikeluarkan daripada sandaran pada peranti anda</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Turning on \"Optimize Signal storage\" will offload old media from your device. You can download it again any time. It will also remove old media from your on-device backup.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Menghidupkan \"Optimumkan storan Signal\" akan memindahkan media lama daripada peranti anda. Anda boleh memuat turun semula pada bila-bila masa. Ini juga akan mengeluarkan media lama anda daripada sandaran pada peranti anda.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Hidupkan</string>
 
-=======
->>>>>>> SIGNAL
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Naik taraf untuk mendayakan ciri ini</string>
@@ -8046,13 +7655,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Pastikan kunci anda selamat</string>
     <!-- Bottom sheet subtitle -->
-<<<<<<< MOLLY
     <string name="MessageBackupsKeyRecordScreen__signal_will_not">Molly tidak akan dapat membantu memulihkan sandaran jika anda kehilangan kunci. Simpannya di tempat yang selamat dan jangan kongsikannya dengan orang lain.</string>
-    <!-- Checkbox label -->
-    <string name="MessageBackupsKeyRecordScreen__ive_recorded_my_key">Saya telah merekodkan kunci saya</string>
-=======
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Signal tidak akan dapat membantu memulihkan sandaran jika anda kehilangan kunci. Simpannya di tempat yang selamat dan jangan kongsikannya dengan orang lain.</string>
->>>>>>> SIGNAL
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Teruskan</string>
     <!-- Sheet secondary action button label -->
@@ -8187,244 +7790,6 @@
     <string name="MessageBackupsTypeSelectionScreen__current_plan">Pelan semasa</string>
 
     <!-- ConfirmBackupCancellationDialog -->
-<<<<<<< MOLLY
-    <!-- Dialog title -->
-    <string name="ConfirmBackupCancellationDialog__confirm_cancellation">Sahkan pembatalan</string>
-    <!-- Dialog body -->
-    <string name="ConfirmBackupCancellationDialog__you_wont_be_charged_again">Anda tidak akan dicaj lagi. Sandaran akan dimatikan pada penghujung kitaran pengebilan anda. Selepas tarikh itu, anda mempunyai 30 hari untuk memuat turun media yang sedang anda sandarkan.</string>
-    <!-- Action button label to cancel subscription and download now -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_now">Sahkan dan muat turun sekarang</string>
-    <!-- Action button label to cancel subscription and download later -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_later">Sahkan dan muat turun kemudian</string>
-    <!-- Action button label to keep current subscription -->
-    <string name="ConfirmBackupCancellationDialog__keep_subscription">Teruskan langganan</string>
-
-    <!-- Accessible content description for the reminder view, describing the icon in the view. -->
-    <string name="ReminderView_icon_content_description">Ikon peringatan</string>
-
-    <!-- Row title for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_i_have_my_old_phone">Saya mempunyai telefon lama saya</string>
-    <!-- Row subtitle for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_scan_qr">Imbas kod QR daripada akaun Signal semasa anda untuk bermula dengan cepat</string>
-
-    <!-- Row title for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Saya tidak mempunyai telefon lama saya</string>
-    <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">Atau anda pasang semula Molly pada peranti yang sama</string>
-
-    <!-- Screen title for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__restore_or_transfer_account">Pulihkan atau pindahkan akaun</string>
-    <!-- Screen subtitle for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__get_your_signal_account">Dapatkan akaun Signal dan sejarah mesej anda ke peranti ini.</string>
-    <!-- Option title for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_signal_backup">Pulihkan sandaran Signal</string>
-    <!-- Option subtitle for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_your_text_messages_and_media_from">Pulihkan mesej teks dan media anda daripada pelan sandaran Signal berbayar anda.</string>
-    <!-- Option title for restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_on_device_backup">Pulihkan sandaran pada peranti</string>
-    <!-- Option subtitle fdor restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_your_messages_from">Pulihkan mesej anda daripada sandaran yang disimpan pada peranti anda.</string>
-    <!-- Option title for restoring via a local backup file -->
-    <string name="SelectRestoreMethodFragment__from_a_backup_file">Daripada fail sandaran</string>
-    <!-- Option subtitle for restoring via a local backup -->
-    <string name="SelectRestoreMethodFragment__choose_a_backup_youve_saved">Pilih sandaran yang telah anda simpan</string>
-    <!-- Option title for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__from_your_old_phone">Dari telefon lama anda</string>
-    <!-- Option subtitle for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__transfer_directly_from_old">Pindahkan terus dari Android lama anda</string>
-    <!-- Dialog title shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_title">Langkau pemulihan?</string>
-    <!-- Dialog message shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_warning">Jika anda melangkau pemulihan sekarang, anda tidak akan dapat memulihkan kemudian. Jika anda mendayakan semula sandaran selepas melangkau pemulihan, sandaran semasa anda akan digantikan dengan sejarah pemesejan baharu anda.</string>
-    <!-- Dialog confirm text shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore">Langkau pemulihan</string>
-
-    <!-- Screen title for restore via local backup -->
-    <string name="RestoreLocalBackup_title">Pulihkan sandaran setempat</string>
-    <!-- Screen subtitle for restore via local backup -->
-    <string name="RestoreLocalBackup_subtitle">Pulihkan mesej anda daripada sandaran yang disimpan pada peranti anda. Jika anda tidak memulihkan sekarang, anda tidak akan dapat memulihkan kemudian.</string>
-
-    <!-- Screen title for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_title">Masukkan kunci pemulihan anda</string>
-    <!-- Screen subtitle for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_subtitle">Kunci pemulihan anda ialah kod 64 aksara yang diperlukan untuk memulihkan akaun dan data anda.</string>
-    <!-- Button to skip entering recovery key and resuming normal registration flow -->
-    <string name="EnterBackupKey_no_backup_key">Tiada kunci pemulihan?</string>
-    <!-- Recovery key text field hint -->
-    <string name="EnterBackupKey_backup_key">Kunci pemulihan</string>
-    <!-- Recovery key not known bottom sheet info paragraph 1 -->
-    <string name="EnterBackupKey_no_key_paragraph_1">Sandaran tidak boleh dipulihkan tanpa kod pemulihan 64 aksara. Jika anda kehilangan kunci pemulihan, Signal tidak dapat membantu memulihkan sandaran anda.</string>
-    <!-- Recovery key not known bottom sheet info paragraph 2 -->
-    <string name="EnterBackupKey_no_key_paragraph_2">Jika anda masih mempunyai peranti lama, anda boleh melihat kunci pemulihan anda dalam Tetapan &gt; Sandaran. Kemudian ketik Lihat kunci pemulihan.</string>
-    <!-- Recovery key not known bottom sheet button to learn more about it -->
-    <string name="EnterBackupKey_learn_more">Ketahui lebih lanjut</string>
-    <!-- Recovery key not known bottom sheet button to skip recovery key entry and resume normal reregistration -->
-    <string name="EnterBackupKey_skip_and_dont_restore">Langkau dan jangan pulihkan</string>
-    <!-- Dialog title shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_title">Kunci pemulihan salah</string>
-    <!-- Dialog message shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_message">Pastikan anda mendaftar dengan nombor telefon yang sama dan kunci pemulihan 64 aksara yang anda simpan ketika mendayakan Sandaran Selamat Signal. Sandaran tidak boleh dipulihkan tanpa kunci ini.</string>
-    <!-- Dialog positive button text to try entering their recovery key again -->
-    <string name="EnterBackupKey_try_again">Cuba lagi</string>
-    <!-- Dialog negative button text to get help with recovery key -->
-    <string name="EnterBackupKey_backup_key_help">Bantuan kunci pemulihan</string>
-    <!-- Text field error text when the recovery key provided has been confirmed invalid -->
-    <string name="EnterBackupKey_incorrect_backup_key_error">Kunci pemulihan salah</string>
-    <!-- Text field error text when the recovery key is too long -->
-    <string name="EnterBackupKey_too_long_error">Terlalu panjang (%1$d/%2$d)</string>
-    <!-- Text field error when the recovery key is invalid -->
-    <string name="EnterBackupKey_invalid_backup_key_error">Kunci pemulihan tidak sah</string>
-    <!-- Dialog title shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_not_found">Sandaran tidak ditemui</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_you_entered_is_correct_but_no_backup">Kunci pemulihan yang anda masukkan adalah betul, tetapi tiada sandaran yang dikaitkan dengannya. Jika anda masih mempunyai telefon lama anda, pastikan sandaran diaktifkan dan satu telah selesai dibuat, kemudian cuba lagi.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">Anda mungkin telah tersalah memasukkan kunci pemulihan, atau anda belum melengkapkan sekurang-kurangnya satu sandaran pada peranti lama anda.\n\nPastikan anda mendaftar dengan nombor telefon dan kunci pemulihan yang sama seperti yang anda simpan semasa mendayakan Sandaran Selamat Signal, dan sahkan bahawa peranti lama anda telah melengkapkan sandaran.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_check_rate_limited">Anda telah kehabisan percubaan kunci pemulihan. Untuk keselamatan anda, bilangan percubaan yang boleh dibuat adalah terhad. Tunggu satu jam dan cuba lagi.</string>
-    <!-- Dialog button shown during registration and trying to restore a remote backup to instead skip said backup process -->
-    <string name="EnterBackupKey_skip_restore">Langkau pemulihan</string>
-    <!-- Dialog title text when encountering backup restore network error -->
-    <string name="EnterBackupKey_cant_restore_backup">Tidak dapat memulihkan sandaran</string>
-    <!-- Dialog body text when encountering backup restore network error -->
-    <string name="EnterBackupKey_your_backup_cant_be_restored_right_now">Sandaran anda tidak dapat dipulihkan sekarang. Semak sambungan internet anda dan cuba lagi. </string>
-    <!-- Dialog button text to contact support on network error -->
-    <string name="EnterBackupKey_contact_support">Hubungi sokongan</string>
-
-    <!-- Email subject when contacting support on a restore backup network issue -->
-    <string name="EnterBackupKey_network_failure_support_email">Ralat rangkaian semasa pemulihan Sandaran Signal Android</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_network_failure_support_email_filter" translatable="false">Android SignalBackups Import Failed</string> -->
-    <!-- Email subject when contacting support on a permanent backup import failure -->
-    <string name="EnterBackupKey_permanent_failure_support_email">Kegagalan kekal memulihkan Sandaran Signal Android</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_permanent_failure_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
-
-    <!-- EnterLocalBackupKeyScreen: Screen title for entering recovery key for local backup restore -->
-    <string name="EnterLocalBackupKeyScreen__enter_your_recovery_key">Masukkan kunci pemulihan anda</string>
-    <!-- EnterLocalBackupKeyScreen: Screen subtitle explaining what the recovery key is -->
-    <string name="EnterLocalBackupKeyScreen__your_recovery_key_is_a_64_character_code">Kunci pemulihan anda ialah kod 64 aksara yang diperlukan untuk memulihkan akaun dan data anda.</string>
-    <!-- EnterLocalBackupKeyScreen: Button text when user does not have a recovery key -->
-    <string name="EnterLocalBackupKeyScreen__no_recovery_key">Tiada kunci pemulihan?</string>
-    <!-- EnterLocalBackupKeyScreen: Button to proceed to next step -->
-    <string name="EnterLocalBackupKeyScreen__next">Seterusnya</string>
-
-    <!-- RestoreLocalBackupDialog: Error message when the selected archive fails to load -->
-    <string name="RestoreLocalBackupDialog__failed_to_load_archive">Gagal memuatkan arkib. Sila pilih direktori lain.</string>
-    <!-- RestoreLocalBackupDialog: Dismiss button for dialog -->
-    <string name="RestoreLocalBackupDialog__ok">OK</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore">Langkau pemulihan?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user about the consequences of skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore_body">Jika anda melangkau pemulihan sekarang, anda tidak akan dapat memulihkan kemudian. Jika anda mendayakan semula sandaran selepas melangkau pemulihan, sandaran semasa anda akan digantikan dengan sejarah pemesejan baharu anda.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the skip restore dialog -->
-    <string name="RestoreLocalBackupDialog__skip_restore_confirm">Langkau pemulihan</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm restoring a backup from a different account -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account">Pulihkan ke akaun baharu?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user that the backup was created with a different account and they will lose group memberships -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account_body">Sandaran yang anda pulihkan telah dicipta menggunakan akaun Signal yang berbeza. Anda boleh memulihkan sandaran ini ke akaun baharu, tetapi anda tidak lagi akan menjadi ahli mana-mana kumpulan yang dipulihkan.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the restore to new account dialog -->
-    <string name="RestoreLocalBackupDialog__restore">Memulihkan</string>
-
-    <!-- RestoreLocalBackupActivity: Toast message when backup restore fails -->
-    <string name="RestoreLocalBackupActivity__backup_restore_failed">Pemulihan sandaran gagal</string>
-    <!-- RestoreLocalBackupActivity: Screen title shown during restore -->
-    <string name="RestoreLocalBackupActivity__restoring_backup">Memulihkan sandaran</string>
-    <!-- RestoreLocalBackupActivity: Screen subtitle explaining restore duration -->
-    <string name="RestoreLocalBackupActivity__depending_on_the_size">Bergantung pada saiz sandaran anda, ini boleh mengambil masa beberapa minit.</string>
-    <!-- RestoreLocalBackupActivity: Status text while restoring messages -->
-    <string name="RestoreLocalBackupActivity__restoring_messages">Memulihkan mesej…</string>
-    <!-- RestoreLocalBackupActivity: Status text while finalizing restore -->
-    <string name="RestoreLocalBackupActivity__finalizing">Memuktamadkan…</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore is complete -->
-    <string name="RestoreLocalBackupActivity__restore_complete">Restore selesai</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore fails -->
-    <string name="RestoreLocalBackupActivity__restore_failed">Pemulihan gagal</string>
-    <!-- RestoreLocalBackupActivity: Progress text showing bytes read of total with percentage, e.g. "1.2 MB of 5.0 MB (24%)" -->
-    <string name="RestoreLocalBackupActivity__s_of_s_d_percent">%1$s daripada %2$s (%3$d%%)</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__cant_restore_backup">Tidak dapat memulihkan sandaran</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__error_occurred_while_restoring">Ralat berlaku semasa memulihkan sandaran anda. Sandaran anda tidak boleh dipulihkan. Sila hubungi sokongan untuk bantuan.</string>
-
-    <!-- RestoreLocalBackupActivity: Label for the button that opens the contact support form -->
-    <string name="RestoreLocalBackupActivity__contact_support">Hubungi sokongan</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when on-device backups could not be automatically re-enabled -->
-    <string name="RestoreLocalBackupActivity__turn_on_on_device_backups">Hidupkan sandaran pada peranti?</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when on-device backups could not be automatically re-enabled, prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__to_continue_using_on_device_backups">Untuk terus menggunakan sandaran pada peranti, anda perlu mendayakannya untuk akaun ini. Anda boleh melakukannya pada bila-bila masa melalui Tetapan &gt; Sandaran.</string>
-
-    <!-- RestoreLocalBackupActivity: Confirm button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__turn_on_now">Hidupkan sekarang</string>
-
-    <!-- RestoreLocalBackupActivity: Dismiss button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__not_now">Bukan sekarang</string>
-
-    <!-- RestoreLocalBackupActivity: Body text for the dialog shown after a successful restore, prompting the user to choose a backup folder -->
-    <string name="RestoreLocalBackupActivity__choose_a_folder_for_backups">Untuk terus menggunakan sandaran pada peranti, pilih folder pada peranti anda di mana sandaran baharu akan disimpan.</string>
-
-    <!-- RestoreLocalBackupActivity: Positive button label for the dialog shown after a successful restore; keeps the current backup folder -->
-    <string name="RestoreLocalBackupActivity__use_current_folder">Gunakan folder semasa</string>
-
-    <!-- RestoreLocalBackupActivity: Neutral button label for the dialog shown after a successful restore; opens folder picker to select a different backup location -->
-    <string name="RestoreLocalBackupActivity__choose_new_folder">Pilih folder baharu</string>
-
-    <!-- RestoreLocalBackupActivity: Negative button label for the dialog shown after a successful restore; disables on-device backups -->
-    <string name="RestoreLocalBackupActivity__disable_backups">Nyahdayakan sandaran</string>
-
-    <!-- SelectInstructionsSheet: Title for the select backup folder instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_folder">Pilih folder sandaran anda</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the select this folder button -->
-    <string name="SelectInstructionsSheet__tap_select_this_folder">Ketik \"Pilih folder ini\"</string>
-    <!-- SelectInstructionsSheet: Instruction not to select individual files -->
-    <string name="SelectInstructionsSheet__do_not_select_individual_files">Jangan pilih fail individu</string>
-    <!-- SelectInstructionsSheet: Title for the select backup file instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_file">Pilih fail sandaran anda</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the backup file saved to device -->
-    <string name="SelectInstructionsSheet__tap_on_the_backup_file">Ketik pada fail sandaran yang anda simpan pada peranti anda</string>
-    <!-- SelectInstructionsSheet: Subtitle explaining how to access backup after tapping continue -->
-    <string name="SelectInstructionsSheet__after_tapping_continue">Selepas mengetik \"Teruskan\", berikut ialah cara untuk mengakses sandaran anda:</string>
-    <!-- SelectInstructionsSheet: Instruction to select the top-level backup folder -->
-    <string name="SelectInstructionsSheet__select_the_top_level_folder">Pilih folder utama yang menyimpan sandaran anda</string>
-    <!-- SelectInstructionsSheet: Continue button text -->
-    <string name="SelectInstructionsSheet__continue_button">Teruskan</string>
-
-    <!-- SelectLocalBackupScreen: Screen title for restoring on-device backup -->
-    <string name="SelectLocalBackupScreen__restore_on_device_backup">Pulihkan sandaran pada peranti</string>
-    <!-- SelectLocalBackupScreen: Screen subtitle explaining the restore process -->
-    <string name="SelectLocalBackupScreen__restore_your_messages_from_the_backup_folder">Pulihkan mesej anda daripada fail sandaran yang disimpan pada peranti anda. Jika anda tidak memulihkan sekarang, anda tidak akan dapat memulihkan kemudian.</string>
-    <!-- SelectLocalBackupScreen: Button to initiate backup restoration -->
-    <string name="SelectLocalBackupScreen__restore_backup">Memulihkan sandaran</string>
-    <!-- SelectLocalBackupScreen: Button to choose an earlier backup when current is latest -->
-    <string name="SelectLocalBackupScreen__choose_an_earlier_backup">Pilih sandaran terdahulu</string>
-    <!-- SelectLocalBackupScreen: Button to choose a different backup -->
-    <string name="SelectLocalBackupScreen__choose_a_different_backup">Pilih sandaran lain</string>
-    <!-- SelectLocalBackupScreen: Label for latest backup card -->
-    <string name="SelectLocalBackupScreen__your_latest_backup">Sandaran terkini anda:</string>
-    <!-- SelectLocalBackupScreen: Label for non-latest backup card -->
-    <string name="SelectLocalBackupScreen__your_backup">Sandaran anda:</string>
-
-    <!-- SelectLocalBackupSheet: Title for backup selection bottom sheet -->
-    <string name="SelectLocalBackupSheet__choose_a_backup_to_restore">Pilih sandaran untuk dipulihkan</string>
-    <!-- SelectLocalBackupSheet: Subtitle warning about choosing an older backup -->
-    <string name="SelectLocalBackupSheet__choosing_an_older_backup">Memilih sandaran yang lebih lama boleh mengakibatkan mesej atau media hilang.</string>
-    <!-- SelectLocalBackupSheet: Continue button text -->
-    <string name="SelectLocalBackupSheet__continue_button">Teruskan</string>
-
-    <!-- SelectLocalBackupTypeScreen: Screen title for selecting backup type -->
-    <string name="SelectLocalBackupTypeScreen__restore_on_device_backup">Pulihkan sandaran pada peranti</string>
-    <!-- SelectLocalBackupTypeScreen: Screen subtitle explaining restore options -->
-    <string name="SelectLocalBackupTypeScreen__restore_your_messages_from_the_backup">Pulihkan mesej anda daripada sandaran yang disimpan pada peranti anda. Jika anda tidak memulihkan sekarang, anda tidak akan dapat memulihkan kemudian.</string>
-    <!-- SelectLocalBackupTypeScreen: Button for users who saved backup as single file -->
-    <string name="SelectLocalBackupTypeScreen__i_saved_my_backup_as_a_single_file">Saya menyimpan sandaran saya sebagai satu fail</string>
-    <!-- SelectLocalBackupTypeScreen: Card title for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__choose_backup_folder">Pilih folder sandaran</string>
-    <!-- SelectLocalBackupTypeScreen: Card description for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__select_the_folder_on_your_device">Pilih folder pada peranti anda tempat sandaran anda disimpan</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Email subject when contacting support on a create backup failure -->
     <string name="BackupAlertBottomSheet_network_failure_support_email">Ralat rangkaian semasa mengeksport Sandaran Signal Android</string>

@@ -49,12 +49,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:includeFontPadding="false"
-<<<<<<< MOLLY
                 android:textColor="?attr/conversation_item_update_text_color"
-=======
-                android:textColor="@color/conversation_item_update_text_color"
                 android:textDirection="locale"
->>>>>>> SIGNAL
                 tools:text="Gwen Stacy set the disappearing message timer to 1 hour" />
 
             <com.google.android.material.button.MaterialButton

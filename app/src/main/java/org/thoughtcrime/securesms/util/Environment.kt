@@ -20,7 +20,7 @@ object Environment {
   val USE_NEW_REGISTRATION: Boolean = true
 
   @JvmField
-  val IS_LINK_AND_SYNC_AVAILABLE: Boolean = false // MOLLY: Test before enable
+  val IS_LINK_AND_SYNC_AVAILABLE: Boolean = true
 
   @JvmField
   val PHONENUMBERLESS_REGISTRATION: Boolean = true

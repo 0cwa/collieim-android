@@ -39,11 +39,7 @@ import org.thoughtcrime.securesms.components.settings.app.subscription.errors.Do
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData
-<<<<<<< MOLLY
-=======
-import org.thoughtcrime.securesms.util.fragments.requireListener
 import java.util.Currency
->>>>>>> SIGNAL
 
 /**
  * Abstracts out some common UI-level interactions between gift flow and normal donate flow.

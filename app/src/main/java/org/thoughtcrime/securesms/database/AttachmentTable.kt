@@ -47,7 +47,6 @@ import org.signal.core.util.UuidUtil
 import org.signal.core.util.bitmaps.BitmapDecodingException
 import org.signal.core.util.copyTo
 import org.signal.core.util.crypto.AttachmentSecret
-import org.signal.core.util.crypto.ClassicDecryptingPartInputStream
 import org.signal.core.util.crypto.ModernDecryptingPartInputStream
 import org.signal.core.util.crypto.ModernEncryptingPartOutputStream
 import org.signal.core.util.drain
@@ -3077,13 +3076,7 @@ class AttachmentTable(
       if (random.size == 32) {
         ModernDecryptingPartInputStream.createFor(attachmentSecret, random, file, offset)
       } else {
-        val stream = ClassicDecryptingPartInputStream.createFor(attachmentSecret, file)
-        val skipped = stream.skip(offset)
-        if (skipped != offset) {
-          Log.w(TAG, "Skip failed: $skipped vs $offset")
-          return null
-        }
-        stream
+        return null
       }
     } catch (e: FileNotFoundException) {
       Log.w(TAG, e)

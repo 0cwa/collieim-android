@@ -10,8 +10,16 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+<<<<<<< MOLLY
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
+=======
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+>>>>>>> SIGNAL
 import kotlin.time.Duration
 
 /**
@@ -107,5 +115,13 @@ private class PendingValues<T> {
   @Synchronized
   fun finish() {
     finished = true
+  }
+}
+
+fun <T, R> Flow<T>.zipWithPrevious(transform: suspend (T?, T) -> R): Flow<R> = flow {
+  var prev: T? = null
+  collect { cur ->
+    emit(transform(prev, cur))
+    prev = cur
   }
 }

@@ -16,13 +16,14 @@
  */
 package org.thoughtcrime.securesms;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.view.View;
+
+import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
-import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.util.VersionTracker;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 /**
  * Activity for creating a user's local encryption passphrase.
@@ -31,6 +32,11 @@ import org.thoughtcrime.securesms.util.VersionTracker;
  */
 
 public class PassphraseCreateActivity extends PassphraseActivity {
+
+  private static final String TAG = Log.tag(PassphraseCreateActivity.class);
+
+  private View yesButton;
+  private View noButton;
 
   public PassphraseCreateActivity() { }
 
@@ -43,6 +49,8 @@ public class PassphraseCreateActivity extends PassphraseActivity {
     initializeResources();
   }
 
+<<<<<<< MOLLY
+=======
   private void initializeResources() {
     new SecretGenerator().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, MasterSecretUtil.UNENCRYPTED_PASSPHRASE);
   }
@@ -76,8 +84,40 @@ public class PassphraseCreateActivity extends PassphraseActivity {
     }
   }
 
+>>>>>>> SIGNAL
   @Override
-  protected void cleanup() {
-    System.gc();
+  public boolean useScreenLock() {
+    return false;
+  }
+
+  private void initializeResources() {
+    yesButton = findViewById(R.id.yes_button);
+    noButton  = findViewById(R.id.no_button);
+
+    yesButton.setOnClickListener(v -> onButtonClicked(true));
+    noButton.setOnClickListener(v -> onButtonClicked(false));
+  }
+
+  private void onButtonClicked(boolean enabled) {
+    if (MasterSecretUtil.isPassphraseInitialized(this)) {
+      Log.w(TAG, "Passphrase already initialized!");
+      return;
+    }
+
+    if (enabled) {
+      ChangePassphraseDialogFragment dialog = ChangePassphraseDialogFragment.newInstance(ChangePassphraseDialogFragment.MODE_ENABLE);
+      dialog.setMasterSecretChangedListener(this::generateSecrets);
+      dialog.show(getSupportFragmentManager(), "ChangePassphraseDialogFragment");
+    } else {
+      generateSecrets(MasterSecretUtil.generateMasterSecret(this, MasterSecretUtil.getUnencryptedPassphrase()));
+    }
+
+    TextSecurePreferences.setPassphraseLockEnabled(this, enabled);
+  }
+
+  private void generateSecrets(MasterSecret masterSecret) {
+    MasterSecretUtil.generateAsymmetricMasterSecret(this, masterSecret);
+    setMasterSecret(masterSecret);
+    launchRoutedActivity();
   }
 }

@@ -1,19 +1,19 @@
 package org.thoughtcrime.securesms.util
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.view.View
 import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.R as MaterialR
 import com.google.android.material.animation.ArgbEvaluatorCompat
 import com.google.android.material.appbar.AppBarLayout
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.ui.view.Stub
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * Sets the view's isActivated state when the content of the attached recycler can scroll up.
@@ -39,6 +39,17 @@ open class Material3OnScrollHelper(
     }
   }
 
+<<<<<<< MOLLY
+  open val activeColorSet: ColorSet = ColorSet.from(activity,
+    toolbarColorRes = MaterialR.attr.colorSurfaceContainer,
+    statusBarColorRes = MaterialR.attr.colorSurfaceContainer,
+    chatFolderColorRes = MaterialR.attr.colorSurface
+  )
+  open val inactiveColorSet: ColorSet = ColorSet.from(activity,
+    toolbarColorRes = MaterialR.attr.colorSurface,
+    statusBarColorRes = MaterialR.attr.colorSurface,
+    chatFolderColorRes = MaterialR.attr.colorSurfaceContainer
+=======
   open val activeColorSet: ColorSet = ColorSet(
     toolbarColorRes = CoreUiR.color.signal_colorSurface2,
     chatFolderColorRes = CoreUiR.color.signal_colorBackground
@@ -46,6 +57,7 @@ open class Material3OnScrollHelper(
   open val inactiveColorSet: ColorSet = ColorSet(
     toolbarColorRes = CoreUiR.color.signal_colorBackground,
     chatFolderColorRes = CoreUiR.color.signal_colorSurface2
+>>>>>>> SIGNAL
   )
 
   private var animator: ValueAnimator? = null
@@ -97,8 +109,14 @@ open class Material3OnScrollHelper(
 
     animator?.cancel()
     val colorSet = if (active == true) activeColorSet else inactiveColorSet
+<<<<<<< MOLLY
+    setToolbarColor(colorSet.toolbarColor)
+    setStatusBarColor(colorSet.statusBarColor)
+    setChatFolderColor(colorSet.chatFolderColor)
+=======
     setToolbarColor(ContextCompat.getColor(activity, colorSet.toolbarColorRes))
     setChatFolderColor(ContextCompat.getColor(activity, colorSet.chatFolderColorRes))
+>>>>>>> SIGNAL
   }
 
   private fun updateActiveState(isActive: Boolean) {
@@ -119,10 +137,19 @@ open class Material3OnScrollHelper(
       val endColorSet = if (isActive) activeColorSet else inactiveColorSet
 
       if (hadActiveState) {
+<<<<<<< MOLLY
+        val startToolbarColor = startColorSet.toolbarColor
+        val endToolbarColor = endColorSet.toolbarColor
+        val startStatusBarColor = startColorSet.statusBarColor
+        val endStatusBarColor = endColorSet.statusBarColor
+        val startChatFolderColor = startColorSet.chatFolderColor
+        val endChatFolderColor = endColorSet.chatFolderColor
+=======
         val startToolbarColor = ContextCompat.getColor(activity, startColorSet.toolbarColorRes)
         val endToolbarColor = ContextCompat.getColor(activity, endColorSet.toolbarColorRes)
         val startChatFolderColor = ContextCompat.getColor(activity, startColorSet.chatFolderColorRes)
         val endChatFolderColor = ContextCompat.getColor(activity, endColorSet.chatFolderColorRes)
+>>>>>>> SIGNAL
 
         animator = ValueAnimator.ofFloat(0f, 1f).apply {
           duration = 200
@@ -162,7 +189,34 @@ open class Material3OnScrollHelper(
    * A pair of colors tied to a specific state.
    */
   data class ColorSet(
+<<<<<<< MOLLY
+    @ColorInt val toolbarColor: Int,
+    @ColorInt val statusBarColor: Int,
+    @ColorInt val chatFolderColor: Int
+  ) {
+    constructor(@ColorInt color: Int) : this(color, color, color)
+    constructor(@ColorInt toolbarColor: Int, @ColorInt statusBarColor: Int) : this(toolbarColor, statusBarColor, toolbarColor)
+
+    companion object {
+      fun from(context: Context, colorRes: Int) = ColorSet(
+        ThemeUtil.getThemedColor(context, colorRes)
+      )
+
+      fun from(context: Context, toolbarColorRes: Int, statusBarColorRes: Int) = ColorSet(
+        ThemeUtil.getThemedColor(context, toolbarColorRes),
+        ThemeUtil.getThemedColor(context, statusBarColorRes)
+      )
+
+      fun from(context: Context, toolbarColorRes: Int, statusBarColorRes: Int, chatFolderColorRes: Int) = ColorSet(
+        ThemeUtil.getThemedColor(context, toolbarColorRes),
+        ThemeUtil.getThemedColor(context, statusBarColorRes),
+        ThemeUtil.getThemedColor(context, chatFolderColorRes)
+      )
+    }
+  }
+=======
     @ColorRes val toolbarColorRes: Int,
     @ColorRes val chatFolderColorRes: Int = toolbarColorRes
   )
+>>>>>>> SIGNAL
 }

@@ -60,8 +60,13 @@ public class ShareInterstitialActivity extends PassphraseRequiredActivity {
   }
 
   @Override
-  protected void onCreate(Bundle savedInstanceState, boolean ready) {
+  protected void onPreCreate() {
+    super.onPreCreate();
     dynamicTheme.onCreate(this);
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState, boolean ready) {
     setContentView(R.layout.share_interstitial_activity);
 
     MultiShareArgs args = getIntent().getParcelableExtra(ARGS);

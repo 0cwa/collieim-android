@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
   <string name="MediaSendDialogs__discard_changes">Descartar alterações?</string>
   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
@@ -138,23 +137,27 @@
   <!-- Dialog title asking users for microphone permission -->
   <string name="CameraXFragment_allow_access_microphone">Permitir acesso ao seu microfone</string>
   <!-- Text explaining why Signal needs camera access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Para tirar fotografias e filmar vídeos, dê permissões ao Signal para acesso à câmara.</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Para tirar fotografias e filmar vídeos, dê permissões ao Molly para acesso à câmara.</string>
   <!-- Text explaining why Signal needs camera and microphone access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Para tirar fotografias e filmar vídeos, permita o acesso do Signal à câmara e microfone.</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Para tirar fotografias e filmar vídeos, permita o acesso do Molly à câmara e microfone.</string>
   <!-- Text explaining why Signal needs microphone access to take videos -->
-  <string name="CameraXFragment_to_capture_videos_with_sound">Para gravar vídeos com som, permita o acesso do Signal ao seu microfone.</string>
+  <string name="CameraXFragment_to_capture_videos_with_sound">Para gravar vídeos com som, permita o acesso do Molly ao seu microfone.</string>
   <!-- Text explaining why Signal needs camera access to scan QR codes -->
-  <string name="CameraXFragment_to_scan_qr_code_allow_camera">Para ler um código QR, permita o acesso do Signal à câmara.</string>
+  <string name="CameraXFragment_to_scan_qr_code_allow_camera">Para ler um código QR, permita o acesso do Molly à câmara.</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when capturing photos -->
-  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">O Signal necessita de acesso à câmara para tirar fotos</string>
+  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">O Molly necessita de acesso à câmara para tirar fotos</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when scanning QR codes -->
-  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">O Signal necessita de acesso à câmara para ler códigos QR</string>
+  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">O Molly necessita de acesso à câmara para ler códigos QR</string>
   <!-- Toast dialog explaining why Signal needs microphone permissions -->
-  <string name="CameraXFragment_signal_needs_microphone_access_video">O Signal necessita de acesso ao microfone para gravar vídeos</string>
+  <string name="CameraXFragment_signal_needs_microphone_access_video">O Molly necessita de acesso ao microfone para gravar vídeos</string>
   <!-- Dialog description that explains the steps needed to give camera permission -->
+<<<<<<< MOLLY
+  <string name="CameraXFragment_to_capture_photos">Para tirar fotos no Molly</string>
+=======
   <string name="CameraXFragment_to_capture_photos">Para tirar fotos no Signal:</string>
+>>>>>>> SIGNAL
   <!-- Dialog description that explains the steps needed to give camera and microphone permission -->
-  <string name="CameraXFragment_to_capture_photos_videos">Para tirar fotos e gravar vídeos no Signal:</string>
+  <string name="CameraXFragment_to_capture_photos_videos">Para tirar fotos e gravar vídeos no Molly:</string>
   <!-- Dialog description that explains the steps needed to give microphone permission -->
   <string name="CameraXFragment_to_capture_videos">Para gravar vídeos com som:</string>
   <!-- Dialog description that explains the steps needed to give Signal camera permissions -->
@@ -168,7 +171,11 @@
   <!-- Accessibility label for the camera toggle that keeps the camera open after each capture so several photos or videos can be taken in a row -->
   <string name="CameraXFragment_multi_capture">Captura múltipla</string>
   <!-- Displayed in a permissions dialog when the user has denied access to hardware for image and video capture. -->
+<<<<<<< MOLLY
+  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">O Sinal necessita de permissões de microfone para poder gravar vídeos. mas elas foram negadas. Por favor, avance até às definições das aplicações,. selecione o Molly e nas \"Permissões\", ative o \"Microfone\" e a \"Câmara\"</string>
+=======
   <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">O Signal necessita de permissões do microfone para poder gravar vídeos, mas elas foram recusadas. Continue para as definições de apps, selecione \"Permissões\", ative \"Microfone\" e \"Câmara\".</string>
+>>>>>>> SIGNAL
 
   <!-- Displayed when there is an error capturing video -->
   <string name="MediaSendViewModel__error_recording_video">Erro ao gravar vídeo</string>
@@ -228,6 +235,9 @@
   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Parece que está a tentar associar um dispositivo Signal. Toque em continuar e depois em \"Associe um novo dispositivo\" e leia novamente o código QR.</string>
   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Continuar</string>
+<<<<<<< MOLLY
+</resources>
+=======
 
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Não é possível transferir conta</string>
@@ -262,3 +272,4 @@
     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
     <string name="MediaEditScreen__d_of_d">%1$d de %2$d</string>
 </resources>
+>>>>>>> SIGNAL

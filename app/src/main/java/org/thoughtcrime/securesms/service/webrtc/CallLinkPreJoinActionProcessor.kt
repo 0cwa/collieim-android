@@ -75,6 +75,7 @@ class CallLinkPreJoinActionProcessor(
 
       webRtcInteractor.callManager.createCallLinkCall(
         SignalStore.internal.groupCallingServer,
+        WebRtcUtil.getProxyInfo(),
         serverPublicParams.endorsementPublicKey,
         callLinkAuthCredentialPresentation.serialize(),
         callLinkRootKey,

@@ -1,10 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
+<<<<<<< MOLLY
+  --><!-- smartling.instruction_comments_enabled = on --><resources>
+=======
   -->
 <!-- smartling.instruction_comments_enabled = on -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+>>>>>>> SIGNAL
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -2509,6 +2512,26 @@
 
     <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
     <string name="RegistrationActivity_additional_verification_required">تأیید تکمیلی لازم است</string>
+<<<<<<< MOLLY
+    <!-- Dialog message shown when we need to verify sms and carrier rates may apply. -->
+    <string name="RegistrationActivity_a_verification_code_will_be_sent_to_this_number">کد تأییدی به این شماره ارسال خواهد شد. ممکن است شرکت مخابراتی هزینه‌هایی اعمال کند.</string>
+    <!-- Text explaining to users that they will be receiving a verification for their phone number and that carrier rates could apply -->
+    <string name="RegistrationActivity_you_will_receive_a_verification_code">شما یک کد وارسی دریافت خواهید کرد. نرخ‌های اپراتور ممکن است اعمال شوند.</string>
+    <!-- Hint text to select a country -->
+    <string name="RegistrationActivity_select_a_country">یک کشور را انتخاب کنید</string>
+    <!-- Hint text explaining that this is where the country code should go -->
+    <string name="RegistrationActivity_default_country_code">۰</string>
+    <string name="RegistrationActivity_you_will_receive_a_call_to_verify_this_number">شما تماسی برای وارسی این شماره دریافت خواهید کرد.</string>
+    <string name="RegistrationActivity_edit_number">ویرایش شماره</string>
+    <string name="RegistrationActivity_missing_google_play_services">فاقد خدمات Google Play</string>
+    <string name="RegistrationActivity_this_device_is_missing_google_play_services">این دستگاه فاقد خدمات Google Play است. شما می‌توانید به استفاده از سیگنال ادامه دهید، اما این پیکربندی می‌تواند باعث کاهش اطمینان‌پذیری یا عملکرد شود.\n\n اگر یک کاربر حرفه‌ای یا در حال اجرای یک ROM سفارشی اندروید نیستید یا فکر می‌کنید که این پیام به اشتباه به شما نشان داده شده است، برای دریافت کمک در فرآیند عیب‌یابی با support@molly.im تماس بگیرید.</string>
+    <string name="RegistrationActivity_i_understand">متوجهم</string>
+    <string name="RegistrationActivity_play_services_error">خطای خدمات Play</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">خدمات Google Play در حال به‌روزرسانی است یا موقتاً در دسترس نیست. لطفاً دوباره تلاش کنید.</string>
+    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">سیگنال به مجوزها‌ی مخاطبین و رسانه‌ها برای کمک به متصل کردن شما به دوستان و ارسال پیام‌ها نیاز دارد. مخاطبین شما با استفاده از اکتشاف خصوصی مخاطب سیگنال بارگذاری می‌شوند، که این یعنی آن‌ها سرتاسر رمزگذاری شده هستند و هیچوقت برای سرویس سیگنال قابل رؤیت نیستند.</string>
+    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">سیگنال به مجوز مخاطبین برای کمک به متصل کردن شما به دوستان نیاز دارد. مخاطبین شما با استفاده از اکتشاف خصوصی مخاطب سیگنال بارگذاری می‌شوند، که این یعنی آن‌ها سرتاسر رمزگذاری شده هستند و هیچوقت برای سرویس سیگنال قابل رؤیت نیستند.</string>
+=======
+>>>>>>> SIGNAL
     <string name="RegistrationActivity_rate_limited_to_service">شما تلاش‌های بسیاری برای ثبت‌نام این شماره انجام داده‌اید. لطفاً دوباره امتحان کنید.</string>
     <string name="RegistrationActivity_unable_to_connect_to_service">اتصال به سرویس ممکن نیست. لطفاً اتصال شبکه را بررسی کرده و دوباره امتحان کنید.</string>
     <!-- Dialog error message shown when we are unable to send an SMS to the user\'s number -->
@@ -4310,7 +4333,7 @@
     <string name="BackupDialog_passphrase_was_not_correct">گذرواژه نادرست بود</string>
     <string name="LocalBackupJob_creating_signal_backup">در حال ایجاد پشتیبان سیگنال…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">در حال تایید پشتیبان Signal…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">در حال تایید پشتیبان Molly…</string>
     <string name="LocalBackupJobApi29_backup_failed">پشتیبان‌گیری ناموفق بود</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">آدرس ذخیره‌سازی پشتیبان شما پاک شده یا به جای دیگری انتقال یافته است.</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">حجم فایل پشتیبان شما برای نگهداری در این محل زیاد است.</string>

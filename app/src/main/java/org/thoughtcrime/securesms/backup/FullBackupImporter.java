@@ -19,8 +19,12 @@ import org.signal.core.util.crypto.AttachmentSecret;
 import org.signal.core.util.crypto.ModernEncryptingPartOutputStream;
 import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.BuildConfig;
+=======
 import org.signal.storage.keyvalue.KeyValueDataSet;
 import org.signal.storage.keyvalue.KeyValueDatabase;
+>>>>>>> SIGNAL
 import org.thoughtcrime.securesms.backup.proto.Attachment;
 import org.thoughtcrime.securesms.backup.proto.Avatar;
 import org.thoughtcrime.securesms.backup.proto.BackupFrame;
@@ -29,6 +33,10 @@ import org.thoughtcrime.securesms.backup.proto.KeyValue;
 import org.thoughtcrime.securesms.backup.proto.SharedPreference;
 import org.thoughtcrime.securesms.backup.proto.SqlStatement;
 import org.thoughtcrime.securesms.backup.proto.Sticker;
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.crypto.EncryptedPreferences;
+=======
+>>>>>>> SIGNAL
 import org.thoughtcrime.securesms.database.AttachmentTable;
 import org.thoughtcrime.securesms.database.CallTable;
 import org.thoughtcrime.securesms.database.EmojiSearchTable;
@@ -43,6 +51,13 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.thoughtcrime.securesms.util.BackupUtil;
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.util.SecurePreferenceManager;
+import org.signal.core.util.Util;
+import org.signal.core.util.crypto.AttachmentSecret;
+import org.signal.core.util.crypto.ModernEncryptingPartOutputStream;
+=======
+>>>>>>> SIGNAL
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -53,6 +68,7 @@ import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -327,9 +343,15 @@ public class FullBackupImporter extends FullBackupBase {
     KeyValueDatabase.getInstance(AppDependencies.getApplication()).writeDataSet(dataSet, Collections.emptyList());
   }
 
+  private static final List<String> defaultSharedPreferencesFileNames = Arrays.asList(
+      BuildConfig.SIGNAL_PACKAGE_NAME + "_preferences",
+      BuildConfig.APPLICATION_ID + "_preferences",
+      SecurePreferenceManager.getSecurePreferencesName()
+  );
+
   @SuppressLint("ApplySharedPref")
   private static void processPreference(@NonNull Context context, SharedPreference preference) {
-    SharedPreferences preferences = context.getSharedPreferences(preference.file_, 0);
+    SharedPreferences preferences;
 
     // Identity keys were moved from shared prefs into SignalStore. Need to handle importing backups made before the migration.
     if ("SecureSMS-Preferences".equals(preference.file_)) {
@@ -342,12 +364,20 @@ public class FullBackupImporter extends FullBackupBase {
       return;
     }
 
+    if (defaultSharedPreferencesFileNames.contains(preference.file_)) {
+      preferences = SecurePreferenceManager.getSecurePreferences(context);
+    } else {
+      preferences = EncryptedPreferences.create(context, preference.file_);
+    }
+
     if (preference.value_ != null) {
       preferences.edit().putString(preference.key, preference.value_).commit();
     } else if (preference.booleanValue != null) {
       preferences.edit().putBoolean(preference.key, preference.booleanValue).commit();
     } else if (preference.isStringSetValue == Boolean.TRUE) {
       preferences.edit().putStringSet(preference.key, new HashSet<>(preference.stringSetValue)).commit();
+    } else if (preference.integerValue != null) {
+      preferences.edit().putInt(preference.key, preference.integerValue).commit();
     }
   }
 

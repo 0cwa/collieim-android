@@ -37,10 +37,6 @@ final class MessageRecordLiveData extends LiveData<MessageRecord> {
     try {
       MessageRecord record = MessageTable.withAttachmentData(SignalDatabase.messages().getMessageRecord(messageId.getId()));
 
-      if (record.isPaymentNotification()) {
-        record = SignalDatabase.payments().updateMessageWithPayment(record);
-      }
-
       postValue(record);
       AppDependencies.getDatabaseObserver().registerVerboseConversationObserver(record.getThreadId(), observer);
     } catch (NoSuchMessageException ignored) {

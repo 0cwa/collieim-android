@@ -8,7 +8,11 @@ import io.mockk.mockkStatic
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+<<<<<<< MOLLY
+import org.junit.Ignore
+=======
 import org.junit.Before
+>>>>>>> SIGNAL
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -19,6 +23,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.whispersystems.signalservice.internal.push.SubscriptionsConfiguration
 import java.util.Currency
 
+@Ignore("Payments are disabled")
 @RunWith(RobolectricTestRunner::class)
 @Config(application = Application::class)
 class SubscriptionsConfigurationExtensionsKtTest {

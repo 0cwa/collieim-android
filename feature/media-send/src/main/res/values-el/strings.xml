@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
   <string name="MediaSendDialogs__discard_changes">Απόρριψη αλλαγών;</string>
   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
@@ -138,23 +137,23 @@
   <!-- Dialog title asking users for microphone permission -->
   <string name="CameraXFragment_allow_access_microphone">Να δοθεί πρόσβαση στο μικρόφωνο</string>
   <!-- Text explaining why Signal needs camera access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Για να τραβήξεις φωτογραφίες και βίντεο, δώσε στο Signal πρόσβαση στην κάμερα.</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Για να τραβήξεις φωτογραφίες και βίντεο, δώσε στο Molly πρόσβαση στην κάμερα.</string>
   <!-- Text explaining why Signal needs camera and microphone access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Για να τραβήξεις φωτογραφίες και βίντεο, δώσε στο Signal πρόσβαση στην κάμερα και στο μικρόφωνο.</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Για να τραβήξεις φωτογραφίες και βίντεο, δώσε στο Molly πρόσβαση στην κάμερα και στο μικρόφωνο.</string>
   <!-- Text explaining why Signal needs microphone access to take videos -->
-  <string name="CameraXFragment_to_capture_videos_with_sound">Για να τραβήξεις βίντεο με ήχο, δώσε στο Signal πρόσβαση στο μικρόφωνο.</string>
+  <string name="CameraXFragment_to_capture_videos_with_sound">Για να τραβήξεις βίντεο με ήχο, δώσε στο Molly πρόσβαση στο μικρόφωνο.</string>
   <!-- Text explaining why Signal needs camera access to scan QR codes -->
-  <string name="CameraXFragment_to_scan_qr_code_allow_camera">Για να σαρώσεις έναν κωδικό QR, δώσε στο Signal πρόσβαση στην κάμερά.</string>
+  <string name="CameraXFragment_to_scan_qr_code_allow_camera">Για να σαρώσεις έναν κωδικό QR, δώσε στο Molly πρόσβαση στην κάμερά.</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when capturing photos -->
-  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">Το Signal χρειάζεται πρόσβαση στην κάμερα για τη λήψη φωτογραφιών</string>
+  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">Το Molly χρειάζεται πρόσβαση στην κάμερα για τη λήψη φωτογραφιών</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when scanning QR codes -->
-  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">Το Signal χρειάζεται πρόσβαση στην κάμερα για τη σάρωση κωδικών QR</string>
+  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">Το Molly χρειάζεται πρόσβαση στην κάμερα για τη σάρωση κωδικών QR</string>
   <!-- Toast dialog explaining why Signal needs microphone permissions -->
-  <string name="CameraXFragment_signal_needs_microphone_access_video">Το Signal χρειάζεται πρόσβαση στο μικρόφωνο για τη λήψη βίντεο</string>
+  <string name="CameraXFragment_signal_needs_microphone_access_video">Το Molly χρειάζεται πρόσβαση στο μικρόφωνο για τη λήψη βίντεο</string>
   <!-- Dialog description that explains the steps needed to give camera permission -->
-  <string name="CameraXFragment_to_capture_photos">Για τη λήψη φωτογραφιών στο Signal:</string>
+  <string name="CameraXFragment_to_capture_photos">Για τη λήψη φωτογραφιών στο Molly:</string>
   <!-- Dialog description that explains the steps needed to give camera and microphone permission -->
-  <string name="CameraXFragment_to_capture_photos_videos">Για τη λήψη φωτογραφιών και βίντεο στο Signal:</string>
+  <string name="CameraXFragment_to_capture_photos_videos">Για τη λήψη φωτογραφιών και βίντεο στο Molly:</string>
   <!-- Dialog description that explains the steps needed to give microphone permission -->
   <string name="CameraXFragment_to_capture_videos">Για τη λήψη βίντεο με ήχο:</string>
   <!-- Dialog description that explains the steps needed to give Signal camera permissions -->
@@ -168,7 +167,7 @@
   <!-- Accessibility label for the camera toggle that keeps the camera open after each capture so several photos or videos can be taken in a row -->
   <string name="CameraXFragment_multi_capture">Πολλαπλή λήψη</string>
   <!-- Displayed in a permissions dialog when the user has denied access to hardware for image and video capture. -->
-  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">Το Signal χρειάζεται τα δικαιώματα μικροφώνου για τη λήψη βίντεο , αλλά αυτά δεν έχουν δοθεί. Πήγαινε στις ρυθμίσεις εφαρμογών, επίλεξε τα «Δικαιώματα», και ενεργοποίησε το «Μικρόφωνο» και την «Κάμερα».</string>
+  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">Το Molly χρειάζεται τα δικαιώματα μικροφώνου για τη λήψη βίντεο , αλλά αυτά δεν έχουν δοθεί. Πήγαινε στις ρυθμίσεις εφαρμογών, επίλεξε τα «Δικαιώματα», και ενεργοποίησε το «Μικρόφωνο» και την «Κάμερα».</string>
 
   <!-- Displayed when there is an error capturing video -->
   <string name="MediaSendViewModel__error_recording_video">Σφάλμα κατά την εγγραφή βίντεο</string>
@@ -228,6 +227,9 @@
   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Φαίνεται πως προσπαθείς να συνδέσεις μια συσκευή Signal. Πάτησε «Συνέχεια», μετά «Σύνδεση νέας συσκευής» και σάρωσε ξανά τον κωδικό QR.</string>
   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Συνέχεια</string>
+<<<<<<< MOLLY
+</resources>
+=======
 
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Δεν είναι δυνατή η μεταφορά λογαριασμού</string>
@@ -262,3 +264,4 @@
     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
     <string name="MediaEditScreen__d_of_d">%1$d από %2$d</string>
 </resources>
+>>>>>>> SIGNAL

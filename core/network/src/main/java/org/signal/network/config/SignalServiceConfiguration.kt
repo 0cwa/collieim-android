@@ -2,7 +2,9 @@ package org.signal.network.config
 
 import okhttp3.Dns
 import okhttp3.Interceptor
+import java.net.ProxySelector
 import java.util.Optional
+import javax.net.SocketFactory
 
 /**
  * Defines all network configuration needed to connect to the Signal service.
@@ -15,8 +17,14 @@ data class SignalServiceConfiguration(
   val signalCdsiUrls: Array<SignalCdsiUrl>,
   val signalSvr2Urls: Array<SignalSvr2Url>,
   val networkInterceptors: List<Interceptor>,
+<<<<<<< MOLLY:lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/configuration/SignalServiceConfiguration.kt
+  val socketFactory: SocketFactory,
+  val proxySelector: ProxySelector,
+  val dns: Dns,
+=======
   val dns: Optional<Dns>,
   val signalProxy: Optional<SignalProxy>,
+>>>>>>> SIGNAL:core/network/src/main/java/org/signal/network/config/SignalServiceConfiguration.kt
   val zkGroupServerPublicParams: ByteArray,
   val genericServerPublicParams: ByteArray,
   val backupServerPublicParams: ByteArray,

@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -25,6 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.signal.core.models.media.Media;
 import org.signal.core.ui.logging.LoggingFragment;
+import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.util.EditTextUtil;
 import org.signal.core.util.StreamUtil;
 import org.signal.core.util.StringUtil;
@@ -217,7 +217,7 @@ public class CreateProfileFragment extends LoggingFragment {
                                                                        }));
       binding.groupDescriptionText.setVisibility(View.GONE);
       binding.profileDescriptionText.setLearnMoreVisible(true);
-      binding.profileDescriptionText.setLinkColor(ContextCompat.getColor(requireContext(), org.signal.core.ui.R.color.signal_colorPrimary));
+      binding.profileDescriptionText.setLinkColor(ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorPrimary));
       binding.profileDescriptionText.setOnLinkClickListener(v -> CommunicationActions.openBrowserLink(requireContext(), getString(R.string.EditProfileFragment__support_link)));
 
       if (SignalStore.account().isPhoneNumberless()) {

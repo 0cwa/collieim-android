@@ -1,5 +1,16 @@
 package org.thoughtcrime.securesms.components.settings.app
 
+<<<<<<< MOLLY
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.util.TextSecurePreferences
+import org.thoughtcrime.securesms.util.livedata.Store
+=======
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +33,7 @@ import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
+>>>>>>> SIGNAL
 
 /**
  * Drives [org.signal.appsettings.home.AppSettingsScreen]. Navigation goes straight to [parentEventEmitter].
@@ -36,15 +48,48 @@ class AppSettingsViewModel(
 
   private val _state = MutableStateFlow(
     AppSettingsState(
+<<<<<<< MOLLY
+      isPrimaryDevice = SignalStore.account.isPrimaryDevice,
+      unreadPaymentsCount = 0,
+      userUnregistered = TextSecurePreferences.isUnauthorizedReceived(AppDependencies.application) || !SignalStore.account.isRegistered,
+      isLinkedDevice = SignalStore.account.isLinkedDevice,
+      clientDeprecated = SignalStore.misc.isClientDeprecated
+=======
       isPrimaryDevice = AppSettingsRepository.isPrimaryDevice(),
       allowUserToGoToDonationManagementScreen = AppSettingsRepository.likelyCanManageDonations(),
       showInternalPreferences = AppSettingsRepository.showInternalPreferences(),
       showPayments = AppSettingsRepository.showPayments(),
       showAppUpdates = AppSettingsRepository.showAppUpdates()
+>>>>>>> SIGNAL
     )
   )
   private val _actions = Channel<AppSettingsAction>(Channel.BUFFERED)
 
+<<<<<<< MOLLY
+  private val disposables = CompositeDisposable()
+
+  val state: LiveData<AppSettingsState> = store.stateLiveData
+  val self: LiveData<BioRecipientState> = Recipient.self().live().liveData.map { BioRecipientState(it) }
+
+  override fun onCleared() {
+    disposables.clear()
+  }
+
+  fun refreshDeprecatedOrUnregistered() {
+    store.update {
+      it.copy(
+        clientDeprecated = SignalStore.misc.isClientDeprecated,
+        userUnregistered = TextSecurePreferences.isUnauthorizedReceived(AppDependencies.application) || !SignalStore.account.isRegistered
+      )
+    }
+  }
+
+  fun refresh() {
+    store.update {
+      it.copy(
+        backupFailureState = getBackupFailureState()
+      )
+=======
   val state: StateFlow<AppSettingsState> = _state.asStateFlow()
   val actions: Flow<AppSettingsAction> = _actions.receiveAsFlow()
 
@@ -118,6 +163,7 @@ class AppSettingsViewModel(
   private suspend fun copySubscriberId(type: InAppPaymentSubscriberRecord.Type, snackbar: Snackbar) {
     if (AppSettingsRepository.copySubscriberIdToClipboard(type)) {
       _state.update { it.copy(snackbar = snackbar) }
+>>>>>>> SIGNAL
     }
   }
 

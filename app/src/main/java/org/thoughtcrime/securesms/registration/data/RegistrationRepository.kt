@@ -9,13 +9,21 @@ import android.app.backup.BackupManager
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
+<<<<<<< MOLLY
+import androidx.core.app.NotificationManagerCompat
+=======
 import com.google.android.gms.auth.api.phone.SmsRetriever
+>>>>>>> SIGNAL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+<<<<<<< MOLLY
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+=======
 import kotlinx.coroutines.withTimeoutOrNull
+>>>>>>> SIGNAL
 import org.signal.core.models.AccountEntropyPool
 import org.signal.core.models.MasterKey
 import org.signal.core.models.ServiceId
@@ -240,8 +248,7 @@ object RegistrationRepository {
     val masterKey = data.masterKey?.let { MasterKey(it.toByteArray()) }
     SvrRepository.onRegistrationComplete(masterKey, data.pin, hasPin, data.reglockEnabled, SignalStore.account.restoredAccountEntropyPool)
 
-    AppDependencies.resetNetwork()
-    AppDependencies.startNetwork()
+    AppDependencies.resetNetwork(restartMessageObserver = true)
     PreKeysSyncJob.enqueue()
 
     recipientTable.clearSelfKeyTransparencyData()
@@ -649,33 +656,6 @@ object RegistrationRepository {
       }
       .map { String(it, StandardCharsets.ISO_8859_1) }
       .toList()
-  }
-
-  /**
-   * Starts an SMS listener to auto-enter a verification code.
-   *
-   * The listener [lives for 5 minutes](https://developers.google.com/android/reference/com/google/android/gms/auth/api/phone/SmsRetrieverApi).
-   *
-   * @return whether or not the Play Services SMS Listener was successfully registered.
-   */
-  suspend fun registerSmsListener(context: Context): Boolean {
-    Log.d(TAG, "Attempting to start verification code SMS retriever.")
-    val started = withTimeoutOrNull(5.seconds.inWholeMilliseconds) {
-      try {
-        SmsRetriever.getClient(context).startSmsRetriever().await()
-        Log.d(TAG, "Successfully started verification code SMS retriever.")
-        return@withTimeoutOrNull true
-      } catch (ex: Exception) {
-        Log.w(TAG, "Could not start verification code SMS retriever due to exception.", ex)
-        return@withTimeoutOrNull false
-      }
-    }
-
-    if (started == null) {
-      Log.w(TAG, "Could not start verification code SMS retriever due to timeout.")
-    }
-
-    return started == true
   }
 
   @VisibleForTesting

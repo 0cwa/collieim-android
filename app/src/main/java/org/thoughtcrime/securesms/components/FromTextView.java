@@ -7,9 +7,18 @@ import android.util.AttributeSet;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
+import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.util.ContextUtil;
+<<<<<<< MOLLY
+import org.signal.core.util.DrawableUtil;
+import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.components.emoji.SimpleEmojiTextView;
+import org.thoughtcrime.securesms.recipients.Recipient;
+import org.thoughtcrime.securesms.util.RemoteConfig;
+import org.thoughtcrime.securesms.util.SpanUtil;
+import org.thoughtcrime.securesms.util.ViewUtil;
+=======
 import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.emoji.SimpleEmojiTextView;
@@ -17,6 +26,7 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.signal.core.util.DrawableUtil;
 import org.signal.core.ui.util.SpanUtil;
 import org.signal.core.ui.util.ViewUtil;
+>>>>>>> SIGNAL
 
 public class FromTextView extends SimpleEmojiTextView {
 
@@ -86,17 +96,17 @@ public class FromTextView extends SimpleEmojiTextView {
   }
 
   private Drawable getMuted() {
-    return getDrawable(R.drawable.ic_bell_disabled_16, R.color.signal_icon_tint_secondary);
+    return getDrawable(R.drawable.ic_bell_disabled_16, R.attr.signal_icon_tint_secondary);
   }
 
   private Drawable getPinned() {
-    return getDrawable(R.drawable.symbol_pin_16, org.signal.core.ui.R.color.signal_colorOnSurface);
+    return getDrawable(R.drawable.symbol_pin_16, com.google.android.material.R.attr.colorOnSurface);
   }
 
   private Drawable getDrawable(@DrawableRes int drawable, int colorRes) {
     Drawable mutedDrawable = ContextUtil.requireDrawable(getContext(), drawable);
     mutedDrawable.setBounds(0, 0, ViewUtil.dpToPx(16), ViewUtil.dpToPx(16));
-    DrawableUtil.tint(mutedDrawable, ContextCompat.getColor(getContext(), colorRes));
+    DrawableUtil.tint(mutedDrawable, ThemeUtil.getThemedColor(getContext(), colorRes));
     return mutedDrawable;
   }
 }

@@ -222,17 +222,23 @@ public abstract class MessageRecord extends DisplayRecord {
     } else if (isGroupQuit()) {
       return fromRecipient(getFromRecipient(), r -> context.getString(R.string.ConversationItem_group_action_left, r.getDisplayName(context)), Glyph.LEAVE);
     } else if (isIncomingAudioCall()) {
-      return staticUpdateDescription(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_incoming_voice_call), getCallDateString(context)), Glyph.PHONE);
+      return staticUpdateDescriptionWithExpiration(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_incoming_voice_call), getCallDateString(context)), Glyph.PHONE);
     } else if (isIncomingVideoCall()) {
-      return staticUpdateDescription(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_incoming_video_call), getCallDateString(context)), Glyph.VIDEO_CAMERA);
+      return staticUpdateDescriptionWithExpiration(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_incoming_video_call), getCallDateString(context)), Glyph.VIDEO_CAMERA);
     } else if (isOutgoingAudioCall()) {
-      return staticUpdateDescription(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_outgoing_voice_call), getCallDateString(context)), Glyph.PHONE);
+      return staticUpdateDescriptionWithExpiration(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_outgoing_voice_call), getCallDateString(context)), Glyph.PHONE);
     } else if (isOutgoingVideoCall()) {
-      return staticUpdateDescription(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_outgoing_video_call), getCallDateString(context)), Glyph.VIDEO_CAMERA);
+      return staticUpdateDescriptionWithExpiration(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_outgoing_video_call), getCallDateString(context)), Glyph.VIDEO_CAMERA);
     } else if (isMissedAudioCall()) {
+<<<<<<< MOLLY
+      return staticUpdateDescriptionWithExpiration(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_missed_voice_call), getCallDateString(context)), Glyph.PHONE, ContextCompat.getColor(context, R.color.core_red_shade), ContextCompat.getColor(context, R.color.core_red));
+    } else if (isMissedVideoCall()) {
+      return staticUpdateDescriptionWithExpiration(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_missed_video_call), getCallDateString(context)), Glyph.VIDEO_CAMERA, ContextCompat.getColor(context, R.color.core_red_shade), ContextCompat.getColor(context, R.color.core_red));
+=======
       return staticUpdateDescription(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_missed_voice_call), getCallDateString(context)), Glyph.PHONE, ContextCompat.getColor(context, org.signal.core.ui.R.color.core_red_shade), ContextCompat.getColor(context, org.signal.core.ui.R.color.core_red));
     } else if (isMissedVideoCall()) {
       return staticUpdateDescription(context.getString(R.string.MessageRecord_call_message_with_date, context.getString(R.string.MessageRecord_missed_video_call), getCallDateString(context)), Glyph.VIDEO_CAMERA, ContextCompat.getColor(context, org.signal.core.ui.R.color.core_red_shade), ContextCompat.getColor(context, org.signal.core.ui.R.color.core_red));
+>>>>>>> SIGNAL
     } else if (isGroupCall()) {
       return getGroupCallUpdateDescription(context, getBody(), true);
     } else if (isJoined()) {
@@ -503,7 +509,7 @@ public abstract class MessageRecord extends DisplayRecord {
   }
 
   protected static @NonNull UpdateDescription staticUpdateDescriptionWithExpiration(@NonNull String string, Glyph glyph) {
-    return UpdateDescription.staticDescriptionWithExpiration(string, glyph);
+    return staticUpdateDescriptionWithExpiration(string, glyph, 0, 0);
   }
 
   protected static @NonNull UpdateDescription staticUpdateDescriptionWithExpiration(@NonNull String string, Glyph glyph, @ColorInt int lightTint, @ColorInt int darkTint) {

@@ -50,6 +50,7 @@ class RegistrationActivity : PassphraseRequiredActivity() {
     private const val REGISTRATION_NEXT_INTENT_EXTRA = "next_intent"
     private const val START_DESTINATION_EXTRA = "start_destination"
     private const val START_FRESH_EXTRA = "start_fresh"
+    internal const val IS_REREGISTRATION_EXTRA = "is_reregistration"
 
     /**
      * @param nextIntent An optional intent to launch once registration completes successfully. This is how the caller
@@ -59,10 +60,17 @@ class RegistrationActivity : PassphraseRequiredActivity() {
      *   to send a deregistered linked device straight to the link-device screen.
      * @param startFresh When true, any persisted registration data is not restored and the user starts the flow fresh
      *   from the beginning.
+     * @param isReRegistration When true, this flow was explicitly started to register the existing account again.
      */
     @JvmStatic
     @JvmOverloads
-    fun createIntent(context: Context, nextIntent: Intent? = null, startDestination: RegistrationRoute? = null, startFresh: Boolean = false): Intent {
+    fun createIntent(
+      context: Context,
+      nextIntent: Intent? = null,
+      startDestination: RegistrationRoute? = null,
+      startFresh: Boolean = false,
+      isReRegistration: Boolean = false
+    ): Intent {
       return Intent(context, RegistrationActivity::class.java).apply {
         if (nextIntent != null) {
           putExtra(REGISTRATION_NEXT_INTENT_EXTRA, nextIntent)
@@ -71,6 +79,7 @@ class RegistrationActivity : PassphraseRequiredActivity() {
           putExtra(START_DESTINATION_EXTRA, startDestination)
         }
         putExtra(START_FRESH_EXTRA, startFresh)
+        putExtra(IS_REREGISTRATION_EXTRA, isReRegistration)
       }
     }
   }
@@ -81,6 +90,7 @@ class RegistrationActivity : PassphraseRequiredActivity() {
 
     val startDestination = IntentCompat.getParcelableExtra(intent, START_DESTINATION_EXTRA, RegistrationRoute::class.java)
     val startFresh = intent.getBooleanExtra(START_FRESH_EXTRA, false)
+    val isReRegistration = intent.getBooleanExtra(IS_REREGISTRATION_EXTRA, false)
 
     setContent {
       SignalTheme(incognitoKeyboardEnabled = SignalStore.settings.isIncognitoKeyboardEnabled) {
@@ -92,6 +102,9 @@ class RegistrationActivity : PassphraseRequiredActivity() {
               .fillMaxSize()
               .navigationBarsPadding(),
             onRegistrationComplete = {
+              if (SignalStore.account.isPrimaryDevice && SignalStore.account.isMultiDevice) {
+                SignalStore.misc.shouldShowLinkedDevicesReminder = isReRegistration
+              }
               setResult(RESULT_OK)
               IntentCompat.getParcelableExtra(intent, REGISTRATION_NEXT_INTENT_EXTRA, Intent::class.java)?.let { startActivity(it) }
               finish()

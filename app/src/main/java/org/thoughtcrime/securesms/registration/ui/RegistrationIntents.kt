@@ -22,7 +22,12 @@ object RegistrationIntents {
 
   @JvmStatic
   fun newIntentForReRegistration(context: Context): Intent {
-    return RegistrationActivity.createIntent(context, nextIntent = MainActivity.clearTop(context), startFresh = true)
+    return RegistrationActivity.createIntent(
+      context = context,
+      nextIntent = MainActivity.clearTop(context),
+      startFresh = true,
+      isReRegistration = true
+    )
   }
 
   @JvmStatic

@@ -125,36 +125,9 @@ include(":feature:chat-settings")
 include(":feature:media-keyboard")
 include(":feature:media-viewer")
 
-<<<<<<< MOLLY
 // Testing/Lint modules
-include(":lintchecks")
-include(":fast-lint")
-=======
-// Demo apps
-include(":demo:paging")
-include(":demo:device-transfer")
-include(":demo:donations")
-include(":demo:contacts")
-include(":demo:qr")
-include(":demo:spinner")
-include(":demo:video")
-include(":demo:image-editor")
-include(":demo:debuglogs-viewer")
-include(":demo:registration")
-include(":demo:camera")
-include(":demo:media-keyboard")
-include(":demo:apng")
-include(":demo:list-detail")
-
-// Testing/Lint modules
-include(":lintchecks")
-include(":fast-lint")
 include(":screener")
-include(":benchmark")
-include(":baseline-profile")
-include(":microbenchmark")
-// App project name
-project(":app").name = "Signal-Android"
->>>>>>> SIGNAL
+include(":lintchecks")
+include(":fast-lint")
 
 rootProject.name = "Molly"

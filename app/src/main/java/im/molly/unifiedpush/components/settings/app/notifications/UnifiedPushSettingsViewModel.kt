@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.model.MollySocket
+import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
@@ -64,6 +65,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       device = SignalStore.unifiedpush.device,
       aci = SignalStore.account.aci?.toString(),
       registrationStatus = SignalStore.unifiedpush.registrationStatus,
+      registrationFailed = SignalStore.unifiedpush.registrationFailed,
       distributors = distributors,
       selected = selected,
       selectedNotAck = !ack,
@@ -74,8 +76,13 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   fun setUnifiedPushDistributor(distributor: String) {
     SignalStore.unifiedpush.endpoint = null
-    UnifiedPush.saveDistributor(application, distributor)
+    UnifiedPushDistributor.saveDistributor(application, distributor)
     refresh()
+    updateRegistration()
+  }
+
+  fun retryRegistration() {
+    SignalStore.unifiedpush.registrationRetryScheduled = false
     updateRegistration()
   }
 

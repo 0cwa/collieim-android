@@ -6,6 +6,8 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.unifiedpush.android.connector.LinkActivityHelper
 
 class UnifiedPushDefaultDistributorLinkActivity : AppCompatActivity() {
@@ -25,6 +27,8 @@ class UnifiedPushDefaultDistributorLinkActivity : AppCompatActivity() {
     super.onActivityResult(requestCode, resultCode, data)
     if (helper.onLinkActivityResult(requestCode, resultCode, data)) {
       // The distributor is saved, you can request registrations with UnifiedPush.registerApp now
+      // The app can lock while the distributor's link activity is open; never touch the encrypted store then.
+      if (!KeyCachingService.isLocked()) SignalStore.unifiedpush.registrationRetryScheduled = false
       Log.d(TAG, "Found a distributor with link activity found.")
       val intent = Intent().putExtra(KEY_FOUND, true)
       setResult(RESULT_OK, intent)

@@ -6,6 +6,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.ui.SelectDistributorDialogsBuilder
 import org.unifiedpush.android.connector.ui.UnifiedPushFunctions
+import org.thoughtcrime.securesms.service.KeyCachingService
 
 object UnifiedPushDistributor {
 
@@ -24,8 +25,13 @@ object UnifiedPushDistributor {
   fun selectFirstDistributor() {
     val context = AppDependencies.application
     UnifiedPush.getDistributors(context).firstOrNull()?.also {
-      UnifiedPush.saveDistributor(context, it)
+      saveDistributor(context, it)
     }
+  }
+
+  fun saveDistributor(context: Context, distributor: String) {
+    if (!KeyCachingService.isLocked()) SignalStore.unifiedpush.registrationRetryScheduled = false
+    UnifiedPush.saveDistributor(context, distributor)
   }
 
   @JvmStatic
@@ -36,7 +42,7 @@ object UnifiedPushDistributor {
         override fun getAckDistributor(): String? = UnifiedPush.getAckDistributor(context)
         override fun getDistributors(): List<String> = UnifiedPush.getDistributors(context)
         override fun registerApp(instance: String) = UnifiedPush.registerApp(context, instance)
-        override fun saveDistributor(distributor: String) = UnifiedPush.saveDistributor(context, distributor)
+        override fun saveDistributor(distributor: String) = UnifiedPushDistributor.saveDistributor(context, distributor)
         override fun tryUseDefaultDistributor(callback: (Boolean) -> Unit) = UnifiedPush.tryUseDefaultDistributor(context, callback)
       }
     ).apply {

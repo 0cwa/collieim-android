@@ -3,6 +3,11 @@ package org.thoughtcrime.securesms.keyvalue
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.logging.Log
+import org.signal.storage.keyvalue.KeyValueStore
+import org.signal.storage.keyvalue.SignalStoreValues
+import org.signal.storage.keyvalue.booleanValue
+import org.signal.storage.keyvalue.longValue
+import org.signal.storage.keyvalue.stringValue
 
 class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
@@ -23,7 +28,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   public override fun onFirstEverAppLaunch() = Unit
 
-  public override fun getKeysToIncludeInBackup() = emptyList<String>()
+  override val keysToIncludeInBackup: List<String> get() = emptyList()
 
   @get:JvmName("isEnabled")
   var enabled: Boolean by booleanValue(UNIFIEDPUSH_ENABLED, false)

@@ -20,7 +20,7 @@ import kotlin.reflect.jvm.isAccessible
  *
  * ```
  * @RemoteConfigForTest(
- *   flags = [Flag(TestRemoteConfigFlag.INTERNAL_USER, "true")],
+ *   flags = [Flag(TestRemoteConfigFlag.DEFAULT_MAX_BACKOFF, "1")],
  *   rawFlags = [RawFlag("android.someOtherKey", "1")]
  * )
  * class MyTest { ... }
@@ -45,7 +45,6 @@ annotation class RawFlag(val key: String, val value: String)
  * Typed handles for remote config flags referenced by tests.
  */
 enum class TestRemoteConfigFlag(private val property: KProperty0<*>) {
-  INTERNAL_USER(RemoteConfig::internalUser),
   DEFAULT_MAX_BACKOFF(RemoteConfig::defaultMaxBackoff);
 
   val key: String

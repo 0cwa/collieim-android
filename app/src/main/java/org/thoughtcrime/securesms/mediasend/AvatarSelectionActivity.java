@@ -26,6 +26,8 @@ import org.thoughtcrime.securesms.mms.PushMediaConstraints;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.signal.core.util.contentproviders.BlobProvider;
 import org.thoughtcrime.securesms.scribbles.ImageEditorFragment;
+import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
+import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.MediaUtil;
 
 import org.signal.core.util.SeekableFileDescriptor;
@@ -55,6 +57,14 @@ public class AvatarSelectionActivity extends AppCompatActivity implements Camera
     return intent;
   }
 
+  private final DynamicTheme dynamicTheme = new DynamicNoActionBarTheme();
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    dynamicTheme.onResume(this);
+  }
+
   @Override
   protected void attachBaseContext(@NonNull Context newBase) {
     getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -65,6 +75,7 @@ public class AvatarSelectionActivity extends AppCompatActivity implements Camera
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     EdgeToEdge.enable(this);
     super.onCreate(savedInstanceState);
+    dynamicTheme.onCreate(this);
 
     setContentView(R.layout.avatar_selection_activity);
 

@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.profiles.edit.pnp
 
 import android.os.Bundle
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -10,6 +9,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.ViewBinderDelegate
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
@@ -80,7 +80,7 @@ class WhoCanFindMeByPhoneNumberFragment : DSLSettingsFragment(
             WhoCanFindMeByPhoneNumberState.NOBODY -> R.string.WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able
           },
           DSLSettingsText.TextAppearanceModifier(CoreUiR.style.Signal_Text_BodyMedium),
-          DSLSettingsText.ColorModifier(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_colorOnSurfaceVariant))
+          DSLSettingsText.ColorModifier(ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorOnSurfaceVariant))
         )
       )
     }

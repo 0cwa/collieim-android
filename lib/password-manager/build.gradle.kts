@@ -20,7 +20,6 @@ dependencies {
   implementation(project(":core:util"))
 
   implementation(libs.androidx.credentials)
-  implementation(libs.androidx.credentials.compat)
   implementation(libs.kotlinx.serialization.cbor)
   implementation(libs.kotlinx.serialization.json)
 

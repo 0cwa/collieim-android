@@ -16,6 +16,8 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import okio.ByteString.Companion.toByteString
 import org.junit.Before
@@ -78,6 +80,32 @@ class RegistrationRepositoryTest {
       isPhoneNumberlessRegistrationAvailable = true,
       signalLoginPurchaseApi = OneTimePurchaseApi.Empty
     )
+  }
+
+  @Test
+  fun `a fresh registration does not enable network before the user proceeds`() {
+    assertThat(networkController.networkEnabledForRegistration).isEqualTo(false)
+  }
+
+  @Test
+  fun `linking enables network before provisioning and does not advertise disabled transfer`() = runTest {
+    networkController.onStartLinkDeviceProvisioning = { allowLinkAndSync ->
+      assertThat(networkController.networkEnabledForRegistration).isEqualTo(true)
+      assertThat(allowLinkAndSync).isEqualTo(false)
+      emptyFlow()
+    }
+
+    repository.startLinkDeviceProvisioning().toList()
+  }
+
+  @Test
+  fun `quick restore enables network before starting its provisioning connection`() = runTest {
+    networkController.onStartProvisioning = {
+      assertThat(networkController.networkEnabledForRegistration).isEqualTo(true)
+      emptyFlow()
+    }
+
+    repository.startProvisioning().toList()
   }
 
   // ==================== getAndMaybeHealRemoteBackupInfo ====================

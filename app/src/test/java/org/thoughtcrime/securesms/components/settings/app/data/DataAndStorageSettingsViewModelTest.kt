@@ -104,7 +104,8 @@ class DataAndStorageSettingsViewModelTest {
         sentMediaQuality = SentMediaQuality.HIGH,
         callDataMode = CallDataMode.LOW_ALWAYS,
         forceWebsocketMode = true,
-        isProxyEnabled = true
+        isProxyEnabled = true,
+        showNetworkSettings = false
       )
     )
   }

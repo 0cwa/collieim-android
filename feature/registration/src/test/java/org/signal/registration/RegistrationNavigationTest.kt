@@ -231,7 +231,7 @@ class RegistrationNavigationTest {
   }
 
   @Test
-  fun `when isLinkAndSyncAvailable is true on compact display, link device button is not shown`() {
+  fun `when isLinkAndSyncAvailable is true on compact display, link device button is shown as a text button`() {
     // Given
     every { mockRepository.isLinkAndSyncAvailable } returns true
     val permissionsState = createMockPermissionsState()
@@ -245,15 +245,15 @@ class RegistrationNavigationTest {
       }
     }
 
-    // Then - compact layout always uses the primary buttons regardless of the flag
-    composeTestRule.onNodeWithTag(TestTags.WELCOME_LINK_DEVICE_BUTTON).assertDoesNotExist()
+    // Then - compact layout always uses the primary buttons regardless of the flag; Molly adds a link device text button below them
+    composeTestRule.onNodeWithTag(TestTags.WELCOME_LINK_DEVICE_BUTTON).assertIsDisplayed()
     composeTestRule.onNodeWithTag(TestTags.WELCOME_GET_STARTED_BUTTON).assertIsDisplayed()
     composeTestRule.onNodeWithTag(TestTags.WELCOME_RESTORE_OR_TRANSFER_BUTTON).assertIsDisplayed()
   }
 
   @Test
   @Config(qualifiers = "w800dp-h800dp-xhdpi")
-  fun `when isLinkAndSyncAvailable is true on medium display, link device button is not shown`() {
+  fun `when isLinkAndSyncAvailable is true on medium display, link device button is shown as a text button`() {
     // Given
     every { mockRepository.isLinkAndSyncAvailable } returns true
     val permissionsState = createMockPermissionsState()
@@ -267,15 +267,15 @@ class RegistrationNavigationTest {
       }
     }
 
-    // Then - medium layout always uses the primary buttons regardless of the flag
-    composeTestRule.onNodeWithTag(TestTags.WELCOME_LINK_DEVICE_BUTTON).assertDoesNotExist()
+    // Then - medium layout always uses the primary buttons regardless of the flag; Molly adds a link device text button below them
+    composeTestRule.onNodeWithTag(TestTags.WELCOME_LINK_DEVICE_BUTTON).assertIsDisplayed()
     composeTestRule.onNodeWithTag(TestTags.WELCOME_GET_STARTED_BUTTON).assertIsDisplayed()
     composeTestRule.onNodeWithTag(TestTags.WELCOME_RESTORE_OR_TRANSFER_BUTTON).assertIsDisplayed()
   }
 
   @Test
   @Config(qualifiers = "w1280dp-h800dp-xhdpi")
-  fun `when isLinkAndSyncAvailable is false, Welcome does not show the link device button`() {
+  fun `when isLinkAndSyncAvailable is false, Welcome still shows the link device button`() {
     // Given - relaxed mock returns false for isLinkAndSyncAvailable by default
     val permissionsState = createMockPermissionsState()
 
@@ -288,8 +288,8 @@ class RegistrationNavigationTest {
       }
     }
 
-    // Then
-    composeTestRule.onNodeWithTag(TestTags.WELCOME_LINK_DEVICE_BUTTON).assertDoesNotExist()
+    // Then - Molly always offers linking on the primary layout, so the flag only decides whether restore is hidden
+    composeTestRule.onNodeWithTag(TestTags.WELCOME_LINK_DEVICE_BUTTON).assertIsDisplayed()
     composeTestRule.onNodeWithTag(TestTags.WELCOME_RESTORE_OR_TRANSFER_BUTTON).assertIsDisplayed()
     composeTestRule.onNodeWithTag(TestTags.WELCOME_GET_STARTED_BUTTON).assertIsDisplayed()
   }

@@ -10,7 +10,7 @@ import java.util.Locale
  * Formats [LocalTime] as localized time. For example, "1:45 PM" or "13:45"
  */
 fun LocalTime.formatHours(context: Context): String {
-  return formatHours(is24Hour = DateFormat.is24HourFormat(context), locale = LocaleUtil.getFirstLocale())
+  return DateUtils.getOnlyTimeString(context, localTime = this)
 }
 
 /**
@@ -20,6 +20,7 @@ fun LocalTime.formatHours(context: Context): String {
 fun LocalTime.formatHours(is24Hour: Boolean, locale: Locale): String {
   // We have to create our own pattern here, since the formatter instance returned by DateTimeFormatter.ofLocalizedTime() is looked up lazily, is immutable,
   // and is not updated when the system's 24-hour time setting changes.
-  val pattern = if (is24Hour) "HH:mm" else "h:mm a"
+  val skeleton = if (is24Hour) "HHmm" else "hhmma"
+  val pattern = DateFormat.getBestDateTimePattern(locale, skeleton)
   return DateTimeFormatter.ofPattern(pattern, locale).format(this)
 }

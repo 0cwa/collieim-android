@@ -3,8 +3,7 @@ package org.thoughtcrime.securesms.service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import org.signal.core.util.ServiceUtil
-import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.util.TextSecurePreferences
 
 /**
  * Respond to a PanicKit trigger Intent by locking the app.  PanicKit provides a
@@ -14,10 +13,9 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
  */
 class PanicResponderListener : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
-    val passwordEnabled = !SignalStore.settings.passphraseDisabled
-    val keyguardSecure = ServiceUtil.getKeyguardManager(context).isKeyguardSecure
+    val passwordEnabled = TextSecurePreferences.isPassphraseLockEnabled(context)
     val intentAction = intent.action
-    if ((passwordEnabled || keyguardSecure) && "info.guardianproject.panic.action.TRIGGER" == intentAction) {
+    if (passwordEnabled && "info.guardianproject.panic.action.TRIGGER" == intentAction) {
       val lockIntent = Intent(context, KeyCachingService::class.java)
       lockIntent.action = KeyCachingService.CLEAR_KEY_ACTION
       context.startService(lockIntent)

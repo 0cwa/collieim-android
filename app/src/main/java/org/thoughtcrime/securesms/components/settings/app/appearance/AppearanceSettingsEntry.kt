@@ -30,7 +30,7 @@ fun AppearanceSettingsEntry(
 
   CollectActions(viewModel.actions) { action ->
     when (action) {
-      is AppearanceSettingsAction.ApplySplashScreenTheme -> SplashScreenUtil.setSplashScreenThemeIfNecessary(activity, action.theme.toSettingsTheme())
+      is AppearanceSettingsAction.ApplySplashScreenTheme -> SplashScreenUtil.setSplashScreenThemeIfNecessary(activity, action.theme.toSettingsTheme(), action.dynamicColors)
     }
   }
 

@@ -17,7 +17,6 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
 import assertk.assertThat
 import assertk.assertions.containsExactly
-import assertk.assertions.isEmpty
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -67,13 +66,13 @@ class HelpSettingsScreenTest {
   }
 
   @Test
-  fun `tapping the version does nothing`() {
+  fun `tapping the version emits VersionClicked`() {
     setContent(HelpSettingsState(versionName = "8.33.0"))
 
     scrollTo(HelpSettingsTestTags.ROW_VERSION)
     composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_VERSION).performClick()
 
-    assertThat(events).isEmpty()
+    assertThat(events).containsExactly(HelpSettingsEvent.VersionClicked)
   }
 
   private fun assertClickEmits(tag: String, expected: HelpSettingsEvent) {

@@ -41,7 +41,7 @@ class DataAndStorageSettingsFragment : ComposeFragment() {
     when (action) {
       DataAndStorageSettingsAction.NavigateBack -> requireActivity().onBackPressedDispatcher.onBackPressed()
       DataAndStorageSettingsAction.NavigateToManageStorage -> findNavController().safeNavigate(R.id.action_dataAndStorageSettingsFragment_to_storagePreferenceFragment)
-      DataAndStorageSettingsAction.NavigateToProxy -> findNavController().safeNavigate(R.id.action_dataAndStorageSettingsFragment_to_editProxyFragment)
+      DataAndStorageSettingsAction.NavigateToProxy -> findNavController().safeNavigate(R.id.action_direct_to_networkPreferenceFragment)
     }
   }
 }

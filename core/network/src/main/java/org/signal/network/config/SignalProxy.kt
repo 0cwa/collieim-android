@@ -6,5 +6,5 @@
 package org.signal.network.config
 
 class SignalProxy(val host: String, val port: Int) {
-  fun toProxyConfig(): ProxyConfig = ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.TLS, host, port)
+  fun toProxyConfig(): ProxyConfig = ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.TLS, host, port, ProxyConfig.ProxySource.USER)
 }

@@ -116,7 +116,7 @@ private fun ReceiptList(
           text = year.toString(),
           modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surface)
         )
       }
 

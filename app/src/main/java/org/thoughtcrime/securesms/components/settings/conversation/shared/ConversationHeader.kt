@@ -31,10 +31,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import org.signal.core.models.badges.Badge
 import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Previews
@@ -42,17 +44,13 @@ import org.signal.emoji.EmojiText
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.avatar.AvatarImage
 import org.thoughtcrime.securesms.avatar.view.AvatarView
-import org.thoughtcrime.securesms.badges.BadgeImageView
-import org.thoughtcrime.securesms.components.settings.app.subscription.BadgeImageSize
+import org.thoughtcrime.securesms.components.settings.app.subscription.BadgeImageLarge
 import org.thoughtcrime.securesms.database.model.StoryViewState
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.signal.core.ui.R as CoreUiR
 
 private val AVATAR_SIZE = 80.dp
-private val BADGE_SIZE = 36.dp
-private val BADGE_OFFSET_X = 44.dp
-private val BADGE_OFFSET_Y = 52.dp
 private val VERIFIED_BADGE_SIZE = 28.dp
 private val HEADLINE_GLYPH_SIZE = 24.dp
 
@@ -69,11 +67,10 @@ fun ConversationHeader(
   modifier: Modifier = Modifier,
   storyViewState: StoryViewState = StoryViewState.NONE,
   subhead: String? = null,
+  linkedDeviceCount: Int? = null,
   showVerifiedBadge: Boolean = false,
   showSystemContactBadge: Boolean = false,
-  badges: List<Badge> = emptyList(),
   onAvatarClick: () -> Unit = {},
-  onBadgeClick: (Badge) -> Unit = {},
   onNameClick: (() -> Unit)? = null,
   onAvatarViewCreated: (View) -> Unit = {},
   underName: @Composable ColumnScope.() -> Unit = {}
@@ -82,9 +79,7 @@ fun ConversationHeader(
     AvatarHeader(
       recipient = recipient,
       storyViewState = storyViewState,
-      badges = badges,
       onAvatarClick = onAvatarClick,
-      onBadgeClick = onBadgeClick,
       onAvatarViewCreated = onAvatarViewCreated
     )
 
@@ -113,6 +108,20 @@ fun ConversationHeader(
           modifier = Modifier.padding(top = 8.dp)
         )
       }
+      if (linkedDeviceCount != null) {
+        Text(
+          text = if (linkedDeviceCount > 0) {
+            pluralStringResource(R.plurals.BioTextPreference_n_linked_devices, linkedDeviceCount, linkedDeviceCount)
+          } else {
+            stringResource(R.string.BioTextPreference_no_linked_devices)
+          },
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          textAlign = TextAlign.Center,
+          modifier = Modifier.padding(top = 8.dp)
+        )
+      }
+
     }
   }
 }
@@ -121,23 +130,22 @@ fun ConversationHeader(
 private fun AvatarHeader(
   recipient: Recipient,
   storyViewState: StoryViewState,
-  badges: List<Badge>,
   onAvatarClick: () -> Unit,
-  onBadgeClick: (Badge) -> Unit,
   onAvatarViewCreated: (View) -> Unit,
   modifier: Modifier = Modifier
 ) {
+  val badge = if (recipient.isSelf) null else recipient.featuredBadge
   Box(
     contentAlignment = Alignment.Center,
     modifier = modifier
       .fillMaxWidth()
       .padding(top = 12.dp)
   ) {
-    // Sized to the avatar rather than the header, so the badge can hang off of the avatar's bottom-end corner.
     Box(
       modifier = Modifier
+        .padding(bottom = if (badge != null) 8.dp else 0.dp)
         .width(AVATAR_SIZE)
-        .height(if (badges.isNotEmpty()) BADGE_OFFSET_Y + BADGE_SIZE else AVATAR_SIZE)
+        .height(AVATAR_SIZE)
     ) {
       if (LocalInspectionMode.current) {
         AvatarImage(
@@ -158,17 +166,16 @@ private fun AvatarHeader(
           avatarView.setOnClickListener { onAvatarClick() }
         }
       }
-
-      if (badges.isNotEmpty()) {
-        AndroidView(
-          factory = { context -> BadgeImageView(context, BadgeImageSize.LARGE) },
+      badge?.let {
+        val badgeDescription = stringResource(R.string.ImageView__badge)
+        BadgeImageLarge(
+          badge = badge,
           modifier = Modifier
-            .offset(x = BADGE_OFFSET_X, y = BADGE_OFFSET_Y)
-            .size(BADGE_SIZE)
-        ) { badgeView ->
-          badgeView.setBadgeFromRecipient(recipient)
-          badgeView.setOnClickListener { onBadgeClick(badges.first()) }
-        }
+            .align(Alignment.BottomEnd)
+            .offset(y = 8.dp)
+            .size(36.dp)
+            .semantics { contentDescription = badgeDescription }
+        )
       }
     }
   }

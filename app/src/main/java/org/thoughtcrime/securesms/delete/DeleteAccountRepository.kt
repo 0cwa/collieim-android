@@ -25,7 +25,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.whispersystems.signalservice.api.NetworkResultUtil
-import org.whispersystems.signalservice.api.payments.FormatterOptions
 import java.io.IOException
 
 /**
@@ -52,12 +51,6 @@ class DeleteAccountRepository {
 
   /** The user's username, or null if they haven't set one. */
   fun getUsername(): String? = SignalStore.account.username
-
-  /** The user's payments balance, formatted for display, or null if there's nothing in there worth mentioning. */
-  fun getFormattedWalletBalance(): String? {
-    val amount = SignalStore.payments.mobileCoinLatestBalance().fullAmount
-    return if (amount.isPositive) amount.toString(FormatterOptions.defaults()) else null
-  }
 
   /** Whether the given number is the one this account is registered to. */
   fun isNumberMatch(countryCode: Int, nationalNumber: Long): Boolean {

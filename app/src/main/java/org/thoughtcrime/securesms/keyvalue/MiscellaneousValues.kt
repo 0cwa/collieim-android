@@ -287,11 +287,6 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
   var lastForegroundTime by longValue(LAST_FOREGROUND_TIME, 0)
 
   /**
-   * Whether or not we've done the initial "PNP Hello World" dance.
-   */
-  var hasPniInitializedDevices by booleanValue(PNI_INITIALIZED_DEVICES, true)
-
-  /**
    * Whether or not we should show a reminder for the user to relink their devices after re-registering.
    */
   var shouldShowLinkedDevicesReminder by booleanValue(LINKED_DEVICES_REMINDER, false)

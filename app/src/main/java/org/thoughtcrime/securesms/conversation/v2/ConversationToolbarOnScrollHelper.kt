@@ -4,10 +4,10 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.R as MaterialR
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.util.Material3OnScrollHelper
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * Scroll helper to manage the color state of the top bar and status bar.
@@ -29,26 +29,26 @@ class ConversationToolbarOnScrollHelper(
   lifecycleOwner = lifecycleOwner
 ) {
   override val activeColorSet: ColorSet
-    get() = when {
-      incognito -> ColorSet(R.color.conversation_toolbar_color_incognito)
-      releaseNotesProvider() -> ColorSet(R.color.release_notes_toolbar_scrolled)
-      else -> ColorSet(getActiveToolbarColor(wallpaperProvider() != null))
+    = when {
+      incognito -> ColorSet.from(activity, R.color.conversation_toolbar_color_incognito)
+      releaseNotesProvider() -> ColorSet.from(activity, R.color.release_notes_toolbar_scrolled)
+      else -> ColorSet.from(activity, getActiveToolbarColor(wallpaperProvider() != null))
     }
 
   override val inactiveColorSet: ColorSet
-    get() = when {
-      incognito -> ColorSet(R.color.conversation_toolbar_color_incognito)
-      releaseNotesProvider() -> ColorSet(R.color.release_notes_toolbar_transparent)
-      else -> ColorSet(getInactiveToolbarColor(wallpaperProvider() != null))
+    = when {
+      incognito -> ColorSet.from(activity, R.color.conversation_toolbar_color_incognito)
+      releaseNotesProvider() -> ColorSet.from(activity, R.color.release_notes_toolbar_transparent)
+      else -> ColorSet.from(activity, getInactiveToolbarColor(wallpaperProvider() != null))
     }
 
   @ColorRes
   private fun getActiveToolbarColor(hasWallpaper: Boolean): Int {
-    return if (hasWallpaper) R.color.conversation_toolbar_color_wallpaper_scrolled else CoreUiR.color.signal_colorSurface2
+    return if (hasWallpaper) R.color.conversation_toolbar_color_wallpaper_scrolled else MaterialR.attr.colorSurfaceContainer
   }
 
   @ColorRes
   private fun getInactiveToolbarColor(hasWallpaper: Boolean): Int {
-    return if (hasWallpaper) R.color.conversation_toolbar_color_wallpaper else CoreUiR.color.signal_colorBackground
+    return if (hasWallpaper) R.color.conversation_toolbar_color_wallpaper else MaterialR.attr.colorSurface
   }
 }

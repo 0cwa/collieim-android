@@ -17,11 +17,13 @@ import org.signal.core.util.StreamUtil;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
 import org.signal.core.util.logging.Scrubber;
-import org.signal.core.util.tracing.Tracer;
 import org.signal.debuglogsviewer.DebugLogsViewer;
 import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.database.LogDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
+import org.thoughtcrime.securesms.net.Networking;
+import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
+import org.thoughtcrime.securesms.service.KeyCachingService;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -91,11 +93,9 @@ public class SubmitDebugLogRepository {
     add(new LogSectionExoPlayerPool());
     add(new LogSectionKeyPreferences());
     add(new LogSectionStories());
-    add(new LogSectionBadges());
     add(new LogSectionChatFolders());
     add(new LogSectionRemoteBackups());
     add(new LogSectionPermissions());
-    add(new LogSectionTrace());
     add(new LogSectionThreads());
     add(new LogSectionSuspiciousThreadDump());
     add(new LogSectionCurrentThreadDump());
@@ -105,9 +105,9 @@ public class SubmitDebugLogRepository {
     add(new LogSectionDatabaseSchema());
     add(new LogSectionRemappedRecords());
     add(new LogSectionDatabaseIssues());
-    add(new LogSectionAnr());
     add(new LogSectionLogcat());
     add(new LogSectionLoggerHeader());
+    // MOLLY: For new sections, override getContentLocked() if content must be visible while locked.
   }};
 
   private final Application     context;
@@ -126,15 +126,8 @@ public class SubmitDebugLogRepository {
     SignalExecutors.UNBOUNDED.execute(() -> {
       Log.blockUntilAllWritesFinished();
       LogDatabase.getInstance(context).logs().trimToSize();
-      callback.accept(submitLogInternal(System.currentTimeMillis(), getPrefixLogLinesInternal(), Tracer.getInstance().serialize()));
+      callback.accept(submitLogInternal(System.currentTimeMillis(), getPrefixLogLinesInternal(), new byte[0]));
     });
-  }
-
-  @WorkerThread
-  public Optional<String> buildAndSubmitLogSync(long untilTime) {
-    Log.blockUntilAllWritesFinished();
-    LogDatabase.getInstance(context).logs().trimToSize();
-    return submitLogInternal(untilTime, getPrefixLogLinesInternal(), Tracer.getInstance().serialize());
   }
 
   public void submitLogFromReader(DebugLogsViewer.LogReader logReader, @Nullable byte[] trace, Consumer<Optional<String>> callback) {
@@ -155,15 +148,16 @@ public class SubmitDebugLogRepository {
             outputStream.write("\n".getBytes());
           }
         } catch (IllegalStateException e) {
-          Log.e(TAG, "Failed to read row!", e);
-          callback.accept(false);
-          return;
+          if (!KeyCachingService.isLocked()) {
+            Log.e(TAG, "Failed to read row!", e);
+            callback.accept(false);
+            return;
+          }
         }
 
         outputStream.closeEntry();
 
         outputStream.putNextEntry(new ZipEntry("signal.trace"));
-        outputStream.write(Tracer.getInstance().serialize());
         outputStream.closeEntry();
 
         callback.accept(true);
@@ -249,7 +243,7 @@ public class SubmitDebugLogRepository {
   @WorkerThread
   private @NonNull Optional<String> submitLogInternal(long untilTime, @NonNull List<LogLine> prefixLines, @Nullable byte[] trace) {
     String traceUrl = null;
-    if (trace != null) {
+    if (trace != null && trace.length > 0) {
       try {
         traceUrl = uploadContent("application/octet-stream", RequestBody.create(MediaType.get("application/octet-stream"), trace));
       } catch (IOException e) {
@@ -322,9 +316,13 @@ public class SubmitDebugLogRepository {
   @WorkerThread
   private @NonNull String uploadContent(@NonNull String contentType, @NonNull RequestBody requestBody) throws IOException {
     OkHttpClient client = AppDependencies.getOkHttpClient().newBuilder()
-                                             .readTimeout(30, TimeUnit.SECONDS)
-                                             .writeTimeout(30, TimeUnit.SECONDS)
-                                             .build();
+        .addInterceptor(new StandardUserAgentInterceptor())
+        .socketFactory(Networking.getSocketFactory())
+        .proxySelector(Networking.getProxySelectorForSocks())
+        .dns(Networking.getDns())
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build();
 
     try (Response response = client.newCall(new Request.Builder().url(API_ENDPOINT).get().build()).execute()) {
       ResponseBody body = response.body();
@@ -416,7 +414,7 @@ public class SubmitDebugLogRepository {
     out.add(new SimpleLogLine(formatTitle(section.getTitle(), maxTitleLength), LogLine.Style.NONE, LogLine.Placeholder.NONE));
 
     if (section.hasContent()) {
-      CharSequence content = Scrubber.scrub(section.getContent(context));
+      CharSequence content = Scrubber.scrub(LogSection.resolveContent(context, section, KeyCachingService.isLocked()));
 
       List<LogLine> lines = Stream.of(Pattern.compile("\\n").split(content))
                                   .map(s -> new SimpleLogLine(s, LogStyleParser.parseStyle(s), LogStyleParser.parsePlaceholderType(s)))

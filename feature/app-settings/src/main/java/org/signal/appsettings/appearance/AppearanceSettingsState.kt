@@ -11,6 +11,8 @@ package org.signal.appsettings.appearance
 data class AppearanceSettingsState(
   val language: String = "zz",
   val theme: Theme = Theme.SYSTEM,
+  val dynamicColors: Boolean = false,
+  val isDynamicColorsAvailable: Boolean = false,
   val messageFontSize: Int = 16,
   val isCompactNavigationBar: Boolean = false,
   val isSystemThemeAvailable: Boolean = true,

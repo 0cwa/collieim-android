@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,7 +22,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import org.signal.core.models.badges.Badge
 import org.signal.core.ui.compose.AllDevicePreviews
 import org.signal.core.ui.compose.Dividers
 import org.signal.core.ui.compose.Previews
@@ -54,8 +51,6 @@ import org.thoughtcrime.securesms.components.settings.conversation.shared.shared
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.signal.core.ui.R as CoreUiR
-
-private val BADGE_SIZE = 64.dp
 
 /**
  * Settings for a 1:1 conversation with another person.
@@ -88,9 +83,8 @@ fun IndividualSettingsScreen(
         subhead = state.recipient.combinedAboutAndEmoji,
         showVerifiedBadge = state.recipient.showVerified,
         showSystemContactBadge = state.recipient.isSystemContact,
-        badges = state.recipient.badges,
+        linkedDeviceCount = state.linkedDeviceCount,
         onAvatarClick = { onEvent(IndividualSettingsEvent.AvatarClicked) },
-        onBadgeClick = { onEvent(IndividualSettingsEvent.BadgeClicked(it)) },
         onNameClick = { onEvent(IndividualSettingsEvent.HeadlineClicked) },
         onAvatarViewCreated = onAvatarViewCreated
       )
@@ -169,7 +163,7 @@ fun IndividualSettingsScreen(
 
       ContactLinkState.ADD -> item {
         Rows.TextRow(
-          text = stringResource(R.string.ConversationSettingsFragment__add_as_a_contact),
+          text = stringResource(R.string.ConversationSettingsFragment__add_to_your_phones_contacts),
           icon = painterResource(R.drawable.ic_plus_24),
           onClick = { onEvent(IndividualSettingsEvent.AddAsContactClicked) }
         )
@@ -192,7 +186,7 @@ fun IndividualSettingsScreen(
       onEvent = { onEvent(IndividualSettingsEvent.MediaRailEvent(it)) }
     )
 
-    badgeSection(state, onEvent)
+    badgeSection(state)
     groupsInCommonSection(state, onEvent)
 
     if (state.canModifyBlockedState) {
@@ -221,33 +215,30 @@ fun IndividualSettingsScreen(
   )
 }
 
-/** The recipient's badges, and a nudge toward getting your own. */
-private fun LazyListScope.badgeSection(
-  state: IndividualSettingsState,
-  onEvent: (IndividualSettingsEvent) -> Unit
-) {
-  if (state.recipient.badges.isEmpty()) {
-    return
-  }
+@OptIn(ExperimentalLayoutApi::class)
+private fun LazyListScope.badgeSection(state: IndividualSettingsState) {
+  if (state.recipient.isSelf || state.recipient.badges.isEmpty()) return
 
   item { Dividers.Default() }
-
   item { Texts.SectionHeader(text = stringResource(R.string.ManageProfileFragment_badges)) }
-
   item {
-    BadgeRow(
-      badges = state.recipient.badges,
-      onBadgeClick = { onEvent(IndividualSettingsEvent.BadgeClicked(it)) }
-    )
-  }
-
-  item {
-    Text(
-      text = stringResource(R.string.ConversationSettingsFragment__get_badges),
-      style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-    )
+    FlowRow(
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp)
+    ) {
+      state.recipient.badges.forEach { badge ->
+        AndroidView(
+          factory = { context -> BadgeImageView(context, BadgeImageSize.BADGE_64) },
+          modifier = Modifier.size(64.dp),
+          update = {
+            it.setBadge(badge)
+            it.contentDescription = badge.name
+            it.isClickable = false
+          }
+        )
+      }
+    }
   }
 }
 
@@ -301,32 +292,6 @@ private fun LazyListScope.groupsInCommonSection(
         icon = R.drawable.ic_chevron_down_icon_20,
         onClick = { onEvent(IndividualSettingsEvent.RevealAllGroupsInCommonClicked) }
       )
-    }
-  }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun BadgeRow(
-  badges: List<Badge>,
-  onBadgeClick: (Badge) -> Unit,
-  modifier: Modifier = Modifier
-) {
-  FlowRow(
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(horizontal = 24.dp, vertical = 8.dp)
-  ) {
-    badges.forEach { badge ->
-      AndroidView(
-        factory = { context -> BadgeImageView(context, BadgeImageSize.BADGE_64) },
-        modifier = Modifier.size(BADGE_SIZE)
-      ) { badgeView ->
-        badgeView.setBadge(badge)
-        badgeView.setOnClickListener { onBadgeClick(badge) }
-      }
     }
   }
 }

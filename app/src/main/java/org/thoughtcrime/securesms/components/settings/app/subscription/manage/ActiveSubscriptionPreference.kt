@@ -3,8 +3,8 @@ package org.thoughtcrime.securesms.components.settings.app.subscription.manage
 import android.text.method.LinkMovementMethod
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import org.signal.core.ui.util.SpanUtil
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.money.FiatMoney
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.badges.BadgeImageView
@@ -128,7 +128,7 @@ object ActiveSubscriptionPreference {
         {
           model.onContactSupport()
         },
-        ContextCompat.getColor(context, CoreUiR.color.signal_accent_primary)
+        ThemeUtil.getThemedColor(context, org.signal.core.ui.R.attr.signal_accent_primary)
       )
       progress.visible = false
     }
@@ -142,7 +142,7 @@ object ActiveSubscriptionPreference {
         {
           model.onContactSupport()
         },
-        ContextCompat.getColor(context, CoreUiR.color.signal_accent_primary)
+        ThemeUtil.getThemedColor(context, org.signal.core.ui.R.attr.signal_accent_primary)
       )
       progress.visible = false
     }

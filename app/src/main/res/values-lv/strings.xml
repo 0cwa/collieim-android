@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -34,9 +31,13 @@
   <!-- Removed by excludeNonTranslatables <string name="AlbumThumbnailView_plus" translatable="false">\+%d</string> -->
 
     <!-- ApplicationMigrationActivity -->
-    <string name="ApplicationMigrationActivity__signal_is_updating">Signal atjaunina informāciju…</string>
+    <string name="ApplicationMigrationActivity__signal_is_updating">Collie atjaunina informāciju…</string>
 
     <!-- ApplicationPreferencesActivity -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Jūs vēl neesat iestatījuši paroles frāzi!</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">Atspējot paroles frāzi?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Šī opcija pastāvīgi atbloķēs Collie un jaunu ziņojumu paziņojumus.</string>
+    <string name="ApplicationPreferencesActivity_disable">Atspējot</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Kļūda savienojoties ar serveri!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">PIN kodi ir nepieciešami reģistrācijas bloķēšanai. Lai atspējotu PIN, vispirms atspējojiet reģistrācijas bloķēšanu.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN izveidots.</string>
@@ -80,7 +81,7 @@
     <string name="AttachmentKeyboard_location">Atrašanās vieta</string>
     <!-- Text for a button that will allow users to create a poll -->
     <string name="AttachmentKeyboard_poll">Aptauja</string>
-    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Signal ir nepieciešama atļauja rādīt jūsu fotoattēlus un videoklipus</string>
+    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Collie ir nepieciešama atļauja rādīt jūsu fotoattēlus un videoklipus</string>
     <!-- Text for a button prompting users to allow Signal access to their gallery storage -->
     <string name="AttachmentKeyboard_allow_access">Atļaut piekļuvi</string>
     <string name="AttachmentKeyboard_payment">Maksājums</string>
@@ -91,34 +92,34 @@
     <!-- Option in menu to go to settings -->
     <string name="AttachmentKeyboard_go_to_settings">Iet uz Iestatījumiem</string>
     <!-- Text explaining that Signal has limited access to photos -->
-    <string name="AttachmentKeyboard_signal_has_limited_access">Signal ir ierobežota piekļuve fotoattēliem vai videoklipiem</string>
+    <string name="AttachmentKeyboard_signal_has_limited_access">Collie ir ierobežota piekļuve fotoattēliem vai videoklipiem</string>
     <!-- Text shown when user has given no photos for Signal to access and an explanation on how to change those permissions -->
     <string name="AttachmentKeyboard_no_photos_found">Netika atrasts neviens fotoattēls. Atlasiet fotoattēlus un videoklipus, ko rādīt šeit, vai mainiet atļaujas</string>
 
     <!-- MediaGalleryFragment -->
     <!-- Text describing that no photos or videos are currently found in the gallery and that Signal can only access media that the user allows -->
-    <string name="MediaGalleryFragment__no_photos_found">Netika atrasts neviens fotoattēls vai videoklips. Signal ir piekļuve tikai jūsu atlasītajiem fotoattēliem un videoklipiem.</string>
+    <string name="MediaGalleryFragment__no_photos_found">Netika atrasts neviens fotoattēls vai videoklips. Collie ir piekļuve tikai jūsu atlasītajiem fotoattēliem un videoklipiem.</string>
 
     <!-- AttachmentManager -->
     <string name="AttachmentManager_cant_open_media_selection">Nevar atrast aplikāciju, ar kuru iespējams izvēlēties pievienojamo mediju failu.</string>
-    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Lai pievienoto fotogrāfijas, videoierakstus un audioierakstus, Signal nepieciešama atļauja pieejai pie Noliktavas, bet tā ir liegta. Dodieties uz lietotnes iestatījumu izvēlni, izvēlieties \"Atļaujas\" un iespējojiet opciju \"Krātuve\".</string>
-    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Signal nepieciešama atļauja pieejai pie Kontaktiem, bet tā ir liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Kontakti\".</string>
-    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Signal nepieciešama atļauja pieejai pie atrašanās vietas pakalpojumiem, bet tā ir liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Atrašanās vieta\".</string>
+    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Lai pievienoto fotogrāfijas, videoierakstus un audioierakstus, Collie nepieciešama atļauja pieejai pie Noliktavas, bet tā ir liegta. Dodieties uz lietotnes iestatījumu izvēlni, izvēlieties \"Atļaujas\" un iespējojiet opciju \"Krātuve\".</string>
+    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Collie nepieciešama atļauja pieejai pie Kontaktiem, bet tā ir liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Kontakti\".</string>
+    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Collie nepieciešama atļauja pieejai pie atrašanās vietas pakalpojumiem, bet tā ir liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Atrašanās vieta\".</string>
 
     <!-- Dialog title asking users for location permission -->
     <string name="AttachmentManager_signal_allow_access_location">Atļaujiet piekļuvi atrašanās vietai</string>
     <!-- Dialog description that will explain the steps needed to give location permission -->
     <string name="AttachmentManager_signal_to_send_location">Lai nosūtītu atrašanās vietu:</string>
     <!-- Alert dialog description asking for location permission -->
-    <string name="AttachmentManager_signal_allow_signal_access_location">Atļaujiet Signal piekļuvi jūsu atrašanās vietai, lai to nosūtītu citiem.</string>
+    <string name="AttachmentManager_signal_allow_signal_access_location">Atļaujiet Collie piekļuvi jūsu atrašanās vietai, lai to nosūtītu citiem.</string>
     <!-- Toast text explaining Signal\'s need for location access -->
-    <string name="AttachmentManager_signal_needs_location_access">Signal ir nepieciešama piekļuve jūsu atrašanās vietai, lai to būtu iespējams nosūtīt citiem.</string>
+    <string name="AttachmentManager_signal_needs_location_access">Collie ir nepieciešama piekļuve jūsu atrašanās vietai, lai to būtu iespējams nosūtīt citiem.</string>
     <!-- Dialog title asking users for gallery storage permission -->
     <string name="AttachmentManager_signal_allow_storage">Atļaujiet piekļuvi krātuvei</string>
     <!-- Dialog description that will explain the steps needed to give gallery storage permission -->
     <string name="AttachmentManager_signal_to_show_photos">Lai rādītu fotoattēlus un videoklipus:</string>
     <!-- Toast text explaining Signal\'s need for storage access -->
-    <string name="AttachmentManager_signal_needs_storage_access">Signal ir nepieciešama piekļuve, lai rādītu jūsu fotoattēlus un videoklipus.</string>
+    <string name="AttachmentManager_signal_needs_storage_access">Collie ir nepieciešama piekļuve, lai rādītu jūsu fotoattēlus un videoklipus.</string>
 
     <!-- Alert dialog title to show the recipient has not activated payments -->
     <string name="AttachmentManager__not_activated_payments">Lietotājs %1$s nav aktivizējis maksājumus </string>
@@ -273,12 +274,12 @@
     <string name="CensorshipCircumventionMegaphone_no_thanks">Nē, paldies</string>
 
     <!-- ClientDeprecatedActivity -->
-    <string name="ClientDeprecatedActivity_update_signal">Atjaunināt Signal</string>
+    <string name="ClientDeprecatedActivity_update_signal">Atjaunināt Collie</string>
     <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">Šī lietotnes versija vairs netiek atbalstīta. Lai turpinātu sūtīt un saņemt ziņas, aktualizējiet uz pēdējo versiju.</string>
     <string name="ClientDeprecatedActivity_update">Atjaunināt</string>
     <string name="ClientDeprecatedActivity_dont_update">Neatjaunināt</string>
     <string name="ClientDeprecatedActivity_warning">Brīdinājums</string>
-    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Jūsu Signal versijas lietošanas termiņš ir beidzies. Jūs varat aplūkot ziņu vēsturi, taču nevarēsiet nosūtīt vai saņemt ziņas, kamēr to neatjaunināsiet.</string>
+    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Jūsu Collie versijas lietošanas termiņš ir beidzies. Jūs varat aplūkot ziņu vēsturi, taču nevarēsiet nosūtīt vai saņemt ziņas, kamēr to neatjaunināsiet.</string>
 
     <!-- ClockSkewActivity -->
     <!-- Title of the full-screen dialog shown when the device clock is too far off from the real time -->
@@ -310,7 +311,7 @@
     <!-- Title on dialog when quick restore qr code is scanned in system camera -->
     <string name="CommunicationActions__transfer_dialog_title">Pārsūtīt kontu uz jaunu ierīci?</string>
     <!-- Message on dialog when quick restore qr code is scanned in system camera -->
-    <string name="CommunicationActions__transfer_dialog_message">Lai šo kontu pārsūtītu uz jaunu ierīci, pieskarieties \"Turpināt\" un vēlreiz noskenējiet QR kodu ar Signal kameru. Pārliecinieties, ka skenējat tikai tos QR kodus, kurus publicē Signal.</string>
+    <string name="CommunicationActions__transfer_dialog_message">Lai šo kontu pārsūtītu uz jaunu ierīci, pieskarieties \"Turpināt\" un vēlreiz noskenējiet QR kodu ar Collie kameru. Pārliecinieties, ka skenējat tikai tos QR kodus, kurus publicē Collie.</string>
     <string name="CommunicationActions__dont_transfer">Nepārsūtīt</string>
 
     <!-- ConfirmIdentityDialog -->
@@ -334,8 +335,8 @@
 
     <!-- ContactsDatabase -->
     <string name="ContactsDatabase_message_s">Ziņa %1$s</string>
-    <string name="ContactsDatabase_signal_call_s">Signal balss zvans %1$s</string>
-    <string name="ContactsDatabase_signal_video_call_s">Signal video zvans %1$s</string>
+    <string name="ContactsDatabase_signal_call_s">Collie balss zvans %1$s</string>
+    <string name="ContactsDatabase_signal_video_call_s">Collie video zvans %1$s</string>
 
     <!-- ContactNameEditActivity -->
     <!-- Toolbar title for contact name edit activity -->
@@ -448,10 +449,10 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="ConversationActivity_signal_to_send_audio_messages">Lai nosūtītu balss ziņas:</string>
     <!-- Alert dialog description asking for microphone permission in order to send voice messages -->
-    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Lai nosūtītu balss ziņas, atļaujiet Signal piekļūt jūsu mikrofonam.</string>
+    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Lai nosūtītu balss ziņas, atļaujiet Collie piekļūt jūsu mikrofonam.</string>
     <!-- Toast text explaining Signal\'s need for microphone access -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Lai ierakstītu balss ziņu, Signal ir nepieciešama piekļuve mikrofonam.</string>
-    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Lai nosūtītu audio ziņas, Signal nepieciešama atļauja pieejai mikrofonam, bet tā ir liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Mikrofons\".</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Lai ierakstītu balss ziņu, Collie ir nepieciešama piekļuve mikrofonam.</string>
+    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Lai nosūtītu audio ziņas, Collie nepieciešama atļauja pieejai mikrofonam, bet tā ir liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Mikrofons\".</string>
 
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d no %2$d</string>
@@ -471,9 +472,9 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions for a voice call -->
     <string name="ConversationActivity__to_start_call">Lai uzsāktu zvanu:</string>
     <!-- Alert dialog description asking for microphone permission in order to start a voice call -->
-    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Lai uzsāktu zvanu, atļaujiet Signal piekļūt jūsu mikrofonam.</string>
+    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Lai uzsāktu zvanu, atļaujiet Collie piekļūt jūsu mikrofonam.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Lai uzsāktu zvanu, Signal ir nepieciešama piekļuve mikrofonam.</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Lai uzsāktu zvanu, Collie ir nepieciešama piekļuve mikrofonam.</string>
 
 
     <string name="ConversationActivity_join">Pievienoties</string>
@@ -487,11 +488,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal vairs netiek atbalstīta SMS ziņu sūtīšana. Uzaiciniet lietotāju %1$s izmantot Signal, lai turpinātu sarunu šeit.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Šī persona vairs neizmanto Signal. Lai turpinātu sarunāties šajā platformā, uzaiciniet šo personu izmantot Signal.</string>
+    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Šī persona vairs neizmanto Collie. Lai turpinātu sarunāties šajā platformā, uzaiciniet šo personu izmantot Collie.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Šis cilvēks neizmanto Signal. Uzaiciniet viņu, lai turpinātu sarunu šajā platformā.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Uzaicināt uz Signal</string>
+    <string name="ConversationActivity__invite_to_signal">Uzaicināt uz Collie</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Zvana laikā nevar ierakstīt balss ziņojumu.</string>
 
@@ -591,15 +592,15 @@
     <!-- Message shown after successfully blocking join requests for a user -->
     <string name="ConversationFragment__blocked">Bloķēts</string>
     <!-- Action shown to allow a user to update their application because it has expired -->
-    <string name="ConversationFragment__update_build">Atjaunināt Signal</string>
+    <string name="ConversationFragment__update_build">Atjaunināt Collie</string>
     <!-- Action shown to allow a user to re-register as they are no longer registered -->
-    <string name="ConversationFragment__reregister_signal">Atkārtoti reģistrēt Signal</string>
+    <string name="ConversationFragment__reregister_signal">Atkārtoti reģistrēt Collie</string>
     <!-- Action shown in the conversation input area to allow a user to re-link this device as it is no longer linked -->
     <string name="ConversationFragment__relink_signal">Piesaistīt vēlreiz</string>
     <!-- Label for a button displayed in the conversation toolbar to return to the previous screen. -->
     <string name="ConversationFragment__content_description_back_button">Pārvietoties atpakaļ.</string>
     <!-- Label for a button displayed in the conversation toolbar to open the main screen of the app. -->
-    <string name="ConversationFragment__content_description_launch_signal_button">Atvērt Signal</string>
+    <string name="ConversationFragment__content_description_launch_signal_button">Atvērt Collie</string>
     <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
     <string name="ConversationFragment__no_longer_verified">Vairs nav verificēts</string>
     <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
@@ -647,7 +648,7 @@
     <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
     <string name="ConversationFragment_attachment_backfill_failed_title">Nevar lejupielādēt multividi</string>
     <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
-    <string name="ConversationFragment_attachment_backfill_timeout">Pārbaudiet šīs ierīces un jūsu tālruņa interneta savienojumu. Atveriet Signal tālrunī un pēc tam mēģiniet lejupielādēt vēlreiz.</string>
+    <string name="ConversationFragment_attachment_backfill_timeout">Pārbaudiet šīs ierīces un jūsu tālruņa interneta savienojumu. Atveriet Collie tālrunī un pēc tam mēģiniet lejupielādēt vēlreiz.</string>
     <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
     <string name="ConversationFragment_attachment_backfill_not_found">Šī multivide vairs nav pieejama jūsu tālrunī, un to nevar lejupielādēt.</string>
     <!-- Dialog for how to long to keep a messaged pinned for -->
@@ -717,7 +718,7 @@
     <!-- Bottom sheet text explaining that profile names are chosen by the account holder. Placeholder will be \'Profile names\' -->
     <string name="ProfileNameBottomSheet__profile_names_on_signal">Signal %1$s izvēlas to kontu īpašnieki.</string>
     <!-- Bottom sheet text explaining that Signal can\'t verify names and photos -->
-    <string name="ProfileNameBottomSheet__signal_cant_verify">Signal nevar verificēt nosaukumus un fotoattēlus</string>
+    <string name="ProfileNameBottomSheet__signal_cant_verify">Collie nevar verificēt nosaukumus un fotoattēlus</string>
     <!-- Bottom sheet text explaining that Signal will never contact you for registration code, PIN, or recovery key -->
     <string name="ProfileNameBottomSheet__signal_will_never_contact">Signal nekad jums neprasīs reģistrācijas kodu, PIN vai atkopšanas atslēgu</string>
     <!-- Bottom sheet text explaining that accounts can impersonate other people and to be cautious -->
@@ -871,9 +872,9 @@
     <!-- Toolbar title for this screen -->
     <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">Kas var mani atrast pēc numura?</string>
     <!-- Description for radio item stating anyone can see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Ikviens, kuram ir jūsu tālruņa numurs, redzēs, ka izmantojat Signal, un varēs uzsākt ar jums sarunas.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Ikviens, kuram ir jūsu tālruņa numurs, redzēs, ka izmantojat Collie, un varēs uzsākt ar jums sarunas.</string>
     <!-- Description for radio item stating no one will be able to see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Neviens neredzēs, ka izmantojat Signal, izņemot tos, kuriem nosūtīsiet ziņu vai ar kuriem jau esat sarunājušies iepriekš.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Neviens neredzēs, ka izmantojat Collie, izņemot tos, kuriem nosūtīsiet ziņu vai ar kuriem jau esat sarunājušies iepriekš.</string>
 
     <!-- ChooseBackupFragment -->
 
@@ -899,7 +900,7 @@
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">Pārbaudiet rezerves kopijas paroles frāzi, un pārliecinieties, ka tā sakrīt</string>
     <string name="BackupsPreferenceFragment__turn_on">Ieslēgt rezerves kopijas</string>
     <string name="BackupsPreferenceFragment__turn_off">Izslēgt</string>
-    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Lai atjaunotu rezerves kopiju, instalējiet Signal no jauna. Atveriet lietotni un pieskarieties “Atjaunot rezerves kopiju”, pēc tam norādiet rezerves kopijas failu. %1$s"</string>
+    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Lai atjaunotu rezerves kopiju, instalējiet Collie no jauna. Atveriet lietotni un pieskarieties “Atjaunot rezerves kopiju”, pēc tam norādiet rezerves kopijas failu. %1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">Lasīt vairāk</string>
     <string name="BackupsPreferenceFragment__in_progress">Procesā…</string>
     <!-- Status text shown in backup preferences when verifying a backup -->
@@ -908,7 +909,7 @@
     <string name="BackupsPreferenceFragment__d_so_far">%1$d līdz šim…</string>
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">%1$s%% līdz šim…</string>
-    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Lai izveidotu rezerves kopijas, Signal nepieciešama pieejas atļauja ārējai datu krātuvei, bet tā tiek pastāvīgi liegta. Lūdzu, dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Krātuve\".</string>
+    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Lai izveidotu rezerves kopijas, Collie nepieciešama pieejas atļauja ārējai datu krātuvei, bet tā tiek pastāvīgi liegta. Lūdzu, dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Krātuve\".</string>
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">Dublēšanas laika iestatīšana</string>
 
@@ -989,7 +990,7 @@
 
     <!-- DecryptionFailedDialog -->
     <string name="DecryptionFailedDialog_chat_session_refreshed">Sarunas sesija atsvaidzināta</string>
-    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Signal izmanto pilnīgu šifrēšanu, un, iespējams, dažreiz būs jāatsvaidzina jūsu sarunas sesija. Tas neietekmē jūsu sarunas drošību, taču, iespējams, esat palaiduši garām kādu šīs kontaktpersonas sūtītu ziņu un būs jālūdz nosūtīt to vēlreiz.</string>
+    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Collie izmanto pilnīgu šifrēšanu, un, iespējams, dažreiz būs jāatsvaidzina jūsu sarunas sesija. Tas neietekmē jūsu sarunas drošību, taču, iespējams, esat palaiduši garām kādu šīs kontaktpersonas sūtītu ziņu un būs jālūdz nosūtīt to vēlreiz.</string>
 
     <!-- LinkDeviceFragment -->
     <!-- Description for how Signal will work with a linked device (eg desktop, iPad) -->
@@ -1098,7 +1099,7 @@
     <!-- Bottom sheet title telling users to complete the linking process on the other device  -->
     <string name="AddLinkDeviceFragment__finish_linking_on_other_device">Pabeidziet piesaistīšanu otrā ierīcē</string>
     <!-- Bottom sheet description telling users to complete the linking process -->
-    <string name="AddLinkDeviceFragment__finish_linking_signal">Pabeidziet Signal piesaistīšanu otrā ierīcē.</string>
+    <string name="AddLinkDeviceFragment__finish_linking_signal">Pabeidziet Collie piesaistīšanu otrā ierīcē.</string>
     <!-- Title of dialog when the QR code being scanned is invalid -->
     <string name="AddLinkDeviceFragment__linking_device_failed">Neizdevās piesaistīt ierīci</string>
     <!-- Text shown in a dialog when the QR code being scanned is invalid -->
@@ -1143,19 +1144,19 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Optimizē situācijai, kurā iztrūkst proprietārie Google Play pakalpojumi</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Šajā ierīcē nav Google Play pakalpojumu atbalsta. Pieskaries, lai atspējotu sistēmas baterijas optimizāciju, kas traucē Signal saņemt ziņas, kamēr tas ir neaktīvs.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Šajā ierīcē nav Google Play pakalpojumu atbalsta. Pieskaries, lai atspējotu sistēmas baterijas optimizāciju, kas traucē Molly saņemt ziņas, kamēr tas ir neaktīvs.</string>
 
     <!-- ExpiredBuildReminder -->
-    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Šīs Signal versijas lietošanas termiņš ir beidzies. Lai nosūtītu un saņemtu ziņas, tā jānomaina ar jaunāku.</string>
+    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Šīs Collie versijas lietošanas termiņš ir beidzies. Lai nosūtītu un saņemtu ziņas, tā jānomaina ar jaunāku.</string>
     <string name="ExpiredBuildReminder_update_now">Aktualizēt tagad</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
     <string name="DeprecatedSdkBanner_body">Signal vairs nedarbojas šajā ierīcē. Lai varētu izmantot Signak, atjauniniet ierīci uz jaunāku Android versiju vai pārejiet uz jaunāku ierīci.</string>
 
     <!-- Title of notification telling users to update Signal -->
-    <string name="DeprecatedNotificationJob_update_signal">Atjaunināt Signal</string>
+    <string name="DeprecatedNotificationJob_update_signal">Atjaunināt Collie</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
-    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Šī Signal versija ir novecojusi. Pieskarieties, lai veiktu atjauninājumus ziņu nosūtīšanai un saņemšanai.</string>
+    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Šī Collie versija ir novecojusi. Pieskarieties, lai veiktu atjauninājumus ziņu nosūtīšanai un saņemšanai.</string>
 
     <!-- PendingGroupJoinRequestsReminder -->
     <plurals name="PendingGroupJoinRequestsReminder_d_pending_member_requests">
@@ -1301,7 +1302,7 @@
     <!-- Message for dialog asking user to submit logs for debugging a crash -->
     <string name="PromptLogsSlowNotificationsDialog__message">Atkļūdošanas žurnāli palīdz mums diagnosticēt un novērst problēmu, un tie nesatur identificējošu informāciju.</string>
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
-    <string name="PromptLogsSlowNotificationsDialog__title_crash">Signal radās problēma. Vai nosūtīt atkļūdošanas žurnālu?</string>
+    <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie radās problēma. Vai nosūtīt atkļūdošanas žurnālu?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">Iespējams, jūs nesaņemat ziņas. Vai iesniegt atkļūdošanas žurnālu?</string>
 
@@ -1309,12 +1310,12 @@
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">Paziņojumi var aizkavēties akumulatora optimizācijas dēļ</string>
     <!-- Message explaining that battery saver may delay notifications -->
-    <string name="PromptBatterySaverBottomSheet__message">Varat atspējot akumulatora optimizāciju lietotnei Signal, lai nodrošinātu, ka netiks aizkavēti paziņojumi par ziņām.</string>
+    <string name="PromptBatterySaverBottomSheet__message">Varat atspējot akumulatora optimizāciju lietotnei Collie, lai nodrošinātu, ka netiks aizkavēti paziņojumi par ziņām.</string>
 
     <!-- Title in bottom sheet that states that notifications for this device could be delayed -->
     <string name="DeviceSpecificNotificationBottomSheet__notifications_may_be_delayed">Paziņojumi var aizkavēties akumulatora optimizācijas dēļ</string>
     <!-- Message in bottom sheet prompting users to fix potential issues by disabling battery optimizations -->
-    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Atspējojiet akumulatora optimizāciju lietotnei Signal, lai pārliecinātos, ka saņemat ziņu paziņojumus. Lai skatītu instrukcijas konkrētām ierīcēm, pieskarieties pie \"Turpināt\".</string>
+    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Atspējojiet akumulatora optimizāciju lietotnei Collie, lai pārliecinātos, ka saņemat ziņu paziņojumus. Lai skatītu instrukcijas konkrētām ierīcēm, pieskarieties pie \"Turpināt\".</string>
     <!-- Button to dismiss notification help prompt -->
     <string name="DeviceSpecificNotificationBottomSheet__no_thanks">Nē, paldies</string>
     <!-- Button to continue and go to Signal support website -->
@@ -1323,7 +1324,7 @@
     <!-- Title of a bottom sheet that is shown when the user is having connectivity issues -->
     <string name="ConnectivityWarningBottomSheet_title">Iespējams, jūs nesaņemat ziņas</string>
     <!-- Body of a bottom sheet that is shown when the user is having connectivity issues -->
-    <string name="ConnectivityWarningBottomSheet_body">Ziņu piegādes problēmu, iespējams, var atrisināt, restartējot ierīci. Ja problēma joprojām pastāv, sazinieties ar Signal atbalsta dienestu.</string>
+    <string name="ConnectivityWarningBottomSheet_body">Ziņu piegādes problēmu, iespējams, var atrisināt, restartējot ierīci. Ja problēma joprojām pastāv, sazinieties ar Collie atbalsta dienestu.</string>
     <!-- Text for a button in a bottom sheet that is shown when the user is having connectivity issues. Clicking it will dismiss the bottom sheet. -->
     <string name="ConnectivityWarningBottomSheet_dismiss_button">Skaidrs</string>
 
@@ -1566,7 +1567,7 @@
     <string name="LongMessageActivity_your_message">Jūsu ziņa</string>
 
     <!-- MessageRetrievalService -->
-    <string name="MessageRetrievalService_signal">Signal</string>
+    <string name="MessageRetrievalService_signal">Collie</string>
     <string name="MessageRetrievalService_background_connection_enabled">Fona savienojums iespējots</string>
 
     <!-- MediaOverviewActivity -->
@@ -1663,10 +1664,10 @@
   <!-- Removed by excludeNonTranslatables <string name="StarredMessages__s_chevron_s" translatable="false">%1$s \u203A %2$s</string> -->
 
     <!-- NotificationBarManager -->
-    <string name="NotificationBarManager__establishing_signal_call">Signal zvana savienojuma izveide</string>
+    <string name="NotificationBarManager__establishing_signal_call">Collie zvana savienojuma izveide</string>
     <!-- Temporary notification shown when starting the calling service -->
-    <string name="NotificationBarManager__starting_signal_call_service">Tiek palaists Signal zvana pakalpojums</string>
-    <string name="NotificationBarManager__stopping_signal_call_service">Tiek apturēts Signal zvana pakalpojums</string>
+    <string name="NotificationBarManager__starting_signal_call_service">Tiek palaists Collie zvana pakalpojums</string>
+    <string name="NotificationBarManager__stopping_signal_call_service">Tiek apturēts Collie zvana pakalpojums</string>
     <string name="NotificationBarManager__cancel_call">Atcelt zvanu</string>
 
     <!-- NotificationsMegaphone -->
@@ -2007,7 +2008,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Lietotnē Signal vairs nav iespējams sūtīt SMS ziņas. Uzaiciniet lietotāju %1$s izmantot Signal, lai turpinātu sarunu šeit.</string>
+    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Lietotnē Collie vairs nav iespējams sūtīt SMS ziņas. Uzaiciniet lietotāju %1$s izmantot Collie, lai turpinātu sarunu šeit.</string>
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Maksājums: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2127,21 +2128,21 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Piesaistīt Signal ierīci?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Lai šim Signal kontam piesaistītu iPad, dodieties uz sadaļu \"Saistītās ierīces\" un pieskarieties pie \"Piesaistīt jaunu ierīci\". Pēc tam skenējiet QR kodu vēlreiz. Pārliecinieties, ka skenējat tikai tos QR kodus, kurus publicē Signal.</string>
 
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Šīs Signal versijas lietošanas termiņš beigsies šodien. Aktualizējiet uz nesenāku versiju.</string>
+    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Šīs Collie versijas lietošanas termiņš beigsies šodien. Aktualizējiet uz nesenāku versiju.</string>
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
-        <item quantity="zero">Šīs Signal versijas lietošanas termiņš beigsies pēc %1$d dienām. Atjauniniet uz jaunāku versiju.</item>
-        <item quantity="one">Šīs Signal versijas lietošanas termiņš beigsies rīt. Atjauniniet uz jaunāku versiju.</item>
-        <item quantity="other">Šīs Signal versijas lietošanas termiņš beigsies pēc %1$d dienām. Atjauniniet uz jaunāku versiju.</item>
+        <item quantity="zero">Šīs Collie versijas lietošanas termiņš beigsies pēc %1$d dienām. Atjauniniet uz jaunāku versiju.</item>
+        <item quantity="one">Šīs Collie versijas lietošanas termiņš beigsies rīt. Atjauniniet uz jaunāku versiju.</item>
+        <item quantity="other">Šīs Collie versijas lietošanas termiņš beigsies pēc %1$d dienām. Atjauniniet uz jaunāku versiju.</item>
     </plurals>
 
     <!-- PassphrasePromptActivity -->
     <string name="PassphrasePromptActivity_enter_passphrase">Ievadiet paroles frāzi</string>
-    <string name="PassphrasePromptActivity_watermark_content_description">Signal ikona</string>
+    <string name="PassphrasePromptActivity_watermark_content_description">Collie ikona</string>
     <string name="PassphrasePromptActivity_ok_button_content_description">Iesniegt paroles frāzi</string>
     <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Nederīga paroles frāze!</string>
-    <string name="PassphrasePromptActivity_unlock_signal">Atbloķēt Signal</string>
+    <string name="PassphrasePromptActivity_unlock_signal">Atbloķēt Collie</string>
     <!-- This is the subject line for the email that is sent to support -->
-    <string name="PassphrasePromptActivity_signal_android_lock_screen">Signal Android - bloķēt ekrānu</string>
+    <string name="PassphrasePromptActivity_signal_android_lock_screen">Collie Android - bloķēt ekrānu</string>
 
     <!-- PlacePickerActivity -->
     <string name="PlacePickerActivity_title">Karte</string>
@@ -2200,7 +2201,7 @@
 
     <!-- RecaptchaRequiredBottomSheetFragment -->
     <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">Pārbaudīt, lai turpinātu ziņapmaiņu</string>
-    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Lai palīdzētu nepieļaut surogātpasta izplatīšanu Signal, lūdzu, pabeidziet pārbaudi.</string>
+    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Lai palīdzētu nepieļaut surogātpasta izplatīšanu Collie, lūdzu, pabeidziet pārbaudi.</string>
     <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">Pēc verifikācijas varat turpināt ziņapmaiņu. Visas pauzētās ziņas tiks automātiski nosūtītas.</string>
 
     <!-- Recipient -->
@@ -2208,7 +2209,7 @@
     <!-- Name of recipient representing user\'s \'My Story\' -->
     <string name="Recipient_my_story">Mans stāsts</string>
     <!-- Name of recipient for a call link without a name -->
-    <string name="Recipient_signal_call">Signal audiozvans</string>
+    <string name="Recipient_signal_call">Collie audiozvans</string>
 
     <!-- RecipientPreferencesActivity -->
     <string name="RecipientPreferenceActivity_block">Bloķēt</string>
@@ -2245,7 +2246,7 @@
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Pieskarieties, lai ieslēgtu video</string>
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
-    <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
+    <string name="WebRtcCallActivity__signal_s">Collie %1$s</string>
     <string name="WebRtcCallActivity__calling">Zvana…</string>
     <!-- Title for dialog warning about lacking bluetooth permissions during a call -->
     <string name="WebRtcCallActivity__bluetooth_permission_denied">Bluetooth atļauja noraidīta</string>
@@ -2316,15 +2317,15 @@
     <!-- Dialog title asking users for camera permission -->
     <string name="WebRtcCallActivity__allow_access_camera">Atļaujiet piekļuvi kamerai</string>
     <!-- Dialog description explaining why camera and microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Lai uzsāktu zvanu vai pievienotos zvanam, ļaujiet Signal piekļūt kamerai un mikrofonam.</string>
+    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Lai uzsāktu zvanu vai pievienotos zvanam, ļaujiet Collie piekļūt kamerai un mikrofonam.</string>
     <!-- Dialog description explaining why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_microphone">Lai uzsāktu zvanu vai pievienotos zvanam, ļaujiet Signal piekļūt mikrofonam.</string>
+    <string name="WebRtcCallActivity__to_start_call_microphone">Lai uzsāktu zvanu vai pievienotos zvanam, ļaujiet Collie piekļūt mikrofonam.</string>
     <!-- Dialog description explaining why camera permissions are needed to enable a user\'s video in a call -->
-    <string name="WebRtcCallActivity__to_enable_video_allow_camera">Lai iespējotu video, ļaujiet Signal piekļūt kamerai.</string>
+    <string name="WebRtcCallActivity__to_enable_video_allow_camera">Lai iespējotu video, ļaujiet Collie piekļūt kamerai.</string>
     <!-- Toast describing why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Lai uzsāktu zvanu vai pievienotos zvanam, Signal ir nepieciešama atļauja piekļūt kamerai.</string>
+    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Lai uzsāktu zvanu vai pievienotos zvanam, Collie ir nepieciešama atļauja piekļūt kamerai.</string>
     <!-- Toast describing why camera permissions are needed to enable a video in a call -->
-    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">Lai varētu iespējot video, Signal ir nepieciešama piekļuve kamerai</string>
+    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">Lai varētu iespējot video, Collie ir nepieciešama piekļuve kamerai</string>
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="WebRtcCallActivity__to_start_call">Lai uzsāktu zvanu vai pievienotos zvanam:</string>
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
@@ -2337,8 +2338,8 @@
     <string name="MoveableLocalVideoRenderer__expand_local_video">Izvērst vietējo video</string>
 
     <!-- WebRtcCallView -->
-    <string name="WebRtcCallView__signal_call">Signal zvans</string>
-    <string name="WebRtcCallView__signal_video_call">Signal videozvans</string>
+    <string name="WebRtcCallView__signal_call">Collie zvans</string>
+    <string name="WebRtcCallView__signal_video_call">Collie videozvans</string>
     <string name="WebRtcCallView__start_call">Sākt zvanu</string>
     <string name="WebRtcCallView__join_call">Pievienoties zvanam</string>
     <string name="WebRtcCallView__call_is_full">Zvana dalībnieku limits izsmelts</string>
@@ -2663,7 +2664,7 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Pievienot kontaktiem</string>
-    <string name="SharedContactView_invite_to_signal">Uzaicināt uz Signal</string>
+    <string name="SharedContactView_invite_to_signal">Uzaicināt uz Collie</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Ziņa</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
@@ -2961,11 +2962,11 @@
     <string name="ThreadRecord_blocked_group">Bloķēti</string>
 
     <!-- ApkUpdateNotifications -->
-    <string name="ApkUpdateNotifications_prompt_install_title">Signal atjauninājums</string>
-    <string name="ApkUpdateNotifications_prompt_install_body">Ir pieejama jauna Signal versija. Pieskarieties, lai atjauninātu.</string>
-    <string name="ApkUpdateNotifications_failed_general_title">Signal atjaunināšana neizdevās</string>
+    <string name="ApkUpdateNotifications_prompt_install_title">Collie atjauninājums</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">Ir pieejama jauna Collie versija. Pieskarieties, lai atjauninātu.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Collie atjaunināšana neizdevās</string>
     <string name="ApkUpdateNotifications_failed_general_body">Vēlāk mēģināsim vēlreiz.</string>
-    <string name="ApkUpdateNotifications_auto_update_success_title">Signal ir sekmīgi atjaunināts</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Collie ir sekmīgi atjaunināts</string>
     <string name="ApkUpdateNotifications_auto_update_success_body">Automātiski tika veikts atjauninājums uz versiju %1$s.</string>
     <string name="ApkUpdateNotifications_manual_update_success_body">Atjauninājums veiksmīgs. Jaunā versija: %1$s.</string>
 
@@ -2993,7 +2994,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">Mūsu Signal drošības numurs:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">Izskatās, ka jums nav nevienas aplikācijas, caur kurām kopīgot.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">Starpliktuvē netika atrasts drošības kods</string>
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Signal ir nepieciešama piekļuve kamerai, lai skenētu kvadrātkodu, bet tā nav dota. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Kamera\".</string>
+    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Collie ir nepieciešama piekļuve kamerai, lai skenētu kvadrātkodu, bet tā nav dota. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Kamera\".</string>
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">Lai skatītu %1$s drošības numuru, vispirms jums savstarpēji ir jāapmainās ar ziņām.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">Drošības numurs ar šo personu tiks izveidots pēc tam, kad būsiet nosūtījuši viens otram ziņas.</string>
@@ -3030,8 +3031,8 @@
 
     <!-- KeyCachingService -->
     <string name="KeyCachingService_signal_passphrase_cached">Pieskarieties, lai atvērtu.</string>
-    <string name="KeyCachingService_passphrase_cached">Signal ir atslēgts</string>
-    <string name="KeyCachingService_lock">Noslēgt Signal</string>
+    <string name="KeyCachingService_passphrase_cached">Collie ir atslēgts</string>
+    <string name="KeyCachingService_lock">Noslēgt Collie</string>
 
     <!-- MediaPreviewActivity -->
     <string name="MediaPreviewActivity_you">Jūs</string>
@@ -3086,7 +3087,7 @@
     <string name="MessageNotifier_failed_to_deliver_message">Neizdevās piegādāt ziņu.</string>
     <string name="MessageNotifier_error_delivering_message">Kļūda piegādājot ziņu.</string>
     <string name="MessageNotifier_message_delivery_paused">Ziņas piegāde pauzēta.</string>
-    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Pārbaudiet, lai turpinātu ziņapmaiņu lietotnē Signal.</string>
+    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Pārbaudiet, lai turpinātu ziņapmaiņu lietotnē Collie.</string>
     <string name="MessageNotifier_mark_all_as_read">Atzīmēt visas kā lasītas</string>
     <string name="MessageNotifier_mark_read">Atzīmēt kā lasītu</string>
     <string name="MessageNotifier_turn_off_these_notifications">Izslēgt šos paziņojumus</string>
@@ -3110,7 +3111,7 @@
     <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
     <string name="MessageNotifier_s_voted_in_poll">%1$s %2$s balsoja aptaujā \"%3$s\"</string>
 
-    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Vai izslēgt paziņojumus par kontaktpersonām, kas sākušās lietot Signal? Paziņojumus var atkal iespējot sadaļā Signal &gt; Iestatījumi &gt; Paziņojumi.</string>
+    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Vai izslēgt paziņojumus par kontaktpersonām, kas sākušās lietot Collie? Paziņojumus var atkal iespējot sadaļā Collie &gt; Iestatījumi &gt; Paziņojumi.</string>
 
     <!-- TurnOnNotificationsBottomSheet -->
     <!-- Title for sheet explaining how to turn on app notifications -->
@@ -3190,7 +3191,7 @@
     </plurals>
 
     <!-- Message shown when the app requests permission to save media to the device storage, but that permission has been permanently denied by the user. -->
-    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">Signal ir nepieciešama pieejas atļauja krātuvei, lai varētu saglabāt datus ārējā krātuvē, bet tā tiek pastāvīgi liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Krātuve\".</string>
+    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">Collie ir nepieciešama pieejas atļauja krātuvei, lai varētu saglabāt datus ārējā krātuvē, bet tā tiek pastāvīgi liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Krātuve\".</string>
 
     <!-- Message explaining that it is not possible to save media to the device storage after the user denied the system save to storage permission. -->
     <string name="AttachmentSaver__unable_to_write_to_external_storage_without_permission">Nav iespējams saglabāt ārējā krātuvē bez atļaujas.</string>
@@ -3200,11 +3201,11 @@
     <!-- Dialog title shown when attempting to save media that has been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_media">Nevar saglabāt multividi</string>
     <!-- Dialog message explaining that media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__media_offloaded_message">Šī multivide tika pārlikta no jūsu ierīces, jo ir ieslēgta funkcija “Optimizēt Signal krātuvi”. Varat lejupielādēt failus pa vienam vai izslēgt funkciju “Optimizēt Signal krātuvi”, lai lejupielādētu visu multividi savā ierīcē.</string>
+    <string name="AttachmentSaver__media_offloaded_message">Šī multivide tika pārlikta no jūsu ierīces, jo ir ieslēgta funkcija “Optimizēt Collie krātuvi”. Varat lejupielādēt failus pa vienam vai izslēgt funkciju “Optimizēt Collie krātuvi”, lai lejupielādētu visu multividi savā ierīcē.</string>
     <!-- Dialog title shown when attempting to save multiple media items, some of which have been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_all_items">Nevar saglabāt visus vienumus</string>
     <!-- Dialog message explaining that some selected media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__some_media_offloaded_message">Daļa jūsu atlasītā multivides satura tika pārlikta no jūsu ierīces, jo ir ieslēgta funkcija “Optimizēt Signal krātuvi”. Varat saglabāt vienumus pa vienam vai izslēgt funkciju “Optimizēt Signal krātuvi”, lai lejupielādētu visu multividi savā ierīcē.</string>
+    <string name="AttachmentSaver__some_media_offloaded_message">Daļa jūsu atlasītā multivides satura tika pārlikta no jūsu ierīces, jo ir ieslēgta funkcija “Optimizēt Collie krātuvi”. Varat saglabāt vienumus pa vienam vai izslēgt funkciju “Optimizēt Collie krātuvi”, lai lejupielādētu visu multividi savā ierīcē.</string>
     <!-- Button label in the offloaded media dialog that navigates to the storage settings screen. -->
     <string name="AttachmentSaver__view_storage_settings">Skatīt krātuves iestatījumus</string>
 
@@ -3217,7 +3218,7 @@
     <string name="ShortcutLauncherActivity_invalid_shortcut">Nepareiza saīsne</string>
 
     <!-- SingleRecipientNotificationBuilder -->
-    <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
+    <string name="SingleRecipientNotificationBuilder_signal">Collie</string>
     <string name="SingleRecipientNotificationBuilder_new_message">Jauna ziņa</string>
     <string name="SingleRecipientNotificationBuilder_message_request">Ziņas pieprasījums</string>
     <string name="SingleRecipientNotificationBuilder_you">Jūs</string>
@@ -3294,7 +3295,7 @@
 
     <!-- UnauthorizedReminder -->
     <!-- Message shown in a reminder banner when the user\'s device is no longer registered -->
-    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Šī ierīce vairs nav reģistrēta. Iespējams, ka reģistrējāt tālruņa numuru lietotnē Signal citā ierīcē.</string>
+    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Šī ierīce vairs nav reģistrēta. Iespējams, ka reģistrējāt tālruņa numuru lietotnē Collie citā ierīcē.</string>
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Atkārtoti reģistrēt ierīci</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
@@ -3303,7 +3304,7 @@
     <string name="UnauthorizedReminder_relink_action">Atkārtoti piesaistīt ierīci</string>
 
     <!-- Push notification when the app is forcibly logged out by the server. -->
-    <string name="LoggedOutNotification_you_have_been_logged_out">Jūs tikāt izrakstīts no Signal šajā ierīcē.</string>
+    <string name="LoggedOutNotification_you_have_been_logged_out">Jūs tikāt izrakstīts no Collie šajā ierīcē.</string>
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
@@ -3349,14 +3350,14 @@
     <string name="change_passphrase_activity__repeat_new_passphrase">Atkārtot jauno paroli</string>
 
     <!-- contact_selection_activity -->
-    <string name="contact_selection_activity__invite_to_signal">Uzaicināt uz Signal</string>
+    <string name="contact_selection_activity__invite_to_signal">Uzaicināt uz Collie</string>
     <string name="contact_selection_activity__new_group">Jauna grupa</string>
     <!-- Row item title for refreshing contacts -->
     <string name="contact_selection_activity__refresh_contacts">Atsvaidzināt kontaktus</string>
     <!-- Row item description for refreshing contacts -->
     <string name="contact_selection_activity__missing_someone">Kāda pietrūkst? Mēģiniet atsvaidzināt</string>
     <!-- Row item title for finding people on Signal via your contacts -->
-    <string name="contact_selection_activity__find_people_you_know">Atrodiet pazīstamas personas platformā Signal</string>
+    <string name="contact_selection_activity__find_people_you_know">Atrodiet pazīstamas personas platformā Collie</string>
     <!-- Row item description asking users for access to their contacts to find people they know -->
     <string name="contact_selection_activity__allow_access_to_contacts">Atļaujiet piekļuvi kontaktpersonām</string>
     <!-- Row header title for more section -->
@@ -3375,7 +3376,7 @@
     <string name="SingleContactSelectionActivity_contact_photo">Kontakta attēls</string>
 
     <!-- ContactSelectionListFragment-->
-    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Lai parādītu Jūsu kontaktus, Signal ir nepieciešama piekļuve kontaktiem, bet tā nav dota. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas“ un iespējojiet \"Kontakti\".</string>
+    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Lai parādītu Jūsu kontaktus, Collie ir nepieciešama piekļuve kontaktiem, bet tā nav dota. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas“ un iespējojiet \"Kontakti\".</string>
     <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">Kļūda, ielādējot kontaktus, pārbaudiet ierīces tīkla savienojumu.</string>
     <string name="ContactSelectionListFragment_username_not_found">Lietotājvārds netika atrasts</string>
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"\"%1$s\" nav Signal lietotājs. Lūdzu, pārbaudiet, vai lietotājvārds uzrakstīts pareizi."</string>
@@ -3396,7 +3397,7 @@
     <!-- Dialog title asking users for contact permission -->
     <string name="ContactSelectionListFragment_allow_access_contacts">Atļaujiet piekļuvi kontaktpersonām</string>
     <!-- Dialog description that will explain the steps needed to give contact permissions -->
-    <string name="ContactSelectionListFragment_to_find_people">Lai atrastu pazīstamas personas platformā Signal:</string>
+    <string name="ContactSelectionListFragment_to_find_people">Lai atrastu pazīstamas personas platformā Collie:</string>
     <!-- Text on button prompting users to give Signal contact permissions -->
     <string name="ContactSelectionListFragment__allow_access">Atļaut piekļuvi</string>
     <!-- Text on button to dismiss Signal\'s request for contact permissions -->
@@ -3530,7 +3531,7 @@
 
     <!-- BubbleOptOutTooltip -->
     <!-- Message to inform the user of what Android chat bubbles are -->
-    <string name="BubbleOptOutTooltip__description">Sarunu burbuļi ir Android iezīme, kuru jūs varat aslēgt Signal sarunām.</string>
+    <string name="BubbleOptOutTooltip__description">Sarunu burbuļi ir Android iezīme, kuru jūs varat aslēgt Collie sarunām.</string>
     <!-- Button to dismiss the tooltip for opting out of using Android bubbles -->
     <string name="BubbleOptOutTooltip__not_now">Ne tagad</string>
     <!-- Button to move to the system settings to control the use of Android bubbles -->
@@ -3638,6 +3639,18 @@
     <string name="EditProfileFragment__group_name">Grupas nosaukums</string>
     <string name="EditProfileFragment__group_description">Grupas apraksts</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Atjaunināt Collie</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Šī Collie versija ir novecojusi. Atjauniniet to, lai turpinātu izmantot Collie.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">Aktualizēt</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">Ierīce nav reģistrēta</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">Šī ierīce vairs nav reģistrēta. Lai veiktu izmaiņas kontā, reģistrējiet to atkārtoti.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Atkārtoti reģistrēties</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Saglabāt</string>
@@ -3673,20 +3686,20 @@
     <!-- Bottom sheet title when encryption is auto-verified -->
     <string name="EncryptionVerifiedSheet__title_success">Šifrēšana šai sarunai tika pārbaudīta automātiski</string>
     <!-- Bottom sheet body when encryption is auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_success">Signal automātiski pārbaudīs savienojuma drošību kontaktpersonām, kas pievienotas ar tālruņa numuru, izmantojot procesu, ko sauc par atslēgu caurskatāmību. Papildu drošībai manuāli pārbaudiet pilnīgo šifrēšanu, salīdzinot iepriekšējā ekrānā redzamos ciparus vai skenējot kodu otras personas ierīcē.</string>
+    <string name="EncryptionVerifiedSheet__body_success">Collie automātiski pārbaudīs savienojuma drošību kontaktpersonām, kas pievienotas ar tālruņa numuru, izmantojot procesu, ko sauc par atslēgu caurskatāmību. Papildu drošībai manuāli pārbaudiet pilnīgo šifrēšanu, salīdzinot iepriekšējā ekrānā redzamos ciparus vai skenējot kodu otras personas ierīcē.</string>
     <!-- Bottom sheet title when encryption is no longer auto-verified -->
     <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">Automātiskā verifikācija šai sarunai nav pieejama</string>
     <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
-    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Signal nevar automātiski verificēt šīs sarunas šifrēšanu. Iespējams, tas ir tāpēc, ka %1$s nomainīja savu tālruņa numuru vai tālruņa numura privātuma iestatījumus. Pārbaudiet pilnīgo šifrēšanu manuāli, salīdzinot iepriekšējā ekrānā redzamos ciparus vai skenējot kodu otras personas ierīcē.</string>
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Collie nevar automātiski verificēt šīs sarunas šifrēšanu. Iespējams, tas ir tāpēc, ka %1$s nomainīja savu tālruņa numuru vai tālruņa numura privātuma iestatījumus. Pārbaudiet pilnīgo šifrēšanu manuāli, salīdzinot iepriekšējā ekrānā redzamos ciparus vai skenējot kodu otras personas ierīcē.</string>
     <!-- Bottom sheet title when encryption cannot be auto-verified -->
     <string name="EncryptionVerifiedSheet__title_unavailable">Automātiskā verifikācija šai sarunai nav pieejama</string>
     <!-- Bottom sheet body when encryption cannot be auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_unavailable">Signal var automātiski pārbaudīt šifrēšanu tikai tajās sarunās, kurās esat savienoti ar kādu personu, izmantojot tālruņa numuru. Ja saruna tika sākta ar kopīgu lietotājvārdu vai grupu, pārbaudiet pilnīgo šifrēšanu, salīdzinot iepriekšējā ekrānā redzamos ciparus vai skenējot kodu otras personas ierīcē.</string>
+    <string name="EncryptionVerifiedSheet__body_unavailable">Collie var automātiski pārbaudīt šifrēšanu tikai tajās sarunās, kurās esat savienoti ar kādu personu, izmantojot tālruņa numuru. Ja saruna tika sākta ar kopīgu lietotājvārdu vai grupu, pārbaudiet pilnīgo šifrēšanu, salīdzinot iepriekšējā ekrānā redzamos ciparus vai skenējot kodu otras personas ierīcē.</string>
 
     <!-- Title for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__title">Signal tagad var automātiski verificēt šifrēšanu</string>
+    <string name="VerifyAutomaticallyEducationSheet__title">Collie tagad var automātiski verificēt šifrēšanu</string>
     <!-- Body for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__body">Signal automātiski pārbaudīs savienojuma drošību kontaktpersonām, kas pievienotas ar tālruņa numuru, izmantojot procesu, ko sauc par atslēgu caurskatāmību. Papildu drošībai savienojumus joprojām varat verificēt manuāli, izmantojot QR kodu vai drošības numuru.</string>
+    <string name="VerifyAutomaticallyEducationSheet__body">Collie automātiski pārbaudīs savienojuma drošību kontaktpersonām, kas pievienotas ar tālruņa numuru, izmantojot procesu, ko sauc par atslēgu caurskatāmību. Papildu drošībai savienojumus joprojām varat verificēt manuāli, izmantojot QR kodu vai drošības numuru.</string>
     <!-- Button to learn more about automatic verification -->
     <string name="VerifyAutomaticallyEducationSheet__learn_more">Uzzināt vairāk</string>
     <!-- Button to go to verification page -->
@@ -3835,7 +3848,9 @@
     <string name="preferences__led_color_unknown">Nezināms</string>
     <string name="preferences__silent">Klusums</string>
     <string name="preferences__advanced">Papildu</string>
-    <string name="preferences__donate_to_signal">Ziedot Signal</string>
+    <string name="preferences__donate_to_signal">Ziedot Molly</string>
+    <!-- Preference label for making one-time donations to Signal -->
+    <string name="preferences__privacy">Privātums</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Stāsti</string>
     <string name="preferences__payments">Maksājumi</string>
@@ -3856,7 +3871,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Cenzūras apiešana</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Cenzūras apiešana</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ja šī funkcija ir iespējota, Signal mēģinās apiet cenzūru. Neieslēdziet šo funkciju, ja atrodaties vietā, kur Signal tiek cenzēta.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ja šī funkcija ir iespējota, Collie mēģinās apiet cenzūru. Neieslēdziet šo funkciju, ja atrodaties vietā, kur Collie tiek cenzēta.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Cenzūras apiešana ir aktivizēta, pamatojoties uz jūsu konta tālruņa numuru.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -3884,7 +3899,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automātiskā atslēgas verifikācija</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Pēc tās iespējošanas Signal mēģinās automātiski verificēt 1:1 sarunu šifrēšanu.</string>
+    <string name="preferences_automatic_key_verification_body">Pēc tās iespējošanas Collie mēģinās automātiski verificēt 1:1 sarunu šifrēšanu.</string>
 
 
     <!-- Internal only preferences -->
@@ -3901,7 +3916,7 @@
 
     <!-- Displayed on a welcome screen for payments -->
     <string name="PaymentsHomeFragment_introducing_payments">Jauna funkcija: maksājumi</string>
-    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Izmantojiet lietotni Signal, lai nosūtītu un saņemtu MobileCoin — jaunu, uz privātumu vērstu digitālo valūtu. Aktivizējiet, lai sāktu.</string>
+    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Izmantojiet lietotni Collie, lai nosūtītu un saņemtu MobileCoin — jaunu, uz privātumu vērstu digitālo valūtu. Aktivizējiet, lai sāktu.</string>
     <string name="PaymentsHomeFragment__activate_payments">Aktivizēt maksājumus</string>
     <string name="PaymentsHomeFragment__activating_payments">Tiek aktivizēti maksājumi…</string>
     <string name="PaymentsHomeFragment__restore_payments_account">Atjaunot maksājumu kontu</string>
@@ -3927,7 +3942,7 @@
     <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">Maksājumi jūsu reģionā nav pieejami.</string>
     <string name="PaymentsHomeFragment__could_not_enable_payments">Nevarējām iespējot maksājumus. Mēģiniet vēlāk.</string>
     <string name="PaymentsHomeFragment__deactivate_payments_question">Deaktivēt maksājumus?</string>
-    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">Deaktivizējot maksājumus, jūs nevarēsiet nosūtīt vai saņemt MobileCoin lietotnē Signal.</string>
+    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">Deaktivizējot maksājumus, jūs nevarēsiet nosūtīt vai saņemt MobileCoin lietotnē Collie.</string>
     <string name="PaymentsHomeFragment__deactivate">Deaktivēt</string>
     <string name="PaymentsHomeFragment__continue">Turpināt</string>
     <string name="PaymentsHomeFragment__balance_is_not_currently_available">Atlikums pašlaik nav pieejams.</string>
@@ -3936,10 +3951,10 @@
     <string name="PaymentsHomeFragment__details">Rekvizīti</string>
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__learn_more__activate_payments" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_activate</string> -->
     <!-- Displayed as a description in a dialog when the user tries to activate payments -->
-    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">Lietotni Signal var izmantot, lai nosūtītu un saņemtu MobileCoin. Uz visiem maksājumiem attiecas MobileCoin un MobileCoin Wallet lietošanas noteikumi. Var rasties dažas problēmas, un maksājumus vai atlikumus, kurus iespējams zaudēt, nevar atgūt. </string>
+    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">Lietotni Collie var izmantot, lai nosūtītu un saņemtu MobileCoin. Uz visiem maksājumiem attiecas MobileCoin un MobileCoin Wallet lietošanas noteikumi. Var rasties dažas problēmas, un maksājumus vai atlikumus, kurus iespējams zaudēt, nevar atgūt. </string>
     <string name="PaymentsHomeFragment__activate">Aktivēt</string>
     <string name="PaymentsHomeFragment__view_mobile_coin_terms">Skatīt MobileCoin lietošanas noteikumus</string>
-    <string name="PaymentsHomeFragment__payments_not_available">Maksājumu opcija lietotnē Signal vairs nav pieejama. Jūs joprojām varat pārskaitīt līdzekļus uz biržu, bet vairs nevarat nosūtīt un saņemt maksājumus vai pievienot līdzekļus.</string>
+    <string name="PaymentsHomeFragment__payments_not_available">Maksājumu opcija lietotnē Collie vairs nav pieejama. Jūs joprojām varat pārskaitīt līdzekļus uz biržu, bet vairs nevarat nosūtīt un saņemt maksājumus vai pievienot līdzekļus.</string>
 
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__mobile_coin_terms_url" translatable="false">https://www.mobilecoin.com/terms-of-use.html</string> -->
     <!-- Alert dialog title which shows up after a payment to turn on payment lock -->
@@ -4022,9 +4037,9 @@
     <string name="PaymentsTransferFragment__next">Tālāk</string>
     <string name="PaymentsTransferFragment__invalid_address">Nederīga adrese</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">Pārbaudiet naudas maka adresi, uz kuru mēģināt pārsūtīt, un mēģiniet vēlreiz.</string>
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Jūs nevarat veikt pārskaitījumu uz savu Signal naudas maka adresi. Ievadiet naudas maka adresi no sava konta atbalstītā biržā.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Lai skenētu kvadrātkodu, lietotnei Signal ir nepieciešama piekļuve kamerai.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Lai skenētu kvadrātkodu, lietotnei Signal ir nepieciešama piekļuve kamerai.</string>
+    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Jūs nevarat veikt pārskaitījumu uz savu Collie naudas maka adresi. Ievadiet naudas maka adresi no sava konta atbalstītā biržā.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Lai skenētu kvadrātkodu, lietotnei Collie ir nepieciešama piekļuve kamerai.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Lai skenētu kvadrātkodu, lietotnei Collie ir nepieciešama piekļuve kamerai.</string>
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Skenēt adreses kvadrātkodu</string>
@@ -4394,17 +4409,17 @@
 
     <!-- CallNotificationBuilder -->
     <!-- Displayed in a notification when a Signal voice call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_voice_call">Ienākošs Signal balss zvans</string>
+    <string name="CallNotificationBuilder__incoming_signal_voice_call">Ienākošs Collie balss zvans</string>
     <!-- Displayed in a notification when a Signal video call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_video_call">Ienākošs Signal video zvans</string>
+    <string name="CallNotificationBuilder__incoming_signal_video_call">Ienākošs Collie video zvans</string>
     <!-- Displayed in a notification when a Signal group call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_group_call">Ienākošs Signal grupas zvans</string>
+    <string name="CallNotificationBuilder__incoming_signal_group_call">Ienākošs Collie grupas zvans</string>
     <!-- Displayed in a notification when a Signal voice call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Aktīvs Signal balss zvans</string>
+    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Aktīvs Collie balss zvans</string>
     <!-- Displayed in a notification when a Signal video call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_video_call">Aktīvs Signal video zvans</string>
+    <string name="CallNotificationBuilder__ongoing_signal_video_call">Aktīvs Collie video zvans</string>
     <!-- Displayed in a notification when a Signal group call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_group_call">Aktīvs Signal grupas zvans</string>
+    <string name="CallNotificationBuilder__ongoing_signal_group_call">Aktīvs Collie grupas zvans</string>
 
     <string name="CallNotificationBuilder_connecting">Savienojos…</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">Rezerves kopijas paroles frāze</string>
@@ -4430,9 +4445,9 @@
     <string name="BackupDialog_verify">Pārbaudīt</string>
     <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">Jūs sekmīgi ievadījāt rezerves ieejas paroli</string>
     <string name="BackupDialog_passphrase_was_not_correct">Parole nav pareiza</string>
-    <string name="LocalBackupJob_creating_signal_backup">Veido Signal rezerves kopiju…</string>
+    <string name="LocalBackupJob_creating_signal_backup">Veido Collie rezerves kopiju…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">Tiek pārbaudīta Signal rezerves kopija…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">Tiek pārbaudīta Collie rezerves kopija…</string>
     <string name="LocalBackupJobApi29_backup_failed">Rezerves kopēšana neizdevās</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">Jūsu rezerves kopiju direktorijs ir dzēsts vai pārvietots.</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">Jūsu rezerves kopijas fails ir pārāk liels saglabāšanai šajā vietā.</string>
@@ -4447,11 +4462,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Piezvaniet man (%1$02d.%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Atkārtoti nosūtīt kodu (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Signal reģistrācija - Android ierīces verifikācijas kods</string>
+    <string name="RegistrationActivity_code_support_subject">Molly reģistrācija - Android ierīces verifikācijas kods</string>
     <string name="RegistrationActivity_incorrect_code">Nepareizs kods</string>
     <string name="BackupUtil_never">Nekad</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Nezināms</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">Izvēlieties, kas var redzēt jūsu tālruņa numuru un kas var ar jums sazināties lietotnē Collie, izmantojot to.</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">Lai izmantotu ekrāna bloķēšanu, iestatiet PIN kodu, kombināciju vai paroli šajā ierīcē.</string>
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Reģistrācijas bloķēšanas iestatīšanas laikā notikusi kļūda.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Reģistrācijas bloķēšanas atiestatīšanas laikā notikusi kļūda.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Jums ir jāievada savs reģistrācijas bloķēšanas PIN</string>
@@ -4463,11 +4482,11 @@
     <string name="preferences_chats__backups">Rezerves kopijas</string>
 
     <!-- Title text shown when Signal is locked and needs to be unlocked -->
-    <string name="prompt_passphrase_activity__unlock_signal">Signal atbloķēšana</string>
+    <string name="prompt_passphrase_activity__unlock_signal">Collie atbloķēšana</string>
     <!-- Description text explaining how to unlock Signal -->
-    <string name="prompt_passphrase_activity__use_your_android_device">Izmantojiet Android ierīces bloķēšanas iestatījumus, lai atbloķētu Signal.</string>
+    <string name="prompt_passphrase_activity__use_your_android_device">Izmantojiet Android ierīces bloķēšanas iestatījumus, lai atbloķētu Collie.</string>
     <!-- Text shown in a dialog that further explains how to unlock Signal by using the same unlocking methods that are used to unlock their own device -->
-    <string name="prompt_passphrase_activity__screen_lock_is_on">Ekrāna bloķēšana ir ieslēgta, un Signal aizsargā ierīces bloķēšanas iestatījumi. Atbloķējiet Signal tāpat kā jūs atbloķējat tālruni: ar sejas vari pirksta nospieduma atpazīšanu, PIN kodu, paroli vai kombināciju.</string>
+    <string name="prompt_passphrase_activity__screen_lock_is_on">Ekrāna bloķēšana ir ieslēgta, un Collie aizsargā ierīces bloķēšanas iestatījumi. Atbloķējiet Collie tāpat kā jūs atbloķējat tālruni: ar sejas vari pirksta nospieduma atpazīšanu, PIN kodu, paroli vai kombināciju.</string>
     <!-- Button in a dialog that will contact Signal support if pressed -->
     <string name="prompt_passphrase_activity__contact_support">Sazināties ar atbalstu</string>
     <!-- Button text to try again after unlocking has previously failed -->
@@ -4522,10 +4541,10 @@
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">Meklē jauno Android ierīci…</string>
-    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Lietotnei Signal ir nepieciešama atrašanās vietas atļauja, lai atrastu jauno Android ierīci un izveidotu ar to savienojumu.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Lietotnē Signal ir jābūt iespējotiem atrašanās vietas pakalpojumiem, lai atrastu jauno Android ierīci un izveidotu ar to savienojumu.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Lietotnē Signal ir jāieslēdz Wi-Fi, lai varētu noteikt jauno Android ierīci un izveidot ar to savienojumu. Wi-Fi ir jābūt ieslēgtam, bet ierīcei nav jābūt pievienotai Wi-Fi tīklam.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Diemžēl šķiet, ka šī ierīce neatbalsta Wi-Fi Direct. Lietotne Signal izmanto Wi-Fi Direct, lai atrastu jauno Android ierīci un izveidotu ar to savienojumu. Joprojām varat izveidot rezerves kopiju konta atjaunošanai jaunajā Android ierīcē.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Lietotnei Collie ir nepieciešama atrašanās vietas atļauja, lai atrastu jauno Android ierīci un izveidotu ar to savienojumu.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Lietotnē Collie ir jābūt iespējotiem atrašanās vietas pakalpojumiem, lai atrastu jauno Android ierīci un izveidotu ar to savienojumu.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Lietotnē Collie ir jāieslēdz Wi-Fi, lai varētu noteikt jauno Android ierīci un izveidot ar to savienojumu. Wi-Fi ir jābūt ieslēgtam, bet ierīcei nav jābūt pievienotai Wi-Fi tīklam.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Diemžēl šķiet, ka šī ierīce neatbalsta Wi-Fi Direct. Lietotne Molly izmanto Wi-Fi Direct, lai atrastu jauno Android ierīci un izveidotu ar to savienojumu. Joprojām varat izveidot rezerves kopiju konta atjaunošanai jaunajā Android ierīcē.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">Izveidot rezerves kopiju</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Mēģinot izveidot savienojumu ar jauno Android ierīci, radās neparedzēta kļūda.</string>
 
@@ -4565,7 +4584,7 @@
 
     <!-- DeviceTransferFragment -->
     <string name="DeviceTransfer__transferring_data">Notiek datu pārsūtīšana</string>
-    <string name="DeviceTransfer__keep_both_devices_near_each_other">Turiet abas ierīces tuvu vienu otrai. Neslēdziet ārā nevienu no ierīcēm un neaizveriet lietotni Signal. Pārsūtīšana ir pilnībā šifrēta.</string>
+    <string name="DeviceTransfer__keep_both_devices_near_each_other">Turiet abas ierīces tuvu vienu otrai. Neslēdziet ārā nevienu no ierīcēm un neaizveriet lietotni Collie. Pārsūtīšana ir pilnībā šifrēta.</string>
     <string name="DeviceTransfer__d_messages_so_far">Pagaidām %1$d ziņas…</string>
     <!-- Filled in with total percentage of messages transferred -->
     <string name="DeviceTransfer__s_of_messages_so_far">%1$s%% no ziņām līdz šim…</string>
@@ -4579,7 +4598,7 @@
     <!-- OldDeviceTransferInstructionsFragment -->
     <string name="OldDeviceTransferInstructions__transfer_account">Pārnest kontu</string>
     <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
-    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Lejupielādēt Signal jaunajā Android ierīcē</string>
+    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Lejupielādēt Collie jaunajā Android ierīcē</string>
     <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
     <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">"Pieskarieties pie Pārsūtīt vai atjaunot kontu"</string>
     <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
@@ -4660,7 +4679,7 @@
     <!-- GroupLinkBottomSheetDialogFragment -->
     <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Ikviens ar šo saiti var skatīt grupas nosaukumu un fotoattēlu un nosūtīt pieprasījumu tai pievienoties. Nosūtiet šo saiti tikai cilvēkiem, kuriem uzticaties.</string>
     <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Ikviens ar šo saiti var skatīt grupas nosaukumu un fotoattēlu un pievienoties šai grupai. Nosūtiet šo saiti tikai cilvēkiem, kuriem uzticaties.</string>
-    <string name="GroupLinkBottomSheet_share_via_signal">Kopīgot, izmantojot Signal</string>
+    <string name="GroupLinkBottomSheet_share_via_signal">Kopīgot, izmantojot Collie</string>
     <string name="GroupLinkBottomSheet_copy">Kopēt</string>
     <string name="GroupLinkBottomSheet_qr_code">Kvadrātkods</string>
     <string name="GroupLinkBottomSheet_share">Kopīgot</string>
@@ -4825,7 +4844,7 @@
     <string name="payment_info_card_about_mobilecoin">Par MobileCoin</string>
     <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">MobileCoin ir jauna uz privātumu vērsta digitālā valūta.</string>
     <string name="payment_info_card_adding_funds">Līdzekļu papildināšana</string>
-    <string name="payment_info_card_you_can_add_funds_for_use_in">Naudas līdzekļus izmantošanai lietotnē Signal varat pievienot, nosūtot MobileCoin uz sava naudas maka adresi.</string>
+    <string name="payment_info_card_you_can_add_funds_for_use_in">Naudas līdzekļus izmantošanai lietotnē Collie varat pievienot, nosūtot MobileCoin uz sava naudas maka adresi.</string>
     <string name="payment_info_card_cashing_out">Naudas izmaksa</string>
     <string name="payment_info_card_you_can_cash_out_mobilecoin">Jūs varat izņemt MobileCoin jebkurā laikā biržā, kas atbalsta MobileCoin. Vienkārši veiciet pārskaitījumu uz savu kontu attiecīgajā biržā.</string>
     <string name="payment_info_card_hide_this_card">Vai paslēpt šo karti?</string>
@@ -4846,12 +4865,12 @@
     <!-- DeactivateWalletFragment -->
     <string name="DeactivateWalletFragment__deactivate_wallet">Deaktivizēt naudas maku</string>
     <string name="DeactivateWalletFragment__your_balance">Jūsu atlikums</string>
-    <string name="DeactivateWalletFragment__its_recommended_that_you">Pirms maksājumu deaktivizēšanas ieteicams pārskaitīt līdzekļus uz citu naudas maka adresi. Ja izvēlēsieties nepārskaitīt savus līdzekļus tūlīt, tie paliks ar lietotni Signal saistītajā naudas makā, ja atkārtoti aktivizēsiet maksājumus.</string>
+    <string name="DeactivateWalletFragment__its_recommended_that_you">Pirms maksājumu deaktivizēšanas ieteicams pārskaitīt līdzekļus uz citu naudas maka adresi. Ja izvēlēsieties nepārskaitīt savus līdzekļus tūlīt, tie paliks ar lietotni Collie saistītajā naudas makā, ja atkārtoti aktivizēsiet maksājumus.</string>
     <string name="DeactivateWalletFragment__transfer_remaining_balance">Pārskaitīt atlikumu</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring">Deaktivizēt, neveicot pārskaitīšanu</string>
     <string name="DeactivateWalletFragment__deactivate">Deaktivēt</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring_question">Vai deaktivizēt, neveicot pārskaitīšanu?</string>
-    <string name="DeactivateWalletFragment__your_balance_will_remain">Ja izvēlēsieties atkārtoti aktivizēt maksājumus, atlikums paliks jūsu ar lietotni Signal saistītajā naudas makā.</string>
+    <string name="DeactivateWalletFragment__your_balance_will_remain">Ja izvēlēsieties atkārtoti aktivizēt maksājumus, atlikums paliks jūsu ar lietotni Collie saistītajā naudas makā.</string>
     <string name="DeactivateWalletFragment__error_deactivating_wallet">Naudas maka deaktivizēšanas kļūda.</string>
   <!-- Removed by excludeNonTranslatables <string name="DeactivateWalletFragment__learn_more__we_recommend_transferring_your_funds" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_deactivate</string> -->
 
@@ -5584,9 +5603,9 @@
     <string name="MySupportPreference__checking_subscription">Notiek abonementa pārbaude…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__title">Atjaunināt Signal</string>
+    <string name="UpdateSignalExpiredDialog__title">Atjaunināt Collie</string>
     <!-- Message of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__message">Šī Signal versija ir novecojusi. Atjauniniet to, lai turpinātu izmantot Signal.</string>
+    <string name="UpdateSignalExpiredDialog__message">Šī Collie versija ir novecojusi. Atjauniniet to, lai turpinātu izmantot Collie.</string>
     <!-- Button text of expiration dialog, will take user to update the app -->
     <string name="UpdateSignalExpiredDialog__update_action">Aktualizēt</string>
     <!-- Button text of expiration dialog to cancel the dialog.  -->
@@ -5595,7 +5614,7 @@
     <!-- Title of dialog telling user they need to re-register signal -->
     <string name="ReregisterSignalDialog__title">Ierīce nav reģistrēta</string>
     <!-- Message of dialog telling user they need to re-register signal as it is no longer registered -->
-    <string name="ReregisterSignalDialog__message">Šī ierīce vairs nav reģistrēta. Reģistrējiet atkārtoti, lai turpinātu izmantot Signal šajā ierīcē.</string>
+    <string name="ReregisterSignalDialog__message">Šī ierīce vairs nav reģistrēta. Reģistrējiet atkārtoti, lai turpinātu izmantot Collie šajā ierīcē.</string>
     <!-- Button text of re-registration dialog to re-register the device.  -->
     <string name="ReregisterSignalDialog__reregister_action">Atkārtoti reģistrēties</string>
     <!-- Button text of re-registration dialog to cancel the dialog.  -->
@@ -5871,6 +5890,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Ieslēgts līdz %1$s</string>
 
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">Neizdevās atvērt atlasītāju.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">Lai iespējotu paziņojumus, Collie ir nepieciešama atļauja tos rādīt.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">Ieslēgt</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Šis ir oficiālais un vienīgais sarunu kanāls ar Signal</string>
@@ -7082,7 +7107,7 @@
     <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__title">Ieslēgt Signal drošās rezerves kopijas</string>
     <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
-    <string name="TurnOnSignalBackups__body">Nezaudējiet nevienu ziņu, pat ja iegādāsieties jaunu tālruni vai atkārtoti instalēsiet Signal.</string>
+    <string name="TurnOnSignalBackups__body">Nezaudējiet nevienu ziņu, pat ja iegādāsieties jaunu tālruni vai atkārtoti instalēsiet Collie.</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
     <string name="TurnOnSignalBackups__turn_on">Ieslēgt</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
@@ -7152,16 +7177,16 @@
     <string name="BackupSetupCompleteBottomSheet__back_up_now">Dublēt tūlīt</string>
 
     <!-- Title of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__title">Atveriet Signal tālrunī</string>
+    <string name="InactivePrimary__title">Atveriet Collie tālrunī</string>
     <!-- Body of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__body">Lai konts paliktu aktīvs, atveriet Signal savā galvenajā ierīcē.</string>
+    <string name="InactivePrimary__body">Lai konts paliktu aktīvs, atveriet Collie savā galvenajā ierīcē.</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will navigate to a support page -->
     <string name="InactivePrimary__learn_more">Uzzināt vairāk</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will snooze the megaphone -->
     <string name="InactivePrimary__got_it">Skaidrs</string>
 
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
-    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Lai atjaunotu rezerves kopiju, instalējiet Signal no jauna. Atveriet lietotni un pieskarieties pie \"Atjaunot rezerves kopiju\". Tad atlasiet rezerves kopijas failu."</string>
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Lai atjaunotu rezerves kopiju, instalējiet Collie no jauna. Atveriet lietotni un pieskarieties pie \"Atjaunot rezerves kopiju\". Tad atlasiet rezerves kopijas failu."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
     <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Jums ir ieslēgta funkcija \"Optimizēt Signal krātuvi\". Ja vēlaties ierīcē saglabātajā rezerves kopijā iekļaut visus multivides failus, izslēdziet šo iestatījumu.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
@@ -7529,6 +7554,34 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Jūs nevarat abonēt Signal Drošās Rezerves Kopijas, jo jūsu tālrunis neatbalsta Google Play pakalpojumus. Lai saņemtu palīdzību, sazinieties ar tālruņa ražotāju.</string>
 
+    <!-- ManageStorageSettingsFragment -->
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">Ziņu ierobežojumi sarunās</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">Dzēst ziņu vēsturi</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Ziņas, kas ir vecākas par iestatīto laika periodu, tiks neatgriezeniski dzēstas.</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Ziņas, kuru garums pārsniedz iestatīto rakstzīmju skaitu, tiks neatgriezeniski dzēstas.</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">Piemērot ierobežojumus saistītajām ierīcēm</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">Iespējojot ziņu ierobežojumus sarunās, ziņas tiks dzēstas arī no jūsu saistītajām ierīcēm.</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie krātuve</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizēt Collie krātuvi</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Neizmantotās multivides lejupielāde tiks atcelta, taču to jebkurā brīdī var lejupielādēt no rezerves kopijas.</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Krātuves optimizāciju var izmantot tikai Signal rezerves kopiju maksas plāna īpašnieki. Jūsu rezerves kopiju abonements joprojām tiek apstrādāts un vēl nav aktīvs. Lūdzu, vēlāk mēģiniet vēlreiz.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Multivide tiks dzēsta no jūsu ierīces rezerves kopijas</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Ieslēdzot funkciju \"Optimizēt Signal krātuvi\", vecā multivide no jūsu ierīces tiks pārlikta. Varat to lejupielādēt vēlreiz jebkurā laikā. Tāpat tiks dzēsta arī vecā multivide no jūsu ierīces rezerves kopijas.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">Ieslēgt</string>
+
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Lai iespējotu šo funkciju, iegādājieties plānu</string>
@@ -7687,7 +7740,7 @@
     <!-- Displays the date the subscription expired. Placeholder is the date. -->
     <string name="RemoteBackupsSettingsFragment__expired_on_s">Derīguma termiņš beigsies: %1$s</string>
     <!-- Displayed at the top of the screen when no backup is currently enabled -->
-    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Izveidojiet ziņu vēstures rezerves kopiju, lai nezaudētu datus, nomainot tālruni vai pārinstalējot Signal.</string>
+    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Izveidojiet ziņu vēstures rezerves kopiju, lai nezaudētu datus, nomainot tālruni vai pārinstalējot Collie.</string>
     <!-- Section header for other ways to back up -->
     <string name="RemoteBackupsSettingsFragment__other_ways_to_backup">Citi rezerves kopijas veidi</string>
     <!-- Row title for performing on-device backup -->
@@ -7968,7 +8021,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Glabājiet atslēgu drošā vietā</string>
     <!-- Bottom sheet subtitle -->
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Ja pazaudēsiet atslēgu, Signal nevarēs palīdzēt atjaunot rezerves kopiju. Glabājiet atslēgu drošā vietā un neizpaudiet to citiem.</string>
+    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Ja pazaudēsiet atslēgu, Collie nevarēs palīdzēt atjaunot rezerves kopiju. Glabājiet atslēgu drošā vietā un neizpaudiet to citiem.</string>
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Turpināt</string>
     <!-- Sheet secondary action button label -->
@@ -7978,13 +8031,13 @@
     <!-- Dialog title for confirming you need to disable optimized storage and download media to rotate AEP key -->
     <string name="MessageBackupsKeyRecordScreen__download_media">Lejupielādēt multividi</string>
     <!-- Dialog body for confirming you need to disable optimized storage and download media to rotate AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Lai izveidotu jaunu atkopšanas atslēgu, jums ir jāizslēdz funkcija “Optimizēt Signal krātuvi” un jāgaida, līdz multivide tiks lejupielādēta. Kad lejupielāde būs pabeigta, varēsiet izveidot jaunu atslēgu.</string>
+    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Lai izveidotu jaunu atkopšanas atslēgu, jums ir jāizslēdz funkcija “Optimizēt Collie krātuvi” un jāgaida, līdz multivide tiks lejupielādēta. Kad lejupielāde būs pabeigta, varēsiet izveidot jaunu atslēgu.</string>
     <!-- Action label to turn off optimized storage and download media -->
     <string name="MessageBackupsKeyRecordScreen__turn_off_and_download">Izslēgt un lejupielādēt</string>
     <!-- Bottom Sheet title for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">Izveidot jaunu atkopšanas atslēgu</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">Jaunas atslēgas izveide ir nepieciešama tikai tad, ja cita persona ir uzzinājusi jūsu atslēgu. Jums būs atkārtoti jāaugšupielādē rezerves kopija, ieskaitot multivides failus. Ja izmantojat funkciju “Optimizēt Signal krātuvi”, vispirms jums būs jālejupielādē no ierīces pārliktie multivides faili.</string>
+    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">Jaunas atslēgas izveide ir nepieciešama tikai tad, ja cita persona ir uzzinājusi jūsu atslēgu. Jums būs atkārtoti jāaugšupielādē rezerves kopija, ieskaitot multivides failus. Ja izmantojat funkciju “Optimizēt Collie krātuvi”, vispirms jums būs jālejupielādē no ierīces pārliktie multivides faili.</string>
     <!-- Dialog title shown when user attempts to exit backup setup before completion -->
     <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">Iziet no rezerves kopiju iestatīšanas?</string>
     <!-- Dialog body warning user that backup setup is incomplete -->
@@ -8505,7 +8558,7 @@
     <string name="CouldNotCompleteBackupRestoreSheet__body_error">Radās kļūda, un jūsu rezerves kopiju nevar atjaunot. Iespējams, atjaunošanas laikā rezerves kopijas mape jūsu ierīcē tika pārvietota.</string>
 
     <!-- Body of the sheet shown when a local backup restore could not be completed, explaining how to try again -->
-    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Lai mēģinātu vēlreiz, atinstalējiet un atkārtoti instalējiet Signal šajā ierīcē un izvēlieties “Atjaunot vai pārsūtīt”.</string>
+    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Lai mēģinātu vēlreiz, atinstalējiet un atkārtoti instalējiet Collie šajā ierīcē un izvēlieties “Atjaunot vai pārsūtīt”.</string>
 
     <!-- Button on the sheet shown when a local backup restore could not be completed, opening a support article about it -->
     <string name="CouldNotCompleteBackupRestoreSheet__learn_more">Uzzināt vairāk</string>

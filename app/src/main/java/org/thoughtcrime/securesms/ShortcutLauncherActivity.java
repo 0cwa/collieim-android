@@ -7,14 +7,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.TaskStackBuilder;
 
 import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.util.CommunicationActions;
 
-public class ShortcutLauncherActivity extends AppCompatActivity {
+public class ShortcutLauncherActivity extends PassphraseRequiredActivity {
 
   private static final String TAG = Log.tag(ShortcutLauncherActivity.class);
 
@@ -29,9 +29,7 @@ public class ShortcutLauncherActivity extends AppCompatActivity {
   }
 
   @Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
+  protected void onCreate(@Nullable Bundle savedInstanceState, boolean ready) {
     String      rawId       = getIntent().getStringExtra(KEY_RECIPIENT);
     RecipientId recipientId = null;
 

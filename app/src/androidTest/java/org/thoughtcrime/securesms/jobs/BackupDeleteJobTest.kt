@@ -46,7 +46,6 @@ import java.util.UUID
 
 @RemoteConfigForTest(
   flags = [
-    Flag(TestRemoteConfigFlag.INTERNAL_USER, "true"),
     Flag(TestRemoteConfigFlag.DEFAULT_MAX_BACKOFF, "1")
   ]
 )

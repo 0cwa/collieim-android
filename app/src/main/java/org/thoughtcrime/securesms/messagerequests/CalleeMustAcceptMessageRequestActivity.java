@@ -18,7 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 
 import org.signal.core.models.recipients.RecipientId;
-import org.thoughtcrime.securesms.BaseActivity;
+import org.thoughtcrime.securesms.PassphraseRequiredActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.AvatarImageView;
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 
-public class CalleeMustAcceptMessageRequestActivity extends BaseActivity {
+public class CalleeMustAcceptMessageRequestActivity extends PassphraseRequiredActivity {
 
   private static final long   TIMEOUT_MS         = TimeUnit.SECONDS.toMillis(10);
   private static final String RECIPIENT_ID_EXTRA = "extra.recipient.id";
@@ -48,8 +48,8 @@ public class CalleeMustAcceptMessageRequestActivity extends BaseActivity {
 
   @SuppressLint("SourceLockedOrientationActivity")
   @Override
-  public void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+  public void onCreate(@Nullable Bundle savedInstanceState, boolean ready) {
+    super.onCreate(savedInstanceState, ready);
     setContentView(R.layout.callee_must_accept_message_request_dialog_fragment);
 
     SystemWindowInsetsSetter.attach(findViewById(R.id.callee_must_accept_root), this, WindowInsetsCompat.Type.systemBars());
@@ -78,8 +78,14 @@ public class CalleeMustAcceptMessageRequestActivity extends BaseActivity {
   @Override
   public void onResume() {
     super.onResume();
+  }
 
-    handler.postDelayed(finisher, TIMEOUT_MS);
+  @Override
+  protected void onPostResume(boolean screenLocked) {
+    super.onPostResume(screenLocked);
+    if (!screenLocked) {
+      handler.postDelayed(finisher, TIMEOUT_MS);
+    }
   }
 
   @Override

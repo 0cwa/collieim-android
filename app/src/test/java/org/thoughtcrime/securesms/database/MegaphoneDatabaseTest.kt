@@ -47,6 +47,17 @@ class MegaphoneDatabaseTest {
   }
 
   @Test
+  fun `completed donation reminder stays completed after upgrade`() {
+    jdbcDatabase.execSQL("INSERT INTO megaphone (event, interaction_count, last_interaction_timestamp, first_visible, last_visible, finished) VALUES ('donate_molly', 0, 0, 1, 1, 1)")
+
+    db.insert(listOf(Megaphones.Event.DONATE_MOLLY))
+
+    val record = db.getAllAndDeleteMissing().single()
+    assertThat(record.event).isEqualTo(Megaphones.Event.DONATE_MOLLY)
+    assertThat(record.finished).isTrue()
+  }
+
+  @Test
   fun `insert adds events`() {
     db.insert(listOf(Megaphones.Event.PINS_FOR_ALL, Megaphones.Event.NOTIFICATIONS))
 

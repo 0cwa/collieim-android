@@ -6,27 +6,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import androidx.navigation.NavDirections
-<<<<<<< MOLLY
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-=======
-import io.reactivex.rxjava3.subjects.PublishSubject
-import io.reactivex.rxjava3.subjects.Subject
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.appsettings.routes.UsernameEditMode
->>>>>>> SIGNAL
 import org.signal.core.util.getParcelableExtraCompat
 import org.signal.core.util.logging.Log
 import org.signal.donations.InAppPaymentType
 import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.R
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.components.settings.DSLSettingsActivity
-import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRoute
-=======
 import org.thoughtcrime.securesms.components.NavGraphHostActivity
-import org.thoughtcrime.securesms.components.settings.app.subscription.GooglePayComponent
-import org.thoughtcrime.securesms.components.settings.app.subscription.GooglePayRepository
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.help.HelpFragment
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.Environment
@@ -36,20 +23,9 @@ private const val START_ROUTE = "app.settings.args.START_ROUTE"
 private const val NOTIFICATION_CATEGORY = "android.intent.category.NOTIFICATION_PREFERENCES"
 internal const val EXTRA_PERFORM_ACTION_ON_CREATE = "extra_perform_action_on_create"
 
-<<<<<<< MOLLY
-class AppSettingsActivity : DSLSettingsActivity() {
+class AppSettingsActivity : NavGraphHostActivity() {
 
   private val TAG = Log.tag(AppSettingsActivity::class)
-
-  private var wasConfigurationUpdated = false
-=======
-class AppSettingsActivity : NavGraphHostActivity(), GooglePayComponent {
-
-  private val TAG = Log.tag(AppSettingsActivity::class)
-
-  override val googlePayRepository: GooglePayRepository by lazy { GooglePayRepository(this) }
-  override val googlePayResultPublisher: Subject<GooglePayComponent.GooglePayResult> = PublishSubject.create()
->>>>>>> SIGNAL
 
   override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
     super.onCreate(savedInstanceState, ready)
@@ -115,36 +91,8 @@ class AppSettingsActivity : NavGraphHostActivity(), GooglePayComponent {
       navController.safeNavigate(it)
     }
 
-<<<<<<< MOLLY
-    SignalStore.settings.onConfigurationSettingChanged.observe(this) { key ->
-      if (key == SettingsValues.THEME) {
-        DynamicTheme.setDefaultDayNightMode(this)
-        wasConfigurationUpdated = true
-        recreate()
-      } else if (key == SettingsValues.LANGUAGE) {
-        CachedInflater.from(this).clear()
-        wasConfigurationUpdated = true
-        recreate()
-        val intent = Intent(this, KeyCachingService::class.java)
-        intent.action = KeyCachingService.LOCALE_CHANGE_EVENT
-        startService(intent)
-      }
-    }
-
-    if (savedInstanceState == null) {
-      when (intent.getStringExtra(EXTRA_PERFORM_ACTION_ON_CREATE)) {
-        ACTION_CHANGE_NUMBER_SUCCESS -> {
-          MaterialAlertDialogBuilder(this)
-            .setMessage(getString(R.string.ChangeNumber__your_phone_number_has_changed_to_s, SignalE164Util.prettyPrint(Recipient.self().requireE164())))
-            .setPositiveButton(R.string.ChangeNumber__okay, null)
-            .show()
-        }
-      }
-    }
-=======
     recreateOnThemeChange()
     performActionOnCreate(savedInstanceState)
->>>>>>> SIGNAL
   }
 
   override fun onNewIntent(intent: Intent) {
@@ -179,14 +127,20 @@ class AppSettingsActivity : NavGraphHostActivity(), GooglePayComponent {
     }
 
     @JvmStatic
-    fun proxy(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.DataAndStorageRoute.Proxy)
+    fun proxy(context: Context): Intent = Intent(context, AppSettingsActivity::class.java)
+      .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
+      .putExtra(START_ROUTE, AppSettingsRoute.DataAndStorageRoute.Proxy)
 
     @JvmStatic
-    fun notifications(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.NotificationsRoute.Notifications)
+    fun notifications(context: Context): Intent = Intent(context, AppSettingsActivity::class.java)
+      .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
+      .putExtra(START_ROUTE, AppSettingsRoute.NotificationsRoute.Notifications)
 
     @JvmStatic
     fun playServicesProblem(context: Context, errorCode: Int): Intent {
-      return getIntentForStartLocation(context, AppSettingsRoute.NotificationsRoute.PlayServicesProblem(errorCode = errorCode))
+      return Intent(context, AppSettingsActivity::class.java)
+        .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
+        .putExtra(START_ROUTE, AppSettingsRoute.NotificationsRoute.PlayServicesProblem(errorCode = errorCode))
     }
 
     @JvmStatic
@@ -201,7 +155,9 @@ class AppSettingsActivity : NavGraphHostActivity(), GooglePayComponent {
     @JvmStatic
     fun manageSubscriptions(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.DonationsRoute.Donations())
 
-    fun manageStorage(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.DataAndStorageRoute.DataAndStorage)
+    fun manageStorage(context: Context): Intent = Intent(context, AppSettingsActivity::class.java)
+      .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
+      .putExtra(START_ROUTE, AppSettingsRoute.DataAndStorageRoute.DataAndStorage)
 
     @JvmStatic
     fun notificationProfiles(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.NotificationsRoute.NotificationProfiles)
@@ -210,7 +166,9 @@ class AppSettingsActivity : NavGraphHostActivity(), GooglePayComponent {
     fun createNotificationProfile(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.NotificationsRoute.EditProfile())
 
     @JvmStatic
-    fun privacy(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.PrivacyRoute.Privacy)
+    fun privacy(context: Context): Intent = Intent(context, AppSettingsActivity::class.java)
+      .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
+      .putExtra(START_ROUTE, AppSettingsRoute.PrivacyRoute.Privacy)
 
     @JvmStatic
     fun notificationProfileDetails(context: Context, profileId: Long): Intent {

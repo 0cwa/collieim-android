@@ -28,7 +28,6 @@ import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentReceiptRecord
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
-import org.thoughtcrime.securesms.testing.GooglePayTestRule
 import org.thoughtcrime.securesms.testing.InAppPaymentsRule
 import org.thoughtcrime.securesms.testing.RawFlag
 import org.thoughtcrime.securesms.testing.RemoteConfigForTest
@@ -63,9 +62,6 @@ class DonationsCheckoutSpecTest(private val spec: DonationsCheckoutTestSpec) {
 
   @get:Rule
   val rxRule = RxTestSchedulerRule()
-
-  @get:Rule
-  val googlePayRule = GooglePayTestRule()
 
   @get:Rule
   val composeRule = createEmptyComposeRule()
@@ -151,46 +147,18 @@ object DonationsCheckoutSpecs {
 
   val ALL: List<DonationsCheckoutTestSpec> = listOf(
     DonationsCheckoutTestSpec(
-      name = "googlePay_oneTime_happyPath_isRedeemed",
-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
-      paymentMethod = TestPaymentMethod.GOOGLE_PAY,
-      world = WorldState(),
-      expected = ExpectedOutcome.Redeemed
-    ),
-    DonationsCheckoutTestSpec(
-      name = "googlePay_oneTime_permitFailure_showsError",
-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
-      paymentMethod = TestPaymentMethod.GOOGLE_PAY,
-      world = WorldState(permit = PermitOutcome.FAILURE),
-      expected = paymentErrorDialog
-    ),
-    DonationsCheckoutTestSpec(
-      name = "googlePay_oneTime_stripeDecline_showsError",
-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
-      paymentMethod = TestPaymentMethod.GOOGLE_PAY,
-      world = WorldState(stripe = StripeOutcome.DECLINE),
-      expected = paymentErrorDialog
-    ),
-    DonationsCheckoutTestSpec(
-      name = "googlePay_oneTime_signalCreateIntent402_showsError",
-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
-      paymentMethod = TestPaymentMethod.GOOGLE_PAY,
-      world = WorldState(signalCreatePaymentStatus = 402),
-      expected = paymentErrorDialog
-    ),
-    DonationsCheckoutTestSpec(
-      name = "googlePay_recurring_permitFailure_showsError",
-      inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
-      paymentMethod = TestPaymentMethod.GOOGLE_PAY,
-      world = WorldState(permit = PermitOutcome.FAILURE),
-      expected = paymentErrorDialog
-    ),
-    DonationsCheckoutTestSpec(
       name = "creditCard_oneTime_happyPath_isRedeemed",
       inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
       paymentMethod = TestPaymentMethod.CREDIT_CARD,
       world = WorldState(),
       expected = ExpectedOutcome.Redeemed
+    ),
+    DonationsCheckoutTestSpec(
+      name = "creditCard_oneTime_permitFailure_showsError",
+      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+      world = WorldState(permit = PermitOutcome.FAILURE),
+      expected = paymentErrorDialog
     ),
     DonationsCheckoutTestSpec(
       name = "creditCard_oneTime_stripeDecline_showsError",
@@ -199,6 +167,22 @@ object DonationsCheckoutSpecs {
       world = WorldState(stripe = StripeOutcome.DECLINE),
       expected = paymentErrorDialog
     ),
+    DonationsCheckoutTestSpec(
+      name = "creditCard_oneTime_signalCreateIntent402_showsError",
+      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+      world = WorldState(signalCreatePaymentStatus = 402),
+      expected = paymentErrorDialog
+    ),
+    DonationsCheckoutTestSpec(
+      name = "creditCard_recurring_permitFailure_showsError",
+      inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
+      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+      world = WorldState(permit = PermitOutcome.FAILURE),
+      expected = paymentErrorDialog
+    ),
+
+
     DonationsCheckoutTestSpec(
       name = "creditCard_oneTime_3dsApproved_isRedeemed",
       inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
@@ -232,19 +216,13 @@ object DonationsCheckoutSpecs {
     // pipeline (create subscriber, setup intent, set default, set level); receipt redemption is
     // shared with the one-time path already covered above.
     DonationsCheckoutTestSpec(
-      name = "googlePay_recurring_happyPath_isSubmitted",
-      inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
-      paymentMethod = TestPaymentMethod.GOOGLE_PAY,
-      world = WorldState(recurringActivatesAfterSetup = true),
-      expected = ExpectedOutcome.PaymentSubmitted
-    ),
-    DonationsCheckoutTestSpec(
       name = "creditCard_recurring_happyPath_isSubmitted",
       inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
       paymentMethod = TestPaymentMethod.CREDIT_CARD,
       world = WorldState(recurringActivatesAfterSetup = true),
       expected = ExpectedOutcome.PaymentSubmitted
     ),
+
     DonationsCheckoutTestSpec(
       name = "payPal_recurring_happyPath_isSubmitted",
       inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
@@ -261,13 +239,7 @@ object DonationsCheckoutSpecs {
     ),
 
     // Additional error cases.
-    DonationsCheckoutTestSpec(
-      name = "creditCard_oneTime_permitFailure_showsError",
-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
-      world = WorldState(permit = PermitOutcome.FAILURE),
-      expected = paymentErrorDialog
-    ),
+
     DonationsCheckoutTestSpec(
       name = "creditCard_recurring_stripeDecline_showsError",
       inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
@@ -276,9 +248,9 @@ object DonationsCheckoutSpecs {
       expected = paymentErrorDialog
     ),
     DonationsCheckoutTestSpec(
-      name = "googlePay_recurring_signalCreatePaymentMethod402_showsError",
+      name = "creditCard_recurring_signalCreatePaymentMethod402_showsError",
       inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
-      paymentMethod = TestPaymentMethod.GOOGLE_PAY,
+      paymentMethod = TestPaymentMethod.CREDIT_CARD,
       world = WorldState(signalCreatePaymentStatus = 402),
       expected = paymentErrorDialog
     )

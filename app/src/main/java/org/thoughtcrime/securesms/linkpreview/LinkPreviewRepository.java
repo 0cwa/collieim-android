@@ -90,14 +90,10 @@ public class LinkPreviewRepository {
   private final OkHttpClient client;
 
   public LinkPreviewRepository() {
-<<<<<<< MOLLY
-    this.client = new OkHttpClient.Builder()
+    this.client = AppDependencies.getOkHttpClient().newBuilder()
                                   .socketFactory(Networking.getSocketFactory())
                                   .proxySelector(Networking.getProxySelectorForSocks())
                                   .dns(Networking.getDns())
-=======
-    this.client = AppDependencies.getOkHttpClient().newBuilder()
->>>>>>> SIGNAL
                                   .cache(null)
                                   .addInterceptor(new UserAgentInterceptor("WhatsApp/2"))
                                   .addNetworkInterceptor(new LinkPreviewRedirectValidationInterceptor())

@@ -74,13 +74,10 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
     data class Username(val mode: UsernameEditMode = UsernameEditMode.NORMAL) : AccountRoute
   }
 
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/components/settings/app/routes/AppSettingsRoute.kt
-=======
   @Serializable
   data object Payments : AppSettingsRoute
 
   @Serializable
->>>>>>> SIGNAL:feature/app-settings/src/main/java/org/signal/appsettings/routes/AppSettingsRoute.kt
   data object Invite : AppSettingsRoute
 
   @Serializable
@@ -163,13 +160,13 @@ sealed interface AppSettingsRoute : Parcelable, DetailNavKey {
 
     @Serializable
     data object NotificationProfiles : NotificationsRoute
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/components/settings/app/routes/AppSettingsRoute.kt
+    @Serializable
     data object UnifiedPushSettings : NotificationsRoute
-    data class PlayServicesProblem(val errorCode: Int) : NotificationsRoute
-=======
 
     @Serializable
->>>>>>> SIGNAL:feature/app-settings/src/main/java/org/signal/appsettings/routes/AppSettingsRoute.kt
+    data class PlayServicesProblem(val errorCode: Int) : NotificationsRoute
+
+    @Serializable
     data class EditProfile(val profileId: Long = -1L) : NotificationsRoute
 
     @Serializable

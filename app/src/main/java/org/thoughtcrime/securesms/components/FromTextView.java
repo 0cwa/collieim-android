@@ -10,15 +10,6 @@ import androidx.annotation.Nullable;
 
 import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.util.ContextUtil;
-<<<<<<< MOLLY
-import org.signal.core.util.DrawableUtil;
-import org.thoughtcrime.securesms.R;
-import org.thoughtcrime.securesms.components.emoji.SimpleEmojiTextView;
-import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.util.RemoteConfig;
-import org.thoughtcrime.securesms.util.SpanUtil;
-import org.thoughtcrime.securesms.util.ViewUtil;
-=======
 import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.emoji.SimpleEmojiTextView;
@@ -26,7 +17,6 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.signal.core.util.DrawableUtil;
 import org.signal.core.ui.util.SpanUtil;
 import org.signal.core.ui.util.ViewUtil;
->>>>>>> SIGNAL
 
 public class FromTextView extends SimpleEmojiTextView {
 

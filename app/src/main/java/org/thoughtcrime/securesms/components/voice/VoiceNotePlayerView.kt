@@ -17,11 +17,8 @@ import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.SimpleColorFilter
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.value.LottieValueCallback
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.models.recipients.RecipientId
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.PlaybackSpeedToggleTextView
 import java.util.concurrent.TimeUnit

@@ -40,11 +40,7 @@ import org.thoughtcrime.securesms.database.GroupTable
 import org.thoughtcrime.securesms.database.MessageTable
 import org.thoughtcrime.securesms.database.MessageTable.MarkedMessageInfo
 import org.thoughtcrime.securesms.database.NoSuchMessageException
-<<<<<<< MOLLY
-=======
-import org.thoughtcrime.securesms.database.PaymentMetaDataUtil
 import org.thoughtcrime.securesms.database.RecipientTable
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.database.SentStorySyncManifest
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.DistributionListId
@@ -1277,58 +1273,7 @@ object SyncMessageProcessor {
   }
 
   private fun handleSynchronizeOutgoingPayment(outgoingPayment: SyncMessage.OutgoingPayment, envelopeTimestamp: Long) {
-<<<<<<< MOLLY
     log(envelopeTimestamp, "Outgoing payment, ignoring.")
-=======
-    log(envelopeTimestamp, "Synchronize outgoing payment.")
-
-    val mobileCoin = if (outgoingPayment.mobileCoin != null) {
-      outgoingPayment.mobileCoin!!
-    } else {
-      log(envelopeTimestamp, "Unknown outgoing payment, ignoring.")
-      return
-    }
-
-    var recipientId: RecipientId? = ServiceId.parseOrNull(outgoingPayment.recipientServiceId)?.let { RecipientIds.from(it) }
-
-    var timestamp: Long = mobileCoin.ledgerBlockTimestamp ?: 0L
-    if (timestamp == 0L) {
-      timestamp = System.currentTimeMillis()
-    }
-
-    var address: MobileCoinPublicAddress? = if (mobileCoin.recipientAddress != null) {
-      MobileCoinPublicAddress.fromBytes(mobileCoin.recipientAddress!!.toByteArray())
-    } else {
-      null
-    }
-
-    if (address == null && recipientId == null) {
-      log(envelopeTimestamp, "Inserting defrag")
-      address = AppDependencies.payments.wallet.mobileCoinPublicAddress
-      recipientId = Recipient.self().id
-    }
-
-    val uuid = UUID.randomUUID()
-    try {
-      SignalDatabase.payments
-        .createSuccessfulPayment(
-          uuid,
-          recipientId,
-          address!!,
-          timestamp,
-          mobileCoin.ledgerBlockIndex!!,
-          outgoingPayment.note ?: "",
-          mobileCoin.amountPicoMob!!.toMobileCoinMoney(),
-          mobileCoin.feePicoMob!!.toMobileCoinMoney(),
-          mobileCoin.receipt!!.toByteArray(),
-          PaymentMetaDataUtil.fromKeysAndImages(mobileCoin.outputPublicKeys, mobileCoin.spentKeyImages)
-        )
-    } catch (e: SerializationException) {
-      warn(envelopeTimestamp, "Ignoring synchronized outgoing payment with bad data.", e)
-    }
-
-    log("Inserted synchronized payment $uuid")
->>>>>>> SIGNAL
   }
 
   private fun handleSynchronizeKeys(keys: SyncMessage.Keys, envelopeTimestamp: Long) {

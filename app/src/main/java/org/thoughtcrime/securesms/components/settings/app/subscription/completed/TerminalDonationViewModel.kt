@@ -14,23 +14,11 @@ import kotlinx.coroutines.launch
 import org.signal.core.models.badges.Badge
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.badges.models.Badge
-=======
-import org.thoughtcrime.securesms.badges.BadgeRepository
-import org.thoughtcrime.securesms.badges.BadgeRepository.DonationBadgeToggle
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.database.model.databaseprotos.TerminalDonationQueue
-import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.thoughtcrime.securesms.recipients.Recipient
 
 class TerminalDonationViewModel(
   donationCompleted: TerminalDonationQueue.TerminalDonation,
-<<<<<<< MOLLY
-  repository: TerminalDonationRepository = TerminalDonationRepository(),
-=======
   repository: TerminalDonationRepository = TerminalDonationRepository()
->>>>>>> SIGNAL
 ) : ViewModel() {
 
   companion object {
@@ -54,15 +42,10 @@ class TerminalDonationViewModel(
         return@launch
       }
 
-      val hasOtherBadges = Recipient.self().badges.filterNot { it.id == badge.id }.isNotEmpty()
-      val isDisplayingBadges = SignalStore.inAppPayments.getDisplayBadgesOnProfile()
-
       internalBadge.value = badge
-      internalToggleChecked.value = !hasOtherBadges
-      internalToggleType.value = when {
-        hasOtherBadges && isDisplayingBadges -> ToggleType.MAKE_FEATURED_BADGE
-        else -> ToggleType.DISPLAY_ON_PROFILE
-      }
+      // Molly can acknowledge a donation without publishing a profile badge.
+      internalToggleType.value = ToggleType.NONE
+
     }
   }
 
@@ -70,49 +53,7 @@ class TerminalDonationViewModel(
     internalToggleChecked.value = isChecked
   }
 
-  fun commitToggleState() {
-<<<<<<< MOLLY
-    when (toggleType.value) {
-      ToggleType.NONE -> Unit
-      ToggleType.MAKE_FEATURED_BADGE -> {
-        // MOLLY: TODO
-        // badgeRepository.setVisibilityForAllBadges(isToggleChecked.value).subscribeBy(
-        //   onError = {
-        //     Log.w(TAG, "Failure while updating badge visibility", it)
-        //   }
-        // )
-      }
-
-      ToggleType.DISPLAY_ON_PROFILE -> {
-        val badge = this.badge.value
-        if (badge == null) {
-          Log.w(TAG, "No badge!")
-          return
-        }
-
-        // MOLLY: TODO
-        // badgeRepository.setFeaturedBadge(badge).subscribeBy(
-        //   onError = {
-        //     Log.w(TAG, "Failure while updating featured badge", it)
-        //   }
-        // )
-      }
-=======
-    val toggle = when (toggleType.value) {
-      ToggleType.NONE -> return
-      ToggleType.MAKE_FEATURED_BADGE -> DonationBadgeToggle.MAKE_FEATURED
-      ToggleType.DISPLAY_ON_PROFILE -> DonationBadgeToggle.DISPLAY_ON_PROFILE
->>>>>>> SIGNAL
-    }
-
-    val badge = this.badge.value
-    if (badge == null) {
-      Log.w(TAG, "No badge!")
-      return
-    }
-
-    BadgeRepository.commitDonationBadgeToggle(toggle, badge, isToggleChecked.value)
-  }
+  fun commitToggleState() = Unit
 
   enum class ToggleType(@StringRes val copyId: Int) {
     NONE(-1),

@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.mediasend.v2.stories
 import com.google.android.material.R as MaterialR
 import org.signal.core.util.DimensionUnit
 import org.thoughtcrime.securesms.R
+import org.signal.core.ui.R as CoreUiR
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
 import org.thoughtcrime.securesms.components.settings.DSLSettingsAdapter
 import org.thoughtcrime.securesms.components.settings.DSLSettingsBottomSheetFragment
@@ -39,13 +40,8 @@ class ChooseStoryTypeBottomSheet : DSLSettingsBottomSheetFragment(
             stringId = R.string.ChooseStoryTypeBottomSheet__visible_only_to
           ),
           icon = DSLSettingsIcon.from(
-<<<<<<< MOLLY
-            iconId = R.drawable.symbol_stories_24,
-            iconTintId = MaterialR.attr.colorOnSurface,
-=======
             iconId = CoreUiR.drawable.symbol_stories_24,
-            iconTintId = CoreUiR.color.signal_colorOnSurface,
->>>>>>> SIGNAL
+            iconTintId = MaterialR.attr.colorOnSurface,
             backgroundId = R.drawable.circle_tintable,
             backgroundTint = MaterialR.attr.colorSurfaceContainerHighest,
             insetPx = DimensionUnit.DP.toPixels(8f).toInt()

@@ -36,12 +36,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobs.MultiDeviceViewedUpdateJob;
 import org.thoughtcrime.securesms.jobs.SendViewedReceiptJob;
 import org.thoughtcrime.securesms.mms.PartUriParser;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.service.KeyCachingService;
-
-=======
->>>>>>> SIGNAL
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

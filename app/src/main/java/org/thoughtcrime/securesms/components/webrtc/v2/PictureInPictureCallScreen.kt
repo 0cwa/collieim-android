@@ -38,14 +38,10 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.compose.NightPreview
 import org.signal.core.ui.compose.Previews
 import org.thoughtcrime.securesms.R
+import org.signal.core.ui.R as CoreUiR
 import org.thoughtcrime.securesms.events.CallParticipant
 import org.thoughtcrime.securesms.events.CallParticipantId
 import org.thoughtcrime.securesms.recipients.Recipient
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId
-=======
-import org.signal.core.ui.R as CoreUiR
->>>>>>> SIGNAL
 
 private val PIP_METRICS_SELF_PORTRAIT_WIDTH = 48.dp
 private val PIP_METRICS_SELF_PORTRAIT_HEIGHT = 86.dp

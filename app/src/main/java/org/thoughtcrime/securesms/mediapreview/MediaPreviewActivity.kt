@@ -24,13 +24,10 @@ import org.thoughtcrime.securesms.PassphraseRequiredActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaController
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaControllerOwner
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewV2Activity.kt
+import java.util.concurrent.TimeUnit
 import org.thoughtcrime.securesms.util.DynamicMediaPreviewTheme
 import org.thoughtcrime.securesms.util.DynamicTheme
-=======
 import org.thoughtcrime.securesms.util.WindowUtil
-import java.util.concurrent.TimeUnit
->>>>>>> SIGNAL:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewActivity.kt
 
 class MediaPreviewActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner {
 
@@ -44,7 +41,8 @@ class MediaPreviewActivity : PassphraseRequiredActivity(), VoiceNoteMediaControl
 
   private lateinit var transitionImageView: ImageView
 
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewV2Activity.kt
+  private var isWindowStarted = false
+
   private val theme: DynamicTheme = DynamicMediaPreviewTheme()
 
   override fun onPreCreate() {
@@ -56,9 +54,6 @@ class MediaPreviewActivity : PassphraseRequiredActivity(), VoiceNoteMediaControl
     super.onResume()
     theme.onResume(this)
   }
-=======
-  private var isWindowStarted = false
->>>>>>> SIGNAL:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewActivity.kt
 
   override fun attachBaseContext(newBase: Context) {
     delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
@@ -111,13 +106,8 @@ class MediaPreviewActivity : PassphraseRequiredActivity(), VoiceNoteMediaControl
     }
 
     super.onCreate(savedInstanceState, ready)
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewV2Activity.kt
-    setContentView(R.layout.activity_mediapreview_v2)
-=======
     lifecycleDisposable.bindTo(this)
-    setTheme(R.style.TextSecure_MediaPreview)
     setContentView(R.layout.activity_media_preview)
->>>>>>> SIGNAL:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewActivity.kt
 
     transitionImageView = findViewById(R.id.transition_image_view)
     val cacheDrawable = MediaPreviewCache.drawable?.let { RecycledBitmapGuardDrawable(it) }
@@ -172,12 +162,9 @@ class MediaPreviewActivity : PassphraseRequiredActivity(), VoiceNoteMediaControl
 
     voiceNoteMediaController = VoiceNoteMediaController(this, false)
 
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewV2Activity.kt
-=======
     WindowUtil.clearLightStatusBar(window)
     WindowUtil.clearLightNavigationBar(window)
 
->>>>>>> SIGNAL:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewActivity.kt
     if (savedInstanceState == null) {
       val bundle = Bundle()
       bundle.putParcelable(MediaPreviewFragment.ARGS_KEY, args)

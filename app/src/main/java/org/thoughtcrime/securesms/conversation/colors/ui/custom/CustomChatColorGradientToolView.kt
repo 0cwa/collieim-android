@@ -14,11 +14,8 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.core.content.ContextCompat
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.util.ViewUtil
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.R
 import kotlin.math.abs
 import kotlin.math.atan

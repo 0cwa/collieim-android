@@ -38,12 +38,9 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil;
-=======
 import org.signal.core.models.database.StickerRecord;
 import org.signal.core.models.recipients.RecipientId;
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.ui.view.Stub;
 import org.signal.core.util.ThreadUtil;
 import org.signal.core.util.concurrent.ListenableFuture;

@@ -390,11 +390,8 @@ private class StarredMessageClickListener(
   override fun goToMediaPreview(parent: ConversationItem, sharedElement: View, args: MediaIntentFactory.MediaPreviewArgs) = Unit
   override fun onShowGroupDescriptionClicked(groupName: String, description: String, shouldLinkifyWebLinks: Boolean) = Unit
   override fun onJoinCallLink(callLinkRootKey: CallLinkRootKey) = Unit
-<<<<<<< MOLLY
-=======
   override fun onViewStickerPackLink(packId: String, packKey: String) = Unit
   override fun onPaymentTombstoneClicked() = Unit
->>>>>>> SIGNAL
   override fun onDisplayMediaNoLongerAvailableSheet() = Unit
   override fun onShowUnverifiedProfileSheet(forGroup: Boolean) = Unit
   override fun onUpdateSignalClicked() = Unit

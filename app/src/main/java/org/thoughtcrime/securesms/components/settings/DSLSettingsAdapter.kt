@@ -14,11 +14,8 @@ import androidx.annotation.Discouraged
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.util.ViewUtil
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.models.AsyncSwitch
@@ -264,13 +261,8 @@ class ExternalLinkPreferenceViewHolder(itemView: View) : PreferenceViewHolder<Ex
   override fun bind(model: ExternalLinkPreference) {
     super.bind(model)
 
-<<<<<<< MOLLY
-    val externalLinkIcon = requireNotNull(ContextCompat.getDrawable(context, R.drawable.symbol_open_20)).apply {
-      colorFilter = PorterDuffColorFilter(ThemeUtil.getThemedColor(context, R.attr.signal_icon_tint_primary), PorterDuff.Mode.SRC_IN)
-=======
     val externalLinkIcon = requireNotNull(ContextCompat.getDrawable(context, CoreUiR.drawable.symbol_open_20)).apply {
-      colorFilter = PorterDuffColorFilter(ContextCompat.getColor(context, R.color.signal_icon_tint_primary), PorterDuff.Mode.SRC_IN)
->>>>>>> SIGNAL
+      colorFilter = PorterDuffColorFilter(ThemeUtil.getThemedColor(context, R.attr.signal_icon_tint_primary), PorterDuff.Mode.SRC_IN)
     }
     externalLinkIcon.setBounds(0, 0, ViewUtil.dpToPx(20), ViewUtil.dpToPx(20))
 

@@ -95,7 +95,7 @@ public final class ConversationUtil {
    */
   @WorkerThread
   public static void ensureShortcutForRecipientSync(@NonNull Context context, @NonNull Recipient recipient) {
-    if (SignalStore.settings().getScreenLockEnabled()) {
+    if (TextSecurePreferences.isPassphraseLockEnabled(context) || TextSecurePreferences.isBiometricScreenLockEnabled(context)) {
       return;
     }
 

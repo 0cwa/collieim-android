@@ -64,12 +64,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.megaphone.MegaphoneRepository
 import org.thoughtcrime.securesms.megaphone.Megaphones
 import org.thoughtcrime.securesms.recipients.Recipient
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId
-=======
-import org.thoughtcrime.securesms.registration.data.QuickstartCredentialExporter
 import org.thoughtcrime.securesms.ringrtc.CameraFpsRanges
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
 import org.thoughtcrime.securesms.util.ConversationUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
@@ -1123,8 +1118,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
       .show()
   }
 
-<<<<<<< MOLLY
-=======
   private fun onCopyServicePasswordClicked() {
     val servicePassword = SignalStore.account.servicePassword
     if (servicePassword == null) {
@@ -1143,43 +1136,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
       .show()
   }
 
-  private fun copyPaymentsDataToClipboard() {
-    MaterialAlertDialogBuilder(requireContext())
-      .setMessage(
-        """
-    Local payments history will be copied to the clipboard.
-    It may therefore compromise privacy.
-    However, no private keys will be copied.
-        """.trimIndent()
-      )
-      .setPositiveButton(
-        "Copy"
-      ) { _: DialogInterface?, _: Int ->
-        val context: Context = AppDependencies.application
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-
-        SimpleTask.run<Any?>(
-          SignalExecutors.UNBOUNDED,
-          {
-            val tsv = DataExportUtil.createTsv()
-            val clip = ClipData.newPlainText(context.getString(R.string.app_name), tsv)
-            clipboard.setPrimaryClip(clip)
-            null
-          },
-          {
-            Toast.makeText(
-              context,
-              "Payments have been copied",
-              Toast.LENGTH_SHORT
-            ).show()
-          }
-        )
-      }
-      .setNegativeButton(android.R.string.cancel, null)
-      .show()
-  }
-
->>>>>>> SIGNAL
   private fun refreshAttributes() {
     AppDependencies.jobManager
       .startChain(RefreshAttributesJob())
@@ -1319,24 +1275,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
     }
   }
 
-<<<<<<< MOLLY
-  private fun promptUserForSentTimestamp() {
-=======
-  private fun exportQuickstartCredentials() {
-    MaterialAlertDialogBuilder(requireContext())
-      .setTitle("Export quickstart credentials?")
-      .setMessage("This will export your account's private keys and credentials to an unencrypted file on disk. This is very dangerous! Only use it with test accounts.")
-      .setPositiveButton("Export") { _, _ ->
-        SimpleTask.run({
-          QuickstartCredentialExporter.export(requireContext())
-        }) { file ->
-          Toast.makeText(requireContext(), "Exported to ${file.absolutePath}", Toast.LENGTH_LONG).show()
-        }
-      }
-      .setNegativeButton(android.R.string.cancel, null)
-      .show()
-  }
-
   /**
    * [onConfirmed] is given the exact contents of the input field
    */
@@ -1347,7 +1285,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
     numeric: Boolean = false,
     onConfirmed: (String) -> Unit
   ) {
->>>>>>> SIGNAL
     val input = EditText(requireContext()).apply {
       inputType = if (numeric) InputType.TYPE_CLASS_NUMBER else InputType.TYPE_CLASS_TEXT
       gravity = Gravity.CENTER

@@ -62,11 +62,7 @@ class DozeBanner(private val context: Context) : Banner<Unit>() {
   }
 
   private fun markAsPrompted() {
-<<<<<<< MOLLY
-    TextSecurePreferences.setPromptedOptimizeDoze(context, true)
-=======
     SignalStore.uiHints.setHasPromptedOptimizeDoze(true)
->>>>>>> SIGNAL
     enabledState.value = false
   }
 }

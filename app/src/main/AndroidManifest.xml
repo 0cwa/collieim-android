@@ -453,11 +453,7 @@
             android:screenOrientation="portrait"
             android:exported="false"
             android:launchMode="singleTop"
-<<<<<<< MOLLY
-            android:screenOrientation="portrait"
-=======
             android:enableOnBackInvokedCallback="true"
->>>>>>> SIGNAL
             android:theme="@style/Theme.Signal.DayNight.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden|adjustNothing" />
 
@@ -486,7 +482,7 @@
             android:configChanges="touchscreen|keyboard|keyboardHidden"
             android:enableOnBackInvokedCallback="true"
             android:exported="false"
-            android:theme="@style/Signal.DayNight.NoActionBar"
+            android:theme="@style/Theme.Signal.DayNight.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
@@ -631,6 +627,7 @@
             android:label="@string/AndroidManifest__media_preview"
             android:launchMode="singleTask"
             android:theme="@style/Signal.DayNight.NoActionBar.MediaViewer"
+
             android:windowSoftInputMode="stateHidden" />
 
         <activity
@@ -722,34 +719,12 @@
             android:windowSoftInputMode="stateHidden" />
 
         <activity
-<<<<<<< MOLLY
-            android:name=".scribbles.ImageEditorStickerSelectActivity"
-            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
-            android:exported="false"
-            android:theme="@style/Theme.Signal.DayNight.NoActionBar" />
-
-        <activity
-=======
->>>>>>> SIGNAL
             android:name=".profiles.edit.CreateProfileActivity"
             android:exported="false"
             android:theme="@style/TextSecure.LightRegistrationTheme"
             android:windowSoftInputMode="stateVisible|adjustResize" />
 
         <activity
-<<<<<<< MOLLY
-            android:name=".registration.ui.restore.RemoteRestoreActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Signal.DayNight.NoActionBar" />
-
-        <activity
-            android:name=".registration.ui.restore.local.RestoreLocalBackupActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Signal.DayNight.NoActionBar" />
-
-        <activity
-=======
->>>>>>> SIGNAL
             android:name=".profiles.manage.EditProfileActivity"
             android:exported="false"
             android:theme="@style/TextSecure.LightTheme"
@@ -780,6 +755,16 @@
             android:exported="false"
             android:theme="@style/TextSecure.DialogActivity" />
 
+
+        <activity
+            android:name=".registration.ui.RegistrationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Signal.DayNight.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="org.signal.registration.RegistrationActivity"
+            tools:node="remove" />
 
         <activity
             android:name=".contactshare.ContactShareActivity"
@@ -922,13 +907,13 @@
         <activity
             android:name=".components.settings.app.account.twofactor.verify.TwoFactorVerifyActivity"
             android:exported="false"
-            android:theme="@style/Signal.DayNight.NoActionBar"
+            android:theme="@style/Theme.Signal.DayNight.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".components.settings.app.account.signallogin.verify.SignalLoginVerifyActivity"
             android:exported="false"
-            android:theme="@style/Signal.DayNight.NoActionBar"
+            android:theme="@style/Theme.Signal.DayNight.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
 
         <activity

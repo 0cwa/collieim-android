@@ -33,11 +33,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Wrapper activity for ConversationFragment.
  */
-<<<<<<< MOLLY
-open class ConversationActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner, MainNavigationChatDetailRouter {
-=======
-open class ConversationActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner, GooglePayComponent, MainNavigationEventSink {
->>>>>>> SIGNAL
+open class ConversationActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner, MainNavigationEventSink {
 
   companion object {
     private val TAG = tag(ConversationActivity::class.java)

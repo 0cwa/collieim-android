@@ -38,13 +38,7 @@ import org.signal.core.util.UnableToStartException
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.recipients.Recipient
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.service.ExportedBroadcastReceiver
-import org.thoughtcrime.securesms.service.SafeForegroundService
-import org.thoughtcrime.securesms.util.DeviceProperties
-=======
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.util.TelephonyUtil
 import org.thoughtcrime.securesms.webrtc.CallNotificationBuilder
 import org.thoughtcrime.securesms.webrtc.UncaughtExceptionHandlerManager

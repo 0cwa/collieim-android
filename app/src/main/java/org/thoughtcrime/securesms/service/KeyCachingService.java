@@ -17,11 +17,7 @@
 package org.thoughtcrime.securesms.service;
 
 import android.app.AlarmManager;
-<<<<<<< MOLLY
-=======
 import android.app.ForegroundServiceStartNotAllowedException;
-import android.app.Notification;
->>>>>>> SIGNAL
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -48,15 +44,10 @@ import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.migrations.ApplicationMigrations;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.util.DynamicLanguage;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
-=======
 import org.thoughtcrime.securesms.notifications.NotificationIds;
-import org.signal.core.util.AppForegroundObserver;
-import org.signal.core.util.ServiceUtil;
->>>>>>> SIGNAL
 
 import java.util.concurrent.TimeUnit;
 
@@ -74,15 +65,11 @@ public class KeyCachingService extends Service {
   public  static final String CLEAR_KEY_EVENT          = BuildConfig.APPLICATION_ID + ".service.action.CLEAR_KEY_EVENT";
   private static final String PASSPHRASE_EXPIRED_EVENT = BuildConfig.APPLICATION_ID + ".service.action.PASSPHRASE_EXPIRED_EVENT";
   public  static final String CLEAR_KEY_ACTION         = BuildConfig.APPLICATION_ID + ".service.action.CLEAR_KEY";
-<<<<<<< MOLLY
   public  static final String LOCALE_CHANGE_EVENT      = BuildConfig.APPLICATION_ID + ".service.action.LOCALE_CHANGE_EVENT";
 
   public static final String EXTRA_KEY_EXPIRED = "extra.key_expired";
 
   private DynamicLanguage dynamicLanguage = new DynamicLanguage();
-=======
-  public  static final String DISABLE_ACTION           = BuildConfig.APPLICATION_ID + ".service.action.DISABLE";
->>>>>>> SIGNAL
 
   private final IBinder binder  = new KeySetBinder();
 
@@ -126,16 +113,9 @@ public class KeyCachingService extends Service {
 
     if (intent.getAction() != null) {
       switch (intent.getAction()) {
-<<<<<<< MOLLY
         case CLEAR_KEY_ACTION -> handleClearKey(false);
         case PASSPHRASE_EXPIRED_EVENT -> handleClearKey(true);
         case LOCALE_CHANGE_EVENT -> handleLocaleChanged();
-=======
-        case CLEAR_KEY_ACTION:         handleClearKey();        break;
-        case PASSPHRASE_EXPIRED_EVENT: handleClearKey();        break;
-        case DISABLE_ACTION:           handleDisableService();  break;
-        case LOCK_TOGGLED_EVENT:       handleLockToggled();     break;
->>>>>>> SIGNAL
       }
     } else {
       handleCacheKey();
@@ -209,7 +189,6 @@ public class KeyCachingService extends Service {
     sendBroadcast(intent, KEY_PERMISSION);
   }
 
-<<<<<<< MOLLY
   private void handleLocaleChanged() {
     dynamicLanguage.updateServiceLocale(this);
     foregroundService();
@@ -222,30 +201,6 @@ public class KeyCachingService extends Service {
       long lockTimeoutSeconds = TextSecurePreferences.getPassphraseLockTimeout(this);
       if (lockTimeoutSeconds > 0) {
         scheduleTimeout(lockTimeoutSeconds);
-=======
-  private static void startTimeoutIfAppropriate(@NonNull Context context) {
-    boolean appVisible       = AppForegroundObserver.isForegrounded();
-    boolean secretSet        = KeyCachingService.masterSecret != null;
-
-    boolean timeoutEnabled   = SignalStore.settings().getPassphraseTimeoutEnabled();
-    boolean passLockActive   = timeoutEnabled && !SignalStore.settings().getPassphraseDisabled();
-
-    long    screenTimeout       = SignalStore.settings().getScreenLockTimeout();
-    boolean screenLockActive    = SignalStore.settings().getScreenLockEnabled();
-    boolean immediateScreenLock = screenTimeout == 0 && screenLockActive;
-
-    if (immediateScreenLock) {
-      Log.i(TAG, "Default immediate screen lock to one minute");
-      SignalStore.settings().setScreenLockTimeout(60);
-      immediateScreenLock = false;
-    }
-
-    if (!appVisible && secretSet && (passLockActive || screenLockActive)) {
-      if (immediateScreenLock) {
-        Log.i(TAG, "Starting immediate screen lock");
-        Intent intent = new Intent(PASSPHRASE_EXPIRED_EVENT, null, context, KeyCachingService.class);
-        context.startService(intent);
->>>>>>> SIGNAL
       } else {
         handleClearKey(true);
       }

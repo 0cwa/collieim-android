@@ -102,6 +102,10 @@ class ConversationSettingsRepository(
     return RecipientUtil.isBlockable(recipient)
   }
 
+  suspend fun getLinkedDeviceCount(recipient: Recipient): Int? = withContext(SignalDispatchers.Default) {
+    RecipientUtil.getSubDeviceCount(context, recipient).orElse(null)
+  }
+
   fun observeRecipient(recipientId: RecipientId): Flow<Recipient> {
     return Recipient.observable(recipientId).asFlow()
   }

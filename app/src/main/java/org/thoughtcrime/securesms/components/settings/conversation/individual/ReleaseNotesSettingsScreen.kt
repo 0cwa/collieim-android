@@ -133,13 +133,6 @@ fun ReleaseNotesSettingsScreen(
       )
     }
 
-    item {
-      Rows.TextRow(
-        text = stringResource(R.string.preferences__donate_to_signal),
-        icon = painterResource(R.drawable.symbol_heart_24),
-        onClick = { onEvent(IndividualSettingsEvent.DonateClicked) }
-      )
-    }
 
     if (state.canModifyBlockedState) {
       item { Dividers.Default() }

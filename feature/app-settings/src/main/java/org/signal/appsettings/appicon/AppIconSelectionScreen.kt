@@ -33,11 +33,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.core.graphics.drawable.toBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -261,8 +263,10 @@ private fun AppIcon(preset: AppIconPreset, isSelected: Boolean, onClick: () -> U
     animationSpec = tween(durationMillis = 150, easing = CubicBezierEasing(0.17f, 0.17f, 0f, 1f))
   )
 
+  val context = LocalContext.current
+  val icon = remember(context, preset) { preset.loadIcon(context).toBitmap().asImageBitmap() }
   Image(
-    painter = painterResource(preset.iconPreviewResId),
+    painter = BitmapPainter(icon),
     contentDescription = presetLabel(preset),
     modifier = modifier
       .size(bitmapSize.dp)

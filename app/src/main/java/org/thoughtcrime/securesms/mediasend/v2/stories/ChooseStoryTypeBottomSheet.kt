@@ -1,7 +1,9 @@
 package org.thoughtcrime.securesms.mediasend.v2.stories
 
+import com.google.android.material.R as MaterialR
 import org.signal.core.util.DimensionUnit
 import org.thoughtcrime.securesms.R
+import org.signal.core.ui.R as CoreUiR
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
 import org.thoughtcrime.securesms.components.settings.DSLSettingsAdapter
 import org.thoughtcrime.securesms.components.settings.DSLSettingsBottomSheetFragment
@@ -10,7 +12,6 @@ import org.thoughtcrime.securesms.components.settings.DSLSettingsText
 import org.thoughtcrime.securesms.components.settings.configure
 import org.thoughtcrime.securesms.components.settings.conversation.preferences.LargeIconClickPreference
 import org.thoughtcrime.securesms.util.fragments.requireListener
-import org.signal.core.ui.R as CoreUiR
 
 class ChooseStoryTypeBottomSheet : DSLSettingsBottomSheetFragment(
   layoutId = R.layout.dsl_settings_bottom_sheet
@@ -40,9 +41,9 @@ class ChooseStoryTypeBottomSheet : DSLSettingsBottomSheetFragment(
           ),
           icon = DSLSettingsIcon.from(
             iconId = CoreUiR.drawable.symbol_stories_24,
-            iconTintId = CoreUiR.color.signal_colorOnSurface,
+            iconTintId = MaterialR.attr.colorOnSurface,
             backgroundId = R.drawable.circle_tintable,
-            backgroundTint = CoreUiR.color.signal_colorSurface5,
+            backgroundTint = MaterialR.attr.colorSurfaceContainerHighest,
             insetPx = DimensionUnit.DP.toPixels(8f).toInt()
           ),
           onClick = {
@@ -62,9 +63,9 @@ class ChooseStoryTypeBottomSheet : DSLSettingsBottomSheetFragment(
           ),
           icon = DSLSettingsIcon.from(
             iconId = R.drawable.ic_group_outline_24,
-            iconTintId = CoreUiR.color.signal_colorOnSurface,
+            iconTintId = MaterialR.attr.colorOnSurface,
             backgroundId = R.drawable.circle_tintable,
-            backgroundTint = CoreUiR.color.signal_colorSurface5,
+            backgroundTint = MaterialR.attr.colorSurfaceContainerHighest,
             insetPx = DimensionUnit.DP.toPixels(8f).toInt()
           ),
           onClick = {

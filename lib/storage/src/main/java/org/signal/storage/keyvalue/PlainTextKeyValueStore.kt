@@ -1,15 +1,13 @@
 package org.signal.storage.keyvalue
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import androidx.preference.PreferenceManager
 
 /**
  * There are some values that you can't store in the normal encrypted [KeyValueStore].
  * Usually, it's because the value you're storing is needed to *open* the database that backs the store,
- * or is otherwise related to the state of the database itself. Regardless, this is just a normal
- * shared-prefs-backed class.
+ * or is otherwise related to the state of the database itself. Molly supplies its preferences
+ * with the existing plaintext filter for values needed before unlock.
  */
 object PlainTextKeyValueStore {
 
@@ -26,13 +24,16 @@ object PlainTextKeyValueStore {
   private lateinit var sharedPrefs: SharedPreferences
   private var currentVersionCode: Int = 0
 
+  internal val legacyPreferences: SharedPreferences
+    get() = sharedPrefs
+
   /**
    * Must be called from [android.app.Application.attachBaseContext] before anything else has a chance to read from
    * this store.
    */
   @JvmStatic
-  fun init(context: Context, currentVersionCode: Int) {
-    sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+  fun init(preferences: SharedPreferences, currentVersionCode: Int) {
+    sharedPrefs = preferences
     this.currentVersionCode = currentVersionCode
   }
 

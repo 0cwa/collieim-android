@@ -25,7 +25,6 @@ import androidx.credentials.exceptions.publickeycredential.CreatePublicKeyCreden
 import androidx.credentials.exceptions.publickeycredential.GetPublicKeyCredentialDomException
 import kotlinx.serialization.SerializationException
 import org.signal.core.util.Base64
-import org.signal.core.util.PlayServicesUtil
 import org.signal.core.util.logging.Log
 import org.signal.core.util.serialization.SignalJson
 import java.io.IOException
@@ -72,23 +71,10 @@ object SignalPasskeyManager {
   private val random = SecureRandom()
 
   /**
-   * Whether this device can run a passkey ceremony at all.
-   *
-   * From API 34 the platform has its own credential provider. Below that the ceremony runs through Play services, which
-   * only speaks passkeys from API 28. There's no API for telling whether the user has actually set a provider up, so a
-   * capable device is assumed willing and only finds out otherwise once a ceremony comes back empty.
+   * Molly uses the platform's passkey providers, available from API 34. It does not bundle the Play Services
+   * credential bridge used on older Android versions. A capable device may still need its provider configured.
    */
-  fun isSupported(context: Context): Boolean {
-    if (Build.VERSION.SDK_INT >= 34) {
-      return true
-    }
-
-    if (Build.VERSION.SDK_INT < 28) {
-      return false
-    }
-
-    return PlayServicesUtil.getPlayServicesStatus(context) == PlayServicesUtil.PlayServicesStatus.SUCCESS
-  }
+  fun isSupported(context: Context): Boolean = Build.VERSION.SDK_INT >= 34
 
   /**
    * Asks the user's passkey provider to create a credential for the account, returning the two pieces the service needs

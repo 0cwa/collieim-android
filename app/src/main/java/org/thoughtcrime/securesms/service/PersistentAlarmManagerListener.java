@@ -3,7 +3,6 @@ package org.thoughtcrime.securesms.service;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -13,7 +12,7 @@ import androidx.annotation.NonNull;
 import org.signal.core.util.PendingIntentFlags;
 import org.signal.core.util.logging.Log;
 
-public abstract class PersistentAlarmManagerListener extends BroadcastReceiver {
+public abstract class PersistentAlarmManagerListener extends ExportedBroadcastReceiver {
 
   private static final String TAG             = Log.tag(PersistentAlarmManagerListener.class);
   private static final String ACTION_SCHEDULE = "signal.ACTION_SCHEDULE";
@@ -29,7 +28,7 @@ public abstract class PersistentAlarmManagerListener extends BroadcastReceiver {
   protected abstract long onAlarm(Context context, long scheduledTime);
 
   @Override
-  public void onReceive(Context context, Intent intent) {
+  public void onReceiveUnlock(Context context, Intent intent) {
     info(String.format("onReceive(%s)", intent.getAction()));
 
     long          scheduledTime = getNextScheduledExecutionTime(context);

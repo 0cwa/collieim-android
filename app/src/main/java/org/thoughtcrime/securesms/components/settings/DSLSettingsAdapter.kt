@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
 import org.signal.core.ui.util.ViewUtil
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.models.AsyncSwitch
@@ -220,12 +221,19 @@ class SwitchPreferenceViewHolder(itemView: View) : PreferenceViewHolder<SwitchPr
     switchWidget.isChecked = model.isChecked
     switchWidget.isEnabled = model.isEnabled
 
-    switchWidget.setOnCheckedChangeListener { _, _ ->
+    switchWidget.setOnCheckedChangeListener { _, isChecked ->
+      if (!model.onToggle(isChecked)) {
+        // MOLLY: Set the toggle button back to the previous state
+        switchWidget.toggle()
+      }
       model.onClick()
     }
 
     itemView.setOnClickListener {
-      model.onClick()
+      val targetState = !switchWidget.isChecked
+      if (model.onToggle(targetState)) {
+        model.onClick()
+      }
     }
 
     if (payload.contains(SwitchPreference.PAYLOAD_CHECKED)) {
@@ -254,7 +262,7 @@ class ExternalLinkPreferenceViewHolder(itemView: View) : PreferenceViewHolder<Ex
     super.bind(model)
 
     val externalLinkIcon = requireNotNull(ContextCompat.getDrawable(context, CoreUiR.drawable.symbol_open_20)).apply {
-      colorFilter = PorterDuffColorFilter(ContextCompat.getColor(context, R.color.signal_icon_tint_primary), PorterDuff.Mode.SRC_IN)
+      colorFilter = PorterDuffColorFilter(ThemeUtil.getThemedColor(context, R.attr.signal_icon_tint_primary), PorterDuff.Mode.SRC_IN)
     }
     externalLinkIcon.setBounds(0, 0, ViewUtil.dpToPx(20), ViewUtil.dpToPx(20))
 

@@ -73,8 +73,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.google.android.gms.auth.api.identity.GetPhoneNumberHintIntentRequest
-import com.google.android.gms.auth.api.identity.Identity
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import org.signal.core.ui.compose.AllDevicePreviews
 import org.signal.core.ui.compose.Buttons
@@ -142,18 +140,18 @@ fun PhoneNumberScreen(
     }
   }
 
-  val phoneNumberHintLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-    val phoneNumber = try {
-      Identity.getSignInClient(context).getPhoneNumberFromIntent(result.data)
-    } catch (e: Exception) {
-      Log.w(TAG, "Failed to retrieve phone number from hint.", e)
-      null
-    }
-
-    if (phoneNumber != null) {
-      onEvent(PhoneNumberEntryScreenEvents.FullPhoneNumberEntered(phoneNumber, autoConfirm = true))
-    }
-  }
+  // val phoneNumberHintLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+  //   val phoneNumber = try {
+  //     Identity.getSignInClient(context).getPhoneNumberFromIntent(result.data)
+  //   } catch (e: Exception) {
+  //     Log.w(TAG, "Failed to retrieve phone number from hint.", e)
+  //     null
+  //   }
+  //
+  //   if (phoneNumber != null) {
+  //     onEvent(PhoneNumberEntryScreenEvents.FullPhoneNumberEntered(phoneNumber, autoConfirm = true))
+  //   }
+  // }
 
   LaunchedEffect(state.initialized) {
     if (!state.initialized || hasRequestedPhoneNumberHint || state.nationalNumber.isNotEmpty() || state.preExistingRegistrationData != null) {
@@ -161,25 +159,26 @@ fun PhoneNumberScreen(
     }
     hasRequestedPhoneNumberHint = true
 
-    try {
-      Identity.getSignInClient(context)
-        .getPhoneNumberHintIntent(GetPhoneNumberHintIntentRequest.builder().build())
-        .addOnSuccessListener { pendingIntent ->
-          try {
-            phoneNumberHintLauncher.launch(IntentSenderRequest.Builder(pendingIntent).build())
-          } catch (e: Exception) {
-            Log.w(TAG, "Failed to launch phone number hint intent.", e)
-            prefillFromDeviceNumberIfAllowed()
-          }
-        }
-        .addOnFailureListener { e ->
-          Log.w(TAG, "Phone number hint unavailable. Falling back to device number.", e)
-          prefillFromDeviceNumberIfAllowed()
-        }
-    } catch (e: Exception) {
-      Log.w(TAG, "Unable to request phone number hint. Falling back to device number.", e)
-      prefillFromDeviceNumberIfAllowed()
-    }
+    // try {
+    //   Identity.getSignInClient(context)
+    //     .getPhoneNumberHintIntent(GetPhoneNumberHintIntentRequest.builder().build())
+    //     .addOnSuccessListener { pendingIntent ->
+    //       try {
+    //         phoneNumberHintLauncher.launch(IntentSenderRequest.Builder(pendingIntent).build())
+    //       } catch (e: Exception) {
+    //         Log.w(TAG, "Failed to launch phone number hint intent.", e)
+    //         prefillFromDeviceNumberIfAllowed()
+    //       }
+    //     }
+    //     .addOnFailureListener { e ->
+    //       Log.w(TAG, "Phone number hint unavailable. Falling back to device number.", e)
+    //       prefillFromDeviceNumberIfAllowed()
+    //     }
+    // } catch (e: Exception) {
+    //   Log.w(TAG, "Unable to request phone number hint. Falling back to device number.", e)
+    //   prefillFromDeviceNumberIfAllowed()
+    // }
+    prefillFromDeviceNumberIfAllowed()
   }
 
   if (state.dialogs.confirmNumber) {
@@ -250,7 +249,7 @@ private fun OnePaneLayout(
 
   OnePaneRegistrationScaffold(
     params = params,
-    topBar = { TopAppBar(scrollBehavior = topBarScrollBehavior, isLinkAndSyncAvailable = state.isLinkAndSyncAvailable, onEvent = onEvent) },
+    topBar = { TopAppBar(scrollBehavior = topBarScrollBehavior, onEvent = onEvent) },
     content = { paddingValues ->
       Column(
         modifier = Modifier
@@ -293,7 +292,7 @@ private fun TwoPaneLayout(
 
   TwoPaneRegistrationScaffold(
     params = params,
-    topBar = { TopAppBar(scrollBehavior = topBarScrollBehavior, isLinkAndSyncAvailable = state.isLinkAndSyncAvailable, onEvent = onEvent) },
+    topBar = { TopAppBar(scrollBehavior = topBarScrollBehavior, onEvent = onEvent) },
     firstPane = { paddingValues ->
       Column(
         modifier = Modifier
@@ -334,7 +333,6 @@ private fun TwoPaneLayout(
 @Composable
 fun TopAppBar(
   scrollBehavior: TopAppBarScrollBehavior,
-  isLinkAndSyncAvailable: Boolean,
   onEvent: (PhoneNumberEntryScreenEvents) -> Unit
 ) {
   val context = LocalContext.current
@@ -364,21 +362,19 @@ fun TopAppBar(
         offsetY = 0.dp
       ) {
         DropdownMenus.Item(
-          text = { Text(text = stringResource(R.string.RegistrationActivity_use_proxy)) },
+          text = { Text(text = stringResource(R.string.RegistrationActivity_network_settings)) },
           onClick = {
             RegistrationDependencies.get().proxyConfigCallback?.invoke(context)
             menuController.hide()
           }
         )
-        if (isLinkAndSyncAvailable) {
-          DropdownMenus.Item(
-            text = { Text(text = stringResource(R.string.RegistrationActivity_link_device)) },
-            onClick = {
-              onEvent(PhoneNumberEntryScreenEvents.LinkDevice)
-              menuController.hide()
-            }
-          )
-        }
+        DropdownMenus.Item(
+          text = { Text(text = stringResource(R.string.RegistrationActivity_link_device)) },
+          onClick = {
+            onEvent(PhoneNumberEntryScreenEvents.LinkDevice)
+            menuController.hide()
+          }
+        )
       }
     }
   )

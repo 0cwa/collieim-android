@@ -5,11 +5,15 @@
 
 package org.thoughtcrime.securesms.components.settings.app.notifications
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.appsettings.routes.AppSettingsRoute
+import org.signal.appsettings.routes.navigateBack
 import org.signal.core.ui.compose.split.detailEntry
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.components.settings.app.notifications.muted.MutedNotificationsEntry
 import org.thoughtcrime.securesms.components.settings.app.notifications.profiles.allowedmembers.AddAllowedMembersEntry
 import org.thoughtcrime.securesms.components.settings.app.notifications.profiles.created.NotificationProfileCreatedEntry
@@ -24,7 +28,19 @@ import org.thoughtcrime.securesms.components.settings.app.notifications.profiles
  */
 fun EntryProviderScope<NavKey>.registerNotificationsRoutes(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit) {
   detailEntry<AppSettingsRoute.NotificationsRoute.Notifications> {
-    NotificationsSettingsEntry(parentEventEmitter = parentEventEmitter)
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+      context.startActivity(AppSettingsActivity.notifications(context))
+      parentEventEmitter.navigateBack()
+    }
+  }
+
+  detailEntry<AppSettingsRoute.NotificationsRoute.PlayServicesProblem> { route ->
+    val context = LocalContext.current
+    LaunchedEffect(route.errorCode) {
+      context.startActivity(AppSettingsActivity.playServicesProblem(context, route.errorCode))
+      parentEventEmitter.navigateBack()
+    }
   }
 
   detailEntry<AppSettingsRoute.NotificationsRoute.MutedNotifications> {

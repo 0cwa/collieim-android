@@ -6,7 +6,9 @@
 package org.thoughtcrime.securesms.database
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Ignore
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.core.models.recipients.RecipientId
 import org.thoughtcrime.securesms.service.webrtc.links.CallLinkCredentials
@@ -16,6 +18,10 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 
 @RunWith(AndroidJUnit4::class)
 class CallLinkTableTest {
+
+  @Ignore("Call-link test methods are not yet implemented")
+  @Test
+  fun callLinkCasesNotYetImplemented() = Unit
 
   companion object {
     private val ROOM_ID_A = byteArrayOf(1, 2, 3, 4)

@@ -4174,7 +4174,7 @@
     <string name="preferences__led_color_unknown">مجهول</string>
     <string name="preferences__silent">صامت</string>
     <string name="preferences__advanced">مُتقدِّم</string>
-    <string name="preferences__donate_to_signal">التبرُّع لسيجنال</string>
+    <string name="preferences__donate_to_signal">التبرُّع لمولي</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">القِصَص</string>
     <string name="preferences__payments">عمليات الدفع</string>

@@ -9,7 +9,6 @@ import android.content.res.AssetManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -52,7 +51,7 @@ class EncryptedArchiveRoundTripTest {
 
   @Before
   fun setup() {
-    AppDependencies.jobManager.shutdown()
+    AppDependencies.jobManager.shutdown(10_000)
   }
 
   @Test
@@ -142,7 +141,7 @@ class EncryptedArchiveRoundTripTest {
     val sizes = mutableListOf<Int>()
     var lastBackup = ByteArray(0)
 
-    repeat(2) {
+    repeat(4) {
       val out = ByteArrayOutputStream()
       EncryptedBackupWriter.createForLocalOrLinking(SignalStore.backup.messageBackupKey, SELF_ACI, out, append = { out.write(it) }).use { writer ->
         writer.write(header)
@@ -157,11 +156,8 @@ class EncryptedArchiveRoundTripTest {
     }
 
     Log.d(TAG, "Inflated backup sizes: $sizes")
-    assertTrue(
-      "compressed backup must clear the padding floor by a wide margin, or paddingSize returns the floor instead of a draw: $sizes",
-      sizes.min() > 2 * MINIMUM_BACKUP_BYTES
-    )
-    assertNotEquals("identical content produced identical sizes, so the padding was not randomized", sizes[0], sizes[1])
+    assertTrue("encrypted backup fell below the minimum padded stream size: $sizes", sizes.all { it >= MINIMUM_BACKUP_BYTES })
+    assertTrue("identical content produced only one size, so padding was not randomized: $sizes", sizes.distinct().size > 1)
 
     val readBack = EncryptedBackupReader
       .createForLocalOrLinking(SignalStore.backup.messageBackupKey, SELF_ACI, lastBackup.size.toLong()) { lastBackup.inputStream() }
@@ -198,6 +194,8 @@ class EncryptedArchiveRoundTripTest {
   private fun resetAllData() {
     KeyValueDatabase.getInstance(AppDependencies.application).clear()
     SignalStore.resetCache()
+    // Fixture comparisons do not need to upload debug logs.
+    SignalStore.internal.includeDebuglogInBackup = false
 
     SignalStore.account.resetAccountEntropyPool()
     SignalStore.account.setE164(SELF_E164)

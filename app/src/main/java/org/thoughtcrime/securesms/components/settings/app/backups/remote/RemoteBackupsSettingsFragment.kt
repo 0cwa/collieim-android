@@ -451,7 +451,7 @@ private fun RemoteBackupsSettingsContent(
             )
           }
 
-          BackupState.None -> Unit
+          is BackupState.None -> Unit
 
           is BackupState.WithTypeAndRenewalTime -> {
             BackupCard(
@@ -2180,7 +2180,7 @@ private fun BackupReadyToDownloadPreview() {
   Previews.Preview {
     BackupReadyToDownloadRow(
       ready = BackupRestoreState.Ready("12GB"),
-      backupState = BackupState.None
+      backupState = BackupState.None(featureSupported = true)
     )
   }
 }

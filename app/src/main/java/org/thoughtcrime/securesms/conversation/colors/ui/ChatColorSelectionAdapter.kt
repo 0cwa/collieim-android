@@ -1,12 +1,11 @@
 package org.thoughtcrime.securesms.conversation.colors.ui
 
 import android.content.Context
-import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import org.signal.core.ui.util.ViewUtil
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.TooltipPopup
 import org.thoughtcrime.securesms.conversation.colors.ChatColors
@@ -94,8 +93,8 @@ class ChatColorSelectionAdapter(
         SignalStore.chatColors.shouldShowAutoTooltip = false
         TooltipPopup.forTarget(itemView)
           .setText(R.string.ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper)
-          .setBackgroundTint(ContextCompat.getColor(context, CoreUiR.color.signal_accent_primary))
-          .setTextColor(Color.WHITE)
+          .setBackgroundTint(ThemeUtil.getThemedColor(context, org.signal.core.ui.R.attr.signal_accent_primary))
+          .setTextColor(ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorOnPrimary))
           .show(TooltipPopup.POSITION_BELOW)
       }
     }

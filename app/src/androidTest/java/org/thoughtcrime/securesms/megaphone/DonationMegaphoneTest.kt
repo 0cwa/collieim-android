@@ -2,112 +2,71 @@
  * Copyright 2026 Signal Messenger, LLC
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-
 package org.thoughtcrime.securesms.megaphone
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNotNull
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
+import io.mockk.verify
+import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.signal.core.ui.compose.theme.SignalTheme
-import org.signal.core.util.getSerializableCompat
-import org.signal.donations.InAppPaymentType
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.CheckoutFlowActivity
-import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.database.model.RemoteMegaphoneRecord
-import org.thoughtcrime.securesms.testing.InAppPaymentsRule
-import org.thoughtcrime.securesms.testing.SignalActivityRule
+import org.thoughtcrime.securesms.util.CommunicationActions
+import java.util.concurrent.TimeUnit
 
-/**
- * Entry-path coverage for the donations remote megaphone: the megaphone shown on the conversation list
- * that carries a "Donate" action into the one-time checkout flow.
- *
- * The megaphone renders through [MegaphoneComponent], so this renders that composable directly (rather
- * than launching the full [org.thoughtcrime.securesms.MainActivity]) and asserts that tapping Donate
- * runs the production [RemoteMegaphoneRepository] action, which navigates to [CheckoutFlowActivity]
- * with [InAppPaymentType.ONE_TIME_DONATION]. The sustainer gating is covered by [DonationMegaphoneGatingTest].
- */
 @RunWith(AndroidJUnit4::class)
 class DonationMegaphoneTest {
-
-  @get:Rule
-  val harness = SignalActivityRule()
-
-  @get:Rule
-  val iapRule = InAppPaymentsRule()
-
-  @get:Rule
-  val composeRule = createComposeRule()
-
-  private val context: Context get() = InstrumentationRegistry.getInstrumentation().targetContext
+  private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
+  private val activity = mockk<FragmentActivity>()
+  private val controller = mockk<MegaphoneActionController>(relaxed = true)
 
   @Before
   fun setUp() {
-    SignalDatabase.remoteMegaphones.debugRemoveAll()
+    mockkStatic(CommunicationActions::class)
+    every { controller.megaphoneActivity } returns activity
+  }
+
+  @After
+  fun tearDown() = unmockkStatic(CommunicationActions::class)
+
+  @Test
+  fun localPromptOpensCollieAndCompletesOnlyOnSuccess() {
+    val prompt = Megaphones.buildDonateQ2Megaphone(context)
+    every { CommunicationActions.tryOpenBrowserLink(activity, any()) } returns false andThen true
+
+    assertThat(prompt.title.resolve(context)).isEqualTo("Support Collie")
+    prompt.buttonClickListener!!.onEvent(prompt, controller)
+    verify(exactly = 1) { CommunicationActions.tryOpenBrowserLink(activity, "https://liberapay.com/Collie") }
+    verify(exactly = 0) { controller.onMegaphoneCompleted(any()) }
+
+    prompt.buttonClickListener!!.onEvent(prompt, controller)
+    verify(exactly = 1) { controller.onMegaphoneCompleted(Megaphones.Event.DONATE_MOLLY) }
   }
 
   @Test
-  fun donateMegaphone_donateClick_opensOneTimeCheckout() {
-    val record = donateMegaphoneRecord(conditionalId = null)
-    SignalDatabase.remoteMegaphones.insert(record)
-
-    val controller = RecordingMegaphoneActionController()
-
-    composeRule.setContent {
-      SignalTheme {
-        MegaphoneComponent(buildDonateMegaphone(record), controller)
-      }
-    }
-
-    composeRule.onNodeWithText(record.primaryActionText!!).performClick()
-
-    val intent = controller.navigationIntent
-    assertThat(intent).isNotNull()
-    assertThat(intent!!.component?.className).isEqualTo(CheckoutFlowActivity::class.java.name)
-
-    val type = intent.extras!!.getSerializableCompat(CheckoutFlowActivity.ARG_IN_APP_PAYMENT_TYPE, InAppPaymentType::class.java)
-    assertThat(type).isEqualTo(InAppPaymentType.ONE_TIME_DONATION)
+  fun dismissalKeepsTheExistingEventKey() {
+    val prompt = Megaphones.buildDonateQ2Megaphone(context)
+    assertThat(Megaphones.Event.fromKey("donate_molly")).isEqualTo(prompt.event)
+    prompt.secondaryButtonClickListener!!.onEvent(prompt, controller)
+    verify(exactly = 1) { controller.onMegaphoneCompleted(Megaphones.Event.DONATE_MOLLY) }
   }
 
-  /** Mirrors [Megaphones.buildRemoteMegaphone]: wires the primary button to the real repository action. */
-  private fun buildDonateMegaphone(record: RemoteMegaphoneRecord): Megaphone {
-    return Megaphone.Builder(Megaphones.Event.REMOTE_MEGAPHONE, Megaphone.Style.BASIC)
-      .setTitle(record.title)
-      .setBody(record.body)
-      .setActionButton(record.primaryActionText!!) { _, controller ->
-        RemoteMegaphoneRepository.getAction(record.primaryActionId!!).run(context, controller, record)
-      }
-      .build()
-  }
-
-  private class RecordingMegaphoneActionController : MegaphoneActionController {
-    var navigationIntent: Intent? = null
-      private set
-
-    override fun onMegaphoneNavigationRequested(intent: Intent) {
-      navigationIntent = intent
-    }
-
-    override fun onMegaphoneNavigationRequested(intent: Intent, requestCode: Int) {
-      navigationIntent = intent
-    }
-
-    override fun onMegaphoneToastRequested(string: String) = Unit
-    override fun getMegaphoneActivity(): Activity = throw UnsupportedOperationException("not used")
-    override fun onMegaphoneSnooze(event: Megaphones.Event) = Unit
-    override fun onMegaphoneCompleted(event: Megaphones.Event) = Unit
-    override fun onMegaphoneDialogFragmentRequested(dialogFragment: DialogFragment) = Unit
+  @Test
+  fun displayWindowEndsSevenDaysAfterFirstVisibility() {
+    val schedule = ShowForDurationSchedule.showForDays(7)
+    val firstVisible = 1000L
+    val end = firstVisible + TimeUnit.DAYS.toMillis(7)
+    assertThat(schedule.shouldDisplay(0, 0, 0, end)).isTrue()
+    assertThat(schedule.shouldDisplay(0, 0, firstVisible, end - 1)).isTrue()
+    assertThat(schedule.shouldDisplay(0, 0, firstVisible, end)).isFalse()
   }
 }

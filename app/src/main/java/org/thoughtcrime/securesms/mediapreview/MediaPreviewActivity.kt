@@ -24,8 +24,10 @@ import org.thoughtcrime.securesms.PassphraseRequiredActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaController
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaControllerOwner
-import org.thoughtcrime.securesms.util.WindowUtil
 import java.util.concurrent.TimeUnit
+import org.thoughtcrime.securesms.util.DynamicMediaPreviewTheme
+import org.thoughtcrime.securesms.util.DynamicTheme
+import org.thoughtcrime.securesms.util.WindowUtil
 
 class MediaPreviewActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner {
 
@@ -40,6 +42,18 @@ class MediaPreviewActivity : PassphraseRequiredActivity(), VoiceNoteMediaControl
   private lateinit var transitionImageView: ImageView
 
   private var isWindowStarted = false
+
+  private val theme: DynamicTheme = DynamicMediaPreviewTheme()
+
+  override fun onPreCreate() {
+    super.onPreCreate()
+    theme.onCreate(this)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    theme.onResume(this)
+  }
 
   override fun attachBaseContext(newBase: Context) {
     delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
@@ -93,7 +107,6 @@ class MediaPreviewActivity : PassphraseRequiredActivity(), VoiceNoteMediaControl
 
     super.onCreate(savedInstanceState, ready)
     lifecycleDisposable.bindTo(this)
-    setTheme(R.style.TextSecure_MediaPreview)
     setContentView(R.layout.activity_media_preview)
 
     transitionImageView = findViewById(R.id.transition_image_view)

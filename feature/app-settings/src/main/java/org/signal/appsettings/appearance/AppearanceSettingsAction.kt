@@ -14,5 +14,5 @@ package org.signal.appsettings.appearance
 sealed interface AppearanceSettingsAction {
 
   /** The theme changed, so the activity's splash screen theme has to follow it. */
-  data class ApplySplashScreenTheme(val theme: AppearanceSettingsState.Theme) : AppearanceSettingsAction
+  data class ApplySplashScreenTheme(val theme: AppearanceSettingsState.Theme, val dynamicColors: Boolean = false) : AppearanceSettingsAction
 }

@@ -9,7 +9,10 @@ import android.net.ConnectivityManager;
 
 import androidx.annotation.NonNull;
 
+import org.signal.core.util.eventbus.EventBus;
+import org.signal.core.util.eventbus.ThreadMode;
 import org.signal.core.util.logging.Log;
+import org.thoughtcrime.securesms.events.NetworkAvailableEvent;
 import org.thoughtcrime.securesms.jobmanager.ConstraintObserver;
 
 public class NetworkConstraintObserver implements ConstraintObserver {
@@ -27,12 +30,16 @@ public class NetworkConstraintObserver implements ConstraintObserver {
     application.registerReceiver(new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-        NetworkConstraint constraint = new NetworkConstraint.Factory(application).create();
-
-        if (constraint.isMet()) {
+        if (NetworkConstraint.isMet(application)) {
           notifier.onConstraintMet(REASON);
         }
       }
     }, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+    EventBus.getDefault().subscribe(NetworkAvailableEvent.class, ThreadMode.MAIN, event -> {
+      if (NetworkConstraint.isMet(application)) {
+        notifier.onConstraintMet(REASON);
+      }
+    });
   }
 }

@@ -50,16 +50,17 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.signal.core.ui.compose.navigationBarsCompat
+import org.signal.core.ui.compose.theme.SignalTheme
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.conversation.ConversationItem
 import org.thoughtcrime.securesms.conversation.ReactionOverlayPlacement
 import org.thoughtcrime.securesms.conversation.ReactionScrubber
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.roundToInt
 import org.signal.core.ui.R as CoreUiR
 
 const val REACTION_EMOJI_COUNT = 7
@@ -305,7 +306,7 @@ fun ChatReactionOverlay(
         .height(with(density) { barHeightPx.toDp() })
         .graphicsLayer { alpha = stripReveal.value }
         .background(
-          color = colorResource(CoreUiR.color.signal_colorSurface2),
+          color = SignalTheme.colors.colorSurface2,
           shape = RoundedCornerShape(STRIP_CORNER_RADIUS)
         )
         .onGloballyPositioned { coordinates ->

@@ -13,7 +13,7 @@
 
     <style name="Widget.CoreUi.FixedRoundedCorners.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Signal.BottomSheet.Rounded</item>
-        <item name="backgroundTint">@color/signal_colorSurface1</item>
+        <item name="backgroundTint">?attr/colorSurfaceContainerLow</item>
         <item name="android:elevation" tools:ignore="NewApi">0dp</item>
     </style>
 

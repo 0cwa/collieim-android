@@ -53,7 +53,6 @@ import org.signal.core.ui.compose.QrCodeData
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.SignalPreviewWrapper
 import org.signal.core.ui.compose.Snackbars
-import org.signal.core.ui.compose.theme.SignalTheme
 
 @VisibleForTesting
 object UsernameLinkSettingsTestTags {
@@ -189,10 +188,10 @@ private fun TopBar(
 @Composable
 private fun TabButton(label: String, active: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
   val colors = if (active) {
-    ButtonDefaults.filledTonalButtonColors()
+    ButtonDefaults.buttonColors()
   } else {
     ButtonDefaults.buttonColors(
-      containerColor = SignalTheme.colors.colorSurface2,
+      containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
       contentColor = MaterialTheme.colorScheme.onSurface
     )
   }
@@ -274,6 +273,7 @@ private fun CodeTab(
     )
 
     Buttons.Small(
+      tonal = true,
       onClick = { onEvent(UsernameLinkSettingsEvent.ResetClicked) },
       modifier = Modifier
         .padding(bottom = 24.dp)

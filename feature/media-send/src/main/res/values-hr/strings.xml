@@ -231,9 +231,6 @@
   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Čini se da pokušavate povezati uređaj sa Signalom. Dodirnite „Nastavi“, zatim „Poveži novi uređaj“ i ponovno skenirajte QR kôd.</string>
   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Nastavi</string>
-<<<<<<< MOLLY
-</resources>
-=======
 
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Nije moguće prenijeti račun</string>
@@ -278,4 +275,3 @@
     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
     <string name="MediaEditScreen__d_of_d">%1$d od %2$d</string>
 </resources>
->>>>>>> SIGNAL

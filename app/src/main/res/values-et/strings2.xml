@@ -169,4 +169,7 @@
     <string name="UnifiedPushSettingsFragment__mollysocket_server">MollySocketi server</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server_air_gapped">Õhkeraldatud</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">Sellesse seadmesse installitud Google Play teenuste versioon on aegunud.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Teavita kui…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play teenused uuenevad või pole hetkel saadaval. Palun proovi uuesti.</string>
+    <string name="please_wait">Palun oota…</string>
 </resources>

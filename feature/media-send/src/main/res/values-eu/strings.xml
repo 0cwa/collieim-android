@@ -227,9 +227,6 @@
   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Signal-eko gailu bat lotu nahian zabiltzala dirudi. Sakatu \"Jarraitu\" eta, ondoren, sakatu \"Lotu beste gailu bat\". Ondoren, eskaneatu QR kodea berriro.</string>
   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Jarraitu</string>
-<<<<<<< MOLLY
-</resources>
-=======
 
   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
   <string name="ReRegistrationScannedDialog__transfer_failed_title">Ezin da transferitu kontua</string>
@@ -264,4 +261,3 @@
     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
     <string name="MediaEditScreen__d_of_d">%1$d / %2$d</string>
 </resources>
->>>>>>> SIGNAL

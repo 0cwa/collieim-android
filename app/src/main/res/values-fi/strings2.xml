@@ -169,4 +169,7 @@
     <string name="preferences_appearance__dynamic_colors">Dynaamiset värit</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Käytä järjestelmän värejä sovelluksen teemassa</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">Tälle laitteelle asennettu Google Play Palveluiden versio on vanhentunut.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Ilmoita minulle</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play -palveluita päivitetään tai ne eivät ole käytettävissä. Yritä myöhemmin uudelleen.</string>
+    <string name="please_wait">Odota hetki…</string>
 </resources>

@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-<<<<<<< MOLLY
-  --><!-- smartling.instruction_comments_enabled = on --><resources>
-=======
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
->>>>>>> SIGNAL
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -40,13 +34,10 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Molly atjaunina informāciju…</string>
 
     <!-- ApplicationPreferencesActivity -->
-<<<<<<< MOLLY
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Jūs vēl neesat iestatījuši paroles frāzi!</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Atspējot paroles frāzi?</string>
     <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Šī opcija pastāvīgi atbloķēs Molly un jaunu ziņojumu paziņojumus.</string>
     <string name="ApplicationPreferencesActivity_disable">Atspējot</string>
-=======
->>>>>>> SIGNAL
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Kļūda savienojoties ar serveri!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">PIN kodi ir nepieciešami reģistrācijas bloķēšanai. Lai atspējotu PIN, vispirms atspējojiet reģistrācijas bloķēšanu.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN izveidots.</string>
@@ -439,10 +430,6 @@
     <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">Izskatās, ka šī ierīce neatbalsta zvanu veikšanu.</string>
     <!-- The content description for button to send a message in a conversation -->
     <string name="ConversationActivity_send_message_content_description">Nosūtīt ziņu</string>
-<<<<<<< MOLLY
-    <string name="ConversationActivity_lets_switch_to_signal">Pārslēdzamies uz Molly %1$s!</string>
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_specify_recipient">Lūdzu, izvēlieties kontaktu!</string>
     <string name="ConversationActivity_unable_to_record_audio">Neizdevās ierakstīt audio!</string>
     <string name="ConversationActivity_you_cant_send_messages_to_this_group">Jūs nevarat nosūtīt ziņas šai grupai, jo jūs vairs neesat tās dalībnieks.</string>
@@ -467,16 +454,6 @@
     <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Lai ierakstītu balss ziņu, Molly ir nepieciešama piekļuve mikrofonam.</string>
     <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Lai nosūtītu audio ziņas, Molly nepieciešama atļauja pieejai mikrofonam, bet tā ir liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Mikrofons\".</string>
 
-<<<<<<< MOLLY
-    <string name="ConversationActivity_signal_needs_the_microphone_and_camera_permissions_in_order_to_call_s">Lai zvanītu %1$s, Molly nepieciešama atļauja piekļuvei mikrofonam un kamerai, bet tā ir liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Mikrofons\" un \"Kamera\".</string>
-    <string name="ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera">Lai uzņemtu fotogrāfijas un video, ļaujiet Molly piekļūt kamerai.</string>
-    <string name="ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video">Lai uzņemtu fotogrāfijas vai video, Molly nepieciešama atļauja piekļūt kamerai, bet tā ir liegta. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Kamera\".</string>
-    <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">Lai uzņemtu fotogrāfijas vai video, Molly nepieciešama atļauja piekļūt kamerai</string>
-    <string name="ConversationActivity_enable_the_microphone_permission_to_capture_videos_with_sound">Ļaujiet Signal piekļūt mikrofonam, lai video tiktu ierakstīts ar skaņu.</string>
-    <string name="ConversationActivity_signal_needs_recording_permissions_to_capture_video">Molly nepieciešamas mikrofona atļaujas, lai ierakstītu video.</string>
-
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d no %2$d</string>
     <string name="ConversationActivity_no_results">Nav rezultātu</string>
@@ -511,19 +488,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal vairs netiek atbalstīta SMS ziņu sūtīšana. Uzaiciniet lietotāju %1$s izmantot Signal, lai turpinātu sarunu šeit.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-<<<<<<< MOLLY
     <string name="ConversationActivity__this_person_is_no_longer_using_signal">Šī persona vairs neizmanto Molly. Lai turpinātu sarunāties šajā platformā, uzaiciniet šo personu izmantot Molly.</string>
-    <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Uzaicināt uz Molly</string>
-    <!-- Snackbar message shown after dismissing the full screen sms export megaphone indicating we\'ll do it again soon -->
-    <string name="ConversationActivity__you_will_be_reminded_again_soon">Drīz vēlreiz saņemsiet atgādinājumu.</string>
-=======
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Šī persona vairs neizmanto Signal. Lai turpinātu sarunāties šajā platformā, uzaiciniet šo personu izmantot Signal.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Šis cilvēks neizmanto Signal. Uzaiciniet viņu, lai turpinātu sarunu šajā platformā.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Uzaicināt uz Signal</string>
->>>>>>> SIGNAL
+    <string name="ConversationActivity__invite_to_signal">Uzaicināt uz Molly</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Zvana laikā nevar ierakstīt balss ziņojumu.</string>
 
@@ -1459,69 +1428,6 @@
     <string name="ManageGroupActivity_add_group_description">Pievienot grupas aprakstu…</string>
 
     <!-- RemoteRestoreActivity -->
-<<<<<<< MOLLY
-    <!-- Progress dialog label when downloading a backup -->
-    <string name="RemoteRestoreActivity__downloading_backup">Rezerves kopija tiek lejupielādēta…</string>
-    <!-- Progress dialog label when restoring a backup -->
-    <string name="RemoteRestoreActivity__restoring_messages">Ziņas tiek atjaunotas…</string>
-    <!-- Progress dialog label when finishing a backup restore -->
-    <string name="RemoteRestoreActivity__finishing_restore">Notiek pabeigšana…</string>
-    <!-- Progress dialog label while awaiting updates -->
-    <string name="RemoteRestoreActivity__restoring">Notiek atjaunošana…</string>
-    <!-- Progress readout for dialog while downloading or restoring a backup. First placeholder is the formatted size of the backup downloaded, the second is formatted total amount to go, and the last is a percentage. -->
-    <string name="RemoteRestoreActivity__s_of_s_s">%1$s no %2$s (%3$s)</string>
-    <!-- Feature list media label for paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_media">Visu jūsu multividi</string>
-    <!-- Feature list media label for free tier. Placeholder is days, and is currently fixed at 30. -->
-    <string name="RemoteRestoreActivity__your_last_d_days_of_media">Pēdējo %1$d dienu multivide</string>
-    <!-- Feature list message label for free and paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_messages">Visas jūsu ziņas</string>
-    <!-- Screen title for restoring from backup -->
-    <string name="RemoteRestoreActivity__restore_from_backup">Atjaunot no rezerves kopijas</string>
-    <!-- Section title for explaining what your backup includes -->
-    <string name="RemoteRestoreActivity__your_backup_includes">Jūsu rezerves kopija ietver:</string>
-    <!-- Primary action button copy for starting restoration -->
-    <string name="RemoteRestoreActivity__restore_backup">Atjaunot rezerves kopiju</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made. %1$s is replaced with the date (e.g. March 5, 2024) and %2$s is replaced with the time (e.g. 9:00am) -->
-    <string name="RemoteRestoreActivity__backup_created_at">Pēdējā rezerves kopija tika izveidota: %1$s plkst. %2$s.</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made and size. %1$s is replaced with the date (e.g. March 5, 2024), %2$s is replaced with the time (e.g. 9:00am), %3$1 is replaced with size (e.g., 1.2GB) -->
-    <string name="RemoteRestoreActivity__backup_created_at_with_size">Pēdējā rezerves kopija tika izveidota: %1$s plkst. %2$s. Rezerves kopijas izmērs ir %3$s.</string>
-    <!-- Progress dialog label while fetching backup info if we don\'t already have it -->
-    <string name="RemoteRestoreActivity__fetching_backup_details">Meklē rezerves kopijas informāciju…</string>
-    <!-- Text label button to skip restore from remote -->
-    <string name="RemoteRestoreActivity__skip_restore">Izlaist atjaunošanu</string>
-    <!-- Dialog title displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__couldnt_transfer">Neizdevās pabeigt pārsūtīšanu</string>
-    <!-- Dialog title displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_title">Nevar atjaunot rezerves kopiju</string>
-    <!-- Dialog body displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_body">Atjaunojot rezerves kopiju, radās kļūda. Jūsu rezerves kopiju nevar atgūt. Lai saņemtu palīdzību, sazinieties ar atbalsta dienestu.</string>
-    <!-- Dialog action button that will link users to a flow to contact support, displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_contact_button">Sazināties ar atbalstu</string>
-    <!-- Dialog message displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__error_occurred">Radās kļūda, un jūsu kontu nevarēja pārsūtīt. Mēģiniet vēlreiz, izvēloties pārsūtīšanas veidu.</string>
-    <!-- Dialog title displayed when remote restore failed because of an outdated backup version. -->
-    <string name="RemoteRestoreActivity__couldnt_restore">Neizdevās atjaunot šo rezerves kopiju</string>
-    <!-- Dialog message explaining that an update to Signal is required to restore the backup. -->
-    <string name="RemoteRestoreActivity__update_latest">Šī Molly versija nevar atjaunot rezerves kopiju. Atjauniniet uz jaunāko versiju un mēģiniet vēlreiz.</string>
-    <!-- Text on button that when pressed will redirect them to update Signal -->
-    <string name="RemoteRestoreActivity__update_signal">Atjaunināt Molly</string>
-    <!-- Text label button to dismiss the dialog -->
-    <string name="RemoteRestoreActivity__not_now">Ne tagad</string>
-    <!-- Text shown on restore screen as information on what will happen if you skip -->
-    <string name="RemoteRestoreActivity__your_media_will_restore_in_the_background">Jūsu multivide tiks atjaunota fonā. Ja izvēlēsieties neveikt atjaunošanu tagad, vēlāk to veikt nevarēs.</string>
-    <!-- Dialog title -->
-    <string name="RestoreActivity__no_longer_registered_title">Šī ierīce vairs nav reģistrēta</string>
-    <!-- Dialog message -->
-    <string name="RestoreActivity__no_longer_registered_message">Tas, visticamāk, ir tādēļ, ka reģistrējāt Signal kontu citā ierīcē.</string>
-
-    <!-- GroupMentionSettingDialog -->
-    <string name="GroupMentionSettingDialog_notify_me_for_mentions">Paziņot man par Pieminējumiem</string>
-    <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">Vai saņemt paziņojumus, kad jūs piemin sarunās, kurām izslēgti paziņojumi?</string>
-    <string name="GroupMentionSettingDialog_always_notify_me">Vienmēr man paziņot</string>
-    <string name="GroupMentionSettingDialog_dont_notify_me">Nevajag paziņot</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ManageProfileFragment -->
     <string name="ManageProfileFragment_badges">Nozīmītes</string>
@@ -1655,33 +1561,6 @@
     <!-- Button inside an alert dialog confirming the deletion of their draft -->
     <string name="InputPanel__discard">Atmest</string>
 
-<<<<<<< MOLLY
-    <!-- InviteActivity -->
-    <string name="InviteActivity_share">Kopīgot</string>
-    <string name="InviteActivity_share_with_contacts">Kopīgot ar kontaktpersonām</string>
-    <string name="InviteActivity_share_via">Kopīgot caur…</string>
-
-    <string name="InviteActivity_cancel">Atcelt</string>
-    <string name="InviteActivity_sending">Tiek sūtīts…</string>
-    <string name="InviteActivity_invitations_sent">Uzaicinājums nosutīts</string>
-    <string name="InviteActivity_invite_to_signal">Uzaicināt uz Molly</string>
-    <string name="InviteActivity_send_sms">Sūtīt SMS (%1$d)</string>
-    <plurals name="InviteActivity_send_sms_invites">
-        <item quantity="zero">Sūtīt %1$dSMS ielūgumus?</item>
-        <item quantity="one">Sūtīt %1$d SMS Ielūgumu?</item>
-        <item quantity="other">Sūtīt %1$d SMS uzaicinājumus?</item>
-    </plurals>
-    <string name="InviteActivity_lets_switch_to_signal">Pārejam uz Molly: %1$s</string>
-    <!-- Toast shown when Signal is unable to find an external app to share the Invite text string to -->
-    <string name="InviteActivity_no_app_to_share_to">Izskatās, ka jums nav nevienas aplikācijas, caur kuru kopīgot.</string>
-
-    <!-- LearnMoreTextView -->
-    <string name="LearnMoreTextView_learn_more">Lasīt vairāk</string>
-
-    <string name="SpanUtil__read_more">Lasīt vairāk</string>
-
-=======
->>>>>>> SIGNAL
     <!-- LongMessageActivity -->
     <string name="LongMessageActivity_unable_to_find_message">Neizdevās atrast ziņu</string>
     <string name="LongMessageActivity_message_from_s">Ziņa no %1$s</string>
@@ -2129,13 +2008,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-<<<<<<< MOLLY
-    <string name="MessageRecord__you_will_no_longer_be_able_to_send_sms_messages_from_signal_soon">Drīzumā vairs nevarēsiet sūtīt SMS ziņas lietotnē Signal. Uzaiciniet lietotāju %1$s izmantot Signal, lai turpinātu sarunu šeit.</string>
-    <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
     <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Lietotnē Molly vairs nav iespējams sūtīt SMS ziņas. Uzaiciniet lietotāju %1$s izmantot Molly, lai turpinātu sarunu šeit.</string>
-=======
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Lietotnē Signal vairs nav iespējams sūtīt SMS ziņas. Uzaiciniet lietotāju %1$s izmantot Signal, lai turpinātu sarunu šeit.</string>
->>>>>>> SIGNAL
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Maksājums: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2255,16 +2128,7 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Piesaistīt Signal ierīci?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Lai šim Signal kontam piesaistītu iPad, dodieties uz sadaļu \"Saistītās ierīces\" un pieskarieties pie \"Piesaistīt jaunu ierīci\". Pēc tam skenējiet QR kodu vēlreiz. Pārliecinieties, ka skenējat tikai tos QR kodus, kurus publicē Signal.</string>
 
-<<<<<<< MOLLY
-    <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">Molly ir nepieciešama piekļuve kamerai, lai skenētu kvadrātkodu, bet tai nav dotas šādas atļaujas. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Kamera\".</string>
-    <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">Nav iespējams skenēt kvadrātkodu bez kameras lietošanas atļaujas</string>
-
-    <!-- OutdatedBuildReminder -->
-    <string name="OutdatedBuildReminder_update_now">Atjaunināt tagad</string>
     <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Šīs Molly versijas lietošanas termiņš beigsies šodien. Aktualizējiet uz nesenāku versiju.</string>
-=======
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Šīs Signal versijas lietošanas termiņš beigsies šodien. Aktualizējiet uz nesenāku versiju.</string>
->>>>>>> SIGNAL
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
         <item quantity="zero">Šīs Molly versijas lietošanas termiņš beigsies pēc %1$d dienām. Atjauniniet uz jaunāku versiju.</item>
         <item quantity="one">Šīs Molly versijas lietošanas termiņš beigsies rīt. Atjauniniet uz jaunāku versiju.</item>
@@ -2381,10 +2245,6 @@
 
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Pieskarieties, lai ieslēgtu video</string>
-<<<<<<< MOLLY
-    <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">Lai zvanītu %1$s, Molly ir nepieciešama piekļuve jūsu kamerai</string>
-=======
->>>>>>> SIGNAL
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
     <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
     <string name="WebRtcCallActivity__calling">Zvana…</string>
@@ -2740,45 +2600,12 @@
 
     <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
     <string name="RegistrationActivity_additional_verification_required">Nepieciešama papildu verifikācija</string>
-<<<<<<< MOLLY
-    <!-- Dialog message shown when we need to verify sms and carrier rates may apply. -->
-    <string name="RegistrationActivity_a_verification_code_will_be_sent_to_this_number">Uz šo numuru tiks nosūtīts verifikācijas kods. Var tikt piemēroti mobilo sakaru operatora tarifi.</string>
-    <!-- Text explaining to users that they will be receiving a verification for their phone number and that carrier rates could apply -->
-    <string name="RegistrationActivity_you_will_receive_a_verification_code">Jūs saņemsiet verifikācijas kodu. Var tikt piemēroti mobilā operatora tarifi.</string>
-    <!-- Hint text to select a country -->
-    <string name="RegistrationActivity_select_a_country">Izvēlieties valsti</string>
-    <!-- Hint text explaining that this is where the country code should go -->
-    <string name="RegistrationActivity_default_country_code">0</string>
-    <string name="RegistrationActivity_you_will_receive_a_call_to_verify_this_number">Jūs saņēmāt zvanu, lai verificētu šo numuru.</string>
-    <string name="RegistrationActivity_edit_number">Rediģēt numuru</string>
-    <string name="RegistrationActivity_missing_google_play_services">Jocīgi, trūkst izspiegojošo Google Play pakalpojumu</string>
-    <string name="RegistrationActivity_this_device_is_missing_google_play_services">Šajā ierīcei trūkst Google Play pakalpojumu. Jūs varat izmantot Molly, taču šī ierīces konfigurācija, iespējams, var pasliktināt uzticamību un veiktspēju.\n\nJa jūs neesat pieredzējis lietotājs, ierīcē neizmantojiet \"pēctirgus\" Android operētājsistēmu vai arī uzskatiet, ka šo paziņojumu redziet kļūdas pēc, lūdzu, sazinieties ar support@molly.im, lai saņemtu palīdzību.</string>
-    <string name="RegistrationActivity_i_understand">Es saprotu</string>
-    <string name="RegistrationActivity_play_services_error">Google Play pakalpojumu kļūme</string>
-    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play pakalpojumi tiek aktualizēti vai īslaicīgi nav pieejami. Lūdzu, mēģiniet vēlreiz.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">Signal nepieciešama pieeja kontaktiem un failiem, lai palīdzētu Jums atrast draugus un sūtīt ziņas. Jūsu kontaktu saraksts tiks augšupielādēts lietojot Signal privāto kontaktu atklāšanu, kas nozīmē, ka tie būs šifrēti, un nekad nebūs redzami Signal servisam.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">Signal nepieciešama pieeja kontaktiem, lai palīdzētu Jums atrast draugus. Jūsu kontaktu saraksts tiks augšupielādēts lietojot Signal privāto kontaktu atklāšanu, kas nozīmē, ka tie būs šifrēti, un nekad nebūs redzami Signal servisam.</string>
-=======
->>>>>>> SIGNAL
     <string name="RegistrationActivity_rate_limited_to_service">Pārāk daudz šī numura reģistrēšanas mēģinājumu. Vēlāk mēģiniet vēlreiz.</string>
     <string name="RegistrationActivity_unable_to_connect_to_service">Nevar izveidot savienojumu ar pakalpojumu. Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz.</string>
     <!-- Dialog error message shown when we are unable to send an SMS to the user\'s number -->
     <string name="RegistrationActivity_sms_provider_error">Mums neizdodas nosūtīt SMS uz jūsu tālruņa numuru. Lūdzu, mēģiniet vēlreiz pēc dažām stundām.</string>
     <!-- Generic error when the app is unable to request an SMS code for an unknown reason. -->
     <string name="RegistrationActivity_unable_to_request_verification_code">Nevar pieprasīt verifikācijas kodu. Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz.</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_non_standard_number_format">Nestandarta numura formāts</string>
-    <!-- Dialog message shown to confirm when entering phone number (first placeholder) is normalized and formatted differently by the app (second placeholder). -->
-    <string name="RegistrationActivity_the_number_you_entered_appears_to_be_a_non_standard">Izskatās, ka numurs, kuru ievadījāt (%1$s), ir nestandarta formātā.\n\nVai domājāt %2$s?</string>
-    <string name="RegistrationActivity_signal_android_phone_number_format">Molly Android - tālruņa Numura Formāts</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via voice call.-->
-    <string name="RegistrationActivity_call_requested">Pieprasīts zvans</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via SMS.-->
-    <string name="RegistrationActivity_sms_requested">Pieprasīta SMS</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code (through an unspecified channel).-->
-    <string name="RegistrationActivity_code_requested">Pieprasīts verifikācijas kods</string>
-=======
->>>>>>> SIGNAL
     <plurals name="RegistrationActivity_debug_log_hint">
         <item quantity="zero">Jūs tagad esiet %1$d soļus no atkļūdošanas žurnāla iesniegšanas</item>
         <item quantity="one">Jūs tagad esiet %1$d soli no atkļūdošanas žurnāla iesniegšanas</item>
@@ -2828,19 +2655,6 @@
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
-<<<<<<< MOLLY
-
-    <!-- SharedContactDetailsActivity -->
-    <string name="SharedContactDetailsActivity_add_to_contacts">Pievienot kontaktiem</string>
-    <string name="SharedContactDetailsActivity_invite_to_signal">Uzaicināt uz Molly</string>
-    <string name="SharedContactDetailsActivity_signal_message">Signal ziņa</string>
-    <string name="SharedContactDetailsActivity_signal_call">Signal zvans</string>
-
-    <!-- SharedContactView -->
-    <string name="SharedContactView_add_to_contacts">Pievienot kontaktiem</string>
-    <string name="SharedContactView_invite_to_signal">Uzaicināt uz Molly</string>
-    <string name="SharedContactView_message">Signal ziņa</string>
-=======
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
@@ -2850,14 +2664,13 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Pievienot kontaktiem</string>
-    <string name="SharedContactView_invite_to_signal">Uzaicināt uz Signal</string>
+    <string name="SharedContactView_invite_to_signal">Uzaicināt uz Molly</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Ziņa</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
     <string name="SharedContactView_add_to_group">Pievienot grupai</string>
     <!-- Confirmation dialog body when adding the person on a shared contact card to the current group. %1$s is the person\'s name, %2$s is the group name -->
     <string name="SharedContactView_add_s_to_s">Vai “%2$s” pievienot %1$s?</string>
->>>>>>> SIGNAL
 
     <!-- SignalBottomActionBar -->
     <!-- Text to describe a button that will show more options -->
@@ -3181,12 +2994,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">Mūsu Signal drošības numurs:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">Izskatās, ka jums nav nevienas aplikācijas, caur kurām kopīgot.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">Starpliktuvē netika atrasts drošības kods</string>
-<<<<<<< MOLLY
     <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Molly ir nepieciešama piekļuve kamerai, lai skenētu kvadrātkodu, bet tā nav dota. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Kamera\".</string>
-    <string name="VerifyIdentityActivity_unable_to_scan_qr_code_without_camera_permission">Nebija iespējams noskenēt kvadrātkodu bez kameras lietošanas atļaujas</string>
-=======
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Signal ir nepieciešama piekļuve kamerai, lai skenētu kvadrātkodu, bet tā nav dota. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Kamera\".</string>
->>>>>>> SIGNAL
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">Lai skatītu %1$s drošības numuru, vispirms jums savstarpēji ir jāapmainās ar ziņām.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">Drošības numurs ar šo personu tiks izveidots pēc tam, kad būsiet nosūtījuši viens otram ziņas.</string>
@@ -3344,15 +3152,8 @@
     <string name="NotificationChannel_additional_message_notifications">Papildu ziņu paziņojumi</string>
     <!-- Notification channel name for notifications sent when a device has been linked -->
     <string name="NotificationChannel_new_linked_device">Jauna saistītā ierīce</string>
-<<<<<<< MOLLY
-
-    <!-- QuickResponseService -->
-    <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Ātrās atbildes nav pieejamas, kad Molly ir bloķēts!</string>
-    <string name="QuickResponseService_problem_sending_message">Problēma sūtot ziņu!</string>
-=======
     <!-- Notification channel name for unread reminder notifications -->
     <string name="NotificationChannel_unread_reminders">Neizlasīti atgādinājumi</string>
->>>>>>> SIGNAL
 
     <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
     <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">Neizdevās ierakstīt krātuvē!</string>
@@ -3510,14 +3311,6 @@
     <string name="EnclaveFailureReminder_update_signal">Atjauniniet Signal, lai turpinātu izmantot maksājumus. Jūsu bilance var nebūt atjaunināta.</string>
     <!-- Banner button to update now -->
 
-<<<<<<< MOLLY
-    <!-- WebRtcCallActivity -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone">Lai atbildētu uz zvanu, atļaujiet Molly piekļūt jūsu mikrofonam.</string>
-    <!-- Message shown in permission dialog when attempting to answer a video call without camera or microphone permissions already granted. -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone_and_camera">Lai atbildētu uz video zvanu, atļaujiet Molly piekļūt jūsu mikrofonam un kamerai.</string>
-    <string name="WebRtcCallActivity_signal_requires_microphone_and_camera_permissions_in_order_to_make_or_receive_calls">Molly nepieciešama atļauja piekļuvei mikrofonam un kamerai, lai zvanītu un saņemtu zvanus, bet tā nav dota. Dodieties uz lietotnes iestatījumiem, izvēlieties \"Atļaujas\" un iespējojiet \"Mikrofons\" un \"Kamera\".</string>
-=======
->>>>>>> SIGNAL
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Atbildēts no savienotās ierīces</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">Atteikts no savienotās ierīces.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">Aizņemts no savienotās ierīces.</string>
@@ -3612,26 +3405,6 @@
     <!-- Text asking for user\'s contact permission -->
     <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">Atļaujiet piekļuvi kontaktpersonām. Jūsu kontaktpersonas tiek šifrētas un nav redzamas pakalpojumam Signal.</string>
 
-<<<<<<< MOLLY
-    <!-- contact_selection_list_fragment -->
-    <string name="contact_selection_list_fragment__signal_needs_access_to_your_contacts_in_order_to_display_them">Molly nepieciešama pieeja jūsu kontaktiem, lai varētu tos parādīt.</string>
-    <string name="contact_selection_list_fragment__show_contacts">Rādīt kontaktpersonas</string>
-
-    <!-- contact_selection_list_item -->
-    <plurals name="contact_selection_list_item__number_of_members">
-        <item quantity="zero">%1$d dalībnieks</item>
-        <item quantity="one">%1$d dalībnieks</item>
-        <item quantity="other">%1$d dalībnieki</item>
-    </plurals>
-    <!-- Displays number of viewers for a story -->
-    <plurals name="contact_selection_list_item__number_of_viewers">
-        <item quantity="zero">%1$d skatītāji</item>
-        <item quantity="one">%1$d skatītājs</item>
-        <item quantity="other">%1$d skatītāji</item>
-    </plurals>
-
-=======
->>>>>>> SIGNAL
     <!-- conversation_activity -->
     <string name="conversation_activity__type_message_push">Signal ziņa</string>
     <!-- Option in send button context menu to schedule the message instead of sending it directly -->
@@ -3866,7 +3639,6 @@
     <string name="EditProfileFragment__group_name">Grupas nosaukums</string>
     <string name="EditProfileFragment__group_description">Grupas apraksts</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-<<<<<<< MOLLY
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
     <string name="EditProfileFragment_deprecated_dialog_title">Atjaunināt Molly</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
@@ -3879,8 +3651,6 @@
     <string name="EditProfileFragment_unregistered_dialog_body">Šī ierīce vairs nav reģistrēta. Lai veiktu izmaiņas kontā, reģistrējiet to atkārtoti.</string>
     <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
     <string name="EditProfileFragment_unregistered_dialog_reregister_button">Atkārtoti reģistrēties</string>
-=======
->>>>>>> SIGNAL
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Saglabāt</string>
@@ -4078,45 +3848,13 @@
     <string name="preferences__led_color_unknown">Nezināms</string>
     <string name="preferences__silent">Klusums</string>
     <string name="preferences__advanced">Papildu</string>
-<<<<<<< MOLLY
     <string name="preferences__donate_to_signal">Ziedot Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Privātums</string>
-=======
-    <string name="preferences__donate_to_signal">Ziedot Signal</string>
->>>>>>> SIGNAL
     <!-- Preference label for stories -->
     <string name="preferences__stories">Stāsti</string>
     <string name="preferences__payments">Maksājumi</string>
     <string name="preferences__linked_devices">Piesaistās ierīces</string>
-<<<<<<< MOLLY
-    <string name="preferences__light_theme">Gaišs</string>
-    <string name="preferences__dark_theme">Tumšs</string>
-    <string name="preferences__appearance">Izskats</string>
-    <string name="preferences__theme">Dizains</string>
-    <string name="preferences__chat_color_and_wallpaper">Sarunas krāsa un fona tapete</string>
-    <!-- Clickable settings text allowing the user to change the icon visible on their phone\'s home screen. -->
-    <string name="preferences__app_icon">Lietotnes ikona</string>
-    <!-- Approval for changing the app icon. -->
-    <string name="preferences__app_icon_dialog_ok">Ok</string>
-    <!-- Cancelling the operation of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_cancel">Atcelt</string>
-    <!-- Title for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_title">Mainīt lietotnes ikonu un nosaukumu uz \"%1$s\"</string>
-    <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Lai mainītu lietotnes ikonu un nosaukumu, Molly būs jāaizver. Paziņojumos vienmēr tiks rādīta Molly noklusējuma ikona un nosaukums.</string>
-    <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Atlasiet lietotnes ikonu un nosaukumu, kas būs redzams tālruņa sākuma ekrānā un lietotņu panelī. Paziņojumos vienmēr tiks rādīta Molly noklusējuma ikona un nosaukums. Lasīt vairāk</string>
-    <!-- Visible warning label for the limitations of changing the app icon. -->
-    <string name="preferences__app_icon_warning">Lietotņu ikonas un nosaukumi ir redzami sākuma ekrānā un lietotņu panelī.</string>
-    <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Paziņojumos vienmēr tiks rādīta Molly noklusējuma ikona un nosaukums.</string>
-    <!--Call to action to get more information about the limitations of the change app icon functionality. -->
-    <string name="preferences__app_icon_learn_more">Lasīt vairāk</string>
-    <!--Text description of a graphic illustrating the limitations of the app icon change. -->
-    <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafika, kas demonstrē, kur būs redzama nomainītā lietotnes ikona.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences__disable_pin">Atspējot PIN</string>
     <string name="preferences__enable_pin">Iespējot PIN</string>
     <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">Ja atspējosiet PIN, jūs zaudēsiet visus datus, atkārtoti reģistrējoties lietotnē Signal, ja vien manuāli tos nedublēsiet un neatjaunosiet. Reģistrācijas bloķēšanu nevar ieslēgt, kamēr PIN ir atspējots.</string>
@@ -4299,17 +4037,9 @@
     <string name="PaymentsTransferFragment__next">Tālāk</string>
     <string name="PaymentsTransferFragment__invalid_address">Nederīga adrese</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">Pārbaudiet naudas maka adresi, uz kuru mēģināt pārsūtīt, un mēģiniet vēlreiz.</string>
-<<<<<<< MOLLY
     <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Jūs nevarat veikt pārskaitījumu uz savu Molly naudas maka adresi. Ievadiet naudas maka adresi no sava konta atbalstītā biržā.</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Lai skenētu kvadrātkodu, lietotnei Molly ir nepieciešama piekļuve kamerai.</string>
-    <string name="PaymentsTransferFragment__signal_needs_the_camera_permission_to_capture_qr_code_go_to_settings">Lai uzņemtu fotoattēlus vai video, lietotnei Molly ir nepieciešama atļauja piekļūt kamerai. Atveriet iestatījumus, atlasiet Atļaujas un iespējojiet Kamera.</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Lai skenētu kvadrātkodu, lietotnei Molly ir nepieciešama piekļuve kamerai.</string>
-    <string name="PaymentsTransferFragment__settings">Iestatījumi</string>
-=======
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Jūs nevarat veikt pārskaitījumu uz savu Signal naudas maka adresi. Ievadiet naudas maka adresi no sava konta atbalstītā biržā.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Lai skenētu kvadrātkodu, lietotnei Signal ir nepieciešama piekļuve kamerai.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Lai skenētu kvadrātkodu, lietotnei Signal ir nepieciešama piekļuve kamerai.</string>
->>>>>>> SIGNAL
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Skenēt adreses kvadrātkodu</string>
@@ -4732,61 +4462,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Piezvaniet man (%1$02d.%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Atkārtoti nosūtīt kodu (%1$02d:%2$02d)</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_contact_signal_support">Sazināties ar Molly tehnisko atbalstu</string>
     <string name="RegistrationActivity_code_support_subject">Molly reģistrācija - Android ierīces verifikācijas kods</string>
-=======
-    <string name="RegistrationActivity_code_support_subject">Signal reģistrācija - Android ierīces verifikācijas kods</string>
->>>>>>> SIGNAL
     <string name="RegistrationActivity_incorrect_code">Nepareizs kods</string>
     <string name="BackupUtil_never">Nekad</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Nezināms</string>
-<<<<<<< MOLLY
-    <!-- Phone number heading displayed as a screen title -->
-    <string name="preferences_app_protection__phone_number">Tālruņa numurs</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
     <string name="preferences_app_protection__choose_who_can_see">Izvēlieties, kas var redzēt jūsu tālruņa numuru un kas var ar jums sazināties lietotnē Molly, izmantojot to.</string>
-    <!-- Section title above two radio buttons for enabling and disabling phone number display -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_see_my_number_heading">Kas var redzēt manu numuru</string>
-    <!-- Subtext below radio buttons when who can see my number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_on_description">Jūsu tālruņa numurs būs redzams cilvēkiem un grupām, kurām sūtīsiet ziņas.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_on_description">Jūsu tālruņa numurs nevienam netiks rādīts, izņemot personām, kuras to ir saglabājušas sava tālruņa kontaktpersonu sarakstā.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_off_description">Jūsu tālruņa numurs nevienam netiks rādīts.</string>
-    <!-- Section title above two radio buttons for enabling and disabling whether users can find me by my phone number  -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_find_me_by_number_heading">Kas var mani atrast pēc numura</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to everyone -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_on_description">Ikviens, kuram ir jūsu tālruņa numurs, redzēs, ka izmantojat Signal, un varēs uzsākt ar jums sarunas.</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_off_description">Neviens neredzēs, ka izmantojat Signal, izņemot tos, kuriem nosūtīsiet ziņu vai ar kuriem jau esat sarunājušies iepriekš.</string>
-    <!-- Snackbar text when pressing invalid radio item -->
-    <string name="PhoneNumberPrivacySettingsFragment__to_change_this_setting">"Lai mainītu šo iestatījumu, sadaļā \"Kas var redzēt manu numuru\" atzīmējiet \"Neviens\"."</string>
-    <!-- Dialog title shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_title">Vai tiešām turpināt?</string>
-    <!-- Dialog warning message shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_message">Funkcijai \"Kas var mani atrast pēc numura\" iestatot \"Neviens\", cilvēkiem būs grūtāk jūs atrast Signal platformā.</string>
-    <!-- Dialog button text for canceling change action -->
-    <string name="PhoneNumberPrivacySettingsFragment__cancel">Atcelt</string>
-    <string name="PhoneNumberPrivacy_everyone">Ikviens</string>
-    <string name="PhoneNumberPrivacy_nobody">Neviens</string>
-    <string name="preferences_app_protection__screen_lock">Ekrāna bloķēšana</string>
-    <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">Slēgt piekļuvi Signal, izmantojot Android ekrāna bloķētāju vai pirkstu nospiedumu</string>
-    <string name="preferences_app_protection__screen_lock_inactivity_timeout">Bezdarbības termiņš, kuram paejot, tiek bloķēts ekrāns</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
     <string name="preferences_app_protection__to_use_screen_lock">Lai izmantotu ekrāna bloķēšanu, iestatiet PIN kodu, kombināciju vai paroli šajā ierīcē.</string>
-    <string name="preferences_app_protection__signal_pin">Signal PIN</string>
-    <string name="preferences_app_protection__create_a_pin">Izveidot PINu</string>
-    <string name="preferences_app_protection__change_your_pin">Labot jūsu PIN</string>
-    <string name="preferences_app_protection__pin_reminders">PIN atgādinājumi</string>
-    <string name="preferences_app_protection__turn_off">Izslēgt</string>
-    <string name="preferences_app_protection__confirm_pin">Apstiprināt PIN</string>
-    <string name="preferences_app_protection__confirm_your_signal_pin">Apstipriniet Signal PIN</string>
-    <string name="preferences_app_protection__make_sure_you_memorize_or_securely_store_your_pin">Pārliecinieties, ka atceraties PIN un vai uzglabājat to droši, jo PIN nevar atgūt. PIN aizmiršanas gadījumā, iespējams, zaudēsiet datus, atkārtoti reģistrējot Signal kontu.</string>
-    <string name="preferences_app_protection__incorrect_pin_try_again">Nepareizs PIN. Mēģiniet vēlreiz.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Reģistrācijas bloķēšanas iestatīšanas laikā notikusi kļūda.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Reģistrācijas bloķēšanas atiestatīšanas laikā notikusi kļūda.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Jums ir jāievada savs reģistrācijas bloķēšanas PIN</string>
@@ -4809,31 +4493,6 @@
     <string name="prompt_passphrase_activity__try_again">Mēģināt vēlreiz</string>
 
     <!-- ScreenLockSettingsFragment -->
-<<<<<<< MOLLY
-    <!-- Text shown when screen lock is not enabled -->
-    <string name="ScreenLockSettingsFragment__off">Izslēgta</string>
-    <!-- Text shown with toggle that when switched on will enable screen lock -->
-    <string name="ScreenLockSettingsFragment__use_screen_lock">Izmantot ekrāna bloķēšanu</string>
-    <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Kad aizvērsiet lietotni vai pārslēgsieties uz citu lietotni, lai atbloķētu Molly, būs jāizmanto Android ierīces bloķēšanas iestatījumi. Ja lietotne ir bloķēta, paziņojumu priekšskatījumos netiks rādīts ziņu saturs.</string>
-    <!-- Title text explaining when users should start the screen lock -->
-    <string name="ScreenLockSettingsFragment__start_screen_lock">Bloķēt ekrānu</string>
-    <!-- Option text explaining that screen lock should start immediately -->
-    <string name="ScreenLockSettingsFragment__immediately">Tūlīt</string>
-    <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_1_min">Pēc 1 minūtes</string>
-    <!-- Option text explaining that screen lock should start after 5 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_5_min">Pēc 5 minūtēm</string>
-    <!-- Option text explaining that screen lock should start after 30 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_30_min">Pēc 30 minūtēm</string>
-    <!-- Option text explaining that screen lock should start at a custom time set by the user -->
-    <string name="ScreenLockSettingsFragment__custom_time">Pielāgots laiks</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Izmantojiet Molly ekrāna bloķēšanu</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Izslēdziet Molly ekrāna bloķēšanu</string>
-=======
->>>>>>> SIGNAL
 
     <string name="Recipient_unknown">Nezināms</string>
     <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
@@ -4879,18 +4538,6 @@
     <!-- NewDeviceTransferInstructionsFragment -->
 
     <!-- NewDeviceTransferSetupFragment -->
-<<<<<<< MOLLY
-    <string name="NewDeviceTransferSetup__preparing_to_connect_to_old_android_device">Gatavojas savienojuma izveidei ar veco Android ierīci…</string>
-    <string name="NewDeviceTransferSetup__take_a_moment_should_be_ready_soon">Brīdi uzgaidiet, drīz viss būs kārtībā</string>
-    <string name="NewDeviceTransferSetup__waiting_for_old_device_to_connect">Gaida savienojumu ar veco Android ierīci…</string>
-    <string name="NewDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_old_device">Lietotnei Molly ir nepieciešama atrašanās vietas atļauja, lai atrastu veco Android ierīci un izveidotu ar to savienojumu.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_old_device">Lietotnē Molly ir jābūt iespējotiem atrašanās vietas pakalpojumiem, lai atrastu veco Android ierīci un izveidotu ar to savienojumu.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_old_device">Lietotnē Molly ir jāieslēdz Wi-Fi, lai varētu noteikt veco Android ierīci un izveidot ar to savienojumu. Wi-Fi ir jābūt ieslēgtam, bet ierīcei nav jābūt pievienotai Wi-Fi tīklam.</string>
-    <string name="NewDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Diemžēl šķiet, ka šī ierīce neatbalsta Wi-Fi Direct. Lietotne Molly izmanto Wi-Fi Direct, lai noteiktu veco Android ierīci un izveidotu ar to savienojumu. Joprojām varat atjaunot rezerves kopiju konta atjaunošanai no vecās Android ierīces.</string>
-    <string name="NewDeviceTransferSetup__restore_a_backup">Atjaunot rezerves kopiju</string>
-    <string name="NewDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Mēģinot izveidot savienojumu ar veco Android ierīci, radās neparedzēta kļūda.</string>
-=======
->>>>>>> SIGNAL
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">Meklē jauno Android ierīci…</string>
@@ -5558,44 +5205,6 @@
     <string name="ExpireTimerSettingsFragment__custom_time">Pielāgots laiks</string>
     <string name="ExpireTimerSettingsFragment__save">Saglabāt</string>
 
-<<<<<<< MOLLY
-    <string name="CustomExpireTimerSelectorView__seconds">sekundes</string>
-    <string name="CustomExpireTimerSelectorView__minutes">minūtes</string>
-    <string name="CustomExpireTimerSelectorView__hours">stundas</string>
-    <string name="CustomExpireTimerSelectorView__days">dienas</string>
-    <string name="CustomExpireTimerSelectorView__weeks">nedēļas</string>
-
-    <!-- HelpSettingsFragment -->
-    <string name="HelpSettingsFragment__support_center">Atbalsta centrs</string>
-    <string name="HelpSettingsFragment__contact_us">Sazināties ar mums</string>
-    <string name="HelpSettingsFragment__version">Versija</string>
-    <!-- Displayed when copying help screen text to the clipboard -->
-    <string name="HelpSettingsFragment__copied_to_clipboard">Iekopēts starpliktuvē</string>
-    <string name="HelpSettingsFragment__debug_log">Atkļūdošanas žurnāls</string>
-    <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
-    <string name="HelpSettingsFragment__licenses">Licences</string>
-    <string name="HelpSettingsFragment__terms_amp_privacy_policy">Noteikumi &amp; privātuma politika</string>
-    <string name="HelpFragment__copyright_signal_messenger">Autortiesības Molly Messenger</string>
-    <string name="HelpFragment__licenced_under_the_agplv3">Licencēta saskaņā ar GPLv3 AGPLv3</string>
-    <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="HelpSettingsFragment__signal_is_a_501c3">Signal ir bezpeļņas organizācija</string>
-
-    <!-- DataAndStorageSettingsFragment -->
-    <string name="DataAndStorageSettingsFragment__media_quality">Multivides kvalitāte</string>
-    <!-- Category title for the quality of the media to be sent -->
-    <string name="DataAndStorageSettingsFragment__sent_media_quality">Nosūtītās multivides kvalitāte</string>
-    <string name="DataAndStorageSettingsFragment__sending_high_quality_media_will_use_more_data">Sūtot augstas kvalitātes multivides saturu, tiks izmantots vairāk datu.</string>
-    <!-- Disclaimer shown under the media auto-download settings. Placeholder is a formatted size like "100 KB". -->
-    <string name="DataAndStorageSettingsFragment__voice_messages_and_stickers_under_size_are_always_auto_downloaded">Balss ziņas un uzlīmes (mazākas par %1$s) vienmēr tiek lejupielādētas automātiski.</string>
-    <string name="DataAndStorageSettingsFragment__calls">Zvani</string>
-    <!-- Title of a toggle that keeps Signal connected in the background via a persistent foreground service instead of using FCM push messages -->
-    <string name="DataAndStorageSettingsFragment__stay_connected_in_background">Saglabāt savienojumu fonā</string>
-    <!-- Body of a confirmation dialog shown when a user tries to enable the "Stay connected in background" setting -->
-    <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">Saglabājot savienojumu fonā, visticamāk, palielināsies akumulatora enerģijas patēriņš. Lielākajai daļai ierīču tas nav nepieciešams. Iespējojiet tikai tad, ja jums ir problēmas ar paziņojumiem.</string>
-    <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
-    <string name="DataAndStorageSettingsFragment__enable">Iespējot</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
@@ -6281,15 +5890,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Ieslēgts līdz %1$s</string>
 
-<<<<<<< MOLLY
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Neizdevās atvērt atlasītāju.</string>
     <!-- Banner title when notification permission is disabled -->
     <string name="NotificationSettingsFragment__to_enable_notifications">Lai iespējotu paziņojumus, Molly ir nepieciešama atļauja tos rādīt.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Ieslēgt</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Šis ir oficiālais un vienīgais sarunu kanāls ar Signal</string>
@@ -7948,7 +7554,6 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Jūs nevarat abonēt Signal Drošās Rezerves Kopijas, jo jūsu tālrunis neatbalsta Google Play pakalpojumus. Lai saņemtu palīdzību, sazinieties ar tālruņa ražotāju.</string>
 
-<<<<<<< MOLLY
     <!-- ManageStorageSettingsFragment -->
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
     <string name="ManageStorageSettingsFragment_chat_limit">Ziņu ierobežojumi sarunās</string>
@@ -7971,14 +7576,12 @@
     <!-- Dialog message for paid tier pending dialog -->
     <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Krātuves optimizāciju var izmantot tikai Signal rezerves kopiju maksas plāna īpašnieki. Jūsu rezerves kopiju abonements joprojām tiek apstrādāts un vēl nav aktīvs. Lūdzu, vēlāk mēģiniet vēlreiz.</string>
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media will be removed from your on-device backup</string>
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Multivide tiks dzēsta no jūsu ierīces rezerves kopijas</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Turning on \"Optimize Signal storage\" will offload old media from your device. You can download it again any time. It will also remove old media from your on-device backup.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Ieslēdzot funkciju \"Optimizēt Signal krātuvi\", vecā multivide no jūsu ierīces tiks pārlikta. Varat to lejupielādēt vēlreiz jebkurā laikā. Tāpat tiks dzēsta arī vecā multivide no jūsu ierīces rezerves kopijas.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Ieslēgt</string>
 
-=======
->>>>>>> SIGNAL
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Lai iespējotu šo funkciju, iegādājieties plānu</string>
@@ -8418,13 +8021,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Glabājiet atslēgu drošā vietā</string>
     <!-- Bottom sheet subtitle -->
-<<<<<<< MOLLY
     <string name="MessageBackupsKeyRecordScreen__signal_will_not">Ja pazaudēsiet atslēgu, Molly nevarēs palīdzēt atjaunot rezerves kopiju. Glabājiet atslēgu drošā vietā un neizpaudiet to citiem.</string>
-    <!-- Checkbox label -->
-    <string name="MessageBackupsKeyRecordScreen__ive_recorded_my_key">Saglabāju atslēgu</string>
-=======
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Ja pazaudēsiet atslēgu, Signal nevarēs palīdzēt atjaunot rezerves kopiju. Glabājiet atslēgu drošā vietā un neizpaudiet to citiem.</string>
->>>>>>> SIGNAL
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Turpināt</string>
     <!-- Sheet secondary action button label -->
@@ -8563,244 +8160,6 @@
     <string name="MessageBackupsTypeSelectionScreen__current_plan">Pašreizējais plāns</string>
 
     <!-- ConfirmBackupCancellationDialog -->
-<<<<<<< MOLLY
-    <!-- Dialog title -->
-    <string name="ConfirmBackupCancellationDialog__confirm_cancellation">Apstiprināt atcelšanu</string>
-    <!-- Dialog body -->
-    <string name="ConfirmBackupCancellationDialog__you_wont_be_charged_again">No jums vairs netiks iekasēta maksa. Rezerves kopiju izveidošana tiks izslēgta norēķinu cikla beigās. Pēc šī datuma jums būs 30 dienas laika, lai lejupielādētu šobrīd izveidoto multivides rezerves kopiju.</string>
-    <!-- Action button label to cancel subscription and download now -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_now">Apstiprināt un lejupielādēt tagad</string>
-    <!-- Action button label to cancel subscription and download later -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_later">Apstiprināt un lejupielādēt vēlāk</string>
-    <!-- Action button label to keep current subscription -->
-    <string name="ConfirmBackupCancellationDialog__keep_subscription">Saglabāt abonementu</string>
-
-    <!-- Accessible content description for the reminder view, describing the icon in the view. -->
-    <string name="ReminderView_icon_content_description">Atgādinājuma ikona</string>
-
-    <!-- Row title for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_i_have_my_old_phone">Man ir iepriekšējais tālrunis</string>
-    <!-- Row subtitle for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_scan_qr">Lai ātri sāktu darbu, skenējiet QR kodu no pašreizējā Signal konta</string>
-
-    <!-- Row title for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Man nav iepriekšējā tālruņa</string>
-    <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">Vai arī jūs atkārtoti instalējat Molly tajā pašā ierīcē</string>
-
-    <!-- Screen title for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__restore_or_transfer_account">Atjaunojiet vai pārsūtiet kontu</string>
-    <!-- Screen subtitle for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__get_your_signal_account">Iegūstiet savu Signal kontu un ziņu vēsturi šajā ierīcē.</string>
-    <!-- Option title for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_signal_backup">Signal rezerves kopijas atjaunošana</string>
-    <!-- Option subtitle for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_your_text_messages_and_media_from">Atjaunojiet īsziņas un multividi ar Signal rezerves kopiju plānu.</string>
-    <!-- Option title for restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_on_device_backup">Ierīces rezerves kopijas atjaunošana</string>
-    <!-- Option subtitle fdor restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_your_messages_from">Atjaunojiet ziņas ar rezerves kopiju, ko saglabājāt savā ierīcē.</string>
-    <!-- Option title for restoring via a local backup file -->
-    <string name="SelectRestoreMethodFragment__from_a_backup_file">No rezerves kopijas faila</string>
-    <!-- Option subtitle for restoring via a local backup -->
-    <string name="SelectRestoreMethodFragment__choose_a_backup_youve_saved">Izvēlieties saglabātu rezerves kopiju</string>
-    <!-- Option title for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__from_your_old_phone">No jūsu iepriekšējā tālruņa</string>
-    <!-- Option subtitle for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__transfer_directly_from_old">Pārsūtiet tieši no iepriekšējā Android tālruņa</string>
-    <!-- Dialog title shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_title">Vai izlaist atjaunošanu?</string>
-    <!-- Dialog message shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_warning">Ja tagad atjaunināšanu izlaidīsiet, vēlāk atjaunošanu veikt nevarēs. Ja pēc atjaunošanas izlaišanas atkārtoti aktivizēsiet rezerves kopijas, pašreizējās rezerves kopijas tiks aizstātas ar jauno ziņu vēsturi.</string>
-    <!-- Dialog confirm text shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore">Izlaist atjaunošanu</string>
-
-    <!-- Screen title for restore via local backup -->
-    <string name="RestoreLocalBackup_title">Lokālās rezerves kopijas atjaunošana</string>
-    <!-- Screen subtitle for restore via local backup -->
-    <string name="RestoreLocalBackup_subtitle">Atjaunojiet ziņas no rezerves kopijas, ko saglabājāt savā ierīcē. Ja neatjaunosiet tagad, vēlāk atjaunošanu veikt nevarēs.</string>
-
-    <!-- Screen title for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_title">Ievadiet savu atkopšanas atslēgu</string>
-    <!-- Screen subtitle for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_subtitle">Atkopšanas atslēga ir 64 rakstzīmju kods, kas nepieciešams konta un datu atgūšanai.</string>
-    <!-- Button to skip entering recovery key and resuming normal registration flow -->
-    <string name="EnterBackupKey_no_backup_key">Nav atkopšanas atslēgas?</string>
-    <!-- Recovery key text field hint -->
-    <string name="EnterBackupKey_backup_key">Atkopšanas atslēga</string>
-    <!-- Recovery key not known bottom sheet info paragraph 1 -->
-    <string name="EnterBackupKey_no_key_paragraph_1">Rezerves kopijas nevar atgūt bez 64 rakstzīmju atgūšanas koda. Ja atkopšananas atslēga ir pazaudēta, Signal nevar palīdzēt atgūt rezerves kopiju.</string>
-    <!-- Recovery key not known bottom sheet info paragraph 2 -->
-    <string name="EnterBackupKey_no_key_paragraph_2">Ja iepriekšējā ierīce ir jūsu rīcībā, rezerves kopijas atslēgu varat skatīt sadaļā Iestatījumi &gt; Rezerves kopijas. Pēc tam pieskarieties pie Skatīt atkopšanas atslēgu.</string>
-    <!-- Recovery key not known bottom sheet button to learn more about it -->
-    <string name="EnterBackupKey_learn_more">Uzzināt vairāk</string>
-    <!-- Recovery key not known bottom sheet button to skip recovery key entry and resume normal reregistration -->
-    <string name="EnterBackupKey_skip_and_dont_restore">Izlaist un neatjaunot</string>
-    <!-- Dialog title shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_title">Nepareiza atkopšanas atslēga</string>
-    <!-- Dialog message shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_message">Pārliecinieties, ka reģistrējaties, izmantojot to pašu tālruņa numuru un 64 rakstzīmju atkopšanas atslēgu, ko saglabājāt, kad iespējojāt Signal drošo rezerves kopiju izveidi. Rezerves kopijas atjaunot bez šīs atslēgas nav iespējams.</string>
-    <!-- Dialog positive button text to try entering their recovery key again -->
-    <string name="EnterBackupKey_try_again">Mēģināt vēlreiz</string>
-    <!-- Dialog negative button text to get help with recovery key -->
-    <string name="EnterBackupKey_backup_key_help">Palīdzība saistībā ar atkopšanas atslēgu</string>
-    <!-- Text field error text when the recovery key provided has been confirmed invalid -->
-    <string name="EnterBackupKey_incorrect_backup_key_error">Nepareiza atkopšanas atslēga</string>
-    <!-- Text field error text when the recovery key is too long -->
-    <string name="EnterBackupKey_too_long_error">Par daudz teksta (%1$d/%2$d)</string>
-    <!-- Text field error when the recovery key is invalid -->
-    <string name="EnterBackupKey_invalid_backup_key_error">Nederīga atkopšanas atslēga</string>
-    <!-- Dialog title shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_not_found">Rezerves kopija nav atrasta</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_you_entered_is_correct_but_no_backup">Ievadītā atkopšanas atslēga ir pareiza, taču ar to nav saistīta neviena rezerves kopija. Ja jums ir piekļuve iepriekšējam tālrunim, pārliecinieties, ka rezerves kopijas ir ieslēgtas un ka rezerves kopijas izveide ir pabeigta. Pēc tam mēģiniet vēlreiz.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">Iespējams, esat nepareizi ievadījuši atkopšanas atslēgu vai neesat pabeiguši vismaz vienu rezerves kopiju vecajā ierīcē.\n\nPārliecinieties, ka reģistrējaties, izmantojot to pašu tālruņa numuru un atkopšanas atslēgu, ko saglabājāt, kad iespējojāt Signal Drošās Rezerves Kopijas, un apstipriniet, ka jūsu vecajā ierīcē ir pabeigta rezerves kopiju izveide.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_check_rate_limited">Atkopšanas atslēgu mēģinājumi ir beigušies. Jūsu drošības nolūkos mēģinājumu skaits ir ierobežots. Pagaidiet vienu stundu un mēģiniet vēlreiz.</string>
-    <!-- Dialog button shown during registration and trying to restore a remote backup to instead skip said backup process -->
-    <string name="EnterBackupKey_skip_restore">Izlaist atjaunošanu</string>
-    <!-- Dialog title text when encountering backup restore network error -->
-    <string name="EnterBackupKey_cant_restore_backup">Nevar atjaunot rezerves kopiju</string>
-    <!-- Dialog body text when encountering backup restore network error -->
-    <string name="EnterBackupKey_your_backup_cant_be_restored_right_now">Rezerves kopiju šobrīd nevar atjaunot. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz. </string>
-    <!-- Dialog button text to contact support on network error -->
-    <string name="EnterBackupKey_contact_support">Sazināties ar atbalstu</string>
-
-    <!-- Email subject when contacting support on a restore backup network issue -->
-    <string name="EnterBackupKey_network_failure_support_email">Signal Android rezerves kopijas atjaunošanas tīkla kļūda</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_network_failure_support_email_filter" translatable="false">Android SignalBackups Import Failed</string> -->
-    <!-- Email subject when contacting support on a permanent backup import failure -->
-    <string name="EnterBackupKey_permanent_failure_support_email">Signal Android rezerves kopijas atjaunošanas neatgriezeniska kļūme</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_permanent_failure_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
-
-    <!-- EnterLocalBackupKeyScreen: Screen title for entering recovery key for local backup restore -->
-    <string name="EnterLocalBackupKeyScreen__enter_your_recovery_key">Ievadiet savu atkopšanas atslēgu</string>
-    <!-- EnterLocalBackupKeyScreen: Screen subtitle explaining what the recovery key is -->
-    <string name="EnterLocalBackupKeyScreen__your_recovery_key_is_a_64_character_code">Atkopšanas atslēga ir 64 rakstzīmju kods, kas nepieciešams konta un datu atgūšanai.</string>
-    <!-- EnterLocalBackupKeyScreen: Button text when user does not have a recovery key -->
-    <string name="EnterLocalBackupKeyScreen__no_recovery_key">Nav atkopšanas atslēgas?</string>
-    <!-- EnterLocalBackupKeyScreen: Button to proceed to next step -->
-    <string name="EnterLocalBackupKeyScreen__next">Tālāk</string>
-
-    <!-- RestoreLocalBackupDialog: Error message when the selected archive fails to load -->
-    <string name="RestoreLocalBackupDialog__failed_to_load_archive">Neizdevās ielādēt arhīvu. Lūdzu, izvēlieties citu direktoriju.</string>
-    <!-- RestoreLocalBackupDialog: Dismiss button for dialog -->
-    <string name="RestoreLocalBackupDialog__ok">Ok</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore">Vai izlaist atjaunošanu?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user about the consequences of skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore_body">Ja tagad atjaunināšanu izlaidīsiet, vēlāk atjaunošanu veikt nevarēs. Ja pēc atjaunošanas izlaišanas atkārtoti aktivizēsiet rezerves kopijas, pašreizējās rezerves kopijas tiks aizstātas ar jauno ziņu vēsturi.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the skip restore dialog -->
-    <string name="RestoreLocalBackupDialog__skip_restore_confirm">Izlaist atjaunošanu</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm restoring a backup from a different account -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account">Atjaunot uz jaunu kontu?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user that the backup was created with a different account and they will lose group memberships -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account_body">Rezerves kopija, kuru atjaunojat, tika izveidota, izmantojot citu Signal kontu. Varat atjaunot šo rezerves kopiju jaunā kontā, taču jūsu dalība atjaunotajās grupās netiks pārnesta.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the restore to new account dialog -->
-    <string name="RestoreLocalBackupDialog__restore">Atjaunot</string>
-
-    <!-- RestoreLocalBackupActivity: Toast message when backup restore fails -->
-    <string name="RestoreLocalBackupActivity__backup_restore_failed">Rezerves kopijas atjaunošana neizdevās</string>
-    <!-- RestoreLocalBackupActivity: Screen title shown during restore -->
-    <string name="RestoreLocalBackupActivity__restoring_backup">Rezerves kopiju atjaunošana</string>
-    <!-- RestoreLocalBackupActivity: Screen subtitle explaining restore duration -->
-    <string name="RestoreLocalBackupActivity__depending_on_the_size">Atkarībā no rezerves kopiju izmēra, process var aizņemt dažas minūtes.</string>
-    <!-- RestoreLocalBackupActivity: Status text while restoring messages -->
-    <string name="RestoreLocalBackupActivity__restoring_messages">Ziņas tiek atjaunotas…</string>
-    <!-- RestoreLocalBackupActivity: Status text while finalizing restore -->
-    <string name="RestoreLocalBackupActivity__finalizing">Notiek pabeigšana…</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore is complete -->
-    <string name="RestoreLocalBackupActivity__restore_complete">Atjaunošana pabeigta</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore fails -->
-    <string name="RestoreLocalBackupActivity__restore_failed">Atjaunošana neizdevās</string>
-    <!-- RestoreLocalBackupActivity: Progress text showing bytes read of total with percentage, e.g. "1.2 MB of 5.0 MB (24%)" -->
-    <string name="RestoreLocalBackupActivity__s_of_s_d_percent">%1$s no %2$s (%3$d%%)</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__cant_restore_backup">Nevar atjaunot rezerves kopiju</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__error_occurred_while_restoring">Atjaunojot rezerves kopiju, radās kļūda. Jūsu rezerves kopiju nevar atgūt. Lai saņemtu palīdzību, sazinieties ar atbalsta dienestu.</string>
-
-    <!-- RestoreLocalBackupActivity: Label for the button that opens the contact support form -->
-    <string name="RestoreLocalBackupActivity__contact_support">Sazināties ar atbalstu</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when on-device backups could not be automatically re-enabled -->
-    <string name="RestoreLocalBackupActivity__turn_on_on_device_backups">Vai ieslēgt rezerves kopijas ierīcē?</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when on-device backups could not be automatically re-enabled, prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__to_continue_using_on_device_backups">Lai turpinātu lietot rezerves kopijas ierīcē, tās jāiespējo šim kontam. To var izdarīt jebkurā laikā sadaļā Iestatījumi &gt; Rezerves kopijas.</string>
-
-    <!-- RestoreLocalBackupActivity: Confirm button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__turn_on_now">Ieslēgt tūlīt</string>
-
-    <!-- RestoreLocalBackupActivity: Dismiss button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__not_now">Ne tagad</string>
-
-    <!-- RestoreLocalBackupActivity: Body text for the dialog shown after a successful restore, prompting the user to choose a backup folder -->
-    <string name="RestoreLocalBackupActivity__choose_a_folder_for_backups">Lai turpinātu izmantot rezerves kopijas ierīcē, izvēlieties mapi savā ierīcē, kurā tiks saglabātas rezerves kopijas.</string>
-
-    <!-- RestoreLocalBackupActivity: Positive button label for the dialog shown after a successful restore; keeps the current backup folder -->
-    <string name="RestoreLocalBackupActivity__use_current_folder">Izmantot esošo mapi</string>
-
-    <!-- RestoreLocalBackupActivity: Neutral button label for the dialog shown after a successful restore; opens folder picker to select a different backup location -->
-    <string name="RestoreLocalBackupActivity__choose_new_folder">Izvēlēties jaunu mapi</string>
-
-    <!-- RestoreLocalBackupActivity: Negative button label for the dialog shown after a successful restore; disables on-device backups -->
-    <string name="RestoreLocalBackupActivity__disable_backups">Atspējot rezerves kopijas</string>
-
-    <!-- SelectInstructionsSheet: Title for the select backup folder instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_folder">Atlasiet rezerves kopiju mapi</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the select this folder button -->
-    <string name="SelectInstructionsSheet__tap_select_this_folder">Pieskarieties pie \"Atlasīt šo mapi\"</string>
-    <!-- SelectInstructionsSheet: Instruction not to select individual files -->
-    <string name="SelectInstructionsSheet__do_not_select_individual_files">Neatlasiet atsevišķus failus</string>
-    <!-- SelectInstructionsSheet: Title for the select backup file instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_file">Atlasiet savu rezerves kopijas failu</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the backup file saved to device -->
-    <string name="SelectInstructionsSheet__tap_on_the_backup_file">Pieskarieties rezerves kopijas failam, kas saglabāts ierīcē</string>
-    <!-- SelectInstructionsSheet: Subtitle explaining how to access backup after tapping continue -->
-    <string name="SelectInstructionsSheet__after_tapping_continue">Pēc pieskaršanās \"Turpināt\", rezerves kopijai varat piekļūt šādi:</string>
-    <!-- SelectInstructionsSheet: Instruction to select the top-level backup folder -->
-    <string name="SelectInstructionsSheet__select_the_top_level_folder">Atlasiet galveno mapi, kurā glabājas rezerves kopija</string>
-    <!-- SelectInstructionsSheet: Continue button text -->
-    <string name="SelectInstructionsSheet__continue_button">Turpināt</string>
-
-    <!-- SelectLocalBackupScreen: Screen title for restoring on-device backup -->
-    <string name="SelectLocalBackupScreen__restore_on_device_backup">Ierīces rezerves kopijas atjaunošana</string>
-    <!-- SelectLocalBackupScreen: Screen subtitle explaining the restore process -->
-    <string name="SelectLocalBackupScreen__restore_your_messages_from_the_backup_folder">Atjaunojiet ziņas no rezerves kopijas mapes, ko saglabājāt savā ierīcē. Ja neatjaunosiet tagad, vēlāk atjaunošanu veikt nevarēs.</string>
-    <!-- SelectLocalBackupScreen: Button to initiate backup restoration -->
-    <string name="SelectLocalBackupScreen__restore_backup">Atjaunot rezerves kopiju</string>
-    <!-- SelectLocalBackupScreen: Button to choose an earlier backup when current is latest -->
-    <string name="SelectLocalBackupScreen__choose_an_earlier_backup">Izvēlieties agrāku rezerves kopiju</string>
-    <!-- SelectLocalBackupScreen: Button to choose a different backup -->
-    <string name="SelectLocalBackupScreen__choose_a_different_backup">Izvēlieties citu rezerves kopiju</string>
-    <!-- SelectLocalBackupScreen: Label for latest backup card -->
-    <string name="SelectLocalBackupScreen__your_latest_backup">Jūsu jaunākā rezerves kopija:</string>
-    <!-- SelectLocalBackupScreen: Label for non-latest backup card -->
-    <string name="SelectLocalBackupScreen__your_backup">Jūsu rezerves kopija:</string>
-
-    <!-- SelectLocalBackupSheet: Title for backup selection bottom sheet -->
-    <string name="SelectLocalBackupSheet__choose_a_backup_to_restore">Izvēlieties rezerves kopiju, ko atjaunot</string>
-    <!-- SelectLocalBackupSheet: Subtitle warning about choosing an older backup -->
-    <string name="SelectLocalBackupSheet__choosing_an_older_backup">Izvēloties vecāku rezerves kopiju, varat zaudēt jaunākās ziņas un multividi.</string>
-    <!-- SelectLocalBackupSheet: Continue button text -->
-    <string name="SelectLocalBackupSheet__continue_button">Turpināt</string>
-
-    <!-- SelectLocalBackupTypeScreen: Screen title for selecting backup type -->
-    <string name="SelectLocalBackupTypeScreen__restore_on_device_backup">Ierīces rezerves kopijas atjaunošana</string>
-    <!-- SelectLocalBackupTypeScreen: Screen subtitle explaining restore options -->
-    <string name="SelectLocalBackupTypeScreen__restore_your_messages_from_the_backup">Atjaunojiet ziņas no rezerves kopijas, ko saglabājāt savā ierīcē. Ja neatjaunosiet tagad, vēlāk atjaunošanu veikt nevarēs.</string>
-    <!-- SelectLocalBackupTypeScreen: Button for users who saved backup as single file -->
-    <string name="SelectLocalBackupTypeScreen__i_saved_my_backup_as_a_single_file">Es saglabāju savu rezerves kopiju kā vienu failu</string>
-    <!-- SelectLocalBackupTypeScreen: Card title for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__choose_backup_folder">Izvēlieties rezerves kopiju mapi</string>
-    <!-- SelectLocalBackupTypeScreen: Card description for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__select_the_folder_on_your_device">Atlasiet mapi ierīcē, kurā glabājas rezerves kopija</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Email subject when contacting support on a create backup failure -->
     <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Android rezerves kopijas eksportēšanas tīkla kļūda</string>

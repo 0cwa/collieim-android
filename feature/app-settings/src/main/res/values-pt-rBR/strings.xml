@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Habilitar bloqueio de registro?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Desabilitar bloqueio de registro?</string>
@@ -509,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Usar bloqueio de tela</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">As configurações de bloqueio do seu dispositivo Android serão necessárias para desbloquear o Signal quando você sair ou alternar entre aplicativos. Quando bloqueado, as prévias de notificações não mostrarão o conteúdo das mensagens.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">As configurações de bloqueio do seu dispositivo Android serão necessárias para desbloquear o Molly quando você sair ou alternar entre aplicativos. Quando bloqueado, as prévias de notificações não mostrarão o conteúdo das mensagens.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Ativar bloqueio de tela</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -521,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Tempo personalizado</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Usar bloqueio de tela do Signal</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Usar bloqueio de tela do Molly</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Desativar o bloqueio de tela do Signal</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Desativar o bloqueio de tela do Molly</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Ajuda</string>
@@ -536,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Licenças</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Termos e Política de Privacidade</string>
-    <string name="HelpFragment__copyright_signal_messenger">Direitos autorais Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Direitos autorais Molly Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Licenciado nos termos da GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">O Signal é uma organização sem fins lucrativos</string>
@@ -545,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Os ícones e nomes de apps ficam visíveis na tela inicial e na gaveta de apps.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">As notificações sempre exibirão o ícone e o nome padrão do Signal.</string>
+    <string name="preferences__app_icon_notification_warning">As notificações sempre exibirão o ícone e o nome padrão do Molly.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Gráfico ilustrando onde o ícone de substituição do app ficará visível.</string>
 
@@ -565,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Mudar ícone e nome do app para \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Para mudar o ícone e nome do app, você precisará fechar o Signal. As notificações sempre exibirão o ícone e o nome padrão do Signal.</string>
+    <string name="preferences__app_icon_dialog_description">Para mudar o ícone e nome do app, você precisará fechar o Molly. As notificações sempre exibirão o ícone e o nome padrão do Molly.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Selecione um ícone e nome para o app, que ficarão visíveis na tela inicial do seu telefone e na gaveta de apps. As notificações sempre exibirão o ícone e o nome padrão do Signal. Saiba mais</string>
+    <string name="preferences__app_icon_warning_learn_more">Selecione um ícone e nome para o app, que ficarão visíveis na tela inicial do seu telefone e na gaveta de apps. As notificações sempre exibirão o ícone e o nome padrão do Molly. Saiba mais</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Saiba mais</string>
 

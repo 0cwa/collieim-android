@@ -19,4 +19,7 @@
     <string name="preferences__passphrase_lock">Криптиране на база данни</string>
     <string name="BlockUnblockDialog_block_and_delete">Блокиране и изтриване</string>
     <string name="prompt_passphrase_activity__molly_is_locked">Molly е заключен</string>
+    <string name="NotificationsSettingsFragment__notify_when">Известявай когато…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services се обновяват или временно не са достъпни. Моля, опитайте отново.</string>
+    <string name="please_wait">Моля, изчакайте…</string>
 </resources>

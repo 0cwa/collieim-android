@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-<<<<<<< MOLLY
-  --><!-- smartling.instruction_comments_enabled = on --><resources>
-=======
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
->>>>>>> SIGNAL
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -40,13 +34,10 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">Molly opdaterer …</string>
 
     <!-- ApplicationPreferencesActivity -->
-<<<<<<< MOLLY
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Du har endnu ikke indtastet en adgangssætning!</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">Deaktiver adgangssætning?</string>
     <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Dette låser permanent op for Molly og besked-notifikationer.</string>
     <string name="ApplicationPreferencesActivity_disable">Deaktiver</string>
-=======
->>>>>>> SIGNAL
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Fejl ved oprettelse af forbindelse til serveren!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">Pinkoder er påkrævet for registreringslås. For at deaktivere pinkoder skal registreringslås først deaktiveres.</string>
     <string name="ApplicationPreferencesActivity_pin_created">Pinkode oprettet.</string>
@@ -435,10 +426,6 @@
     <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">Enheden understøtter ikke initieret opkald</string>
     <!-- The content description for button to send a message in a conversation -->
     <string name="ConversationActivity_send_message_content_description">Send besked</string>
-<<<<<<< MOLLY
-    <string name="ConversationActivity_lets_switch_to_signal">Lad os bruge Molly %1$s?</string>
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_specify_recipient">Vælg venligst en kontakt</string>
     <string name="ConversationActivity_unable_to_record_audio">Fejl ved lydoptagelse!</string>
     <string name="ConversationActivity_you_cant_send_messages_to_this_group">Du kan ikke sende beskeder til gruppen, fordi du ikke længere er medlem.</string>
@@ -463,16 +450,6 @@
     <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Molly skal bruge adgang til din mikrofon for at optage en talebesked.</string>
     <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Molly beder om tilladelse til at tilgå mikrofonen for at kunne sende lydfiler, hvilket er blevet nægtet. Gå venligst til appindstillinger, vælg \"Tilladelser\" og tilvælg \"Mikrofon\".</string>
 
-<<<<<<< MOLLY
-    <string name="ConversationActivity_signal_needs_the_microphone_and_camera_permissions_in_order_to_call_s">Molly beder om tilladelse til at tilgå mikrofon og kamera, for at kunne ringe til %1$s, men er permanent blevet afvist. Gå venligst til appindstillinger, vælg \"Tilladelser\" og tilvælg \"Mikrofon\" og \"Kamera\".</string>
-    <string name="ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera">Giv Molly tilladelse til at tilgå dit kamera for at tage billeder og optage video.</string>
-    <string name="ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video">Molly beder om tilladelse til at tilgå dit kamera, for at kunne tage billeder eller optage video, hvilket er blevet nægtet. Gå venligst til appindstillinger, vælg \"Tilladelser\" og tilvælg \"Kamera\".</string>
-    <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">Molly behøver tilladelse til at tilgå kameraet, for at tage billeder og video</string>
-    <string name="ConversationActivity_enable_the_microphone_permission_to_capture_videos_with_sound">Tildel adgang til mikrofonen for at kunne optage video med lyd.</string>
-    <string name="ConversationActivity_signal_needs_recording_permissions_to_capture_video">Molly skal have adgang til mikrofonen for at kunne optage video.</string>
-
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_quoted_contact_message">%1$s%2$s</string>
     <string name="ConversationActivity_search_position">%1$d af %2$d</string>
     <string name="ConversationActivity_no_results">Ingen resultater</string>
@@ -507,19 +484,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Sms-beskeder understøttes ikke længere i Signal. Invitér %1$s til Signal for at holde samtalen her.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-<<<<<<< MOLLY
     <string name="ConversationActivity__this_person_is_no_longer_using_signal">Denne person bruger ikke længere Molly. Invitér dem til Molly for at fortsætte samtalen her.</string>
-    <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Inviter til Molly</string>
-    <!-- Snackbar message shown after dismissing the full screen sms export megaphone indicating we\'ll do it again soon -->
-    <string name="ConversationActivity__you_will_be_reminded_again_soon">Du vil snart blive påmindet igen.</string>
-=======
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Denne person bruger ikke længere Signal. Invitér dem til Signal for at fortsætte samtalen her.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Denne person bruger ikke Signal. Invitér dem for at holde samtalen her.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Inviter til Signal</string>
->>>>>>> SIGNAL
+    <string name="ConversationActivity__invite_to_signal">Inviter til Molly</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Det er ikke muligt at optage en talebesked under opkald.</string>
 
@@ -1416,69 +1385,6 @@
     <string name="ManageGroupActivity_add_group_description">Tilføj gruppebeskrivelse …</string>
 
     <!-- RemoteRestoreActivity -->
-<<<<<<< MOLLY
-    <!-- Progress dialog label when downloading a backup -->
-    <string name="RemoteRestoreActivity__downloading_backup">Downloader sikkerhedskopi…</string>
-    <!-- Progress dialog label when restoring a backup -->
-    <string name="RemoteRestoreActivity__restoring_messages">Gendanner beskeder…</string>
-    <!-- Progress dialog label when finishing a backup restore -->
-    <string name="RemoteRestoreActivity__finishing_restore">Afslutter…</string>
-    <!-- Progress dialog label while awaiting updates -->
-    <string name="RemoteRestoreActivity__restoring">Gendanner…</string>
-    <!-- Progress readout for dialog while downloading or restoring a backup. First placeholder is the formatted size of the backup downloaded, the second is formatted total amount to go, and the last is a percentage. -->
-    <string name="RemoteRestoreActivity__s_of_s_s">%1$s af %2$s (%3$s)</string>
-    <!-- Feature list media label for paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_media">Alle dine mediefiler</string>
-    <!-- Feature list media label for free tier. Placeholder is days, and is currently fixed at 30. -->
-    <string name="RemoteRestoreActivity__your_last_d_days_of_media">De seneste %1$d dages medier</string>
-    <!-- Feature list message label for free and paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_messages">Alle dine beskeder</string>
-    <!-- Screen title for restoring from backup -->
-    <string name="RemoteRestoreActivity__restore_from_backup">Gendan fra sikkerhedskopi</string>
-    <!-- Section title for explaining what your backup includes -->
-    <string name="RemoteRestoreActivity__your_backup_includes">Din sikkerhedskopi omfatter:</string>
-    <!-- Primary action button copy for starting restoration -->
-    <string name="RemoteRestoreActivity__restore_backup">Gendan sikkerhedskopi</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made. %1$s is replaced with the date (e.g. March 5, 2024) and %2$s is replaced with the time (e.g. 9:00am) -->
-    <string name="RemoteRestoreActivity__backup_created_at">Din sidste sikkerhedskopi blev lavet %1$s kl. %2$s.</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made and size. %1$s is replaced with the date (e.g. March 5, 2024), %2$s is replaced with the time (e.g. 9:00am), %3$1 is replaced with size (e.g., 1.2GB) -->
-    <string name="RemoteRestoreActivity__backup_created_at_with_size">Din sidste sikkerhedskopi blev oprettet %1$s kl. %2$s. Sikkerhedskopiens størrelse er %3$s.</string>
-    <!-- Progress dialog label while fetching backup info if we don\'t already have it -->
-    <string name="RemoteRestoreActivity__fetching_backup_details">Henter sikkerhedskopieringsoplysninger…</string>
-    <!-- Text label button to skip restore from remote -->
-    <string name="RemoteRestoreActivity__skip_restore">Spring gendannelse over</string>
-    <!-- Dialog title displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__couldnt_transfer">Overførslen kunne ikke afsluttes</string>
-    <!-- Dialog title displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_title">Kan ikke gendanne sikkerhedskopien</string>
-    <!-- Dialog body displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_body">Der opstod en fejl under gendannelsen af din sikkerhedskopi. Din sikkerhedskopi kan ikke gendannes. Kontakt support for hjælp.</string>
-    <!-- Dialog action button that will link users to a flow to contact support, displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_contact_button">Kontakt support</string>
-    <!-- Dialog message displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__error_occurred">Der opstod en fejl, og din konto kunne ikke overføres. Prøv igen ved at vælge din overførselsmetode.</string>
-    <!-- Dialog title displayed when remote restore failed because of an outdated backup version. -->
-    <string name="RemoteRestoreActivity__couldnt_restore">Kunne ikke gennemføre denne sikkerhedskopiering</string>
-    <!-- Dialog message explaining that an update to Signal is required to restore the backup. -->
-    <string name="RemoteRestoreActivity__update_latest">Denne version af Molly kan ikke gendanne din sikkerhedskopi. Opdatér til den nyeste version, og prøv igen.</string>
-    <!-- Text on button that when pressed will redirect them to update Signal -->
-    <string name="RemoteRestoreActivity__update_signal">Opdater Molly</string>
-    <!-- Text label button to dismiss the dialog -->
-    <string name="RemoteRestoreActivity__not_now">Ikke nu</string>
-    <!-- Text shown on restore screen as information on what will happen if you skip -->
-    <string name="RemoteRestoreActivity__your_media_will_restore_in_the_background">Dine medier vil blive gendannet i baggrunden. Hvis du vælger ikke at gendanne nu, vil du ikke kunne gendanne senere.</string>
-    <!-- Dialog title -->
-    <string name="RestoreActivity__no_longer_registered_title">Denne enhed er ikke længere registreret</string>
-    <!-- Dialog message -->
-    <string name="RestoreActivity__no_longer_registered_message">Det skyldes sandsynligvis, at du har registreret din Signal-konto på en anden enhed.</string>
-
-    <!-- GroupMentionSettingDialog -->
-    <string name="GroupMentionSettingDialog_notify_me_for_mentions">Underret mig ved omtaler</string>
-    <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">Vil du modtage notifikationer, når du bliver tagget i ignorerede chats?</string>
-    <string name="GroupMentionSettingDialog_always_notify_me">Underret mig altid</string>
-    <string name="GroupMentionSettingDialog_dont_notify_me">Underret mig ikke</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ManageProfileFragment -->
     <string name="ManageProfileFragment_badges">Badges</string>
@@ -1608,32 +1514,6 @@
     <!-- Button inside an alert dialog confirming the deletion of their draft -->
     <string name="InputPanel__discard">Kassér</string>
 
-<<<<<<< MOLLY
-    <!-- InviteActivity -->
-    <string name="InviteActivity_share">Del</string>
-    <string name="InviteActivity_share_with_contacts">Del med kontakter</string>
-    <string name="InviteActivity_share_via">Del via …</string>
-
-    <string name="InviteActivity_cancel">Afbryd</string>
-    <string name="InviteActivity_sending">Sender …</string>
-    <string name="InviteActivity_invitations_sent">Invitationer sendt!</string>
-    <string name="InviteActivity_invite_to_signal">Inviter til Molly</string>
-    <string name="InviteActivity_send_sms">Send SMS (%1$d)</string>
-    <plurals name="InviteActivity_send_sms_invites">
-        <item quantity="one">Send %1$d SMS invitationer?</item>
-        <item quantity="other">Send %1$d SMS-invitationer?</item>
-    </plurals>
-    <string name="InviteActivity_lets_switch_to_signal">Lad os skifte til Molly: %1$s</string>
-    <!-- Toast shown when Signal is unable to find an external app to share the Invite text string to -->
-    <string name="InviteActivity_no_app_to_share_to">Det ser ud til, at du ikke har nogen apps at dele til.</string>
-
-    <!-- LearnMoreTextView -->
-    <string name="LearnMoreTextView_learn_more">Læs mere</string>
-
-    <string name="SpanUtil__read_more">Læs mere</string>
-
-=======
->>>>>>> SIGNAL
     <!-- LongMessageActivity -->
     <string name="LongMessageActivity_unable_to_find_message">Kunne ikke finde beskeden</string>
     <string name="LongMessageActivity_message_from_s">Besked fra %1$s</string>
@@ -2066,13 +1946,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-<<<<<<< MOLLY
-    <string name="MessageRecord__you_will_no_longer_be_able_to_send_sms_messages_from_signal_soon">Snart vil du ikke længere kunne sende sms\'er fra Signal. Invitér %1$s til Signal for at fortsætte samtalen her.</string>
-    <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
     <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Du kan ikke længere sende sms-beskeder i Molly. Invitér %1$s til Molly for at holde samtalen her.</string>
-=======
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Du kan ikke længere sende sms-beskeder i Signal. Invitér %1$s til Signal for at holde samtalen her.</string>
->>>>>>> SIGNAL
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Betaling: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2187,16 +2061,7 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Tilknyt en Signal-enhed?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">For at tilknytte en computer eller iPad til denne Signal-konto skal du gå til Forbundne enheder, trykke på \"Tilknyt en ny enhed\", og scanne QR-koden igen. Sørg for kun at scanne QR-koder, der kommer direkte fra Signal.</string>
 
-<<<<<<< MOLLY
-    <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">Molly beder om tilladelse til at tilgå dit kamera, for at kunne scanne en QR-kode, hvilket er blevet nægtet. Gå venligst til appindstillinger, vælg \"Tilladelser\" og tilvælg \"Kamera\".</string>
-    <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">Kan ikke scanne en QR-kode uden tilladelse til at tilgå kameraet</string>
-
-    <!-- OutdatedBuildReminder -->
-    <string name="OutdatedBuildReminder_update_now">Opdatér nu</string>
     <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Denne version af Molly udløber i dag. Opdatér til den nyeste version.</string>
-=======
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Denne version af Signal udløber i dag. Opdatér til den nyeste version.</string>
->>>>>>> SIGNAL
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
         <item quantity="one">Denne version af Molly udløber i morgen. Opdatér til den nyeste version</item>
         <item quantity="other">Denne version af Molly udløber om %1$d dage. Opdatér til den nyeste version</item>
@@ -2311,10 +2176,6 @@
 
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Tryk her for at starte video</string>
-<<<<<<< MOLLY
-    <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">For at ringe til %1$s har Molly brug for tilladelse til at tilgå dit kamera</string>
-=======
->>>>>>> SIGNAL
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
     <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
     <string name="WebRtcCallActivity__calling">Ringer op …</string>
@@ -2649,45 +2510,12 @@
 
     <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
     <string name="RegistrationActivity_additional_verification_required">Yderligere verificering er påkrævet</string>
-<<<<<<< MOLLY
-    <!-- Dialog message shown when we need to verify sms and carrier rates may apply. -->
-    <string name="RegistrationActivity_a_verification_code_will_be_sent_to_this_number">Der sendes en bekræftelseskode til dette nummer. Almindelig sms-takst kan gælde.</string>
-    <!-- Text explaining to users that they will be receiving a verification for their phone number and that carrier rates could apply -->
-    <string name="RegistrationActivity_you_will_receive_a_verification_code">Du modtager en verifikationskode. Takster fra dit teleselskab kan blive pålagt.</string>
-    <!-- Hint text to select a country -->
-    <string name="RegistrationActivity_select_a_country">Vælg et land</string>
-    <!-- Hint text explaining that this is where the country code should go -->
-    <string name="RegistrationActivity_default_country_code">0</string>
-    <string name="RegistrationActivity_you_will_receive_a_call_to_verify_this_number">Du vil modtage et opkald for at bekræfte dette nummer.</string>
-    <string name="RegistrationActivity_edit_number">Redigér nummer</string>
-    <string name="RegistrationActivity_missing_google_play_services">Mangler Google Play-tjenester</string>
-    <string name="RegistrationActivity_this_device_is_missing_google_play_services">Enheden mangler Google Play-tjenester. Du kan stadig bruge Molly, men denne konfiguration kan resultere i begrænset stabilitet og ydeevne.\n\nHvis du ikke er en superbruger, ikke kører en alternativ Android ROM eller mener, at du ser denne besked ved en fejl, bedes du kontakte support@molly.im på engelsk for hjælp.</string>
-    <string name="RegistrationActivity_i_understand">Forstået</string>
-    <string name="RegistrationActivity_play_services_error">Play Services fejl</string>
-    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play-tjenester opdateres eller er midlertidigt utilgængelig. Prøv venligst igen.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">Signal har brug for tilladelse til at tilgå kontakter og lagerplads for at du kan oprette forbindelse til venner og sende beskeder. Dine kontakter uploades ved hjælp af Signals private kontaktopdagelse, hvilket betyder, at de er end-to-end-krypteret og aldrig synlige for Signal-tjenesten.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">Signal har brug for tilladelse til at tilgå kontakter for at du kan oprette forbindelse til venner. Dine kontakter uploades ved hjælp af Signals private kontaktopdagelse, hvilket betyder, at de er end-to-end-krypteret og aldrig synlige for Signal-tjenesten.</string>
-=======
->>>>>>> SIGNAL
     <string name="RegistrationActivity_rate_limited_to_service">Du har foretaget for mange forsøg på at registrere dette nummer. Prøv igen senere.</string>
     <string name="RegistrationActivity_unable_to_connect_to_service">Ikke muligt at få forbindelse til service. Tjek venligst din netværksforbindelse og prøv igen.</string>
     <!-- Dialog error message shown when we are unable to send an SMS to the user\'s number -->
     <string name="RegistrationActivity_sms_provider_error">Vi kan ikke sende en sms til dit nummer. Prøv igen om flere timer.</string>
     <!-- Generic error when the app is unable to request an SMS code for an unknown reason. -->
     <string name="RegistrationActivity_unable_to_request_verification_code">Kunne ikke anmode om verificeringskoden. Tjek din netværksforbindelse, og prøv igen.</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_non_standard_number_format">Ikke-standardiseret nummerformat</string>
-    <!-- Dialog message shown to confirm when entering phone number (first placeholder) is normalized and formatted differently by the app (second placeholder). -->
-    <string name="RegistrationActivity_the_number_you_entered_appears_to_be_a_non_standard">Det nummer du har indtastet (%1$s) ser ud til at være et ikke-standardiseret format.\n\nMente du %2$s?</string>
-    <string name="RegistrationActivity_signal_android_phone_number_format">Molly Android - Telefonnummerformat</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via voice call.-->
-    <string name="RegistrationActivity_call_requested">Anmodet om opkald</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via SMS.-->
-    <string name="RegistrationActivity_sms_requested">Sms anmodet</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code (through an unspecified channel).-->
-    <string name="RegistrationActivity_code_requested">Verifikationskode anmodet</string>
-=======
->>>>>>> SIGNAL
     <plurals name="RegistrationActivity_debug_log_hint">
         <item quantity="one">Du er nu kun %1$d trin fra at indsende en fejllog</item>
         <item quantity="other">Du er nu kun %1$d trin fra at indsende en fejlsøgningslog.</item>
@@ -2736,19 +2564,6 @@
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
-<<<<<<< MOLLY
-
-    <!-- SharedContactDetailsActivity -->
-    <string name="SharedContactDetailsActivity_add_to_contacts">Føj til kontakter</string>
-    <string name="SharedContactDetailsActivity_invite_to_signal">Inviter til Molly</string>
-    <string name="SharedContactDetailsActivity_signal_message">Signal-besked</string>
-    <string name="SharedContactDetailsActivity_signal_call">Signal-opkald</string>
-
-    <!-- SharedContactView -->
-    <string name="SharedContactView_add_to_contacts">Føj til kontakter</string>
-    <string name="SharedContactView_invite_to_signal">Inviter til Molly</string>
-    <string name="SharedContactView_message">Signal-besked</string>
-=======
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
@@ -2758,14 +2573,13 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Føj til kontakter</string>
-    <string name="SharedContactView_invite_to_signal">Inviter til Signal</string>
+    <string name="SharedContactView_invite_to_signal">Inviter til Molly</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Besked</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
     <string name="SharedContactView_add_to_group">Tilføj til gruppe</string>
     <!-- Confirmation dialog body when adding the person on a shared contact card to the current group. %1$s is the person\'s name, %2$s is the group name -->
     <string name="SharedContactView_add_s_to_s">Vil du tilføje %1$s til \"%2$s\"?</string>
->>>>>>> SIGNAL
 
     <!-- SignalBottomActionBar -->
     <!-- Text to describe a button that will show more options -->
@@ -3083,12 +2897,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">Vores Signal-sikkerhedsnummer:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">Det lader til at du ikke har nogen apps at dele til.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">Sikkerhedsnummer til sammenligning kunne ikke findes i udklipsholderen</string>
-<<<<<<< MOLLY
     <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Molly beder om tilladelse til at tilgå dit kamera, for at kunne scanne en QR-kode, hvilket er blevet nægtet. Gå venligst til appindstillinger, vælg \"Tilladelser\" og tilvælg \"Kamera\".</string>
-    <string name="VerifyIdentityActivity_unable_to_scan_qr_code_without_camera_permission">Ikke muligt at scanne QR-koden uden tilladelse til at tilgå kameraet</string>
-=======
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Signal beder om tilladelse til at tilgå dit kamera, for at kunne scanne en QR-kode, hvilket er blevet nægtet. Gå venligst til appindstillinger, vælg \"Tilladelser\" og tilvælg \"Kamera\".</string>
->>>>>>> SIGNAL
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">Du skal først udveksle beskeder, før du kan se %1$s\'s sikkerhedsnummer.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">Der oprettes et sikkerhedsnummer med denne person, når vedkommende har udvekslet beskeder med dig.</string>
@@ -3244,15 +3053,8 @@
     <string name="NotificationChannel_additional_message_notifications">Yderligere beskednotifikationer</string>
     <!-- Notification channel name for notifications sent when a device has been linked -->
     <string name="NotificationChannel_new_linked_device">Ny forbundet enhed</string>
-<<<<<<< MOLLY
-
-    <!-- QuickResponseService -->
-    <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">Hurtig svar utilgængelig når Molly er låst!</string>
-    <string name="QuickResponseService_problem_sending_message">Problem med at sende besked!</string>
-=======
     <!-- Notification channel name for unread reminder notifications -->
     <string name="NotificationChannel_unread_reminders">Notifikationer om ulæste beskeder</string>
->>>>>>> SIGNAL
 
     <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
     <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">Kunne ikke gemme i lagerplads!</string>
@@ -3405,14 +3207,6 @@
     <string name="EnclaveFailureReminder_update_signal">Opdatér Signal for at fortsætte med at bruge betalinger. Din saldo er muligvis ikke opdateret.</string>
     <!-- Banner button to update now -->
 
-<<<<<<< MOLLY
-    <!-- WebRtcCallActivity -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone">Hvis du vil besvare opkaldet, skal du give Molly adgang til din mikrofon.</string>
-    <!-- Message shown in permission dialog when attempting to answer a video call without camera or microphone permissions already granted. -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone_and_camera">For at besvare videoopkaldet skal du give Molly adgang til din mikrofon og dit kamera.</string>
-    <string name="WebRtcCallActivity_signal_requires_microphone_and_camera_permissions_in_order_to_make_or_receive_calls">Molly beder om tilladelse til at tilgå mikrofon og kamera, for at kunne modtage og foretage opkald, hvilket er blevet nægtet. Gå venligst til appindstillinger, vælg \"Tilladelser\" og tilvælg \"Mikrofon\" og \"Kamera\".</string>
-=======
->>>>>>> SIGNAL
     <string name="WebRtcCallActivity__answered_on_a_linked_device">Besvaret på en forbundet enhed.</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">Afvist på en forbundet enhed.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">Optaget på en forbundet enhed</string>
@@ -3506,24 +3300,6 @@
     <!-- Text asking for user\'s contact permission -->
     <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">Giv adgang til dine kontakter. Dine kontakter er krypterede og er ikke synlige for Signal-tjenesten.</string>
 
-<<<<<<< MOLLY
-    <!-- contact_selection_list_fragment -->
-    <string name="contact_selection_list_fragment__signal_needs_access_to_your_contacts_in_order_to_display_them">Molly kræver tilladelse til at tilgå dine kontakter for at kunne vise dem.</string>
-    <string name="contact_selection_list_fragment__show_contacts">Vis kontakter</string>
-
-    <!-- contact_selection_list_item -->
-    <plurals name="contact_selection_list_item__number_of_members">
-        <item quantity="one">%1$d medlem</item>
-        <item quantity="other">%1$d medlemmer</item>
-    </plurals>
-    <!-- Displays number of viewers for a story -->
-    <plurals name="contact_selection_list_item__number_of_viewers">
-        <item quantity="one">%1$d seer</item>
-        <item quantity="other">%1$d seere</item>
-    </plurals>
-
-=======
->>>>>>> SIGNAL
     <!-- conversation_activity -->
     <string name="conversation_activity__type_message_push">Signal-besked</string>
     <!-- Option in send button context menu to schedule the message instead of sending it directly -->
@@ -3752,7 +3528,6 @@
     <string name="EditProfileFragment__group_name">Gruppenavn</string>
     <string name="EditProfileFragment__group_description">Gruppebeskrivelse</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-<<<<<<< MOLLY
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
     <string name="EditProfileFragment_deprecated_dialog_title">Opdater Molly</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
@@ -3765,8 +3540,6 @@
     <string name="EditProfileFragment_unregistered_dialog_body">Denne enhed er ikke længere registreret. Registrer den igen for at foretage ændringer på din konto.</string>
     <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
     <string name="EditProfileFragment_unregistered_dialog_reregister_button">Genregistrering</string>
-=======
->>>>>>> SIGNAL
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Gem</string>
@@ -3962,45 +3735,13 @@
     <string name="preferences__led_color_unknown">Ukendt</string>
     <string name="preferences__silent">Lydløs</string>
     <string name="preferences__advanced">Avanceret</string>
-<<<<<<< MOLLY
     <string name="preferences__donate_to_signal">Donér til Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Privatliv</string>
-=======
-    <string name="preferences__donate_to_signal">Donér til Signal</string>
->>>>>>> SIGNAL
     <!-- Preference label for stories -->
     <string name="preferences__stories">Historier</string>
     <string name="preferences__payments">Betalinger</string>
     <string name="preferences__linked_devices">Forbundne enheder</string>
-<<<<<<< MOLLY
-    <string name="preferences__light_theme">Lyst</string>
-    <string name="preferences__dark_theme">Mørkt</string>
-    <string name="preferences__appearance">Udseende</string>
-    <string name="preferences__theme">Tema</string>
-    <string name="preferences__chat_color_and_wallpaper">Chatfarve og baggrund</string>
-    <!-- Clickable settings text allowing the user to change the icon visible on their phone\'s home screen. -->
-    <string name="preferences__app_icon">Appikon</string>
-    <!-- Approval for changing the app icon. -->
-    <string name="preferences__app_icon_dialog_ok">OK</string>
-    <!-- Cancelling the operation of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_cancel">Annuller</string>
-    <!-- Title for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_title">Skift appikon og -navn til \"%1$s\"</string>
-    <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly skal lukkes for at ændre appens ikon og navn. Notifikationer viser altid Mollys standardikon og -navn.</string>
-    <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Vælg et appikon og -navn, som vil være synligt på telefonens startskærm og i appskuffen. Notifikationer viser altid Mollys standardikon og -navn. Få mere at vide</string>
-    <!-- Visible warning label for the limitations of changing the app icon. -->
-    <string name="preferences__app_icon_warning">Appikoner og -navne er synlige på startskærmen og i appskuffen.</string>
-    <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Notifikationer viser altid Mollys standardikon og -navn.</string>
-    <!--Call to action to get more information about the limitations of the change app icon functionality. -->
-    <string name="preferences__app_icon_learn_more">Få mere at vide</string>
-    <!--Text description of a graphic illustrating the limitations of the app icon change. -->
-    <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafik, der viser, hvor ikonet for den nye app vil være synligt.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences__disable_pin">Deaktiver pinkode</string>
     <string name="preferences__enable_pin">Aktiver pinkode</string>
     <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">Hvis du deaktiverer pinkoden mister du alle data, når du omregistrerer Signal. Medmindre du sikkerhedskopierer og gendanner manuelt. Du kan ikke aktivere registreringslås, mens pinkoden er deaktiveret.</string>
@@ -4183,17 +3924,9 @@
     <string name="PaymentsTransferFragment__next">Næste</string>
     <string name="PaymentsTransferFragment__invalid_address">Ugyldig adresse</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">Tjek wallet-adressen du forsøger at overføre til, og prøv igen.</string>
-<<<<<<< MOLLY
     <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Du kan ikke overføre til din egen wallet-adresse i Molly. Indtast wallet-adressen fra din konto på en understøttet børs.</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">For at scanne en QR-kode skal Molly have adgang til kameraet.</string>
-    <string name="PaymentsTransferFragment__signal_needs_the_camera_permission_to_capture_qr_code_go_to_settings">Molly skal have kameratilladelsen for at fange en QR-kode. Gå til indstillinger, vælg \"Tilladelser\", og aktiver \"Kamera\".</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">For at scanne en QR-kode skal Molly have adgang til kameraet.</string>
-    <string name="PaymentsTransferFragment__settings">Indstillinger</string>
-=======
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Du kan ikke overføre til din egen wallet-adresse i Signal. Indtast wallet-adressen fra din konto på en understøttet børs.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">For at scanne en QR-kode skal Signal have adgang til kameraet.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">For at scanne en QR-kode skal Signal have adgang til kameraet.</string>
->>>>>>> SIGNAL
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Scan QR-kode for adresse</string>
@@ -4607,61 +4340,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Ring til mig (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Send kode igen (%1$02d:%2$02d)</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_contact_signal_support">Kontakt Molly Support</string>
     <string name="RegistrationActivity_code_support_subject">Molly-registrering - Verifikationskode for Android</string>
-=======
-    <string name="RegistrationActivity_code_support_subject">Signal-registrering - Verifikationskode for Android</string>
->>>>>>> SIGNAL
     <string name="RegistrationActivity_incorrect_code">Forkert kode</string>
     <string name="BackupUtil_never">Aldrig</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Ukendt</string>
-<<<<<<< MOLLY
-    <!-- Phone number heading displayed as a screen title -->
-    <string name="preferences_app_protection__phone_number">Telefonnummer</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
     <string name="preferences_app_protection__choose_who_can_see">Vælg, hvem der kan se dit telefonnummer, og hvem der kan kontakte dig på Molly med det.</string>
-    <!-- Section title above two radio buttons for enabling and disabling phone number display -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_see_my_number_heading">Personer, der kan se mit nummer</string>
-    <!-- Subtext below radio buttons when who can see my number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_on_description">Dit telefonnummer vil være synligt for folk og grupper, du sender beskeder til.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_on_description">Dit telefonnummer vil ikke være synligt for nogen, medmindre de har gemt det i telefonens kontakter.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_off_description">Dit telefonnummer er ikke synligt for nogen.</string>
-    <!-- Section title above two radio buttons for enabling and disabling whether users can find me by my phone number  -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_find_me_by_number_heading">Personer, der kan finde mig med mit nummer</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to everyone -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_on_description">Alle, der har dit telefonnummer, kan se, at du er på Signal, og de kan starte en chat med dig.</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_off_description">Ingen vil kunne se, at du er på Signal, medmindre du sender dem en besked eller har en eksisterende chat med dem.</string>
-    <!-- Snackbar text when pressing invalid radio item -->
-    <string name="PhoneNumberPrivacySettingsFragment__to_change_this_setting">"For at ændre denne indstilling skal du indstille \"Personer, der kan se mit nummer\" til \"Ingen\"."</string>
-    <!-- Dialog title shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_title">Er du sikker?</string>
-    <!-- Dialog warning message shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_message">Ved at indstille \"Hvem kan finde mig med mit nummer\" til \"Ingen\" bliver det sværere for folk at finde dig på Signal.</string>
-    <!-- Dialog button text for canceling change action -->
-    <string name="PhoneNumberPrivacySettingsFragment__cancel">Annuller</string>
-    <string name="PhoneNumberPrivacy_everyone">Alle</string>
-    <string name="PhoneNumberPrivacy_nobody">Ingen</string>
-    <string name="preferences_app_protection__screen_lock">Skærmlås</string>
-    <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">Lås adgang til Signal med Android-skærmlås eller fingeraftryk</string>
-    <string name="preferences_app_protection__screen_lock_inactivity_timeout">Timeout for inaktiv skærmlås</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
     <string name="preferences_app_protection__to_use_screen_lock">Hvis du vil bruge skærmlås, skal du angive en pinkode, et mønster eller en adgangskode på denne enhed.</string>
-    <string name="preferences_app_protection__signal_pin">Signal-pinkode</string>
-    <string name="preferences_app_protection__create_a_pin">Opret en pinkode</string>
-    <string name="preferences_app_protection__change_your_pin">Skift din pinkode</string>
-    <string name="preferences_app_protection__pin_reminders">Pinkode-påmindelser</string>
-    <string name="preferences_app_protection__turn_off">Deaktiver</string>
-    <string name="preferences_app_protection__confirm_pin">Bekræft pinkode</string>
-    <string name="preferences_app_protection__confirm_your_signal_pin">Bekræft din Signal-pinkode</string>
-    <string name="preferences_app_protection__make_sure_you_memorize_or_securely_store_your_pin">Vær sikker på at du husker eller opbevarer din pinkode sikkert, da den ikke kan gendannes. Hvis du glemmer din pinkode, kan du miste data når du genregistrerer din Signal-konto.</string>
-    <string name="preferences_app_protection__incorrect_pin_try_again">Forkert pinkode. Prøv igen.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Aktivering af registreringslås mislykkedes</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Deaktivering af registreringslås mislykkedes</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Du skal indtaste din registreringslås-pinkode</string>
@@ -4684,31 +4371,6 @@
     <string name="prompt_passphrase_activity__try_again">Prøv igen</string>
 
     <!-- ScreenLockSettingsFragment -->
-<<<<<<< MOLLY
-    <!-- Text shown when screen lock is not enabled -->
-    <string name="ScreenLockSettingsFragment__off">Deaktiveret</string>
-    <!-- Text shown with toggle that when switched on will enable screen lock -->
-    <string name="ScreenLockSettingsFragment__use_screen_lock">Brug skærmlås</string>
-    <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Dine Android-enheds låseindstillinger kræves for at låse Molly op, når du forlader eller skifter apps. Når enheden er låst, viser notifikationer ikke beskedernes indhold.</string>
-    <!-- Title text explaining when users should start the screen lock -->
-    <string name="ScreenLockSettingsFragment__start_screen_lock">Start skærmlås</string>
-    <!-- Option text explaining that screen lock should start immediately -->
-    <string name="ScreenLockSettingsFragment__immediately">Med det samme</string>
-    <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_1_min">Efter 1 minut</string>
-    <!-- Option text explaining that screen lock should start after 5 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_5_min">Efter 5 minutter</string>
-    <!-- Option text explaining that screen lock should start after 30 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_30_min">Efter 30 minutter</string>
-    <!-- Option text explaining that screen lock should start at a custom time set by the user -->
-    <string name="ScreenLockSettingsFragment__custom_time">Tilpasset tid</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Brug Molly-skærmlås</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Deaktiver Molly-skærmlås</string>
-=======
->>>>>>> SIGNAL
 
     <string name="Recipient_unknown">Ukendt</string>
     <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
@@ -4754,18 +4416,6 @@
     <!-- NewDeviceTransferInstructionsFragment -->
 
     <!-- NewDeviceTransferSetupFragment -->
-<<<<<<< MOLLY
-    <string name="NewDeviceTransferSetup__preparing_to_connect_to_old_android_device">Forbereder forbindelse til den gamle Android-enhed…</string>
-    <string name="NewDeviceTransferSetup__take_a_moment_should_be_ready_soon">Tager et øjeblik. Vil snart være klar</string>
-    <string name="NewDeviceTransferSetup__waiting_for_old_device_to_connect">Venter på, at den gamle Android-enhed forbinder …</string>
-    <string name="NewDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_old_device">Molly kræver placeringstilladelsen for at opspore og forbinde din gamle Android-enhed.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_old_device">Molly kræver placeringstjenester aktiveret for at opspore og forbinde med din gamle Android-enhed.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_old_device">Molly kræver Wi-Fi til for at opspore og forbinde med din gamle Android-enhed. Wi-Fi skal være tændt, men det behøver ikke at være forbundet til et Wi-Fi-netværk.</string>
-    <string name="NewDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Beklager, denne enhed understøtter ikke Wi-Fi Direct. Molly bruger Wi-Fi Direct til at opspore og forbinde med din gamle Android-enhed. Du kan stadig gendanne en sikkerhedskopi for at gendanne din konto fra din gamle Android-enhed.</string>
-    <string name="NewDeviceTransferSetup__restore_a_backup">Gendan en sikkerhedskopi</string>
-    <string name="NewDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Der opstod en uventet fejl under forbindelsesforsøg til din gamle Android-enhed.</string>
-=======
->>>>>>> SIGNAL
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">Søger efter ny Android-enhed …</string>
@@ -5418,44 +5068,6 @@
     <string name="ExpireTimerSettingsFragment__custom_time">Tilpasset tid</string>
     <string name="ExpireTimerSettingsFragment__save">Gem</string>
 
-<<<<<<< MOLLY
-    <string name="CustomExpireTimerSelectorView__seconds">sekunder</string>
-    <string name="CustomExpireTimerSelectorView__minutes">minutter</string>
-    <string name="CustomExpireTimerSelectorView__hours">timer</string>
-    <string name="CustomExpireTimerSelectorView__days">dage</string>
-    <string name="CustomExpireTimerSelectorView__weeks">uger</string>
-
-    <!-- HelpSettingsFragment -->
-    <string name="HelpSettingsFragment__support_center">Hjælpecenter</string>
-    <string name="HelpSettingsFragment__contact_us">Kontakt os</string>
-    <string name="HelpSettingsFragment__version">Version</string>
-    <!-- Displayed when copying help screen text to the clipboard -->
-    <string name="HelpSettingsFragment__copied_to_clipboard">Kopieret til udklipsholder</string>
-    <string name="HelpSettingsFragment__debug_log">Fejlsøgningslog</string>
-    <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
-    <string name="HelpSettingsFragment__licenses">Licenser</string>
-    <string name="HelpSettingsFragment__terms_amp_privacy_policy">Vilkår &amp; privatlivspolitik</string>
-    <string name="HelpFragment__copyright_signal_messenger">Ophavsret Molly Messenger</string>
-    <string name="HelpFragment__licenced_under_the_agplv3">Licenseret under GNU AGPLv3</string>
-    <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="HelpSettingsFragment__signal_is_a_501c3">Signal er en nonprofitorganisation</string>
-
-    <!-- DataAndStorageSettingsFragment -->
-    <string name="DataAndStorageSettingsFragment__media_quality">Mediekvalitet</string>
-    <!-- Category title for the quality of the media to be sent -->
-    <string name="DataAndStorageSettingsFragment__sent_media_quality">Kvalitet af sendte mediefiler</string>
-    <string name="DataAndStorageSettingsFragment__sending_high_quality_media_will_use_more_data">Afsendelse af mediefiler i høj kvalitet bruger mere data.</string>
-    <!-- Disclaimer shown under the media auto-download settings. Placeholder is a formatted size like "100 KB". -->
-    <string name="DataAndStorageSettingsFragment__voice_messages_and_stickers_under_size_are_always_auto_downloaded">Stemmebeskeder og klistermærker (under %1$s) downloades altid automatisk.</string>
-    <string name="DataAndStorageSettingsFragment__calls">Opkald</string>
-    <!-- Title of a toggle that keeps Signal connected in the background via a persistent foreground service instead of using FCM push messages -->
-    <string name="DataAndStorageSettingsFragment__stay_connected_in_background">Forbliv tilsluttet i baggrunden</string>
-    <!-- Body of a confirmation dialog shown when a user tries to enable the "Stay connected in background" setting -->
-    <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">Hvis du forbliver forbundet i baggrunden, vil det sandsynligvis øge batteriforbruget. For de fleste enheder er dette ikke nødvendigt. Aktivér kun dette, hvis du har oplevet problemer med notifikationer.</string>
-    <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
-    <string name="DataAndStorageSettingsFragment__enable">Aktivér</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
@@ -6133,15 +5745,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Aktiveret indtil %1$s</string>
 
-<<<<<<< MOLLY
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">Kunne ikke åbne vælgeren.</string>
     <!-- Banner title when notification permission is disabled -->
     <string name="NotificationSettingsFragment__to_enable_notifications">For at aktivere notifikationer, skal Molly have tilladelse til at vise dem.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">Aktiver</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Dette er den officielle og eneste Signal-chat</string>
@@ -7769,7 +7378,6 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Du kan ikke abonnere på Sikre sikkerhedskopier, fordi din telefon ikke understøtter Google Play-tjenester. Kontakt telefonproducenten for hjælp.</string>
 
-<<<<<<< MOLLY
     <!-- ManageStorageSettingsFragment -->
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
     <string name="ManageStorageSettingsFragment_chat_limit">Chatgrænser</string>
@@ -7792,14 +7400,12 @@
     <!-- Dialog message for paid tier pending dialog -->
     <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Lageroptimering kan kun bruges, hvis du betaler for Sikre Signal-sikkerhedskopier. Dit abonnement på sikkerhedskopiering behandles og er endnu ikke aktivt. Prøv igen senere.</string>
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media will be removed from your on-device backup</string>
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Medier fjernes fra sikkerhedskopien på denne enhed</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Turning on \"Optimize Signal storage\" will offload old media from your device. You can download it again any time. It will also remove old media from your on-device backup.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Når \"Optimer Signals lagerplads\" slås til, fjernes ældre medier fra din enhed for at frigøre plads. Du kan downloade det igen når som helst. Det fjerner også ældre medier fra sikkerhedskopien på denne enhed.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">Aktiver</string>
 
-=======
->>>>>>> SIGNAL
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Opgrader for at aktivere denne funktion</string>
@@ -8232,13 +7838,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Opbevar din nøgle sikkert</string>
     <!-- Bottom sheet subtitle -->
-<<<<<<< MOLLY
     <string name="MessageBackupsKeyRecordScreen__signal_will_not">Molly vil ikke kunne hjælpe dig med at gendanne din sikkerhedskopi, hvis du mister din nøgle. Opbevar den et sikkert sted, og del den ikke med andre.</string>
-    <!-- Checkbox label -->
-    <string name="MessageBackupsKeyRecordScreen__ive_recorded_my_key">Jeg har skrevet min nøgle ned</string>
-=======
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Signal vil ikke kunne hjælpe dig med at gendanne din sikkerhedskopi, hvis du mister din nøgle. Opbevar den et sikkert sted, og del den ikke med andre.</string>
->>>>>>> SIGNAL
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Fortsæt</string>
     <!-- Sheet secondary action button label -->
@@ -8375,244 +7975,6 @@
     <string name="MessageBackupsTypeSelectionScreen__current_plan">Nuværende abonnement</string>
 
     <!-- ConfirmBackupCancellationDialog -->
-<<<<<<< MOLLY
-    <!-- Dialog title -->
-    <string name="ConfirmBackupCancellationDialog__confirm_cancellation">Bekræft annullering</string>
-    <!-- Dialog body -->
-    <string name="ConfirmBackupCancellationDialog__you_wont_be_charged_again">Du bliver ikke opkrævet igen. Sikkerhedskopier slås fra når din faktureringsperiode slutter. Efter denne dato har du 30 dage til at downloade de medier, du i øjeblikket sikkerhedskopierer.</string>
-    <!-- Action button label to cancel subscription and download now -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_now">Bekræft og download nu</string>
-    <!-- Action button label to cancel subscription and download later -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_later">Bekræft og download senere</string>
-    <!-- Action button label to keep current subscription -->
-    <string name="ConfirmBackupCancellationDialog__keep_subscription">Behold abonnementet</string>
-
-    <!-- Accessible content description for the reminder view, describing the icon in the view. -->
-    <string name="ReminderView_icon_content_description">Påmindelsesikon</string>
-
-    <!-- Row title for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_i_have_my_old_phone">Jeg har min gamle telefon</string>
-    <!-- Row subtitle for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_scan_qr">Scan en QR-kode fra din nuværende Signal-konto for at komme hurtigt i gang</string>
-
-    <!-- Row title for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Jeg har ikke min gamle telefon</string>
-    <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">Eller hvis du geninstallerer Molly på samme enhed</string>
-
-    <!-- Screen title for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__restore_or_transfer_account">Gendan eller overfør konto</string>
-    <!-- Screen subtitle for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__get_your_signal_account">Få din Signal-konto og -beskedhistorik på denne enhed.</string>
-    <!-- Option title for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_signal_backup">Genopret Signal-sikkerhedskopi</string>
-    <!-- Option subtitle for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_your_text_messages_and_media_from">Genopret dine beskeder og medier fra dit Signal-sikkerhedskopiabonnement.</string>
-    <!-- Option title for restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_on_device_backup">Gendan din sikkerhedskopi på enheden</string>
-    <!-- Option subtitle fdor restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_your_messages_from">Gendan dine beskeder fra en sikkerhedskopi, du har gemt på din enhed.</string>
-    <!-- Option title for restoring via a local backup file -->
-    <string name="SelectRestoreMethodFragment__from_a_backup_file">Fra en sikkerhedskopifil</string>
-    <!-- Option subtitle for restoring via a local backup -->
-    <string name="SelectRestoreMethodFragment__choose_a_backup_youve_saved">Vælg en sikkerhedskopi, du har gemt</string>
-    <!-- Option title for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__from_your_old_phone">Fra din gamle telefon</string>
-    <!-- Option subtitle for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__transfer_directly_from_old">Overfør direkte fra din gamle Android</string>
-    <!-- Dialog title shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_title">Vil du springe gendannelse over?</string>
-    <!-- Dialog message shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_warning">Hvis du vælger ikke at gendanne nu, vil du ikke kunne gendanne senere. Hvis du genaktiverer sikkerhedskopiering efter at have sprunget gendannelse over, vil din nuværende sikkerhedskopi blive erstattet af din nye beskedhistorik.</string>
-    <!-- Dialog confirm text shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore">Spring gendannelse over</string>
-
-    <!-- Screen title for restore via local backup -->
-    <string name="RestoreLocalBackup_title">Genopret lokal sikkerhedskopi</string>
-    <!-- Screen subtitle for restore via local backup -->
-    <string name="RestoreLocalBackup_subtitle">Gendan dine beskeder fra en sikkerhedskopi, du har gemt på din enhed. Hvis du ikke gendanner nu, kan du ikke gendanne senere.</string>
-
-    <!-- Screen title for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_title">Angiv din gendannelsesnøgle</string>
-    <!-- Screen subtitle for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_subtitle">Din gendannelsesnøgle er en kode på 64 tegn, der kræves for at gendanne din konto og dine data.</string>
-    <!-- Button to skip entering recovery key and resuming normal registration flow -->
-    <string name="EnterBackupKey_no_backup_key">Har du ingen gendannelsesnøgle?</string>
-    <!-- Recovery key text field hint -->
-    <string name="EnterBackupKey_backup_key">Gendannelsesnøgle</string>
-    <!-- Recovery key not known bottom sheet info paragraph 1 -->
-    <string name="EnterBackupKey_no_key_paragraph_1">Sikkerhedskopier kan ikke gendannes uden gendannelseskoden på 64 tegn. Hvis du har mistet din gendannelsesnøgle, kan Signal ikke hjælpe med at gendanne din sikkerhedskopi.</string>
-    <!-- Recovery key not known bottom sheet info paragraph 2 -->
-    <string name="EnterBackupKey_no_key_paragraph_2">Hvis du har din gamle enhed, kan du se din gendannelsesnøgle i Indstillinger &gt; Sikkerhedskopier. Tryk derefter på Se gendannelsesnøgle.</string>
-    <!-- Recovery key not known bottom sheet button to learn more about it -->
-    <string name="EnterBackupKey_learn_more">Få mere at vide</string>
-    <!-- Recovery key not known bottom sheet button to skip recovery key entry and resume normal reregistration -->
-    <string name="EnterBackupKey_skip_and_dont_restore">Spring over uden gendannelse</string>
-    <!-- Dialog title shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_title">Forkert gendannelsesnøgle</string>
-    <!-- Dialog message shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_message">Sørg for, at du registrerer dig med det telefonnummer og den gendannelsesnøgle (64 tegn) du gemte, da du aktiverede Signal-sikkerhedskopier. Sikkerhedskopier kan ikke gendannes uden denne kode.</string>
-    <!-- Dialog positive button text to try entering their recovery key again -->
-    <string name="EnterBackupKey_try_again">Prøv igen</string>
-    <!-- Dialog negative button text to get help with recovery key -->
-    <string name="EnterBackupKey_backup_key_help">Hjælp til gendannelsesnøgler</string>
-    <!-- Text field error text when the recovery key provided has been confirmed invalid -->
-    <string name="EnterBackupKey_incorrect_backup_key_error">Forkert gendannelsesnøgle</string>
-    <!-- Text field error text when the recovery key is too long -->
-    <string name="EnterBackupKey_too_long_error">For lang (%1$d/%2$d)</string>
-    <!-- Text field error when the recovery key is invalid -->
-    <string name="EnterBackupKey_invalid_backup_key_error">Ugyldig gendannelsesnøgle</string>
-    <!-- Dialog title shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_not_found">Sikkerhedskopi ikke fundet</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_you_entered_is_correct_but_no_backup">Den angivne gendannelsesnøgle er korrekt, men der er ingen sikkerhedskopi knyttet til den. Hvis du stadig har din gamle telefon, skal du sørge for, at sikkerhedskopier er aktiveret, og at en sikkerhedskopiering er gennemført, og prøve igen.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">Du kan have indtastet din gendannelsesnøgle forkert, ellers har du ikke gennemført mindst én sikkerhedskopi på din gamle enhed.\n\nSørg for, at du registrerer dig med det samme telefonnummer og den samme gendannelsesnøgle, som du gemte, da du aktiverede Sikre sikkerhedskopier, og bekræft, at din gamle enhed har gennemført en sikkerhedskopi.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_check_rate_limited">Du er løbet tør for forsøg på gendannelsesnøglen. Af sikkerhedshensyn er antallet af forsøg, du kan gøre, begrænset. Vent en time, og prøv igen.</string>
-    <!-- Dialog button shown during registration and trying to restore a remote backup to instead skip said backup process -->
-    <string name="EnterBackupKey_skip_restore">Spring gendannelse over</string>
-    <!-- Dialog title text when encountering backup restore network error -->
-    <string name="EnterBackupKey_cant_restore_backup">Kan ikke gendanne sikkerhedskopien</string>
-    <!-- Dialog body text when encountering backup restore network error -->
-    <string name="EnterBackupKey_your_backup_cant_be_restored_right_now">Din sikkerhedskopi kan ikke gendannes lige nu. Tjek din internetforbindelse, og prøv igen. </string>
-    <!-- Dialog button text to contact support on network error -->
-    <string name="EnterBackupKey_contact_support">Kontakt support</string>
-
-    <!-- Email subject when contacting support on a restore backup network issue -->
-    <string name="EnterBackupKey_network_failure_support_email">Netværksfejl under gendannelse af Signal Android-sikkerhedskopi</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_network_failure_support_email_filter" translatable="false">Android SignalBackups Import Failed</string> -->
-    <!-- Email subject when contacting support on a permanent backup import failure -->
-    <string name="EnterBackupKey_permanent_failure_support_email">Vedvarende fejl ved gendannelse af Signal Android-sikkerhedskopi</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_permanent_failure_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
-
-    <!-- EnterLocalBackupKeyScreen: Screen title for entering recovery key for local backup restore -->
-    <string name="EnterLocalBackupKeyScreen__enter_your_recovery_key">Angiv din gendannelsesnøgle</string>
-    <!-- EnterLocalBackupKeyScreen: Screen subtitle explaining what the recovery key is -->
-    <string name="EnterLocalBackupKeyScreen__your_recovery_key_is_a_64_character_code">Din gendannelsesnøgle er en kode på 64 tegn, der kræves for at gendanne din konto og dine data.</string>
-    <!-- EnterLocalBackupKeyScreen: Button text when user does not have a recovery key -->
-    <string name="EnterLocalBackupKeyScreen__no_recovery_key">Har du ingen gendannelsesnøgle?</string>
-    <!-- EnterLocalBackupKeyScreen: Button to proceed to next step -->
-    <string name="EnterLocalBackupKeyScreen__next">Næste</string>
-
-    <!-- RestoreLocalBackupDialog: Error message when the selected archive fails to load -->
-    <string name="RestoreLocalBackupDialog__failed_to_load_archive">Fejl ved indlæsning af arkiv. Vælg en anden mappe.</string>
-    <!-- RestoreLocalBackupDialog: Dismiss button for dialog -->
-    <string name="RestoreLocalBackupDialog__ok">OK</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore">Vil du springe gendannelse over?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user about the consequences of skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore_body">Hvis du vælger ikke at gendanne nu, vil du ikke kunne gendanne senere. Hvis du genaktiverer sikkerhedskopiering efter at have sprunget gendannelse over, vil din nuværende sikkerhedskopi blive erstattet af din nye beskedhistorik.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the skip restore dialog -->
-    <string name="RestoreLocalBackupDialog__skip_restore_confirm">Spring gendannelse over</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm restoring a backup from a different account -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account">Vil du gendanne til en ny konto?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user that the backup was created with a different account and they will lose group memberships -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account_body">Den sikkerhedskopi, du gendanner, blev oprettet med en anden Signal-konto. Du kan gendanne denne sikkerhedskopi til en ny konto, men du vil ikke længere være medlem af nogen af de grupper, der blev gendannet.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the restore to new account dialog -->
-    <string name="RestoreLocalBackupDialog__restore">Gendan</string>
-
-    <!-- RestoreLocalBackupActivity: Toast message when backup restore fails -->
-    <string name="RestoreLocalBackupActivity__backup_restore_failed">Gendannelse af sikkerhedskopi mislykkedes</string>
-    <!-- RestoreLocalBackupActivity: Screen title shown during restore -->
-    <string name="RestoreLocalBackupActivity__restoring_backup">Gendannelse af sikkerhedskopi</string>
-    <!-- RestoreLocalBackupActivity: Screen subtitle explaining restore duration -->
-    <string name="RestoreLocalBackupActivity__depending_on_the_size">Det kan tage et par minutter, afhængigt af sikkerhedskopiens størrelse.</string>
-    <!-- RestoreLocalBackupActivity: Status text while restoring messages -->
-    <string name="RestoreLocalBackupActivity__restoring_messages">Gendanner beskeder…</string>
-    <!-- RestoreLocalBackupActivity: Status text while finalizing restore -->
-    <string name="RestoreLocalBackupActivity__finalizing">Afslutter…</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore is complete -->
-    <string name="RestoreLocalBackupActivity__restore_complete">Gendannelse afsluttet</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore fails -->
-    <string name="RestoreLocalBackupActivity__restore_failed">Gendannelse mislykkedes</string>
-    <!-- RestoreLocalBackupActivity: Progress text showing bytes read of total with percentage, e.g. "1.2 MB of 5.0 MB (24%)" -->
-    <string name="RestoreLocalBackupActivity__s_of_s_d_percent">%1$s af %2$s (%3$d %%)</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__cant_restore_backup">Kan ikke gendanne sikkerhedskopien</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__error_occurred_while_restoring">Der opstod en fejl under gendannelsen af din sikkerhedskopi. Din sikkerhedskopi kan ikke gendannes. Kontakt support for hjælp.</string>
-
-    <!-- RestoreLocalBackupActivity: Label for the button that opens the contact support form -->
-    <string name="RestoreLocalBackupActivity__contact_support">Kontakt support</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when on-device backups could not be automatically re-enabled -->
-    <string name="RestoreLocalBackupActivity__turn_on_on_device_backups">Vil du slå sikkerhedskopier på enheden til?</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when on-device backups could not be automatically re-enabled, prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__to_continue_using_on_device_backups">For at fortsætte med at bruge sikkerhedskopier på enheden skal du slå det til for denne konto. Du kan gøre det når som helst under Indstillinger &gt; Sikkerhedskopier.</string>
-
-    <!-- RestoreLocalBackupActivity: Confirm button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__turn_on_now">Slå til nu</string>
-
-    <!-- RestoreLocalBackupActivity: Dismiss button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__not_now">Ikke nu</string>
-
-    <!-- RestoreLocalBackupActivity: Body text for the dialog shown after a successful restore, prompting the user to choose a backup folder -->
-    <string name="RestoreLocalBackupActivity__choose_a_folder_for_backups">Vælg en mappe for at fortsætte med at bruge sikkerhedskopier på enheden, hvor de nye sikkerhedskopier vil blive gemt.</string>
-
-    <!-- RestoreLocalBackupActivity: Positive button label for the dialog shown after a successful restore; keeps the current backup folder -->
-    <string name="RestoreLocalBackupActivity__use_current_folder">Brug den aktuelle mappe</string>
-
-    <!-- RestoreLocalBackupActivity: Neutral button label for the dialog shown after a successful restore; opens folder picker to select a different backup location -->
-    <string name="RestoreLocalBackupActivity__choose_new_folder">Vælg en ny mappe</string>
-
-    <!-- RestoreLocalBackupActivity: Negative button label for the dialog shown after a successful restore; disables on-device backups -->
-    <string name="RestoreLocalBackupActivity__disable_backups">Deaktiver sikkerhedskopier</string>
-
-    <!-- SelectInstructionsSheet: Title for the select backup folder instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_folder">Vælg din sikkerhedskopimappe</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the select this folder button -->
-    <string name="SelectInstructionsSheet__tap_select_this_folder">Tryk på \"Vælg denne mappe\"</string>
-    <!-- SelectInstructionsSheet: Instruction not to select individual files -->
-    <string name="SelectInstructionsSheet__do_not_select_individual_files">Vælg ikke enkeltfiler</string>
-    <!-- SelectInstructionsSheet: Title for the select backup file instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_file">Vælg din sikkerhedskopi</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the backup file saved to device -->
-    <string name="SelectInstructionsSheet__tap_on_the_backup_file">Tryk på den sikkerhedskopi, du har gemt på din enhed</string>
-    <!-- SelectInstructionsSheet: Subtitle explaining how to access backup after tapping continue -->
-    <string name="SelectInstructionsSheet__after_tapping_continue">Når du trykker på \"Fortsæt\", kan du få adgang til din sikkerhedskopi således:</string>
-    <!-- SelectInstructionsSheet: Instruction to select the top-level backup folder -->
-    <string name="SelectInstructionsSheet__select_the_top_level_folder">Vælg den overordnede mappe, hvor din sikkerhedskopi er gemt</string>
-    <!-- SelectInstructionsSheet: Continue button text -->
-    <string name="SelectInstructionsSheet__continue_button">Fortsæt</string>
-
-    <!-- SelectLocalBackupScreen: Screen title for restoring on-device backup -->
-    <string name="SelectLocalBackupScreen__restore_on_device_backup">Gendan en sikkerhedskopi på enheden</string>
-    <!-- SelectLocalBackupScreen: Screen subtitle explaining the restore process -->
-    <string name="SelectLocalBackupScreen__restore_your_messages_from_the_backup_folder">Gendanne dine beskeder fra en sikkerhedskopimappe, du har gemt på din enhed. Hvis du ikke gendanner nu, kan du ikke gendanne senere.</string>
-    <!-- SelectLocalBackupScreen: Button to initiate backup restoration -->
-    <string name="SelectLocalBackupScreen__restore_backup">Gendan sikkerhedskopi</string>
-    <!-- SelectLocalBackupScreen: Button to choose an earlier backup when current is latest -->
-    <string name="SelectLocalBackupScreen__choose_an_earlier_backup">Vælg en tidligere sikkerhedskopi</string>
-    <!-- SelectLocalBackupScreen: Button to choose a different backup -->
-    <string name="SelectLocalBackupScreen__choose_a_different_backup">Vælg en anden sikkerhedskopi</string>
-    <!-- SelectLocalBackupScreen: Label for latest backup card -->
-    <string name="SelectLocalBackupScreen__your_latest_backup">Din seneste sikkerhedskopi:</string>
-    <!-- SelectLocalBackupScreen: Label for non-latest backup card -->
-    <string name="SelectLocalBackupScreen__your_backup">Din sikkerhedskopi:</string>
-
-    <!-- SelectLocalBackupSheet: Title for backup selection bottom sheet -->
-    <string name="SelectLocalBackupSheet__choose_a_backup_to_restore">Vælg en sikkerhedskopi til gendannelse</string>
-    <!-- SelectLocalBackupSheet: Subtitle warning about choosing an older backup -->
-    <string name="SelectLocalBackupSheet__choosing_an_older_backup">Ved valg af en tidligere sikkerhedskopi kan det medføre tab af beskeder eller medier.</string>
-    <!-- SelectLocalBackupSheet: Continue button text -->
-    <string name="SelectLocalBackupSheet__continue_button">Fortsæt</string>
-
-    <!-- SelectLocalBackupTypeScreen: Screen title for selecting backup type -->
-    <string name="SelectLocalBackupTypeScreen__restore_on_device_backup">Gendanne en sikkerhedskopi på enheden</string>
-    <!-- SelectLocalBackupTypeScreen: Screen subtitle explaining restore options -->
-    <string name="SelectLocalBackupTypeScreen__restore_your_messages_from_the_backup">Gendan dine beskeder fra en sikkerhedskopi, du har gemt på din enhed. Hvis du ikke gendanner nu, kan du ikke gendanne senere.</string>
-    <!-- SelectLocalBackupTypeScreen: Button for users who saved backup as single file -->
-    <string name="SelectLocalBackupTypeScreen__i_saved_my_backup_as_a_single_file">Jeg har gemt min sikkerhedskopi som en enkelt fil</string>
-    <!-- SelectLocalBackupTypeScreen: Card title for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__choose_backup_folder">Vælg din sikkerhedskopimappe</string>
-    <!-- SelectLocalBackupTypeScreen: Card description for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__select_the_folder_on_your_device">Vælg mappen på din enhed med din sikkerhedskopi</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Email subject when contacting support on a create backup failure -->
     <string name="BackupAlertBottomSheet_network_failure_support_email">Netværksfejl under gendannelse af Signal Android-sikkerhedskopi</string>

@@ -170,4 +170,7 @@
     <string name="UnifiedPushNotificationBuilder__registration_failed">Registrace s vaší doručovací službou UnitedPush selhala. Mohlo se tak stát z důvodu chyby sítě nebo chybějícího požadavku od doručovací služby.</string>
     <string name="MollySocketLink_try_scanning_another_image_containing_a_mollysocket_qr_code">Zkuste naskenovat jiný obrázek obsahující QR kód MollySocket.</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">Nainstalovaná verze Služeb Google Play na tomto zařízení je zastaralá.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Upozornit, když…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Služba Google Play se aktualizuje nebo je dočasně nedostupná. Zkuste to prosím znovu.</string>
+    <string name="please_wait">Prosím čekejte…</string>
 </resources>

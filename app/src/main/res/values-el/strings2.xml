@@ -168,4 +168,7 @@
     <string name="preferences_appearance__dynamic_colors">Δυναμικά Χρώματα</string>
     <string name="UnifiedPushNotificationBuilder__registration_failed">Η εγγραφή με τον διανομέα UnifiedPush απέτυχε. Αυτό θα μπορούσε να οφείλεται σε ένα ζήτημα δικτύου ή σε μια αγνοούμενη απαίτηση από τον διανομέα σου.</string>
     <string name="MollySocketLink_try_scanning_another_image_containing_a_mollysocket_qr_code">Προσπάθησε να σαρώσεις μια άλλη εικόνα που περιέχει έναν κωδικό MollySocket QR.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Να ειδοποιούμαι όταν…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Οι υπηρεσίες Google Play αναβαθμίζονται ή είναι προσωρινά μη διαθέσιμες. Παρακαλώ ξαναπροσπάθησε.</string>
+    <string name="please_wait">Περίμενε λίγο…</string>
 </resources>

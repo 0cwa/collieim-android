@@ -90,4 +90,7 @@
     <string name="preferences_appearance__navigation_bar">Navigacijos juosta</string>
     <string name="preferences_appearance__show_calls">Rodyti skambučius</string>
     <string name="preferences_appearance__toggle_to_show_or_hide_the_icon_on_the_navigation_bar">Perjungti, jei norite rodyti arba slėpti piktogramą naršymo juostoje</string>
+    <string name="NotificationsSettingsFragment__notify_when">Pranešti, kai…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">„Google Play“ paslaugos yra atnaujinamos arba laikinai neprieinamos. Prašome bandyti dar kartą.</string>
+    <string name="please_wait">Palaukite…</string>
 </resources>

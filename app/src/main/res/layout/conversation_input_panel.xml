@@ -191,13 +191,8 @@
             android:contentDescription="@string/conversation_activity__quick_attachment_drawer_toggle_camera_description"
             android:foreground="?selectableItemBackgroundBorderless"
             android:scaleType="fitCenter"
-<<<<<<< MOLLY
-            app:srcCompat="@drawable/ic_camera_24"
-            app:tint="?attr/colorOnSurfaceVariant" />
-=======
             app:srcCompat="@drawable/symbol_camera_24"
-            app:tint="@color/signal_colorOnSurfaceVariant" />
->>>>>>> SIGNAL
+            app:tint="?attr/colorOnSurfaceVariant" />
 
         <org.thoughtcrime.securesms.components.MicrophoneRecorderView
             android:id="@+id/recorder_view"
@@ -234,13 +229,8 @@
             android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/ConversationActivity_add_attachment"
             android:scaleType="fitCenter"
-<<<<<<< MOLLY
-            app:srcCompat="@drawable/ic_plus_24"
-            app:tint="?attr/colorOnSurface" />
-=======
             app:srcCompat="@drawable/symbol_plus_24"
-            app:tint="@color/signal_colorOnSurface" />
->>>>>>> SIGNAL
+            app:tint="?attr/colorOnSurface" />
 
     </org.thoughtcrime.securesms.components.HidingLinearLayout>
 

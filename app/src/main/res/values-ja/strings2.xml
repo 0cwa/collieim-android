@@ -115,4 +115,7 @@
     <string name="NotificationsSettingsFragment__sorry_this_feature_requires_push_notifications_delivered_via_fcm_or_unifiedpush">この機能には FCM または UnifiedPush によるプッシュ通知が必要ですが、現在プッシュ通知は利用できません。</string>
     <string name="AppUpdatesSettingsFragment__last_checked_s">最終更新日：%s</string>
     <string name="RegistrationActivity_provider_declined">プロバイダーが通知コードの送信を拒否しました。おそらく詐欺防止のルールによるものです。</string>
+    <string name="NotificationsSettingsFragment__notify_when">その他の通知</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play開発者サービスは更新中か一時的に使用不能です。再度試してください。</string>
+    <string name="please_wait">お待ち下さい…</string>
 </resources>

@@ -19,4 +19,7 @@
     <string name="arrays__on_inactivity_timeout">Hvis du går et bestemt tidspunkt uden at låse din enhed op</string>
     <string name="BlockUnblockDialog_block_and_delete">Blokér og slet</string>
     <string name="prompt_passphrase_activity__molly_is_locked">Molly er låst</string>
+    <string name="NotificationsSettingsFragment__notify_when">Underret når …</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play-tjenester opdateres eller er midlertidigt utilgængelig. Prøv venligst igen.</string>
+    <string name="please_wait">Vent venligst …</string>
 </resources>

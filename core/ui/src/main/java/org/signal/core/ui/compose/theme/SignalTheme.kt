@@ -373,7 +373,7 @@ private fun isThemeUsingDynamicColors(context: Context): Boolean {
 
 private fun extendedColors(colorScheme: ColorScheme, isDarkMode: Boolean, isDynamic: Boolean): ExtendedColors {
   return when {
-    isDynamic -> (if (isDarkMode) darkExtendedColors else lightExtendedColors).copy(
+    isDynamic -> lightExtendedColors.copy(
       colorSurface1 = colorScheme.surfaceContainerLow,
       colorSurface2 = colorScheme.surfaceContainer,
       colorSurface3 = colorScheme.surfaceContainerHigh,

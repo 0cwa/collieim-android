@@ -159,14 +159,10 @@ object Rows {
     values: Array<String>,
     selectedValue: String,
     onSelected: (String) -> Unit,
-<<<<<<< MOLLY
-    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
-    enabled: Boolean = true
-=======
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    requireConfirmation: Boolean = false
->>>>>>> SIGNAL
+    requireConfirmation: Boolean = false,
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null
   ) {
     RadioListRow(
       text = { selectedIndex ->
@@ -186,14 +182,10 @@ object Rows {
       values = values,
       selectedValue = selectedValue,
       onSelected = onSelected,
-<<<<<<< MOLLY
-      trailingIcon = trailingIcon,
-      enabled = enabled
-=======
       modifier = modifier,
       enabled = enabled,
-      requireConfirmation = requireConfirmation
->>>>>>> SIGNAL
+      requireConfirmation = requireConfirmation,
+      trailingIcon = trailingIcon
     )
   }
 
@@ -209,14 +201,10 @@ object Rows {
     values: Array<String>,
     selectedValue: String,
     onSelected: (String) -> Unit,
-<<<<<<< MOLLY
-    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
-    enabled: Boolean = true
-=======
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    requireConfirmation: Boolean = false
->>>>>>> SIGNAL
+    requireConfirmation: Boolean = false,
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null
   ) {
     val selectedIndex = values.indexOf(selectedValue)
     var displayDialog by remember { mutableStateOf(false) }

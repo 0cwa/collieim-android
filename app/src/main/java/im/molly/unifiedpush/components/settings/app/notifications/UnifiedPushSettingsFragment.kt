@@ -56,6 +56,13 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
         summary = DSLSettingsText.from(getStatusSummary(state)),
       )
 
+      if (state.registrationFailed) {
+        clickPref(
+          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__retry_registration),
+          onClick = { viewModel.retryRegistration() },
+        )
+      }
+
       clickPref(
         title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__mollysocket_server),
         summary = DSLSettingsText.from(
@@ -128,6 +135,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     return when {
       state.distributors.isEmpty() -> R.string.UnifiedPushSettingsFragment__status_summary_no_distributor
       state.selected == -1 -> R.string.UnifiedPushSettingsFragment__status_summary_distributor_not_selected
+      state.registrationFailed -> R.string.UnifiedPushSettingsFragment__registration_failed
       state.selectedNotAck -> R.string.UnifiedPushSettingsFragment__status_summary_missing_endpoint
       state.endpoint == null -> R.string.UnifiedPushSettingsFragment__status_summary_missing_endpoint
       state.mollySocketUrl == null && !state.airGapped -> R.string.UnifiedPushSettingsFragment__status_summary_mollysocket_url_missing

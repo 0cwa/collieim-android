@@ -16,6 +16,7 @@ class UnifiedPushNotificationBuilder(val context: Context) {
   companion object {
     private const val NOTIFICATION_ID = 51215
     private const val NOTIFICATION_TEST_ID = 51216
+    private const val NOTIFICATION_REGISTRATION_FAILED_ID = 51217
   }
 
   private val notificationManager = NotificationManagerCompat.from(context)
@@ -44,8 +45,15 @@ class UnifiedPushNotificationBuilder(val context: Context) {
     }
   }
 
-  fun clearAlerts() {
+  fun clearAlerts(clearRegistrationFailure: Boolean) {
     notificationManager.cancel(NOTIFICATION_ID)
+    if (clearRegistrationFailure) {
+      clearRegistrationFailed()
+    }
+  }
+
+  fun clearRegistrationFailed() {
+    notificationManager.cancel(NOTIFICATION_REGISTRATION_FAILED_ID)
   }
 
   fun setNotificationDeviceLimitExceeded(deviceLimit: Int) {
@@ -70,7 +78,7 @@ class UnifiedPushNotificationBuilder(val context: Context) {
   }
 
   fun setNotificationRegistrationFailed() {
-    notify(NOTIFICATION_ID, context.getString(R.string.UnifiedPushNotificationBuilder__registration_failed))
+    notify(NOTIFICATION_REGISTRATION_FAILED_ID, context.getString(R.string.UnifiedPushNotificationBuilder__registration_failed))
   }
 
   fun setNotificationTest() {

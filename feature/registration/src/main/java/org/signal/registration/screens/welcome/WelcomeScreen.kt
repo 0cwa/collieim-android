@@ -48,11 +48,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,6 +64,9 @@ import org.signal.core.ui.WindowBreakpoint
 import org.signal.core.ui.compose.AllDevicePreviews
 import org.signal.core.ui.compose.BottomSheets
 import org.signal.core.ui.compose.Buttons
+import org.signal.core.ui.compose.DropdownMenus
+import org.signal.core.ui.compose.IconButtons.IconButton
+import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.TabletPortraitDayPreview
@@ -71,11 +76,13 @@ import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.isWidthExpanded
 import org.signal.core.ui.rememberWindowBreakpoint
 import org.signal.registration.R
+import org.signal.registration.RegistrationDependencies
 import org.signal.registration.screens.RegistrationScaffold
 import org.signal.registration.screens.attachDebugLogHelper
 import org.signal.registration.test.TestTags
 import kotlin.math.pow
 import kotlin.math.sqrt
+import org.signal.core.ui.R as CoreR
 
 /**
  * Welcome screen for the registration flow.
@@ -141,6 +148,7 @@ private fun CompactLayout(
   modifier: Modifier = Modifier
 ) {
   RegistrationScaffold(
+    topBar = { NetworkSettingsTopAppBar() },
     modifier = modifier
       .fillMaxSize()
       .testTag(TestTags.WELCOME_SCREEN),
@@ -200,6 +208,7 @@ private fun MediumLayout(
   modifier: Modifier = Modifier
 ) {
   RegistrationScaffold(
+    topBar = { NetworkSettingsTopAppBar() },
     modifier = modifier
       .fillMaxSize()
       .padding(bottom = 56.dp),
@@ -258,6 +267,7 @@ private fun LargeLayout(
   modifier: Modifier = Modifier
 ) {
   RegistrationScaffold(
+    topBar = { NetworkSettingsTopAppBar() },
     modifier = modifier.fillMaxSize(),
     content = {
       Row(
@@ -309,6 +319,39 @@ private fun LargeLayout(
             }
           }
         }
+      }
+    }
+  )
+}
+
+@Composable
+private fun NetworkSettingsTopAppBar() {
+  val context = LocalContext.current
+  val menuController = remember { DropdownMenus.MenuController() }
+
+  Scaffolds.DefaultTopAppBar(
+    title = "",
+    titleContent = { _, _ -> },
+    onNavigationClick = {},
+    navigationIcon = null,
+    actions = {
+      IconButton(
+        onClick = { menuController.show() },
+        modifier = Modifier.padding(horizontal = 8.dp)
+      ) {
+        Icon(
+          imageVector = ImageVector.vectorResource(CoreR.drawable.symbol_more_vertical_24),
+          contentDescription = stringResource(R.string.RegistrationActivity_open_menu)
+        )
+      }
+      DropdownMenus.Menu(controller = menuController, offsetX = 24.dp, offsetY = 0.dp) {
+        DropdownMenus.Item(
+          text = { Text(stringResource(R.string.RegistrationActivity_network_settings)) },
+          onClick = {
+            RegistrationDependencies.get().proxyConfigCallback?.invoke(context)
+            menuController.hide()
+          }
+        )
       }
     }
   )
@@ -374,6 +417,15 @@ private fun PrimaryDeviceCallToActionButtons(
       .testTag(TestTags.WELCOME_GET_STARTED_BUTTON)
   ) {
     Text(stringResource(R.string.RegistrationActivity_continue))
+  }
+
+  TextButton(
+    onClick = { onEvent(WelcomeScreenEvents.LinkDevice) },
+    modifier = Modifier
+      .fillMaxWidth()
+      .testTag(TestTags.WELCOME_LINK_DEVICE_BUTTON)
+  ) {
+    Text(stringResource(R.string.RegistrationActivity_link_device))
   }
 
   if (showRestoreOrTransfer) {

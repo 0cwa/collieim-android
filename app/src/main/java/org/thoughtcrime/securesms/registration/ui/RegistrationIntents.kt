@@ -7,7 +7,6 @@ package org.thoughtcrime.securesms.registration.ui
 
 import android.content.Context
 import android.content.Intent
-import org.signal.registration.RegistrationActivity
 import org.signal.registration.RegistrationRoute
 import org.thoughtcrime.securesms.MainActivity
 

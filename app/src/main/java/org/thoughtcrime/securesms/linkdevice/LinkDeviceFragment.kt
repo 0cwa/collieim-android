@@ -425,9 +425,7 @@ fun DeviceListScreen(
     val linkButtonColors = ButtonDefaults.filledTonalButtonColors()
     Buttons.LargeTonal(
       onClick = onLinkNewDeviceClicked,
-<<<<<<< MOLLY
       enabled = state.canLinkDevices,
-=======
       colors = if (atDeviceLimit) {
         linkButtonColors.copy(
           containerColor = linkButtonColors.disabledContainerColor,
@@ -436,7 +434,6 @@ fun DeviceListScreen(
       } else {
         linkButtonColors
       },
->>>>>>> SIGNAL
       modifier = Modifier
         .defaultMinSize(300.dp)
         .padding(bottom = 8.dp)

@@ -546,7 +546,10 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
   // --- Permissions Screen
   entry<RegistrationRoute.Permissions> { key ->
     val context = LocalContext.current
-    val onProceed = { parentEventEmitter.navigateTo(key.nextRoute) }
+    val onProceed = {
+      registrationRepository.storageController.onRegistrationPermissionsResult()
+      parentEventEmitter.navigateTo(key.nextRoute)
+    }
     val localPermissionsState = permissionsState ?: rememberMultiplePermissionsState(
       permissions = RegistrationPermissions.getRequiredPermissions(context),
       onPermissionsResult = { onProceed() }
@@ -559,7 +562,10 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
 
   // --- Allow Notifications Screen
   entry<RegistrationRoute.AllowNotifications> { key ->
-    val onProceed = { parentEventEmitter.navigateTo(key.nextRoute) }
+    val onProceed = {
+      registrationRepository.storageController.onRegistrationPermissionsResult()
+      parentEventEmitter.navigateTo(key.nextRoute)
+    }
     val localPermissionState = rememberPermissionState(
       permission = registrationViewModel.getRequiredLinkedDevicePermission()!!,
       onPermissionResult = { onProceed() }
@@ -701,13 +707,11 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
 
   // -- Verification Code Entry Screen
   entry<RegistrationRoute.VerificationCodeEntry> {
-    val context = LocalContext.current.applicationContext
     val viewModel: VerificationCodeViewModel = viewModel {
       VerificationCodeViewModel(
         repository = registrationRepository,
         parentState = registrationViewModel.state,
-        parentEventEmitter = registrationViewModel::onEvent,
-        smsCodeEvents = VerificationCodeViewModel.smsCodeFlow(context)
+        parentEventEmitter = registrationViewModel::onEvent
       )
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -749,9 +753,14 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
 
         SignalLoginPaymentScreenActions.MakeGooglePlayServicesAvailable -> {
           if (activity != null) {
-            GoogleApiAvailability.getInstance()
-              .makeGooglePlayServicesAvailable(activity)
-              .addOnCompleteListener { viewModel.onEvent(SignalLoginPaymentScreenEvents.Foregrounded) }
+            val availability = GoogleApiAvailability.getInstance()
+            val status = availability.isGooglePlayServicesAvailable(activity)
+            try {
+              availability.getErrorResolutionPendingIntent(activity, status, 0)?.send()
+            } catch (e: android.app.PendingIntent.CanceledException) {
+              Log.w("RegistrationNavigation", "Unable to launch Play Services settings.", e)
+            }
+            viewModel.onEvent(SignalLoginPaymentScreenEvents.Foregrounded)
           }
         }
 

@@ -5,19 +5,12 @@
 
 package org.signal.registration.screens.verificationcode
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import androidx.annotation.VisibleForTesting
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -483,22 +476,10 @@ class VerificationCodeViewModel(
   private fun initializeRateLimits(session: SessionMetadata, parentState: RegistrationFlowState): SmsAndCallRateLimits {
     val now = clock().milliseconds
 
-<<<<<<< MOLLY
-    /**
-     * Builds a real SMS retriever flow from [context]. Prefer the application context.
-     */
-    constructor(
-      context: Context,
-      repository: RegistrationRepository,
-      parentState: StateFlow<RegistrationFlowState>,
-      parentEventEmitter: (RegistrationFlowEvent) -> Unit
-    ) : this(repository, parentState, parentEventEmitter, emptyFlow())
-=======
     val nextSmsAvailableAt: Duration? = parentState.lastSmsVerificationCodeRequest
       ?.takeIf { it.e164 == parentState.sessionE164 }
       ?.nextAllowedRequestTime?.milliseconds
       ?: session.nextSms?.let { now + it.seconds }
->>>>>>> SIGNAL
 
     val nextCallAvailableAt: Duration? = parentState.lastCallVerificationCodeRequest
       ?.takeIf { it.e164 == parentState.sessionE164 }

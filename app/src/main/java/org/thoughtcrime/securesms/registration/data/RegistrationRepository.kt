@@ -9,21 +9,10 @@ import android.app.backup.BackupManager
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
-<<<<<<< MOLLY
-import androidx.core.app.NotificationManagerCompat
-=======
-import com.google.android.gms.auth.api.phone.SmsRetriever
->>>>>>> SIGNAL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
-<<<<<<< MOLLY
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-=======
-import kotlinx.coroutines.withTimeoutOrNull
->>>>>>> SIGNAL
 import org.signal.core.models.AccountEntropyPool
 import org.signal.core.models.MasterKey
 import org.signal.core.models.ServiceId

@@ -1491,20 +1491,12 @@ object DataMessageProcessor {
           .firstOrNull()
       }
 
-<<<<<<< MOLLY
-      val body = if (quotedMessage.isPaymentNotification) quotedMessage.getDisplayBody(context).toString() else quotedMessage.body
-=======
-      if (quotedMessage.isPaymentNotification) {
-        quotedMessage = SignalDatabase.payments.updateMessageWithPayment(quotedMessage) as MmsMessageRecord
-      }
-
       val sharedContact = quotedMessage.sharedContacts.firstOrNull()
       val body = when {
         quotedMessage.isPaymentNotification -> quotedMessage.getDisplayBody(context).toString()
         sharedContact != null -> sharedContact.quoteText(context)
         else -> quotedMessage.body
       }
->>>>>>> SIGNAL
 
       return QuoteModel(
         id = quote.id!!,

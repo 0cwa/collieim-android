@@ -9,15 +9,8 @@ import org.json.JSONException
 import org.signal.core.models.badges.Badge
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.R
-=======
-import org.signal.donations.InAppPaymentType
 import org.signal.remoteconfig.RemoteConfig
-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppDonations
-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.CheckoutFlowActivity
->>>>>>> SIGNAL
+import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.database.RemoteMegaphoneTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.RemoteMegaphoneRecord

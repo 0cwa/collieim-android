@@ -20,11 +20,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.signal.core.ui.BottomSheetUtil;
-<<<<<<< MOLLY
-=======
 import org.signal.core.ui.WindowExtensionsKt;
-import org.signal.core.ui.util.ThemeUtil;
->>>>>>> SIGNAL
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.qr.QrView;

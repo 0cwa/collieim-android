@@ -38,12 +38,8 @@ class QrImageSelectionActivity : AppCompatActivity(), MediaGalleryFragment.Callb
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-<<<<<<< MOLLY
     theme.onCreate(this)
-    window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
-=======
     enableEdgeToEdge()
->>>>>>> SIGNAL
     setContentView(R.layout.username_qr_image_selection_activity)
   }
 

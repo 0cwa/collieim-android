@@ -59,6 +59,8 @@ sealed interface AppSettingsEvent {
   data object BackupsLongClicked : AppSettingsEvent
 
   /** The user tapped the data and storage row. */
+  data object NetworkClicked : AppSettingsEvent
+
   data object DataAndStorageClicked : AppSettingsEvent
 
   /** The user tapped the app updates row. */

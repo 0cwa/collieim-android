@@ -89,12 +89,6 @@ import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgressState;
 import org.thoughtcrime.securesms.backup.v2.ui.BackupAlert;
 import org.thoughtcrime.securesms.backup.v2.ui.BackupAlertBottomSheet;
 import org.thoughtcrime.securesms.backup.v2.ui.BackupAlertDelegate;
-<<<<<<< MOLLY
-=======
-import org.signal.core.models.badges.Badge;
-import org.thoughtcrime.securesms.badges.self.expired.ExpiredOneTimeBadgeBottomSheetDialogFragment;
-import org.thoughtcrime.securesms.badges.self.expired.MonthlyDonationCanceledBottomSheetDialogFragment;
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.banner.Banner;
 import org.thoughtcrime.securesms.banner.BannerManager;
 import org.thoughtcrime.securesms.banner.banners.ArchiveRestoreStatusBanner;
@@ -559,39 +553,6 @@ public class ConversationListFragment extends MainFragment implements Conversati
       RecaptchaProofBottomSheetFragment.show(getChildFragmentManager());
     }
 
-<<<<<<< MOLLY
-=======
-    Badge                              expiredBadge                       = SignalStore.inAppPayments().getExpiredBadge();
-    String                             subscriptionCancellationReason     = SignalStore.inAppPayments().getUnexpectedSubscriptionCancelationReason();
-    UnexpectedSubscriptionCancellation unexpectedSubscriptionCancellation = UnexpectedSubscriptionCancellation.fromStatus(subscriptionCancellationReason);
-    long                               subscriptionFailureTimestamp       = SignalStore.inAppPayments().getUnexpectedSubscriptionCancelationTimestamp();
-    long                               subscriptionFailureWatermark       = SignalStore.inAppPayments().getUnexpectedSubscriptionCancelationWatermark();
-    boolean                            isWatermarkPriorToTimestamp        = subscriptionFailureWatermark < subscriptionFailureTimestamp;
-
-    if (unexpectedSubscriptionCancellation != null &&
-        !SignalStore.inAppPayments().isDonationSubscriptionManuallyCancelled() &&
-        SignalStore.inAppPayments().showCantProcessDialog() &&
-        isWatermarkPriorToTimestamp)
-    {
-      Log.w(TAG, "Displaying bottom sheet for unexpected cancellation: " + unexpectedSubscriptionCancellation, true);
-      MonthlyDonationCanceledBottomSheetDialogFragment.show(getChildFragmentManager());
-      SignalStore.inAppPayments().setUnexpectedSubscriptionCancelationWatermark(subscriptionFailureTimestamp);
-    } else if (unexpectedSubscriptionCancellation != null && SignalStore.inAppPayments().isDonationSubscriptionManuallyCancelled()) {
-      Log.w(TAG, "Unexpected cancellation detected but not displaying dialog because user manually cancelled their subscription: " + unexpectedSubscriptionCancellation, true);
-      SignalStore.inAppPayments().setUnexpectedSubscriptionCancelationWatermark(subscriptionFailureTimestamp);
-    } else if (unexpectedSubscriptionCancellation != null && !SignalStore.inAppPayments().showCantProcessDialog()) {
-      Log.w(TAG, "Unexpected cancellation detected but not displaying dialog because user has silenced it.", true);
-      SignalStore.inAppPayments().setUnexpectedSubscriptionCancelationWatermark(subscriptionFailureTimestamp);
-    }
-
-    if (expiredBadge != null && expiredBadge.isBoost()) {
-      SignalStore.inAppPayments().setExpiredBadge(null);
-
-      Log.w(TAG, "Displaying bottom sheet for an expired badge", true);
-      ExpiredOneTimeBadgeBottomSheetDialogFragment.show(expiredBadge, getParentFragmentManager());
-    }
-
->>>>>>> SIGNAL
     if (this.bannerManager != null) {
       this.bannerManager.updateContent(bannerView.get());
     }

@@ -137,6 +137,7 @@ import org.signal.core.ui.getWindowSizeClass
 import org.signal.core.ui.isSplitPane
 import org.signal.core.ui.logging.LoggingFragment
 import org.signal.core.ui.permissions.Permissions
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.ui.util.ViewUtil
 import org.signal.core.ui.view.Stub
 import org.signal.core.ui.viewModel
@@ -164,16 +165,12 @@ import org.signal.core.util.orNull
 import org.signal.core.util.requireDrawable
 import org.signal.core.util.requireParcelableCompat
 import org.signal.core.util.setActionItemTint
-<<<<<<< MOLLY
-=======
 import org.signal.core.util.toMillis
-import org.signal.donations.InAppPaymentType
 import org.signal.emoji.EmojiEventListener
 import org.signal.mediakeyboard.MediaKeyboardAction
 import org.signal.mediakeyboard.MediaKeyboardTab
 import org.signal.mediakeyboard.data.KeyboardSticker
 import org.signal.remoteconfig.RemoteConfig
->>>>>>> SIGNAL
 import org.signal.ringrtc.CallLinkRootKey
 import org.thoughtcrime.securesms.BlockUnblockDialog
 import org.thoughtcrime.securesms.MainActivity
@@ -2253,11 +2250,7 @@ class ConversationFragment :
   private fun presentNavigationIconForBubble() {
     binding.toolbar.navigationIcon = DrawableUtil.tint(
       requireContext().requireDrawable(R.drawable.ic_notification),
-<<<<<<< MOLLY
-      ThemeUtil.getThemedColor(requireContext(), R.attr.signal_accent_primary)
-=======
-      ContextCompat.getColor(requireContext(), CoreUiR.color.signal_accent_primary)
->>>>>>> SIGNAL
+      ThemeUtil.getThemedColor(requireContext(), org.signal.core.ui.R.attr.signal_accent_primary)
     )
 
     binding.toolbar.setNavigationContentDescription(R.string.ConversationFragment__content_description_launch_signal_button)
@@ -2395,17 +2388,13 @@ class ConversationFragment :
       MaterialR.attr.colorSurface
     }
 
-<<<<<<< MOLLY
-    binding.navBar.setBackgroundColor(ThemeUtil.getThemedColor(requireContext(), navColor))
-=======
-    chatScrims.navigationBarColor = ContextCompat.getColor(requireContext(), navColor)
+    chatScrims.navigationBarColor = ThemeUtil.getThemedColor(requireContext(), navColor)
     chatScrims.attachmentKeyboardColor = androidx.compose.ui.graphics.Color(
-      ContextCompat.getColor(
+      ThemeUtil.getThemedColor(
         requireContext(),
-        if (hasWallpaper) R.color.wallpaper_compose_background else R.color.signal_background_primary
+        if (hasWallpaper) R.color.wallpaper_compose_background else R.attr.signal_background_primary
       )
     )
->>>>>>> SIGNAL
   }
 
   private fun presentChatColors(chatColors: ChatColors) {
@@ -2792,46 +2781,18 @@ class ConversationFragment :
       .addTo(disposables)
   }
 
-<<<<<<< MOLLY
-  private fun initializeMediaKeyboard() {
-    val keyboardMode: TextSecurePreferences.MediaKeyboardMode = TextSecurePreferences.getMediaKeyboardMode(requireContext())
-
-    keyboardPagerViewModel.resetPages()
-    inputPanel.showMediaKeyboardToggle(true)
-
-    val keyboardPage = when (keyboardMode) {
-      TextSecurePreferences.MediaKeyboardMode.EMOJI -> KeyboardPage.EMOJI
-      TextSecurePreferences.MediaKeyboardMode.STICKER -> KeyboardPage.STICKER
-      TextSecurePreferences.MediaKeyboardMode.GIF -> if (RemoteConfig.gifSearchAvailable) KeyboardPage.GIF else KeyboardPage.STICKER
-=======
   /** Which keyboard the toggle should offer, from the mode remembered across runs. */
   private fun preferredKeyboardTab(): MediaKeyboardTab {
     return when (SignalStore.settings.mediaKeyboardMode) {
       MediaKeyboardMode.EMOJI -> MediaKeyboardTab.EMOJI
       MediaKeyboardMode.STICKER -> MediaKeyboardTab.STICKER
       MediaKeyboardMode.GIF -> if (RemoteConfig.gifSearchAvailable) MediaKeyboardTab.GIF else MediaKeyboardTab.STICKER
->>>>>>> SIGNAL
     }
   }
 
-<<<<<<< MOLLY
-    inputPanel.setMediaKeyboardToggleMode(keyboardPage)
-    keyboardPagerViewModel.switchToPage(keyboardPage)
-=======
   private fun initializeMediaKeyboard() {
-    val stickerIntro: Boolean = !SignalStore.tooltips.hasSeenStickerIntroTooltip()
-
     inputPanel.showMediaKeyboardToggle(true)
     inputPanel.setMediaKeyboardToggleMode(preferredKeyboardTab())
-
-    if (stickerIntro) {
-      SignalStore.settings.mediaKeyboardMode = MediaKeyboardMode.STICKER
-      inputPanel.setMediaKeyboardToggleMode(MediaKeyboardTab.STICKER)
-      conversationTooltips.displayStickerIntroductionTooltip(inputPanel.mediaKeyboardToggleAnchorView) {
-        EventBus.default.removeStickyEvent<StickerPackInstallEvent>()
-      }
-    }
->>>>>>> SIGNAL
   }
 
   private fun initializeStickerSuggestions() {
@@ -3560,20 +3521,6 @@ class ConversationFragment :
     startActionMode()
   }
 
-<<<<<<< MOLLY
-=======
-  private fun handleViewPaymentDetails(conversationMessage: ConversationMessage) {
-    val record: MmsMessageRecord = conversationMessage.messageRecord as? MmsMessageRecord ?: return
-    val payment = record.payment
-    if (payment == null || record.isPaymentTombstone) {
-      showPaymentTombstoneLearnMoreDialog()
-      return
-    }
-    if (record.isPaymentNotification) {
-      startActivity(PaymentsActivity.navigateToPaymentDetails(requireContext(), payment.uuid))
-    }
-  }
-
   private fun handleViewStickerPack(conversationMessage: ConversationMessage) {
     val record: MmsMessageRecord = conversationMessage.messageRecord as? MmsMessageRecord ?: return
     val stickerLocator = record.slideDeck.stickerSlide?.asAttachment()?.stickerLocator ?: return
@@ -3581,7 +3528,6 @@ class ConversationFragment :
     startActivity(StickerPackPreviewActivityV2.createIntent(StickerPackId(stickerLocator.packId), StickerPackKey(stickerLocator.packKey)))
   }
 
->>>>>>> SIGNAL
   private fun showPaymentTombstoneLearnMoreDialog() {
     val dialogBuilder = MaterialAlertDialogBuilder(requireContext())
     dialogBuilder
@@ -4372,12 +4318,8 @@ class ConversationFragment :
 
     override fun onCallToAction(action: String) {
       when (action) {
-<<<<<<< MOLLY
         "gift_badge" -> Unit  // MOLLY: No action
-=======
-        "gift_badge" -> startActivity(CheckoutFlowActivity.createIntent(requireContext(), InAppPaymentType.ONE_TIME_GIFT))
         "donate" -> startActivity(CheckoutFlowActivity.createIntent(requireContext(), InAppPaymentType.ONE_TIME_DONATION))
->>>>>>> SIGNAL
         "username_edit" -> startActivity(EditProfileActivity.getIntentForUsernameEdit(requireContext()))
         "calls_tab" -> startActivity(MainActivity.clearTopAndOpenTab(requireContext(), MainListRoute.Calls))
         "chat_folder" -> startActivity(AppSettingsActivity.chatFolders(requireContext()))
@@ -4430,34 +4372,11 @@ class ConversationFragment :
     override fun onScheduledIndicatorClicked(view: View, conversationMessage: ConversationMessage) = Unit
 
     override fun onUrlClicked(url: String): Boolean {
-<<<<<<< MOLLY
-      return CommunicationActions.handlePotentialGroupLinkUrl(requireActivity(), url)
-=======
-      if (CommunicationActions.handlePotentialGroupLinkUrl(requireActivity(), url) ||
-        CommunicationActions.handlePotentialProxyLinkUrl(requireActivity(), url)
-      ) {
+      if (CommunicationActions.handlePotentialGroupLinkUrl(requireActivity(), url)) {
         return true
       }
-
       openLink(url)
       return true
-    }
-
-    override fun onViewGiftBadgeClicked(messageRecord: MessageRecord) {
-      if (!messageRecord.hasGiftBadge()) {
-        return
-      }
-
-      if (messageRecord.isOutgoing) {
-        ViewSentGiftBottomSheet.show(childFragmentManager, (messageRecord as MmsMessageRecord))
-      } else {
-        ViewReceivedGiftBottomSheet.show(childFragmentManager, (messageRecord as MmsMessageRecord))
-      }
-    }
-
-    override fun onGiftBadgeRevealed(messageRecord: MessageRecord) {
-      viewModel.markGiftBadgeRevealed(messageRecord)
->>>>>>> SIGNAL
     }
 
     override fun goToMediaPreview(parent: ConversationItem, sharedElement: View, args: MediaIntentFactory.MediaPreviewArgs) {
@@ -5031,22 +4950,6 @@ class ConversationFragment :
   ) {
     fun onActionSelected(action: ReactionAction) {
       when (action) {
-<<<<<<< MOLLY
-        ConversationReactionOverlay.Action.REPLY -> handleReplyToMessage(conversationMessage)
-        ConversationReactionOverlay.Action.EDIT -> handleEditMessage(conversationMessage)
-        ConversationReactionOverlay.Action.FORWARD -> handleForwardMessageParts(conversationMessage.multiselectCollection.toSet())
-        ConversationReactionOverlay.Action.RESEND -> handleResend(conversationMessage)
-        ConversationReactionOverlay.Action.DOWNLOAD -> handleSaveAttachment(conversationMessage.messageRecord as MmsMessageRecord)
-        ConversationReactionOverlay.Action.COPY -> handleCopyMessage(conversationMessage.multiselectCollection.toSet())
-        ConversationReactionOverlay.Action.MULTISELECT -> handleEnterMultiselect(conversationMessage)
-        ConversationReactionOverlay.Action.VIEW_INFO -> handleDisplayDetails(conversationMessage)
-        ConversationReactionOverlay.Action.DELETE -> handleDeleteMessages(conversationMessage.multiselectCollection.toSet())
-        ConversationReactionOverlay.Action.END_POLL -> handleEndPoll(conversationMessage.messageRecord.getPoll()?.id)
-        ConversationReactionOverlay.Action.PIN_MESSAGE -> handlePinMessage(conversationMessage)
-        ConversationReactionOverlay.Action.UNPIN_MESSAGE -> handleUnpinMessage(conversationMessage.messageRecord.id)
-        ConversationReactionOverlay.Action.STAR_MESSAGE -> handleStarMessages(setOf(conversationMessage.messageRecord.id))
-        ConversationReactionOverlay.Action.UNSTAR_MESSAGE -> handleUnstarMessages(setOf(conversationMessage.messageRecord.id))
-=======
         ReactionAction.REPLY -> handleReplyToMessage(conversationMessage)
         ReactionAction.EDIT -> handleEditMessage(conversationMessage)
         ReactionAction.FORWARD -> handleForwardMessageParts(conversationMessage.multiselectCollection.toSet())
@@ -5054,7 +4957,6 @@ class ConversationFragment :
         ReactionAction.DOWNLOAD -> handleSaveAttachment(conversationMessage.messageRecord as MmsMessageRecord)
         ReactionAction.COPY -> handleCopyMessage(conversationMessage.multiselectCollection.toSet())
         ReactionAction.MULTISELECT -> handleEnterMultiselect(conversationMessage)
-        ReactionAction.PAYMENT_DETAILS -> handleViewPaymentDetails(conversationMessage)
         ReactionAction.VIEW_INFO -> handleDisplayDetails(conversationMessage)
         ReactionAction.DELETE -> handleDeleteMessages(conversationMessage.multiselectCollection.toSet())
         ReactionAction.END_POLL -> handleEndPoll(conversationMessage.messageRecord.getPoll()?.id)
@@ -5063,7 +4965,6 @@ class ConversationFragment :
         ReactionAction.STAR_MESSAGE -> handleStarMessages(setOf(conversationMessage.messageRecord.id))
         ReactionAction.UNSTAR_MESSAGE -> handleUnstarMessages(setOf(conversationMessage.messageRecord.id))
         ReactionAction.VIEW_STICKER_PACK -> handleViewStickerPack(conversationMessage)
->>>>>>> SIGNAL
       }
     }
   }
@@ -5702,69 +5603,6 @@ class ConversationFragment :
     }
   }
 
-<<<<<<< MOLLY
-  private object MediaKeyboardFragmentCreator : InputAwareConstraintLayout.FragmentCreator {
-    override val id: Int = MEDIA_KEYBOARD_FRAGMENT_CREATOR_ID
-    override fun create(): Fragment = KeyboardPagerFragment().apply {
-      arguments = bundleOf(KeyboardPagerFragment.ARG_SET_NAV_COLOR to false)
-    }
-  }
-
-  private inner class KeyboardEvents :
-    InputAwareConstraintLayout.Listener,
-    InsetAwareConstraintLayout.KeyboardStateListener {
-
-    override fun onInputShown(fragmentCreatorId: Int) {
-      when (fragmentCreatorId) {
-        ATTACHMENT_KEYBOARD_FRAGMENT_CREATOR_ID -> {
-          if (viewModel.recipientSnapshot?.wallpaper != null) {
-            binding.navBar.setBackgroundColor(ThemeUtil.getThemedColor(requireContext(), R.color.wallpaper_compose_background))
-          } else {
-            binding.navBar.setBackgroundColor(ThemeUtil.getThemedColor(requireContext(), R.attr.signal_background_primary))
-          }
-        }
-
-        MEDIA_KEYBOARD_FRAGMENT_CREATOR_ID -> {
-          binding.navBar.setBackgroundColor(ThemeUtil.getThemedColor(requireContext(), R.attr.mediaKeyboardBottomBarBackgroundColor))
-        }
-
-        else -> {
-          Log.w(TAG, "Not setting navbar coloring for unknown creator id $fragmentCreatorId")
-        }
-      }
-
-      viewModel.setIsMediaKeyboardShowing(true)
-    }
-
-    override fun onInputHidden() {
-      setNavBarBackgroundColor(viewModel.wallpaperSnapshot != null || viewModel.recipientSnapshot?.isReleaseNotes == true)
-      viewModel.setIsMediaKeyboardShowing(false)
-    }
-
-    override fun onKeyboardShown() {
-      if (searchMenuItem?.isActionViewExpanded == true && searchMenuItem?.actionView?.hasFocus() == false) {
-        searchMenuItem?.actionView?.requestFocus()
-      }
-    }
-
-    override fun onKeyboardHidden() {
-      if (searchMenuItem?.isActionViewExpanded == true && searchMenuItem?.actionView?.hasFocus() == true) {
-        searchMenuItem?.actionView?.clearFocus()
-      }
-    }
-
-    override fun onKeyboardAnimationEnded() {
-      if (view == null) {
-        return
-      }
-      if (!container.isKeyboardShowing) {
-        closeEmojiSearch()
-      }
-    }
-  }
-
-=======
->>>>>>> SIGNAL
   //endregion
 
   //region Event Bus
@@ -5787,11 +5625,7 @@ class ConversationFragment :
       return
     }
 
-<<<<<<< MOLLY
-    EventBus.getDefault().removeStickyEvent(event)
-=======
     EventBus.default.removeStickyEvent(event)
->>>>>>> SIGNAL
 
     if (!inputPanel.isStickerMode) {
       conversationTooltips.displayStickerPackInstalledTooltip(inputPanel.mediaKeyboardToggleAnchorView, event)

@@ -167,7 +167,7 @@ fun PinnedMessagesBanner(
 
             val displayBody = if (glyph != null) {
               SpannableStringBuilder()
-                .append(getSpannedString(LocalContext.current, SignalSymbols.Weight.REGULAR, glyph, -1))
+                .append(getSpannedString(LocalContext.current, SignalSymbols.Weight.REGULAR, glyph, null))
                 .append(" ")
                 .append(body)
             } else {

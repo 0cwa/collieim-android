@@ -90,10 +90,6 @@ import org.thoughtcrime.securesms.sms.MessageSender
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme
 import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.FullscreenHelper
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.util.RemoteConfig
-=======
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.util.VibrateUtil
 import org.thoughtcrime.securesms.webrtc.CallParticipantsViewState
 import org.thoughtcrime.securesms.webrtc.audio.SignalAudioManager
@@ -1220,17 +1216,6 @@ class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialo
     }
   }
 
-<<<<<<< MOLLY
-=======
-  private fun initializeScreenshotSecurity() {
-    if (SignalStore.settings.isScreenSecurityEnabled) {
-      window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-    } else {
-      window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-    }
-  }
-
->>>>>>> SIGNAL
   /**
    * Controls lock screen and screen-on behavior based on call state.
    * - Show over lock screen: For any ongoing call state, so the call UI remains visible

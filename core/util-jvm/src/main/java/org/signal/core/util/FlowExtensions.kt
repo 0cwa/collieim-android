@@ -10,16 +10,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-<<<<<<< MOLLY
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.filterNot
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-=======
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
->>>>>>> SIGNAL
 import kotlin.time.Duration
 
 /**

@@ -304,10 +304,6 @@ public class SharedContactView extends LinearLayout implements RecipientForeverO
       isSystemContact |= recipient.get().isSystemContact();
     }
 
-<<<<<<< MOLLY
-    if (!pushUsers.isEmpty()) {
-      actionButtonView.setText(R.string.NewConversationActivity__message);
-=======
     boolean hasContactDetails = !contact.getPhoneNumbers().isEmpty() ||
                                 !contact.getEmails().isEmpty() ||
                                 !contact.getPostalAddresses().isEmpty();
@@ -319,7 +315,6 @@ public class SharedContactView extends LinearLayout implements RecipientForeverO
 
     if (presentation.isOnSignal()) {
       actionButtonView.setText(R.string.SharedContactView_message_button);
->>>>>>> SIGNAL
       actionButtonView.setOnClickListener(v -> {
         if (eventListener != null) {
           eventListener.onMessageClicked(contact, registered);

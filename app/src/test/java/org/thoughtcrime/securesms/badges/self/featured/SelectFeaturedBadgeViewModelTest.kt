@@ -20,6 +20,10 @@ import io.mockk.unmockkAll
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -31,9 +35,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.signal.appsettings.badges.SelectFeaturedBadgeEvent
-import org.signal.appsettings.badges.SelectFeaturedBadgeState
-import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.core.models.badges.Badge
 import org.signal.core.models.recipients.RecipientId
 import org.signal.network.NetworkResult
@@ -53,7 +54,6 @@ class SelectFeaturedBadgeViewModelTest {
   val dispatcherRule = CoroutineDispatcherRule(testDispatcher)
 
   private val selfSubject = BehaviorSubject.create<Recipient>()
-  private val navigationEvents = mutableListOf<AppSettingsNavigationEvent>()
 
   private val first = createBadge("first")
   private val second = createBadge("second")
@@ -83,72 +83,59 @@ class SelectFeaturedBadgeViewModelTest {
 
     val state = viewModel.state.value
     assertThat(state.stage).isEqualTo(SelectFeaturedBadgeState.Stage.READY)
-    assertThat(state.badges).containsExactly(first, second)
+    assertThat(state.allUnlockedBadges).containsExactly(first, second)
     assertThat(state.selectedBadge).isEqualTo(first)
   }
 
   @Test
   fun `an unresolved self recipient is ignored`() = runTest(testDispatcher) {
-    val viewModel = SelectFeaturedBadgeViewModel(parentEventEmitter = { navigationEvents += it })
+    val viewModel = SelectFeaturedBadgeViewModel()
 
     selfSubject.onNext(createSelf(listOf(first), isResolving = true))
 
     val state = viewModel.state.value
     assertThat(state.stage).isEqualTo(SelectFeaturedBadgeState.Stage.INIT)
-    assertThat(state.badges).isEmpty()
+    assertThat(state.allUnlockedBadges).isEmpty()
   }
 
   @Test
-  fun `BadgeClicked updates the selected badge`() = runTest(testDispatcher) {
+  fun `BadgeSelected updates the selected badge`() = runTest(testDispatcher) {
     val viewModel = createViewModel(badges = listOf(first, second))
 
-    viewModel.onEvent(SelectFeaturedBadgeEvent.BadgeClicked(second))
+    viewModel.onEvent(SelectFeaturedBadgeEvents.BadgeSelected(second))
 
     assertThat(viewModel.state.value.selectedBadge).isEqualTo(second)
   }
 
   @Test
-  fun `Save features the selected badge and navigates back`() = runTest(testDispatcher) {
+  fun `Save features the selected badge and moves to SAVED`() = runTest(testDispatcher) {
     val viewModel = createViewModel(badges = listOf(first, second))
 
-    viewModel.onEvent(SelectFeaturedBadgeEvent.BadgeClicked(second))
-    viewModel.onEvent(SelectFeaturedBadgeEvent.SaveClicked)
+    viewModel.onEvent(SelectFeaturedBadgeEvents.BadgeSelected(second))
+    viewModel.onEvent(SelectFeaturedBadgeEvents.Save)
 
     coVerify(exactly = 1) { BadgeRepository.setFeaturedBadge(second) }
-    assertThat(navigationEvents).containsExactly(AppSettingsNavigationEvent.NavigateBack())
+    assertThat(viewModel.state.value.stage).isEqualTo(SelectFeaturedBadgeState.Stage.SAVED)
   }
 
   @Test
-  fun `a failed Save returns to READY and shows a snackbar until it's dismissed`() = runTest(testDispatcher) {
+  fun `a failed Save returns to READY and tells the user`() = runTest(testDispatcher) {
     coEvery { BadgeRepository.setFeaturedBadge(any()) } returns NetworkResult.NetworkError(IOException())
 
     val viewModel = createViewModel(badges = listOf(first))
+    val actions = collectActions(viewModel.actions)
 
-    viewModel.onEvent(SelectFeaturedBadgeEvent.SaveClicked)
+    viewModel.onEvent(SelectFeaturedBadgeEvents.Save)
 
     assertThat(viewModel.state.value.stage).isEqualTo(SelectFeaturedBadgeState.Stage.READY)
-    assertThat(viewModel.state.value.snackbar).isEqualTo(SelectFeaturedBadgeState.Snackbar.FailedToUpdateProfile)
-    assertThat(navigationEvents).isEmpty()
-
-    viewModel.onEvent(SelectFeaturedBadgeEvent.SnackbarDismissed)
-
-    assertThat(viewModel.state.value.snackbar).isEqualTo(SelectFeaturedBadgeState.Snackbar.None)
-  }
-
-  @Test
-  fun `NavigateBackClicked navigates back`() = runTest(testDispatcher) {
-    val viewModel = createViewModel(badges = listOf(first))
-
-    viewModel.onEvent(SelectFeaturedBadgeEvent.NavigateBackClicked)
-
-    assertThat(navigationEvents).containsExactly(AppSettingsNavigationEvent.NavigateBack())
+    assertThat(actions).containsExactly(SelectFeaturedBadgeActions.ShowFailedToUpdateProfile)
   }
 
   @Test
   fun `Save does nothing without a selected badge`() = runTest(testDispatcher) {
     val viewModel = createViewModel(badges = emptyList())
 
-    viewModel.onEvent(SelectFeaturedBadgeEvent.SaveClicked)
+    viewModel.onEvent(SelectFeaturedBadgeEvents.Save)
 
     assertThat(viewModel.state.value.selectedBadge).isNull()
     assertThat(viewModel.state.value.stage).isEqualTo(SelectFeaturedBadgeState.Stage.READY)
@@ -157,10 +144,10 @@ class SelectFeaturedBadgeViewModelTest {
 
   @Test
   fun `Save does nothing before the screen is ready`() = runTest(testDispatcher) {
-    val viewModel = SelectFeaturedBadgeViewModel(parentEventEmitter = { navigationEvents += it })
+    val viewModel = SelectFeaturedBadgeViewModel()
 
-    viewModel.onEvent(SelectFeaturedBadgeEvent.BadgeClicked(first))
-    viewModel.onEvent(SelectFeaturedBadgeEvent.SaveClicked)
+    viewModel.onEvent(SelectFeaturedBadgeEvents.BadgeSelected(first))
+    viewModel.onEvent(SelectFeaturedBadgeEvents.Save)
 
     assertThat(viewModel.state.value.stage).isEqualTo(SelectFeaturedBadgeState.Stage.INIT)
     coVerify(exactly = 0) { BadgeRepository.setFeaturedBadge(any()) }
@@ -170,16 +157,22 @@ class SelectFeaturedBadgeViewModelTest {
   fun `a second Save after success is ignored`() = runTest(testDispatcher) {
     val viewModel = createViewModel(badges = listOf(first))
 
-    viewModel.onEvent(SelectFeaturedBadgeEvent.SaveClicked)
-    viewModel.onEvent(SelectFeaturedBadgeEvent.SaveClicked)
+    viewModel.onEvent(SelectFeaturedBadgeEvents.Save)
+    viewModel.onEvent(SelectFeaturedBadgeEvents.Save)
 
     coVerify(exactly = 1) { BadgeRepository.setFeaturedBadge(first) }
   }
 
   private fun createViewModel(badges: List<Badge>): SelectFeaturedBadgeViewModel {
-    val viewModel = SelectFeaturedBadgeViewModel(parentEventEmitter = { navigationEvents += it })
+    val viewModel = SelectFeaturedBadgeViewModel()
     selfSubject.onNext(createSelf(badges))
     return viewModel
+  }
+
+  private fun TestScope.collectActions(actions: Flow<SelectFeaturedBadgeActions>): List<SelectFeaturedBadgeActions> {
+    val collected = mutableListOf<SelectFeaturedBadgeActions>()
+    backgroundScope.launch { actions.toList(collected) }
+    return collected
   }
 
   private fun createSelf(badges: List<Badge>, isResolving: Boolean = false): Recipient {

@@ -58,11 +58,7 @@ public final class OldDeviceTransferSetupFragment extends DeviceTransferSetupFra
     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     PendingIntent pendingIntent = PendingIntent.getActivity(requireContext(), 0, intent, PendingIntentFlags.mutable());
 
-<<<<<<< MOLLY
     DeviceToDeviceTransferService.TransferNotificationData notificationData = new DeviceToDeviceTransferService.TransferNotificationData(NotificationIds.DEVICE_TRANSFER, NotificationChannels.getInstance().BACKUPS, R.drawable.ic_notification_backup);
-=======
-    DeviceToDeviceTransferService.TransferNotificationData notificationData = new DeviceToDeviceTransferService.TransferNotificationData(NotificationIds.DEVICE_TRANSFER, NotificationChannels.getInstance().BACKUPS, org.signal.core.ui.R.drawable.ic_signal_backup);
->>>>>>> SIGNAL
     DeviceToDeviceTransferService.startClient(requireContext(), new OldDeviceClientTask(), notificationData, pendingIntent);
   }
 

@@ -9,17 +9,37 @@ import android.os.Build
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.appsettings.routes.AppSettingsRoute
+import org.signal.appsettings.routes.navigateBack
 import org.signal.core.ui.compose.split.detailEntry
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 
 /**
  * Registers the routes within the data and storage section of app settings.
  */
 fun EntryProviderScope<NavKey>.registerDataAndStorageRoutes(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit) {
+  detailEntry<AppSettingsRoute.DataAndStorageRoute.DataAndStorage> {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+      context.startActivity(AppSettingsActivity.manageStorage(context))
+      parentEventEmitter.navigateBack()
+    }
+  }
+
+  detailEntry<AppSettingsRoute.DataAndStorageRoute.Proxy> {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+      context.startActivity(AppSettingsActivity.proxy(context))
+      parentEventEmitter.navigateBack()
+    }
+  }
+
   detailEntry<AppSettingsRoute.DataAndStorageRoute.KeepMessages> {
     KeepMessagesSettingsEntry(parentEventEmitter = parentEventEmitter)
   }

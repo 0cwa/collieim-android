@@ -10,13 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.thoughtcrime.securesms.R;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.components.emoji.EmojiFilter;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
-=======
 import org.signal.emoji.EmojiFilter;
-import org.thoughtcrime.securesms.keyvalue.SignalStore;
->>>>>>> SIGNAL
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 /**
  * Custom styled search view that we can insert into ActionBar menus

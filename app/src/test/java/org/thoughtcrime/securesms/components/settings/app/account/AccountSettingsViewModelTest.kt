@@ -140,84 +140,13 @@ class AccountSettingsViewModelTest {
   }
 
   @Test
-  fun `turning PIN reminders off asks for the PIN first`() = runTest(testDispatcher) {
-    every { repository.getPinKeyboardType() } returns PinKeyboardType.ALPHA_NUMERIC
-
+  fun `turning PIN reminders off writes straight through`() = runTest(testDispatcher) {
     val viewModel = createViewModel()
 
     viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-
-    verify(exactly = 0) { repository.setPinRemindersEnabled(any()) }
-    assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.ConfirmPinToDisableReminders(isAlphanumericKeyboard = true))
-  }
-
-  @Test
-  fun `a correct PIN turns reminders off and closes the dialog`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged(CORRECT_PIN))
-    viewModel.onEvent(AccountSettingsEvent.DisablePinRemindersConfirmed)
 
     verify { repository.setPinRemindersEnabled(false) }
     assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.None)
-  }
-
-  @Test
-  fun `canSubmit only turns on once the PIN is long enough`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged("123"))
-    assertThat((viewModel.state.value.dialog as Dialog.ConfirmPinToDisableReminders).canSubmit).isFalse()
-
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged("1234"))
-    assertThat((viewModel.state.value.dialog as Dialog.ConfirmPinToDisableReminders).canSubmit).isTrue()
-  }
-
-  @Test
-  fun `an incorrect PIN leaves the dialog up with an error`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged(INCORRECT_PIN))
-    viewModel.onEvent(AccountSettingsEvent.DisablePinRemindersConfirmed)
-
-    verify(exactly = 0) { repository.setPinRemindersEnabled(any()) }
-
-    val dialog = viewModel.state.value.dialog
-    assertThat(dialog).isInstanceOf(Dialog.ConfirmPinToDisableReminders::class)
-    assertThat((dialog as Dialog.ConfirmPinToDisableReminders).incorrectPin).isTrue()
-  }
-
-  @Test
-  fun `typing again clears the incorrect PIN error`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged(INCORRECT_PIN))
-    viewModel.onEvent(AccountSettingsEvent.DisablePinRemindersConfirmed)
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged("1"))
-
-    val dialog = viewModel.state.value.dialog as Dialog.ConfirmPinToDisableReminders
-    assertThat(dialog.incorrectPin).isFalse()
-    assertThat(dialog.pin).isEqualTo("1")
-    assertThat(dialog.canSubmit).isFalse()
-  }
-
-  @Test
-  fun `toggling the keyboard swaps the type and clears what was typed`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged(CORRECT_PIN))
-    viewModel.onEvent(AccountSettingsEvent.PinKeyboardToggled)
-
-    val dialog = viewModel.state.value.dialog as Dialog.ConfirmPinToDisableReminders
-    assertThat(dialog.isAlphanumericKeyboard).isTrue()
-    assertThat(dialog.pin).isEqualTo("")
-    assertThat(dialog.canSubmit).isFalse()
   }
 
   @Test

@@ -7,11 +7,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-<<<<<<< MOLLY
 import androidx.core.app.TaskStackBuilder;
-=======
-import androidx.appcompat.app.AppCompatActivity;
->>>>>>> SIGNAL
 
 import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.util.logging.Log;

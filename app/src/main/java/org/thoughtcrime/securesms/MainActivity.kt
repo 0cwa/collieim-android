@@ -62,12 +62,8 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
-<<<<<<< MOLLY
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.compose.AndroidFragment
-import androidx.fragment.compose.rememberFragmentState
-=======
->>>>>>> SIGNAL
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,11 +78,8 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-<<<<<<< MOLLY
 import im.molly.unifiedpush.UnifiedPushDistributor
-=======
 import org.signal.appsettings.twofactorverify.TwoFactorVerifyMethod
->>>>>>> SIGNAL
 import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.ui.NavigationType
 import org.signal.core.ui.compose.Snackbars
@@ -101,11 +94,8 @@ import org.signal.core.ui.compose.split.rememberListDetailPaneLayout
 import org.signal.core.ui.compose.split.rememberListDetailPaneMetrics
 import org.signal.core.ui.compose.systemBarsCompat
 import org.signal.core.ui.compose.theme.SignalTheme
-<<<<<<< MOLLY
 import org.signal.core.ui.compose.theme.colorAttribute
 import org.signal.core.ui.navigation.TransitionSpecs
-=======
->>>>>>> SIGNAL
 import org.signal.core.ui.permissions.Permissions
 import org.signal.core.ui.rememberIsSplitPane
 import org.signal.core.ui.viewModel
@@ -115,11 +105,6 @@ import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.getParcelableCompat
 import org.signal.core.util.getSerializableCompat
 import org.signal.core.util.logging.Log
-<<<<<<< MOLLY
-import org.signal.mediasend.MediaSendActivityContract
-=======
-import org.signal.donations.StripeApi
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgress
 import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgressState
 import org.thoughtcrime.securesms.backup.v2.ui.CouldNotCompleteBackupRestoreSheet
@@ -128,24 +113,11 @@ import org.thoughtcrime.securesms.calls.YouAreAlreadyInACallSnackbar.show
 import org.thoughtcrime.securesms.calls.log.CallLogFilter
 import org.thoughtcrime.securesms.calls.log.CallLogFragment
 import org.thoughtcrime.securesms.calls.new.NewCallActivity
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.chats.ConversationTransitionState
-import org.thoughtcrime.securesms.chats.chatsNavEntries
-=======
-import org.thoughtcrime.securesms.calls.quality.CallQuality
-import org.thoughtcrime.securesms.calls.quality.CallQualityBottomSheetFragment
-import org.thoughtcrime.securesms.components.DebugLogsPromptDialogFragment
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.components.PromptBatterySaverDialogFragment
 import org.thoughtcrime.securesms.components.compose.DeviceSpecificNotificationBottomSheet
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
-<<<<<<< MOLLY
-=======
-import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity.Companion.manageSubscriptions
-import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
 import org.thoughtcrime.securesms.components.settings.app.account.signallogin.verify.SignalLoginVerifyActivity
 import org.thoughtcrime.securesms.components.settings.app.account.twofactor.verify.TwoFactorVerifyActivity
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.components.settings.app.notifications.manual.NotificationProfileSelectionFragment
 import org.thoughtcrime.securesms.components.snackbars.LocalSnackbarStateConsumerRegistry
 import org.thoughtcrime.securesms.components.snackbars.SnackbarHostKey
@@ -215,14 +187,8 @@ class MainActivity :
   MainNavigator.NavigatorProvider,
   Material3OnScrollHelperBinder,
   ConversationListFragment.Callback,
-<<<<<<< MOLLY
-  MainNavigationRouter,
-  CallLogFragment.Callback {
-=======
   MainNavigationEventSink,
-  CallLogFragment.Callback,
-  GooglePayComponent {
->>>>>>> SIGNAL
+  CallLogFragment.Callback {
 
   companion object {
     private val TAG = Log.tag(MainActivity::class)
@@ -292,12 +258,6 @@ class MainActivity :
   private val megaphoneActionController = MainMegaphoneActionController()
   private val mainNavigationCallback: (MainListRoute) -> Unit = { mainNavigationViewModel.onEvent(MainNavigationEvents.GoToTab(it)) }
 
-<<<<<<< MOLLY
-  private lateinit var mediaSendLauncher: ActivityResultLauncher<MediaSendActivityContract.Args>
-=======
-  override val googlePayRepository: GooglePayRepository by lazy { GooglePayRepository(this) }
-  override val googlePayResultPublisher: Subject<GooglePayComponent.GooglePayResult> = PublishSubject.create()
->>>>>>> SIGNAL
 
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
     return motionEventRelay.offer(ev) || super.dispatchTouchEvent(ev)
@@ -390,25 +350,7 @@ class MainActivity :
       }
     }
 
-<<<<<<< MOLLY
     shareDataTimestampViewModel.setTimestampFromActivityCreation(savedInstanceState, intent)
-=======
-    supportFragmentManager.setFragmentResultListener(
-      CallQualityBottomSheetFragment.REQUEST_KEY,
-      this
-    ) { _, bundle ->
-      if (bundle.getBoolean(CallQualityBottomSheetFragment.REQUEST_KEY, false)) {
-        mainNavigationViewModel.snackbarRegistry.emit(
-          SnackbarState(
-            message = getString(R.string.CallQualitySheet__thanks_for_your_feedback),
-            duration = Snackbars.Duration.SHORT,
-            hostKey = MainSnackbarHostKey.Chat,
-            fallbackKey = MainSnackbarHostKey.MainChrome
-          )
-        )
-      }
-    }
->>>>>>> SIGNAL
 
     setContent {
       val mainToolbarState by toolbarViewModel.state.collectAsStateWithLifecycle()
@@ -458,7 +400,7 @@ class MainActivity :
         val navBarColor = when {
           isSplitPane -> SignalTheme.colors.colorSurface1.toArgb()
           isConversationFullscreen -> Color.Transparent.toArgb()
-          else -> ContextCompat.getColor(context, CoreUiR.color.signal_colorSurface2)
+          else -> Color.Transparent.toArgb()
         }
 
         LaunchedEffect(isDarkTheme, navBarColor) {
@@ -508,164 +450,6 @@ class MainActivity :
                 modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBarsCompat)
               )
             }
-<<<<<<< MOLLY
-          },
-          bottomNavContent = {
-            if (isNavigationBarVisible) {
-              Column(
-                modifier = Modifier
-                  .clip(contentLayoutData.navigationBarShape)
-                  .background(color = colorAttribute(R.attr.navbar_container_color))
-              ) {
-                MainNavigationBar(
-                  state = mainNavigationState,
-                  onDestinationSelected = mainNavigationCallback
-                )
-
-                if (!LocalResources.current.rememberIsSplitPane()) {
-                  Spacer(Modifier.navigationBarsPadding())
-                }
-              }
-            }
-          },
-          navRailContent = {
-            if (isNavigationRailVisible) {
-              MainNavigationRail(
-                state = mainNavigationState,
-                mainFloatingActionButtonsCallback = mainBottomChromeCallback,
-                onDestinationSelected = mainNavigationCallback
-              )
-            }
-          },
-          secondaryContent = {
-            val listContainerColor = if (isSplitPane) {
-              SignalTheme.colors.colorSurface1
-            } else {
-              MaterialTheme.colorScheme.surface
-            }
-
-            Column(
-              modifier = Modifier
-                .padding(start = contentLayoutData.listPaddingStart)
-                .fillMaxSize()
-                .background(listContainerColor, contentLayoutData.shape)
-                .clip(contentLayoutData.shape)
-            ) {
-              MainToolbar(
-                state = mainToolbarState,
-                callback = toolbarCallback
-              )
-
-              Box(
-                modifier = Modifier.weight(1f)
-              ) {
-                when (val destination = mainNavigationState.currentListLocation) {
-                  MainNavigationListLocation.CHATS -> {
-                    val state = key(destination) { rememberFragmentState() }
-                    AndroidFragment(
-                      clazz = ConversationListFragment::class.java,
-                      fragmentState = state,
-                      modifier = Modifier.fillMaxSize()
-                    )
-                  }
-
-                  MainNavigationListLocation.ARCHIVE -> {
-                    val state = key(destination) { rememberFragmentState() }
-                    AndroidFragment(
-                      clazz = ConversationListArchiveFragment::class.java,
-                      fragmentState = state,
-                      modifier = Modifier.fillMaxSize()
-                    )
-                  }
-
-                  MainNavigationListLocation.CALLS -> {
-                    val state = key(destination) { rememberFragmentState() }
-                    AndroidFragment(
-                      clazz = CallLogFragment::class.java,
-                      fragmentState = state,
-                      modifier = Modifier.fillMaxSize()
-                    )
-                  }
-
-                  MainNavigationListLocation.STORIES -> {
-                    val state = key(destination) { rememberFragmentState() }
-                    AndroidFragment(
-                      clazz = StoriesLandingFragment::class.java,
-                      fragmentState = state,
-                      modifier = Modifier.fillMaxSize()
-                    )
-                  }
-                }
-
-                MainBottomChrome(
-                  state = mainBottomChromeState,
-                  callback = mainBottomChromeCallback,
-                  megaphoneActionController = megaphoneActionController,
-                  modifier = Modifier.align(Alignment.BottomCenter)
-                )
-              }
-            }
-          },
-          primaryContent = {
-            when (mainNavigationState.currentListLocation) {
-              MainNavigationListLocation.CHATS, MainNavigationListLocation.ARCHIVE -> {
-                NavDisplay(
-                  backStack = mainNavigationViewModel.chatsBackStackEntries,
-                  onBack = { mainNavigationViewModel.popChatsDetailLocation() },
-                  transitionSpec = TransitionSpecs.HorizontalSlide.transitionSpec,
-                  popTransitionSpec = TransitionSpecs.HorizontalSlide.popTransitionSpec,
-                  predictivePopTransitionSpec = TransitionSpecs.HorizontalSlide.predictivePopTransitionSpec,
-                  entryProvider = entryProvider { chatsNavEntries(convoTransitionState) }
-                )
-              }
-
-              MainNavigationListLocation.CALLS -> {
-                NavDisplay(
-                  backStack = mainNavigationViewModel.callsBackStackEntries,
-                  onBack = { mainNavigationViewModel.popCallsDetailLocation() },
-                  transitionSpec = TransitionSpecs.HorizontalSlide.transitionSpec,
-                  popTransitionSpec = TransitionSpecs.HorizontalSlide.popTransitionSpec,
-                  predictivePopTransitionSpec = TransitionSpecs.HorizontalSlide.predictivePopTransitionSpec,
-                  entryDecorators = listOf(
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator()
-                  ),
-                  entryProvider = entryProvider { callsNavEntries(isSplitPane) }
-                )
-              }
-
-              MainNavigationListLocation.STORIES -> {
-                NavDisplay(
-                  backStack = mainNavigationViewModel.storiesBackStackEntries,
-                  onBack = { mainNavigationViewModel.popStoriesDetailLocation() },
-                  transitionSpec = TransitionSpecs.HorizontalSlide.transitionSpec,
-                  popTransitionSpec = TransitionSpecs.HorizontalSlide.popTransitionSpec,
-                  predictivePopTransitionSpec = TransitionSpecs.HorizontalSlide.predictivePopTransitionSpec,
-                  entryDecorators = listOf(
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator()
-                  ),
-                  entryProvider = entryProvider { storiesNavEntries() }
-                )
-              }
-            }
-          },
-          paneExpansionDragHandle = if (contentLayoutData.hasDragHandle()) {
-            {
-              AppPaneDragHandle(
-                paneExpansionState = paneExpansionState,
-                mutableInteractionSource = mutableInteractionSource
-              )
-            }
-          } else {
-            null
-          },
-          animatorFactory = if (mainNavigationState.currentListLocation.isChatsTab) {
-            noEnterTransitionFactory
-          } else {
-            AppScaffoldAnimationStateFactory.Default
-=======
->>>>>>> SIGNAL
           }
         ) { paddingValues ->
           ListDetailNavDisplay(
@@ -812,7 +596,7 @@ class MainActivity :
           Column(
             modifier = Modifier
               .clip(contentLayoutData.navigationBarShape)
-              .background(color = SignalTheme.colors.colorSurface2)
+              .background(color = colorAttribute(R.attr.navbar_container_color))
           ) {
             MainNavigationBar(
               state = mainNavigationState,
@@ -840,25 +624,6 @@ class MainActivity :
           SignalTheme.colors.colorSurface1
         }
 
-<<<<<<< MOLLY
-        val isDarkTheme = isSystemInDarkTheme()
-        val navBarColor = if (isSplitPane) backgroundColor.toArgb() else 0
-        LaunchedEffect(isDarkTheme, navBarColor) {
-          if (Build.VERSION.SDK_INT >= 26) {
-            enableEdgeToEdge(
-              navigationBarStyle = if (isDarkTheme) {
-                SystemBarStyle.dark(navBarColor)
-              } else {
-                SystemBarStyle.light(navBarColor, navBarColor)
-              }
-            )
-          } else {
-            enableEdgeToEdge()
-          }
-        }
-
-=======
->>>>>>> SIGNAL
         val modifier = when {
           isSplitPane -> {
             Modifier
@@ -946,15 +711,7 @@ class MainActivity :
     }
 
     vitalsViewModel.checkSlowNotificationHeuristics()
-<<<<<<< MOLLY
-    mainNavigationViewModel.refreshNavigationBarState()
-=======
     mainNavigationViewModel.onEvent(MainNavigationEvents.RefreshNavigationBar)
-
-    CallQuality.consumeQualityRequest()?.let {
-      CallQualityBottomSheetFragment.create(it).show(supportFragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG)
-    }
->>>>>>> SIGNAL
   }
 
   override fun onStop() {
@@ -1258,11 +1015,7 @@ class MainActivity :
     }
 
     override fun onDonateClick() {
-      if (AppSettingsRepository.likelyCanManageDonations()) {
-        openSettings.launch(AppSettingsActivity.manageSubscriptions(this@MainActivity))
-      } else {
-        CommunicationActions.openBrowserLink(this@MainActivity, getString(R.string.donate_url))
-      }
+      CommunicationActions.openBrowserLink(this@MainActivity, getString(R.string.donate_url))
     }
 
     override fun onNotificationProfileClick() {

@@ -15,11 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import im.molly.app.base.ApkInfo
 import org.signal.core.util.PendingIntentFlags
-<<<<<<< MOLLY
-=======
 import org.signal.remoteconfig.RemoteConfig
-import org.thoughtcrime.securesms.BuildConfig
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.database.model.IssueEntry
 import org.thoughtcrime.securesms.database.model.IssuePriority

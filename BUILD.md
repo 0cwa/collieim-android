@@ -3,8 +3,10 @@
 Reconstruction and release engineering live in [collie-release-engineering](https://github.com/0cwa/collie-release-engineering). See [VERIFY.md](VERIFY.md) for Git-only source inspection.
 
 This checkout contains the reconstructed application source; Gradle does not run
-an assembler or inject source from another worktree. JDK/Gradle/SDK/NDK and strict
-dependency inputs are declared in this tree. Canonical identity is im.collie.app,
+an assembler or inject source from another worktree. Its JDK is Eclipse Temurin
+21.0.13+9: `.tool-versions` pins that release and `Dockerfile` pins the matching
+official Linux/amd64 image by digest. Gradle/SDK/NDK and strict dependency inputs
+are also declared in this tree. Canonical identity is im.collie.app,
 Collie backup names and optional FCM; legacy filename aliases are one product.
 
 **Direct build readiness: BLOCKED.** `build-inputs/native-lock.json` identifies

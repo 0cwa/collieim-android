@@ -3,7 +3,7 @@ package org.thoughtcrime.securesms.notifications
 import org.thoughtcrime.securesms.notifications.v2.ConversationId
 
 /**
- * New single-use ids count up by 10 and stay below the first ranged id. Molly-specific ids retain their existing values.
+ * New single-use ids count up by 10 and stay below the first ranged id. Legacy Molly backup-alert ids are retained for upgrade cleanup.
  *
  * Ranged ids are a base plus a database id, built by the `getNotificationIdFor*` functions. For example, thread ranges are offset by
  * thread id, story ranges by the parent story's message id.
@@ -39,6 +39,10 @@ object NotificationIds {
   const val FCM_FAILURE: Int = 12
   const val PENDING_MESSAGES: Int = 1111
   const val MANUAL_BACKUP_NOT_CREATED: Int = 120502
+
+  // Cleanup-only IDs; they overlap the old Molly thread notification range, so verify the active channel before canceling.
+  const val LEGACY_OUT_OF_REMOTE_STORAGE: Int = 120500
+  const val LEGACY_INITIAL_BACKUP_FAILED: Int = 120501
 
   const val THREAD: Int = 10000000
   const val MESSAGE_DELIVERY_FAILURE: Int = 20000000

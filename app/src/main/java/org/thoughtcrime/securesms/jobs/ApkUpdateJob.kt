@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import com.fasterxml.jackson.annotation.JsonProperty
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.greenrobot.eventbus.EventBus
 import org.signal.core.util.Hex
@@ -19,11 +20,7 @@ import org.signal.core.util.requireString
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateDownloadManagerReceiver
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.events.ApkUpdateEvent
-=======
-import org.thoughtcrime.securesms.dependencies.AppDependencies
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -73,12 +70,7 @@ class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(paramet
     val includeBeta = TextSecurePreferences.isUpdateApkIncludeBetaEnabled(context)
     val url = "${BuildConfig.FDROID_UPDATE_URL}/index-v1.json"
 
-<<<<<<< MOLLY
     Log.i(TAG, "Checking for APK update [stable" + (if (includeBeta) ", beta" else "") + "] at $url")
-=======
-    val client = AppDependencies.okHttpClient
-    val request = Request.Builder().url(BuildConfig.APK_UPDATE_MANIFEST_URL).build()
->>>>>>> SIGNAL
 
     val client = OkHttpClient().newBuilder()
       .socketFactory(Networking.socketFactory)
@@ -194,8 +186,8 @@ class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(paramet
 
     val downloadRequest = DownloadManager.Request(uri).apply {
       setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
-      setTitle("Downloading ${R.string.app_name} update")
-      setDescription("Downloading ${R.string.app_name} $versionName")
+      setTitle("Downloading ${context.getString(R.string.app_name)} update")
+      setDescription("Downloading ${context.getString(R.string.app_name)} $versionName")
       setDestinationInExternalFilesDir(context, null, "molly-update.apk")
     }
 

@@ -14,11 +14,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobs.ApkUpdateJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.service.PersistentAlarmManagerListener;
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
-=======
-import org.thoughtcrime.securesms.util.Environment;
->>>>>>> SIGNAL
 
 import java.util.concurrent.TimeUnit;
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The fallback matches the bottom sheet's active day/night or dynamic theme. The values-v27
+     override remains transparent so Material lays the sheet out edge-to-edge. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="?attr/colorSurfaceContainerLow" />
+</selector>

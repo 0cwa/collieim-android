@@ -45,7 +45,7 @@ object UnregisteredNotifier {
     )
 
     val notification = NotificationCompat.Builder(context, NotificationChannels.getInstance().FAILURES)
-      .setSmallIcon(R.drawable.ic_signal_logo_large)
+      .setSmallIcon(R.drawable.ic_notification)
       .setContentText(context.getString(R.string.LoggedOutNotification_you_have_been_logged_out))
       .setContentIntent(reRegistrationIntent)
       .setOnlyAlertOnce(true)

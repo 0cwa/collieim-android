@@ -85,7 +85,7 @@ object DataAndStorageSettingsRepository {
     return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(AppDependencies.application) == ConnectionResult.SUCCESS
   }
 
-  fun isProxyEnabled(): Boolean = SignalStore.proxy.isProxyEnabled
+  fun isProxyEnabled(): Boolean = AppDependencies.networkManager.isProxyEnabled
 
   /** The discrete MIME type (the part before the "/") stored in [SignalStore.settings] for each media type. */
   private val AutoDownloadMediaType.storageValue: String

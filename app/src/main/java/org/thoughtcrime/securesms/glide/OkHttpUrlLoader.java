@@ -13,6 +13,7 @@ import org.signal.glide.load.OkHttpStreamFetcher;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.net.ContentProxySelector;
 import org.thoughtcrime.securesms.net.Networking;
+import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
 
 import java.io.InputStream;
 

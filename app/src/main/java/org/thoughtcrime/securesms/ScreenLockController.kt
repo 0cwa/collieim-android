@@ -8,7 +8,7 @@ import android.os.SystemClock
 import android.view.View
 import android.view.Window
 import android.view.inspector.WindowInspector
-import org.signal.core.util.ServiceUtil;
+import org.signal.core.util.ServiceUtil
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.biometric.BiometricDialogFragment
@@ -93,7 +93,7 @@ object ScreenLockController {
 
   private fun activitiesRunningOnTopOfTasks(context: Context): List<ComponentName> =
     ServiceUtil.getActivityManager(context).appTasks
-      .map { it.taskInfo }
+      .mapNotNull { it.taskInfo }
       .filter {
         if (Build.VERSION.SDK_INT >= 29) it.isRunning else true
       }

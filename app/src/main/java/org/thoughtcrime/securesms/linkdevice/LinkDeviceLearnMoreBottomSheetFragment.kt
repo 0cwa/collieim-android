@@ -45,7 +45,7 @@ class LinkDeviceLearnMoreBottomSheetFragment : ComposeBottomSheetDialogFragment(
 @Composable
 fun LearnMoreSheet() {
   val context = LocalContext.current
-  val downloadUrl = stringResource(R.string.install_url)
+  val downloadUrl = stringResource(org.signal.core.util.R.string.install_url)
   val linkText = downloadUrl.removePrefix("https://")
   val fullString = stringResource(id = R.string.LinkDeviceFragment__for_android_devices_visit_s_to_install_molly, linkText)
   val spanned = SpanUtil.urlSubsequence(fullString, linkText, downloadUrl)

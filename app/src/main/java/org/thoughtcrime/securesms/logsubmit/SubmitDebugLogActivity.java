@@ -118,13 +118,11 @@ public class SubmitDebugLogActivity extends BaseActivity {
     getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
       @Override
       public void handleOnBackPressed() {
-        if (!viewModel.onBackPressed()) {
-          final Intent nextIntent = getIntent().getParcelableExtra("next_intent");
-          if (nextIntent != null) {
-            startActivity(nextIntent);
-          }
-          finish();
+        final Intent nextIntent = getIntent().getParcelableExtra("next_intent");
+        if (nextIntent != null) {
+          startActivity(nextIntent);
         }
+        finish();
       }
     });
 

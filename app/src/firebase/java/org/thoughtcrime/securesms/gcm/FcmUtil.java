@@ -23,6 +23,12 @@ public final class FcmUtil {
 
   private static final String TAG = Log.tag(FcmUtil.class);
 
+  public static boolean isSupported() { return true; }
+
+  public static void deleteInstallationForPrivacySettings() throws InterruptedException, ExecutionException {
+    Tasks.await(FirebaseInstallations.getInstance().delete());
+  }
+
   /**
    * Retrieves the current FCM token. If one isn't available, it'll be generated.
    */

@@ -46,6 +46,7 @@ val selectableVariants = listOf(
 
 // Override build config via env vars when project property 'CI' is set
 val ciEnabled = project.hasProperty("CI")
+val firebaseFree = providers.gradleProperty("mollyFirebaseFree").map(String::toBoolean).getOrElse(false)
 
 val baseAppTitle = getCiEnv("CI_APP_TITLE") ?: properties["baseAppTitle"] as String
 val baseAppFileName = getCiEnv("CI_APP_FILENAME") ?: properties["baseAppFileName"] as String
@@ -112,6 +113,7 @@ android {
   }
 
   sourceSets {
+    getByName("main").java.srcDir(if (firebaseFree) "src/firebaseFree/java" else "src/firebase/java")
     getByName("test") {
       kotlin.directories += "src/testShared"
       java.directories += "src/testShared"
@@ -341,6 +343,11 @@ android {
     }
   }
 
+  if (!firebaseFree) {
+    sourceSets.getByName("prod").manifest.srcFile("src/firebase/AndroidManifest.xml")
+    sourceSets.getByName("staging").manifest.srcFile("src/firebase/AndroidManifest.xml")
+  }
+
   lint {
     abortOnError = true
     baseline = file("lint-baseline.xml")
@@ -471,7 +478,7 @@ dependencies {
   implementation(libs.androidx.webkit)
   implementation(libs.androidx.paging.runtime)
   implementation(libs.androidx.paging.compose)
-  implementation(libs.firebase.messaging) {
+  if (!firebaseFree) implementation(libs.firebase.messaging) {
     exclude(group = "com.google.firebase", module = "firebase-core")
     exclude(group = "com.google.firebase", module = "firebase-analytics")
     exclude(group = "com.google.firebase", module = "firebase-measurement-connector")
@@ -482,7 +489,13 @@ dependencies {
     exclude(group = "com.google.android.gms", module = "play-services-stats")
     exclude(group = "com.google.android.gms", module = "play-services-tasks")
   }
-  implementation(project(":core-gms:cloud-messaging"))
+  if (firebaseFree) {
+    implementation(project(":core-gms:base"))
+    implementation(project(":core-gms:safeparcel"))
+    implementation(project(":core-gms:tasks"))
+  } else {
+    implementation(project(":core-gms:cloud-messaging"))
+  }
   implementation(libs.androidx.media)
   implementation(libs.bundles.media3)
   implementation(libs.conscrypt.android)

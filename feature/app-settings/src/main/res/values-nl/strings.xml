@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Appvergrendeling gebruiken</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">De vergrendelingsinstellingen van je Android-apparaat zijn vereist om Molly te ontgrendelen wanneer je de app afsluit of van app wisselt. Als de app is vergrendeld, zie je geen inhoud van berichten in meldingen.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">De vergrendelingsinstellingen van je Android-apparaat zijn vereist om Collie te ontgrendelen wanneer je de app afsluit of van app wisselt. Als de app is vergrendeld, zie je geen inhoud van berichten in meldingen.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Appvergrendeling starten</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Zelfgekozen tijd</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Molly-appvergrendeling gebruiken</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie-appvergrendeling gebruiken</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Molly-appvergrendeling uitschakelen</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collie-appvergrendeling uitschakelen</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Hulp</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">App-pictogrammen en -namen zijn zichtbaar op het startscherm en appoverzicht.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Meldingen geven altijd het standaard Molly-pictogram en de standaard app-naam weer.</string>
+    <string name="preferences__app_icon_notification_warning">Meldingen geven altijd het standaard Collie-pictogram en de standaard app-naam weer.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Afbeelding die illustreert waar het vervangende app-pictogram zichtbaar zal zijn.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Wijzig het app-pictogram en de naam in ‘%1$s’</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly moet worden gesloten om het app-pictogram en de naam te wijzigen. Meldingen geven altijd het standaard Molly-pictogram en de standaard app-naam weer.</string>
+    <string name="preferences__app_icon_dialog_description">Collie moet worden gesloten om het app-pictogram en de naam te wijzigen. Meldingen geven altijd het standaard Collie-pictogram en de standaard app-naam weer.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Selecteer een app-pictogram en naam die zichtbaar zijn op het startscherm en het appoverzicht van je telefoon. Meldingen geven altijd het standaard Molly-pictogram en de standaard app-naam weer. Meer informatie</string>
+    <string name="preferences__app_icon_warning_learn_more">Selecteer een app-pictogram en naam die zichtbaar zijn op het startscherm en het appoverzicht van je telefoon. Meldingen geven altijd het standaard Collie-pictogram en de standaard app-naam weer. Meer informatie</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Meer informatie</string>
 

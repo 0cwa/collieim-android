@@ -100,6 +100,7 @@ fun AppSettingsScreen(
   contentColor: Color = MaterialTheme.colorScheme.contentColorFor(containerColor).takeOrElse { MaterialTheme.colorScheme.onSurface },
   selectedRoute: AppSettingsRoute? = null,
   donationLabel: String? = null,
+  donationContent: (@Composable () -> Unit)? = null,
   networkLabel: String? = null,
   networkIcon: Painter? = null,
   avatar: @Composable () -> Unit = {},
@@ -186,6 +187,9 @@ fun AppSettingsScreen(
         }
 
         item {
+          if (donationContent != null) {
+            donationContent()
+          } else {
           Rows.TextRow(
             text = {
               Text(
@@ -214,6 +218,7 @@ fun AppSettingsScreen(
               .selectionHighlight(selectedRoute is AppSettingsRoute.DonationsRoute)
               .testTag(AppSettingsTestTags.ROW_DONATE)
           )
+          }
         }
 
         item {

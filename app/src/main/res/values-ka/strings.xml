@@ -31,12 +31,12 @@
   <!-- Removed by excludeNonTranslatables <string name="AlbumThumbnailView_plus" translatable="false">\+%d</string> -->
 
     <!-- ApplicationMigrationActivity -->
-    <string name="ApplicationMigrationActivity__signal_is_updating">მიმდინარეობს Molly-ის განახლება…</string>
+    <string name="ApplicationMigrationActivity__signal_is_updating">მიმდინარეობს Collie-ის განახლება…</string>
 
     <!-- ApplicationPreferencesActivity -->
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">პაროლფრაზა ჯერ არ დაგიყენებია!</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">გამოვრთოთ პაროლფრაზა?</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">ეს სამუდამოდ განბლოკავს Molly-ს და მიმოწერის შეტყობინებებს.</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">ეს სამუდამოდ განბლოკავს Collie-ს და მიმოწერის შეტყობინებებს.</string>
     <string name="ApplicationPreferencesActivity_disable">გამორთვა</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">სერვერთან დაკავშირებისას დაფიქსირდა შეცდომა!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">პინ-კოდი საჭიროა რეგისტრაციის ბლოკირებისთვის. პინ-კოდის გასათიშად, ჯერ უნდა გათიშო რეგისტრაციის ბლოკირება.</string>
@@ -81,7 +81,7 @@
     <string name="AttachmentKeyboard_location">ადგილმდებარეობა</string>
     <!-- Text for a button that will allow users to create a poll -->
     <string name="AttachmentKeyboard_poll">გამოკითხვა</string>
-    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">შენი ფოტოებისა და ვიდეოების საჩვენებლად Molly-ს ნებართვა სჭირდება</string>
+    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">შენი ფოტოებისა და ვიდეოების საჩვენებლად Collie-ს ნებართვა სჭირდება</string>
     <!-- Text for a button prompting users to allow Signal access to their gallery storage -->
     <string name="AttachmentKeyboard_allow_access">წვდომის მიცემა</string>
     <string name="AttachmentKeyboard_payment">ტრანზაქცია</string>
@@ -92,34 +92,34 @@
     <!-- Option in menu to go to settings -->
     <string name="AttachmentKeyboard_go_to_settings">შედი პარამეტრებში</string>
     <!-- Text explaining that Signal has limited access to photos -->
-    <string name="AttachmentKeyboard_signal_has_limited_access">Molly-ს ფოტოებსა და ვიდეოებზე შეზღუდული წვდომა აქვს</string>
+    <string name="AttachmentKeyboard_signal_has_limited_access">Collie-ს ფოტოებსა და ვიდეოებზე შეზღუდული წვდომა აქვს</string>
     <!-- Text shown when user has given no photos for Signal to access and an explanation on how to change those permissions -->
     <string name="AttachmentKeyboard_no_photos_found">ფოტოები ვერ მოიძებნა, აირჩიე ფოტოები და ვიდეოები აქ გამოსაჩენად ან შეცვალე ნებართვები</string>
 
     <!-- MediaGalleryFragment -->
     <!-- Text describing that no photos or videos are currently found in the gallery and that Signal can only access media that the user allows -->
-    <string name="MediaGalleryFragment__no_photos_found">ფოტოები და ვიდეოები ვერ მოიძებნა. Molly-ს მხოლოდ იმ ფოტოებსა და ვიდეოებზე აქვს წვდომა, რომლებიც შენ აირჩიე.</string>
+    <string name="MediaGalleryFragment__no_photos_found">ფოტოები და ვიდეოები ვერ მოიძებნა. Collie-ს მხოლოდ იმ ფოტოებსა და ვიდეოებზე აქვს წვდომა, რომლებიც შენ აირჩიე.</string>
 
     <!-- AttachmentManager -->
     <string name="AttachmentManager_cant_open_media_selection">მედიის ასარჩევი აპი ვერ მოიძებნა.</string>
-    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">სურათების, ვიდეოების ან აუდიოს მისამაგრებლად Molly-ს მეხსიერებაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ გადახვიდე აპის პარამეტრების მენიუში, აირჩიე \"ნებართვები\" და გააქტიურე \"მეხსიერება\".</string>
-    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">საკონტაქტო ინფორმაციის მისაბმელად Molly-ს კონტაქტებზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ გადახვიდე აპის პარამეტრების მენიუში, აირჩიე \"ნებართვები\" და გააქტიურე \"კონტაქტები\".</string>
-    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">ადგილმდებარეობის საჩვენებლად Molly-ს ადგილმდებარეობაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპის პარამეტრების მენიუში, აირჩიე \"ნებართვები\" და გააქტიურე \"ადგილმდებარეობა\".</string>
+    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">სურათების, ვიდეოების ან აუდიოს მისამაგრებლად Collie-ს მეხსიერებაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ გადახვიდე აპის პარამეტრების მენიუში, აირჩიე \"ნებართვები\" და გააქტიურე \"მეხსიერება\".</string>
+    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">საკონტაქტო ინფორმაციის მისაბმელად Collie-ს კონტაქტებზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ გადახვიდე აპის პარამეტრების მენიუში, აირჩიე \"ნებართვები\" და გააქტიურე \"კონტაქტები\".</string>
+    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">ადგილმდებარეობის საჩვენებლად Collie-ს ადგილმდებარეობაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპის პარამეტრების მენიუში, აირჩიე \"ნებართვები\" და გააქტიურე \"ადგილმდებარეობა\".</string>
 
     <!-- Dialog title asking users for location permission -->
     <string name="AttachmentManager_signal_allow_access_location">მიეცი წვდომა შენს ლოკაციაზე</string>
     <!-- Dialog description that will explain the steps needed to give location permission -->
     <string name="AttachmentManager_signal_to_send_location">შენი მდებარეობის გასაგზავნად:</string>
     <!-- Alert dialog description asking for location permission -->
-    <string name="AttachmentManager_signal_allow_signal_access_location">შენი მდებარეობის გასაგზავნად, მიეცი Molly-ს წვდომა.</string>
+    <string name="AttachmentManager_signal_allow_signal_access_location">შენი მდებარეობის გასაგზავნად, მიეცი Collie-ს წვდომა.</string>
     <!-- Toast text explaining Signal\'s need for location access -->
-    <string name="AttachmentManager_signal_needs_location_access">Molly-ს შენი მდებარეობის გასაგზავნად ლოკაციაზე წვდომა სჭირდება.</string>
+    <string name="AttachmentManager_signal_needs_location_access">Collie-ს შენი მდებარეობის გასაგზავნად ლოკაციაზე წვდომა სჭირდება.</string>
     <!-- Dialog title asking users for gallery storage permission -->
     <string name="AttachmentManager_signal_allow_storage">მეხსიერებაზე წვდომის მიცემა</string>
     <!-- Dialog description that will explain the steps needed to give gallery storage permission -->
     <string name="AttachmentManager_signal_to_show_photos">ფოტოებისა და ვიდეოების საჩვენებლად:</string>
     <!-- Toast text explaining Signal\'s need for storage access -->
-    <string name="AttachmentManager_signal_needs_storage_access">Molly-ს წვდომა მხოლოდ შენი ფოტოებისა და ვიდეოების საჩვენებლად სჭირდება.</string>
+    <string name="AttachmentManager_signal_needs_storage_access">Collie-ს წვდომა მხოლოდ შენი ფოტოებისა და ვიდეოების საჩვენებლად სჭირდება.</string>
 
     <!-- Alert dialog title to show the recipient has not activated payments -->
     <string name="AttachmentManager__not_activated_payments">%1$s-ს ტრანზაქციები არ გაუაქტიურებია </string>
@@ -272,12 +272,12 @@
     <string name="CensorshipCircumventionMegaphone_no_thanks">არა, მადლობა</string>
 
     <!-- ClientDeprecatedActivity -->
-    <string name="ClientDeprecatedActivity_update_signal">Molly-ის განახლება</string>
+    <string name="ClientDeprecatedActivity_update_signal">Collie-ის განახლება</string>
     <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">აპის ამ ვერსიას აღარ აქვს მხარდაჭერა. შეტყობინებების გაგზავნისა და მიღების გასაგრძელებლად გადმოწერე უახლესი ვერსია.</string>
     <string name="ClientDeprecatedActivity_update">განახლება</string>
     <string name="ClientDeprecatedActivity_dont_update">არ განაახლო</string>
     <string name="ClientDeprecatedActivity_warning">გაფრთხილება</string>
-    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Molly-ის შენს ვერსიას ვადა გაუვიდა. შეგიძლია ნახო შენი შეტყობინებების ისტორია, მაგრამ სანამ აპს არ განაახლებ შეტყობინებების გაგზავნას ან მიღებას ვერ შეძლებ.</string>
+    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Collie-ის შენს ვერსიას ვადა გაუვიდა. შეგიძლია ნახო შენი შეტყობინებების ისტორია, მაგრამ სანამ აპს არ განაახლებ შეტყობინებების გაგზავნას ან მიღებას ვერ შეძლებ.</string>
 
     <!-- ClockSkewActivity -->
     <!-- Title of the full-screen dialog shown when the device clock is too far off from the real time -->
@@ -309,7 +309,7 @@
     <!-- Title on dialog when quick restore qr code is scanned in system camera -->
     <string name="CommunicationActions__transfer_dialog_title">გსურს, ანგარიში ახალ მოწყობილობაზე გადაიტანო?</string>
     <!-- Message on dialog when quick restore qr code is scanned in system camera -->
-    <string name="CommunicationActions__transfer_dialog_message">ამ ანგარიშის ახალ მოწყობილობაზე გადასატანად დააჭირე \"გაგრძელებას\" და QR კოდი Molly-ის კამერით თავიდან დაასკანირე. დარწმუნდი, რომ მხოლოდ იმ QR კოდებს ასკანირებ, რომლებიც პირდაპირ Molly-იდან მოდის.</string>
+    <string name="CommunicationActions__transfer_dialog_message">ამ ანგარიშის ახალ მოწყობილობაზე გადასატანად დააჭირე \"გაგრძელებას\" და QR კოდი Collie-ის კამერით თავიდან დაასკანირე. დარწმუნდი, რომ მხოლოდ იმ QR კოდებს ასკანირებ, რომლებიც პირდაპირ Collie-იდან მოდის.</string>
     <string name="CommunicationActions__dont_transfer">არ გადაიტანო</string>
 
     <!-- ConfirmIdentityDialog -->
@@ -333,8 +333,8 @@
 
     <!-- ContactsDatabase -->
     <string name="ContactsDatabase_message_s">შეტყობინება %1$s</string>
-    <string name="ContactsDatabase_signal_call_s">Molly-ის ხმოვანი ზარი %1$s</string>
-    <string name="ContactsDatabase_signal_video_call_s">Molly-ის ვიდეო ზარი %1$s</string>
+    <string name="ContactsDatabase_signal_call_s">Collie-ის ხმოვანი ზარი %1$s</string>
+    <string name="ContactsDatabase_signal_video_call_s">Collie-ის ვიდეო ზარი %1$s</string>
 
     <!-- ContactNameEditActivity -->
     <!-- Toolbar title for contact name edit activity -->
@@ -445,10 +445,10 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="ConversationActivity_signal_to_send_audio_messages">ხმოვანი შეტყობინებების გასაგზავნად:</string>
     <!-- Alert dialog description asking for microphone permission in order to send voice messages -->
-    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">ხმოვანი შეტყობინებების გასაგზავნად, Molly-ს შენს მიკროფონზე წვდომა მიეცი.</string>
+    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">ხმოვანი შეტყობინებების გასაგზავნად, Collie-ს შენს მიკროფონზე წვდომა მიეცი.</string>
     <!-- Toast text explaining Signal\'s need for microphone access -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">ხმოვანი შეტყობინების ჩასაწერად Molly-ს მიკროფონზე წვდომა სჭირდება.</string>
-    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">აუდიო შეტყობინებების გადასაგზავნად Molly-ს მიკროფონზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპის პარამეტრების მენიუში, აირჩიო \"უფლებები\" და ჩართო \"მიკროფონი\".</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">ხმოვანი შეტყობინების ჩასაწერად Collie-ს მიკროფონზე წვდომა სჭირდება.</string>
+    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">აუდიო შეტყობინებების გადასაგზავნად Collie-ს მიკროფონზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპის პარამეტრების მენიუში, აირჩიო \"უფლებები\" და ჩართო \"მიკროფონი\".</string>
 
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d %2$d-დან</string>
@@ -468,9 +468,9 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions for a voice call -->
     <string name="ConversationActivity__to_start_call">ზარის დასაწყებად:</string>
     <!-- Alert dialog description asking for microphone permission in order to start a voice call -->
-    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">ზარის დასაწყებად, Molly-ს შენს მიკროფონზე წვდომა მიეცი.</string>
+    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">ზარის დასაწყებად, Collie-ს შენს მიკროფონზე წვდომა მიეცი.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">ზარის დასაწყებად Molly-ს მიკროფონზე წვდომა სჭირდება.</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">ზარის დასაწყებად Collie-ს მიკროფონზე წვდომა სჭირდება.</string>
 
 
     <string name="ConversationActivity_join">შემოუერთდი</string>
@@ -484,11 +484,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">SMS მიმოწერები Signal-ში აღარ არის ხელმისაწვდომი. მოიწვიე %1$s Signal-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">ეს ადამიანი Molly-ს აღარ იყენებს. მოიწვიე ის Molly-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
+    <string name="ConversationActivity__this_person_is_no_longer_using_signal">ეს ადამიანი Collie-ს აღარ იყენებს. მოიწვიე ის Collie-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">ეს ადამიანი Signal-ს არ იყენებს. მოიწვიე, რომ მიმოწერა აქ განაგრძოთ.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">მოიწვიე Molly-ში</string>
+    <string name="ConversationActivity__invite_to_signal">მოიწვიე Collie-ში</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">ზარის დროს ხმოვანი შეტყობინების ჩაწერა შეუძლებელია.</string>
 
@@ -581,15 +581,15 @@
     <!-- Message shown after successfully blocking join requests for a user -->
     <string name="ConversationFragment__blocked">დაბლოკილია</string>
     <!-- Action shown to allow a user to update their application because it has expired -->
-    <string name="ConversationFragment__update_build">Molly-ის განახლება</string>
+    <string name="ConversationFragment__update_build">Collie-ის განახლება</string>
     <!-- Action shown to allow a user to re-register as they are no longer registered -->
-    <string name="ConversationFragment__reregister_signal">Molly-ის ხელახლა რეგისტრაცია</string>
+    <string name="ConversationFragment__reregister_signal">Collie-ის ხელახლა რეგისტრაცია</string>
     <!-- Action shown in the conversation input area to allow a user to re-link this device as it is no longer linked -->
     <string name="ConversationFragment__relink_signal">თავიდან მიბმა</string>
     <!-- Label for a button displayed in the conversation toolbar to return to the previous screen. -->
     <string name="ConversationFragment__content_description_back_button">უკან გასვლა.</string>
     <!-- Label for a button displayed in the conversation toolbar to open the main screen of the app. -->
-    <string name="ConversationFragment__content_description_launch_signal_button">Molly-ის გახსნა</string>
+    <string name="ConversationFragment__content_description_launch_signal_button">Collie-ის გახსნა</string>
     <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
     <string name="ConversationFragment__no_longer_verified">ვერიფიცირებული აღარაა</string>
     <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
@@ -636,7 +636,7 @@
     <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
     <string name="ConversationFragment_attachment_backfill_failed_title">მედია ფაილების გადმოწერა შეუძლებელია</string>
     <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
-    <string name="ConversationFragment_attachment_backfill_timeout">შეამოწმე ეს მოწყობილობა და შენი მობილურის ინტერნეტ კავშირი. შედი Molly-ზე შენს მობილურში და თავიდან ჩამოტვირთვა სცადე.</string>
+    <string name="ConversationFragment_attachment_backfill_timeout">შეამოწმე ეს მოწყობილობა და შენი მობილურის ინტერნეტ კავშირი. შედი Collie-ზე შენს მობილურში და თავიდან ჩამოტვირთვა სცადე.</string>
     <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
     <string name="ConversationFragment_attachment_backfill_not_found">ეს მედია ფაილი შენს მობილურზე ხელმისაწვდომი აღარაა და ვერ ჩამოიტვირთება.</string>
     <!-- Dialog for how to long to keep a messaged pinned for -->
@@ -706,7 +706,7 @@
     <!-- Bottom sheet text explaining that profile names are chosen by the account holder. Placeholder will be \'Profile names\' -->
     <string name="ProfileNameBottomSheet__profile_names_on_signal">Signal-ზე %1$s მათი ანგარიშის მფლობელის მიერაა არჩეული.</string>
     <!-- Bottom sheet text explaining that Signal can\'t verify names and photos -->
-    <string name="ProfileNameBottomSheet__signal_cant_verify">Molly-ი სახელებისა და ფოტოების ვერიფიცირებას ვერ ახერხებს</string>
+    <string name="ProfileNameBottomSheet__signal_cant_verify">Collie-ი სახელებისა და ფოტოების ვერიფიცირებას ვერ ახერხებს</string>
     <!-- Bottom sheet text explaining that Signal will never contact you for registration code, PIN, or recovery key -->
     <string name="ProfileNameBottomSheet__signal_will_never_contact">Signal-ი არასდროს მოგწერს შენი რეგისტრაციის კოდის, პინ-კოდის ან აღდგენის გასაღების მოთხოვნით</string>
     <!-- Bottom sheet text explaining that accounts can impersonate other people and to be cautious -->
@@ -848,9 +848,9 @@
     <!-- Toolbar title for this screen -->
     <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">ვის შეუძლია ნომრით მიპოვოს?</string>
     <!-- Description for radio item stating anyone can see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">ნებისმიერს, ვისაც შენი მობილურის ნომერი აქვს, დაინახავს, რომ Molly-ზე ხარ და შენთან ჩატის წამოწყებას შეძლებს.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">ნებისმიერს, ვისაც შენი მობილურის ნომერი აქვს, დაინახავს, რომ Collie-ზე ხარ და შენთან ჩატის წამოწყებას შეძლებს.</string>
     <!-- Description for radio item stating no one will be able to see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">ვერავინ დაინახავს, რომ Molly-ზე ხარ, სანამ არ მისწერ ან თუ არსებული ჩატი არ გექნებათ.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">ვერავინ დაინახავს, რომ Collie-ზე ხარ, სანამ არ მისწერ ან თუ არსებული ჩატი არ გექნებათ.</string>
 
     <!-- ChooseBackupFragment -->
 
@@ -876,7 +876,7 @@
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">გატესტე შენი სათადარიგო ასლების პაროლ-ფრაზა და დარწმუნდი, რომ ის შეესაბამება</string>
     <string name="BackupsPreferenceFragment__turn_on">სათადარიგო ასლების ჩართვა</string>
     <string name="BackupsPreferenceFragment__turn_off">გამორთვა</string>
-    <string name="BackupsPreferenceFragment__to_restore_a_backup">"სათადარიგო ასლის აღსადგენად გადმოწერე Molly-ის ახალი ვერსია. გახსენი აპლიკაცია და დააჭირე \"სარეზერვო ასლის აღდგენას\", შემდეგ იპოვე სათადარიგო ფაილი. %1$s"</string>
+    <string name="BackupsPreferenceFragment__to_restore_a_backup">"სათადარიგო ასლის აღსადგენად გადმოწერე Collie-ის ახალი ვერსია. გახსენი აპლიკაცია და დააჭირე \"სარეზერვო ასლის აღდგენას\", შემდეგ იპოვე სათადარიგო ფაილი. %1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">გაიგე მეტი</string>
     <string name="BackupsPreferenceFragment__in_progress">იტვირთება…</string>
     <!-- Status text shown in backup preferences when verifying a backup -->
@@ -885,7 +885,7 @@
     <string name="BackupsPreferenceFragment__d_so_far">%1$d ჯერ…</string>
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">%1$s%% ჯერ…</string>
-    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">სათადარიგო ასლების შესაქმნელად Molly-ი საჭიროებს გარე მეხსიერებაზე წვდომის ნებართვას, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „შენახვა“.</string>
+    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">სათადარიგო ასლების შესაქმნელად Collie-ი საჭიროებს გარე მეხსიერებაზე წვდომის ნებართვას, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „შენახვა“.</string>
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">დააყენე სარეზერვო კოპიების შექმნის დრო</string>
 
@@ -963,7 +963,7 @@
 
     <!-- DecryptionFailedDialog -->
     <string name="DecryptionFailedDialog_chat_session_refreshed">ჩატის სესია განახლდა</string>
-    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Molly-ი სრულ დაშიფვრას იყენებს, რის გამოც შეიძლება ზოგჯერ შენი ჩატის სესიის განახლება დასჭირდეს. ეს არ იმოქმედებს შენი ჩატის უსაფრთხოებაზე, მაგრამ შესაძლოა ამ კონტაქტისგან შეტყობინება გამოგრჩეს, რის შედეგადაც შესაძლოა მისთვის შეტყობინების ხელახლა გამოგზავნის თხოვნა მოგიწიოს.</string>
+    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Collie-ი სრულ დაშიფვრას იყენებს, რის გამოც შეიძლება ზოგჯერ შენი ჩატის სესიის განახლება დასჭირდეს. ეს არ იმოქმედებს შენი ჩატის უსაფრთხოებაზე, მაგრამ შესაძლოა ამ კონტაქტისგან შეტყობინება გამოგრჩეს, რის შედეგადაც შესაძლოა მისთვის შეტყობინების ხელახლა გამოგზავნის თხოვნა მოგიწიოს.</string>
 
     <!-- LinkDeviceFragment -->
     <!-- Description for how Signal will work with a linked device (eg desktop, iPad) -->
@@ -1072,7 +1072,7 @@
     <!-- Bottom sheet title telling users to complete the linking process on the other device  -->
     <string name="AddLinkDeviceFragment__finish_linking_on_other_device">დაასრულე შენს სხვა მოწყობილობასთან დაკავშირება</string>
     <!-- Bottom sheet description telling users to complete the linking process -->
-    <string name="AddLinkDeviceFragment__finish_linking_signal">დაასრულე Molly-ის დაკავშირება შენს სხვა მოწყობილობასთან.</string>
+    <string name="AddLinkDeviceFragment__finish_linking_signal">დაასრულე Collie-ის დაკავშირება შენს სხვა მოწყობილობასთან.</string>
     <!-- Title of dialog when the QR code being scanned is invalid -->
     <string name="AddLinkDeviceFragment__linking_device_failed">მოწყობილობის დაკავშირება ვერ მოხერხდა</string>
     <!-- Text shown in a dialog when the QR code being scanned is invalid -->
@@ -1120,16 +1120,16 @@
     <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">ამ მოწყობილობას არ აქვს Play Services-ის მხარდაჭერა. დააჭირე, რათა გამორთო ბატარეის სისტემური ოპტიმიზაცია, რაც ხელს უშლის Molly-ს შეტყობინებების მოძიებაში, როცა აპლიკაციას არ იყენებ.</string>
 
     <!-- ExpiredBuildReminder -->
-    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Molly-ის ამ ვერსიას ვადა გაუვიდა. განაახლე ახლავე, რათა გააგზავნო და მიიღო შეტყობინებები.</string>
+    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Collie-ის ამ ვერსიას ვადა გაუვიდა. განაახლე ახლავე, რათა გააგზავნო და მიიღო შეტყობინებები.</string>
     <string name="ExpiredBuildReminder_update_now">განაახლე ახლავე</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
     <string name="DeprecatedSdkBanner_body">ამ მოწყობილობაზე Signal-ი აღარ მუშაობს. იმისათვის, რომ Signal-ის გამოყენება ისევ შეძლო, განაახლე Android-ის ვერსია, ან შეცვალე შენი მოწყობილობა ახლით.</string>
 
     <!-- Title of notification telling users to update Signal -->
-    <string name="DeprecatedNotificationJob_update_signal">Molly-ის განახლება</string>
+    <string name="DeprecatedNotificationJob_update_signal">Collie-ის განახლება</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
-    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Molly-ის ამ ვერსიას ვადა გაუვიდა. დააჭირე და განაახლე, რომ წერილები გაგზავნო და მიიღო.</string>
+    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Collie-ის ამ ვერსიას ვადა გაუვიდა. დააჭირე და განაახლე, რომ წერილები გაგზავნო და მიიღო.</string>
 
     <!-- PendingGroupJoinRequestsReminder -->
     <plurals name="PendingGroupJoinRequestsReminder_d_pending_member_requests">
@@ -1263,7 +1263,7 @@
     <!-- Message for dialog asking user to submit logs for debugging a crash -->
     <string name="PromptLogsSlowNotificationsDialog__message">გამართვის ჟურნალები გვეხმარება პრობლემის დიაგნოსტიკასა და გამოსწორებაში და არ შეიცავს საიდენტიფიკაციო ინფორმაციას.</string>
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
-    <string name="PromptLogsSlowNotificationsDialog__title_crash">Molly-ი პრობლემას გადააწყდა. ატვირთოთ გამართვის ჟურნალი?</string>
+    <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie-ი პრობლემას გადააწყდა. ატვირთოთ გამართვის ჟურნალი?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">შეიძლება შეტყობინებებს ვერ იღებდე. გსურს გაუმართაობის რეესტრის ატვირთვა?</string>
 
@@ -1271,12 +1271,12 @@
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">შეტყობინებები შეიძლება ბატარეის ოპტიმიზაციის გამო დაგვიანდეს</string>
     <!-- Message explaining that battery saver may delay notifications -->
-    <string name="PromptBatterySaverBottomSheet__message">შეგიძლია Molly-ისთვის ბატარეის ოპტიმიზაცია გამორთო, რათა დარწმუნდე, რომ შეტყობინებებზე ინფორმირება არ დაგვიანდება.</string>
+    <string name="PromptBatterySaverBottomSheet__message">შეგიძლია Collie-ისთვის ბატარეის ოპტიმიზაცია გამორთო, რათა დარწმუნდე, რომ შეტყობინებებზე ინფორმირება არ დაგვიანდება.</string>
 
     <!-- Title in bottom sheet that states that notifications for this device could be delayed -->
     <string name="DeviceSpecificNotificationBottomSheet__notifications_may_be_delayed">შეტყობინებები შეიძლება ბატარეის ოპტიმიზაციის გამო დაგვიანდეს</string>
     <!-- Message in bottom sheet prompting users to fix potential issues by disabling battery optimizations -->
-    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">შეგიძლია Molly-ისთვის ბატარეის ოპტიმიზაცია გამორთო, რათა დარწმუნდე, რომ შეტყობინებებზე ინფორმირება არ დაგვიანდება. მოწყობილობის სპეციფიკური ინსტრუქციების სანახავად დააჭირე \"გაგრძელება\"-ს.</string>
+    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">შეგიძლია Collie-ისთვის ბატარეის ოპტიმიზაცია გამორთო, რათა დარწმუნდე, რომ შეტყობინებებზე ინფორმირება არ დაგვიანდება. მოწყობილობის სპეციფიკური ინსტრუქციების სანახავად დააჭირე \"გაგრძელება\"-ს.</string>
     <!-- Button to dismiss notification help prompt -->
     <string name="DeviceSpecificNotificationBottomSheet__no_thanks">არა, მადლობა</string>
     <!-- Button to continue and go to Signal support website -->
@@ -1285,7 +1285,7 @@
     <!-- Title of a bottom sheet that is shown when the user is having connectivity issues -->
     <string name="ConnectivityWarningBottomSheet_title">შეიძლება შეტყობინებებს ვერ იღებდე</string>
     <!-- Body of a bottom sheet that is shown when the user is having connectivity issues -->
-    <string name="ConnectivityWarningBottomSheet_body">შეტყობინების მიღების პრობლემის მოგვარებაში შენი მოწყობილობის გადატვირთვა დაგეხმარება. თუ პრობლემა ისევ გექნება, Molly-ის მხარდაჭერის გუნდს დაუკავშირდი.</string>
+    <string name="ConnectivityWarningBottomSheet_body">შეტყობინების მიღების პრობლემის მოგვარებაში შენი მოწყობილობის გადატვირთვა დაგეხმარება. თუ პრობლემა ისევ გექნება, Collie-ის მხარდაჭერის გუნდს დაუკავშირდი.</string>
     <!-- Text for a button in a bottom sheet that is shown when the user is having connectivity issues. Clicking it will dismiss the bottom sheet. -->
     <string name="ConnectivityWarningBottomSheet_dismiss_button">გასაგებია</string>
 
@@ -1520,7 +1520,7 @@
     <string name="LongMessageActivity_your_message">შენი შეტყობინება</string>
 
     <!-- MessageRetrievalService -->
-    <string name="MessageRetrievalService_signal">Molly</string>
+    <string name="MessageRetrievalService_signal">Collie</string>
     <string name="MessageRetrievalService_background_connection_enabled">ფონური კავშირი ჩართულია</string>
 
     <!-- MediaOverviewActivity -->
@@ -1612,10 +1612,10 @@
   <!-- Removed by excludeNonTranslatables <string name="StarredMessages__s_chevron_s" translatable="false">%1$s \u203A %2$s</string> -->
 
     <!-- NotificationBarManager -->
-    <string name="NotificationBarManager__establishing_signal_call">ვახორციელებთ Molly-ის ზარს</string>
+    <string name="NotificationBarManager__establishing_signal_call">ვახორციელებთ Collie-ის ზარს</string>
     <!-- Temporary notification shown when starting the calling service -->
-    <string name="NotificationBarManager__starting_signal_call_service">ვიწყებთ Molly-ის სერვისის ზარს</string>
-    <string name="NotificationBarManager__stopping_signal_call_service">ვაჩერებთ Molly-ის სერვისის ზარს</string>
+    <string name="NotificationBarManager__starting_signal_call_service">ვიწყებთ Collie-ის სერვისის ზარს</string>
+    <string name="NotificationBarManager__stopping_signal_call_service">ვაჩერებთ Collie-ის სერვისის ზარს</string>
     <string name="NotificationBarManager__cancel_call">ზარის გაუქმება</string>
 
     <!-- NotificationsMegaphone -->
@@ -1946,7 +1946,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Molly-ით SMS შეტყობინებების გაგზავნას ვეღარ შეძლებ. მოიწვიე %1$s Molly-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
+    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Collie-ით SMS შეტყობინებების გაგზავნას ვეღარ შეძლებ. მოიწვიე %1$s Collie-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">ტრანზაქცია: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2061,20 +2061,20 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">მივაბათ Signal-ს მოწყობილობა?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">დესკტოპის ან iPad-ის ამ Signal ანგარიშთან მისაბმელად, გადადი დაკავშირებულ მოწყობილობებზე, აირჩიე „ახალი მოწყობილობის მიბმა“ და თავიდან დაასკანირე QR კოდი. დარწმუნდი, რომ მხოლოდ იმ QR კოდებს ასკანირებ, რომლებიც პირდაპირ Signal-იდან მოდის.</string>
 
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Molly-ის ამ ვერსიას ვადა დღეს ამოეწურება. გადმოწერე უახლესი ვერსია.</string>
+    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Collie-ის ამ ვერსიას ვადა დღეს ამოეწურება. გადმოწერე უახლესი ვერსია.</string>
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
-        <item quantity="one">Molly-ის ამ ვერსიას ვადა ხვალ გაუვა. გადმოწერე უახლესი ვერსია.</item>
-        <item quantity="other">Molly-ის ამ ვერსიას ვადა %1$d დღეში გაუვა. გადმოწერე უახლესი ვერსია.</item>
+        <item quantity="one">Collie-ის ამ ვერსიას ვადა ხვალ გაუვა. გადმოწერე უახლესი ვერსია.</item>
+        <item quantity="other">Collie-ის ამ ვერსიას ვადა %1$d დღეში გაუვა. გადმოწერე უახლესი ვერსია.</item>
     </plurals>
 
     <!-- PassphrasePromptActivity -->
     <string name="PassphrasePromptActivity_enter_passphrase">შეიყვანე პაროლ-ფრაზა</string>
-    <string name="PassphrasePromptActivity_watermark_content_description">Molly-ის ხატულა</string>
+    <string name="PassphrasePromptActivity_watermark_content_description">Collie-ის ხატულა</string>
     <string name="PassphrasePromptActivity_ok_button_content_description">პაროლ-ფრაზის დადასტურება</string>
     <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">არასწორი პაროლ-ფრაზა!</string>
-    <string name="PassphrasePromptActivity_unlock_signal">Molly-ის გახსნა</string>
+    <string name="PassphrasePromptActivity_unlock_signal">Collie-ის გახსნა</string>
     <!-- This is the subject line for the email that is sent to support -->
-    <string name="PassphrasePromptActivity_signal_android_lock_screen">Molly Android - დაბლოკილი ეკრანი</string>
+    <string name="PassphrasePromptActivity_signal_android_lock_screen">Collie Android - დაბლოკილი ეკრანი</string>
 
     <!-- PlacePickerActivity -->
     <string name="PlacePickerActivity_title">რუკა</string>
@@ -2132,7 +2132,7 @@
 
     <!-- RecaptchaRequiredBottomSheetFragment -->
     <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">გაიარე ვერიფიკაცია მიმოწერის გასაგრძელებლად</string>
-    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Molly-ზე სპამის თავიდან ასაცილებლად, გთხოვთ, დაასრულო ვერიფიკაცია.</string>
+    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Collie-ზე სპამის თავიდან ასაცილებლად, გთხოვთ, დაასრულო ვერიფიკაცია.</string>
     <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">ვერიფიკაციის გავლის შემდეგ მიმოწერის გაგრძელებას შეძლებ. ნებისმიერი შეჩერებული შეტყობინება ავტომატურად გაიგზავნება.</string>
 
     <!-- Recipient -->
@@ -2140,7 +2140,7 @@
     <!-- Name of recipient representing user\'s \'My Story\' -->
     <string name="Recipient_my_story">ჩემი Story-ი</string>
     <!-- Name of recipient for a call link without a name -->
-    <string name="Recipient_signal_call">Molly-ის ზარი</string>
+    <string name="Recipient_signal_call">Collie-ის ზარი</string>
 
     <!-- RecipientPreferencesActivity -->
     <string name="RecipientPreferenceActivity_block">დაბლოკვა</string>
@@ -2177,7 +2177,7 @@
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">დააჭირე აქ შენი ვიდეოს ჩასართავად</string>
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
-    <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
+    <string name="WebRtcCallActivity__signal_s">Collie %1$s</string>
     <string name="WebRtcCallActivity__calling">ვრეკავთ…</string>
     <!-- Title for dialog warning about lacking bluetooth permissions during a call -->
     <string name="WebRtcCallActivity__bluetooth_permission_denied">Bluetooth-ის ნებართვა უარყოფილია</string>
@@ -2242,15 +2242,15 @@
     <!-- Dialog title asking users for camera permission -->
     <string name="WebRtcCallActivity__allow_access_camera">შენს კამერაზე წვდომის მიცემა</string>
     <!-- Dialog description explaining why camera and microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_camera_microphone">ზარის დასაწყებად ან მასში შესასვლელად, Molly-ს შენს კამერასა და მიკროფონზე წვდომა სჭირდება.</string>
+    <string name="WebRtcCallActivity__to_start_call_camera_microphone">ზარის დასაწყებად ან მასში შესასვლელად, Collie-ს შენს კამერასა და მიკროფონზე წვდომა სჭირდება.</string>
     <!-- Dialog description explaining why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_microphone">ზარის დასაწყებად ან მასში შესასვლელად, Molly-ს შენს კამერასა და მიკროფონზე წვდომა მიეცი.</string>
+    <string name="WebRtcCallActivity__to_start_call_microphone">ზარის დასაწყებად ან მასში შესასვლელად, Collie-ს შენს კამერასა და მიკროფონზე წვდომა მიეცი.</string>
     <!-- Dialog description explaining why camera permissions are needed to enable a user\'s video in a call -->
-    <string name="WebRtcCallActivity__to_enable_video_allow_camera">ვიდეოს ჩასართავად, Molly-ს შენ კამერაზე წვდომა მიეცი.</string>
+    <string name="WebRtcCallActivity__to_enable_video_allow_camera">ვიდეოს ჩასართავად, Collie-ს შენ კამერაზე წვდომა მიეცი.</string>
     <!-- Toast describing why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">ზარის დასაწყებად ან მასში შესასვლელად Molly-ს მიკროფონზე წვდომა სჭირდება.</string>
+    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">ზარის დასაწყებად ან მასში შესასვლელად Collie-ს მიკროფონზე წვდომა სჭირდება.</string>
     <!-- Toast describing why camera permissions are needed to enable a video in a call -->
-    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">ვიდეოს ჩასართვად Molly-ს კამერაზე წვდომა სჭირდება</string>
+    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">ვიდეოს ჩასართვად Collie-ს კამერაზე წვდომა სჭირდება</string>
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="WebRtcCallActivity__to_start_call">ზარის წამოსაწყებად, ან მასში შესასვლელად:</string>
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
@@ -2263,8 +2263,8 @@
     <string name="MoveableLocalVideoRenderer__expand_local_video">ლოკალური ვიდეოს გადიდება</string>
 
     <!-- WebRtcCallView -->
-    <string name="WebRtcCallView__signal_call">Molly-ის ზარი</string>
-    <string name="WebRtcCallView__signal_video_call">Molly-ის ვიდეო ზარი</string>
+    <string name="WebRtcCallView__signal_call">Collie-ის ზარი</string>
+    <string name="WebRtcCallView__signal_video_call">Collie-ის ვიდეო ზარი</string>
     <string name="WebRtcCallView__start_call">ზარის დაწყება</string>
     <string name="WebRtcCallView__join_call">ზარზე შესვლა</string>
     <string name="WebRtcCallView__call_is_full">ზარი გადავსებულია</string>
@@ -2573,7 +2573,7 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">კონტაქტებში დამატება</string>
-    <string name="SharedContactView_invite_to_signal">მოიწვიე Molly-ში</string>
+    <string name="SharedContactView_invite_to_signal">მოიწვიე Collie-ში</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">მიწერა</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
@@ -2866,11 +2866,11 @@
     <string name="ThreadRecord_blocked_group">დაბლოკილია</string>
 
     <!-- ApkUpdateNotifications -->
-    <string name="ApkUpdateNotifications_prompt_install_title">Molly-ის განახლება</string>
-    <string name="ApkUpdateNotifications_prompt_install_body">Molly-ის ახალი ვერსია ხელმისაწვდომია. დააჭირე განახლებისთვის.</string>
-    <string name="ApkUpdateNotifications_failed_general_title">Molly-ის განახლება ვერ მოხერხდა</string>
+    <string name="ApkUpdateNotifications_prompt_install_title">Collie-ის განახლება</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">Collie-ის ახალი ვერსია ხელმისაწვდომია. დააჭირე განახლებისთვის.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Collie-ის განახლება ვერ მოხერხდა</string>
     <string name="ApkUpdateNotifications_failed_general_body">მოგვიანებით ისევ ვცდით.</string>
-    <string name="ApkUpdateNotifications_auto_update_success_title">Molly-ი წარმატებით განახლდა</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Collie-ი წარმატებით განახლდა</string>
     <string name="ApkUpdateNotifications_auto_update_success_body">შენ ავტომატურად გადახვედი %1$s ვერსიაზე.</string>
     <string name="ApkUpdateNotifications_manual_update_success_body">შენ დააყენე ახალი ვერსია - %1$s.</string>
 
@@ -2897,7 +2897,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">ჩვენი Signal-ის უსაფრთხოების ნომერი:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">როგორც ჩანს, არ გაქვს ისეთი აპი, რითაც შეძლებ გაზიარებას.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">შესადარებელი უსაფრთხოების ნომერი ბუფერში ვერ მოიძებნა</string>
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">QR კოდის დასასკანერებლად Molly-ს კამერაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „კამერა“.</string>
+    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">QR კოდის დასასკანერებლად Collie-ს კამერაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „კამერა“.</string>
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">%1$s-ის უსაფრთხოების ნომრის სანახავად ჯერ შეტყობინებები უნდა გაცვალოთ.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">ამ ადამიანთან უსაფრთხოების ნომერი შეიქმნება მაშინ, როდესაც ის შენთან მიმოწერას დაიწყებს.</string>
@@ -2934,8 +2934,8 @@
 
     <!-- KeyCachingService -->
     <string name="KeyCachingService_signal_passphrase_cached">დააჭირე გასახსნელად.</string>
-    <string name="KeyCachingService_passphrase_cached">Molly-ი გახსნილია</string>
-    <string name="KeyCachingService_lock">Molly-ის დახურვა</string>
+    <string name="KeyCachingService_passphrase_cached">Collie-ი გახსნილია</string>
+    <string name="KeyCachingService_lock">Collie-ის დახურვა</string>
 
     <!-- MediaPreviewActivity -->
     <string name="MediaPreviewActivity_you">შენ</string>
@@ -2988,7 +2988,7 @@
     <string name="MessageNotifier_failed_to_deliver_message">შეტყობინების გაგზავნა ვერ მოხერხდა.</string>
     <string name="MessageNotifier_error_delivering_message">ხარვეზი შეტყობინების გაგზავნისას.</string>
     <string name="MessageNotifier_message_delivery_paused">შეტყობინების გაგზავნა შეჩერდა.</string>
-    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">გაიარე ვერიფიკაცია, რომ Molly-ზე მიმოწერა გააგრძელო.</string>
+    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">გაიარე ვერიფიკაცია, რომ Collie-ზე მიმოწერა გააგრძელო.</string>
     <string name="MessageNotifier_mark_all_as_read">ყველას წაკითხულად მონიშვნა.</string>
     <string name="MessageNotifier_mark_read">წაკითხულად მონიშვნა</string>
     <string name="MessageNotifier_turn_off_these_notifications">ამ შეტყობინებების გამორთვა</string>
@@ -3012,7 +3012,7 @@
     <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
     <string name="MessageNotifier_s_voted_in_poll">%1$s-მ(ა), %2$s-მ(ა) გამოკითხვაში მონიშნეს \"%3$s\"</string>
 
-    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">გამოვრთოთ კონტაქტის Molly-ში დამატების შეტყობინებები? მათი ხელახლა ჩართვა შეგიძლია Molly &gt; პარამეტრები &gt; შეტყობინებები.</string>
+    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">გამოვრთოთ კონტაქტის Collie-ში დამატების შეტყობინებები? მათი ხელახლა ჩართვა შეგიძლია Collie &gt; პარამეტრები &gt; შეტყობინებები.</string>
 
     <!-- TurnOnNotificationsBottomSheet -->
     <!-- Title for sheet explaining how to turn on app notifications -->
@@ -3088,7 +3088,7 @@
     </plurals>
 
     <!-- Message shown when the app requests permission to save media to the device storage, but that permission has been permanently denied by the user. -->
-    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">გარე მეხსიერებაში შესანახად Molly-ს შენახვის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „შენახვა“.</string>
+    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">გარე მეხსიერებაში შესანახად Collie-ს შენახვის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „შენახვა“.</string>
 
     <!-- Message explaining that it is not possible to save media to the device storage after the user denied the system save to storage permission. -->
     <string name="AttachmentSaver__unable_to_write_to_external_storage_without_permission">ნებართვების გარეშე გარე მეხსიერებაში შენახვა შეუძლებელია</string>
@@ -3098,11 +3098,11 @@
     <!-- Dialog title shown when attempting to save media that has been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_media">მედია ფაილის შენახვა შეუძლებელია</string>
     <!-- Dialog message explaining that media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__media_offloaded_message">შენი მოწყობილობიდან ამ მედია ფაილის გადატანა მოხდა, რადგან \"Molly-ის მეხსიერების ოპტიმიზაციაა\" ჩართული. შეგიძლია თითო-თითო ელემენტი გადმოწერო ან \"Molly-ის მეხსიერების ოპტიმიზაცია\" გამორთო, რომ ყველა მედია ფაილი ერთიანად გადმოიწერო შენს მოწყობილობაზე.</string>
+    <string name="AttachmentSaver__media_offloaded_message">შენი მოწყობილობიდან ამ მედია ფაილის გადატანა მოხდა, რადგან \"Collie-ის მეხსიერების ოპტიმიზაციაა\" ჩართული. შეგიძლია თითო-თითო ელემენტი გადმოწერო ან \"Collie-ის მეხსიერების ოპტიმიზაცია\" გამორთო, რომ ყველა მედია ფაილი ერთიანად გადმოიწერო შენს მოწყობილობაზე.</string>
     <!-- Dialog title shown when attempting to save multiple media items, some of which have been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_all_items">ყველა ელემენტის შენახვა შეუძლებელია</string>
     <!-- Dialog message explaining that some selected media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__some_media_offloaded_message">შენი მოწყობილობიდან შენ მიერ არჩეული ზოგიერთი მედია ფაილის გადატანა მოხდა, რადგან \"Molly-ის მეხსიერების ოპტიმიზაციაა\" ჩართული. შეგიძლია თითო-თითო ელემენტი შეინახო ან \"Molly-ის მეხსიერების ოპტიმიზაცია გამორთო, რომ ყველა მედია ფაილი ერთიანად გადმოიწერო შენს მოწყობილობაზე.</string>
+    <string name="AttachmentSaver__some_media_offloaded_message">შენი მოწყობილობიდან შენ მიერ არჩეული ზოგიერთი მედია ფაილის გადატანა მოხდა, რადგან \"Collie-ის მეხსიერების ოპტიმიზაციაა\" ჩართული. შეგიძლია თითო-თითო ელემენტი შეინახო ან \"Collie-ის მეხსიერების ოპტიმიზაცია გამორთო, რომ ყველა მედია ფაილი ერთიანად გადმოიწერო შენს მოწყობილობაზე.</string>
     <!-- Button label in the offloaded media dialog that navigates to the storage settings screen. -->
     <string name="AttachmentSaver__view_storage_settings">მეხსიერების პარამეტრების ნახვა</string>
 
@@ -3115,7 +3115,7 @@
     <string name="ShortcutLauncherActivity_invalid_shortcut">არასწორი მალსახმობი</string>
 
     <!-- SingleRecipientNotificationBuilder -->
-    <string name="SingleRecipientNotificationBuilder_signal">Molly</string>
+    <string name="SingleRecipientNotificationBuilder_signal">Collie</string>
     <string name="SingleRecipientNotificationBuilder_new_message">ახალი შეტყობინება</string>
     <string name="SingleRecipientNotificationBuilder_message_request">მოთხოვნა მიმოწერაზე</string>
     <string name="SingleRecipientNotificationBuilder_you">შენ</string>
@@ -3191,7 +3191,7 @@
 
     <!-- UnauthorizedReminder -->
     <!-- Message shown in a reminder banner when the user\'s device is no longer registered -->
-    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">ეს მოწყობილობა აღარ არის რეგისტრირებული. ეს სავარაუდოდ იმიტომ ხდება, რომ შენი ტელეფონის ნომერი Molly-ზე სხვა მოწყობილობაზე დაარეგისტრირე.</string>
+    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">ეს მოწყობილობა აღარ არის რეგისტრირებული. ეს სავარაუდოდ იმიტომ ხდება, რომ შენი ტელეფონის ნომერი Collie-ზე სხვა მოწყობილობაზე დაარეგისტრირე.</string>
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">ხელახლა დაარეგისტრირე მოწყობილობა</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
@@ -3200,7 +3200,7 @@
     <string name="UnauthorizedReminder_relink_action">მოწყობილობის თავიდან მიბმა</string>
 
     <!-- Push notification when the app is forcibly logged out by the server. -->
-    <string name="LoggedOutNotification_you_have_been_logged_out">ამ მოწყობილობაზე Molly-იდან გამოსული ხარ</string>
+    <string name="LoggedOutNotification_you_have_been_logged_out">ამ მოწყობილობაზე Collie-იდან გამოსული ხარ</string>
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
@@ -3246,14 +3246,14 @@
     <string name="change_passphrase_activity__repeat_new_passphrase">გაიმეორე ახალი პაროლ-ფრაზა</string>
 
     <!-- contact_selection_activity -->
-    <string name="contact_selection_activity__invite_to_signal">მოიწვიე Molly-ში</string>
+    <string name="contact_selection_activity__invite_to_signal">მოიწვიე Collie-ში</string>
     <string name="contact_selection_activity__new_group">ახალი ჯგუფი</string>
     <!-- Row item title for refreshing contacts -->
     <string name="contact_selection_activity__refresh_contacts">კონტაქტების გადატვირთვა</string>
     <!-- Row item description for refreshing contacts -->
     <string name="contact_selection_activity__missing_someone">ვინმე ვერ იპოვე? გადატვირთვა სცადე</string>
     <!-- Row item title for finding people on Signal via your contacts -->
-    <string name="contact_selection_activity__find_people_you_know">იპოვე შენი ნაცნობები Molly-ზე</string>
+    <string name="contact_selection_activity__find_people_you_know">იპოვე შენი ნაცნობები Collie-ზე</string>
     <!-- Row item description asking users for access to their contacts to find people they know -->
     <string name="contact_selection_activity__allow_access_to_contacts">შენს კონტაქტებზე წვდომის მიცემა</string>
     <!-- Row header title for more section -->
@@ -3272,7 +3272,7 @@
     <string name="SingleContactSelectionActivity_contact_photo">კონტაქტის ფოტო</string>
 
     <!-- ContactSelectionListFragment-->
-    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">შენი კონტაქტების საჩვენებლად Molly-ს კონტაქტებზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპლიკაციის პარამეტრების მენიუში, აირჩიო „ნებართვები“ და ჩართო „კონტაქტები“.</string>
+    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">შენი კონტაქტების საჩვენებლად Collie-ს კონტაქტებზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპლიკაციის პარამეტრების მენიუში, აირჩიო „ნებართვები“ და ჩართო „კონტაქტები“.</string>
     <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">შეცდომა კონტაქტების მოძიებისას, შეამოწმე შენი ქსელის კავშირი</string>
     <string name="ContactSelectionListFragment_username_not_found">მომხმარებლის სახელი ვერ მოიძებნა</string>
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"%1$s არაა Signal-ის მომხმარებელი. გთხოვთ, გადაამოწმო მომხმარებლის სახელი და თავიდან სცადო."</string>
@@ -3292,7 +3292,7 @@
     <!-- Dialog title asking users for contact permission -->
     <string name="ContactSelectionListFragment_allow_access_contacts">კონტაქტებზე წვდომის მიცემა</string>
     <!-- Dialog description that will explain the steps needed to give contact permissions -->
-    <string name="ContactSelectionListFragment_to_find_people">Molly-ზე შენი ნაცნობების მოსაძებნად:</string>
+    <string name="ContactSelectionListFragment_to_find_people">Collie-ზე შენი ნაცნობების მოსაძებნად:</string>
     <!-- Text on button prompting users to give Signal contact permissions -->
     <string name="ContactSelectionListFragment__allow_access">წვდომის მიცემა</string>
     <!-- Text on button to dismiss Signal\'s request for contact permissions -->
@@ -3422,7 +3422,7 @@
 
     <!-- BubbleOptOutTooltip -->
     <!-- Message to inform the user of what Android chat bubbles are -->
-    <string name="BubbleOptOutTooltip__description">Bubbles-ი Android-ის ფუნქციაა, რომელიც შეგიძლია Molly-ის ჩატებისთვის გამორთო.</string>
+    <string name="BubbleOptOutTooltip__description">Bubbles-ი Android-ის ფუნქციაა, რომელიც შეგიძლია Collie-ის ჩატებისთვის გამორთო.</string>
     <!-- Button to dismiss the tooltip for opting out of using Android bubbles -->
     <string name="BubbleOptOutTooltip__not_now">ახლა არა</string>
     <!-- Button to move to the system settings to control the use of Android bubbles -->
@@ -3529,9 +3529,9 @@
     <string name="EditProfileFragment__group_description">ჯგუფის აღწერილობა</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">Molly-ის განახლება</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">Collie-ის განახლება</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">Molly-ის ამ ვერსიას ვადა გაუვიდა. განაახლე ახლავე, რათა Molly-ის გამოყენება განაგრძო.</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">Collie-ის ამ ვერსიას ვადა გაუვიდა. განაახლე ახლავე, რათა Collie-ის გამოყენება განაგრძო.</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">განახლება</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -3575,20 +3575,20 @@
     <!-- Bottom sheet title when encryption is auto-verified -->
     <string name="EncryptionVerifiedSheet__title_success">ამ ჩატის დაშიფვრა ავტომატურად ვერიფიცირებულია</string>
     <!-- Bottom sheet body when encryption is auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_success">Molly-ს შეუძლია კონტაქტებისთვის, რომლებთანაც მობილურის ნომრით ხარ დაკავშირებული, კავშირის უსაფრთხოება ავტომატურად დაადასტუროს პროცესის დახმარებით, რომელსაც გასაღების გამჭვირვალობა ჰქვია. დამატებითი უსაფრთხოებისთვის, ბოლომდე დაშიფვრის ვერიფიკაცია წინა ეკრანზე არსებული რიცხვების შედარებით ან მის მოწყობილობაზე კოდის სკანირებით შეგიძლია.</string>
+    <string name="EncryptionVerifiedSheet__body_success">Collie-ს შეუძლია კონტაქტებისთვის, რომლებთანაც მობილურის ნომრით ხარ დაკავშირებული, კავშირის უსაფრთხოება ავტომატურად დაადასტუროს პროცესის დახმარებით, რომელსაც გასაღების გამჭვირვალობა ჰქვია. დამატებითი უსაფრთხოებისთვის, ბოლომდე დაშიფვრის ვერიფიკაცია წინა ეკრანზე არსებული რიცხვების შედარებით ან მის მოწყობილობაზე კოდის სკანირებით შეგიძლია.</string>
     <!-- Bottom sheet title when encryption is no longer auto-verified -->
     <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">ამ ჩატისთვის ავტომატური ვერიფიკაცია ხელმისაწვდომი არაა</string>
     <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
-    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Molly-ი ამ ჩატის დაშიფვრის ავტომატურ ვერიფიკაციას ვერ შეძლებს. ალბათ, ეს იმიტომ მოხდა, რომ %1$s-მ(ა) მობილურის ნომერი ან მობილურის ნომრის კონფიდენციალურობა შეცვალა. ხელით გადაამოწმე ბოლომდე დაშიფვრა წინა ეკრანზე არსებული რიცხვების შედარებით ან მის მოწყობილობაზე კოდის სკანირებით.</string>
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Collie-ი ამ ჩატის დაშიფვრის ავტომატურ ვერიფიკაციას ვერ შეძლებს. ალბათ, ეს იმიტომ მოხდა, რომ %1$s-მ(ა) მობილურის ნომერი ან მობილურის ნომრის კონფიდენციალურობა შეცვალა. ხელით გადაამოწმე ბოლომდე დაშიფვრა წინა ეკრანზე არსებული რიცხვების შედარებით ან მის მოწყობილობაზე კოდის სკანირებით.</string>
     <!-- Bottom sheet title when encryption cannot be auto-verified -->
     <string name="EncryptionVerifiedSheet__title_unavailable">ამ ჩატისთვის ავტომატური ვერიფიკაცია ხელმისაწვდომი არაა</string>
     <!-- Bottom sheet body when encryption cannot be auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_unavailable">Molly-ს მხოლოდ იმ ჩატების დაშიფვრის ავტომატური ვერიფიკაცია შეუძლია, რომლებშიც ვინმესთან მობილურის ნომრით ხარ დაკავშირებული. თუ ჩატი მომხმარებლის სახელით ან საერთო ჯგუფით წამოიწყო, ბოლომდე დაშიფვრის ვერიფიკაციას წინა ეკრანზე არსებული რიცხვების შედარებით ან მის მოწყობილობაზე კოდის სკანირებით შეძლებ.</string>
+    <string name="EncryptionVerifiedSheet__body_unavailable">Collie-ს მხოლოდ იმ ჩატების დაშიფვრის ავტომატური ვერიფიკაცია შეუძლია, რომლებშიც ვინმესთან მობილურის ნომრით ხარ დაკავშირებული. თუ ჩატი მომხმარებლის სახელით ან საერთო ჯგუფით წამოიწყო, ბოლომდე დაშიფვრის ვერიფიკაციას წინა ეკრანზე არსებული რიცხვების შედარებით ან მის მოწყობილობაზე კოდის სკანირებით შეძლებ.</string>
 
     <!-- Title for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__title">ახლა უკვე Molly-ს დაშიფვრის ავტომატური ვერიფიკაცია შეუძლია</string>
+    <string name="VerifyAutomaticallyEducationSheet__title">ახლა უკვე Collie-ს დაშიფვრის ავტომატური ვერიფიკაცია შეუძლია</string>
     <!-- Body for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__body">Molly-ს შეუძლია კონტაქტებისთვის, რომლებთანაც მობილურის ნომრით ხარ დაკავშირებული, კავშირის უსაფრთხოება ავტომატურად დაადასტუროს პროცესის დახმარებით, რომელსაც გასაღების გამჭვირვალობა ჰქვია. დამატებითი უსაფრთხოებისთვის, კავშირების ვერიფიკაცია ხელითაც შეგიძლია, QR კოდის ან ნომრის გამოყენებით.</string>
+    <string name="VerifyAutomaticallyEducationSheet__body">Collie-ს შეუძლია კონტაქტებისთვის, რომლებთანაც მობილურის ნომრით ხარ დაკავშირებული, კავშირის უსაფრთხოება ავტომატურად დაადასტუროს პროცესის დახმარებით, რომელსაც გასაღების გამჭვირვალობა ჰქვია. დამატებითი უსაფრთხოებისთვის, კავშირების ვერიფიკაცია ხელითაც შეგიძლია, QR კოდის ან ნომრის გამოყენებით.</string>
     <!-- Button to learn more about automatic verification -->
     <string name="VerifyAutomaticallyEducationSheet__learn_more">გაიგე მეტი</string>
     <!-- Button to go to verification page -->
@@ -3758,7 +3758,7 @@
     <string name="preferences_communication__category_censorship_circumvention">ცენზურისთვის გვერდის ავლა</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">ცენზურისთვის გვერდის ავლა</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">თუ ამას ჩართავ, Molly-ი შეეცდება გვერდი აარიდოს ცენზურას. არ ჩართო ეს ფუნქცია, თუ არ იმყოფები ისეთ ადგილას, სადაც Molly-ი ცენზურადადებულია.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">თუ ამას ჩართავ, Collie-ი შეეცდება გვერდი აარიდოს ცენზურას. არ ჩართო ეს ფუნქცია, თუ არ იმყოფები ისეთ ადგილას, სადაც Collie-ი ცენზურადადებულია.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">ცენზურისთვის გვერდის ავლა გააქტიურებულია შენს მონაცემებში არსებული ტელეფონის ნომრის საფუძველზე.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -3786,7 +3786,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">ავტომატური ვერიფიკაცია გასაღებით</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">თუ ეს ჩართული იქნება, Molly-ი ერთი ერთზე ჩატების დაშიფვრის ავტომატურ ვერიფიკაციას ცდის.</string>
+    <string name="preferences_automatic_key_verification_body">თუ ეს ჩართული იქნება, Collie-ი ერთი ერთზე ჩატების დაშიფვრის ავტომატურ ვერიფიკაციას ცდის.</string>
 
 
     <!-- Internal only preferences -->
@@ -3803,7 +3803,7 @@
 
     <!-- Displayed on a welcome screen for payments -->
     <string name="PaymentsHomeFragment_introducing_payments">წარმოგიდგენთ გადახდებს</string>
-    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">გამოიყენე Molly-ი ახალი, კონფიდენციალურობაზე ორიენტირებული, ციფრული ვალუტის MobileCoin-ის გასაგზავნად და მისაღებად. დასაწყებად გააქტიურე.</string>
+    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">გამოიყენე Collie-ი ახალი, კონფიდენციალურობაზე ორიენტირებული, ციფრული ვალუტის MobileCoin-ის გასაგზავნად და მისაღებად. დასაწყებად გააქტიურე.</string>
     <string name="PaymentsHomeFragment__activate_payments">ტრანზაქციების აქტივაცია</string>
     <string name="PaymentsHomeFragment__activating_payments">ვააქტიურებთ ტრანზაქციებს…</string>
     <string name="PaymentsHomeFragment__restore_payments_account">ტრანზაქციების მონაცემების აღდგენა</string>
@@ -3829,7 +3829,7 @@
     <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">ტრანზაქციები შენს რეგიონში ხელმისაწვდომი არაა.</string>
     <string name="PaymentsHomeFragment__could_not_enable_payments">ტრანზაქციების ჩართვა ვერ მოხერხდა. მოგვიანებით კიდევ სცადე.</string>
     <string name="PaymentsHomeFragment__deactivate_payments_question">გსურს ტრანზაქციების დეაქტივაცია?</string>
-    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">შენ ვერ შეძლებ MobileCoin-ის Molly-ში გაგზავანას ან მიღებას , თუ ტრანზაქციებს გამორთავ.</string>
+    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">შენ ვერ შეძლებ MobileCoin-ის Collie-ში გაგზავანას ან მიღებას , თუ ტრანზაქციებს გამორთავ.</string>
     <string name="PaymentsHomeFragment__deactivate">დეაქტივაცია</string>
     <string name="PaymentsHomeFragment__continue">გაგრძელება</string>
     <string name="PaymentsHomeFragment__balance_is_not_currently_available">ბალანსი ამჟამად ხელმისაწვდომი არაა.</string>
@@ -3838,10 +3838,10 @@
     <string name="PaymentsHomeFragment__details">Details</string>
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__learn_more__activate_payments" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_activate</string> -->
     <!-- Displayed as a description in a dialog when the user tries to activate payments -->
-    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">შეგიძლია Molly-ი MobileCoin-ის გასაგზავნად და მისაღებად გამოიყენო. ყველა გადახდა ექვემდებარება MobileCoins-ისა და MobileCoin Wallet-ის გამოყენების პირობებს. შეიძლება პრობლემები შეგექმნას და გადახდები ან ნაშთები, რომლებიც შეიძლება დაკარგო, ვერ აღდგება. </string>
+    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">შეგიძლია Collie-ი MobileCoin-ის გასაგზავნად და მისაღებად გამოიყენო. ყველა გადახდა ექვემდებარება MobileCoins-ისა და MobileCoin Wallet-ის გამოყენების პირობებს. შეიძლება პრობლემები შეგექმნას და გადახდები ან ნაშთები, რომლებიც შეიძლება დაკარგო, ვერ აღდგება. </string>
     <string name="PaymentsHomeFragment__activate">გააქტიურება</string>
     <string name="PaymentsHomeFragment__view_mobile_coin_terms">MobileCoin-ის პირობების ნახვა</string>
-    <string name="PaymentsHomeFragment__payments_not_available">ტრანზაქციები Molly-ში აღარ არის ხელმისაწვდომი. ისევ შეგიძლია თანხების გადარიცხვა ბირჟაზე, მაგრამ აღარ შეგიძლია ტრანზაქციების გაგზავნა და მიღება, ან თანხის დამატება.</string>
+    <string name="PaymentsHomeFragment__payments_not_available">ტრანზაქციები Collie-ში აღარ არის ხელმისაწვდომი. ისევ შეგიძლია თანხების გადარიცხვა ბირჟაზე, მაგრამ აღარ შეგიძლია ტრანზაქციების გაგზავნა და მიღება, ან თანხის დამატება.</string>
 
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__mobile_coin_terms_url" translatable="false">https://www.mobilecoin.com/terms-of-use.html</string> -->
     <!-- Alert dialog title which shows up after a payment to turn on payment lock -->
@@ -3924,9 +3924,9 @@
     <string name="PaymentsTransferFragment__next">შემდეგი</string>
     <string name="PaymentsTransferFragment__invalid_address">არასწორი მისამართი</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">შეამოწმე საფულის მისამართი, რომელზეც ცდილობ გადარიცხვას და სცადე ხელახლა.</string>
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">შენი Molly-ის საფულის მისამართზე გადარიცხვა არ შეგიძლია. შეიყვანე საფულის მისამართი მხარდაჭერილი ბირჟის შენი ანგარიშიდან .</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR კოდის დასასკანირებლად Molly-ს კამერაზე წვდომა სჭირდება.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR კოდის დასასკანირებლად Molly-ს კამერაზე წვდომა სჭირდება.</string>
+    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">შენი Collie-ის საფულის მისამართზე გადარიცხვა არ შეგიძლია. შეიყვანე საფულის მისამართი მხარდაჭერილი ბირჟის შენი ანგარიშიდან .</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR კოდის დასასკანირებლად Collie-ს კამერაზე წვდომა სჭირდება.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR კოდის დასასკანირებლად Collie-ს კამერაზე წვდომა სჭირდება.</string>
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">მისამართის QR კოდის სკანირება</string>
@@ -4287,17 +4287,17 @@
 
     <!-- CallNotificationBuilder -->
     <!-- Displayed in a notification when a Signal voice call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_voice_call">Molly-ის შემომავალი ხმოვანი ზარი</string>
+    <string name="CallNotificationBuilder__incoming_signal_voice_call">Collie-ის შემომავალი ხმოვანი ზარი</string>
     <!-- Displayed in a notification when a Signal video call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_video_call">Molly-ის შემომავალი ვიდეო ზარი</string>
+    <string name="CallNotificationBuilder__incoming_signal_video_call">Collie-ის შემომავალი ვიდეო ზარი</string>
     <!-- Displayed in a notification when a Signal group call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_group_call">Molly-ის შემომავალი ჯგუფური ზარი</string>
+    <string name="CallNotificationBuilder__incoming_signal_group_call">Collie-ის შემომავალი ჯგუფური ზარი</string>
     <!-- Displayed in a notification when a Signal voice call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Molly-ის მიმდინარე ხმოვანი ზარი</string>
+    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Collie-ის მიმდინარე ხმოვანი ზარი</string>
     <!-- Displayed in a notification when a Signal video call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_video_call">Molly-ის მიმდინარე ვიდეო ზარი</string>
+    <string name="CallNotificationBuilder__ongoing_signal_video_call">Collie-ის მიმდინარე ვიდეო ზარი</string>
     <!-- Displayed in a notification when a Signal group call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_group_call">Molly-ის მიმდინარე ჯგუფის ზარი</string>
+    <string name="CallNotificationBuilder__ongoing_signal_group_call">Collie-ის მიმდინარე ჯგუფის ზარი</string>
 
     <string name="CallNotificationBuilder_connecting">ვუკავშირდებით…</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">სარეზერვო კოპიების პაროლ-ფრაზა</string>
@@ -4323,9 +4323,9 @@
     <string name="BackupDialog_verify">ვერიფიკაცია</string>
     <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">შენ წარმატებით შეიყვანე სარეზერვო კოპიების პაროლ-ფრაზა</string>
     <string name="BackupDialog_passphrase_was_not_correct">პაროლ-ფრაზა არასწორი იყო</string>
-    <string name="LocalBackupJob_creating_signal_backup">ვქმნით Molly-ის სარეზერვო კოპიებს…</string>
+    <string name="LocalBackupJob_creating_signal_backup">ვქმნით Collie-ის სარეზერვო კოპიებს…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">მიმდინარეობს Molly-ის სარეზერვო კოპიების ვერიფიცირება…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">მიმდინარეობს Collie-ის სარეზერვო კოპიების ვერიფიცირება…</string>
     <string name="LocalBackupJobApi29_backup_failed">სარეზერვო კოპიების შენახვა ვერ მოხერხდა</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">შენი სარეზერვო კოპიების შესანახი ადგილი იქნა წაშლილი ან გადატანილი.</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">შენი სარეზერვო კოპიის ფაილი ზედმეტად დიდია აქ შესანახად.</string>
@@ -4346,7 +4346,7 @@
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">უცნობი</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">შეარჩიე, ვის შეუძლია ნახოს შენი ტელეფონის ნომერი და ვინ შეიძლება დაგიკავშირდეს Molly-ზე მისი დახმარებით.</string>
+    <string name="preferences_app_protection__choose_who_can_see">შეარჩიე, ვის შეუძლია ნახოს შენი ტელეფონის ნომერი და ვინ შეიძლება დაგიკავშირდეს Collie-ზე მისი დახმარებით.</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
     <string name="preferences_app_protection__to_use_screen_lock">ეკრანის დაბლოკვის გამოსაყენებლად ამ მოწყობილობაზე პინ-კოდი, პატერნი ან პაროლი დააყენე.</string>
     <string name="preferences_app_protection__failed_to_enable_registration_lock">რეგისტრაციის დაბლოკვა ვერ გააქტიურდა.</string>
@@ -4360,11 +4360,11 @@
     <string name="preferences_chats__backups">სარეზერვო კოპიები</string>
 
     <!-- Title text shown when Signal is locked and needs to be unlocked -->
-    <string name="prompt_passphrase_activity__unlock_signal">Molly-ის გახსნა</string>
+    <string name="prompt_passphrase_activity__unlock_signal">Collie-ის გახსნა</string>
     <!-- Description text explaining how to unlock Signal -->
-    <string name="prompt_passphrase_activity__use_your_android_device">გამოიყენე შენი Android მოწყობილობის დაბლოკვის პარამეტრები Molly-ის განბლოკვისთვის.</string>
+    <string name="prompt_passphrase_activity__use_your_android_device">გამოიყენე შენი Android მოწყობილობის დაბლოკვის პარამეტრები Collie-ის განბლოკვისთვის.</string>
     <!-- Text shown in a dialog that further explains how to unlock Signal by using the same unlocking methods that are used to unlock their own device -->
-    <string name="prompt_passphrase_activity__screen_lock_is_on">ეკრანის დაბლოკვა ჩართულია და Molly-ი უსაფრთხოდ არის დაცული შენი მოწყობილობის დაბლოკვის პარამეტრებით. განბლოკე Molly-ი ისე, როგორც შენი მობილური, ეს შეიძლება იყოს სახით განბლოკვის, თითის ანაბეჭდით განბლოკვის, პინ-კოდის, პაროლის ან პატერნის საშუალებით.</string>
+    <string name="prompt_passphrase_activity__screen_lock_is_on">ეკრანის დაბლოკვა ჩართულია და Collie-ი უსაფრთხოდ არის დაცული შენი მოწყობილობის დაბლოკვის პარამეტრებით. განბლოკე Collie-ი ისე, როგორც შენი მობილური, ეს შეიძლება იყოს სახით განბლოკვის, თითის ანაბეჭდით განბლოკვის, პინ-კოდის, პაროლის ან პატერნის საშუალებით.</string>
     <!-- Button in a dialog that will contact Signal support if pressed -->
     <string name="prompt_passphrase_activity__contact_support">მხარდაჭერის გუნდთან დაკავშირება</string>
     <!-- Button text to try again after unlocking has previously failed -->
@@ -4419,9 +4419,9 @@
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">ვეძებთ ახალ Android მოწყობილობას…</string>
-    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">შენი ახალი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად Molly-ს მდებარეობაზე წვდომის ნებართვა სჭირდება.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Molly-ს სჭირდება ჩართული მდებარეობის სერვისები შენი ახალი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Molly-ს სჭირდება ჩართული Wi-Fi შენი ახალი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად. Wi-Fi უნდა იყოს ჩართული, მაგრამ არ უნდა იყოს დაკავშირებული Wi-Fi ქსელთან.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">შენი ახალი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად Collie-ს მდებარეობაზე წვდომის ნებართვა სჭირდება.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie-ს სჭირდება ჩართული მდებარეობის სერვისები შენი ახალი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie-ს სჭირდება ჩართული Wi-Fi შენი ახალი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად. Wi-Fi უნდა იყოს ჩართული, მაგრამ არ უნდა იყოს დაკავშირებული Wi-Fi ქსელთან.</string>
     <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">ბოდიში, როგორც ჩანს, ამ მოწყობილობას არ აქვს Wi-Fi Direct-ის მხარდაჭერა. Molly-ი Wi-Fi Direct-ს შენი ახალი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად იყენებს. თუმცა შენი მონაცემების აღსადგენად, შენი ახალი Android მოწყობილობაზე შეგიძლია სარეზერვო კოპია შექმნა.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">სარეზერვო კოპიის შექმნა</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">შენს ახალ Android მოწყობილობასთან დაკავშირების მცდელობისას მოხდა მოულოდნელი შეცდომა.</string>
@@ -4462,7 +4462,7 @@
 
     <!-- DeviceTransferFragment -->
     <string name="DeviceTransfer__transferring_data">მონაცემთა გადატანა</string>
-    <string name="DeviceTransfer__keep_both_devices_near_each_other">ორივე მოწყობილობა ერთმანეთთან ახლოს გეჭიროს. არ გამორთო მოწყობილობები და Molly-ი გახსნილი გქონდეს. გადატანა ბოლომდეა დაშიფრული.</string>
+    <string name="DeviceTransfer__keep_both_devices_near_each_other">ორივე მოწყობილობა ერთმანეთთან ახლოს გეჭიროს. არ გამორთო მოწყობილობები და Collie-ი გახსნილი გქონდეს. გადატანა ბოლომდეა დაშიფრული.</string>
     <string name="DeviceTransfer__d_messages_so_far">ჯერ-ჯერობი %1$d შეტყობინება…</string>
     <!-- Filled in with total percentage of messages transferred -->
     <string name="DeviceTransfer__s_of_messages_so_far">ჯერ-ჯერობით %%-დან %1$s შეტყობინება…</string>
@@ -4476,7 +4476,7 @@
     <!-- OldDeviceTransferInstructionsFragment -->
     <string name="OldDeviceTransferInstructions__transfer_account">მონაცემების გადატანა</string>
     <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
-    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">ჩამოტვირთე Molly-ი შენს ახალ Android მოწყობილობაზე</string>
+    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">ჩამოტვირთე Collie-ი შენს ახალ Android მოწყობილობაზე</string>
     <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
     <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">"დააჭირე \"მონაცემების გადატანა ან აღდგენა\""</string>
     <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
@@ -4557,7 +4557,7 @@
     <!-- GroupLinkBottomSheetDialogFragment -->
     <string name="GroupLinkBottomSheet_share_hint_requiring_approval">ნებისმიერს, ვისაც აქვს ეს ბმული, შეუძლია ნახოს ჯგუფის სახელი და ფოტო და მოითხოვოს გაწევრიანება. გაუზიარე ის ადამიანებს, რომლებსაც ენდობი.</string>
     <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">ნებისმიერს, ვისაც აქვს ეს ბმული, შეუძლია ნახოს ჯგუფის სახელი და ფოტო და შეუერთდეს ჯგუფს. გაუზიარე ის ადამიანებს, რომლებსაც ენდობი.</string>
-    <string name="GroupLinkBottomSheet_share_via_signal">Molly-ით გაზიარება</string>
+    <string name="GroupLinkBottomSheet_share_via_signal">Collie-ით გაზიარება</string>
     <string name="GroupLinkBottomSheet_copy">დაკოპირება</string>
     <string name="GroupLinkBottomSheet_qr_code">QR კოდი</string>
     <string name="GroupLinkBottomSheet_share">გაზიარება</string>
@@ -4715,7 +4715,7 @@
     <string name="payment_info_card_about_mobilecoin">MobileCoin-ის შესახებ</string>
     <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">MobileCoin-ი არის კონფიდენციალურობაზე ორიენტირებული ახალი ციფრული ვალუტა.</string>
     <string name="payment_info_card_adding_funds">თანხის დამატება</string>
-    <string name="payment_info_card_you_can_add_funds_for_use_in">შეგიძლია Molly-ში გამოსაყენებლად თანხა დაამატო MobileCoin-ის შენი საფულის მისამართზე გაგზავნით.</string>
+    <string name="payment_info_card_you_can_add_funds_for_use_in">შეგიძლია Collie-ში გამოსაყენებლად თანხა დაამატო MobileCoin-ის შენი საფულის მისამართზე გაგზავნით.</string>
     <string name="payment_info_card_cashing_out">განაღდება</string>
     <string name="payment_info_card_you_can_cash_out_mobilecoin">შეგიძლია გაანაღდო MobileCoin ნებისმიერ დროს იმ ბირჟაზე, რომელიც ემსახურება MobileCoin-ს. უბრალოდ გადარიცხე მაგ ბირჟის შენს ანგარიშზე.</string>
     <string name="payment_info_card_hide_this_card">დავმალოთ ეს ბარათი?</string>
@@ -4736,12 +4736,12 @@
     <!-- DeactivateWalletFragment -->
     <string name="DeactivateWalletFragment__deactivate_wallet">საფულის დეაქტივაცია</string>
     <string name="DeactivateWalletFragment__your_balance">შენი ბალანსი</string>
-    <string name="DeactivateWalletFragment__its_recommended_that_you">გადახდების დეაქტივაციამდე რეკომენდებულია, შენი თანხები სხვა საფულის მისამართზე გადარიცხო. თუ გადაწყვეტ, რომ შენი თანხები ახლა არ გადარიცხო, ისინი დარჩება Molly-თან დაკავშირებულ შენს საფულეში, თუ გადახდებს ხელახლა გააქტიურებ.</string>
+    <string name="DeactivateWalletFragment__its_recommended_that_you">გადახდების დეაქტივაციამდე რეკომენდებულია, შენი თანხები სხვა საფულის მისამართზე გადარიცხო. თუ გადაწყვეტ, რომ შენი თანხები ახლა არ გადარიცხო, ისინი დარჩება Collie-თან დაკავშირებულ შენს საფულეში, თუ გადახდებს ხელახლა გააქტიურებ.</string>
     <string name="DeactivateWalletFragment__transfer_remaining_balance">დარჩენილი ბალანსის გადატანა</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring">დეაქტივაცია გადატანის გარეშე</string>
     <string name="DeactivateWalletFragment__deactivate">დეაქტივაცია</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring_question">გსურს გადატანის გარეშე დეაქტივაცია?</string>
-    <string name="DeactivateWalletFragment__your_balance_will_remain">თუ ტრანზაქციების ხელახლა გააქტიურებას გადაწყვეტ, შენი ბალანსი შენს საფულეში დარჩება, რომელიც Molly-თანაა დაკავშირებული.</string>
+    <string name="DeactivateWalletFragment__your_balance_will_remain">თუ ტრანზაქციების ხელახლა გააქტიურებას გადაწყვეტ, შენი ბალანსი შენს საფულეში დარჩება, რომელიც Collie-თანაა დაკავშირებული.</string>
     <string name="DeactivateWalletFragment__error_deactivating_wallet">საფულის დეაქტივაციისას ხარვეზი მოხდა.</string>
   <!-- Removed by excludeNonTranslatables <string name="DeactivateWalletFragment__learn_more__we_recommend_transferring_your_funds" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_deactivate</string> -->
 
@@ -5458,9 +5458,9 @@
     <string name="MySupportPreference__checking_subscription">მიმდინარეობს გამოწერის შემოწმება…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__title">Molly-ის განახლება</string>
+    <string name="UpdateSignalExpiredDialog__title">Collie-ის განახლება</string>
     <!-- Message of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__message">Molly-ის ამ ვერსიას ვადა გაუვიდა. განაახლე ახლავე, რათა Molly-ის გამოყენება განაგრძო.</string>
+    <string name="UpdateSignalExpiredDialog__message">Collie-ის ამ ვერსიას ვადა გაუვიდა. განაახლე ახლავე, რათა Collie-ის გამოყენება განაგრძო.</string>
     <!-- Button text of expiration dialog, will take user to update the app -->
     <string name="UpdateSignalExpiredDialog__update_action">განახლება</string>
     <!-- Button text of expiration dialog to cancel the dialog.  -->
@@ -5469,7 +5469,7 @@
     <!-- Title of dialog telling user they need to re-register signal -->
     <string name="ReregisterSignalDialog__title">მოწყობილობა არ არის რეგისტრირებული</string>
     <!-- Message of dialog telling user they need to re-register signal as it is no longer registered -->
-    <string name="ReregisterSignalDialog__message">ეს მოწყობილობა აღარ არის რეგისტრირებული. ხელახლა დარეგისტრირდი, რომ გააგრძელო Molly-ის გამოყენება ამ მოწყობილობაზე.</string>
+    <string name="ReregisterSignalDialog__message">ეს მოწყობილობა აღარ არის რეგისტრირებული. ხელახლა დარეგისტრირდი, რომ გააგრძელო Collie-ის გამოყენება ამ მოწყობილობაზე.</string>
     <!-- Button text of re-registration dialog to re-register the device.  -->
     <string name="ReregisterSignalDialog__reregister_action">ხელახლა რეგისტრაცია</string>
     <!-- Button text of re-registration dialog to cancel the dialog.  -->
@@ -5748,7 +5748,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">ამომრჩევის გახსნა ვერ მოხერხდა.</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">შეტყობინებების ჩასართავად, Molly-ს მათი ჩვენების ნებართვა სჭირდება.</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">შეტყობინებების ჩასართავად, Collie-ს მათი ჩვენების ნებართვა სჭირდება.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">ჩართვა</string>
 
@@ -6934,7 +6934,7 @@
     <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__title">ჩართე Signal-ის უსაფრთხო სათადარიგო ასლები</string>
     <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
-    <string name="TurnOnSignalBackups__body">არასდროს დაკარგო შეტყობინებები, როდესაც ახალ მობილურს იყიდი ან Molly-ს თავიდან დააყენებ.</string>
+    <string name="TurnOnSignalBackups__body">არასდროს დაკარგო შეტყობინებები, როდესაც ახალ მობილურს იყიდი ან Collie-ს თავიდან დააყენებ.</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
     <string name="TurnOnSignalBackups__turn_on">ჩართვა</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
@@ -7004,16 +7004,16 @@
     <string name="BackupSetupCompleteBottomSheet__back_up_now">სარეზერვო კოპიის ახლავე შექმნა</string>
 
     <!-- Title of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__title">გახსენი Molly-ი შენს ტელეფონში</string>
+    <string name="InactivePrimary__title">გახსენი Collie-ი შენს ტელეფონში</string>
     <!-- Body of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__body">გახსენი Molly-ი შენს მთავარ მოწყობილობაზე შენი ანგარიშის აქტიურობის შესანარჩუნებლად.</string>
+    <string name="InactivePrimary__body">გახსენი Collie-ი შენს მთავარ მოწყობილობაზე შენი ანგარიშის აქტიურობის შესანარჩუნებლად.</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will navigate to a support page -->
     <string name="InactivePrimary__learn_more">გაიგე მეტი</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will snooze the megaphone -->
     <string name="InactivePrimary__got_it">გასაგებია</string>
 
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
-    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"სათადარიგო ასლის აღსადგენად, დააინსტალირე Molly-ის ახალი ასლი. გახსენი აპი და დააჭირე „სათადარიგო ასლის აღდგენას“, შემდეგ იპოვე სათადარიგო საქაღალდე."</string>
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"სათადარიგო ასლის აღსადგენად, დააინსტალირე Collie-ის ახალი ასლი. გახსენი აპი და დააჭირე „სათადარიგო ასლის აღდგენას“, შემდეგ იპოვე სათადარიგო საქაღალდე."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
     <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">\"Signal-ის მეხსიერების ოპტიმიზაცია\" გაქვს ჩართული. თუ შენი მოწყობილობის სათადარიგო ასლებში ყველა მედია ფაილის შეყვანა გსურს, გამორთე ეს პარამეტრი.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
@@ -7392,9 +7392,9 @@
     <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
     <string name="ManageStorageSettingsFragment_apply_limits_description">ჩართვის შემთხვევაში, ჩატის ლიმიტები ასევე წაშლის წერილებს შენი დაკავშირებული მოწყობილობებიდან.</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Molly-ის მეხსიერება</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie-ის მეხსიერება</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Molly-ის მეხსიერების ოპტიმიზაცია</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie-ის მეხსიერების ოპტიმიზაცია</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">გამოუყენებელი მედია ფაილები გაქრება, მაგრამ მათი სარეზერვო კოპიების გადმოწერა ნებისმიერ დროს შეგიძლია.</string>
     <!-- Dialog message for paid tier pending dialog -->
@@ -7560,7 +7560,7 @@
     <!-- Displays the date the subscription expired. Placeholder is the date. -->
     <string name="RemoteBackupsSettingsFragment__expired_on_s">ვადის გასვლის თარიღია %1$s</string>
     <!-- Displayed at the top of the screen when no backup is currently enabled -->
-    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">შექმენი შენი მიმოწერის ისტორიის სათადარიგო ასლები, რათა ახალი მობილურის შეძენისას ან Molly-ის თავიდან გადმოწერისას მონაცემები არ დაკარგო.</string>
+    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">შექმენი შენი მიმოწერის ისტორიის სათადარიგო ასლები, რათა ახალი მობილურის შეძენისას ან Collie-ის თავიდან გადმოწერისას მონაცემები არ დაკარგო.</string>
     <!-- Section header for other ways to back up -->
     <string name="RemoteBackupsSettingsFragment__other_ways_to_backup">სათადარიგო ასლების შექმნის სხვა გზები</string>
     <!-- Row title for performing on-device backup -->
@@ -7838,7 +7838,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">უსაფრთხოდ შეინახე შენი გასაღები</string>
     <!-- Bottom sheet subtitle -->
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">გასაღების დაკარგვის შემთხვევაში, მის აღდგენაში Molly-ი ვერ დაგეხმარება. ის სადმე დაცულ ადგილას შეინახე და არავის გაუზიარო.</string>
+    <string name="MessageBackupsKeyRecordScreen__signal_will_not">გასაღების დაკარგვის შემთხვევაში, მის აღდგენაში Collie-ი ვერ დაგეხმარება. ის სადმე დაცულ ადგილას შეინახე და არავის გაუზიარო.</string>
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">გაგრძელება</string>
     <!-- Sheet secondary action button label -->
@@ -7848,13 +7848,13 @@
     <!-- Dialog title for confirming you need to disable optimized storage and download media to rotate AEP key -->
     <string name="MessageBackupsKeyRecordScreen__download_media">მედია ფაილის გადმოწერა</string>
     <!-- Dialog body for confirming you need to disable optimized storage and download media to rotate AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">გასაღების ახალი სათადარიგო ასლის შესაქმნელად \"Molly-ის მეხსიერების ოპტიმიზაცია\" უნდა გამორთო და დაელოდო, რომ შენი მედია ფაილი გადმოიწეროს. შეგიძლია, ჩამოტვირთვის დასრულების შემდეგ ახალი გასაღები შექმნა.</string>
+    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">გასაღების ახალი სათადარიგო ასლის შესაქმნელად \"Collie-ის მეხსიერების ოპტიმიზაცია\" უნდა გამორთო და დაელოდო, რომ შენი მედია ფაილი გადმოიწეროს. შეგიძლია, ჩამოტვირთვის დასრულების შემდეგ ახალი გასაღები შექმნა.</string>
     <!-- Action label to turn off optimized storage and download media -->
     <string name="MessageBackupsKeyRecordScreen__turn_off_and_download">გამორთვა და გადმოწერა</string>
     <!-- Bottom Sheet title for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">შექმენი ახალი აღდგენის გასაღები</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">ახალი გასაღების შექმნა მხოლოდ იმ შემთხვევაშია საჭირო, თუ სხვამ იცის შენი გასაღების შესახებ. მოგიწევს შენი სათადარიგო ასლი თავიდან ატვირთო, მედია ფაილის ჩათვლით. თუ \"Molly-ის მეხსიერების ოპტიმიზაციას\" იყენებ, მოგიწევს, ჯერ გადატვირთული მედია ფაილი გადმოიწერო.</string>
+    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">ახალი გასაღების შექმნა მხოლოდ იმ შემთხვევაშია საჭირო, თუ სხვამ იცის შენი გასაღების შესახებ. მოგიწევს შენი სათადარიგო ასლი თავიდან ატვირთო, მედია ფაილის ჩათვლით. თუ \"Collie-ის მეხსიერების ოპტიმიზაციას\" იყენებ, მოგიწევს, ჯერ გადატვირთული მედია ფაილი გადმოიწერო.</string>
     <!-- Dialog title shown when user attempts to exit backup setup before completion -->
     <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">გსურს სათადარიგო ასლების შექმნიდან გამოხვიდე?</string>
     <!-- Dialog body warning user that backup setup is incomplete -->
@@ -8371,7 +8371,7 @@
     <string name="CouldNotCompleteBackupRestoreSheet__body_error">ხარვეზი დაფიქსირდა და შენი სათადარიგო ასლის აღდგენა შეუძლებელია. შეიძლება ეს იმან გამოიწვია, რომ სათადარიგო ასლის საქაღალდე შენს მოწყობილობაზე მაშინ გადავიდა, სანამ სათადარიგო ასლების აღდგენა მიმდინარეობდა.</string>
 
     <!-- Body of the sheet shown when a local backup restore could not be completed, explaining how to try again -->
-    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">თავიდან საცდელად, Molly-ი შენს მოწყობილობაზე წაშალე და თავიდან დააინსტალირე, შემდეგ კი \"აღდგენა ან გადატანა\" აირჩიე.</string>
+    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">თავიდან საცდელად, Collie-ი შენს მოწყობილობაზე წაშალე და თავიდან დააინსტალირე, შემდეგ კი \"აღდგენა ან გადატანა\" აირჩიე.</string>
 
     <!-- Button on the sheet shown when a local backup restore could not be completed, opening a support article about it -->
     <string name="CouldNotCompleteBackupRestoreSheet__learn_more">გაიგე მეტი</string>

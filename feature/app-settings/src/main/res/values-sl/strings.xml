@@ -510,7 +510,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Uporabi zaklepanje zaslona</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Nastavitve zaklepanja naprave Android bodo zahtevane za odklepanje Mollya, ko zapustite ali preklopite aplikacije. Ko je zaklenjeno, predogledi obvestil ne prikazujejo vsebine sporočila.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Nastavitve zaklepanja naprave Android bodo zahtevane za odklepanje Colliea, ko zapustite ali preklopite aplikacije. Ko je zaklenjeno, predogledi obvestil ne prikazujejo vsebine sporočila.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Začetek zaklepanja zaslona</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -522,9 +522,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Čas po meri</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Uporabi zaklepanje zaslona Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Uporabi zaklepanje zaslona Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Izklop zaklepanja zaslona Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Izklop zaklepanja zaslona Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Pomoč</string>
@@ -546,7 +546,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Ikone in imena aplikacij so vidne na začetnem zaslonu in v predalu aplikacij.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Obvestila bodo vedno prikazala privzeto ikono in ime Mollya.</string>
+    <string name="preferences__app_icon_notification_warning">Obvestila bodo vedno prikazala privzeto ikono in ime Colliea.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafika, ki prikazuje, kje bo vidna nadomestna ikona aplikacije.</string>
 
@@ -566,9 +566,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Spremenite ikono in ime aplikacije v »%1$s«</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Za spremembo ikone in imena aplikacije bo treba Molly zapreti. Obvestila bodo vedno prikazala privzeto ikono in ime Mollya.</string>
+    <string name="preferences__app_icon_dialog_description">Za spremembo ikone in imena aplikacije bo treba Collie zapreti. Obvestila bodo vedno prikazala privzeto ikono in ime Colliea.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Izberite ikono in ime aplikacije, ki bosta vidna na začetnem zaslonu in v predalu za aplikacije vašega telefona. Obvestila bodo vedno prikazala privzeto ikono in ime Mollya. Preberite več</string>
+    <string name="preferences__app_icon_warning_learn_more">Izberite ikono in ime aplikacije, ki bosta vidna na začetnem zaslonu in v predalu za aplikacije vašega telefona. Obvestila bodo vedno prikazala privzeto ikono in ime Colliea. Preberite več</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Preberite več</string>
 

@@ -28,22 +28,22 @@
     <color name="signal_colorErrorContainerInverse">@color/molly_error_container_light</color>
 
     <!-- Core color alpha variants -->
-    <color name="signal_colorSecondaryContainer_12">#1F434159</color>
-    <color name="signal_colorSurface_60">#99100E1F</color>
-    <color name="signal_colorSurfaceVariant_38">#61302F33</color>
-    <color name="signal_colorSurfaceVariant_64">#A3302F33</color>
-    <color name="signal_colorOnSurface_12">#1FE3E1E6</color>
-    <color name="signal_colorOnSurface_50">#80E3E1E6</color>
-    <color name="signal_colorOnSurfaceVariant_60">#99BEBCC4</color>
-    <color name="signal_colorOnBackground_60">#99E3E1E6</color>
-    <color name="signal_colorOutline_38">#615D5D66</color>
-    <color name="signal_colorBackground_0">#00100E1F</color>
+    <color name="signal_colorSecondaryContainer_12">#1F2F4F3A</color>
+    <color name="signal_colorSurface_60">#9924130D</color>
+    <color name="signal_colorSurfaceVariant_38">#6149372F</color>
+    <color name="signal_colorSurfaceVariant_64">#A349372F</color>
+    <color name="signal_colorOnSurface_12">#1FFFF3DF</color>
+    <color name="signal_colorOnSurface_50">#80FFF3DF</color>
+    <color name="signal_colorOnSurfaceVariant_60">#99D8C3B2</color>
+    <color name="signal_colorOnBackground_60">#99FFF3DF</color>
+    <color name="signal_colorOutline_38">#61A9917F</color>
+    <color name="signal_colorBackground_0">#0024130D</color>
 
     <!-- Core color alpha variants without alpha channel -->
-    <color name="signal_colorSurfaceVariant_16_no_alpha">#3F4249</color>
-    <color name="signal_colorSurfaceVariant_32_no_alpha">#5D5E62</color>
+    <color name="signal_colorSurfaceVariant_16_no_alpha">#544237</color>
+    <color name="signal_colorSurfaceVariant_32_no_alpha">#756457</color>
 
     <color name="reminder_background">#26221D</color>
-<color name="signal_colorTertiaryContainer_12">#1F423290</color>
-    <color name="signal_colorOutlineVariant_38">#615D5D66</color>
-    </resources>
+    <color name="signal_colorTertiaryContainer_12">#1FEE9024</color>
+    <color name="signal_colorOutlineVariant_38">#61705849</color>
+</resources>

@@ -510,7 +510,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Použít zámek obrazovky</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Pro odemknutí aplikace Molly při jejím vypnutí nebo přepnutí bude nutné nastavení zámku v zařízení se systémem Android. Při uzamčení se v náhledech oznámení nezobrazuje obsah zprávy.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Pro odemknutí aplikace Collie při jejím vypnutí nebo přepnutí bude nutné nastavení zámku v zařízení se systémem Android. Při uzamčení se v náhledech oznámení nezobrazuje obsah zprávy.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Zámek úvodní obrazovky</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -522,9 +522,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Vlastní čas</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Použít zámek obrazovky aplikace Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Použít zámek obrazovky aplikace Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Vypněte zámek obrazovky aplikace Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Vypněte zámek obrazovky aplikace Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Nápověda</string>
@@ -546,7 +546,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Ikony a názvy aplikací se zobrazují na domovské obrazovce a ve složce s aplikacemi.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Oznámení budou vždy zobrazovat výchozí ikonu a název Molly.</string>
+    <string name="preferences__app_icon_notification_warning">Oznámení budou vždy zobrazovat výchozí ikonu a název Collie.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafika znázorňující, kde se bude nová ikona aplikace zobrazovat.</string>
 
@@ -566,9 +566,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Změnit ikonu a název aplikace na „%1$s“</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Aby bylo možné ikonu a název aplikace Molly změnit, bude nutné ji zavřít. Oznámení budou vždy zobrazovat výchozí ikonu a název Molly.</string>
+    <string name="preferences__app_icon_dialog_description">Aby bylo možné ikonu a název aplikace Collie změnit, bude nutné ji zavřít. Oznámení budou vždy zobrazovat výchozí ikonu a název Collie.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Vyberte si ikonu a název aplikace, které se budou zobrazovat na domovské obrazovce vašeho telefonu a ve složce s aplikacemi. Oznámení budou vždy zobrazovat výchozí ikonu a název Molly. Více informací</string>
+    <string name="preferences__app_icon_warning_learn_more">Vyberte si ikonu a název aplikace, které se budou zobrazovat na domovské obrazovce vašeho telefonu a ve složce s aplikacemi. Oznámení budou vždy zobrazovat výchozí ikonu a název Collie. Více informací</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Více informací</string>
 

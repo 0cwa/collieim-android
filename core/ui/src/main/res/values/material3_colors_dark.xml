@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="signal_dark_colorSurfaceVariantFill">#33FFFFFF</color>
-    <color name="signal_dark_colorOnSurface">#E3E1E6</color>
+    <color name="signal_dark_colorOnSurface">#FFF3DF</color>
     <color name="signal_dark_neutralSurface">#14FFFFFF</color>
     <color name="signal_dark_neutralFill">#33FFFFFF</color>
     <color name="signal_dark_colorOnCustom">#FFFFFF</color>

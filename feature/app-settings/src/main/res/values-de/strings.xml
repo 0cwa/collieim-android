@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Bildschirmsperre verwenden</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Zum Entsperren von Molly wird die Entsperrfunktion deines Android-Geräts verwendet, wenn du Apps verlässt oder zwischen Apps wechselst. Wenn dein Gerät gesperrt ist, wird der Inhalt in Benachrichtigungen nicht angezeigt.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Zum Entsperren von Collie wird die Entsperrfunktion deines Android-Geräts verwendet, wenn du Apps verlässt oder zwischen Apps wechselst. Wenn dein Gerät gesperrt ist, wird der Inhalt in Benachrichtigungen nicht angezeigt.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Bildschirmsperre aktivieren</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Personalisierte Zeit</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Bildschirmsperre von Molly verwenden</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Bildschirmsperre von Collie verwenden</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Schalte die Bildschirmsperre von Molly aus</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Schalte die Bildschirmsperre von Collie aus</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Hilfe</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">App-Symbole und Namen werden auf dem Startbildschirm und im App-Drawer deines Mobiltelefons angezeigt.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Bei Benachrichtigungen werden immer das Standardsymbol von Molly und der Name angezeigt.</string>
+    <string name="preferences__app_icon_notification_warning">Bei Benachrichtigungen werden immer das Standardsymbol von Collie und der Name angezeigt.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafik, die zeigt, wo das neue App-Symbol zu sehen sein wird.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Ändere App-Symbol und Name zu »%1$s«</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly muss beendet werden, um das App-Symbol und den Namen zu ändern. Bei Benachrichtigungen werden immer das Standardsymbol von Molly und der Name angezeigt.</string>
+    <string name="preferences__app_icon_dialog_description">Collie muss beendet werden, um das App-Symbol und den Namen zu ändern. Bei Benachrichtigungen werden immer das Standardsymbol von Collie und der Name angezeigt.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Wähle ein App-Symbol und einen Namen aus, die dann auf dem Startbildschirm und im App-Drawer deines Mobiltelefons angezeigt werden. Bei Benachrichtigungen werden immer das Standardsymbol von Molly und der Name angezeigt. Mehr erfahren</string>
+    <string name="preferences__app_icon_warning_learn_more">Wähle ein App-Symbol und einen Namen aus, die dann auf dem Startbildschirm und im App-Drawer deines Mobiltelefons angezeigt werden. Bei Benachrichtigungen werden immer das Standardsymbol von Collie und der Name angezeigt. Mehr erfahren</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Mehr erfahren</string>
 

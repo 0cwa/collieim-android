@@ -9,7 +9,7 @@
 <string name="preferences__enable_debug_log">Foutopsporingslog inschakelen</string>
     <string name="HelpSettingsFragment__molly_im_website">Molly.im website</string>
     <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Check periodiek voor nieuwe versies en vraag of ze geinstalleerd moeten worden</string>
-    <string name="preferences__autoupdate_molly">Molly automatisch updaten</string>
+    <string name="preferences__autoupdate_molly">Collie automatisch updaten</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta versies zijn bedoeld om te testen en kunnen fouten bevatten</string>
     <string name="preferences__include_beta_updates">Inclusief beta updates</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">Controleren op updates</string>

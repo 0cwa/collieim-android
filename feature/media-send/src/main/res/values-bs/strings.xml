@@ -137,23 +137,23 @@
   <!-- Dialog title asking users for microphone permission -->
   <string name="CameraXFragment_allow_access_microphone">Dozvolite pristup vašem mikrofonu</string>
   <!-- Text explaining why Signal needs camera access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Da biste slikali i snimali, dozvolite Mollyu da pristupi kameri.</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Da biste slikali i snimali, dozvolite Collieu da pristupi kameri.</string>
   <!-- Text explaining why Signal needs camera and microphone access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Za snimanje fotografija i videozapisa, dozvolite Mollyu pristup kameri i mikrofonu.</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Za snimanje fotografija i videozapisa, dozvolite Collieu pristup kameri i mikrofonu.</string>
   <!-- Text explaining why Signal needs microphone access to take videos -->
-  <string name="CameraXFragment_to_capture_videos_with_sound">Za snimanje videozapisa sa zvukom, dozvolite Mollyu pristup mikrofonu.</string>
+  <string name="CameraXFragment_to_capture_videos_with_sound">Za snimanje videozapisa sa zvukom, dozvolite Collieu pristup mikrofonu.</string>
   <!-- Text explaining why Signal needs camera access to scan QR codes -->
-  <string name="CameraXFragment_to_scan_qr_code_allow_camera">Da skenirate QR kod, dozvolite Mollyu pristup kameri.</string>
+  <string name="CameraXFragment_to_scan_qr_code_allow_camera">Da skenirate QR kod, dozvolite Collieu pristup kameri.</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when capturing photos -->
-  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">Molly treba pristup kameri za snimanje fotografija</string>
+  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">Collie treba pristup kameri za snimanje fotografija</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when scanning QR codes -->
-  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">Mollyu treba pristup kameri za skeniranje QR kodova</string>
+  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">Collieu treba pristup kameri za skeniranje QR kodova</string>
   <!-- Toast dialog explaining why Signal needs microphone permissions -->
-  <string name="CameraXFragment_signal_needs_microphone_access_video">Mollyu treba pristup mikrofonu za snimanje videa</string>
+  <string name="CameraXFragment_signal_needs_microphone_access_video">Collieu treba pristup mikrofonu za snimanje videa</string>
   <!-- Dialog description that explains the steps needed to give camera permission -->
-  <string name="CameraXFragment_to_capture_photos">Za snimanje fotografija u Mollyu:</string>
+  <string name="CameraXFragment_to_capture_photos">Za snimanje fotografija u Collieu:</string>
   <!-- Dialog description that explains the steps needed to give camera and microphone permission -->
-  <string name="CameraXFragment_to_capture_photos_videos">Za snimanje fotografija i videozapisa u Mollyu:</string>
+  <string name="CameraXFragment_to_capture_photos_videos">Za snimanje fotografija i videozapisa u Collieu:</string>
   <!-- Dialog description that explains the steps needed to give microphone permission -->
   <string name="CameraXFragment_to_capture_videos">Za snimanje videozapisa sa zvukom:</string>
   <!-- Dialog description that explains the steps needed to give Signal camera permissions -->
@@ -167,7 +167,7 @@
   <!-- Accessibility label for the camera toggle that keeps the camera open after each capture so several photos or videos can be taken in a row -->
   <string name="CameraXFragment_multi_capture">Višestruko snimanje</string>
   <!-- Displayed in a permissions dialog when the user has denied access to hardware for image and video capture. -->
-  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">Mollyu je potrebno dopuštenje da pristupi mikrofonu kako bi mogao snimati video, ali je ono uskraćeno. Molimo nastavite do postavki aplikacije, odaberite \"Dozvole\" i aktivirajte stavke \"Mikrofon\" i \"Kamera\".</string>
+  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">Collieu je potrebno dopuštenje da pristupi mikrofonu kako bi mogao snimati video, ali je ono uskraćeno. Molimo nastavite do postavki aplikacije, odaberite \"Dozvole\" i aktivirajte stavke \"Mikrofon\" i \"Kamera\".</string>
 
   <!-- Displayed when there is an error capturing video -->
   <string name="MediaSendViewModel__error_recording_video">Greška pri snimanju videozapisa</string>

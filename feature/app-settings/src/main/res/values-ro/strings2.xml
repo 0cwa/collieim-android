@@ -8,7 +8,7 @@
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Folosește culorile sistemului pentru aspectul aplicației</string>
 <string name="preferences__enable_debug_log">Activează jurnalul de depanare</string>
     <string name="HelpSettingsFragment__molly_im_website">Situl web Molly.im</string>
-    <string name="preferences__autoupdate_molly">Actualizează automat Molly</string>
+    <string name="preferences__autoupdate_molly">Actualizează automat Collie</string>
     <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Verifică periodic dacă există versiuni noi și cere să le instalezi</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Versiunile beta sunt versiuni de test și pot conține erori</string>
     <string name="preferences__include_beta_updates">Include versiuni beta</string>

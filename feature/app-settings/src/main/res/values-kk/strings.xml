@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Экран құлпын пайдалану</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Шыққанда немесе қолданбаларды ауыстырғанда, Molly құлпын ашу үшін Android құрылғыңыздың құлпын ашу параметрлері керек болады. Құлыпталып тұрғанда, хабарландырулардың алдын ала көрінісі хаттың контентін көрсетпейді.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Шыққанда немесе қолданбаларды ауыстырғанда, Collie құлпын ашу үшін Android құрылғыңыздың құлпын ашу параметрлері керек болады. Құлыпталып тұрғанда, хабарландырулардың алдын ала көрінісі хаттың контентін көрсетпейді.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Бастапқы экран құлпы</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Реттелмелі уақыт</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Molly экран құлпын пайдалану</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie экран құлпын пайдалану</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Molly экран құлпын өшіру</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collie экран құлпын өшіру</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Анықтама</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Қолданба белгішелері мен аттары басты экранда және қолданба панелінде көрініп тұрады.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Хабарландыруларда міндетті түрде әдепкі Molly белгішесі мен аты көрсетіледі.</string>
+    <string name="preferences__app_icon_notification_warning">Хабарландыруларда міндетті түрде әдепкі Collie белгішесі мен аты көрсетіледі.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Ауыстырылатын қолданба белгішесі қай жерде тұратынын көрсететін график.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Қолданба белгішесі мен атын \"%1$s\" деп өзгерту</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Қолданбаның белгішесі мен атын өзгерту үшін Molly-дың жабылуына тура келеді. Хабарландыруларда міндетті түрде әдепкі Molly белгішесі мен аты көрсетіледі.</string>
+    <string name="preferences__app_icon_dialog_description">Қолданбаның белгішесі мен атын өзгерту үшін Collie-дың жабылуына тура келеді. Хабарландыруларда міндетті түрде әдепкі Collie белгішесі мен аты көрсетіледі.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Қолданбаның белгішесі мен атын таңдаңыз, олар телефоныңыздың басты экранында және қолданбалар панелінде көрсетіледі. Хабарландыруларда міндетті түрде әдепкі Molly белгішесі мен аты көрсетіледі. Толық ақпарат</string>
+    <string name="preferences__app_icon_warning_learn_more">Қолданбаның белгішесі мен атын таңдаңыз, олар телефоныңыздың басты экранында және қолданбалар панелінде көрсетіледі. Хабарландыруларда міндетті түрде әдепкі Collie белгішесі мен аты көрсетіледі. Толық ақпарат</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Толық ақпарат</string>
 

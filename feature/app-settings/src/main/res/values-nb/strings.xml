@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Bruk skjermlås</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Du vil bli bedt om å låse opp Molly via skjermlåsen på enheten din hver gang du lukker appen. Innholdet i meldinger vises ikke i forhåndsvisningene av varsler når Molly er låst.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Du vil bli bedt om å låse opp Collie via skjermlåsen på enheten din hver gang du lukker appen. Innholdet i meldinger vises ikke i forhåndsvisningene av varsler når Collie er låst.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Lås skjermen</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Selvvalgt tid</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Bruk skjermlås på Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Bruk skjermlås på Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Slå av skjermlåsen på Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Slå av skjermlåsen på Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Hjelp</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Appikonene og -navnene vises på startskjermen og oversikten over apper.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Varslene vil fremdeles vise standardikonet og navnet til Molly.</string>
+    <string name="preferences__app_icon_notification_warning">Varslene vil fremdeles vise standardikonet og navnet til Collie.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Bilde som viser hvor det nye appikonet blir vist.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Bytt appikonet og -navnet til «%1$s»</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly må starte på nytt for at endringene skal tre i kraft. Varslene vil fremdeles vise standardikonet og navnet til Molly.</string>
+    <string name="preferences__app_icon_dialog_description">Collie må starte på nytt for at endringene skal tre i kraft. Varslene vil fremdeles vise standardikonet og navnet til Collie.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Velg et annet ikon og navn som skal vises på telefonens startskjerm og i oversikten over apper. Varslene vil fremdeles vise standardikonet og navnet til Molly. Les mer</string>
+    <string name="preferences__app_icon_warning_learn_more">Velg et annet ikon og navn som skal vises på telefonens startskjerm og i oversikten over apper. Varslene vil fremdeles vise standardikonet og navnet til Collie. Les mer</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Les mer</string>
 

@@ -143,7 +143,7 @@
     <!-- Row title for restore/transfer without using a previous device -->
     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">ਮੇਰੇ ਕੋਲ ਮੇਰਾ ਪੁਰਾਣਾ ਫ਼ੋਨ ਨਹੀਂ ਹੈ</string>
     <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">ਜਾਂ ਤੁਸੀਂ ਉਸੇ ਡਿਵਾਈਸ \'ਤੇ Molly ਨੂੰ ਮੁੜ ਇੰਸਟਾਲ ਕਰ ਰਹੇ ਹੋ</string>
+    <string name="WelcomeFragment_restore_action_reinstalling">ਜਾਂ ਤੁਸੀਂ ਉਸੇ ਡਿਵਾਈਸ \'ਤੇ Collie ਨੂੰ ਮੁੜ ਇੰਸਟਾਲ ਕਰ ਰਹੇ ਹੋ</string>
 
     <!-- ArchiveRestoreSelectionScreen -->
     <!-- Title text for the archive restore selection screen -->

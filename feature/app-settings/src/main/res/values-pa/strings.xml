@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">ਸਕ੍ਰੀਨ ਲੌਕ ਦੀ ਵਰਤੋਂ ਕਰੋ</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">ਜਦੋਂ ਤੁਸੀਂ ਐਪ ਵਿੱਚੋਂ ਬਾਹਰ ਜਾਂਦੇ ਹੋ ਜਾਂ ਇੱਕ ਐਪ ਤੋਂ ਦੂਜੀ ਐਪ \'ਤੇ ਜਾਂਦੇ ਹੋ ਤਾਂ Molly ਨੂੰ ਅਨਲੌਕ ਕਰਨ ਲਈ ਤੁਹਾਡੇ Android ਡਿਵਾਈਸ ਦੀਆਂ ਲੌਕ ਸੈਟਿੰਗਾਂ ਨੂੰ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਲੌਕ ਹੋਣ \'ਤੇ, ਸੂਚਨਾਵਾਂ ਦੀ ਝਲਕ ਵਿੱਚ ਸੁਨੇਹੇ ਦੀ ਸਮੱਗਰੀ ਦਿਖਾਈ ਨਹੀਂ ਜਾਵੇਗੀ।</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">ਜਦੋਂ ਤੁਸੀਂ ਐਪ ਵਿੱਚੋਂ ਬਾਹਰ ਜਾਂਦੇ ਹੋ ਜਾਂ ਇੱਕ ਐਪ ਤੋਂ ਦੂਜੀ ਐਪ \'ਤੇ ਜਾਂਦੇ ਹੋ ਤਾਂ Collie ਨੂੰ ਅਨਲੌਕ ਕਰਨ ਲਈ ਤੁਹਾਡੇ Android ਡਿਵਾਈਸ ਦੀਆਂ ਲੌਕ ਸੈਟਿੰਗਾਂ ਨੂੰ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਲੌਕ ਹੋਣ \'ਤੇ, ਸੂਚਨਾਵਾਂ ਦੀ ਝਲਕ ਵਿੱਚ ਸੁਨੇਹੇ ਦੀ ਸਮੱਗਰੀ ਦਿਖਾਈ ਨਹੀਂ ਜਾਵੇਗੀ।</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">ਸਕ੍ਰੀਨ ਲੌਕ ਸ਼ੁਰੂ ਕਰੋ</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">ਪਸੰਦੀਦਾ ਸਮਾਂ</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Molly ਸਕ੍ਰੀਨ ਲੌਕ ਦੀ ਵਰਤੋਂ ਕਰੋ</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie ਸਕ੍ਰੀਨ ਲੌਕ ਦੀ ਵਰਤੋਂ ਕਰੋ</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Molly ਸਕ੍ਰੀਨ ਲੌਕ ਬੰਦ ਕਰੋ</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collie ਸਕ੍ਰੀਨ ਲੌਕ ਬੰਦ ਕਰੋ</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">ਮਦਦ</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">ਐਪ ਆਈਕਨ ਅਤੇ ਨਾਮ ਹੋਮ ਸਕ੍ਰੀਨ ਅਤੇ ਐਪ ਡ੍ਰਾਅਰ ਵਿੱਚ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ।</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">ਸੂਚਨਾਵਾਂ ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਡਿਫੌਲਟ Molly ਆਈਕਨ ਅਤੇ ਨਾਮ ਦਿਖਾਈ ਦੇਵੇਗਾ।</string>
+    <string name="preferences__app_icon_notification_warning">ਸੂਚਨਾਵਾਂ ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਡਿਫੌਲਟ Collie ਆਈਕਨ ਅਤੇ ਨਾਮ ਦਿਖਾਈ ਦੇਵੇਗਾ।</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">ਰਿਪਲੇਸਮੈਂਟ ਐਪ ਆਈਕਨ ਕਿੱਥੇ ਦਿਖਾਈ ਦੇਵੇਗਾ ਇਹ ਦਿਖਾਉਣ ਵਾਲਾ ਗ੍ਰਾਫਿਕ।</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">ਐਪ ਆਈਕਨ ਅਤੇ ਨਾਮ ਨੂੰ \"%1$s\" \'ਤੇ ਬਦਲੋ</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">ਐਪ ਆਈਕਨ ਅਤੇ ਨਾਮ ਨੂੰ ਬਦਲਣ ਲਈ Molly ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਸੂਚਨਾਵਾਂ ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਡਿਫੌਲਟ Molly ਆਈਕਨ ਅਤੇ ਨਾਮ ਦਿਖਾਈ ਦੇਵੇਗਾ।</string>
+    <string name="preferences__app_icon_dialog_description">ਐਪ ਆਈਕਨ ਅਤੇ ਨਾਮ ਨੂੰ ਬਦਲਣ ਲਈ Collie ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਸੂਚਨਾਵਾਂ ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਡਿਫੌਲਟ Collie ਆਈਕਨ ਅਤੇ ਨਾਮ ਦਿਖਾਈ ਦੇਵੇਗਾ।</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">ਕੋਈ ਐਪ ਆਈਕਨ ਅਤੇ ਨਾਮ ਚੁਣੋ, ਜੋ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦੀ ਹੋਮ ਸਕ੍ਰੀਨ ਅਤੇ ਐਪ ਡ੍ਰਾਅਰ ਵਿੱਚ ਦਿਖਾਈ ਦੇਵੇਗਾ। ਸੂਚਨਾਵਾਂ ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਡਿਫੌਲਟ Molly ਆਈਕਨ ਅਤੇ ਨਾਮ ਦਿਖਾਈ ਦੇਵੇਗਾ। ਹੋਰ ਜਾਣੋ</string>
+    <string name="preferences__app_icon_warning_learn_more">ਕੋਈ ਐਪ ਆਈਕਨ ਅਤੇ ਨਾਮ ਚੁਣੋ, ਜੋ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦੀ ਹੋਮ ਸਕ੍ਰੀਨ ਅਤੇ ਐਪ ਡ੍ਰਾਅਰ ਵਿੱਚ ਦਿਖਾਈ ਦੇਵੇਗਾ। ਸੂਚਨਾਵਾਂ ਵਿੱਚ ਹਮੇਸ਼ਾਂ ਡਿਫੌਲਟ Collie ਆਈਕਨ ਅਤੇ ਨਾਮ ਦਿਖਾਈ ਦੇਵੇਗਾ। ਹੋਰ ਜਾਣੋ</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">ਹੋਰ ਜਾਣੋ</string>
 

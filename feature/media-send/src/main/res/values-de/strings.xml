@@ -137,23 +137,23 @@
   <!-- Dialog title asking users for microphone permission -->
   <string name="CameraXFragment_allow_access_microphone">Zugriff auf dein Mikrofon erlauben</string>
   <!-- Text explaining why Signal needs camera access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Zum Aufnehmen von Fotos und Videos erlaube Molly Zugriff auf deine Kamera.</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Zum Aufnehmen von Fotos und Videos erlaube Collie Zugriff auf deine Kamera.</string>
   <!-- Text explaining why Signal needs camera and microphone access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Zum Aufnehmen von Fotos und Videos erlaube Molly Zugriff auf deine Kamera und dein Mikrofon.</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Zum Aufnehmen von Fotos und Videos erlaube Collie Zugriff auf deine Kamera und dein Mikrofon.</string>
   <!-- Text explaining why Signal needs microphone access to take videos -->
-  <string name="CameraXFragment_to_capture_videos_with_sound">Molly benötigt Zugriff auf dein Mikrofon, um Videos mit Ton aufzunehmen.</string>
+  <string name="CameraXFragment_to_capture_videos_with_sound">Collie benötigt Zugriff auf dein Mikrofon, um Videos mit Ton aufzunehmen.</string>
   <!-- Text explaining why Signal needs camera access to scan QR codes -->
-  <string name="CameraXFragment_to_scan_qr_code_allow_camera">Um QR-Codes zu scannen, erlaube Molly Zugriff auf deine Kamera.</string>
+  <string name="CameraXFragment_to_scan_qr_code_allow_camera">Um QR-Codes zu scannen, erlaube Collie Zugriff auf deine Kamera.</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when capturing photos -->
-  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">Um Aufnahmen zu machen, benötigt Molly Zugriff auf deine Kamera</string>
+  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">Um Aufnahmen zu machen, benötigt Collie Zugriff auf deine Kamera</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when scanning QR codes -->
-  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">Um QR-Codes zu scannen, benötigt Molly Zugriff auf deine Kamera</string>
+  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">Um QR-Codes zu scannen, benötigt Collie Zugriff auf deine Kamera</string>
   <!-- Toast dialog explaining why Signal needs microphone permissions -->
-  <string name="CameraXFragment_signal_needs_microphone_access_video">Um Videos aufzunehmen, benötigt Molly Zugriff auf dein Mikrofon</string>
+  <string name="CameraXFragment_signal_needs_microphone_access_video">Um Videos aufzunehmen, benötigt Collie Zugriff auf dein Mikrofon</string>
   <!-- Dialog description that explains the steps needed to give camera permission -->
-  <string name="CameraXFragment_to_capture_photos">Um in Molly Fotos zu machen:</string>
+  <string name="CameraXFragment_to_capture_photos">Um in Collie Fotos zu machen:</string>
   <!-- Dialog description that explains the steps needed to give camera and microphone permission -->
-  <string name="CameraXFragment_to_capture_photos_videos">Um in Molly Fotos und Videos aufzunehmen:</string>
+  <string name="CameraXFragment_to_capture_photos_videos">Um in Collie Fotos und Videos aufzunehmen:</string>
   <!-- Dialog description that explains the steps needed to give microphone permission -->
   <string name="CameraXFragment_to_capture_videos">Um Videos mit Ton aufzunehmen:</string>
   <!-- Dialog description that explains the steps needed to give Signal camera permissions -->
@@ -167,7 +167,7 @@
   <!-- Accessibility label for the camera toggle that keeps the camera open after each capture so several photos or videos can be taken in a row -->
   <string name="CameraXFragment_multi_capture">Mehrfachaufnahme</string>
   <!-- Displayed in a permissions dialog when the user has denied access to hardware for image and video capture. -->
-  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">Molly benötigt die Berechtigung »Mikrofon«, um Videos aufzunehmen, diese wurde jedoch abgelehnt. Bitte öffne die App-Einstellungen, wähle »Berechtigungen« und aktiviere »Mikrofon« und »Kamera«.</string>
+  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">Collie benötigt die Berechtigung »Mikrofon«, um Videos aufzunehmen, diese wurde jedoch abgelehnt. Bitte öffne die App-Einstellungen, wähle »Berechtigungen« und aktiviere »Mikrofon« und »Kamera«.</string>
 
   <!-- Displayed when there is an error capturing video -->
   <string name="MediaSendViewModel__error_recording_video">Fehler beim Aufnehmen eines Videos</string>

@@ -15,12 +15,7 @@ class ApkUpdateValues(store: KeyValueStore, context: Context) : SignalStoreValue
     private const val DOWNLOAD_ID = "apk_update.download_id"
     private const val DIGEST = "apk_update.digest"
     private const val LAST_SUCCESSFUL_CHECK = "apk_update.last_successful_check"
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/keyvalue/ApkUpdateValues.kt
-=======
-    private const val LAST_APK_UPLOAD_TIME = "apk_update.last_apk_upload_time"
-    private const val PENDING_APK_UPLOAD_TIME = "apk_update.pending_apk_upload_time"
     private const val REFRESH_TIME = "apk_update.refresh_time"
->>>>>>> SIGNAL:lib/storage/src/main/java/org/signal/storage/keyvalue/ApkUpdateValues.kt
   }
 
   init {

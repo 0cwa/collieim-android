@@ -12,6 +12,8 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.giph.model.ChunkedImageUrl;
 import org.thoughtcrime.securesms.net.ContentProxySafetyInterceptor;
 import org.thoughtcrime.securesms.net.ContentProxySelector;
+import org.thoughtcrime.securesms.net.Networking;
+import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
 
 import java.io.InputStream;
 
@@ -41,7 +43,9 @@ public class ChunkedImageUrlLoader implements ModelLoader<ChunkedImageUrl, Input
 
     public Factory() {
       this.client  = AppDependencies.getOkHttpClient().newBuilder()
+                                     .socketFactory(Networking.getSocketFactory())
                                      .proxySelector(new ContentProxySelector())
+                                     .dns(Networking.getDns())
                                      .cache(null)
                                      .addNetworkInterceptor(new ContentProxySafetyInterceptor())
                                      .addNetworkInterceptor(new PaddedHeadersInterceptor())

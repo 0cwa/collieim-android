@@ -16,7 +16,6 @@ enum class ReactionAction {
   DOWNLOAD,
   COPY,
   MULTISELECT,
-  PAYMENT_DETAILS,
   VIEW_INFO,
   DELETE,
   END_POLL,

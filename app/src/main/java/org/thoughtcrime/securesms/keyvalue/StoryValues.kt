@@ -60,9 +60,7 @@ class StoryValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val ARCHIVE_DURATION = "stories.archive.duration"
   }
 
-  public override fun onFirstEverAppLaunch() {
-    viewedReceiptsEnabled = true
-  }
+  public override fun onFirstEverAppLaunch() = Unit
 
   override val keysToIncludeInBackup: List<String>
     get() = listOf(
@@ -77,7 +75,7 @@ class StoryValues(store: KeyValueStore) : SignalStoreValues(store) {
       ARCHIVE_DURATION
     )
 
-  var isFeatureDisabled: Boolean by booleanValue(MANUAL_FEATURE_DISABLE, false)
+  var isFeatureDisabled: Boolean by booleanValue(MANUAL_FEATURE_DISABLE, true)
 
   var lastFontVersionCheck: Long by longValue(LAST_FONT_VERSION_CHECK, 0)
 
@@ -89,7 +87,7 @@ class StoryValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   var userHasViewedOnboardingStory: Boolean by booleanValue(USER_HAS_VIEWED_ONBOARDING_STORY, false)
 
-  var viewedReceiptsEnabled: Boolean by booleanValue(STORY_VIEWED_RECEIPTS, false)
+  var viewedReceiptsEnabled: Boolean by booleanValue(STORY_VIEWED_RECEIPTS, true)
 
   var userHasSeenGroupStoryEducationSheet: Boolean by booleanValue(USER_HAS_SEEN_GROUP_STORY_EDUCATION_SHEET, false)
 

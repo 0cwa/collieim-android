@@ -22,6 +22,9 @@ sealed interface AppearanceSettingsEvent {
   /** The user picked a theme from the theme list. */
   data class ThemeSelected(val theme: AppearanceSettingsState.Theme) : AppearanceSettingsEvent
 
+  /** The user enabled or disabled the system color palette. */
+  data class DynamicColorsChanged(val enabled: Boolean) : AppearanceSettingsEvent
+
   /** The user tapped the chat color and wallpaper row. */
   data object ChatColorAndWallpaperClicked : AppearanceSettingsEvent
 

@@ -10,7 +10,7 @@ import org.signal.core.ui.compose.ComposeFragment
 import org.thoughtcrime.securesms.components.settings.app.appSettingsRouter
 
 /**
- * Settings around app updates. Only shown for builds that manage their own app updates.
+ * Settings for Molly updates, or app-store guidance for externally managed builds.
  */
 class AppUpdatesSettingsFragment : ComposeFragment() {
 

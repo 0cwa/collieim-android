@@ -22,7 +22,7 @@
   <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0--only-687E59?style=flat&amp;labelColor=5A4033" alt="AGPL 3.0 only"></a>
 </p>
 
-Welcome!  Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.  We use a patch-based release system for maximum code auditability, fast security updates ⚡, and interoperability.  [We contribute](https://github.com/mollyim/mollyim-android/pull/852) [back upstream](https://github.com/mollyim/mollyim-android/pull/853).
+Welcome!  Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.  Published application source is inspected here; reconstruction and release engineering live in [collie-release-engineering](https://github.com/0cwa/collie-release-engineering). See [BUILD.md](BUILD.md) and [VERIFY.md](VERIFY.md).  [We contribute](https://github.com/mollyim/mollyim-android/pull/852) [back upstream](https://github.com/mollyim/mollyim-android/pull/853).
 
 <b>🌟 Stars! 🧡</b>
 

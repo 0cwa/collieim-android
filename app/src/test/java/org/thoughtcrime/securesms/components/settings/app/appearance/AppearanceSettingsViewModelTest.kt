@@ -57,12 +57,14 @@ class AppearanceSettingsViewModelTest {
 
     every { AppearanceSettingsRepository.getLanguage() } returns "zz"
     every { AppearanceSettingsRepository.getTheme() } returns Theme.SYSTEM
+    every { AppearanceSettingsRepository.useDynamicColors() } returns false
+    every { AppearanceSettingsRepository.isDynamicColorsAvailable() } returns false
     every { AppearanceSettingsRepository.getMessageFontSize() } returns 16
     every { AppearanceSettingsRepository.isCompactNavigationBar() } returns false
     every { AppearanceSettingsRepository.isSystemThemeAvailable() } returns true
     every { AppearanceSettingsRepository.isAppIconSupported() } returns true
     every { AppearanceSettingsRepository.applyLanguage(any()) } just Runs
-    every { AppearanceSettingsRepository.setTheme(any()) } just Runs
+    every { AppearanceSettingsRepository.setTheme(any(), any()) } just Runs
     every { AppearanceSettingsRepository.setMessageFontSize(any()) } just Runs
     every { AppearanceSettingsRepository.setCompactNavigationBar(any()) } just Runs
   }
@@ -155,9 +157,34 @@ class AppearanceSettingsViewModelTest {
 
     viewModel.onEvent(AppearanceSettingsEvent.ThemeSelected(Theme.DARK))
 
-    verify { AppearanceSettingsRepository.setTheme(Theme.DARK) }
+    verify { AppearanceSettingsRepository.setTheme(Theme.DARK, false) }
     assertThat(viewModel.state.value.theme).isEqualTo(Theme.DARK)
     assertThat(actions).isEqualTo(listOf(AppearanceSettingsAction.ApplySplashScreenTheme(Theme.DARK)))
+  }
+
+  @Test
+  fun `selecting a theme preserves dynamic colors`() = runTest(testDispatcher) {
+    every { AppearanceSettingsRepository.useDynamicColors() } returns true
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+
+    viewModel.onEvent(AppearanceSettingsEvent.ThemeSelected(Theme.DARK))
+
+    verify { AppearanceSettingsRepository.setTheme(Theme.DARK, true) }
+    assertThat(actions).isEqualTo(listOf(AppearanceSettingsAction.ApplySplashScreenTheme(Theme.DARK, true)))
+  }
+
+  @Test
+  fun `changing dynamic colors preserves the selected theme`() = runTest(testDispatcher) {
+    every { AppearanceSettingsRepository.getTheme() } returns Theme.DARK
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+
+    viewModel.onEvent(AppearanceSettingsEvent.DynamicColorsChanged(true))
+
+    verify { AppearanceSettingsRepository.setTheme(Theme.DARK, true) }
+    assertThat(viewModel.state.value.dynamicColors).isEqualTo(true)
+    assertThat(actions).isEqualTo(listOf(AppearanceSettingsAction.ApplySplashScreenTheme(Theme.DARK, true)))
   }
 
   @Test

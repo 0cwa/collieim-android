@@ -32,8 +32,6 @@ import org.signal.core.util.requireDrawable
 import org.thoughtcrime.securesms.BlockUnblockDialog
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.avatar.view.AvatarView
-import org.thoughtcrime.securesms.badges.BadgeImageView
-import org.thoughtcrime.securesms.badges.view.ViewBadgeBottomSheetDialogFragment
 import org.thoughtcrime.securesms.calls.YouAreAlreadyInACallSnackbar
 import org.thoughtcrime.securesms.components.SignalProgressDialog
 import org.thoughtcrime.securesms.components.settings.DSLSettingsIcon
@@ -129,7 +127,6 @@ class RecipientBottomSheetDialogFragment : FixedRoundedCornerBottomSheetDialogFr
     val noteToSelfDescription: View = view.findViewById(R.id.rbs_note_to_self_description)
     val buttonStrip: View = view.findViewById(R.id.button_strip)
     val interactionsContainer: View = view.findViewById(R.id.interactions_container)
-    val badgeImageView: BadgeImageView = view.findViewById(R.id.rbs_badge)
     val tapToView: View = view.findViewById(R.id.rbs_tap_to_view)
     val progressBar: ProgressBar = view.findViewById(R.id.rbs_progress_bar)
 
@@ -192,10 +189,6 @@ class RecipientBottomSheetDialogFragment : FixedRoundedCornerBottomSheetDialogFr
       interactionsContainer.visible = !recipient.isSelf
       if (AvatarDownloadStateCache.getDownloadState(recipient) != AvatarDownloadStateCache.DownloadState.IN_PROGRESS) {
         avatar.displayChatAvatar(recipient)
-      }
-
-      if (!recipient.isSelf) {
-        badgeImageView.setBadgeFromRecipient(recipient)
       }
 
       if (recipient.isSelf) {
@@ -341,11 +334,6 @@ class RecipientBottomSheetDialogFragment : FixedRoundedCornerBottomSheetDialogFr
     avatar.setOnClickListener {
       dismiss()
       viewModel.onAvatarClicked(requireActivity())
-    }
-
-    badgeImageView.setOnClickListener {
-      dismiss()
-      ViewBadgeBottomSheetDialogFragment.show(getParentFragmentManager(), recipientId, null)
     }
 
     blockButton.setOnClickListener {

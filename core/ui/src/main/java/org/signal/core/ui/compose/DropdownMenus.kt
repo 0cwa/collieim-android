@@ -107,6 +107,7 @@ object DropdownMenus {
   @Composable
   fun Item(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp),
     @DrawableRes leadingIconResId: Int? = null,
     leadingIconSpacing: Dp = 0.dp,
@@ -133,6 +134,7 @@ object DropdownMenus {
       },
       colors = MenuDefaults.itemColors(leadingIconColor = MaterialTheme.colorScheme.onSurface),
       onClick = onClick,
+      enabled = enabled,
       modifier = modifier
     )
   }

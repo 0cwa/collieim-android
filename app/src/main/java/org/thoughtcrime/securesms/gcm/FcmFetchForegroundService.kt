@@ -14,6 +14,7 @@ import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.NotificationIds
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.util.WakeLockUtil
 
 /**
@@ -129,9 +130,10 @@ class FcmFetchForegroundService : Service() {
       Log.w(TAG, "Failed to start foreground service! StopSelf: ${intent?.getBooleanExtra(KEY_STOP_SELF, false)}", e)
     }
 
-    return if (intent != null && intent.getBooleanExtra(KEY_STOP_SELF, false)) {
+    val appLocked = KeyCachingService.isLocked()
+    return if (appLocked || (intent != null && intent.getBooleanExtra(KEY_STOP_SELF, false))) {
       WakeLockUtil.release(wakeLock, WAKELOCK_TAG)
-      stopForeground(true)
+      stopForeground(STOP_FOREGROUND_REMOVE)
       stopSelf()
       START_NOT_STICKY
     } else {
@@ -145,8 +147,8 @@ class FcmFetchForegroundService : Service() {
   private fun postForegroundNotification() {
     startForeground(
       NotificationIds.FCM_FETCH,
-      NotificationCompat.Builder(this, NotificationChannels.getInstance().OTHER)
-        .setSmallIcon(R.drawable.ic_signal_refresh)
+      NotificationCompat.Builder(this, NotificationChannels.BACKGROUND)
+        .setSmallIcon(R.drawable.ic_notification)
         .setContentTitle(getString(R.string.BackgroundMessageRetriever_checking_for_messages))
         .setCategory(NotificationCompat.CATEGORY_SERVICE)
         .setProgress(0, 0, true)

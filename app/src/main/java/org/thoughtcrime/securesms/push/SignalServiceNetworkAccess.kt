@@ -5,7 +5,6 @@ import android.os.SystemClock
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
-import okhttp3.Dns
 import okhttp3.Interceptor
 import okhttp3.TlsVersion
 import org.signal.core.util.Base64
@@ -21,14 +20,11 @@ import org.signal.network.exceptions.RequestCanceledException
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.thoughtcrime.securesms.keyvalue.proxy
-import org.thoughtcrime.securesms.net.CustomDns
 import org.thoughtcrime.securesms.net.DeprecatedClientPreventionInterceptor
 import org.thoughtcrime.securesms.net.DeviceTransferBlockingInterceptor
+import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.net.RemoteDeprecationDetectorInterceptor
-import org.thoughtcrime.securesms.net.SequentialDns
 import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor
-import org.thoughtcrime.securesms.net.StaticDns
 import org.thoughtcrime.securesms.net.StorageServiceSizeLoggingInterceptor
 import java.io.IOException
 import java.util.Optional
@@ -42,24 +38,7 @@ class SignalServiceNetworkAccess(context: Context) {
   companion object {
     private val TAG = Log.tag(SignalServiceNetworkAccess::class.java)
 
-    @JvmField
-    val DNS: Dns = SequentialDns(
-      Dns.SYSTEM,
-      CustomDns("1.1.1.1"),
-      StaticDns(
-        mapOf(
-          BuildConfig.SIGNAL_URL.stripProtocol() to BuildConfig.SIGNAL_SERVICE_IPS.toSet(),
-          BuildConfig.STORAGE_URL.stripProtocol() to BuildConfig.SIGNAL_STORAGE_IPS.toSet(),
-          BuildConfig.SIGNAL_CDN_URL.stripProtocol() to BuildConfig.SIGNAL_CDN_IPS.toSet(),
-          BuildConfig.SIGNAL_CDN2_URL.stripProtocol() to BuildConfig.SIGNAL_CDN2_IPS.toSet(),
-          BuildConfig.SIGNAL_CDN3_URL.stripProtocol() to BuildConfig.SIGNAL_CDN3_IPS.toSet(),
-          BuildConfig.SIGNAL_SFU_URL.stripProtocol() to BuildConfig.SIGNAL_SFU_IPS.toSet(),
-          BuildConfig.CONTENT_PROXY_HOST.stripProtocol() to BuildConfig.SIGNAL_CONTENT_PROXY_IPS.toSet(),
-          BuildConfig.SIGNAL_CDSI_URL.stripProtocol() to BuildConfig.SIGNAL_CDSI_IPS.toSet(),
-          BuildConfig.SIGNAL_SVR2_URL.stripProtocol() to BuildConfig.SIGNAL_SVR2_IPS.toSet()
-        )
-      )
-    )
+    // MOLLY: DNS object moved to Networking.kt
 
     private fun String.stripProtocol(): String {
       return this.removePrefix("https://")
@@ -75,6 +54,9 @@ class SignalServiceNetworkAccess(context: Context) {
     private const val COUNTRY_CODE_VENEZUELA = 58
     private const val COUNTRY_CODE_PAKISTAN = 92
 
+    // MOLLY: Add new hostnames and URLs to HOSTNAMES below
+    private const val SIGNALCAPTCHAS_HOST = "signalcaptchas.org"
+    private const val UPDATES2_HOST = "updates2.signal.org"
     private const val G_HOST = "reflector-nrgwuv7kwq-uc.a.run.app"
     private const val F_SERVICE_HOST = "chat-signal.global.ssl.fastly.net"
     private const val F_STORAGE_HOST = "storage.signal.org.global.prod.fastly.net"
@@ -83,6 +65,61 @@ class SignalServiceNetworkAccess(context: Context) {
     private const val F_CDN3_HOST = "cdn3-signal.global.ssl.fastly.net"
     private const val F_CDSI_HOST = "cdsi-signal.global.ssl.fastly.net"
     private const val F_SVR2_HOST = "svr2-signal.global.ssl.fastly.net"
+    private const val HTTPS_WWW_GOOGLE_COM = "https://www.google.com"
+    private const val HTTPS_ANDROID_CLIENTS_GOOGLE_COM = "https://android.clients.google.com"
+    private const val HTTPS_CLIENTS_3_GOOGLE_COM = "https://clients3.google.com"
+    private const val HTTPS_CLIENTS_4_GOOGLE_COM = "https://clients4.google.com"
+    private const val HTTPS_GOOGLEMAIL_COM = "https://googlemail.com"
+    private const val HTTPS_GITHUB_GITHUBASSETS_COM = "https://github.githubassets.com"
+    private const val HTTPS_PINTEREST_COM = "https://pinterest.com"
+    private const val HTTPS_WWW_REDDITSTATIC_COM = "https://www.redditstatic.com"
+    private const val HTTPS_WWW_GOOGLE_COM_EG = "https://www.google.com.eg"
+    private const val HTTPS_WWW_GOOGLE_AE = "https://www.google.ae"
+    private const val HTTPS_WWW_GOOGLE_COM_OM = "https://www.google.com.om"
+    private const val HTTPS_WWW_GOOGLE_COM_QA = "https://www.google.com.qa"
+    private const val HTTPS_WWW_GOOGLE_CO_UZ = "https://www.google.co.uz"
+    private const val HTTPS_WWW_GOOGLE_CO_VE = "https://www.google.co.ve"
+    private const val HTTPS_WWW_GOOGLE_COM_PK = "https://www.google.com.pk"
+
+    @JvmField
+    val HOSTNAMES = setOf(
+      BuildConfig.SIGNAL_URL.stripProtocol(),
+      BuildConfig.STORAGE_URL.stripProtocol(),
+      BuildConfig.SIGNAL_CDN_URL.stripProtocol(),
+      BuildConfig.SIGNAL_CDN2_URL.stripProtocol(),
+      BuildConfig.SIGNAL_CDN3_URL.stripProtocol(),
+      BuildConfig.SIGNAL_CDSI_URL.stripProtocol(),
+      // SIGNAL_SERVICE_STATUS_URL
+      BuildConfig.SIGNAL_SVR2_URL.stripProtocol(),
+      BuildConfig.SIGNAL_SFU_URL.stripProtocol(),
+      BuildConfig.SIGNAL_STAGING_SFU_URL.stripProtocol(),
+      BuildConfig.CONTENT_PROXY_HOST,
+      SIGNALCAPTCHAS_HOST,
+      UPDATES2_HOST,
+      G_HOST,
+      F_SERVICE_HOST,
+      F_STORAGE_HOST,
+      F_CDN_HOST,
+      F_CDN2_HOST,
+      F_CDN3_HOST,
+      F_CDSI_HOST,
+      F_SVR2_HOST,
+      HTTPS_WWW_GOOGLE_COM.stripProtocol(),
+      HTTPS_ANDROID_CLIENTS_GOOGLE_COM.stripProtocol(),
+      HTTPS_CLIENTS_3_GOOGLE_COM.stripProtocol(),
+      HTTPS_CLIENTS_4_GOOGLE_COM.stripProtocol(),
+      HTTPS_GOOGLEMAIL_COM.stripProtocol(),
+      HTTPS_GITHUB_GITHUBASSETS_COM.stripProtocol(),
+      HTTPS_PINTEREST_COM.stripProtocol(),
+      HTTPS_WWW_REDDITSTATIC_COM.stripProtocol(),
+      HTTPS_WWW_GOOGLE_COM_EG.stripProtocol(),
+      HTTPS_WWW_GOOGLE_AE.stripProtocol(),
+      HTTPS_WWW_GOOGLE_COM_OM.stripProtocol(),
+      HTTPS_WWW_GOOGLE_COM_QA.stripProtocol(),
+      HTTPS_WWW_GOOGLE_CO_UZ.stripProtocol(),
+      HTTPS_WWW_GOOGLE_CO_VE.stripProtocol(),
+      HTTPS_WWW_GOOGLE_COM_PK.stripProtocol(),
+    )
 
     private val GMAPS_CONNECTION_SPEC = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
       .tlsVersions(TlsVersion.TLS_1_2)
@@ -191,14 +228,14 @@ class SignalServiceNetworkAccess(context: Context) {
   }
 
   private val baseGHostConfigs: List<HostConfig> = listOf(
-    HostConfig("https://www.google.com", G_HOST, GMAIL_CONNECTION_SPEC),
-    HostConfig("https://android.clients.google.com", G_HOST, PLAY_CONNECTION_SPEC),
-    HostConfig("https://clients3.google.com", G_HOST, GMAPS_CONNECTION_SPEC),
-    HostConfig("https://clients4.google.com", G_HOST, GMAPS_CONNECTION_SPEC),
-    HostConfig("https://googlemail.com", G_HOST, GMAIL_CONNECTION_SPEC)
+    HostConfig(HTTPS_WWW_GOOGLE_COM, G_HOST, GMAIL_CONNECTION_SPEC),
+    HostConfig(HTTPS_ANDROID_CLIENTS_GOOGLE_COM, G_HOST, PLAY_CONNECTION_SPEC),
+    HostConfig(HTTPS_CLIENTS_3_GOOGLE_COM, G_HOST, GMAPS_CONNECTION_SPEC),
+    HostConfig(HTTPS_CLIENTS_4_GOOGLE_COM, G_HOST, GMAPS_CONNECTION_SPEC),
+    HostConfig(HTTPS_GOOGLEMAIL_COM, G_HOST, GMAIL_CONNECTION_SPEC)
   )
 
-  private val fUrls = arrayOf("https://github.githubassets.com", "https://pinterest.com", "https://www.redditstatic.com")
+  private val fUrls = arrayOf(HTTPS_GITHUB_GITHUBASSETS_COM, HTTPS_PINTEREST_COM, HTTPS_WWW_REDDITSTATIC_COM)
 
   private val fConfig: SignalServiceConfiguration = SignalServiceConfiguration(
     signalServiceUrls = fUrls.map { SignalServiceUrl(it, F_SERVICE_HOST, fTrustStore, APP_CONNECTION_SPEC) }.toTypedArray(),
@@ -211,8 +248,9 @@ class SignalServiceNetworkAccess(context: Context) {
     signalCdsiUrls = fUrls.map { SignalCdsiUrl(it, F_CDSI_HOST, fTrustStore, APP_CONNECTION_SPEC) }.toTypedArray(),
     signalSvr2Urls = fUrls.map { SignalSvr2Url(it, fTrustStore, F_SVR2_HOST, APP_CONNECTION_SPEC) }.toTypedArray(),
     networkInterceptors = interceptors,
-    dns = Optional.of(DNS),
-    signalProxy = Optional.empty(),
+    socketFactory = Networking.socketFactory,
+    proxySelector = Networking.proxySelectorForSocks,
+    dns = Networking.dns,
     zkGroupServerPublicParams = zkGroupServerPublicParams,
     genericServerPublicParams = genericServerPublicParams,
     backupServerPublicParams = backupServerPublicParams,
@@ -221,25 +259,25 @@ class SignalServiceNetworkAccess(context: Context) {
 
   private val censorshipConfiguration: Map<Int, SignalServiceConfiguration> = mapOf(
     COUNTRY_CODE_EGYPT to buildGConfiguration(
-      listOf(HostConfig("https://www.google.com.eg", G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
+      listOf(HostConfig(HTTPS_WWW_GOOGLE_COM_EG, G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
     ),
     COUNTRY_CODE_UAE to buildGConfiguration(
-      listOf(HostConfig("https://www.google.ae", G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
+      listOf(HostConfig(HTTPS_WWW_GOOGLE_AE, G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
     ),
     COUNTRY_CODE_OMAN to buildGConfiguration(
-      listOf(HostConfig("https://www.google.com.om", G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
+      listOf(HostConfig(HTTPS_WWW_GOOGLE_COM_OM, G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
     ),
     COUNTRY_CODE_QATAR to buildGConfiguration(
-      listOf(HostConfig("https://www.google.com.qa", G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
+      listOf(HostConfig(HTTPS_WWW_GOOGLE_COM_QA, G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
     ),
     COUNTRY_CODE_UZBEKISTAN to buildGConfiguration(
-      listOf(HostConfig("https://www.google.co.uz", G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
+      listOf(HostConfig(HTTPS_WWW_GOOGLE_CO_UZ, G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
     ),
     COUNTRY_CODE_VENEZUELA to buildGConfiguration(
-      listOf(HostConfig("https://www.google.co.ve", G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
+      listOf(HostConfig(HTTPS_WWW_GOOGLE_CO_VE, G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
     ),
     COUNTRY_CODE_PAKISTAN to buildGConfiguration(
-      listOf(HostConfig("https://www.google.com.pk", G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
+      listOf(HostConfig(HTTPS_WWW_GOOGLE_COM_PK, G_HOST, GMAIL_CONNECTION_SPEC)) + baseGHostConfigs
     ),
     COUNTRY_CODE_IRAN to fConfig,
     COUNTRY_CODE_CUBA to fConfig
@@ -270,8 +308,9 @@ class SignalServiceNetworkAccess(context: Context) {
     signalCdsiUrls = arrayOf(SignalCdsiUrl(BuildConfig.SIGNAL_CDSI_URL, serviceTrustStore)),
     signalSvr2Urls = arrayOf(SignalSvr2Url(BuildConfig.SIGNAL_SVR2_URL, serviceTrustStore)),
     networkInterceptors = interceptors + directFetchFailureInterceptor,
-    dns = Optional.of(DNS),
-    signalProxy = if (SignalStore.proxy.isProxyEnabled) Optional.ofNullable(SignalStore.proxy.proxy) else Optional.empty(),
+    socketFactory = Networking.socketFactory,
+    proxySelector = Networking.proxySelectorForSocks,
+    dns = Networking.dns,
     zkGroupServerPublicParams = zkGroupServerPublicParams,
     genericServerPublicParams = genericServerPublicParams,
     backupServerPublicParams = backupServerPublicParams,
@@ -295,7 +334,7 @@ class SignalServiceNetworkAccess(context: Context) {
   }
 
   fun getConfiguration(e164: String?): SignalServiceConfiguration {
-    if (e164 == null || SignalStore.proxy.isProxyEnabled) {
+    if (e164.isNullOrEmpty()) {
       return uncensoredConfiguration
     }
 
@@ -354,8 +393,9 @@ class SignalServiceNetworkAccess(context: Context) {
       signalCdsiUrls = cdsiUrls,
       signalSvr2Urls = svr2Urls,
       networkInterceptors = interceptors,
-      dns = Optional.of(DNS),
-      signalProxy = Optional.empty(),
+      socketFactory = Networking.socketFactory,
+      proxySelector = Networking.proxySelectorForSocks,
+      dns = Networking.dns,
       zkGroupServerPublicParams = zkGroupServerPublicParams,
       genericServerPublicParams = genericServerPublicParams,
       backupServerPublicParams = backupServerPublicParams,

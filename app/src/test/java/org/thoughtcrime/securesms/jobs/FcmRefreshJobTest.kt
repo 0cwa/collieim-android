@@ -13,6 +13,8 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
@@ -26,6 +28,8 @@ import org.junit.Test
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.net.RequestResult
 import org.thoughtcrime.securesms.gcm.FcmUtil
+import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.jobmanager.JobManager
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
@@ -50,6 +54,7 @@ class FcmRefreshJobTest {
     SignalNetwork.init(network)
 
     mockkStatic(FcmUtil::class)
+    every { FcmUtil.isSupported() } returns true
     every { FcmUtil.deleteFirebaseInstallationId(context) } just Runs
     every { signalStore.account.fcmEnabled } returns false
     every { signalStore.account.fcmTokenLastSetTime } answers { tokenLastSetTime }
@@ -103,6 +108,42 @@ class FcmRefreshJobTest {
     verify(exactly = 1) { FcmUtil.deleteFirebaseInstallationId(context) }
     verify(exactly = 1) { signalStore.account.fcmToken = null }
     verify(exactly = 0) { signalStore.account.fcmEnabled = any() }
+  }
+
+  @Test
+  fun `pending unsupported FCM token is scheduled again after a failed cleanup`() {
+    val jobManager = mockk<JobManager>(relaxed = true)
+    mockkObject(AppDependencies)
+    mockkStatic(AppDependencies::class)
+    try {
+      every { AppDependencies.jobManager } returns jobManager
+      every { FcmUtil.isSupported() } returns false
+      every { signalStore.account.isRegistered } returns true
+      every { signalStore.account.fcmEnabled } returns false
+      tokenLastSetTime = 1234L
+
+      FcmRefreshJob.enqueueUnsupportedCleanupIfNeeded()
+
+      verify(exactly = 1) { jobManager.add(any<FcmRefreshJob>()) }
+    } finally {
+      unmockkStatic(AppDependencies::class)
+      unmockkObject(AppDependencies)
+    }
+  }
+
+  @Test
+  fun `unsupported FCM disables it and clears an existing server token`() {
+    var enabled = true
+    every { FcmUtil.isSupported() } returns false
+    every { signalStore.account.fcmEnabled } answers { enabled }
+    every { signalStore.account.fcmEnabled = any() } answers { enabled = firstArg() }
+    coEvery { accountApi.clearFcmToken() } returns RequestResult.Success(Unit)
+
+    FcmRefreshJob().apply { setContext(context) }.onRun()
+
+    assertTrue(!enabled)
+    coVerify(exactly = 1) { accountApi.clearFcmToken() }
+    verify(exactly = 1) { signalStore.account.fcmToken = null }
   }
 
   @Test

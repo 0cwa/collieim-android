@@ -27,6 +27,18 @@
             android:layout_height="wrap_content"
             android:paddingBottom="16dp">
 
+            <org.thoughtcrime.securesms.badges.BadgeImageView
+                android:id="@+id/thanks_bottom_sheet_badge"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="28dp"
+                android:contentDescription="@string/ImageView__badge"
+                app:badge_size="badge_112"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/test_gradient" />
+
             <TextView
                 android:id="@+id/thanks_bottom_sheet_heading"
                 android:layout_width="0dp"
@@ -39,7 +51,23 @@
                 android:textAppearance="@style/Signal.Text.TitleLarge"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/thanks_bottom_sheet_badge" />
+
+            <TextView
+                android:id="@+id/thanks_bottom_sheet_subhead"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dsl_settings_gutter"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="@dimen/dsl_settings_gutter"
+                android:gravity="center"
+                android:textAppearance="@style/Signal.Text.BodyLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/thanks_bottom_sheet_heading"
+                tools:text="@string/SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/thanks_bottom_sheet_done"
@@ -53,7 +81,7 @@
                 android:text="@string/SubscribeThanksForYourSupportBottomSheetDialogFragment__continue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/thanks_bottom_sheet_heading" />
+                app:layout_constraintTop_toBottomOf="@id/thanks_bottom_sheet_subhead" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

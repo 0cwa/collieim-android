@@ -1,8 +1,9 @@
 {
   "schema": 1,
   "status": "BLOCKED",
-  "repository": null,
-  "reason": "Accepted trusted-local native artifacts have locked hashes but no verified public immutable origin. Release assembly remains blocked.",
+  "repository": "https://repo.collie.im/native-inputs/v1/maven/",
+  "reason": "Tracked native coordinates/repository/substitutions/strict verification are materialized. Exact public bytes and direct Android acceptance remain unverified; gate stays unconditional.",
   "lock": "native-lock.json",
-  "production_version_floor": 177702
+  "production_version_floor": 177702,
+  "publication_status": "NOT PUBLISHED"
 }

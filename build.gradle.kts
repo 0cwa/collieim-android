@@ -85,3 +85,17 @@ allprojects {
 tasks.register("clean", Delete::class) {
   delete(rootProject.layout.buildDirectory)
 }
+
+// Collie native substitutions: ordinary tracked project configuration.
+allprojects {
+  configurations.configureEach {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("im.molly:libsignal-android")).using(module("im.collie.native:libsignal-android:0.106.1-collie.1"))
+        substitute(module("im.molly:libsignal-client")).using(module("im.collie.native:libsignal-client:0.106.1-collie.1"))
+        substitute(module("im.molly:ringrtc-android")).using(module("im.collie.native:ringrtc-android:2.74.0-collie.1"))
+        substitute(module("org.signal:libsignal-android")).using(module("im.collie.native:libsignal-android:0.106.1-collie.1"))
+        substitute(module("org.signal:libsignal-client")).using(module("im.collie.native:libsignal-client:0.106.1-collie.1"))
+        substitute(module("org.signal:ringrtc-android")).using(module("im.collie.native:ringrtc-android:2.74.0-collie.1"))
+    }
+  }
+}

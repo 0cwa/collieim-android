@@ -1,33 +1,9 @@
 package org.thoughtcrime.securesms.keyvalue
 
 import org.signal.core.util.logging.Log
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.payments.Entropy
-=======
-import org.signal.remoteconfig.RemoteConfig
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
-import org.signal.storage.keyvalue.booleanValue
-import org.signal.storage.keyvalue.integerValue
-import org.signal.storage.keyvalue.longValue
-import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.lock.v2.PinKeyboardType
-import org.thoughtcrime.securesms.payments.Balance
 import org.thoughtcrime.securesms.payments.Entropy
-import org.thoughtcrime.securesms.payments.GeographicalRestrictions
-import org.thoughtcrime.securesms.payments.Mnemonic
-import org.thoughtcrime.securesms.payments.MobileCoinLedgerWrapper
-import org.thoughtcrime.securesms.payments.currency.CurrencyUtil
-import org.thoughtcrime.securesms.payments.proto.MobileCoinLedger
-import org.thoughtcrime.securesms.recipients.Recipient
-import org.thoughtcrime.securesms.storage.StorageSyncHelper
-import org.whispersystems.signalservice.api.payments.Money
-import java.io.IOException
-import java.math.BigDecimal
-import java.util.Arrays
-import java.util.Currency
-import java.util.Locale
->>>>>>> SIGNAL
 
 class PaymentsValues internal constructor(store: KeyValueStore) : SignalStoreValues(store) {
 

@@ -99,6 +99,7 @@ fun AppSettingsScreen(
   containerColor: Color = if (rememberIsSplitPaneSettings()) SignalTheme.colors.colorSurface4 else MaterialTheme.colorScheme.background,
   contentColor: Color = MaterialTheme.colorScheme.contentColorFor(containerColor).takeOrElse { MaterialTheme.colorScheme.onSurface },
   selectedRoute: AppSettingsRoute? = null,
+  donationLabel: String? = null,
   networkLabel: String? = null,
   networkIcon: Painter? = null,
   avatar: @Composable () -> Unit = {},
@@ -188,7 +189,7 @@ fun AppSettingsScreen(
           Rows.TextRow(
             text = {
               Text(
-                text = stringResource(R.string.AppSettingsScreen__donate_to_signal),
+                text = donationLabel ?: stringResource(R.string.AppSettingsScreen__donate_to_signal),
                 modifier = Modifier.weight(1f)
               )
 

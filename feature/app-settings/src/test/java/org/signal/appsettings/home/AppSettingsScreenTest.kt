@@ -56,6 +56,12 @@ class AppSettingsScreenTest {
   }
 
   @Test
+  fun `donation row displays the host app label`() {
+    setContent(createState(), donationLabel = "Donate to Molly")
+    composeTestRule.onNodeWithText("Donate to Molly").assertIsDisplayed()
+  }
+
+  @Test
   fun `clicking the profile emits ProfileClicked`() {
     setContent(createState())
 
@@ -249,12 +255,13 @@ class AppSettingsScreenTest {
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_CHATS).assertIsSelected()
   }
 
-  private fun setContent(state: AppSettingsState, selectedRoute: AppSettingsRoute? = null) {
+  private fun setContent(state: AppSettingsState, selectedRoute: AppSettingsRoute? = null, donationLabel: String? = null) {
     composeTestRule.setContent {
       AppSettingsScreen(
         state = state,
         onEvent = { events += it },
         selectedRoute = selectedRoute,
+        donationLabel = donationLabel,
         networkLabel = "Network"
       )
     }

@@ -68,7 +68,15 @@ object ChatColorsPalette {
     // region Gradients
 
     @JvmField
-    val EMBER = ULTRAMARINE
+    // Keep Molly's ultramarine appearance while retaining Ember's backup identity.
+    val EMBER = ChatColors.forGradient(
+      ChatColors.Id.BuiltIn,
+      ChatColors.LinearGradient(
+        168f,
+        intArrayOf(0xFF6448E5.toInt(), 0xFF6448E5.toInt()),
+        floatArrayOf(0f, 1f)
+      )
+    )
 
     @JvmField
     val MIDNIGHT = ChatColors.forGradient(

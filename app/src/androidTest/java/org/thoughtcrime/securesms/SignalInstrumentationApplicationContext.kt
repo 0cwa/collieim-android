@@ -6,6 +6,7 @@ import org.signal.core.util.logging.AndroidLogger
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.protocol.logging.SignalProtocolLoggerProvider
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.database.LogDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider
@@ -22,20 +23,29 @@ import org.thoughtcrime.securesms.util.Environment
  */
 class SignalInstrumentationApplicationContext : ApplicationContext() {
   override fun onCreate() {
-    MasterSecretUtil.generateMasterSecret(this, MasterSecretUtil.getUnencryptedPassphrase())
+    val passphrase = MasterSecretUtil.getUnencryptedPassphrase()
+    val masterSecret = if (MasterSecretUtil.isPassphraseInitialized(this)) {
+      MasterSecretUtil.getMasterSecret(this, passphrase)
+    } else {
+      MasterSecretUtil.generateMasterSecret(this, passphrase)
+    }
+    KeyCachingService.setMasterSecret(masterSecret)
     super.onCreate()
   }
 
   val inMemoryLogger: InMemoryLogger = InMemoryLogger()
 
   override fun attachBaseContext(base: Context?) {
+    // Initialize Kotlin's Random classes before application startup schedules background work.
+    // Concurrent first use from a test and a periodic task can deadlock their class initializers.
+    kotlin.random.Random.nextLong()
     Environment.IS_INSTRUMENTATION = true
     super.attachBaseContext(base)
   }
 
   override fun initializeAppDependencies() {
     val default = ApplicationDependencyProvider(this)
-    AppDependencies.init(this, InstrumentationApplicationDependencyProvider(this, default))
+    AppDependencies.init(InstrumentationApplicationDependencyProvider(this, default))
     AppDependencies.deadlockDetector.start()
 
     // Stage any test-declared remote config into the store to be read in RemoteConfig.init().

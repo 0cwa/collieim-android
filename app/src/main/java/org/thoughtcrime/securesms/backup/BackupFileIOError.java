@@ -53,11 +53,7 @@ public enum BackupFileIOError {
 
     PendingIntent pendingIntent           = PendingIntent.getActivity(context, -1, AppSettingsActivity.backups(context), PendingIntentFlags.mutable());
     Notification backupFailedNotification = new NotificationCompat.Builder(context, NotificationChannels.getInstance().FAILURES)
-<<<<<<< MOLLY
                                                                   .setSmallIcon(R.drawable.ic_notification_backup)
-=======
-                                                                  .setSmallIcon(org.signal.core.ui.R.drawable.ic_signal_backup)
->>>>>>> SIGNAL
                                                                   .setContentTitle(context.getString(titleId))
                                                                   .setContentText(context.getString(messageId))
                                                                   .setStyle(new NotificationCompat.BigTextStyle().bigText(context.getString(messageId)))

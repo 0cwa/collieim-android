@@ -507,7 +507,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">ใช้การล็อกหน้าจอ</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">ระบบจะใช้รูปแบบการล็อกที่คุณตั้งค่าไว้บนอุปกรณ์ Android มาปลดล็อก Molly เมื่อคุณสลับหรือปิดแอป โดยแถบการแจ้งเตือนจะไม่แสดงเนื้อหาของข้อความในระหว่างที่แอปถูกล็อก</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">ระบบจะใช้รูปแบบการล็อกที่คุณตั้งค่าไว้บนอุปกรณ์ Android มาปลดล็อก Collie เมื่อคุณสลับหรือปิดแอป โดยแถบการแจ้งเตือนจะไม่แสดงเนื้อหาของข้อความในระหว่างที่แอปถูกล็อก</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">เริ่มล็อกหน้าจอ</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -519,9 +519,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">กำหนดเวลาเอง</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">ใช้การล็อกหน้าจอของ Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">ใช้การล็อกหน้าจอของ Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">ปิดใช้การล็อกหน้าจอของ Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">ปิดใช้การล็อกหน้าจอของ Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">ช่วยเหลือ</string>
@@ -543,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">ไอคอนและชื่อของแอปจะแสดงในหน้าจอหลักและลิ้นชักแอป</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">โดยระบบจะแสดงชื่อและไอคอนเริ่มต้นของแอป Molly ในการแจ้งเตือนเสมอ</string>
+    <string name="preferences__app_icon_notification_warning">โดยระบบจะแสดงชื่อและไอคอนเริ่มต้นของแอป Collie ในการแจ้งเตือนเสมอ</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">ภาพกราฟิกแสดงตำแหน่งของไอคอนใหม่ของแอป</string>
 
@@ -563,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">เปลี่ยนไอคอนและชื่อของแอปเป็น \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly ต้องปิดแอปก่อน จึงจะเปลี่ยนไอคอนและชื่อของแอปได้ โดยระบบจะแสดงชื่อและไอคอนเริ่มต้นของแอป Molly ในการแจ้งเตือนเสมอ</string>
+    <string name="preferences__app_icon_dialog_description">Collie ต้องปิดแอปก่อน จึงจะเปลี่ยนไอคอนและชื่อของแอปได้ โดยระบบจะแสดงชื่อและไอคอนเริ่มต้นของแอป Collie ในการแจ้งเตือนเสมอ</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">เลือกไอคอนและชื่อของแอป ซึ่งจะแสดงในหน้าจอหลักและลิ้นชักแอปของโทรศัพท์คุณ โดยระบบจะแสดงชื่อและไอคอนเริ่มต้นของแอป Molly ในการแจ้งเตือนเสมอ เรียนรู้เพิ่มเติม</string>
+    <string name="preferences__app_icon_warning_learn_more">เลือกไอคอนและชื่อของแอป ซึ่งจะแสดงในหน้าจอหลักและลิ้นชักแอปของโทรศัพท์คุณ โดยระบบจะแสดงชื่อและไอคอนเริ่มต้นของแอป Collie ในการแจ้งเตือนเสมอ เรียนรู้เพิ่มเติม</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">เรียนรู้เพิ่มเติม</string>
 

@@ -143,7 +143,7 @@
     <!-- Row title for restore/transfer without using a previous device -->
     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Nie mam swojego poprzedniego telefonu</string>
     <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">Wybierz tę opcję również wtedy, gdy ponownie instalujesz Molly na tym samym urządzeniu</string>
+    <string name="WelcomeFragment_restore_action_reinstalling">Wybierz tę opcję również wtedy, gdy ponownie instalujesz Collie na tym samym urządzeniu</string>
 
     <!-- ArchiveRestoreSelectionScreen -->
     <!-- Title text for the archive restore selection screen -->

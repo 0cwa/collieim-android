@@ -1,7 +1,6 @@
 package org.thoughtcrime.securesms.conversation.colors.ui
 
 import android.content.Context
-import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -95,7 +94,7 @@ class ChatColorSelectionAdapter(
         TooltipPopup.forTarget(itemView)
           .setText(R.string.ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper)
           .setBackgroundTint(ThemeUtil.getThemedColor(context, org.signal.core.ui.R.attr.signal_accent_primary))
-          .setTextColor(Color.WHITE)
+          .setTextColor(ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorOnPrimary))
           .show(TooltipPopup.POSITION_BELOW)
       }
     }

@@ -63,7 +63,7 @@
     <color name="safety_number_card_grey">@color/molly_tertiary_fixed</color>
     <color name="safety_number_card_blue">@color/molly_core_ultramarine</color>
 
-    <color name="notification_background_ultramarine">#6341FF</color>
+    <color name="notification_background_ultramarine">#96390C</color>
 
     <!-- Bottom-sheet dialog navigation bar color. Opaque below API 27 (keeps the legacy colored
          strip); overridden to transparent in values-v27 so Material's BottomSheetDialog lays the

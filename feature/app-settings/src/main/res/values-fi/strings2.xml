@@ -9,7 +9,7 @@
 <string name="preferences__enable_debug_log">Ota virheenkorjausloki käyttöön</string>
     <string name="HelpSettingsFragment__molly_im_website">Molly.im-verkkosivusto</string>
     <string name="preferences__include_beta_updates">Sisällytä beta-päivitykset</string>
-    <string name="preferences__autoupdate_molly">Päivitä Molly automaattisesti</string>
+    <string name="preferences__autoupdate_molly">Päivitä Collie automaattisesti</string>
     <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Tarkista säännöllisesti uudet julkaisut ja pyydä asentamaan ne</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta-versiot on tarkoitettu testaustarkoituksiin, ja ne voivat sisältää virheitä</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">Tarkista päivitykset</string>

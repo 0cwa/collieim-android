@@ -165,14 +165,13 @@ class ManageDonationsFragment :
 
       space(24.dp)
 
-      primaryWrappedButton(
-        text = DSLSettingsText.from(R.string.ManageDonationsFragment__donate_to_signal),
-        onClick = {
-          launcher.launch(InAppPaymentType.ONE_TIME_DONATION)
-        }
-      )
-
-      space(16.dp)
+      if (state.hasDonationSubscriber) {
+        primaryWrappedButton(
+          text = DSLSettingsText.from(R.string.ManageDonationsFragment__manage_monthly_donation),
+          onClick = { launcher.launch(InAppPaymentType.RECURRING_DONATION) }
+        )
+        space(16.dp)
+      }
 
       if (!state.isLoaded) {
         customPref(IndeterminateLoadingCircle)
@@ -212,8 +211,6 @@ class ManageDonationsFragment :
 
     // MOLLY: TODO
     // presentBadges()
-
-    presentOtherWaysToGive()
 
     presentMore()
   }
@@ -318,31 +315,13 @@ class ManageDonationsFragment :
     // MOLLY: TODO
     // presentBadges()
 
-    presentOtherWaysToGive()
-
     presentMore()
   }
 
   private fun DSLConfiguration.presentNotADonorSettings(hasReceipts: Boolean) {
-    presentOtherWaysToGive()
-
     if (hasReceipts) {
       presentMore()
     }
-  }
-
-  private fun DSLConfiguration.presentOtherWaysToGive() {
-    dividerPref()
-
-    sectionHeaderPref(R.string.ManageDonationsFragment__other_ways_to_give)
-
-    clickPref(
-      title = DSLSettingsText.from(R.string.ManageDonationsFragment__donate_for_a_friend),
-      icon = DSLSettingsIcon.from(R.drawable.symbol_gift_24),
-      onClick = {
-        launcher.launch(InAppPaymentType.ONE_TIME_GIFT)
-      }
-    )
   }
 
   // MOLLY: TODO

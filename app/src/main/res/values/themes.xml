@@ -261,11 +261,11 @@
         <item name="message_request_bar_denyForeground_wallpaper">?attr/colorError</item>
         <item name="message_request_bar_acceptForeground_wallpaper">@color/signal_colorNeutralInverse</item> --&gt;
         <item name="safety_tip_background">@color/core_white</item>
-        <item name="safety_tip_image_background">#99F3F0FF</item>
+        <item name="safety_tip_image_background">#99FFF4E5</item>
 
         <item name="switchThemeOverlay">@style/ThemeOverlay.MaterialSwitch.DayNight</item>
-        <item name="extended_action_button_container_color">@color/molly_tertiary_container_light</item>
-        <item name="extended_action_button_icon_color">@color/molly_on_tertiary_container_light</item>
+        <item name="extended_action_button_container_color">@color/collie_red</item>
+        <item name="extended_action_button_icon_color">@color/collie_bark_black</item>
 
         <item name="filled_tonal_icon_button_container_color">@color/molly_surface_container_highest_light</item>
         <item name="filled_tonal_icon_button_icon_color">@color/molly_on_surface_light</item>
@@ -273,7 +273,7 @@
         <item name="context_menu_container_color">@color/molly_surface_container_light</item>
 
         <item name="navbar_active_indicator_color">@color/molly_secondary_container_light</item>
-        <item name="navbar_container_color">@color/molly_surface_container_light</item>
+        <item name="navbar_container_color">@color/molly_secondary_fixed</item>
     </style>
 
     <style name="TextSecure.DarkTheme" parent="@style/TextSecure.BaseDarkTheme">
@@ -376,7 +376,7 @@
         <item name="signal_icon_tint_tab_unselected">?attr/colorOnSurfaceVariant</item>
         <item name="signal_button_primary">@color/core_ultramarine_light</item>
         <item name="signal_button_primary_ripple">@color/transparent_black_15</item>
-        <item name="signal_button_primary_text">@color/core_white</item>
+        <item name="signal_button_primary_text">@color/molly_on_primary_dark</item>
         <item name="signal_button_primary_text_disabled">@color/transparent_white_20</item>
         <item name="signal_button_secondary">@color/core_grey_75</item>
         <item name="signal_button_secondary_ripple">@color/core_grey_80</item>
@@ -387,7 +387,7 @@
         <item name="contact_filter_edit_background">?attr/colorSurfaceContainerHighest</item>
         <item name="reactions_pill_selected_color">?attr/colorSurfaceContainer</item>
         <item name="qr_card_color">@color/molly_on_primary_light</item>
-        <item name="qr_card_text_color">?attr/colorOnSurfaceVariant</item>
+        <item name="qr_card_text_color">@color/molly_on_surface_light</item>
         <item name="conversation_item_update_text_color">?attr/colorOnSurfaceVariant</item>
         <item name="conversation_item_quote_text_color">@color/core_grey_05</item>
         <item name="conversation_item_quote_text_color_sent">?attr/colorOnSurface</item>
@@ -434,15 +434,15 @@
         <item name="safety_tip_image_background">?attr/colorSecondary</item>
 
         <item name="switchThemeOverlay">@style/ThemeOverlay.MaterialSwitch.DayNight</item>
-        <item name="extended_action_button_container_color">@color/molly_tertiary_container_dark</item>
-        <item name="extended_action_button_icon_color">@color/molly_on_tertiary_container_dark</item>
+        <item name="extended_action_button_container_color">?attr/colorPrimary</item>
+        <item name="extended_action_button_icon_color">?attr/colorOnPrimary</item>
 
         <item name="filled_tonal_icon_button_container_color">@color/molly_surface_container_highest_dark</item>
         <item name="filled_tonal_icon_button_icon_color">@color/molly_on_surface_dark</item>
 
         <item name="context_menu_container_color">@color/molly_surface_container_high_dark</item>
 
-        <item name="navbar_active_indicator_color">@color/molly_surface_bright_dark</item>
+        <item name="navbar_active_indicator_color">@color/molly_secondary_container_dark</item>
         <item name="navbar_container_color">@color/molly_surface_container_dark</item>
     </style>
 

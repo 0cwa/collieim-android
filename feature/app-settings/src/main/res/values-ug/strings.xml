@@ -543,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">ئەپ سىنبەلگىسى ۋە ئەپ نامى باش بەت ئېكرانى ۋە ئەپ تارتمىسىدا كۆرۈنىدۇ.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">ئۇقتۇرۇشلار ھەمىشە سۈكۈتتىكى Molly سىنبەلگىسى ۋە نامىنى كۆرسىتىدۇ.</string>
+    <string name="preferences__app_icon_notification_warning">ئۇقتۇرۇشلار ھەمىشە سۈكۈتتىكى Collie سىنبەلگىسى ۋە نامىنى كۆرسىتىدۇ.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">ئەپ سىنبەلگىسىنىڭ كۆرۈلۈش ئورنىنى گرافىكلىك چۈشەندۈرۈۋاتىدۇ.</string>
 
@@ -563,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">ئەپ سىنبەلگىسى ۋە نامىنى «%1$s» غا ئۆزگەرتىش</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">ئەپ سىنبەلگىسى ۋە نامىنى ئۆزگەرتىش ئۈچۈن Molly نى ئېتىش كېرەك. ئۇقتۇرۇشلار ھەمىشە سۈكۈتتىكى Molly سىنبەلگىسى ۋە نامىنى كۆرسىتىدۇ.</string>
+    <string name="preferences__app_icon_dialog_description">ئەپ سىنبەلگىسى ۋە نامىنى ئۆزگەرتىش ئۈچۈن Collie نى ئېتىش كېرەك. ئۇقتۇرۇشلار ھەمىشە سۈكۈتتىكى Collie سىنبەلگىسى ۋە نامىنى كۆرسىتىدۇ.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">تېلېفونىڭىزنىڭ باش بەت ئېكرانىدا ۋە ئەپ تارتمىسىدا كۆرۈنىدىغان ئەپ سىنبەلگىسى ۋە ئەپ نامى تاللاڭ. ئۇقتۇرۇشلار ھەمىشە سۈكۈتتىكى Molly سىنبەلگىسى ۋە نامىنى كۆرسىتىدۇ. تەپسىلاتى</string>
+    <string name="preferences__app_icon_warning_learn_more">تېلېفونىڭىزنىڭ باش بەت ئېكرانىدا ۋە ئەپ تارتمىسىدا كۆرۈنىدىغان ئەپ سىنبەلگىسى ۋە ئەپ نامى تاللاڭ. ئۇقتۇرۇشلار ھەمىشە سۈكۈتتىكى Collie سىنبەلگىسى ۋە نامىنى كۆرسىتىدۇ. تەپسىلاتى</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">تەپسىلاتى</string>
 

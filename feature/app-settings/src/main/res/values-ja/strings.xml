@@ -507,7 +507,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">画面ロックを使用する</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Android端末のロック設定は、アプリを終了したり切り替えたりする際に、Mollyのロックを解除する必要があります。ロックされている場合、通知プレビューにはメッセージの内容が表示されません。</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Android端末のロック設定は、アプリを終了したり切り替えたりする際に、Collieのロックを解除する必要があります。ロックされている場合、通知プレビューにはメッセージの内容が表示されません。</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">ロックされるまでの時間</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -519,9 +519,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">カスタム時間</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Mollyの画面ロックを使用する</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collieの画面ロックを使用する</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Mollyの画面ロックをオフにする</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collieの画面ロックをオフにする</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">ヘルプ</string>
@@ -543,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">アプリのアイコンと名前は、ホーム画面とアプリ一覧に表示されます。</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">通知には常にデフォルトのMollyのアイコンと名前が表示されます。</string>
+    <string name="preferences__app_icon_notification_warning">通知には常にデフォルトのCollieのアイコンと名前が表示されます。</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">置き換えられるアプリのアイコンが表示される場所を示す図。</string>
 
@@ -563,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">アプリのアイコンと名前を「%1$s」に変更します</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">アプリのアイコンと名前を変更するためには、Mollyを閉じる必要があります。通知には常にデフォルトのMollyのアイコンと名前が表示されます。</string>
+    <string name="preferences__app_icon_dialog_description">アプリのアイコンと名前を変更するためには、Collieを閉じる必要があります。通知には常にデフォルトのCollieのアイコンと名前が表示されます。</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">アプリのアイコンと名前を選択すると、お使いの携帯電話のホーム画面とアプリ一覧に反映されます。通知には常にデフォルトのMollyのアイコンと名前が表示されます。詳しく見る</string>
+    <string name="preferences__app_icon_warning_learn_more">アプリのアイコンと名前を選択すると、お使いの携帯電話のホーム画面とアプリ一覧に反映されます。通知には常にデフォルトのCollieのアイコンと名前が表示されます。詳しく見る</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">詳しく見る</string>
 

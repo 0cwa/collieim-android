@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.megaphone
 import android.app.Application
 import android.net.Uri
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import io.mockk.clearMocks
@@ -126,6 +127,18 @@ class RemoteMegaphoneRepositoryTest {
 
     // THEN
     assertThat(record).isNotNull()
+  }
+
+  @Test
+  fun donationPromptsAreSkippedWithoutHidingOtherRemotePrompts() {
+    val primaryDonation = megaphone(id = 1, primaryActionId = RemoteMegaphoneRecord.ActionId.DONATE)
+    val secondaryDonation = megaphone(id = 2, secondaryActionId = RemoteMegaphoneRecord.ActionId.DONATE)
+    val conditionalDonation = megaphone(id = 3, conditionalId = "standard_donate")
+    val other = megaphone(id = 4)
+    every { remoteMegaphoneTable.getPotentialMegaphonesAndClearOld(any()) } returns
+      listOf(primaryDonation, secondaryDonation, conditionalDonation, other)
+
+    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow(0)).isEqualTo(other)
   }
 
   companion object {

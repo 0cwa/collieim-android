@@ -510,7 +510,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">שימוש בנעילת מסך</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">הגדרות הנעילה של מכשיר Android שלך יידרשו כדי לבטל את הנעילה של Molly בעת יציאה או מעבר בין אפליקציות. במצב נעול, התראות תצוגה מקדימה לא יציגו את תוכן ההודעה.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">הגדרות הנעילה של מכשיר Android שלך יידרשו כדי לבטל את הנעילה של Collie בעת יציאה או מעבר בין אפליקציות. במצב נעול, התראות תצוגה מקדימה לא יציגו את תוכן ההודעה.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">הפעלת נעילת מסך</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -522,9 +522,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">זמן מותאם אישית</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">שימוש בנעילת מסך של Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">שימוש בנעילת מסך של Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">כיבוי נעילת המסך של Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">כיבוי נעילת המסך של Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">עזרה</string>
@@ -546,7 +546,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">סמלי ושמות אפליקציות גלויים במסך הבית ובמגירת האפליקציות.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">התראות יציגו תמיד את סמל ושם ברירת המחדל של Molly.</string>
+    <string name="preferences__app_icon_notification_warning">התראות יציגו תמיד את סמל ושם ברירת המחדל של Collie.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">גרפיקה שממחישה איפה סמל האפליקציה החלופי יהיה גלוי.</string>
 
@@ -566,9 +566,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">שינוי סמל ושם אפליקציה ל״%1$s״</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">צריך לסגור את Molly כדי לשנות את סמל ושם האפליקציה. התראות יציגו תמיד את סמל ושם ברירת המחדל של Molly.</string>
+    <string name="preferences__app_icon_dialog_description">צריך לסגור את Collie כדי לשנות את סמל ושם האפליקציה. התראות יציגו תמיד את סמל ושם ברירת המחדל של Collie.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">בוחרים שם וסמל אפליקציה שיהיו גלויים במסך הבית ובמגירת האפליקציות של הטלפון שלך. התראות יציגו תמיד את סמל ושם ברירת המחדל של Molly. למידע נוסף</string>
+    <string name="preferences__app_icon_warning_learn_more">בוחרים שם וסמל אפליקציה שיהיו גלויים במסך הבית ובמגירת האפליקציות של הטלפון שלך. התראות יציגו תמיד את סמל ושם ברירת המחדל של Collie. למידע נוסף</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">למידע נוסף</string>
 

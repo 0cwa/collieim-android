@@ -143,7 +143,7 @@
     <!-- Row title for restore/transfer without using a previous device -->
     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Sina simu yangu ya zamani</string>
     <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">Au unasakinisha tena Molly kwenye kifaa kile kile</string>
+    <string name="WelcomeFragment_restore_action_reinstalling">Au unasakinisha tena Collie kwenye kifaa kile kile</string>
 
     <!-- ArchiveRestoreSelectionScreen -->
     <!-- Title text for the archive restore selection screen -->

@@ -676,16 +676,7 @@ public final class ConversationUpdateItem extends FrameLayout
         }
       });
     } else if (conversationMessage.getMessageRecord().isReleaseChannelDonationRequest()) {
-      actionButton.setVisibility(VISIBLE);
-      actionButton.setOnClickListener(v -> {
-        if (batchSelected.isEmpty() && eventListener != null) {
-          eventListener.onDonateClicked();
-        } else {
-          passthroughClickListener.onClick(v);
-        }
-      });
-
-      actionButton.setText(R.string.ConversationUpdateItem_donate);
+      actionButton.setVisibility(GONE);
     } else if (conversationMessage.getMessageRecord().isSmsExportType()) {
       actionButton.setVisibility(View.VISIBLE);
       actionButton.setOnClickListener(v -> {

@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.components.settings.app
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.signal.appsettings.home.AppSettingsAction
 import org.signal.appsettings.home.AppSettingsEvent
 import org.signal.appsettings.home.AppSettingsState
@@ -20,6 +22,10 @@ import org.signal.appsettings.routes.openSection
 import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
+import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 
 /**
  * Drives [org.signal.appsettings.home.AppSettingsScreen]. Navigation goes straight to [parentEventEmitter].
@@ -40,9 +46,11 @@ class AppSettingsViewModel(
     )
   )
   private val _actions = Channel<AppSettingsAction>(Channel.BUFFERED)
+  private val _showDonationManagement = MutableStateFlow(false)
 
   val state: StateFlow<AppSettingsState> = _state.asStateFlow()
   val actions: Flow<AppSettingsAction> = _actions.receiveAsFlow()
+  val showDonationManagement: StateFlow<Boolean> = _showDonationManagement.asStateFlow()
 
   init {
     refresh()
@@ -94,6 +102,14 @@ class AppSettingsViewModel(
   }
 
   private fun refresh() {
+    viewModelScope.launch {
+      _showDonationManagement.value = withContext(Dispatchers.IO) {
+        InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION) != null ||
+          SignalDatabase.inAppPayments.hasDonationInProgress() ||
+          SignalDatabase.donationReceipts.hasReceipts() ||
+          SignalStore.inAppPayments.isLikelyASustainer()
+      }
+    }
     _state.update {
       it.copy(
         backupFailureState = AppSettingsRepository.getBackupFailureState(),

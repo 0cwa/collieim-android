@@ -1273,7 +1273,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
       bodyText.setTextAsync(StringUtil.trim(styledText));
       bodyText.setVisibility(View.VISIBLE);
 
-      if (conversationMessage.getBottomButton() != null) {
+      if (conversationMessage.getBottomButton() != null && !"donate".equals(conversationMessage.getBottomButton().action)) {
         callToActionStub.get().setVisibility(View.VISIBLE);
         callToActionStub.get().setText(conversationMessage.getBottomButton().label);
         callToActionStub.get().setOnClickListener(v -> {

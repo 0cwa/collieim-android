@@ -758,7 +758,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
             try {
               availability.getErrorResolutionPendingIntent(activity, status, 0)?.send()
             } catch (e: android.app.PendingIntent.CanceledException) {
-              Log.w("RegistrationNavigation", "Unable to launch Play Services settings.", e)
+              Log.w(TAG, "Unable to launch Play Services settings.", e)
             }
             viewModel.onEvent(SignalLoginPaymentScreenEvents.Foregrounded)
           }

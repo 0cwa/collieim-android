@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
@@ -39,6 +38,7 @@ import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.Texts
 import org.signal.core.ui.compose.theme.SignalTheme
+import org.signal.core.ui.compose.theme.colorAttribute
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.avatar.AvatarImage
 import org.thoughtcrime.securesms.components.WrapperDialogFragment
@@ -50,7 +50,6 @@ import org.thoughtcrime.securesms.stories.dialogs.StoryDialogs
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import org.whispersystems.signalservice.api.push.DistributionId
 import java.util.UUID
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * Settings fragment for private stories.
@@ -196,7 +195,7 @@ private fun PrivateStorySettingsScreen(
         item {
           Rows.TextRow(
             text = stringResource(R.string.PrivateStorySettingsFragment__delete_custom_story),
-            foregroundTint = colorResource(CoreUiR.color.signal_colorError),
+            foregroundTint = colorAttribute(com.google.android.material.R.attr.colorError),
             onClick = { callback.onDeleteStoryClick(state.privateStory.name) }
           )
         }

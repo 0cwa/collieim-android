@@ -127,7 +127,7 @@ fun ChatStyle.toLocal(importState: ImportState): ChatColors? {
   }
 
   if (this.autoBubbleColor != null) {
-    return ChatColorsPalette.Bubbles.default.withId(ChatColors.Id.Auto)
+    return ChatColorsPalette.Bubbles.autoDefault
   }
 
   if (this.customColorId != null) {

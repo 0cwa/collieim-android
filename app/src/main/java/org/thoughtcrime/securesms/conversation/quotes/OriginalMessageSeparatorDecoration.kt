@@ -8,13 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.marginLeft
 import androidx.recyclerview.widget.RecyclerView
 import org.signal.core.ui.util.ViewUtil
 import org.thoughtcrime.securesms.R
-import org.signal.core.ui.R as CoreUiR
+import org.signal.core.ui.util.ThemeUtil
 
 /**
  * Serves as the separator between the original message and other messages. Used in [MessageQuotesBottomSheet] and [EditMessageHistoryDialog]
@@ -30,7 +29,7 @@ class OriginalMessageSeparatorDecoration(
   private val dividerRect = Rect()
   private val dividerPaint: Paint = Paint().apply {
     style = Paint.Style.FILL
-    color = ContextCompat.getColor(context, CoreUiR.color.signal_colorSurfaceVariant)
+    color = ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorSurfaceVariant)
   }
 
   private var cachedHeader: View? = null

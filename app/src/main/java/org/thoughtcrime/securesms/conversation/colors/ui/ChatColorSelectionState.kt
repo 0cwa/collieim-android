@@ -30,7 +30,7 @@ data class ChatColorSelectionState(
       )
     } else {
       ChatColorMappingModel(
-        ChatColorsPalette.Bubbles.default.withId(ChatColors.Id.Auto),
+        ChatColorsPalette.Bubbles.autoDefault,
         chatColors?.id == ChatColors.Id.Auto,
         true
       )

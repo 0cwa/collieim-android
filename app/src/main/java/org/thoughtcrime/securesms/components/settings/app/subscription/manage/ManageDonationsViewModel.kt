@@ -107,11 +107,14 @@ class ManageDonationsViewModel : ViewModel() {
     InAppPaymentKeepAliveJob.enqueueAndTrackTime(System.currentTimeMillis().milliseconds)
 
     disposables += Single.fromCallable {
-      InAppPaymentsRepository.getShouldCancelSubscriptionBeforeNextSubscribeAttempt(InAppPaymentSubscriberRecord.Type.DONATION)
+      Pair(
+        InAppPaymentsRepository.getShouldCancelSubscriptionBeforeNextSubscribeAttempt(InAppPaymentSubscriberRecord.Type.DONATION),
+        InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION) != null
+      )
     }.subscribeOn(Schedulers.io()).subscribeBy(
-      onSuccess = { requiresCancel ->
+      onSuccess = { (requiresCancel, hasSubscriber) ->
         store.update {
-          it.copy(subscriberRequiresCancel = requiresCancel)
+          it.copy(subscriberRequiresCancel = requiresCancel, hasDonationSubscriber = hasSubscriber)
         }
       },
       onError = { throwable ->

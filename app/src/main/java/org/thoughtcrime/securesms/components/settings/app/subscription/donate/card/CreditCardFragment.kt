@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.addTextChangedListener
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.signal.core.ui.util.ViewUtil
 import org.signal.core.ui.viewModel
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.getParcelableCompat
 import org.signal.donations.InAppPaymentType
@@ -40,7 +40,6 @@ import org.thoughtcrime.securesms.databinding.CreditCardFragmentBinding
 import org.thoughtcrime.securesms.payments.FiatMoneyUtil
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
-import org.signal.core.ui.R as CoreUiR
 
 class CreditCardFragment : Fragment(R.layout.credit_card_fragment), InAppPaymentCheckoutDelegate.ErrorHandlerCallback {
 
@@ -97,7 +96,7 @@ class CreditCardFragment : Fragment(R.layout.credit_card_fragment), InAppPayment
       }
     }
 
-    binding.description.setLinkColor(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_colorPrimary))
+    binding.description.setLinkColor(ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorPrimary))
     binding.description.setLearnMoreVisible(true)
     binding.description.setOnLinkClickListener {
       findNavController().safeNavigate(CreditCardFragmentDirections.actionCreditCardFragmentToYourInformationIsPrivateBottomSheet())

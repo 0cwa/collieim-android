@@ -8,13 +8,14 @@ package org.signal.network.config
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import org.junit.Test
+import okhttp3.Dns
+import javax.net.SocketFactory
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.net.ProxySelector
 import java.net.SocketAddress
 import java.net.URI
-import java.util.Optional
 
 class ProxyConfigTest {
 
@@ -71,10 +72,10 @@ class ProxyConfigTest {
   }
 
   @Test
-  fun `resolve prefers an explicit signal proxy over the system proxy`() {
+  fun `resolve prefers a user SOCKS proxy with remote DNS over the system proxy`() {
     val system = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("proxy.example.com", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = false, signalProxy = SignalProxy("signal.tls.proxy", 443)), TARGET_URL, StubProxySelector(system))
-    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.TLS, "signal.tls.proxy", 443))
+    val config = ProxyConfig.resolve(configuration(censored = false), TARGET_URL, StubProxySelector(system), userProxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved("localhost", 9050)))
+    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.SOCKS_REMOTE_DNS, "localhost", 9050, ProxyConfig.ProxySource.USER))
   }
 
   @Test
@@ -92,13 +93,30 @@ class ProxyConfigTest {
   }
 
   @Test
-  fun `resolve prefers an explicit signal proxy over a censored configuration`() {
+  fun `resolve preserves a user proxy when censorship circumvention is enabled`() {
     val system = Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved("proxy.example.com", 8080))
-    val config = ProxyConfig.resolve(configuration(censored = true, signalProxy = SignalProxy("signal.tls.proxy", 443)), TARGET_URL, StubProxySelector(system))
-    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.TLS, "signal.tls.proxy", 443))
+    val config = ProxyConfig.resolve(configuration(censored = true), TARGET_URL, StubProxySelector(system), userProxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved("localhost", 9050)))
+    assertThat(config).isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.SOCKS_REMOTE_DNS, "localhost", 9050, ProxyConfig.ProxySource.USER))
   }
 
-  private fun configuration(censored: Boolean, signalProxy: SignalProxy? = null): SignalServiceConfiguration {
+  @Test
+  fun `system SOCKS proxy uses local DNS`() {
+    val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress.createUnresolved("localhost", 1080))
+    assertThat(ProxyConfig.fromProxy(proxy, ProxyConfig.ProxySource.SYSTEM))
+      .isEqualTo(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.SOCKS, "localhost", 1080))
+  }
+
+  @Test
+  fun `proxy source changes restart native connections`() {
+    val state = NetworkProxyState()
+    val system = ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080)
+    assertThat(state.update(system)).isEqualTo(true)
+    assertThat(state.update(system)).isEqualTo(false)
+    assertThat(state.update(system.copy(source = ProxyConfig.ProxySource.USER))).isEqualTo(true)
+    assertThat(state.update(ProxyConfig.Direct)).isEqualTo(true)
+  }
+
+  private fun configuration(censored: Boolean): SignalServiceConfiguration {
     return SignalServiceConfiguration(
       signalServiceUrls = emptyArray(),
       signalCdnUrlMap = emptyMap(),
@@ -106,8 +124,9 @@ class ProxyConfigTest {
       signalCdsiUrls = emptyArray(),
       signalSvr2Urls = emptyArray(),
       networkInterceptors = emptyList(),
-      dns = Optional.empty(),
-      signalProxy = Optional.ofNullable(signalProxy),
+      dns = Dns.SYSTEM,
+      socketFactory = SocketFactory.getDefault(),
+      proxySelector = StubProxySelector(Proxy.NO_PROXY),
       zkGroupServerPublicParams = ByteArray(0),
       genericServerPublicParams = ByteArray(0),
       backupServerPublicParams = ByteArray(0),

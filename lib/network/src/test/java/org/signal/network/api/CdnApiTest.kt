@@ -11,6 +11,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNull
 import kotlinx.coroutines.test.runTest
+import okhttp3.Dns
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -34,8 +35,9 @@ import org.signal.network.rest.SignalRestClient
 import org.whispersystems.signalservice.internal.push.AttachmentUploadForm
 import java.io.ByteArrayInputStream
 import java.io.IOException
-import java.util.Optional
+import java.net.ProxySelector
 import java.util.Random
+import javax.net.SocketFactory
 import kotlin.time.Duration.Companion.seconds
 
 class CdnApiTest {
@@ -404,8 +406,9 @@ class CdnApiTest {
       signalCdsiUrls = emptyArray<SignalCdsiUrl>(),
       signalSvr2Urls = emptyArray<SignalSvr2Url>(),
       networkInterceptors = emptyList(),
-      dns = Optional.empty(),
-      signalProxy = Optional.empty(),
+      dns = Dns.SYSTEM,
+      socketFactory = SocketFactory.getDefault(),
+      proxySelector = ProxySelector.getDefault(),
       zkGroupServerPublicParams = ByteArray(0),
       genericServerPublicParams = ByteArray(0),
       backupServerPublicParams = ByteArray(0),

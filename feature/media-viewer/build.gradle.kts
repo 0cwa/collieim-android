@@ -5,12 +5,7 @@
 
 plugins {
   id("signal-library")
-  alias(libs.plugins.ktlint)
   alias(libs.plugins.compose.compiler)
-}
-
-ktlint {
-  version.set("1.5.0")
 }
 
 android {
@@ -34,7 +29,6 @@ android {
 
 dependencies {
   lintChecks(project(":lintchecks"))
-  ktlintRuleset(libs.ktlint.twitter.compose)
 
   // Project dependencies
   implementation(project(":core:ui"))

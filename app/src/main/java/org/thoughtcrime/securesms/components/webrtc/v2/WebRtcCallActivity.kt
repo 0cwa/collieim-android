@@ -61,7 +61,7 @@ import org.signal.core.util.isInMultiWindowModeCompat
 import org.signal.core.util.logging.Log
 import org.signal.remoteconfig.RemoteConfig
 import org.signal.ringrtc.CallManager
-import org.thoughtcrime.securesms.BaseActivity
+import org.thoughtcrime.securesms.PassphraseRequiredActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.sensors.Orientation
 import org.thoughtcrime.securesms.components.webrtc.CallLinkProfileKeySender
@@ -87,6 +87,8 @@ import org.thoughtcrime.securesms.service.webrtc.ActiveCallManager
 import org.thoughtcrime.securesms.service.webrtc.CallLinkDisconnectReason
 import org.thoughtcrime.securesms.service.webrtc.SignalCallManager
 import org.thoughtcrime.securesms.sms.MessageSender
+import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme
+import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.FullscreenHelper
 import org.thoughtcrime.securesms.util.VibrateUtil
 import org.thoughtcrime.securesms.webrtc.CallParticipantsViewState
@@ -97,7 +99,7 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 /** Conversion */
-class WebRtcCallActivity : BaseActivity(), SafetyNumberChangeDialog.Callback, ReactWithAnyEmojiBottomSheetDialogFragment.Callback, RecaptchaProofBottomSheetFragment.Callback {
+class WebRtcCallActivity : PassphraseRequiredActivity(), SafetyNumberChangeDialog.Callback, ReactWithAnyEmojiBottomSheetDialogFragment.Callback, RecaptchaProofBottomSheetFragment.Callback {
 
   companion object {
     val TAG = Log.tag(WebRtcCallActivity::class)
@@ -161,6 +163,13 @@ class WebRtcCallActivity : BaseActivity(), SafetyNumberChangeDialog.Callback, Re
     }
   }
 
+  private val theme: DynamicTheme = DynamicNoActionBarTheme()
+
+  override fun onPreCreate() {
+    super.onPreCreate()
+    theme.onCreate(this)
+  }
+
   override fun attachBaseContext(newBase: Context) {
     delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
     super.attachBaseContext(newBase)
@@ -172,13 +181,13 @@ class WebRtcCallActivity : BaseActivity(), SafetyNumberChangeDialog.Callback, Re
   }
 
   @SuppressLint("MissingInflatedId")
-  override fun onCreate(savedInstanceState: Bundle?) {
+  override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
     val callIntent: CallIntent = getCallIntent()
     Log.i(TAG, "onCreate(${callIntent.isStartedFromFullScreen})")
 
     lifecycleDisposable.bindTo(this)
 
-    super.onCreate(savedInstanceState)
+    super.onCreate(savedInstanceState, ready)
 
     volumeControlStream = AudioManager.STREAM_VOICE_CALL
 
@@ -288,8 +297,9 @@ class WebRtcCallActivity : BaseActivity(), SafetyNumberChangeDialog.Callback, Re
   override fun onResume() {
     Log.i(TAG, "onResume()")
     super.onResume()
+    theme.onResume(this)
 
-    initializeScreenshotSecurity()
+    // MOLLY: Screen security is already initialized by BaseActivity.onResume()
 
     subscribeToEvents()
 
@@ -1203,14 +1213,6 @@ class WebRtcCallActivity : BaseActivity(), SafetyNumberChangeDialog.Callback, Re
     val event = previousEvent ?: return
     if (event.state == WebRtcViewModel.State.CALL_INCOMING) {
       AppDependencies.signalCallManager.setIncomingRingingVanity(false)
-    }
-  }
-
-  private fun initializeScreenshotSecurity() {
-    if (SignalStore.settings.isScreenSecurityEnabled) {
-      window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-    } else {
-      window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }
   }
 

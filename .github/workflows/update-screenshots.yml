@@ -62,8 +62,17 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.sha }}
+          path: source
           submodules: true
           lfs: true
+          persist-credentials: false
+      - name: Load pinned engineering screenshot collector
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: 0cwa/collie-release-engineering
+          ref: 7f9e63d6d55861c0c4e7757ba7eb07d6484289a6
+          path: policy
+          sparse-checkout: tools/screenshots
           persist-credentials: false
       - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
@@ -74,13 +83,14 @@ jobs:
         with:
           cache-disabled: true
       - name: Generate screenshots without private build-cache values
+        working-directory: source
         env:
           SIGNAL_BUILD_CACHE_PUSH: false
         run: ./gradlew updateScreenshots
       - name: Collect only bounded screenshot data
         env:
           BASE_SHA: ${{ github.sha }}
-        run: python3 .github/scripts/screenshot_artifacts.py collect --repository . --base-sha "$BASE_SHA" --output "$RUNNER_TEMP/screenshots/screenshot-changes.json"
+        run: python3 policy/tools/screenshots/screenshot_artifacts.py collect --repository source --base-sha "$BASE_SHA" --output "$RUNNER_TEMP/screenshots/screenshot-changes.json"
       - name: Upload one data manifest
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:

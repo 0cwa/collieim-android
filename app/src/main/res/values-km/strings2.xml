@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences__enable_debug_log">បើកកំណត់ត្រាកំហុស</string>
+    <string name="AppProtectionPreferenceFragment_instant">ភ្លាមៗ</string>
+    <string name="BlockUnblockDialog_block_and_delete">ហាមឃាត់ និងលុបចោល</string>
+    <string name="prompt_passphrase_activity__molly_is_locked">Collie ជាប់សោរ</string>
+    <string name="NotificationsSettingsFragment__notify_when">ជូនដំណឹងនៅពេល</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services កំពុងធ្វើបច្ចុប្បន្នភាព ឬមិនអាចប្រើបានជាបណ្តោះអាសន្ន។ សូមព្យាយាមម្តងទៀត។</string>
+    <string name="please_wait">សូមរង់ចាំ…</string>
+</resources>

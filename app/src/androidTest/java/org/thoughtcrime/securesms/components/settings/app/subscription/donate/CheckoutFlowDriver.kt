@@ -69,7 +69,6 @@ class CheckoutFlowDriver(
     proceedToGateway()
 
     when (spec.paymentMethod) {
-      TestPaymentMethod.GOOGLE_PAY -> scenario.selectGooglePay(composeRule, scheduler, spec.inAppPaymentType)
       TestPaymentMethod.CREDIT_CARD -> completeCreditCard()
       TestPaymentMethod.PAYPAL -> completePayPal(scenario, spec.inAppPaymentType)
       TestPaymentMethod.SEPA_DEBIT -> completeSepa(spec.inAppPaymentType)
@@ -278,7 +277,7 @@ class CheckoutFlowDriver(
   /**
    * Clicks a Compose gateway-selector button and waits for the bottom sheet to dismiss. For methods
    * other than Google Pay the checkout then navigates to the method's fragment; Google Pay instead
-   * requires a result injection (see `selectGooglePay`).
+   * requires a result injection.
    */
   private fun clickGatewayButton(tag: String) {
     scheduler.flushUntil {

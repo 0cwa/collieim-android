@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">បើកមុខងារចាក់សោការចុះឈ្មោះ?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">បិទមុខងារចាក់សោការចុះឈ្មោះ?</string>
@@ -508,7 +507,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">ប្រើការចាក់សោអេក្រង់</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">នឹងតម្រូវឱ្យមានការកំណត់ចាក់សោឧបករណ៍ Android របស់អ្នក ដើម្បីដោះសោ Signal នៅពេលអ្នកចេញពី ឬប្តូរកម្មវិធី។ នៅពេលចាក់សោ នៅក្នុងផ្នែកមើលការជូនដំណឹងជាមុន វានឹងមិនបង្ហាញខ្លឹមសាររបស់សារនោះទេ។</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">នឹងតម្រូវឱ្យមានការកំណត់ចាក់សោឧបករណ៍ Android របស់អ្នក ដើម្បីដោះសោ Collie នៅពេលអ្នកចេញពី ឬប្តូរកម្មវិធី។ នៅពេលចាក់សោ នៅក្នុងផ្នែកមើលការជូនដំណឹងជាមុន វានឹងមិនបង្ហាញខ្លឹមសាររបស់សារនោះទេ។</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">ចាប់ផ្តើមចាក់សោអេក្រង់</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +519,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">កំណត់រយៈពេលខ្លួនឯង</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">ប្រើការចាក់សោអេក្រង់ Signal</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">ប្រើការចាក់សោអេក្រង់ Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">បិទការចាក់សោអេក្រង់ Signal</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">បិទការចាក់សោអេក្រង់ Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">ជំនួយ</string>
@@ -535,7 +534,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">អាជ្ញាបណ្ណ</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">លក្ខខណ្ឌ និងគោលការណ៍ឯកជនភាព</string>
-    <string name="HelpFragment__copyright_signal_messenger">Signal Messenger ក្រោមការរក្សាសិទ្ធិ</string>
+    <string name="HelpFragment__copyright_signal_messenger">Molly Messenger ក្រោមការរក្សាសិទ្ធិ</string>
     <string name="HelpFragment__licenced_under_the_agplv3">មានអាជ្ញាបណ្ណក្រោម GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal គឺជាអង្គការមិនស្វែងរកប្រាក់ចំណេញ 501c3</string>
@@ -544,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">ឈ្មោះ និងរូបកម្មវិធីអាចមើលឃើញបាននៅលើអេក្រង់ទំព័រដើម និងថតកម្មវិធី។</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">ការជូនដំណឹងនឹងបង្ហាញឈ្មោះ និងរូបកម្មវិធី Signal លំនាំដើមជានិច្ច។</string>
+    <string name="preferences__app_icon_notification_warning">ការជូនដំណឹងនឹងបង្ហាញឈ្មោះ និងរូបកម្មវិធី Collie លំនាំដើមជានិច្ច។</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">ក្រាហ្វិកបង្ហាញពីកន្លែងដែលនឹងអាចមើលឃើញរូបកម្មវិធីជំនួស។</string>
 
@@ -564,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">ប្តូរឈ្មោះ និងរូបកម្មវិធីទៅជា \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">ត្រូវបិទ Signal ដើម្បីប្តូរឈ្មោះ និងរូបកម្មវិធី។ ការជូនដំណឹងនឹងបង្ហាញឈ្មោះ និងរូបកម្មវិធី Signal លំនាំដើមជានិច្ច។</string>
+    <string name="preferences__app_icon_dialog_description">ត្រូវបិទ Collie ដើម្បីប្តូរឈ្មោះ និងរូបកម្មវិធី។ ការជូនដំណឹងនឹងបង្ហាញឈ្មោះ និងរូបកម្មវិធី Collie លំនាំដើមជានិច្ច។</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">ជ្រើសរើសឈ្មោះ និងរូបកម្មវិធីដែលនឹងអាចមើលឃើញបាននៅលើអេក្រង់ទំព័រដើម និងថតកម្មវិធីរបស់ទូរសព្ទអ្នក។ ការជូនដំណឹងនឹងបង្ហាញឈ្មោះ និងរូបកម្មវិធី Signal លំនាំដើមជានិច្ច។ ស្វែងយល់បន្ថែម</string>
+    <string name="preferences__app_icon_warning_learn_more">ជ្រើសរើសឈ្មោះ និងរូបកម្មវិធីដែលនឹងអាចមើលឃើញបាននៅលើអេក្រង់ទំព័រដើម និងថតកម្មវិធីរបស់ទូរសព្ទអ្នក។ ការជូនដំណឹងនឹងបង្ហាញឈ្មោះ និងរូបកម្មវិធី Collie លំនាំដើមជានិច្ច។ ស្វែងយល់បន្ថែម</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">ស្វែងយល់បន្ថែម</string>
 

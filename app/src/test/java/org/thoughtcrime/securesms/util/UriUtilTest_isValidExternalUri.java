@@ -64,7 +64,7 @@ public class UriUtilTest_isValidExternalUri {
   @Test
   public void parse() {
     Context context = ApplicationProvider.getApplicationContext();
-    Uri     uri     = Uri.parse(input);
+    Uri     uri     = Uri.parse(input.replace("org.thoughtcrime.securesms", context.getPackageName()));
 
     assertEquals(output, UriUtil.isValidExternalUri(context, uri));
   }

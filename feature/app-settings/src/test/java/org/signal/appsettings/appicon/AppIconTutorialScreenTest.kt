@@ -20,7 +20,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
+import org.signal.appsettings.R
 
 @RunWith(RobolectricTestRunner::class)
 @Config(application = Application::class)
@@ -46,7 +48,7 @@ class AppIconTutorialScreenTest {
 
     composeTestRule.onNodeWithText("App icons and names are visible on the home screen and app drawer.").assertIsDisplayed()
 
-    val notificationWarning = "Notifications will always display the default Signal icon and name."
+    val notificationWarning = RuntimeEnvironment.getApplication().getString(R.string.preferences__app_icon_notification_warning)
     composeTestRule.onNodeWithTag(AppIconTutorialTestTags.SCROLLER).performScrollToNode(hasText(notificationWarning))
     composeTestRule.onNodeWithText(notificationWarning).assertIsDisplayed()
   }

@@ -10,6 +10,7 @@ import org.signal.benchmark.setup.TestUsers
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
 import org.signal.network.websocket.WebSocketRequestMessage
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.IncomingMessageObserverInstrumentationApplicationContext
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
@@ -17,6 +18,7 @@ import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JobTracker
 import org.thoughtcrime.securesms.jobs.MarkerJob
 import org.thoughtcrime.securesms.jobs.PushProcessMessageJob
+import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.whispersystems.signalservice.internal.push.Envelope
 import org.whispersystems.signalservice.internal.websocket.BenchmarkWebSocketConnection
@@ -67,6 +69,15 @@ class IncomingMessageObserverRule(
       AppDependencies.application is IncomingMessageObserverInstrumentationApplicationContext
     )
 
+    check(BuildConfig.DEBUG && BuildConfig.APPLICATION_ID.endsWith(".imo")) {
+      "The incoming-message harness requires an isolated IMO debug application"
+    }
+    check(BuildConfig.UNIDENTIFIED_SENDER_TRUST_ROOTS.contentEquals(arrayOf("BVT/2gHqbrG1xzuIypLIOjFgMtihrMld1/5TGADL6Dhv"))) {
+      "The incoming-message harness requires its test certificate root"
+    }
+
+    // Registration can start the observer foreground service during setup.
+    NotificationChannels.getInstance()
     self = TestUsers.setupSelf()
     TestUsers.setupTestClients(peerCount)
     peers = Harness.otherClients.take(peerCount)

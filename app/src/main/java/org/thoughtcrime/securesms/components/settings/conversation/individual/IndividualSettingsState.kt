@@ -18,6 +18,7 @@ data class IndividualSettingsState(
   /** Changed when recipient content changes, since Recipient.equals only compares IDs. */
   val recipientContentVersion: Int = 0,
   val threadId: Long = -1L,
+  val linkedDeviceCount: Int? = null,
   val storyViewState: StoryViewState = StoryViewState.NONE,
   val isDeprecatedOrUnregistered: Boolean = false,
   val displayInternalRecipientDetails: Boolean = false,

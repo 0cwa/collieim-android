@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">রেজিস্ট্রেশন লক চালু করবেন?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">রেজিস্ট্রেশন লক বন্ধ করবেন?</string>
@@ -509,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">স্ক্রিন লক ব্যবহার করুন</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">আপনি যখন অ্যাপ্লিকেশন থেকে বেরিয়ে যান বা স্যুইচ করেন তখন Signal আনলক করতে আপনার Android ডিভাইস লক সেটিংসের প্রয়োজন হবে। লক করা অবস্থায় নোটিফিকেশন প্রিভিউ-এ মেসেজ কন্টেন্ট দেখা যাবে না।</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">আপনি যখন অ্যাপ্লিকেশন থেকে বেরিয়ে যান বা স্যুইচ করেন তখন Collie আনলক করতে আপনার Android ডিভাইস লক সেটিংসের প্রয়োজন হবে। লক করা অবস্থায় নোটিফিকেশন প্রিভিউ-এ মেসেজ কন্টেন্ট দেখা যাবে না।</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">স্ক্রিন লক চালু করুন</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -521,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">কাস্টম সময়</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Signal স্ক্রিন লক ব্যবহার করুন</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie স্ক্রিন লক ব্যবহার করুন</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Signal স্ক্রিন লক বন্ধ করুন</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collie স্ক্রিন লক বন্ধ করুন</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">সাহায্য</string>
@@ -536,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">লাইসেন্স</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">শর্তাদি এবং গোপনীয়তা নীতি</string>
-    <string name="HelpFragment__copyright_signal_messenger">Signal Messenger এর কপিরাইট</string>
+    <string name="HelpFragment__copyright_signal_messenger">Molly Messenger এর কপিরাইট</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3-এর অধীনে লাইসেন্সকৃত</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal একটি অলাভজনক প্রতিষ্ঠান</string>
@@ -545,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">অ্যাপ আইকন ও নাম হোম স্ক্রিন ও অ্যাপ ড্রয়ারে দৃশ্যমান।</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">নোটিফিকেশনে সবসময় ডিফল্ট Signal আইকন ও নাম দেখা যাবে।</string>
+    <string name="preferences__app_icon_notification_warning">নোটিফিকেশনে সবসময় ডিফল্ট Collie আইকন ও নাম দেখা যাবে।</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">প্রতিস্থাপিত অ্যাপ আইকনটি যেখানে দৃশ্যমান হবে সেখানে গ্রাফিক চিত্রায়ন থাকবে।</string>
 
@@ -565,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">অ্যাপ আইকন ও নাম \"%1$s\"-এ পরিবর্তন করুন</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">অ্যাপ আইকন ও নাম পরিবর্তন করতে Signal বন্ধ করতে হবে। নোটিফিকেশনে সবসময় ডিফল্ট Signal আইকন ও নাম দেখা যাবে।</string>
+    <string name="preferences__app_icon_dialog_description">অ্যাপ আইকন ও নাম পরিবর্তন করতে Collie বন্ধ করতে হবে। নোটিফিকেশনে সবসময় ডিফল্ট Collie আইকন ও নাম দেখা যাবে।</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">একটি অ্যাপ আইকন ও নাম বেছে নিন, যা আপনার ফোনের হোম স্ক্রিন এবং অ্যাপ ড্রয়ারে দেখা যাবে। নোটিফিকেশনে সবসময় ডিফল্ট Signal আইকন ও নাম দেখা যাবে। আরো জানুন</string>
+    <string name="preferences__app_icon_warning_learn_more">একটি অ্যাপ আইকন ও নাম বেছে নিন, যা আপনার ফোনের হোম স্ক্রিন এবং অ্যাপ ড্রয়ারে দেখা যাবে। নোটিফিকেশনে সবসময় ডিফল্ট Collie আইকন ও নাম দেখা যাবে। আরো জানুন</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">আরো জানুন</string>
 

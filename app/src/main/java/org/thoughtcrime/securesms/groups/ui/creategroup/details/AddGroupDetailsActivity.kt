@@ -17,11 +17,24 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.conversation.ConversationIntents
 import org.thoughtcrime.securesms.groups.ui.managegroup.dialogs.GroupInviteSentDialog
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme
 
 /**
  * Activity to add group details like name or avatar when creating a group
  */
 class AddGroupDetailsActivity : PassphraseRequiredActivity(), AddGroupDetailsFragment.Callback {
+
+  private val theme = DynamicNoActionBarTheme()
+
+  override fun onPreCreate() {
+    super.onPreCreate()
+    theme.onCreate(this)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    theme.onResume(this)
+  }
 
   companion object {
     private const val EXTRA_RECIPIENTS = "recipient_ids"

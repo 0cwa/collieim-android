@@ -25,12 +25,12 @@ import java.util.Optional
  * Helper test for rendering conversation items for preview.
  */
 @RunWith(AndroidJUnit4::class)
-@Ignore("For testing/previewing manually, no assertions")
 class ConversationItemPreviewer {
 
   @get:Rule
   val harness = SignalActivityRule(othersCount = 10)
 
+  @Ignore("For testing/previewing manually, no assertions")
   @Test
   fun testShowLongName() {
     val other: Recipient = Recipient.resolved(harness.others.first())

@@ -30,18 +30,44 @@ class FullBackupExporterTest {
   }
 
   @Test
-  fun `a revision cycle terminates without exporting the corrupt message`() {
+  fun `a revision cycle stops at the repeated message`() {
     val first = messageCursor(id = 1, latestRevisionId = 2)
     val second = messageCursor(id = 2, latestRevisionId = 1)
     val db = mockk<SQLiteDatabase>()
     every { db.query(MessageTable.TABLE_NAME, any<Array<String>>(), any<String>(), any<Array<String>>(), null, null, null) } returnsMany listOf(second, first)
 
-    assertFalse(FullBackupExporter.isNonExpiringMessage(db, first))
+    assertTrue(FullBackupExporter.isNonExpiringMessage(db, first))
   }
 
   @Test
   fun `messages whose disappearing timer has not started remain exportable`() {
     assertTrue(FullBackupExporter.isNonExpiringMessage(mockk(), messageCursor(id = 1, expiresIn = 60_000L)))
+  }
+
+  @Test
+  fun `an older started timer does not override the latest revision`() {
+    val old = messageCursor(id = 1, expiresIn = 60_000L, expireStarted = 1, latestRevisionId = 2)
+    val latest = messageCursor(id = 2)
+    val db = mockk<SQLiteDatabase>()
+    every { db.query(MessageTable.TABLE_NAME, any<Array<String>>(), any<String>(), any<Array<String>>(), null, null, null) } returns latest
+
+    assertTrue(FullBackupExporter.isNonExpiringMessage(db, old))
+  }
+
+  @Test
+  fun `a missing revision is excluded`() {
+    val missing = messageCursor(id = 2)
+    every { missing.moveToFirst() } returns false
+    val db = mockk<SQLiteDatabase>()
+    every { db.query(MessageTable.TABLE_NAME, any<Array<String>>(), any<String>(), any<Array<String>>(), null, null, null) } returns missing
+
+    assertFalse(FullBackupExporter.isNonExpiringMessage(db, messageCursor(id = 1, latestRevisionId = 2)))
+  }
+
+  @Test
+  fun `a self reference uses the current message timer`() {
+    assertTrue(FullBackupExporter.isNonExpiringMessage(mockk(), messageCursor(id = 1, latestRevisionId = 1)))
+    assertFalse(FullBackupExporter.isNonExpiringMessage(mockk(), messageCursor(id = 1, expiresIn = 60_000L, expireStarted = 1, latestRevisionId = 1)))
   }
 
   private fun messageCursor(id: Long, expiresIn: Long = 0, expireStarted: Long = 0, latestRevisionId: Long = 0): Cursor {

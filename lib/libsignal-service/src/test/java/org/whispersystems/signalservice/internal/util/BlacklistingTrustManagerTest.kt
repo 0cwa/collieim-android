@@ -23,6 +23,9 @@ import org.junit.Test
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
+import java.net.Socket
+import javax.net.ssl.SSLEngine
+import javax.net.ssl.X509ExtendedTrustManager
 import javax.net.ssl.X509TrustManager
 
 class BlacklistingTrustManagerTest {
@@ -89,6 +92,56 @@ class BlacklistingTrustManagerTest {
     assertFailure {
       trustManager.checkServerTrusted(arrayOf(readCertificate("ias.cert")), AUTH_TYPE)
     }.isInstanceOf<CertificateException>()
+  }
+
+  @Test
+  fun `socket context is forwarded to an extended delegate`() {
+    val extended = mockk<X509ExtendedTrustManager>(relaxed = true)
+    val wrapper = BlacklistingTrustManager(extended)
+    val socket = mockk<Socket>()
+    val chain = arrayOf(readCertificate("ias.cert"))
+
+    wrapper.checkServerTrusted(chain, AUTH_TYPE, socket)
+
+    verify { extended.checkServerTrusted(chain, AUTH_TYPE, socket) }
+  }
+
+  @Test
+  fun `engine context is forwarded to an extended delegate`() {
+    val extended = mockk<X509ExtendedTrustManager>(relaxed = true)
+    val wrapper = BlacklistingTrustManager(extended)
+    val engine = mockk<SSLEngine>()
+    val chain = arrayOf(readCertificate("ias.cert"))
+
+    wrapper.checkServerTrusted(chain, AUTH_TYPE, engine)
+
+    verify { extended.checkServerTrusted(chain, AUTH_TYPE, engine) }
+  }
+
+  @Test
+  fun `blacklisted chain is rejected before contextual delegate`() {
+    val extended = mockk<X509ExtendedTrustManager>(relaxed = true)
+    val wrapper = BlacklistingTrustManager(extended)
+    val socket = mockk<Socket>()
+    val compromised = loadImpactedIntermediates().first().certificate()
+
+    assertFailure {
+      wrapper.checkServerTrusted(arrayOf(compromised), AUTH_TYPE, socket)
+    }.isInstanceOf<CertificateException>()
+
+    verify(exactly = 0) { extended.checkServerTrusted(any(), any(), any<Socket>()) }
+  }
+
+  @Test
+  fun `legacy delegate is used when contextual validation is unavailable`() {
+    val plain = mockk<X509TrustManager>(relaxed = true)
+    val wrapper = BlacklistingTrustManager(plain)
+    val engine = mockk<SSLEngine>()
+    val chain = arrayOf(readCertificate("ias.cert"))
+
+    wrapper.checkServerTrusted(chain, AUTH_TYPE, engine)
+
+    verify { plain.checkServerTrusted(chain, AUTH_TYPE) }
   }
 
   private fun loadImpactedIntermediates(): List<ImpactedIntermediate> {

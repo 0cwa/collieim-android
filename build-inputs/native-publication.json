@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "status": "BLOCKED",
+  "repository": null,
+  "reason": "Accepted trusted-local native artifacts have locked hashes but no verified public immutable origin. Release assembly remains blocked.",
+  "lock": "native-lock.json",
+  "production_version_floor": 177702
+}

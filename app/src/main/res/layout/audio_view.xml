@@ -13,6 +13,13 @@
             android:id="@+id/file_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+<<<<<<< MOLLY
+            android:layout_gravity="center_vertical"
+            android:fontFamily="sans-serif-light"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?attr/signal_text_secondary"
+            android:textSize="@dimen/conversation_item_date_text_size"
+=======
             android:layout_marginBottom="4dp"
             android:ellipsize="end"
             android:fontFamily="sans-serif"
@@ -21,6 +28,7 @@
             android:textAlignment="viewStart"
             android:textAppearance="@style/Signal.Text.LabelSmall"
             android:textStyle="normal"
+>>>>>>> SIGNAL
             android:visibility="gone"
             tools:text="Recording 2026-10-01.mp3"
             tools:visibility="visible" />

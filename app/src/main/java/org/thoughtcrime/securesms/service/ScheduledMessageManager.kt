@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.service
 
 import android.app.Application
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.annotation.WorkerThread
@@ -90,13 +89,13 @@ class ScheduledMessageManager(
 
   data class Event(val delay: Long, val recipientId: RecipientId, val threadId: Long)
 
-  class ScheduledMessagesAlarm : BroadcastReceiver() {
+  class ScheduledMessagesAlarm : ExportedBroadcastReceiver() {
 
     companion object {
       private val TAG = Log.tag(ScheduledMessagesAlarm::class.java)
     }
 
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceiveUnlock(context: Context?, intent: Intent?) {
       Log.d(TAG, "onReceive()")
       AppDependencies.scheduledMessageManager.scheduleIfNecessary()
     }

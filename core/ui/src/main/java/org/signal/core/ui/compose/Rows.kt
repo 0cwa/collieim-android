@@ -159,9 +159,14 @@ object Rows {
     values: Array<String>,
     selectedValue: String,
     onSelected: (String) -> Unit,
+<<<<<<< MOLLY
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
+    enabled: Boolean = true
+=======
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     requireConfirmation: Boolean = false
+>>>>>>> SIGNAL
   ) {
     RadioListRow(
       text = { selectedIndex ->
@@ -181,9 +186,14 @@ object Rows {
       values = values,
       selectedValue = selectedValue,
       onSelected = onSelected,
+<<<<<<< MOLLY
+      trailingIcon = trailingIcon,
+      enabled = enabled
+=======
       modifier = modifier,
       enabled = enabled,
       requireConfirmation = requireConfirmation
+>>>>>>> SIGNAL
     )
   }
 
@@ -199,15 +209,21 @@ object Rows {
     values: Array<String>,
     selectedValue: String,
     onSelected: (String) -> Unit,
+<<<<<<< MOLLY
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
+    enabled: Boolean = true
+=======
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     requireConfirmation: Boolean = false
+>>>>>>> SIGNAL
   ) {
     val selectedIndex = values.indexOf(selectedValue)
     var displayDialog by remember { mutableStateOf(false) }
 
     TextRow(
       text = { text(selectedIndex) },
+      trailingIcon = trailingIcon,
       enabled = enabled,
       onClick = {
         displayDialog = true
@@ -528,6 +544,7 @@ object Rows {
     text: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
     icon: (@Composable RowScope.() -> Unit)? = null,
+    trailingIcon: (@Composable RowScope.() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
     onLongClick: (() -> Unit)? = null,
     onDisabledClick: (() -> Unit)? = null,
@@ -553,11 +570,17 @@ object Rows {
         .padding(defaultPadding()),
       verticalAlignment = CenterVertically
     ) {
-      if (icon != null) {
-        icon()
-        Spacer(modifier = Modifier.width(24.dp))
+      Row(modifier = Modifier.weight(1f)) {
+        if (icon != null) {
+          icon()
+          Spacer(modifier = Modifier.width(24.dp))
+        }
+        text()
       }
-      text()
+      // MOLLY: Trailing icon aligned to the end
+      if (trailingIcon != null) {
+        trailingIcon()
+      }
     }
   }
 
@@ -746,6 +769,9 @@ private fun RadioListRowPreview() {
       labels = arrayOf("A", "B", "C"),
       values = arrayOf("a", "b", "c"),
       selectedValue = selectedValue,
+      trailingIcon = {
+        Icon(painterResource(android.R.drawable.ic_dialog_alert), contentDescription = null)
+      },
       onSelected = {
         selectedValue = it
       }

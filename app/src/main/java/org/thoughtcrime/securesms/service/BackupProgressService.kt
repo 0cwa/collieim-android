@@ -12,7 +12,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+<<<<<<< MOLLY
+import androidx.annotation.CheckResult
+=======
 import android.os.PowerManager
+>>>>>>> SIGNAL
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -23,7 +27,6 @@ import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.NotificationIds
 import java.util.concurrent.locks.ReentrantLock
-import javax.annotation.CheckReturnValue
 import kotlin.concurrent.withLock
 import kotlin.time.Duration.Companion.hours
 import org.signal.core.ui.R as CoreUiR
@@ -47,10 +50,14 @@ class BackupProgressService : SafeForegroundService() {
     private var progress: Float = 0f
     private var indeterminate: Boolean = true
 
+<<<<<<< MOLLY
+    @CheckResult
+=======
     private const val WAKE_LOCK_TAG = "signal:backupProgress"
     private val WAKE_LOCK_TIMEOUT = 2.hours.inWholeMilliseconds
 
     @CheckReturnValue
+>>>>>>> SIGNAL
     fun start(context: Context, startingTitle: String): Controller {
       controllerLock.withLock {
         if (controller != null) {

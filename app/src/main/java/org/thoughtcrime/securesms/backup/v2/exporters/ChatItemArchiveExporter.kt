@@ -26,7 +26,6 @@ import org.signal.archive.proto.GroupV2MigrationUpdate
 import org.signal.archive.proto.IndividualCall
 import org.signal.archive.proto.LearnedProfileChatUpdate
 import org.signal.archive.proto.MessageAttachment
-import org.signal.archive.proto.PaymentNotification
 import org.signal.archive.proto.PinMessageUpdate
 import org.signal.archive.proto.Poll
 import org.signal.archive.proto.PollTerminateUpdate
@@ -87,7 +86,6 @@ import org.thoughtcrime.securesms.database.CallTable
 import org.thoughtcrime.securesms.database.GroupReceiptTable
 import org.thoughtcrime.securesms.database.MessageTable
 import org.thoughtcrime.securesms.database.MessageTypes
-import org.thoughtcrime.securesms.database.PaymentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.documents.IdentityKeyMismatchSet
 import org.thoughtcrime.securesms.database.documents.NetworkFailureSet
@@ -107,8 +105,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.linkpreview.LinkPreview
 import org.thoughtcrime.securesms.mms.PartAuthority
 import org.thoughtcrime.securesms.mms.QuoteModel
-import org.thoughtcrime.securesms.payments.FailureReason
-import org.thoughtcrime.securesms.payments.State
 import org.thoughtcrime.securesms.polls.PollRecord
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.util.mb
@@ -294,13 +290,11 @@ class ChatItemArchiveExporter(
         }
 
         MessageTypes.isPaymentsActivated(record.type) -> {
-          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.PAYMENTS_ACTIVATED)
-          transformTimer.emit("simple-update")
+          continue  // MOLLY: No-op
         }
 
         MessageTypes.isPaymentsRequestToActivate(record.type) -> {
-          builder.updateMessage = simpleUpdate(SimpleChatUpdate.Type.PAYMENT_ACTIVATION_REQUEST)
-          transformTimer.emit("simple-update")
+          continue  // MOLLY: No-op
         }
 
         MessageTypes.isUnsupportedMessageType(record.type) -> {
@@ -396,12 +390,7 @@ class ChatItemArchiveExporter(
         }
 
         MessageTypes.isPaymentsNotification(record.type) -> {
-          if (record.threadId == noteToSelfThreadId) {
-            Log.w(TAG, ExportSkips.paymentNotificationInNoteToSelf(record.dateSent))
-            continue
-          }
-          builder.paymentNotification = record.toRemotePaymentNotificationUpdate(db)
-          transformTimer.emit("payment")
+          continue  // MOLLY: No-op
         }
 
         MessageTypes.isGiftBadge(record.type) -> {
@@ -916,26 +905,6 @@ private fun CallTable.Call.toRemoteCallUpdate(exportState: ExportState, messageR
     }
 
     CallTable.Type.AD_HOC_CALL -> throw IllegalArgumentException("AdHoc calls are not update messages!")
-  }
-}
-
-private fun BackupMessageRecord.toRemotePaymentNotificationUpdate(db: SignalDatabase): PaymentNotification {
-  val paymentUuid = UuidUtil.parseOrNull(this.body)
-  val payment = if (paymentUuid != null) {
-    db.paymentTable.getPayment(paymentUuid)
-  } else {
-    null
-  }
-
-  return if (payment == null) {
-    PaymentNotification()
-  } else {
-    PaymentNotification(
-      amountMob = payment.amount.requireMobileCoin().amountDecimalString,
-      feeMob = payment.fee.requireMobileCoin().amountDecimalString,
-      note = payment.note.takeUnless { it.isEmpty() },
-      transactionDetails = payment.toRemoteTransactionDetails()
-    )
   }
 }
 
@@ -1454,47 +1423,6 @@ private fun DatabaseAttachment.toRemoteMessageAttachment(backupMode: BackupMode,
 private fun List<DatabaseAttachment>.toRemoteAttachments(backupMode: BackupMode): List<MessageAttachment> {
   return this.map { attachment ->
     attachment.toRemoteMessageAttachment(backupMode = backupMode)
-  }
-}
-
-private fun PaymentTable.PaymentTransaction.toRemoteTransactionDetails(): PaymentNotification.TransactionDetails {
-  if (this.failureReason != null || this.state == State.FAILED) {
-    return PaymentNotification.TransactionDetails(failedTransaction = PaymentNotification.TransactionDetails.FailedTransaction(reason = this.failureReason.toRemote()))
-  }
-
-  return PaymentNotification.TransactionDetails(
-    transaction = PaymentNotification.TransactionDetails.Transaction(
-      status = this.state.toRemote(),
-      timestamp = this.timestamp.clampToValidBackupRange(),
-      blockIndex = this.blockIndex,
-      blockTimestamp = this.blockTimestamp.clampToValidBackupRange(),
-      mobileCoinIdentification = this.paymentMetaData.mobileCoinTxoIdentification?.let {
-        PaymentNotification.TransactionDetails.MobileCoinTxoIdentification(
-          publicKey = it.publicKey.takeIf { this.direction.isReceived } ?: emptyList(),
-          keyImages = it.keyImages.takeIf { this.direction.isSent } ?: emptyList()
-        )
-      },
-      transaction = this.transaction?.toByteString(),
-      receipt = this.receipt?.toByteString()
-    )
-  )
-}
-
-private fun State.toRemote(): PaymentNotification.TransactionDetails.Transaction.Status {
-  return when (this) {
-    State.INITIAL -> PaymentNotification.TransactionDetails.Transaction.Status.INITIAL
-    State.SUBMITTED -> PaymentNotification.TransactionDetails.Transaction.Status.SUBMITTED
-    State.SUCCESSFUL -> PaymentNotification.TransactionDetails.Transaction.Status.SUCCESSFUL
-    State.FAILED -> throw IllegalArgumentException("state cannot be failed")
-  }
-}
-
-private fun FailureReason?.toRemote(): PaymentNotification.TransactionDetails.FailedTransaction.FailureReason {
-  return when (this) {
-    FailureReason.UNKNOWN -> PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.GENERIC
-    FailureReason.INSUFFICIENT_FUNDS -> PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.INSUFFICIENT_FUNDS
-    FailureReason.NETWORK -> PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.NETWORK
-    else -> PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.GENERIC
   }
 }
 

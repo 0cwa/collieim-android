@@ -6,16 +6,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import org.signal.core.util.AppForegroundObserver;
 import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
-import org.signal.core.util.tracing.Tracer;
 import org.signal.devicetransfer.TransferStatus;
 import org.signal.registration.RegistrationActivity;
 import org.signal.registration.RegistrationRoute;
@@ -23,7 +20,6 @@ import org.thoughtcrime.securesms.clockskew.ClockSkewActivity;
 import org.thoughtcrime.securesms.clockskew.ClockSkewDetector;
 import org.thoughtcrime.securesms.components.settings.app.changenumber.ChangeNumberLockActivity;
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
-import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.devicetransfer.olddevice.OldDeviceTransferActivity;
 import org.signal.storage.keyvalue.RestoreDecisionStateUtil;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
@@ -32,18 +28,14 @@ import org.thoughtcrime.securesms.migrations.ApplicationMigrationActivity;
 import org.thoughtcrime.securesms.migrations.ApplicationMigrations;
 import org.thoughtcrime.securesms.pin.PinRestoreActivity;
 import org.thoughtcrime.securesms.profiles.edit.CreateProfileActivity;
-import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.registration.ui.RegistrationIntents;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.AppStartup;
 
-import java.util.Locale;
-
-public abstract class PassphraseRequiredActivity extends BaseActivity implements MasterSecretListener {
+public abstract class PassphraseRequiredActivity extends PassphraseActivity implements MasterSecretListener {
   private static final String TAG = Log.tag(PassphraseRequiredActivity.class);
 
-  public static final String LOCALE_EXTRA      = "locale_extra";
   public static final String NEXT_INTENT_EXTRA = "next_intent";
 
   private static final int STATE_NORMAL              = 0;
@@ -62,28 +54,25 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
   private static final int STATE_CLOCK_SKEW          = 13;
   private static final int STATE_RESUME_REGISTRATION = 14;
 
-  private SignalServiceNetworkAccess networkAccess;
-  private BroadcastReceiver          clearKeyReceiver;
+  private BroadcastReceiver clearKeyReceiver;
 
   @Override
   protected final void onCreate(Bundle savedInstanceState) {
-    Tracer.getInstance().start(Log.tag(getClass()) + "#onCreate()");
     AppStartup.getInstance().onCriticalRenderEventStart();
-    this.networkAccess = AppDependencies.getSignalServiceNetworkAccess();
     onPreCreate();
 
-    final boolean locked = KeyCachingService.isLocked(this);
+    final boolean locked = KeyCachingService.isLocked();
     routeApplicationState(locked);
 
-    super.onCreate(savedInstanceState);
-
     if (!isFinishing()) {
+      super.onCreate(savedInstanceState);
       initializeClearKeyReceiver();
       onCreate(savedInstanceState, true);
+    } else {
+      super.onCreate(null);
     }
 
     AppStartup.getInstance().onCriticalRenderEventEnd();
-    Tracer.getInstance().end(Log.tag(getClass()) + "#onCreate()");
   }
 
   protected void onPreCreate() {}
@@ -97,47 +86,15 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
 
   @Override
   public void onMasterSecretCleared() {
-    Log.d(TAG, "onMasterSecretCleared()");
-    if (AppForegroundObserver.isForegrounded()) routeApplicationState(true);
-    else                                        finish();
-  }
-
-  protected <T extends Fragment> T initFragment(@IdRes int target,
-                                                @NonNull T fragment)
-  {
-    return initFragment(target, fragment, null);
-  }
-
-  protected <T extends Fragment> T initFragment(@IdRes int target,
-                                                @NonNull T fragment,
-                                                @Nullable Locale locale)
-  {
-    return initFragment(target, fragment, locale, null);
-  }
-
-  protected <T extends Fragment> T initFragment(@IdRes int target,
-                                                @NonNull T fragment,
-                                                @Nullable Locale locale,
-                                                @Nullable Bundle extras)
-  {
-    Bundle args = new Bundle();
-    args.putSerializable(LOCALE_EXTRA, locale);
-
-    if (extras != null) {
-      args.putAll(extras);
-    }
-
-    fragment.setArguments(args);
-    getSupportFragmentManager().beginTransaction()
-                               .replace(target, fragment)
-                               .commitAllowingStateLoss();
-    return fragment;
+    Log.d(TAG, "[" + Log.tag(getClass()) + "] onMasterSecretCleared()");
+    finishAndRemoveTask();
   }
 
   private void routeApplicationState(boolean locked) {
     final int applicationState = getApplicationState(locked);
     Intent    intent           = getIntentForState(applicationState);
-    if (intent != null) {
+    // MOLLY: If the current activity matches the intent target, skip the routing
+    if (intent != null && (intent.getComponent() == null || !getLocalClassName().equals(intent.getComponent().getClassName()))) {
       Log.d(TAG, "routeApplicationState(), intent: " + intent.getComponent());
         startActivity(intent);
         finish();
@@ -240,16 +197,18 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
   }
 
   private Intent getPromptPassphraseIntent() {
-    Intent intent = getRoutedIntent(PassphrasePromptActivity.class, getIntent());
-    intent.putExtra(PassphrasePromptActivity.FROM_FOREGROUND, AppForegroundObserver.isForegrounded());
-    return intent;
+    return getRoutedIntent(PassphrasePromptActivity.class, getIntent());
   }
 
   private Intent getUiBlockingUpgradeIntent() {
+<<<<<<< MOLLY
+    return getRoutedIntent(ApplicationMigrationActivity.class, MainActivity.clearTop(this));
+=======
     return getRoutedIntent(ApplicationMigrationActivity.class,
                            SignalStore.registration().getHasPromptedPushRegistration()
                                ? getConversationListIntent()
                                : getPushRegistrationIntent());
+>>>>>>> SIGNAL
   }
 
   private Intent getPushRegistrationIntent() {
@@ -330,10 +289,8 @@ public abstract class PassphraseRequiredActivity extends BaseActivity implements
     this.clearKeyReceiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-        Log.i(TAG, "onReceive() for clear key event. PasswordDisabled: " + SignalStore.settings().getPassphraseDisabled() + ", ScreenLock: " + SignalStore.settings().getScreenLockEnabled());
-        if (SignalStore.settings().getScreenLockEnabled() || !SignalStore.settings().getPassphraseDisabled()) {
-          onMasterSecretCleared();
-        }
+        Log.i(TAG, "onReceive() for clear key event. PassphraseLock: " + TextSecurePreferences.isPassphraseLockEnabled(context));
+        onMasterSecretCleared();
       }
     };
 

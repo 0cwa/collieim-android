@@ -8,8 +8,11 @@ import org.gradle.api.tasks.SourceSetContainer
 plugins {
   id("java-library")
   id("org.jetbrains.kotlin.jvm")
+<<<<<<< MOLLY
+=======
   alias(libs.plugins.kotlinx.serialization)
   id("ktlint")
+>>>>>>> SIGNAL
   id("com.squareup.wire")
 }
 
@@ -24,17 +27,6 @@ kotlin {
   }
 }
 
-afterEvaluate {
-  listOf(
-    "runKtlintCheckOverMainSourceSet",
-    "runKtlintFormatOverMainSourceSet"
-  ).forEach { taskName ->
-    tasks.named(taskName) {
-      mustRunAfter(tasks.named("generateMainProtos"))
-    }
-  }
-}
-
 wire {
   kotlin {
     javaInterop = true
@@ -43,24 +35,6 @@ wire {
   sourcePath {
     srcDir("src/main/protowire")
   }
-}
-
-tasks.runKtlintCheckOverMainSourceSet {
-  dependsOn(":core:network:generateMainProtos")
-}
-
-val sourceSets = extensions.getByName("sourceSets") as SourceSetContainer
-sourceSets.named("main") {
-  output.dir(
-    mapOf("builtBy" to tasks.named("compileKotlin")),
-    "$buildDir/classes/kotlin/main"
-  )
-}
-sourceSets.named("test") {
-  output.dir(
-    mapOf("builtBy" to tasks.named("compileTestKotlin")),
-    "$buildDir/classes/kotlin/test"
-  )
 }
 
 dependencies {

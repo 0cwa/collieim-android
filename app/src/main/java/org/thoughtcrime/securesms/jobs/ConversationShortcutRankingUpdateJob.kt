@@ -6,11 +6,11 @@ import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
-import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.transport.RetryLaterException
 import org.thoughtcrime.securesms.util.ConversationUtil
 import org.thoughtcrime.securesms.util.ConversationUtil.Direction
+import org.thoughtcrime.securesms.util.TextSecurePreferences
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -65,6 +65,10 @@ class ConversationShortcutRankingUpdateJob private constructor(
   override fun getFactoryKey() = KEY
 
   override fun onRun() {
+<<<<<<< MOLLY
+    if (TextSecurePreferences.isPassphraseLockEnabled(context)) {
+      Log.i(TAG, "Passphrase lock enabled. Clearing shortcuts.")
+=======
     if (recipient.id.isUnknown) {
       Log.w(TAG, "Recipient no longer exists. Skipping shortcut update.")
       return
@@ -72,6 +76,7 @@ class ConversationShortcutRankingUpdateJob private constructor(
 
     if (SignalStore.settings.screenLockEnabled) {
       Log.i(TAG, "Screen lock enabled. Clearing shortcuts.")
+>>>>>>> SIGNAL
       ConversationUtil.clearAllShortcuts(context)
       return
     }

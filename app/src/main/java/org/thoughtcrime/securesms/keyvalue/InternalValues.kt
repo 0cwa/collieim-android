@@ -34,6 +34,8 @@ class InternalValues internal constructor(store: KeyValueStore) : SignalStoreVal
     const val CALLING_USE_SOFTWARE_NS: String = "internal.calling_use_software_ns"
     const val CALLING_USE_INPUT_LOW_LATENCY: String = "internal.calling_use_input_low_latency"
     const val CALLING_USE_INPUT_VOICE_COMM: String = "internal.calling_use_input_voice_comm"
+<<<<<<< MOLLY
+=======
     const val CALLING_SET_VIDEO_CONFIG: String = "internal.calling_set_video_config"
     const val CALLING_USE_HARDWARE_VP9_ENCODE: String = "internal.calling_use_hardware_vp9_encode"
     const val CALLING_USE_HARDWARE_VP9_DECODE: String = "internal.calling_use_hardware_vp9_decode"
@@ -43,6 +45,7 @@ class InternalValues internal constructor(store: KeyValueStore) : SignalStoreVal
     const val CALLING_STATS_INTERVAL_SECS: String = "internal.calling_stats_interval_secs"
     const val CALLING_MINIMUM_CAPTURE_FPS: String = "internal.calling_minimum_capture_fps"
     const val SHAKE_TO_REPORT: String = "internal.shake_to_report"
+>>>>>>> SIGNAL
     const val DISABLE_STORAGE_SERVICE: String = "internal.disable_storage_service"
     const val LAST_SCROLL_POSITION: String = "internal.last_scroll_position"
     const val CONVERSATION_ITEM_V2_MEDIA: String = "internal.conversation_item_v2_media"
@@ -95,11 +98,6 @@ class InternalValues internal constructor(store: KeyValueStore) : SignalStoreVal
    * Delay resending messages in response to retry receipts by 10 seconds.
    */
   var delayResends by booleanValue(DELAY_RESENDS, false).defaultForExternalUsers()
-
-  /**
-   * Whether or not "shake to report" is enabled.
-   */
-  var shakeToReport: Boolean by booleanValue(SHAKE_TO_REPORT, true).falseForExternalUsers()
 
   /**
    * Whether or not storage service is manually disabled.

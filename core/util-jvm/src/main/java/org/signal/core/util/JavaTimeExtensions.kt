@@ -1,5 +1,9 @@
 package org.signal.core.util
 
+<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/util/JavaTimeExtensions.kt
+import android.content.Context
+=======
+>>>>>>> SIGNAL:core/util-jvm/src/main/java/org/signal/core/util/JavaTimeExtensions.kt
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -86,6 +90,16 @@ fun Long.toLocalTime(zoneId: ZoneId = ZoneId.systemDefault()): LocalTime {
 }
 
 /**
+<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/util/JavaTimeExtensions.kt
+ * Formats [LocalTime] as localized time. For example, "1:45 PM" or "13:45"
+ */
+fun LocalTime.formatHours(context: Context): String {
+  return DateUtils.getOnlyTimeString(context, localTime = this)
+}
+
+/**
+=======
+>>>>>>> SIGNAL:core/util-jvm/src/main/java/org/signal/core/util/JavaTimeExtensions.kt
  * Get the days of the week in order based on [Locale].
  */
 fun Locale.orderOfDaysInWeek(): List<DayOfWeek> {

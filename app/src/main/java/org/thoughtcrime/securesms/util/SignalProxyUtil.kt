@@ -1,33 +1,33 @@
 package org.thoughtcrime.securesms.util
 
 import androidx.annotation.WorkerThread
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.functions.Function
-import io.reactivex.rxjava3.functions.Predicate
-import io.reactivex.rxjava3.schedulers.Schedulers
-import org.conscrypt.ConscryptSignal
 import org.signal.core.util.concurrent.SignalExecutors
-import org.signal.core.util.logging.Log
 import org.signal.core.util.logging.Log.tag
 import org.signal.core.util.logging.Log.w
 import org.signal.network.config.SignalProxy
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.push.AccountManagerFactory
+import org.whispersystems.signalservice.api.push.SignalServiceAddress
+=======
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.enableProxy
 import org.thoughtcrime.securesms.push.AccountManagerFactory
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
+>>>>>>> SIGNAL
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.regex.Pattern
 
 object SignalProxyUtil {
   private val TAG = tag(SignalProxyUtil::class.java)
 
   private const val PROXY_LINK_HOST = "signal.tube"
 
+<<<<<<< MOLLY
+=======
   private val PROXY_LINK_PATTERN: Pattern = Pattern.compile("^(https|sgnl)://$PROXY_LINK_HOST/#([^:]+).*$")
   private val HOST_PATTERN: Pattern = Pattern.compile("^([^:]+).*$")
 
@@ -71,6 +71,7 @@ object SignalProxyUtil {
     SignalStore.proxy.clearProxy()
   }
 
+>>>>>>> SIGNAL
   /**
    * A blocking call that will wait until the websocket either successfully connects, or fails.
    * It is assumed that the app state is already configured how you would like it, e.g. you've
@@ -81,6 +82,9 @@ object SignalProxyUtil {
   @JvmStatic
   @WorkerThread
   fun testWebsocketConnection(timeout: Long): Boolean {
+<<<<<<< MOLLY
+    return testWebsocketConnectionUnregistered(timeout)
+=======
     startListeningToWebsocket()
 
     if (!SignalStore.account.isRegistered || SignalStore.account.aci == null) {
@@ -153,6 +157,7 @@ object SignalProxyUtil {
     }
 
     return "https://$PROXY_LINK_HOST/#$host"
+>>>>>>> SIGNAL
   }
 
   private fun testWebsocketConnectionUnregistered(timeout: Long): Boolean {

@@ -17,6 +17,7 @@ class ResponseFieldLoggerTest {
       override fun w(tag: String, message: String?, t: Throwable?, keepLonger: Boolean) = println(message)
       override fun e(tag: String, message: String?, t: Throwable?, keepLonger: Boolean) = Unit
       override fun flush() = Unit
+      override fun clear() = Unit
     })
   }
 

@@ -18,7 +18,6 @@ import org.signal.core.util.CursorUtil;
 import org.signal.core.util.SetUtil;
 import org.signal.core.util.Stopwatch;
 import org.signal.core.util.crypto.AttachmentSecret;
-import org.signal.core.util.crypto.ClassicDecryptingPartInputStream;
 import org.signal.core.util.crypto.ModernDecryptingPartInputStream;
 import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
@@ -84,7 +83,6 @@ public class FullBackupExporter extends FullBackupBase {
   private static final long TABLE_RECORD_COUNT_MULTIPLIER    = 3L;
   private static final long IDENTITY_KEY_BACKUP_RECORD_COUNT = 2L;
   private static final long FINAL_MESSAGE_COUNT              = 1L;
-  private static final long EXPIRATION_BACKUP_THRESHOLD      = TimeUnit.DAYS.toMillis(1);
 
   /**
    * Tables in list will still have their *schema* exported (so the tables will be created),
@@ -531,11 +529,7 @@ public class FullBackupExporter extends FullBackupBase {
   }
 
   private static InputStream openAttachmentStream(@NonNull AttachmentSecret attachmentSecret, @Nullable byte[] random, @NonNull String data) throws IOException {
-    if (random != null && random.length == 32) {
-      return ModernDecryptingPartInputStream.createFor(attachmentSecret, random, new File(data), 0);
-    } else {
-      return ClassicDecryptingPartInputStream.createFor(attachmentSecret, new File(data));
-    }
+    return ModernDecryptingPartInputStream.createFor(attachmentSecret, random, new File(data), 0);
   }
 
   private static int exportKeyValues(@NonNull BackupFrameOutputStream outputStream,
@@ -591,6 +585,11 @@ public class FullBackupExporter extends FullBackupBase {
   }
 
   private static boolean isNonExpiringMessage(@NonNull SQLiteDatabase db, @NonNull Cursor cursor) {
+<<<<<<< MOLLY
+    // MOLLY: Exclude any message whose expire timer has started regardless of remaining time
+    return CursorUtil.requireLong(cursor, MessageTable.EXPIRES_IN) <= 0 ||
+           CursorUtil.requireLong(cursor, MessageTable.EXPIRE_STARTED) <= 0;
+=======
     return isNonExpiringMessage(db,
                                 CursorUtil.requireLong(cursor, MessageTable.ID),
                                 CursorUtil.requireLong(cursor, MessageTable.EXPIRE_STARTED),
@@ -629,6 +628,7 @@ public class FullBackupExporter extends FullBackupBase {
     long timeRemaining = expiresAt - System.currentTimeMillis();
 
     return !(expireStarted > 0 && timeRemaining <= EXPIRATION_BACKUP_THRESHOLD);
+>>>>>>> SIGNAL
   }
 
   private static boolean isForNonExpiringMessage(@NonNull SQLiteDatabase db, long messageId) {

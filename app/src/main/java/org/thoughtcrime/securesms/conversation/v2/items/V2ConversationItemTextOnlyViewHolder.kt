@@ -435,7 +435,11 @@ open class V2ConversationItemTextOnlyViewHolder<Model : MappingModel<Model>>(
       val linkColor = if (isReleaseNotes) {
         themeDelegate.getBodyTextColor(conversationMessage)
       } else {
+<<<<<<< MOLLY
+        ThemeUtil.getThemedColor(context, R.attr.signal_accent_primary)
+=======
         ContextCompat.getColor(getContext(), CoreUiR.color.signal_accent_primary)
+>>>>>>> SIGNAL
       }
       val underline = isReleaseNotes
       messageBody.getSpans(0, messageBody.length, PlaceholderURLSpan::class.java).forEach { placeholder ->

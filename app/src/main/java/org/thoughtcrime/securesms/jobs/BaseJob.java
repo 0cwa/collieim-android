@@ -4,14 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.signal.core.util.logging.Log;
+<<<<<<< MOLLY
+=======
 import org.signal.core.util.tracing.Tracer;
 import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.jobmanager.Job;
+>>>>>>> SIGNAL
 import org.thoughtcrime.securesms.jobmanager.JobLogger;
 import org.thoughtcrime.securesms.jobmanager.JobManager.Chain;
 import org.thoughtcrime.securesms.jobmanager.impl.BackoffUtil;
 
-public abstract class BaseJob extends Job {
+public abstract class BaseJob extends MasterSecretJob {
 
   private static final String TAG = Log.tag(BaseJob.class);
 
@@ -23,10 +26,6 @@ public abstract class BaseJob extends Job {
 
   @Override
   public @NonNull Result run() {
-    if (shouldTrace()) {
-      Tracer.getInstance().start(getClass().getSimpleName());
-    }
-
     try {
       onRun();
       return Result.success(outputData);
@@ -40,10 +39,6 @@ public abstract class BaseJob extends Job {
       } else {
         Log.w(TAG, JobLogger.format(this, "Encountered a failing exception."), e);
         return Result.failure();
-      }
-    } finally {
-      if (shouldTrace()) {
-        Tracer.getInstance().end(getClass().getSimpleName());
       }
     }
   }

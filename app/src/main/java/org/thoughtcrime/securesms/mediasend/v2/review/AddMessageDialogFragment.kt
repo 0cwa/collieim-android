@@ -4,6 +4,10 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.os.Bundle
+<<<<<<< MOLLY
+import android.view.KeyEvent
+=======
+>>>>>>> SIGNAL
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -73,6 +77,8 @@ class AddMessageDialogFragment : KeyboardEntryDialogFragment(R.layout.v2_media_a
 
   private val disposables = CompositeDisposable()
 
+<<<<<<< MOLLY
+=======
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     startWithEmojiKeyboard = savedInstanceState == null && requireArguments().getBoolean(ARG_INITIAL_EMOJI_TOGGLE)
 
@@ -84,6 +90,7 @@ class AddMessageDialogFragment : KeyboardEntryDialogFragment(R.layout.v2_media_a
     return dialog
   }
 
+>>>>>>> SIGNAL
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     if (viewModel.isViewOnce) {
       dismissAllowingStateLoss()

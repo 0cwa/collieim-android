@@ -37,17 +37,20 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import org.signal.core.util.bitmaps.BitmapUtil;
 import org.signal.core.util.concurrent.ListenableFuture;
 import org.signal.core.util.logging.Log;
+import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.location.SignalMapView;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.MediaUtil;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -99,12 +102,24 @@ public final class PlacePickerActivity extends AppCompatActivity {
     View markerImage = findViewById(R.id.marker_image_view);
     View fab         = findViewById(R.id.place_chosen_button);
 
+<<<<<<< MOLLY
+    // MOLLY: TODO
+    // if (BuildConfig.USE_OSM) {
+    //   findViewById(R.id.map_type_overlay).setVisibility(View.GONE);
+    // } else {
+    //   findViewById(R.id.btnMapTypeNormal).setOnClickListener(v -> handleMapType("normal"));
+    //   findViewById(R.id.btnMapTypeSatellite).setOnClickListener(v -> handleMapType("satellite"));
+    //   findViewById(R.id.btnMapTypeTerrain).setOnClickListener(v -> handleMapType("terrain"));
+    // }
+    findViewById(R.id.map_type_overlay).setVisibility(View.GONE);
+=======
     ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (view, insets) -> {
       systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
       bottomSheet.setPadding(systemBarInsets.left, 0, systemBarInsets.right, systemBarInsets.bottom);
       applyMapPadding();
       return insets;
     });
+>>>>>>> SIGNAL
 
     ViewCompat.setBackgroundTintList(fab, ColorStateList.valueOf(getIntent().getIntExtra(KEY_CHAT_COLOR, Color.RED)));
     fab.setOnClickListener(v -> finishWithAddress());
@@ -179,6 +194,27 @@ public final class PlacePickerActivity extends AppCompatActivity {
   private void setMap(GoogleMap googleMap) {
     this.googleMap = googleMap;
 
+<<<<<<< MOLLY
+    setMapType(TextSecurePreferences.getGoogleMapType(this));
+    moveMapToInitialIfPossible();
+  }
+
+  private void handleMapType(final String mapType) {
+    setMapType(mapType);
+    TextSecurePreferences.setGoogleMapType(this, mapType);
+  }
+
+  private void setMapType(final String mapType) {
+    if (googleMap == null) {
+      return;
+    }
+    switch (mapType) {
+      case "hybrid":    googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);    break;
+      case "satellite": googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE); break;
+      case "terrain":   googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);   break;
+      case "none":      googleMap.setMapType(GoogleMap.MAP_TYPE_NONE);      break;
+      default:          googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);    break;
+=======
     applyMapPadding();
     moveMapToInitialIfPossible();
   }
@@ -186,6 +222,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
   private void applyMapPadding() {
     if (googleMap != null && systemBarInsets != null) {
       googleMap.setPadding(systemBarInsets.left, systemBarInsets.top, systemBarInsets.right, systemBarInsets.bottom);
+>>>>>>> SIGNAL
     }
   }
 
@@ -301,7 +338,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
   private static @NonNull String addressToShortString(@Nullable Address address) {
     if (address == null) return "";
 
-    String   addressLine = address.getAddressLine(0);
+    String   addressLine = Objects.requireNonNullElse(address.getAddressLine(0), "");
     String[] split       = addressLine.split(",");
 
     if (split.length >= 3) {

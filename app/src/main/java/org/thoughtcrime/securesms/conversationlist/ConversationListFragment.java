@@ -45,7 +45,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.compose.ui.platform.ComposeView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -65,6 +64,7 @@ import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.ui.BottomSheetUtil;
 import org.signal.core.ui.WindowSizeClassExtensionsKt;
 import org.signal.core.ui.compose.Snackbars;
+import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.ui.view.Stub;
 import org.signal.core.util.AppForegroundObserver;
 import org.signal.core.util.DimensionUnit;
@@ -89,9 +89,12 @@ import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgressState;
 import org.thoughtcrime.securesms.backup.v2.ui.BackupAlert;
 import org.thoughtcrime.securesms.backup.v2.ui.BackupAlertBottomSheet;
 import org.thoughtcrime.securesms.backup.v2.ui.BackupAlertDelegate;
+<<<<<<< MOLLY
+=======
 import org.signal.core.models.badges.Badge;
 import org.thoughtcrime.securesms.badges.self.expired.ExpiredOneTimeBadgeBottomSheetDialogFragment;
 import org.thoughtcrime.securesms.badges.self.expired.MonthlyDonationCanceledBottomSheetDialogFragment;
+>>>>>>> SIGNAL
 import org.thoughtcrime.securesms.banner.Banner;
 import org.thoughtcrime.securesms.banner.BannerManager;
 import org.thoughtcrime.securesms.banner.banners.ArchiveRestoreStatusBanner;
@@ -105,15 +108,12 @@ import org.thoughtcrime.securesms.banner.banners.OutdatedBuildBanner;
 import org.thoughtcrime.securesms.banner.banners.ServiceOutageBanner;
 import org.thoughtcrime.securesms.banner.banners.UnauthorizedBanner;
 import org.thoughtcrime.securesms.banner.banners.UsernameOutOfSyncBanner;
-import org.thoughtcrime.securesms.components.RatingManager;
 import org.thoughtcrime.securesms.components.SignalProgressDialog;
 import org.thoughtcrime.securesms.components.menu.ActionItem;
 import org.thoughtcrime.securesms.components.menu.SignalBottomActionBar;
 import org.thoughtcrime.securesms.components.menu.SignalContextMenu;
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity;
 import org.thoughtcrime.securesms.components.settings.app.chats.folders.ChatFolderRecord;
-import org.thoughtcrime.securesms.components.settings.app.subscription.completed.InAppPaymentsBottomSheetDelegate;
-import org.thoughtcrime.securesms.components.settings.app.subscription.errors.UnexpectedSubscriptionCancellation;
 import org.thoughtcrime.securesms.components.snackbars.SnackbarState;
 import org.thoughtcrime.securesms.components.spoiler.SpoilerAnnotation;
 import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaControllerOwner;
@@ -151,7 +151,6 @@ import org.thoughtcrime.securesms.main.MainSnackbarHostKey;
 import org.thoughtcrime.securesms.main.MainToolbarMode;
 import org.thoughtcrime.securesms.main.MainToolbarViewModel;
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder;
-import org.thoughtcrime.securesms.megaphone.Megaphones;
 import org.thoughtcrime.securesms.notifications.MarkReadReceiver;
 import org.thoughtcrime.securesms.profiles.manage.username.UsernameEditFragment;
 import org.thoughtcrime.securesms.ratelimit.RecaptchaProofBottomSheetFragment;
@@ -165,7 +164,6 @@ import org.thoughtcrime.securesms.util.AppStartup;
 import org.thoughtcrime.securesms.util.CachedInflater;
 import org.thoughtcrime.securesms.util.ConversationUtil;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
-import org.thoughtcrime.securesms.util.SignalProxyUtil;
 import org.thoughtcrime.securesms.util.SnapToTopDataObserver;
 import org.signal.core.ui.util.ViewUtil;
 import org.thoughtcrime.securesms.util.adapter.mapping.PagingMappingAdapter;
@@ -315,7 +313,6 @@ public class ConversationListFragment extends MainFragment implements Conversati
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    getViewLifecycleOwner().getLifecycle().addObserver(new InAppPaymentsBottomSheetDelegate(getParentFragmentManager(), getViewLifecycleOwner()));
     BackupAlertDelegate.delegate(getParentFragmentManager(), getViewLifecycleOwner().getLifecycle());
 
     lifecycleDisposable = new LifecycleDisposable();
@@ -416,7 +413,9 @@ public class ConversationListFragment extends MainFragment implements Conversati
       pullView.onUserDrag(progress);
     });
 
-    archiveDecoration = new ConversationListArchiveItemDecoration(new ColorDrawable(getResources().getColor(R.color.conversation_list_archive_background_end)));
+    int colorPrimary = ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorPrimary);
+
+    archiveDecoration = new ConversationListArchiveItemDecoration(new ColorDrawable(colorPrimary));
     itemAnimator      = new ConversationListItemAnimator();
 
     chatFolderAdapter = new ChatFolderAdapter(this);
@@ -429,12 +428,13 @@ public class ConversationListFragment extends MainFragment implements Conversati
     list.setLayoutManager(new LinearLayoutManager(requireActivity()));
     list.setItemAnimator(itemAnimator);
     list.addItemDecoration(archiveDecoration);
+    CachedInflater.from(list.getContext()).clear();
     CachedInflater.from(list.getContext()).cacheUntilLimit(R.layout.conversation_list_item_view, list, 10);
 
     snapToTopDataObserver = new SnapToTopDataObserver(list);
 
-    new ItemTouchHelper(new ArchiveListenerCallback(getResources().getColor(R.color.conversation_list_archive_background_start),
-                                                    getResources().getColor(R.color.conversation_list_archive_background_end))).attachToRecyclerView(list);
+    new ItemTouchHelper(new ArchiveListenerCallback(colorPrimary,
+                                                    colorPrimary)).attachToRecyclerView(list);
 
     initializeViewModel();
     initializeListAdapters();
@@ -461,8 +461,6 @@ public class ConversationListFragment extends MainFragment implements Conversati
         !SignalStore.misc().getHasSeenKeyTransparencyFailure()) {
       SelfVerificationFailureSheet.show(getParentFragmentManager());
     }
-
-    RatingManager.showRatingDialogIfNecessary(requireContext());
 
     chatListBackHandler = new ChatListBackHandler(false);
     requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), chatListBackHandler);
@@ -556,13 +554,13 @@ public class ConversationListFragment extends MainFragment implements Conversati
       setAdapter(defaultAdapter);
     }
 
-    SignalProxyUtil.startListeningToWebsocket();
-
     if (SignalStore.rateLimit().needsRecaptcha()) {
       Log.i(TAG, "Recaptcha required.");
       RecaptchaProofBottomSheetFragment.show(getChildFragmentManager());
     }
 
+<<<<<<< MOLLY
+=======
     Badge                              expiredBadge                       = SignalStore.inAppPayments().getExpiredBadge();
     String                             subscriptionCancellationReason     = SignalStore.inAppPayments().getUnexpectedSubscriptionCancelationReason();
     UnexpectedSubscriptionCancellation unexpectedSubscriptionCancellation = UnexpectedSubscriptionCancellation.fromStatus(subscriptionCancellationReason);
@@ -593,6 +591,7 @@ public class ConversationListFragment extends MainFragment implements Conversati
       ExpiredOneTimeBadgeBottomSheetDialogFragment.show(expiredBadge, getParentFragmentManager());
     }
 
+>>>>>>> SIGNAL
     if (this.bannerManager != null) {
       this.bannerManager.updateContent(bannerView.get());
     }
@@ -1346,17 +1345,10 @@ public class ConversationListFragment extends MainFragment implements Conversati
   void updateEmptyState(boolean isConversationEmpty) {
     if (isConversationEmpty) {
       Log.i(TAG, "Received an empty data set.");
-
-      SignalStore.onboarding().setShowNewGroup(true);
-      SignalStore.onboarding().setShowInviteFriends(true);
     }
   }
 
   protected void onPostSubmitList(int conversationCount) {
-    if (conversationCount >= 6 && (SignalStore.onboarding().shouldShowInviteFriends() || SignalStore.onboarding().shouldShowNewGroup())) {
-      SignalStore.onboarding().clearAll();
-      AppDependencies.getMegaphoneRepository().markFinished(Megaphones.Event.ONBOARDING);
-    }
   }
 
   @Override
@@ -1895,7 +1887,7 @@ public class ConversationListFragment extends MainFragment implements Conversati
         if (absoluteDx > 0) {
           if (archiveDrawable == null) {
             archiveDrawable = Objects.requireNonNull(AppCompatResources.getDrawable(requireContext(), getArchiveIconRes()));
-            archiveDrawable.setColorFilter(new SimpleColorFilter(ContextCompat.getColor(requireContext(), org.signal.core.ui.R.color.signal_colorOnPrimary)));
+            archiveDrawable.setColorFilter(new SimpleColorFilter(ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorOnPrimary)));
             archiveDrawable.setBounds(0, 0, archiveDrawable.getIntrinsicWidth(), archiveDrawable.getIntrinsicHeight());
           }
 

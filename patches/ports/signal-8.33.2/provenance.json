@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "190ad231ab86fd7fbe7c6cb137a3bf0680a13d24",
+  "target_tree": "ff319e31f48739facb1b430102ce61351114ebb8",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -469,6 +469,22 @@
       "source_bundle": "followups/version-preference-write/source-checkpoint.bundle",
       "source_bundle_prerequisite": "09d0c9e17576de7090da7a9e6c84080c618f817e",
       "source_bundle_sha256": "c7d707c1001be2b9776a9c7f802b5dca0c6fc3141bb5675a6be28a92686ab2c3"
+    },
+    {
+      "id": "followups/giphy-client-formatting",
+      "source_commit": "ae5099dd637e08095c995464ec22118866296e3a",
+      "description": "Restore Molly formatting for Giphy client construction without changing proxy behavior.",
+      "ai_generated": true,
+      "before_tree": "190ad231ab86fd7fbe7c6cb137a3bf0680a13d24",
+      "after_tree": "ff319e31f48739facb1b430102ce61351114ebb8",
+      "paths": 1,
+      "patches": [
+        "followups/giphy-client-formatting/0001-giphy-client-formatting.patch"
+      ],
+      "mailbox_bytes": 1548,
+      "source_bundle": "followups/giphy-client-formatting/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "b0e9ca51c613c1b88ada51a5552b0b7131d1621e",
+      "source_bundle_sha256": "201db39a7a3f7eb252daa00f06db8eba0de2e007cdb5e593c6becc2a4e7252e1"
     }
   ],
   "mailbox_sha256": {
@@ -523,6 +539,7 @@
     "followups/dynamic-appearance-colors/0001-dynamic-appearance-colors.patch": "acff3f6b54c407618a709d918f9d021ab0212b9593a18f52331890db9f847ab9",
     "followups/blocked-network-priority/0001-blocked-network-priority.patch": "dc4ff5c24994d2f8884f515f3c879083274c0c9bc10111227844894a64340c16",
     "followups/recipient-avatar-badge/0001-recipient-avatar-badge.patch": "f65e3b9247fe599ec7943ac7dcee3285dee173e19280399866709ac60a26f9d7",
-    "followups/version-preference-write/0001-version-preference-write.patch": "9c314a3616cd3c56f2de21b084af1508a34398500c12fd93c9111a8d9ee875fc"
+    "followups/version-preference-write/0001-version-preference-write.patch": "9c314a3616cd3c56f2de21b084af1508a34398500c12fd93c9111a8d9ee875fc",
+    "followups/giphy-client-formatting/0001-giphy-client-formatting.patch": "a8cd61dac9f7c3e40fe37aa3a3ec4603afe4e561ef59e7223693ef96360844d6"
   }
 }

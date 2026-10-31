@@ -42,3 +42,8 @@ followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devi
 followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch
 followups/donation-completion/0001-donation-completion.patch
 followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch
+followups/recipient-badge-list/0001-recipient-badge-list.patch
+followups/localized-resource-notices/0001-localized-resource-notices.patch
+followups/locked-system-info/0001-locked-system-info.patch
+followups/remaining-resource-notices/0001-remaining-resource-notices.patch
+followups/dynamic-appearance-colors/0001-dynamic-appearance-colors.patch

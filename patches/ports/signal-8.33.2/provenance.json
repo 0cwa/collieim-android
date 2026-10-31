@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "70f2eba69967c4a3ae82dd9204999feb1bd70f9b",
+  "target_tree": "229e4bd926c1080318cf80ee6633178e42eeb6dd",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -341,6 +341,86 @@
       "source_bundle": "followups/backup-notification-id-upgrade/source-checkpoint.bundle",
       "source_bundle_prerequisite": "34100dfa15eb70256d948f96b14abe4b7c7920d6",
       "source_bundle_sha256": "9a1161f5f03b3f6d74a36c77ca0af57c13eb4ff62e75e6276f5fd23b7ddfcdd3"
+    },
+    {
+      "id": "followups/recipient-badge-list",
+      "source_commit": "f35e5d6f2adb49bee7af7599e18d15dcf9823082",
+      "description": "Restore non-self recipient badge lists while keeping badge interactions disabled.",
+      "ai_generated": true,
+      "before_tree": "70f2eba69967c4a3ae82dd9204999feb1bd70f9b",
+      "after_tree": "09c0192152398a4969178704894cfcb1c0552513",
+      "paths": 1,
+      "patches": [
+        "followups/recipient-badge-list/0001-recipient-badge-list.patch"
+      ],
+      "mailbox_bytes": 4172,
+      "source_bundle": "followups/recipient-badge-list/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "ae2672a773d15d1b22186bd8acbec2221760f049",
+      "source_bundle_sha256": "8053bd4fa349e7c7a7079dd80df08fbadf6be9e4ad8dab4706f1b34bafc9da40"
+    },
+    {
+      "id": "followups/localized-resource-notices",
+      "source_commit": "2baf94944e5461323bd4fc53ea99d522882be4b1",
+      "description": "Restore copyright and SPDX notices in localized resource files.",
+      "ai_generated": true,
+      "before_tree": "09c0192152398a4969178704894cfcb1c0552513",
+      "after_tree": "f3b957dcbd02f828be8bccd29770fa080b68b55a",
+      "paths": 65,
+      "patches": [
+        "followups/localized-resource-notices/0001-localized-resource-notices.patch"
+      ],
+      "mailbox_bytes": 39114,
+      "source_bundle": "followups/localized-resource-notices/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "f35e5d6f2adb49bee7af7599e18d15dcf9823082",
+      "source_bundle_sha256": "9215af611f9e78ab4c1aa196288992671878c7ca90547bdbabd8b60c56c04ea8"
+    },
+    {
+      "id": "followups/locked-system-info",
+      "source_commit": "a9ebbf1c92798f703ad434c1caa720536a724fe0",
+      "description": "Restore system information behavior while the application is locked.",
+      "ai_generated": true,
+      "before_tree": "f3b957dcbd02f828be8bccd29770fa080b68b55a",
+      "after_tree": "e71a4e56e8f5ebb9229ff4c2cf1dc3972b444655",
+      "paths": 2,
+      "patches": [
+        "followups/locked-system-info/0001-locked-system-info.patch"
+      ],
+      "mailbox_bytes": 5367,
+      "source_bundle": "followups/locked-system-info/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "2baf94944e5461323bd4fc53ea99d522882be4b1",
+      "source_bundle_sha256": "0b0f6f708711679b9408923d2780487cfa60e7c97dfae8538b24dcd0d0aa4b53"
+    },
+    {
+      "id": "followups/remaining-resource-notices",
+      "source_commit": "0a44d06b86c793186f42d53cf248ad8bb2f6c925",
+      "description": "Restore copyright notices in remaining resource files.",
+      "ai_generated": true,
+      "before_tree": "e71a4e56e8f5ebb9229ff4c2cf1dc3972b444655",
+      "after_tree": "2e5e16d1d08625df6ae12ab911eb180d44ed581a",
+      "paths": 5,
+      "patches": [
+        "followups/remaining-resource-notices/0001-remaining-resource-notices.patch"
+      ],
+      "mailbox_bytes": 3557,
+      "source_bundle": "followups/remaining-resource-notices/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "a9ebbf1c92798f703ad434c1caa720536a724fe0",
+      "source_bundle_sha256": "857e35b2d1f77ae65825eb8c110536b4cf712015b82e4e3d63beab8149ed5357"
+    },
+    {
+      "id": "followups/dynamic-appearance-colors",
+      "source_commit": "325a19e470349aa88232eaa6fd68d7e064a3da24",
+      "description": "Restore Molly dynamic-color extended palette selection.",
+      "ai_generated": true,
+      "before_tree": "2e5e16d1d08625df6ae12ab911eb180d44ed581a",
+      "after_tree": "229e4bd926c1080318cf80ee6633178e42eeb6dd",
+      "paths": 1,
+      "patches": [
+        "followups/dynamic-appearance-colors/0001-dynamic-appearance-colors.patch"
+      ],
+      "mailbox_bytes": 1387,
+      "source_bundle": "followups/dynamic-appearance-colors/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "0a44d06b86c793186f42d53cf248ad8bb2f6c925",
+      "source_bundle_sha256": "003581b9c61ade83b2b34692161a0ae36b45f513b1da0bb7ef1c1f7da4d143d9"
     }
   ],
   "mailbox_sha256": {
@@ -387,6 +467,11 @@
     "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "04f2c62a65efe3f6f2c293721f791106517321ffb0b210fb5f3e68c6e55ef1f1",
     "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "2db0f4c241474580b6ad0d99591eff73d72642d3bb4da09c4756d1f8918b2890",
     "followups/donation-completion/0001-donation-completion.patch": "6ded6ab60d7814c0b289934d15e2a3af085c948d00945ed13e62ff9af0fcd825",
-    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "7ef97dfd6b14a8463c0b6c31e076a129db5947b83c7ce34eebe89e9e4da226a1"
+    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "7ef97dfd6b14a8463c0b6c31e076a129db5947b83c7ce34eebe89e9e4da226a1",
+    "followups/recipient-badge-list/0001-recipient-badge-list.patch": "79b9a48bd9089627d674116731998457ceabf98d124dd07bbd8e776a73fc7d25",
+    "followups/localized-resource-notices/0001-localized-resource-notices.patch": "92600001fde107c22e4c1faf75b41c5617525002ff548e0c61c6197551c2b8f1",
+    "followups/locked-system-info/0001-locked-system-info.patch": "04178ea604df1c5b4bebeeb71b1dcfda7a2597c718e406793e49aeb47bca1a91",
+    "followups/remaining-resource-notices/0001-remaining-resource-notices.patch": "38ce6def6223797e9b366511109517e647c67e8399752065f00b83b73944c40b",
+    "followups/dynamic-appearance-colors/0001-dynamic-appearance-colors.patch": "acff3f6b54c407618a709d918f9d021ab0212b9593a18f52331890db9f847ab9"
   }
 }

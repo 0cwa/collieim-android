@@ -106,11 +106,12 @@ Subsequent commits add ordinary mailbox resolutions, grouped by application
 feature. Their parent source is Git's mechanical merge, so they show changes
 that remain after deterministic integration. The initial groups reproduce
 the existing PR #7 source merge
-`90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; eight subsequent layers retain
+`90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; thirteen subsequent layers retain
 the preference-import, NetCipher SDK DSL, broader integration/regression, CDN
 test-fixture, linked-device reminder, backup preference precedence, donation
-completion, and legacy backup-notification cleanup corrections as individual
-review steps. Each mailbox
+completion, legacy backup-notification cleanup, recipient badge list, localized
+resource notices, locked system information, remaining resource notices, and dynamic appearance corrections
+as individual review steps. Each mailbox
 records its source commit and AI-generation status.
 Previous mailboxes do not receive new provenance headers when a later fix is
 added.
@@ -124,8 +125,11 @@ AI compatibility decision. Every conflict must be covered by a resolution
 or an explicit unchanged-content decision.
 
 The final source must equal tree
-`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`, the tree of synthetic source
-commit `ae2672a773d15d1b22186bd8acbec2221760f049`. It extends donation
+`229e4bd926c1080318cf80ee6633178e42eeb6dd`, the tree of synthetic source
+commit `325a19e470349aa88232eaa6fd68d7e064a3da24`. Five subsequent checkpoints extend the backup-notification
+checkpoint `ae2672a773d15d1b22186bd8acbec2221760f049` (tree `70f2eba69967c4a3ae82dd9204999feb1bd70f9b`): recipient badge list, localized
+resource notices, locked system information, remaining resource notices, and Molly dynamic appearance.
+The backup-notification checkpoint extends donation
 checkpoint `34100dfa15eb70256d948f96b14abe4b7c7920d6` (tree
 `33540be50355fd43b776249136554d167625462a`) with channel-checked cleanup of
 Molly's old backup alerts at IDs `120500` and `120501`; new backup alerts keep
@@ -148,7 +152,8 @@ bundle requires `cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c`; the backup bundle
 requires `d3c917a5be7db6116c83b7e29e09f145e7f38825`; the donation bundle
 requires `266d0185d021b2b6a98882205f6b6242152d146e`; and the backup-notification
 bundle requires `34100dfa15eb70256d948f96b14abe4b7c7920d6`. Each prerequisite must
-already be present in the object database. For a fresh local repository,
+already be present in the object database. The five later bundles each require
+the source commit from the immediately preceding checkpoint. For a fresh local repository,
 materialize and verify the chain in order:
 
 ```sh
@@ -173,13 +178,38 @@ git bundle verify patches/ports/signal-8.33.2/followups/backup-notification-id-u
 git fetch patches/ports/signal-8.33.2/followups/backup-notification-id-upgrade/source-checkpoint.bundle \
   refs/heads/source-checkpoint/backup-notification-id-upgrade:refs/port-source/backup-notification-id-upgrade
 git rev-parse refs/port-source/backup-notification-id-upgrade^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/recipient-badge-list/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/recipient-badge-list/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/recipient-badge-list:refs/port-source/recipient-badge-list
+git rev-parse refs/port-source/recipient-badge-list^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/localized-resource-notices/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/localized-resource-notices/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/localized-resource-notices:refs/port-source/localized-resource-notices
+git rev-parse refs/port-source/localized-resource-notices^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/locked-system-info/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/locked-system-info/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/locked-system-info:refs/port-source/locked-system-info
+git rev-parse refs/port-source/locked-system-info^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/remaining-resource-notices/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/remaining-resource-notices/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/remaining-resource-notices:refs/port-source/remaining-resource-notices
+git rev-parse refs/port-source/remaining-resource-notices^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/dynamic-appearance-colors/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/dynamic-appearance-colors/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/dynamic-appearance-colors:refs/port-source/dynamic-appearance-colors
+git rev-parse refs/port-source/dynamic-appearance-colors^{tree}
 ```
 
 The tree commands must print, in order, `2533afec2fe2d7f9fc682f699fc21d7624521889`,
 `0e5c581b7db3f4429256630011790f3ed4ad141f`,
 `febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`,
 `33540be50355fd43b776249136554d167625462a`, and
-`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`. The bundles do not carry their
+`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`, `09c0192152398a4969178704894cfcb1c0552513`, `f3b957dcbd02f828be8bccd29770fa080b68b55a`, `e71a4e56e8f5ebb9229ff4c2cf1dc3972b444655`, `2e5e16d1d08625df6ae12ab911eb180d44ed581a`, `229e4bd926c1080318cf80ee6633178e42eeb6dd`. The bundles do not carry their
 prerequisites; a fresh clone cannot verify or fetch a later bundle until the
 earlier checkpoints are materialized.
 

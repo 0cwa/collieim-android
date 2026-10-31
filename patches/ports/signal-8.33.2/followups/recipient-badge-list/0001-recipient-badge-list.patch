@@ -1,0 +1,96 @@
+From f35e5d6f2adb49bee7af7599e18d15dcf9823082 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 02:20:16 +0100
+Subject: [PATCH] Restore recipient badge list in conversation settings
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Show all badges for non-self recipients while keeping Molly’s badge interactions disabled. Omit the old prompt that claims badges can be tapped and displayed on the user profile.
+
+AI-Generated: true
+
+Based-On-Source-Commit: ae2672a773d15d1b22186bd8acbec2221760f049
+Source-Commit: f35e5d6f2adb49bee7af7599e18d15dcf9823082
+---
+ .../individual/IndividualSettingsScreen.kt    | 37 +++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt
+index 5d44022f..b8373a0e 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt
+@@ -6,6 +6,12 @@
+ package org.thoughtcrime.securesms.components.settings.conversation.individual
+ 
+ import android.view.View
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.ExperimentalLayoutApi
++import androidx.compose.foundation.layout.FlowRow
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.size
+ import androidx.compose.foundation.lazy.LazyListScope
+ import androidx.compose.foundation.lazy.items
+ import androidx.compose.runtime.Composable
+@@ -14,12 +20,16 @@ import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.res.painterResource
+ import androidx.compose.ui.res.pluralStringResource
+ import androidx.compose.ui.res.stringResource
++import androidx.compose.ui.unit.dp
++import androidx.compose.ui.viewinterop.AndroidView
+ import org.signal.core.ui.compose.AllDevicePreviews
+ import org.signal.core.ui.compose.Dividers
+ import org.signal.core.ui.compose.Previews
+ import org.signal.core.ui.compose.Rows
+ import org.signal.core.ui.compose.Texts
+ import org.thoughtcrime.securesms.R
++import org.thoughtcrime.securesms.badges.BadgeImageView
++import org.thoughtcrime.securesms.components.settings.app.subscription.BadgeImageSize
+ import org.thoughtcrime.securesms.components.settings.conversation.individual.IndividualSettingsState.Dialog
+ import org.thoughtcrime.securesms.components.settings.conversation.shared.BlockRow
+ import org.thoughtcrime.securesms.components.settings.conversation.shared.CallBar
+@@ -176,6 +186,7 @@ fun IndividualSettingsScreen(
+       onEvent = { onEvent(IndividualSettingsEvent.MediaRailEvent(it)) }
+     )
+ 
++    badgeSection(state)
+     groupsInCommonSection(state, onEvent)
+ 
+     if (state.canModifyBlockedState) {
+@@ -204,6 +215,32 @@ fun IndividualSettingsScreen(
+   )
+ }
+ 
++@OptIn(ExperimentalLayoutApi::class)
++private fun LazyListScope.badgeSection(state: IndividualSettingsState) {
++  if (state.recipient.isSelf || state.recipient.badges.isEmpty()) return
++
++  item { Dividers.Default() }
++  item { Texts.SectionHeader(text = stringResource(R.string.ManageProfileFragment_badges)) }
++  item {
++    FlowRow(
++      horizontalArrangement = Arrangement.spacedBy(16.dp),
++      verticalArrangement = Arrangement.spacedBy(8.dp),
++      modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp)
++    ) {
++      state.recipient.badges.forEach { badge ->
++        AndroidView(
++          factory = { context -> BadgeImageView(context, BadgeImageSize.BADGE_64) },
++          modifier = Modifier.size(64.dp),
++          update = {
++            it.setBadge(badge)
++            it.isClickable = false
++          }
++        )
++      }
++    }
++  }
++}
++
+ /** Groups the two of you are both in. */
+ private fun LazyListScope.groupsInCommonSection(
+   state: IndividualSettingsState,
+-- 
+2.56.0
+

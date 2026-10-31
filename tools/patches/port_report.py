@@ -8,6 +8,9 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
+
+import release
 
 TYPES = {'conflict_resolution', 'signal_api_compile_fix', 'behavior_preservation'}
 HUNK = re.compile(rb'^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@')
@@ -85,6 +88,79 @@ def totals(records):
     return sum(v[0] for v in values), sum(v[1] for v in values), sum(v is None for v in records.values())
 
 
+def clean_contribution(source, mechanical):
+    """Count only paths without any merge conflict, including partial conflicts."""
+    tree, conflicts, _ = release.mechanical_merge('.', OLD, MOLLY, source)
+    if tree != mechanical:
+        raise ValueError('mechanical merge tree differs from pinned tree')
+    paths = {os.fsencode(path) for path in conflicts}
+    return totals({p: count for p, count in numstat(source, mechanical).items() if p not in paths}), sorted(conflicts)
+
+
+def expand_groups(evidence):
+    """Expand explicitly enumerated descriptions; gates stay individual."""
+    rows = evidence.get('hunks', {})
+    groups = evidence.get('groups', {})
+    if not isinstance(rows, dict) or not isinstance(groups, dict):
+        raise ValueError('hunks and groups metadata must be objects')
+    result = {key: dict(value) for key, value in rows.items()}
+    assigned = set()
+    allowed = {'type', 'reason', 'molly_equivalent', 'searched_branches'}
+    for name, group in groups.items():
+        ids = group.get('hunks')
+        description = group.get('description')
+        if not isinstance(ids, list) or not ids or not isinstance(description, dict) or not description or set(description) - allowed:
+            raise ValueError('invalid group ' + name)
+        for key in ids:
+            if not isinstance(key, str) or key in assigned:
+                raise ValueError('overlapping group hunk ' + str(key))
+            assigned.add(key)
+            item = result.setdefault(key, {})
+            for field, value in description.items():
+                if field in item:
+                    raise ValueError('overlapping group field ' + key + ': ' + field)
+                item[field] = value
+    return result
+
+
+def action_history(evidence):
+    """Replay versioned one-file patches on pinned starting trees in private indexes."""
+    chains = evidence.get('action_chains', [])
+    if not isinstance(chains, list):
+        raise ValueError('action_chains must be a list')
+    output = []
+    with tempfile.TemporaryDirectory(prefix='molly-report-actions-') as tmp:
+        for n, chain in enumerate(chains):
+            start = chain['start_tree']
+            require_tree(start)
+            index = str(Path(tmp) / str(n))
+            env = dict(os.environ, GIT_INDEX_FILE=index)
+            def run(*args):
+                return subprocess.run(['git', *args], env=env, check=True, stdout=subprocess.PIPE).stdout
+            run('read-tree', start)
+            for action in chain['actions']:
+                path = action['path']
+                if not isinstance(path, str) or not path or path.startswith('/') or '..' in Path(path).parts:
+                    raise ValueError('invalid action path')
+                before = run('rev-parse', ':' + path).strip().decode()
+                if before != action['input_blob']:
+                    raise ValueError('stale action input: ' + path)
+                patch = release.inside(Path('.').resolve(), action['patch'], 'action patch')
+                git('ls-files', '--error-unmatch', '--', action['patch'])
+                previous = run('write-tree').strip().decode()
+                run('apply', '--cached', '--binary', '--whitespace=nowarn', str(patch))
+                after = run('rev-parse', ':' + path).strip().decode()
+                current = run('write-tree').strip().decode()
+                changed = [x for x in run('diff', '--no-renames', '--name-only', '-z', previous, current).split(b'\0') if x]
+                if after != action['output_blob'] or changed != [os.fsencode(path)]:
+                    raise ValueError('action output or paths differ: ' + path)
+                fields = [action[k] for k in ('gate_input', 'gate', 'outcome', 'evidence')]
+                if any(not isinstance(x, str) or not x.strip() or x == 'unmeasured' for x in fields):
+                    raise ValueError('incomplete action evidence: ' + path)
+                output.append((path, before, after, action['patch'], *fields))
+    return output
+
+
 def render(config, evidence, ready=False):
     port = config['port']
     before, target = port['mechanical_tree'], config['target_tree']
@@ -97,16 +173,17 @@ def render(config, evidence, ready=False):
         raise ValueError('mechanical tree differs from immutable baseline')
     if not isinstance(source, str) or not re.fullmatch('[0-9a-f]{40}', source) or git('cat-file', '-t', source).strip() != b'commit':
         raise ValueError('expected an immutable full Signal commit ID')
-    rows = evidence.get('hunks', {})
-    if not isinstance(rows, dict):
-        raise ValueError('hunks metadata must be an object')
+    rows = expand_groups(evidence)
+    actions = action_history(evidence)
     seen = set()
     stats = numstat(before, target)
     file_modes = modes(before, target)
     if set(file_modes) != set(stats):
         raise ValueError('raw diff paths do not match numstat')
     output = ['# Port report', '', 'Physical Git diff lines; counts do not establish authorship or necessity.', '']
-    for label, a, b in [('Molly patchset', OLD, MOLLY), ('Clean merge contribution', source, before),
+    (clean_a, clean_d, clean_b), conflicts = clean_contribution(source, before)
+    output.append(f'- Clean merge contribution (conservative whole-file count): {clean_a} added, {clean_d} deleted, {clean_a+clean_d} total text lines; {clean_b} binary paths (`{source}` → `{before}`).')
+    for label, a, b in [('Molly patchset', OLD, MOLLY), ('Full Signal to mechanical comparison', source, before),
                         ('AI-assisted compatibility changes before minimization', baseline_before, baseline_target),
                         ('Compared with Molly before minimization', MOLLY, baseline_target)]:
         adds, dels, binary = totals(numstat(a, b))
@@ -118,7 +195,7 @@ def render(config, evidence, ready=False):
     after = 'After minimization: final.' if evidence.get('minimization_complete') else 'After minimization: unmeasured.'
     output += ['', f'Compatibility share: {a+d} / {ma+md} physical added plus deleted text lines = {(a+d)/(ma+md)*100:.3f}%.' if ma+md else 'Compatibility share: undefined (zero denominator).',
                current, after, '', 'Molly exclusions, including partial-file exclusions: unmeasured.', '',
-               'Clean merge counts above are whole-file Git diff totals; no clean-merge hunk classification is asserted.', '',
+               f'Clean merge excludes all {len(conflicts)} conflicted paths, including clean portions within them: ' + (', '.join('`' + p.replace('`', '\\`') + '`' for p in conflicts) if conflicts else 'none') + '.', '',
                '| Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |',
                '|---|---|---|---|---|---:|---:|---|---|---|---|']
     for path, expected in sorted(stats.items()):
@@ -150,14 +227,18 @@ def render(config, evidence, ready=False):
             seen.add(key); item = rows.get(key, {})
             category = item.get('type', '')
             if category and category not in TYPES: raise ValueError('invalid hunk type ' + key)
-            if ready and (category not in TYPES or any(not item.get(k) or item[k] == 'unmeasured' for k in ('reason', 'molly_equivalent', 'searched_branches', 'revert_gate', 'outcome'))):
+            if ready and (category not in TYPES or any(not item.get(k) or item[k] == 'unmeasured' for k in ('reason', 'molly_equivalent', 'searched_branches', 'revert_gate', 'gate_input', 'outcome', 'evidence'))):
                 raise ValueError('missing evidence for ' + key)
-            fields = [key, display, kind, old_mode, new_mode, str(added), str(deleted), category or 'unmeasured', item.get('reason', 'unmeasured'), item.get('molly_equivalent', 'unmeasured') + ' (searched: ' + item.get('searched_branches', 'unmeasured') + ')', (item.get('revert_gate', 'unmeasured') + ': ' + item.get('outcome', 'unmeasured'))]
+            fields = [key, display, kind, old_mode, new_mode, str(added), str(deleted), category or 'unmeasured', item.get('reason', 'unmeasured'), item.get('molly_equivalent', 'unmeasured') + ' (searched: ' + item.get('searched_branches', 'unmeasured') + ')', (item.get('revert_gate', 'unmeasured') + ' (input: ' + item.get('gate_input', 'unmeasured') + '): ' + item.get('outcome', 'unmeasured') + ' (evidence: ' + item.get('evidence', 'unmeasured') + ')')]
             output.append('| ' + ' | '.join(str(f).replace('\n', ' ').replace('|', '\\|') for f in fields) + ' |')
     stale = set(rows) - seen
     if stale: raise ValueError('stale or overlapping metadata: ' + ', '.join(sorted(stale)))
-    if ready and not evidence.get('exclusions_complete'):
-        raise ValueError('Molly exclusion evidence is incomplete')
+    if ready and (not evidence.get('exclusions_complete') or not evidence.get('minimization_complete')):
+        raise ValueError('Molly exclusion or minimization evidence is incomplete')
+    if actions:
+        output += ['', '## Measured minimization actions', '', '| Path | Input blob | Output blob | Versioned patch | Gate input | Gate | Outcome | Evidence |', '|---|---|---|---|---|---|---|---|']
+        for action in actions:
+            output.append('| ' + ' | '.join(str(x).replace('\n', ' ').replace('|', '\\|') for x in action) + ' |')
     return '\n'.join(output) + '\n'
 
 

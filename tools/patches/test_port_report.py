@@ -44,7 +44,7 @@ class PortReportTests(unittest.TestCase):
             def invoke(*args):
                 return subprocess.check_output(['git', '-C', directory, *args])
             config = {'signal': {'commit': old_commit}, 'port': {'mechanical_tree': old}, 'target_tree': new}
-            with patch.object(port_report, 'git', side_effect=invoke), patch.object(port_report, 'OLD', old), patch.object(port_report, 'MOLLY', new):
+            with patch.object(port_report, 'git', side_effect=invoke), patch.object(port_report, 'OLD', old), patch.object(port_report, 'MOLLY', new), patch.object(port_report, 'clean_contribution', return_value=((0, 0, 0), [])):
                 preview = port_report.render(config, {'hunks': {}, 'baseline_mechanical_tree': old, 'baseline_target_tree': new})
                 self.assertIn('unmeasured', preview)
                 self.assertIn('| mode | 100644 | 100755 |', preview)
@@ -86,7 +86,7 @@ class PortReportTests(unittest.TestCase):
                 return subprocess.check_output(['git', '-C', directory, *args])
             def ids(report, name):
                 return re.findall(r'^\| ([0-9a-f]{20}) \| ' + name + r' \|', report, re.M)
-            with patch.object(port_report, 'git', side_effect=invoke), patch.object(port_report, 'OLD', before), patch.object(port_report, 'MOLLY', first):
+            with patch.object(port_report, 'git', side_effect=invoke), patch.object(port_report, 'OLD', before), patch.object(port_report, 'MOLLY', first), patch.object(port_report, 'clean_contribution', return_value=((0, 0, 0), [])):
                 report = port_report.render(config, evidence)
                 duplicates = ids(report, 'duplicate')
                 self.assertEqual(len(set(duplicates)), 2)
@@ -105,3 +105,75 @@ class PortReportTests(unittest.TestCase):
                 config['target_tree'] = run('write-tree')
                 with self.assertRaisesRegex(ValueError, 'stale or overlapping metadata'):
                     port_report.render(config, evidence)
+
+
+class EvidenceModelTests(unittest.TestCase):
+    def test_groups_require_explicit_nonoverlapping_ids_and_cannot_claim_gates(self):
+        group = {'hunks': ['a'], 'description': {'reason': 'shared'}}
+        self.assertEqual(port_report.expand_groups({'groups': {'one': group}, 'hunks': {'a': {'outcome': 'fail'}}})['a'], {'reason': 'shared', 'outcome': 'fail'})
+        with self.assertRaisesRegex(ValueError, 'overlapping'):
+            port_report.expand_groups({'groups': {'one': group, 'two': group}})
+        with self.assertRaisesRegex(ValueError, 'invalid group'):
+            port_report.expand_groups({'groups': {'one': {'hunks': ['a'], 'description': {'revert_gate': 'pass'}}}})
+
+    def test_action_replay_rejects_stale_input(self):
+        import os
+        import pathlib
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            old_cwd = os.getcwd()
+            try:
+                os.chdir(directory)
+                def run(*args): return subprocess.check_output(['git', *args]).decode().strip()
+                run('init', '-q')
+                pathlib.Path('source').write_text('old\n')
+                run('add', 'source')
+                before = run('write-tree')
+                blob = run('rev-parse', ':source')
+                pathlib.Path('source').write_text('new\n')
+                patch = subprocess.check_output(['git', 'diff', '--', 'source'])
+                pathlib.Path('action.patch').write_bytes(patch)
+                run('add', 'action.patch')
+                run('add', 'source')
+                after = run('rev-parse', ':source')
+                action = {'path': 'source', 'input_blob': blob, 'output_blob': after, 'patch': 'action.patch', 'gate_input': 'tested source state', 'gate': 'compile', 'outcome': 'pass', 'evidence': 'log'}
+                data = {'action_chains': [{'start_tree': before, 'actions': [action]}]}
+                self.assertEqual(len(port_report.action_history(data)), 1)
+                action['input_blob'] = after
+                with self.assertRaisesRegex(ValueError, 'stale action input'):
+                    port_report.action_history(data)
+            finally:
+                os.chdir(old_cwd)
+
+    def test_actual_merge_conflicts_excluded_from_clean_count(self):
+        import os
+        import pathlib
+        import subprocess
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            original = os.getcwd()
+            try:
+                os.chdir(directory)
+                def run(*args): return subprocess.check_output(['git', *args]).decode().strip()
+                run('init', '-q'); run('config', 'user.name', 'Test'); run('config', 'user.email', 'test@example.invalid')
+                pathlib.Path('conflict').write_text('base\n')
+                pathlib.Path('deleted').write_text('base\n')
+                pathlib.Path('binary').write_bytes(b'\0base')
+                run('add', '.'); run('commit', '-qm', 'base'); base = run('rev-parse', 'HEAD')
+                pathlib.Path('conflict').write_text('molly\n'); pathlib.Path('deleted').unlink()
+                pathlib.Path('binary').write_bytes(b'\0molly')
+                pathlib.Path('clean').write_text('clean\n')
+                run('add', '-A'); run('commit', '-qm', 'molly'); molly = run('rev-parse', 'HEAD')
+                run('checkout', '-q', '--detach', base)
+                pathlib.Path('conflict').write_text('signal\n'); pathlib.Path('deleted').write_text('signal\n')
+                pathlib.Path('binary').write_bytes(b'\0signal')
+                run('add', '-A'); run('commit', '-qm', 'signal'); signal = run('rev-parse', 'HEAD')
+                tree, _, _ = port_report.release.mechanical_merge('.', base, molly, signal)
+                with patch.object(port_report, 'OLD', base), patch.object(port_report, 'MOLLY', molly):
+                    counts, conflicts = port_report.clean_contribution(signal, tree)
+                self.assertEqual(set(conflicts), {'conflict', 'deleted', 'binary'})
+                self.assertEqual(counts, (1, 0, 0))
+            finally:
+                os.chdir(original)

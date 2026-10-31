@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "a6d0ea74c2ead7a2600ecb5d95541acf168fecb1",
+  "target_tree": "4dc1b2c647ad062b3de168ff5cb2568b5675c20f",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -661,6 +661,22 @@
       "source_bundle": "followups/navigation-and-share-legacy/source-checkpoint.bundle",
       "source_bundle_prerequisite": "a3a9eaabe66d42fdbf8807158eca7de8c9755b33",
       "source_bundle_sha256": "bdc3d8ff535401f896b7a504ee77ada7bc2994d59030d5af43a7f70b7db1a7a5"
+    },
+    {
+      "id": "followups/retained-settings-camera-and-version",
+      "source_commit": "a39eeee9155bdc9116b611734dcc58653f7cb38f",
+      "description": "Restore an uncalled camera count component and four legacy settings files; the count remains undisplayed and the help view model can wipe logs if invoked. The checked first-launch preference write throws on failure.",
+      "ai_generated": true,
+      "before_tree": "a6d0ea74c2ead7a2600ecb5d95541acf168fecb1",
+      "after_tree": "4dc1b2c647ad062b3de168ff5cb2568b5675c20f",
+      "paths": 6,
+      "patches": [
+        "followups/retained-settings-camera-and-version/0001-retained-settings-camera-and-version.patch"
+      ],
+      "mailbox_bytes": 10173,
+      "source_bundle": "followups/retained-settings-camera-and-version/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "031894f1a74ca85b44cdd37f33a4bf6ba3f6c275",
+      "source_bundle_sha256": "bc2b4831a82989cc7d845abf1ee0344863b9e9ef826bb26b6080f0354334c05a"
     }
   ],
   "mailbox_sha256": {
@@ -727,6 +743,7 @@
     "followups/remove-pre27-sheet-selectors/0001-remove-pre27-sheet-selectors.patch": "1246b34fd9b7fbfc055886837cd05a305b5eaf47ddb4a41f1bcb88fbc3ccffaf",
     "followups/registration-and-timing-format/0001-registration-and-timing-format.patch": "687789c173da4503ad5747d44e30a51bb6cbb5b3edb02f6d45c51150f8bc5db3",
     "followups/unavailable-contact-and-legacy-preferences/0001-unavailable-contact-and-legacy-preferences.patch": "c84adb06940a97b02ba372316ef68fdca7ffb2513186cd521d1cb142f3a52ce0",
-    "followups/navigation-and-share-legacy/0001-navigation-and-share-legacy.patch": "63172158e7ddda1f94a1c664a4dc3907bcfa4e15a84ba8918c4fb5732d76d7cc"
+    "followups/navigation-and-share-legacy/0001-navigation-and-share-legacy.patch": "63172158e7ddda1f94a1c664a4dc3907bcfa4e15a84ba8918c4fb5732d76d7cc",
+    "followups/retained-settings-camera-and-version/0001-retained-settings-camera-and-version.patch": "9a3e23f9012030bd5830f7f425c6d538f02dd1993a19a0bf47482d896e6c51b4"
   }
 }

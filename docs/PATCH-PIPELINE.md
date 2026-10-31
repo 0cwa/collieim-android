@@ -106,13 +106,13 @@ Subsequent commits add ordinary mailbox resolutions, grouped by application
 feature. Their parent source is Git's mechanical merge, so they show changes
 that remain after deterministic integration. The initial groups reproduce
 the existing PR #7 source merge
-`90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; twenty-eight subsequent layers retain
+`90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; twenty-nine subsequent layers retain
 the preference-import, NetCipher SDK DSL, broader integration/regression, CDN
 test-fixture, linked-device reminder, backup preference precedence, donation
 completion, legacy backup-notification cleanup, recipient badge list, localized
 resource notices, locked system information, remaining resource notices, dynamic
 appearance, blocked-network priority, recipient avatar badge, version preference
-write, Giphy client formatting, always-relay accessor, logcat collection, three retained Molly import corrections, source import formatting, direct backup cancellation, pre-27 selector cleanup, registration layout and timing log, unavailable-contact and retained legacy code, and navigation imports and share override as individual review steps. Each mailbox
+write, Giphy client formatting, always-relay accessor, logcat collection, three retained Molly import corrections, source import formatting, direct backup cancellation, pre-27 selector cleanup, registration layout and timing log, unavailable-contact and retained legacy code, navigation imports and share override, and retained settings, camera and version write as individual review steps. Each mailbox
 records its source commit and AI-generation status.
 Previous mailboxes do not receive new provenance headers when a later fix is
 added.
@@ -126,8 +126,12 @@ AI compatibility decision. Every conflict must be covered by a resolution
 or an explicit unchanged-content decision.
 
 The final source must equal tree
-`a6d0ea74c2ead7a2600ecb5d95541acf168fecb1`, the tree of synthetic source
-commit `031894f1a74ca85b44cdd37f33a4bf6ba3f6c275`. The navigation and share checkpoint restores numerous unused
+`4dc1b2c647ad062b3de168ff5cb2568b5675c20f`, the tree of synthetic source
+commit `a39eeee9155bdc9116b611734dcc58653f7cb38f`. This checkpoint restores dormant camera and settings source. The
+camera count is still not displayed, and the restored help view model can wipe logs
+if invoked. The first-launch version write now throws on preference write failure.
+It extends navigation and share checkpoint `031894f1a74ca85b44cdd37f33a4bf6ba3f6c275` (tree `a6d0ea74c2ead7a2600ecb5d95541acf168fecb1`).
+The navigation and share checkpoint restores numerous unused
 Molly navigation imports and a ShareActivity container override. The current full-screen
 path does not call the override; a future sheet path could receive the wrong host
 container. It extends checkpoint `a3a9eaabe66d42fdbf8807158eca7de8c9755b33` (tree `41a6f4dd9731829110773b23e7739c5b5fd65444`).
@@ -176,7 +180,7 @@ bundle requires `cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c`; the backup bundle
 requires `d3c917a5be7db6116c83b7e29e09f145e7f38825`; the donation bundle
 requires `266d0185d021b2b6a98882205f6b6242152d146e`; and the backup-notification
 bundle requires `34100dfa15eb70256d948f96b14abe4b7c7920d6`. Each prerequisite must
-already be present in the object database. The twenty later bundles each require
+already be present in the object database. The twenty-one later bundles each require
 the source commit from the immediately preceding checkpoint. For a fresh local repository,
 materialize and verify the chain in order:
 
@@ -302,13 +306,18 @@ git bundle verify patches/ports/signal-8.33.2/followups/navigation-and-share-leg
 git fetch patches/ports/signal-8.33.2/followups/navigation-and-share-legacy/source-checkpoint.bundle \
   refs/heads/source-checkpoint/navigation-and-share-legacy:refs/port-source/navigation-and-share-legacy
 git rev-parse refs/port-source/navigation-and-share-legacy^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/retained-settings-camera-and-version/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/retained-settings-camera-and-version/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/retained-settings-camera-and-version:refs/port-source/retained-settings-camera-and-version
+git rev-parse refs/port-source/retained-settings-camera-and-version^{tree}
 ```
 
 The tree commands must print, in order, `2533afec2fe2d7f9fc682f699fc21d7624521889`,
 `0e5c581b7db3f4429256630011790f3ed4ad141f`,
 `febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`,
 `33540be50355fd43b776249136554d167625462a`, and
-`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`, `09c0192152398a4969178704894cfcb1c0552513`, `f3b957dcbd02f828be8bccd29770fa080b68b55a`, `e71a4e56e8f5ebb9229ff4c2cf1dc3972b444655`, `2e5e16d1d08625df6ae12ab911eb180d44ed581a`, `229e4bd926c1080318cf80ee6633178e42eeb6dd`, `936c1c8ccf52a6450b4d6b9fb216ae1dfdff102a`, `67761e2dc6664979273d89f2a438fa7be060f65a`, `190ad231ab86fd7fbe7c6cb137a3bf0680a13d24`, `ff319e31f48739facb1b430102ce61351114ebb8`, `0965228d1febaa1b9be4d228208f3ffcf3b7c595`, `2f2df9763230c11a9a0eac423b0fec52ef0b7fe5`, `ed84aae0b10c71574fb91a124202015f298a2226`, `09b480ee848a0c390779e27ca166fbbe0bf13f3a`, `46d52ca93e698991994f668d7d649f61ec6cd503`, `ebc09c526aeab140c8c51ebc898d08f32c0f28c6`, `76df44b49dccd2ea946719764aaa23fd8f9e9208`, `c23d85ed3707b8c153c65e1a91dcca30dd51ee7c`, `ad924cb75d22db46a530c9257fe331bc1b6e218a`, `41a6f4dd9731829110773b23e7739c5b5fd65444`, `a6d0ea74c2ead7a2600ecb5d95541acf168fecb1`. The bundles do not carry their
+`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`, `09c0192152398a4969178704894cfcb1c0552513`, `f3b957dcbd02f828be8bccd29770fa080b68b55a`, `e71a4e56e8f5ebb9229ff4c2cf1dc3972b444655`, `2e5e16d1d08625df6ae12ab911eb180d44ed581a`, `229e4bd926c1080318cf80ee6633178e42eeb6dd`, `936c1c8ccf52a6450b4d6b9fb216ae1dfdff102a`, `67761e2dc6664979273d89f2a438fa7be060f65a`, `190ad231ab86fd7fbe7c6cb137a3bf0680a13d24`, `ff319e31f48739facb1b430102ce61351114ebb8`, `0965228d1febaa1b9be4d228208f3ffcf3b7c595`, `2f2df9763230c11a9a0eac423b0fec52ef0b7fe5`, `ed84aae0b10c71574fb91a124202015f298a2226`, `09b480ee848a0c390779e27ca166fbbe0bf13f3a`, `46d52ca93e698991994f668d7d649f61ec6cd503`, `ebc09c526aeab140c8c51ebc898d08f32c0f28c6`, `76df44b49dccd2ea946719764aaa23fd8f9e9208`, `c23d85ed3707b8c153c65e1a91dcca30dd51ee7c`, `ad924cb75d22db46a530c9257fe331bc1b6e218a`, `41a6f4dd9731829110773b23e7739c5b5fd65444`, `a6d0ea74c2ead7a2600ecb5d95541acf168fecb1`, `4dc1b2c647ad062b3de168ff5cb2568b5675c20f`. The bundles do not carry their
 prerequisites; a fresh clone cannot verify or fetch a later bundle until the
 earlier checkpoints are materialized.
 

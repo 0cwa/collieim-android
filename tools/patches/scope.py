@@ -32,7 +32,16 @@ def report_evidence(path):
     if not path.startswith(prefix):
         return False
     name = path[len(prefix):]
-    return name == 'receipts.md' or bool(re.fullmatch(r'(?:fmt-(?:0[1-9]|1[0-6])|lex-(?:0[1-9]|[1-6][0-9]|7[0-4]))\.patch', name))
+    locale_evidence = {
+        'locale-revert-cohort.tsv', 'locale-revert-cohort.patch',
+        'locale-revert-cohort.md', 'locale-revert-cohort.py',
+        'locale-resource-probe.md', 'locale-resource-probe.py', 'locale-resource-probe.log',
+        'locale-cohort-two-readme.md', 'locale-cohort-two-cohort.tsv',
+        'locale-cohort-two-cohort.patch', 'locale-cohort-two-probe.py',
+        'locale-cohort-two-resource-probe.py', 'locale-cohort-two-run.log',
+        'locale-cohort-two-resource.log',
+    }
+    return name == 'receipts.md' or name in locale_evidence or bool(re.fullmatch(r'(?:fmt-(?:0[1-9]|1[0-6])|lex-(?:0[1-9]|[1-6][0-9]|7[0-4]))\.patch', name))
 
 
 def allowed(scope, path):

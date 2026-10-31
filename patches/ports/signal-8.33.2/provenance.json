@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "c23d85ed3707b8c153c65e1a91dcca30dd51ee7c",
+  "target_tree": "ad924cb75d22db46a530c9257fe331bc1b6e218a",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -613,6 +613,22 @@
       "source_bundle": "followups/remove-pre27-sheet-selectors/source-checkpoint.bundle",
       "source_bundle_prerequisite": "7ee4f371851ac9f2baae2915b209eaf2a664e92f",
       "source_bundle_sha256": "90761fd82485585fef396221ac32a2dc897b21d13796f7009626524815c0402c"
+    },
+    {
+      "id": "followups/registration-and-timing-format",
+      "source_commit": "1f0af82f4ab6a510afe506d0efd33d8f09ecf24e",
+      "description": "Retain the longer one-line registration signature and omit added prose; the debug timing log loses the shared-contacts duration.",
+      "ai_generated": true,
+      "before_tree": "c23d85ed3707b8c153c65e1a91dcca30dd51ee7c",
+      "after_tree": "ad924cb75d22db46a530c9257fe331bc1b6e218a",
+      "paths": 3,
+      "patches": [
+        "followups/registration-and-timing-format/0001-registration-and-timing-format.patch"
+      ],
+      "mailbox_bytes": 4534,
+      "source_bundle": "followups/registration-and-timing-format/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "bda4a65056b18ae1b9aa31aefa8a737342967b64",
+      "source_bundle_sha256": "1dbbc00bfc986291a726b2636f11dcc8141a452511e01071d9738fc473bbf4c5"
     }
   ],
   "mailbox_sha256": {
@@ -676,6 +692,7 @@
     "followups/retained-import-formatting/0001-retained-import-formatting.patch": "ebb48282d192150a899d05e60332009754114dbf05c63b060e463f7536e416d2",
     "followups/retained-media-preference-imports/0001-retained-media-preference-imports.patch": "c2149ef7abd9616ebd1059753b1b64c07adcd1e8a0fefbf6504e83910498881e",
     "followups/backup-direct-cancellation/0001-backup-direct-cancellation.patch": "5935b98c4e9bdd004b7207b08015f2be6e142d554f55de05ab978cba138c8785",
-    "followups/remove-pre27-sheet-selectors/0001-remove-pre27-sheet-selectors.patch": "1246b34fd9b7fbfc055886837cd05a305b5eaf47ddb4a41f1bcb88fbc3ccffaf"
+    "followups/remove-pre27-sheet-selectors/0001-remove-pre27-sheet-selectors.patch": "1246b34fd9b7fbfc055886837cd05a305b5eaf47ddb4a41f1bcb88fbc3ccffaf",
+    "followups/registration-and-timing-format/0001-registration-and-timing-format.patch": "687789c173da4503ad5747d44e30a51bb6cbb5b3edb02f6d45c51150f8bc5db3"
   }
 }

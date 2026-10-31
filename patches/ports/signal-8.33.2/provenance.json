@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "ebc09c526aeab140c8c51ebc898d08f32c0f28c6",
+  "target_tree": "76df44b49dccd2ea946719764aaa23fd8f9e9208",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -581,6 +581,22 @@
       "source_bundle": "followups/retained-media-preference-imports/source-checkpoint.bundle",
       "source_bundle_prerequisite": "5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9",
       "source_bundle_sha256": "070074ee3efc0d006dbe27035326f704d0271c11e49815529744d6faf1b2d2ad"
+    },
+    {
+      "id": "followups/backup-direct-cancellation",
+      "source_commit": "7ee4f371851ac9f2baae2915b209eaf2a664e92f",
+      "description": "Keep direct backup alert cancellation expressions alongside legacy alert cleanup.",
+      "ai_generated": true,
+      "before_tree": "ebc09c526aeab140c8c51ebc898d08f32c0f28c6",
+      "after_tree": "76df44b49dccd2ea946719764aaa23fd8f9e9208",
+      "paths": 1,
+      "patches": [
+        "followups/backup-direct-cancellation/0001-backup-direct-cancellation.patch"
+      ],
+      "mailbox_bytes": 1924,
+      "source_bundle": "followups/backup-direct-cancellation/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "98f6a7e996abf915eecee06ece4ea901a34ef64b",
+      "source_bundle_sha256": "614ba3761545590d2810a00d601ea5faa21dac2ac72e416424f4519eea1a05fd"
     }
   ],
   "mailbox_sha256": {
@@ -642,6 +658,7 @@
     "followups/retained-molly-imports/0001-retained-molly-imports.patch": "2f0d81917603645023441857f36165a1aefb69af8e4be4ba4b78180ebf7ac914",
     "followups/retained-activity-push-imports/0001-retained-activity-push-imports.patch": "e649351741c2ccbeb31d0262f12b4d0f82311ad8ec2cfd9dcef2e67edf6ffa90",
     "followups/retained-import-formatting/0001-retained-import-formatting.patch": "ebb48282d192150a899d05e60332009754114dbf05c63b060e463f7536e416d2",
-    "followups/retained-media-preference-imports/0001-retained-media-preference-imports.patch": "c2149ef7abd9616ebd1059753b1b64c07adcd1e8a0fefbf6504e83910498881e"
+    "followups/retained-media-preference-imports/0001-retained-media-preference-imports.patch": "c2149ef7abd9616ebd1059753b1b64c07adcd1e8a0fefbf6504e83910498881e",
+    "followups/backup-direct-cancellation/0001-backup-direct-cancellation.patch": "5935b98c4e9bdd004b7207b08015f2be6e142d554f55de05ab978cba138c8785"
   }
 }

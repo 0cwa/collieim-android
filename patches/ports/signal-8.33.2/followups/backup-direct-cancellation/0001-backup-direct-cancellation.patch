@@ -1,0 +1,42 @@
+From 7ee4f371851ac9f2baae2915b209eaf2a664e92f Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 04:32:57 +0100
+Subject: [PATCH] Keep original backup alert cancellation calls
+
+Keep the direct cancellation calls alongside legacy-alert cleanup.
+
+AI-Generated: true
+
+Based-On-Source-Commit: 98f6a7e996abf915eecee06ece4ea901a34ef64b
+Source-Commit: 7ee4f371851ac9f2baae2915b209eaf2a664e92f
+---
+ .../thoughtcrime/securesms/backup/v2/BackupRepository.kt    | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt
+index 0bb06105..984c4881 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt
+@@ -352,8 +352,7 @@ object BackupRepository {
+ 
+   fun clearBackupFailure() {
+     SignalStore.backup.backupCreationError = null
+-    val notificationManager = ServiceUtil.getNotificationManager(AppDependencies.application)
+-    notificationManager.cancel(NotificationIds.INITIAL_BACKUP_FAILED)
++    ServiceUtil.getNotificationManager(AppDependencies.application).cancel(NotificationIds.INITIAL_BACKUP_FAILED)
+     cancelLegacyBackupNotification(NotificationIds.LEGACY_INITIAL_BACKUP_FAILED)
+   }
+ 
+@@ -382,8 +381,7 @@ object BackupRepository {
+ 
+   fun clearOutOfRemoteStorageSpaceError() {
+     SignalStore.backup.clearNotEnoughRemoteStorageSpace()
+-    val notificationManager = ServiceUtil.getNotificationManager(AppDependencies.application)
+-    notificationManager.cancel(NotificationIds.OUT_OF_REMOTE_STORAGE)
++    ServiceUtil.getNotificationManager(AppDependencies.application).cancel(NotificationIds.OUT_OF_REMOTE_STORAGE)
+     cancelLegacyBackupNotification(NotificationIds.LEGACY_OUT_OF_REMOTE_STORAGE)
+   }
+ 
+-- 
+2.56.0
+

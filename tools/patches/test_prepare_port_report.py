@@ -72,6 +72,14 @@ class PrepareReportTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'immutable report baseline'):
                 prepare.prepare(repo)
 
-    def test_ci_prepares_in_same_step_before_check(self):
-        workflow = (Path(__file__).resolve().parents[2] / '.github/workflows/molly-patch-release.yml').read_text()
-        self.assertIn('python3 tools/patches/prepare_port_report.py\n            python3 tools/patches/verify_source_bundles.py\n            python3 tools/patches/port_report.py --check', workflow)
+    def test_preparation_precedes_each_scope_projection(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / '.github/workflows/molly-patch-release.yml').read_text()
+        scope, proof, android = workflow.split('  source-proof:', 1)[0], *workflow.split('  source-proof:', 1)[1].split('  android:', 1)
+        self.assertLess(scope.index('python3 tools/patches/prepare_port_report.py'), scope.index('python3 tools/patches/scope.py'))
+        self.assertLess(scope.index('python3 tools/patches/prepare_port_report.py'), scope.index('python3 tools/patches/verify_source_bundles.py'))
+        for job in (proof, android):
+            self.assertLess(job.index('python3 tools/patches/prepare_port_report.py'), job.index('python3 tools/patches/release.py'))
+        preflight = (root / 'tools/patches/preflight.sh').read_text()
+        self.assertLess(preflight.index('python3 tools/patches/prepare_port_report.py'), preflight.index('python3 tools/patches/scope.py'))
+        self.assertLess(preflight.index('python3 tools/patches/prepare_port_report.py'), preflight.index('python3 tools/patches/release.py'))

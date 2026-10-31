@@ -20,13 +20,18 @@ while (($#)); do
     *) echo "usage: $0 [proof|resources|full] [--scope pipeline|switch|release|followups --base REF]" >&2; exit 2 ;;
   esac
 done
+repo=$(git rev-parse --show-toplevel)
+cd "$repo"
+if [[ -f molly-build.json ]] && python3 -c 'import json; d=json.load(open("molly-build.json")); raise SystemExit(d.get("port") is None)'; then
+  echo '== prepare port report trees'
+  python3 tools/patches/prepare_port_report.py
+fi
+
 if [[ -n $scope || -n $scope_base ]]; then
   [[ -n $scope && -n $scope_base ]] || { echo '--scope and --base are both required' >&2; exit 2; }
   python3 tools/patches/scope.py --scope "$scope" --base "$scope_base"
 fi
 
-repo=$(git rev-parse --show-toplevel)
-cd "$repo"
 base=${MOLLY_PREFLIGHT_DIR:-/tmp/molly-preflight}
 worktree="$base/release"
 reports="$base/reports"
@@ -72,8 +77,6 @@ print(f"source proof PASS, tree {report['tree']}")
 PY
 
 if python3 -c 'import json; d=json.load(open("molly-build.json")); raise SystemExit(d.get("port") is None)'; then
-  echo '== prepare port report trees'
-  python3 tools/patches/prepare_port_report.py
   echo '== source checkpoint bundles'
   python3 tools/patches/verify_source_bundles.py
   echo '== port report freshness'

@@ -34,7 +34,7 @@ def allowed(scope, path):
             return True  # exact source projection checked independently below
         if scope == 'switch':
             return path.startswith('patches/molly/') or path == 'molly-build.json'
-        return path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PORT-REPORT.md'}
+        return path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'}
     if scope == 'followups':
         prefix = 'patches/ports/signal-8.33.2/'
         if path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md', prefix + 'series', prefix + 'provenance.json', prefix + 'report-metadata.json'}:

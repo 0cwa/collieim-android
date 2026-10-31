@@ -37,6 +37,14 @@ class ScopeTests(unittest.TestCase):
         with mock.patch.object(scope, 'MOLLY', self.base):
             return scope.check_scope(self.repo, 'pipeline', self.base)
 
+    def test_locale_evidence_allowlist_does_not_admit_other_files(self):
+        prefix = 'patches/ports/signal-8.33.2/report-evidence/'
+        for scope_name in ('release', 'followups'):
+            for name in ('locale-revert-cohort.tsv', 'locale-cohort-two-resource.log'):
+                self.assertTrue(scope.allowed(scope_name, prefix + name))
+            for name in ('locale-extra.py', '../initial/hidden.patch', 'locale-revert-cohort.tsv.bak'):
+                self.assertFalse(scope.allowed(scope_name, prefix + name))
+
     def test_pipeline_accepts_tooling_and_rejects_app_changes(self):
         self.commit('tools/patches/example.py', 'print(1)\n')
         self.assertFalse(self.check()['profile_present'])

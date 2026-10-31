@@ -28,13 +28,13 @@ def numstat(old, new):
 
 
 def modes(old, new):
-    fields = git('diff', '--no-renames', '--raw', '-z', old, new).split(b'\0')
+    fields = git('diff', '--no-renames', '--raw', '--no-abbrev', '-z', old, new).split(b'\0')
     result = {}
     for i in range(0, len(fields) - 1, 2):
         if not fields[i]:
             continue
         header = fields[i].split()
-        result[fields[i+1]] = (header[0][1:].decode(), header[1].decode())
+        result[fields[i+1]] = (header[0][1:].decode(), header[1].decode(), header[2], header[3])
     return result
 
 
@@ -123,17 +123,27 @@ def render(config, evidence, ready=False):
                '|---|---|---|---|---|---:|---:|---|---|---|---|']
     for path, expected in sorted(stats.items()):
         display = os.fsdecode(path).replace('|', '\\|').replace('\n', '\\n')
+        old_mode, new_mode, old_blob, new_blob = file_modes[path]
+        def identity(*parts):
+            return hashlib.sha256(b'\0'.join((path, *parts))).hexdigest()[:20]
         if expected is None:
-            key = hashlib.sha256(before.encode()+b'\0'+target.encode()+b'\0'+path+b'\0binary').hexdigest()[:20]
+            key = identity(b'binary', old_blob, new_blob, old_mode.encode(), new_mode.encode())
             hunks = [(0, 0, b'binary', key, 'binary')]
         else:
             patch = git('diff', '--no-ext-diff', '--no-renames', '--unified=3', before, target, '--', os.fsdecode(path))
-            hunks = [(x, y, body, hashlib.sha256(before.encode()+b'\0'+target.encode()+b'\0'+path+b'\0'+body).hexdigest()[:20], 'text') for x, y, body in parse_hunks(patch)]
+            parsed = parse_hunks(patch)
+            # Line numbers can shift independently of the change; retain content and context.
+            contents = [body.split(b'\n', 1)[1] for _, _, body in parsed]
+            occurrences = {}
+            hunks = []
+            for (x, y, body), content in zip(parsed, contents):
+                occurrences[content] = occurrences.get(content, 0) + 1
+                key = identity(b'text', content, str(contents.count(content)).encode(), str(occurrences[content]).encode())
+                hunks.append((x, y, body, key, 'text'))
             if (sum(h[0] for h in hunks), sum(h[1] for h in hunks)) != expected:
                 raise ValueError('hunk counts do not match numstat for ' + display)
-        old_mode, new_mode = file_modes[path]
         if expected is not None and old_mode != new_mode:
-            key = hashlib.sha256(before.encode()+b'\0'+target.encode()+b'\0'+path+b'\0mode').hexdigest()[:20]
+            key = identity(b'mode', old_mode.encode(), new_mode.encode())
             hunks.append((0, 0, b'mode', key, 'mode'))
         for added, deleted, _, key, kind in hunks:
             if key in seen: raise ValueError('duplicate hunk ID ' + key)

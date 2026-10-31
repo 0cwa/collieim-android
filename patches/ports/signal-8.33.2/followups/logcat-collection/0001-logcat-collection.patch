@@ -1,0 +1,32 @@
+From 9fd7b272e2b546c5fc706315df09c5778590f1fb Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 03:43:49 +0100
+Subject: [PATCH] Preserve Molly logcat collection during port
+
+Remove the port-only View-tag filter and retain Molly upstream log collection behavior.
+
+AI-Generated: true
+
+Based-On-Source-Commit: 02088f97be08bcb50763d78245af68f8f1d065e7
+Source-Commit: 9fd7b272e2b546c5fc706315df09c5778590f1fb
+---
+ .../main/java/org/signal/core/util/logging/AndroidLogger.kt    | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt b/core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt
+index b1f56e28..ab98fa25 100644
+--- a/core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt
++++ b/core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt
+@@ -39,8 +39,7 @@ object AndroidLogger : Log.Logger() {
+   @get:WorkerThread
+   val logcatDump: CharSequence?
+     get() = runCatching {
+-      // Some OEM builds log a View message for every draw pass.
+-      val process = Runtime.getRuntime().exec(arrayOf("logcat", "-d", "View:S", "*:V"))
++      val process = Runtime.getRuntime().exec("logcat -d")
+       val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
+       val log = StringBuilder()
+       val separator = System.lineSeparator()
+-- 
+2.56.0
+

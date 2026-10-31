@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "ff319e31f48739facb1b430102ce61351114ebb8",
+  "target_tree": "2f2df9763230c11a9a0eac423b0fec52ef0b7fe5",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -485,6 +485,38 @@
       "source_bundle": "followups/giphy-client-formatting/source-checkpoint.bundle",
       "source_bundle_prerequisite": "b0e9ca51c613c1b88ada51a5552b0b7131d1621e",
       "source_bundle_sha256": "201db39a7a3f7eb252daa00f06db8eba0de2e007cdb5e593c6becc2a4e7252e1"
+    },
+    {
+      "id": "followups/always-relay-accessor",
+      "source_commit": "02088f97be08bcb50763d78245af68f8f1d065e7",
+      "description": "Restore Molly always-relay preference accessor while preserving proxy settings.",
+      "ai_generated": true,
+      "before_tree": "ff319e31f48739facb1b430102ce61351114ebb8",
+      "after_tree": "0965228d1febaa1b9be4d228208f3ffcf3b7c595",
+      "paths": 1,
+      "patches": [
+        "followups/always-relay-accessor/0001-always-relay-accessor.patch"
+      ],
+      "mailbox_bytes": 2153,
+      "source_bundle": "followups/always-relay-accessor/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "ae5099dd637e08095c995464ec22118866296e3a",
+      "source_bundle_sha256": "f1daea1fec7d899e02d8b83ca89e21c441b1952c0e63b3375908897d4ddda4a6"
+    },
+    {
+      "id": "followups/logcat-collection",
+      "source_commit": "9fd7b272e2b546c5fc706315df09c5778590f1fb",
+      "description": "Restore Molly unfiltered logcat collection.",
+      "ai_generated": true,
+      "before_tree": "0965228d1febaa1b9be4d228208f3ffcf3b7c595",
+      "after_tree": "2f2df9763230c11a9a0eac423b0fec52ef0b7fe5",
+      "paths": 1,
+      "patches": [
+        "followups/logcat-collection/0001-logcat-collection.patch"
+      ],
+      "mailbox_bytes": 1416,
+      "source_bundle": "followups/logcat-collection/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "02088f97be08bcb50763d78245af68f8f1d065e7",
+      "source_bundle_sha256": "51d0d25f65eb309607ee50e520626489b95ffbda641106d5bae64ef1c4d1ac13"
     }
   ],
   "mailbox_sha256": {
@@ -540,6 +572,8 @@
     "followups/blocked-network-priority/0001-blocked-network-priority.patch": "dc4ff5c24994d2f8884f515f3c879083274c0c9bc10111227844894a64340c16",
     "followups/recipient-avatar-badge/0001-recipient-avatar-badge.patch": "f65e3b9247fe599ec7943ac7dcee3285dee173e19280399866709ac60a26f9d7",
     "followups/version-preference-write/0001-version-preference-write.patch": "9c314a3616cd3c56f2de21b084af1508a34398500c12fd93c9111a8d9ee875fc",
-    "followups/giphy-client-formatting/0001-giphy-client-formatting.patch": "a8cd61dac9f7c3e40fe37aa3a3ec4603afe4e561ef59e7223693ef96360844d6"
+    "followups/giphy-client-formatting/0001-giphy-client-formatting.patch": "a8cd61dac9f7c3e40fe37aa3a3ec4603afe4e561ef59e7223693ef96360844d6",
+    "followups/always-relay-accessor/0001-always-relay-accessor.patch": "b201fc33197a97cca455fd5c9393fd3ac704c5b8e91d4e1519809bccd584feb5",
+    "followups/logcat-collection/0001-logcat-collection.patch": "1c9aef81bec93efbbf8ea8d150f83b6ed937dd5e3e0f87808df375c9a8b152fb"
   }
 }

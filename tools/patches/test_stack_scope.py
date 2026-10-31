@@ -127,3 +127,13 @@ class BundleScopeTests(unittest.TestCase):
     def test_only_exact_release_bundle_path_is_allowed(self):
         self.assertTrue(scope.allowed('release', 'patches/ports/signal-8.33.2/source-checkpoint.bundle'))
         self.assertFalse(scope.allowed('release', 'patches/ports/signal-8.33.2/unrelated.bundle'))
+
+
+class ReportEvidenceScopeTests(unittest.TestCase):
+    def test_only_bounded_report_evidence_paths_are_allowed(self):
+        prefix = 'patches/ports/signal-8.33.2/report-evidence/'
+        for phase in ('release', 'followups'):
+            for name in ('receipts.md', 'fmt-01.patch', 'fmt-16.patch', 'lex-01.patch', 'lex-74.patch'):
+                self.assertTrue(scope.allowed(phase, prefix + name))
+            for name in ('other.patch', 'fmt-17.patch', 'lex-75.patch', '../series', 'receipts.md.extra'):
+                self.assertFalse(scope.allowed(phase, prefix + name))

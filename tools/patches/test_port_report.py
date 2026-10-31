@@ -33,14 +33,21 @@ class PortReportTests(unittest.TestCase):
             (path / 'file').write_text('-- old\n')
             run('add', '.')
             run('commit', '-qm', 'old')
+            old_commit = run('rev-parse', 'HEAD')
             old = run('rev-parse', 'HEAD^{tree}')
             (path / 'file').write_text('++ new\n')
-            run('commit', '-qam', 'new')
+            (path / 'file').chmod(0o755)
+            (path / 'binary').write_bytes(b'\x00\xff')
+            run('add', '.')
+            run('commit', '-qm', 'new')
             new = run('rev-parse', 'HEAD^{tree}')
             def invoke(*args):
                 return subprocess.check_output(['git', '-C', directory, *args])
-            config = {'signal': {'commit': old}, 'port': {'mechanical_tree': old}, 'target_tree': new}
+            config = {'signal': {'commit': old_commit}, 'port': {'mechanical_tree': old}, 'target_tree': new}
             with patch.object(port_report, 'git', side_effect=invoke), patch.object(port_report, 'OLD', old), patch.object(port_report, 'MOLLY', new):
-                self.assertIn('unmeasured', port_report.render(config, {'hunks': {}}))
+                preview = port_report.render(config, {'hunks': {}})
+                self.assertIn('unmeasured', preview)
+                self.assertIn('| mode | 100644 | 100755 |', preview)
+                self.assertIn('| binary | 000000 | 100644 |', preview)
                 with self.assertRaisesRegex(ValueError, 'missing evidence'):
                     port_report.render(config, {'hunks': {}}, ready=True)

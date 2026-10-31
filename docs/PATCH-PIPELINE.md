@@ -277,6 +277,6 @@ Android profile, so its preflight runs the tool tests only.
 
 `port_report.py` measures physical Git additions and deletions for the Molly
 patchset, the mechanical merge, and AI-assisted compatibility changes. Its
-preview marks missing hunk evidence as unmeasured. `--check --ready` requires
-current output and measured evidence before a port can pass the report gate.
+preview marks missing hunk evidence as unmeasured. `--check` verifies current
+output; `--ready` additionally requires measured evidence for the final gate.
 These counts alone do not establish authorship or necessity.

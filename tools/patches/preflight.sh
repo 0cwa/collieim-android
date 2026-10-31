@@ -59,8 +59,10 @@ fi
 git worktree prune
 
 echo '== source reconstruction and tree proof'
+stack_args=()
+if [[ -n $scope ]]; then stack_args=(--scope "$scope" --base "$scope_base"); fi
 python3 tools/patches/release.py --repo . --config molly-build.json \
-  --worktree "$worktree" --report "$reports/source.json" >/dev/null
+  --worktree "$worktree" --report "$reports/source.json" "${stack_args[@]}" >/dev/null
 python3 - "$reports/source.json" <<'PY'
 import json, sys
 report = json.load(open(sys.argv[1]))
@@ -68,6 +70,11 @@ if report.get('status') != 'PASS':
     sys.exit(f"source proof failed: {report.get('error')}")
 print(f"source proof PASS, tree {report['tree']}")
 PY
+
+if [[ -n $scope && ( $scope == release || $scope == followups ) ]]; then
+  echo '== port report freshness'
+  python3 tools/patches/port_report.py --check
+fi
 
 [[ $stage == proof ]] && exit 0
 

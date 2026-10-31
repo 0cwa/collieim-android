@@ -22,6 +22,8 @@ jobs:
     outputs:
       profile: ${{ steps.scope.outputs.profile }}
       port: ${{ steps.scope.outputs.port }}
+      stack_scope: ${{ steps.scope.outputs.stack_scope }}
+      base: ${{ steps.scope.outputs.base }}
     steps:
       - name: Check out immutable head
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -61,10 +63,12 @@ jobs:
           else
             echo "Unsupported event" >&2; exit 1
           fi
-          result=$(python3 tools/patches/scope.py --scope "$scope" --base "$base")
+          python3 tools/patches/scope.py --scope "$scope" --base "$base"
+          echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
           if [[ "$scope" == release || "$scope" == followups ]]; then
-            python3 tools/patches/port_report.py --check --ready
+            python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"
           else
             echo 'port=false' >> "$GITHUB_OUTPUT"
@@ -106,7 +110,8 @@ jobs:
         run: |
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
-            --report "$RUNNER_TEMP/reports/source.json"
+            --report "$RUNNER_TEMP/reports/source.json" \
+            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}"
 
       - name: Prove the upstream native cherry-pick when configured
         run: |
@@ -123,7 +128,7 @@ jobs:
 
   android:
     name: Build the proved source and run its regression tests
-    needs: source-proof
+    needs: [scope, source-proof]
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -148,7 +153,8 @@ jobs:
         run: |
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
-            --report "$RUNNER_TEMP/reports/source.json"
+            --report "$RUNNER_TEMP/reports/source.json" \
+            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}"
 
       - name: Prepare the optional native backport from its immutable sources
         run: |

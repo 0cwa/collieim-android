@@ -1,0 +1,1267 @@
+From 8fcb0b66e861be2c9a26ad6a4d928222cf9453f7 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Thu, 29 Oct 2026 00:01:38 +0100
+Subject: [PATCH] Port resources-and-branding to Signal 8.33.2, part 14
+
+Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.
+
+These are AI-generated compatibility resolutions from the existing
+PR #7 port source, exported after Git has performed its deterministic
+three-way merge of the unchanged official Molly 8.19.2-4 snapshot
+with Signal 8.33.2. The original Molly mailboxes remain unchanged.
+Offset-only movement and conflict-free automatic merges are already
+in the parent tree and are not re-exported as patch rewrites.
+
+This batch owns 45 whole-file changes. It preserves the
+previous port tree exactly and makes no new application changes.
+The source commit records a derived candidate, not an official
+Molly release or a claim of upstream authorship.
+
+Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
+Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
+Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
+Mechanical-Merge-Tree: 759ef1c309d93aa7e4ac7217b144c04545562f11
+AI-Generated: true
+
+diff --git a/feature/media-send/src/main/res/values-hu/strings.xml b/feature/media-send/src/main/res/values-hu/strings.xml
+index 419c9e4e539d50355f97a3c11ed5b89f50838a03..447302f7ecd32f15db401aee433102f2ae66476e 100644
+--- a/feature/media-send/src/main/res/values-hu/strings.xml
++++ b/feature/media-send/src/main/res/values-hu/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Elveted a változásokat?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Úgy tűnik, hogy egy Signal-eszközt próbálsz társítani. Koppints a Folytatás, majd az „Új eszköz összekapcsolása” elemre, és olvasd be újra a QR-kódot.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Folytatás</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">A fiók nem helyezhető át</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d / %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-in/strings.xml b/feature/media-send/src/main/res/values-in/strings.xml
+index 28c669e3d34f5378fe20be52f77b04210ad8e09b..a1a0fbb45dbcab6e520069711514b948643009c3 100644
+--- a/feature/media-send/src/main/res/values-in/strings.xml
++++ b/feature/media-send/src/main/res/values-in/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Buang perubahan?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Sepertinya Anda sedang mencoba menghubungkan perangkat Signal. Ketuk lanjutkan, lalu ketuk \"Hubungkan Perangkat Baru\" dan pindai kode QR lagi.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Lanjutkan</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Tidak bisa mentransfer akun</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d dari %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-it/strings.xml b/feature/media-send/src/main/res/values-it/strings.xml
+index 5f04b1a7317cac9e116fb4f1dcac6302fbae3a45..5051d8a32f049795071980e2bd7063f5f032f8a9 100644
+--- a/feature/media-send/src/main/res/values-it/strings.xml
++++ b/feature/media-send/src/main/res/values-it/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Eliminare le modifiche?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -137,19 +138,11 @@
+   <!-- Dialog title asking users for microphone permission -->
+   <string name="CameraXFragment_allow_access_microphone">Consenti l\'accesso al tuo microfono</string>
+   <!-- Text explaining why Signal needs camera access in order to take photos and videos -->
+-<<<<<<< MOLLY
+-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Per scattare foto e fare video, consenti a Molly di accedere alla fotocamera.</string>
++  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Per scattare foto e registrare video, consenti a Molly di accedere alla fotocamera.</string>
+   <!-- Text explaining why Signal needs camera and microphone access in order to take photos and videos -->
+-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Per scattare foto e fare video, consenti a Molly di accedere a fotocamera e microfono.</string>
++  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Per scattare foto e registrare video, consenti a Molly di accedere a fotocamera e microfono.</string>
+   <!-- Text explaining why Signal needs microphone access to take videos -->
+-  <string name="CameraXFragment_to_capture_videos_with_sound">Per fare dei video con audio, consenti a Molly di accedere al tuo microfono.</string>
+-=======
+-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Per scattare foto e registrare video, consenti a Signal di accedere alla fotocamera.</string>
+-  <!-- Text explaining why Signal needs camera and microphone access in order to take photos and videos -->
+-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Per scattare foto e registrare video, consenti a Signal di accedere a fotocamera e microfono.</string>
+-  <!-- Text explaining why Signal needs microphone access to take videos -->
+-  <string name="CameraXFragment_to_capture_videos_with_sound">Per registrare video con audio, consenti a Signal di accedere al tuo microfono.</string>
+->>>>>>> SIGNAL
++  <string name="CameraXFragment_to_capture_videos_with_sound">Per registrare video con audio, consenti a Molly di accedere al tuo microfono.</string>
+   <!-- Text explaining why Signal needs camera access to scan QR codes -->
+   <string name="CameraXFragment_to_scan_qr_code_allow_camera">Per scansionare un codice QR, consenti a Molly di accedere alla fotocamera.</string>
+   <!-- Toast dialog explaining why Signal needs camera permissions when capturing photos -->
+@@ -157,19 +150,11 @@
+   <!-- Toast dialog explaining why Signal needs camera permissions when scanning QR codes -->
+   <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">Molly deve accedere alla tua fotocamera per scansionare i codici QR</string>
+   <!-- Toast dialog explaining why Signal needs microphone permissions -->
+-<<<<<<< MOLLY
+-  <string name="CameraXFragment_signal_needs_microphone_access_video">Molly deve accedere al tuo microfono per fare i video</string>
+-=======
+-  <string name="CameraXFragment_signal_needs_microphone_access_video">Signal deve accedere al tuo microfono per registrare video</string>
+->>>>>>> SIGNAL
++  <string name="CameraXFragment_signal_needs_microphone_access_video">Molly deve accedere al tuo microfono per registrare video</string>
+   <!-- Dialog description that explains the steps needed to give camera permission -->
+   <string name="CameraXFragment_to_capture_photos">Per scattare foto su Molly:</string>
+   <!-- Dialog description that explains the steps needed to give camera and microphone permission -->
+-<<<<<<< MOLLY
+-  <string name="CameraXFragment_to_capture_photos_videos">Per scattare foto e fare video su Molly:</string>
+-=======
+-  <string name="CameraXFragment_to_capture_photos_videos">Per scattare foto e registrare video su Signal:</string>
+->>>>>>> SIGNAL
++  <string name="CameraXFragment_to_capture_photos_videos">Per scattare foto e registrare video su Molly:</string>
+   <!-- Dialog description that explains the steps needed to give microphone permission -->
+   <string name="CameraXFragment_to_capture_videos">Per registrare video con audio su Signal:</string>
+   <!-- Dialog description that explains the steps needed to give Signal camera permissions -->
+@@ -243,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Sembra che tu stia provando a collegare un dispositivo a Signal. Tocca continua, poi \"Collega un nuovo dispositivo\" e scansiona di nuovo il codice QR.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Continua</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Impossibile trasferire l\'account</string>
+@@ -280,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d di %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-iw/strings.xml b/feature/media-send/src/main/res/values-iw/strings.xml
+index ef22e2d94f38ef119937c02b55bd26687c906f05..96c12ef4b92952e233191a7e78ee3946185899f8 100644
+--- a/feature/media-send/src/main/res/values-iw/strings.xml
++++ b/feature/media-send/src/main/res/values-iw/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">להשמיט שינויים?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -231,9 +232,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">נראה שאת/ה מנסה לקשר מכשיר Signal. יש ללחוץ על המשך ואז ללחוץ על ״קישור מכשיר חדש״ ולסרוק שנית את קוד ה–QR.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">המשך</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">לא ניתן להעביר את החשבון</string>
+@@ -278,4 +276,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d מתוך %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ja/strings.xml b/feature/media-send/src/main/res/values-ja/strings.xml
+index fdc9c282855beaa4e65c4a56b38bb3ec265617b9..726a1d9b31d38c39103e9592a26f8d535dc21927 100644
+--- a/feature/media-send/src/main/res/values-ja/strings.xml
++++ b/feature/media-send/src/main/res/values-ja/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">変更を破棄しますか？</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Signal端末をリンクしようとしていますか？［続ける］→［新しい端末をリンクする］をタップし、もう一度QRコードをスキャンしてください。</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">続行</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">アカウントを移行できません</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d/%2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ka/strings.xml b/feature/media-send/src/main/res/values-ka/strings.xml
+index e5451de23bcccf64ecbd73c91fa36b703080fb4c..b7dca908726e43c2f8967ceff5f9e7eadc29507d 100644
+--- a/feature/media-send/src/main/res/values-ka/strings.xml
++++ b/feature/media-send/src/main/res/values-ka/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">გავაუქმოთ ცვლილებები?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">როგორც ჩანს, Signal-ის მოწყობილობის დაკავშირებას ცდილობ. დააჭირე გაგრძელებას, შემდეგ აირჩიე „ახალი მოწყობილობის მიბმა“ და თავიდან დაასკანირე QR კოდი.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">გაგრძელება</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">ანგარიშის გადატანა შეუძლებელია</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d %2$d-დან</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-kk/strings.xml b/feature/media-send/src/main/res/values-kk/strings.xml
+index 17012dec0575e9c991765e5c0b4264c079ec5ede..eb6d84ba6a6452d2f85597db662f2c9f4ee1cb7e 100644
+--- a/feature/media-send/src/main/res/values-kk/strings.xml
++++ b/feature/media-send/src/main/res/values-kk/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Өзгерістерді сақтамау керек пе?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Signal құрылғысын байланыстырайын деп жатқан сияқтысыз. \"Жалғастыру\" түймесін, содан кейін \"Жаңа құрылғыны байланыстыру\" түймесін түртіп, QR кодын қайта сканерлеңіз.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Жалғастыру</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Аккаунтты тасымалдау мүмкін емес</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d / %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-km/strings.xml b/feature/media-send/src/main/res/values-km/strings.xml
+index 3977c9acf5711cc067a3256cf6630f1bdc2f3443..690c64baa30418825929ffed513602c6ff9d12bb 100644
+--- a/feature/media-send/src/main/res/values-km/strings.xml
++++ b/feature/media-send/src/main/res/values-km/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">បោះបង់ការកែប្រែ?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">អ្នកហាក់ដូចជាកំពុងព្យាយាមភ្ជាប់ឧបករណ៍ Signal។ ចុចបន្ត ហើយបន្ទាប់មកចុច \"ភ្ជាប់ឧបករណ៍ថ្មី\" ហើយស្គែនកូដ QR ម្តងទៀត។</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">បន្ត</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">មិនអាចផ្ទេរគណនីបានទេ</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d នៃ %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-kn/strings.xml b/feature/media-send/src/main/res/values-kn/strings.xml
+index e09a056d0e2aea758de7fa915c3f856f47f0bbff..18821f346012b480976fab5548abe3c7b3fd4982 100644
+--- a/feature/media-send/src/main/res/values-kn/strings.xml
++++ b/feature/media-send/src/main/res/values-kn/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">ಬದಲಾವಣೆಗಳನ್ನು ತ್ಯಜಿಸುವುದೇ?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">ನೀವು ಒಂದು Signal ಸಾಧನವನ್ನು ಲಿಂಕ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವಂತೆ ತೋರುತ್ತಿದೆ. ಮುಂದುವರಿಸಿ ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತು \"ಹೊಸ ಸಾಧನವನ್ನು ಲಿಂಕ್ ಮಾಡಿ\" ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಮತ್ತು QR ಕೋಡ್ ಅನ್ನು ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">ಮುಂದುವರಿಸಿ</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">ಖಾತೆಯನ್ನು ವರ್ಗಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%2$d ನಲ್ಲಿ %1$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ko/strings.xml b/feature/media-send/src/main/res/values-ko/strings.xml
+index 81ceb08eefd49e7975342520d73fb1f8dc5851c8..bcfe44f62716e24a9ebbcf53608e0ea4f87ed41e 100644
+--- a/feature/media-send/src/main/res/values-ko/strings.xml
++++ b/feature/media-send/src/main/res/values-ko/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">변경 내용을 삭제할까요?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Signal 기기를 연동하려고 하시는 것 같네요. 계속을 탭한 다음 \'새 기기 연동\'을 탭하고 QR 코드를 다시 스캔하세요.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">계속</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">계정을 이전할 수 없음</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%2$d 중 %1$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ky/strings.xml b/feature/media-send/src/main/res/values-ky/strings.xml
+index 43e1a0fd7dfedb6145442268a681e9a903327de9..78b16d6ee47d1b6c23a3d5b3ec58ea3437b3c595 100644
+--- a/feature/media-send/src/main/res/values-ky/strings.xml
++++ b/feature/media-send/src/main/res/values-ky/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Өзгөртүүлөр жокко чыгарылсынбы?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Signal түзмөгүн байланыштырганы жатат окшойсуз. Алгач, Улантуу дегенди, андан соң \"Жаңы түзмөктү байланыштыруу\" дегенди таптап, QR кодду кайра скандаңыз.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Улантуу</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Аккаунт өтпөй жатат</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%2$d ичинен %1$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-lt/strings.xml b/feature/media-send/src/main/res/values-lt/strings.xml
+index 4d9837dc9b876cceb75fd247677550ad67628822..8fa76044a28a083c914d51164504cd8bdc4c800f 100644
+--- a/feature/media-send/src/main/res/values-lt/strings.xml
++++ b/feature/media-send/src/main/res/values-lt/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Atmesti pakeitimus?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -231,9 +232,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Atrodo, kad bandote susieti „Signal“ įrenginį. Bakstelėkite „Tęsti“, tada bakstelėkite „Susieti naują įrenginį“ ir nuskaitykite QR kodą dar kartą.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Tęsti</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Paskyros perkelti neįmanoma</string>
+@@ -278,4 +276,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d iš %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-lv/strings.xml b/feature/media-send/src/main/res/values-lv/strings.xml
+index ee93e5d07a1956a47135836dbcbb991181fe8c6b..a6011cb404fed2b8ac416af6ab1a1e2e701c955d 100644
+--- a/feature/media-send/src/main/res/values-lv/strings.xml
++++ b/feature/media-send/src/main/res/values-lv/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Atmest izmaiņas?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -229,9 +230,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Šķiet, ka mēģināt piesaistīt Signal ierīci. Pieskarties pie \"Turpināt\" un pie \"Piesaistīt jaunu ierīci\". Pēc tam skenējiet QR kodu vēlreiz.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Turpināt</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Neizdodas pārsūtīt kontu</string>
+@@ -271,4 +269,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d no %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-mk/strings.xml b/feature/media-send/src/main/res/values-mk/strings.xml
+index e05b4072ef725277fcd3ba598dedc463a3aaa0aa..6de8a4df996cee7fe6a6ee2506e13bb74bd156f2 100644
+--- a/feature/media-send/src/main/res/values-mk/strings.xml
++++ b/feature/media-send/src/main/res/values-mk/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Да ги откажам промените?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Изгледа дека сакате да поврзете Signal уред. Допрете на „Продолжи“, па допрете на „Поврзете нов уред“ и скенирајте го QR кодот повторно.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Продолжи</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Не може да се пренесе корисничката сметка</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d од %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ml/strings.xml b/feature/media-send/src/main/res/values-ml/strings.xml
+index f06f08ce3f24c0144a826c67165b0bd2f8e5129c..26f707439e07b4f6706c3d083111f0a010c5c85f 100644
+--- a/feature/media-send/src/main/res/values-ml/strings.xml
++++ b/feature/media-send/src/main/res/values-ml/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">മാറ്റങ്ങൾ ഉപേക്ഷിക്കണോ?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">നിങ്ങൾ ഒരു Signal ഉപകരണം ലിങ്ക് ചെയ്യാൻ ശ്രമിക്കുന്നതായി തോന്നുന്നു. തുടരുക ടാപ്പ് ചെയ്യുക, തുടർന്ന് \"ഒരു പുതിയ ഉപകരണം ലിങ്ക് ചെയ്യുക\" ടാപ്പ് ചെയ്യുക, തുടർന്ന് QR കോഡ് വീണ്ടും സ്കാൻ ചെയ്യുക.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">തുടരുക</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">അക്കൗണ്ട് കൈമാറാൻ കഴിയില്ല</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%2$d ൽ %1$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-mr/strings.xml b/feature/media-send/src/main/res/values-mr/strings.xml
+index cc2f58e4d47a06ffbb6f928e519f57eefa1eb05a..86c1fdb88360281d449c80811f8ec46e2c7b2efe 100644
+--- a/feature/media-send/src/main/res/values-mr/strings.xml
++++ b/feature/media-send/src/main/res/values-mr/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">बदल रद्द करायचे ?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">आपण Signal डिव्हाइस लिंक करण्याचा प्रयत्न करत आहात असे दिसते. चालू ठेवा वर टॅप करा आणि मग \"नवीन डिव्हाईस लिंक करा\" वर टॅप करा आणि QR कोड पुन्हा स्कॅन करा.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">सुरू ठेवा</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">खाते हस्तांतरित करता येणार नाही</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d पैकी %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ms/strings.xml b/feature/media-send/src/main/res/values-ms/strings.xml
+index 61aa9abd24334100698783c2c042e78003dade92..3132ea43d67bf9d6730ad9ec451e2c82efb0b844 100644
+--- a/feature/media-send/src/main/res/values-ms/strings.xml
++++ b/feature/media-send/src/main/res/values-ms/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Abaikan perubahan?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Nampaknya anda sedang cuba memautkan peranti Signal. Ketik teruskan, kemudian ketik \"Pautkan Peranti Baharu\" dan imbas semula kod QR.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Teruskan</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Tidak dapat memindahkan akaun</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d daripada %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-my/strings.xml b/feature/media-send/src/main/res/values-my/strings.xml
+index bf2dc89104d9664c87c141be4cf9a67c4d301701..0e7880249bd4f9821edef9f0e65e7074e4b2c122 100644
+--- a/feature/media-send/src/main/res/values-my/strings.xml
++++ b/feature/media-send/src/main/res/values-my/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">ပြောင်းလဲမှုများကို ဖယ်ပစ်မည်လား။</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">သင်သည် Signal စက်တစ်လုံးကို ချိတ်ဆက်ရန် ကြိုးစားနေပုံရပါသည်။ ဆက်လုပ်ရန်ကို နှိပ်ကာ \"စက်အသစ်တစ်ခုကို ချိတ်ဆက်ပါ\" ကိုနှိပ်ပြီး QR ကုဒ်ကို ထပ်မံစကင်န်ဖတ်ပါ။</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">ဆက်လုပ်ရန်</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">အကောင့်ကို လွှဲပြောင်း၍ မရပါ</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d/%2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-nb/strings.xml b/feature/media-send/src/main/res/values-nb/strings.xml
+index dc3e6fffc8b7857eac8ba1faec52aa437e1dda5d..6ca414ec7afbd946106184c233246f246a43bf30 100644
+--- a/feature/media-send/src/main/res/values-nb/strings.xml
++++ b/feature/media-send/src/main/res/values-nb/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Vil du forkaste endringene?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Det ser ut til at du prøver å koble til en enhet med Signal. Trykk på «Fortsett» og så «Koble til ny enhet», og skann deretter QR-koden på nytt.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Fortsett</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Kunne ikke overføre kontoen</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d av %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-nl/strings.xml b/feature/media-send/src/main/res/values-nl/strings.xml
+index 3a908886f4e5f3ed9d6afc799dddf25582e5097e..3872279754ec67c93976ca40f042a1abf3ef8093 100644
+--- a/feature/media-send/src/main/res/values-nl/strings.xml
++++ b/feature/media-send/src/main/res/values-nl/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Wijzigingen verwijderen?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Het lijkt erop dat je een Signal-apparaat probeert te koppelen. Tik op Doorgaan, vervolgens op ‘Een nieuw apparaat koppelen’ en scan de QR-code opnieuw.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Doorgaan</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Kan account niet overzetten</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d van %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-pa/strings.xml b/feature/media-send/src/main/res/values-pa/strings.xml
+index 9500a4836579e26aa187cb61e68bdb1650391363..8b6800821fb4974fa3ad238a60d82050c0c4c9f5 100644
+--- a/feature/media-send/src/main/res/values-pa/strings.xml
++++ b/feature/media-send/src/main/res/values-pa/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">ਕੀ ਤਬਦੀਲੀਆਂ ਨੂੰ ਖਾਰਜ ਕਰਨਾ ਹੈ?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇੱਕ Signal ਡਿਵਾਈਸ ਨੂੰ ਲਿੰਕ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ। ਜਾਰੀ ਰੱਖੋ \'ਤੇ ਟੈਪ ਕਰੋ ਅਤੇ ਫਿਰ \"ਨਵਾਂ ਡਿਵਾਈਸ ਲਿੰਕ ਕਰੋ\" ਉੱਤੇ ਟੈਪ ਕਰੋ ਅਤੇ QR ਕੋਡ ਨੂੰ ਦੁਬਾਰਾ ਸਕੈਨ ਕਰੋ।</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">ਜਾਰੀ ਰੱਖੋ</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">ਖਾਤਾ ਟ੍ਰਾਂਸਫਰ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%2$d ਵਿੱਚੋਂ %1$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-pl/strings.xml b/feature/media-send/src/main/res/values-pl/strings.xml
+index e542da2ee9c20e89ee28ab3b96f4242baa6930fc..25bf1b28847cc99ed95d86cce8c2c07ec1519e3b 100644
+--- a/feature/media-send/src/main/res/values-pl/strings.xml
++++ b/feature/media-send/src/main/res/values-pl/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Odrzucić zmiany?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -231,9 +232,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Wygląda na to, że próbujesz połączyć z aplikacją Signal nowe urządzenie. Aby to zrobić, dotknij opcji „Kontynuuj”, wybierz „Połącz nowe urządzenie” i zeskanuj kod QR ponownie.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Kontynuuj</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Nie można przenieść konta</string>
+@@ -278,4 +276,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d z %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-pt-rBR/strings.xml b/feature/media-send/src/main/res/values-pt-rBR/strings.xml
+index b26ecaa15e17fb93a9e7c32b6345608562b3b6c9..724c28e32662bf4c24a07e05a5362bda1a97ec6b 100644
+--- a/feature/media-send/src/main/res/values-pt-rBR/strings.xml
++++ b/feature/media-send/src/main/res/values-pt-rBR/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Descartar alterações?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Parece que você está tentando vincular um dispositivo Signal. Toque em continuar, depois em \"Vincular um novo dispositivo\" e escaneie o QR code novamente.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Continuar</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Não foi possível transferir a conta</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d de %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-pt/strings.xml b/feature/media-send/src/main/res/values-pt/strings.xml
+index 059632994624303217023b37b1b6ee7612f22ca6..984d15569a5dfc3d2e614ca69deaad7e1043e8ef 100644
+--- a/feature/media-send/src/main/res/values-pt/strings.xml
++++ b/feature/media-send/src/main/res/values-pt/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Descartar alterações?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -151,11 +152,7 @@
+   <!-- Toast dialog explaining why Signal needs microphone permissions -->
+   <string name="CameraXFragment_signal_needs_microphone_access_video">O Molly necessita de acesso ao microfone para gravar vídeos</string>
+   <!-- Dialog description that explains the steps needed to give camera permission -->
+-<<<<<<< MOLLY
+-  <string name="CameraXFragment_to_capture_photos">Para tirar fotos no Molly</string>
+-=======
+-  <string name="CameraXFragment_to_capture_photos">Para tirar fotos no Signal:</string>
+->>>>>>> SIGNAL
++  <string name="CameraXFragment_to_capture_photos">Para tirar fotos no Molly:</string>
+   <!-- Dialog description that explains the steps needed to give camera and microphone permission -->
+   <string name="CameraXFragment_to_capture_photos_videos">Para tirar fotos e gravar vídeos no Molly:</string>
+   <!-- Dialog description that explains the steps needed to give microphone permission -->
+@@ -171,11 +168,7 @@
+   <!-- Accessibility label for the camera toggle that keeps the camera open after each capture so several photos or videos can be taken in a row -->
+   <string name="CameraXFragment_multi_capture">Captura múltipla</string>
+   <!-- Displayed in a permissions dialog when the user has denied access to hardware for image and video capture. -->
+-<<<<<<< MOLLY
+-  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">O Sinal necessita de permissões de microfone para poder gravar vídeos. mas elas foram negadas. Por favor, avance até às definições das aplicações,. selecione o Molly e nas \"Permissões\", ative o \"Microfone\" e a \"Câmara\"</string>
+-=======
+-  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">O Signal necessita de permissões do microfone para poder gravar vídeos, mas elas foram recusadas. Continue para as definições de apps, selecione \"Permissões\", ative \"Microfone\" e \"Câmara\".</string>
+->>>>>>> SIGNAL
++  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">O Molly necessita de permissões do microfone para poder gravar vídeos, mas elas foram recusadas. Continue para as definições de apps, selecione \"Permissões\", ative \"Microfone\" e \"Câmara\".</string>
+ 
+   <!-- Displayed when there is an error capturing video -->
+   <string name="MediaSendViewModel__error_recording_video">Erro ao gravar vídeo</string>
+@@ -235,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Parece que está a tentar associar um dispositivo Signal. Toque em continuar e depois em \"Associe um novo dispositivo\" e leia novamente o código QR.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Continuar</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Não é possível transferir conta</string>
+@@ -272,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d de %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ro/strings.xml b/feature/media-send/src/main/res/values-ro/strings.xml
+index 8212b312351e8656218c4fc4ecef795674a7747c..54f973a1db65763c7f1726a7412ad9b7ccdc1ce2 100644
+--- a/feature/media-send/src/main/res/values-ro/strings.xml
++++ b/feature/media-send/src/main/res/values-ro/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Renunți la modificări?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -229,9 +230,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Se pare că încerci să asociezi un dispozitiv Signal. Atinge Continuă, apoi atinge „Asociază un dispozitiv nou” și scanează din nou codul QR.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Continuare</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Nu se poate transfera contul</string>
+@@ -271,4 +269,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d din %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ru/strings.xml b/feature/media-send/src/main/res/values-ru/strings.xml
+index 54ee19369d0379e6d4cefefed674a51e46e8052d..01a2dc0d2fe96bec424c41247876e70b0d25964b 100644
+--- a/feature/media-send/src/main/res/values-ru/strings.xml
++++ b/feature/media-send/src/main/res/values-ru/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Сбросить изменения?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -231,9 +232,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Похоже, вы пытаетесь привязать устройство Signal. Нажмите «Продолжить», затем «Привязать новое устройство» и снова просканируйте QR-код.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Продолжить</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Невозможно перенести учётную запись</string>
+@@ -278,4 +276,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d из %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-sk/strings.xml b/feature/media-send/src/main/res/values-sk/strings.xml
+index 45a2edbbabf5d484d92eca53fff31c0b24641a64..888f670b58d0a7dbad560a7fb8372608834b95a3 100644
+--- a/feature/media-send/src/main/res/values-sk/strings.xml
++++ b/feature/media-send/src/main/res/values-sk/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Zrušiť zmeny?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -231,9 +232,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Zdá sa, že sa pokúšate prepojiť zariadenie Signal. Ťuknite na Pokračovať, potom na „Prepojiť nové zariadenie“ a znova naskenujte QR kód.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Pokračovať</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Účet sa nedá preniesť</string>
+@@ -278,4 +276,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d z %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-sl/strings.xml b/feature/media-send/src/main/res/values-sl/strings.xml
+index d44d2226cf0e9f706df52b15b30b0aaed652c52f..95ff97b170054488c7da7e4d9505cfc1a9bac92a 100644
+--- a/feature/media-send/src/main/res/values-sl/strings.xml
++++ b/feature/media-send/src/main/res/values-sl/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Želite zavreči spremembe?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -231,9 +232,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Zdi se, da poskušate povezati napravo Signal. Tapnite Nadaljuj in nato »Poveži novo napravo« ter znova preberite kodo QR.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Nadaljuj</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Ni mogoče prenesti računa</string>
+@@ -278,4 +276,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d od %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-sq/strings.xml b/feature/media-send/src/main/res/values-sq/strings.xml
+index 35e33eae9bf1c196f23cf6d3bcf0f123f60e98a5..dd60d116bd63e7c895b9d0f269daf479e17ef28f 100644
+--- a/feature/media-send/src/main/res/values-sq/strings.xml
++++ b/feature/media-send/src/main/res/values-sq/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Të hiqen ndryshimet?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Me sa duket, po përpiqesh të lidhësh një pajisje Signal. Prek \"Vazhdo\" dhe më pas prek \"Lidh pajisje të re\" dhe skano përsëri kodin QR.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Vazhdo</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Nuk mund të transferohet llogaria</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d nga %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-sr/strings.xml b/feature/media-send/src/main/res/values-sr/strings.xml
+index 45d21ee5500198a8819247ed1a3d958bf46ce05c..73ec6b76daca7216a2e32d7c6523f6c364cb3fa6 100644
+--- a/feature/media-send/src/main/res/values-sr/strings.xml
++++ b/feature/media-send/src/main/res/values-sr/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Желите ли да одбаците промене?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Изгледа да покушавате да повежете уређај на ком је инсталиран Signal. Додирните „Настави“, а потом додирните „Повежи нови уређај“ и скенирајте поново QR код.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Настави</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Пренос налога није могућ</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d од %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-sv/strings.xml b/feature/media-send/src/main/res/values-sv/strings.xml
+index 1f5a6067788c8d60470876f15ae6d78cd984e6af..ec92848269fa503699ea74d86d5b2e21c359ca01 100644
+--- a/feature/media-send/src/main/res/values-sv/strings.xml
++++ b/feature/media-send/src/main/res/values-sv/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Kassera ändringar?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Det verkar som om du försöker länka en Signal-enhet. Tryck på fortsätt och tryck sedan på Länka en ny enhet och skanna QR-koden igen.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Fortsätt</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Det går inte att överföra konto</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d av %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-sw/strings.xml b/feature/media-send/src/main/res/values-sw/strings.xml
+index 0a98df7599a92a62caf718ca9c3dcd42477af438..79d9eb8aed08c3592dd62a2b0dc8610d0b4cc51a 100644
+--- a/feature/media-send/src/main/res/values-sw/strings.xml
++++ b/feature/media-send/src/main/res/values-sw/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Ondoa mabadiliko?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Inaonekana kama unajaribu kuunganisha kifaa cha Signal. Gusa endelea na kisha gusa \"Unganisha kifaa kipya\" na uskani kodi ya QR tena.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Endelea</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Imeshindwa kuhamisha akaunti</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d kwa %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ta/strings.xml b/feature/media-send/src/main/res/values-ta/strings.xml
+index fc8b49679b6cf4f03733fc24c323034f71fbda3d..6c8c518a9f2fac41148165a4977b95d128cb1450 100644
+--- a/feature/media-send/src/main/res/values-ta/strings.xml
++++ b/feature/media-send/src/main/res/values-ta/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">மாற்றங்களைக் கைவிடுவதா?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">நீங்கள் சிக்னல் சாதனத்தை இணைக்க முயல்வது போல் தெரிகிறது. தொடர்க என்பதைத் தட்டி, பின்னர் \"புதிய சாதனத்தை இணை\" என்பதைத் தட்டி, QR குறியீட்டை மீண்டும் ஸ்கேன் செய்யுங்கள்.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">தொடர்</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">கணக்கை இடமாற்ற முடியாது</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%2$d இன் %1$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-te/strings.xml b/feature/media-send/src/main/res/values-te/strings.xml
+index b7599d219ef2510a87ffcbe1868e17f46cc0e9a4..06961995b1e8c7ec03b1226f27d3570e182eeb5a 100644
+--- a/feature/media-send/src/main/res/values-te/strings.xml
++++ b/feature/media-send/src/main/res/values-te/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">మార్పులను విస్మరించాలా?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">మీరు Signal పరికరాన్ని లింక్ చేయడానికి ప్రయత్నిస్తున్నట్లు కనిపిస్తోంది. కొనసాగించును తట్టండి, ఆపై \"కొత్త పరికరాన్ని లింక్ చేయండి\"పై తట్టండి, QR కోడ్‌ను మళ్లీ స్కాన్ చేయండి.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">కొనసాగించు</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">ఖాతాను బదిలీ చేయడం సాధ్యం కాదు</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d ఆఫ్ %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-th/strings.xml b/feature/media-send/src/main/res/values-th/strings.xml
+index 2545dd5be9ae2005909cdba4959657651fce8f76..ad7d35805a946e740f18f35f176140a9bbb245a4 100644
+--- a/feature/media-send/src/main/res/values-th/strings.xml
++++ b/feature/media-send/src/main/res/values-th/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">ยกเลิกการเปลี่ยนแปลงหรือไม่</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">ดูเหมือนว่าคุณพยายามจะเชื่อมโยงอุปกรณ์ Signal แตะดำเนินการต่อ จากนั้นให้แตะ \"เชื่อมโยงอุปกรณ์เครื่องใหม่\" แล้วสแกนคิวอาร์โค้ดอีกครั้ง</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">ทำต่อ</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">ไม่สามารถถ่ายโอนบัญชีได้</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d จาก %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-tl/strings.xml b/feature/media-send/src/main/res/values-tl/strings.xml
+index c29618e7b3d997a7b0699944a30f986e94f6c208..102218926bd391835bbfa79ab5215846dc34d5cb 100644
+--- a/feature/media-send/src/main/res/values-tl/strings.xml
++++ b/feature/media-send/src/main/res/values-tl/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Gusto mo bang i-discard ang changes?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Mukhang sinusubukan mong mag-link ng isang Signal device. I-tap ang continue, tapos i-tap ang \"Mag-link ng Bagong Device\", at subukang i-scan ulit ang QR code.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Magpatuloy</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Hindi ma-transfer ang account</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d ng %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-tr/strings.xml b/feature/media-send/src/main/res/values-tr/strings.xml
+index 9089a1730278fb482167ef63b8c42dcffb2b3a2e..44474367c5fccbd55f4c5cfa1805e76ebab6bb26 100644
+--- a/feature/media-send/src/main/res/values-tr/strings.xml
++++ b/feature/media-send/src/main/res/values-tr/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Değişiklikler silinsin mi?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Signal\'da bir cihaz bağlamaya çalışıyor gibi görünüyorsun. Devam et\'e dokun. Ardından \"Yeni Bir Cihaz Bağla\"ya dokunup karekodu yeniden tara.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Devam et</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Hesap aktarılamıyor</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d / %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ug/strings.xml b/feature/media-send/src/main/res/values-ug/strings.xml
+index cd16426eefbd11ffa0c1b7e789f4d5554b79bc5a..44a220e8ea4df3d1a2f2758d51dfa0daa6fe6b1c 100644
+--- a/feature/media-send/src/main/res/values-ug/strings.xml
++++ b/feature/media-send/src/main/res/values-ug/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">ئۆزگىرىشلەرنى تاشلىۋەت</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">بىر Signal ئۈسكۈنىسىنى ئۇلىماقچى بولغاندەك تۇرىسىز. داۋاملاشتۇرۇشنى چېكىپ ئاندىن «يېڭى ئۈسكۈنىنى ئۇلاش» نى چېكىڭ ھەمدە QR كودىنى قايتا سىكانېرلاڭ.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">داۋاملاشتۇر</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">ھېساباتنى يۆتكىگىلى بولمىدى</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d نىڭ%2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-uk/strings.xml b/feature/media-send/src/main/res/values-uk/strings.xml
+index f5d50636bf2cfbdcbb432fa1b77fd0d3dfddcdab..cbe166f6a7365bfd5196dec728b8e7fa24aba834 100644
+--- a/feature/media-send/src/main/res/values-uk/strings.xml
++++ b/feature/media-send/src/main/res/values-uk/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Відхилити зміни?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -231,9 +232,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Схоже, ви намагаєтеся зв\'язати пристрій із Signal. Натисніть «Продовжити», потім натисніть «Зв\'язати новий пристрій» і зіскануйте QR-код знову.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Продовжити</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Не вдається перенести акаунт</string>
+@@ -278,4 +276,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d з %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-ur/strings.xml b/feature/media-send/src/main/res/values-ur/strings.xml
+index f5385498f0524a6e266f76ab2058e885701a1dde..2c48437550764c98e41f421ca07469eaa7c29c63 100644
+--- a/feature/media-send/src/main/res/values-ur/strings.xml
++++ b/feature/media-send/src/main/res/values-ur/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">تبدیلیاں رد کریں؟</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -227,9 +228,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">ایسا لگتا ہے کہ آپ Signal ڈیوائس کو لنک کرنے کی کوشش کر رہے ہیں۔ جاری رکھیں پر ٹیپ کریں اور پھر \"نئی ڈیوائس لنک کریں\" پر ٹیپ کریں اور QR کوڈ کو دوبارہ اسکین کریں۔</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">جاری رکھیں</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">اکاؤنٹ ٹرانسفر نہیں کیا جا سکتا</string>
+@@ -264,4 +262,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$dکا%2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-vi/strings.xml b/feature/media-send/src/main/res/values-vi/strings.xml
+index 799f10e5d87f0e12cc5c2ce5c66cffe76d6255a9..48d97308c944951ad1fd1ffcf8ed898ca59bfc40 100644
+--- a/feature/media-send/src/main/res/values-vi/strings.xml
++++ b/feature/media-send/src/main/res/values-vi/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">Bạn có muốn hủy bỏ các thay đổi không?</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">Có vẻ như bạn đang cố liên kết một thiết bị Signal. Nhấn tiếp tục và sau đó nhấn \"Liên kết thiết bị mới\" và quét lại mã QR.</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">Tiếp tục</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">Không thể chuyển tài khoản</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d trên tổng số %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-yue/strings.xml b/feature/media-send/src/main/res/values-yue/strings.xml
+index 3d83e5a5385e56f55373533d89b491aeb8b9f572..97f0671062a4e41da043a4fb540480bcc37ac8ed 100644
+--- a/feature/media-send/src/main/res/values-yue/strings.xml
++++ b/feature/media-send/src/main/res/values-yue/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">改過嗰啲嘢係咪掉咗佢？</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">你似乎嘗試緊連結一部裝咗 Signal 嘅裝置。㩒一下繼續，然後㩒一下「連結新裝置」再掃描二維碼。</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">繼續</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">轉移唔到帳戶</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d / %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-zh-rCN/strings.xml b/feature/media-send/src/main/res/values-zh-rCN/strings.xml
+index 017b357cf04ebd28f299670865d07778940f64f0..91281e0454d51467c5ae2bcef61614120e04b821 100644
+--- a/feature/media-send/src/main/res/values-zh-rCN/strings.xml
++++ b/feature/media-send/src/main/res/values-zh-rCN/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">要放弃更改吗？</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">您似乎正在尝试链接一个 Signal 设备。请点击“继续”，然后点击“链接新设备”，并再次扫描二维码。</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">继续</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">无法转移账户</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">%1$d / %2$d</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-zh-rHK/strings.xml b/feature/media-send/src/main/res/values-zh-rHK/strings.xml
+index e4d398e959daf4824c1f09e921fa8564d71a8583..2954f07444235b8b566950e55c1e298835f85ec5 100644
+--- a/feature/media-send/src/main/res/values-zh-rHK/strings.xml
++++ b/feature/media-send/src/main/res/values-zh-rHK/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">要捨棄變更嗎？</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">你似乎正嘗試連結 Signal 裝置。輕按繼續，然後輕按「連結新的裝置」並再次掃描二維碼。</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">繼續</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">無法轉移帳戶</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">第 %1$d 個，共 %2$d 個</string>
+ </resources>
+->>>>>>> SIGNAL
+diff --git a/feature/media-send/src/main/res/values-zh-rTW/strings.xml b/feature/media-send/src/main/res/values-zh-rTW/strings.xml
+index b10016d842a0c04617d7a8a2a7773eff446d3a61..a7a64c868619c0986fcf223c1fc9ecda50dedb5e 100644
+--- a/feature/media-send/src/main/res/values-zh-rTW/strings.xml
++++ b/feature/media-send/src/main/res/values-zh-rTW/strings.xml
+@@ -1,4 +1,5 @@
+-<?xml version="1.0" encoding="UTF-8"?><resources>
++<?xml version="1.0" encoding="UTF-8"?>
++<resources>
+   <!-- Dialog title shown when the user tries to leave the image editor with unsaved edits. -->
+   <string name="MediaSendDialogs__discard_changes">放棄更改？</string>
+   <!-- Dialog body explaining that leaving the image editor will discard any edits made to the current photo. -->
+@@ -225,9 +226,6 @@
+   <string name="LinkedDeviceScannedDialog__it_looks_like_youre_trying">你似乎正嘗試連結 Signal 裝置。輕按繼續，然後輕按「連結新的裝置」並再次掃描二維碼。</string>
+   <!-- The label of a dialog asking the user if they would like to continue to the linked device settings screen. -->
+   <string name="LinkedDeviceScannedDialog__device_link_dialog_continue">繼續</string>
+-<<<<<<< MOLLY
+-</resources>
+-=======
+ 
+   <!-- The title of a dialog shown when the user scanned a transfer QR code from a device that is too old to accept their account. -->
+   <string name="ReRegistrationScannedDialog__transfer_failed_title">無法轉移帳戶</string>
+@@ -257,4 +255,3 @@
+     <!-- x of y label displayed in a pill in the editor specifying the type of media being sent. First placeholder is selected page, second is total count. -->
+     <string name="MediaEditScreen__d_of_d">第 %1$d 個，共 %2$d 個</string>
+ </resources>
+->>>>>>> SIGNAL

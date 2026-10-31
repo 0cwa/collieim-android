@@ -1,0 +1,1169 @@
+From af670c86260629013c59b299f756999016c6c352 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Thu, 29 Oct 2026 00:01:38 +0100
+Subject: [PATCH] Port resources-and-branding to Signal 8.33.2, part 11
+
+Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.
+
+These are AI-generated compatibility resolutions from the existing
+PR #7 port source, exported after Git has performed its deterministic
+three-way merge of the unchanged official Molly 8.19.2-4 snapshot
+with Signal 8.33.2. The original Molly mailboxes remain unchanged.
+Offset-only movement and conflict-free automatic merges are already
+in the parent tree and are not re-exported as patch rewrites.
+
+This batch owns 50 whole-file changes. It preserves the
+previous port tree exactly and makes no new application changes.
+The source commit records a derived candidate, not an official
+Molly release or a claim of upstream authorship.
+
+Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
+Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
+Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
+Mechanical-Merge-Tree: 759ef1c309d93aa7e4ac7217b144c04545562f11
+AI-Generated: true
+
+diff --git a/core/ui/src/main/res/drawable-night/image_signal_logo_wordmark.xml b/core/ui/src/main/res/drawable-night/image_signal_logo_wordmark.xml
+deleted file mode 100644
+index 1e297bee8d5eaf80f26960549103353f1d2dd9ea..0000000000000000000000000000000000000000
+--- a/core/ui/src/main/res/drawable-night/image_signal_logo_wordmark.xml
++++ /dev/null
+@@ -1,85 +0,0 @@
+-<!--
+-  ~ Copyright 2025 Signal Messenger, LLC
+-  ~ SPDX-License-Identifier: AGPL-3.0-only
+-  -->
+-
+-<vector xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:width="100dp"
+-    android:height="28.5dp"
+-    android:viewportWidth="560"
+-    android:viewportHeight="160">
+-  <path
+-      android:pathData="m80,0c4.15,0 8.23,0.32 12.21,0.93l-1.14,7.41c-3.61,-0.55 -7.3,-0.84 -11.06,-0.84 -3.76,0 -7.46,0.29 -11.06,0.84l-1.14,-7.41c3.98,-0.61 8.06,-0.93 12.21,-0.93z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m98.98,2.27 l-1.78,7.29c7.31,1.78 14.18,4.67 20.44,8.47l3.89,-6.41c-6.9,-4.2 -14.49,-7.39 -22.55,-9.35z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m127.28,15.46 l-4.43,6.05c5.98,4.39 11.26,9.67 15.64,15.64l6.05,-4.43c-4.84,-6.6 -10.67,-12.42 -17.26,-17.26z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m148.38,38.46 l-6.41,3.89c3.81,6.25 6.69,13.13 8.47,20.44l7.29,-1.78c-1.96,-8.07 -5.15,-15.65 -9.35,-22.55z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m159.07,67.79 l-7.41,1.14c0.55,3.61 0.84,7.3 0.84,11.06 0,3.76 -0.29,7.46 -0.84,11.06l7.41,1.14c0.61,-3.98 0.93,-8.06 0.93,-12.21 0,-4.15 -0.32,-8.23 -0.93,-12.21z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m141.97,117.64c3.81,-6.26 6.69,-13.13 8.47,-20.44l7.29,1.78c-1.96,8.07 -5.15,15.65 -9.35,22.55z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m138.49,122.85 l6.05,4.43c-4.84,6.6 -10.67,12.42 -17.26,17.26l-4.43,-6.05c5.98,-4.39 11.26,-9.67 15.64,-15.64z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m117.64,141.97 l3.89,6.41c-6.9,4.2 -14.49,7.39 -22.55,9.35l-1.78,-7.29c7.31,-1.78 14.19,-4.67 20.44,-8.47z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m91.06,151.66 l1.14,7.41c-3.98,0.61 -8.06,0.93 -12.21,0.93 -4.15,0 -8.23,-0.32 -12.21,-0.93l1.14,-7.41c3.61,0.55 7.3,0.84 11.06,0.84 3.76,0 7.46,-0.29 11.06,-0.84z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m62.79,150.45 l-1.78,7.29c-6.06,-1.48 -11.85,-3.64 -17.28,-6.41l-7.59,1.77 -1.7,-7.3 10.26,-2.39 2.44,1.24c4.92,2.51 10.16,4.47 15.65,5.8z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m28.11,147.27 l1.7,7.3 -13.01,3.04c-8.66,2.02 -16.43,-5.75 -14.41,-14.41l3.04,-13.02 7.3,1.7 -3.04,13.02c-0.76,3.25 2.16,6.16 5.4,5.41z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m14.2,125.56 l-7.3,-1.7 1.77,-7.59c-2.77,-5.43 -4.93,-11.22 -6.41,-17.28l7.29,-1.78c1.34,5.49 3.3,10.74 5.8,15.65l1.24,2.44z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m8.34,91.06 l-7.41,1.14c-0.61,-3.98 -0.93,-8.06 -0.93,-12.21 0,-4.15 0.32,-8.23 0.93,-12.21l7.41,1.14c-0.55,3.61 -0.84,7.3 -0.84,11.06 0,3.76 0.29,7.46 0.84,11.06z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m9.55,62.79 l-7.29,-1.78c1.96,-8.07 5.15,-15.65 9.35,-22.55l6.41,3.89c-3.81,6.25 -6.69,13.13 -8.47,20.44z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m21.51,37.15 l-6.05,-4.43c4.84,-6.6 10.67,-12.42 17.26,-17.26l4.43,6.05c-5.98,4.39 -11.26,9.67 -15.64,15.64z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m42.36,18.03 l-3.89,-6.41c6.9,-4.2 14.49,-7.39 22.55,-9.35l1.78,7.29c-7.31,1.78 -14.19,4.67 -20.44,8.47z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m145,80c0,35.9 -29.1,65 -65,65 -11.39,0 -22.09,-2.93 -31.4,-8.07 -0.9,-0.5 -1.94,-0.66 -2.94,-0.43l-28.91,6.75 6.75,-28.91c0.23,-1 0.07,-2.04 -0.43,-2.94 -5.14,-9.31 -8.07,-20.01 -8.07,-31.4 0,-35.9 29.1,-65 65,-65 35.9,0 65,29.1 65,65z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m283.47,43.28c-5.47,0 -9.98,-4.51 -9.98,-9.98 0,-5.47 4.51,-9.98 9.98,-9.98s9.98,4.51 9.98,9.98c0,5.47 -4.51,9.98 -9.98,9.98z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m275.2,129v-76.43h16.54v76.43z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m558.08,129v-104.45h-16.54v104.45z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m458.72,90.79c0,25.36 13.67,39.44 31.79,39.44 9.57,0 17.23,-4.99 22.01,-13.53v12.31h16.75v-76.43h-16.75v12.24c-4.78,-8.54 -12.24,-13.47 -21.53,-13.47 -18.59,0 -32.27,14.08 -32.27,39.44zM513.47,90.79c0,15.38 -6.49,25.91 -18.66,25.91 -12.31,0 -18.8,-11.14 -18.8,-25.91 0,-14.77 6.49,-25.43 18.8,-25.43 12.17,0 18.66,10.05 18.66,25.43z"
+-      android:fillColor="#fff"
+-      android:fillType="evenOdd"/>
+-  <path
+-      android:pathData="m400.85,84.09v44.91h-16.89v-76.43h16l0.2,14.97c4.65,-10.66 12.51,-15.93 23.58,-15.93 15.72,0 26.11,10.25 26.11,28.78v48.6h-16.89v-46.14c0,-10.53 -5.81,-16.82 -15.31,-16.82 -9.77,0 -16.82,6.63 -16.82,18.05z"
+-      android:fillColor="#fff"/>
+-  <path
+-      android:pathData="m336.35,159.21c19.48,0 35.34,-9.02 35.34,-31.38v-75.26h-16.54v13.26c-4.78,-9.09 -12.65,-14.49 -22.76,-14.49 -18.11,0 -31.79,13.74 -31.79,38.28s13.67,38.28 31.79,38.28c9.98,0 17.77,-5.2 22.56,-14.15v14.97c0,11.01 -6.56,17.43 -18.59,17.43 -8.48,0 -14.83,-3.28 -16.95,-9.91h-16.06c2.26,14.29 14.15,22.97 33.02,22.97zM355.35,89.63c0,14.63 -6.49,24.75 -18.66,24.75 -12.31,0 -18.8,-10.73 -18.8,-24.75 0,-14.01 6.49,-24.27 18.8,-24.27 12.17,0 18.66,9.64 18.66,24.27z"
+-      android:fillColor="#fff"
+-      android:fillType="evenOdd"/>
+-  <path
+-      android:pathData="m188.83,99.74c0.89,19.48 15.59,30.9 38.97,30.9 24.13,0 38.15,-12.37 38.15,-30.08 0,-17.98 -15.52,-25.5 -29.67,-28.98l-9.71,-2.53c-8,-2.05 -17.77,-5.54 -17.77,-14.56 0,-8.13 7.38,-14.08 19.28,-14.08 11.21,0 18.94,5.2 19.96,14.15h16.54c-0.48,-16.68 -14.83,-28.78 -36.23,-28.78 -20.99,0 -36.71,11.89 -36.71,29.67 0,14.22 9.98,22.76 26.8,27.21l11.76,3.14c10.94,2.87 18.8,6.29 18.8,14.63 0,9.3 -8.95,15.45 -21.33,15.45 -11.62,0 -21.05,-5.13 -21.88,-16.13z"
+-      android:fillColor="#fff"/>
+-</vector>
+diff --git a/core/ui/src/main/res/drawable-xhdpi/ic_signal_backup.png b/core/ui/src/main/res/drawable-xhdpi/ic_signal_backup.png
+deleted file mode 100644
+index c352bcbfb9395fc4dc66e7b361017d71aff13a5f..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 537
+zcmeAS@N?(olHy`uVBq!ia0vp^1|ZDA3?vioaBc-s5&=FTuI>ds|FHpC@6dffHS8rp
+ze!&a^dTBkoZrZcR-)CT8T<PiJ7*cU-Z&-9uvjflM)YJR^_gc3uY2v+57i!PbEk9}T
+zSC;?$%c2^hT>o^f`02*H*S7xbMY%ACOm9sa1<pRB4^B(k5+1RcGVKUpd9}<tV;Qr<
+z1~a2oYfY-H{~!5oX@1pB{5wzVhnugT%(=+v5}$G2cHcARt?6q{Mfx6JFPS5#EmME>
+z@nXBgfASs-A#+68ZxpvPoZnTQ;&gq9$>WN=*y?wJCnV)0KSnvKGIKB$&RMf;y+kQn
+zPtIJ`7sY1WH4F3-bp06~)M@LzzvpW6l=-9K!F{G$avFujclr|cuZ}2TtiAO5N8$Ru
+z*&EI3;-<FbhVA2FoF`Qvx%OU2Zf^k-!_VE;KUSSPS;Kl^+ceW1F22Gh%2yn@Zo1!>
+zda89n+t9Y-)!fO7)slW+6u+;N4r01B>*4dNjNL{5raaiVY&Y}XAR!0!Cp_h6Pp#SZ
+zqCA@4Ax<jPGyl!^<DX1!Ctv+ixc~8w!%NeitaVjq+03$K(rVKfr+at)R_!;8@6*2V
+zdv3?8$$PCi4Yo=s2d(1CNzjaa(!qD<k=Ei)_87fJ_d9E6rf)DYUi+y2U*%7xp#L(}
+UuRQDxf$_-T>FVdQ&MBb@0GW;SV*mgE
+
+diff --git a/core/ui/src/main/res/drawable-xxhdpi/ic_signal_backup.png b/core/ui/src/main/res/drawable-xxhdpi/ic_signal_backup.png
+deleted file mode 100644
+index 4be8c6de1dbf7a92fe3f50d8be24a2956e4d1d71..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 760
+zcmV<U0tfwxP)<h;3K|Lk000e1NJLTq002k;002k`0{{R3VlzW^0000OP)t-sM{rF4
+z|NsC0|NsC0|NsC0|NsC0|NsC09ZOZd00007bW%=J02yJ9+q*iLh*ItV00M|fL_t(|
+z+U1zrcB?Q9L?ewP{{N4Az`zv7#>vTJ=ZS*WMt6t4{-Vqs5%%vQGEw%Q6y&n0Uax9b
+z>7TQzQ3%?V^&w|D75;j8@b3?u%8dcWQjU#=_ZgneC77lyHizJE<#<_EyFp%See{lB
+z7S}vjxdZSr-rAzJIfqt-V3GqRHWLoowUfdEZo-sA&QWniku>Ju<XA2P!Du<G`}wqD
+z87k@|`GZ4f#7FsIoMV@QoEa(Tkjjj6_M~dI0|;ASCYHW>^A2O_X3AsNRCnBq37W}w
+z)0DuD4r5@`;7r$3qk|63<?I)U%;?Zuv4@fU$Z8HqtjehUwI(|n(~<?sWENcSOd`t~
+zty3+&O)-jsfSytm<GHH)MvI5y=Q%%)h?a7<u7_1V&NbxtZTPX9c;FC2Ma@9UvB67B
+zLmT8MWVr-FHp)ENVX~x*?g=S|<#%0nT*pd68yXW1gcD$_Buz)eZZ$x$r+HJ?5qb`l
+zG-e~wte(~gErM9;Vw<zY#$!%7etDssvaXTk^|hXz{>*D^Qn&h@inF0uGs+m-J~@kY
+zj5Go|jqCS=wj@Q6yi<`(!c8ub=RNNf_~MZHmt4mMDv{?M<k+@v2uQB`k^k<lr0Elg
+z>VdpvzP<*b)x{MQ(woCt9Ol-wjA7OMUW?u7IBy4h^)7~eM0DK`ns#j)gP&H?*|N?+
+z@0e@$H>I;ijyz<p<s|M-|9b86jGzX!^46Jw`}kpe4*F#sRr}mzXYMRcrf_7^v=Qm@
+zaA&71NEudI)#wx{T<nz;@Mdc*t9q^_0Pv2S+ID=pQdY<!NhF-PEWYND^gU<t`{-j;
+q41Vf<F3&G9lsR&BEcpMIKcOGa(mxA0hxm8^0000<MNUMnLSTaJBz=Pb
+
+diff --git a/core/ui/src/main/res/drawable-xxxhdpi/ic_signal_backup.png b/core/ui/src/main/res/drawable-xxxhdpi/ic_signal_backup.png
+deleted file mode 100644
+index 4a02ff687a1ce303d84cb6ec0f0a43dc8cced053..0000000000000000000000000000000000000000
+GIT binary patch
+literal 0
+HcmV?d00001
+
+literal 1015
+zcmV<T0|@+yP)<h;3K|Lk000e1NJLTq003YB003YJ0{{R3)kcR30000OP)t-sM{rF4
+z|NsC0|NsC0|NsC0|NsC0|NsC09ZOZd00007bW%=J02pJF!R9!7%{lr200W0fL_t(|
+z+U;4{j-x;fT$d02|BqJ*C^fWkA21{BN>fh>kn&M&yPN#^#eV?-)EuvmFjEcrR&w?2
+z4Sjvp{j)2+$4J=0P6Pao$Mi4X342|#uUGt881yz9U{p^a<W@lBeJuh?D{`BgA-INA
+z$}1mU0~|*P7PbCI0C23juiNJPZ>9U(?uD;PA+}38iT!C=;6K(TQYpU`F*|F5W5voU
+zzX~&ETLXjeE-ftZJHBXn35y#skU#qLXD7nvEf^o&<?cd-Zp|sJCw}-gfP)rh8VATv
+z_4?401xyJLOwS0+OZY$r<^(i021&t;^@~`^zh*%vL}vG4ex|b|SQ<4;(76`M0I@9s
+zi6#T7Zsx(t)H)oeC%P@e7`gXqO!#pT!66>Ctj1XGg;0+wp;oa>PQRlpXE1xVPToWx
+zRfd$Y+<=g$TtkZzy8>}+$DqL+RT9WthB%gMq89PVqD=ZOz5Oye62v`vLewh*n5<&b
+zS0?m&*2k0t9utjo%|PvbaKESM8iuNwO!NtSVOMXZp^X|N{{Du~@XSE;=qERjGyaP{
+zSY*S=J05s0cSI(Cc<Zs~a3woi(a104E}D0-NoyNdvaoBNahbL#TLp%j+!hqRqXRx1
+z=q5-~ZLxsi9Saz>YcNv6L6&4)7X}UkxH^0g=*YlftsMnC+pG=P%FvfYV2MAkq{(dy
+zow2_Eo_|FMa}<@taltRJx<5rKH7i1pb_s!Ar$Q?hQgk-I-b(CLj;$iYn|0)FND(lw
+zD5`?ZuAd_jX6rIkw4Pz=;FBSRBU)Ak;US`<vs)Af7#NBGQbV@M6Q<DNY%r@DmnsXO
+zs@FekhpChX+8kf@Qy&`O_wkc?rpfjr2G~xqO{U1FQ^bqZ_@2mCiyZ0g_xdu;H>{lp
+zX{aa<EUD1MbB5Xnlg5nC4g16mOOCl*hk&-iajmhNo~F4(x7oG+qRs93^cmzPI_;X!
+z@-dcKiF)9qJqEH#YMj7u(#Sjjv$tS!G5Mo3Ac3PV@ys$B`kCKSC;A-hKIZK7ms#|-
+zE%{|DQuMCJp)nN&7(y=w@p2;DbyYTOG1xkKYA}N_CX9z#6($6ps-oOiGVjpg_FeWx
+z(cY0Ff4PpKULQb~PO||e_X!fJX(bI#)VG1TH^C1O{_urNjn#wrI-b8ucpii?J<kC9
+lA^PD9spqI)sr}+##a}E0Z;(Yxc+vm>002ovPDHLkV1l&|-(3Iz
+
+diff --git a/core/ui/src/main/res/drawable/image_signal_logo_wordmark.xml b/core/ui/src/main/res/drawable/image_signal_logo_wordmark.xml
+deleted file mode 100644
+index f898aac4fed03e4fa9aea7fc2564b96999c2f9c8..0000000000000000000000000000000000000000
+--- a/core/ui/src/main/res/drawable/image_signal_logo_wordmark.xml
++++ /dev/null
+@@ -1,85 +0,0 @@
+-<!--
+-  ~ Copyright 2025 Signal Messenger, LLC
+-  ~ SPDX-License-Identifier: AGPL-3.0-only
+-  -->
+-
+-<vector xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:width="100dp"
+-    android:height="28.5dp"
+-    android:viewportWidth="560"
+-    android:viewportHeight="160">
+-  <path
+-      android:pathData="m80,0c4.15,0 8.23,0.32 12.21,0.93l-1.14,7.41c-3.61,-0.55 -7.3,-0.84 -11.06,-0.84 -3.76,0 -7.46,0.29 -11.06,0.84l-1.14,-7.41c3.98,-0.61 8.06,-0.93 12.21,-0.93z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m98.98,2.27 l-1.78,7.29c7.31,1.78 14.18,4.67 20.44,8.47l3.89,-6.41c-6.9,-4.2 -14.49,-7.39 -22.55,-9.35z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m127.28,15.46 l-4.43,6.05c5.98,4.39 11.26,9.67 15.64,15.64l6.05,-4.43c-4.84,-6.6 -10.67,-12.42 -17.26,-17.26z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m148.38,38.46 l-6.41,3.89c3.81,6.25 6.69,13.13 8.47,20.44l7.29,-1.78c-1.96,-8.07 -5.15,-15.65 -9.35,-22.55z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m159.07,67.79 l-7.41,1.14c0.55,3.61 0.84,7.3 0.84,11.06 0,3.76 -0.29,7.46 -0.84,11.06l7.41,1.14c0.61,-3.98 0.93,-8.06 0.93,-12.21 0,-4.15 -0.32,-8.23 -0.93,-12.21z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m141.97,117.64c3.81,-6.26 6.69,-13.13 8.47,-20.44l7.29,1.78c-1.96,8.07 -5.15,15.65 -9.35,22.55z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m138.49,122.85 l6.05,4.43c-4.84,6.6 -10.67,12.42 -17.26,17.26l-4.43,-6.05c5.98,-4.39 11.26,-9.67 15.64,-15.64z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m117.64,141.97 l3.89,6.41c-6.9,4.2 -14.49,7.39 -22.55,9.35l-1.78,-7.29c7.31,-1.78 14.19,-4.67 20.44,-8.47z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m91.06,151.66 l1.14,7.41c-3.98,0.61 -8.06,0.93 -12.21,0.93 -4.15,0 -8.23,-0.32 -12.21,-0.93l1.14,-7.41c3.61,0.55 7.3,0.84 11.06,0.84 3.76,0 7.46,-0.29 11.06,-0.84z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m62.79,150.45 l-1.78,7.29c-6.06,-1.48 -11.85,-3.64 -17.28,-6.41l-7.59,1.77 -1.7,-7.3 10.26,-2.39 2.44,1.24c4.92,2.51 10.16,4.47 15.65,5.8z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m28.11,147.27 l1.7,7.3 -13.01,3.04c-8.66,2.02 -16.43,-5.75 -14.41,-14.41l3.04,-13.02 7.3,1.7 -3.04,13.02c-0.76,3.25 2.16,6.16 5.4,5.41z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m14.2,125.56 l-7.3,-1.7 1.77,-7.59c-2.77,-5.43 -4.93,-11.22 -6.41,-17.28l7.29,-1.78c1.34,5.49 3.3,10.74 5.8,15.65l1.24,2.44z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m8.34,91.06 l-7.41,1.14c-0.61,-3.98 -0.93,-8.06 -0.93,-12.21 0,-4.15 0.32,-8.23 0.93,-12.21l7.41,1.14c-0.55,3.61 -0.84,7.3 -0.84,11.06 0,3.76 0.29,7.46 0.84,11.06z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m9.55,62.79 l-7.29,-1.78c1.96,-8.07 5.15,-15.65 9.35,-22.55l6.41,3.89c-3.81,6.25 -6.69,13.13 -8.47,20.44z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m21.51,37.15 l-6.05,-4.43c4.84,-6.6 10.67,-12.42 17.26,-17.26l4.43,6.05c-5.98,4.39 -11.26,9.67 -15.64,15.64z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m42.36,18.03 l-3.89,-6.41c6.9,-4.2 14.49,-7.39 22.55,-9.35l1.78,7.29c-7.31,1.78 -14.19,4.67 -20.44,8.47z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m145,80c0,35.9 -29.1,65 -65,65 -11.39,0 -22.09,-2.93 -31.4,-8.07 -0.9,-0.5 -1.94,-0.66 -2.94,-0.43l-28.91,6.75 6.75,-28.91c0.23,-1 0.07,-2.04 -0.43,-2.94 -5.14,-9.31 -8.07,-20.01 -8.07,-31.4 0,-35.9 29.1,-65 65,-65 35.9,0 65,29.1 65,65z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m283.47,43.28c-5.47,0 -9.98,-4.51 -9.98,-9.98 0,-5.47 4.51,-9.98 9.98,-9.98s9.98,4.51 9.98,9.98c0,5.47 -4.51,9.98 -9.98,9.98z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m275.2,129v-76.43h16.54v76.43z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m558.08,129v-104.45h-16.54v104.45z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m458.72,90.79c0,25.36 13.67,39.44 31.79,39.44 9.57,0 17.23,-4.99 22.01,-13.53v12.31h16.75v-76.43h-16.75v12.24c-4.78,-8.54 -12.24,-13.47 -21.53,-13.47 -18.59,0 -32.27,14.08 -32.27,39.44zM513.47,90.79c0,15.38 -6.49,25.91 -18.66,25.91 -12.31,0 -18.8,-11.14 -18.8,-25.91 0,-14.77 6.49,-25.43 18.8,-25.43 12.17,0 18.66,10.05 18.66,25.43z"
+-      android:fillColor="#3b45fd"
+-      android:fillType="evenOdd"/>
+-  <path
+-      android:pathData="m400.85,84.09v44.91h-16.89v-76.43h16l0.2,14.97c4.65,-10.66 12.51,-15.93 23.58,-15.93 15.72,0 26.11,10.25 26.11,28.78v48.6h-16.89v-46.14c0,-10.53 -5.81,-16.82 -15.31,-16.82 -9.77,0 -16.82,6.63 -16.82,18.05z"
+-      android:fillColor="#3b45fd"/>
+-  <path
+-      android:pathData="m336.35,159.21c19.48,0 35.34,-9.02 35.34,-31.38v-75.26h-16.54v13.26c-4.78,-9.09 -12.65,-14.49 -22.76,-14.49 -18.11,0 -31.79,13.74 -31.79,38.28s13.67,38.28 31.79,38.28c9.98,0 17.77,-5.2 22.56,-14.15v14.97c0,11.01 -6.56,17.43 -18.59,17.43 -8.48,0 -14.83,-3.28 -16.95,-9.91h-16.06c2.26,14.29 14.15,22.97 33.02,22.97zM355.35,89.63c0,14.63 -6.49,24.75 -18.66,24.75 -12.31,0 -18.8,-10.73 -18.8,-24.75 0,-14.01 6.49,-24.27 18.8,-24.27 12.17,0 18.66,9.64 18.66,24.27z"
+-      android:fillColor="#3b45fd"
+-      android:fillType="evenOdd"/>
+-  <path
+-      android:pathData="m188.83,99.74c0.89,19.48 15.59,30.9 38.97,30.9 24.13,0 38.15,-12.37 38.15,-30.08 0,-17.98 -15.52,-25.5 -29.67,-28.98l-9.71,-2.53c-8,-2.05 -17.77,-5.54 -17.77,-14.56 0,-8.13 7.38,-14.08 19.28,-14.08 11.21,0 18.94,5.2 19.96,14.15h16.54c-0.48,-16.68 -14.83,-28.78 -36.23,-28.78 -20.99,0 -36.71,11.89 -36.71,29.67 0,14.22 9.98,22.76 26.8,27.21l11.76,3.14c10.94,2.87 18.8,6.29 18.8,14.63 0,9.3 -8.95,15.45 -21.33,15.45 -11.62,0 -21.05,-5.13 -21.88,-16.13z"
+-      android:fillColor="#3b45fd"/>
+-</vector>
+diff --git a/core/ui/src/main/res/drawable/image_signal_logo_wordmark_light.xml b/core/ui/src/main/res/drawable/image_signal_logo_wordmark_light.xml
+deleted file mode 100644
+index 6eaa0d089a45d9d4d32ba99f5db282f7f25f8b99..0000000000000000000000000000000000000000
+--- a/core/ui/src/main/res/drawable/image_signal_logo_wordmark_light.xml
++++ /dev/null
+@@ -1,85 +0,0 @@
+-<!--
+-  ~ Copyright 2025 Signal Messenger, LLC
+-  ~ SPDX-License-Identifier: AGPL-3.0-only
+-  -->
+-
+-<vector xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:width="100dp"
+-    android:height="28.5dp"
+-    android:viewportWidth="560"
+-    android:viewportHeight="160">
+-    <path
+-        android:pathData="m80,0c4.15,0 8.23,0.32 12.21,0.93l-1.14,7.41c-3.61,-0.55 -7.3,-0.84 -11.06,-0.84 -3.76,0 -7.46,0.29 -11.06,0.84l-1.14,-7.41c3.98,-0.61 8.06,-0.93 12.21,-0.93z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m98.98,2.27 l-1.78,7.29c7.31,1.78 14.18,4.67 20.44,8.47l3.89,-6.41c-6.9,-4.2 -14.49,-7.39 -22.55,-9.35z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m127.28,15.46 l-4.43,6.05c5.98,4.39 11.26,9.67 15.64,15.64l6.05,-4.43c-4.84,-6.6 -10.67,-12.42 -17.26,-17.26z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m148.38,38.46 l-6.41,3.89c3.81,6.25 6.69,13.13 8.47,20.44l7.29,-1.78c-1.96,-8.07 -5.15,-15.65 -9.35,-22.55z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m159.07,67.79 l-7.41,1.14c0.55,3.61 0.84,7.3 0.84,11.06 0,3.76 -0.29,7.46 -0.84,11.06l7.41,1.14c0.61,-3.98 0.93,-8.06 0.93,-12.21 0,-4.15 -0.32,-8.23 -0.93,-12.21z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m141.97,117.64c3.81,-6.26 6.69,-13.13 8.47,-20.44l7.29,1.78c-1.96,8.07 -5.15,15.65 -9.35,22.55z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m138.49,122.85 l6.05,4.43c-4.84,6.6 -10.67,12.42 -17.26,17.26l-4.43,-6.05c5.98,-4.39 11.26,-9.67 15.64,-15.64z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m117.64,141.97 l3.89,6.41c-6.9,4.2 -14.49,7.39 -22.55,9.35l-1.78,-7.29c7.31,-1.78 14.19,-4.67 20.44,-8.47z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m91.06,151.66 l1.14,7.41c-3.98,0.61 -8.06,0.93 -12.21,0.93 -4.15,0 -8.23,-0.32 -12.21,-0.93l1.14,-7.41c3.61,0.55 7.3,0.84 11.06,0.84 3.76,0 7.46,-0.29 11.06,-0.84z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m62.79,150.45 l-1.78,7.29c-6.06,-1.48 -11.85,-3.64 -17.28,-6.41l-7.59,1.77 -1.7,-7.3 10.26,-2.39 2.44,1.24c4.92,2.51 10.16,4.47 15.65,5.8z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m28.11,147.27 l1.7,7.3 -13.01,3.04c-8.66,2.02 -16.43,-5.75 -14.41,-14.41l3.04,-13.02 7.3,1.7 -3.04,13.02c-0.76,3.25 2.16,6.16 5.4,5.41z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m14.2,125.56 l-7.3,-1.7 1.77,-7.59c-2.77,-5.43 -4.93,-11.22 -6.41,-17.28l7.29,-1.78c1.34,5.49 3.3,10.74 5.8,15.65l1.24,2.44z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m8.34,91.06 l-7.41,1.14c-0.61,-3.98 -0.93,-8.06 -0.93,-12.21 0,-4.15 0.32,-8.23 0.93,-12.21l7.41,1.14c-0.55,3.61 -0.84,7.3 -0.84,11.06 0,3.76 0.29,7.46 0.84,11.06z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m9.55,62.79 l-7.29,-1.78c1.96,-8.07 5.15,-15.65 9.35,-22.55l6.41,3.89c-3.81,6.25 -6.69,13.13 -8.47,20.44z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m21.51,37.15 l-6.05,-4.43c4.84,-6.6 10.67,-12.42 17.26,-17.26l4.43,6.05c-5.98,4.39 -11.26,9.67 -15.64,15.64z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m42.36,18.03 l-3.89,-6.41c6.9,-4.2 14.49,-7.39 22.55,-9.35l1.78,7.29c-7.31,1.78 -14.19,4.67 -20.44,8.47z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m145,80c0,35.9 -29.1,65 -65,65 -11.39,0 -22.09,-2.93 -31.4,-8.07 -0.9,-0.5 -1.94,-0.66 -2.94,-0.43l-28.91,6.75 6.75,-28.91c0.23,-1 0.07,-2.04 -0.43,-2.94 -5.14,-9.31 -8.07,-20.01 -8.07,-31.4 0,-35.9 29.1,-65 65,-65 35.9,0 65,29.1 65,65z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m283.47,43.28c-5.47,0 -9.98,-4.51 -9.98,-9.98 0,-5.47 4.51,-9.98 9.98,-9.98s9.98,4.51 9.98,9.98c0,5.47 -4.51,9.98 -9.98,9.98z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m275.2,129v-76.43h16.54v76.43z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m558.08,129v-104.45h-16.54v104.45z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m458.72,90.79c0,25.36 13.67,39.44 31.79,39.44 9.57,0 17.23,-4.99 22.01,-13.53v12.31h16.75v-76.43h-16.75v12.24c-4.78,-8.54 -12.24,-13.47 -21.53,-13.47 -18.59,0 -32.27,14.08 -32.27,39.44zM513.47,90.79c0,15.38 -6.49,25.91 -18.66,25.91 -12.31,0 -18.8,-11.14 -18.8,-25.91 0,-14.77 6.49,-25.43 18.8,-25.43 12.17,0 18.66,10.05 18.66,25.43z"
+-        android:fillColor="#3b45fd"
+-        android:fillType="evenOdd"/>
+-    <path
+-        android:pathData="m400.85,84.09v44.91h-16.89v-76.43h16l0.2,14.97c4.65,-10.66 12.51,-15.93 23.58,-15.93 15.72,0 26.11,10.25 26.11,28.78v48.6h-16.89v-46.14c0,-10.53 -5.81,-16.82 -15.31,-16.82 -9.77,0 -16.82,6.63 -16.82,18.05z"
+-        android:fillColor="#3b45fd"/>
+-    <path
+-        android:pathData="m336.35,159.21c19.48,0 35.34,-9.02 35.34,-31.38v-75.26h-16.54v13.26c-4.78,-9.09 -12.65,-14.49 -22.76,-14.49 -18.11,0 -31.79,13.74 -31.79,38.28s13.67,38.28 31.79,38.28c9.98,0 17.77,-5.2 22.56,-14.15v14.97c0,11.01 -6.56,17.43 -18.59,17.43 -8.48,0 -14.83,-3.28 -16.95,-9.91h-16.06c2.26,14.29 14.15,22.97 33.02,22.97zM355.35,89.63c0,14.63 -6.49,24.75 -18.66,24.75 -12.31,0 -18.8,-10.73 -18.8,-24.75 0,-14.01 6.49,-24.27 18.8,-24.27 12.17,0 18.66,9.64 18.66,24.27z"
+-        android:fillColor="#3b45fd"
+-        android:fillType="evenOdd"/>
+-    <path
+-        android:pathData="m188.83,99.74c0.89,19.48 15.59,30.9 38.97,30.9 24.13,0 38.15,-12.37 38.15,-30.08 0,-17.98 -15.52,-25.5 -29.67,-28.98l-9.71,-2.53c-8,-2.05 -17.77,-5.54 -17.77,-14.56 0,-8.13 7.38,-14.08 19.28,-14.08 11.21,0 18.94,5.2 19.96,14.15h16.54c-0.48,-16.68 -14.83,-28.78 -36.23,-28.78 -20.99,0 -36.71,11.89 -36.71,29.67 0,14.22 9.98,22.76 26.8,27.21l11.76,3.14c10.94,2.87 18.8,6.29 18.8,14.63 0,9.3 -8.95,15.45 -21.33,15.45 -11.62,0 -21.05,-5.13 -21.88,-16.13z"
+-        android:fillColor="#3b45fd"/>
+-</vector>
+diff --git a/core/ui/src/main/res/values-night/material3_colors.xml b/core/ui/src/main/res/values-night/material3_colors.xml
+index fb6855131f4fabe94f341f08470ce5c2a4394fed..c2146c26d7fafed6819a875f3cffb9b831c458a0 100644
+--- a/core/ui/src/main/res/values-night/material3_colors.xml
++++ b/core/ui/src/main/res/values-night/material3_colors.xml
+@@ -1,33 +1,12 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+     <!-- Core colors for Material3 -->
+-<<<<<<< MOLLY
+-    <!-- MOLLY: Colors moved to themes.xml as theme attributes -->
+-=======
+-    <color name="signal_colorPrimary">@color/signal_dark_colorPrimary</color>
+-    <color name="signal_colorPrimaryContainer">@color/signal_dark_colorPrimaryContainer</color>
+-    <color name="signal_colorSecondary">@color/signal_dark_colorSecondary</color>
+-    <color name="signal_colorSecondaryContainer">@color/signal_dark_colorSecondaryContainer</color>
+-    <color name="signal_colorSurface">@color/signal_dark_colorSurface</color>
+-    <color name="signal_colorSurfaceVariant">@color/signal_dark_colorSurfaceVariant</color>
+     <color name="signal_colorSurfaceVariantFill">@color/signal_dark_colorSurfaceVariantFill</color>
+-    <color name="signal_colorBackground">@color/signal_dark_colorBackground</color>
+-    <color name="signal_colorError">@color/signal_dark_colorError</color>
+-    <color name="signal_colorErrorContainer">@color/signal_dark_colorErrorContainer</color>
+-    <color name="signal_colorOnPrimary">@color/signal_dark_colorOnPrimary</color>
+-    <color name="signal_colorOnPrimaryContainer">@color/signal_dark_colorOnPrimaryContainer</color>
+-    <color name="signal_colorOnSecondary">@color/signal_dark_colorOnSecondary</color>
+-    <color name="signal_colorOnSecondaryContainer">@color/signal_dark_colorOnSecondaryContainer</color>
+-    <color name="signal_colorOnSurface">@color/signal_dark_colorOnSurface</color>
+-    <color name="signal_colorOnSurfaceVariant">@color/signal_dark_colorOnSurfaceVariant</color>
+-    <color name="signal_colorOnSurfaceVariant1">@color/signal_dark_colorOnSurfaceVariant1</color>
+-    <color name="signal_colorOnBackground">@color/signal_dark_colorOnBackground</color>
+-    <color name="signal_colorOutline">@color/signal_dark_colorOutline</color>
+->>>>>>> SIGNAL
+     <color name="signal_neutralSurface">@color/signal_dark_neutralSurface</color>
+     <color name="signal_neutralFill">@color/signal_dark_neutralFill</color>
+     <color name="signal_colorOnCustom">@color/signal_dark_colorOnCustom</color>
+     <color name="signal_colorOnCustomVariant">@color/signal_dark_colorOnCustomVariant</color>
++
+     <color name="signal_colorTransparent1">@color/signal_dark_colorTransparent1</color>
+     <color name="signal_colorTransparent2">@color/signal_dark_colorTransparent2</color>
+     <color name="signal_colorTransparent3">@color/signal_dark_colorTransparent3</color>
+@@ -50,7 +29,6 @@
+ 
+     <!-- Core color alpha variants -->
+     <color name="signal_colorSecondaryContainer_12">#1F434159</color>
+-    <color name="signal_colorTertiaryContainer_12">#1F423290</color>
+     <color name="signal_colorSurface_60">#99100E1F</color>
+     <color name="signal_colorSurfaceVariant_38">#61302F33</color>
+     <color name="signal_colorSurfaceVariant_64">#A3302F33</color>
+@@ -59,15 +37,13 @@
+     <color name="signal_colorOnSurfaceVariant_60">#99BEBCC4</color>
+     <color name="signal_colorOnBackground_60">#99E3E1E6</color>
+     <color name="signal_colorOutline_38">#615D5D66</color>
+-    <color name="signal_colorOutlineVariant_38">#615D5D66</color>
+     <color name="signal_colorBackground_0">#00100E1F</color>
+ 
+     <!-- Core color alpha variants without alpha channel -->
+     <color name="signal_colorSurfaceVariant_16_no_alpha">#3F4249</color>
+     <color name="signal_colorSurfaceVariant_32_no_alpha">#5D5E62</color>
+-<<<<<<< MOLLY
+-=======
+ 
+     <color name="reminder_background">#26221D</color>
+->>>>>>> SIGNAL
+-</resources>
+\ No newline at end of file
++<color name="signal_colorTertiaryContainer_12">#1F423290</color>
++    <color name="signal_colorOutlineVariant_38">#615D5D66</color>
++    </resources>
+diff --git a/core/ui/src/main/res/values/attrs.xml b/core/ui/src/main/res/values/attrs.xml
+index 4c9bb52d413af32f571a3965e529e9ee7ce7760a..2efa68bd570cc52ad68756276de3601e0a1e8186 100644
+--- a/core/ui/src/main/res/values/attrs.xml
++++ b/core/ui/src/main/res/values/attrs.xml
+@@ -9,4 +9,5 @@
+     <attr name="fullScreenDialogStyle" format="reference"/>
+     <attr name="fixedRoundedCornerBottomSheetStyle" format="reference"/>
+     <attr name="permissionsRationaleDialogTheme" format="reference"/>
++    <attr name="signal_accent_primary" format="color" />
+ </resources>
+diff --git a/core/ui/src/main/res/values/material3_colors.xml b/core/ui/src/main/res/values/material3_colors.xml
+index d4bdfbc665cb5a2ef2c4f054de0fa622fc63cbc1..3340b4ce186b1d224abfb23324235bee76db1473 100644
+--- a/core/ui/src/main/res/values/material3_colors.xml
++++ b/core/ui/src/main/res/values/material3_colors.xml
+@@ -1,33 +1,12 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+     <!-- Core colors for Material3 -->
+-<<<<<<< MOLLY
+-    <!-- MOLLY: Colors moved to themes.xml as theme attributes -->
+-=======
+-    <color name="signal_colorPrimary">@color/signal_light_colorPrimary</color>
+-    <color name="signal_colorPrimaryContainer">@color/signal_light_colorPrimaryContainer</color>
+-    <color name="signal_colorSecondary">@color/signal_light_colorSecondary</color>
+-    <color name="signal_colorSecondaryContainer">@color/signal_light_colorSecondaryContainer</color>
+-    <color name="signal_colorSurface">@color/signal_light_colorSurface</color>
+-    <color name="signal_colorSurfaceVariant">@color/signal_light_colorSurfaceVariant</color>
+     <color name="signal_colorSurfaceVariantFill">@color/signal_light_colorSurfaceVariantFill</color>
+-    <color name="signal_colorBackground">@color/signal_light_colorBackground</color>
+-    <color name="signal_colorError">@color/signal_light_colorError</color>
+-    <color name="signal_colorErrorContainer">@color/signal_light_colorErrorContainer</color>
+-    <color name="signal_colorOnPrimary">@color/signal_light_colorOnPrimary</color>
+-    <color name="signal_colorOnPrimaryContainer">@color/signal_light_colorOnPrimaryContainer</color>
+-    <color name="signal_colorOnSecondary">@color/signal_light_colorOnSecondary</color>
+-    <color name="signal_colorOnSecondaryContainer">@color/signal_light_colorOnSecondaryContainer</color>
+-    <color name="signal_colorOnSurface">@color/signal_light_colorOnSurface</color>
+-    <color name="signal_colorOnSurfaceVariant">@color/signal_light_colorOnSurfaceVariant</color>
+-    <color name="signal_colorOnSurfaceVariant1">@color/signal_light_colorOnSurfaceVariant1</color>
+-    <color name="signal_colorOnBackground">@color/signal_light_colorOnBackground</color>
+-    <color name="signal_colorOutline">@color/signal_light_colorOutline</color>
+->>>>>>> SIGNAL
+     <color name="signal_neutralSurface">@color/signal_light_neutralSurface</color>
+     <color name="signal_neutralFill">@color/signal_dark_neutralFill</color>
+     <color name="signal_colorOnCustom">@color/signal_light_colorOnCustom</color>
+     <color name="signal_colorOnCustomVariant">@color/signal_light_colorOnCustomVariant</color>
++
+     <color name="signal_colorTransparent1">@color/signal_light_colorTransparent1</color>
+     <color name="signal_colorTransparent2">@color/signal_light_colorTransparent2</color>
+     <color name="signal_colorTransparent3">@color/signal_light_colorTransparent3</color>
+@@ -50,7 +29,6 @@
+ 
+     <!-- Core color alpha variants -->
+     <color name="signal_colorSecondaryContainer_12">#1FE3DBF9</color>
+-    <color name="signal_colorTertiaryContainer_12">#1FD1C6FB</color>
+     <color name="signal_colorSurface_60">#99F6F6FF</color>
+     <color name="signal_colorSurfaceVariant_38">#61E7E6F2</color>
+     <color name="signal_colorSurfaceVariant_64">#A3E7E6F2</color>
+@@ -60,17 +38,13 @@
+     <color name="signal_colorOnSurfaceVariant_60">#99585563</color>
+     <color name="signal_colorOnBackground_60">#99171719</color>
+     <color name="signal_colorOutline_38">#6182808A</color>
+-    <color name="signal_colorOutlineVariant_38">#619384E2</color>
+     <color name="signal_colorBackground_0">#00F6F6FF</color>
+ 
+     <!-- Core color alpha variants without alpha channel -->
+-<<<<<<< MOLLY
+     <color name="signal_colorSurfaceVariant_16_no_alpha">#D0CFDB</color>
+     <color name="signal_colorSurfaceVariant_32_no_alpha">#B9B8C4</color>
+-=======
+-    <color name="signal_colorSurfaceVariant_16_no_alpha">#D5D8DE</color>
+-    <color name="signal_colorSurfaceVariant_32_no_alpha">#B8BCC5</color>
+ 
+     <color name="reminder_background">#faf0dc</color>
+->>>>>>> SIGNAL
+-</resources>
+\ No newline at end of file
++<color name="signal_colorTertiaryContainer_12">#1FD1C6FB</color>
++    <color name="signal_colorOutlineVariant_38">#619384E2</color>
++    </resources>
+diff --git a/core/ui/src/main/res/values/material3_colors_dark.xml b/core/ui/src/main/res/values/material3_colors_dark.xml
+index 9dfab3fde08c55786310dea08d38411142068120..68184477a422b40ca647f6e4c6626cb060351434 100644
+--- a/core/ui/src/main/res/values/material3_colors_dark.xml
++++ b/core/ui/src/main/res/values/material3_colors_dark.xml
+@@ -1,56 +1,12 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+-<<<<<<< MOLLY
+-    <!-- <color name="signal_dark_colorPrimary">#AA98FF</color> -->
+-    <!-- <color name="signal_dark_colorPrimaryContainer">#483B6A</color> -->
+-    <!-- <color name="signal_dark_colorSecondary">#CBC4DE</color> -->
+-    <!-- <color name="signal_dark_colorSecondaryContainer">#434159</color> -->
+-    <!-- <color name="signal_dark_colorSurface">#100E1F</color> -->
+-    <!-- <color name="signal_dark_colorSurfaceVariant">#302F33</color> -->
+-    <!-- <color name="signal_dark_colorBackground">#100E1F</color> -->
+-    <!-- <color name="signal_dark_colorError">#FE006E</color> -->
+-    <!-- <color name="signal_dark_colorErrorContainer">#A40449</color> -->
+-    <!-- <color name="signal_dark_colorOnPrimary">#1E1B38</color> -->
+-    <!-- <color name="signal_dark_colorOnPrimaryContainer">#DDDCFC</color> -->
+-    <!-- <color name="signal_dark_colorOnSecondary">#2E2A42</color> -->
+-    <!-- <color name="signal_dark_colorOnSecondaryContainer">#E3DCF9</color> -->
+-    <color name="signal_dark_colorOnSurface">#E3E1E6</color>
+-    <!-- <color name="signal_dark_colorOnSurfaceVariant">#BEBCC4</color> -->
+-    <!-- <color name="signal_dark_colorOutlineVariant">#6E5DB9</color> -->
+-    <!-- <color name="signal_dark_colorOnBackground">#E3E1E6</color> -->
+-    <!-- <color name="signal_dark_colorOutline">#5D5D66</color> -->
+-=======
+-    <color name="signal_dark_colorPrimary">#B6C5FA</color>
+-    <color name="signal_dark_colorPrimaryContainer">#464B5C</color>
+-    <color name="signal_dark_colorSecondary">#C1C6DD</color>
+-    <color name="signal_dark_colorSecondaryContainer">#414659</color>
+-    <color name="signal_dark_colorSurface">#1B1C1F</color>
+-    <color name="signal_dark_colorSurfaceVariant">#303133</color>
+     <color name="signal_dark_colorSurfaceVariantFill">#33FFFFFF</color>
+-    <color name="signal_dark_colorBackground">#1B1C1F</color>
+-    <color name="signal_dark_colorError">#FFB4A9</color>
+-    <color name="signal_dark_colorErrorContainer">#930006</color>
+-    <color name="signal_dark_colorOnPrimary">#1E2438</color>
+-    <color name="signal_dark_colorOnPrimaryContainer">#DBE1FC</color>
+-    <color name="signal_dark_colorOnSecondary">#2A3042</color>
+-    <color name="signal_dark_colorOnSecondaryContainer">#DCE1F9</color>
+-    <color name="signal_dark_colorOnSurface">#E2E1E5</color>
+-    <color name="signal_dark_colorOnSurfaceVariant">#BEBFC5</color>
+-    <color name="signal_dark_colorOnSurfaceVariant1">#4D5059</color>
+-    <color name="signal_dark_colorOnBackground">#E2E1E5</color>
+-    <color name="signal_dark_colorOutline">#5C5E65</color>
+->>>>>>> SIGNAL
++    <color name="signal_dark_colorOnSurface">#E3E1E6</color>
+     <color name="signal_dark_neutralSurface">#14FFFFFF</color>
+     <color name="signal_dark_neutralFill">#33FFFFFF</color>
+     <color name="signal_dark_colorOnCustom">#FFFFFF</color>
+     <color name="signal_dark_colorOnCustomVariant">#B3FFFFFF</color>
+ 
+-    <!-- <color name="signal_dark_colorSurface1">#181137</color> -->
+-    <!-- <color name="signal_dark_colorSurface2">#1E1645</color> -->
+-    <!-- <color name="signal_dark_colorSurface3">#231A4E</color> -->
+-    <!-- <color name="signal_dark_colorSurface4">#281E57</color> -->
+-    <!-- <color name="signal_dark_colorSurface5">#33276A</color> -->
+-
+     <color name="signal_dark_colorTransparent1">#0AFFFFFF</color>
+     <color name="signal_dark_colorTransparent2">#1FFFFFFF</color>
+     <color name="signal_dark_colorTransparent3">#29FFFFFF</color>
+@@ -66,14 +22,6 @@
+     <color name="signal_dark_colorNeutralInverse">#E0FFFFFF</color>
+     <color name="signal_dark_colorNeutralVariantInverse">#A3FFFFFF</color>
+ 
+-<<<<<<< MOLLY
+-    <!-- <color name="signal_dark_colorBackground_92">#EB100E1F</color> -->
+-    <color name="signal_dark_colorNeutral_87">#DE121212</color>
+-    <!-- <color name="signal_dark_colorSurfaceVariant_92">#EB302F33</color> -->
+-=======
+-    <color name="signal_dark_colorBackground_92">#EB1B1C1F</color>
+-    <color name="signal_dark_colorSurface_87">#DE1B1C1F</color>
+     <color name="signal_dark_colorSurface5_80">#CC31343E</color>
+-    <color name="signal_dark_colorSurfaceVariant_92">#EB303133</color>
+->>>>>>> SIGNAL
+-</resources>
+\ No newline at end of file
++    <color name="signal_dark_colorNeutral_87">#DE121212</color>
++    </resources>
+diff --git a/core/ui/src/main/res/values/material3_colors_light.xml b/core/ui/src/main/res/values/material3_colors_light.xml
+index 590c301e3d8d42714d1b2384d7a100edef283086..8e1985e6a5bcb82dbc60bd27d78b3ed1eaf582ee 100644
+--- a/core/ui/src/main/res/values/material3_colors_light.xml
++++ b/core/ui/src/main/res/values/material3_colors_light.xml
+@@ -1,47 +1,20 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <resources>
+-<<<<<<< MOLLY
+     <color name="signal_light_colorPrimary">#5335DD</color>
+-    <!-- <color name="signal_light_colorPrimaryContainer">#C1B4FB</color> -->
+-    <!-- <color name="signal_light_colorSecondary">#C5C1DD</color> -->
+     <color name="signal_light_colorSecondaryContainer">#E3DBF9</color>
+     <color name="signal_light_colorSurface">#F6F6FF</color>
+-    <!-- <color name="signal_light_colorSurfaceVariant">#E7E6F2</color> -->
+-    <color name="signal_light_colorBackground">#F6F6FF</color>
+-    <!-- <color name="signal_light_colorError">#E00052</color> -->
+-    <!-- <color name="signal_light_colorErrorContainer">#FDC7DB</color> -->
+-=======
+-    <color name="signal_light_colorPrimary">#2C58C3</color>
+-    <color name="signal_light_colorPrimaryContainer">#D2DFFB</color>
+-    <color name="signal_light_colorSecondary">#586071</color>
+-    <color name="signal_light_colorSecondaryContainer">#DCE5F9</color>
+-    <color name="signal_light_colorSurface">#FBFCFF</color>
+-    <color name="signal_light_colorSurfaceVariant">#E7EBF3</color>
+     <color name="signal_light_colorSurfaceVariantFill">#CCFFFFFF</color>
+-    <color name="signal_light_colorBackground">#FBFCFF</color>
+-    <color name="signal_light_colorError">#BA1B1B</color>
+-    <color name="signal_light_colorErrorContainer">#FFDAD4</color>
+->>>>>>> SIGNAL
++    <color name="signal_light_colorBackground">#F6F6FF</color>
+     <color name="signal_light_colorOnPrimary">#FFFFFF</color>
+-    <!-- <color name="signal_light_colorOnPrimaryContainer">#180D49</color> -->
+-    <!-- <color name="signal_light_colorOnSecondary">#FFFFFF</color> -->
+     <color name="signal_light_colorOnSecondaryContainer">#1E1835</color>
+     <color name="signal_light_colorOnSurface">#181719</color>
+     <color name="signal_light_colorOnSurfaceVariant">#585563</color>
+-    <!-- <color name="signal_light_colorOutlineVariant">#9384E2</color> -->
+-    <!-- <color name="signal_light_colorOnBackground">#171719</color> -->
+     <color name="signal_light_colorOutline">#82808A</color>
+     <color name="signal_light_neutralSurface">#99FFFFFF</color>
+     <color name="signal_light_neutralFill">#1A000000</color>
+     <color name="signal_light_colorOnCustom">#FFFFFF</color>
+     <color name="signal_light_colorOnCustomVariant">#B3FFFFFF</color>
+ 
+-    <!-- <color name="signal_light_colorSurface1">#F3F0FF</color> -->
+-    <!-- <color name="signal_light_colorSurface2">#EEEAFF</color> -->
+-    <!-- <color name="signal_light_colorSurface3">#EAE5FF</color> -->
+-    <!-- <color name="signal_light_colorSurface4">#E5DFFF</color> -->
+-    <!-- <color name="signal_light_colorSurface5">#DED6FF</color> -->
+-
+     <color name="signal_light_colorTransparent1">#14FFFFFF</color>
+     <color name="signal_light_colorTransparent2">#29FFFFFF</color>
+     <color name="signal_light_colorTransparent3">#8FFFFFFF</color>
+@@ -56,4 +29,4 @@
+     <color name="signal_light_colorTransparentInverse5">#E0000000</color>
+     <color name="signal_light_colorNeutralInverse">#121212</color>
+     <color name="signal_light_colorNeutralVariantInverse">#5C5C5C</color>
+-</resources>
+\ No newline at end of file
++</resources>
+diff --git a/core/ui/src/main/res/values/themes.xml b/core/ui/src/main/res/values/themes.xml
+index 2d576205019e3149d03bdfdfd912482145f49445..bcd9a21367169904936bf7a7063183375db69fbd 100644
+--- a/core/ui/src/main/res/values/themes.xml
++++ b/core/ui/src/main/res/values/themes.xml
+@@ -7,12 +7,8 @@
+         <item name="bottomSheetStyle">@style/Widget.CoreUi.FixedRoundedCorners.BottomSheet</item>
+         <item name="android:windowEnterAnimation">@anim/slide_from_bottom</item>
+         <item name="android:windowExitAnimation">@anim/slide_to_bottom</item>
+-<<<<<<< MOLLY
+-        <item name="android:navigationBarColor" tools:targetApi="lollipop">?attr/colorSurfaceContainerLow</item>
+-=======
+         <!-- Only applies under API 35, otherwise edge-to-edge enforcement keeps the bar transparent and the sheet draws behind it. -->
+         <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/signal_bottom_sheet_navigation_bar</item>
+->>>>>>> SIGNAL
+     </style>
+ 
+     <style name="Widget.CoreUi.FixedRoundedCorners.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+diff --git a/core/util/src/main/res/values-af/strings.xml b/core/util/src/main/res/values-af/strings.xml
+index 9f7165910bc165b1a46e56bb012b8e6e27a65dd7..949663735bdc3caf70d577d7564205977be73d38 100644
+--- a/core/util/src/main/res/values-af/strings.xml
++++ b/core/util/src/main/res/values-af/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Nooi na Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-ar/strings.xml b/core/util/src/main/res/values-ar/strings.xml
+index 80df66c3209f60a510fa134a59c42ee41443ed85..73843a38bf107e78ca5489814734f92209665797 100644
+--- a/core/util/src/main/res/values-ar/strings.xml
++++ b/core/util/src/main/res/values-ar/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">اُدْعُ إلى سيجنال</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-az/strings.xml b/core/util/src/main/res/values-az/strings.xml
+index cada92161bd105b9ec0786a760723042cffff1ac..3a61970437c3b6783402112191df0b08c9e56eeb 100644
+--- a/core/util/src/main/res/values-az/strings.xml
++++ b/core/util/src/main/res/values-az/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signal-a dəvət edin</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-be/strings.xml b/core/util/src/main/res/values-be/strings.xml
+index 601dd9dba94640b8cfc9bf896f59f306ff109f5b..caae30bffc50501904eebe47a1b8c7b1f54c48b1 100644
+--- a/core/util/src/main/res/values-be/strings.xml
++++ b/core/util/src/main/res/values-be/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Запрасіць у Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-bg/strings.xml b/core/util/src/main/res/values-bg/strings.xml
+index 4ae65392d053e689c9b22de5f725a73d5ad833b7..c9aebccbb5ab2623e4f61b4e8c659ac73e497d8c 100644
+--- a/core/util/src/main/res/values-bg/strings.xml
++++ b/core/util/src/main/res/values-bg/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Поканете в Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-bn/strings.xml b/core/util/src/main/res/values-bn/strings.xml
+index f2850acb961001a90c974351d0cc531ffdcfd3da..5533992077c68c723156142cd96ccd91cd5bac51 100644
+--- a/core/util/src/main/res/values-bn/strings.xml
++++ b/core/util/src/main/res/values-bn/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signal এ আমন্ত্রন জানান</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-bs/strings.xml b/core/util/src/main/res/values-bs/strings.xml
+index e7817b782c7b3d8884ce70fa48c776d2bdaafdb3..c5be484e0febbac1954a721728b27a4fe826a143 100644
+--- a/core/util/src/main/res/values-bs/strings.xml
++++ b/core/util/src/main/res/values-bs/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Pozovite na Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-ca/strings.xml b/core/util/src/main/res/values-ca/strings.xml
+index 1e75e24ba445fef5b027ccd231dee08d8ba70eb8..50bf461fddb8d2bf0f1c09e5ccc299618e31dfe0 100644
+--- a/core/util/src/main/res/values-ca/strings.xml
++++ b/core/util/src/main/res/values-ca/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Convida al Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-cs/strings.xml b/core/util/src/main/res/values-cs/strings.xml
+index 66453d74ff2fbb914f2061e520da9d1768da091e..69e41e98e401437b7505b7e2dd9207803d0c95af 100644
+--- a/core/util/src/main/res/values-cs/strings.xml
++++ b/core/util/src/main/res/values-cs/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Pozvat do Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-da/strings.xml b/core/util/src/main/res/values-da/strings.xml
+index 2945eb1f187daabaa306df79cd55e13226bfd697..759c57ed7805940ee59234b232d0c21b9f3b9223 100644
+--- a/core/util/src/main/res/values-da/strings.xml
++++ b/core/util/src/main/res/values-da/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Inviter til Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-de/strings.xml b/core/util/src/main/res/values-de/strings.xml
+index 666fd684166c4cdcb92093f47336035e4e95d78a..b9e00514b6080a3d235572e2096b2967a8fc6762 100644
+--- a/core/util/src/main/res/values-de/strings.xml
++++ b/core/util/src/main/res/values-de/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Zu Signal einladen</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-el/strings.xml b/core/util/src/main/res/values-el/strings.xml
+index 17ccb3dac70614b2eb1d7ca31761bf307a3e9b0b..d87ec5d68c0177658510faa4db26d78904eda8c8 100644
+--- a/core/util/src/main/res/values-el/strings.xml
++++ b/core/util/src/main/res/values-el/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Πρόσκληση στο Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-es/strings.xml b/core/util/src/main/res/values-es/strings.xml
+index 3613627c9d09a0727880474bb67c0fcf9faede23..9f7507fa74ef657e58e3a0c23c048bf1996e4b84 100644
+--- a/core/util/src/main/res/values-es/strings.xml
++++ b/core/util/src/main/res/values-es/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Invitar a Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-et/strings.xml b/core/util/src/main/res/values-et/strings.xml
+index ed79788010cd4dda5f8d1b7866c2bef7269ea591..29ac2377f442ed38dfc66ed9e720666e38cd5c78 100644
+--- a/core/util/src/main/res/values-et/strings.xml
++++ b/core/util/src/main/res/values-et/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Kutsu Signalisse</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-eu/strings.xml b/core/util/src/main/res/values-eu/strings.xml
+index 9a8c1eedcb1d92966fd8d3508c7f7e387422ab79..3f3869acedc71a8669cfd0fbb61ee7b031630378 100644
+--- a/core/util/src/main/res/values-eu/strings.xml
++++ b/core/util/src/main/res/values-eu/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Gonbidatu Signal erabiltzera</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-fa/strings.xml b/core/util/src/main/res/values-fa/strings.xml
+index 5a7175812c740ccbc9711db765068a247d9a769a..03d1a0d07bea063ca6f288a9281c08a94ff060c4 100644
+--- a/core/util/src/main/res/values-fa/strings.xml
++++ b/core/util/src/main/res/values-fa/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">دعوت به سیگنال</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-fi/strings.xml b/core/util/src/main/res/values-fi/strings.xml
+index 2977bdc3ab7ac9e0329d2a634d4de0b376925e78..3b4c2d93206c95f93e002550e9fc9b46f5cf0b5c 100644
+--- a/core/util/src/main/res/values-fi/strings.xml
++++ b/core/util/src/main/res/values-fi/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Kutsu Signaliin</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-fr/strings.xml b/core/util/src/main/res/values-fr/strings.xml
+index e5a0805e5763e6fbcd1eac1f044c9a72f1ecbef0..bdc2da51c9765b31a3725a16c18ee9c3681101d5 100644
+--- a/core/util/src/main/res/values-fr/strings.xml
++++ b/core/util/src/main/res/values-fr/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Inviter sur Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-ga/strings.xml b/core/util/src/main/res/values-ga/strings.xml
+index 19ad069fbd9e1f1df1c1735a58e5048be35c05f3..91e4606bd570979c011538f7371ae6f0c2f3b2ff 100644
+--- a/core/util/src/main/res/values-ga/strings.xml
++++ b/core/util/src/main/res/values-ga/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Tabhair cuireadh chuig Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-gl/strings.xml b/core/util/src/main/res/values-gl/strings.xml
+index 327b91909826b600ad780ee14e522caba2c80c8c..06be0684966c1a9261b93a2516f9ca93be2bda73 100644
+--- a/core/util/src/main/res/values-gl/strings.xml
++++ b/core/util/src/main/res/values-gl/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Convidar a Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-gu/strings.xml b/core/util/src/main/res/values-gu/strings.xml
+index bd0d7629a1904136628e66215d7d26cbfb26b42b..f52ac53d1767bf0088a58d6dce0374574684c2b8 100644
+--- a/core/util/src/main/res/values-gu/strings.xml
++++ b/core/util/src/main/res/values-gu/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signal માટે આમંત્રણ આપો</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-hi/strings.xml b/core/util/src/main/res/values-hi/strings.xml
+index 7aebdd6c8d1767e232a70c72441e47e5df3ed6a9..3e912f9ad873d88a9adf0fc913f5daa551ab7e0e 100644
+--- a/core/util/src/main/res/values-hi/strings.xml
++++ b/core/util/src/main/res/values-hi/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signal इस्तेमाल करने के लिए इनवाइट भेजें</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-hr/strings.xml b/core/util/src/main/res/values-hr/strings.xml
+index 0dd35645f738dd72676f77d9862f2f05d45304bf..37d9936aba46460dea012918463524b270bfa32d 100644
+--- a/core/util/src/main/res/values-hr/strings.xml
++++ b/core/util/src/main/res/values-hr/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Pozovi u Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-hu/strings.xml b/core/util/src/main/res/values-hu/strings.xml
+index 9bd9fcb9760a9381b8cb975b9610fafe6ff74ce3..eb012710231690a2f1b1d4cf09b596e790f2743e 100644
+--- a/core/util/src/main/res/values-hu/strings.xml
++++ b/core/util/src/main/res/values-hu/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Meghívás a Signalra</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-in/strings.xml b/core/util/src/main/res/values-in/strings.xml
+index a0428ed18ae858ea95b432950fbd63ba700e0b2b..bbf578db880b2fccd99c75e3259a610f674be78e 100644
+--- a/core/util/src/main/res/values-in/strings.xml
++++ b/core/util/src/main/res/values-in/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Undang ke Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-it/strings.xml b/core/util/src/main/res/values-it/strings.xml
+index 246b11959ad99ba19e3538c1bf9711e92fec9e92..6e7654b0f17a9c18792d13be94a98e8785ea13ca 100644
+--- a/core/util/src/main/res/values-it/strings.xml
++++ b/core/util/src/main/res/values-it/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Invita su Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-iw/strings.xml b/core/util/src/main/res/values-iw/strings.xml
+index 621d5c1e5434d69d964de42a1fd1d48c89428133..4876d31b927416e4d313da07c1c3740a900b1087 100644
+--- a/core/util/src/main/res/values-iw/strings.xml
++++ b/core/util/src/main/res/values-iw/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">הזמנה אל Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-ja/strings.xml b/core/util/src/main/res/values-ja/strings.xml
+index 633a3374d1b12986ac9cbaf8061a3c77ea5d8f91..4a6775c566d23f2fe61ba03d316a529212a5ae7c 100644
+--- a/core/util/src/main/res/values-ja/strings.xml
++++ b/core/util/src/main/res/values-ja/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signalへの招待</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-ka/strings.xml b/core/util/src/main/res/values-ka/strings.xml
+index 76d24df574de5bf088bfc345abc989626b2255e1..cb757452124f0eb0757dc397ec995e7efdb5e5fc 100644
+--- a/core/util/src/main/res/values-ka/strings.xml
++++ b/core/util/src/main/res/values-ka/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">მოიწვიე Signal-ში</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-kk/strings.xml b/core/util/src/main/res/values-kk/strings.xml
+index 44981b6c25a2a0f3d921c6efc3e7bb2238098be1..79c718f8d12ccc13472c8b02ac114e5ad552c821 100644
+--- a/core/util/src/main/res/values-kk/strings.xml
++++ b/core/util/src/main/res/values-kk/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signal қолданбасына шақыру</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-km/strings.xml b/core/util/src/main/res/values-km/strings.xml
+index 41f84ec29745bc57bbef1067bcb8047142d600c3..3dd30c02b079a2cea062681f6b86b42d5c4c2d9a 100644
+--- a/core/util/src/main/res/values-km/strings.xml
++++ b/core/util/src/main/res/values-km/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">អញ្ជើញឱ្យចូលរួមប្រើ Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-kn/strings.xml b/core/util/src/main/res/values-kn/strings.xml
+index d25a56e644a37afb045eb7c50b29dd8fd3bde26a..ba66781b68dcb4099f7b85a0d2a18c66580b3137 100644
+--- a/core/util/src/main/res/values-kn/strings.xml
++++ b/core/util/src/main/res/values-kn/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signal ಗೆ ಆಮಂತ್ರಿಸಿ</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-ko/strings.xml b/core/util/src/main/res/values-ko/strings.xml
+index ebd2f8107f3fc899f6e0f0839b1871384d830cd8..14c68325a9a7f46f303638a07d07407a77e936f0 100644
+--- a/core/util/src/main/res/values-ko/strings.xml
++++ b/core/util/src/main/res/values-ko/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signal로 초대하기</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-ky/strings.xml b/core/util/src/main/res/values-ky/strings.xml
+index 66131d8c09efb91677d4815c997573c9d28eefbc..d9eaad4104cfd89db902c35efe5e2875ecffd36a 100644
+--- a/core/util/src/main/res/values-ky/strings.xml
++++ b/core/util/src/main/res/values-ky/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signal\'га чакыруу</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-lt/strings.xml b/core/util/src/main/res/values-lt/strings.xml
+index 9fe5ae167fc33464039f585046d73f19f8c7fe4b..b16960093d36808cf53b18f904a6716c5bb32db2 100644
+--- a/core/util/src/main/res/values-lt/strings.xml
++++ b/core/util/src/main/res/values-lt/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Pakviesti į Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-lv/strings.xml b/core/util/src/main/res/values-lv/strings.xml
+index 7ac013066bcf6f06232fb3f396a66b0080e50fc3..71ca2f35dc7c5a7fb0ad3f6325b3f7e7df2328b3 100644
+--- a/core/util/src/main/res/values-lv/strings.xml
++++ b/core/util/src/main/res/values-lv/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Uzaicināt uz Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-mk/strings.xml b/core/util/src/main/res/values-mk/strings.xml
+index c56d7c8134cf72c4afd61255326dc4d96a3eaa96..8e4dfd0c82f69cd77b9730913043676beeb21661 100644
+--- a/core/util/src/main/res/values-mk/strings.xml
++++ b/core/util/src/main/res/values-mk/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Испрати покана за Signal</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->
+diff --git a/core/util/src/main/res/values-ml/strings.xml b/core/util/src/main/res/values-ml/strings.xml
+index 2c77d86afa66580e694e7d8396ad27aa37763fb1..f291f935e071cfbdc2314f9dcd7728ab8f260277 100644
+--- a/core/util/src/main/res/values-ml/strings.xml
++++ b/core/util/src/main/res/values-ml/strings.xml
+@@ -7,7 +7,7 @@
+ <resources>
+     <!-- Link to the Signal install page used in invite flows. -->
+   <!-- Removed by excludeNonTranslatables <string name="install_url" translatable="false">https://signal.org/install</string> -->
+-    
++
+     <!-- Title of the system share sheet shown when sharing an invite -->
+     <string name="Invite__invite_to_signal">Signal-ലേക്ക് ക്ഷണിക്കുക</string>
+     <!-- Default invite message shown in invite flows, to send in email or SMS. -->

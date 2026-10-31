@@ -1,0 +1,1300 @@
+From 8c967521c78e71ce9c362bf99668aa149d33f63e Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Thu, 29 Oct 2026 00:01:38 +0100
+Subject: [PATCH] Port module-pruning to Signal 8.33.2, part 3
+
+Resolve modify/delete conflicts for modules Molly removes and remove new upstream files added beneath those excluded modules.
+
+These are AI-generated compatibility resolutions from the existing
+PR #7 port source, exported after Git has performed its deterministic
+three-way merge of the unchanged official Molly 8.19.2-4 snapshot
+with Signal 8.33.2. The original Molly mailboxes remain unchanged.
+Offset-only movement and conflict-free automatic merges are already
+in the parent tree and are not re-exported as patch rewrites.
+
+This batch owns 50 whole-file changes. It preserves the
+previous port tree exactly and makes no new application changes.
+The source commit records a derived candidate, not an official
+Molly release or a claim of upstream authorship.
+
+Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
+Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
+Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
+Mechanical-Merge-Tree: 759ef1c309d93aa7e4ac7217b144c04545562f11
+AI-Generated: true
+
+diff --git a/demo/video/src/main/java/org/thoughtcrime/video/app/transcode/composables/ConfigurationSelection.kt b/demo/video/src/main/java/org/thoughtcrime/video/app/transcode/composables/ConfigurationSelection.kt
+deleted file mode 100644
+index 0714c2e94ded61a48a23ba3175ca80d6dd38fce0..0000000000000000000000000000000000000000
+--- a/demo/video/src/main/java/org/thoughtcrime/video/app/transcode/composables/ConfigurationSelection.kt
++++ /dev/null
+@@ -1,287 +0,0 @@
+-/*
+- * Copyright 2024 Signal Messenger, LLC
+- * SPDX-License-Identifier: AGPL-3.0-only
+- */
+-
+-package org.thoughtcrime.video.app.transcode.composables
+-
+-import android.net.Uri
+-import androidx.compose.foundation.layout.Arrangement
+-import androidx.compose.foundation.layout.Column
+-import androidx.compose.foundation.layout.Row
+-import androidx.compose.foundation.layout.fillMaxWidth
+-import androidx.compose.foundation.layout.padding
+-import androidx.compose.foundation.selection.selectable
+-import androidx.compose.foundation.selection.selectableGroup
+-import androidx.compose.material3.Checkbox
+-import androidx.compose.material3.MaterialTheme
+-import androidx.compose.material3.RadioButton
+-import androidx.compose.material3.Slider
+-import androidx.compose.material3.SliderDefaults
+-import androidx.compose.material3.Text
+-import androidx.compose.runtime.Composable
+-import androidx.compose.ui.Alignment
+-import androidx.compose.ui.Modifier
+-import androidx.compose.ui.semantics.Role
+-import androidx.compose.ui.semantics.contentDescription
+-import androidx.compose.ui.semantics.semantics
+-import androidx.compose.ui.text.font.FontFamily
+-import androidx.compose.ui.text.style.TextAlign
+-import androidx.compose.ui.tooling.preview.Preview
+-import androidx.compose.ui.unit.dp
+-import androidx.compose.ui.unit.sp
+-import androidx.lifecycle.viewmodel.compose.viewModel
+-import org.thoughtcrime.video.app.transcode.MAX_VIDEO_MEGABITRATE
+-import org.thoughtcrime.video.app.transcode.MIN_VIDEO_MEGABITRATE
+-import org.thoughtcrime.video.app.transcode.OPTIONS_AUDIO_KILOBITRATES
+-import org.thoughtcrime.video.app.transcode.TranscodeQuality
+-import org.thoughtcrime.video.app.transcode.TranscodeTestViewModel
+-import org.thoughtcrime.video.app.transcode.VideoResolution
+-import org.thoughtcrime.video.app.ui.composables.LabeledButton
+-import kotlin.math.roundToInt
+-
+-/**
+- * A view that shows the selected video URI and allows you to change the encoding options.
+- */
+-@Composable
+-fun ConfigureEncodingParameters(
+-  onTranscodeClicked: () -> Unit,
+-  modifier: Modifier = Modifier,
+-  viewModel: TranscodeTestViewModel = viewModel()
+-) {
+-  Column(
+-    verticalArrangement = Arrangement.Center,
+-    horizontalAlignment = Alignment.CenterHorizontally,
+-    modifier = modifier
+-  ) {
+-    Text(
+-      text = "Selected video:",
+-      modifier = Modifier
+-        .padding(horizontal = 8.dp)
+-        .align(Alignment.Start)
+-    )
+-    viewModel.selectedVideo?.let {
+-      Text(
+-        text = it.toString(),
+-        fontSize = 8.sp,
+-        fontFamily = FontFamily.Monospace,
+-        modifier = Modifier
+-          .padding(horizontal = 8.dp)
+-          .align(Alignment.Start)
+-      )
+-    }
+-    Row(
+-      verticalAlignment = Alignment.CenterVertically,
+-      modifier = Modifier
+-        .fillMaxWidth()
+-    ) {
+-      Checkbox(
+-        checked = viewModel.useAutoTranscodingSettings,
+-        onCheckedChange = { viewModel.useAutoTranscodingSettings = it }
+-      )
+-      Text(
+-        text = "Match Signal App Transcoding Settings",
+-        style = MaterialTheme.typography.bodySmall
+-      )
+-    }
+-    if (viewModel.useAutoTranscodingSettings) {
+-      QualityPicker(
+-        viewModel.transcodeQuality,
+-        viewModel::updateTranscodeQuality,
+-        modifier = Modifier.padding(vertical = 16.dp)
+-      )
+-    } else {
+-      CustomSettings(
+-        selectedResolution = viewModel.videoResolution,
+-        onResolutionSelected = { viewModel.videoResolution = it },
+-        fastStartChecked = viewModel.enableFastStart,
+-        onFastStartSettingCheckChanged = { viewModel.enableFastStart = it },
+-        audioRemuxChecked = viewModel.enableAudioRemux,
+-        onAudioRemuxCheckChanged = { viewModel.enableAudioRemux = it },
+-        videoSliderPosition = viewModel.videoMegaBitrate,
+-        updateVideoSliderPosition = { viewModel.videoMegaBitrate = it },
+-        audioSliderPosition = viewModel.audioKiloBitrate,
+-        updateAudioSliderPosition = { viewModel.audioKiloBitrate = it.roundToInt() },
+-        modifier = Modifier.padding(vertical = 16.dp)
+-      )
+-    }
+-    LabeledButton(
+-      buttonLabel = "Transcode",
+-      onClick = onTranscodeClicked,
+-      modifier = Modifier.padding(vertical = 8.dp)
+-    )
+-  }
+-}
+-
+-@Composable
+-internal fun QualityPicker(
+-  selectedTranscodeQuality: TranscodeQuality,
+-  onQualitySelected: (TranscodeQuality) -> Unit,
+-  modifier: Modifier = Modifier
+-) {
+-  Row(
+-    horizontalArrangement = Arrangement.SpaceEvenly,
+-    modifier = modifier
+-      .fillMaxWidth()
+-      .selectableGroup()
+-  ) {
+-    TranscodeQuality.entries.forEach {
+-      Column(
+-        horizontalAlignment = Alignment.CenterHorizontally,
+-        modifier = Modifier
+-          .selectable(
+-            selected = selectedTranscodeQuality == it,
+-            onClick = {
+-              onQualitySelected(it)
+-            },
+-            role = Role.RadioButton
+-          )
+-      ) {
+-        RadioButton(
+-          selected = selectedTranscodeQuality == it,
+-          onClick = null,
+-          modifier = Modifier.semantics { contentDescription = it.name }
+-        )
+-        Text(
+-          text = it.name,
+-          textAlign = TextAlign.Center
+-        )
+-      }
+-    }
+-  }
+-}
+-
+-@Composable
+-internal fun CustomSettings(
+-  selectedResolution: VideoResolution,
+-  onResolutionSelected: (VideoResolution) -> Unit,
+-  fastStartChecked: Boolean,
+-  onFastStartSettingCheckChanged: (Boolean) -> Unit,
+-  audioRemuxChecked: Boolean,
+-  onAudioRemuxCheckChanged: (Boolean) -> Unit,
+-  videoSliderPosition: Float,
+-  updateVideoSliderPosition: (Float) -> Unit,
+-  audioSliderPosition: Int,
+-  updateAudioSliderPosition: (Float) -> Unit,
+-  modifier: Modifier = Modifier
+-) {
+-  Row(
+-    horizontalArrangement = Arrangement.SpaceEvenly,
+-    modifier = modifier
+-      .fillMaxWidth()
+-      .selectableGroup()
+-  ) {
+-    VideoResolution.entries.forEach {
+-      Column(
+-        horizontalAlignment = Alignment.CenterHorizontally,
+-        modifier = Modifier
+-          .selectable(
+-            selected = selectedResolution == it,
+-            onClick = { onResolutionSelected(it) },
+-            role = Role.RadioButton
+-          )
+-          .padding(start = 16.dp)
+-      ) {
+-        RadioButton(
+-          selected = selectedResolution == it,
+-          onClick = null,
+-          modifier = Modifier.semantics { contentDescription = it.getContentDescription() }
+-        )
+-        Text(
+-          text = "${it.shortEdge}p",
+-          textAlign = TextAlign.Center
+-        )
+-      }
+-    }
+-  }
+-  VideoBitrateSlider(videoSliderPosition, updateVideoSliderPosition)
+-  AudioBitrateSlider(audioSliderPosition, updateAudioSliderPosition)
+-
+-  Row(
+-    verticalAlignment = Alignment.CenterVertically,
+-    modifier = Modifier
+-      .padding(vertical = 8.dp, horizontal = 8.dp)
+-      .fillMaxWidth()
+-  ) {
+-    Checkbox(
+-      checked = audioRemuxChecked,
+-      onCheckedChange = { onAudioRemuxCheckChanged(it) }
+-    )
+-    Text(text = "Allow audio remuxing", style = MaterialTheme.typography.bodySmall)
+-  }
+-
+-  Row(
+-    verticalAlignment = Alignment.CenterVertically,
+-    modifier = Modifier
+-      .padding(vertical = 8.dp, horizontal = 8.dp)
+-      .fillMaxWidth()
+-  ) {
+-    Checkbox(
+-      checked = fastStartChecked,
+-      onCheckedChange = { onFastStartSettingCheckChanged(it) }
+-    )
+-    Text(text = "Perform Mp4San Postprocessing", style = MaterialTheme.typography.bodySmall)
+-  }
+-}
+-
+-@Composable
+-private fun VideoBitrateSlider(
+-  videoSliderPosition: Float,
+-  updateSliderPosition: (Float) -> Unit,
+-  modifier: Modifier = Modifier
+-) {
+-  Slider(
+-    value = videoSliderPosition,
+-    onValueChange = updateSliderPosition,
+-    colors = SliderDefaults.colors(
+-      thumbColor = MaterialTheme.colorScheme.secondary,
+-      activeTrackColor = MaterialTheme.colorScheme.secondary,
+-      inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer
+-    ),
+-    valueRange = MIN_VIDEO_MEGABITRATE..MAX_VIDEO_MEGABITRATE,
+-    modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+-  )
+-  Text(text = String.format("Video: %.2f Mbit/s", videoSliderPosition))
+-}
+-
+-@Composable
+-private fun AudioBitrateSlider(
+-  audioSliderPosition: Int,
+-  updateSliderPosition: (Float) -> Unit,
+-  modifier: Modifier = Modifier
+-) {
+-  val minValue = OPTIONS_AUDIO_KILOBITRATES.first().toFloat()
+-  val maxValue = OPTIONS_AUDIO_KILOBITRATES.last().toFloat()
+-  val steps = OPTIONS_AUDIO_KILOBITRATES.size - 2
+-
+-  Slider(
+-    value = audioSliderPosition.toFloat(),
+-    onValueChange = updateSliderPosition,
+-    colors = SliderDefaults.colors(
+-      thumbColor = MaterialTheme.colorScheme.secondary,
+-      activeTrackColor = MaterialTheme.colorScheme.secondary,
+-      inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer
+-    ),
+-    valueRange = minValue..maxValue,
+-    steps = steps,
+-    modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+-  )
+-  Text(text = String.format("Audio: %d Kbit/s", audioSliderPosition))
+-}
+-
+-@Preview(showBackground = true)
+-@Composable
+-private fun ConfigurationScreenPreviewPreset() {
+-  val vm: TranscodeTestViewModel = viewModel()
+-  vm.selectedVideo = Uri.parse("content://media/video/1")
+-  ConfigureEncodingParameters(onTranscodeClicked = {})
+-}
+-
+-@Preview(showBackground = true)
+-@Composable
+-private fun ConfigurationScreenPreviewCustom() {
+-  val vm: TranscodeTestViewModel = viewModel()
+-  vm.selectedVideo = Uri.parse("content://media/video/1")
+-  vm.useAutoTranscodingSettings = false
+-  ConfigureEncodingParameters(onTranscodeClicked = {})
+-}
+diff --git a/demo/video/src/main/java/org/thoughtcrime/video/app/transcode/composables/TranscodingScreen.kt b/demo/video/src/main/java/org/thoughtcrime/video/app/transcode/composables/TranscodingScreen.kt
+deleted file mode 100644
+index 60b6411d7ec0018ed0c46d4c9a9466c47fb02224..0000000000000000000000000000000000000000
+--- a/demo/video/src/main/java/org/thoughtcrime/video/app/transcode/composables/TranscodingScreen.kt
++++ /dev/null
+@@ -1,221 +0,0 @@
+-/*
+- * Copyright 2024 Signal Messenger, LLC
+- * SPDX-License-Identifier: AGPL-3.0-only
+- */
+-
+-package org.thoughtcrime.video.app.transcode.composables
+-
+-import android.content.Intent
+-import android.net.Uri
+-import android.text.format.Formatter
+-import android.view.WindowManager
+-import androidx.compose.foundation.layout.Arrangement
+-import androidx.compose.foundation.layout.Column
+-import androidx.compose.foundation.layout.Spacer
+-import androidx.compose.foundation.layout.fillMaxSize
+-import androidx.compose.foundation.layout.fillMaxWidth
+-import androidx.compose.foundation.layout.height
+-import androidx.compose.foundation.layout.padding
+-import androidx.compose.foundation.rememberScrollState
+-import androidx.compose.foundation.verticalScroll
+-import androidx.compose.material3.HorizontalDivider
+-import androidx.compose.material3.LinearProgressIndicator
+-import androidx.compose.material3.MaterialTheme
+-import androidx.compose.material3.Text
+-import androidx.compose.runtime.Composable
+-import androidx.compose.runtime.DisposableEffect
+-import androidx.compose.ui.Alignment
+-import androidx.compose.ui.Modifier
+-import androidx.compose.ui.platform.LocalContext
+-import androidx.compose.ui.text.font.FontFamily
+-import androidx.compose.ui.tooling.preview.Preview
+-import androidx.compose.ui.unit.dp
+-import androidx.compose.ui.unit.sp
+-import androidx.core.content.FileProvider
+-import org.thoughtcrime.video.app.transcode.TranscodeQuality
+-import org.thoughtcrime.video.app.transcode.TranscodeSettings
+-import org.thoughtcrime.video.app.transcode.TranscodingState
+-import org.thoughtcrime.video.app.transcode.VideoResolution
+-import org.thoughtcrime.video.app.ui.composables.LabeledButton
+-
+-@Composable
+-fun TranscodingScreen(
+-  state: TranscodingState,
+-  onCancel: () -> Unit,
+-  onReset: () -> Unit,
+-  modifier: Modifier = Modifier
+-) {
+-  val context = LocalContext.current
+-
+-  if (state is TranscodingState.InProgress) {
+-    DisposableEffect(Unit) {
+-      val window = (context as? android.app.Activity)?.window
+-      window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+-      onDispose {
+-        window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+-      }
+-    }
+-  }
+-
+-  Column(
+-    verticalArrangement = Arrangement.Center,
+-    horizontalAlignment = Alignment.CenterHorizontally,
+-    modifier = modifier
+-      .fillMaxSize()
+-      .verticalScroll(rememberScrollState())
+-      .padding(16.dp)
+-  ) {
+-    when (state) {
+-      is TranscodingState.Idle -> {
+-        Text("Preparing...", style = MaterialTheme.typography.bodyLarge)
+-      }
+-
+-      is TranscodingState.InProgress -> {
+-        Text("Transcoding: ${state.percent}%", style = MaterialTheme.typography.headlineSmall)
+-        Spacer(modifier = Modifier.height(16.dp))
+-        LinearProgressIndicator(
+-          progress = { state.percent / 100f },
+-          modifier = Modifier
+-            .fillMaxWidth()
+-            .padding(horizontal = 32.dp)
+-        )
+-        Spacer(modifier = Modifier.height(24.dp))
+-        LabeledButton("Cancel", onClick = onCancel)
+-      }
+-
+-      is TranscodingState.Completed -> {
+-        Text("Transcoding Complete", style = MaterialTheme.typography.headlineSmall)
+-        Spacer(modifier = Modifier.height(16.dp))
+-
+-        val originalFormatted = Formatter.formatFileSize(context, state.originalSize)
+-        val outputFormatted = Formatter.formatFileSize(context, state.outputSize)
+-        val ratio = if (state.originalSize > 0) {
+-          "%.1f%%".format(state.outputSize.toFloat() / state.originalSize * 100)
+-        } else {
+-          "N/A"
+-        }
+-
+-        Text("File Sizes", style = MaterialTheme.typography.titleMedium)
+-        Spacer(modifier = Modifier.height(4.dp))
+-        StatsText("Original: $originalFormatted")
+-        StatsText("Output: $outputFormatted ($ratio of original)")
+-        Spacer(modifier = Modifier.height(12.dp))
+-        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+-        Spacer(modifier = Modifier.height(12.dp))
+-
+-        Text("Transcode Settings", style = MaterialTheme.typography.titleMedium)
+-        Spacer(modifier = Modifier.height(4.dp))
+-        if (state.settings.quality != null) {
+-          StatsText("Mode: ${state.settings.quality.name}")
+-        } else {
+-          StatsText("Mode: Custom")
+-        }
+-        StatsText("Resolution: ${state.settings.videoResolution.name} (${state.settings.videoResolution.shortEdge}p)")
+-        StatsText("Video bitrate: ${"%.2f".format(state.settings.videoMegaBitrate)} Mbps")
+-        StatsText("Audio bitrate: ${state.settings.audioKiloBitrate} kbps")
+-        StatsText("Fast start: ${if (state.settings.enableFastStart) "Yes" else "No"}")
+-        StatsText("Audio remux: ${if (state.settings.enableAudioRemux) "Yes" else "No"}")
+-        Spacer(modifier = Modifier.height(12.dp))
+-        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+-        Spacer(modifier = Modifier.height(12.dp))
+-
+-        Text(
+-          text = "Saved to Downloads:\n${state.outputUri}",
+-          fontSize = 10.sp,
+-          fontFamily = FontFamily.Monospace,
+-          modifier = Modifier.padding(horizontal = 16.dp)
+-        )
+-        Spacer(modifier = Modifier.height(24.dp))
+-        LabeledButton("Play Original", onClick = {
+-          val originalUri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", state.originalFile)
+-          val intent = Intent(Intent.ACTION_VIEW).apply {
+-            setDataAndType(originalUri, "video/*")
+-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+-          }
+-          context.startActivity(intent)
+-        })
+-        Spacer(modifier = Modifier.height(8.dp))
+-        LabeledButton("Play Transcoded", onClick = {
+-          val intent = Intent(Intent.ACTION_VIEW).apply {
+-            setDataAndType(state.outputUri, "video/mp4")
+-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+-          }
+-          context.startActivity(intent)
+-        })
+-        Spacer(modifier = Modifier.height(8.dp))
+-        LabeledButton("Start Over", onClick = onReset)
+-      }
+-
+-      is TranscodingState.Failed -> {
+-        Text(
+-          "Transcoding Failed",
+-          style = MaterialTheme.typography.headlineSmall,
+-          color = MaterialTheme.colorScheme.error
+-        )
+-        Spacer(modifier = Modifier.height(8.dp))
+-        Text(text = state.error)
+-        Spacer(modifier = Modifier.height(24.dp))
+-        LabeledButton("Start Over", onClick = onReset)
+-      }
+-
+-      is TranscodingState.Cancelled -> {
+-        Text("Transcoding Cancelled", style = MaterialTheme.typography.headlineSmall)
+-        Spacer(modifier = Modifier.height(24.dp))
+-        LabeledButton("Start Over", onClick = onReset)
+-      }
+-    }
+-  }
+-}
+-
+-@Composable
+-private fun StatsText(text: String) {
+-  Text(
+-    text = text,
+-    style = MaterialTheme.typography.bodyMedium,
+-    fontFamily = FontFamily.Monospace,
+-    fontSize = 13.sp
+-  )
+-}
+-
+-@Preview(showBackground = true)
+-@Composable
+-private fun TranscodingScreenInProgressPreview() {
+-  TranscodingScreen(
+-    state = TranscodingState.InProgress(42),
+-    onCancel = {},
+-    onReset = {}
+-  )
+-}
+-
+-@Preview(showBackground = true)
+-@Composable
+-private fun TranscodingScreenCompletedPreview() {
+-  TranscodingScreen(
+-    state = TranscodingState.Completed(
+-      outputUri = Uri.parse("content://downloads/123"),
+-      originalFile = java.io.File("/tmp/original.mp4"),
+-      originalSize = 52_428_800L,
+-      outputSize = 12_582_912L,
+-      settings = TranscodeSettings(
+-        quality = TranscodeQuality.STANDARD,
+-        videoResolution = VideoResolution.SD,
+-        videoMegaBitrate = 2.0f,
+-        audioKiloBitrate = 192,
+-        enableFastStart = true,
+-        enableAudioRemux = true
+-      )
+-    ),
+-    onCancel = {},
+-    onReset = {}
+-  )
+-}
+-
+-@Preview(showBackground = true)
+-@Composable
+-private fun TranscodingScreenFailedPreview() {
+-  TranscodingScreen(
+-    state = TranscodingState.Failed("Encoder initialization failed"),
+-    onCancel = {},
+-    onReset = {}
+-  )
+-}
+diff --git a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests.kt b/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests.kt
+deleted file mode 100644
+index 89d06bedf3f18ffa7ea3cd0a4659a5a81ec162b6..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests.kt
++++ /dev/null
+@@ -1,62 +0,0 @@
+-/*
+- * Copyright 2026 Signal Messenger, LLC
+- * SPDX-License-Identifier: AGPL-3.0-only
+- */
+-
+-package org.signal.mediasend.screens.capture
+-
+-import androidx.compose.runtime.Composable
+-import com.android.tools.screenshot.PreviewTest
+-import org.signal.core.ui.compose.AllNightPreviews
+-import org.signal.core.ui.compose.Previews
+-import org.signal.core.ui.compose.RtlPreview
+-import org.signal.mediasend.screens.edit.rememberPreviewMedia
+-
+-class MediaCaptureScreenScreenshotTests {
+-  @PreviewTest
+-  @AllNightPreviews
+-  @RtlPreview
+-  @Composable
+-  fun MediaCaptureScreenPhotoPreview() {
+-    Previews.Preview {
+-      MediaCaptureScreen(
+-        state = rememberPreviewCaptureState(),
+-        onEvent = {},
+-        textStoryEditorSlot = {}
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @AllNightPreviews
+-  @RtlPreview
+-  @Composable
+-  fun MediaCaptureScreenVideoPreview() {
+-    Previews.Preview {
+-      MediaCaptureScreen(
+-        state = rememberPreviewCaptureState().copy(selectedCameraMode = MediaCaptureMode.VIDEO),
+-        onEvent = {},
+-        textStoryEditorSlot = {}
+-      )
+-    }
+-  }
+-
+-  /**
+-   * A flow already carrying a capture: the text story is withdrawn from the bar and the next button floats over its end.
+-   */
+-  @PreviewTest
+-  @AllNightPreviews
+-  @RtlPreview
+-  @Composable
+-  fun MediaCaptureScreenWithSelectedMediaPreview() {
+-    val selectedMedia = rememberPreviewMedia(1)
+-
+-    Previews.Preview {
+-      MediaCaptureScreen(
+-        state = rememberPreviewCaptureState().copy(selectedMedia = selectedMedia),
+-        onEvent = {},
+-        textStoryEditorSlot = {}
+-      )
+-    }
+-  }
+-}
+diff --git a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests.kt b/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests.kt
+deleted file mode 100644
+index 59abe31145b51f6e1a25ddc9bcb273a29c9e778c..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests.kt
++++ /dev/null
+@@ -1,65 +0,0 @@
+-/*
+- * Copyright 2026 Signal Messenger, LLC
+- * SPDX-License-Identifier: AGPL-3.0-only
+- */
+-
+-package org.signal.mediasend.screens.edit
+-
+-import androidx.compose.runtime.Composable
+-import com.android.tools.screenshot.PreviewTest
+-import org.signal.core.ui.compose.DayNightPreviews
+-import org.signal.core.ui.compose.Previews
+-import org.signal.core.ui.compose.RtlPreview
+-
+-class MediaEditScreenDialogsScreenshotTests {
+-  @PreviewTest
+-  @DayNightPreviews
+-  @RtlPreview
+-  @Composable
+-  fun DiscardEditsConfirmationDialogPreview() {
+-    Previews.Preview {
+-      MediaEditScreenDialogs.DiscardEditsConfirmationDialog(
+-        onDiscard = {},
+-        onDismiss = {}
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @DayNightPreviews
+-  @RtlPreview
+-  @Composable
+-  fun AddToGroupStoryConfirmationDialogPreview() {
+-    Previews.Preview {
+-      MediaEditScreenDialogs.AddToGroupStoryConfirmationDialog(
+-        groupName = "Signal Android",
+-        onAddToStory = {},
+-        onDeny = {},
+-        onDismissRequest = {}
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @DayNightPreviews
+-  @RtlPreview
+-  @Composable
+-  fun SaveToStorageConfirmationDialogPreview() {
+-    Previews.Preview {
+-      MediaEditScreenDialogs.SaveToStorageConfirmationDialog(
+-        onSave = {},
+-        onDismissRequest = {}
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @DayNightPreviews
+-  @RtlPreview
+-  @Composable
+-  fun SavingToStorageProgressDialogPreview() {
+-    Previews.Preview {
+-      MediaEditScreenDialogs.SavingToStorageProgressDialog()
+-    }
+-  }
+-}
+diff --git a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests.kt b/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests.kt
+deleted file mode 100644
+index 1c6b2bb2212bd4fc01ff4e90cb457a0d07ac3249..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests.kt
++++ /dev/null
+@@ -1,80 +0,0 @@
+-/*
+- * Copyright 2026 Signal Messenger, LLC
+- * SPDX-License-Identifier: AGPL-3.0-only
+- */
+-
+-package org.signal.mediasend.screens.edit
+-
+-import androidx.compose.runtime.Composable
+-import androidx.compose.runtime.remember
+-import com.android.tools.screenshot.PreviewTest
+-import org.signal.core.models.media.SentMediaQuality
+-import org.signal.core.ui.compose.Previews
+-import org.signal.core.ui.compose.ScreenshotPreviews
+-import org.signal.core.util.ContentTypeUtil
+-import org.signal.imageeditor.core.model.EditorModel
+-import org.signal.mediasend.EditorState
+-import org.signal.mediasend.screens.edit.video.VideoTrimData
+-
+-class MediaEditScreenScreenshotTests {
+-  @PreviewTest
+-  @ScreenshotPreviews
+-  @Composable
+-  fun MediaEditScreenImagePreview() {
+-    val selectedMedia = rememberPreviewMedia(10)
+-
+-    Previews.Preview {
+-      MediaEditScreen(
+-        state = MediaEditState(
+-          selectedMedia = selectedMedia,
+-          focusedMedia = selectedMedia.first(),
+-          editorStateMap = mapOf(selectedMedia.first().uri to EditorState.Image(EditorModel.create(0)))
+-        ),
+-        onEvent = {},
+-        imageControllers = remember { ImageController.Container() }
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @ScreenshotPreviews
+-  @Composable
+-  fun MediaEditScreenSingleImagePreview() {
+-    val selectedMedia = rememberPreviewMedia(1)
+-
+-    Previews.Preview {
+-      MediaEditScreen(
+-        state = MediaEditState(
+-          selectedMedia = selectedMedia,
+-          focusedMedia = selectedMedia.first(),
+-          editorStateMap = mapOf(selectedMedia.first().uri to EditorState.Image(EditorModel.create(0))),
+-          message = "Look at this",
+-          isViewOnceAvailable = true
+-        ),
+-        onEvent = {},
+-        imageControllers = remember { ImageController.Container() }
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @ScreenshotPreviews
+-  @Composable
+-  fun MediaEditScreenVideoPreview() {
+-    val selectedMedia = rememberPreviewMedia(10, contentType = ContentTypeUtil.VIDEO_MP4)
+-
+-    Previews.Preview {
+-      MediaEditScreen(
+-        state = MediaEditState(
+-          selectedMedia = selectedMedia,
+-          focusedMedia = selectedMedia.first(),
+-          editorStateMap = mapOf(selectedMedia.first().uri to EditorState.VideoTrim(VideoTrimData())),
+-          sentMediaQuality = SentMediaQuality.HIGH,
+-          isMuteVideoAudioEnabled = true
+-        ),
+-        onEvent = {},
+-        imageControllers = remember { ImageController.Container() }
+-      )
+-    }
+-  }
+-}
+diff --git a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/edit/QualitySelectorSheetContentScreenshotTests.kt b/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/edit/QualitySelectorSheetContentScreenshotTests.kt
+deleted file mode 100644
+index cf2a56e1c21fe4c4ce6b9a6c463b0dc947f2b605..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/edit/QualitySelectorSheetContentScreenshotTests.kt
++++ /dev/null
+@@ -1,35 +0,0 @@
+-/*
+- * Copyright 2026 Signal Messenger, LLC
+- * SPDX-License-Identifier: AGPL-3.0-only
+- */
+-
+-package org.signal.mediasend.screens.edit
+-
+-import androidx.compose.runtime.Composable
+-import com.android.tools.screenshot.PreviewTest
+-import org.signal.core.models.media.SentMediaQuality
+-import org.signal.core.ui.compose.DayNightPreviews
+-import org.signal.core.ui.compose.Previews
+-import org.signal.core.ui.compose.RtlPreview
+-
+-class QualitySelectorSheetContentScreenshotTests {
+-  @PreviewTest
+-  @DayNightPreviews
+-  @RtlPreview
+-  @Composable
+-  fun QualitySelectorSheetContentStandardPreview() {
+-    Previews.BottomSheetContentPreview {
+-      QualitySelectorSheetContent(quality = SentMediaQuality.STANDARD, onQualitySelected = {})
+-    }
+-  }
+-
+-  @PreviewTest
+-  @DayNightPreviews
+-  @RtlPreview
+-  @Composable
+-  fun QualitySelectorSheetContentHighPreview() {
+-    Previews.BottomSheetContentPreview {
+-      QualitySelectorSheetContent(quality = SentMediaQuality.HIGH, onQualitySelected = {})
+-    }
+-  }
+-}
+diff --git a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/select/MediaSelectScreenScreenshotTests.kt b/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/select/MediaSelectScreenScreenshotTests.kt
+deleted file mode 100644
+index df829e46d79611683426284a4bc74ec3c0eccef6..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/select/MediaSelectScreenScreenshotTests.kt
++++ /dev/null
+@@ -1,95 +0,0 @@
+-/*
+- * Copyright 2026 Signal Messenger, LLC
+- * SPDX-License-Identifier: AGPL-3.0-only
+- */
+-
+-package org.signal.mediasend.screens.select
+-
+-import androidx.compose.runtime.Composable
+-import com.android.tools.screenshot.PreviewTest
+-import org.signal.core.ui.compose.Previews
+-import org.signal.core.ui.compose.ScreenshotPreviews
+-import org.signal.mediasend.screens.edit.rememberPreviewMedia
+-
+-class MediaSelectScreenScreenshotTests {
+-  @PreviewTest
+-  @ScreenshotPreviews
+-  @Composable
+-  fun MediaSelectScreenFoldersPreview() {
+-    Previews.Preview {
+-      MediaSelectScreen(
+-        state = MediaSelectState.Folders(
+-          mediaFolders = rememberPreviewMediaFolders(20),
+-          selectedMedia = emptyList()
+-        ),
+-        onEvent = {}
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @ScreenshotPreviews
+-  @Composable
+-  fun MediaSelectScreenFilesPreview() {
+-    Previews.Preview {
+-      MediaSelectScreen(
+-        state = MediaSelectState.Files(
+-          selectedMediaFolder = rememberPreviewMediaFolders(1).first(),
+-          selectedMediaFolderItems = rememberPreviewMedia(100),
+-          selectedMedia = emptyList()
+-        ),
+-        onEvent = {}
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @ScreenshotPreviews
+-  @Composable
+-  fun MediaSelectScreenFilesWithSelectionPreview() {
+-    val media = rememberPreviewMedia(100)
+-
+-    Previews.Preview {
+-      MediaSelectScreen(
+-        state = MediaSelectState.Files(
+-          selectedMediaFolder = rememberPreviewMediaFolders(1).first(),
+-          selectedMediaFolderItems = media,
+-          selectedMedia = media.take(3)
+-        ),
+-        onEvent = {}
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @ScreenshotPreviews
+-  @Composable
+-  fun MediaSelectScreenNoPermissionPreview() {
+-    Previews.Preview {
+-      MediaSelectScreen(
+-        state = MediaSelectState.Folders(
+-          mediaFolders = emptyList(),
+-          selectedMedia = emptyList(),
+-          mediaPermissions = MediaPermissions.NONE
+-        ),
+-        onEvent = {}
+-      )
+-    }
+-  }
+-
+-  @PreviewTest
+-  @ScreenshotPreviews
+-  @Composable
+-  fun MediaSelectScreenPartialPermissionPreview() {
+-    Previews.Preview {
+-      MediaSelectScreen(
+-        state = MediaSelectState.Folders(
+-          mediaFolders = rememberPreviewMediaFolders(4),
+-          selectedMedia = emptyList(),
+-          mediaPermissions = MediaPermissions.PARTIAL
+-        ),
+-        onEvent = {}
+-      )
+-    }
+-  }
+-}
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_foldable portrait (night)_7382068f_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_foldable portrait (night)_7382068f_0.png
+deleted file mode 100644
+index 37b6daaba5541c84e47d82800d799c7bbd3482f9..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_foldable portrait (night)_7382068f_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:3d559f07866fd7d3a686afc1c9c4cc2ce9c68f039fd68482ccdb6cd31cf7308a
+-size 74657
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_phone landscape (night)_9b208707_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_phone landscape (night)_9b208707_0.png
+deleted file mode 100644
+index e30a6ea4658c19dcdb393c863ee060d37d7da91a..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_phone landscape (night)_9b208707_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:32330bb4e185a792f7ade6840e90ceb38d2f16444ce3e5e91cb7438f0d3c3bd8
+-size 43908
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_phone portrait (night)_cc3c9530_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_phone portrait (night)_cc3c9530_0.png
+deleted file mode 100644
+index e492da6e2e91e62427ffe12937b78cbe888728bd..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_phone portrait (night)_cc3c9530_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:05bd07853f2a0ab0b92d72f7c11dd657a61bac2df597768204851f255cd96687
+-size 40252
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_rtl_5f2f3345_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_rtl_5f2f3345_0.png
+deleted file mode 100644
+index 259f39830751ec4b18626cc00f67d16776ca1821..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_rtl_5f2f3345_0.png
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:d831df48f8c4d354bfda54754e68a94a243401727dd73c93623d6f0f215d7007
+-size 44184
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_tablet landscape (night)_d25401fe_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_tablet landscape (night)_d25401fe_0.png
+deleted file mode 100644
+index 20b3da3b32d3f7605a395d51b268a0bf0c07a94a..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_tablet landscape (night)_d25401fe_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:2c1c12952644cd3ab4d45b9d70e57695278058643e3d4f6f3f160ce6ccdf3093
+-size 81289
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_tablet portrait (night)_4413f5b7_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_tablet portrait (night)_4413f5b7_0.png
+deleted file mode 100644
+index f4c9565535f9d4778c81013f5ab923ce57187adc..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenPhotoPreview_tablet portrait (night)_4413f5b7_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:d16ff428daf35d2990c299c2e17e52a823aae6aa05554ab4927d195e075a0afd
+-size 90706
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_foldable portrait (night)_7382068f_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_foldable portrait (night)_7382068f_0.png
+deleted file mode 100644
+index 4efb1930639ed25a1c1c7f154d492c2ad411219e..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_foldable portrait (night)_7382068f_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:11ec1dc4d94c784e8cc30e37d67cf1b7339577563fc80d3690c8cc45b382dc4c
+-size 74116
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_phone landscape (night)_9b208707_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_phone landscape (night)_9b208707_0.png
+deleted file mode 100644
+index 059134bc0e742ff482ed59ee0153b187b2b086ce..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_phone landscape (night)_9b208707_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:895b9834f46ddf08a22dde72262e195ca6fc531bf9167b12e7d6c12b2707f168
+-size 43457
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_phone portrait (night)_cc3c9530_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_phone portrait (night)_cc3c9530_0.png
+deleted file mode 100644
+index 10c28a1b2ce2fee0f09c0972988ae2a9769cdd9c..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_phone portrait (night)_cc3c9530_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:b0bd1f4657f534cfff2b891de4569dbb1f09c7cee4f234a02ad4c65945502d55
+-size 39251
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_rtl_5f2f3345_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_rtl_5f2f3345_0.png
+deleted file mode 100644
+index 54d3814f1896681fa0328704326c97254b30b30c..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_rtl_5f2f3345_0.png
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:a33b8cbc5fd410ebf77c93158a0a2f7a92b2594b54c0ba508a5e9bfc9a040632
+-size 43666
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_tablet landscape (night)_d25401fe_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_tablet landscape (night)_d25401fe_0.png
+deleted file mode 100644
+index 97398f978fecce3c79e0ccc37d44a81d1841d4e5..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_tablet landscape (night)_d25401fe_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:ae02e341be30a29d20ce7f9803da5513598581b17425ef02a293cad249aebc45
+-size 80864
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_tablet portrait (night)_4413f5b7_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_tablet portrait (night)_4413f5b7_0.png
+deleted file mode 100644
+index df2ab5d66817ef4e4fb8d0ad43c98a3db178063e..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenVideoPreview_tablet portrait (night)_4413f5b7_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:bf86cdc258bd4f40fc0c133fa4e4f94f64e805ab93d8982b10a53eeb75a154a6
+-size 90047
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_foldable portrait (night)_7382068f_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_foldable portrait (night)_7382068f_0.png
+deleted file mode 100644
+index c29937cd07cba092dd237b552ba81f02a5ae9563..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_foldable portrait (night)_7382068f_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:3e4dc537cb45edd0f6f177fdee8a30147c3ad869c31b81de4d8dfd19e010bfcb
+-size 77073
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_phone landscape (night)_9b208707_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_phone landscape (night)_9b208707_0.png
+deleted file mode 100644
+index a56ddbafac4bb7315ca69414773b73c32bc28d51..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_phone landscape (night)_9b208707_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:e7201b1e20e65a4f0d526db969f2a23acef0f939d22233b2faa81011a6f5ca5c
+-size 45528
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_phone portrait (night)_cc3c9530_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_phone portrait (night)_cc3c9530_0.png
+deleted file mode 100644
+index 06d8332257029fa94b3e6f5ca7bfea1a5aabda69..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_phone portrait (night)_cc3c9530_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:ddfd35abaabee66929d30ed6341fb2b190200b4334599f387e0c75243e55bbe9
+-size 42134
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_rtl_5f2f3345_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_rtl_5f2f3345_0.png
+deleted file mode 100644
+index cda0af6e05a07cad8c905e9f03024095a4a240e0..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_rtl_5f2f3345_0.png
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:85b1cfed0853c0a977385f47c73d476e6213d3166ac1f060b31e651af8ebec1f
+-size 45991
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_tablet landscape (night)_d25401fe_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_tablet landscape (night)_d25401fe_0.png
+deleted file mode 100644
+index 32fba6b4ae50c0e6ea62d0ce4a0c8fda7de019f2..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_tablet landscape (night)_d25401fe_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:db94730863c7078095764ae3f155a353f9d6e2da5026d95e6eb09c4f45d68639
+-size 83888
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_tablet portrait (night)_4413f5b7_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_tablet portrait (night)_4413f5b7_0.png
+deleted file mode 100644
+index 1760c091f7cabfc744d70acc778476937d3a3e37..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests/MediaCaptureScreenWithSelectedMediaPreview_tablet portrait (night)_4413f5b7_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:2f773fe32d401a1a0a64e51f322d914200d09c52c6bac2a0a3843767654f54c8
+-size 92906
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/AddToGroupStoryConfirmationDialogPreview_day mode_7e480c1c_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/AddToGroupStoryConfirmationDialogPreview_day mode_7e480c1c_0.png
+deleted file mode 100644
+index 4923321738c254cd24a517b1b4f1c179453a29d4..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/AddToGroupStoryConfirmationDialogPreview_day mode_7e480c1c_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:04d38376f46dab5a56e5f7907fa45fd11b63298ad3ff88984f1b7205d47c1945
+-size 16781
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/AddToGroupStoryConfirmationDialogPreview_night mode_c0572229_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/AddToGroupStoryConfirmationDialogPreview_night mode_c0572229_0.png
+deleted file mode 100644
+index 4c7f005ca34db40e00d27d7cc39e3ad4e40acfd7..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/AddToGroupStoryConfirmationDialogPreview_night mode_c0572229_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:de35a5a364f95820fa5488c724beec316858eb21f67b733151921958586fee71
+-size 15907
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/AddToGroupStoryConfirmationDialogPreview_rtl_5f2f3345_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/AddToGroupStoryConfirmationDialogPreview_rtl_5f2f3345_0.png
+deleted file mode 100644
+index c08277d6b927388821f6215700e379ab10e4bc98..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/AddToGroupStoryConfirmationDialogPreview_rtl_5f2f3345_0.png
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:ab03b838600add5b130f4685975b7c6359bece20ca016b8e513dfc4476b4ff49
+-size 16667
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/DiscardEditsConfirmationDialogPreview_day mode_7e480c1c_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/DiscardEditsConfirmationDialogPreview_day mode_7e480c1c_0.png
+deleted file mode 100644
+index fa92010794020de10d5f4a8f1a712a2630e15c42..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/DiscardEditsConfirmationDialogPreview_day mode_7e480c1c_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:075dbde9e47e7adec075bcb9f4487380262abc05db516c2a3367cfea2580bb99
+-size 25877
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/DiscardEditsConfirmationDialogPreview_night mode_c0572229_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/DiscardEditsConfirmationDialogPreview_night mode_c0572229_0.png
+deleted file mode 100644
+index c1f6b41ccca70ec2f58bc969406f7451710dcdaa..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/DiscardEditsConfirmationDialogPreview_night mode_c0572229_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:df3dc5bf21c1025424e561a11f19e06b6fc64c090055f1bddc381ab6dda571fc
+-size 24819
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/DiscardEditsConfirmationDialogPreview_rtl_5f2f3345_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/DiscardEditsConfirmationDialogPreview_rtl_5f2f3345_0.png
+deleted file mode 100644
+index d5f36b6552af39c2bb16f1ada13508254fb92f08..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/DiscardEditsConfirmationDialogPreview_rtl_5f2f3345_0.png
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:e498699dc679eaf9dedafc54158d9937ec911bfe02ab008a04091621c1bd0d2f
+-size 25846
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SaveToStorageConfirmationDialogPreview_day mode_7e480c1c_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SaveToStorageConfirmationDialogPreview_day mode_7e480c1c_0.png
+deleted file mode 100644
+index 3b03faf4e41ded19efaa47abda3401077dfc6039..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SaveToStorageConfirmationDialogPreview_day mode_7e480c1c_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:06d26c17596570a02cb3cbfb444698cf70efca5f2265bf1810cf5462805d982b
+-size 40672
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SaveToStorageConfirmationDialogPreview_night mode_c0572229_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SaveToStorageConfirmationDialogPreview_night mode_c0572229_0.png
+deleted file mode 100644
+index ae50f54ddb0f3dd6a784ca11fa691075f9b7f7e6..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SaveToStorageConfirmationDialogPreview_night mode_c0572229_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:5f63d086e439c8f7bb7d96bf986dce3f09fcfaa082db2838b1695715e21dfcc1
+-size 39689
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SaveToStorageConfirmationDialogPreview_rtl_5f2f3345_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SaveToStorageConfirmationDialogPreview_rtl_5f2f3345_0.png
+deleted file mode 100644
+index 8f6fc12a005e000859a1e2d018df950bedd17220..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SaveToStorageConfirmationDialogPreview_rtl_5f2f3345_0.png
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:50a2cef8aec6d5b3a5c0e8ee6179f8501af3d8a5c7c7a9133ed38f72d21f6de2
+-size 40719
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SavingToStorageProgressDialogPreview_day mode_7e480c1c_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SavingToStorageProgressDialogPreview_day mode_7e480c1c_0.png
+deleted file mode 100644
+index 99c2ddd4b140790a84dc1238031a000aa6488fc1..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SavingToStorageProgressDialogPreview_day mode_7e480c1c_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:57e32efc6dcc686af703e65ba3b50a30b5039cf6ff4cbb8fc1fb925aab3b3c83
+-size 13805
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SavingToStorageProgressDialogPreview_night mode_c0572229_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SavingToStorageProgressDialogPreview_night mode_c0572229_0.png
+deleted file mode 100644
+index 26054de36bbdfde2bcbc5bf460b25e6879792aab..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SavingToStorageProgressDialogPreview_night mode_c0572229_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:68966072b1b8cdb5486cd04abfae9b75e6e20e3ad22cf803c23b08c1465e7c2a
+-size 12718
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SavingToStorageProgressDialogPreview_rtl_5f2f3345_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SavingToStorageProgressDialogPreview_rtl_5f2f3345_0.png
+deleted file mode 100644
+index db3be1ae5b4ce251c0f1cddb79ed99e02c8671f1..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenDialogsScreenshotTests/SavingToStorageProgressDialogPreview_rtl_5f2f3345_0.png
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:452f839282d702f3e87ee1b6cea29e3b3e4e65b90f3abbf715d1cf41802b9282
+-size 13762
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_foldable landscape (day)_41c0d57c_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_foldable landscape (day)_41c0d57c_0.png
+deleted file mode 100644
+index 0754bf87e97027398e8d6f52c248a12e1c04787a..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_foldable landscape (day)_41c0d57c_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:ab732bb4fb48cd57124286855efdfcece1a2abd4bd24a451170dee114f4de718
+-size 63581
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_foldable portrait (day)_bf09cc79_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_foldable portrait (day)_bf09cc79_0.png
+deleted file mode 100644
+index 5f07c7690937455ced215378d9007cb231ff5e84..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_foldable portrait (day)_bf09cc79_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:3204f7ad82bf4381dbfa2f2d4d5f1d4ebdef7a594fb3317746235cfa79a6e241
+-size 64117
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_foldable portrait (night)_7382068f_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_foldable portrait (night)_7382068f_0.png
+deleted file mode 100644
+index 751cdded7af36555bfcbfb034b5d77315ce0fba2..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_foldable portrait (night)_7382068f_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:6cbba9b08733d05765c44476003b46891ce1f88da112a382a1ff8490b32a5e85
+-size 64868
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_phone landscape (day)_5d9eaff2_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_phone landscape (day)_5d9eaff2_0.png
+deleted file mode 100644
+index 77680ead9824f0580312ae6a4eb972092716e4da..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_phone landscape (day)_5d9eaff2_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:d18c7667310be311acc27e6c2238b9a468d3da4420b1157aa8afa30c152f2975
+-size 43473
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_phone portrait (day)_e052ce8c_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_phone portrait (day)_e052ce8c_0.png
+deleted file mode 100644
+index 41388b1551ceb529c184e439d9b3605cd1e6ddcb..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_phone portrait (day)_e052ce8c_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:1d80ac0a174f9c034153561943599eddf38b4d68a1c78a48414842e32ca40201
+-size 41155
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_phone portrait (night)_cc3c9530_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_phone portrait (night)_cc3c9530_0.png
+deleted file mode 100644
+index 931a7e6a85eed47f2a50b6e0f4a3836a6142834d..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_phone portrait (night)_cc3c9530_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:9b735803f69bc0890393875a507fda01950585658b613b7b8e4550bb40bf9e89
+-size 41719
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_rtl_5f2f3345_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_rtl_5f2f3345_0.png
+deleted file mode 100644
+index 693fad7e72e95b2323da49fd134f108074adee0b..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_rtl_5f2f3345_0.png
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:a6c75811786bc2a5b56d5e262f5759f963a9d932a852af59ae293c8a3d263791
+-size 45333
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_tablet landscape (day)_308754cb_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_tablet landscape (day)_308754cb_0.png
+deleted file mode 100644
+index eaa848fbb42d678362df4e10d3ad350a787a4e9c..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_tablet landscape (day)_308754cb_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:2304e9ec2fa347592409ab1fc6b15f970da344e07004069fd0e00349235e563e
+-size 70735
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_tablet landscape (night)_d25401fe_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_tablet landscape (night)_d25401fe_0.png
+deleted file mode 100644
+index eabdec960915b538cfc26f060ec5f74aea49f8de..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_tablet landscape (night)_d25401fe_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:ed95ceddab2e18c420381a91c93a4ab3ab0f5c2947077ac98ee2c33f3940936b
+-size 71775
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_tablet portrait (day)_ae17fb11_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_tablet portrait (day)_ae17fb11_0.png
+deleted file mode 100644
+index 3f6ec7b3e6fe5c09dee0a3a9dc2a8cc0caa42344..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenImagePreview_tablet portrait (day)_ae17fb11_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:0b97ffb7b77d674e84f190dcd18b70fa915d87c3c77566e214cfb823c5a54965
+-size 73607
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenSingleImagePreview_foldable landscape (day)_41c0d57c_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenSingleImagePreview_foldable landscape (day)_41c0d57c_0.png
+deleted file mode 100644
+index cc970059d914463daa8aae1de9a2ce3501bab2b5..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenSingleImagePreview_foldable landscape (day)_41c0d57c_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:8ec21adb71a2a63653883867474b247f928a1cee2bf0ec7c3e86cbabfd94c485
+-size 56386
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenSingleImagePreview_foldable portrait (day)_bf09cc79_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenSingleImagePreview_foldable portrait (day)_bf09cc79_0.png
+deleted file mode 100644
+index 7b5dfd9866a39e0b25d172a01bd8b4c5ec52c7e0..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenSingleImagePreview_foldable portrait (day)_bf09cc79_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:695f2fdcbbb9dbe7aa2338858ba8f0fb20e5307558d19b4032cf4025994eb5aa
+-size 56892
+diff --git a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenSingleImagePreview_foldable portrait (night)_7382068f_0.png b/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenSingleImagePreview_foldable portrait (night)_7382068f_0.png
+deleted file mode 100644
+index 20f7120f85ae1077fb2032c52e7a93d515927087..0000000000000000000000000000000000000000
+--- a/feature/media-send/src/screenshotTestDebug/reference/org/signal/mediasend/screens/edit/MediaEditScreenScreenshotTests/MediaEditScreenSingleImagePreview_foldable portrait (night)_7382068f_0.png	
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:109fc74e841dede3aa4b302c2001a80998a2a0d274356a60007b8f1baf63e298
+-size 57475

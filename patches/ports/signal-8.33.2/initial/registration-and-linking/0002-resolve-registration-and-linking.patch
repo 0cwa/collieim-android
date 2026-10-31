@@ -1,0 +1,518 @@
+From 50faa9e502c12016d7d70a3c1fddfb31ad5e653b Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Thu, 29 Oct 2026 00:01:38 +0100
+Subject: [PATCH] Port registration-and-linking to Signal 8.33.2, part 2
+
+Adapt Molly registration and Android linked-device policies to the new Signal registration architecture.
+
+These are AI-generated compatibility resolutions from the existing
+PR #7 port source, exported after Git has performed its deterministic
+three-way merge of the unchanged official Molly 8.19.2-4 snapshot
+with Signal 8.33.2. The original Molly mailboxes remain unchanged.
+Offset-only movement and conflict-free automatic merges are already
+in the parent tree and are not re-exported as patch rewrites.
+
+This batch owns 36 whole-file changes. It preserves the
+previous port tree exactly and makes no new application changes.
+The source commit records a derived candidate, not an official
+Molly release or a claim of upstream authorship.
+
+Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
+Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
+Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
+Mechanical-Merge-Tree: 759ef1c309d93aa7e4ac7217b144c04545562f11
+AI-Generated: true
+
+diff --git a/feature/registration/src/main/res/values-pt/strings2.xml b/feature/registration/src/main/res/values-pt/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..24af182a0cfbf0052126fe49f5d72b6c8cfa257a
+--- /dev/null
++++ b/feature/registration/src/main/res/values-pt/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Configurações de rede</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ro/strings.xml b/feature/registration/src/main/res/values-ro/strings.xml
+index 42bccfb0ba64f2277d94429e4e012f92468814ba..ef9c2afd443b5d4ca0e774ce42789c75775a6f6c 100644
+--- a/feature/registration/src/main/res/values-ro/strings.xml
++++ b/feature/registration/src/main/res/values-ro/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Nu am telefonul meu vechi</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Sau reinstalează Signal pe același dispozitiv</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Sau reinstalează Molly pe același dispozitiv</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-ro/strings2.xml b/feature/registration/src/main/res/values-ro/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..4efe2dfd3e0bd9b52c490b8eb023febd966bb23d
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ro/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Reglări rețea</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ru/strings.xml b/feature/registration/src/main/res/values-ru/strings.xml
+index ea3beff2f6e403c8d95729ae440f220f05d9a9ae..c59f6d265120942b3f9465eff76fcb2f095080a6 100644
+--- a/feature/registration/src/main/res/values-ru/strings.xml
++++ b/feature/registration/src/main/res/values-ru/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">У меня нет старого телефона</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Либо вы повторно устанавливаете Signal на том же устройстве</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Либо вы повторно устанавливаете Molly на том же устройстве</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-ru/strings2.xml b/feature/registration/src/main/res/values-ru/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..467e86fced2bf5037a305f78ff11d0f65f59cde3
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ru/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Настройки сети</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-sk/strings.xml b/feature/registration/src/main/res/values-sk/strings.xml
+index aadfc8b344bfbaa4b97041e11b3782d4712c67b4..9b34bacb47f6c9eaebbb41a0a8a266373ff4ec05 100644
+--- a/feature/registration/src/main/res/values-sk/strings.xml
++++ b/feature/registration/src/main/res/values-sk/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Nemám svoj starý telefón</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Alebo znova inštalujete Signal na rovnakom zariadení</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Alebo znova inštalujete Molly na rovnakom zariadení</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-sl/strings.xml b/feature/registration/src/main/res/values-sl/strings.xml
+index 01580a1e6d017e6af5bd96411a2fc7afe8e1ba37..ce7b2048e83d4a86728ffcd374d1a34ffcaf1d35 100644
+--- a/feature/registration/src/main/res/values-sl/strings.xml
++++ b/feature/registration/src/main/res/values-sl/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Nimam starega telefona</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Ali pa ponovno nameščate Signal v isto napravo</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Ali pa ponovno nameščate Molly v isto napravo</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-sq/strings.xml b/feature/registration/src/main/res/values-sq/strings.xml
+index 49220481731debe877e511bdf22759fac907bc92..b095bbde2d4ddcc9c379fdb431e91dfa9095c38e 100644
+--- a/feature/registration/src/main/res/values-sq/strings.xml
++++ b/feature/registration/src/main/res/values-sq/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Nuk e kam telefonin e vjetër</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Ose je duke e riinstaluar Signal në të njëjtën pajisje</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Ose je duke e riinstaluar Molly në të njëjtën pajisje</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-sr/strings.xml b/feature/registration/src/main/res/values-sr/strings.xml
+index 7b205d5bdbed8c67c420d5feb3666c6b87965d39..1043d2ee0dcf38fe696ca8fcc5ac54f03b4f1c74 100644
+--- a/feature/registration/src/main/res/values-sr/strings.xml
++++ b/feature/registration/src/main/res/values-sr/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Немам свој стари телефон</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Или поново инсталирате Signal на истом уређају</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Или поново инсталирате Molly на истом уређају</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-sr/strings2.xml b/feature/registration/src/main/res/values-sr/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..b12c2e356faf5388ec30089659e8677248f029a3
+--- /dev/null
++++ b/feature/registration/src/main/res/values-sr/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Подешавања мреже</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-sv/strings.xml b/feature/registration/src/main/res/values-sv/strings.xml
+index f16a9f781206652199a96c01a374847656a151c8..019c784e0441d751af3079fc866a33c047dcaabf 100644
+--- a/feature/registration/src/main/res/values-sv/strings.xml
++++ b/feature/registration/src/main/res/values-sv/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Jag har inte min gamla telefon</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Eller så installerar du om Signal på samma enhet</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Eller så installerar du om Molly på samma enhet</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-sv/strings2.xml b/feature/registration/src/main/res/values-sv/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..bfd845cbfde9190186832cbe89800fc973ca0ffe
+--- /dev/null
++++ b/feature/registration/src/main/res/values-sv/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Nätverksinställningar</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-sw/strings.xml b/feature/registration/src/main/res/values-sw/strings.xml
+index 978eabe83d5777717316cad684f3e49c8a514eb1..25f7801729cb77d9cf1753e2208831b98018c987 100644
+--- a/feature/registration/src/main/res/values-sw/strings.xml
++++ b/feature/registration/src/main/res/values-sw/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Sina simu yangu ya zamani</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Au unasakinisha tena Signal kwenye kifaa kile kile</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Au unasakinisha tena Molly kwenye kifaa kile kile</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-ta/strings2.xml b/feature/registration/src/main/res/values-ta/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..1d4c4c02152f7cc626e3b88386e5d798ee18beac
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ta/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">பிணைய அமைப்புகள்</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-te/strings.xml b/feature/registration/src/main/res/values-te/strings.xml
+index 4bc48de0272b7e7ad265f3dbcef401619ce5ad04..fae1d6c8f64316d6008b84ea09264919c6bf9ca1 100644
+--- a/feature/registration/src/main/res/values-te/strings.xml
++++ b/feature/registration/src/main/res/values-te/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">నా దగ్గర నా పాత ఫోన్ లేదు</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">లేదా మీరు అదే పరికరంలో Signal ను మళ్ళీ ఇన్‌స్టాల్ చేస్తున్నారు</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">లేదా మీరు అదే పరికరంలో Molly ను మళ్ళీ ఇన్‌స్టాల్ చేస్తున్నారు</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-th/strings.xml b/feature/registration/src/main/res/values-th/strings.xml
+index 0bedf2b4472675cc5f86572ea0d69ca334f851e1..42ec0b0c3e8c95b4ea579010ae0b50f4bea8d58b 100644
+--- a/feature/registration/src/main/res/values-th/strings.xml
++++ b/feature/registration/src/main/res/values-th/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">ฉันไม่มีโทรศัพท์เครื่องเก่า</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">หรือติดตั้ง Signal ใหม่บนอุปกรณ์เครื่องเดียวกันนั้น</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">หรือติดตั้ง Molly ใหม่บนอุปกรณ์เครื่องเดียวกันนั้น</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-tl/strings.xml b/feature/registration/src/main/res/values-tl/strings.xml
+index 7bc2b0bf25f2a82dbfd02aa1167c45bd53dddcc4..cea58e9f0ec20bb4ac949fcc398ac07473a63bfe 100644
+--- a/feature/registration/src/main/res/values-tl/strings.xml
++++ b/feature/registration/src/main/res/values-tl/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Wala sa akin ang lumang phone ko</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">O nag-iinstall ka ulit ng Signal sa parehong device</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">O nag-iinstall ka ulit ng Molly sa parehong device</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-tr/strings.xml b/feature/registration/src/main/res/values-tr/strings.xml
+index ae3200807f4eab8e1fc598ad229d1d9f89db3a0a..20742362ebf5a6d706f6d1bb0987e080dffc80ca 100644
+--- a/feature/registration/src/main/res/values-tr/strings.xml
++++ b/feature/registration/src/main/res/values-tr/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Eski telefonum yanımda değil</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Ya da Signal\'ı aynı cihaza yeniden yüklüyorsun</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Ya da Molly\'ı aynı cihaza yeniden yüklüyorsun</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-tr/strings2.xml b/feature/registration/src/main/res/values-tr/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..7677b041b72ab2ee888f4771616471777a814643
+--- /dev/null
++++ b/feature/registration/src/main/res/values-tr/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Ağ ayarları</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ug/strings2.xml b/feature/registration/src/main/res/values-ug/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..e9a57bfbfcd5712e041fb2ee6f38658acd2b9ef1
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ug/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">تور تەڭشىكى</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-uk/strings.xml b/feature/registration/src/main/res/values-uk/strings.xml
+index a7bdac8ead187a1174f1528354870d05e529f751..1e8b32832ddd659092d07573a7eb3d47c937a0a0 100644
+--- a/feature/registration/src/main/res/values-uk/strings.xml
++++ b/feature/registration/src/main/res/values-uk/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">У мене не лишилося старого телефона</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Або ви перевстановлюєте Signal на цьому ж пристрої</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Або ви перевстановлюєте Molly на цьому ж пристрої</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-uk/strings2.xml b/feature/registration/src/main/res/values-uk/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..302c3c1d3a2ea40e34c2f9b36b517040d2400369
+--- /dev/null
++++ b/feature/registration/src/main/res/values-uk/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Налаштування мережі</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ur/strings.xml b/feature/registration/src/main/res/values-ur/strings.xml
+index b879d04b53733981105163a43b78b67ac309d05d..29f4c12f5b65180efb7ff2351c4e772ddd084df4 100644
+--- a/feature/registration/src/main/res/values-ur/strings.xml
++++ b/feature/registration/src/main/res/values-ur/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">میرے پاس اپنا پرانا فون موجود نہیں ہے</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">یا آپ اسی ڈیوائس پر Signal کو دوبارہ انسٹال کر رہے ہیں</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">یا آپ اسی ڈیوائس پر Molly کو دوبارہ انسٹال کر رہے ہیں</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-vi/strings.xml b/feature/registration/src/main/res/values-vi/strings.xml
+index c78cf2de3665089eae5c62c9ee38ed8e304d8c9f..f15bb4dd2158bce4b5df88eceb35961ff2ec0c8e 100644
+--- a/feature/registration/src/main/res/values-vi/strings.xml
++++ b/feature/registration/src/main/res/values-vi/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Tôi không có điện thoại cũ</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Hoặc bạn đang cài lại Signal trên cùng thiết bị</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">Hoặc bạn đang cài lại Molly trên cùng thiết bị</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-vi/strings2.xml b/feature/registration/src/main/res/values-vi/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..d2e4b87ee2e44aa4d2ea99199d7798aad73f5389
+--- /dev/null
++++ b/feature/registration/src/main/res/values-vi/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Cài đặt mạng</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-yue/strings.xml b/feature/registration/src/main/res/values-yue/strings.xml
+index c28dec9e0235879dd3aeddc91ed40a60a65a8a4e..87aa2e8125039d7da2ead8f6c921c6b7371db3be 100644
+--- a/feature/registration/src/main/res/values-yue/strings.xml
++++ b/feature/registration/src/main/res/values-yue/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">部舊手機唔喺我手上</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">或者如果你係喺同一部機度重新安裝緊 Signal</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">或者如果你係喺同一部機度重新安裝緊 Molly</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-zh-rCN/strings.xml b/feature/registration/src/main/res/values-zh-rCN/strings.xml
+index ba936e1912c44aa70b9513e42579f1b298c48277..1d51624d2b2aea887e24866b6b9a66f152953835 100644
+--- a/feature/registration/src/main/res/values-zh-rCN/strings.xml
++++ b/feature/registration/src/main/res/values-zh-rCN/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">我无法用旧手机</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">您可以在同一个设备上重新安装 Signal</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">您可以在同一个设备上重新安装 Molly</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-zh-rCN/strings2.xml b/feature/registration/src/main/res/values-zh-rCN/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..710b7e0765e68e5fa026ce1208edfe062ecc7061
+--- /dev/null
++++ b/feature/registration/src/main/res/values-zh-rCN/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">网络设置</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-zh-rHK/strings.xml b/feature/registration/src/main/res/values-zh-rHK/strings.xml
+index 84ec403aa4ccb8c5fe30f9357b8dfdf805d406d1..8d15ea5365cee240dca4dcd7397c4c620b382a01 100644
+--- a/feature/registration/src/main/res/values-zh-rHK/strings.xml
++++ b/feature/registration/src/main/res/values-zh-rHK/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">我沒有我的舊手機</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">或者你正在同一裝置上重新安裝 Signal</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">或者你正在同一裝置上重新安裝 Molly</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-zh-rTW/strings.xml b/feature/registration/src/main/res/values-zh-rTW/strings.xml
+index 5ebb25e2d3a22956357ece6ac9093b6b45574526..cbdbabf6ecb6ebb482c4345d9041bff1016ba233 100644
+--- a/feature/registration/src/main/res/values-zh-rTW/strings.xml
++++ b/feature/registration/src/main/res/values-zh-rTW/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">我沒有我的舊手機</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">或者你正在同一裝置上重新安裝 Signal</string>
++    <string name="WelcomeFragment_restore_action_reinstalling">或者你正在同一裝置上重新安裝 Molly</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-zh-rTW/strings2.xml b/feature/registration/src/main/res/values-zh-rTW/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..c400b95e1c2b9fddbbc916ad3818d9a79340ccb5
+--- /dev/null
++++ b/feature/registration/src/main/res/values-zh-rTW/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">網絡設定</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values/strings.xml b/feature/registration/src/main/res/values/strings.xml
+index 67174115a3993d6a4fc002f1357b1f4d169604c7..8c6aa1c3ea86ffba5cb8bcac8a6cdf34d62bf3c2 100644
+--- a/feature/registration/src/main/res/values/strings.xml
++++ b/feature/registration/src/main/res/values/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">I don\'t have my old phone</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Or you\'re reinstalling Signal on the same device</string>
++    <string name="WelcomeFragment_restore_action_reinstalling" mollyify="true">Or you\'re reinstalling Molly on the same device</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values/strings2.xml b/feature/registration/src/main/res/values/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..197ad4c94ebebee072c67ef22ad3228c9b640057
+--- /dev/null
++++ b/feature/registration/src/main/res/values/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Network settings</string>
++</resources>
+diff --git a/feature/registration/src/test/java/org/signal/registration/RegistrationRepositoryTest.kt b/feature/registration/src/test/java/org/signal/registration/RegistrationRepositoryTest.kt
+index 8882ff7d389900659a227baa691fdc83e5364800..c8a44f561ea59fa6234cfa84a1c3dcb74aa7f2f4 100644
+--- a/feature/registration/src/test/java/org/signal/registration/RegistrationRepositoryTest.kt
++++ b/feature/registration/src/test/java/org/signal/registration/RegistrationRepositoryTest.kt
+@@ -16,6 +16,8 @@ import assertk.assertions.isNull
+ import assertk.assertions.isTrue
+ import io.mockk.mockk
+ import kotlinx.coroutines.ExperimentalCoroutinesApi
++import kotlinx.coroutines.flow.emptyFlow
++import kotlinx.coroutines.flow.toList
+ import kotlinx.coroutines.test.runTest
+ import okio.ByteString.Companion.toByteString
+ import org.junit.Before
+@@ -80,6 +82,32 @@ class RegistrationRepositoryTest {
+     )
+   }
+ 
++  @Test
++  fun `a fresh registration does not enable network before the user proceeds`() {
++    assertThat(networkController.networkEnabledForRegistration).isEqualTo(false)
++  }
++
++  @Test
++  fun `linking enables network before provisioning and does not advertise disabled transfer`() = runTest {
++    networkController.onStartLinkDeviceProvisioning = { allowLinkAndSync ->
++      assertThat(networkController.networkEnabledForRegistration).isEqualTo(true)
++      assertThat(allowLinkAndSync).isEqualTo(false)
++      emptyFlow()
++    }
++
++    repository.startLinkDeviceProvisioning().toList()
++  }
++
++  @Test
++  fun `quick restore enables network before starting its provisioning connection`() = runTest {
++    networkController.onStartProvisioning = {
++      assertThat(networkController.networkEnabledForRegistration).isEqualTo(true)
++      emptyFlow()
++    }
++
++    repository.startProvisioning().toList()
++  }
++
+   // ==================== getAndMaybeHealRemoteBackupInfo ====================
+ 
+   @Test
+diff --git a/feature/registration/src/test/java/org/signal/registration/fakes/FakeNetworkController.kt b/feature/registration/src/test/java/org/signal/registration/fakes/FakeNetworkController.kt
+index aeed7dc3a650649c2d7d70d36b57c534ec95c996..231f062c8c9365448c1bd8a0b0142bdf9921ee5c 100644
+--- a/feature/registration/src/test/java/org/signal/registration/fakes/FakeNetworkController.kt
++++ b/feature/registration/src/test/java/org/signal/registration/fakes/FakeNetworkController.kt
+@@ -500,7 +500,14 @@ class FakeNetworkController(
+     return onStartProvisioning()
+   }
+ 
+-  override fun startLinkDeviceProvisioning(allowLinkAndSync: Boolean): Flow<LinkDeviceProvisioningEvent> = notExpected()
++  var networkEnabledForRegistration = false
++  var onStartLinkDeviceProvisioning: (Boolean) -> Flow<LinkDeviceProvisioningEvent> = { notExpected() }
++
++  override fun enableNetworkForRegistration() {
++    networkEnabledForRegistration = true
++  }
++
++  override fun startLinkDeviceProvisioning(allowLinkAndSync: Boolean): Flow<LinkDeviceProvisioningEvent> = onStartLinkDeviceProvisioning(allowLinkAndSync)
+ 
+   override suspend fun registerAsLinkedDevice(
+     aci: ACI,
+diff --git a/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt b/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt
+index af05ac27b8b5c2ad543d9350d6826c639af34e70..402635c50290e90ee9747702a95071202d419fed 100644
+--- a/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt
++++ b/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt
+@@ -19,6 +19,7 @@ import io.mockk.coEvery
+ import io.mockk.coVerify
+ import io.mockk.every
+ import io.mockk.mockk
++import io.mockk.verify
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.ExperimentalCoroutinesApi
+ import kotlinx.coroutines.flow.MutableStateFlow
+@@ -526,6 +527,15 @@ class PhoneNumberEntryViewModelTest {
+   // ==================== Trunk Prefix Normalization Tests ====================
+ 
+   @Test
++  fun `entering a number and opening confirmation leave networking disabled`() = runTest {
++    val initialState = PhoneNumberEntryState(countryCode = "1", nationalNumber = "2025550123")
++
++    viewModel.applyEvent(initialState, PhoneNumberEntryScreenEvents.NextClicked, parentEventEmitter, stateEmitter)
++
++    verify(exactly = 0) { mockRepository.enableNetworkForRegistration() }
++  }
++
++  @Test
+   fun `NextClicked strips a redundant leading trunk prefix before showing the confirmation dialog`() = runTest {
+     // Dutch users habitually type their number with the leading national '0' (e.g. 0612345678), which must not end
+     // up in the E164 (+31612345678, not +310612345678).
+@@ -584,6 +594,7 @@ class PhoneNumberEntryViewModelTest {
+ 
+     viewModel.applyEvent(initialState, PhoneNumberEntryScreenEvents.PhoneNumberConfirmed, parentEventEmitter, stateEmitter)
+ 
++    verify(exactly = 1) { mockRepository.enableNetworkForRegistration() }
+     coVerify(exactly = 1) { mockRepository.createSession("+31612345678") }
+     assertThat(emittedStates.last().nationalNumber).isEqualTo("612345678")
+     assertThat(emittedEvents.filterIsInstance<RegistrationFlowEvent.E164Chosen>())

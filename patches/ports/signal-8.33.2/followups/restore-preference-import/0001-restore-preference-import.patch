@@ -1,0 +1,25 @@
+From 916ae9f9b63e4f6a0c04adf31f97c11245a5d416 Mon Sep 17 00:00:00 2001
+From: 0cwa <kainau@yahoo.com>
+Date: Thu, 29 Oct 2026 00:04:40 +0100
+Subject: [PATCH] Restore the Molly preference import in ported megaphones
+
+Carry this existing AI-generated PR #7 source fix as its own
+reviewable patch, preserving the original source author and diff.
+The official Molly snapshot and earlier resolution patches do
+not receive regenerated provenance headers.
+
+Source-Commit: 1dc39842dfad7c31be516556f8da95556d6c810f
+AI-Generated: true
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java b/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java
+index c0f91c5afec02fad985a1d565d7562a0c2d1f2b6..f30c53c307fcebc010845612f2053f7050edd41b 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java
+@@ -45,6 +45,7 @@ import org.thoughtcrime.securesms.util.CommunicationActions;
+ import org.thoughtcrime.securesms.util.DateUtils;
+ import org.thoughtcrime.securesms.util.Environment;
+ import org.thoughtcrime.securesms.util.RemoteConfig;
++import org.thoughtcrime.securesms.util.TextSecurePreferences;
+ import org.signal.core.util.ServiceUtil;
+ import org.thoughtcrime.securesms.util.VersionTracker;
+ import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;

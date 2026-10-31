@@ -1,0 +1,48 @@
+From cbd8d7280c47d36c934bea7da9df155b9adbfa71 Mon Sep 17 00:00:00 2001
+From: 0cwa <kainau@yahoo.com>
+Date: Fri, 30 Oct 2026 01:31:56 +0100
+Subject: [PATCH] Fix CDN test configuration for Molly network transport
+
+Carry this existing AI-generated PR #7 source fix as its own
+reviewable patch, preserving the original source author and diff.
+The official Molly snapshot and earlier resolution patches do
+not receive regenerated provenance headers.
+
+Source-Commit: cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c
+AI-Generated: true
+
+diff --git a/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt b/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt
+index 103ec690dedc18db6e6644fb6d30aaae44076fd9..a95eb394f38840764dbcfd002fcbe6b3fa91f13b 100644
+--- a/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt
++++ b/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt
+@@ -11,6 +11,7 @@ import assertk.assertions.isEqualTo
+ import assertk.assertions.isInstanceOf
+ import assertk.assertions.isNull
+ import kotlinx.coroutines.test.runTest
++import okhttp3.Dns
+ import okhttp3.Interceptor
+ import okhttp3.MediaType.Companion.toMediaType
+ import okhttp3.OkHttpClient
+@@ -34,8 +35,9 @@ import org.signal.network.rest.SignalRestClient
+ import org.whispersystems.signalservice.internal.push.AttachmentUploadForm
+ import java.io.ByteArrayInputStream
+ import java.io.IOException
+-import java.util.Optional
++import java.net.ProxySelector
+ import java.util.Random
++import javax.net.SocketFactory
+ import kotlin.time.Duration.Companion.seconds
+ 
+ class CdnApiTest {
+@@ -404,8 +406,9 @@ class CdnApiTest {
+       signalCdsiUrls = emptyArray<SignalCdsiUrl>(),
+       signalSvr2Urls = emptyArray<SignalSvr2Url>(),
+       networkInterceptors = emptyList(),
+-      dns = Optional.empty(),
+-      signalProxy = Optional.empty(),
++      dns = Dns.SYSTEM,
++      socketFactory = SocketFactory.getDefault(),
++      proxySelector = ProxySelector.getDefault(),
+       zkGroupServerPublicParams = ByteArray(0),
+       genericServerPublicParams = ByteArray(0),
+       backupServerPublicParams = ByteArray(0),

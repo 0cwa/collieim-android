@@ -58,3 +58,4 @@ followups/retained-activity-push-imports/0001-retained-activity-push-imports.pat
 followups/retained-import-formatting/0001-retained-import-formatting.patch
 followups/retained-media-preference-imports/0001-retained-media-preference-imports.patch
 followups/backup-direct-cancellation/0001-backup-direct-cancellation.patch
+followups/remove-pre27-sheet-selectors/0001-remove-pre27-sheet-selectors.patch

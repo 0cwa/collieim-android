@@ -110,3 +110,9 @@ class ScopeTests(unittest.TestCase):
     def test_followups_allow_only_named_adjacent_report_metadata(self):
         self.assertTrue(scope.allowed('followups', 'patches/ports/signal-8.33.2/report-metadata.json'))
         self.assertFalse(scope.allowed('followups', 'patches/ports/signal-8.33.2/unexpected.json'))
+
+    def test_followups_allow_pipeline_pin_document_but_not_other_docs_or_tools(self):
+        self.assertTrue(scope.allowed('followups', 'docs/PATCH-PIPELINE.md'))
+        self.assertFalse(scope.allowed('followups', 'docs/OTHER.md'))
+        self.assertFalse(scope.allowed('followups', 'docs/PATCH-PIPELINE.md.extra'))
+        self.assertFalse(scope.allowed('followups', 'tools/patches/scope.py'))

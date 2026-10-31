@@ -4,5 +4,37 @@
   "minimization_complete": false,
   "hunks": {},
   "exclusions_complete": false,
-  "baseline_profile_commit": "deabfb346bf15690df89c86517fb3a71205c7cec"
+  "baseline_profile_commit": "deabfb346bf15690df89c86517fb3a71205c7cec",
+  "action_chains": [
+    {
+      "start_tree": "2533afec2fe2d7f9fc682f699fc21d7624521889",
+      "actions": [
+        {
+          "path": "app/src/main/res/layout/audio_view.xml",
+          "input_blob": "571410be668d8b24234e3b91dc0b98bfcbc8e1eb",
+          "output_blob": "698b435c04fd0a12181856f1a273051d28d8effb",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/fmt-01.patch",
+          "gate_input": "PR4-derived tree 70f2eba69967c4a3ae82dd9204999feb1bd70f9b with candidate applied; full tested tree not pinned",
+          "gate": "XML event comparison; Gradle :app:processProdWebsiteDebugResources",
+          "outcome": "XML events equal; resource task executed, exit 0",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#fmt-01"
+        }
+      ]
+    },
+    {
+      "start_tree": "2533afec2fe2d7f9fc682f699fc21d7624521889",
+      "actions": [
+        {
+          "path": "app/src/main/res/values-af/strings.xml",
+          "input_blob": "834085e2b39349c74ee9bb338202b8d222fdc1a0",
+          "output_blob": "c1457e149094d35c0973c2aa6e00d3d0d766b667",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/lex-01.patch",
+          "gate_input": "individual input blobs and relative file path",
+          "gate": "AAPT2 9.4.0-15978811-linux compile",
+          "outcome": "baseline and restored file compile, exit 0",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#lex-01"
+        }
+      ]
+    }
+  ]
 }

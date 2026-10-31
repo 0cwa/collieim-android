@@ -5390,3 +5390,10 @@ Clean merge excludes all 764 conflicted paths, including clean portions within t
 | 0441bfc65bf445b63760 | settings.gradle.kts | text | 100644 | 100644 | 1 | 28 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 0e54ee801df27d02a79b | wire-handler/lib/build.gradle.kts | text | 100644 | 000000 | 0 | 18 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | c50828c2507901e204d9 | wire-handler/lib/build.gradle.kts | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+
+## Measured minimization actions
+
+| Path | Input blob | Output blob | Versioned patch | Gate input | Gate | Outcome | Evidence |
+|---|---|---|---|---|---|---|---|
+| app/src/main/res/layout/audio_view.xml | 571410be668d8b24234e3b91dc0b98bfcbc8e1eb | 698b435c04fd0a12181856f1a273051d28d8effb | patches/ports/signal-8.33.2/report-evidence/fmt-01.patch | PR4-derived tree 70f2eba69967c4a3ae82dd9204999feb1bd70f9b with candidate applied; full tested tree not pinned | XML event comparison; Gradle :app:processProdWebsiteDebugResources | XML events equal; resource task executed, exit 0 | patches/ports/signal-8.33.2/report-evidence/receipts.md#fmt-01 |
+| app/src/main/res/values-af/strings.xml | 834085e2b39349c74ee9bb338202b8d222fdc1a0 | c1457e149094d35c0973c2aa6e00d3d0d766b667 | patches/ports/signal-8.33.2/report-evidence/lex-01.patch | individual input blobs and relative file path | AAPT2 9.4.0-15978811-linux compile | baseline and restored file compile, exit 0 | patches/ports/signal-8.33.2/report-evidence/receipts.md#lex-01 |

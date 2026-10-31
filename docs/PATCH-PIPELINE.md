@@ -230,3 +230,22 @@ patchset, the mechanical merge, and AI-assisted compatibility changes. Its
 preview marks missing hunk evidence as unmeasured. `--check` verifies current
 output; `--ready` additionally requires measured evidence for the final gate.
 These counts alone do not establish authorship or necessity.
+
+Report metadata may share descriptions through `groups`: each group has an
+explicit `hunks` array of current IDs and a `description` containing only
+`type`, `reason`, `molly_equivalent`, and `searched_branches`. Groups may not
+claim gate results or overlap. Individual `hunks` entries record `revert_gate`,
+`gate_input`, `outcome`, and `evidence` for the exact measured check. Missing
+fields remain unmeasured; readiness requires every field, exclusion evidence,
+and completed minimization.
+
+For removed changes, `action_chains` records a `start_tree` and ordered
+`actions`. Each action names a `path`, tracked one-file `patch`, `input_blob`,
+`output_blob`, `gate_input`, `gate`, `outcome`, and `evidence`. The renderer
+replays the patches in a private index, checks the blob IDs and single changed
+path, and displays the reported gate separately from current-hunk evidence.
+The input description must identify the actual tested state; a passing build
+cannot establish an individual revert failure. Historical patches must be
+committed so replay works in a fresh checkout. The starting tree must be
+available from the report preparation step. The clean-merge measurement omits
+whole conflicted files, including any clean portions within those files.

@@ -251,7 +251,7 @@ def verify(patches, repo, worktree=None):
                 if not preserve and destination.exists():
                     forest.git(repo, 'worktree', 'remove', '--force', str(destination))
                 if reverse and requested is not None and retained_head is not None:
-                    forest.git(repo, 'worktree', 'add', '--detach', str(requested), retained_head)
+                    forest.add_worktree(repo, requested, retained_head)
     return result
 
 

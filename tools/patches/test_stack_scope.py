@@ -119,6 +119,11 @@ class ScopeTests(unittest.TestCase):
 
 
 class BundleScopeTests(unittest.TestCase):
+    def test_release_allows_only_pipeline_document(self):
+        self.assertTrue(scope.allowed('release', 'docs/PATCH-PIPELINE.md'))
+        self.assertFalse(scope.metadata('docs/PATCH-PIPELINE.md.extra'))
+        self.assertFalse(scope.metadata('docs/OTHER.md'))
+
     def test_only_exact_release_bundle_path_is_allowed(self):
         self.assertTrue(scope.allowed('release', 'patches/ports/signal-8.33.2/source-checkpoint.bundle'))
         self.assertFalse(scope.allowed('release', 'patches/ports/signal-8.33.2/unrelated.bundle'))

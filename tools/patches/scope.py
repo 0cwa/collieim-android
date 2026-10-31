@@ -3,6 +3,7 @@
 import argparse
 import json
 import subprocess
+import re
 import sys
 
 MOLLY = '0e202dda90785771ff8c87526eaaf30c655f54f3'
@@ -26,6 +27,14 @@ def metadata(path):
             path in WORKFLOWS)
 
 
+def report_evidence(path):
+    prefix = 'patches/ports/signal-8.33.2/report-evidence/'
+    if not path.startswith(prefix):
+        return False
+    name = path[len(prefix):]
+    return name == 'receipts.md' or bool(re.fullmatch(r'(?:fmt-(?:0[1-9]|1[0-6])|lex-(?:0[1-9]|[1-6][0-9]|7[0-4]))\.patch', name))
+
+
 def allowed(scope, path):
     if scope == 'pipeline':
         return path.startswith('tools/patches/') or path == 'docs/PATCH-PIPELINE.md' or path in WORKFLOWS
@@ -34,8 +43,10 @@ def allowed(scope, path):
             return True  # exact source projection checked independently below
         if scope == 'switch':
             return path.startswith('patches/molly/') or path == 'molly-build.json'
-        return path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'}
+        return report_evidence(path) or path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'}
     if scope == 'followups':
+        if report_evidence(path):
+            return True
         prefix = 'patches/ports/signal-8.33.2/'
         if path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md', prefix + 'series', prefix + 'provenance.json', prefix + 'report-metadata.json'}:
             return True

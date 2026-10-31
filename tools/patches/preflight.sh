@@ -71,7 +71,7 @@ if report.get('status') != 'PASS':
 print(f"source proof PASS, tree {report['tree']}")
 PY
 
-if [[ -n $scope && ( $scope == release || $scope == followups ) ]]; then
+if python3 -c 'import json; d=json.load(open("molly-build.json")); raise SystemExit(d.get("port") is None)'; then
   echo '== port report freshness'
   python3 tools/patches/port_report.py --check
 fi

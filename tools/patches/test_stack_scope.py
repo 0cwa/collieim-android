@@ -74,6 +74,10 @@ class ScopeTests(unittest.TestCase):
         self.git('commit', '-qm', 'switch')
         with mock.patch.object(scope, 'MOLLY', self.base), mock.patch.object(scope, 'OLD', signal), mock.patch.object(scope, 'FOREST', forest_id):
             self.assertTrue(scope.check_scope(self.repo, 'switch', lower)['profile_present'])
+            with self.assertRaisesRegex(ValueError, 'lower base'):
+                scope.check_scope(self.repo, 'switch', 'HEAD')
+            with self.assertRaisesRegex(ValueError, 'outside scope'):
+                scope.check_scope(self.repo, 'switch', self.base)
             with self.assertRaisesRegex(ValueError, 'base is not an ancestor'):
                 scope.check_scope(self.repo, 'switch', signal)
             self.commit('app.txt', 'unexpected source mutation\n')

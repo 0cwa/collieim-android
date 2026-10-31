@@ -16,7 +16,68 @@ env:
   GIT_TERMINAL_PROMPT: '0'
 
 jobs:
+  scope:
+    name: Check stack scope and patch tools
+    runs-on: ubuntu-24.04
+    outputs:
+      profile: ${{ steps.scope.outputs.profile }}
+      port: ${{ steps.scope.outputs.port }}
+      stack_scope: ${{ steps.scope.outputs.stack_scope }}
+      base: ${{ steps.scope.outputs.base }}
+    steps:
+      - name: Check out immutable head
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          lfs: false
+      - name: Validate scope and tests
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_REF: ${{ github.ref_name }}
+        run: |
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            case "$BASE_REF" in
+              stack/0-molly-8.19.2-4) scope=pipeline ;;
+              stack/1-patch-pipeline) scope=switch ;;
+              stack/2-molly-as-patchset) scope=release ;;
+              stack/3-signal-8.33.2) scope=followups ;;
+              *) echo "Unknown base: $BASE_REF" >&2; exit 1 ;;
+            esac
+            base="$BASE_SHA"
+          elif [[ "$EVENT_NAME" == workflow_dispatch ]]; then
+            case "$HEAD_REF" in
+              stack/1-patch-pipeline) scope=pipeline; base_ref=stack/0-molly-8.19.2-4 ;;
+              stack/2-molly-as-patchset) scope=switch; base_ref=stack/1-patch-pipeline ;;
+              stack/3-signal-8.33.2) scope=release; base_ref=stack/2-molly-as-patchset ;;
+              stack/4-behavior-followups) scope=followups; base_ref=stack/3-signal-8.33.2 ;;
+              *) echo "Unknown branch: $HEAD_REF" >&2; exit 1 ;;
+            esac
+            git fetch --no-tags origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref"
+            base="refs/remotes/origin/$base_ref"
+          else
+            echo "Unsupported event" >&2; exit 1
+          fi
+          python3 tools/patches/scope.py --scope "$scope" --base "$base"
+          echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
+          python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
+          if [[ "$scope" == release || "$scope" == followups ]]; then
+            python3 tools/patches/port_report.py --check
+            echo 'port=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'port=false' >> "$GITHUB_OUTPUT"
+          fi
+          if [[ "$scope" == pipeline ]]; then echo 'profile=false' >> "$GITHUB_OUTPUT"; else echo 'profile=true' >> "$GITHUB_OUTPUT"; fi
+
   source-proof:
+    needs: scope
+    if: needs.scope.outputs.profile == 'true'
     name: Prove source reconstruction and upstream provenance
     runs-on: ubuntu-24.04
     timeout-minutes: 45
@@ -49,7 +110,8 @@ jobs:
         run: |
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
-            --report "$RUNNER_TEMP/reports/source.json"
+            --report "$RUNNER_TEMP/reports/source.json" \
+            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}"
 
       - name: Prove the upstream native cherry-pick when configured
         run: |
@@ -66,7 +128,7 @@ jobs:
 
   android:
     name: Build the proved source and run its regression tests
-    needs: source-proof
+    needs: [scope, source-proof]
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -91,7 +153,8 @@ jobs:
         run: |
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
-            --report "$RUNNER_TEMP/reports/source.json"
+            --report "$RUNNER_TEMP/reports/source.json" \
+            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}"
 
       - name: Prepare the optional native backport from its immutable sources
         run: |

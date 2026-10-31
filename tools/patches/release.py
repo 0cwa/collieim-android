@@ -16,6 +16,7 @@ import sys
 import tempfile
 
 import forest
+import scope as stack_scope
 import git_utils
 import verify_complete
 
@@ -71,9 +72,17 @@ def load_config(path):
     return data
 
 
-def check_source_boundary(repo, signal):
+def check_source_boundary(repo, signal, scope=None, base=None):
     """A new base edit must be reviewed explicitly, never silently excluded."""
     verify_complete.commit(repo, signal, 'Signal source')
+    if scope or base:
+        if not scope or not base or scope == 'pipeline':
+            raise forest.ForestError('a release requires a valid stack scope and lower base')
+        try:
+            stack_scope.check_scope(repo, scope, base)
+        except ValueError as exc:
+            raise forest.ForestError(str(exc)) from exc
+        return
     if git_utils.git(repo, 'merge-base', '--is-ancestor', signal, 'HEAD', check=False).returncode:
         raise forest.ForestError('the PR must descend from its pinned Signal source commit')
     changed = verify_complete.changed_paths(repo, signal, 'HEAD')
@@ -215,12 +224,12 @@ def apply_resolutions(repo, worktree, tree, records):
     return changed, applied
 
 
-def assemble(repo, config_path, worktree):
+def assemble(repo, config_path, worktree, scope=None, base=None):
     repo = Path(repo).resolve()
     config = load_config(config_path)
     destination = forest.destination(repo, worktree)
     signal = config['signal']['commit']
-    check_source_boundary(repo, signal)
+    check_source_boundary(repo, signal, scope, base)
     patches = inside(repo, config['molly']['patches'], 'Molly forest')
     data = forest.Forest(patches)
     identity = verify_complete.validate_identity(data, repo)
@@ -283,9 +292,11 @@ def main():
     parser.add_argument('--config', type=Path, default=Path('molly-build.json'))
     parser.add_argument('--worktree', type=Path, required=True)
     parser.add_argument('--report', type=Path)
+    parser.add_argument('--scope', choices=('switch', 'release', 'followups'))
+    parser.add_argument('--base')
     args = parser.parse_args()
     try:
-        result = assemble(args.repo, args.config, args.worktree)
+        result = assemble(args.repo, args.config, args.worktree, args.scope, args.base)
         code = 0
     except (forest.ForestError, git_utils.GitError, OSError, UnicodeError, ValueError, KeyError) as exc:
         result, code = {'status': 'FAIL', 'error': str(exc)}, 1

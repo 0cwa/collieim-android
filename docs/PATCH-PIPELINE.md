@@ -265,3 +265,18 @@ Keep a PR in draft until its required native and Android gates have actually
 passed. Neither a source-tree proof nor an earlier candidate's CI result is
 a fresh APK validation. No native binary checksum, build success, or device
 acceptance is assumed by these patches.
+
+## Local stack scope and port report
+
+For a stack boundary, pass its explicit base to the preflight, for example
+`tools/patches/preflight.sh --scope pipeline --base stack/0-molly-8.19.2-4`.
+Use `switch`, `release`, or `followups` for the subsequent boundaries. The
+scope check validates the base ancestry, source projection, approved workflow
+paths, Molly forest identity, and profile pins. The pipeline branch has no
+Android profile, so its preflight runs the tool tests only.
+
+`port_report.py` measures physical Git additions and deletions for the Molly
+patchset, the mechanical merge, and AI-assisted compatibility changes. Its
+preview marks missing hunk evidence as unmeasured. `--check` verifies current
+output; `--ready` additionally requires measured evidence for the final gate.
+These counts alone do not establish authorship or necessity.

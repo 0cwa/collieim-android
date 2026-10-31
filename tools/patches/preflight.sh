@@ -9,8 +9,21 @@
 # and is replaced on each run. Android stages need JDK 21 and ANDROID_HOME.
 set -euo pipefail
 
-stage=${1:-proof}
-case "$stage" in proof|resources|full) ;; *) echo "usage: $0 [proof|resources|full]" >&2; exit 2 ;; esac
+stage=proof
+scope=
+scope_base=
+while (($#)); do
+  case "$1" in
+    proof|resources|full) stage=$1; shift ;;
+    --scope) scope=${2:?missing scope}; shift 2 ;;
+    --base) scope_base=${2:?missing base}; shift 2 ;;
+    *) echo "usage: $0 [proof|resources|full] [--scope pipeline|switch|release|followups --base REF]" >&2; exit 2 ;;
+  esac
+done
+if [[ -n $scope || -n $scope_base ]]; then
+  [[ -n $scope && -n $scope_base ]] || { echo '--scope and --base are both required' >&2; exit 2; }
+  python3 tools/patches/scope.py --scope "$scope" --base "$scope_base"
+fi
 
 repo=$(git rev-parse --show-toplevel)
 cd "$repo"
@@ -18,6 +31,13 @@ base=${MOLLY_PREFLIGHT_DIR:-/tmp/molly-preflight}
 worktree="$base/release"
 reports="$base/reports"
 mkdir -p "$base"
+
+if [[ $scope == pipeline ]]; then
+  [[ $stage == proof ]] || { echo 'pipeline has no Android profile' >&2; exit 2; }
+  echo '== patch-tool tests'
+  python3 -m unittest discover -s tools/patches -p 'test_*.py'
+  exit 0
+fi
 
 molly_target=$(python3 -c 'import json; print(json.load(open("molly-build.json"))["molly"]["target"])')
 
@@ -39,8 +59,10 @@ fi
 git worktree prune
 
 echo '== source reconstruction and tree proof'
+stack_args=()
+if [[ -n $scope ]]; then stack_args=(--scope "$scope" --base "$scope_base"); fi
 python3 tools/patches/release.py --repo . --config molly-build.json \
-  --worktree "$worktree" --report "$reports/source.json" >/dev/null
+  --worktree "$worktree" --report "$reports/source.json" "${stack_args[@]}" >/dev/null
 python3 - "$reports/source.json" <<'PY'
 import json, sys
 report = json.load(open(sys.argv[1]))
@@ -48,6 +70,11 @@ if report.get('status') != 'PASS':
     sys.exit(f"source proof failed: {report.get('error')}")
 print(f"source proof PASS, tree {report['tree']}")
 PY
+
+if python3 -c 'import json; d=json.load(open("molly-build.json")); raise SystemExit(d.get("port") is None)'; then
+  echo '== port report freshness'
+  python3 tools/patches/port_report.py --check
+fi
 
 [[ $stage == proof ]] && exit 0
 

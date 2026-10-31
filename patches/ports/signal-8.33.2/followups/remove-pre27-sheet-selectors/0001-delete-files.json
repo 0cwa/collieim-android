@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "type": "delete-files",
+  "source_commit": "193b43ba234f92b8565d36fff324a780d2a534ce",
+  "before_tree": "3d220916d8bac6beb8cfb6e2967ccb2522a376cb",
+  "after_tree": "28e6a455c8a0b4d1cb071c3d24fc08fe91feb455",
+  "files": [
+    {
+      "path": "app/src/main/res/color/bottom_sheet_navigation_bar_surface.xml",
+      "mode": "100644",
+      "blob": "133c9359780327cd678aed852bf1e04c90f543a0"
+    },
+    {
+      "path": "core/ui/src/main/res/color/signal_bottom_sheet_navigation_bar.xml",
+      "mode": "100644",
+      "blob": "11d0c73850b98b6181eb41fd753e99a1eeab08a6"
+    }
+  ]
+}

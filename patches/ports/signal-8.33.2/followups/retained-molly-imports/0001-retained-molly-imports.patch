@@ -1,18 +1,15 @@
-From 6a08b686d0f4159a8b801420d601ce55b5195b66 Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 03:51:23 +0100
-Subject: [PATCH] Retain Molly message and reactions imports
+From dd98fd50511a7bcf337bae7d3c544207c429294c Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/retained-molly-imports
 
-Restore four existing Molly imports that compile without behavior changes.
+Retain Molly message processor and reactions theme imports.
 
+Original-Source-Commit: 6a08b686d0f4159a8b801420d601ce55b5195b66
 AI-Generated: true
 
-Based-On-Source-Commit: 9fd7b272e2b546c5fc706315df09c5778590f1fb
-Source-Commit: 6a08b686d0f4159a8b801420d601ce55b5195b66
----
- .../thoughtcrime/securesms/messages/DataMessageProcessor.kt    | 3 +++
- .../reactions/ReactionsBottomSheetDialogFragment.java          | 1 +
- 2 files changed, 4 insertions(+)
+Source-Commit: dd98fd50511a7bcf337bae7d3c544207c429294c
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt b/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
 index 08b8191c..f7948257 100644
@@ -54,6 +51,3 @@ index 5e07a00a..e3358b41 100644
  import org.thoughtcrime.securesms.R;
  import org.thoughtcrime.securesms.components.emoji.EmojiImageView;
  import org.thoughtcrime.securesms.database.model.MessageId;
--- 
-2.56.0
-

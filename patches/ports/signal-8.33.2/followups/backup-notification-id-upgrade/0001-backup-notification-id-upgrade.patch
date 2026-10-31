@@ -1,23 +1,15 @@
-From ae2672a773d15d1b22186bd8acbec2221760f049 Mon Sep 17 00:00:00 2001
-From: Molly Port Compatibility Follow-up <port-compatibility@example.invalid>
-Date: Fri, 30 Oct 2026 07:36:09 +0100
-Subject: [PATCH] Clean up legacy backup notifications after upgrade
+From b25c3a11d24d66eb2613def6ab147c945a5d32fe Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/backup-notification-id-upgrade
 
-Keep the collision-free Signal IDs for new backup alerts, and remove old Molly alerts only when the active notification matches the backup channel. This avoids deleting old conversation notifications that shared the previous numeric range.
+Clean up legacy Molly backup alerts by checking their untagged notification ID and backup channel, while keeping Signal IDs for new alerts.
 
+Original-Source-Commit: ae2672a773d15d1b22186bd8acbec2221760f049
 AI-Generated: true
 
-Based-On-Source-Commit: 34100dfa15eb70256d948f96b14abe4b7c7920d6
-Source-Commit: ae2672a773d15d1b22186bd8acbec2221760f049
----
- .../securesms/backup/v2/BackupRepository.kt   | 30 +++++++++++++++++--
- .../backup/v2/LegacyBackupNotification.kt     | 13 ++++++++
- .../notifications/NotificationIds.kt          |  6 +++-
- .../backup/v2/LegacyBackupNotificationTest.kt | 17 +++++++++++
- .../notifications/NotificationIdsTest.kt      |  7 +++++
- 5 files changed, 70 insertions(+), 3 deletions(-)
- create mode 100644 app/src/main/java/org/thoughtcrime/securesms/backup/v2/LegacyBackupNotification.kt
- create mode 100644 app/src/test/java/org/thoughtcrime/securesms/backup/v2/LegacyBackupNotificationTest.kt
+Source-Commit: b25c3a11d24d66eb2613def6ab147c945a5d32fe
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt
 index c3483573..0bb06105 100644
@@ -171,6 +163,3 @@ index a433c09a..725f3dab 100644
    @Test
    fun `fixed ids are positive`() {
      val nonPositive = fixedIds.filterValues { it <= 0 }
--- 
-2.56.0
-

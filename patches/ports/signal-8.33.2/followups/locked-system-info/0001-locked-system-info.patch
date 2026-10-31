@@ -1,19 +1,15 @@
-From a9ebbf1c92798f703ad434c1caa720536a724fe0 Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 02:31:28 +0100
-Subject: [PATCH] Fix system information logging while locked
+From 7a1ab1cb074a5c7a975ea0b692153a2d83eccc28 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/locked-system-info
 
-Read the first-install version from Molly preferences before SignalStore is initialized. Exercise the complete locked system-info section without initializing SignalStore.
+Restore system information behavior while the application is locked.
 
+Original-Source-Commit: a9ebbf1c92798f703ad434c1caa720536a724fe0
 AI-Generated: true
 
-Based-On-Source-Commit: 2baf94944e5461323bd4fc53ea99d522882be4b1
-Source-Commit: a9ebbf1c92798f703ad434c1caa720536a724fe0
----
- .../logsubmit/LogSectionSystemInfo.kt         |  3 +-
- .../logsubmit/LogSectionSystemInfoTest.kt     | 62 +++++++++++++++++++
- 2 files changed, 64 insertions(+), 1 deletion(-)
- create mode 100644 app/src/test/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfoTest.kt
+Source-Commit: 7a1ab1cb074a5c7a975ea0b692153a2d83eccc28
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfo.kt b/app/src/main/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfo.kt
 index ed5b105c..bd971601 100644
@@ -104,6 +100,3 @@ index 00000000..e209f1ee
 +    assertTrue(content.contains("First Version     : 123"))
 +  }
 +}
--- 
-2.56.0
-

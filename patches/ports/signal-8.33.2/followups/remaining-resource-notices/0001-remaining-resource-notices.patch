@@ -1,61 +1,16 @@
-From 0a44d06b86c793186f42d53cf248ad8bb2f6c925 Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 02:31:54 +0100
-Subject: [PATCH] Restore copyright headers in remaining resource files
+From 34312fb9fc4454ce3616c6e5b4e798401569f9b7 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/remaining-resource-notices
 
-Preserve the original Signal copyright and SPDX notices in the five affected resource files.
+Restore copyright notices in remaining resource files.
 
+Original-Source-Commit: 0a44d06b86c793186f42d53cf248ad8bb2f6c925
 AI-Generated: true
 
-Based-On-Source-Commit: a9ebbf1c92798f703ad434c1caa720536a724fe0
-Source-Commit: 0a44d06b86c793186f42d53cf248ad8bb2f6c925
----
- app/src/main/res/values-af/strings.xml    | 4 ++++
- app/src/main/res/values-hi/strings.xml    | 4 ++++
- app/src/main/res/values-pt/strings.xml    | 4 ++++
- app/src/main/res/values/strings.xml       | 4 ++++
- core/util/src/main/res/values/strings.xml | 4 ++++
- 5 files changed, 20 insertions(+)
+Source-Commit: 34312fb9fc4454ce3616c6e5b4e798401569f9b7
 
-diff --git a/app/src/main/res/values-af/strings.xml b/app/src/main/res/values-af/strings.xml
-index 834085e2..c1457e14 100644
---- a/app/src/main/res/values-af/strings.xml
-+++ b/app/src/main/res/values-af/strings.xml
-@@ -1,4 +1,8 @@
- <?xml version="1.0" encoding="UTF-8"?>
-+<!--
-+  ~ Copyright 2024 Signal Messenger, LLC
-+  ~ SPDX-License-Identifier: AGPL-3.0-only
-+  -->
- <resources xmlns:tools="http://schemas.android.com/tools">
-   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
- 
-diff --git a/app/src/main/res/values-hi/strings.xml b/app/src/main/res/values-hi/strings.xml
-index 435c7a36..acbe9d79 100644
---- a/app/src/main/res/values-hi/strings.xml
-+++ b/app/src/main/res/values-hi/strings.xml
-@@ -1,4 +1,8 @@
- <?xml version="1.0" encoding="UTF-8"?>
-+<!--
-+  ~ Copyright 2024 Signal Messenger, LLC
-+  ~ SPDX-License-Identifier: AGPL-3.0-only
-+  -->
- <resources xmlns:tools="http://schemas.android.com/tools">
-   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
- 
-diff --git a/app/src/main/res/values-pt/strings.xml b/app/src/main/res/values-pt/strings.xml
-index 6f680337..570eed87 100644
---- a/app/src/main/res/values-pt/strings.xml
-+++ b/app/src/main/res/values-pt/strings.xml
-@@ -1,4 +1,8 @@
- <?xml version="1.0" encoding="UTF-8"?>
-+<!--
-+  ~ Copyright 2024 Signal Messenger, LLC
-+  ~ SPDX-License-Identifier: AGPL-3.0-only
-+  -->
- <resources xmlns:tools="http://schemas.android.com/tools">
-   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
- 
 diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
 index 93c830b1..abf6d14f 100644
 --- a/app/src/main/res/values/strings.xml
@@ -82,6 +37,3 @@ index 6cac334c..26d9bfd5 100644
  <resources>
      <!-- Link to the Signal install page used in invite flows. -->
      <string name="install_url" translatable="false">https://molly.im/install</string>
--- 
-2.56.0
-

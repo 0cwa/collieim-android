@@ -1,18 +1,18 @@
-From cbd8d7280c47d36c934bea7da9df155b9adbfa71 Mon Sep 17 00:00:00 2001
-From: 0cwa <kainau@yahoo.com>
-Date: Fri, 30 Oct 2026 01:31:56 +0100
-Subject: [PATCH] Fix CDN test configuration for Molly network transport
+From 6026d3d8ba2b5014e78e34cf61c92bb07fceffb2 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/cdn-transport-test-fixture
 
-Carry this existing AI-generated PR #7 source fix as its own
-reviewable patch, preserving the original source author and diff.
-The official Molly snapshot and earlier resolution patches do
-not receive regenerated provenance headers.
+Fix CDN test configuration for Molly network transport
 
-Source-Commit: cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c
+Original-Source-Commit: cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c
 AI-Generated: true
 
+Source-Commit: 6026d3d8ba2b5014e78e34cf61c92bb07fceffb2
+
 diff --git a/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt b/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt
-index 103ec690dedc18db6e6644fb6d30aaae44076fd9..a95eb394f38840764dbcfd002fcbe6b3fa91f13b 100644
+index 103ec690..a95eb394 100644
 --- a/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt
 +++ b/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt
 @@ -11,6 +11,7 @@ import assertk.assertions.isEqualTo

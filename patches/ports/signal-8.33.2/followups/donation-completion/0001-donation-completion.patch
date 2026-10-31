@@ -1,23 +1,15 @@
-From 34100dfa15eb70256d948f96b14abe4b7c7920d6 Mon Sep 17 00:00:00 2001
-From: Molly Port Compatibility Follow-up <port-compatibility@example.invalid>
-Date: Fri, 30 Oct 2026 07:12:36 +0100
-Subject: [PATCH] Restore donation completion acknowledgement
+From 0d89360887c3f284f0d0a144a059eef69090b9be Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/donation-completion
 
-Display the earned badge after immediate donations and restore the eligible first-Boost monthly sustainer link without exposing profile-badge controls. Use existing thank-you copy that does not promise unsupported profile display.
+Restore immediate donation badge acknowledgement and the eligible monthly sustainer link; remove unsupported profile-display copy and the completed-donation loading spinner.
 
-For long-running donations, stop showing the loading indicator after the badge loads when Molly disables the profile-badge toggle. Keep loading visible while the badge is unavailable, and cover both states with focused Compose UI tests.
-
+Original-Source-Commit: 34100dfa15eb70256d948f96b14abe4b7c7920d6
 AI-Generated: true
 
-Based-On-Source-Commit: 266d0185d021b2b6a98882205f6b6242152d146e
-Source-Commit: 34100dfa15eb70256d948f96b14abe4b7c7920d6
----
- .../completed/TerminalDonationBottomSheet.kt  | 10 ++-
- ...ForYourSupportBottomSheetDialogFragment.kt | 32 +++++++
- ...r_support_bottom_sheet_dialog_fragment.xml | 34 +++++++-
- .../TerminalDonationBottomSheetTest.kt        | 87 +++++++++++++++++++
- 4 files changed, 156 insertions(+), 7 deletions(-)
- create mode 100644 app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheetTest.kt
+Source-Commit: 0d89360887c3f284f0d0a144a059eef69090b9be
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt
 index 16a0dbaa..cc5103da 100644
@@ -274,6 +266,3 @@ index 00000000..c81643c2
 +    )
 +  }
 +}
--- 
-2.56.0
-

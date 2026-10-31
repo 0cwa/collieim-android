@@ -1,20 +1,15 @@
-From ad4e4df669330f034242afe4d19f29bb1c6f3995 Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 04:03:03 +0100
-Subject: [PATCH] Retain Molly activity, conversation and push imports
+From 15f5d61ec355d95997331f4eb634ab049e606ea8 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/retained-activity-push-imports
 
-Restore five Molly imports that compile without behavior changes.
+Retain Molly activity, conversation, place picker and push socket imports.
 
+Original-Source-Commit: ad4e4df669330f034242afe4d19f29bb1c6f3995
 AI-Generated: true
 
-Based-On-Source-Commit: 6a08b686d0f4159a8b801420d601ce55b5195b66
-Source-Commit: ad4e4df669330f034242afe4d19f29bb1c6f3995
----
- app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt    | 1 +
- .../thoughtcrime/securesms/conversation/ConversationItem.java   | 2 ++
- .../org/thoughtcrime/securesms/maps/PlacePickerActivity.java    | 1 +
- .../signalservice/internal/push/PushServiceSocket.java          | 1 +
- 4 files changed, 5 insertions(+)
+Source-Commit: 15f5d61ec355d95997331f4eb634ab049e606ea8
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt
 index 67a515ff..4641434a 100644
@@ -72,6 +67,3 @@ index be4becdd..224f7cf8 100644
  import com.fasterxml.jackson.core.JsonProcessingException;
  import com.squareup.wire.Message;
  
--- 
-2.56.0
-

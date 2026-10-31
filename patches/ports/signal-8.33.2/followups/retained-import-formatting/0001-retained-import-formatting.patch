@@ -1,18 +1,15 @@
-From 5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9 Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 04:05:53 +0100
-Subject: [PATCH] Retain source import formatting
+From 5bc59b9c7c30128a2298c2c61e1199a82b32dbb6 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/retained-import-formatting
 
-Restore Molly screen-lock import punctuation and mechanical-merge reaction overlay import order.
+Retain Molly screen-lock import punctuation and mechanical-merge reaction overlay import order.
 
+Original-Source-Commit: 5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9
 AI-Generated: true
 
-Based-On-Source-Commit: ad4e4df669330f034242afe4d19f29bb1c6f3995
-Source-Commit: 5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9
----
- .../java/org/thoughtcrime/securesms/ScreenLockController.kt | 2 +-
- .../securesms/conversation/v2/ChatReactionOverlay.kt        | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Source-Commit: 5bc59b9c7c30128a2298c2c61e1199a82b32dbb6
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt b/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt
 index ee57ebf7..1ecf4f3b 100644
@@ -51,6 +48,3 @@ index 7751de32..3b747339 100644
  import org.signal.core.ui.R as CoreUiR
  
  const val REACTION_EMOJI_COUNT = 7
--- 
-2.56.0
-

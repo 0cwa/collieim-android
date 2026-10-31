@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "type": "delete-files",
+  "source_commit": "fc460d6e0052179f74583118f9b23993d6aa9d73",
+  "before_tree": "1fcff6ea474e0d0e559277c61922356202abf355",
+  "after_tree": "aa749acc2a33184c7ddee4c19f6a67d3000dc705",
+  "files": [
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/restore/RestoreActivity.kt",
+      "mode": "100644",
+      "blob": "0f8b4a04db7f1de5a09c86959f0830d58af04c79"
+    }
+  ]
+}

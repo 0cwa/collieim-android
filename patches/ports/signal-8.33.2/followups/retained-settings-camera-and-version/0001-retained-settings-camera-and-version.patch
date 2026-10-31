@@ -1,30 +1,15 @@
-From a39eeee9155bdc9116b611734dcc58653f7cb38f Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 06:30:00 +0100
-Subject: [PATCH] Restore retained settings and camera source with checked
- version write
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From 110bc9216efce297075fbbc7e6911e7fafc310e1 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/retained-settings-camera-and-version
 
-Restore an uncalled camera count indicator and four legacy settings files. The count is still not displayed; if invoked, the restored help view model can wipe logs when logging is disabled. Use Molly’s checked first-launch version write, which throws an AssertionError if the preference write fails instead of proceeding unchecked.
+Restore an uncalled camera count component and four legacy settings files; the count remains undisplayed and the help view model can wipe logs if invoked. The checked first-launch preference write throws on failure.
 
+Original-Source-Commit: a39eeee9155bdc9116b611734dcc58653f7cb38f
 AI-Generated: true
 
-Based-On-Source-Commit: 031894f1a74ca85b44cdd37f33a4bf6ba3f6c275
-Source-Commit: a39eeee9155bdc9116b611734dcc58653f7cb38f
----
- .../securesms/AppInitialization.java          |  2 +-
- .../app/account/AccountSettingsState.kt       | 19 ++++++
- .../app/appearance/AppearanceSettingsState.kt | 11 +++
- .../settings/app/help/HelpSettingsState.kt    |  5 ++
- .../app/help/HelpSettingsViewModel.kt         | 38 +++++++++++
- .../signal/camera/hud/StandardCameraHud.kt    | 67 +++++++++++++++++++
- 6 files changed, 141 insertions(+), 1 deletion(-)
- create mode 100644 app/src/main/java/org/thoughtcrime/securesms/components/settings/app/account/AccountSettingsState.kt
- create mode 100644 app/src/main/java/org/thoughtcrime/securesms/components/settings/app/appearance/AppearanceSettingsState.kt
- create mode 100644 app/src/main/java/org/thoughtcrime/securesms/components/settings/app/help/HelpSettingsState.kt
- create mode 100644 app/src/main/java/org/thoughtcrime/securesms/components/settings/app/help/HelpSettingsViewModel.kt
+Source-Commit: 110bc9216efce297075fbbc7e6911e7fafc310e1
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/AppInitialization.java b/app/src/main/java/org/thoughtcrime/securesms/AppInitialization.java
 index d1b0574e..4ee8aaae 100644
@@ -242,6 +227,3 @@ index 2fc3f0f7..330e1609 100644
  @AllNightPreviews
  @Composable
  private fun StandardCameraHudPreview() {
--- 
-2.56.0
-

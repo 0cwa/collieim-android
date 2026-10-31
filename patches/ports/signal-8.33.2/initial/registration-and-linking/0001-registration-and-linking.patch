@@ -1,0 +1,1448 @@
+From 4b6565603e306f83974eb981f6f800c8b9b0a9fc Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ initial/registration-and-linking
+
+Adapt Molly registration and Android linked-device policies to the new Signal registration architecture.
+
+Original-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+AI-Generated: true
+
+Source-Commit: 4b6565603e306f83974eb981f6f800c8b9b0a9fc
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/AddLinkDeviceFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/AddLinkDeviceFragment.kt
+index 99a14cf3..a11312a1 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/AddLinkDeviceFragment.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/AddLinkDeviceFragment.kt
+@@ -37,11 +37,7 @@ import org.signal.core.ui.compose.Scaffolds
+ import org.signal.core.ui.permissions.Permissions
+ import org.thoughtcrime.securesms.R
+ import org.thoughtcrime.securesms.util.VibrateUtil
+-<<<<<<< MOLLY
+-=======
+-import org.thoughtcrime.securesms.util.navigation.safeNavigate
+ import org.signal.core.ui.R as CoreUiR
+->>>>>>> SIGNAL
+ import org.signal.mediasend.R as MediaSendR
+ 
+ /**
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceFragment.kt
+index 1d8a487f..93e063f9 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceFragment.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceFragment.kt
+@@ -425,9 +425,7 @@ fun DeviceListScreen(
+     val linkButtonColors = ButtonDefaults.filledTonalButtonColors()
+     Buttons.LargeTonal(
+       onClick = onLinkNewDeviceClicked,
+-<<<<<<< MOLLY
+       enabled = state.canLinkDevices,
+-=======
+       colors = if (atDeviceLimit) {
+         linkButtonColors.copy(
+           containerColor = linkButtonColors.disabledContainerColor,
+@@ -436,7 +434,6 @@ fun DeviceListScreen(
+       } else {
+         linkButtonColors
+       },
+->>>>>>> SIGNAL
+       modifier = Modifier
+         .defaultMinSize(300.dp)
+         .padding(bottom = 8.dp)
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceRepository.kt
+index ff4eaf5c..0dd2ea6b 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceRepository.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceRepository.kt
+@@ -105,13 +105,9 @@ object LinkDeviceRepository {
+ 
+   private fun DeviceInfo.toLocalDevice(): Device {
+     val createdAt = this.getPlaintextCreatedAt()
+-<<<<<<< MOLLY
+-    val canRename = !SignalStore.unifiedpush.isMollySocketDevice(getId())
+-    val defaultDevice = Device(getId(), getName(), createdAt, getLastSeen(), getRegistrationId(), canRename = canRename)
+-=======
++    val canRename = !SignalStore.unifiedpush.isMollySocketDevice(id)
+     val encodedName = name
+-    val defaultDevice = Device(id, encodedName, createdAt, lastSeen, registrationId)
+->>>>>>> SIGNAL
++    val defaultDevice = Device(id, encodedName, createdAt, lastSeen, registrationId, canRename = canRename)
+     try {
+       if (encodedName.isNullOrEmpty() || encodedName.length < 4) {
+         Log.w(TAG, "Invalid DeviceInfo name.")
+@@ -130,10 +126,7 @@ object LinkDeviceRepository {
+         return defaultDevice
+       }
+ 
+-<<<<<<< MOLLY
+-      return Device(getId(), String(plaintext), createdAt, getLastSeen(), getRegistrationId(), canRename = canRename)
+-=======
+-      return Device(id, String(plaintext), createdAt, lastSeen, registrationId)
++      return Device(id, String(plaintext), createdAt, lastSeen, registrationId, canRename = canRename)
+     } catch (e: Exception) {
+       Log.w(TAG, "Failed while reading the protobuf.", e)
+     }
+@@ -142,7 +135,8 @@ object LinkDeviceRepository {
+ 
+   private fun LibSignalLinkedDevice.toLocalDevice(): Device {
+     val createdAt = getPlaintextCreatedAt()
+-    val defaultDevice = Device(this.id, Base64.encodeWithPadding(this.encryptedName), createdAt, this.lastSeen.toEpochMilli(), this.registrationId)
++    val canRename = !SignalStore.unifiedpush.isMollySocketDevice(id)
++    val defaultDevice = Device(this.id, Base64.encodeWithPadding(this.encryptedName), createdAt, this.lastSeen.toEpochMilli(), this.registrationId, canRename = canRename)
+     try {
+       if (this.encryptedName.size < 4) {
+         Log.w(TAG, "Invalid LinkedDevice name.")
+@@ -161,8 +155,7 @@ object LinkDeviceRepository {
+         return defaultDevice
+       }
+ 
+-      return Device(id, String(plaintext), createdAt, lastSeen.toEpochMilli(), registrationId)
+->>>>>>> SIGNAL
++      return Device(id, String(plaintext), createdAt, lastSeen.toEpochMilli(), registrationId, canRename = canRename)
+     } catch (e: Exception) {
+       Log.w(TAG, "Failed while reading the protobuf.", e)
+     }
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceViewModel.kt b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceViewModel.kt
+index 89cb20df..7caadb41 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceViewModel.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceViewModel.kt
+@@ -153,16 +153,11 @@ class LinkDeviceViewModel : ViewModel() {
+     pollJob?.cancel()
+   }
+ 
+-<<<<<<< MOLLY
+-  fun requestLinkWithoutQrCode(value: Boolean) {
+-=======
+   fun onDeviceLimitReached() {
+     _state.update { it.copy(oneTimeEvent = OneTimeEvent.SnackbarDeviceLimitReached) }
+   }
+ 
+-  fun markQrEducationSheetSeen() {
+-    SignalStore.uiHints.markHasSeenLinkDeviceQrEducationSheet()
+->>>>>>> SIGNAL
++  fun requestLinkWithoutQrCode(value: Boolean) {
+     _state.update {
+       it.copy(linkWithoutQrCode = value)
+     }
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/data/RegistrationRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/data/RegistrationRepository.kt
+index 9c63f919..a3ad0484 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/registration/data/RegistrationRepository.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/registration/data/RegistrationRepository.kt
+@@ -9,21 +9,10 @@ import android.app.backup.BackupManager
+ import android.content.Context
+ import androidx.annotation.VisibleForTesting
+ import androidx.annotation.WorkerThread
+-<<<<<<< MOLLY
+-import androidx.core.app.NotificationManagerCompat
+-=======
+-import com.google.android.gms.auth.api.phone.SmsRetriever
+->>>>>>> SIGNAL
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.delay
+ import kotlinx.coroutines.isActive
+ import kotlinx.coroutines.withContext
+-<<<<<<< MOLLY
+-import org.greenrobot.eventbus.EventBus
+-import org.greenrobot.eventbus.Subscribe
+-=======
+-import kotlinx.coroutines.withTimeoutOrNull
+->>>>>>> SIGNAL
+ import org.signal.core.models.AccountEntropyPool
+ import org.signal.core.models.MasterKey
+ import org.signal.core.models.ServiceId
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt
+index c62027e9..84bf943f 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt
+@@ -8,96 +8,123 @@ package org.thoughtcrime.securesms.registration.ui
+ import android.content.Context
+ import android.content.Intent
+ import android.os.Bundle
+-import androidx.activity.viewModels
+-import androidx.navigation.ActivityNavigator
++import androidx.activity.compose.setContent
++import androidx.activity.result.contract.ActivityResultContract
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.navigationBarsPadding
++import androidx.compose.material3.Surface
++import androidx.compose.ui.Modifier
++import androidx.core.content.IntentCompat
++import com.google.accompanist.permissions.ExperimentalPermissionsApi
++import org.signal.core.ui.compose.theme.SignalTheme
++import org.signal.registration.RegistrationNavHost
+ import org.signal.registration.RegistrationRoute
+-import org.thoughtcrime.securesms.MainActivity
+ import org.thoughtcrime.securesms.PassphraseRequiredActivity
+-import org.thoughtcrime.securesms.R
+ import org.thoughtcrime.securesms.keyvalue.SignalStore
+-import org.thoughtcrime.securesms.registration.util.RegistrationUtil
+ import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme
+-import org.thoughtcrime.securesms.util.Environment
+ 
+ /**
+- * Activity to hold the entire registration process.
++ * Hosts the current registration flow within Molly's local passphrase and screen-lock lifecycle.
++ *
++ * This activity can be launched from the main app to start the registration process.
++ * Upon successful completion, it will return RESULT_OK and, if provided via [createIntent], launch the next intent to
++ * route the user back into the main app.
+  */
+ class RegistrationActivity : PassphraseRequiredActivity() {
+ 
+   private val dynamicTheme = DynamicNoActionBarTheme()
+-  val sharedViewModel: RegistrationViewModel by viewModels()
+ 
+   override fun onPreCreate() {
+     super.onPreCreate()
+     dynamicTheme.onCreate(this)
+   }
+ 
+-  override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
+-    super.onCreate(savedInstanceState, ready)
+-    setContentView(R.layout.activity_registration_navigation_v3)
+-
+-    sharedViewModel.isReregister = intent.getBooleanExtra(RE_REGISTRATION_EXTRA, false)
+-
+-    sharedViewModel.checkpoint.observe(this) {
+-      if (it >= RegistrationCheckpoint.LOCAL_REGISTRATION_COMPLETE) {
+-        RegistrationUtil.maybeMarkRegistrationComplete()
+-        handleSuccessfulVerify()
+-      }
+-    }
+-  }
++  override fun isRegistrationFlow(): Boolean = true
+ 
+   override fun onResume() {
+     super.onResume()
+     dynamicTheme.onResume(this)
+   }
+ 
+-  private fun handleSuccessfulVerify() {
+-    if (SignalStore.account.isPrimaryDevice && SignalStore.account.isMultiDevice) {
+-      SignalStore.misc.shouldShowLinkedDevicesReminder = sharedViewModel.isReregister
+-    }
+-
+-    startActivity(MainActivity.clearTop(this))
+-    finish()
+-    ActivityNavigator.applyPopAnimationsToPendingTransition(this)
+-  }
+-
+   companion object {
+-    const val RE_REGISTRATION_EXTRA: String = "re_registration"
++    private const val REGISTRATION_NEXT_INTENT_EXTRA = "next_intent"
++    private const val START_DESTINATION_EXTRA = "start_destination"
++    private const val START_FRESH_EXTRA = "start_fresh"
+ 
++    /**
++     * @param nextIntent An optional intent to launch once registration completes successfully. This is how the caller
++     *   (which lives outside this module) routes the user back into the main app, since the launching activity will
++     *   typically have finished itself.
++     * @param startDestination An optional route to open directly instead of resuming a previous flow. Used, for example,
++     *   to send a deregistered linked device straight to the link-device screen.
++     * @param startFresh When true, any persisted registration data is not restored and the user starts the flow fresh
++     *   from the beginning.
++     */
+     @JvmStatic
+-    fun newIntentForNewRegistration(context: Context, originalIntent: Intent): Intent {
+-      return if (Environment.USE_NEW_REGISTRATION) {
+-        org.signal.registration.RegistrationActivity.createIntent(context, nextIntent = MainActivity.clearTop(context))
+-      } else {
+-        Intent(context, RegistrationActivity::class.java).apply {
+-          putExtra(RE_REGISTRATION_EXTRA, false)
+-          setData(originalIntent.data)
++    @JvmOverloads
++    fun createIntent(context: Context, nextIntent: Intent? = null, startDestination: RegistrationRoute? = null, startFresh: Boolean = false): Intent {
++      return Intent(context, RegistrationActivity::class.java).apply {
++        if (nextIntent != null) {
++          putExtra(REGISTRATION_NEXT_INTENT_EXTRA, nextIntent)
++        }
++        if (startDestination != null) {
++          putExtra(START_DESTINATION_EXTRA, startDestination)
+         }
++        putExtra(START_FRESH_EXTRA, startFresh)
+       }
+     }
++  }
+ 
+-    @JvmStatic
+-    fun newIntentForReRegistration(context: Context): Intent {
+-      return if (Environment.USE_NEW_REGISTRATION) {
+-        org.signal.registration.RegistrationActivity.createIntent(context, nextIntent = MainActivity.clearTop(context), startFresh = true)
+-      } else {
+-        Intent(context, RegistrationActivity::class.java).apply {
+-          putExtra(RE_REGISTRATION_EXTRA, true)
++  @OptIn(ExperimentalPermissionsApi::class)
++  override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
++    super.onCreate(savedInstanceState, ready)
++
++    val startDestination = IntentCompat.getParcelableExtra(intent, START_DESTINATION_EXTRA, RegistrationRoute::class.java)
++    val startFresh = intent.getBooleanExtra(START_FRESH_EXTRA, false)
++
++    setContent {
++      SignalTheme(incognitoKeyboardEnabled = SignalStore.settings.isIncognitoKeyboardEnabled) {
++        Surface(modifier = Modifier.fillMaxSize()) {
++          RegistrationNavHost(
++            startDestination = startDestination,
++            startFresh = startFresh,
++            modifier = Modifier
++              .fillMaxSize()
++              .navigationBarsPadding(),
++            onRegistrationComplete = {
++              setResult(RESULT_OK)
++              IntentCompat.getParcelableExtra(intent, REGISTRATION_NEXT_INTENT_EXTRA, Intent::class.java)?.let { startActivity(it) }
++              finish()
++            }
++          )
+         }
+       }
+     }
++  }
+ 
+-    @JvmStatic
+-    fun newIntentForReLinkDevice(context: Context): Intent {
+-      return if (Environment.USE_NEW_REGISTRATION) {
+-        org.signal.registration.RegistrationActivity.createIntent(
+-          context = context,
+-          nextIntent = MainActivity.clearTop(context),
+-          startDestination = RegistrationRoute.LinkAccount(showCreateAccount = false)
+-        )
+-      } else {
+-        Intent(context, RegistrationActivity::class.java)
+-      }
++  /**
++   * Activity result contract for launching the registration flow.
++   *
++   * Usage:
++   * ```
++   * val registrationLauncher = registerForActivityResult(RegistrationContract()) { success ->
++   *   if (success) {
++   *     // Registration completed successfully
++   *   } else {
++   *     // Registration was cancelled or failed
++   *   }
++   * }
++   *
++   * registrationLauncher.launch(Unit)
++   * ```
++   */
++  class RegistrationContract : ActivityResultContract<Unit, Boolean>() {
++    override fun createIntent(context: Context, input: Unit): Intent {
++      return createIntent(context)
++    }
++
++    override fun parseResult(resultCode: Int, intent: Intent?): Boolean {
++      return resultCode == RESULT_OK
+     }
+   }
+ }
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt
+index 59aa07ff..0344db79 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt
+@@ -7,7 +7,6 @@ package org.thoughtcrime.securesms.registration.ui
+ 
+ import android.content.Context
+ import android.content.Intent
+-import org.signal.registration.RegistrationActivity
+ import org.signal.registration.RegistrationRoute
+ import org.thoughtcrime.securesms.MainActivity
+ 
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt
+new file mode 100644
+index 00000000..5348ce38
+--- /dev/null
++++ b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt
+@@ -0,0 +1,47 @@
++/*
++ * Copyright 2026 Molly Project
++ * SPDX-License-Identifier: AGPL-3.0-only
++ */
++
++package org.thoughtcrime.securesms.registration.ui
++
++import android.content.Context
++import android.content.Intent
++import android.os.Bundle
++import android.widget.FrameLayout
++import org.thoughtcrime.securesms.PassphraseRequiredActivity
++import org.thoughtcrime.securesms.preferences.NetworkPreferenceFragment
++import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme
++
++/** Lets an unregistered user configure Molly's SOCKS or Orbot proxy before connecting. */
++class RegistrationNetworkSettingsActivity : PassphraseRequiredActivity() {
++
++  private val dynamicTheme = DynamicNoActionBarTheme()
++
++  override fun onPreCreate() {
++    super.onPreCreate()
++    dynamicTheme.onCreate(this)
++  }
++
++  override fun isRegistrationFlow(): Boolean = true
++
++  override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
++    super.onCreate(savedInstanceState, ready)
++    setContentView(FrameLayout(this))
++    if (savedInstanceState == null) {
++      supportFragmentManager.beginTransaction()
++        .replace(android.R.id.content, NetworkPreferenceFragment())
++        .commit()
++    }
++  }
++
++  override fun onResume() {
++    super.onResume()
++    dynamicTheme.onResume(this)
++  }
++
++  companion object {
++    @JvmStatic
++    fun createIntent(context: Context): Intent = Intent(context, RegistrationNetworkSettingsActivity::class.java)
++  }
++}
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationNetworkController.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationNetworkController.kt
+index a8516436..457b7632 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationNetworkController.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationNetworkController.kt
+@@ -96,6 +96,7 @@ import org.thoughtcrime.securesms.jobs.ResetSvrGuessCountJob
+ import org.thoughtcrime.securesms.jobs.StorageAccountRestoreJob
+ import org.thoughtcrime.securesms.keyvalue.SignalStore
+ import org.thoughtcrime.securesms.net.SignalNetwork
++import org.thoughtcrime.securesms.util.TextSecurePreferences
+ import org.thoughtcrime.securesms.pin.SvrRepository
+ import org.thoughtcrime.securesms.pin.SvrWrongPinException
+ import org.thoughtcrime.securesms.profiles.AvatarHelper
+@@ -146,6 +147,11 @@ class AppRegistrationNetworkController(
+     private val RETRY_BACKOFF = 5.seconds
+   }
+ 
++  override fun enableNetworkForRegistration() {
++    TextSecurePreferences.setHasSeenNetworkConfig(context, true)
++    AppDependencies.networkManager.setNetworkEnabled(true)
++  }
++
+   override suspend fun createSession(
+     e164: String,
+     fcmToken: String?,
+@@ -582,11 +588,7 @@ class AppRegistrationNetworkController(
+     val notificationData = org.signal.devicetransfer.DeviceToDeviceTransferService.TransferNotificationData(
+       org.thoughtcrime.securesms.notifications.NotificationIds.DEVICE_TRANSFER,
+       org.thoughtcrime.securesms.notifications.NotificationChannels.getInstance().BACKUPS,
+-<<<<<<< MOLLY
+       org.thoughtcrime.securesms.R.drawable.ic_notification_backup
+-=======
+-      org.signal.core.ui.R.drawable.ic_signal_backup
+->>>>>>> SIGNAL
+     )
+     org.signal.devicetransfer.DeviceToDeviceTransferService.startServer(
+       context,
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageController.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageController.kt
+index 0bc8781f..8545a0e1 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageController.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageController.kt
+@@ -92,6 +92,7 @@ import org.thoughtcrime.securesms.recipients.Recipient
+ import org.thoughtcrime.securesms.registration.util.RegistrationUtil
+ import org.thoughtcrime.securesms.service.BackupProgressService
+ import org.thoughtcrime.securesms.service.DirectoryRefreshListener
++import org.thoughtcrime.securesms.service.KeyCachingService
+ import org.thoughtcrime.securesms.service.LocalBackupListener
+ import org.thoughtcrime.securesms.service.RotateSignedPreKeyListener
+ import org.thoughtcrime.securesms.util.BackupUtil
+@@ -123,8 +124,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
+    */
+   @VisibleForTesting
+   internal var restartNetwork: () -> Unit = {
+-    AppDependencies.resetNetwork()
+-    AppDependencies.startNetwork()
++    AppDependencies.resetNetwork(restartMessageObserver = true)
+   }
+ 
+   companion object {
+@@ -134,6 +134,12 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
+     private val LEGACY_BACKUP_PATTERN = Regex("^signal-(\\d{4})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})\\.backup$")
+   }
+ 
++  override fun onRegistrationPermissionsResult() {
++    context.startService(Intent(context, KeyCachingService::class.java).apply {
++      action = KeyCachingService.LOCALE_CHANGE_EVENT
++    })
++  }
++
+   override suspend fun getPreExistingRegistrationData(): PreExistingRegistrationData? = withContext(Dispatchers.Default) {
+     if (!SignalStore.account.isRegistered) {
+       return@withContext null
+diff --git a/feature/registration/src/main/java/org/signal/registration/NetworkController.kt b/feature/registration/src/main/java/org/signal/registration/NetworkController.kt
+index 5873d760..8695b734 100644
+--- a/feature/registration/src/main/java/org/signal/registration/NetworkController.kt
++++ b/feature/registration/src/main/java/org/signal/registration/NetworkController.kt
+@@ -57,6 +57,10 @@ import kotlin.time.Duration
+ 
+ interface NetworkController {
+ 
++  /** Enables networking after the user proceeds past the pre-connection proxy settings. */
++  fun enableNetworkForRegistration() = Unit
++
++
+   /**
+    * Request that the service initialize a new registration session.
+    *
+diff --git a/feature/registration/src/main/java/org/signal/registration/RegistrationNavigation.kt b/feature/registration/src/main/java/org/signal/registration/RegistrationNavigation.kt
+index 421e02ae..101fdf87 100644
+--- a/feature/registration/src/main/java/org/signal/registration/RegistrationNavigation.kt
++++ b/feature/registration/src/main/java/org/signal/registration/RegistrationNavigation.kt
+@@ -538,7 +538,10 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
+   // --- Permissions Screen
+   entry<RegistrationRoute.Permissions> { key ->
+     val context = LocalContext.current
+-    val onProceed = { parentEventEmitter.navigateTo(key.nextRoute) }
++    val onProceed = {
++      registrationRepository.storageController.onRegistrationPermissionsResult()
++      parentEventEmitter.navigateTo(key.nextRoute)
++    }
+     val localPermissionsState = permissionsState ?: rememberMultiplePermissionsState(
+       permissions = RegistrationPermissions.getRequiredPermissions(context),
+       onPermissionsResult = { onProceed() }
+@@ -551,7 +554,10 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
+ 
+   // --- Allow Notifications Screen
+   entry<RegistrationRoute.AllowNotifications> { key ->
+-    val onProceed = { parentEventEmitter.navigateTo(key.nextRoute) }
++    val onProceed = {
++      registrationRepository.storageController.onRegistrationPermissionsResult()
++      parentEventEmitter.navigateTo(key.nextRoute)
++    }
+     val localPermissionState = rememberPermissionState(
+       permission = registrationViewModel.getRequiredLinkedDevicePermission()!!,
+       onPermissionResult = { onProceed() }
+@@ -693,13 +699,11 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
+ 
+   // -- Verification Code Entry Screen
+   entry<RegistrationRoute.VerificationCodeEntry> {
+-    val context = LocalContext.current.applicationContext
+     val viewModel: VerificationCodeViewModel = viewModel {
+       VerificationCodeViewModel(
+         repository = registrationRepository,
+         parentState = registrationViewModel.state,
+-        parentEventEmitter = registrationViewModel::onEvent,
+-        smsCodeEvents = VerificationCodeViewModel.smsCodeFlow(context)
++        parentEventEmitter = registrationViewModel::onEvent
+       )
+     }
+     val state by viewModel.state.collectAsStateWithLifecycle()
+@@ -741,9 +745,14 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
+ 
+         SignalLoginPaymentScreenActions.MakeGooglePlayServicesAvailable -> {
+           if (activity != null) {
+-            GoogleApiAvailability.getInstance()
+-              .makeGooglePlayServicesAvailable(activity)
+-              .addOnCompleteListener { viewModel.onEvent(SignalLoginPaymentScreenEvents.Foregrounded) }
++            val availability = GoogleApiAvailability.getInstance()
++            val status = availability.isGooglePlayServicesAvailable(activity)
++            try {
++              availability.getErrorResolutionPendingIntent(activity, status, 0)?.send()
++            } catch (e: android.app.PendingIntent.CanceledException) {
++              Log.w("RegistrationNavigation", "Unable to launch Play Services settings.", e)
++            }
++            viewModel.onEvent(SignalLoginPaymentScreenEvents.Foregrounded)
+           }
+         }
+ 
+diff --git a/feature/registration/src/main/java/org/signal/registration/RegistrationRepository.kt b/feature/registration/src/main/java/org/signal/registration/RegistrationRepository.kt
+index 13d6b4ad..d912e956 100644
+--- a/feature/registration/src/main/java/org/signal/registration/RegistrationRepository.kt
++++ b/feature/registration/src/main/java/org/signal/registration/RegistrationRepository.kt
+@@ -11,12 +11,8 @@ import android.app.backup.BackupManager
+ import android.content.Context
+ import android.content.pm.PackageManager
+ import android.net.Uri
+-<<<<<<< MOLLY
+-=======
+ import androidx.core.content.ContextCompat
+-import com.google.android.gms.auth.api.phone.SmsRetriever
+ import com.google.android.gms.common.GoogleApiAvailability
+->>>>>>> SIGNAL
+ import com.google.i18n.phonenumbers.PhoneNumberUtil
+ import kotlinx.coroutines.CoroutineScope
+ import kotlinx.coroutines.Deferred
+@@ -29,14 +25,12 @@ import kotlinx.coroutines.flow.emitAll
+ import kotlinx.coroutines.flow.flow
+ import kotlinx.coroutines.sync.Mutex
+ import kotlinx.coroutines.sync.withLock
+-import kotlinx.coroutines.tasks.await
+ import kotlinx.coroutines.withContext
+ import kotlinx.coroutines.withTimeoutOrNull
+ import kotlinx.serialization.json.Json
+ import okio.ByteString
+ import okio.ByteString.Companion.toByteString
+ import org.signal.archive.LocalBackupRestoreProgress
+-import org.signal.billing.BillingFactory
+ import org.signal.core.models.AccountEntropyPool
+ import org.signal.core.models.MasterKey
+ import org.signal.core.models.ServiceId.ACI
+@@ -157,11 +151,8 @@ class RegistrationRepository(
+         storageController = dependencies.storageController,
+         isLinkAndSyncAvailable = dependencies.isLinkAndSyncAvailable,
+         isPhoneNumberlessRegistrationAvailable = dependencies.isPhoneNumberlessRegistrationAvailable,
+-        isGooglePlayBillingAvailable = dependencies.isGooglePlayBillingAvailable,
+-        signalLoginPurchaseApi = BillingFactory.createOneTimePurchaseApi(
+-          context = application,
+-          isAvailable = dependencies.isGooglePlayBillingAvailable
+-        )
++        isGooglePlayBillingAvailable = false,
++        signalLoginPurchaseApi = OneTimePurchaseApi.Empty
+       )
+     }
+ 
+@@ -172,6 +163,10 @@ class RegistrationRepository(
+     internal const val SIGNAL_LOGIN_PURCHASE_OPTION_ID = "nonumber"
+   }
+ 
++  fun enableNetworkForRegistration() {
++    networkController.enableNetworkForRegistration()
++  }
++
+   suspend fun createSession(e164: String): RequestResult<SessionMetadata, CreateSessionError> = withContext(Dispatchers.IO) {
+     val fcmToken = networkController.getFcmToken()
+     networkController.createSession(
+@@ -195,18 +190,8 @@ class RegistrationRepository(
+     )
+   }
+ 
+-  /**
+-   * Starts the Play Services SMS retriever so an incoming verification code can be automatically entered.
+-   *
+-   * The listener [lives for 5 minutes](https://developers.google.com/android/reference/com/google/android/gms/auth/api/phone/SmsRetrieverApi).
+-   * Callers should pass the result as `smsAutoRetrieveCodeSupported` when requesting a code so the server formats the
+-   * SMS for retrieval.
+-   *
+-   * @return whether the Play Services SMS retriever was successfully started.
+-   */
+-  suspend fun registerSmsListener(): Boolean {
+-    return false  // MOLLY: TODO
+-  }
++  /** Manual verification remains available without a Play Services SMS receiver. */
++  suspend fun registerSmsListener(): Boolean = false
+ 
+   fun getCaptchaUrl(): String = networkController.getCaptchaUrl()
+ 
+@@ -843,8 +828,9 @@ class RegistrationRepository(
+    * Starts a provisioning session for QR-based quick restore.
+    * See [NetworkController.startProvisioning].
+    */
+-  fun startProvisioning(): Flow<ProvisioningEvent> {
+-    return networkController.startProvisioning()
++  fun startProvisioning(): Flow<ProvisioningEvent> = flow {
++    enableNetworkForRegistration()
++    emitAll(networkController.startProvisioning())
+   }
+ 
+   /**
+@@ -852,7 +838,8 @@ class RegistrationRepository(
+    * See [NetworkController.startLinkDeviceProvisioning].
+    */
+   fun startLinkDeviceProvisioning(): Flow<NetworkController.LinkDeviceProvisioningEvent> = flow {
+-    emitAll(networkController.startLinkDeviceProvisioning(allowLinkAndSync = isCleanStart()))
++    enableNetworkForRegistration()
++    emitAll(networkController.startLinkDeviceProvisioning(allowLinkAndSync = isLinkAndSyncAvailable && isCleanStart()))
+   }
+ 
+   /**
+diff --git a/feature/registration/src/main/java/org/signal/registration/StorageController.kt b/feature/registration/src/main/java/org/signal/registration/StorageController.kt
+index 6ed61d8c..a10e5ad7 100644
+--- a/feature/registration/src/main/java/org/signal/registration/StorageController.kt
++++ b/feature/registration/src/main/java/org/signal/registration/StorageController.kt
+@@ -46,6 +46,10 @@ import org.whispersystems.signalservice.api.push.UsernameLinkComponents
+  */
+ interface StorageController {
+ 
++  /** Refreshes app state after registration permissions are granted or declined. */
++  fun onRegistrationPermissionsResult() = Unit
++
++
+   /**
+    * Retrieves previously stored registration data for registered installs, if any.
+    *
+diff --git a/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryScreen.kt b/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryScreen.kt
+index be45d8a6..005045e1 100644
+--- a/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryScreen.kt
++++ b/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryScreen.kt
+@@ -249,7 +249,7 @@ private fun OnePaneLayout(
+ 
+   OnePaneRegistrationScaffold(
+     params = params,
+-    topBar = { TopAppBar(scrollBehavior = topBarScrollBehavior, isLinkAndSyncAvailable = state.isLinkAndSyncAvailable, onEvent = onEvent) },
++    topBar = { TopAppBar(scrollBehavior = topBarScrollBehavior, onEvent = onEvent) },
+     content = { paddingValues ->
+       Column(
+         modifier = Modifier
+@@ -292,7 +292,7 @@ private fun TwoPaneLayout(
+ 
+   TwoPaneRegistrationScaffold(
+     params = params,
+-    topBar = { TopAppBar(scrollBehavior = topBarScrollBehavior, isLinkAndSyncAvailable = state.isLinkAndSyncAvailable, onEvent = onEvent) },
++    topBar = { TopAppBar(scrollBehavior = topBarScrollBehavior, onEvent = onEvent) },
+     firstPane = { paddingValues ->
+       Column(
+         modifier = Modifier
+@@ -333,7 +333,6 @@ private fun TwoPaneLayout(
+ @Composable
+ fun TopAppBar(
+   scrollBehavior: TopAppBarScrollBehavior,
+-  isLinkAndSyncAvailable: Boolean,
+   onEvent: (PhoneNumberEntryScreenEvents) -> Unit
+ ) {
+   val context = LocalContext.current
+@@ -363,21 +362,19 @@ fun TopAppBar(
+         offsetY = 0.dp
+       ) {
+         DropdownMenus.Item(
+-          text = { Text(text = stringResource(R.string.RegistrationActivity_use_proxy)) },
++          text = { Text(text = stringResource(R.string.RegistrationActivity_network_settings)) },
+           onClick = {
+             RegistrationDependencies.get().proxyConfigCallback?.invoke(context)
+             menuController.hide()
+           }
+         )
+-        if (isLinkAndSyncAvailable) {
+-          DropdownMenus.Item(
+-            text = { Text(text = stringResource(R.string.RegistrationActivity_link_device)) },
+-            onClick = {
+-              onEvent(PhoneNumberEntryScreenEvents.LinkDevice)
+-              menuController.hide()
+-            }
+-          )
+-        }
++        DropdownMenus.Item(
++          text = { Text(text = stringResource(R.string.RegistrationActivity_link_device)) },
++          onClick = {
++            onEvent(PhoneNumberEntryScreenEvents.LinkDevice)
++            menuController.hide()
++          }
++        )
+       }
+     }
+   )
+diff --git a/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryState.kt b/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryState.kt
+index d40c951d..acecb404 100644
+--- a/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryState.kt
++++ b/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryState.kt
+@@ -41,7 +41,7 @@ data class PhoneNumberEntryState(
+   val isNumberPossible: Boolean = false,
+   /** Whether the entered number is definitively invalid. A still-too-short number is not considered invalid, since the user may simply be mid-entry. */
+   val isNumberInvalid: Boolean = false,
+-  /** Gates whether the link device option is shown in the overflow menu. */
++  /** Whether optional linked-device message transfer is supported; basic linking remains available. */
+   val isLinkAndSyncAvailable: Boolean = false,
+   val isPhoneNumberlessRegistrationAvailable: Boolean = false
+ ) {
+diff --git a/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModel.kt b/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModel.kt
+index e56b54bc..9fc66b10 100644
+--- a/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModel.kt
++++ b/feature/registration/src/main/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModel.kt
+@@ -123,6 +123,7 @@ class PhoneNumberEntryViewModel(
+       is PhoneNumberEntryScreenEvents.NextClicked -> {
+         val accountId = state.enteredAccountId
+         if (accountId != null) {
++          repository.enableNetworkForRegistration()
+           parentEventEmitter.navigateTo(RegistrationRoute.SignalLoginCredentialEntry(accountId))
+         } else {
+           val normalized = state.withNormalizedNationalNumber()
+@@ -133,6 +134,7 @@ class PhoneNumberEntryViewModel(
+         stateEmitter(state.copy(dialogs = state.dialogs.copy(confirmNumber = false)))
+       }
+       is PhoneNumberEntryScreenEvents.PhoneNumberConfirmed -> {
++        repository.enableNetworkForRegistration()
+         var localState = state.copy(showSpinner = true, dialogs = state.dialogs.copy(confirmNumber = false))
+         stateEmitter(localState)
+         localState = applyPhoneNumberSubmitted(localState, parentEventEmitter)
+@@ -151,6 +153,7 @@ class PhoneNumberEntryViewModel(
+         parentEventEmitter.navigateTo(RegistrationRoute.LinkAccount())
+       }
+       is PhoneNumberEntryScreenEvents.RegisterWithoutNumber -> {
++        repository.enableNetworkForRegistration()
+         if (state.sawArchiveRestoreSelectionScreen) {
+           parentEventEmitter.navigateTo(RegistrationRoute.SignalLoginCredentialEntry())
+         } else {
+diff --git a/feature/registration/src/main/java/org/signal/registration/screens/verificationcode/VerificationCodeViewModel.kt b/feature/registration/src/main/java/org/signal/registration/screens/verificationcode/VerificationCodeViewModel.kt
+index 6f2e24bf..03536f12 100644
+--- a/feature/registration/src/main/java/org/signal/registration/screens/verificationcode/VerificationCodeViewModel.kt
++++ b/feature/registration/src/main/java/org/signal/registration/screens/verificationcode/VerificationCodeViewModel.kt
+@@ -5,19 +5,12 @@
+ 
+ package org.signal.registration.screens.verificationcode
+ 
+-import android.content.BroadcastReceiver
+-import android.content.Context
+-import android.content.Intent
+-import android.content.IntentFilter
+ import androidx.annotation.VisibleForTesting
+-import androidx.core.content.ContextCompat
+ import androidx.lifecycle.viewModelScope
+-import kotlinx.coroutines.channels.awaitClose
+ import kotlinx.coroutines.flow.Flow
+ import kotlinx.coroutines.flow.MutableStateFlow
+ import kotlinx.coroutines.flow.StateFlow
+ import kotlinx.coroutines.flow.asStateFlow
+-import kotlinx.coroutines.flow.callbackFlow
+ import kotlinx.coroutines.flow.emptyFlow
+ import kotlinx.coroutines.flow.launchIn
+ import kotlinx.coroutines.flow.onEach
+@@ -483,22 +476,10 @@ class VerificationCodeViewModel(
+   private fun initializeRateLimits(session: SessionMetadata, parentState: RegistrationFlowState): SmsAndCallRateLimits {
+     val now = clock().milliseconds
+ 
+-<<<<<<< MOLLY
+-    /**
+-     * Builds a real SMS retriever flow from [context]. Prefer the application context.
+-     */
+-    constructor(
+-      context: Context,
+-      repository: RegistrationRepository,
+-      parentState: StateFlow<RegistrationFlowState>,
+-      parentEventEmitter: (RegistrationFlowEvent) -> Unit
+-    ) : this(repository, parentState, parentEventEmitter, emptyFlow())
+-=======
+     val nextSmsAvailableAt: Duration? = parentState.lastSmsVerificationCodeRequest
+       ?.takeIf { it.e164 == parentState.sessionE164 }
+       ?.nextAllowedRequestTime?.milliseconds
+       ?: session.nextSms?.let { now + it.seconds }
+->>>>>>> SIGNAL
+ 
+     val nextCallAvailableAt: Duration? = parentState.lastCallVerificationCodeRequest
+       ?.takeIf { it.e164 == parentState.sessionE164 }
+diff --git a/feature/registration/src/main/java/org/signal/registration/screens/welcome/WelcomeScreen.kt b/feature/registration/src/main/java/org/signal/registration/screens/welcome/WelcomeScreen.kt
+index ffe2695f..cd144085 100644
+--- a/feature/registration/src/main/java/org/signal/registration/screens/welcome/WelcomeScreen.kt
++++ b/feature/registration/src/main/java/org/signal/registration/screens/welcome/WelcomeScreen.kt
+@@ -48,11 +48,13 @@ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.draw.clip
+ import androidx.compose.ui.graphics.painter.Painter
++import androidx.compose.ui.graphics.vector.ImageVector
+ import androidx.compose.ui.layout.ContentScale
+ import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.platform.testTag
+ import androidx.compose.ui.res.painterResource
+ import androidx.compose.ui.res.stringResource
++import androidx.compose.ui.res.vectorResource
+ import androidx.compose.ui.text.TextStyle
+ import androidx.compose.ui.text.style.TextAlign
+ import androidx.compose.ui.unit.dp
+@@ -62,6 +64,9 @@ import org.signal.core.ui.WindowBreakpoint
+ import org.signal.core.ui.compose.AllDevicePreviews
+ import org.signal.core.ui.compose.BottomSheets
+ import org.signal.core.ui.compose.Buttons
++import org.signal.core.ui.compose.DropdownMenus
++import org.signal.core.ui.compose.IconButtons.IconButton
++import org.signal.core.ui.compose.Scaffolds
+ import org.signal.core.ui.compose.Previews
+ import org.signal.core.ui.compose.SignalIcons
+ import org.signal.core.ui.compose.TabletPortraitDayPreview
+@@ -71,11 +76,13 @@ import org.signal.core.ui.compose.theme.SignalTheme
+ import org.signal.core.ui.isWidthExpanded
+ import org.signal.core.ui.rememberWindowBreakpoint
+ import org.signal.registration.R
++import org.signal.registration.RegistrationDependencies
+ import org.signal.registration.screens.RegistrationScaffold
+ import org.signal.registration.screens.attachDebugLogHelper
+ import org.signal.registration.test.TestTags
+ import kotlin.math.pow
+ import kotlin.math.sqrt
++import org.signal.core.ui.R as CoreR
+ 
+ /**
+  * Welcome screen for the registration flow.
+@@ -141,6 +148,7 @@ private fun CompactLayout(
+   modifier: Modifier = Modifier
+ ) {
+   RegistrationScaffold(
++    topBar = { NetworkSettingsTopAppBar() },
+     modifier = modifier
+       .fillMaxSize()
+       .testTag(TestTags.WELCOME_SCREEN),
+@@ -200,6 +208,7 @@ private fun MediumLayout(
+   modifier: Modifier = Modifier
+ ) {
+   RegistrationScaffold(
++    topBar = { NetworkSettingsTopAppBar() },
+     modifier = modifier
+       .fillMaxSize()
+       .padding(bottom = 56.dp),
+@@ -258,6 +267,7 @@ private fun LargeLayout(
+   modifier: Modifier = Modifier
+ ) {
+   RegistrationScaffold(
++    topBar = { NetworkSettingsTopAppBar() },
+     modifier = modifier.fillMaxSize(),
+     content = {
+       Row(
+@@ -314,6 +324,39 @@ private fun LargeLayout(
+   )
+ }
+ 
++@Composable
++private fun NetworkSettingsTopAppBar() {
++  val context = LocalContext.current
++  val menuController = remember { DropdownMenus.MenuController() }
++
++  Scaffolds.DefaultTopAppBar(
++    title = "",
++    titleContent = { _, _ -> },
++    onNavigationClick = {},
++    navigationIcon = null,
++    actions = {
++      IconButton(
++        onClick = { menuController.show() },
++        modifier = Modifier.padding(horizontal = 8.dp)
++      ) {
++        Icon(
++          imageVector = ImageVector.vectorResource(CoreR.drawable.symbol_more_vertical_24),
++          contentDescription = stringResource(R.string.RegistrationActivity_open_menu)
++        )
++      }
++      DropdownMenus.Menu(controller = menuController, offsetX = 24.dp, offsetY = 0.dp) {
++        DropdownMenus.Item(
++          text = { Text(stringResource(R.string.RegistrationActivity_network_settings)) },
++          onClick = {
++            RegistrationDependencies.get().proxyConfigCallback?.invoke(context)
++            menuController.hide()
++          }
++        )
++      }
++    }
++  )
++}
++
+ @Composable
+ private fun HeroImage(
+   modifier: Modifier = Modifier
+@@ -376,6 +419,15 @@ private fun PrimaryDeviceCallToActionButtons(
+     Text(stringResource(R.string.RegistrationActivity_continue))
+   }
+ 
++  TextButton(
++    onClick = { onEvent(WelcomeScreenEvents.LinkDevice) },
++    modifier = Modifier
++      .fillMaxWidth()
++      .testTag(TestTags.WELCOME_LINK_DEVICE_BUTTON)
++  ) {
++    Text(stringResource(R.string.RegistrationActivity_link_device))
++  }
++
+   if (showRestoreOrTransfer) {
+     Spacer(modifier = Modifier.height(16.dp))
+ 
+diff --git a/feature/registration/src/main/res/values-ar/strings2.xml b/feature/registration/src/main/res/values-ar/strings2.xml
+new file mode 100644
+index 00000000..67a518fe
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ar/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">اعدادات الشبكة</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-bs/strings2.xml b/feature/registration/src/main/res/values-bs/strings2.xml
+new file mode 100644
+index 00000000..faf9d345
+--- /dev/null
++++ b/feature/registration/src/main/res/values-bs/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Mrežna podešavanja</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ca/strings2.xml b/feature/registration/src/main/res/values-ca/strings2.xml
+new file mode 100644
+index 00000000..3a4ef9f4
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ca/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Configuració de la xarxa</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-cs/strings2.xml b/feature/registration/src/main/res/values-cs/strings2.xml
+new file mode 100644
+index 00000000..84886e1a
+--- /dev/null
++++ b/feature/registration/src/main/res/values-cs/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Nastavení sítě</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-de/strings2.xml b/feature/registration/src/main/res/values-de/strings2.xml
+new file mode 100644
+index 00000000..c8146e52
+--- /dev/null
++++ b/feature/registration/src/main/res/values-de/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Netzwerkeinstellungen</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-el/strings2.xml b/feature/registration/src/main/res/values-el/strings2.xml
+new file mode 100644
+index 00000000..ec6d1542
+--- /dev/null
++++ b/feature/registration/src/main/res/values-el/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Ρυθμίσεις δικτύου</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-es/strings2.xml b/feature/registration/src/main/res/values-es/strings2.xml
+new file mode 100644
+index 00000000..8341f5c6
+--- /dev/null
++++ b/feature/registration/src/main/res/values-es/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Configuración de la red</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-et/strings2.xml b/feature/registration/src/main/res/values-et/strings2.xml
+new file mode 100644
+index 00000000..8713a80d
+--- /dev/null
++++ b/feature/registration/src/main/res/values-et/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Võrgu sätted</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-eu/strings2.xml b/feature/registration/src/main/res/values-eu/strings2.xml
+new file mode 100644
+index 00000000..5ca9d1db
+--- /dev/null
++++ b/feature/registration/src/main/res/values-eu/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Sarearen konfigurazioa</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-fi/strings2.xml b/feature/registration/src/main/res/values-fi/strings2.xml
+new file mode 100644
+index 00000000..0c47fdb2
+--- /dev/null
++++ b/feature/registration/src/main/res/values-fi/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Verkkoasetukset</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-fr/strings2.xml b/feature/registration/src/main/res/values-fr/strings2.xml
+new file mode 100644
+index 00000000..933ec990
+--- /dev/null
++++ b/feature/registration/src/main/res/values-fr/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Paramètres réseau</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ga/strings2.xml b/feature/registration/src/main/res/values-ga/strings2.xml
+new file mode 100644
+index 00000000..448b021d
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ga/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Socruithe líonra</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-gl/strings2.xml b/feature/registration/src/main/res/values-gl/strings2.xml
+new file mode 100644
+index 00000000..16c6e255
+--- /dev/null
++++ b/feature/registration/src/main/res/values-gl/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Axustes da rede</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-hr/strings2.xml b/feature/registration/src/main/res/values-hr/strings2.xml
+new file mode 100644
+index 00000000..33002138
+--- /dev/null
++++ b/feature/registration/src/main/res/values-hr/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Mrežne postavke</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-hu/strings2.xml b/feature/registration/src/main/res/values-hu/strings2.xml
+new file mode 100644
+index 00000000..d7256985
+--- /dev/null
++++ b/feature/registration/src/main/res/values-hu/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Hálózati beállítások</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-in/strings2.xml b/feature/registration/src/main/res/values-in/strings2.xml
+new file mode 100644
+index 00000000..3abf2fc8
+--- /dev/null
++++ b/feature/registration/src/main/res/values-in/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Setelan jaringan</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-it/strings2.xml b/feature/registration/src/main/res/values-it/strings2.xml
+new file mode 100644
+index 00000000..cc1b0233
+--- /dev/null
++++ b/feature/registration/src/main/res/values-it/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Impostazioni di rete</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-iw/strings2.xml b/feature/registration/src/main/res/values-iw/strings2.xml
+new file mode 100644
+index 00000000..7b8e5c83
+--- /dev/null
++++ b/feature/registration/src/main/res/values-iw/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">הגדרות רשת</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ja/strings2.xml b/feature/registration/src/main/res/values-ja/strings2.xml
+new file mode 100644
+index 00000000..1ed02f0a
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ja/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">ネットワークの設定</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ko/strings2.xml b/feature/registration/src/main/res/values-ko/strings2.xml
+new file mode 100644
+index 00000000..3feae17e
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ko/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">네트워크 설정</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-lt/strings2.xml b/feature/registration/src/main/res/values-lt/strings2.xml
+new file mode 100644
+index 00000000..220a7a81
+--- /dev/null
++++ b/feature/registration/src/main/res/values-lt/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Tinklo nustatymai</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-lv/strings2.xml b/feature/registration/src/main/res/values-lv/strings2.xml
+new file mode 100644
+index 00000000..9be2fa5c
+--- /dev/null
++++ b/feature/registration/src/main/res/values-lv/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Tīkla iestatījumi</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-nb/strings2.xml b/feature/registration/src/main/res/values-nb/strings2.xml
+new file mode 100644
+index 00000000..b6394813
+--- /dev/null
++++ b/feature/registration/src/main/res/values-nb/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Nettverksinnstillinger</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-nl/strings2.xml b/feature/registration/src/main/res/values-nl/strings2.xml
+new file mode 100644
+index 00000000..6c9b9f7c
+--- /dev/null
++++ b/feature/registration/src/main/res/values-nl/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Netwerk instellingen</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-pa/strings2.xml b/feature/registration/src/main/res/values-pa/strings2.xml
+new file mode 100644
+index 00000000..787eb604
+--- /dev/null
++++ b/feature/registration/src/main/res/values-pa/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-pl/strings2.xml b/feature/registration/src/main/res/values-pl/strings2.xml
+new file mode 100644
+index 00000000..e6faf8d2
+--- /dev/null
++++ b/feature/registration/src/main/res/values-pl/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Ustawienia sieci</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-pt-rBR/strings2.xml b/feature/registration/src/main/res/values-pt-rBR/strings2.xml
+new file mode 100644
+index 00000000..24af182a
+--- /dev/null
++++ b/feature/registration/src/main/res/values-pt-rBR/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Configurações de rede</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-pt/strings2.xml b/feature/registration/src/main/res/values-pt/strings2.xml
+new file mode 100644
+index 00000000..24af182a
+--- /dev/null
++++ b/feature/registration/src/main/res/values-pt/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Configurações de rede</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ro/strings2.xml b/feature/registration/src/main/res/values-ro/strings2.xml
+new file mode 100644
+index 00000000..4efe2dfd
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ro/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Reglări rețea</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ru/strings2.xml b/feature/registration/src/main/res/values-ru/strings2.xml
+new file mode 100644
+index 00000000..467e86fc
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ru/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Настройки сети</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-sr/strings2.xml b/feature/registration/src/main/res/values-sr/strings2.xml
+new file mode 100644
+index 00000000..b12c2e35
+--- /dev/null
++++ b/feature/registration/src/main/res/values-sr/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Подешавања мреже</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-sv/strings2.xml b/feature/registration/src/main/res/values-sv/strings2.xml
+new file mode 100644
+index 00000000..bfd845cb
+--- /dev/null
++++ b/feature/registration/src/main/res/values-sv/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Nätverksinställningar</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ta/strings2.xml b/feature/registration/src/main/res/values-ta/strings2.xml
+new file mode 100644
+index 00000000..1d4c4c02
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ta/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">பிணைய அமைப்புகள்</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-tr/strings2.xml b/feature/registration/src/main/res/values-tr/strings2.xml
+new file mode 100644
+index 00000000..7677b041
+--- /dev/null
++++ b/feature/registration/src/main/res/values-tr/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Ağ ayarları</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-ug/strings2.xml b/feature/registration/src/main/res/values-ug/strings2.xml
+new file mode 100644
+index 00000000..e9a57bfb
+--- /dev/null
++++ b/feature/registration/src/main/res/values-ug/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">تور تەڭشىكى</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-uk/strings2.xml b/feature/registration/src/main/res/values-uk/strings2.xml
+new file mode 100644
+index 00000000..302c3c1d
+--- /dev/null
++++ b/feature/registration/src/main/res/values-uk/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Налаштування мережі</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-vi/strings2.xml b/feature/registration/src/main/res/values-vi/strings2.xml
+new file mode 100644
+index 00000000..d2e4b87e
+--- /dev/null
++++ b/feature/registration/src/main/res/values-vi/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Cài đặt mạng</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-zh-rCN/strings2.xml b/feature/registration/src/main/res/values-zh-rCN/strings2.xml
+new file mode 100644
+index 00000000..710b7e07
+--- /dev/null
++++ b/feature/registration/src/main/res/values-zh-rCN/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">网络设置</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values-zh-rTW/strings2.xml b/feature/registration/src/main/res/values-zh-rTW/strings2.xml
+new file mode 100644
+index 00000000..c400b95e
+--- /dev/null
++++ b/feature/registration/src/main/res/values-zh-rTW/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">網絡設定</string>
++</resources>
+diff --git a/feature/registration/src/main/res/values/strings.xml b/feature/registration/src/main/res/values/strings.xml
+index 67174115..8c6aa1c3 100644
+--- a/feature/registration/src/main/res/values/strings.xml
++++ b/feature/registration/src/main/res/values/strings.xml
+@@ -144,7 +144,7 @@
+     <!-- Row title for restore/transfer without using a previous device -->
+     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">I don\'t have my old phone</string>
+     <!-- Row subtitle for restore/transfer without using a previous device -->
+-    <string name="WelcomeFragment_restore_action_reinstalling">Or you\'re reinstalling Signal on the same device</string>
++    <string name="WelcomeFragment_restore_action_reinstalling" mollyify="true">Or you\'re reinstalling Molly on the same device</string>
+ 
+     <!-- ArchiveRestoreSelectionScreen -->
+     <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values/strings2.xml b/feature/registration/src/main/res/values/strings2.xml
+new file mode 100644
+index 00000000..197ad4c9
+--- /dev/null
++++ b/feature/registration/src/main/res/values/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Network settings</string>
++</resources>
+diff --git a/feature/registration/src/test/java/org/signal/registration/RegistrationRepositoryTest.kt b/feature/registration/src/test/java/org/signal/registration/RegistrationRepositoryTest.kt
+index 8882ff7d..c8a44f56 100644
+--- a/feature/registration/src/test/java/org/signal/registration/RegistrationRepositoryTest.kt
++++ b/feature/registration/src/test/java/org/signal/registration/RegistrationRepositoryTest.kt
+@@ -16,6 +16,8 @@ import assertk.assertions.isNull
+ import assertk.assertions.isTrue
+ import io.mockk.mockk
+ import kotlinx.coroutines.ExperimentalCoroutinesApi
++import kotlinx.coroutines.flow.emptyFlow
++import kotlinx.coroutines.flow.toList
+ import kotlinx.coroutines.test.runTest
+ import okio.ByteString.Companion.toByteString
+ import org.junit.Before
+@@ -80,6 +82,32 @@ class RegistrationRepositoryTest {
+     )
+   }
+ 
++  @Test
++  fun `a fresh registration does not enable network before the user proceeds`() {
++    assertThat(networkController.networkEnabledForRegistration).isEqualTo(false)
++  }
++
++  @Test
++  fun `linking enables network before provisioning and does not advertise disabled transfer`() = runTest {
++    networkController.onStartLinkDeviceProvisioning = { allowLinkAndSync ->
++      assertThat(networkController.networkEnabledForRegistration).isEqualTo(true)
++      assertThat(allowLinkAndSync).isEqualTo(false)
++      emptyFlow()
++    }
++
++    repository.startLinkDeviceProvisioning().toList()
++  }
++
++  @Test
++  fun `quick restore enables network before starting its provisioning connection`() = runTest {
++    networkController.onStartProvisioning = {
++      assertThat(networkController.networkEnabledForRegistration).isEqualTo(true)
++      emptyFlow()
++    }
++
++    repository.startProvisioning().toList()
++  }
++
+   // ==================== getAndMaybeHealRemoteBackupInfo ====================
+ 
+   @Test
+diff --git a/feature/registration/src/test/java/org/signal/registration/fakes/FakeNetworkController.kt b/feature/registration/src/test/java/org/signal/registration/fakes/FakeNetworkController.kt
+index aeed7dc3..231f062c 100644
+--- a/feature/registration/src/test/java/org/signal/registration/fakes/FakeNetworkController.kt
++++ b/feature/registration/src/test/java/org/signal/registration/fakes/FakeNetworkController.kt
+@@ -500,7 +500,14 @@ class FakeNetworkController(
+     return onStartProvisioning()
+   }
+ 
+-  override fun startLinkDeviceProvisioning(allowLinkAndSync: Boolean): Flow<LinkDeviceProvisioningEvent> = notExpected()
++  var networkEnabledForRegistration = false
++  var onStartLinkDeviceProvisioning: (Boolean) -> Flow<LinkDeviceProvisioningEvent> = { notExpected() }
++
++  override fun enableNetworkForRegistration() {
++    networkEnabledForRegistration = true
++  }
++
++  override fun startLinkDeviceProvisioning(allowLinkAndSync: Boolean): Flow<LinkDeviceProvisioningEvent> = onStartLinkDeviceProvisioning(allowLinkAndSync)
+ 
+   override suspend fun registerAsLinkedDevice(
+     aci: ACI,
+diff --git a/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt b/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt
+index af05ac27..402635c5 100644
+--- a/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt
++++ b/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt
+@@ -19,6 +19,7 @@ import io.mockk.coEvery
+ import io.mockk.coVerify
+ import io.mockk.every
+ import io.mockk.mockk
++import io.mockk.verify
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.ExperimentalCoroutinesApi
+ import kotlinx.coroutines.flow.MutableStateFlow
+@@ -525,6 +526,15 @@ class PhoneNumberEntryViewModelTest {
+ 
+   // ==================== Trunk Prefix Normalization Tests ====================
+ 
++  @Test
++  fun `entering a number and opening confirmation leave networking disabled`() = runTest {
++    val initialState = PhoneNumberEntryState(countryCode = "1", nationalNumber = "2025550123")
++
++    viewModel.applyEvent(initialState, PhoneNumberEntryScreenEvents.NextClicked, parentEventEmitter, stateEmitter)
++
++    verify(exactly = 0) { mockRepository.enableNetworkForRegistration() }
++  }
++
+   @Test
+   fun `NextClicked strips a redundant leading trunk prefix before showing the confirmation dialog`() = runTest {
+     // Dutch users habitually type their number with the leading national '0' (e.g. 0612345678), which must not end
+@@ -584,6 +594,7 @@ class PhoneNumberEntryViewModelTest {
+ 
+     viewModel.applyEvent(initialState, PhoneNumberEntryScreenEvents.PhoneNumberConfirmed, parentEventEmitter, stateEmitter)
+ 
++    verify(exactly = 1) { mockRepository.enableNetworkForRegistration() }
+     coVerify(exactly = 1) { mockRepository.createSession("+31612345678") }
+     assertThat(emittedStates.last().nationalNumber).isEqualTo("612345678")
+     assertThat(emittedEvents.filterIsInstance<RegistrationFlowEvent.E164Chosen>())

@@ -1,19 +1,15 @@
-From 1f0af82f4ab6a510afe506d0efd33d8f09ecf24e Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 05:49:28 +0100
-Subject: [PATCH] Retain source registration layout and timing log
+From 82b8e785b8a45decbd75bb725bb3292f0d646048 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/registration-and-timing-format
 
-Keep the longer one-line registration signature and call layout, remove added parameter prose, and restore the prior message-fetch timing log. The timing log no longer includes the shared-contacts duration.
+Retain the longer one-line registration signature and omit added prose; the debug timing log loses the shared-contacts duration.
 
+Original-Source-Commit: 1f0af82f4ab6a510afe506d0efd33d8f09ecf24e
 AI-Generated: true
 
-Based-On-Source-Commit: bda4a65056b18ae1b9aa31aefa8a737342967b64
-Source-Commit: 1f0af82f4ab6a510afe506d0efd33d8f09ecf24e
----
- .../securesms/conversation/v2/data/MessageDataFetcher.kt | 2 +-
- .../securesms/registration/ui/RegistrationActivity.kt    | 9 +--------
- .../securesms/registration/ui/RegistrationIntents.kt     | 7 +------
- 3 files changed, 3 insertions(+), 15 deletions(-)
+Source-Commit: 82b8e785b8a45decbd75bb725bb3292f0d646048
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/data/MessageDataFetcher.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/data/MessageDataFetcher.kt
 index c235a3e6..527fe54b 100644
@@ -69,6 +65,3 @@ index 709ff882..9cbd1189 100644
    }
  
    @JvmStatic
--- 
-2.56.0
-

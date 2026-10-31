@@ -102,230 +102,27 @@ Molly snapshot with **no AI compatibility patches**. This is an intentionally
 unadapted review checkpoint: source assembly reports the conflicts and refuses
 to label the result buildable.
 
-Subsequent commits add resolutions grouped by application feature. Module pruning
-uses a pinned whole-file deletion manifest; its SHA-256 is `7488de7e37bab4c54675832f8879c18058b0552d43c5b5630616af8c1c655c34`. Their parent source is Git's mechanical merge, so they show changes
-that remain after deterministic integration. The initial groups reproduce
-the existing PR #7 source merge
-`90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; twenty-nine subsequent layers retain
-the preference-import, NetCipher SDK DSL, broader integration/regression, CDN
-test-fixture, linked-device reminder, backup preference precedence, donation
-completion, legacy backup-notification cleanup, recipient badge list, localized
-resource notices, locked system information, remaining resource notices, dynamic
-appearance, blocked-network priority, recipient avatar badge, version preference
-write, Giphy client formatting, always-relay accessor, logcat collection, three retained Molly import corrections, source import formatting, direct backup cancellation, pre-27 selector cleanup, registration layout and timing log, unavailable-contact and retained legacy code, navigation imports and share override, and retained settings, camera and version write as individual review steps. Each mailbox
-records its source commit and AI-generation status.
-Previous mailboxes do not receive new provenance headers when a later fix is
-added.
+The compatibility resolutions follow the pinned mechanical merge. The derived
+source checkpoints are incremental bundles; their actual commit IDs and original
+source attribution are listed in `patches/ports/signal-8.33.2/provenance.json`.
+The bundle `source-checkpoint-mechanical.bundle` starts from the pinned Signal
+commit. Fetch each listed bundle in layer order after its prerequisite is present.
+The mechanical bundle ref is `refs/heads/source-checkpoint/mechanical-merge`;
+other refs use their layer ID with `/` replaced by `--`, except the final ref
+is `refs/heads/source-checkpoint/generated-translations`. Bundle prerequisites,
+expected commits and expected trees are recorded for each layer.
 
-The port has 764 conflict paths. Initial resolutions change 763 of
-them; the retained `CorrectedPreferenceFragment.java` modify/delete conflict
-is recorded as an explicit keep-Molly decision in the configuration. A
-content diff is unnecessary for that choice because Git already leaves
-Molly's version in the conflicted tree. The choice is still reviewed as an
-AI compatibility decision. Every conflict must be covered by a resolution
-or an explicit unchanged-content decision.
+Whole-file deletion manifests and generated translations are explicit,
+pinned stages. Translation generation reads Signal locale blobs and adds the
+68 Molly `please_wait` entries to locale `strings2.xml` files.
 
-The final source must equal tree
-`4dc1b2c647ad062b3de168ff5cb2568b5675c20f`, the tree of synthetic source
-commit `a39eeee9155bdc9116b611734dcc58653f7cb38f`. This checkpoint restores dormant camera and settings source. The
-camera count is still not displayed, and the restored help view model can wipe logs
-if invoked. The first-launch version write now throws on preference write failure.
-It extends navigation and share checkpoint `031894f1a74ca85b44cdd37f33a4bf6ba3f6c275` (tree `a6d0ea74c2ead7a2600ecb5d95541acf168fecb1`).
-The navigation and share checkpoint restores numerous unused
-Molly navigation imports and a ShareActivity container override. The current full-screen
-path does not call the override; a future sheet path could receive the wrong host
-container. It extends checkpoint `a3a9eaabe66d42fdbf8807158eca7de8c9755b33` (tree `41a6f4dd9731829110773b23e7739c5b5fd65444`).
-The unavailable-contact message no longer distinguishes whether
-the person previously used Signal. This checkpoint also restores the currently unused
-legacy PlainTextSharedPrefsDataStore API and imports, and removes one unused import.
-It extends registration and timing checkpoint `1f0af82f4ab6a510afe506d0efd33d8f09ecf24e` (tree `ad924cb75d22db46a530c9257fe331bc1b6e218a`).
-The registration and timing checkpoint keeps a longer one-line
-registration signature and removes the shared-contacts duration from a debug timing log.
-It extends pre-27 selector checkpoint `bda4a65056b18ae1b9aa31aefa8a737342967b64` (tree `c23d85ed3707b8c153c65e1a91dcca30dd51ee7c`).
-The pre-27 selector checkpoint extends direct backup cancellation
-checkpoint `7ee4f371851ac9f2baae2915b209eaf2a664e92f` (tree `76df44b49dccd2ea946719764aaa23fd8f9e9208`). The direct backup cancellation checkpoint extends media and preference imports
-checkpoint `98f6a7e996abf915eecee06ece4ea901a34ef64b` (tree `ebc09c526aeab140c8c51ebc898d08f32c0f28c6`). The media and preference imports checkpoint extends source import formatting
-checkpoint `5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9` (tree `46d52ca93e698991994f668d7d649f61ec6cd503`). The source import formatting checkpoint retains Molly screen-lock punctuation and
-the mechanical-merge reaction overlay import order; it extends activity and push imports
-checkpoint `ad4e4df669330f034242afe4d19f29bb1c6f3995` (tree `09b480ee848a0c390779e27ca166fbbe0bf13f3a`). The activity and push imports checkpoint extends retained imports
-checkpoint `6a08b686d0f4159a8b801420d601ce55b5195b66` (tree `ed84aae0b10c71574fb91a124202015f298a2226`). The retained imports checkpoint extends logcat collection
-checkpoint `9fd7b272e2b546c5fc706315df09c5778590f1fb` (tree `2f2df9763230c11a9a0eac423b0fec52ef0b7fe5`). The logcat and always-relay checkpoints extend Giphy formatting
-checkpoint `ae5099dd637e08095c995464ec22118866296e3a` (tree `ff319e31f48739facb1b430102ce61351114ebb8`). The Giphy formatting checkpoint extends version preference
-checkpoint `b0e9ca51c613c1b88ada51a5552b0b7131d1621e` (tree `190ad231ab86fd7fbe7c6cb137a3bf0680a13d24`). The version preference checkpoint extends recipient avatar badge
-checkpoint `09d0c9e17576de7090da7a9e6c84080c618f817e` (tree `67761e2dc6664979273d89f2a438fa7be060f65a`). The recipient avatar badge checkpoint extends blocked-network priority
-checkpoint `7a2ec75db0b56f45310d09716a3559e5dd503b19` (tree `936c1c8ccf52a6450b4d6b9fb216ae1dfdff102a`). The blocked-network priority checkpoint extends dynamic appearance
-checkpoint `325a19e470349aa88232eaa6fd68d7e064a3da24` (tree `229e4bd926c1080318cf80ee6633178e42eeb6dd`). Five prior checkpoints extend the backup-notification
-checkpoint `ae2672a773d15d1b22186bd8acbec2221760f049` (tree `70f2eba69967c4a3ae82dd9204999feb1bd70f9b`): recipient badge list, localized
-resource notices, locked system information, remaining resource notices, and Molly dynamic appearance.
-The backup-notification checkpoint extends donation
-checkpoint `34100dfa15eb70256d948f96b14abe4b7c7920d6` (tree
-`33540be50355fd43b776249136554d167625462a`) with channel-checked cleanup of
-Molly's old backup alerts at IDs `120500` and `120501`; new backup alerts keep
-Signal's current IDs. The donation checkpoint extends backup checkpoint
-`266d0185d021b2b6a98882205f6b6242152d146e` (tree
-`febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`) with the restored donation badge
-acknowledgement, eligible monthly-sustainer link, and a completion-sheet
-loading-state fix plus Compose coverage. The backup checkpoint extends
-re-registration checkpoint `d3c917a5be7db6116c83b7e29e09f145e7f38825` (tree
-`0e5c581b7db3f4429256630011790f3ed4ad141f`). That checkpoint extends
-`cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c` (tree
-`2533afec2fe2d7f9fc682f699fc21d7624521889`) with the explicit
-re-registration marker, linked-device reminder assignment after successful
-primary-device multi-device registration, and marker test. These settings
-restore Molly's prior reminder behavior while leaving new registrations
-unchanged. This remains a development port, not an official Molly release.
+The final source tree is `14ba9fde0c1b0d5e1f31eb2a216142fa4e7270d6`. The source commit is `8ca76dfeb369b3711ea3591a1c5e5f03045f2d99`.
+The retained `CorrectedPreferenceFragment.java` conflict is an explicit
+keep-Molly decision in the build configuration.
 
-Each synthetic source commit is stored in an incremental bundle. The reminder
-bundle requires `cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c`; the backup bundle
-requires `d3c917a5be7db6116c83b7e29e09f145e7f38825`; the donation bundle
-requires `266d0185d021b2b6a98882205f6b6242152d146e`; and the backup-notification
-bundle requires `34100dfa15eb70256d948f96b14abe4b7c7920d6`. Each prerequisite must
-already be present in the object database. The twenty-one later bundles each require
-the source commit from the immediately preceding checkpoint. For a fresh local repository,
-materialize and verify the chain in order:
-
-```sh
-git cat-file -e cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c^{commit}
-git rev-parse cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c^{tree}
-git bundle verify patches/ports/signal-8.33.2/followups/reregistration-linked-devices-reminder/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/reregistration-linked-devices-reminder/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/reregistration-linked-devices-reminder:refs/port-source/reregistration-linked-devices-reminder
-git rev-parse refs/port-source/reregistration-linked-devices-reminder^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/legacy-backup-precedence/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/legacy-backup-precedence/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/legacy-backup-precedence:refs/port-source/legacy-backup-precedence
-git rev-parse refs/port-source/legacy-backup-precedence^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/donation-completion/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/donation-completion/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/donation-completion:refs/port-source/donation-completion
-git rev-parse refs/port-source/donation-completion^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/backup-notification-id-upgrade/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/backup-notification-id-upgrade/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/backup-notification-id-upgrade:refs/port-source/backup-notification-id-upgrade
-git rev-parse refs/port-source/backup-notification-id-upgrade^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/recipient-badge-list/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/recipient-badge-list/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/recipient-badge-list:refs/port-source/recipient-badge-list
-git rev-parse refs/port-source/recipient-badge-list^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/localized-resource-notices/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/localized-resource-notices/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/localized-resource-notices:refs/port-source/localized-resource-notices
-git rev-parse refs/port-source/localized-resource-notices^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/locked-system-info/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/locked-system-info/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/locked-system-info:refs/port-source/locked-system-info
-git rev-parse refs/port-source/locked-system-info^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/remaining-resource-notices/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/remaining-resource-notices/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/remaining-resource-notices:refs/port-source/remaining-resource-notices
-git rev-parse refs/port-source/remaining-resource-notices^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/dynamic-appearance-colors/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/dynamic-appearance-colors/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/dynamic-appearance-colors:refs/port-source/dynamic-appearance-colors
-git rev-parse refs/port-source/dynamic-appearance-colors^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/blocked-network-priority/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/blocked-network-priority/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/blocked-network-priority:refs/port-source/blocked-network-priority
-git rev-parse refs/port-source/blocked-network-priority^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/recipient-avatar-badge/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/recipient-avatar-badge/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/recipient-avatar-badge:refs/port-source/recipient-avatar-badge
-git rev-parse refs/port-source/recipient-avatar-badge^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/version-preference-write/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/version-preference-write/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/version-preference-write:refs/port-source/version-preference-write
-git rev-parse refs/port-source/version-preference-write^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/giphy-client-formatting/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/giphy-client-formatting/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/giphy-client-formatting:refs/port-source/giphy-client-formatting
-git rev-parse refs/port-source/giphy-client-formatting^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/always-relay-accessor/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/always-relay-accessor/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/always-relay-accessor:refs/port-source/always-relay-accessor
-git rev-parse refs/port-source/always-relay-accessor^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/logcat-collection/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/logcat-collection/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/logcat-collection:refs/port-source/logcat-collection
-git rev-parse refs/port-source/logcat-collection^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/retained-molly-imports/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/retained-molly-imports/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/retained-molly-imports:refs/port-source/retained-molly-imports
-git rev-parse refs/port-source/retained-molly-imports^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/retained-activity-push-imports/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/retained-activity-push-imports/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/retained-activity-push-imports:refs/port-source/retained-activity-push-imports
-git rev-parse refs/port-source/retained-activity-push-imports^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/retained-import-formatting/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/retained-import-formatting/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/retained-import-formatting:refs/port-source/retained-import-formatting
-git rev-parse refs/port-source/retained-import-formatting^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/retained-media-preference-imports/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/retained-media-preference-imports/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/retained-media-preference-imports:refs/port-source/retained-media-preference-imports
-git rev-parse refs/port-source/retained-media-preference-imports^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/backup-direct-cancellation/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/backup-direct-cancellation/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/backup-direct-cancellation:refs/port-source/backup-direct-cancellation
-git rev-parse refs/port-source/backup-direct-cancellation^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/remove-pre27-sheet-selectors/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/remove-pre27-sheet-selectors/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/remove-pre27-sheet-selectors:refs/port-source/remove-pre27-sheet-selectors
-git rev-parse refs/port-source/remove-pre27-sheet-selectors^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/registration-and-timing-format/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/registration-and-timing-format/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/registration-and-timing-format:refs/port-source/registration-and-timing-format
-git rev-parse refs/port-source/registration-and-timing-format^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/unavailable-contact-and-legacy-preferences/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/unavailable-contact-and-legacy-preferences/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/unavailable-contact-and-legacy-preferences:refs/port-source/unavailable-contact-and-legacy-preferences
-git rev-parse refs/port-source/unavailable-contact-and-legacy-preferences^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/navigation-and-share-legacy/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/navigation-and-share-legacy/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/navigation-and-share-legacy:refs/port-source/navigation-and-share-legacy
-git rev-parse refs/port-source/navigation-and-share-legacy^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/retained-settings-camera-and-version/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/retained-settings-camera-and-version/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/retained-settings-camera-and-version:refs/port-source/retained-settings-camera-and-version
-git rev-parse refs/port-source/retained-settings-camera-and-version^{tree}
-```
-
-The tree commands must print, in order, `2533afec2fe2d7f9fc682f699fc21d7624521889`,
-`0e5c581b7db3f4429256630011790f3ed4ad141f`,
-`febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`,
-`33540be50355fd43b776249136554d167625462a`, and
-`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`, `09c0192152398a4969178704894cfcb1c0552513`, `f3b957dcbd02f828be8bccd29770fa080b68b55a`, `e71a4e56e8f5ebb9229ff4c2cf1dc3972b444655`, `2e5e16d1d08625df6ae12ab911eb180d44ed581a`, `229e4bd926c1080318cf80ee6633178e42eeb6dd`, `936c1c8ccf52a6450b4d6b9fb216ae1dfdff102a`, `67761e2dc6664979273d89f2a438fa7be060f65a`, `190ad231ab86fd7fbe7c6cb137a3bf0680a13d24`, `ff319e31f48739facb1b430102ce61351114ebb8`, `0965228d1febaa1b9be4d228208f3ffcf3b7c595`, `2f2df9763230c11a9a0eac423b0fec52ef0b7fe5`, `ed84aae0b10c71574fb91a124202015f298a2226`, `09b480ee848a0c390779e27ca166fbbe0bf13f3a`, `46d52ca93e698991994f668d7d649f61ec6cd503`, `ebc09c526aeab140c8c51ebc898d08f32c0f28c6`, `76df44b49dccd2ea946719764aaa23fd8f9e9208`, `c23d85ed3707b8c153c65e1a91dcca30dd51ee7c`, `ad924cb75d22db46a530c9257fe331bc1b6e218a`, `41a6f4dd9731829110773b23e7739c5b5fd65444`, `a6d0ea74c2ead7a2600ecb5d95541acf168fecb1`, `4dc1b2c647ad062b3de168ff5cb2568b5675c20f`. The bundles do not carry their
-prerequisites; a fresh clone cannot verify or fetch a later bundle until the
-earlier checkpoints are materialized.
-
-When changing a resolution, update only the affected mailbox and its reviewed
-target-tree pin. Leave unrelated mailbox envelopes and the historical forest
-alone. `export_complete.py` remains available for exporting a new official
-source snapshot; it is not a command to refresh unchanged patches for line
-offsets. An upstream release with genuinely changed APIs still requires
+When changing a checkpoint, replay every later checkpoint and regenerate its
+bundle, mailbox, source attribution, and tree and hash pins. The official Molly
+forest remains unchanged. Offset-only changes do not require patch refreshes. An upstream release with genuinely changed APIs still requires
 explicit compatibility work and review.
 
 ## The microphone fix is a native source cherry-pick

@@ -1,20 +1,15 @@
-From 09d0c9e17576de7090da7a9e6c84080c618f817e Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 03:13:57 +0100
-Subject: [PATCH] Restore recipient badge on settings avatar
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From 6b745941a7b86787f2e06d6b65434593d8c371d4 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/recipient-avatar-badge
 
-Display the first badge for non-self recipients at Molly’s previous avatar position, while preserving the avatar transition and leaving the badge non-interactive.
+Restore the non-interactive featured badge on non-self recipient avatars.
 
+Original-Source-Commit: 09d0c9e17576de7090da7a9e6c84080c618f817e
 AI-Generated: true
 
-Based-On-Source-Commit: 7a2ec75db0b56f45310d09716a3559e5dd503b19
-Source-Commit: 09d0c9e17576de7090da7a9e6c84080c618f817e
----
- .../conversation/shared/ConversationHeader.kt | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+Source-Commit: 6b745941a7b86787f2e06d6b65434593d8c371d4
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/shared/ConversationHeader.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/shared/ConversationHeader.kt
 index bf6851fb..e7034132 100644
@@ -81,6 +76,3 @@ index bf6851fb..e7034132 100644
      }
    }
  }
--- 
-2.56.0
-

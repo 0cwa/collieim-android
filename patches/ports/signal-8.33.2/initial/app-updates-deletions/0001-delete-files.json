@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "type": "delete-files",
+  "source_commit": "1d406087ae9520453d1081526fd03156913f4d0b",
+  "before_tree": "759ef1c309d93aa7e4ac7217b144c04545562f11",
+  "after_tree": "c01fd175f6f054c3f8cb34f04d360716b9ef2c21",
+  "files": [
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/updates/AppUpdatesSettingsState.kt",
+      "mode": "100644",
+      "blob": "897acec31f09dbee6a1617a9853713fe5e85fbdc"
+    }
+  ]
+}

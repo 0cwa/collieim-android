@@ -1,24 +1,15 @@
-From a3a9eaabe66d42fdbf8807158eca7de8c9755b33 Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 05:58:41 +0100
-Subject: [PATCH] Restore unavailable-contact message and retained source code
+From cde9899c6940721994679e841ffe3a27557e478c Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/unavailable-contact-and-legacy-preferences
 
-Use the Molly unavailable-contact message, which no longer distinguishes whether a person previously used Signal. Restore available Molly imports, remove one unused conversation-list import, and restore the 33-line PlainTextSharedPrefsDataStore API, which has no current callers.
+Restore the Molly unavailable-contact message, dropping the prior-use distinction; restore Molly imports and the currently unused legacy PlainTextSharedPrefsDataStore API, and remove one unused import.
 
+Original-Source-Commit: a3a9eaabe66d42fdbf8807158eca7de8c9755b33
 AI-Generated: true
 
-Based-On-Source-Commit: 1f0af82f4ab6a510afe506d0efd33d8f09ecf24e
-Source-Commit: a3a9eaabe66d42fdbf8807158eca7de8c9755b33
----
- .../conversation/v2/DisabledInputView.kt      |  4 +--
- .../ConversationListFragment.java             |  1 -
- .../CoreUiDependenciesProvider.kt             |  1 +
- .../dependencies/NetworkDependenciesModule.kt |  3 ++
- .../glide/ChunkedImageUrlLoader.java          |  1 +
- .../securesms/keyvalue/AccountValues.kt       |  1 +
- .../keyvalue/PlainTextSharedPrefsDataStore.kt | 33 +++++++++++++++++++
- 7 files changed, 40 insertions(+), 4 deletions(-)
- create mode 100644 app/src/main/java/org/thoughtcrime/securesms/keyvalue/PlainTextSharedPrefsDataStore.kt
+Source-Commit: cde9899c6940721994679e841ffe3a27557e478c
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/DisabledInputView.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/DisabledInputView.kt
 index e257337d..8adced2d 100644
@@ -142,6 +133,3 @@ index 00000000..e2840c23
 +      sharedPrefs.edit().putLong(SMS_MIGRATION_ID_OFFSET, value).commit()
 +    }
 +}
--- 
-2.56.0
-

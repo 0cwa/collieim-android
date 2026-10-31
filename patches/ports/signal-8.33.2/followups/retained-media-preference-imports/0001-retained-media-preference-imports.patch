@@ -1,20 +1,15 @@
-From 98f6a7e996abf915eecee06ece4ea901a34ef64b Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 04:24:02 +0100
-Subject: [PATCH] Retain Molly media and preference imports
+From 092e35b8f8231227cfdc4efc9cbdfa5c5913bf7c Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/retained-media-preference-imports
 
-Restore the original Molly media composer, attachment and preference imports.
+Retain Molly media composer, attachment and preference imports.
 
+Original-Source-Commit: 98f6a7e996abf915eecee06ece4ea901a34ef64b
 AI-Generated: true
 
-Based-On-Source-Commit: 5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9
-Source-Commit: 98f6a7e996abf915eecee06ece4ea901a34ef64b
----
- .../v2/review/AddMessageDialogFragment.kt          |  1 +
- .../mediasend/v3/MediaSendV3ForwardFragment.kt     |  1 +
- .../securesms/mms/AttachmentManager.java           |  2 ++
- .../securesms/util/TextSecurePreferences.java      | 14 ++++++++++++++
- 4 files changed, 18 insertions(+)
+Source-Commit: 092e35b8f8231227cfdc4efc9cbdfa5c5913bf7c
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/mediasend/v2/review/AddMessageDialogFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/mediasend/v2/review/AddMessageDialogFragment.kt
 index 71d24ee8..cb3b7be6 100644
@@ -99,6 +94,3 @@ index 05852f9a..fb1f7738 100644
  
  import java.util.ArrayList;
  import java.util.Arrays;
--- 
-2.56.0
-

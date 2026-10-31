@@ -1,17 +1,15 @@
-From 325a19e470349aa88232eaa6fd68d7e064a3da24 Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 02:40:25 +0100
-Subject: [PATCH] Restore Molly dynamic color palette selection
+From 80e59c2543aa30deb6777a4278ffc2ffb9bf7315 Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/dynamic-appearance-colors
 
-Use Molly's light extended-color base for dynamic themes.
+Restore Molly dynamic-color extended palette selection.
 
+Original-Source-Commit: 325a19e470349aa88232eaa6fd68d7e064a3da24
 AI-Generated: true
 
-Based-On-Source-Commit: 0a44d06b86c793186f42d53cf248ad8bb2f6c925
-Source-Commit: 325a19e470349aa88232eaa6fd68d7e064a3da24
----
- .../main/java/org/signal/core/ui/compose/theme/SignalTheme.kt   | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Source-Commit: 80e59c2543aa30deb6777a4278ffc2ffb9bf7315
 
 diff --git a/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt b/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt
 index 0f69d2e3..06763d59 100644
@@ -26,6 +24,3 @@ index 0f69d2e3..06763d59 100644
        colorSurface1 = colorScheme.surfaceContainerLow,
        colorSurface2 = colorScheme.surfaceContainer,
        colorSurface3 = colorScheme.surfaceContainerHigh,
--- 
-2.56.0
-

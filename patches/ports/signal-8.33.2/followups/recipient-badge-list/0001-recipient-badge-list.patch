@@ -1,20 +1,15 @@
-From f35e5d6f2adb49bee7af7599e18d15dcf9823082 Mon Sep 17 00:00:00 2001
-From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 02:20:16 +0100
-Subject: [PATCH] Restore recipient badge list in conversation settings
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From 0a1e4567cc689c32fecdaaee0f53a1a0e4d6b8bf Mon Sep 17 00:00:00 2001
+From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
+Date: Sat, 1 Jan 2000 00:00:00 +0000
+Subject: [PATCH] Derived compatibility checkpoint:
+ followups/recipient-badge-list
 
-Show all badges for non-self recipients while keeping Molly’s badge interactions disabled. Omit the old prompt that claims badges can be tapped and displayed on the user profile.
+Restore non-self recipient badge lists while keeping badge interactions disabled.
 
+Original-Source-Commit: f35e5d6f2adb49bee7af7599e18d15dcf9823082
 AI-Generated: true
 
-Based-On-Source-Commit: ae2672a773d15d1b22186bd8acbec2221760f049
-Source-Commit: f35e5d6f2adb49bee7af7599e18d15dcf9823082
----
- .../individual/IndividualSettingsScreen.kt    | 37 +++++++++++++++++++
- 1 file changed, 37 insertions(+)
+Source-Commit: 0a1e4567cc689c32fecdaaee0f53a1a0e4d6b8bf
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt
 index 5d44022f..b8373a0e 100644
@@ -91,6 +86,3 @@ index 5d44022f..b8373a0e 100644
  /** Groups the two of you are both in. */
  private fun LazyListScope.groupsInCommonSection(
    state: IndividualSettingsState,
--- 
-2.56.0
-

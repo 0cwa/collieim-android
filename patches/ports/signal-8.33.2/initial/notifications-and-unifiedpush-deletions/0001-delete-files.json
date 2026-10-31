@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "type": "delete-files",
+  "source_commit": "bf204ff0d9a10c1c82209dc19dbf862f3fe6db9f",
+  "before_tree": "c80e938120145e8e4ad5660efb586656898c28da",
+  "after_tree": "2f7920246a54d7b47212a5b2b65c137888b92fe4",
+  "files": [
+    {
+      "path": "app/src/main/java/org/thoughtcrime/securesms/notifications/NotificationIds.java",
+      "mode": "100644",
+      "blob": "ad0f4a25966e755c53f9e41e4de83255988018cb"
+    }
+  ]
+}

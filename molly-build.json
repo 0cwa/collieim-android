@@ -20,7 +20,7 @@
       "app/src/main/java/org/thoughtcrime/securesms/keyvalue/PlainTextSharedPrefsDataStore.kt": "Retain Molly's secure-preferences-backed SMS migration offset API after Signal removed the old path; follow-up a3a9eaabe66d42fdbf8807158eca7de8c9755b33 restored it unchanged."
     }
   },
-  "target_tree": "758a8cb3048c525e8802cfe92369c69f09722961",
+  "target_tree": "c85dca5e6fea23d006d4fcd87dd27a4384be91fc",
   "native": null,
   "android": {
     "sdk": "37.0",
@@ -63,6 +63,8 @@
       "org.thoughtcrime.securesms.backup.FullBackupImporterTest",
       "--tests",
       "org.thoughtcrime.securesms.notifications.NotificationIdsTest",
+      "--tests",
+      "org.thoughtcrime.securesms.backup.v2.LegacyBackupNotificationTest",
       "--tests",
       "org.thoughtcrime.securesms.service.MessageBackupListenerTest",
       "--tests",

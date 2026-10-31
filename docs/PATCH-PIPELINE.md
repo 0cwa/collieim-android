@@ -108,15 +108,15 @@ source attribution are listed in `patches/ports/signal-8.33.2/provenance.json`.
 The bundle `source-checkpoint-mechanical.bundle` starts from the pinned Signal
 commit. Fetch each listed bundle in layer order after its prerequisite is present.
 The mechanical bundle ref is `refs/heads/source-checkpoint/mechanical-merge`;
-other refs use their layer ID with `/` replaced by `--`, except the final ref
-is `refs/heads/source-checkpoint/generated-translations`. Bundle prerequisites,
+other refs use their layer ID with `/` replaced by `--`; the generated translations
+ref is `refs/heads/source-checkpoint/generated-translations`. Bundle prerequisites,
 expected commits and expected trees are recorded for each layer.
 
 Whole-file deletion manifests and generated translations are explicit,
 pinned stages. Translation generation reads Signal locale blobs and adds the
 68 Molly `please_wait` entries to locale `strings2.xml` files.
 
-The final source tree is `758a8cb3048c525e8802cfe92369c69f09722961`. The source commit is `772a3e479083c5a1b84a20ec772265b153b3dd6d`.
+The final source tree is `c85dca5e6fea23d006d4fcd87dd27a4384be91fc`. The source commit is `01de2a3a0df35a6089991a8e793215815260aa10`.
 The retained `CorrectedPreferenceFragment.java` conflict is an explicit
 keep-Molly decision in the build configuration.
 
@@ -165,7 +165,7 @@ then run the strict full preflight from the patch-release checkout. Writing
 verification metadata does not itself prove native artifact provenance; follow
 the native build instructions below when they apply.
 
-The optional legacy backup notification cleanup and its dedicated test are deferred.
+The optional legacy backup notification cleanup and its dedicated test are restored in the final follow-up layer.
 
 When changing a checkpoint, replay every later checkpoint and regenerate its
 bundle, mailbox, source attribution, and tree and hash pins. The official Molly

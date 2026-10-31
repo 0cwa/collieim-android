@@ -25,3 +25,4 @@ initial/build-and-release/0001-build-and-release.patch
 followups/generated-verification-metadata/0001-generated-verification-metadata.patch
 followups/regression-tests/0001-regression-tests.patch
 generated-translations/0001-generate-translations.json
+followups/optional-legacy-notification-cleanup/0001-optional-legacy-notification-cleanup.patch

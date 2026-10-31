@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "1d406087ae9520453d1081526fd03156913f4d0b",
   "complete_source_checkpoint": true,
-  "target_tree": "758a8cb3048c525e8802cfe92369c69f09722961",
+  "target_tree": "c85dca5e6fea23d006d4fcd87dd27a4384be91fc",
   "layers": [
     {
       "id": "initial/app-updates-deletions",
@@ -617,6 +617,25 @@
       "source_bundle": "generated-translations/source-checkpoint.bundle",
       "source_bundle_prerequisite": "6cab50bc152dc6dc049af8764b315fd2f3e95881",
       "source_bundle_sha256": "239adba91c154ff6f0b9dba6a32b1478609a653da6f22874a689b8d8cd47842e"
+    },
+    {
+      "id": "followups/optional-legacy-notification-cleanup",
+      "source_commit": "01de2a3a0df35a6089991a8e793215815260aa10",
+      "original_source_commits": [],
+      "description": "Optionally clean up matching legacy backup notifications after upgrade.",
+      "ai_generated": true,
+      "before_tree": "758a8cb3048c525e8802cfe92369c69f09722961",
+      "after_tree": "c85dca5e6fea23d006d4fcd87dd27a4384be91fc",
+      "paths": 5,
+      "whole_file_deletions": 0,
+      "whole_file_deletion_diff_bytes": 0,
+      "patches": [
+        "followups/optional-legacy-notification-cleanup/0001-optional-legacy-notification-cleanup.patch"
+      ],
+      "mailbox_bytes": 7258,
+      "source_bundle": "followups/optional-legacy-notification-cleanup/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "772a3e479083c5a1b84a20ec772265b153b3dd6d",
+      "source_bundle_sha256": "06ad1fd14770291754892b53148b1b3bb648ed4d4fffe0289c1e92d1bb8b7afa"
     }
   ],
   "mailbox_sha256": {
@@ -646,10 +665,11 @@
     "initial/build-and-release/0001-build-and-release.patch": "36c82eee55fb90538050ff862884c10478ba9cd85c33e071685ca6e87823aafb",
     "followups/generated-verification-metadata/0001-generated-verification-metadata.patch": "77bef2db8d3be3aa60f2014b5bcc780ab027ad8ce0cbf0aa79e7dcb9afbda720",
     "followups/regression-tests/0001-regression-tests.patch": "9c98fec8269ad13b87e9c20ca05812935e4d102a535dcedcaf08b308ad643228",
-    "generated-translations/0001-generate-translations.json": "aab23a8a1dfc8fae24f44184550f98cb9d386fa4ebff037a23b5fdfa3da32c3c"
+    "generated-translations/0001-generate-translations.json": "aab23a8a1dfc8fae24f44184550f98cb9d386fa4ebff037a23b5fdfa3da32c3c",
+    "followups/optional-legacy-notification-cleanup/0001-optional-legacy-notification-cleanup.patch": "bce7ece0308cf8b034463b32bbe42eef02cd52887840dbab7311a71b8a2f4ef3"
   },
   "metadata_generation_command": "./gradlew --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --write-verification-metadata sha256 --init-script /var/home/x/agent-scratch/mollyim-android/pr10-reviewability-release/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:assembleProdWebsiteDebug\n./gradlew --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --write-verification-metadata sha256 --init-script /var/home/x/agent-scratch/mollyim-android/pr10-reviewability-release/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :core:network:test --tests org.signal.network.config.ProxyConfigTest --tests org.signal.network.config.LibSignalProxyPolicyTest :lib:network:test :lib:libsignal-service:test --tests org.whispersystems.signalservice.api.SignalServiceAccountManagerLinkedRegistrationTest :feature:registration:testDebugUnitTest --tests org.signal.registration.RegistrationRepositoryTest --tests org.signal.registration.screens.phonenumber.PhoneNumberEntryViewModelTest --tests org.signal.registration.screens.verificationcode.VerificationCodeViewModelTest --tests org.signal.registration.screens.welcome.WelcomeScreenViewModelTest :app:testProdWebsiteDebugUnitTest --tests org.thoughtcrime.securesms.logsubmit.LogSectionSystemInfoTest --tests org.thoughtcrime.securesms.registration.ui.RegistrationIntentsTest --tests org.thoughtcrime.securesms.keyvalue.MollySettingsMigrationTest --tests org.thoughtcrime.securesms.net.ConnectivityStateCalculatorTest --tests org.thoughtcrime.securesms.backup.MollyBackupPreferencesTest --tests org.thoughtcrime.securesms.backup.FullBackupExporterTest --tests org.thoughtcrime.securesms.backup.FullBackupImporterTest --tests org.thoughtcrime.securesms.notifications.NotificationIdsTest --tests org.thoughtcrime.securesms.backup.v2.LegacyBackupNotificationTest --tests org.thoughtcrime.securesms.service.MessageBackupListenerTest --tests org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceSettingsViewModelTest --tests org.thoughtcrime.securesms.components.settings.app.account.AccountSettingsViewModelTest --tests org.thoughtcrime.securesms.components.settings.app.data.DataAndStorageSettingsViewModelTest --tests org.thoughtcrime.securesms.components.settings.app.updates.AppUpdatesSettingsViewModelTest --tests org.thoughtcrime.securesms.jobs.FcmRefreshJobTest --tests org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJobTest --tests org.thoughtcrime.securesms.components.settings.app.subscription.completed.TerminalDonationBottomSheetTest --tests org.thoughtcrime.securesms.delete.DeleteAccountViewModelTest --tests org.thoughtcrime.securesms.registration.v2.AppRegistrationStorageControllerTest :feature:app-settings:testDebugUnitTest --tests org.signal.appsettings.updates.AppUpdatesSettingsScreenTest",
-  "omitted_test_filter": "org.thoughtcrime.securesms.backup.v2.LegacyBackupNotificationTest",
+  "omitted_test_filter": null,
   "explicit_source_patches": [
     {
       "path": "/tmp/pr10-network-policy.patch",
@@ -14899,8 +14919,7 @@
       "original_source_commits": [
         "ae2672a773d15d1b22186bd8acbec2221760f049"
       ],
-      "derived_layer": "deferred-legacy-notification-cleanup",
-      "disposition": "Explicitly deferred optional legacy notification cleanup; removed by a supplied source patch."
+      "derived_layer": "followups/optional-legacy-notification-cleanup"
     },
     {
       "original_layer": "followups/backup-notification-id-upgrade",
@@ -14916,8 +14935,7 @@
       "original_source_commits": [
         "ae2672a773d15d1b22186bd8acbec2221760f049"
       ],
-      "derived_layer": "deferred-legacy-notification-cleanup",
-      "disposition": "Explicitly deferred optional legacy notification cleanup; removed by a supplied source patch."
+      "derived_layer": "followups/optional-legacy-notification-cleanup"
     },
     {
       "original_layer": "followups/backup-notification-id-upgrade",

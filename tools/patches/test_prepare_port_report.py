@@ -74,4 +74,4 @@ class PrepareReportTests(unittest.TestCase):
 
     def test_ci_prepares_in_same_step_before_check(self):
         workflow = (Path(__file__).resolve().parents[2] / '.github/workflows/molly-patch-release.yml').read_text()
-        self.assertIn('python3 tools/patches/prepare_port_report.py\n            python3 tools/patches/port_report.py --check', workflow)
+        self.assertIn('python3 tools/patches/prepare_port_report.py\n            python3 tools/patches/verify_source_bundles.py\n            python3 tools/patches/port_report.py --check', workflow)

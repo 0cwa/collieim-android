@@ -55,3 +55,4 @@ followups/always-relay-accessor/0001-always-relay-accessor.patch
 followups/logcat-collection/0001-logcat-collection.patch
 followups/retained-molly-imports/0001-retained-molly-imports.patch
 followups/retained-activity-push-imports/0001-retained-activity-push-imports.patch
+followups/retained-import-formatting/0001-retained-import-formatting.patch

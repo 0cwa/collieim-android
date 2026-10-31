@@ -1,0 +1,56 @@
+From 5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 04:05:53 +0100
+Subject: [PATCH] Retain source import formatting
+
+Restore Molly screen-lock import punctuation and mechanical-merge reaction overlay import order.
+
+AI-Generated: true
+
+Based-On-Source-Commit: ad4e4df669330f034242afe4d19f29bb1c6f3995
+Source-Commit: 5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9
+---
+ .../java/org/thoughtcrime/securesms/ScreenLockController.kt | 2 +-
+ .../securesms/conversation/v2/ChatReactionOverlay.kt        | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt b/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt
+index ee57ebf7..1ecf4f3b 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt
+@@ -8,7 +8,7 @@ import android.os.SystemClock
+ import android.view.View
+ import android.view.Window
+ import android.view.inspector.WindowInspector
+-import org.signal.core.util.ServiceUtil
++import org.signal.core.util.ServiceUtil;
+ import org.signal.core.util.concurrent.SignalExecutors
+ import org.signal.core.util.logging.Log
+ import org.thoughtcrime.securesms.biometric.BiometricDialogFragment
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/ChatReactionOverlay.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/ChatReactionOverlay.kt
+index 7751de32..3b747339 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/ChatReactionOverlay.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/ChatReactionOverlay.kt
+@@ -50,9 +50,6 @@ import androidx.compose.ui.unit.IntOffset
+ import androidx.compose.ui.unit.LayoutDirection
+ import androidx.compose.ui.unit.dp
+ import com.google.accompanist.drawablepainter.rememberDrawablePainter
+-import kotlin.math.PI
+-import kotlin.math.cos
+-import kotlin.math.roundToInt
+ import kotlinx.coroutines.coroutineScope
+ import kotlinx.coroutines.launch
+ import org.signal.core.ui.compose.navigationBarsCompat
+@@ -61,6 +58,9 @@ import org.thoughtcrime.securesms.R
+ import org.thoughtcrime.securesms.conversation.ConversationItem
+ import org.thoughtcrime.securesms.conversation.ReactionOverlayPlacement
+ import org.thoughtcrime.securesms.conversation.ReactionScrubber
++import kotlin.math.PI
++import kotlin.math.cos
++import kotlin.math.roundToInt
+ import org.signal.core.ui.R as CoreUiR
+ 
+ const val REACTION_EMOJI_COUNT = 7
+-- 
+2.56.0
+

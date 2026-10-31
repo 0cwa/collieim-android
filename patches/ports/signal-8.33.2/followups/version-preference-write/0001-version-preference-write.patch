@@ -1,0 +1,38 @@
+From b0e9ca51c613c1b88ada51a5552b0b7131d1621e Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 03:24:36 +0100
+Subject: [PATCH] Remove duplicate version preference write
+
+The Molly preference setter already commits the same value to the same secure preference key and checks the result. Avoid a second unchecked commit.
+
+AI-Generated: true
+
+Based-On-Source-Commit: 09d0c9e17576de7090da7a9e6c84080c618f817e
+Source-Commit: b0e9ca51c613c1b88ada51a5552b0b7131d1621e
+---
+ .../main/java/org/thoughtcrime/securesms/util/VersionTracker.kt | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/util/VersionTracker.kt b/app/src/main/java/org/thoughtcrime/securesms/util/VersionTracker.kt
+index cddc1639..b2571d52 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/util/VersionTracker.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/util/VersionTracker.kt
+@@ -8,7 +8,6 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
+ import org.thoughtcrime.securesms.jobs.RefreshAttributesJob
+ import org.thoughtcrime.securesms.jobs.RemoteConfigRefreshJob
+ import org.thoughtcrime.securesms.jobs.RetrieveRemoteAnnouncementsJob
+-import org.thoughtcrime.securesms.keyvalue.PlainTextKeyValueStore
+ import org.thoughtcrime.securesms.keyvalue.SignalStore
+ import java.time.Duration
+ 
+@@ -46,7 +45,6 @@ object VersionTracker {
+     }
+ 
+     TextSecurePreferences.setLastVersionCodeForMolly(context, currentVersionCode)
+-    PlainTextKeyValueStore.lastVersionCode = currentVersionCode
+   }
+ 
+   @JvmStatic
+-- 
+2.56.0
+

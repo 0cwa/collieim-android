@@ -27,6 +27,24 @@ def numstat(old, new):
     return records
 
 
+def modes(old, new):
+    fields = git('diff', '--no-renames', '--raw', '-z', old, new).split(b'\0')
+    result = {}
+    for i in range(0, len(fields) - 1, 2):
+        if not fields[i]:
+            continue
+        header = fields[i].split()
+        result[fields[i+1]] = (header[0][1:].decode(), header[1].decode())
+    return result
+
+
+def require_tree(value):
+    if not isinstance(value, str) or not re.fullmatch('[0-9a-f]{40}', value):
+        raise ValueError('expected an immutable full tree ID')
+    if git('cat-file', '-t', value).strip() != b'tree':
+        raise ValueError('expected a tree object: ' + value)
+
+
 def parse_hunks(patch):
     """Read actual hunk body counts, including lines beginning +++ and ---."""
     lines = patch.splitlines(keepends=True)
@@ -71,11 +89,18 @@ def render(config, evidence, ready=False):
     port = config['port']
     before, target = port['mechanical_tree'], config['target_tree']
     source = config['signal']['commit']
+    require_tree(before)
+    require_tree(target)
+    if not isinstance(source, str) or not re.fullmatch('[0-9a-f]{40}', source) or git('cat-file', '-t', source).strip() != b'commit':
+        raise ValueError('expected an immutable full Signal commit ID')
     rows = evidence.get('hunks', {})
     if not isinstance(rows, dict):
         raise ValueError('hunks metadata must be an object')
     seen = set()
     stats = numstat(before, target)
+    file_modes = modes(before, target)
+    if set(file_modes) != set(stats):
+        raise ValueError('raw diff paths do not match numstat')
     output = ['# Port report', '', 'Physical Git diff lines; counts do not establish authorship or necessity.', '']
     for label, a, b in [('Molly patchset', OLD, MOLLY), ('Clean merge contribution', source, before),
                         ('AI-assisted compatibility changes before minimization', before, target),
@@ -86,29 +111,30 @@ def render(config, evidence, ready=False):
     output += ['', f'Compatibility share: {a+d} / {ma+md} physical added plus deleted text lines = {(a+d)/(ma+md)*100:.3f}%.' if ma+md else 'Compatibility share: undefined (zero denominator).',
                'After minimization: unmeasured.', '', 'Molly exclusions, including partial-file exclusions: unmeasured.', '',
                'Clean merge counts above are whole-file Git diff totals; no clean-merge hunk classification is asserted.', '',
-               '| Hunk ID | Path | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |',
-               '|---|---|---:|---:|---|---|---|---|']
+               '| Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |',
+               '|---|---|---|---|---|---:|---:|---|---|---|---|']
     for path, expected in sorted(stats.items()):
         display = os.fsdecode(path).replace('|', '\\|').replace('\n', '\\n')
         if expected is None:
             key = hashlib.sha256(before.encode()+b'\0'+target.encode()+b'\0'+path+b'\0binary').hexdigest()[:20]
-            hunks = [(0, 0, b'binary', key)]
+            hunks = [(0, 0, b'binary', key, 'binary')]
         else:
             patch = git('diff', '--no-ext-diff', '--no-renames', '--unified=3', before, target, '--', os.fsdecode(path))
-            hunks = [(x, y, body, hashlib.sha256(before.encode()+b'\0'+target.encode()+b'\0'+path+b'\0'+body).hexdigest()[:20]) for x, y, body in parse_hunks(patch)]
+            hunks = [(x, y, body, hashlib.sha256(before.encode()+b'\0'+target.encode()+b'\0'+path+b'\0'+body).hexdigest()[:20], 'text') for x, y, body in parse_hunks(patch)]
             if (sum(h[0] for h in hunks), sum(h[1] for h in hunks)) != expected:
                 raise ValueError('hunk counts do not match numstat for ' + display)
-            if not hunks:
-                key = hashlib.sha256(before.encode()+b'\0'+target.encode()+b'\0'+path+b'\0mode').hexdigest()[:20]
-                hunks = [(0, 0, b'mode', key)]
-        for added, deleted, _, key in hunks:
+        old_mode, new_mode = file_modes[path]
+        if expected is not None and old_mode != new_mode:
+            key = hashlib.sha256(before.encode()+b'\0'+target.encode()+b'\0'+path+b'\0mode').hexdigest()[:20]
+            hunks.append((0, 0, b'mode', key, 'mode'))
+        for added, deleted, _, key, kind in hunks:
             if key in seen: raise ValueError('duplicate hunk ID ' + key)
             seen.add(key); item = rows.get(key, {})
             category = item.get('type', '')
             if category and category not in TYPES: raise ValueError('invalid hunk type ' + key)
             if ready and (category not in TYPES or any(not item.get(k) or item[k] == 'unmeasured' for k in ('reason', 'molly_equivalent', 'searched_branches', 'revert_gate', 'outcome'))):
                 raise ValueError('missing evidence for ' + key)
-            fields = [key, display, str(added), str(deleted), category or 'unmeasured', item.get('reason', 'unmeasured'), item.get('molly_equivalent', 'unmeasured') + ' (searched: ' + item.get('searched_branches', 'unmeasured') + ')', (item.get('revert_gate', 'unmeasured') + ': ' + item.get('outcome', 'unmeasured'))]
+            fields = [key, display, kind, old_mode, new_mode, str(added), str(deleted), category or 'unmeasured', item.get('reason', 'unmeasured'), item.get('molly_equivalent', 'unmeasured') + ' (searched: ' + item.get('searched_branches', 'unmeasured') + ')', (item.get('revert_gate', 'unmeasured') + ': ' + item.get('outcome', 'unmeasured'))]
             output.append('| ' + ' | '.join(str(f).replace('\n', ' ').replace('|', '\\|') for f in fields) + ' |')
     stale = set(rows) - seen
     if stale: raise ValueError('stale or overlapping metadata: ' + ', '.join(sorted(stale)))

@@ -1,0 +1,64 @@
+From 7a2ec75db0b56f45310d09716a3559e5dd503b19 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 02:52:36 +0100
+Subject: [PATCH] Preserve Molly blocked network priority
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Prefer a blocked network over an unvalidated one when calculating connectivity, matching Molly’s network monitor. Cover a blocked VPN alongside an unvalidated underlying network.
+
+AI-Generated: true
+
+Based-On-Source-Commit: 325a19e470349aa88232eaa6fd68d7e064a3da24
+Source-Commit: 7a2ec75db0b56f45310d09716a3559e5dd503b19
+---
+ .../securesms/net/ConnectivityStateCalculator.kt    |  4 ++--
+ .../net/ConnectivityStateCalculatorTest.kt          | 13 +++++++++++--
+ 2 files changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt b/app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt
+index 3e5041da..25e8f148 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt
+@@ -47,8 +47,8 @@ data class NetworkState(
+     get() = when {
+       isReachable && onVpn -> 4
+       isReachable -> 3
+-      !blocked -> 2
+-      blocked && onVpn -> 1
++      blocked && onVpn -> 2
++      blocked -> 1
+       else -> 0
+     }
+ }
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt b/app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt
+index 14a023e7..76eff6b7 100644
+--- a/app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt
++++ b/app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt
+@@ -98,11 +98,20 @@ class ConnectivityStateCalculatorTest {
+   }
+ 
+   @Test
+-  fun `a usable unvalidated network outranks a blocked one`() {
++  fun `a blocked network outranks an unvalidated network`() {
+     val states = listOf(
+       NetworkState(validated = true, blocked = true, onVpn = false),
+       NetworkState(validated = false, blocked = false, onVpn = false)
+     )
+-    assertThat(ConnectivityStateCalculator.calculate(states)).isEqualTo(ConnectivityState.CONNECTED_UNVALIDATED)
++    assertThat(ConnectivityStateCalculator.calculate(states)).isEqualTo(ConnectivityState.BLOCKED)
++  }
++
++  @Test
++  fun `a blocked vpn outranks an unvalidated underlying network`() {
++    val states = listOf(
++      NetworkState(validated = true, blocked = true, onVpn = true),
++      NetworkState(validated = false, blocked = false, onVpn = false)
++    )
++    assertThat(ConnectivityStateCalculator.calculate(states)).isEqualTo(ConnectivityState.BLOCKED_VPN)
+   }
+ }
+-- 
+2.56.0
+

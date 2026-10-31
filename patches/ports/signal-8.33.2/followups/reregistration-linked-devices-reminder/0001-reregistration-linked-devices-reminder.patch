@@ -1,17 +1,21 @@
-From 32c3ec8765208e6d608223477b06577f0110a733 Mon Sep 17 00:00:00 2001
-From: Molly Port Compatibility Follow-up <port-compatibility@example.invalid>
-Date: Fri, 30 Oct 2026 05:38:51 +0000
+From 395fc8794221269f9e223b19840503fbfb3c076e Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 23:25:33 +0100
 Subject: [PATCH] Restore linked-device reminder after re-registration
 
-Mark existing-account registration explicitly and restore the Molly reminder after successful primary-device multi-device re-registration. Add focused coverage for registration intent markers.
+Mark existing-account registration explicitly and restore the Molly reminder after successful primary-device multi-device re-registration. Add focused coverage for the entry-point marker and reminder policy.
+Based-On-Source-Commit: 6bf19c561f1c123269fdeb5d693bff154684998a
+Source-Commit: 395fc8794221269f9e223b19840503fbfb3c076e
 
-Carry this compatibility correction as a distinct follow-up patch. The source commit identifies the complete resulting source tree; its parent is the previously pinned port checkpoint.
-
-Source-Commit: d3c917a5be7db6116c83b7e29e09f145e7f38825
-AI-Generated: true
+---
+ .../registration/ui/RegistrationActivity.kt   | 15 ++++++++-
+ .../registration/ui/RegistrationIntents.kt    |  7 +++-
+ .../ui/RegistrationIntentsTest.kt             | 32 +++++++++++++++++++
+ 3 files changed, 52 insertions(+), 2 deletions(-)
+ create mode 100644 app/src/test/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntentsTest.kt
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt
-index 84bf943f7c217b1cfb3436498e6cb1ee1aec0ab4..99672a786c0da6d28ef62c038a3373bed84273fb 100644
+index 84bf943f..99672a78 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt
 @@ -50,6 +50,7 @@ class RegistrationActivity : PassphraseRequiredActivity() {
@@ -68,7 +72,7 @@ index 84bf943f7c217b1cfb3436498e6cb1ee1aec0ab4..99672a786c0da6d28ef62c038a3373be
                IntentCompat.getParcelableExtra(intent, REGISTRATION_NEXT_INTENT_EXTRA, Intent::class.java)?.let { startActivity(it) }
                finish()
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt
-index 0344db79d55f984850a14f439a749cd0853a70b6..709ff882be6a50f9354ab33e5c04963e0bbf4a84 100644
+index 0344db79..709ff882 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt
 @@ -22,7 +22,12 @@ object RegistrationIntents {
@@ -87,7 +91,7 @@ index 0344db79d55f984850a14f439a749cd0853a70b6..709ff882be6a50f9354ab33e5c04963e
    @JvmStatic
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntentsTest.kt b/app/src/test/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntentsTest.kt
 new file mode 100644
-index 0000000000000000000000000000000000000000..1d8f01a8ad38b6d48689e46d1490c0f45ab4c16b
+index 00000000..1d8f01a8
 --- /dev/null
 +++ b/app/src/test/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntentsTest.kt
 @@ -0,0 +1,32 @@
@@ -123,3 +127,6 @@ index 0000000000000000000000000000000000000000..1d8f01a8ad38b6d48689e46d1490c0f4
 +    assertFalse(reLink.getBooleanExtra(RegistrationActivity.IS_REREGISTRATION_EXTRA, false))
 +  }
 +}
+-- 
+2.56.0
+

@@ -1,6 +1,6 @@
-From 266d0185d021b2b6a98882205f6b6242152d146e Mon Sep 17 00:00:00 2001
-From: Molly Port Compatibility Follow-up <port-compatibility@example.invalid>
-Date: Fri, 30 Oct 2026 07:11:23 +0100
+From 1102fc4430e12d2708747622413f2020a022da19 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 23:25:33 +0100
 Subject: [PATCH] Restore migrated settings with backup frame precedence
 
 Map Molly shared-preference frames to their migrated SignalStore keys synchronously as the importer reads them. Later KeyValue frames then replace preference-only values or duplicate older values, matching the legacy exporter order.
@@ -9,12 +9,17 @@ Drain queued SignalStore writes before opening the restore transaction and remov
 
 AI-Generated: true
 
-Based-On-Source-Commit: d3c917a5be7db6116c83b7e29e09f145e7f38825
-Source-Commit: 266d0185d021b2b6a98882205f6b6242152d146e
-AI-Generated: true
+Based-On-Source-Commit: 395fc8794221269f9e223b19840503fbfb3c076e
+Source-Commit: 1102fc4430e12d2708747622413f2020a022da19
+---
+ .../securesms/backup/FullBackupImporter.java  | 27 ++++++-
+ .../securesms/keyvalue/SettingsValues.kt      | 69 ++++++++++------
+ .../securesms/keyvalue/SignalStore.kt         |  1 -
+ .../backup/MollyBackupPreferencesTest.kt      | 80 ++++++++++++++++++-
+ 4 files changed, 147 insertions(+), 30 deletions(-)
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/backup/FullBackupImporter.java b/app/src/main/java/org/thoughtcrime/securesms/backup/FullBackupImporter.java
-index 2c0a6cab56e8e19f890439e596ef47c832ee83b4..e881646e98dc958ec744039e913953dc4ff1803c 100644
+index 2c0a6cab..e881646e 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/backup/FullBackupImporter.java
 +++ b/app/src/main/java/org/thoughtcrime/securesms/backup/FullBackupImporter.java
 @@ -40,6 +40,7 @@ import org.thoughtcrime.securesms.database.SignedPreKeyTable;
@@ -87,7 +92,7 @@ index 2c0a6cab56e8e19f890439e596ef47c832ee83b4..e881646e98dc958ec744039e913953dc
  
    private static void dropAllTables(@NonNull SQLiteDatabase db, boolean excludeKeyTables) {
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt
-index ec0c3b469a2137adede241c82a0e249dc78fb7aa..097ace05ff60c0e418090b52eef1b2c7c72011d8 100644
+index ec0c3b46..097ace05 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt
 @@ -12,6 +12,7 @@ import org.signal.core.models.media.SentMediaQuality
@@ -178,7 +183,7 @@ index ec0c3b469a2137adede241c82a0e249dc78fb7aa..097ace05ff60c0e418090b52eef1b2c7
  
    /**
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SignalStore.kt b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SignalStore.kt
-index eb961806e7c84e96157a2d9fd72d6fe83c3a1d37..8c759d6007b67f68ba9c915a3a11eb0c4d31ddd5 100644
+index eb961806..8c759d60 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SignalStore.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SignalStore.kt
 @@ -145,7 +145,6 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
@@ -190,7 +195,7 @@ index eb961806e7c84e96157a2d9fd72d6fe83c3a1d37..8c759d6007b67f68ba9c915a3a11eb0c
  
      @JvmStatic
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/backup/MollyBackupPreferencesTest.kt b/app/src/test/java/org/thoughtcrime/securesms/backup/MollyBackupPreferencesTest.kt
-index aba1a441a587da06fff2dc76547cd6c729115248..beaf1398d93cda3d485bcbc07bd670297bece212 100644
+index aba1a441..beaf1398 100644
 --- a/app/src/test/java/org/thoughtcrime/securesms/backup/MollyBackupPreferencesTest.kt
 +++ b/app/src/test/java/org/thoughtcrime/securesms/backup/MollyBackupPreferencesTest.kt
 @@ -22,7 +22,18 @@ import org.junit.Test
@@ -253,7 +258,7 @@ index aba1a441a587da06fff2dc76547cd6c729115248..beaf1398d93cda3d485bcbc07bd67029
      }
  
      assertEquals(timeout, TextSecurePreferences.getPassphraseLockTimeout(context))
-@@ -80,12 +105,63 @@ class MollyBackupPreferencesTest {
+@@ -80,11 +105,62 @@ class MollyBackupPreferencesTest {
        .integerValue(-1)
        .build()
  
@@ -263,7 +268,7 @@ index aba1a441a587da06fff2dc76547cd6c729115248..beaf1398d93cda3d485bcbc07bd67029
      assertEquals(0xffff_ffffL, TextSecurePreferences.getPassphraseLockTimeout(context))
    }
  
-   @Test
++  @Test
 +  fun `legacy preference-only settings restore into SignalStore`() {
 +    val languageRecord = SharedPreference.Builder()
 +      .file_(BuildConfig.SIGNAL_PACKAGE_NAME + "_preferences")
@@ -314,7 +319,9 @@ index aba1a441a587da06fff2dc76547cd6c729115248..beaf1398d93cda3d485bcbc07bd67029
 +    assertEquals("none", SignalStore.settings.messageNotificationsPrivacy.toString())
 +  }
 +
-+  @Test
+   @Test
    fun `stale shared preferences for migrated Signal settings are not exported`() {
      preferences.edit()
-       .putBoolean("pref_read_receipts", false)
+-- 
+2.56.0
+

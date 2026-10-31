@@ -72,6 +72,8 @@ print(f"source proof PASS, tree {report['tree']}")
 PY
 
 if python3 -c 'import json; d=json.load(open("molly-build.json")); raise SystemExit(d.get("port") is None)'; then
+  echo '== prepare port report trees'
+  python3 tools/patches/prepare_port_report.py
   echo '== port report freshness'
   python3 tools/patches/port_report.py --check
 fi

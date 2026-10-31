@@ -284,6 +284,25 @@ class CompleteTests(unittest.TestCase):
         self.assertEqual((self.repo / '.git/index').read_bytes(), original_index)
         self.assertEqual(self.git('worktree', 'list', '--porcelain').count('worktree '), 2)
 
+    def test_requested_output_never_overlaps_a_temporary_replay(self):
+        root = self.make_forest()
+        destination = self.home / 'complete-output'
+        existing = self.home / 'existing-builder'
+        self.git('worktree', 'add', '--detach', str(existing), self.base)
+        original = forest.apply
+        counts = []
+
+        def observed(*args, **kwargs):
+            result = original(*args, **kwargs)
+            counts.append(self.git('worktree', 'list', '--porcelain').count('worktree '))
+            return result
+
+        with patch.object(forest, 'apply', side_effect=observed):
+            result = verify_complete.verify(root, self.repo, destination)
+        self.assertEqual(counts, [3, 3])
+        self.assertEqual([row['order'] for row in result['replays']], ['ready', 'reverse-ready'])
+        self.assertEqual(git_utils.git(destination, 'rev-parse', 'HEAD^{tree}').stdout.strip(), self.target_tree)
+
     def test_export_is_repeatable_and_does_not_use_the_callers_index(self):
         (self.repo / 'existing.txt').write_text('staged caller edit\n')
         self.git('add', 'existing.txt')

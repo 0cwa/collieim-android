@@ -102,8 +102,8 @@ Molly snapshot with **no AI compatibility patches**. This is an intentionally
 unadapted review checkpoint: source assembly reports the conflicts and refuses
 to label the result buildable.
 
-Subsequent commits add ordinary mailbox resolutions, grouped by application
-feature. Their parent source is Git's mechanical merge, so they show changes
+Subsequent commits add resolutions grouped by application feature. Module pruning
+uses a pinned whole-file deletion manifest; its SHA-256 is `7488de7e37bab4c54675832f8879c18058b0552d43c5b5630616af8c1c655c34`. Their parent source is Git's mechanical merge, so they show changes
 that remain after deterministic integration. The initial groups reproduce
 the existing PR #7 source merge
 `90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; twenty-nine subsequent layers retain
@@ -117,7 +117,7 @@ records its source commit and AI-generation status.
 Previous mailboxes do not receive new provenance headers when a later fix is
 added.
 
-The port has 764 conflict paths. Initial resolution patches change 763 of
+The port has 764 conflict paths. Initial resolutions change 763 of
 them; the retained `CorrectedPreferenceFragment.java` modify/delete conflict
 is recorded as an explicit keep-Molly decision in the configuration. A
 content diff is unnecessary for that choice because Git already leaves

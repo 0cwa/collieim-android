@@ -73,15 +73,9 @@
       "paths": 521,
       "conflict_paths": 156,
       "patches": [
-        "initial/module-pruning/0001-resolve-module-pruning.patch",
-        "initial/module-pruning/0002-resolve-module-pruning.patch",
-        "initial/module-pruning/0003-resolve-module-pruning.patch",
-        "initial/module-pruning/0004-resolve-module-pruning.patch",
-        "initial/module-pruning/0005-resolve-module-pruning.patch",
-        "initial/module-pruning/0006-resolve-module-pruning.patch",
-        "initial/module-pruning/0007-resolve-module-pruning.patch"
+        "initial/module-pruning/0001-delete-files.json"
       ],
-      "mailbox_bytes": 2100023,
+      "mailbox_bytes": 143259,
       "after_tree": "3fdc33661149b457693394fef815dae72a95a3dd"
     },
     {
@@ -684,13 +678,6 @@
     "initial/appearance/0001-resolve-appearance.patch": "946fbcfee80da8736fe1a4b9777a448df348ac3e8db88f9c0427a089f5667321",
     "initial/backup-and-restore/0001-resolve-backup-and-restore.patch": "90b329aec26b42354b48e7b936af941f6e856e3b01b49147437aa0796cda1a99",
     "initial/maps/0001-resolve-maps.patch": "f12ad70ece2bf8522df0a092315287061c5602049f4ced3733dbe02c2817e8c4",
-    "initial/module-pruning/0001-resolve-module-pruning.patch": "9cfbb7ba8554378a76a81e407f00446e19e88ca21781c052eb80a604c2399512",
-    "initial/module-pruning/0002-resolve-module-pruning.patch": "c52e9f5df9dfcb16b52fd5ddd09d3bcdac9365efd6eefc4b126b7d333f1e2f20",
-    "initial/module-pruning/0003-resolve-module-pruning.patch": "0aabf3d5b244815438a438c133221072726392500f2f083827e146fbb0800e25",
-    "initial/module-pruning/0004-resolve-module-pruning.patch": "25e717d4de153a4d408f8ed256677feeea18adf3c0da6253637d01806c213ab7",
-    "initial/module-pruning/0005-resolve-module-pruning.patch": "885f9f097a66f40718846ffff684e48a27c207645afd24f4f0cf870f6731f7e8",
-    "initial/module-pruning/0006-resolve-module-pruning.patch": "e762685f6588dde1782fc5dd8aa13a1bc3d609ef34f5abe1207cc8a14bcbc235",
-    "initial/module-pruning/0007-resolve-module-pruning.patch": "ce1b413c6b935a3f6a5568c73793e17d1c3768353ab2c0f8de8a16301e529549",
     "initial/networking-and-proxies/0001-resolve-networking-and-proxies.patch": "3cf3cf933d19a18334234e46868366d36bd5d769431dae844e82e889f96811a1",
     "initial/notifications-and-unifiedpush/0001-resolve-notifications-and-unifiedpush.patch": "8a29f1e92ee9ee883a48a64a3352231674d56f9176afbf7c9b77402b09d766f2",
     "initial/payments-and-donations/0001-resolve-payments-and-donations.patch": "1837d9342eada42d7e2b1dc764a45a67ba82061ee7dc00579d1c9b73ade51a42",
@@ -744,6 +731,7 @@
     "followups/registration-and-timing-format/0001-registration-and-timing-format.patch": "687789c173da4503ad5747d44e30a51bb6cbb5b3edb02f6d45c51150f8bc5db3",
     "followups/unavailable-contact-and-legacy-preferences/0001-unavailable-contact-and-legacy-preferences.patch": "c84adb06940a97b02ba372316ef68fdca7ffb2513186cd521d1cb142f3a52ce0",
     "followups/navigation-and-share-legacy/0001-navigation-and-share-legacy.patch": "63172158e7ddda1f94a1c664a4dc3907bcfa4e15a84ba8918c4fb5732d76d7cc",
-    "followups/retained-settings-camera-and-version/0001-retained-settings-camera-and-version.patch": "9a3e23f9012030bd5830f7f425c6d538f02dd1993a19a0bf47482d896e6c51b4"
+    "followups/retained-settings-camera-and-version/0001-retained-settings-camera-and-version.patch": "9a3e23f9012030bd5830f7f425c6d538f02dd1993a19a0bf47482d896e6c51b4",
+    "initial/module-pruning/0001-delete-files.json": "7488de7e37bab4c54675832f8879c18058b0552d43c5b5630616af8c1c655c34"
   }
 }

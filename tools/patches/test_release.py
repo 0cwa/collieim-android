@@ -156,6 +156,53 @@ class ReleaseTests(unittest.TestCase):
                 with self.assertRaises(forest.ForestError):
                     release.resolution_series(self.repo, 'patches/ports/next/series')
 
+    def test_deletion_manifest_replays_and_covers_conflict(self):
+        self.port_fixture()
+        # Replace the resolution and keep decision with a deletion of both conflicts.
+        import export_deletions
+        authored = self.home / 'author-deletions'
+        synthetic = self.git('commit-tree', self.mechanical, '-m', 'Deletion fixture')
+        forest.git(self.repo, 'worktree', 'add', '--detach', str(authored), synthetic)
+        forest.git(authored, 'rm', '-q', 'existing.txt', 'mode.sh')
+        after = forest.git(authored, 'write-tree')
+        data = export_deletions.export(self.repo, self.mechanical, after, self.source.target)
+        manifest = self.resolution.parent / 'deletions.json'
+        manifest.write_text(json.dumps(data))
+        forest.git(authored, 'reset', '--hard', '-q', synthetic)
+        (authored / 'existing.txt').unlink()
+        (authored / 'existing.txt').symlink_to(self.repo / 'existing.txt')
+        with self.assertRaisesRegex(forest.ForestError, 'symlink'):
+            release.apply_deletions(self.repo, authored, data, forest.clean_git_env())
+        (authored / 'existing.txt').unlink()
+        forest.git(authored, 'checkout', '--', 'existing.txt')
+        (authored / 'mode.sh').write_text('dirty preimage')
+        with self.assertRaises((forest.ForestError, git_utils.GitError)):
+            release.apply_deletions(self.repo, authored, data, forest.clean_git_env())
+        (manifest.parent / 'series').write_text('deletions.json\n')
+        self.config['target_tree'] = after
+        self.config['port']['keep_mechanical'] = {}
+        self.save_config()
+        result = self.assemble()
+        self.assertEqual(result['tree'], after)
+        self.assertEqual(result['conflict_paths'], 2)
+        self.assertFalse((self.home / 'build/existing.txt').exists())
+        self.assertFalse((self.home / 'build/mode.sh').exists())
+
+        for label, mutate in (
+                ('duplicate', lambda d: d['files'].append(d['files'][0])),
+                ('traversal', lambda d: d['files'][0].update(path='../escape')),
+                ('symlink mode', lambda d: d['files'][0].update(mode='120000')),
+                ('blob', lambda d: d['files'][0].update(blob='0' * 40)),
+                ('missing', lambda d: d['files'].pop()),
+                ('before', lambda d: d.update(before_tree='0' * 40)),
+                ('after', lambda d: d.update(after_tree='0' * 40))):
+            with self.subTest(label=label):
+                altered = json.loads(json.dumps(data))
+                mutate(altered)
+                manifest.write_text(json.dumps(altered))
+                with self.assertRaises((forest.ForestError, git_utils.GitError)):
+                    self.assemble('invalid-' + label.replace(' ', '-'))
+
     def test_mechanical_merge_ignores_ambient_merge_rules(self):
         self.port_fixture()
         args = (self.repo, self.source.base, self.source.target, self.config['signal']['commit'])

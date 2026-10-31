@@ -174,13 +174,76 @@ def resolution_series(root, path):
     records = []
     for entry in forest.lines(series):
         patch = inside(series.parent, entry, 'resolution mailbox')
-        if patch.suffix != '.patch' or not patch.is_file():
-            raise forest.ForestError(f'missing resolution mailbox: {entry}')
-        metadata = forest.mailbox(patch, entry)
-        if len(metadata['source_commit_shas']) != 1:
-            raise forest.ForestError(f'{entry}: a resolution must identify its source commit')
+        if not patch.is_file() or patch.suffix not in ('.patch', '.json'):
+            raise forest.ForestError(f'missing resolution mailbox or deletion manifest: {entry}')
+        if patch.suffix == '.patch':
+            metadata = forest.mailbox(patch, entry)
+            if len(metadata['source_commit_shas']) != 1:
+                raise forest.ForestError(f'{entry}: a resolution must identify its source commit')
+        else:
+            metadata = deletion_manifest(patch, entry)
         records.append((patch, metadata))
     return records
+
+
+def deletion_manifest(path, relative):
+    """Validate an explicit, pinned list of regular files to delete."""
+    raw = path.read_bytes()
+    data = json.loads(raw)
+    if not isinstance(data, dict) or set(data) != {
+            'schema', 'type', 'source_commit', 'before_tree', 'after_tree', 'files'} \
+            or data['schema'] != 1 or data['type'] != 'delete-files':
+        raise forest.ForestError(f'{relative}: invalid deletion manifest')
+    for key in ('source_commit', 'before_tree', 'after_tree'):
+        require_sha(data[key], f'{relative} {key}')
+    if not isinstance(data['files'], list) or not data['files']:
+        raise forest.ForestError(f'{relative}: deletion list must not be empty')
+    seen = set()
+    for item in data['files']:
+        if not isinstance(item, dict) or set(item) != {'path', 'mode', 'blob'}:
+            raise forest.ForestError(f'{relative}: invalid deletion entry')
+        name = item['path']
+        if (not isinstance(name, str) or not name or name.startswith('/') or
+                '\\' in name or any(ord(c) < 32 or ord(c) == 127 for c in name) or
+                any(part in ('', '.', '..', '.git') for part in name.split('/'))
+                or name in seen):
+            raise forest.ForestError(f'{relative}: unsafe or duplicate deletion path: {name!r}')
+        if item['mode'] not in ('100644', '100755'):
+            raise forest.ForestError(f'{relative}: deletion must target a regular file')
+        require_sha(item['blob'], f'{relative} blob')
+        seen.add(name)
+    return {'path': relative, 'sha256': hashlib.sha256(raw).hexdigest(),
+            'source_commit_shas': [data['source_commit']], 'deletion': data}
+
+
+def apply_deletions(repo, worktree, manifest, env):
+    before = forest.git(worktree, 'rev-parse', 'HEAD^{tree}')
+    if before != manifest['before_tree']:
+        raise forest.ForestError('deletion manifest before-tree mismatch')
+    entries = verify_complete.tree_entries(repo, before)
+    paths = []
+    for item in manifest['files']:
+        name = item['path']
+        actual = entries.get(os.fsencode(name))
+        expected = (item['mode'].encode(), b'blob', item['blob'].encode())
+        if actual != expected:
+            raise forest.ForestError(f'deletion preimage mismatch: {name}')
+        path = inside(worktree, name, 'deletion path')
+        if not path.is_file() or path.is_symlink():
+            raise forest.ForestError(f'deletion path is not a regular file: {name}')
+        paths.append(name)
+    verify_complete.clean_worktree(worktree)
+    # Literal pathspecs avoid interpreting a file name as Git pathspec syntax.
+    for offset in range(0, len(paths), 100):
+        git_utils.git(worktree, '--literal-pathspecs', 'rm', '--quiet', '--',
+                      *paths[offset:offset + 100], env=env)
+    actual = forest.git(worktree, 'write-tree')
+    if actual != manifest['after_tree']:
+        raise forest.ForestError(f'deletion manifest after-tree mismatch: {actual}')
+    parent = forest.git(worktree, 'rev-parse', 'HEAD')
+    commit = git_utils.git(worktree, '-c', 'commit.gpgSign=false', 'commit-tree', actual,
+                           '-p', parent, '-m', 'Apply explicit whole-file deletions', env=env).stdout.strip()
+    git_utils.git(worktree, 'reset', '--quiet', '--hard', commit, env=env)
 
 
 def apply_resolutions(repo, worktree, tree, records):
@@ -204,8 +267,11 @@ def apply_resolutions(repo, worktree, tree, records):
             raise forest.ForestError(f'resolution changed after validation: {patch}')
         before = forest.git(worktree, 'rev-parse', 'HEAD')
         try:
-            forest.git(worktree, 'am', '--no-3way', '--whitespace=nowarn',
-                       '--committer-date-is-author-date', str(patch))
+            if 'deletion' in metadata:
+                apply_deletions(repo, worktree, metadata['deletion'], env)
+            else:
+                forest.git(worktree, 'am', '--no-3way', '--whitespace=nowarn',
+                           '--committer-date-is-author-date', str(patch))
         except forest.ForestError as exc:
             raise forest.ForestError(f'{patch}: {exc}\nWorktree preserved at {worktree}') from exc
         after = forest.git(worktree, 'rev-parse', 'HEAD')

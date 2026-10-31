@@ -3,5 +3,6 @@
   "baseline_target_tree": "59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf",
   "minimization_complete": false,
   "hunks": {},
-  "exclusions_complete": false
+  "exclusions_complete": false,
+  "baseline_profile_commit": "deabfb346bf15690df89c86517fb3a71205c7cec"
 }

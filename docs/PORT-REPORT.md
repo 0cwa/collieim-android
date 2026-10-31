@@ -8,6 +8,7 @@ Physical Git diff lines; counts do not establish authorship or necessity.
 - Compared with Molly before minimization: 396447 added, 242304 deleted, 638751 total text lines; 698 binary paths (`0e202dda90785771ff8c87526eaaf30c655f54f3` → `2533afec2fe2d7f9fc682f699fc21d7624521889`).
 
 Compatibility share: 108564 / 143289 physical added plus deleted text lines = 75.766%.
+Current mechanical comparison: 7619 added, 100945 deleted, 108564 total, 28 binary; current Molly comparison: 396447 added, 242304 deleted, 638751 total, 698 binary.
 After minimization: unmeasured.
 
 Molly exclusions, including partial-file exclusions: unmeasured.

@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "cfba0c14068d8405ba70311b33e9b8ddf4b75507",
-  "before_tree": "3fdc33661149b457693394fef815dae72a95a3dd",
-  "after_tree": "941d683ce21bf98d49c27eb0cab8c9e243d06721",
+  "source_commit": "4a75832180baf1f8366502d6577640e841b3f908",
+  "before_tree": "47323607dc5b1113b20a3441a17d4358bdfd59b6",
+  "after_tree": "bea9909b32e673a689f6f05e5d8662e80acf4c70",
   "files": [
     {
       "path": "app/src/main/java/org/thoughtcrime/securesms/dependencies/NetworkProxyState.kt",

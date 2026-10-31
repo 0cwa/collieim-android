@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "1d406087ae9520453d1081526fd03156913f4d0b",
   "complete_source_checkpoint": true,
-  "target_tree": "14ba9fde0c1b0d5e1f31eb2a216142fa4e7270d6",
+  "target_tree": "758a8cb3048c525e8802cfe92369c69f09722961",
   "layers": [
     {
       "id": "initial/app-updates-deletions",
@@ -31,56 +31,58 @@
     },
     {
       "id": "initial/app-updates",
-      "source_commit": "498ec84698269530c54578ee9f49083c0e414eea",
+      "source_commit": "f4219a383613278c4a5a81b214b82f6f14929b96",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
       "description": "Retain the Molly updater and update preferences on the updated Signal application structure.",
       "ai_generated": true,
       "before_tree": "c01fd175f6f054c3f8cb34f04d360716b9ef2c21",
-      "after_tree": "1951338ed748a50ab19e5067c83b1b351e91db2d",
+      "after_tree": "742a3f83932a7b96b0a212e8c4763ecf0b5d8d10",
       "paths": 7,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/app-updates/0001-app-updates.patch"
       ],
-      "mailbox_bytes": 26168,
+      "mailbox_bytes": 26702,
       "source_bundle": "initial/app-updates/source-checkpoint.bundle",
       "source_bundle_prerequisite": "1d406087ae9520453d1081526fd03156913f4d0b",
-      "source_bundle_sha256": "212f948b54c23949c506313369e84e8139d1284e22f3bd975d797cce461b577a"
+      "source_bundle_sha256": "192e143fcbbe21ab7f9fba8876e09ebd6e48fc18fe5c11646eca81256792aa4d"
     },
     {
       "id": "initial/appearance",
-      "source_commit": "86d33fb676e78105b47403469bb8ad2d1edc5d78",
+      "source_commit": "74ecc0a46d6a0bf3e88ef5ddc3a23482ac8844de",
       "original_source_commits": [
+        "325a19e470349aa88232eaa6fd68d7e064a3da24",
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Resolve dynamic colors, themes and moved UI APIs while retaining Molly appearance behavior.",
       "ai_generated": true,
-      "before_tree": "1951338ed748a50ab19e5067c83b1b351e91db2d",
-      "after_tree": "1fcff6ea474e0d0e559277c61922356202abf355",
+      "before_tree": "742a3f83932a7b96b0a212e8c4763ecf0b5d8d10",
+      "after_tree": "9ca23ea83ad07c8202f9ebabcbd167f9ac891415",
       "paths": 6,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/appearance/0001-appearance.patch"
       ],
-      "mailbox_bytes": 12334,
+      "mailbox_bytes": 11884,
       "source_bundle": "initial/appearance/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "498ec84698269530c54578ee9f49083c0e414eea",
-      "source_bundle_sha256": "244dec5e2124ab0c619679e1771f87cbb429e2ecddf6a1e73ba03855fc03eedd"
+      "source_bundle_prerequisite": "f4219a383613278c4a5a81b214b82f6f14929b96",
+      "source_bundle_sha256": "e06763c00dc1484842a211cca63e05ff067db426ead896f228c8842613574b10"
     },
     {
       "id": "initial/backup-and-restore-deletions",
-      "source_commit": "fc460d6e0052179f74583118f9b23993d6aa9d73",
+      "source_commit": "b8b410c258648984e446a8b3b345e52afd6ef87c",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Remove whole files owned by initial/backup-and-restore.",
       "ai_generated": true,
-      "before_tree": "1fcff6ea474e0d0e559277c61922356202abf355",
-      "after_tree": "aa749acc2a33184c7ddee4c19f6a67d3000dc705",
+      "before_tree": "9ca23ea83ad07c8202f9ebabcbd167f9ac891415",
+      "after_tree": "c79649a868eb5303bee2d2f051a06e71e60cb7d4",
       "paths": 1,
       "whole_file_deletions": 1,
       "whole_file_deletion_diff_bytes": 7455,
@@ -89,40 +91,42 @@
       ],
       "mailbox_bytes": 428,
       "source_bundle": "initial/backup-and-restore-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "86d33fb676e78105b47403469bb8ad2d1edc5d78",
-      "source_bundle_sha256": "9f3ce5b542bd044fbc331841b6f859c43f47dc4ec30da590eee0861d7d939ce8"
+      "source_bundle_prerequisite": "74ecc0a46d6a0bf3e88ef5ddc3a23482ac8844de",
+      "source_bundle_sha256": "06ce73f1732f4503e467f9e6a4b5b97b1e1defb4bb023b75a2c55bcd6dd142b8"
     },
     {
       "id": "initial/backup-and-restore",
-      "source_commit": "c918d296b820895fb58693b056bc39344af6071f",
+      "source_commit": "e0e987f8ea003f2a19dc47e937efc3553e7ce806",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "266d0185d021b2b6a98882205f6b6242152d146e",
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
       "description": "Resolve backup and restore API changes while retaining Molly backup preferences and serialization behavior.",
       "ai_generated": true,
-      "before_tree": "aa749acc2a33184c7ddee4c19f6a67d3000dc705",
-      "after_tree": "d3c88755f81f839cb5da84ea466b0b39305bbe97",
-      "paths": 13,
+      "before_tree": "c79649a868eb5303bee2d2f051a06e71e60cb7d4",
+      "after_tree": "1b79e47c63f69c570f523b644c6be87fb0d17b76",
+      "paths": 14,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/backup-and-restore/0001-backup-and-restore.patch"
       ],
-      "mailbox_bytes": 30718,
+      "mailbox_bytes": 31487,
       "source_bundle": "initial/backup-and-restore/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "fc460d6e0052179f74583118f9b23993d6aa9d73",
-      "source_bundle_sha256": "7fd48258bcefdd2202c321bac20af3c3afb91960a435287347a6d6bb1adec962"
+      "source_bundle_prerequisite": "b8b410c258648984e446a8b3b345e52afd6ef87c",
+      "source_bundle_sha256": "13b1655bce0902851f6a055a4fda16120d847f257462f0222bf4f8f04e17203e"
     },
     {
       "id": "initial/maps",
-      "source_commit": "d991d6ee300f690b4a3bab4ba3f3d22772840ba9",
+      "source_commit": "ad491702059bfd2ff21909cc6e357183ca404269",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Retain the Molly map implementation and compatibility layer in the upgraded tree.",
       "ai_generated": true,
-      "before_tree": "d3c88755f81f839cb5da84ea466b0b39305bbe97",
-      "after_tree": "c2d52b9c65ef53bd25e4068893eefc524cb7dcc1",
+      "before_tree": "1b79e47c63f69c570f523b644c6be87fb0d17b76",
+      "after_tree": "fb0dc47bcab91c61f650930a72d617de22b38cba",
       "paths": 1,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
@@ -131,19 +135,19 @@
       ],
       "mailbox_bytes": 1932,
       "source_bundle": "initial/maps/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "c918d296b820895fb58693b056bc39344af6071f",
-      "source_bundle_sha256": "ead200a426bd8da9bd5340ca3c9b793cca0d1eaac1645c0fc47baad1ad7ac21a"
+      "source_bundle_prerequisite": "e0e987f8ea003f2a19dc47e937efc3553e7ce806",
+      "source_bundle_sha256": "67b44f5fc21493a77a8f34af9f93f929e103e923355e935174d18a86fb1c5a23"
     },
     {
       "id": "initial/module-pruning",
-      "source_commit": "9becfe4bb55be9729d88364e1c495227d2f55f06",
+      "source_commit": "c0a0e9c4e7286e23ff9916c0f6f2878a63a1a8c4",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Resolve modify/delete conflicts for modules Molly removes and remove new upstream files added beneath those excluded modules.",
       "ai_generated": true,
-      "before_tree": "c2d52b9c65ef53bd25e4068893eefc524cb7dcc1",
-      "after_tree": "3fdc33661149b457693394fef815dae72a95a3dd",
+      "before_tree": "fb0dc47bcab91c61f650930a72d617de22b38cba",
+      "after_tree": "47323607dc5b1113b20a3441a17d4358bdfd59b6",
       "paths": 521,
       "whole_file_deletions": 521,
       "whole_file_deletion_diff_bytes": 2060917,
@@ -152,19 +156,19 @@
       ],
       "mailbox_bytes": 143259,
       "source_bundle": "initial/module-pruning/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "d991d6ee300f690b4a3bab4ba3f3d22772840ba9",
-      "source_bundle_sha256": "e19ec8d8bfded58bf513593c4506c71f82b9a95fe8848e91eee5fbb4b8e1d43e"
+      "source_bundle_prerequisite": "ad491702059bfd2ff21909cc6e357183ca404269",
+      "source_bundle_sha256": "577e871d3a8ac7f7e6417d4c82209572e694708779f88baedac93999ad7d39e2"
     },
     {
       "id": "initial/networking-and-proxies-deletions",
-      "source_commit": "cfba0c14068d8405ba70311b33e9b8ddf4b75507",
+      "source_commit": "4a75832180baf1f8366502d6577640e841b3f908",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Remove whole files owned by initial/networking-and-proxies.",
       "ai_generated": true,
-      "before_tree": "3fdc33661149b457693394fef815dae72a95a3dd",
-      "after_tree": "941d683ce21bf98d49c27eb0cab8c9e243d06721",
+      "before_tree": "47323607dc5b1113b20a3441a17d4358bdfd59b6",
+      "after_tree": "bea9909b32e673a689f6f05e5d8662e80acf4c70",
       "paths": 6,
       "whole_file_deletions": 6,
       "whole_file_deletion_diff_bytes": 26325,
@@ -173,40 +177,43 @@
       ],
       "mailbox_bytes": 1423,
       "source_bundle": "initial/networking-and-proxies-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "9becfe4bb55be9729d88364e1c495227d2f55f06",
-      "source_bundle_sha256": "d8f966af9a14264b0594e08d28b0606c327ebfdd57f21de9954fb03d5ebd7a4f"
+      "source_bundle_prerequisite": "c0a0e9c4e7286e23ff9916c0f6f2878a63a1a8c4",
+      "source_bundle_sha256": "21d53a1b04c4e98ae1862c5d76ea864be220d29828ff054091a24acc055abb83"
     },
     {
       "id": "initial/networking-and-proxies",
-      "source_commit": "6046f8a36520ddcd0c07d7e5dd89a540168a7b23",
+      "source_commit": "087286ef9a8209ec35c28e4927224afb95bd23cd",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "7a2ec75db0b56f45310d09716a3559e5dd503b19",
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748",
+        "cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c"
       ],
       "description": "Carry Molly SOCKS, Tor, DNS and transport choices through the updated Signal networking interfaces and NetCipher integration.",
       "ai_generated": true,
-      "before_tree": "941d683ce21bf98d49c27eb0cab8c9e243d06721",
-      "after_tree": "c80e938120145e8e4ad5660efb586656898c28da",
-      "paths": 12,
+      "before_tree": "bea9909b32e673a689f6f05e5d8662e80acf4c70",
+      "after_tree": "b92e18eeed1b0120efabe209213eaba2187cd897",
+      "paths": 16,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/networking-and-proxies/0001-networking-and-proxies.patch"
       ],
-      "mailbox_bytes": 39703,
+      "mailbox_bytes": 48776,
       "source_bundle": "initial/networking-and-proxies/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "cfba0c14068d8405ba70311b33e9b8ddf4b75507",
-      "source_bundle_sha256": "6eff6823247123951ce69434be9400d3978bab7a4345abc40b6564e27122c0ac"
+      "source_bundle_prerequisite": "4a75832180baf1f8366502d6577640e841b3f908",
+      "source_bundle_sha256": "a080a5edd632526d8663d9445e6015b4d859e9411eaee6fd1d8fcebe8faf5e0f"
     },
     {
       "id": "initial/notifications-and-unifiedpush-deletions",
-      "source_commit": "bf204ff0d9a10c1c82209dc19dbf862f3fe6db9f",
+      "source_commit": "760a8c705b7f92ddd0cb8cecd33ac8b91486e087",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Remove whole files owned by initial/notifications-and-unifiedpush.",
       "ai_generated": true,
-      "before_tree": "c80e938120145e8e4ad5660efb586656898c28da",
-      "after_tree": "2f7920246a54d7b47212a5b2b65c137888b92fe4",
+      "before_tree": "b92e18eeed1b0120efabe209213eaba2187cd897",
+      "after_tree": "de332e054f7123c5b34dc465e1a46bd4aa7b638f",
       "paths": 1,
       "whole_file_deletions": 1,
       "whole_file_deletion_diff_bytes": 3677,
@@ -215,40 +222,42 @@
       ],
       "mailbox_bytes": 436,
       "source_bundle": "initial/notifications-and-unifiedpush-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "6046f8a36520ddcd0c07d7e5dd89a540168a7b23",
-      "source_bundle_sha256": "834897bd48d5100d1bb2a68b4a67f803a5ec7a5aa0c649aec7773a9019fa3923"
+      "source_bundle_prerequisite": "087286ef9a8209ec35c28e4927224afb95bd23cd",
+      "source_bundle_sha256": "6eb8b05d74f2464ea8a4a4e8ef778c83cf68a367d6c3ef864bb91ad7c69a79bb"
     },
     {
       "id": "initial/notifications-and-unifiedpush",
-      "source_commit": "084d026dbe0ebf8ea024286e48d4c6bac11c008b",
+      "source_commit": "b56dec8ad74f87f45f745e7e428f8961148ee878",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "ae2672a773d15d1b22186bd8acbec2221760f049",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
       "description": "Retain MollySocket, UnifiedPush and push-selection behavior while resolving notification and delivery API changes.",
       "ai_generated": true,
-      "before_tree": "2f7920246a54d7b47212a5b2b65c137888b92fe4",
-      "after_tree": "4d7d0a9a1ead3ab8974b68f00481b69b501c9340",
-      "paths": 7,
+      "before_tree": "de332e054f7123c5b34dc465e1a46bd4aa7b638f",
+      "after_tree": "e3210117b1627857cac4858d05bf463691c078fe",
+      "paths": 12,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/notifications-and-unifiedpush/0001-notifications-and-unifiedpush.patch"
       ],
-      "mailbox_bytes": 16671,
+      "mailbox_bytes": 26047,
       "source_bundle": "initial/notifications-and-unifiedpush/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "bf204ff0d9a10c1c82209dc19dbf862f3fe6db9f",
-      "source_bundle_sha256": "7152a03e26546666b6bdc4d721dd3c716406e5742e8ad40f44ef27d69e7df21a"
+      "source_bundle_prerequisite": "760a8c705b7f92ddd0cb8cecd33ac8b91486e087",
+      "source_bundle_sha256": "37aa0a1285448b86df0b17751c70b84c7f6df4e5b642c25ae827efd447b494ee"
     },
     {
       "id": "initial/payments-and-donations-deletions",
-      "source_commit": "84c64fed08105f2a5d4f6ad7a082baf824ab8ca9",
+      "source_commit": "452033a21e10343e548e15fbd7707278392144fd",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Remove whole files owned by initial/payments-and-donations.",
       "ai_generated": true,
-      "before_tree": "4d7d0a9a1ead3ab8974b68f00481b69b501c9340",
-      "after_tree": "75fb75206e312c01db52c8e0b88dd7060a27203b",
+      "before_tree": "e3210117b1627857cac4858d05bf463691c078fe",
+      "after_tree": "2ddc55e845cb91cdf7112f827164669c06a091c3",
       "paths": 35,
       "whole_file_deletions": 35,
       "whole_file_deletion_diff_bytes": 243336,
@@ -257,19 +266,19 @@
       ],
       "mailbox_bytes": 7264,
       "source_bundle": "initial/payments-and-donations-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "084d026dbe0ebf8ea024286e48d4c6bac11c008b",
-      "source_bundle_sha256": "a64af3f270350877685d0520bc767c0bfde1deeed887163c38b8015f99c1cd60"
+      "source_bundle_prerequisite": "b56dec8ad74f87f45f745e7e428f8961148ee878",
+      "source_bundle_sha256": "d787d5412931aae6df2fdc1ece07528da106259c99d36958f058349a06ba6240"
     },
     {
       "id": "initial/payments-and-donations",
-      "source_commit": "4ba2722738b35e6d815a3dc07113dcd8ffeb1b1c",
+      "source_commit": "4bf05addc7f5c2316a579c469175cf23804c1b44",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Keep MobileCoin and Google billing excluded while adapting the remaining donation and migration code.",
       "ai_generated": true,
-      "before_tree": "75fb75206e312c01db52c8e0b88dd7060a27203b",
-      "after_tree": "6c7d63cc94e14b50e157d40d2f6e140f8837b389",
+      "before_tree": "2ddc55e845cb91cdf7112f827164669c06a091c3",
+      "after_tree": "f16c350548aef4494fa1867b0d5e5a0c80845a54",
       "paths": 1,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
@@ -278,40 +287,41 @@
       ],
       "mailbox_bytes": 31834,
       "source_bundle": "initial/payments-and-donations/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "84c64fed08105f2a5d4f6ad7a082baf824ab8ca9",
-      "source_bundle_sha256": "05698e78495067d9b3aa0f1bf08bbb261a92385ceeefdd69f6a939fb521552df"
+      "source_bundle_prerequisite": "452033a21e10343e548e15fbd7707278392144fd",
+      "source_bundle_sha256": "1352aa8f79848ed00d6be438151c1478b102e179902423dca4613c11ba821e37"
     },
     {
       "id": "initial/privacy-controls",
-      "source_commit": "d98846a2acd189a2ec967de63cafec6f5b03a0e9",
+      "source_commit": "cff88593eda12b8afe9559b2116017dbd4a3ec40",
       "original_source_commits": [
+        "02088f97be08bcb50763d78245af68f8f1d065e7",
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Retain Molly privacy policies for calls, unknown contacts and logging in the updated upstream code.",
       "ai_generated": true,
-      "before_tree": "6c7d63cc94e14b50e157d40d2f6e140f8837b389",
-      "after_tree": "9136333e998bff4ea5904e1b7141fa091c9c94fc",
-      "paths": 6,
+      "before_tree": "f16c350548aef4494fa1867b0d5e5a0c80845a54",
+      "after_tree": "3d1e0703b96368a3c07bc1dfc982c482a9ee041d",
+      "paths": 5,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/privacy-controls/0001-privacy-controls.patch"
       ],
-      "mailbox_bytes": 21647,
+      "mailbox_bytes": 21220,
       "source_bundle": "initial/privacy-controls/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "4ba2722738b35e6d815a3dc07113dcd8ffeb1b1c",
-      "source_bundle_sha256": "6057ff7c4ed12cd686efcaee69d7dc45dd80038dd29af377459bc6de3340da22"
+      "source_bundle_prerequisite": "4bf05addc7f5c2316a579c469175cf23804c1b44",
+      "source_bundle_sha256": "218b37062d6fccaaa554fc4a7cc63cca24f06fa131e67ec1aea8c70eeeb0c642"
     },
     {
       "id": "initial/registration-and-linking-deletions",
-      "source_commit": "3fd68386964e4927893fe618b4c07a82dc59d11a",
+      "source_commit": "a6708b7867e82e0d4fbabc2bf6ad0aa8d56af2e2",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Remove whole files owned by initial/registration-and-linking.",
       "ai_generated": true,
-      "before_tree": "9136333e998bff4ea5904e1b7141fa091c9c94fc",
-      "after_tree": "17bf1dddd01bdc2d6e7ec87621381ce1ef64ae31",
+      "before_tree": "3d1e0703b96368a3c07bc1dfc982c482a9ee041d",
+      "after_tree": "567bacbf9b19bea9ec46cfbda615a01c9a766f68",
       "paths": 9,
       "whole_file_deletions": 9,
       "whole_file_deletion_diff_bytes": 108587,
@@ -320,40 +330,43 @@
       ],
       "mailbox_bytes": 2109,
       "source_bundle": "initial/registration-and-linking-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "d98846a2acd189a2ec967de63cafec6f5b03a0e9",
-      "source_bundle_sha256": "1fa9158e3aaa241e4bfaaef0408469ca1dc44075037a871dc05b5757323c6dcb"
+      "source_bundle_prerequisite": "cff88593eda12b8afe9559b2116017dbd4a3ec40",
+      "source_bundle_sha256": "ad5e75cac04cc87b4600d01aa00d588a03deccebb428d8172b5bb7b6380ec0be"
     },
     {
       "id": "initial/registration-and-linking",
-      "source_commit": "4b6565603e306f83974eb981f6f800c8b9b0a9fc",
+      "source_commit": "f8b67bb7649ce053dabb6c0e76547b620121bb19",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "1f0af82f4ab6a510afe506d0efd33d8f09ecf24e",
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748",
+        "d3c917a5be7db6116c83b7e29e09f145e7f38825"
       ],
       "description": "Adapt Molly registration and Android linked-device policies to the new Signal registration architecture.",
       "ai_generated": true,
-      "before_tree": "17bf1dddd01bdc2d6e7ec87621381ce1ef64ae31",
-      "after_tree": "9f54022a52fcd0b5c5966987cbebab04efb41bff",
-      "paths": 63,
+      "before_tree": "567bacbf9b19bea9ec46cfbda615a01c9a766f68",
+      "after_tree": "bbed20a421647ea719115c41ac1b8637d5005985",
+      "paths": 66,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/registration-and-linking/0001-registration-and-linking.patch"
       ],
-      "mailbox_bytes": 65835,
+      "mailbox_bytes": 69718,
       "source_bundle": "initial/registration-and-linking/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "3fd68386964e4927893fe618b4c07a82dc59d11a",
-      "source_bundle_sha256": "4b3f4955b86e2f51ad1c2be2c2d73e9ad39ce1392898511cdd57ff06469f799e"
+      "source_bundle_prerequisite": "a6708b7867e82e0d4fbabc2bf6ad0aa8d56af2e2",
+      "source_bundle_sha256": "9341b466f798ea790d3d760eb931a2e9ecd06abaac17209a348e1107db524ffe"
     },
     {
       "id": "initial/resources-and-branding-deletions",
-      "source_commit": "22780425bd77cb9a32896f665211a3b32a4d3bbd",
+      "source_commit": "25b635a8ad8fe12ce61b2939b3561fe092503c53",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Remove whole files owned by initial/resources-and-branding.",
       "ai_generated": true,
-      "before_tree": "9f54022a52fcd0b5c5966987cbebab04efb41bff",
-      "after_tree": "6c7cb15d896eddd0244ad034634e96c205938ebc",
+      "before_tree": "bbed20a421647ea719115c41ac1b8637d5005985",
+      "after_tree": "a81687beb10f4fc1df841626428dd76b7091fb20",
       "paths": 105,
       "whole_file_deletions": 105,
       "whole_file_deletion_diff_bytes": 338647,
@@ -362,40 +375,43 @@
       ],
       "mailbox_bytes": 18152,
       "source_bundle": "initial/resources-and-branding-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "4b6565603e306f83974eb981f6f800c8b9b0a9fc",
-      "source_bundle_sha256": "4c40c10e440d6c6cc359539780feb20ae85267d5b7f24a87a0f9e2bc624e94fa"
+      "source_bundle_prerequisite": "f8b67bb7649ce053dabb6c0e76547b620121bb19",
+      "source_bundle_sha256": "13fcaab354dad7eb3318bff88e5816399dfd3e4ba3781fc43ffa9ca4ac2cb605"
     },
     {
       "id": "initial/resources-and-branding",
-      "source_commit": "4449551ceef0a1426ca15d06e0dd2a540dc59368",
+      "source_commit": "31be090b4cb5de5286026263bcd999999dd78165",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "0a44d06b86c793186f42d53cf248ad8bb2f6c925",
+        "34100dfa15eb70256d948f96b14abe4b7c7920d6",
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
       "description": "Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.",
       "ai_generated": true,
-      "before_tree": "6c7cb15d896eddd0244ad034634e96c205938ebc",
-      "after_tree": "ccb7f8c9149b8c9f5c593c1265ffb775a81bb945",
-      "paths": 172,
+      "before_tree": "a81687beb10f4fc1df841626428dd76b7091fb20",
+      "after_tree": "0a8da826f2e1b501b9997c7d9ca3ec9cbc6e289f",
+      "paths": 180,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/resources-and-branding/0001-resources-and-branding.patch"
       ],
-      "mailbox_bytes": 627471,
+      "mailbox_bytes": 424472,
       "source_bundle": "initial/resources-and-branding/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "22780425bd77cb9a32896f665211a3b32a4d3bbd",
-      "source_bundle_sha256": "789d93d630f41e1386bf82b1f3cbd27ec7d31f81e821efca2e3311798d27cbde"
+      "source_bundle_prerequisite": "25b635a8ad8fe12ce61b2939b3561fe092503c53",
+      "source_bundle_sha256": "9bd0b8194b235e6d845b0b63d4c9a22a24905ec79d1bf1f723d363f35ad589ab"
     },
     {
       "id": "initial/security-and-locking-deletions",
-      "source_commit": "66466a97c2ec0417b7bf58ff5ba4299c836cfc4e",
+      "source_commit": "a98177d0568829df6780d0256c75fe5650be1065",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Remove whole files owned by initial/security-and-locking.",
       "ai_generated": true,
-      "before_tree": "ccb7f8c9149b8c9f5c593c1265ffb775a81bb945",
-      "after_tree": "dc98cbde6eaa2598446be6a2261efef547dd1a70",
+      "before_tree": "0a8da826f2e1b501b9997c7d9ca3ec9cbc6e289f",
+      "after_tree": "262aac5078718978046d147433b6098b6a6a3653",
       "paths": 4,
       "whole_file_deletions": 4,
       "whole_file_deletion_diff_bytes": 14306,
@@ -404,82 +420,102 @@
       ],
       "mailbox_bytes": 1169,
       "source_bundle": "initial/security-and-locking-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "4449551ceef0a1426ca15d06e0dd2a540dc59368",
-      "source_bundle_sha256": "46de6813c829053f3779961cea1922a95191ba9e9b7d6c3ef69a0ed5f3de23ca"
+      "source_bundle_prerequisite": "31be090b4cb5de5286026263bcd999999dd78165",
+      "source_bundle_sha256": "b8227bf520ab03d68f1d1412d41b9dc99042b2ab2328a96002ee411a2cbacf9c"
     },
     {
       "id": "initial/security-and-locking",
-      "source_commit": "c45ecbe7f547036aef3d6f98f80a9c8f38faa48c",
+      "source_commit": "1e25fc340d2ac9dd7c54202611fec6963fe6bf26",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9",
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
       "description": "Integrate encrypted preferences, secret handling and lock-aware application behavior with the updated Signal classes.",
       "ai_generated": true,
-      "before_tree": "dc98cbde6eaa2598446be6a2261efef547dd1a70",
-      "after_tree": "5217ffb3da72a4716b1548babaf136c066c0e14a",
-      "paths": 4,
+      "before_tree": "262aac5078718978046d147433b6098b6a6a3653",
+      "after_tree": "edf8bfcd1946b2b60ac4c93c50dbaa2690b7ace2",
+      "paths": 5,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/security-and-locking/0001-security-and-locking.patch"
       ],
-      "mailbox_bytes": 9010,
+      "mailbox_bytes": 10448,
       "source_bundle": "initial/security-and-locking/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "66466a97c2ec0417b7bf58ff5ba4299c836cfc4e",
-      "source_bundle_sha256": "2dbc4db934314aa97245a1d126be0349ae12964c651ec9c563a7cab2cb2048aa"
+      "source_bundle_prerequisite": "a98177d0568829df6780d0256c75fe5650be1065",
+      "source_bundle_sha256": "cb90c3ea0aa25367d0c33d472a633526d67384396d64feb6be0c6231a8c7d2bd"
     },
     {
       "id": "initial/integration-deletions",
-      "source_commit": "45aae56b026a6d0d2649963181230a135648199d",
+      "source_commit": "bfb5dccc3d87c91eaea7f1dc933d2914df466ccf",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
       "description": "Remove whole files owned by initial/integration.",
       "ai_generated": true,
-      "before_tree": "5217ffb3da72a4716b1548babaf136c066c0e14a",
-      "after_tree": "47e0888f5bc1d0141d7ac230dd74d1e4c33ecaa7",
-      "paths": 79,
-      "whole_file_deletions": 79,
-      "whole_file_deletion_diff_bytes": 447823,
+      "before_tree": "edf8bfcd1946b2b60ac4c93c50dbaa2690b7ace2",
+      "after_tree": "b9f3552bf78c7238a58f98e8bc29d006822763e3",
+      "paths": 76,
+      "whole_file_deletions": 76,
+      "whole_file_deletion_diff_bytes": 459743,
       "patches": [
         "initial/integration-deletions/0001-delete-files.json"
       ],
-      "mailbox_bytes": 16228,
+      "mailbox_bytes": 15605,
       "source_bundle": "initial/integration-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "c45ecbe7f547036aef3d6f98f80a9c8f38faa48c",
-      "source_bundle_sha256": "f56b60fa7e810575c41a9f96180136e23ad5a818c6e693d9d196f64b24bbc24d"
+      "source_bundle_prerequisite": "1e25fc340d2ac9dd7c54202611fec6963fe6bf26",
+      "source_bundle_sha256": "5c81ed45ae4966ec61d2b55c5862b61fa25e5e01c803fdec125416cd44d84cec"
     },
     {
       "id": "initial/integration",
-      "source_commit": "e049d23bde1f66457c9680c6d865ea90484d7b75",
+      "source_commit": "9e105462bef2526d726e43b93b16bb31520e1244",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "031894f1a74ca85b44cdd37f33a4bf6ba3f6c275",
+        "09d0c9e17576de7090da7a9e6c84080c618f817e",
+        "1dc39842dfad7c31be516556f8da95556d6c810f",
+        "1f0af82f4ab6a510afe506d0efd33d8f09ecf24e",
+        "266d0185d021b2b6a98882205f6b6242152d146e",
+        "34100dfa15eb70256d948f96b14abe4b7c7920d6",
+        "5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9",
+        "6a08b686d0f4159a8b801420d601ce55b5195b66",
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "98f6a7e996abf915eecee06ece4ea901a34ef64b",
+        "a39eeee9155bdc9116b611734dcc58653f7cb38f",
+        "a3a9eaabe66d42fdbf8807158eca7de8c9755b33",
+        "a9ebbf1c92798f703ad434c1caa720536a724fe0",
+        "ad4e4df669330f034242afe4d19f29bb1c6f3995",
+        "ae5099dd637e08095c995464ec22118866296e3a",
+        "b0e9ca51c613c1b88ada51a5552b0b7131d1621e",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748",
+        "f35e5d6f2adb49bee7af7599e18d15dcf9823082"
       ],
       "description": "Resolve shared application, account, service and core integration files whose APIs or feature boundaries changed upstream.",
       "ai_generated": true,
-      "before_tree": "47e0888f5bc1d0141d7ac230dd74d1e4c33ecaa7",
-      "after_tree": "a3913c6816c5e7400c915ece7f4ad0fa28b65296",
-      "paths": 207,
+      "before_tree": "b9f3552bf78c7238a58f98e8bc29d006822763e3",
+      "after_tree": "d607231035727909cd9ad45de8327e860ef99538",
+      "paths": 219,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/integration/0001-integration.patch"
       ],
-      "mailbox_bytes": 611639,
+      "mailbox_bytes": 642192,
       "source_bundle": "initial/integration/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "45aae56b026a6d0d2649963181230a135648199d",
-      "source_bundle_sha256": "9e4e056f59b471452140188bbd35ed671df7503634938d2bfece8e1dba319554"
+      "source_bundle_prerequisite": "bfb5dccc3d87c91eaea7f1dc933d2914df466ccf",
+      "source_bundle_sha256": "79c5b392d542795ba7f4adf35d29f486c14a7d2560138af1a52be3513b4a6706"
     },
     {
       "id": "initial/build-and-release-deletions",
-      "source_commit": "3aa6a519751761fad8a069dbbe9e77352838f7f3",
+      "source_commit": "36d72bcfc6370a81b670227ed265c95840ff9919",
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
       "description": "Remove whole files owned by initial/build-and-release.",
       "ai_generated": true,
-      "before_tree": "a3913c6816c5e7400c915ece7f4ad0fa28b65296",
-      "after_tree": "7d433cb70b165d48e992e18bfd377012b9f9910f",
+      "before_tree": "d607231035727909cd9ad45de8327e860ef99538",
+      "after_tree": "fa82d75a80f15ea34186138dd040831b34604c57",
       "paths": 9,
       "whole_file_deletions": 9,
       "whole_file_deletion_diff_bytes": 173704,
@@ -488,669 +524,89 @@
       ],
       "mailbox_bytes": 1593,
       "source_bundle": "initial/build-and-release-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "e049d23bde1f66457c9680c6d865ea90484d7b75",
-      "source_bundle_sha256": "8be8201919b9d62bf85bd1c37892eb1cc00d11db018f55a67a65195fe2bc318e"
+      "source_bundle_prerequisite": "9e105462bef2526d726e43b93b16bb31520e1244",
+      "source_bundle_sha256": "dbc975785567e765ad70a986bc73161f7ec4ce77500fb2e805cfb2ffeb022a76"
     },
     {
       "id": "initial/build-and-release",
-      "source_commit": "02c201590af3a89ec3b3e1a7166bf3ad15a4eb09",
+      "source_commit": "78257e05f9d682075b3d093e7ac46dcc04275346",
       "original_source_commits": [
-        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "a8e3343240ae373624945086999d251e9d652180"
       ],
       "description": "Integrate the new Signal build layout and toolchain with Molly dependency, native-fork and release policies.",
       "ai_generated": true,
-      "before_tree": "7d433cb70b165d48e992e18bfd377012b9f9910f",
-      "after_tree": "a832caa8deb649835b5643836bc7299c66a45422",
+      "before_tree": "fa82d75a80f15ea34186138dd040831b34604c57",
+      "after_tree": "75dc411194256a200dbc8713b92282da658a01d1",
       "paths": 21,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
         "initial/build-and-release/0001-build-and-release.patch"
       ],
-      "mailbox_bytes": 334951,
+      "mailbox_bytes": 61675,
       "source_bundle": "initial/build-and-release/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "3aa6a519751761fad8a069dbbe9e77352838f7f3",
-      "source_bundle_sha256": "092656b9bc11e9a88003381c4f68686a61990021160f75501fdaff255fa425bb"
+      "source_bundle_prerequisite": "36d72bcfc6370a81b670227ed265c95840ff9919",
+      "source_bundle_sha256": "0e16248590c7ddb3120f0f77686a9e1672c431f8127b0b214fd70b89ca8828e3"
     },
     {
-      "id": "followups/restore-preference-import",
-      "source_commit": "55f3e20a2523661739fe597dce0a445717992e4b",
+      "id": "followups/generated-verification-metadata",
+      "source_commit": "5175ad8a0fbb9fd8977b7b7b06940b649e9eba91",
       "original_source_commits": [
-        "1dc39842dfad7c31be516556f8da95556d6c810f"
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "description": "Restore the Molly preference import in ported megaphones",
+      "description": "Retain the pinned Gradle dependency verification metadata.",
       "ai_generated": true,
-      "before_tree": "a832caa8deb649835b5643836bc7299c66a45422",
-      "after_tree": "449f264f41953560dfcbfa058f969e5e4b42e6a0",
+      "before_tree": "75dc411194256a200dbc8713b92282da658a01d1",
+      "after_tree": "c73420a7910ece330855dbb3bfef1fe228969134",
       "paths": 1,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
-        "followups/restore-preference-import/0001-restore-preference-import.patch"
+        "followups/generated-verification-metadata/0001-generated-verification-metadata.patch"
       ],
-      "mailbox_bytes": 1303,
-      "source_bundle": "followups/restore-preference-import/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "02c201590af3a89ec3b3e1a7166bf3ad15a4eb09",
-      "source_bundle_sha256": "fe600b4e1a348c92ef7d886ee360fa53c49b89ad2d013dd56b65ecc52432dbb1"
+      "mailbox_bytes": 275186,
+      "source_bundle": "followups/generated-verification-metadata/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "78257e05f9d682075b3d093e7ac46dcc04275346",
+      "source_bundle_sha256": "0f14eda3804594b33db3607285daef80b86a6d8ef0204b06c706f385408a7609"
     },
     {
-      "id": "followups/netcipher-sdk-dsl",
-      "source_commit": "5aae2fb544ef10be072f61f6f8a2a7f62bc32f95",
+      "id": "followups/regression-tests",
+      "source_commit": "6cab50bc152dc6dc049af8764b315fd2f3e95881",
       "original_source_commits": [
-        "a8e3343240ae373624945086999d251e9d652180"
-      ],
-      "description": "Use the typed SDK DSL for Molly's NetCipher module\n\nAGP 9.4 rejects the numeric SDK catalog string passed to compileSdkVersion.\nMatch Signal's compileSdk release DSL while retaining the pinned SDK version\nand strict dependency verification.",
-      "ai_generated": true,
-      "before_tree": "449f264f41953560dfcbfa058f969e5e4b42e6a0",
-      "after_tree": "ababe7a1cf7913b72f3a231f67a02a7976ea86e2",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch"
-      ],
-      "mailbox_bytes": 1181,
-      "source_bundle": "followups/netcipher-sdk-dsl/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "55f3e20a2523661739fe597dce0a445717992e4b",
-      "source_bundle_sha256": "4c8df761ed1bfec938dd0aba87c5afa2d08b618aae5f93c9e126c72cc6b0c660"
-    },
-    {
-      "id": "followups/integration-and-regression-tests-deletions",
-      "source_commit": "ba54f6d3b9a685f3f792c06944df6ab66ef38b5e",
-      "original_source_commits": [
-        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
-      ],
-      "description": "Remove whole files owned by followups/integration-and-regression-tests.",
-      "ai_generated": true,
-      "before_tree": "ababe7a1cf7913b72f3a231f67a02a7976ea86e2",
-      "after_tree": "ee2252f2a6874f6b8baa7eaaf2faf506076b2646",
-      "paths": 2,
-      "whole_file_deletions": 2,
-      "whole_file_deletion_diff_bytes": 17391,
-      "patches": [
-        "followups/integration-and-regression-tests-deletions/0001-delete-files.json"
-      ],
-      "mailbox_bytes": 666,
-      "source_bundle": "followups/integration-and-regression-tests-deletions/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "5aae2fb544ef10be072f61f6f8a2a7f62bc32f95",
-      "source_bundle_sha256": "898b34832d7c92e98f58701c9400c05b7d24890f6ee68fe4f73cfbf4633c46e0"
-    },
-    {
-      "id": "followups/integration-and-regression-tests",
-      "source_commit": "517cdd3b732a321cbeb66a1794c66838354cae6d",
-      "original_source_commits": [
-        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
-      ],
-      "description": "Adapt Molly integrations and tests to Signal 8.33.2\n\nUpdate linked-device provisioning and FCM cleanup for the current service APIs while preserving proxy configuration, error types, user-selected delivery and retry credentials. Move remaining event producers and lifecycle-bound subscribers to Signal's event bus.\n\nRepair lock-aware receivers, encrypted backup preference imports, retained donation completion, dynamic theme resources and moved branding references. Keep Molly's excluded profile-badge and payment-wallet features excluded, and adapt inherited test fixtures accordingly.\n\nAdd transport and cleanup regressions for MollySocket, UnifiedPush and FCM.",
-      "ai_generated": true,
-      "before_tree": "ee2252f2a6874f6b8baa7eaaf2faf506076b2646",
-      "after_tree": "de987a90b5fc2d75b8fb97b4fd82c70a20b725b3",
-      "paths": 68,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch"
-      ],
-      "mailbox_bytes": 104526,
-      "source_bundle": "followups/integration-and-regression-tests/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "ba54f6d3b9a685f3f792c06944df6ab66ef38b5e",
-      "source_bundle_sha256": "f541d49183f63a3368bf31b131f664ddac71c3ca2e278106e024501219d0363d"
-    },
-    {
-      "id": "followups/cdn-transport-test-fixture",
-      "source_commit": "6026d3d8ba2b5014e78e34cf61c92bb07fceffb2",
-      "original_source_commits": [
-        "cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c"
-      ],
-      "description": "Fix CDN test configuration for Molly network transport",
-      "ai_generated": true,
-      "before_tree": "de987a90b5fc2d75b8fb97b4fd82c70a20b725b3",
-      "after_tree": "2b06b30d0369670c5173464bbca57db45a1ae72c",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch"
-      ],
-      "mailbox_bytes": 1999,
-      "source_bundle": "followups/cdn-transport-test-fixture/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "517cdd3b732a321cbeb66a1794c66838354cae6d",
-      "source_bundle_sha256": "77aaf84879cccd7fe2c7ac41022b0140a71a2904d9dc4b438bd19e50328fe476"
-    },
-    {
-      "id": "followups/reregistration-linked-devices-reminder",
-      "source_commit": "49b19b0ab9ae43b27a175c70490fa248f84fcbe1",
-      "original_source_commits": [
+        "266d0185d021b2b6a98882205f6b6242152d146e",
+        "34100dfa15eb70256d948f96b14abe4b7c7920d6",
+        "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
+        "a9ebbf1c92798f703ad434c1caa720536a724fe0",
+        "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748",
         "d3c917a5be7db6116c83b7e29e09f145e7f38825"
       ],
-      "description": "Restore the linked-device reminder after successful primary-device multi-device re-registration; explicitly mark re-registration intents.",
+      "description": "Preserve new focused regression tests for Molly policies and compatibility.",
       "ai_generated": true,
-      "before_tree": "2b06b30d0369670c5173464bbca57db45a1ae72c",
-      "after_tree": "6fd58e7aea3f24a3b23b0c9d09ea57a72879e4c9",
-      "paths": 3,
+      "before_tree": "c73420a7910ece330855dbb3bfef1fe228969134",
+      "after_tree": "ea9df38cd298036678b1f1f7e3f5d29da4b7f589",
+      "paths": 8,
       "whole_file_deletions": 0,
       "whole_file_deletion_diff_bytes": 0,
       "patches": [
-        "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch"
+        "followups/regression-tests/0001-regression-tests.patch"
       ],
-      "mailbox_bytes": 6286,
-      "source_bundle": "followups/reregistration-linked-devices-reminder/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "6026d3d8ba2b5014e78e34cf61c92bb07fceffb2",
-      "source_bundle_sha256": "a28c3039c751336b2091107c1a3fff2fb183d104460e90fbe2ab73a81076e302"
-    },
-    {
-      "id": "followups/legacy-backup-precedence",
-      "source_commit": "db1f7747892268b073d2b0a9a3473e8dc9889eb5",
-      "original_source_commits": [
-        "266d0185d021b2b6a98882205f6b6242152d146e"
-      ],
-      "description": "Restore migrated Molly settings from preference frames before later KeyValue frames, drain pending store writes before restore, and test restore precedence.",
-      "ai_generated": true,
-      "before_tree": "6fd58e7aea3f24a3b23b0c9d09ea57a72879e4c9",
-      "after_tree": "bc4286d21bae7e15284a8b78e905f242159c3942",
-      "paths": 4,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch"
-      ],
-      "mailbox_bytes": 16560,
-      "source_bundle": "followups/legacy-backup-precedence/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "49b19b0ab9ae43b27a175c70490fa248f84fcbe1",
-      "source_bundle_sha256": "12e1cf216a0840e0e2ccc655e1f9949fe2fb5d6e9b28cdf21e109fd8ef147222"
-    },
-    {
-      "id": "followups/donation-completion",
-      "source_commit": "0d89360887c3f284f0d0a144a059eef69090b9be",
-      "original_source_commits": [
-        "34100dfa15eb70256d948f96b14abe4b7c7920d6"
-      ],
-      "description": "Restore immediate donation badge acknowledgement and the eligible monthly sustainer link; remove unsupported profile-display copy and the completed-donation loading spinner.",
-      "ai_generated": true,
-      "before_tree": "bc4286d21bae7e15284a8b78e905f242159c3942",
-      "after_tree": "7bc6e6ff06c3ad0b91194db58ebc09f65bc63b0a",
-      "paths": 4,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/donation-completion/0001-donation-completion.patch"
-      ],
-      "mailbox_bytes": 12600,
-      "source_bundle": "followups/donation-completion/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "db1f7747892268b073d2b0a9a3473e8dc9889eb5",
-      "source_bundle_sha256": "ebaaec35a7036c0737913ad67391b0c8d1a6018aa80d37d3a9c7e58fffa533af"
-    },
-    {
-      "id": "followups/backup-notification-id-upgrade",
-      "source_commit": "b25c3a11d24d66eb2613def6ab147c945a5d32fe",
-      "original_source_commits": [
-        "ae2672a773d15d1b22186bd8acbec2221760f049"
-      ],
-      "description": "Clean up legacy Molly backup alerts by checking their untagged notification ID and backup channel, while keeping Signal IDs for new alerts.",
-      "ai_generated": true,
-      "before_tree": "7bc6e6ff06c3ad0b91194db58ebc09f65bc63b0a",
-      "after_tree": "e947c476f5cb6bc777e2d9615dd86a2c8ba38318",
-      "paths": 5,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch"
-      ],
-      "mailbox_bytes": 8239,
-      "source_bundle": "followups/backup-notification-id-upgrade/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "0d89360887c3f284f0d0a144a059eef69090b9be",
-      "source_bundle_sha256": "79f5c5313867bf9c27ba23173153621986a4a43da275911f94ecc522130ecf59"
-    },
-    {
-      "id": "followups/recipient-badge-list",
-      "source_commit": "0a1e4567cc689c32fecdaaee0f53a1a0e4d6b8bf",
-      "original_source_commits": [
-        "f35e5d6f2adb49bee7af7599e18d15dcf9823082"
-      ],
-      "description": "Restore non-self recipient badge lists while keeping badge interactions disabled.",
-      "ai_generated": true,
-      "before_tree": "e947c476f5cb6bc777e2d9615dd86a2c8ba38318",
-      "after_tree": "cf7f7f39aee17fac8a585dc6cbebd04e565101ce",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/recipient-badge-list/0001-recipient-badge-list.patch"
-      ],
-      "mailbox_bytes": 3926,
-      "source_bundle": "followups/recipient-badge-list/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "b25c3a11d24d66eb2613def6ab147c945a5d32fe",
-      "source_bundle_sha256": "eec8ee792251cdb0d9e9221a6b9500ff3cede17da52d514b7d1e7809a5102b4c"
-    },
-    {
-      "id": "followups/locked-system-info",
-      "source_commit": "7a1ab1cb074a5c7a975ea0b692153a2d83eccc28",
-      "original_source_commits": [
-        "a9ebbf1c92798f703ad434c1caa720536a724fe0"
-      ],
-      "description": "Restore system information behavior while the application is locked.",
-      "ai_generated": true,
-      "before_tree": "cf7f7f39aee17fac8a585dc6cbebd04e565101ce",
-      "after_tree": "2b82cd3ac4c7989420e1ef2dc09765e04379cc51",
-      "paths": 2,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/locked-system-info/0001-locked-system-info.patch"
-      ],
-      "mailbox_bytes": 5041,
-      "source_bundle": "followups/locked-system-info/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "0a1e4567cc689c32fecdaaee0f53a1a0e4d6b8bf",
-      "source_bundle_sha256": "250cbec1d7cef1f1acc47232b5dfc8532d7b14dbb1582712fd501dc72c7c2a27"
-    },
-    {
-      "id": "followups/remaining-resource-notices",
-      "source_commit": "34312fb9fc4454ce3616c6e5b4e798401569f9b7",
-      "original_source_commits": [
-        "0a44d06b86c793186f42d53cf248ad8bb2f6c925"
-      ],
-      "description": "Restore copyright notices in remaining resource files.",
-      "ai_generated": true,
-      "before_tree": "2b82cd3ac4c7989420e1ef2dc09765e04379cc51",
-      "after_tree": "c0b6d8dd45ccbe35b10da83a94ebac931750de8f",
-      "paths": 2,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/remaining-resource-notices/0001-remaining-resource-notices.patch"
-      ],
-      "mailbox_bytes": 1659,
-      "source_bundle": "followups/remaining-resource-notices/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "7a1ab1cb074a5c7a975ea0b692153a2d83eccc28",
-      "source_bundle_sha256": "b422366fd9ab82e73771ea082b5104a70aefdd1904ef40643687ce4272ea0bc7"
-    },
-    {
-      "id": "followups/dynamic-appearance-colors",
-      "source_commit": "80e59c2543aa30deb6777a4278ffc2ffb9bf7315",
-      "original_source_commits": [
-        "325a19e470349aa88232eaa6fd68d7e064a3da24"
-      ],
-      "description": "Restore Molly dynamic-color extended palette selection.",
-      "ai_generated": true,
-      "before_tree": "c0b6d8dd45ccbe35b10da83a94ebac931750de8f",
-      "after_tree": "79d047f2630378753022059dbebd40c021893499",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/dynamic-appearance-colors/0001-dynamic-appearance-colors.patch"
-      ],
-      "mailbox_bytes": 1328,
-      "source_bundle": "followups/dynamic-appearance-colors/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "34312fb9fc4454ce3616c6e5b4e798401569f9b7",
-      "source_bundle_sha256": "70881b3f26e4dcca635f9089c4ec395c6bb6f7f4a3ffe3716bbe16e84d905d40"
-    },
-    {
-      "id": "followups/blocked-network-priority",
-      "source_commit": "043a03f3b8f85db985b1ca6522d0696110de8366",
-      "original_source_commits": [
-        "7a2ec75db0b56f45310d09716a3559e5dd503b19"
-      ],
-      "description": "Preserve Molly blocked-network priority, including a blocked VPN with an unvalidated underlying network.",
-      "ai_generated": true,
-      "before_tree": "79d047f2630378753022059dbebd40c021893499",
-      "after_tree": "d98f9519605a41d746161e9b6755921750a72654",
-      "paths": 2,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/blocked-network-priority/0001-blocked-network-priority.patch"
-      ],
-      "mailbox_bytes": 2505,
-      "source_bundle": "followups/blocked-network-priority/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "80e59c2543aa30deb6777a4278ffc2ffb9bf7315",
-      "source_bundle_sha256": "6849b947e736fe65e4ef4dd8da205ba5561739dee87a04ab22ac15e18822bfd8"
-    },
-    {
-      "id": "followups/recipient-avatar-badge",
-      "source_commit": "6b745941a7b86787f2e06d6b65434593d8c371d4",
-      "original_source_commits": [
-        "09d0c9e17576de7090da7a9e6c84080c618f817e"
-      ],
-      "description": "Restore the non-interactive featured badge on non-self recipient avatars.",
-      "ai_generated": true,
-      "before_tree": "d98f9519605a41d746161e9b6755921750a72654",
-      "after_tree": "0a1639bcff47ca1de0e52451e925b31cbaa5e3f7",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/recipient-avatar-badge/0001-recipient-avatar-badge.patch"
-      ],
-      "mailbox_bytes": 3327,
-      "source_bundle": "followups/recipient-avatar-badge/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "043a03f3b8f85db985b1ca6522d0696110de8366",
-      "source_bundle_sha256": "8ff1ed3dc0e22bd8fe4abff07fad34647169cae8497c644a867bd4b75cd9e6ce"
-    },
-    {
-      "id": "followups/version-preference-write",
-      "source_commit": "5496c2bcfde99d041a041d52bc5de9356ce7dffa",
-      "original_source_commits": [
-        "b0e9ca51c613c1b88ada51a5552b0b7131d1621e"
-      ],
-      "description": "Remove the redundant secure preference write when recording the app version.",
-      "ai_generated": true,
-      "before_tree": "0a1639bcff47ca1de0e52451e925b31cbaa5e3f7",
-      "after_tree": "2067eea03ab682cc344d115436affe0de70d2bab",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/version-preference-write/0001-version-preference-write.patch"
-      ],
-      "mailbox_bytes": 1471,
-      "source_bundle": "followups/version-preference-write/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "6b745941a7b86787f2e06d6b65434593d8c371d4",
-      "source_bundle_sha256": "06e32c917796615fbf312b20baa88c5e2b9e7d879afbc2110a6f390d195c6c00"
-    },
-    {
-      "id": "followups/giphy-client-formatting",
-      "source_commit": "ff919479a5a600299e1a60351f12da66d58168d2",
-      "original_source_commits": [
-        "ae5099dd637e08095c995464ec22118866296e3a"
-      ],
-      "description": "Restore Molly formatting for Giphy client construction without changing proxy behavior.",
-      "ai_generated": true,
-      "before_tree": "2067eea03ab682cc344d115436affe0de70d2bab",
-      "after_tree": "2e22135e9c02291d0f69ab2608fe8e215a185bc5",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/giphy-client-formatting/0001-giphy-client-formatting.patch"
-      ],
-      "mailbox_bytes": 1428,
-      "source_bundle": "followups/giphy-client-formatting/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "5496c2bcfde99d041a041d52bc5de9356ce7dffa",
-      "source_bundle_sha256": "ee6f84d89c96699522a7719090b80c7bc5f0a99e2d19a131699e52d436b2e67d"
-    },
-    {
-      "id": "followups/always-relay-accessor",
-      "source_commit": "6e986ed8e9d2eac62ceeac64673040a886ae7ae9",
-      "original_source_commits": [
-        "02088f97be08bcb50763d78245af68f8f1d065e7"
-      ],
-      "description": "Restore Molly always-relay preference accessor while preserving proxy settings.",
-      "ai_generated": true,
-      "before_tree": "2e22135e9c02291d0f69ab2608fe8e215a185bc5",
-      "after_tree": "6362c80f87e7b323c0f6119c5778b12dd326a45d",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/always-relay-accessor/0001-always-relay-accessor.patch"
-      ],
-      "mailbox_bytes": 2020,
-      "source_bundle": "followups/always-relay-accessor/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "ff919479a5a600299e1a60351f12da66d58168d2",
-      "source_bundle_sha256": "3152ba06582b6f3a0358b098f801fe26e038619b576f85300a82a445eaf32873"
-    },
-    {
-      "id": "followups/logcat-collection",
-      "source_commit": "73d1b67d3fe0e0578ac6078a5958f62f1f5bc1ad",
-      "original_source_commits": [
-        "9fd7b272e2b546c5fc706315df09c5778590f1fb"
-      ],
-      "description": "Restore Molly unfiltered logcat collection.",
-      "ai_generated": true,
-      "before_tree": "6362c80f87e7b323c0f6119c5778b12dd326a45d",
-      "after_tree": "101e90793548c04f8959e6aaf41f4faa18c0c22d",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/logcat-collection/0001-logcat-collection.patch"
-      ],
-      "mailbox_bytes": 1306,
-      "source_bundle": "followups/logcat-collection/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "6e986ed8e9d2eac62ceeac64673040a886ae7ae9",
-      "source_bundle_sha256": "6402da07655b784ac140665b8829f5244165d120b33e24575f0ff7ab1c3842f5"
-    },
-    {
-      "id": "followups/retained-molly-imports",
-      "source_commit": "dd98fd50511a7bcf337bae7d3c544207c429294c",
-      "original_source_commits": [
-        "6a08b686d0f4159a8b801420d601ce55b5195b66"
-      ],
-      "description": "Retain Molly message processor and reactions theme imports.",
-      "ai_generated": true,
-      "before_tree": "101e90793548c04f8959e6aaf41f4faa18c0c22d",
-      "after_tree": "3dac35c82b6b4a0967fada004b34674e24f4b0b7",
-      "paths": 2,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/retained-molly-imports/0001-retained-molly-imports.patch"
-      ],
-      "mailbox_bytes": 2976,
-      "source_bundle": "followups/retained-molly-imports/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "73d1b67d3fe0e0578ac6078a5958f62f1f5bc1ad",
-      "source_bundle_sha256": "1fb30e1dae8a65a0d15f5396ba447a65b5dfafaa707a6caf3a766a421226b048"
-    },
-    {
-      "id": "followups/retained-activity-push-imports",
-      "source_commit": "15f5d61ec355d95997331f4eb634ab049e606ea8",
-      "original_source_commits": [
-        "ad4e4df669330f034242afe4d19f29bb1c6f3995"
-      ],
-      "description": "Retain Molly activity, conversation, place picker and push socket imports.",
-      "ai_generated": true,
-      "before_tree": "3dac35c82b6b4a0967fada004b34674e24f4b0b7",
-      "after_tree": "7243471553ea58a2447e168fe9638fe0238e0a9e",
-      "paths": 4,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/retained-activity-push-imports/0001-retained-activity-push-imports.patch"
-      ],
-      "mailbox_bytes": 3883,
-      "source_bundle": "followups/retained-activity-push-imports/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "dd98fd50511a7bcf337bae7d3c544207c429294c",
-      "source_bundle_sha256": "5b675a76a942e31f3c8245428ad67e4c83941f7ad36bde36d61d7590410d847a"
-    },
-    {
-      "id": "followups/retained-import-formatting",
-      "source_commit": "5bc59b9c7c30128a2298c2c61e1199a82b32dbb6",
-      "original_source_commits": [
-        "5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9"
-      ],
-      "description": "Retain Molly screen-lock import punctuation and mechanical-merge reaction overlay import order.",
-      "ai_generated": true,
-      "before_tree": "7243471553ea58a2447e168fe9638fe0238e0a9e",
-      "after_tree": "92ca63e8437e6130a0f9fd0b5203ccba8ba97e9f",
-      "paths": 2,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/retained-import-formatting/0001-retained-import-formatting.patch"
-      ],
-      "mailbox_bytes": 2480,
-      "source_bundle": "followups/retained-import-formatting/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "15f5d61ec355d95997331f4eb634ab049e606ea8",
-      "source_bundle_sha256": "4ec4e87401c063d2ac207482d5813b9501dc264aa7afb60fc7ce8c65e5588d3b"
-    },
-    {
-      "id": "followups/retained-media-preference-imports",
-      "source_commit": "092e35b8f8231227cfdc4efc9cbdfa5c5913bf7c",
-      "original_source_commits": [
-        "98f6a7e996abf915eecee06ece4ea901a34ef64b"
-      ],
-      "description": "Retain Molly media composer, attachment and preference imports.",
-      "ai_generated": true,
-      "before_tree": "92ca63e8437e6130a0f9fd0b5203ccba8ba97e9f",
-      "after_tree": "4ac236c977e4321974bbee0cdec874fbe6b5d634",
-      "paths": 4,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/retained-media-preference-imports/0001-retained-media-preference-imports.patch"
-      ],
-      "mailbox_bytes": 5113,
-      "source_bundle": "followups/retained-media-preference-imports/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "5bc59b9c7c30128a2298c2c61e1199a82b32dbb6",
-      "source_bundle_sha256": "cacc7149cfc5a9e1d1ae66201572b763e1ed5fb6d7db260ca9962e7ebbfafa13"
-    },
-    {
-      "id": "followups/backup-direct-cancellation",
-      "source_commit": "deb0cde0a3317c0f3aa385917200ac58fbd07369",
-      "original_source_commits": [
-        "7ee4f371851ac9f2baae2915b209eaf2a664e92f"
-      ],
-      "description": "Keep direct backup alert cancellation expressions alongside legacy alert cleanup.",
-      "ai_generated": true,
-      "before_tree": "4ac236c977e4321974bbee0cdec874fbe6b5d634",
-      "after_tree": "3d220916d8bac6beb8cfb6e2967ccb2522a376cb",
-      "paths": 1,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/backup-direct-cancellation/0001-backup-direct-cancellation.patch"
-      ],
-      "mailbox_bytes": 1881,
-      "source_bundle": "followups/backup-direct-cancellation/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "092e35b8f8231227cfdc4efc9cbdfa5c5913bf7c",
-      "source_bundle_sha256": "7628f4483319123d4860c9ebadcfdb977e11c86034e30acbf6f9eb3ed218566f"
-    },
-    {
-      "id": "followups/remove-pre27-sheet-selectors",
-      "source_commit": "193b43ba234f92b8565d36fff324a780d2a534ce",
-      "original_source_commits": [
-        "bda4a65056b18ae1b9aa31aefa8a737342967b64"
-      ],
-      "description": "Remove unreachable pre-27 bottom-sheet selectors; retain API 27 color definitions.",
-      "ai_generated": true,
-      "before_tree": "3d220916d8bac6beb8cfb6e2967ccb2522a376cb",
-      "after_tree": "28e6a455c8a0b4d1cb071c3d24fc08fe91feb455",
-      "paths": 2,
-      "whole_file_deletions": 2,
-      "whole_file_deletion_diff_bytes": 1135,
-      "patches": [
-        "followups/remove-pre27-sheet-selectors/0001-delete-files.json"
-      ],
-      "mailbox_bytes": 596,
-      "source_bundle": "followups/remove-pre27-sheet-selectors/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "deb0cde0a3317c0f3aa385917200ac58fbd07369",
-      "source_bundle_sha256": "201d3b91ef38965c36ee30ea718585208b56b0dad8e5e28a54307b760bf48ae7"
-    },
-    {
-      "id": "followups/registration-and-timing-format",
-      "source_commit": "82b8e785b8a45decbd75bb725bb3292f0d646048",
-      "original_source_commits": [
-        "1f0af82f4ab6a510afe506d0efd33d8f09ecf24e"
-      ],
-      "description": "Retain the longer one-line registration signature and omit added prose; the debug timing log loses the shared-contacts duration.",
-      "ai_generated": true,
-      "before_tree": "28e6a455c8a0b4d1cb071c3d24fc08fe91feb455",
-      "after_tree": "4219f4e554563f80c4acbe425480d7424a6fb2a2",
-      "paths": 3,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/registration-and-timing-format/0001-registration-and-timing-format.patch"
-      ],
-      "mailbox_bytes": 4262,
-      "source_bundle": "followups/registration-and-timing-format/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "193b43ba234f92b8565d36fff324a780d2a534ce",
-      "source_bundle_sha256": "63142b14380d798af4fc1d955fb2acd8038bd71cf0e2339cd56e5c7b20688794"
-    },
-    {
-      "id": "followups/unavailable-contact-and-legacy-preferences",
-      "source_commit": "cde9899c6940721994679e841ffe3a27557e478c",
-      "original_source_commits": [
-        "a3a9eaabe66d42fdbf8807158eca7de8c9755b33"
-      ],
-      "description": "Restore the Molly unavailable-contact message, dropping the prior-use distinction; restore Molly imports and the currently unused legacy PlainTextSharedPrefsDataStore API, and remove one unused import.",
-      "ai_generated": true,
-      "before_tree": "4219f4e554563f80c4acbe425480d7424a6fb2a2",
-      "after_tree": "8a28221fa81798d61bd91d5ef6b0b95e5dba83a4",
-      "paths": 7,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/unavailable-contact-and-legacy-preferences/0001-unavailable-contact-and-legacy-preferences.patch"
-      ],
-      "mailbox_bytes": 8178,
-      "source_bundle": "followups/unavailable-contact-and-legacy-preferences/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "82b8e785b8a45decbd75bb725bb3292f0d646048",
-      "source_bundle_sha256": "1e5517d4b5ab8940151298ad97ba7ce97bd7a1372aa9f3c10f1421a252d0cb6b"
-    },
-    {
-      "id": "followups/navigation-and-share-legacy",
-      "source_commit": "e5cc786f0bea43034887369110aee1003d7f35bc",
-      "original_source_commits": [
-        "031894f1a74ca85b44cdd37f33a4bf6ba3f6c275"
-      ],
-      "description": "Restore numerous unused navigation imports, a network import and telecom comment; restore a currently uncalled ShareActivity container override that could return the wrong host container for a future sheet path.",
-      "ai_generated": true,
-      "before_tree": "8a28221fa81798d61bd91d5ef6b0b95e5dba83a4",
-      "after_tree": "6e6b2da7384e8878ce137516189df1796e63b768",
-      "paths": 5,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/navigation-and-share-legacy/0001-navigation-and-share-legacy.patch"
-      ],
-      "mailbox_bytes": 7417,
-      "source_bundle": "followups/navigation-and-share-legacy/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "cde9899c6940721994679e841ffe3a27557e478c",
-      "source_bundle_sha256": "3a4d1552efafd4b2ab09110f383f92aef727b3dd4b3deb3e3fe2f7448dad6d55"
-    },
-    {
-      "id": "followups/retained-settings-camera-and-version",
-      "source_commit": "110bc9216efce297075fbbc7e6911e7fafc310e1",
-      "original_source_commits": [
-        "a39eeee9155bdc9116b611734dcc58653f7cb38f"
-      ],
-      "description": "Restore an uncalled camera count component and four legacy settings files; the count remains undisplayed and the help view model can wipe logs if invoked. The checked first-launch preference write throws on failure.",
-      "ai_generated": true,
-      "before_tree": "6e6b2da7384e8878ce137516189df1796e63b768",
-      "after_tree": "5d47d10eaf033b9ebda5a7917a88d5d83083f34c",
-      "paths": 6,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/retained-settings-camera-and-version/0001-retained-settings-camera-and-version.patch"
-      ],
-      "mailbox_bytes": 9118,
-      "source_bundle": "followups/retained-settings-camera-and-version/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "e5cc786f0bea43034887369110aee1003d7f35bc",
-      "source_bundle_sha256": "6da6a9db47eae8543cec370f01690a827fbd18309ce3f4f249ff633ef37798ac"
-    },
-    {
-      "id": "followups/xml-format-restoration",
-      "source_commit": "f272b7886240ff213ccc72b56aaf61ebe630c0d2",
-      "original_source_commits": [],
-      "description": "Restore namespace-equivalent Signal XML formatting.",
-      "ai_generated": true,
-      "before_tree": "5d47d10eaf033b9ebda5a7917a88d5d83083f34c",
-      "after_tree": "94bc00d40386424e4f1c0119b044c209431a87e9",
-      "paths": 14,
-      "whole_file_deletions": 0,
-      "whole_file_deletion_diff_bytes": 0,
-      "patches": [
-        "followups/xml-format-restoration/0001-xml-format-restoration.patch"
-      ],
-      "mailbox_bytes": 240389,
-      "source_bundle": "followups/xml-format-restoration/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "110bc9216efce297075fbbc7e6911e7fafc310e1",
-      "source_bundle_sha256": "ab073e668b647824f7dbb040ab4558b5fed150c4ba14b8c1d0a8d6b5b21aa458"
+      "mailbox_bytes": 39016,
+      "source_bundle": "followups/regression-tests/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "5175ad8a0fbb9fd8977b7b7b06940b649e9eba91",
+      "source_bundle_sha256": "c1774686ccd140990e43401de0751ebd3736d5a03300c327325b41477c5511b0"
     },
     {
       "id": "generated-translations",
-      "source_commit": "8ca76dfeb369b3711ea3591a1c5e5f03045f2d99",
+      "source_commit": "772a3e479083c5a1b84a20ec772265b153b3dd6d",
       "original_source_commits": [
         "0a44d06b86c793186f42d53cf248ad8bb2f6c925",
         "2baf94944e5461323bd4fc53ea99d522882be4b1",
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "before_tree": "94bc00d40386424e4f1c0119b044c209431a87e9",
-      "after_tree": "14ba9fde0c1b0d5e1f31eb2a216142fa4e7270d6",
+      "before_tree": "ea9df38cd298036678b1f1f7e3f5d29da4b7f589",
+      "after_tree": "758a8cb3048c525e8802cfe92369c69f09722961",
       "paths": 884,
       "description": "Generate pinned locale translations and move locale please_wait entries to strings2.",
       "ai_generated": true,
@@ -1159,69 +615,75 @@
       ],
       "mailbox_bytes": 367012,
       "source_bundle": "generated-translations/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "f272b7886240ff213ccc72b56aaf61ebe630c0d2",
-      "source_bundle_sha256": "48141bf5940961e656ccec94a13873a37b20cea2f264512f3dab3df72155d361"
+      "source_bundle_prerequisite": "6cab50bc152dc6dc049af8764b315fd2f3e95881",
+      "source_bundle_sha256": "239adba91c154ff6f0b9dba6a32b1478609a653da6f22874a689b8d8cd47842e"
     }
   ],
   "mailbox_sha256": {
     "initial/app-updates-deletions/0001-delete-files.json": "7758cdc274f6a5576dbf573023339e30faa4c27a83d9e80f67666cb4d55941e9",
-    "initial/app-updates/0001-app-updates.patch": "fda7a097828c695c2e68b6310d5652a9309b9ce5902d695c6697d240d9d6c3f7",
-    "initial/appearance/0001-appearance.patch": "ad367bf6e2ef9b1e005e572c23df2ffd6dd8c55bac09e012970084334868c2de",
-    "initial/backup-and-restore-deletions/0001-delete-files.json": "04d6ba71cbb433b0f704121a175b4b0c8e66eb99f5ca298aa4325dcebb1e1af7",
-    "initial/backup-and-restore/0001-backup-and-restore.patch": "4c6ad44597ae0f1300547f22512800e000fc9f9b72d90f188e226d4f726aff68",
-    "initial/maps/0001-maps.patch": "1a6b9bc7364cb5be4b6e946bc9a96fbe6003c08112500f1ef7fd9d77a082303c",
-    "initial/module-pruning/0001-delete-files.json": "5f8e2bb8caa81ea8fd3a30ca1c918500a85e4b2384bd3bb9a40e7dc2da9894dd",
-    "initial/networking-and-proxies-deletions/0001-delete-files.json": "4c62651c30e99738b58ac4ed63070d1b0bead68f4447ae19f4bcdf6fdb76372e",
-    "initial/networking-and-proxies/0001-networking-and-proxies.patch": "be68a40e6b744f30e1b489f91c4183af17fc92254973f612fcc1055a2b36f33c",
-    "initial/notifications-and-unifiedpush-deletions/0001-delete-files.json": "f4328a2fd0ad163c4e4e62612f0acea3210e0755bbfe8f5698fca792deac315b",
-    "initial/notifications-and-unifiedpush/0001-notifications-and-unifiedpush.patch": "876ebd56ea8a68a0cca65a5c0a1ba4b1c03c46069b57cbd77deb049b09392f82",
-    "initial/payments-and-donations-deletions/0001-delete-files.json": "d01811edd796c9a3901fc3ae88525d678b44dd04e6097ef852bd82b539dc9ee2",
-    "initial/payments-and-donations/0001-payments-and-donations.patch": "75190474d3b8f9f64cfab09655f29ca17261328ed11d56ed7508207613134548",
-    "initial/privacy-controls/0001-privacy-controls.patch": "bcbae8451f2fe805e0f2169a768fd507e32e7eafcd1f09333b782117cb6be0ce",
-    "initial/registration-and-linking-deletions/0001-delete-files.json": "63e83dee747d5888182b17ee1d4d4ac178b5dbaccb1510e3e613b73fa69925b5",
-    "initial/registration-and-linking/0001-registration-and-linking.patch": "58f226e28298653ced05c5768fa503336fd6c1db0b80a0e1c0934f1480986b24",
-    "initial/resources-and-branding-deletions/0001-delete-files.json": "7a4540f3e423e63ac3ab12417fb2fe70b1e93352950aa198b9556af41b2b4d9b",
-    "initial/resources-and-branding/0001-resources-and-branding.patch": "614c65d05a3e5085a94d8794ab5df4d0f2bc6ee436ae83bbb11d3aa2d51e5fbd",
-    "initial/security-and-locking-deletions/0001-delete-files.json": "1fa1a61d7aee61977402c8d659f787c4a8363244cc880b791b1bd349bfbea6a8",
-    "initial/security-and-locking/0001-security-and-locking.patch": "a8ac70d4d2341bac0b80efdddd1e4b485e07fdef494489e2b99356a0d236f088",
-    "initial/integration-deletions/0001-delete-files.json": "7b32dbd6d3c25e1f2bda64bdf40302a4c6c354a7fa719b2d6c3989f2875a3faa",
-    "initial/integration/0001-integration.patch": "fef615968808d47c67bf79f1b4d19872acd3d8ef84e2347bd34e7e30b1d4269e",
-    "initial/build-and-release-deletions/0001-delete-files.json": "1949039a221d48bf11d94a748b3ab3a1114bbadaf43e2b05a7e080d5b3a84e7e",
-    "initial/build-and-release/0001-build-and-release.patch": "b4e63570da0067a74b77930f9920b8c73263221f73f8f0aa67f560d0e88aebdf",
-    "followups/restore-preference-import/0001-restore-preference-import.patch": "80c52a4260666d54d9e52998b2ef45cb22d70ad8a8ea7f326debdf14c568f603",
-    "followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch": "c850eed7bfec47a1fa9622b3e51c7d1f757743c911d0cb17a52d449f4ba0bbca",
-    "followups/integration-and-regression-tests-deletions/0001-delete-files.json": "718fa982bb72ea3b94e6e6f96002129191706d63bb99316dd927ff9bc0d0a19e",
-    "followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch": "5119324adbfaa549fcf57c8f628cca39512b93c8df39d6b81773c3a489fd0c7d",
-    "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch": "3cbce043bdda3a664793abdcf5d775e93f96e6b7d8e6618e4a038f674bcb8129",
-    "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "72d596cf141b26c30ef3d84d9097a9f774993b831e4b39f5a741db83c8f7612f",
-    "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "fba8433356125110cf0919ee5024b7eddc671f6c325795821d29d2ab228a0f26",
-    "followups/donation-completion/0001-donation-completion.patch": "2d3c6b746aec78331b2b88f282ad54dfd8988ab49ffb54e947678748ea26535f",
-    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "a6ed97d3777740a6470e186d125628c6eefe02e785e52a5ff9a649ec16d8b3c6",
-    "followups/recipient-badge-list/0001-recipient-badge-list.patch": "e9bfd1f560f93f776abfbd2a1fd204c19199e2a840f4033a14c562472ef770cc",
-    "followups/locked-system-info/0001-locked-system-info.patch": "1b411c7314dca91373c4daee0f1898e498462ac93f5b89208254b6820e18f90e",
-    "followups/remaining-resource-notices/0001-remaining-resource-notices.patch": "708a46763971b9f9bbb0e96bf32ff24c59b9f7bbb31518e2be8fe57d97622cb1",
-    "followups/dynamic-appearance-colors/0001-dynamic-appearance-colors.patch": "6412e4d019a0d54703fdc6e43f2e46bb3198b8d0e72d73d7a199417db6a19a68",
-    "followups/blocked-network-priority/0001-blocked-network-priority.patch": "866ea8d8a3378713882d7aef9b51bbacf928fbbc210fa659f67683dca74295e5",
-    "followups/recipient-avatar-badge/0001-recipient-avatar-badge.patch": "37d6facfca59a006601ba99a307cac78da395eb82ce34a81b78e584f5e676cbc",
-    "followups/version-preference-write/0001-version-preference-write.patch": "019479dd5147924587931b5f0e21de3564fb365c891a839b5119c6f561991602",
-    "followups/giphy-client-formatting/0001-giphy-client-formatting.patch": "e18cd3c064d12450c3b1d8861701726cfb54cdf1b051a5b8ae3672962f94373f",
-    "followups/always-relay-accessor/0001-always-relay-accessor.patch": "d77409cdc948f62ca00495b76438f5dda536c0b5fe77f4b76fd377a5f8c52115",
-    "followups/logcat-collection/0001-logcat-collection.patch": "89abb4656e4569165cef64fba56c8062d9ed5a21f9d91a59745de790e70fe453",
-    "followups/retained-molly-imports/0001-retained-molly-imports.patch": "0d867eb90b7f268807890f8db0217a75ce35c44853bc15fec0a5d27b8bc969c7",
-    "followups/retained-activity-push-imports/0001-retained-activity-push-imports.patch": "150343a36c367fae906efc53cb66d0aebcb27c768a4f37b16bc1137ece935cdb",
-    "followups/retained-import-formatting/0001-retained-import-formatting.patch": "78f179e0a587d070eedfa1bf081c83397c004b30a570c8825d4d583b815db416",
-    "followups/retained-media-preference-imports/0001-retained-media-preference-imports.patch": "1bfcf9769ff6a134dad21c53308d5ead61e621d692e65ce746d154bd103c93d3",
-    "followups/backup-direct-cancellation/0001-backup-direct-cancellation.patch": "161e93beb64c1f50057ed9a22e1620e80a1df3dbffbb4d7332ca6d780721d4e0",
-    "followups/remove-pre27-sheet-selectors/0001-delete-files.json": "c37abe1f9bc8d1c112ddf16f762de997f78f452411c0899f0a5219443d208df8",
-    "followups/registration-and-timing-format/0001-registration-and-timing-format.patch": "b3d46efc782139ddc8b97388e25702c64f3c634e39a0070010c3b52238a4791f",
-    "followups/unavailable-contact-and-legacy-preferences/0001-unavailable-contact-and-legacy-preferences.patch": "f2a65892e42caf371f8d8f815975145120a9c8f2e38dfcda48c09e8a59a47633",
-    "followups/navigation-and-share-legacy/0001-navigation-and-share-legacy.patch": "a78d43e45cd8aba2fd9624f51e2f78b36b58b5c2ac5285fd4b514232cba67115",
-    "followups/retained-settings-camera-and-version/0001-retained-settings-camera-and-version.patch": "1903acb4674351ac62448c1e5d83b09dc7b3094681b9aed54459a5378d332b91",
-    "followups/xml-format-restoration/0001-xml-format-restoration.patch": "d32b50b621d06b85d1fa073b2f2556234d272685fc9ee6594120d98cf999c1f2",
-    "generated-translations/0001-generate-translations.json": "422e70dc1465615c0b5dcc29a7f7fbe0cdb131ab85f9ea20442d8ddffe2521c7"
+    "initial/app-updates/0001-app-updates.patch": "739d8012529a0381e57b119a1414d844b57b8325aa1c580670b323a1c8b439a1",
+    "initial/appearance/0001-appearance.patch": "6dd18bbd0ce2228bce61db2924c293afead979d16aa2f954c0d0d069b265b28a",
+    "initial/backup-and-restore-deletions/0001-delete-files.json": "3b795866f2fca12eda6644eed7ae93c79341d2e590ece5bbeb7c6ecbe6e173be",
+    "initial/backup-and-restore/0001-backup-and-restore.patch": "b93631db3bb6cd31f5c7550d65f3cf93607f4fcc406dabf14765d24c7e34f8ee",
+    "initial/maps/0001-maps.patch": "2d4ec790ff7abba0c4759e3b820de45c155a269d2dbd0477513a776f47120a95",
+    "initial/module-pruning/0001-delete-files.json": "9b77e18b300e67f55ede92925f869660ce12b53dcb1b35e8f7c20e4bb843b585",
+    "initial/networking-and-proxies-deletions/0001-delete-files.json": "5825c2e5ff077d7a534ffabfdec26b82f56f698f1d0ed33186c2d547ca2aac5c",
+    "initial/networking-and-proxies/0001-networking-and-proxies.patch": "5277d1b2b2c58ddfdb976bd38ef4c90051932a5c7d11174b55daa40f671be14a",
+    "initial/notifications-and-unifiedpush-deletions/0001-delete-files.json": "4de3fadffd9b6398fd333eea8723fedbe982d16e7d735ef9a73e0843395f2940",
+    "initial/notifications-and-unifiedpush/0001-notifications-and-unifiedpush.patch": "8c1e9ca325ccdd184628ce66be2cdef788e7567be0be934325ee58354f957830",
+    "initial/payments-and-donations-deletions/0001-delete-files.json": "4dd7ee5bd2bda6300ec11149884d01254c4eaf88258a241d31990f207dedcbbc",
+    "initial/payments-and-donations/0001-payments-and-donations.patch": "d110f446e4a1a7429972d3f43b313cd174de04149b9e13e00d8fe207d305b4ab",
+    "initial/privacy-controls/0001-privacy-controls.patch": "e6be5b603c5ecb9dfa7ab05c98a95a09249d490ab0e9dc0c1b5dac5c0ce69080",
+    "initial/registration-and-linking-deletions/0001-delete-files.json": "b564f39db9bf370030a4982ae2ed16adbe68dd48ff3acb38dbe7bffb400cd86b",
+    "initial/registration-and-linking/0001-registration-and-linking.patch": "5117be3e9e6d7a7f8561d5fe863dc3c5e2761ea643023bd3598b4d7b581be1a1",
+    "initial/resources-and-branding-deletions/0001-delete-files.json": "3b5895873a8e1c53d73253060efc72e99c6441acc8c6365661987763b9ba0fd6",
+    "initial/resources-and-branding/0001-resources-and-branding.patch": "c79c476762d32816b51fac2b1f014e649b5b4b759468326eea0204c4d2beefe5",
+    "initial/security-and-locking-deletions/0001-delete-files.json": "bd80a5126e72efaa9a88c35d3698ac1a67333ca64abb9dfac4dcdc156b30a20b",
+    "initial/security-and-locking/0001-security-and-locking.patch": "a5f1f2a5a8360cbd112bf3b04b7460056c23773027df5686ddcbcbed1ead0564",
+    "initial/integration-deletions/0001-delete-files.json": "66a5f3edad95f24bd5810bf1c71750ca18f7ae03cb3a699f6d9a786181505331",
+    "initial/integration/0001-integration.patch": "e02663de940cb3b4f5a0b12543a2c252d44cea99bff3ed2754d4da0d76d49acb",
+    "initial/build-and-release-deletions/0001-delete-files.json": "059434cb96ecfa23742700364090b4d8d96961dda7cb191947be3de396576eb3",
+    "initial/build-and-release/0001-build-and-release.patch": "36c82eee55fb90538050ff862884c10478ba9cd85c33e071685ca6e87823aafb",
+    "followups/generated-verification-metadata/0001-generated-verification-metadata.patch": "77bef2db8d3be3aa60f2014b5bcc780ab027ad8ce0cbf0aa79e7dcb9afbda720",
+    "followups/regression-tests/0001-regression-tests.patch": "9c98fec8269ad13b87e9c20ca05812935e4d102a535dcedcaf08b308ad643228",
+    "generated-translations/0001-generate-translations.json": "aab23a8a1dfc8fae24f44184550f98cb9d386fa4ebff037a23b5fdfa3da32c3c"
   },
-  "explicit_source_patches": [],
-  "explicit_source_allow_paths": [],
+  "metadata_generation_command": "./gradlew --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --write-verification-metadata sha256 --init-script /var/home/x/agent-scratch/mollyim-android/pr10-reviewability-release/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:assembleProdWebsiteDebug\n./gradlew --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --write-verification-metadata sha256 --init-script /var/home/x/agent-scratch/mollyim-android/pr10-reviewability-release/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :core:network:test --tests org.signal.network.config.ProxyConfigTest --tests org.signal.network.config.LibSignalProxyPolicyTest :lib:network:test :lib:libsignal-service:test --tests org.whispersystems.signalservice.api.SignalServiceAccountManagerLinkedRegistrationTest :feature:registration:testDebugUnitTest --tests org.signal.registration.RegistrationRepositoryTest --tests org.signal.registration.screens.phonenumber.PhoneNumberEntryViewModelTest --tests org.signal.registration.screens.verificationcode.VerificationCodeViewModelTest --tests org.signal.registration.screens.welcome.WelcomeScreenViewModelTest :app:testProdWebsiteDebugUnitTest --tests org.thoughtcrime.securesms.logsubmit.LogSectionSystemInfoTest --tests org.thoughtcrime.securesms.registration.ui.RegistrationIntentsTest --tests org.thoughtcrime.securesms.keyvalue.MollySettingsMigrationTest --tests org.thoughtcrime.securesms.net.ConnectivityStateCalculatorTest --tests org.thoughtcrime.securesms.backup.MollyBackupPreferencesTest --tests org.thoughtcrime.securesms.backup.FullBackupExporterTest --tests org.thoughtcrime.securesms.backup.FullBackupImporterTest --tests org.thoughtcrime.securesms.notifications.NotificationIdsTest --tests org.thoughtcrime.securesms.backup.v2.LegacyBackupNotificationTest --tests org.thoughtcrime.securesms.service.MessageBackupListenerTest --tests org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceSettingsViewModelTest --tests org.thoughtcrime.securesms.components.settings.app.account.AccountSettingsViewModelTest --tests org.thoughtcrime.securesms.components.settings.app.data.DataAndStorageSettingsViewModelTest --tests org.thoughtcrime.securesms.components.settings.app.updates.AppUpdatesSettingsViewModelTest --tests org.thoughtcrime.securesms.jobs.FcmRefreshJobTest --tests org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJobTest --tests org.thoughtcrime.securesms.components.settings.app.subscription.completed.TerminalDonationBottomSheetTest --tests org.thoughtcrime.securesms.delete.DeleteAccountViewModelTest --tests org.thoughtcrime.securesms.registration.v2.AppRegistrationStorageControllerTest :feature:app-settings:testDebugUnitTest --tests org.signal.appsettings.updates.AppUpdatesSettingsScreenTest",
+  "omitted_test_filter": "org.thoughtcrime.securesms.backup.v2.LegacyBackupNotificationTest",
+  "explicit_source_patches": [
+    {
+      "path": "/tmp/pr10-network-policy.patch",
+      "sha256": "6d4aa1820454aa5a5342aded6f0ff1d16a1200fcfcf62a6882e7b42bde459fd7"
+    },
+    {
+      "path": "/tmp/pr10-import-cleanup.patch",
+      "sha256": "471e5c79811454785ebca0f53ed7adbb55e4f16bee2b776c8aa501679359e650"
+    },
+    {
+      "path": "/tmp/pr10-remove-legacy-cleanup.patch",
+      "sha256": "d8aa75c8f04b8738e24fd655aac1ef1f7b220f4693fb540ff89b480ae361fc4a"
+    },
+    {
+      "path": "/tmp/pr10-verification-metadata.patch",
+      "sha256": "58a16483a2f881cc35fd89910f94dd3a6da561ad9daaa54c9847c24d633daaa6"
+    }
+  ],
+  "explicit_source_allow_paths": [
+    "app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt",
+    "app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt",
+    "app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt",
+    "app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt",
+    "app/src/main/java/org/thoughtcrime/securesms/giph/mp4/GiphyMp4Repository.java",
+    "app/src/main/java/org/thoughtcrime/securesms/main/MainNavigation.kt",
+    "app/src/main/java/org/thoughtcrime/securesms/mediasend/v2/review/AddMessageDialogFragment.kt",
+    "app/src/main/java/org/thoughtcrime/securesms/reactions/ReactionsBottomSheetDialogFragment.java",
+    "app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt",
+    "app/src/main/java/org/thoughtcrime/securesms/backup/v2/LegacyBackupNotification.kt",
+    "app/src/main/java/org/thoughtcrime/securesms/notifications/NotificationIds.kt",
+    "app/src/test/java/org/thoughtcrime/securesms/backup/v2/LegacyBackupNotificationTest.kt",
+    "app/src/test/java/org/thoughtcrime/securesms/notifications/NotificationIdsTest.kt",
+    "gradle/verification-metadata.xml"
+  ],
   "source_path_mapping": [
     {
       "original_layer": "initial/app-updates",
@@ -1445,7 +907,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/backup-and-restore"
+      "derived_layer": "followups/regression-tests"
     },
     {
       "original_layer": "initial/maps",
@@ -5725,7 +5187,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/networking-and-proxies"
+      "derived_layer": "followups/regression-tests"
     },
     {
       "original_layer": "initial/networking-and-proxies",
@@ -6165,7 +5627,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/privacy-controls"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "initial/registration-and-linking",
@@ -12229,7 +11691,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/integration-deletions"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "initial/integration",
@@ -12261,7 +11723,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/integration-deletions"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "initial/integration",
@@ -12325,7 +11787,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/integration-deletions"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "initial/integration",
@@ -12333,7 +11795,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/integration-deletions"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "initial/integration",
@@ -13149,7 +12611,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/integration-deletions"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "initial/integration",
@@ -13749,7 +13211,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/integration"
+      "derived_layer": "followups/regression-tests"
     },
     {
       "original_layer": "initial/integration",
@@ -14141,7 +13603,7 @@
       "original_source_commits": [
         "90a0bb917ecc49a62236d539f4e7faae01b1d9fe"
       ],
-      "derived_layer": "initial/build-and-release"
+      "derived_layer": "followups/generated-verification-metadata"
     },
     {
       "original_layer": "initial/build-and-release",
@@ -14213,7 +13675,7 @@
       "original_source_commits": [
         "1dc39842dfad7c31be516556f8da95556d6c810f"
       ],
-      "derived_layer": "followups/restore-preference-import"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/netcipher-sdk-dsl",
@@ -14221,7 +13683,7 @@
       "original_source_commits": [
         "a8e3343240ae373624945086999d251e9d652180"
       ],
-      "derived_layer": "followups/netcipher-sdk-dsl"
+      "derived_layer": "initial/build-and-release"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14229,7 +13691,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14237,7 +13699,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/notifications-and-unifiedpush"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14245,7 +13707,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/notifications-and-unifiedpush"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14253,7 +13715,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14261,7 +13723,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14269,7 +13731,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/security-and-locking"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14277,7 +13739,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/backup-and-restore"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14285,7 +13747,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14293,7 +13755,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14301,7 +13763,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14309,7 +13771,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/backup-and-restore"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14317,7 +13779,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14325,7 +13787,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/notifications-and-unifiedpush"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14333,7 +13795,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14341,7 +13803,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14349,7 +13811,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14357,7 +13819,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14365,7 +13827,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14373,7 +13835,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14381,7 +13843,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14389,7 +13851,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14397,7 +13859,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/notifications-and-unifiedpush"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14405,7 +13867,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14413,7 +13875,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14421,7 +13883,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/networking-and-proxies"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14429,7 +13891,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/app-updates"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14437,7 +13899,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14445,7 +13907,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14453,7 +13915,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/notifications-and-unifiedpush"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14461,7 +13923,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14469,7 +13931,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/registration-and-linking"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14477,7 +13939,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14485,7 +13947,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14493,7 +13955,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14501,7 +13963,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14509,7 +13971,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14517,7 +13979,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/networking-and-proxies"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14525,7 +13987,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/notifications-and-unifiedpush"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14533,7 +13995,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/backup-and-restore"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14541,7 +14003,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14549,7 +14011,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14557,7 +14019,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/backup-and-restore"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14565,7 +14027,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14573,7 +14035,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/security-and-locking"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14581,7 +14043,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14589,7 +14051,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14597,7 +14059,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14605,7 +14067,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14613,7 +14075,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14621,7 +14083,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14629,7 +14091,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14637,7 +14099,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -14645,7 +14107,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15197,7 +14659,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15205,7 +14667,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15213,7 +14675,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests-deletions"
+      "derived_layer": "initial/integration-deletions"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15221,7 +14683,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests-deletions"
+      "derived_layer": "initial/integration-deletions"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15229,7 +14691,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15237,7 +14699,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15245,7 +14707,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15253,7 +14715,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "followups/regression-tests"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15261,7 +14723,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/registration-and-linking"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15269,7 +14731,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15277,7 +14739,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15285,7 +14747,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15293,7 +14755,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/registration-and-linking"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15301,7 +14763,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15309,7 +14771,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15317,7 +14779,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/integration-and-regression-tests",
@@ -15325,7 +14787,7 @@
       "original_source_commits": [
         "b6e4f2a164f4861190939ab3fe29fb0d1fdf0748"
       ],
-      "derived_layer": "followups/integration-and-regression-tests"
+      "derived_layer": "followups/regression-tests"
     },
     {
       "original_layer": "followups/cdn-transport-test-fixture",
@@ -15333,7 +14795,7 @@
       "original_source_commits": [
         "cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c"
       ],
-      "derived_layer": "followups/cdn-transport-test-fixture"
+      "derived_layer": "initial/networking-and-proxies"
     },
     {
       "original_layer": "followups/reregistration-linked-devices-reminder",
@@ -15341,7 +14803,7 @@
       "original_source_commits": [
         "d3c917a5be7db6116c83b7e29e09f145e7f38825"
       ],
-      "derived_layer": "followups/reregistration-linked-devices-reminder"
+      "derived_layer": "initial/registration-and-linking"
     },
     {
       "original_layer": "followups/reregistration-linked-devices-reminder",
@@ -15349,7 +14811,7 @@
       "original_source_commits": [
         "d3c917a5be7db6116c83b7e29e09f145e7f38825"
       ],
-      "derived_layer": "followups/reregistration-linked-devices-reminder"
+      "derived_layer": "initial/registration-and-linking"
     },
     {
       "original_layer": "followups/reregistration-linked-devices-reminder",
@@ -15357,7 +14819,7 @@
       "original_source_commits": [
         "d3c917a5be7db6116c83b7e29e09f145e7f38825"
       ],
-      "derived_layer": "followups/reregistration-linked-devices-reminder"
+      "derived_layer": "followups/regression-tests"
     },
     {
       "original_layer": "followups/legacy-backup-precedence",
@@ -15365,7 +14827,7 @@
       "original_source_commits": [
         "266d0185d021b2b6a98882205f6b6242152d146e"
       ],
-      "derived_layer": "followups/legacy-backup-precedence"
+      "derived_layer": "initial/backup-and-restore"
     },
     {
       "original_layer": "followups/legacy-backup-precedence",
@@ -15373,7 +14835,7 @@
       "original_source_commits": [
         "266d0185d021b2b6a98882205f6b6242152d146e"
       ],
-      "derived_layer": "followups/legacy-backup-precedence"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/legacy-backup-precedence",
@@ -15381,7 +14843,7 @@
       "original_source_commits": [
         "266d0185d021b2b6a98882205f6b6242152d146e"
       ],
-      "derived_layer": "followups/legacy-backup-precedence"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/legacy-backup-precedence",
@@ -15389,7 +14851,7 @@
       "original_source_commits": [
         "266d0185d021b2b6a98882205f6b6242152d146e"
       ],
-      "derived_layer": "followups/legacy-backup-precedence"
+      "derived_layer": "followups/regression-tests"
     },
     {
       "original_layer": "followups/donation-completion",
@@ -15397,7 +14859,7 @@
       "original_source_commits": [
         "34100dfa15eb70256d948f96b14abe4b7c7920d6"
       ],
-      "derived_layer": "followups/donation-completion"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/donation-completion",
@@ -15405,7 +14867,7 @@
       "original_source_commits": [
         "34100dfa15eb70256d948f96b14abe4b7c7920d6"
       ],
-      "derived_layer": "followups/donation-completion"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/donation-completion",
@@ -15413,7 +14875,7 @@
       "original_source_commits": [
         "34100dfa15eb70256d948f96b14abe4b7c7920d6"
       ],
-      "derived_layer": "followups/donation-completion"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/donation-completion",
@@ -15421,7 +14883,7 @@
       "original_source_commits": [
         "34100dfa15eb70256d948f96b14abe4b7c7920d6"
       ],
-      "derived_layer": "followups/donation-completion"
+      "derived_layer": "followups/regression-tests"
     },
     {
       "original_layer": "followups/backup-notification-id-upgrade",
@@ -15429,7 +14891,7 @@
       "original_source_commits": [
         "ae2672a773d15d1b22186bd8acbec2221760f049"
       ],
-      "derived_layer": "followups/backup-notification-id-upgrade"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/backup-notification-id-upgrade",
@@ -15437,7 +14899,8 @@
       "original_source_commits": [
         "ae2672a773d15d1b22186bd8acbec2221760f049"
       ],
-      "derived_layer": "followups/backup-notification-id-upgrade"
+      "derived_layer": "deferred-legacy-notification-cleanup",
+      "disposition": "Explicitly deferred optional legacy notification cleanup; removed by a supplied source patch."
     },
     {
       "original_layer": "followups/backup-notification-id-upgrade",
@@ -15445,7 +14908,7 @@
       "original_source_commits": [
         "ae2672a773d15d1b22186bd8acbec2221760f049"
       ],
-      "derived_layer": "followups/backup-notification-id-upgrade"
+      "derived_layer": "initial/notifications-and-unifiedpush"
     },
     {
       "original_layer": "followups/backup-notification-id-upgrade",
@@ -15453,7 +14916,8 @@
       "original_source_commits": [
         "ae2672a773d15d1b22186bd8acbec2221760f049"
       ],
-      "derived_layer": "followups/backup-notification-id-upgrade"
+      "derived_layer": "deferred-legacy-notification-cleanup",
+      "disposition": "Explicitly deferred optional legacy notification cleanup; removed by a supplied source patch."
     },
     {
       "original_layer": "followups/backup-notification-id-upgrade",
@@ -15461,7 +14925,7 @@
       "original_source_commits": [
         "ae2672a773d15d1b22186bd8acbec2221760f049"
       ],
-      "derived_layer": "followups/backup-notification-id-upgrade"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/recipient-badge-list",
@@ -15469,7 +14933,7 @@
       "original_source_commits": [
         "f35e5d6f2adb49bee7af7599e18d15dcf9823082"
       ],
-      "derived_layer": "followups/recipient-badge-list"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/localized-resource-notices",
@@ -15997,7 +15461,7 @@
       "original_source_commits": [
         "a9ebbf1c92798f703ad434c1caa720536a724fe0"
       ],
-      "derived_layer": "followups/locked-system-info"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/locked-system-info",
@@ -16005,7 +15469,7 @@
       "original_source_commits": [
         "a9ebbf1c92798f703ad434c1caa720536a724fe0"
       ],
-      "derived_layer": "followups/locked-system-info"
+      "derived_layer": "followups/regression-tests"
     },
     {
       "original_layer": "followups/remaining-resource-notices",
@@ -16037,7 +15501,7 @@
       "original_source_commits": [
         "0a44d06b86c793186f42d53cf248ad8bb2f6c925"
       ],
-      "derived_layer": "followups/remaining-resource-notices"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/remaining-resource-notices",
@@ -16045,7 +15509,7 @@
       "original_source_commits": [
         "0a44d06b86c793186f42d53cf248ad8bb2f6c925"
       ],
-      "derived_layer": "followups/remaining-resource-notices"
+      "derived_layer": "initial/resources-and-branding"
     },
     {
       "original_layer": "followups/dynamic-appearance-colors",
@@ -16053,7 +15517,7 @@
       "original_source_commits": [
         "325a19e470349aa88232eaa6fd68d7e064a3da24"
       ],
-      "derived_layer": "followups/dynamic-appearance-colors"
+      "derived_layer": "initial/appearance"
     },
     {
       "original_layer": "followups/blocked-network-priority",
@@ -16061,7 +15525,7 @@
       "original_source_commits": [
         "7a2ec75db0b56f45310d09716a3559e5dd503b19"
       ],
-      "derived_layer": "followups/blocked-network-priority"
+      "derived_layer": "initial/networking-and-proxies"
     },
     {
       "original_layer": "followups/blocked-network-priority",
@@ -16069,7 +15533,7 @@
       "original_source_commits": [
         "7a2ec75db0b56f45310d09716a3559e5dd503b19"
       ],
-      "derived_layer": "followups/blocked-network-priority"
+      "derived_layer": "initial/networking-and-proxies"
     },
     {
       "original_layer": "followups/recipient-avatar-badge",
@@ -16077,7 +15541,7 @@
       "original_source_commits": [
         "09d0c9e17576de7090da7a9e6c84080c618f817e"
       ],
-      "derived_layer": "followups/recipient-avatar-badge"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/version-preference-write",
@@ -16085,7 +15549,7 @@
       "original_source_commits": [
         "b0e9ca51c613c1b88ada51a5552b0b7131d1621e"
       ],
-      "derived_layer": "followups/version-preference-write"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/giphy-client-formatting",
@@ -16093,7 +15557,7 @@
       "original_source_commits": [
         "ae5099dd637e08095c995464ec22118866296e3a"
       ],
-      "derived_layer": "followups/giphy-client-formatting"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/always-relay-accessor",
@@ -16101,7 +15565,7 @@
       "original_source_commits": [
         "02088f97be08bcb50763d78245af68f8f1d065e7"
       ],
-      "derived_layer": "followups/always-relay-accessor"
+      "derived_layer": "initial/privacy-controls"
     },
     {
       "original_layer": "followups/logcat-collection",
@@ -16109,7 +15573,7 @@
       "original_source_commits": [
         "9fd7b272e2b546c5fc706315df09c5778590f1fb"
       ],
-      "derived_layer": "followups/logcat-collection"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/retained-molly-imports",
@@ -16117,7 +15581,7 @@
       "original_source_commits": [
         "6a08b686d0f4159a8b801420d601ce55b5195b66"
       ],
-      "derived_layer": "followups/retained-molly-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-molly-imports",
@@ -16125,7 +15589,7 @@
       "original_source_commits": [
         "6a08b686d0f4159a8b801420d601ce55b5195b66"
       ],
-      "derived_layer": "followups/retained-molly-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-activity-push-imports",
@@ -16133,7 +15597,7 @@
       "original_source_commits": [
         "ad4e4df669330f034242afe4d19f29bb1c6f3995"
       ],
-      "derived_layer": "followups/retained-activity-push-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-activity-push-imports",
@@ -16141,7 +15605,7 @@
       "original_source_commits": [
         "ad4e4df669330f034242afe4d19f29bb1c6f3995"
       ],
-      "derived_layer": "followups/retained-activity-push-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-activity-push-imports",
@@ -16149,7 +15613,7 @@
       "original_source_commits": [
         "ad4e4df669330f034242afe4d19f29bb1c6f3995"
       ],
-      "derived_layer": "followups/retained-activity-push-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-activity-push-imports",
@@ -16157,7 +15621,7 @@
       "original_source_commits": [
         "ad4e4df669330f034242afe4d19f29bb1c6f3995"
       ],
-      "derived_layer": "followups/retained-activity-push-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-import-formatting",
@@ -16165,7 +15629,7 @@
       "original_source_commits": [
         "5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9"
       ],
-      "derived_layer": "followups/retained-import-formatting"
+      "derived_layer": "initial/security-and-locking"
     },
     {
       "original_layer": "followups/retained-import-formatting",
@@ -16173,7 +15637,7 @@
       "original_source_commits": [
         "5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9"
       ],
-      "derived_layer": "followups/retained-import-formatting"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-media-preference-imports",
@@ -16181,7 +15645,7 @@
       "original_source_commits": [
         "98f6a7e996abf915eecee06ece4ea901a34ef64b"
       ],
-      "derived_layer": "followups/retained-media-preference-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-media-preference-imports",
@@ -16189,7 +15653,7 @@
       "original_source_commits": [
         "98f6a7e996abf915eecee06ece4ea901a34ef64b"
       ],
-      "derived_layer": "followups/retained-media-preference-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-media-preference-imports",
@@ -16197,7 +15661,7 @@
       "original_source_commits": [
         "98f6a7e996abf915eecee06ece4ea901a34ef64b"
       ],
-      "derived_layer": "followups/retained-media-preference-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-media-preference-imports",
@@ -16205,7 +15669,7 @@
       "original_source_commits": [
         "98f6a7e996abf915eecee06ece4ea901a34ef64b"
       ],
-      "derived_layer": "followups/retained-media-preference-imports"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/backup-direct-cancellation",
@@ -16213,7 +15677,7 @@
       "original_source_commits": [
         "7ee4f371851ac9f2baae2915b209eaf2a664e92f"
       ],
-      "derived_layer": "followups/backup-direct-cancellation"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/remove-pre27-sheet-selectors",
@@ -16221,7 +15685,7 @@
       "original_source_commits": [
         "bda4a65056b18ae1b9aa31aefa8a737342967b64"
       ],
-      "derived_layer": "followups/remove-pre27-sheet-selectors"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/remove-pre27-sheet-selectors",
@@ -16229,7 +15693,7 @@
       "original_source_commits": [
         "bda4a65056b18ae1b9aa31aefa8a737342967b64"
       ],
-      "derived_layer": "followups/remove-pre27-sheet-selectors"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/registration-and-timing-format",
@@ -16237,7 +15701,7 @@
       "original_source_commits": [
         "1f0af82f4ab6a510afe506d0efd33d8f09ecf24e"
       ],
-      "derived_layer": "followups/registration-and-timing-format"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/registration-and-timing-format",
@@ -16245,7 +15709,7 @@
       "original_source_commits": [
         "1f0af82f4ab6a510afe506d0efd33d8f09ecf24e"
       ],
-      "derived_layer": "followups/registration-and-timing-format"
+      "derived_layer": "initial/registration-and-linking"
     },
     {
       "original_layer": "followups/registration-and-timing-format",
@@ -16253,7 +15717,7 @@
       "original_source_commits": [
         "1f0af82f4ab6a510afe506d0efd33d8f09ecf24e"
       ],
-      "derived_layer": "followups/registration-and-timing-format"
+      "derived_layer": "initial/registration-and-linking"
     },
     {
       "original_layer": "followups/unavailable-contact-and-legacy-preferences",
@@ -16261,7 +15725,7 @@
       "original_source_commits": [
         "a3a9eaabe66d42fdbf8807158eca7de8c9755b33"
       ],
-      "derived_layer": "followups/unavailable-contact-and-legacy-preferences"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/unavailable-contact-and-legacy-preferences",
@@ -16269,7 +15733,7 @@
       "original_source_commits": [
         "a3a9eaabe66d42fdbf8807158eca7de8c9755b33"
       ],
-      "derived_layer": "followups/unavailable-contact-and-legacy-preferences"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/unavailable-contact-and-legacy-preferences",
@@ -16277,7 +15741,7 @@
       "original_source_commits": [
         "a3a9eaabe66d42fdbf8807158eca7de8c9755b33"
       ],
-      "derived_layer": "followups/unavailable-contact-and-legacy-preferences"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/unavailable-contact-and-legacy-preferences",
@@ -16285,7 +15749,7 @@
       "original_source_commits": [
         "a3a9eaabe66d42fdbf8807158eca7de8c9755b33"
       ],
-      "derived_layer": "followups/unavailable-contact-and-legacy-preferences"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/unavailable-contact-and-legacy-preferences",
@@ -16293,7 +15757,7 @@
       "original_source_commits": [
         "a3a9eaabe66d42fdbf8807158eca7de8c9755b33"
       ],
-      "derived_layer": "followups/unavailable-contact-and-legacy-preferences"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/unavailable-contact-and-legacy-preferences",
@@ -16301,7 +15765,7 @@
       "original_source_commits": [
         "a3a9eaabe66d42fdbf8807158eca7de8c9755b33"
       ],
-      "derived_layer": "followups/unavailable-contact-and-legacy-preferences"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/unavailable-contact-and-legacy-preferences",
@@ -16309,7 +15773,7 @@
       "original_source_commits": [
         "a3a9eaabe66d42fdbf8807158eca7de8c9755b33"
       ],
-      "derived_layer": "followups/unavailable-contact-and-legacy-preferences"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/navigation-and-share-legacy",
@@ -16317,7 +15781,7 @@
       "original_source_commits": [
         "031894f1a74ca85b44cdd37f33a4bf6ba3f6c275"
       ],
-      "derived_layer": "followups/navigation-and-share-legacy"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/navigation-and-share-legacy",
@@ -16325,7 +15789,7 @@
       "original_source_commits": [
         "031894f1a74ca85b44cdd37f33a4bf6ba3f6c275"
       ],
-      "derived_layer": "followups/navigation-and-share-legacy"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/navigation-and-share-legacy",
@@ -16333,7 +15797,7 @@
       "original_source_commits": [
         "031894f1a74ca85b44cdd37f33a4bf6ba3f6c275"
       ],
-      "derived_layer": "followups/navigation-and-share-legacy"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/navigation-and-share-legacy",
@@ -16341,7 +15805,7 @@
       "original_source_commits": [
         "031894f1a74ca85b44cdd37f33a4bf6ba3f6c275"
       ],
-      "derived_layer": "followups/navigation-and-share-legacy"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/navigation-and-share-legacy",
@@ -16349,7 +15813,7 @@
       "original_source_commits": [
         "031894f1a74ca85b44cdd37f33a4bf6ba3f6c275"
       ],
-      "derived_layer": "followups/navigation-and-share-legacy"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-settings-camera-and-version",
@@ -16357,7 +15821,7 @@
       "original_source_commits": [
         "a39eeee9155bdc9116b611734dcc58653f7cb38f"
       ],
-      "derived_layer": "followups/retained-settings-camera-and-version"
+      "derived_layer": "initial/integration"
     },
     {
       "original_layer": "followups/retained-settings-camera-and-version",
@@ -16365,7 +15829,7 @@
       "original_source_commits": [
         "a39eeee9155bdc9116b611734dcc58653f7cb38f"
       ],
-      "derived_layer": "followups/retained-settings-camera-and-version"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/retained-settings-camera-and-version",
@@ -16373,7 +15837,7 @@
       "original_source_commits": [
         "a39eeee9155bdc9116b611734dcc58653f7cb38f"
       ],
-      "derived_layer": "followups/retained-settings-camera-and-version"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/retained-settings-camera-and-version",
@@ -16381,7 +15845,7 @@
       "original_source_commits": [
         "a39eeee9155bdc9116b611734dcc58653f7cb38f"
       ],
-      "derived_layer": "followups/retained-settings-camera-and-version"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/retained-settings-camera-and-version",
@@ -16389,7 +15853,7 @@
       "original_source_commits": [
         "a39eeee9155bdc9116b611734dcc58653f7cb38f"
       ],
-      "derived_layer": "followups/retained-settings-camera-and-version"
+      "derived_layer": "absorbed-no-net-change"
     },
     {
       "original_layer": "followups/retained-settings-camera-and-version",
@@ -16397,19 +15861,11 @@
       "original_source_commits": [
         "a39eeee9155bdc9116b611734dcc58653f7cb38f"
       ],
-      "derived_layer": "followups/retained-settings-camera-and-version"
+      "derived_layer": "initial/integration"
     }
   ],
   "original_initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
-  "absorbed_layers": [
-    {
-      "id": "followups/localized-resource-notices",
-      "original_source_commits": [
-        "2baf94944e5461323bd4fc53ea99d522882be4b1"
-      ],
-      "destination": "generated-translations"
-    }
-  ],
+  "absorbed_layers": [],
   "mechanical_source_commit": "9f74731e3f2ebbdc01cab18f407dcd86e13623cf",
   "mechanical_source_bundle": "source-checkpoint-mechanical.bundle",
   "mechanical_source_bundle_prerequisite": "6e9dddc01f1b26e608ac683807c51e139c141ed2",

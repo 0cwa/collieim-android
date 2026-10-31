@@ -1,14 +1,15 @@
-From 86d33fb676e78105b47403469bb8ad2d1edc5d78 Mon Sep 17 00:00:00 2001
+From 74ecc0a46d6a0bf3e88ef5ddc3a23482ac8844de Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sat, 1 Jan 2000 00:00:00 +0000
 Subject: [PATCH] Derived compatibility checkpoint: initial/appearance
 
 Resolve dynamic colors, themes and moved UI APIs while retaining Molly appearance behavior.
 
+Original-Source-Commit: 325a19e470349aa88232eaa6fd68d7e064a3da24
 Original-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
 AI-Generated: true
 
-Source-Commit: 86d33fb676e78105b47403469bb8ad2d1edc5d78
+Source-Commit: 74ecc0a46d6a0bf3e88ef5ddc3a23482ac8844de
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/wallpaper/crop/WallpaperCropActivity.java b/app/src/main/java/org/thoughtcrime/securesms/wallpaper/crop/WallpaperCropActivity.java
 index 5f0fc8d4..77a57a9f 100644
@@ -167,7 +168,7 @@ index 3e7b83a4..35f12286 100644
      val selectedIndex = values.indexOf(selectedValue)
      var displayDialog by remember { mutableStateOf(false) }
 diff --git a/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt b/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt
-index 007d0882..0f69d2e3 100644
+index 007d0882..06763d59 100644
 --- a/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt
 +++ b/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt
 @@ -132,20 +132,12 @@ private val lightExtendedColors = ExtendedColors(
@@ -223,15 +224,6 @@ index 007d0882..0f69d2e3 100644
  @Composable
  private fun systemAlignedLightColorScheme() = lightColorScheme(
    primary = colorResource(R.color.dynamic_primary_light),
-@@ -374,7 +356,7 @@ private fun isThemeUsingDynamicColors(context: Context): Boolean {
- 
- private fun extendedColors(colorScheme: ColorScheme, isDarkMode: Boolean, isDynamic: Boolean): ExtendedColors {
-   return when {
--    isDynamic -> lightExtendedColors.copy(
-+    isDynamic -> (if (isDarkMode) darkExtendedColors else lightExtendedColors).copy(
-       colorSurface1 = colorScheme.surfaceContainerLow,
-       colorSurface2 = colorScheme.surfaceContainer,
-       colorSurface3 = colorScheme.surfaceContainerHigh,
 @@ -408,7 +390,9 @@ fun colorAttribute(@AttrRes id: Int): Color {
      colorResource(typedValue.resourceId)
    } else {

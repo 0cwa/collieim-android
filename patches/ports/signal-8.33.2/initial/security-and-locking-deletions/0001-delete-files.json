@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "66466a97c2ec0417b7bf58ff5ba4299c836cfc4e",
-  "before_tree": "ccb7f8c9149b8c9f5c593c1265ffb775a81bb945",
-  "after_tree": "dc98cbde6eaa2598446be6a2261efef547dd1a70",
+  "source_commit": "a98177d0568829df6780d0256c75fe5650be1065",
+  "before_tree": "0a8da826f2e1b501b9997c7d9ca3ec9cbc6e289f",
+  "after_tree": "262aac5078718978046d147433b6098b6a6a3653",
   "files": [
     {
       "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/privacy/screenlock/ScreenLockSettingsFragment.kt",

@@ -116,9 +116,56 @@ Whole-file deletion manifests and generated translations are explicit,
 pinned stages. Translation generation reads Signal locale blobs and adds the
 68 Molly `please_wait` entries to locale `strings2.xml` files.
 
-The final source tree is `14ba9fde0c1b0d5e1f31eb2a216142fa4e7270d6`. The source commit is `8ca76dfeb369b3711ea3591a1c5e5f03045f2d99`.
+The final source tree is `758a8cb3048c525e8802cfe92369c69f09722961`. The source commit is `772a3e479083c5a1b84a20ec772265b153b3dd6d`.
 The retained `CorrectedPreferenceFragment.java` conflict is an explicit
 keep-Molly decision in the build configuration.
+
+Gradle verification metadata is a separate review layer. The exact historical
+commands are recorded in `provenance.json` under `metadata_generation_command`.
+They ran against source tree `14ba9fde0c1b0d5e1f31eb2a216142fa4e7270d6`, before
+the optional legacy backup notification cleanup and its dedicated test were
+deferred. The historical run added two checksums without changing or removing
+existing entries or trust configuration. The subsequent source changes do not
+change the dependency configuration.
+
+To regenerate metadata for the current profile, set `PATCH_RELEASE` to the
+absolute path of the patch-release checkout and change directory to the
+**assembled Molly source tree**. The tracked patch-release tree is Signal's tree;
+it is not the assembled build tree. The commands below use the profile's current
+assemble task and test arguments:
+
+```sh
+export PATCH_RELEASE=/absolute/path/to/patch-release
+cd /absolute/path/to/assembled-molly-source
+python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+import subprocess
+
+release = Path(os.environ['PATCH_RELEASE']).resolve(strict=True)
+profile = json.loads((release / 'molly-build.json').read_text())['android']
+common = [
+    './gradlew', '--no-daemon', '--no-parallel', '--no-configuration-cache',
+    '--max-workers=1', '--write-verification-metadata', 'sha256',
+    '--init-script', str(release / 'tools/patches/test-worker-heap.init.gradle'),
+    '-Pkotlin.compiler.execution.strategy=in-process',
+    '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g '
+    '-Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions '
+    '-XX:hashCode=3',
+]
+subprocess.run(common + [profile['assemble']], check=True)
+subprocess.run(common + profile['tests'], check=True)
+PY
+```
+
+The previous `qaRemote` task wrapper was unusable because the task was excluded,
+so generation used direct Gradle commands. Review the generated metadata and
+then run the strict full preflight from the patch-release checkout. Writing
+verification metadata does not itself prove native artifact provenance; follow
+the native build instructions below when they apply.
+
+The optional legacy backup notification cleanup and its dedicated test are deferred.
 
 When changing a checkpoint, replay every later checkpoint and regenerate its
 bundle, mailbox, source attribution, and tree and hash pins. The official Molly

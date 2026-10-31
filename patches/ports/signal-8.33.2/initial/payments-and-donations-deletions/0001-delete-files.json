@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "84c64fed08105f2a5d4f6ad7a082baf824ab8ca9",
-  "before_tree": "4d7d0a9a1ead3ab8974b68f00481b69b501c9340",
-  "after_tree": "75fb75206e312c01db52c8e0b88dd7060a27203b",
+  "source_commit": "452033a21e10343e548e15fbd7707278392144fd",
+  "before_tree": "e3210117b1627857cac4858d05bf463691c078fe",
+  "after_tree": "2ddc55e845cb91cdf7112f827164669c06a091c3",
   "files": [
     {
       "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/InAppPaymentGiftSendJob.kt",

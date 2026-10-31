@@ -1,4 +1,4 @@
-From 6046f8a36520ddcd0c07d7e5dd89a540168a7b23 Mon Sep 17 00:00:00 2001
+From 087286ef9a8209ec35c28e4927224afb95bd23cd Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sat, 1 Jan 2000 00:00:00 +0000
 Subject: [PATCH] Derived compatibility checkpoint:
@@ -6,11 +6,46 @@ Subject: [PATCH] Derived compatibility checkpoint:
 
 Carry Molly SOCKS, Tor, DNS and transport choices through the updated Signal networking interfaces and NetCipher integration.
 
+Original-Source-Commit: 7a2ec75db0b56f45310d09716a3559e5dd503b19
 Original-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Original-Source-Commit: b6e4f2a164f4861190939ab3fe29fb0d1fdf0748
+Original-Source-Commit: cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c
 AI-Generated: true
 
-Source-Commit: 6046f8a36520ddcd0c07d7e5dd89a540168a7b23
+Source-Commit: 087286ef9a8209ec35c28e4927224afb95bd23cd
 
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/jobmanager/impl/NetworkConstraintObserver.java b/app/src/main/java/org/thoughtcrime/securesms/jobmanager/impl/NetworkConstraintObserver.java
+index 0736adfb..19b8ef8c 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/jobmanager/impl/NetworkConstraintObserver.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/jobmanager/impl/NetworkConstraintObserver.java
+@@ -9,9 +9,8 @@ import android.net.ConnectivityManager;
+ 
+ import androidx.annotation.NonNull;
+ 
+-import org.greenrobot.eventbus.EventBus;
+-import org.greenrobot.eventbus.Subscribe;
+-import org.greenrobot.eventbus.ThreadMode;
++import org.signal.core.util.eventbus.EventBus;
++import org.signal.core.util.eventbus.ThreadMode;
+ import org.signal.core.util.logging.Log;
+ import org.thoughtcrime.securesms.events.NetworkAvailableEvent;
+ import org.thoughtcrime.securesms.jobmanager.ConstraintObserver;
+@@ -37,12 +36,9 @@ public class NetworkConstraintObserver implements ConstraintObserver {
+       }
+     }, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+ 
+-    EventBus.getDefault().register(new Object() {
+-      @Subscribe(threadMode = ThreadMode.MAIN)
+-      public void onNetworkReadyEvent(@NonNull NetworkAvailableEvent event) {
+-        if (NetworkConstraint.isMet(application)) {
+-          notifier.onConstraintMet(REASON);
+-        }
++    EventBus.getDefault().subscribe(NetworkAvailableEvent.class, ThreadMode.MAIN, event -> {
++      if (NetworkConstraint.isMet(application)) {
++        notifier.onConstraintMet(REASON);
+       }
+     });
+   }
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/ProxyValues.java b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/ProxyValues.java
 index 53283b7b..282ccbbf 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/ProxyValues.java
@@ -29,8 +64,50 @@ index 53283b7b..282ccbbf 100644
  
  import java.util.Arrays;
  import java.util.List;
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt b/app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt
+index 3e5041da..81db0ce4 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt
+@@ -14,24 +14,18 @@ enum class ConnectivityState {
+ 
+   /**
+    * A network is connected but Android has not validated Internet reachability (e.g. a captive portal, or a
+-   * restrictive network that blocks the OS validation probe). Treated as online (see [isAssumedOnline]) so we
+-   * still try.
++   * restrictive network that blocks the OS validation probe).
+    */
+   CONNECTED_UNVALIDATED,
+ 
+   /**
+-   * We could not get connectivity information from the OS. We fail open and assume we are online until
+-   * we get a strong signal otherwise (e.g. [BLOCKED]), rather than sitting idle believing we are offline.
++   * We could not get connectivity information from the OS.
+    */
+   MONITORING_UNAVAILABLE;
+ 
+   /** True only when the OS confirms validated Internet reachability. */
+   val isOnline: Boolean
+     get() = this == ONLINE || this == ONLINE_VPN
+-
+-  /** [isOnline] plus the fail-open states we optimistically treat as online (connected-but-unvalidated, or unknown). */
+-  val isAssumedOnline: Boolean
+-    get() = isOnline || this == CONNECTED_UNVALIDATED || this == MONITORING_UNAVAILABLE
+ }
+ 
+ /** The tracked state of a single network. */
+@@ -47,8 +41,8 @@ data class NetworkState(
+     get() = when {
+       isReachable && onVpn -> 4
+       isReachable -> 3
+-      !blocked -> 2
+-      blocked && onVpn -> 1
++      blocked && onVpn -> 2
++      blocked -> 1
+       else -> 0
+     }
+ }
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt b/app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt
-index 2e8d9bc5..c199e4a9 100644
+index 2e8d9bc5..9618b47e 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt
 @@ -10,10 +10,7 @@ import android.content.Context
@@ -79,7 +156,7 @@ index 2e8d9bc5..c199e4a9 100644
  import kotlinx.coroutines.CancellationException
  import kotlinx.coroutines.CoroutineExceptionHandler
  import kotlinx.coroutines.CoroutineScope
-@@ -77,20 +46,10 @@ import org.thoughtcrime.securesms.jobmanager.impl.BackoffUtil
+@@ -77,26 +46,16 @@ import org.thoughtcrime.securesms.jobmanager.impl.BackoffUtil
  import kotlin.time.Duration
  import kotlin.time.Duration.Companion.milliseconds
  import kotlin.time.Duration.Companion.minutes
@@ -100,6 +177,14 @@ index 2e8d9bc5..c199e4a9 100644
   * [onConnectivityUpdated] is invoked when the [ConnectivityState], the set of tracked networks, or the default network or its addresses change (a
   * transport swap leaves the old transport stale), and on the first state of every callback re-registration.
   * The current state is delivered immediately upon registration. If the OS reports no matching networks at all,
+  * [ConnectivityState.OFFLINE] is reported after [INITIAL_STATE_TIMEOUT], since no callbacks will ever arrive.
+- * If we lose the ability to observe connectivity entirely, we fail open and report
+- * [ConnectivityState.MONITORING_UNAVAILABLE] (treated as online) while retrying in the background.
++ * If we lose the ability to observe connectivity entirely, we report
++ * [ConnectivityState.MONITORING_UNAVAILABLE] while retrying in the background.
+  *
+  * [onProxyChanged] is invoked when the system reports a proxy change, and additionally whenever the set of
+  * tracked networks or the aggregate connectivity state changes, since the proxy we read can lag the broadcast.
 @@ -108,7 +67,6 @@ import kotlin.time.Duration.Companion.minutes
   * The callbacks run inside the monitor's own coroutine job. They must be non-suspending, and must not assume
   * the monitor keeps running if they trigger [unregister] (e.g. via a teardown/reset): cancellation is
@@ -171,7 +256,7 @@ index 2e8d9bc5..c199e4a9 100644
        }
      }
    }
-@@ -234,35 +156,6 @@ class InternetConnectivityMonitor(
+@@ -234,39 +156,10 @@ class InternetConnectivityMonitor(
      monitorJob = null
    }
  
@@ -206,7 +291,22 @@ index 2e8d9bc5..c199e4a9 100644
 -=======
    /**
     * Wraps [connectivityStateFlow] so a failure to observe connectivity never permanently stops monitoring:
-    * an expected [NetworkStateStaleException] re-subscribes immediately, while any other failure fails open
+-   * an expected [NetworkStateStaleException] re-subscribes immediately, while any other failure fails open
+-   * ([ConnectivityState.MONITORING_UNAVAILABLE]) and retries with capped backoff.
++   * an expected [NetworkStateStaleException] re-subscribes immediately, while any other failure reports
++   * [ConnectivityState.MONITORING_UNAVAILABLE] and retries with capped backoff.
+    */
+   private fun resilientConnectivityStateFlow(): Flow<ConnectivitySnapshot> = flow {
+     var failures = 0
+@@ -286,7 +179,7 @@ class InternetConnectivityMonitor(
+             }
+             else -> {
+               failures++
+-              Log.w(TAG, "Connectivity monitoring failed (attempt $failures). Assuming online until it recovers.", cause)
++              Log.w(TAG, "Connectivity monitoring failed (attempt $failures). Retrying until it recovers.", cause)
+               // Latched so a long outage emits MONITORING_UNAVAILABLE once instead of once per retry. Reset on the next successful collect.
+               if (!reportedUnavailable) {
+                 emit(ConnectivitySnapshot(ConnectivityState.MONITORING_UNAVAILABLE, emptyMap()))
 @@ -320,13 +213,10 @@ class InternetConnectivityMonitor(
      private val connectivityManager: ConnectivityManager,
      private val onStateChanged: (ConnectivitySnapshot) -> Unit,
@@ -358,6 +458,15 @@ index 2e8d9bc5..c199e4a9 100644
      callback.bootstrap()
      try {
        callback.register(request)
+@@ -630,7 +419,7 @@ class InternetConnectivityMonitor(
+       callbackScope.cancel()
+     }
+   }.conflate()
+-    .debounce { if (it.state.isAssumedOnline) ONLINE_SETTLE_TIMEOUT else Duration.ZERO }
++    .debounce { if (it.state.isOnline) ONLINE_SETTLE_TIMEOUT else Duration.ZERO }
+     // Keyed on networks and the default too: a swap can hold the state (WiFi drops, cellular stays ONLINE) while the old transport goes stale.
+     .distinctUntilChanged { old, new -> old.state == new.state && old.networks.keys == new.networks.keys && old.defaultNetwork == new.defaultNetwork }
+ 
 @@ -645,7 +434,6 @@ class InternetConnectivityMonitor(
          true
        }
@@ -394,6 +503,19 @@ index 2e8d9bc5..c199e4a9 100644
    }
 ->>>>>>> SIGNAL
  }
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/net/NetworkManager.java b/app/src/main/java/org/thoughtcrime/securesms/net/NetworkManager.java
+index 0a4ae49f..ddddac0a 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/net/NetworkManager.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/net/NetworkManager.java
+@@ -10,7 +10,7 @@ import androidx.webkit.ProxyConfig;
+ import androidx.webkit.ProxyController;
+ import androidx.webkit.WebViewFeature;
+ 
+-import org.greenrobot.eventbus.EventBus;
++import org.signal.core.util.eventbus.EventBus;
+ import org.signal.core.util.AppForegroundObserver;
+ import org.signal.core.util.concurrent.SignalExecutors;
+ import org.signal.core.util.logging.Log;
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/net/NetworkProxy.kt b/app/src/main/java/org/thoughtcrime/securesms/net/NetworkProxy.kt
 index 94e0beee..56d094ff 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/net/NetworkProxy.kt
@@ -606,6 +728,56 @@ index 4fddefe4..2da5ef7d 100644
    }
  
    private fun testWebsocketConnectionUnregistered(timeout: Long): Boolean {
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt b/app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt
+index 14a023e7..f08cfc15 100644
+--- a/app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt
++++ b/app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt
+@@ -25,14 +25,14 @@ class ConnectivityStateCalculatorTest {
+   }
+ 
+   @Test
+-  fun `isAssumedOnline adds the fail-open states`() {
+-    assertThat(ConnectivityState.ONLINE.isAssumedOnline).isTrue()
+-    assertThat(ConnectivityState.ONLINE_VPN.isAssumedOnline).isTrue()
+-    assertThat(ConnectivityState.CONNECTED_UNVALIDATED.isAssumedOnline).isTrue()
+-    assertThat(ConnectivityState.MONITORING_UNAVAILABLE.isAssumedOnline).isTrue()
+-    assertThat(ConnectivityState.OFFLINE.isAssumedOnline).isFalse()
+-    assertThat(ConnectivityState.BLOCKED.isAssumedOnline).isFalse()
+-    assertThat(ConnectivityState.BLOCKED_VPN.isAssumedOnline).isFalse()
++  fun `validated network permits connectivity after an unvalidated or blocked network`() {
++    val unvalidated = NetworkState(validated = false, blocked = false, onVpn = false)
++    val blocked = NetworkState(validated = true, blocked = true, onVpn = false)
++    val validated = NetworkState(validated = true, blocked = false, onVpn = false)
++
++    assertThat(ConnectivityStateCalculator.calculate(listOf(unvalidated)).isOnline).isFalse()
++    assertThat(ConnectivityStateCalculator.calculate(listOf(blocked)).isOnline).isFalse()
++    assertThat(ConnectivityStateCalculator.calculate(listOf(validated)).isOnline).isTrue()
+   }
+ 
+   @Test
+@@ -98,11 +98,20 @@ class ConnectivityStateCalculatorTest {
+   }
+ 
+   @Test
+-  fun `a usable unvalidated network outranks a blocked one`() {
++  fun `a blocked network outranks an unvalidated network`() {
+     val states = listOf(
+       NetworkState(validated = true, blocked = true, onVpn = false),
+       NetworkState(validated = false, blocked = false, onVpn = false)
+     )
+-    assertThat(ConnectivityStateCalculator.calculate(states)).isEqualTo(ConnectivityState.CONNECTED_UNVALIDATED)
++    assertThat(ConnectivityStateCalculator.calculate(states)).isEqualTo(ConnectivityState.BLOCKED)
++  }
++
++  @Test
++  fun `a blocked vpn outranks an unvalidated underlying network`() {
++    val states = listOf(
++      NetworkState(validated = true, blocked = true, onVpn = true),
++      NetworkState(validated = false, blocked = false, onVpn = false)
++    )
++    assertThat(ConnectivityStateCalculator.calculate(states)).isEqualTo(ConnectivityState.BLOCKED_VPN)
+   }
+ }
 diff --git a/core/network/src/main/java/org/signal/network/config/NetworkProxyState.kt b/core/network/src/main/java/org/signal/network/config/NetworkProxyState.kt
 index 6ebbe6e3..d2a6a4b1 100644
 --- a/core/network/src/main/java/org/signal/network/config/NetworkProxyState.kt
@@ -708,50 +880,6 @@ index 81a79506..d9af3187 100644
 -  fun toProxyConfig(): ProxyConfig = ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.TLS, host, port)
 +  fun toProxyConfig(): ProxyConfig = ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.TLS, host, port, ProxyConfig.ProxySource.USER)
  }
-diff --git a/core/network/src/test/java/org/signal/network/config/LibSignalProxyPolicyTest.kt b/core/network/src/test/java/org/signal/network/config/LibSignalProxyPolicyTest.kt
-new file mode 100644
-index 00000000..17e0f3b6
---- /dev/null
-+++ b/core/network/src/test/java/org/signal/network/config/LibSignalProxyPolicyTest.kt
-@@ -0,0 +1,38 @@
-+/*
-+ * Copyright 2026 Molly Project
-+ * SPDX-License-Identifier: AGPL-3.0-only
-+ */
-+
-+package org.signal.network.config
-+
-+import io.mockk.every
-+import io.mockk.mockk
-+import io.mockk.verify
-+import org.junit.Test
-+import org.signal.libsignal.net.Network
-+import java.io.IOException
-+
-+class LibSignalProxyPolicyTest {
-+
-+  @Test
-+  fun `a rejected user SOCKS proxy fails closed without a direct fallback`() {
-+    val network = mockk<Network>(relaxed = true)
-+    every { network.setProxy("socks5h", "localhost", 9050, null, null) } throws IOException("Invalid proxy")
-+
-+    network.configureProxy(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.SOCKS_REMOTE_DNS, "localhost", 9050, ProxyConfig.ProxySource.USER))
-+
-+    verify(exactly = 1) { network.setInvalidProxy() }
-+    verify(exactly = 0) { network.clearProxy() }
-+  }
-+
-+  @Test
-+  fun `an unavailable optional system proxy retains the existing direct fallback`() {
-+    val network = mockk<Network>(relaxed = true)
-+    every { network.setProxy("http", "proxy.example.com", 8080, null, null) } throws IOException("Invalid proxy")
-+
-+    network.configureProxy(ProxyConfig.ProxyAddress(ProxyConfig.ProxyScheme.HTTP, "proxy.example.com", 8080))
-+
-+    verify(exactly = 1) { network.clearProxy() }
-+    verify(exactly = 0) { network.setInvalidProxy() }
-+  }
-+}
 diff --git a/core/network/src/test/java/org/signal/network/config/ProxyConfigTest.kt b/core/network/src/test/java/org/signal/network/config/ProxyConfigTest.kt
 index ea455830..4970fa05 100644
 --- a/core/network/src/test/java/org/signal/network/config/ProxyConfigTest.kt
@@ -919,6 +1047,41 @@ index 1ec4fd53..a4d1ff5c 100644
      } else {
        storageClients
      }
+diff --git a/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt b/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt
+index 103ec690..a95eb394 100644
+--- a/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt
++++ b/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt
+@@ -11,6 +11,7 @@ import assertk.assertions.isEqualTo
+ import assertk.assertions.isInstanceOf
+ import assertk.assertions.isNull
+ import kotlinx.coroutines.test.runTest
++import okhttp3.Dns
+ import okhttp3.Interceptor
+ import okhttp3.MediaType.Companion.toMediaType
+ import okhttp3.OkHttpClient
+@@ -34,8 +35,9 @@ import org.signal.network.rest.SignalRestClient
+ import org.whispersystems.signalservice.internal.push.AttachmentUploadForm
+ import java.io.ByteArrayInputStream
+ import java.io.IOException
+-import java.util.Optional
++import java.net.ProxySelector
+ import java.util.Random
++import javax.net.SocketFactory
+ import kotlin.time.Duration.Companion.seconds
+ 
+ class CdnApiTest {
+@@ -404,8 +406,9 @@ class CdnApiTest {
+       signalCdsiUrls = emptyArray<SignalCdsiUrl>(),
+       signalSvr2Urls = emptyArray<SignalSvr2Url>(),
+       networkInterceptors = emptyList(),
+-      dns = Optional.empty(),
+-      signalProxy = Optional.empty(),
++      dns = Dns.SYSTEM,
++      socketFactory = SocketFactory.getDefault(),
++      proxySelector = ProxySelector.getDefault(),
+       zkGroupServerPublicParams = ByteArray(0),
+       genericServerPublicParams = ByteArray(0),
+       backupServerPublicParams = ByteArray(0),
 diff --git a/lib/network/src/test/java/org/signal/network/rest/SignalRestClientTest.kt b/lib/network/src/test/java/org/signal/network/rest/SignalRestClientTest.kt
 index a6b84a07..83ae3645 100644
 --- a/lib/network/src/test/java/org/signal/network/rest/SignalRestClientTest.kt

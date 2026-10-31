@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "9becfe4bb55be9729d88364e1c495227d2f55f06",
-  "before_tree": "c2d52b9c65ef53bd25e4068893eefc524cb7dcc1",
-  "after_tree": "3fdc33661149b457693394fef815dae72a95a3dd",
+  "source_commit": "c0a0e9c4e7286e23ff9916c0f6f2878a63a1a8c4",
+  "before_tree": "fb0dc47bcab91c61f650930a72d617de22b38cba",
+  "after_tree": "47323607dc5b1113b20a3441a17d4358bdfd59b6",
   "files": [
     {
       "path": "app/src/benchmark/java/org/thoughtcrime/securesms/BenchmarkApplicationContext.kt",

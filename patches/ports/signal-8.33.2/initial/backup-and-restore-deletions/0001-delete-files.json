@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "fc460d6e0052179f74583118f9b23993d6aa9d73",
-  "before_tree": "1fcff6ea474e0d0e559277c61922356202abf355",
-  "after_tree": "aa749acc2a33184c7ddee4c19f6a67d3000dc705",
+  "source_commit": "b8b410c258648984e446a8b3b345e52afd6ef87c",
+  "before_tree": "9ca23ea83ad07c8202f9ebabcbd167f9ac891415",
+  "after_tree": "c79649a868eb5303bee2d2f051a06e71e60cb7d4",
   "files": [
     {
       "path": "app/src/main/java/org/thoughtcrime/securesms/restore/RestoreActivity.kt",

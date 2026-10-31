@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "3fd68386964e4927893fe618b4c07a82dc59d11a",
-  "before_tree": "9136333e998bff4ea5904e1b7141fa091c9c94fc",
-  "after_tree": "17bf1dddd01bdc2d6e7ec87621381ce1ef64ae31",
+  "source_commit": "a6708b7867e82e0d4fbabc2bf6ad0aa8d56af2e2",
+  "before_tree": "3d1e0703b96368a3c07bc1dfc982c482a9ee041d",
+  "after_tree": "567bacbf9b19bea9ec46cfbda615a01c9a766f68",
   "files": [
     {
       "path": "app/src/main/java/org/thoughtcrime/securesms/registration/sms/SmsRetrieverReceiver.java",

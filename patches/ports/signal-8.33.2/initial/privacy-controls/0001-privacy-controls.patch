@@ -1,14 +1,15 @@
-From d98846a2acd189a2ec967de63cafec6f5b03a0e9 Mon Sep 17 00:00:00 2001
+From cff88593eda12b8afe9559b2116017dbd4a3ec40 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sat, 1 Jan 2000 00:00:00 +0000
 Subject: [PATCH] Derived compatibility checkpoint: initial/privacy-controls
 
 Retain Molly privacy policies for calls, unknown contacts and logging in the updated upstream code.
 
+Original-Source-Commit: 02088f97be08bcb50763d78245af68f8f1d065e7
 Original-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
 AI-Generated: true
 
-Source-Commit: d98846a2acd189a2ec967de63cafec6f5b03a0e9
+Source-Commit: cff88593eda12b8afe9559b2116017dbd4a3ec40
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/calls/log/CallLogAdapter.kt b/app/src/main/java/org/thoughtcrime/securesms/calls/log/CallLogAdapter.kt
 index 56a6aac7..093bc63e 100644
@@ -405,34 +406,27 @@ index 8dbf4195..4ce52166 100644
  
    private var networkReceiver: NetworkReceiver? = null
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/privacy/advanced/AdvancedPrivacySettingsViewModel.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/privacy/advanced/AdvancedPrivacySettingsViewModel.kt
-index a6fbb5d0..3fb4168f 100644
+index a6fbb5d0..6fc46049 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/privacy/advanced/AdvancedPrivacySettingsViewModel.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/privacy/advanced/AdvancedPrivacySettingsViewModel.kt
-@@ -94,12 +94,8 @@ class AdvancedPrivacySettingsViewModel(
+@@ -21,6 +21,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
+ import org.thoughtcrime.securesms.recipients.Recipient
+ import org.thoughtcrime.securesms.storage.StorageSyncHelper
+ import org.thoughtcrime.securesms.util.SignalE164Util
++import org.thoughtcrime.securesms.util.TextSecurePreferences
+ import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
+ 
+ class AdvancedPrivacySettingsViewModel(
+@@ -94,12 +95,8 @@ class AdvancedPrivacySettingsViewModel(
  
      return AdvancedPrivacySettingsState(
        isPushEnabled = SignalStore.account.isRegistered,
 -<<<<<<< MOLLY
--      alwaysRelayCalls = TextSecurePreferences.isTurnOnly(AppDependencies.application),
--      proxyEnabled = AppDependencies.networkManager.isProxyEnabled,
+       alwaysRelayCalls = TextSecurePreferences.isTurnOnly(AppDependencies.application),
+       proxyEnabled = AppDependencies.networkManager.isProxyEnabled,
 -=======
-       alwaysRelayCalls = SignalStore.settings.isTurnOnly,
+-      alwaysRelayCalls = SignalStore.settings.isTurnOnly,
 ->>>>>>> SIGNAL
-+      proxyEnabled = AppDependencies.networkManager.isProxyEnabled,
        censorshipCircumventionState = censorshipCircumventionState,
        censorshipCircumventionEnabled = getCensorshipCircumventionEnabled(censorshipCircumventionState),
        showSealedSenderStatusIcon = SignalStore.settings.isShowUnidentifiedDeliveryIndicatorsEnabled,
-diff --git a/core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt b/core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt
-index ab98fa25..b1f56e28 100644
---- a/core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt
-+++ b/core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt
-@@ -39,7 +39,8 @@ object AndroidLogger : Log.Logger() {
-   @get:WorkerThread
-   val logcatDump: CharSequence?
-     get() = runCatching {
--      val process = Runtime.getRuntime().exec("logcat -d")
-+      // Some OEM builds log a View message for every draw pass.
-+      val process = Runtime.getRuntime().exec(arrayOf("logcat", "-d", "View:S", "*:V"))
-       val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
-       val log = StringBuilder()
-       val separator = System.lineSeparator()

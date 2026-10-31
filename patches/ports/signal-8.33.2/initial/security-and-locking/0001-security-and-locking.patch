@@ -1,4 +1,4 @@
-From c45ecbe7f547036aef3d6f98f80a9c8f38faa48c Mon Sep 17 00:00:00 2001
+From 1e25fc340d2ac9dd7c54202611fec6963fe6bf26 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sat, 1 Jan 2000 00:00:00 +0000
 Subject: [PATCH] Derived compatibility checkpoint:
@@ -6,10 +6,12 @@ Subject: [PATCH] Derived compatibility checkpoint:
 
 Integrate encrypted preferences, secret handling and lock-aware application behavior with the updated Signal classes.
 
+Original-Source-Commit: 5bd3bcd52a7f42ace4a303a070b5a6d3f1d0f1c9
 Original-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Original-Source-Commit: b6e4f2a164f4861190939ab3fe29fb0d1fdf0748
 AI-Generated: true
 
-Source-Commit: c45ecbe7f547036aef3d6f98f80a9c8f38faa48c
+Source-Commit: 1e25fc340d2ac9dd7c54202611fec6963fe6bf26
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/PassphraseCreateActivity.java b/app/src/main/java/org/thoughtcrime/securesms/PassphraseCreateActivity.java
 index 54dc9b7b..3a20b9be 100644
@@ -160,8 +162,21 @@ index 3ba3792a..78bc218b 100644
    }
  
    private Intent getPushRegistrationIntent() {
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt b/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt
+index 22708f83..1ecf4f3b 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/ScreenLockController.kt
+@@ -93,7 +93,7 @@ object ScreenLockController {
+ 
+   private fun activitiesRunningOnTopOfTasks(context: Context): List<ComponentName> =
+     ServiceUtil.getActivityManager(context).appTasks
+-      .map { it.taskInfo }
++      .mapNotNull { it.taskInfo }
+       .filter {
+         if (Build.VERSION.SDK_INT >= 29) it.isRunning else true
+       }
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/service/WipeMemoryService.java b/app/src/main/java/org/thoughtcrime/securesms/service/WipeMemoryService.java
-index 5cae6c1f..fc504d32 100644
+index 5cae6c1f..4310201c 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/service/WipeMemoryService.java
 +++ b/app/src/main/java/org/thoughtcrime/securesms/service/WipeMemoryService.java
 @@ -17,7 +17,7 @@ import org.signal.core.util.logging.Log;
@@ -173,3 +188,12 @@ index 5cae6c1f..fc504d32 100644
  import org.thoughtcrime.securesms.notifications.NotificationChannels;
  import org.thoughtcrime.securesms.util.WakeLockUtil;
  
+@@ -216,7 +216,7 @@ public class WipeMemoryService extends IntentService {
+         .setContentText(getString(R.string.WipeMemoryService_clearing_unencrypted_data_from_ram))
+         .setStyle(new NotificationCompat.BigTextStyle().bigText(getString(R.string.WipeMemoryService_clearing_unencrypted_data_from_ram)))
+         .setSmallIcon(R.drawable.ic_notification)
+-        .setColor(getResources().getColor(R.color.core_ultramarine))
++        .setColor(getResources().getColor(org.signal.core.ui.R.color.core_ultramarine))
+         .setContentIntent(pendingIntent)
+         .setShowWhen(false)
+         .setProgress(0, 0, true)

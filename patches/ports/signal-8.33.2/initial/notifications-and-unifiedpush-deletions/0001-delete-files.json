@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "bf204ff0d9a10c1c82209dc19dbf862f3fe6db9f",
-  "before_tree": "c80e938120145e8e4ad5660efb586656898c28da",
-  "after_tree": "2f7920246a54d7b47212a5b2b65c137888b92fe4",
+  "source_commit": "760a8c705b7f92ddd0cb8cecd33ac8b91486e087",
+  "before_tree": "b92e18eeed1b0120efabe209213eaba2187cd897",
+  "after_tree": "de332e054f7123c5b34dc465e1a46bd4aa7b638f",
   "files": [
     {
       "path": "app/src/main/java/org/thoughtcrime/securesms/notifications/NotificationIds.java",

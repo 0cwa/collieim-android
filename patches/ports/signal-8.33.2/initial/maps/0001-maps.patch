@@ -1,4 +1,4 @@
-From d991d6ee300f690b4a3bab4ba3f3d22772840ba9 Mon Sep 17 00:00:00 2001
+From ad491702059bfd2ff21909cc6e357183ca404269 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sat, 1 Jan 2000 00:00:00 +0000
 Subject: [PATCH] Derived compatibility checkpoint: initial/maps
@@ -8,7 +8,7 @@ Retain the Molly map implementation and compatibility layer in the upgraded tree
 Original-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
 AI-Generated: true
 
-Source-Commit: d991d6ee300f690b4a3bab4ba3f3d22772840ba9
+Source-Commit: ad491702059bfd2ff21909cc6e357183ca404269
 
 diff --git a/app/src/main/java/com/google/android/gms/maps/GoogleMap.java b/app/src/main/java/com/google/android/gms/maps/GoogleMap.java
 index 7d284fa2..15999493 100644

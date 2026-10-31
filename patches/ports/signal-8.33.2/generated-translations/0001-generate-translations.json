@@ -2063,9 +2063,9 @@
   },
   "schema": 1,
   "type": "generate-translations",
-  "source_commit": "8ca76dfeb369b3711ea3591a1c5e5f03045f2d99",
-  "before_tree": "94bc00d40386424e4f1c0119b044c209431a87e9",
-  "after_tree": "14ba9fde0c1b0d5e1f31eb2a216142fa4e7270d6",
+  "source_commit": "772a3e479083c5a1b84a20ec772265b153b3dd6d",
+  "before_tree": "ea9df38cd298036678b1f1f7e3f5d29da4b7f589",
+  "after_tree": "758a8cb3048c525e8802cfe92369c69f09722961",
   "preimages": {
     "app/src/main/res/values-af/strings.xml": {
       "mode": "100644",

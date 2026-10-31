@@ -1,4 +1,4 @@
-From 4b6565603e306f83974eb981f6f800c8b9b0a9fc Mon Sep 17 00:00:00 2001
+From f8b67bb7649ce053dabb6c0e76547b620121bb19 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sat, 1 Jan 2000 00:00:00 +0000
 Subject: [PATCH] Derived compatibility checkpoint:
@@ -6,10 +6,13 @@ Subject: [PATCH] Derived compatibility checkpoint:
 
 Adapt Molly registration and Android linked-device policies to the new Signal registration architecture.
 
+Original-Source-Commit: 1f0af82f4ab6a510afe506d0efd33d8f09ecf24e
 Original-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Original-Source-Commit: b6e4f2a164f4861190939ab3fe29fb0d1fdf0748
+Original-Source-Commit: d3c917a5be7db6116c83b7e29e09f145e7f38825
 AI-Generated: true
 
-Source-Commit: 4b6565603e306f83974eb981f6f800c8b9b0a9fc
+Source-Commit: f8b67bb7649ce053dabb6c0e76547b620121bb19
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/AddLinkDeviceFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/AddLinkDeviceFragment.kt
 index 99a14cf3..a11312a1 100644
@@ -49,6 +52,19 @@ index 1d8a487f..93e063f9 100644
        modifier = Modifier
          .defaultMinSize(300.dp)
          .padding(bottom = 8.dp)
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceLearnMoreBottomSheetFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceLearnMoreBottomSheetFragment.kt
+index 2fdc14e0..13de971b 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceLearnMoreBottomSheetFragment.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceLearnMoreBottomSheetFragment.kt
+@@ -45,7 +45,7 @@ class LinkDeviceLearnMoreBottomSheetFragment : ComposeBottomSheetDialogFragment(
+ @Composable
+ fun LearnMoreSheet() {
+   val context = LocalContext.current
+-  val downloadUrl = stringResource(R.string.install_url)
++  val downloadUrl = stringResource(org.signal.core.util.R.string.install_url)
+   val linkText = downloadUrl.removePrefix("https://")
+   val fullString = stringResource(id = R.string.LinkDeviceFragment__for_android_devices_visit_s_to_install_molly, linkText)
+   val spanned = SpanUtil.urlSubsequence(fullString, linkText, downloadUrl)
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceRepository.kt
 index ff4eaf5c..0dd2ea6b 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/linkdevice/LinkDeviceRepository.kt
@@ -150,10 +166,10 @@ index 9c63f919..a3ad0484 100644
  import org.signal.core.models.MasterKey
  import org.signal.core.models.ServiceId
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt
-index c62027e9..84bf943f 100644
+index c62027e9..66512817 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt
-@@ -8,96 +8,123 @@ package org.thoughtcrime.securesms.registration.ui
+@@ -8,96 +8,129 @@ package org.thoughtcrime.securesms.registration.ui
  import android.content.Context
  import android.content.Intent
  import android.os.Bundle
@@ -231,6 +247,7 @@ index c62027e9..84bf943f 100644
 +    private const val REGISTRATION_NEXT_INTENT_EXTRA = "next_intent"
 +    private const val START_DESTINATION_EXTRA = "start_destination"
 +    private const val START_FRESH_EXTRA = "start_fresh"
++    internal const val IS_REREGISTRATION_EXTRA = "is_reregistration"
  
 +    /**
 +     * @param nextIntent An optional intent to launch once registration completes successfully. This is how the caller
@@ -250,7 +267,7 @@ index c62027e9..84bf943f 100644
 -          putExtra(RE_REGISTRATION_EXTRA, false)
 -          setData(originalIntent.data)
 +    @JvmOverloads
-+    fun createIntent(context: Context, nextIntent: Intent? = null, startDestination: RegistrationRoute? = null, startFresh: Boolean = false): Intent {
++    fun createIntent(context: Context, nextIntent: Intent? = null, startDestination: RegistrationRoute? = null, startFresh: Boolean = false, isReRegistration: Boolean = false): Intent {
 +      return Intent(context, RegistrationActivity::class.java).apply {
 +        if (nextIntent != null) {
 +          putExtra(REGISTRATION_NEXT_INTENT_EXTRA, nextIntent)
@@ -259,6 +276,7 @@ index c62027e9..84bf943f 100644
 +          putExtra(START_DESTINATION_EXTRA, startDestination)
          }
 +        putExtra(START_FRESH_EXTRA, startFresh)
++        putExtra(IS_REREGISTRATION_EXTRA, isReRegistration)
        }
      }
 +  }
@@ -276,6 +294,7 @@ index c62027e9..84bf943f 100644
 +
 +    val startDestination = IntentCompat.getParcelableExtra(intent, START_DESTINATION_EXTRA, RegistrationRoute::class.java)
 +    val startFresh = intent.getBooleanExtra(START_FRESH_EXTRA, false)
++    val isReRegistration = intent.getBooleanExtra(IS_REREGISTRATION_EXTRA, false)
 +
 +    setContent {
 +      SignalTheme(incognitoKeyboardEnabled = SignalStore.settings.isIncognitoKeyboardEnabled) {
@@ -287,6 +306,9 @@ index c62027e9..84bf943f 100644
 +              .fillMaxSize()
 +              .navigationBarsPadding(),
 +            onRegistrationComplete = {
++              if (SignalStore.account.isPrimaryDevice && SignalStore.account.isMultiDevice) {
++                SignalStore.misc.shouldShowLinkedDevicesReminder = isReRegistration
++              }
 +              setResult(RESULT_OK)
 +              IntentCompat.getParcelableExtra(intent, REGISTRATION_NEXT_INTENT_EXTRA, Intent::class.java)?.let { startActivity(it) }
 +              finish()
@@ -335,7 +357,7 @@ index c62027e9..84bf943f 100644
    }
  }
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt
-index 59aa07ff..0344db79 100644
+index 59aa07ff..9cbd1189 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt
 @@ -7,7 +7,6 @@ package org.thoughtcrime.securesms.registration.ui
@@ -346,6 +368,15 @@ index 59aa07ff..0344db79 100644
  import org.signal.registration.RegistrationRoute
  import org.thoughtcrime.securesms.MainActivity
  
+@@ -23,7 +22,7 @@ object RegistrationIntents {
+ 
+   @JvmStatic
+   fun newIntentForReRegistration(context: Context): Intent {
+-    return RegistrationActivity.createIntent(context, nextIntent = MainActivity.clearTop(context), startFresh = true)
++    return RegistrationActivity.createIntent(context, nextIntent = MainActivity.clearTop(context), startFresh = true, isReRegistration = true)
+   }
+ 
+   @JvmStatic
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt
 new file mode 100644
 index 00000000..5348ce38
@@ -470,6 +501,20 @@ index 0bc8781f..8545a0e1 100644
    override suspend fun getPreExistingRegistrationData(): PreExistingRegistrationData? = withContext(Dispatchers.Default) {
      if (!SignalStore.account.isRegistered) {
        return@withContext null
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageControllerTest.kt b/app/src/test/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageControllerTest.kt
+index eddca877..e722ac1d 100644
+--- a/app/src/test/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageControllerTest.kt
++++ b/app/src/test/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageControllerTest.kt
+@@ -745,8 +745,7 @@ class AppRegistrationStorageControllerTest {
+ 
+   /** Puts onboarding into the state a fresh install leaves it in, where the get-started megaphone would show. */
+   private fun seedOnboardingState() {
+-    SignalStore.onboarding.setShowNewGroup(true)
+-    SignalStore.onboarding.setShowInviteFriends(true)
++    SignalStore.onboarding.setShowStories(true)
+     SignalStore.onboarding.setShowAppearance(true)
+     SignalStore.onboarding.setShowAddPhoto(true)
+   }
 diff --git a/feature/registration/src/main/java/org/signal/registration/NetworkController.kt b/feature/registration/src/main/java/org/signal/registration/NetworkController.kt
 index 5873d760..8695b734 100644
 --- a/feature/registration/src/main/java/org/signal/registration/NetworkController.kt
@@ -1410,6 +1455,18 @@ index aeed7dc3..231f062c 100644
  
    override suspend fun registerAsLinkedDevice(
      aci: ACI,
+diff --git a/feature/registration/src/test/java/org/signal/registration/fakes/SystemOutLogger.kt b/feature/registration/src/test/java/org/signal/registration/fakes/SystemOutLogger.kt
+index c00c3f02..9a9820fd 100644
+--- a/feature/registration/src/test/java/org/signal/registration/fakes/SystemOutLogger.kt
++++ b/feature/registration/src/test/java/org/signal/registration/fakes/SystemOutLogger.kt
+@@ -17,6 +17,7 @@ class SystemOutLogger : Log.Logger() {
+   override fun w(tag: String, message: String?, t: Throwable?, keepLonger: Boolean) = print("W", tag, message, t)
+   override fun e(tag: String, message: String?, t: Throwable?, keepLonger: Boolean) = print("E", tag, message, t)
+   override fun flush() = Unit
++  override fun clear() = Unit
+ 
+   private fun print(level: String, tag: String, message: String?, t: Throwable?) {
+     println("[$level][$tag] $message")
 diff --git a/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt b/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt
 index af05ac27..402635c5 100644
 --- a/feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt

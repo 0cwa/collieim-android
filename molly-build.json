@@ -17,7 +17,7 @@
       "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI compatibility choice from source merge 90a0bb917ecc49a62236d539f4e7faae01b1d9fe."
     }
   },
-  "target_tree": "14ba9fde0c1b0d5e1f31eb2a216142fa4e7270d6",
+  "target_tree": "758a8cb3048c525e8802cfe92369c69f09722961",
   "native": null,
   "android": {
     "sdk": "37.0",
@@ -60,8 +60,6 @@
       "org.thoughtcrime.securesms.backup.FullBackupImporterTest",
       "--tests",
       "org.thoughtcrime.securesms.notifications.NotificationIdsTest",
-      "--tests",
-      "org.thoughtcrime.securesms.backup.v2.LegacyBackupNotificationTest",
       "--tests",
       "org.thoughtcrime.securesms.service.MessageBackupListenerTest",
       "--tests",

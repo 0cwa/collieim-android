@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "22780425bd77cb9a32896f665211a3b32a4d3bbd",
-  "before_tree": "9f54022a52fcd0b5c5966987cbebab04efb41bff",
-  "after_tree": "6c7cb15d896eddd0244ad034634e96c205938ebc",
+  "source_commit": "25b635a8ad8fe12ce61b2939b3561fe092503c53",
+  "before_tree": "bbed20a421647ea719115c41ac1b8637d5005985",
+  "after_tree": "a81687beb10f4fc1df841626428dd76b7091fb20",
   "files": [
     {
       "path": "app/src/main/res/color/checkable_stroke_color.xml",

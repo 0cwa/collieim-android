@@ -1,4 +1,4 @@
-From 084d026dbe0ebf8ea024286e48d4c6bac11c008b Mon Sep 17 00:00:00 2001
+From b56dec8ad74f87f45f745e7e428f8961148ee878 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sat, 1 Jan 2000 00:00:00 +0000
 Subject: [PATCH] Derived compatibility checkpoint:
@@ -7,12 +7,114 @@ Subject: [PATCH] Derived compatibility checkpoint:
 Retain MollySocket, UnifiedPush and push-selection behavior while resolving notification and delivery API changes.
 
 Original-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Original-Source-Commit: ae2672a773d15d1b22186bd8acbec2221760f049
+Original-Source-Commit: b6e4f2a164f4861190939ab3fe29fb0d1fdf0748
 AI-Generated: true
 
-Source-Commit: 084d026dbe0ebf8ea024286e48d4c6bac11c008b
+Source-Commit: b56dec8ad74f87f45f745e7e428f8961148ee878
 
+diff --git a/app/src/main/java/im/molly/unifiedpush/MollySocketRepository.kt b/app/src/main/java/im/molly/unifiedpush/MollySocketRepository.kt
+index 03a37a20..2404bc46 100644
+--- a/app/src/main/java/im/molly/unifiedpush/MollySocketRepository.kt
++++ b/app/src/main/java/im/molly/unifiedpush/MollySocketRepository.kt
+@@ -1,5 +1,6 @@
+ package im.molly.unifiedpush
+ 
++import androidx.annotation.WorkerThread
+ import com.fasterxml.jackson.core.JsonParseException
+ import com.fasterxml.jackson.core.JsonProcessingException
+ import com.fasterxml.jackson.databind.JsonMappingException
+@@ -8,6 +9,7 @@ import im.molly.unifiedpush.model.ConnectionResult
+ import im.molly.unifiedpush.model.LinkStatus
+ import im.molly.unifiedpush.model.MollySocketDevice
+ import im.molly.unifiedpush.model.Response
++import kotlinx.coroutines.runBlocking
+ import okhttp3.HttpUrl
+ import okhttp3.MediaType.Companion.toMediaType
+ import okhttp3.Request
+@@ -15,6 +17,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
+ import org.signal.core.util.Base64
+ import org.signal.core.util.JsonUtils
+ import org.signal.core.util.Util
++import org.signal.core.util.ThreadUtil
+ import org.signal.core.util.crypto.DeviceNameCipher
+ import org.signal.core.util.logging.Log
+ import org.signal.libsignal.protocol.SessionBuilder
+@@ -129,12 +132,18 @@ object MollySocketRepository {
+     }
+   }
+ 
++  @WorkerThread
+   @Throws(IOException::class)
+   fun removeDevice(device: MollySocketDevice) {
+-    LinkDeviceRepository.removeDevice(device.deviceId)
++    ThreadUtil.assertNotMainThread()
++    if (!runBlocking { LinkDeviceRepository.removeDevice(device.deviceId) }) {
++      throw IOException("Failed to remove MollySocket linked device")
++    }
+   }
+ 
++  @WorkerThread
+   fun getDeviceStatus(device: MollySocketDevice): LinkStatus {
++    ThreadUtil.assertNotMainThread()
+     return when (device.isLinked()) {
+       true -> LinkStatus.LINKED
+       false -> LinkStatus.NOT_LINKED
+@@ -143,7 +152,7 @@ object MollySocketRepository {
+   }
+ 
+   private fun MollySocketDevice.isLinked(): Boolean? {
+-    return LinkDeviceRepository.loadDevices()?.any {
++    return runBlocking { LinkDeviceRepository.loadDevices() }?.any {
+       it.id == deviceId && it.name == DEVICE_NAME
+     }
+   }
+diff --git a/app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/UnifiedPushSettingsFragment.kt b/app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/UnifiedPushSettingsFragment.kt
+index d2d0295c..e9c5c0a0 100644
+--- a/app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/UnifiedPushSettingsFragment.kt
++++ b/app/src/main/java/im/molly/unifiedpush/components/settings/app/notifications/UnifiedPushSettingsFragment.kt
+@@ -4,18 +4,18 @@ import android.widget.Toast
+ import androidx.activity.result.ActivityResultLauncher
+ import androidx.activity.result.launch
+ import androidx.annotation.StringRes
++import androidx.lifecycle.Lifecycle
+ import androidx.lifecycle.ViewModelProvider
+ import im.molly.unifiedpush.model.RegistrationStatus
+-import org.greenrobot.eventbus.EventBus
+-import org.greenrobot.eventbus.Subscribe
+-import org.greenrobot.eventbus.ThreadMode
++import org.signal.core.util.eventbus.EventBus
++import org.signal.core.util.eventbus.RestartableSubscription
++import org.signal.core.util.eventbus.ThreadMode
+ import org.thoughtcrime.securesms.R
+ import org.thoughtcrime.securesms.components.settings.DSLConfiguration
+ import org.thoughtcrime.securesms.components.settings.DSLSettingsFragment
+ import org.thoughtcrime.securesms.components.settings.DSLSettingsIcon
+ import org.thoughtcrime.securesms.components.settings.DSLSettingsText
+ import org.thoughtcrime.securesms.components.settings.configure
+-import org.thoughtcrime.securesms.conversation.v2.registerForLifecycle
+ import org.thoughtcrime.securesms.events.PushServiceEvent
+ import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
+ 
+@@ -39,13 +39,13 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
+       adapter.submitList(getConfiguration(it).toMappingModelList())
+     }
+ 
+-    EventBus.getDefault().registerForLifecycle(subscriber = this, lifecycleOwner = viewLifecycleOwner)
++    RestartableSubscription { EventBus.default.subscribe<PushServiceEvent>(ThreadMode.MAIN, ::onPushServiceEvent) }
++      .bindTo(viewLifecycleOwner, Lifecycle.State.RESUMED)
+ 
+     viewModel.updateRegistration()
+   }
+ 
+-  @Subscribe(threadMode = ThreadMode.MAIN)
+-  fun onPushServiceEvent(event: PushServiceEvent) {
++  private fun onPushServiceEvent(event: PushServiceEvent) {
+     viewModel.refresh()
+   }
+ 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettingsFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettingsFragment.kt
-index 7f2d3e57..9ed577d8 100644
+index 7f2d3e57..4e0b6134 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettingsFragment.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettingsFragment.kt
 @@ -19,10 +19,7 @@ import androidx.compose.foundation.layout.size
@@ -26,7 +128,7 @@ index 7f2d3e57..9ed577d8 100644
  import androidx.compose.material3.MaterialTheme
  import androidx.compose.material3.Text
  import androidx.compose.runtime.Composable
-@@ -47,14 +44,11 @@ import androidx.lifecycle.lifecycleScope
+@@ -47,18 +44,15 @@ import androidx.lifecycle.lifecycleScope
  import androidx.lifecycle.repeatOnLifecycle
  import androidx.lifecycle.withStateAtLeast
  import androidx.navigation.fragment.findNavController
@@ -39,9 +141,23 @@ index 7f2d3e57..9ed577d8 100644
 -=======
 ->>>>>>> SIGNAL
  import kotlinx.coroutines.launch
- import org.greenrobot.eventbus.EventBus
- import org.greenrobot.eventbus.Subscribe
-@@ -83,20 +77,13 @@ import org.thoughtcrime.securesms.notifications.NotificationChannels
+-import org.greenrobot.eventbus.EventBus
+-import org.greenrobot.eventbus.Subscribe
+-import org.greenrobot.eventbus.ThreadMode
++import org.signal.core.util.eventbus.EventBus
++import org.signal.core.util.eventbus.RestartableSubscription
++import org.signal.core.util.eventbus.ThreadMode
+ import org.signal.core.ui.BottomSheetUtil
+ import org.signal.core.ui.compose.ComposeFragment
+ import org.signal.core.ui.compose.DayNightPreviews
+@@ -76,27 +70,19 @@ import org.thoughtcrime.securesms.components.PromptBatterySaverDialogFragment
+ import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRoute
+ import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRouter
+ import org.thoughtcrime.securesms.components.settings.models.Banner
+-import org.thoughtcrime.securesms.conversation.v2.registerForLifecycle
+ import org.thoughtcrime.securesms.events.PushServiceEvent
+ import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
+ import org.thoughtcrime.securesms.notifications.NotificationChannels
  import org.thoughtcrime.securesms.notifications.TurnOnNotificationsBottomSheet
  import org.thoughtcrime.securesms.util.CommunicationActions
  import org.thoughtcrime.securesms.util.RingtoneUtil
@@ -62,7 +178,7 @@ index 7f2d3e57..9ed577d8 100644
    }
  
    private val appSettingsRouter: AppSettingsRouter by viewModel {
-@@ -120,13 +107,12 @@ class NotificationsSettingsFragment : ComposeFragment() {
+@@ -120,13 +106,12 @@ class NotificationsSettingsFragment : ComposeFragment() {
                findNavController().safeNavigate(R.id.action_notificationsSettingsFragment_to_notificationProfilesFragment)
              }
  
@@ -78,7 +194,27 @@ index 7f2d3e57..9ed577d8 100644
              }
  
              else -> error("Unexpected route: ${it.javaClass.name}")
-@@ -348,7 +334,6 @@ open class DefaultNotificationsSettingsCallbacks(
+@@ -139,7 +124,8 @@ class NotificationsSettingsFragment : ComposeFragment() {
+       viewModel.setPlayServicesErrorCode(args.playServicesErrorCode)
+     }
+ 
+-    EventBus.getDefault().registerForLifecycle(subscriber = this, lifecycleOwner = viewLifecycleOwner)
++    RestartableSubscription { EventBus.default.subscribe<PushServiceEvent>(ThreadMode.MAIN, ::onPushServiceEvent) }
++      .bindTo(viewLifecycleOwner, Lifecycle.State.RESUMED)
+   }
+ 
+   override fun onResume() {
+@@ -147,8 +133,7 @@ class NotificationsSettingsFragment : ComposeFragment() {
+     viewModel.refresh()
+   }
+ 
+-  @Subscribe(threadMode = ThreadMode.MAIN)
+-  fun onPushServiceEvent(event: PushServiceEvent) {
++  private fun onPushServiceEvent(event: PushServiceEvent) {
+     viewModel.refresh()
+   }
+ 
+@@ -348,7 +333,6 @@ open class DefaultNotificationsSettingsCallbacks(
      viewModel.setNotifyWhenContactJoinsSignal(enabled)
    }
  
@@ -86,7 +222,7 @@ index 7f2d3e57..9ed577d8 100644
    override fun setNotifyNewActivityWhileLocked(enabled: Boolean, isSupported: Boolean) {
      if (enabled && !isSupported) {
        MaterialAlertDialogBuilder(activity)
-@@ -373,8 +358,8 @@ open class DefaultNotificationsSettingsCallbacks(
+@@ -373,8 +357,8 @@ open class DefaultNotificationsSettingsCallbacks(
              .setPositiveButton(R.string.AddLinkDeviceFragment__scan_qr_code) { _, _ ->
                qrScanLauncher.launch()
              }
@@ -97,7 +233,7 @@ index 7f2d3e57..9ed577d8 100644
                CommunicationActions.openBrowserLink(activity, activity.getString(R.string.mollysocket_setup_url))
              }
              .show()
-@@ -411,7 +396,8 @@ open class DefaultNotificationsSettingsCallbacks(
+@@ -411,7 +395,8 @@ open class DefaultNotificationsSettingsCallbacks(
        .show()
  
      viewModel.setPlayServicesErrorCode(null)
@@ -107,7 +243,7 @@ index 7f2d3e57..9ed577d8 100644
    override fun onMutedClicked() {
      appSettingsRouter.navigateTo(AppSettingsRoute.NotificationsRoute.MutedNotifications)
    }
-@@ -426,7 +412,6 @@ open class DefaultNotificationsSettingsCallbacks(
+@@ -426,7 +411,6 @@ open class DefaultNotificationsSettingsCallbacks(
  
    override fun onReset() {
      viewModel.resetSettings()
@@ -115,7 +251,7 @@ index 7f2d3e57..9ed577d8 100644
    }
  }
  
-@@ -451,17 +436,14 @@ interface NotificationsSettingsCallbacks {
+@@ -451,17 +435,14 @@ interface NotificationsSettingsCallbacks {
    fun setCallVibrateEnabled(enabled: Boolean) = Unit
    fun onNavigationProfilesClick() = Unit
    fun setNotifyWhenContactJoinsSignal(enabled: Boolean) = Unit
@@ -133,7 +269,7 @@ index 7f2d3e57..9ed577d8 100644
  
    object Empty : NotificationsSettingsCallbacks
  }
-@@ -756,7 +738,6 @@ fun NotificationsSettingsScreen(
+@@ -756,7 +737,6 @@ fun NotificationsSettingsScreen(
        }
  
        item {
@@ -141,7 +277,7 @@ index 7f2d3e57..9ed577d8 100644
          Texts.SectionHeader(stringResource(R.string.NotificationsSettingsFragment__notify_when))
        }
  
-@@ -772,16 +753,10 @@ fun NotificationsSettingsScreen(
+@@ -772,16 +752,10 @@ fun NotificationsSettingsScreen(
        }
  
        item {
@@ -215,6 +351,41 @@ index bbea5381..44b16b58 100644
    }
  
    /**
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/gcm/FcmFetchManager.kt b/app/src/main/java/org/thoughtcrime/securesms/gcm/FcmFetchManager.kt
+index f59a2ff5..6b74a121 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/gcm/FcmFetchManager.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/gcm/FcmFetchManager.kt
+@@ -95,7 +95,7 @@ object FcmFetchManager {
+ 
+     val mayHaveMessagesNotification: Notification = NotificationCompat.Builder(context, NotificationChannels.ADDITIONAL_MESSAGE_NOTIFICATIONS)
+       .setSmallIcon(R.drawable.ic_notification)
+-      .setColor(ContextCompat.getColor(context, R.color.core_ultramarine))
++      .setColor(ContextCompat.getColor(context, org.signal.core.ui.R.color.core_ultramarine))
+       .setContentTitle(context.getString(R.string.FcmFetchManager__you_may_have_messages))
+       .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+       .setContentIntent(PendingIntent.getActivity(context, 0, MainActivity.clearTop(context), mutable()))
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJob.kt b/app/src/main/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJob.kt
+index 4dca4616..62baf0ba 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJob.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJob.kt
+@@ -8,7 +8,7 @@ import im.molly.unifiedpush.model.MollySocketDevice
+ import im.molly.unifiedpush.model.RegistrationStatus
+ import im.molly.unifiedpush.model.toRegistrationStatus
+ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+-import org.greenrobot.eventbus.EventBus
++import org.signal.core.util.eventbus.EventBus
+ import org.signal.core.util.logging.Log
+ import org.signal.network.exceptions.NonSuccessfulResponseCodeException
+ import org.thoughtcrime.securesms.dependencies.AppDependencies
+@@ -103,7 +103,7 @@ class UnifiedPushRefreshJob private constructor(
+       }
+     } finally {
+       AppDependencies.resetNetwork(restartMessageObserver = true)
+-      EventBus.getDefault().post(PushServiceEvent)
++      EventBus.default.post(PushServiceEvent)
+     }
+   }
+ 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/notifications/MarkReadReceiver.java b/app/src/main/java/org/thoughtcrime/securesms/notifications/MarkReadReceiver.java
 index cea02107..dba103c2 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/notifications/MarkReadReceiver.java
@@ -232,7 +403,7 @@ index cea02107..dba103c2 100644
  import java.util.ArrayList;
  import java.util.LinkedList;
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/notifications/NotificationIds.kt b/app/src/main/java/org/thoughtcrime/securesms/notifications/NotificationIds.kt
-index 044051ad..29ae73d7 100644
+index 044051ad..96e9a3ce 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/notifications/NotificationIds.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/notifications/NotificationIds.kt
 @@ -3,7 +3,7 @@ package org.thoughtcrime.securesms.notifications
@@ -240,7 +411,7 @@ index 044051ad..29ae73d7 100644
  
  /**
 - * Single-use ids count up by 10 and stay below the first ranged id.
-+ * New single-use ids count up by 10 and stay below the first ranged id. Molly-specific ids retain their existing values.
++ * New single-use ids count up by 10 and stay below the first ranged id. Legacy Molly backup-alert ids are retained for upgrade cleanup.
   *
   * Ranged ids are a base plus a database id, built by the `getNotificationIdFor*` functions. For example, thread ranges are offset by
   * thread id, story ranges by the parent story's message id.
@@ -271,6 +442,19 @@ index 6f9fffc0..855e7b09 100644
  import org.thoughtcrime.securesms.sms.MessageSender;
  import org.thoughtcrime.securesms.util.MessageUtil;
  
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/notifications/UnregisteredNotifier.kt b/app/src/main/java/org/thoughtcrime/securesms/notifications/UnregisteredNotifier.kt
+index 1cc560c6..b66465e2 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/notifications/UnregisteredNotifier.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/notifications/UnregisteredNotifier.kt
+@@ -45,7 +45,7 @@ object UnregisteredNotifier {
+     )
+ 
+     val notification = NotificationCompat.Builder(context, NotificationChannels.getInstance().FAILURES)
+-      .setSmallIcon(R.drawable.ic_signal_logo_large)
++      .setSmallIcon(R.drawable.ic_notification)
+       .setContentText(context.getString(R.string.LoggedOutNotification_you_have_been_logged_out))
+       .setContentIntent(reRegistrationIntent)
+       .setOnlyAlertOnce(true)
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/notifications/VitalsViewModel.kt b/app/src/main/java/org/thoughtcrime/securesms/notifications/VitalsViewModel.kt
 index b435e731..88596bcf 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/notifications/VitalsViewModel.kt

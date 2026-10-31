@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "45aae56b026a6d0d2649963181230a135648199d",
-  "before_tree": "5217ffb3da72a4716b1548babaf136c066c0e14a",
-  "after_tree": "47e0888f5bc1d0141d7ac230dd74d1e4c33ecaa7",
+  "source_commit": "bfb5dccc3d87c91eaea7f1dc933d2914df466ccf",
+  "before_tree": "edf8bfcd1946b2b60ac4c93c50dbaa2690b7ace2",
+  "after_tree": "b9f3552bf78c7238a58f98e8bc29d006822763e3",
   "files": [
     {
       "path": "app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/BecomeASustainerUpsellTest.kt",
@@ -231,29 +231,9 @@
       "blob": "ab4e9c39d2df3e5daf6d3bea52ce3ce8eeee5573"
     },
     {
-      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/account/AccountSettingsState.kt",
-      "mode": "100644",
-      "blob": "1353f056452bc83c316d45e4aae2f83ccd7c117b"
-    },
-    {
-      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/appearance/AppearanceSettingsState.kt",
-      "mode": "100644",
-      "blob": "d65ba284d3bf6d4089cd3957ad0c8596e8c23d63"
-    },
-    {
       "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/data/DataAndStorageSettingsState.kt",
       "mode": "100644",
       "blob": "b902b7d755cf1fe17d2e9a68050c2938021123c5"
-    },
-    {
-      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/help/HelpSettingsState.kt",
-      "mode": "100644",
-      "blob": "d57a5f8b425a5c64427747b6fd3012c5e562d507"
-    },
-    {
-      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/help/HelpSettingsViewModel.kt",
-      "mode": "100644",
-      "blob": "a2f755f9255363f6dec1098f80d35cc138cb802b"
     },
     {
       "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/ConversationSettingsState.kt",
@@ -314,11 +294,6 @@
       "path": "app/src/main/java/org/thoughtcrime/securesms/groups/GroupsV2ProcessingLock.java",
       "mode": "100644",
       "blob": "06c16f131dd702ccfac2b94f4d21d3dff8347dd2"
-    },
-    {
-      "path": "app/src/main/java/org/thoughtcrime/securesms/keyvalue/PlainTextSharedPrefsDataStore.kt",
-      "mode": "100644",
-      "blob": "e2840c23da0eeab5194a59a7d04cb6aef2ae2dae"
     },
     {
       "path": "app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.java",
@@ -399,6 +374,16 @@
       "path": "app/src/main/java/org/thoughtcrime/securesms/shakereport/ShakeToReportViewModel.kt",
       "mode": "100644",
       "blob": "1e54338bd65903edd25b94ae07f158655e675d73"
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/badges/self/featured/SelectFeaturedBadgeViewModelTest.kt",
+      "mode": "100644",
+      "blob": "9868f2433e75b8c1628ac173596e0f9051313f80"
+    },
+    {
+      "path": "app/src/test/java/org/thoughtcrime/securesms/badges/self/overview/BadgesOverviewViewModelTest.kt",
+      "mode": "100644",
+      "blob": "7be1465cf3a66bc0160ba92c9948b28288f4de2b"
     }
   ]
 }

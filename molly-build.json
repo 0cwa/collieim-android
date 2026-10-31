@@ -14,7 +14,10 @@
     "mechanical_tree": "759ef1c309d93aa7e4ac7217b144c04545562f11",
     "series": "patches/ports/signal-8.33.2/series",
     "keep_mechanical": {
-      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI compatibility choice from source merge 90a0bb917ecc49a62236d539f4e7faae01b1d9fe."
+      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI compatibility choice from source merge 90a0bb917ecc49a62236d539f4e7faae01b1d9fe.",
+      "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/account/AccountSettingsState.kt": "Retain Molly's legacy account settings state after Signal removed the old path; the original source merge deleted it and follow-up a39eeee9155bdc9116b611734dcc58653f7cb38f restored it unchanged.",
+      "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/appearance/AppearanceSettingsState.kt": "Retain Molly's legacy appearance settings state after Signal moved settings to the app-settings module; follow-up a39eeee9155bdc9116b611734dcc58653f7cb38f restored it unchanged.",
+      "app/src/main/java/org/thoughtcrime/securesms/keyvalue/PlainTextSharedPrefsDataStore.kt": "Retain Molly's secure-preferences-backed SMS migration offset API after Signal removed the old path; follow-up a3a9eaabe66d42fdbf8807158eca7de8c9755b33 restored it unchanged."
     }
   },
   "target_tree": "758a8cb3048c525e8802cfe92369c69f09722961",

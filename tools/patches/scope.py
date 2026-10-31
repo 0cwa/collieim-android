@@ -97,6 +97,21 @@ def check_scope(repo, scope, base, head='HEAD'):
         raise ValueError('release phase contains behavior patches')
     if scope == 'followups' and not all(exists(head, 'patches/ports/signal-8.33.2/followups/' + name) for name in BEHAVIOR):
         raise ValueError('followups phase is incomplete')
+    # Verify lower phases from their own ancestors, so changes hidden in a base
+    # cannot escape the adjacent diff. Each recursion moves to an earlier phase.
+    if scope == 'switch':
+        check_scope(repo, 'pipeline', MOLLY, base)
+    elif scope in ('release', 'followups'):
+        lower_phase = 'switch' if scope == 'release' else 'release'
+        candidates = git(repo, 'rev-list', '--ancestry-path', MOLLY + '..' + base).decode().splitlines()
+        for candidate in candidates:
+            try:
+                check_scope(repo, lower_phase, candidate, base)
+                break
+            except (ValueError, subprocess.CalledProcessError):
+                continue
+        else:
+            raise ValueError('lower base has no validated preceding stack phase')
     source = {'pipeline': MOLLY, 'switch': OLD, 'release': NEW, 'followups': NEW}[scope]
     paths = git(repo, 'diff', '--no-renames', '--name-only', '-z', source, head).split(b'\0')
     for raw in filter(None, paths):

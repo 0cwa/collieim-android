@@ -1,23 +1,22 @@
-From fad3f19cca5c94e07f5c1606ce67fee5f300f790 Mon Sep 17 00:00:00 2001
+From c894668c9d9ea14991887b0418091f7e272a4161 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Thu, 29 Oct 2026 00:01:38 +0100
+Date: Sat, 31 Oct 2026 23:25:32 +0100
 Subject: [PATCH] Port resources-and-branding to Signal 8.33.2, part 12
 
 Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.
 
-These are AI-generated compatibility resolutions from the existing
-PR #7 port source, exported after Git has performed its deterministic
+These are AI-assisted compatibility changes from the recorded
+source checkpoint, exported after Git has performed its deterministic
 three-way merge of the unchanged official Molly 8.19.2-4 snapshot
 with Signal 8.33.2. The original Molly mailboxes remain unchanged.
 Offset-only movement and conflict-free automatic merges are already
 in the parent tree and are not re-exported as patch rewrites.
 
-This batch owns 100 whole-file changes. It preserves the
-previous port tree exactly and makes no new application changes.
+This batch owns 100 whole-file changes. It records AI-assisted compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Source-Commit: f392c29451f25d6c94316dac316d5aeaf1989206
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -415,16 +414,16 @@ index 5fb14c9a16a8c9a11b32543b75cde4825d160264..c342adae160f84f91a06edaa8622429a
      <string name="Invite__invite_to_signal">邀請至 Signal</string>
      <!-- Default invite message shown in invite flows, to send in email or SMS. -->
 diff --git a/core/util/src/main/res/values/strings.xml b/core/util/src/main/res/values/strings.xml
-index ecc5a87a82f8370b5564ba39a56f619fed046f6c..6cac334cdce57dac88329d6440179d1aeb264334 100644
+index ecc5a87a82f8370b5564ba39a56f619fed046f6c..26d9bfd53987ba62a659700e9a1dd671712db906 100644
 --- a/core/util/src/main/res/values/strings.xml
 +++ b/core/util/src/main/res/values/strings.xml
-@@ -1,15 +1,8 @@
+@@ -1,15 +1,12 @@
  <?xml version="1.0" encoding="utf-8"?>
 -
--<!--
--  ~ Copyright 2024 Signal Messenger, LLC
--  ~ SPDX-License-Identifier: AGPL-3.0-only
--  -->
+ <!--
+   ~ Copyright 2024 Signal Messenger, LLC
+   ~ SPDX-License-Identifier: AGPL-3.0-only
+   -->
 -
 -<!-- smartling.instruction_comments_enabled = on -->
  <resources>

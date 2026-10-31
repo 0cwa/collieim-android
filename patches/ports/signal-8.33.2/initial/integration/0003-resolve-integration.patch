@@ -1,23 +1,22 @@
-From 5b3287d94eb62ce006e3ca3c70de4642cad3ffb7 Mon Sep 17 00:00:00 2001
+From 51c559da2ac20387ccb9cc75c39b1cc435fc050f Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Thu, 29 Oct 2026 00:01:38 +0100
+Date: Sat, 31 Oct 2026 23:25:32 +0100
 Subject: [PATCH] Port integration to Signal 8.33.2, part 3
 
 Resolve shared application, account, service and core integration files whose APIs or feature boundaries changed upstream.
 
-These are AI-generated compatibility resolutions from the existing
-PR #7 port source, exported after Git has performed its deterministic
+These are AI-assisted compatibility changes from the recorded
+source checkpoint, exported after Git has performed its deterministic
 three-way merge of the unchanged official Molly 8.19.2-4 snapshot
 with Signal 8.33.2. The original Molly mailboxes remain unchanged.
 Offset-only movement and conflict-free automatic merges are already
 in the parent tree and are not re-exported as patch rewrites.
 
-This batch owns 86 whole-file changes. It preserves the
-previous port tree exactly and makes no new application changes.
+This batch owns 87 whole-file changes. It records AI-assisted compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Source-Commit: f392c29451f25d6c94316dac316d5aeaf1989206
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -1297,7 +1296,7 @@ index 8dc6efd88fc7a29e06b481cdfa62650bd9e3e7d0..08b8191ce3163e1c8e15681d9e7446cc
        return QuoteModel(
          id = quote.id!!,
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt b/app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt
-index 26c2015d9755b3502b50a263e83f83b429457bc4..f0e7de473cbdb7bd2468bc4e06154ae629f34064 100644
+index 26c2015d9755b3502b50a263e83f83b429457bc4..cdf1cdb5fdc4c486cfe5e8287c40e923b6c25062 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt
 @@ -23,10 +23,7 @@ import org.signal.core.util.SleepTimer
@@ -1344,7 +1343,7 @@ index 26c2015d9755b3502b50a263e83f83b429457bc4..f0e7de473cbdb7bd2468bc4e06154ae6
  import kotlin.math.round
  import kotlin.time.Duration.Companion.minutes
  import kotlin.time.Duration.Companion.seconds
-@@ -107,39 +94,19 @@ class IncomingMessageObserver(
+@@ -107,63 +94,37 @@ class IncomingMessageObserver(
      private val maxBackgroundTime: Long
        get() = if (censored) 10.seconds.inWholeMilliseconds else 2.minutes.inWholeMilliseconds
  
@@ -1385,21 +1384,25 @@ index 26c2015d9755b3502b50a263e83f83b429457bc4..f0e7de473cbdb7bd2468bc4e06154ae6
    private val connectionLock = ReentrantLock()
    private val connectionConditionsChanged = connectionLock.newCondition()
  
-@@ -149,21 +116,15 @@ class IncomingMessageObserver(
-   /** Tracks Internet connection as reported by [InternetConnectivityMonitor]. Starts fail-open (assume online) until the first report. */
    @Volatile
-   private var internetConnection: ConnectivityState = ConnectivityState.MONITORING_UNAVAILABLE
+   private var connectionConditionsVersion: Long = 0
+ 
+-  /** Tracks Internet connection as reported by [InternetConnectivityMonitor]. Starts fail-open (assume online) until the first report. */
++  /** Tracks Internet connection as reported by [InternetConnectivityMonitor]. Starts offline until the first report. */
+   @Volatile
+-  private var internetConnection: ConnectivityState = ConnectivityState.MONITORING_UNAVAILABLE
 ->>>>>>> SIGNAL
++  private var internetConnection: ConnectivityState = ConnectivityState.OFFLINE
  
    private val internetConnectivityMonitor = InternetConnectivityMonitor(
      context = context,
      onConnectivityUpdated = { state ->
        internetConnection = state
 -<<<<<<< MOLLY
--      if (state.isOnline) {
+       if (state.isOnline) {
 -        AppDependencies.libsignalNetwork.onNetworkChange()
 -=======
-       if (state.isAssumedOnline) {
+-      if (state.isAssumedOnline) {
          // Staying online through a transport swap only resets backoff; we rely on the OS to tear down sockets on the interface that went away.
          AppDependencies.libsignalNetwork.onNetworkChange()
          AppDependencies.signalServiceNetworkAccess.onNetworkChange()
@@ -1545,17 +1548,16 @@ index 26c2015d9755b3502b50a263e83f83b429457bc4..f0e7de473cbdb7bd2468bc4e06154ae6
      val registered = SignalStore.account.isRegistered
 -<<<<<<< MOLLY
 -    val unauthorizedReceived = TextSecurePreferences.isUnauthorizedReceived(context)
--    val pushAvailable = SignalStore.account.pushAvailable
--    val hasNetwork = internetConnection.isOnline
--    val hasProxy = AppDependencies.networkManager.isProxyEnabled
++    val unauthorizedReceived = SignalStore.account.isUnauthorizedReceived
+     val pushAvailable = SignalStore.account.pushAvailable
+     val hasNetwork = internetConnection.isOnline
+     val hasProxy = AppDependencies.networkManager.isProxyEnabled
 -=======
-     val unauthorizedReceived = SignalStore.account.isUnauthorizedReceived
+-    val unauthorizedReceived = SignalStore.account.isUnauthorizedReceived
 -    val fcmEnabled = SignalStore.account.fcmEnabled
-+    val pushAvailable = SignalStore.account.pushAvailable
-     val hasNetwork = internetConnection.isAssumedOnline
+-    val hasNetwork = internetConnection.isAssumedOnline
 -    val hasProxy = SignalStore.proxy.isProxyEnabled
 ->>>>>>> SIGNAL
-+    val hasProxy = AppDependencies.networkManager.isProxyEnabled
      val forceWebsocket = SignalStore.settings.forceWebsocketMode.isEnabled
      val websocketAlreadyOpen = isConnectionAvailable()
      val clockSkewDetected = ClockSkewDetector.isDetected
@@ -1588,10 +1590,10 @@ index 26c2015d9755b3502b50a263e83f83b429457bc4..f0e7de473cbdb7bd2468bc4e06154ae6
  
    private fun isConnectionAvailable(): Boolean {
 -<<<<<<< MOLLY
--    val hasNetwork = internetConnection.isOnline
+     val hasNetwork = internetConnection.isOnline
 -    return !TextSecurePreferences.isUnauthorizedReceived(context) && SignalStore.account.isRegistered && (authWebSocket.stateSnapshot == WebSocketConnectionState.CONNECTED || (authWebSocket.shouldSendKeepAlives() && hasNetwork))
 -=======
-     val hasNetwork = internetConnection.isAssumedOnline
+-    val hasNetwork = internetConnection.isAssumedOnline
      return !SignalStore.account.isUnauthorizedReceived && SignalStore.account.isRegistered && (authWebSocket.stateSnapshot == WebSocketConnectionState.CONNECTED || (authWebSocket.shouldSendKeepAlives() && hasNetwork))
 ->>>>>>> SIGNAL
    }
@@ -4483,10 +4485,10 @@ index 78e3f06affe0563b22c424685a0d0004debf68ca..c081b43a0f7db8962335e0c671fe122e
  }
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/keyvalue/MollySettingsMigrationTest.kt b/app/src/test/java/org/thoughtcrime/securesms/keyvalue/MollySettingsMigrationTest.kt
 new file mode 100644
-index 0000000000000000000000000000000000000000..788035123df490e0b69c8a4de8e46fc7193930a1
+index 0000000000000000000000000000000000000000..ae16b4b631e61b88dac46d88f05abd3048a5434a
 --- /dev/null
 +++ b/app/src/test/java/org/thoughtcrime/securesms/keyvalue/MollySettingsMigrationTest.kt
-@@ -0,0 +1,132 @@
+@@ -0,0 +1,155 @@
 +/*
 + * SPDX-License-Identifier: AGPL-3.0-only
 + */
@@ -4575,6 +4577,29 @@ index 0000000000000000000000000000000000000000..788035123df490e0b69c8a4de8e46fc7
 +  }
 +
 +  @Test
++  fun `existing chosen language survives migration and first launch`() {
++    mollyPreferences.edit().putString("pref_language", "de").commit()
++    PreferenceManager.getDefaultSharedPreferences(context).edit().putString("pref_language", "en").commit()
++
++    val settings = SettingsValues(store, context)
++    assertEquals("de", settings.language)
++
++    settings.onFirstEverAppLaunch()
++    assertEquals("de", settings.language)
++  }
++
++  @Test
++  fun `changed language is visible through the settings reader`() {
++    mollyPreferences.edit().putString("pref_language", "de").commit()
++    val settings = SettingsValues(store, context)
++    assertEquals("de", settings.language)
++
++    settings.language = "fr"
++
++    assertEquals("fr", settings.language)
++  }
++
++  @Test
 +  fun `new installs retain Molly privacy defaults`() {
 +    val settings = SettingsValues(store, context)
 +
@@ -4617,6 +4642,106 @@ index 0000000000000000000000000000000000000000..788035123df490e0b69c8a4de8e46fc7
 +    PlainTextKeyValueStore.databaseEncryptedSecret = "replacement-secret"
 +    assertEquals("replacement-secret", mollyPreferences.getString("pref_database_encrypted_secret", null))
 +    assertTrue(PreferenceManager.getDefaultSharedPreferences(context).all.isEmpty())
++  }
++}
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/messages/IncomingMessageObserverConnectivityTest.kt b/app/src/test/java/org/thoughtcrime/securesms/messages/IncomingMessageObserverConnectivityTest.kt
+new file mode 100644
+index 0000000000000000000000000000000000000000..b318b9eae4859e928fd40e8ee7490270e056e358
+--- /dev/null
++++ b/app/src/test/java/org/thoughtcrime/securesms/messages/IncomingMessageObserverConnectivityTest.kt
+@@ -0,0 +1,94 @@
++/*
++ * Copyright 2026 Molly Project
++ * SPDX-License-Identifier: AGPL-3.0-only
++ */
++package org.thoughtcrime.securesms.messages
++
++import android.app.Application
++import androidx.test.core.app.ApplicationProvider
++import io.mockk.*
++import io.reactivex.rxjava3.core.Observable
++import org.junit.*
++import org.junit.runner.RunWith
++import org.robolectric.RobolectricTestRunner
++import org.robolectric.annotation.Config
++import org.signal.core.util.AppForegroundObserver
++import org.signal.core.util.logging.Log
++import org.thoughtcrime.securesms.testutil.SystemOutLogger
++import org.thoughtcrime.securesms.dependencies.AppDependencies
++import org.thoughtcrime.securesms.database.model.databaseprotos.RestoreDecisionState
++import org.thoughtcrime.securesms.keyvalue.SettingsValues
++import org.thoughtcrime.securesms.net.ConnectivityState
++import org.thoughtcrime.securesms.net.InternetConnectivityMonitor
++import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
++import org.whispersystems.signalservice.api.websocket.SignalWebSocket
++import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
++import java.util.concurrent.CountDownLatch
++import java.util.concurrent.TimeUnit
++
++@RunWith(RobolectricTestRunner::class)
++@Config(manifest = Config.NONE, application = Application::class)
++class IncomingMessageObserverConnectivityTest {
++  @get:Rule val store = MockSignalStoreRule()
++  private val auth = mockk<SignalWebSocket.AuthenticatedWebSocket>(relaxed = true)
++  private val unauth = mockk<SignalWebSocket.UnauthenticatedWebSocket>(relaxed = true)
++  private lateinit var observer: IncomingMessageObserver
++  private lateinit var update: (ConnectivityState) -> Unit
++  private val connected = CountDownLatch(1)
++
++  @Before fun setup() {
++    Log.initialize(SystemOutLogger())
++    every { store.account.isRegistered } returns true
++    every { store.account.isUnauthorizedReceived } returns false
++    every { store.account.pushAvailable } returns true
++    every { store.settings.forceWebsocketMode } returns SettingsValues.ForceWebsocketMode.DISABLED_BY_USER
++    every { store.registration.restoreDecisionState } returns RestoreDecisionState(RestoreDecisionState.State.START)
++    every { auth.state } returns Observable.never()
++    every { auth.stateSnapshot } returns WebSocketConnectionState.DISCONNECTED
++    every { auth.shouldSendKeepAlives() } returns false
++    every { auth.connect() } answers { connected.countDown() }
++    mockkStatic(AppDependencies::class, AppForegroundObserver::class, MessageContentProcessor::class)
++    mockkObject(AppForegroundObserver, MessageContentProcessor.Companion)
++    every { AppDependencies.signalServiceNetworkAccess } returns mockk(relaxed = true)
++    every { AppDependencies.networkManager } returns mockk(relaxed = true)
++    every { AppDependencies.libsignalNetwork } returns mockk(relaxed = true)
++    every { MessageContentProcessor.create(any()) } returns mockk(relaxed = true)
++    every { AppForegroundObserver.addListener(any()) } just Runs
++    every { AppForegroundObserver.removeListener(any()) } just Runs
++    mockkConstructor(InternetConnectivityMonitor::class)
++    every { anyConstructed<InternetConnectivityMonitor>().register() } just Runs
++    every { anyConstructed<InternetConnectivityMonitor>().unregister() } just Runs
++    observer = IncomingMessageObserver(ApplicationProvider.getApplicationContext(), auth, unauth)
++    val monitorField = IncomingMessageObserver::class.java.getDeclaredField("internetConnectivityMonitor").apply { isAccessible = true }
++    val monitor = monitorField.get(observer)
++    val callbackField = InternetConnectivityMonitor::class.java.getDeclaredField("onConnectivityUpdated").apply { isAccessible = true }
++    @Suppress("UNCHECKED_CAST")
++    update = callbackField.get(monitor) as (ConnectivityState) -> Unit
++  }
++
++  @After fun cleanup() {
++    if (::observer.isInitialized) observer.terminate()
++    unmockkConstructor(InternetConnectivityMonitor::class)
++    unmockkObject(AppForegroundObserver, MessageContentProcessor.Companion)
++    unmockkStatic(AppDependencies::class, AppForegroundObserver::class, MessageContentProcessor::class)
++  }
++
++  @Test fun `startup and unavailable or unvalidated states do not connect but online does`() {
++    Assert.assertFalse("startup connected before a connectivity report", connected.await(500, TimeUnit.MILLISECONDS))
++    update(ConnectivityState.MONITORING_UNAVAILABLE)
++    Assert.assertFalse("monitor failure connected", connected.await(500, TimeUnit.MILLISECONDS))
++    update(ConnectivityState.CONNECTED_UNVALIDATED)
++    Assert.assertFalse("unvalidated network connected", connected.await(500, TimeUnit.MILLISECONDS))
++    update(ConnectivityState.ONLINE)
++    Assert.assertTrue("validated network did not connect", connected.await(2, TimeUnit.SECONDS))
++  }
++
++  @Test fun `losing validation disconnects both websockets`() {
++    update(ConnectivityState.ONLINE)
++    Assert.assertTrue(connected.await(2, TimeUnit.SECONDS))
++    clearMocks(auth, unauth, answers = false, recordedCalls = true)
++    update(ConnectivityState.CONNECTED_UNVALIDATED)
++    verify(atLeast = 1) { auth.disconnect() }
++    verify(exactly = 1) { unauth.disconnect() }
 +  }
 +}
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/testutil/MockAppDependenciesRule.kt b/app/src/test/java/org/thoughtcrime/securesms/testutil/MockAppDependenciesRule.kt

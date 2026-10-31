@@ -178,14 +178,14 @@ def main():
                 message = (
                     f'Port {group} to Signal {SIGNAL_VERSION}, part {number}\n\n'
                     f'{PURPOSE[group]}\n\n'
-                    'These are AI-generated compatibility resolutions from the existing\n'
-                    'PR #7 port source, exported after Git has performed its deterministic\n'
+                    'These are AI-assisted compatibility changes from the recorded\n'
+                    'source checkpoint, exported after Git has performed its deterministic\n'
                     f'three-way merge of the unchanged official Molly {MOLLY_VERSION} snapshot\n'
                     f'with Signal {SIGNAL_VERSION}. The original Molly mailboxes remain unchanged.\n'
                     'Offset-only movement and conflict-free automatic merges are already\n'
                     'in the parent tree and are not re-exported as patch rewrites.\n\n'
-                    f'This batch owns {len(batch)} whole-file changes. It preserves the\n'
-                    'previous port tree exactly and makes no new application changes.\n'
+                    f'This batch owns {len(batch)} whole-file changes. It records AI-assisted\n'
+                    'compatibility changes in the pinned source tree.\n'
                     'The source commit records a derived candidate, not an official\n'
                     'Molly release or a claim of upstream authorship.\n\n'
                     f'Source-Commit: {MERGE}\n'
@@ -223,7 +223,7 @@ def main():
                 raise RuntimeError(f'follow-up tree mismatch: {slug}')
             source_message = git(REPO, 'cat-file', 'commit', source).decode().split('\n\n', 1)[1].rstrip()
             message = (source_message + '\n\n'
-                       'Carry this existing AI-generated PR #7 source fix as its own\n'
+                       'Carry this AI-assisted source change as its own\n'
                        'reviewable patch, preserving the original source author and diff.\n'
                        'The official Molly snapshot and earlier resolution patches do\n'
                        'not receive regenerated provenance headers.\n\n'

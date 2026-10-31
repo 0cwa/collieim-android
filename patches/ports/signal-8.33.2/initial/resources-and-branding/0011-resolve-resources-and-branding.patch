@@ -1,23 +1,22 @@
-From af670c86260629013c59b299f756999016c6c352 Mon Sep 17 00:00:00 2001
+From 2967d3cce110805e98837fbe9cc16fb60a0c4d3f Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Thu, 29 Oct 2026 00:01:38 +0100
+Date: Sat, 31 Oct 2026 23:25:32 +0100
 Subject: [PATCH] Port resources-and-branding to Signal 8.33.2, part 11
 
 Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.
 
-These are AI-generated compatibility resolutions from the existing
-PR #7 port source, exported after Git has performed its deterministic
+These are AI-assisted compatibility changes from the recorded
+source checkpoint, exported after Git has performed its deterministic
 three-way merge of the unchanged official Molly 8.19.2-4 snapshot
 with Signal 8.33.2. The original Molly mailboxes remain unchanged.
 Offset-only movement and conflict-free automatic merges are already
 in the parent tree and are not re-exported as patch rewrites.
 
-This batch owns 50 whole-file changes. It preserves the
-previous port tree exactly and makes no new application changes.
+This batch owns 50 whole-file changes. It records AI-assisted compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Source-Commit: f392c29451f25d6c94316dac316d5aeaf1989206
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -123,17 +122,17 @@ literal 0
 HcmV?d00001
 
 literal 537
-zcmeAS@N?(olHy`uVBq!ia0vp^1|ZDA3?vioaBc-s5&=FTuI>ds|FHpC@6dffHS8rp
-ze!&a^dTBkoZrZcR-)CT8T<PiJ7*cU-Z&-9uvjflM)YJR^_gc3uY2v+57i!PbEk9}T
-zSC;?$%c2^hT>o^f`02*H*S7xbMY%ACOm9sa1<pRB4^B(k5+1RcGVKUpd9}<tV;Qr<
-z1~a2oYfY-H{~!5oX@1pB{5wzVhnugT%(=+v5}$G2cHcARt?6q{Mfx6JFPS5#EmME>
-z@nXBgfASs-A#+68ZxpvPoZnTQ;&gq9$>WN=*y?wJCnV)0KSnvKGIKB$&RMf;y+kQn
-zPtIJ`7sY1WH4F3-bp06~)M@LzzvpW6l=-9K!F{G$avFujclr|cuZ}2TtiAO5N8$Ru
-z*&EI3;-<FbhVA2FoF`Qvx%OU2Zf^k-!_VE;KUSSPS;Kl^+ceW1F22Gh%2yn@Zo1!>
-zda89n+t9Y-)!fO7)slW+6u+;N4r01B>*4dNjNL{5raaiVY&Y}XAR!0!Cp_h6Pp#SZ
-zqCA@4Ax<jPGyl!^<DX1!Ctv+ixc~8w!%NeitaVjq+03$K(rVKfr+at)R_!;8@6*2V
-zdv3?8$$PCi4Yo=s2d(1CNzjaa(!qD<k=Ei)_87fJ_d9E6rf)DYUi+y2U*%7xp#L(}
-UuRQDxf$_-T>FVdQ&MBb@0GW;SV*mgE
+zcmV+!0_OdRP)<h;3K|Lk000e1NJLTq001xm001xu0{{R3VB86{0000OP)t-sM{rF4
+z|NsC0|NsC0|NsC0|NsC0|NsC09ZOZd00007bW%=J01z%_jJnxB1Rvi300F5<L_t(|
+z+Pzj=a)Uq&lV!`k|BX9^q=F65epNpViyxAs^#uP9rdohnMf{4W`9=f1J%7#79#%kU
+zODQ}c363)GLZpUZ;s!MWxKIS@rb}q113<7gGODdKdprNc_c=G!Mi=)CUGUlK<ebq7
+zL|<snJ-+4xwP&o#Sxv{U8Eg?N9Dmj0qdsB&A4mXHoD~PybB6%Wx_e|o*Q7M#cy3*L
+z?h(it9vSgkK_vqS0&$$Irmq-v28?W-CFpZD3w)q1U@cDo;C?GE@7_f`<pc3C!M-&r
+z9w>2h+>T(st5|daebVdraj%Y>u{M5Qm4t0pz6=4L8gLn{-c)UkZ~_4NyF2)*&dGcQ
+z(6*K}xI|48G$YhO3fV{B8s#d`D=|HY>YbAzdl^pjA@{BuQUcnV;pcj2yK?@N;IXE=
+z1HDobKqur3cg@PIw&-_T4?tcTRY`B`_s8-y+hf)AalhmE!=+~AtwkpUvjnt~t2JCg
+z-rW6qzcF8qE7<#;i0YHQI|(qg7$Z`u3~XR2UF3)k+~O*ui3eORfk)h}nP;#xGp*u(
+b{(1QVQvV!#>PSB^00000NkvXXu0mjfnT_;g
 
 diff --git a/core/ui/src/main/res/drawable-xxhdpi/ic_signal_backup.png b/core/ui/src/main/res/drawable-xxhdpi/ic_signal_backup.png
 deleted file mode 100644

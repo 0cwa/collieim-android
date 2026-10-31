@@ -116,3 +116,9 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope.allowed('followups', 'docs/OTHER.md'))
         self.assertFalse(scope.allowed('followups', 'docs/PATCH-PIPELINE.md.extra'))
         self.assertFalse(scope.allowed('followups', 'tools/patches/scope.py'))
+
+
+class BundleScopeTests(unittest.TestCase):
+    def test_only_exact_release_bundle_path_is_allowed(self):
+        self.assertTrue(scope.allowed('release', 'patches/ports/signal-8.33.2/source-checkpoint.bundle'))
+        self.assertFalse(scope.allowed('release', 'patches/ports/signal-8.33.2/unrelated.bundle'))

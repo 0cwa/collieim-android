@@ -69,6 +69,7 @@ jobs:
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
           if [[ "$scope" == release || "$scope" == followups ]]; then
             python3 tools/patches/prepare_port_report.py
+            python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"
           else

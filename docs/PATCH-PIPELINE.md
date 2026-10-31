@@ -247,3 +247,38 @@ Keep a PR in draft until its required native and Android gates have actually
 passed. Neither a source-tree proof nor an earlier candidate's CI result is
 a fresh APK validation. No native binary checksum, build success, or device
 acceptance is assumed by these patches.
+
+## Review conflict choices and residual edits
+
+`tools/patches/review_conflicts.py` produces an offline HTML view, a side-choice
+manifest, and a compressed residual patch. All source objects must already be
+local. Pass the assembled source repository and the original Signal baseline
+used by Molly as explicit inputs; the other pins come from `molly-build.json`:
+
+```sh
+python3 - "$PATCH_RELEASE" "$ASSEMBLED_REPO" "$OLD_SIGNAL" "$REPORT_DIR" <<'PY'
+import json
+from pathlib import Path
+import subprocess
+import sys
+release = Path(sys.argv[1]).resolve()
+profile = json.loads((release / "molly-build.json").read_text())
+subprocess.run([
+    sys.executable, str(release / "tools/patches/review_conflicts.py"),
+    "--repo", sys.argv[2],
+    "--mechanical-tree", profile["port"]["mechanical_tree"],
+    "--old-signal", sys.argv[3],
+    "--molly-source", profile["molly"]["target"],
+    "--new-signal", profile["signal"]["commit"],
+    "--target-tree", profile["target_tree"], "--out", sys.argv[4],
+], check=True)
+PY
+```
+
+Open `view.html` in the output directory and select its `review.json.gz`.
+The choices are reproducible review baselines, not assertions about the original
+author's intent. The tool independently applies the residual in a private Git
+index and checks every resulting path, mode and blob against the target tree.
+Generated translations and deletions have separate categories; their contents
+are excluded from the hand-merge line counts. Per-region contextual windows may
+overlap, so use the complete per-file residuals for additive comparisons.

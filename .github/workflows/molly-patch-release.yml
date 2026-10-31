@@ -63,12 +63,14 @@ jobs:
           else
             echo "Unsupported event" >&2; exit 1
           fi
+          if [[ "$scope" == release || "$scope" == followups ]]; then
+            python3 tools/patches/prepare_port_report.py
+          fi
           python3 tools/patches/scope.py --scope "$scope" --base "$base"
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
           if [[ "$scope" == release || "$scope" == followups ]]; then
-            python3 tools/patches/prepare_port_report.py
             python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"
@@ -110,6 +112,9 @@ jobs:
 
       - name: Reconstruct the selected release and prove its complete tree
         run: |
+          if [[ "${{ needs.scope.outputs.port }}" == true ]]; then
+            python3 tools/patches/prepare_port_report.py
+          fi
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
             --report "$RUNNER_TEMP/reports/source.json" \
@@ -153,6 +158,9 @@ jobs:
       # trusting a tarball whose .git file points to a different runner.
       - name: Materialize and verify the source on the build runner
         run: |
+          if [[ "${{ needs.scope.outputs.port }}" == true ]]; then
+            python3 tools/patches/prepare_port_report.py
+          fi
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
             --report "$RUNNER_TEMP/reports/source.json" \

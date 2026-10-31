@@ -1,0 +1,147 @@
+From a3a9eaabe66d42fdbf8807158eca7de8c9755b33 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 05:58:41 +0100
+Subject: [PATCH] Restore unavailable-contact message and retained source code
+
+Use the Molly unavailable-contact message, which no longer distinguishes whether a person previously used Signal. Restore available Molly imports, remove one unused conversation-list import, and restore the 33-line PlainTextSharedPrefsDataStore API, which has no current callers.
+
+AI-Generated: true
+
+Based-On-Source-Commit: 1f0af82f4ab6a510afe506d0efd33d8f09ecf24e
+Source-Commit: a3a9eaabe66d42fdbf8807158eca7de8c9755b33
+---
+ .../conversation/v2/DisabledInputView.kt      |  4 +--
+ .../ConversationListFragment.java             |  1 -
+ .../CoreUiDependenciesProvider.kt             |  1 +
+ .../dependencies/NetworkDependenciesModule.kt |  3 ++
+ .../glide/ChunkedImageUrlLoader.java          |  1 +
+ .../securesms/keyvalue/AccountValues.kt       |  1 +
+ .../keyvalue/PlainTextSharedPrefsDataStore.kt | 33 +++++++++++++++++++
+ 7 files changed, 40 insertions(+), 4 deletions(-)
+ create mode 100644 app/src/main/java/org/thoughtcrime/securesms/keyvalue/PlainTextSharedPrefsDataStore.kt
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/DisabledInputView.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/DisabledInputView.kt
+index e257337d..8adced2d 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/DisabledInputView.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/DisabledInputView.kt
+@@ -207,10 +207,8 @@ class DisabledInputView @JvmOverloads constructor(
+       bind = {
+         findViewById<TextView>(R.id.export_sms_message).text = if (recipient.isMmsGroup) {
+           context.getString(R.string.ConversationActivity__sms_messaging_is_no_longer_supported)
+-        } else if (recipient.hasAci) {
+-          context.getString(R.string.ConversationActivity__this_person_is_no_longer_using_signal)
+         } else {
+-          context.getString(R.string.ConversationActivity__this_person_is_not_using_signal)
++          context.getString(R.string.NewConversationActivity__s_is_not_registered_with_signal, recipient.getDisplayName(context))
+         }
+ 
+         findViewById<MaterialButton>(R.id.export_sms_button).apply {
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversationlist/ConversationListFragment.java b/app/src/main/java/org/thoughtcrime/securesms/conversationlist/ConversationListFragment.java
+index 9d32baaa..d3fa712b 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversationlist/ConversationListFragment.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversationlist/ConversationListFragment.java
+@@ -87,7 +87,6 @@ import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgressState;
+ import org.thoughtcrime.securesms.backup.v2.ui.BackupAlert;
+ import org.thoughtcrime.securesms.backup.v2.ui.BackupAlertBottomSheet;
+ import org.thoughtcrime.securesms.backup.v2.ui.BackupAlertDelegate;
+-import org.signal.core.models.badges.Badge;
+ import org.thoughtcrime.securesms.banner.Banner;
+ import org.thoughtcrime.securesms.banner.BannerManager;
+ import org.thoughtcrime.securesms.banner.banners.ArchiveRestoreStatusBanner;
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/dependencies/CoreUiDependenciesProvider.kt b/app/src/main/java/org/thoughtcrime/securesms/dependencies/CoreUiDependenciesProvider.kt
+index 3c2abc35..5bd52e1a 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/dependencies/CoreUiDependenciesProvider.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/dependencies/CoreUiDependenciesProvider.kt
+@@ -10,6 +10,7 @@ import org.thoughtcrime.securesms.ScreenLockController
+ import org.thoughtcrime.securesms.keyvalue.SignalStore
+ import org.thoughtcrime.securesms.service.KeyCachingService
+ import org.thoughtcrime.securesms.util.BackupUtil
++import org.thoughtcrime.securesms.util.TextSecurePreferences
+ 
+ object CoreUiDependenciesProvider : CoreUiDependencies.Provider {
+   override fun provideBackupBaseDirName(): String {
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/dependencies/NetworkDependenciesModule.kt b/app/src/main/java/org/thoughtcrime/securesms/dependencies/NetworkDependenciesModule.kt
+index 115dbd37..bacc8985 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/dependencies/NetworkDependenciesModule.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/dependencies/NetworkDependenciesModule.kt
+@@ -39,11 +39,14 @@ import org.signal.network.service.StorageServiceService
+ import org.signal.network.service.TwoFactorMethodService
+ import org.signal.network.service.UsernameService
+ import org.signal.network.util.Tls12SocketFactory
++import org.thoughtcrime.securesms.BuildConfig
+ import org.thoughtcrime.securesms.crypto.storage.SignalServiceDataStoreImpl
+ import org.thoughtcrime.securesms.groups.GroupsV2Authorization
+ import org.thoughtcrime.securesms.groups.GroupsV2AuthorizationMemoryValueCache
+ import org.thoughtcrime.securesms.keyvalue.SignalStore
+ import org.thoughtcrime.securesms.messages.IncomingMessageObserver
++import org.thoughtcrime.securesms.net.Networking
++import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor
+ import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess
+ import org.thoughtcrime.securesms.push.SignalServiceTrustStore
+ import org.whispersystems.signalservice.api.SignalServiceAccountManager
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/glide/ChunkedImageUrlLoader.java b/app/src/main/java/org/thoughtcrime/securesms/glide/ChunkedImageUrlLoader.java
+index c8f0f5e5..aa549b8d 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/glide/ChunkedImageUrlLoader.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/glide/ChunkedImageUrlLoader.java
+@@ -13,6 +13,7 @@ import org.thoughtcrime.securesms.giph.model.ChunkedImageUrl;
+ import org.thoughtcrime.securesms.net.ContentProxySafetyInterceptor;
+ import org.thoughtcrime.securesms.net.ContentProxySelector;
+ import org.thoughtcrime.securesms.net.Networking;
++import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
+ 
+ import java.io.InputStream;
+ 
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/AccountValues.kt b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/AccountValues.kt
+index b77b897f..91942f27 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/AccountValues.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/AccountValues.kt
+@@ -25,6 +25,7 @@ import org.thoughtcrime.securesms.jobmanager.impl.RegisteredConstraint
+ import org.thoughtcrime.securesms.jobs.PreKeysSyncJob
+ import org.thoughtcrime.securesms.notifications.UnregisteredNotifier
+ import org.thoughtcrime.securesms.recipients.Recipient
++import org.thoughtcrime.securesms.util.SecurePreferenceManager
+ import org.whispersystems.signalservice.api.push.ServiceIds
+ import org.whispersystems.signalservice.api.push.SignalServiceAddress
+ import org.whispersystems.signalservice.api.push.UsernameLinkComponents
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/PlainTextSharedPrefsDataStore.kt b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/PlainTextSharedPrefsDataStore.kt
+new file mode 100644
+index 00000000..e2840c23
+--- /dev/null
++++ b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/PlainTextSharedPrefsDataStore.kt
+@@ -0,0 +1,33 @@
++package org.thoughtcrime.securesms.keyvalue
++
++import android.annotation.SuppressLint
++import android.content.Context
++import org.thoughtcrime.securesms.util.SecurePreferenceManager
++
++/**
++ * There are some values that you can't, for whatever reason, store in the normal encrypted [KeyValueStore].
++ * Usually, it's because the value your storing is _related to_ the database. Regardless, this is just a normal
++ * shared-prefs-backed class. Do not put anything in here that you wouldn't be comfortable storing in plain text.
++ *
++ * A good rule of thumb might be: if you're not comfortable logging it, then you shouldn't be comfortable putting
++ * it in here.
++ */
++class PlainTextSharedPrefsDataStore(private val context: Context) {
++
++  companion object {
++    const val SMS_MIGRATION_ID_OFFSET = "sms_migration_id_offset"
++  }
++
++  private val sharedPrefs = SecurePreferenceManager.getSecurePreferences(context)
++
++  /**
++   * Stores the ID offset that was determined during the big migration that moved all SMS messages into the MMS table.
++   */
++  var smsMigrationIdOffset: Long
++    get() = sharedPrefs.getLong(SMS_MIGRATION_ID_OFFSET, -1)
++
++    @SuppressLint("ApplySharedPref")
++    set(value) {
++      sharedPrefs.edit().putLong(SMS_MIGRATION_ID_OFFSET, value).commit()
++    }
++}
+-- 
+2.56.0
+

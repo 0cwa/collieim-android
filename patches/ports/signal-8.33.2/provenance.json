@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "ad924cb75d22db46a530c9257fe331bc1b6e218a",
+  "target_tree": "41a6f4dd9731829110773b23e7739c5b5fd65444",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -629,6 +629,22 @@
       "source_bundle": "followups/registration-and-timing-format/source-checkpoint.bundle",
       "source_bundle_prerequisite": "bda4a65056b18ae1b9aa31aefa8a737342967b64",
       "source_bundle_sha256": "1dbbc00bfc986291a726b2636f11dcc8141a452511e01071d9738fc473bbf4c5"
+    },
+    {
+      "id": "followups/unavailable-contact-and-legacy-preferences",
+      "source_commit": "a3a9eaabe66d42fdbf8807158eca7de8c9755b33",
+      "description": "Restore the Molly unavailable-contact message, dropping the prior-use distinction; restore Molly imports and the currently unused legacy PlainTextSharedPrefsDataStore API, and remove one unused import.",
+      "ai_generated": true,
+      "before_tree": "ad924cb75d22db46a530c9257fe331bc1b6e218a",
+      "after_tree": "41a6f4dd9731829110773b23e7739c5b5fd65444",
+      "paths": 7,
+      "patches": [
+        "followups/unavailable-contact-and-legacy-preferences/0001-unavailable-contact-and-legacy-preferences.patch"
+      ],
+      "mailbox_bytes": 8749,
+      "source_bundle": "followups/unavailable-contact-and-legacy-preferences/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "1f0af82f4ab6a510afe506d0efd33d8f09ecf24e",
+      "source_bundle_sha256": "7ad0dddc70a920fc703e1296977bc23b399f6cd5d027e2bc46a8062925ad8c01"
     }
   ],
   "mailbox_sha256": {
@@ -693,6 +709,7 @@
     "followups/retained-media-preference-imports/0001-retained-media-preference-imports.patch": "c2149ef7abd9616ebd1059753b1b64c07adcd1e8a0fefbf6504e83910498881e",
     "followups/backup-direct-cancellation/0001-backup-direct-cancellation.patch": "5935b98c4e9bdd004b7207b08015f2be6e142d554f55de05ab978cba138c8785",
     "followups/remove-pre27-sheet-selectors/0001-remove-pre27-sheet-selectors.patch": "1246b34fd9b7fbfc055886837cd05a305b5eaf47ddb4a41f1bcb88fbc3ccffaf",
-    "followups/registration-and-timing-format/0001-registration-and-timing-format.patch": "687789c173da4503ad5747d44e30a51bb6cbb5b3edb02f6d45c51150f8bc5db3"
+    "followups/registration-and-timing-format/0001-registration-and-timing-format.patch": "687789c173da4503ad5747d44e30a51bb6cbb5b3edb02f6d45c51150f8bc5db3",
+    "followups/unavailable-contact-and-legacy-preferences/0001-unavailable-contact-and-legacy-preferences.patch": "c84adb06940a97b02ba372316ef68fdca7ffb2513186cd521d1cb142f3a52ce0"
   }
 }

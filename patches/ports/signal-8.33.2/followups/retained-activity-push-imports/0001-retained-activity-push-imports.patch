@@ -1,0 +1,77 @@
+From ad4e4df669330f034242afe4d19f29bb1c6f3995 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 04:03:03 +0100
+Subject: [PATCH] Retain Molly activity, conversation and push imports
+
+Restore five Molly imports that compile without behavior changes.
+
+AI-Generated: true
+
+Based-On-Source-Commit: 6a08b686d0f4159a8b801420d601ce55b5195b66
+Source-Commit: ad4e4df669330f034242afe4d19f29bb1c6f3995
+---
+ app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt    | 1 +
+ .../thoughtcrime/securesms/conversation/ConversationItem.java   | 2 ++
+ .../org/thoughtcrime/securesms/maps/PlacePickerActivity.java    | 1 +
+ .../signalservice/internal/push/PushServiceSocket.java          | 1 +
+ 4 files changed, 5 insertions(+)
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt
+index 67a515ff..4641434a 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt
+@@ -6,6 +6,7 @@
+ package org.thoughtcrime.securesms
+ 
+ import android.annotation.SuppressLint
++import android.app.Activity
+ import android.content.Context
+ import android.content.Intent
+ import android.os.Build
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java b/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java
+index c05cd953..8973ebe5 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java
+@@ -115,6 +115,7 @@ import org.thoughtcrime.securesms.database.model.InMemoryMessageRecord;
+ import org.thoughtcrime.securesms.database.model.MessageRecord;
+ import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
+ import org.thoughtcrime.securesms.database.model.Quote;
++import org.thoughtcrime.securesms.database.model.databaseprotos.MessageExtras;
+ import org.thoughtcrime.securesms.dependencies.AppDependencies;
+ import org.thoughtcrime.securesms.events.PartProgressEvent;
+ import org.thoughtcrime.securesms.giph.mp4.GiphyMp4PlaybackPolicy;
+@@ -147,6 +148,7 @@ import org.thoughtcrime.securesms.util.MessageRecordUtil;
+ import org.thoughtcrime.securesms.util.PlaceholderURLSpan;
+ import org.thoughtcrime.securesms.util.Projection;
+ import org.thoughtcrime.securesms.util.ProjectionList;
++import org.thoughtcrime.securesms.util.RemoteConfig;
+ import org.thoughtcrime.securesms.util.SearchUtil;
+ import org.signal.core.ui.util.SpanUtil;
+ import org.thoughtcrime.securesms.util.UrlClickHandler;
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/maps/PlacePickerActivity.java b/app/src/main/java/org/thoughtcrime/securesms/maps/PlacePickerActivity.java
+index 1f2194e5..a9aed78b 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/maps/PlacePickerActivity.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/maps/PlacePickerActivity.java
+@@ -44,6 +44,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
+ import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
+ import org.thoughtcrime.securesms.util.DynamicTheme;
+ import org.thoughtcrime.securesms.util.MediaUtil;
++import org.thoughtcrime.securesms.util.TextSecurePreferences;
+ import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
+ 
+ import java.io.IOException;
+diff --git a/lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/PushServiceSocket.java b/lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/PushServiceSocket.java
+index be4becdd..224f7cf8 100644
+--- a/lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/PushServiceSocket.java
++++ b/lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/PushServiceSocket.java
+@@ -6,6 +6,7 @@
+ 
+ package org.whispersystems.signalservice.internal.push;
+ 
++import com.fasterxml.jackson.annotation.JsonProperty;
+ import com.fasterxml.jackson.core.JsonProcessingException;
+ import com.squareup.wire.Message;
+ 
+-- 
+2.56.0
+

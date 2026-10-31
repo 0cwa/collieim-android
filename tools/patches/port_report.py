@@ -112,14 +112,12 @@ def render(config, evidence, ready=False):
         adds, dels, binary = totals(numstat(a, b))
         output.append(f'- {label}: {adds} added, {dels} deleted, {adds+dels} total text lines; {binary} binary paths (`{a}` → `{b}`).')
     a, d, _ = totals(numstat(baseline_before, baseline_target)); ma, md, _ = totals(numstat(OLD, MOLLY))
-    if evidence.get('minimization_complete'):
-        ca, cd, cb = totals(stats)
-        cm, cn, cmb = totals(numstat(MOLLY, target))
-        after = f'After minimization: mechanical comparison {ca} added, {cd} deleted, {ca+cd} total, {cb} binary; Molly comparison {cm} added, {cn} deleted, {cm+cn} total, {cmb} binary.'
-    else:
-        after = 'After minimization: unmeasured.'
+    ca, cd, cb = totals(stats)
+    cm, cn, cmb = totals(numstat(MOLLY, target))
+    current = f'Current mechanical comparison: {ca} added, {cd} deleted, {ca+cd} total, {cb} binary; current Molly comparison: {cm} added, {cn} deleted, {cm+cn} total, {cmb} binary.'
+    after = 'After minimization: final.' if evidence.get('minimization_complete') else 'After minimization: unmeasured.'
     output += ['', f'Compatibility share: {a+d} / {ma+md} physical added plus deleted text lines = {(a+d)/(ma+md)*100:.3f}%.' if ma+md else 'Compatibility share: undefined (zero denominator).',
-               after, '', 'Molly exclusions, including partial-file exclusions: unmeasured.', '',
+               current, after, '', 'Molly exclusions, including partial-file exclusions: unmeasured.', '',
                'Clean merge counts above are whole-file Git diff totals; no clean-merge hunk classification is asserted.', '',
                '| Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |',
                '|---|---|---|---|---|---:|---:|---|---|---|---|']

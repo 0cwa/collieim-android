@@ -74,6 +74,7 @@ class ScopeTests(unittest.TestCase):
         self.git('commit', '-qm', 'switch')
         with mock.patch.object(scope, 'MOLLY', self.base), mock.patch.object(scope, 'OLD', signal), mock.patch.object(scope, 'FOREST', forest_id):
             self.assertTrue(scope.check_scope(self.repo, 'switch', lower)['profile_present'])
+            switch_head = self.git('rev-parse', 'HEAD').strip()
             with self.assertRaisesRegex(ValueError, 'lower base'):
                 scope.check_scope(self.repo, 'switch', 'HEAD')
             with self.assertRaisesRegex(ValueError, 'outside scope'):
@@ -83,3 +84,25 @@ class ScopeTests(unittest.TestCase):
             self.commit('app.txt', 'unexpected source mutation\n')
             with self.assertRaisesRegex(ValueError, 'source projection differs'):
                 scope.check_scope(self.repo, 'switch', lower)
+
+            self.git('checkout', '-q', '--detach', lower)
+            self.commit('patches/ports/hidden', 'unreviewed port\n')
+            hidden_base = self.git('rev-parse', 'HEAD').strip()
+            self.git('checkout', switch_head, '--', 'app.txt', 'molly-build.json', 'patches/molly')
+            self.git('add', '.')
+            self.git('commit', '-qm', 'switch with hidden base port')
+            with self.assertRaisesRegex(ValueError, 'outside scope'):
+                scope.check_scope(self.repo, 'switch', hidden_base)
+            self.git('checkout', '-q', '--detach', switch_head)
+            self.commit('tools/patches/hidden.py', 'hidden tool change\n')
+            hidden_tool_base = self.git('rev-parse', 'HEAD').strip()
+            config['port'] = {'mechanical_tree': 'unused'}
+            (self.repo / 'molly-build.json').write_text(json.dumps(config))
+            port_series = self.repo / 'patches/ports/signal-8.33.2/series'
+            port_series.parent.mkdir(parents=True)
+            port_series.write_text('initial\n')
+            self.git('add', '.')
+            self.git('commit', '-qm', 'release')
+            with mock.patch.object(scope, 'NEW', signal):
+                with self.assertRaisesRegex(ValueError, 'no validated preceding stack phase'):
+                    scope.check_scope(self.repo, 'release', hidden_tool_base)

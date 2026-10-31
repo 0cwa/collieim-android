@@ -106,13 +106,13 @@ Subsequent commits add ordinary mailbox resolutions, grouped by application
 feature. Their parent source is Git's mechanical merge, so they show changes
 that remain after deterministic integration. The initial groups reproduce
 the existing PR #7 source merge
-`90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; nineteen subsequent layers retain
+`90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; twenty subsequent layers retain
 the preference-import, NetCipher SDK DSL, broader integration/regression, CDN
 test-fixture, linked-device reminder, backup preference precedence, donation
 completion, legacy backup-notification cleanup, recipient badge list, localized
 resource notices, locked system information, remaining resource notices, dynamic
 appearance, blocked-network priority, recipient avatar badge, version preference
-write, Giphy client formatting, always-relay accessor, and logcat collection corrections as individual review steps. Each mailbox
+write, Giphy client formatting, always-relay accessor, logcat collection, and retained Molly import corrections as individual review steps. Each mailbox
 records its source commit and AI-generation status.
 Previous mailboxes do not receive new provenance headers when a later fix is
 added.
@@ -126,8 +126,9 @@ AI compatibility decision. Every conflict must be covered by a resolution
 or an explicit unchanged-content decision.
 
 The final source must equal tree
-`2f2df9763230c11a9a0eac423b0fec52ef0b7fe5`, the tree of synthetic source
-commit `9fd7b272e2b546c5fc706315df09c5778590f1fb`. The logcat and always-relay checkpoints extend Giphy formatting
+`ed84aae0b10c71574fb91a124202015f298a2226`, the tree of synthetic source
+commit `6a08b686d0f4159a8b801420d601ce55b5195b66`. The retained imports checkpoint extends logcat collection
+checkpoint `9fd7b272e2b546c5fc706315df09c5778590f1fb` (tree `2f2df9763230c11a9a0eac423b0fec52ef0b7fe5`). The logcat and always-relay checkpoints extend Giphy formatting
 checkpoint `ae5099dd637e08095c995464ec22118866296e3a` (tree `ff319e31f48739facb1b430102ce61351114ebb8`). The Giphy formatting checkpoint extends version preference
 checkpoint `b0e9ca51c613c1b88ada51a5552b0b7131d1621e` (tree `190ad231ab86fd7fbe7c6cb137a3bf0680a13d24`). The version preference checkpoint extends recipient avatar badge
 checkpoint `09d0c9e17576de7090da7a9e6c84080c618f817e` (tree `67761e2dc6664979273d89f2a438fa7be060f65a`). The recipient avatar badge checkpoint extends blocked-network priority
@@ -158,7 +159,7 @@ bundle requires `cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c`; the backup bundle
 requires `d3c917a5be7db6116c83b7e29e09f145e7f38825`; the donation bundle
 requires `266d0185d021b2b6a98882205f6b6242152d146e`; and the backup-notification
 bundle requires `34100dfa15eb70256d948f96b14abe4b7c7920d6`. Each prerequisite must
-already be present in the object database. The eleven later bundles each require
+already be present in the object database. The twelve later bundles each require
 the source commit from the immediately preceding checkpoint. For a fresh local repository,
 materialize and verify the chain in order:
 
@@ -239,13 +240,18 @@ git bundle verify patches/ports/signal-8.33.2/followups/logcat-collection/source
 git fetch patches/ports/signal-8.33.2/followups/logcat-collection/source-checkpoint.bundle \
   refs/heads/source-checkpoint/logcat-collection:refs/port-source/logcat-collection
 git rev-parse refs/port-source/logcat-collection^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/retained-molly-imports/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/retained-molly-imports/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/retained-molly-imports:refs/port-source/retained-molly-imports
+git rev-parse refs/port-source/retained-molly-imports^{tree}
 ```
 
 The tree commands must print, in order, `2533afec2fe2d7f9fc682f699fc21d7624521889`,
 `0e5c581b7db3f4429256630011790f3ed4ad141f`,
 `febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`,
 `33540be50355fd43b776249136554d167625462a`, and
-`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`, `09c0192152398a4969178704894cfcb1c0552513`, `f3b957dcbd02f828be8bccd29770fa080b68b55a`, `e71a4e56e8f5ebb9229ff4c2cf1dc3972b444655`, `2e5e16d1d08625df6ae12ab911eb180d44ed581a`, `229e4bd926c1080318cf80ee6633178e42eeb6dd`, `936c1c8ccf52a6450b4d6b9fb216ae1dfdff102a`, `67761e2dc6664979273d89f2a438fa7be060f65a`, `190ad231ab86fd7fbe7c6cb137a3bf0680a13d24`, `ff319e31f48739facb1b430102ce61351114ebb8`, `0965228d1febaa1b9be4d228208f3ffcf3b7c595`, `2f2df9763230c11a9a0eac423b0fec52ef0b7fe5`. The bundles do not carry their
+`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`, `09c0192152398a4969178704894cfcb1c0552513`, `f3b957dcbd02f828be8bccd29770fa080b68b55a`, `e71a4e56e8f5ebb9229ff4c2cf1dc3972b444655`, `2e5e16d1d08625df6ae12ab911eb180d44ed581a`, `229e4bd926c1080318cf80ee6633178e42eeb6dd`, `936c1c8ccf52a6450b4d6b9fb216ae1dfdff102a`, `67761e2dc6664979273d89f2a438fa7be060f65a`, `190ad231ab86fd7fbe7c6cb137a3bf0680a13d24`, `ff319e31f48739facb1b430102ce61351114ebb8`, `0965228d1febaa1b9be4d228208f3ffcf3b7c595`, `2f2df9763230c11a9a0eac423b0fec52ef0b7fe5`, `ed84aae0b10c71574fb91a124202015f298a2226`. The bundles do not carry their
 prerequisites; a fresh clone cannot verify or fetch a later bundle until the
 earlier checkpoints are materialized.
 

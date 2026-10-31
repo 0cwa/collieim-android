@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "2f2df9763230c11a9a0eac423b0fec52ef0b7fe5",
+  "target_tree": "ed84aae0b10c71574fb91a124202015f298a2226",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -517,6 +517,22 @@
       "source_bundle": "followups/logcat-collection/source-checkpoint.bundle",
       "source_bundle_prerequisite": "02088f97be08bcb50763d78245af68f8f1d065e7",
       "source_bundle_sha256": "51d0d25f65eb309607ee50e520626489b95ffbda641106d5bae64ef1c4d1ac13"
+    },
+    {
+      "id": "followups/retained-molly-imports",
+      "source_commit": "6a08b686d0f4159a8b801420d601ce55b5195b66",
+      "description": "Retain Molly message processor and reactions theme imports.",
+      "ai_generated": true,
+      "before_tree": "2f2df9763230c11a9a0eac423b0fec52ef0b7fe5",
+      "after_tree": "ed84aae0b10c71574fb91a124202015f298a2226",
+      "paths": 2,
+      "patches": [
+        "followups/retained-molly-imports/0001-retained-molly-imports.patch"
+      ],
+      "mailbox_bytes": 3105,
+      "source_bundle": "followups/retained-molly-imports/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "9fd7b272e2b546c5fc706315df09c5778590f1fb",
+      "source_bundle_sha256": "65c0a077808e22e2dd5d8295680d48a969792415ccfae4900a90b0b8d2a1acd9"
     }
   ],
   "mailbox_sha256": {
@@ -574,6 +590,7 @@
     "followups/version-preference-write/0001-version-preference-write.patch": "9c314a3616cd3c56f2de21b084af1508a34398500c12fd93c9111a8d9ee875fc",
     "followups/giphy-client-formatting/0001-giphy-client-formatting.patch": "a8cd61dac9f7c3e40fe37aa3a3ec4603afe4e561ef59e7223693ef96360844d6",
     "followups/always-relay-accessor/0001-always-relay-accessor.patch": "b201fc33197a97cca455fd5c9393fd3ac704c5b8e91d4e1519809bccd584feb5",
-    "followups/logcat-collection/0001-logcat-collection.patch": "1c9aef81bec93efbbf8ea8d150f83b6ed937dd5e3e0f87808df375c9a8b152fb"
+    "followups/logcat-collection/0001-logcat-collection.patch": "1c9aef81bec93efbbf8ea8d150f83b6ed937dd5e3e0f87808df375c9a8b152fb",
+    "followups/retained-molly-imports/0001-retained-molly-imports.patch": "2f0d81917603645023441857f36165a1aefb69af8e4be4ba4b78180ebf7ac914"
   }
 }

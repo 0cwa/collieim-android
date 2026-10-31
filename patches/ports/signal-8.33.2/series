@@ -53,3 +53,4 @@ followups/version-preference-write/0001-version-preference-write.patch
 followups/giphy-client-formatting/0001-giphy-client-formatting.patch
 followups/always-relay-accessor/0001-always-relay-accessor.patch
 followups/logcat-collection/0001-logcat-collection.patch
+followups/retained-molly-imports/0001-retained-molly-imports.patch

@@ -1,0 +1,59 @@
+From 6a08b686d0f4159a8b801420d601ce55b5195b66 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 03:51:23 +0100
+Subject: [PATCH] Retain Molly message and reactions imports
+
+Restore four existing Molly imports that compile without behavior changes.
+
+AI-Generated: true
+
+Based-On-Source-Commit: 9fd7b272e2b546c5fc706315df09c5778590f1fb
+Source-Commit: 6a08b686d0f4159a8b801420d601ce55b5195b66
+---
+ .../thoughtcrime/securesms/messages/DataMessageProcessor.kt    | 3 +++
+ .../reactions/ReactionsBottomSheetDialogFragment.java          | 1 +
+ 2 files changed, 4 insertions(+)
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt b/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
+index 08b8191c..f7948257 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
+@@ -7,6 +7,7 @@ import org.signal.core.models.ServiceId
+ import org.signal.core.models.ServiceId.ACI
+ import org.signal.core.models.database.StickerRecord
+ import org.signal.core.models.recipients.RecipientId
++import org.signal.core.util.Base64
+ import org.signal.core.util.Hex
+ import org.signal.core.util.UuidUtil
+ import org.signal.core.util.isNotEmpty
+@@ -14,6 +15,7 @@ import org.signal.core.util.logging.Log
+ import org.signal.core.util.orNull
+ import org.signal.core.util.toOptional
+ import org.signal.emoji.EmojiUtil
++import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialPresentation
+ import org.signal.network.util.Preconditions
+ import org.thoughtcrime.securesms.attachments.Attachment
+ import org.thoughtcrime.securesms.attachments.LocalStickerAttachment
+@@ -55,6 +57,7 @@ import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob
+ import org.thoughtcrime.securesms.jobs.GroupCallPeekJob
+ import org.thoughtcrime.securesms.jobs.GroupV2UpdateSelfProfileKeyJob
+ import org.thoughtcrime.securesms.jobs.ProfileKeySendJob
++import org.thoughtcrime.securesms.jobs.PushProcessMessageJob
+ import org.thoughtcrime.securesms.jobs.RefreshAttributesJob
+ import org.thoughtcrime.securesms.jobs.RetrieveProfileJob
+ import org.thoughtcrime.securesms.jobs.StorageSyncJob
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/reactions/ReactionsBottomSheetDialogFragment.java b/app/src/main/java/org/thoughtcrime/securesms/reactions/ReactionsBottomSheetDialogFragment.java
+index 5e07a00a..e3358b41 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/reactions/ReactionsBottomSheetDialogFragment.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/reactions/ReactionsBottomSheetDialogFragment.java
+@@ -18,6 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+ import com.google.android.material.tabs.TabLayout;
+ import com.google.android.material.tabs.TabLayoutMediator;
+ 
++import org.signal.core.ui.util.ThemeUtil;
+ import org.thoughtcrime.securesms.R;
+ import org.thoughtcrime.securesms.components.emoji.EmojiImageView;
+ import org.thoughtcrime.securesms.database.model.MessageId;
+-- 
+2.56.0
+

@@ -14,8 +14,7 @@ the original Molly snapshot, and any compatibility changes as separate commits.
 | Signal 8.33.2 | `6e9dddc01f1b26e608ac683807c51e139c141ed2` |
 | Pipeline and historical export origin | [PR #7 at cef8e04](https://github.com/0cwa/mollyim-android/tree/cef8e044f55d1a47c5634f500e01b3956ee31f4f) |
 
-`molly-build.json` selects the release. Its Signal commit must be an ancestor
-of the branch. The assembler rejects changes to the tracked Signal source
+`molly-build.json` selects the release. The pinned Signal commit supplies the source projection for the branch. The assembler rejects changes to the tracked Signal source
 outside the explicitly named pipeline, documentation, patch, and CI paths.
 An application edit cannot disappear behind a broad source projection.
 
@@ -32,8 +31,8 @@ Use the commands in this guide for this branch; the old `tools/827` pilot,
 pilot-specific source adaptations, reports, and CI jobs are not imported.
 
 The pipeline and its tests are AI-assisted infrastructure. Compatibility
-mailboxes under `patches/ports` are explicitly identified as AI-generated
-application adaptations. They never replace or silently regenerate the
+mailboxes under `patches/ports` are described as AI-assisted
+compatibility changes. They never replace or silently regenerate the
 official Molly mailboxes.
 
 ## Reconstruct and prove the source
@@ -97,98 +96,41 @@ the expected hash.
 
 ## Review the Signal 8.33.2 adaptations
 
-The first two commits on the upgrade branch contain the pipeline and original
-Molly snapshot with **no AI compatibility patches**. This is an intentionally
-unadapted review checkpoint: source assembly reports the conflicts and refuses
-to label the result buildable.
+The original Molly snapshot remains unchanged. AI-assisted compatibility
+changes are grouped into initial resolution mailboxes and follow-up mailboxes.
+The initial source commit has the pinned Molly and Signal commits as parents.
+Each follow-up records its immediate source parent and resulting tree.
 
-Subsequent commits add ordinary mailbox resolutions, grouped by application
-feature. Their parent source is Git's mechanical merge, so they show changes
-that remain after deterministic integration. The initial groups reproduce
-the existing PR #7 source merge
-`90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; eight subsequent layers retain
-the preference-import, NetCipher SDK DSL, broader integration/regression, CDN
-test-fixture, linked-device reminder, backup preference precedence, donation
-completion, and legacy backup-notification cleanup corrections as individual
-review steps. Each mailbox
-records its source commit and AI-generation status.
-Previous mailboxes do not receive new provenance headers when a later fix is
-added.
+Initial source: `f392c29451f25d6c94316dac316d5aeaf1989206`. Final source tree: `129bd88f3f04dfb6b80a93b96ec026f6a5cd3010`.
 
-The port has 764 conflict paths. Initial resolution patches change 763 of
-them; the retained `CorrectedPreferenceFragment.java` modify/delete conflict
-is recorded as an explicit keep-Molly decision in the configuration. A
-content diff is unnecessary for that choice because Git already leaves
-Molly's version in the conflicted tree. The choice is still reviewed as an
-AI compatibility decision. Every conflict must be covered by a resolution
-or an explicit unchanged-content decision.
+| Follow-up | Source commit | Resulting tree |
+| --- | --- | --- |
+| `followups/restore-preference-import` | `3aff0139f46dabbd2415f2e24208891da4262801` | `e821a9c5148f3f1992689cfcdfbe21d4670e77ae` |
+| `followups/netcipher-sdk-dsl` | `9348f32d075eeb7d4c7e6a3f032d6b1fc750e014` | `44084ad64919e34326e9417c7afeaeccaf3848c9` |
+| `followups/integration-and-regression-tests` | `0698c1aea2ae762edeee34b5a7e5c46b8a4e747f` | `502707151352b89af8099c59dcaeef5c4c324909` |
+| `followups/cdn-transport-test-fixture` | `6bf19c561f1c123269fdeb5d693bff154684998a` | `129bd88f3f04dfb6b80a93b96ec026f6a5cd3010` |
 
-The final source must equal tree
-`59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf`, the tree of synthetic source
-commit `a069fdf625d924e517eb6f2aeb0cbd607db3fcdb`. It extends donation
-checkpoint `0e7a018870f034d547db10e8e4856c515bbe2b80` (tree
-`c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d`) with channel-checked cleanup of
-Molly's old backup alerts at IDs `120500` and `120501`; new backup alerts keep
-Signal's current IDs. The donation checkpoint extends backup checkpoint
-`266d0185d021b2b6a98882205f6b6242152d146e` (tree
-`febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`) with the restored donation badge
-acknowledgement, eligible monthly-sustainer link, and a completion-sheet
-loading-state fix plus Compose coverage. The backup checkpoint extends
-re-registration checkpoint `d3c917a5be7db6116c83b7e29e09f145e7f38825` (tree
-`0e5c581b7db3f4429256630011790f3ed4ad141f`). That checkpoint extends
-`cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c` (tree
-`2533afec2fe2d7f9fc682f699fc21d7624521889`) with the explicit
-re-registration marker, linked-device reminder assignment after successful
-primary-device multi-device registration, and marker test. These settings
-restore Molly's prior reminder behavior while leaving new registrations
-unchanged. This remains a development port, not an official Molly release.
+The `CorrectedPreferenceFragment.java` modify/delete conflict retains Molly's
+file unchanged in the mechanical merge and is an explicit configuration choice.
+The port report records unmeasured hunk evidence without treating it as proof.
 
-Each synthetic source commit is stored in an incremental bundle. The reminder
-bundle requires `cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c`; the backup bundle
-requires `d3c917a5be7db6116c83b7e29e09f145e7f38825`; the donation bundle
-requires `266d0185d021b2b6a98882205f6b6242152d146e`; and the backup-notification
-bundle requires `0e7a018870f034d547db10e8e4856c515bbe2b80`. Each prerequisite must
-already be present in the object database. For a fresh local repository,
-materialize and verify the chain in order:
+The source checkpoint bundle at `patches/ports/signal-8.33.2/source-checkpoint.bundle`
+contains the initial commit and four core follow-ups. Its prerequisites are the
+pinned official Molly and Signal commits. The bundle has
+11795462 bytes and SHA-256 `072ef4184827357093d9aa3ed7d7b92a035ee33f528d215b85b4ed3326555aeb`; its advertised ref is
+`refs/heads/source-checkpoint/core`, pointing to `6bf19c561f1c123269fdeb5d693bff154684998a` (tree
+`129bd88f3f04dfb6b80a93b96ec026f6a5cd3010`).
+
+Prepare the pinned source objects and verify the complete checkpoint chain:
 
 ```sh
-git cat-file -e cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c^{commit}
-git rev-parse cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c^{tree}
-git bundle verify patches/ports/signal-8.33.2/followups/reregistration-linked-devices-reminder/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/reregistration-linked-devices-reminder/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/reregistration-linked-devices-reminder:refs/port-source/reregistration-linked-devices-reminder
-git rev-parse refs/port-source/reregistration-linked-devices-reminder^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/legacy-backup-precedence/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/legacy-backup-precedence/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/legacy-backup-precedence:refs/port-source/legacy-backup-precedence
-git rev-parse refs/port-source/legacy-backup-precedence^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/donation-completion/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/donation-completion/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/donation-completion:refs/port-source/donation-completion
-git rev-parse refs/port-source/donation-completion^{tree}
-
-git bundle verify patches/ports/signal-8.33.2/followups/backup-notification-id-upgrade/source-checkpoint.bundle
-git fetch patches/ports/signal-8.33.2/followups/backup-notification-id-upgrade/source-checkpoint.bundle \
-  refs/heads/source-checkpoint/backup-notification-id-upgrade:refs/port-source/backup-notification-id-upgrade
-git rev-parse refs/port-source/backup-notification-id-upgrade^{tree}
+python3 tools/patches/prepare_port_report.py
+python3 tools/patches/verify_source_bundles.py
 ```
 
-The tree commands must print, in order, `2533afec2fe2d7f9fc682f699fc21d7624521889`,
-`0e5c581b7db3f4429256630011790f3ed4ad141f`,
-`febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`,
-`c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d`, and
-`59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf`. The bundles do not carry their
-prerequisites; a fresh clone cannot verify or fetch a later bundle until the
-earlier checkpoints are materialized.
-
-When changing a resolution, update only the affected mailbox and its reviewed
-target-tree pin. Leave unrelated mailbox envelopes and the historical forest
-alone. `export_complete.py` remains available for exporting a new official
-source snapshot; it is not a command to refresh unchanged patches for line
-offsets. An upstream release with genuinely changed APIs still requires
-explicit compatibility work and review.
+The verifier checks bundle bytes, hashes, advertised refs, prerequisites, source
+parents and trees. Mailbox reconstruction separately proves the selected final
+tree. These checks do not establish that every compatibility hunk is minimal.
 
 ## The microphone fix is a native source cherry-pick
 

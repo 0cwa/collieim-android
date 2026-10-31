@@ -1,14 +1,14 @@
-From cbd8d7280c47d36c934bea7da9df155b9adbfa71 Mon Sep 17 00:00:00 2001
-From: 0cwa <kainau@yahoo.com>
-Date: Fri, 30 Oct 2026 01:31:56 +0100
+From 166c3b164e4985267396ba928f03a7b216117bfd Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 23:25:33 +0100
 Subject: [PATCH] Fix CDN test configuration for Molly network transport
 
-Carry this existing AI-generated PR #7 source fix as its own
+Carry this AI-assisted source change as its own
 reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c
+Source-Commit: 6bf19c561f1c123269fdeb5d693bff154684998a
 AI-Generated: true
 
 diff --git a/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt b/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt

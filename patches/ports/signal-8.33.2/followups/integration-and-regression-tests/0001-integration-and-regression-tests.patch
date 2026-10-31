@@ -1,6 +1,6 @@
-From 719d9814b08e47176cac82d9206ac1597ad532a1 Mon Sep 17 00:00:00 2001
-From: 0cwa <kainau@yahoo.com>
-Date: Thu, 29 Oct 2026 15:55:07 +0100
+From a93ae9d764b3e2851c29cbf0611b4201377be251 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 23:25:33 +0100
 Subject: [PATCH] Adapt Molly integrations and tests to Signal 8.33.2
 
 Update linked-device provisioning and FCM cleanup for the current service APIs while preserving proxy configuration, error types, user-selected delivery and retry credentials. Move remaining event producers and lifecycle-bound subscribers to Signal's event bus.
@@ -9,12 +9,12 @@ Repair lock-aware receivers, encrypted backup preference imports, retained donat
 
 Add transport and cleanup regressions for MollySocket, UnifiedPush and FCM.
 
-Carry this existing AI-generated PR #7 source fix as its own
+Carry this AI-assisted source change as its own
 reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: b6e4f2a164f4861190939ab3fe29fb0d1fdf0748
+Source-Commit: 0698c1aea2ae762edeee34b5a7e5c46b8a4e747f
 AI-Generated: true
 
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
@@ -1254,680 +1254,680 @@ index 4ef4cea6cb510137caa25db39fa43ca3a3e3dfa1..eeb5a0d946638ff9ad51763c2b35b0ab
          </androidx.constraintlayout.widget.ConstraintLayout>
      </androidx.core.widget.NestedScrollView>
 diff --git a/app/src/main/res/values-af/strings.xml b/app/src/main/res/values-af/strings.xml
-index df0422c0b6e958136bfdff637a49979cfe3895bb..834085e2b39349c74ee9bb338202b8d222fdc1a0 100644
+index 015124b045f3af71517c956490996f220f70eacf..c1457e149094d35c0973c2aa6e00d3d0d766b667 100644
 --- a/app/src/main/res/values-af/strings.xml
 +++ b/app/src/main/res/values-af/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Jy het die maksimum getal nuwe sleutels bereik wat jy kan skep. Jy sal oor 7 dae \'n nuwe herwinsleutel kan skep.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Wag asseblief…</string>
  </resources>
 diff --git a/app/src/main/res/values-ar/strings.xml b/app/src/main/res/values-ar/strings.xml
-index 883f4c2f77f999a28fb142ad8291798b17f5ebce..815354a855cefdd858ef9273501ffb4c28d1a134 100644
+index 96f22ae132ac714e40b15b10c2753e04166600a6..0bb34a12019bd8746fa47ffcfcc1721bbf26839d 100644
 --- a/app/src/main/res/values-ar/strings.xml
 +++ b/app/src/main/res/values-ar/strings.xml
-@@ -9672,4 +9672,5 @@
+@@ -9676,4 +9676,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">استنفدت عدد المفاتيح التي يمكنك إنشاؤها. سيصبح بإمكانك إنشاء مفتاح استعادة جديد في 7 أيام.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">يُرجى الانتظار…</string>
  </resources>
 diff --git a/app/src/main/res/values-az/strings.xml b/app/src/main/res/values-az/strings.xml
-index 513aec50e5e7f576bf904dfd431baf86ce65c9ea..0c812888fb5913fc509a07edb927c10c790f817b 100644
+index 0ea2abe4183fa39f5fd6a0c21df593ec4117b9f4..a3a89b8892b6c34b82b9ec3be37b91c8731ed919 100644
 --- a/app/src/main/res/values-az/strings.xml
 +++ b/app/src/main/res/values-az/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Yarada biləcəyiniz maksimum şifrə sayını keçdiniz. 7 gün ərzində yeni bərpa şifrəsini yarada bilərsiniz.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Zəhmət olmasa gözləyin…</string>
  </resources>
 diff --git a/app/src/main/res/values-be/strings.xml b/app/src/main/res/values-be/strings.xml
-index c771ef6f4c8c935ba7b02df499d9c18456a4303d..bdc80f78d571dd09cafd67e937ecdac9f00e97d3 100644
+index 400337a6a4e9add19947e8b1d218826bf69818fb..7dee579839769037f7e204f3fd63a909318ca42c 100644
 --- a/app/src/main/res/values-be/strings.xml
 +++ b/app/src/main/res/values-be/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Вы перавысілі колькасць новых кодаў, што можна стварыць. Вы зможаце стварыць новы код для аднаўлення праз 7 дзён.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Пачакайце, калі ласка…</string>
  </resources>
 diff --git a/app/src/main/res/values-bg/strings.xml b/app/src/main/res/values-bg/strings.xml
-index 4370891188fdb9915e932af582de56510d23ab26..eb54c777545de539b0af4e88d271af241c58bda8 100644
+index 9796a39dcc0be3cacbd8be52236e45f9a2a11e3b..444e6380616d3eed671b1eb6b82929a4bdd787df 100644
 --- a/app/src/main/res/values-bg/strings.xml
 +++ b/app/src/main/res/values-bg/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Изразходвали сте броя нови ключове, които можете да създадете. Ще можете да създадете нов ключ за възстановяване след 7 дни.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Моля, изчакайте…</string>
  </resources>
 diff --git a/app/src/main/res/values-bn/strings.xml b/app/src/main/res/values-bn/strings.xml
-index e8163355e3ea946affcc623be2f51014a8799b7b..b4c6b1e9453545a1b669e96505a06abc9839b4fe 100644
+index 4b84ed75c4f0d0c8665d8fd3964a629c8610ab1b..65135a3fb61282ba3ef45eed2ee06f41f4da34b6 100644
 --- a/app/src/main/res/values-bn/strings.xml
 +++ b/app/src/main/res/values-bn/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">আপনি সর্বোচ্চ সংখ্যক নতুন \'কি\' তৈরি করে ফেলেছেন। আপনি 7 দিনের মধ্যে একটি নতুন পুনরুদ্ধার \'কি\' তৈরি করতে পারবেন।</string>
  
      <!-- EOF -->
 +    <string name="please_wait">অনুগ্রহপূর্বক অপেক্ষা করুন…</string>
  </resources>
 diff --git a/app/src/main/res/values-bs/strings.xml b/app/src/main/res/values-bs/strings.xml
-index c0be8c29ef8c79eb852b6c6e8c535427b398216d..41610ee5e48e98da2941bb62c067c23a35b91c9b 100644
+index a20fdaba4ba593706bfa326a00f52755a7c35912..be98e7096f3ce1bad2d07a10093efb16993cde1b 100644
 --- a/app/src/main/res/values-bs/strings.xml
 +++ b/app/src/main/res/values-bs/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Iskoristili ste broj novih ključeva koje možete kreirati. Moći ćete kreirati novi ključ za oporavak za 7 dana.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Molimo pričekajte…</string>
  </resources>
 diff --git a/app/src/main/res/values-ca/strings.xml b/app/src/main/res/values-ca/strings.xml
-index ba8dc7606ff5a89aafda32a8248af516bc9fac28..41795be6eaf1c6f3dbfe90202b07023bd9bb9bb5 100644
+index e718f9023158c7a40290377cabec80896a5e84b2..00df8c4fdc658f5c299a3e8dbf49b7ad72e694e0 100644
 --- a/app/src/main/res/values-ca/strings.xml
 +++ b/app/src/main/res/values-ca/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Has esgotat el nombre de claus noves que pots crear. Podràs crear una nova clau de recuperació en 7 dies.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Espereu, si us plau…</string>
  </resources>
 diff --git a/app/src/main/res/values-cs/strings.xml b/app/src/main/res/values-cs/strings.xml
-index 0a2c3f9a073a5960f77e1d8c3f82db95932fda81..61de4b0d868db3ac1150b4166b71c43b06d5524a 100644
+index 3669bbe6ca6cdc281aa8f4d149db193f9f22f25b..37118c0ef690252add04b1330b5f870e5d23db91 100644
 --- a/app/src/main/res/values-cs/strings.xml
 +++ b/app/src/main/res/values-cs/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Vyčerpali jste maximální počet nových klíčů, které lze vytvořit. Nový klíč pro obnovení budete moci vytvořit za 7 dní.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Prosím čekejte…</string>
  </resources>
 diff --git a/app/src/main/res/values-da/strings.xml b/app/src/main/res/values-da/strings.xml
-index 8c1d46a79169f7fd2e7308f2ab3391a95279ff9f..546ce42042b40c6ec46d391d5f278a9afedc730e 100644
+index 7efcd966fcd9e3ecfc371ceba99482df8bab53be..955f2b3e45dabe53bc6a0ecbb6d24eb1603db2b5 100644
 --- a/app/src/main/res/values-da/strings.xml
 +++ b/app/src/main/res/values-da/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Du har nået grænsen for, hvor mange nye nøgler du kan oprette. Du kan oprette en ny gendannelsesnøgle om syv dage.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Vent venligst …</string>
  </resources>
 diff --git a/app/src/main/res/values-de/strings.xml b/app/src/main/res/values-de/strings.xml
-index c70dbaeba94adba1da0e99057012a90e7081a813..fb263b5d9e887c1046c42de8c55ce89a4134c90c 100644
+index 1df38f0d1e6a24e8d2465acf99d1b01f16dda118..51db2996c85a41d8f3cc8613d822eca91e50dd4e 100644
 --- a/app/src/main/res/values-de/strings.xml
 +++ b/app/src/main/res/values-de/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Du hast die Anzahl der neuen Schlüssel, die erstellt werden dürfen, aufgebraucht. Du kannst in 7 Tagen einen neuen Wiederherstellungsschlüssel erstellen.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Bitte warten …</string>
  </resources>
 diff --git a/app/src/main/res/values-el/strings.xml b/app/src/main/res/values-el/strings.xml
-index 83230a618c1de83627a99e964c14e75df202ec60..73c9c682ba00604fea03d6de343996d3f4f88585 100644
+index 6b860824e641783177d8442986a0bc7beac3c8a1..6dbf595f704cd1325a4d4c03e6ed22e2bfa8dd2f 100644
 --- a/app/src/main/res/values-el/strings.xml
 +++ b/app/src/main/res/values-el/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Έχεις εξαντλήσει τον αριθμό των νέων κλειδιών που μπορείς να δημιουργήσεις. Θα μπορείς να δημιουργήσεις ένα νέο κλειδί ανάκτησης σε 7 ημέρες.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Περίμενε λίγο…</string>
  </resources>
 diff --git a/app/src/main/res/values-es/strings.xml b/app/src/main/res/values-es/strings.xml
-index a3ce5debc3d4d299b4cc8154b72d4fb945b73a36..c3069fc93f8011c6db34737c7c4d5e8764de71fb 100644
+index 17cab6b72439945ceea93e3fdfa357ab53fdb4a5..5c66c93be64efc82b29e11fc7a6d5d92e84daa6a 100644
 --- a/app/src/main/res/values-es/strings.xml
 +++ b/app/src/main/res/values-es/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Has agotado la cantidad de claves nuevas que puedes crear. Podrás crear una nueva clave de recuperación en 7 días.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Espera un momento…</string>
  </resources>
 diff --git a/app/src/main/res/values-et/strings.xml b/app/src/main/res/values-et/strings.xml
-index c1def8932bddb9ec9094ed756eb67d809b6da755..095952768eb1e4251b5960b4f833f4c4a5124ba7 100644
+index 3440e5477be23763eff75dc012d850575884ca65..8616a82b791a342b567761636471a16af14983f1 100644
 --- a/app/src/main/res/values-et/strings.xml
 +++ b/app/src/main/res/values-et/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Oled juba loonud maksimaalse arvu uusi võtmeid. Uue taastevõtme saad luua 7 päeva pärast.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Palun oota…</string>
  </resources>
 diff --git a/app/src/main/res/values-eu/strings.xml b/app/src/main/res/values-eu/strings.xml
-index 79f9e325d54a8facaf6d30ea089c9e98e6841e5b..dbb9c4eba8861b26d719523dbe35b031f83f7931 100644
+index fb61086e99351835a37d521aa8e540b8e6b2cdf2..92324ea8b092100062093b55394bf2febfbdb05c 100644
 --- a/app/src/main/res/values-eu/strings.xml
 +++ b/app/src/main/res/values-eu/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Sor ditzakezun gakoen gehieneko kopurura iritsi zara. 7 egunen buruan sortu ahalko duzu beste berreskuratze-gako bat.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Itxaron, mesedez…</string>
  </resources>
 diff --git a/app/src/main/res/values-fa/strings.xml b/app/src/main/res/values-fa/strings.xml
-index e23f99ebd826c0ad54a6e4d107fbcb203be1ef08..65b4d3af33c92313892ae490abecf65ddab185a8 100644
+index 55585774d0e6d6fd1cac39dd23d7462c832e8af0..cb1198e438707a48b35133819499cc57c3ce96e2 100644
 --- a/app/src/main/res/values-fa/strings.xml
 +++ b/app/src/main/res/values-fa/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">به سقف تعداد مجاز رمزهای جدیدی که می‌توانید ایجاد کنید رسیده‌اید. تا ۷ روز دیگر قادر به ایجاد رمز بازیابی جدید خواهید بود.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">لطفاً صبر کنید…</string>
  </resources>
 diff --git a/app/src/main/res/values-fi/strings.xml b/app/src/main/res/values-fi/strings.xml
-index e389410016a33d3cef74672909d3e17869c8fefe..393bba11a3cd94a69646786765c71fb445a84436 100644
+index a1609b1b9ec77a12cbf4ac52fe01980a698cd306..544918c62e69bc1dce1562c08dc20ba48a2d1fac 100644
 --- a/app/src/main/res/values-fi/strings.xml
 +++ b/app/src/main/res/values-fi/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Olet luonut enimmäismäärän uusia avaimia. Voit luoda uuden palautusavaimen seitsemän päivän kuluttua.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Odota hetki…</string>
  </resources>
 diff --git a/app/src/main/res/values-fr/strings.xml b/app/src/main/res/values-fr/strings.xml
-index 225bcc3eb91518f476c368770aea845566098ccc..d31b6be17cbd0c2a48df00ff7e62d6f720b9fdb7 100644
+index 3dfdb549352733af6fd07172214cab37b8aae292..8b3db188fd08dbdbdce76994a1eccb7618159d65 100644
 --- a/app/src/main/res/values-fr/strings.xml
 +++ b/app/src/main/res/values-fr/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Vous avez créé un trop grand nombre de clés. Vous pourrez en créer une nouvelle dans 7 jours.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Veuillez patienter…</string>
  </resources>
 diff --git a/app/src/main/res/values-ga/strings.xml b/app/src/main/res/values-ga/strings.xml
-index a41bad1ba45b8df13a98816cccb4e98631380636..1e2990b968e355071f29325f5730f5752210c2d2 100644
+index 8046bb86425b7d2884f3d5486a42b0c33ed1deff..3c4c607c8226a303a3dcd9cfdd901dd439842c5e 100644
 --- a/app/src/main/res/values-ga/strings.xml
 +++ b/app/src/main/res/values-ga/strings.xml
-@@ -9477,4 +9477,5 @@
+@@ -9481,4 +9481,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Tá líon na n-eochracha nua is féidir leat a chruthú úsáidte agat. Beidh tú in ann eochair athshlánaithe nua a chruthú i gceann 7 lá.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Fan le do thoil…</string>
  </resources>
 diff --git a/app/src/main/res/values-gl/strings.xml b/app/src/main/res/values-gl/strings.xml
-index aad17aa97eb33dd8ff126e49eb601ec469adaa8c..6009d09f097137762cdab2593430e0b25b0eee20 100644
+index 62cd8e7b1c203ab5128db9ac3c0d07a737f9c711..d5d09b0a2771973d66f832c21bd28cbce835eb50 100644
 --- a/app/src/main/res/values-gl/strings.xml
 +++ b/app/src/main/res/values-gl/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Esgotaches o número de claves que podes crear. Poderás crear unha clave de recuperación en 7 días.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Por favor, agarda…</string>
  </resources>
 diff --git a/app/src/main/res/values-gu/strings.xml b/app/src/main/res/values-gu/strings.xml
-index 862f0995da08dfb6972596ed00db1dfc9caa1119..1e38e85696c30e2ba79b81ae7e9729b0a3249fa8 100644
+index e3eb1da3120b118004df9a5770c5fb3cf38d7bbb..4e0919cfb5e81099add61abef189326118cd2818 100644
 --- a/app/src/main/res/values-gu/strings.xml
 +++ b/app/src/main/res/values-gu/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">તમારી નવી કી બનાવી શકવાની મર્યાદા પૂરી થઈ ગઈ છે. તમે 7 દિવસમાં નવી રિકવરી કી બનાવી શકશો.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">કૃપા કરીને રાહ જુઓ…</string>
  </resources>
 diff --git a/app/src/main/res/values-hi/strings.xml b/app/src/main/res/values-hi/strings.xml
-index f85d06e50ddb5b44906797c3b21112bce3f58a4b..435c7a36b0dcc27156b31ca56154d4f3691e09b7 100644
+index 7efb9d293125a3d7e53411d11d92266525c862dd..acbe9d798dc317303525e6079360524d518fb0c8 100644
 --- a/app/src/main/res/values-hi/strings.xml
 +++ b/app/src/main/res/values-hi/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">आपने नई \'की\' बनाने की तय संख्या पूरी कर ली है। अब आपको नई \'रिकवरी की\' बनाने के लिए 7 दिन इंतज़ार करना होगा।</string>
  
      <!-- EOF -->
 +    <string name="please_wait">कृपया इंतज़ार करें…</string>
  </resources>
 diff --git a/app/src/main/res/values-hr/strings.xml b/app/src/main/res/values-hr/strings.xml
-index ac140454297e9ebd6b52419a6ad56b2907ac418d..fdf79f2acd17f47604aa8867b66fc7501a689797 100644
+index bb097ca805254bdd72d60c413f5296170b3597a6..63b2428954aedd946423a0ca62c3e9cf15823770 100644
 --- a/app/src/main/res/values-hr/strings.xml
 +++ b/app/src/main/res/values-hr/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Iskoristili ste maksimalan broj novih ključeva koje možete stvoriti. Moći ćete stvoriti novi ključ za oporavak za 7 dana.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Molimo pričekajte…</string>
  </resources>
 diff --git a/app/src/main/res/values-hu/strings.xml b/app/src/main/res/values-hu/strings.xml
-index b1fb34ee12fcd851e0ee0850852afc0abccf9ea9..22be226d92f872bee118b967abe69b4f43eea798 100644
+index 35d8c283ce723c79cc64d199fec87d3f3f22ff81..76647750dabb808c18360c59c8f9c333caf81800 100644
 --- a/app/src/main/res/values-hu/strings.xml
 +++ b/app/src/main/res/values-hu/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Kimerítetted a létrehozható új kulcsok maximális számát. Hét nap múlva hozhatsz létre új helyreállítási kulcsot.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Kérlek várj…</string>
  </resources>
 diff --git a/app/src/main/res/values-in/strings.xml b/app/src/main/res/values-in/strings.xml
-index 4f270c94d01fb541448498e24f78d935bdcb785e..312d3e339a5b78845e123c6f351edbfdbd9745ae 100644
+index 760699b7a5ea87ef24ea603c9fcb260e01f5c1c0..2c538873421441763af319ce738849dd1a2e3084 100644
 --- a/app/src/main/res/values-in/strings.xml
 +++ b/app/src/main/res/values-in/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Kesempatan Anda untuk membuat kunci baru telah habis. Anda bisa membuat kunci pemulihan baru setelah 7 hari.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Tunggu sebentar…</string>
  </resources>
 diff --git a/app/src/main/res/values-it/strings.xml b/app/src/main/res/values-it/strings.xml
-index 4a40a80a1f0226dcc921b7d87b1d589a54a7facc..67422f994e62834caf3a10f9bedd8e555875fc69 100644
+index 92a7c30a9ebc9ac51ae011b05b36017cf768acb7..80f74e765c5258b6368001f6273f29f388419cce 100644
 --- a/app/src/main/res/values-it/strings.xml
 +++ b/app/src/main/res/values-it/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Hai esaurito il numero di nuove chiavi che puoi generare. Potrai creare una nuova chiave di ripristino tra 7 giorni.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Attendi…</string>
  </resources>
 diff --git a/app/src/main/res/values-iw/strings.xml b/app/src/main/res/values-iw/strings.xml
-index dc20f90bad1e255336c3552b3750fba4fce3f81a..3b12ee0d61df8857628690a145081405237814e0 100644
+index fdd1d7d259cd1db7595468dfe29a5eaf957decb5..fcacf3a22625697428bd5763285a039a3de615bd 100644
 --- a/app/src/main/res/values-iw/strings.xml
 +++ b/app/src/main/res/values-iw/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">מיצית את מספר המפתחות החדשים שבאפשרותך ליצור. תהיה לך אפשרות ליצור מפתח שחזור חדש בעוד 7 ימים.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">אנא המתן…</string>
  </resources>
 diff --git a/app/src/main/res/values-ja/strings.xml b/app/src/main/res/values-ja/strings.xml
-index 4c026b81be0738ca461fbd930f01b3e4460ead2a..691d57d9c4d2a20101635a32c60c8308393796fc 100644
+index 292becb2b0cac2e4ddf6de41a7cb7724f7289225..4868bdfe59e80149068c0054da1f61a1bbb3bace 100644
 --- a/app/src/main/res/values-ja/strings.xml
 +++ b/app/src/main/res/values-ja/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">新しいキーの作成上限回数に達しました。7日後に新しい回復キーを作成できるようになります。</string>
  
      <!-- EOF -->
 +    <string name="please_wait">お待ち下さい…</string>
  </resources>
 diff --git a/app/src/main/res/values-ka/strings.xml b/app/src/main/res/values-ka/strings.xml
-index 8c51dea31585bf80433ccf4bda18eac28d7584b3..b702115056fd9ec7423fe326c65a5d9e7ee0770f 100644
+index 223657b5faeb20e2a1063ee0dfe677c7a84d97d1..fe271b2d7c9b9f9b756f9c1e74b596bd4254f412 100644
 --- a/app/src/main/res/values-ka/strings.xml
 +++ b/app/src/main/res/values-ka/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">ახალი გასაღების შექმნის შესაძლებლობები ამოწურე. ახალი აღდგენის გასაღების შექმნას 7 დღეში შეძლებ.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">გთხოვთ დაელოდო…</string>
  </resources>
 diff --git a/app/src/main/res/values-kk/strings.xml b/app/src/main/res/values-kk/strings.xml
-index 309a4e7856031e1ff032edf36ea854617267d30e..0f07001443aaf7c8966c36314a4293a7471142f2 100644
+index 626f386eb623871431a987a69197ea15294c0dcf..2d4ad2e00f6687271438a0bfabec455b1845c142 100644
 --- a/app/src/main/res/values-kk/strings.xml
 +++ b/app/src/main/res/values-kk/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Жаңа кілт жасауға берілген мүмкіндіктеріңіздің барлығын қолданып қойдыңыз. Жаңа қалпына келтіру кілтін 7 күннен кейін жасай аласыз.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Күте тұрыңыз…</string>
  </resources>
 diff --git a/app/src/main/res/values-km/strings.xml b/app/src/main/res/values-km/strings.xml
-index eeb6adb8d061f4ab061339bb3c5453504e0bf01e..6c6b7be8aec5880673d43ef0ee9cd645bb56b5e2 100644
+index 62bfae0ff67b742712d083f4a7fec5d0acb8140e..530de8c2ee2617e266ebdb63451bb444994e310b 100644
 --- a/app/src/main/res/values-km/strings.xml
 +++ b/app/src/main/res/values-km/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">ចំនួនសោថ្មីដែលអ្នកអាចបង្កើតបានគឺអ្នកបានប្រើអស់ហើយ។ អ្នកនឹងអាចបង្កើតសោស្តារថ្មីក្នុងរយៈពេល 7 ថ្ងៃ។</string>
  
      <!-- EOF -->
 +    <string name="please_wait">សូមរង់ចាំ…</string>
  </resources>
 diff --git a/app/src/main/res/values-kn/strings.xml b/app/src/main/res/values-kn/strings.xml
-index 60c48b43fbc6ac3c55ab7ecd7a58f199515ba23d..9ab9c848dc937fff6dcbbb175fecd9fc7a37c417 100644
+index c86506a5c33d73f786ebc32bcaae6a6350601461..03d8d0b1ef8d597ab9090a040e328fc22b24bed0 100644
 --- a/app/src/main/res/values-kn/strings.xml
 +++ b/app/src/main/res/values-kn/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">ನೀವು ರಚಿಸಬಹುದಾದ ಹೊಸ ಕೀಗಳ ಸಂಖ್ಯೆ ಮುಗಿದಿದೆ. ನೀವು 7 ದಿನಗಳಲ್ಲಿ ಹೊಸ ರಿಕವರಿ ಕೀಯನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ…</string>
  </resources>
 diff --git a/app/src/main/res/values-ko/strings.xml b/app/src/main/res/values-ko/strings.xml
-index 1a12765f6f882a1d35956054d6060a247261720a..4177cd641919c396924d1c9fde40427c916f4793 100644
+index ab6fb13e0f4d7694ddf26bd22105744e7a7086b8..269b2bdc186bf0e350e04c737c10e5fab201eef8 100644
 --- a/app/src/main/res/values-ko/strings.xml
 +++ b/app/src/main/res/values-ko/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">생성할 수 있는 새 키의 개수를 모두 소진했습니다. 새 복구 키는 7일 후에 만들 수 있습니다.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">잠시만 기다려 주세요.</string>
  </resources>
 diff --git a/app/src/main/res/values-ky/strings.xml b/app/src/main/res/values-ky/strings.xml
-index 7be04b275ec0d18907591691366f276a4734a47f..f33a2c7f68763f48a8dfc2bd5533c9972debaf4b 100644
+index 0d99e78e2ddbc3220ce493a910b3bca2152b6bd0..91916a86bfcd4a113b7cc3787dc659de5c543760 100644
 --- a/app/src/main/res/values-ky/strings.xml
 +++ b/app/src/main/res/values-ky/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Жаңы ачкыч түзгөнгө өтө көп жолу аракет кылдыңыз. Эми аны 7 күндөн кийин гана түзө аласыз.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Сураныч, күтө туруңуз…</string>
  </resources>
 diff --git a/app/src/main/res/values-lt/strings.xml b/app/src/main/res/values-lt/strings.xml
-index 610d4d7572e9fc27ff255b767b9c457032973471..4812ed994fccd076ab008b08c4981bf0fec3a92e 100644
+index cfa94182843ad280b0e98b3d437b857be82f31de..98e162c37b9875b0dd07feba14096b7a9aad8ce5 100644
 --- a/app/src/main/res/values-lt/strings.xml
 +++ b/app/src/main/res/values-lt/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Išnaudojote maksimalų naujų raktų, kuriuos galite sukurti, skaičių. Naują atkūrimo raktą galėsite sukurti po 7 dienų.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Palaukite…</string>
  </resources>
 diff --git a/app/src/main/res/values-lv/strings.xml b/app/src/main/res/values-lv/strings.xml
-index ddac7f97ebacdf4b1f2b97fae1a3c9fa75337ae3..db3dc8d0509d293ef4863be010c046042950e307 100644
+index d7d7ed14927b303a03cc05d1ae231c2b4747d189..b2c84ebb74de44da3108f2fc686f2258f1e2c290 100644
 --- a/app/src/main/res/values-lv/strings.xml
 +++ b/app/src/main/res/values-lv/strings.xml
-@@ -9087,4 +9087,5 @@
+@@ -9091,4 +9091,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Jūs esat izsmēluši jaunu atslēgu izveides limitu. Jaunu atkopšanas atslēgu varēsiet izveidot pēc 7 dienām.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Lūdzu uzgaidiet…</string>
  </resources>
 diff --git a/app/src/main/res/values-mk/strings.xml b/app/src/main/res/values-mk/strings.xml
-index 5a4d3a86b2e0c04c070c423193f3a2192c43d8b7..df42bb26d087557f889541ef6b16e0bc25001dc8 100644
+index 8b782e6560aa98fedf55d3914e27c1f678d4341e..ba0a41246e06c588fed6d358626d40af66cb5f97 100644
 --- a/app/src/main/res/values-mk/strings.xml
 +++ b/app/src/main/res/values-mk/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Го исцрпивте бројот на нови клучеви што можете да ги создадете. Ќе можете да создадете нов клуч за враќање резервни копии за 7 дена.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Ве молиме почекајте…</string>
  </resources>
 diff --git a/app/src/main/res/values-ml/strings.xml b/app/src/main/res/values-ml/strings.xml
-index 223caaa4c3da1210c6a72c2720993a51bedcf1f5..ab98c3525be0a571c439ea34f48343bc9ae5b6c7 100644
+index cee42f78c29a2f5ab0db2f6df0088714e1e5ac0c..e8beb6e58f2b2002cdb8a1aef68e8697d90f067e 100644
 --- a/app/src/main/res/values-ml/strings.xml
 +++ b/app/src/main/res/values-ml/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">നിങ്ങൾക്ക് സൃഷ്ടിക്കാൻ കഴിയുന്ന പുതിയ കീകളുടെ എണ്ണം തീർന്നു. 7 ദിവസത്തിനുള്ളിൽ നിങ്ങൾക്ക് ഒരു പുതിയ വീണ്ടെടുക്കൽ കീ സൃഷ്ടിക്കാൻ കഴിയും.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">കാത്തിരിക്കൂ…</string>
  </resources>
 diff --git a/app/src/main/res/values-mr/strings.xml b/app/src/main/res/values-mr/strings.xml
-index 55e04f45dbb82e68c4197d57b88243f1cba22caf..a6af29cf6a5e8b7c376f91cbb92d4449eac0ce29 100644
+index 67806e4061a293ad586e6e49a36594468fa12ce7..ae469101ad679f742ec87c42765136432b84a72c 100644
 --- a/app/src/main/res/values-mr/strings.xml
 +++ b/app/src/main/res/values-mr/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">तुम्ही नवीन की तयार करण्याची मर्यादा ओलांडली आहे. तुम्हाला 7 दिवसांनी नवी रीकव्हरी की तयार करता येईल.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">कृपया थांबा…</string>
  </resources>
 diff --git a/app/src/main/res/values-ms/strings.xml b/app/src/main/res/values-ms/strings.xml
-index f879231ab2f55670a688521078326c6ef996c8b3..bffc7aa3422b0cd980575f6eccb71ff8b5f2ef89 100644
+index 06d6a36f9ff6cd48258ecefa3c062f83c29fa5d8..b1f6240754edb93ecab4a6ef578424012bd72657 100644
 --- a/app/src/main/res/values-ms/strings.xml
 +++ b/app/src/main/res/values-ms/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Anda telah kehabisan bilangan kunci baharu yang boleh dibuat. Anda akan dapat membuat kunci pemulihan baharu dalam masa 7 hari.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Sila tunggu…</string>
  </resources>
 diff --git a/app/src/main/res/values-my/strings.xml b/app/src/main/res/values-my/strings.xml
-index 3ba5241737636dc1ab500c8acd81bc20b28847f1..a18f011985ad14cd1c8042d5af9bc89dbe21bfd1 100644
+index e9f12959126029a14cca6c3c281defed7d800bad..82abde1c9f9cfe9acb4122c90e5d0177d25a622c 100644
 --- a/app/src/main/res/values-my/strings.xml
 +++ b/app/src/main/res/values-my/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">သင်ဖန်တီးနိုင်သော ကီးအသစ်အရေအတွက် ကုန်သွားပါပြီ။ သင်သည် 7 ရက်အတွင်း ပြန်လည်ရယူရေးကီးအသစ်ကို ဖန်တီးနိုင်မည်ဖြစ်သည်။</string>
  
      <!-- EOF -->
 +    <string name="please_wait">ခဏစောင့်ပါ…</string>
  </resources>
 diff --git a/app/src/main/res/values-nb/strings.xml b/app/src/main/res/values-nb/strings.xml
-index f475ed4d7567f0530aa9e888cb3c77945bc824f0..d036953e626faac759332f55a41e1c2c7d0dd7df 100644
+index 6e0714a652cf515f9811680130ba660ed9a8f295..aa7572a6400790ef8762623c2610270dca45a90f 100644
 --- a/app/src/main/res/values-nb/strings.xml
 +++ b/app/src/main/res/values-nb/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Du kan ikke lage flere koder for øyeblikket. En ny sikkerhetskode kan opprettes om syv dager.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Vennligst vent…</string>
  </resources>
 diff --git a/app/src/main/res/values-nl/strings.xml b/app/src/main/res/values-nl/strings.xml
-index 8320d41465e67b7baf9219d94c52d0678fdb4d35..c4a461f7e52d065bf0f69c85d027d4e2dbf1581d 100644
+index ed6e8d124c021a4e7b102a3f0efd5ed9ab72388b..5259e905089ce3384f4810c79ac37be7e3ef2209 100644
 --- a/app/src/main/res/values-nl/strings.xml
 +++ b/app/src/main/res/values-nl/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Je hebt het aantal nieuwe sleutels dat je kunt aanmaken opgebruikt. Je kunt over 7 dagen een nieuwe herstelsleutel aanmaken.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Even geduld…</string>
  </resources>
 diff --git a/app/src/main/res/values-pa/strings.xml b/app/src/main/res/values-pa/strings.xml
-index 194932bf51a8a6eb914d3cff2a92932fcd90c323..9eb8bb55723b8771b4075a2809677bb02c4fec00 100644
+index 80023b2332243ec8749e11a9cf6c0020f34e6924..c7d615c349f90c0dd0dcd40318ae6df4a5c7fc7b 100644
 --- a/app/src/main/res/values-pa/strings.xml
 +++ b/app/src/main/res/values-pa/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">ਤੁਸੀਂ ਜਿੰਨੀਆਂ ਨਵੀਆਂ ਕੁੰਜੀਆਂ ਬਣਾ ਸਕਦੇ ਸੀ, ਉਹ ਬਣਾ ਚੁੱਕੇ ਹੋ। ਤੁਸੀਂ 7 ਦਿਨਾਂ ਬਾਅਦ ਇੱਕ ਨਵੀਂ ਰਿਕਵਰੀ ਕੁੰਜੀ ਬਣਾ ਸਕੋਗੇ।</string>
  
      <!-- EOF -->
 +    <string name="please_wait">ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ…</string>
  </resources>
 diff --git a/app/src/main/res/values-pl/strings.xml b/app/src/main/res/values-pl/strings.xml
-index 74e817be0bee5d50704e687ae311cab3ebf7cc09..0ca8c6024b1593eb973262dc811fafab3646c7c6 100644
+index 2d057a917ad5b4f93281cdd1a3ac727e4a5fa15e..86f72802f1768ed4c64254754e9da6fc1ef57eb0 100644
 --- a/app/src/main/res/values-pl/strings.xml
 +++ b/app/src/main/res/values-pl/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Nie możesz utworzyć więcej nowych kodów. Aby utworzyć nowy kod odzyskiwania, musisz odczekać 7 dni.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Jeszcze chwila…</string>
  </resources>
 diff --git a/app/src/main/res/values-pt-rBR/strings.xml b/app/src/main/res/values-pt-rBR/strings.xml
-index 7f68de736e470c872d9a0a0ad3c1065ab15e27a9..c1de3f05e5797114071c329d92b6c65f95936b58 100644
+index 773ed0e142e8d17a948ecf8745f9f48cda97aeed..3db127522b3abd9e78cf473dfbd06e5e45ba493e 100644
 --- a/app/src/main/res/values-pt-rBR/strings.xml
 +++ b/app/src/main/res/values-pt-rBR/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Você atingiu o número máximo de novas chaves que pode criar. Será possível gerar uma nova chave de recuperação em 7 dias.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Aguarde…</string>
  </resources>
 diff --git a/app/src/main/res/values-pt/strings.xml b/app/src/main/res/values-pt/strings.xml
-index 92fc207c436bf612ecbb4218da491da08789a2e2..6f68033779955edf8085fe2c395dfa63b4b1497e 100644
+index 4456722ec2fb87d436629937ca3f24adabfb612a..570eed87d4b76feb98bf7604f91a388ab2b25c1c 100644
 --- a/app/src/main/res/values-pt/strings.xml
 +++ b/app/src/main/res/values-pt/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Esgotou o número de novas chaves que pode criar. Poderá criar uma nova chave de recuperação em 7 dias.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Aguarde, por favor…</string>
  </resources>
 diff --git a/app/src/main/res/values-ro/strings.xml b/app/src/main/res/values-ro/strings.xml
-index 958ce0ab9b5060e2b87e1f25a028087244b95bcf..791fa9e3ef3451510df7ac545a63c3f117664037 100644
+index 4e5c33a0518e166723698084628f23e4feeadab4..c7d87f7d05795cc954ccdce4d242548c6d8a9f39 100644
 --- a/app/src/main/res/values-ro/strings.xml
 +++ b/app/src/main/res/values-ro/strings.xml
-@@ -9087,4 +9087,5 @@
+@@ -9091,4 +9091,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Ai epuizat numărul de coduri noi pe care le poți crea. Vei putea crea un nou cod de recuperare în 7 zile.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Te rugăm așteaptă…</string>
  </resources>
 diff --git a/app/src/main/res/values-ru/strings.xml b/app/src/main/res/values-ru/strings.xml
-index 09cc1945992d7f0242e21c4f1bf0cf5d8d1a3795..8e85121e3941c781a68320f51a9e30e23383e5e2 100644
+index ba527a0ea7113679c5aff3e6bd249dc5636084cf..d802bb39878c40f8ee021592af5cdd94781a205d 100644
 --- a/app/src/main/res/values-ru/strings.xml
 +++ b/app/src/main/res/values-ru/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Вы исчерпали количество новых ключей, которые можете создать. Вы сможете создать новый ключ восстановления через 7 дней.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Пожалуйста, подождите…</string>
  </resources>
 diff --git a/app/src/main/res/values-sk/strings.xml b/app/src/main/res/values-sk/strings.xml
-index 4947b9d7c23220ce18343218407a2928701f187f..115e6565052821cb656c4c661e24339021459084 100644
+index 5c9f975621929b6569846f45f86eb1788eca8405..937562767cce4a4de915762487f20977cd2c7b66 100644
 --- a/app/src/main/res/values-sk/strings.xml
 +++ b/app/src/main/res/values-sk/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Vyčerpali ste počet nových kľúčov, ktoré môžete vytvoriť. Nový kľúč na obnovenie si budete môcť vytvoriť o 7 dní.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Čakajte prosím…</string>
  </resources>
 diff --git a/app/src/main/res/values-sl/strings.xml b/app/src/main/res/values-sl/strings.xml
-index e55a0690ca72ee9c908bec8b67be752c18a93d0e..8fa3bc425898c7192c1b330a8b0484de68d65ab3 100644
+index 6fdce516b693c463a614aefb66254a115067f660..e9e3204fcfb81495194e522b73f23ad061a8aef9 100644
 --- a/app/src/main/res/values-sl/strings.xml
 +++ b/app/src/main/res/values-sl/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Izčrpali ste število novih ključev, ki jih lahko ustvarite. Nov obnovitveni ključ boste lahko ustvarili v 7 dneh.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Prosimo, počakajte …</string>
  </resources>
 diff --git a/app/src/main/res/values-sq/strings.xml b/app/src/main/res/values-sq/strings.xml
-index c6b9c77e6b8083f4357239accfc6c1dff66f8422..704f118501ea88eccb7fb8c134d26ec3f4c942b3 100644
+index f8d5a4eb9237cec67ad4e733da068fc9b0edafb3..384d234898a56314740ffcf963e0a1aedb212820 100644
 --- a/app/src/main/res/values-sq/strings.xml
 +++ b/app/src/main/res/values-sq/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Të kanë mbaruar mundësitë për të krijuar kod të ri. Kodin e ri të rikthimit mund ta krijosh pas 7 ditësh.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Të lutem, prit…</string>
  </resources>
 diff --git a/app/src/main/res/values-sr/strings.xml b/app/src/main/res/values-sr/strings.xml
-index 24dd86e035fa74b1b4383f48ed1cff6453a0b540..48be3891bb79f05f893856338f49c63fa65501fd 100644
+index f73c51249e117780453c1100512904a3ad4679f3..75f19461c318b210bddad54d620788f42f0e157d 100644
 --- a/app/src/main/res/values-sr/strings.xml
 +++ b/app/src/main/res/values-sr/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Дозвољени број нових кључева је истрошен. Моћи ћете да креирате нови кључ за опоравак за 7 дана.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Сачекајте…</string>
  </resources>
 diff --git a/app/src/main/res/values-sv/strings.xml b/app/src/main/res/values-sv/strings.xml
-index b6e1621569ed7854766032529cc3d9abb68e75b7..69bcc575b13a04ce20e322c0d3f46733d88facf9 100644
+index d2ed7a379f91b7d65c32484d4e568bfa7bf1a6ea..af7493450bb924a79885d6ea1406e2a31432cc82 100644
 --- a/app/src/main/res/values-sv/strings.xml
 +++ b/app/src/main/res/values-sv/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Du har nått gränsen för hur många nya nycklar du kan skapa. Du kommer att kunna skapa en ny återställningsnyckel om sju dagar.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Vänta…</string>
  </resources>
 diff --git a/app/src/main/res/values-sw/strings.xml b/app/src/main/res/values-sw/strings.xml
-index 553167cb064999cf64b7e85c776c4f5abdd6b15d..f17ed1e53e79bba6db75442e282c6a73d41cb076 100644
+index d1ce6068dc75af69544953c069099f71e0df88b3..5702fbe4e5d4a601a048c3cb4262692b83014da4 100644
 --- a/app/src/main/res/values-sw/strings.xml
 +++ b/app/src/main/res/values-sw/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Umetumia idadi zote za funguo mpya unazoweza kuunda. Utaweza kuunda ufunguo mpya wa kurejesha akaunti ndani ya siku 7.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Tafadhali subiri…</string>
  </resources>
 diff --git a/app/src/main/res/values-ta/strings.xml b/app/src/main/res/values-ta/strings.xml
-index eaadce9e466f34f2516d37e9001c92576853f678..13bf0e0fe7d21ed2f1a4305e6a46b9cc26d69d5e 100644
+index 17bd76a2900b7e2eaa37c9f6daa4fd790c2847a4..2d43fa6f100443e513224b4f313d1fedac567520 100644
 --- a/app/src/main/res/values-ta/strings.xml
 +++ b/app/src/main/res/values-ta/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">நீங்கள் உருவாக்கக்கூடிய புதிய குறியீடுகளுக்கான அனுமதிக்கப்பட்ட எண்ணிக்கை முழுவதையும் உபயோகித்துவிட்டீர்கள். 7 நாட்களில் உங்களால் புதிய மீட்புக் குறியீட்டை உருவாக்க முடியும்.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">தயவுசெய்து காத்திருங்கள்…</string>
  </resources>
 diff --git a/app/src/main/res/values-te/strings.xml b/app/src/main/res/values-te/strings.xml
-index 2d293cf1e09bf99afb75cec7a963c81c75eafad7..39958bfa0505cd032f91e9d711ad6d5b14d3651e 100644
+index acbd57ca37c8fa897dbf4eea9fbc8f8e8635b649..cf0813f1eb5fcadca6f77ec14f79ae4140563f4d 100644
 --- a/app/src/main/res/values-te/strings.xml
 +++ b/app/src/main/res/values-te/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">మీరు సృష్టించగల కొత్త కీల సంఖ్యను మీరు దాటిపోయారు. మీరు 7 రోజుల్లో కొత్త రికవరీ కీని సృష్టించగలరు.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">దయచేసి వేచి ఉండండి…</string>
  </resources>
 diff --git a/app/src/main/res/values-th/strings.xml b/app/src/main/res/values-th/strings.xml
-index bd4e8b432dbb87dbe0e1588fc3ca5b02d3b7a474..d4516105740a02233dcc0140100c6b7d7076635e 100644
+index 7cdcc2c2b348feed0c32685b870eb84945a5f4ef..ba9d7ea2bfe4fc8d7fc499aa7486a5fe6260db90 100644
 --- a/app/src/main/res/values-th/strings.xml
 +++ b/app/src/main/res/values-th/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">คุณสร้างกุญแจกู้คืนใหม่จนครบจำนวนที่กำหนดแล้ว โดยคุณจะสามารถสร้างกุญแจใหม่ได้ในอีก 7 วัน</string>
  
      <!-- EOF -->
 +    <string name="please_wait">โปรดรอ…</string>
  </resources>
 diff --git a/app/src/main/res/values-tl/strings.xml b/app/src/main/res/values-tl/strings.xml
-index aa69f3f2d73a776cfb8d955414f3d7fd38a086bc..2b626592280474973e05aa9b8446f7ad8d388a47 100644
+index 1360a8fdcaf4cadcd1d11e9e869a90634d4c1bc7..c12955ca5087a632e940279e9ac4d1b247462681 100644
 --- a/app/src/main/res/values-tl/strings.xml
 +++ b/app/src/main/res/values-tl/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Naubos mo na ang bilang ng bagong keys na maaari mong gawin. Maaari kang gumawa ng bagong recovery key pagkatapos ng 7 araw.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Please wait…</string>
  </resources>
 diff --git a/app/src/main/res/values-tr/strings.xml b/app/src/main/res/values-tr/strings.xml
-index 49f94b1ea211c829e1759e5c9583d3fa7687b09e..1034a447b2e62218c7698f0339c5d9e7c0ab3caa 100644
+index e547eba4c404d2ba6e76fdc4809239ada48d83b0..1d9b565274a425ffc1890f8d3a42e3108457d453 100644
 --- a/app/src/main/res/values-tr/strings.xml
 +++ b/app/src/main/res/values-tr/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Oluşturabileceğin yeni anahtar sayısını tükettin. 7 gün sonra yeni bir kurtarma anahtarı oluşturabileceksin.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Lütfen bekleyin…</string>
  </resources>
 diff --git a/app/src/main/res/values-ug/strings.xml b/app/src/main/res/values-ug/strings.xml
-index 612f543062a0a6fc640aceb31d4cbe0346dd5281..2c18745f6a5b1b1e049b0c1afa2f87e5c06159fc 100644
+index 6215bfb72d1d66022b89606c940b63a17e4b4cc9..005bdce197cba3f7181ab311a9351e99dd00b9c3 100644
 --- a/app/src/main/res/values-ug/strings.xml
 +++ b/app/src/main/res/values-ug/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">يېڭى ئاچقۇچلارنى قۇرۇشقا بېرىلگەن قېتىم سانىنى تۈگىتىپ بولدىڭىز. 7 كۈندىن كىيىن يېڭى بىر ئەسلىگە كەلتۈرۈش ئاچقۇچى قۇرالايسىز.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">سەل كۈتۈڭ…</string>
  </resources>
 diff --git a/app/src/main/res/values-uk/strings.xml b/app/src/main/res/values-uk/strings.xml
-index ed5861510e63f14a0d9633a9988c2ae7faf06008..46331c455fede808b65b7f14133d32c3444f8af4 100644
+index 9d4e4bd6d2406fe2fb6cc3a2bbd60120a253d69b..8f97a9d14bcb00b36c176e7e5ed3e5cacc06e6ea 100644
 --- a/app/src/main/res/values-uk/strings.xml
 +++ b/app/src/main/res/values-uk/strings.xml
-@@ -9282,4 +9282,5 @@
+@@ -9286,4 +9286,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Ви створили максимальну дозволену кількість нових ключів. Створити ще один ключ відновлення можна лише через 7 днів.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Будь ласка, зачекайте…</string>
  </resources>
 diff --git a/app/src/main/res/values-ur/strings.xml b/app/src/main/res/values-ur/strings.xml
-index a158da2e4be97e0aa514dc1c0756817987ee0589..b31199ca871e4d6cc53024e16924420caf856426 100644
+index a018ace4fe3138addb40237c2dd24ca862344a3c..13a078b288847ea6cf233ea6956ca5427e965659 100644
 --- a/app/src/main/res/values-ur/strings.xml
 +++ b/app/src/main/res/values-ur/strings.xml
-@@ -8892,4 +8892,5 @@
+@@ -8896,4 +8896,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">آپ نئی کییز تخلیق کرنے کی تعداد کی حد ختم کر چکے ہیں۔ آپ 7 دن میں نئی بحالی کی کیی تخلیق کر سکیں گے۔</string>
  
      <!-- EOF -->
 +    <string name="please_wait">برائے مہربانی انتظار کریں. . . .</string>
  </resources>
 diff --git a/app/src/main/res/values-vi/strings.xml b/app/src/main/res/values-vi/strings.xml
-index c0958a762205690652fd216c016d32c3fc03bdd1..ec4739b63f6aa19b1336f20fcf01581c7d74c87d 100644
+index cde318b388d870a6f97944e03719c6bd66bafa54..144211467a5e9247e9bb282e65d8f2d678c985b6 100644
 --- a/app/src/main/res/values-vi/strings.xml
 +++ b/app/src/main/res/values-vi/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Bạn đã đạt giới hạn số mã khóa mới có thể tạo. Bạn sẽ không thể tạo mã khóa khôi phục mới trong 7 ngày.</string>
  
      <!-- EOF -->
 +    <string name="please_wait">Xin chờ…</string>
  </resources>
 diff --git a/app/src/main/res/values-yue/strings.xml b/app/src/main/res/values-yue/strings.xml
-index 7a6476043094a575d63fbc9db2f93c3ab8469dba..33a242ce883950268bb18d6d524fd52e15433dd9 100644
+index 443640e667c28dfd2b84db34bc9080cc3db1afa8..688049e2ce13d8dcebd35d32999f64b253559ac2 100644
 --- a/app/src/main/res/values-yue/strings.xml
 +++ b/app/src/main/res/values-yue/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">你已經用晒可以建立新金鑰嘅配額。你可以喺 7 日之後建立新嘅恢復金鑰。</string>
  
      <!-- EOF -->
 +    <string name="please_wait">請等等…</string>
  </resources>
 diff --git a/app/src/main/res/values-zh-rCN/strings.xml b/app/src/main/res/values-zh-rCN/strings.xml
-index d970e58c5e2cb84ddaa497fb30a7beb521d80b92..b85d2ef68651e094153606a37778eeebab32f15c 100644
+index e5c1751d50f96c2fa20159af45bff3577a8d2619..226e4b219aa97621099ff4c72dae427370e9a98b 100644
 --- a/app/src/main/res/values-zh-rCN/strings.xml
 +++ b/app/src/main/res/values-zh-rCN/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">您已达到创建新密钥的次数上限。您可以在 7 天后创建新的恢复密钥。</string>
  
      <!-- EOF -->
 +    <string name="please_wait">请稍候…</string>
  </resources>
 diff --git a/app/src/main/res/values-zh-rHK/strings.xml b/app/src/main/res/values-zh-rHK/strings.xml
-index 96efd7e5fe82f0a33c877590543f7d14c580affc..6f38fbdc462856e33dc203447a70a873fbb45cf2 100644
+index 86d497aeb08fa2c174adb0559d8b086785a13683..5c90fabce0906274dc0c2cd64c9f4195cbd8ab31 100644
 --- a/app/src/main/res/values-zh-rHK/strings.xml
 +++ b/app/src/main/res/values-zh-rHK/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">你已用盡可建立的新金鑰數量。你可以在 7 天後建立新的恢復金鑰。</string>
  
      <!-- EOF -->
 +    <string name="please_wait">請稍候…</string>
  </resources>
 diff --git a/app/src/main/res/values-zh-rTW/strings.xml b/app/src/main/res/values-zh-rTW/strings.xml
-index e29100b79c6f5836ff2365988db4e0fd61576b4b..f3e40516e8109c9d6dbe7afd9b52a850b6e823e4 100644
+index ccda0130b3fdeedcfab857fb5cbb54fa3b243e44..f48306bbf0d1b5007ee0673c6b2c3a26ebcae79a 100644
 --- a/app/src/main/res/values-zh-rTW/strings.xml
 +++ b/app/src/main/res/values-zh-rTW/strings.xml
-@@ -8697,4 +8697,5 @@
+@@ -8701,4 +8701,5 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">你已用盡可建立的新金鑰數量。你可以在 7 天後建立新的恢復金鑰。</string>
  
      <!-- EOF -->

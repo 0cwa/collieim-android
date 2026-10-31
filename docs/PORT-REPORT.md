@@ -8,7 +8,7 @@ Physical Git diff lines; counts do not establish authorship or necessity.
 - Compared with Molly before minimization: 396447 added, 242304 deleted, 638751 total text lines; 698 binary paths (`0e202dda90785771ff8c87526eaaf30c655f54f3` → `2533afec2fe2d7f9fc682f699fc21d7624521889`).
 
 Compatibility share: 108564 / 143289 physical added plus deleted text lines = 75.766%.
-Current mechanical comparison: 7619 added, 100945 deleted, 108564 total, 28 binary; current Molly comparison: 396447 added, 242304 deleted, 638751 total, 698 binary.
+Current mechanical comparison: 7526 added, 98250 deleted, 105776 total, 28 binary; current Molly comparison: 396714 added, 239969 deleted, 636683 total, 698 binary.
 After minimization: unmeasured.
 
 Molly exclusions, including partial-file exclusions: unmeasured.
@@ -710,15 +710,14 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 7f1e2b01fe90564619e6 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 0 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | dc29870f526b94b597e6 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 0 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2daab31dfd4aed3e7ec9 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 690d0fa24e14267e9dcf | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 1 | 21 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 236491b7a5c37c63909c | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 0 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| ac40dbe912d40ae8b587 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 3 | 29 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 07104be2c0ccb2b400c9 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f6988f61c6d43142ed88 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 0 | 19 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e68a1aa110658f93d77c | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 1 | 23 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 178a125ab99e7ac29720 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | bf21444d88cd00d22f16 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 80a1237fa49c1349840d | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 3 | 23 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 6e3c442212801aa3a11c | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 2 | 21 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 47a8b4a730f9c7d6431b | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 2 | 22 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| daa82c952997dcfb08b9 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 2 | 21 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fcc74fae7475705e12b5 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 2 | 17 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c7d8d20918706111cba0 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a80ac7892a45b23561ee | app/src/main/java/org/thoughtcrime/securesms/messages/MessageContentProcessor.kt | text | 100644 | 100644 | 1 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -735,19 +734,23 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 73689c749785bca37f53 | app/src/main/java/org/thoughtcrime/securesms/migrations/UuidMigrationJob.java | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f30277315359fadada35 | app/src/main/java/org/thoughtcrime/securesms/mms/AttachmentManager.java | text | 100644 | 100644 | 0 | 19 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f9358441f5e776f43e9f | app/src/main/java/org/thoughtcrime/securesms/mms/AttachmentManager.java | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 2f612d6e8a1fbdb993d1 | app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt | text | 100644 | 100644 | 2 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 4f96f4db9270e3adb079 | app/src/main/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculator.kt | text | 100644 | 100644 | 2 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9faf095085a1543b1271 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e7a48641b33f3ac99e8f | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 28 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 772139f75a6b0aad6001 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 26f703cde7c74ced534d | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 2 | 12 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9d3c4e12d8f13fc21b39 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2e8155e355d960467c9e | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | dd9f583476ff9a854239 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 29 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1642a30f117785fe271b | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| dd9efef0efb249e66177 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 29 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| ba85058a32608ec1b263 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 2 | 31 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 97f5e861451c6c69a212 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ce570b3aa05c30dde3b3 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e2c18e60ee23eccadd26 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 30 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3ec0adf9b88ec3f68924 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 62 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f8ac464808a8f8e15b4d | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a83d55c860cc7ab1c96b | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 8 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 26f9adf8421e86aeab04 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6984d4582199223c52d7 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | de8c675c53f173c015f7 | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0bc86df1eef4cf530f0d | app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt | text | 100644 | 100644 | 0 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1030,20 +1033,31 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | f238dea4bd82ff99943a | app/src/main/res/layout/all_signal_connections_row_item.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 53730d3d504572bf9e1b | app/src/main/res/layout/audio_output_adapter_radio_item.xml | text | 100644 | 000000 | 0 | 23 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f1e45e7cc40fc4f05b06 | app/src/main/res/layout/audio_output_adapter_radio_item.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| ec5ddb32a80da3910bbc | app/src/main/res/layout/audio_view.xml | text | 100644 | 100644 | 9 | 70 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| ad4f296bb1fd88b1de16 | app/src/main/res/layout/audio_view.xml | text | 100644 | 100644 | 0 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 85d239a8e3202f1a7f5c | app/src/main/res/layout/audio_view.xml | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 5c605db107d6eb61fbdc | app/src/main/res/layout/audio_view.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 6e3c3114510aac32d1f0 | app/src/main/res/layout/audio_view.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| e27ea4696d4cf581db93 | app/src/main/res/layout/audio_view.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0ae059910624e3f037d6 | app/src/main/res/layout/avatar_picker_fragment.xml | text | 100644 | 000000 | 0 | 153 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c830c37ad5b73699734a | app/src/main/res/layout/avatar_picker_fragment.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| f1f1f7ee7c8320d75032 | app/src/main/res/layout/blocked_users_adapter_item.xml | text | 100644 | 100644 | 6 | 52 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 649cce92c2f71d683c2c | app/src/main/res/layout/blocked_users_adapter_item.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| a6ff7488950f3ddf558b | app/src/main/res/layout/blocked_users_adapter_item.xml | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 0b9edf2def10ae0beb30 | app/src/main/res/layout/blocked_users_adapter_item.xml | text | 100644 | 100644 | 2 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ada4999d5725e5a9cdb6 | app/src/main/res/layout/call_log_adapter_item.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 049e97d4278092133451 | app/src/main/res/layout/change_passphrase_activity.xml | text | 100644 | 000000 | 0 | 86 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | df0bde372e94472bc208 | app/src/main/res/layout/change_passphrase_activity.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 65e20f7790951b539d4b | app/src/main/res/layout/conversation_input_panel.xml | text | 100644 | 100644 | 26 | 281 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| d1992180f5a54a7361d1 | app/src/main/res/layout/conversation_item_received_shared_contact.xml | text | 100644 | 100644 | 1 | 23 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 99d03395963e8fb799fa | app/src/main/res/layout/conversation_item_update.xml | text | 100644 | 100644 | 6 | 62 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| b612986d5e464bcbe261 | app/src/main/res/layout/conversation_input_panel.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 28fa0f3c422e342ba81a | app/src/main/res/layout/conversation_input_panel.xml | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 9e1ffba768ff67813db5 | app/src/main/res/layout/conversation_input_panel.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 29ad219a83d4541894f3 | app/src/main/res/layout/conversation_input_panel.xml | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 5d2efe07e8e090677c1f | app/src/main/res/layout/conversation_item_received_shared_contact.xml | text | 100644 | 100644 | 6 | 11 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| e559877168e5571b95d2 | app/src/main/res/layout/conversation_item_update.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| c809a68a22c5df21861f | app/src/main/res/layout/conversation_item_update.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 43b75aa010d7ffe646b1 | app/src/main/res/layout/conversation_list_archive_toolbar.xml | text | 100644 | 000000 | 0 | 14 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d1ab6de78603ddc5bd11 | app/src/main/res/layout/conversation_list_archive_toolbar.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 55573b41ec45ef48dee9 | app/src/main/res/layout/conversation_list_item_action.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 3adffb0c9a4d2fb45692 | app/src/main/res/layout/conversation_list_item_view.xml | text | 100644 | 100644 | 29 | 205 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| ae89b25c0cd315ef5f77 | app/src/main/res/layout/conversation_list_item_view.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| b33e8b8ff327fae63182 | app/src/main/res/layout/conversation_list_item_view.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f8e19ce4a697943bd682 | app/src/main/res/layout/conversation_list_search_toolbar.xml | text | 100644 | 000000 | 0 | 11 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2ac3ec588fb5e97d5a0d | app/src/main/res/layout/conversation_list_search_toolbar.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6d26ccb22b67ebe0bd0f | app/src/main/res/layout/conversation_settings_bio_preference_item.xml | text | 100644 | 000000 | 0 | 91 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1060,10 +1074,15 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | af9c0f985b6ce0d5c627 | app/src/main/res/layout/delete_account_fragment.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c224aba78e49fe439437 | app/src/main/res/layout/delete_account_progress_dialog.xml | text | 100644 | 000000 | 0 | 52 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | da452f6fc79c6f4a37e7 | app/src/main/res/layout/delete_account_progress_dialog.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| ed1cf2c3c3b5727bd00d | app/src/main/res/layout/donation_pill_toggle.xml | text | 100644 | 100644 | 6 | 122 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| abf2dc11b90712b7ff42 | app/src/main/res/layout/donation_pill_toggle.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 8410df74a9653999cbc9 | app/src/main/res/layout/donation_pill_toggle.xml | text | 100644 | 100644 | 0 | 8 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 1b3df3d6594c2f5937eb | app/src/main/res/layout/donation_pill_toggle.xml | text | 100644 | 100644 | 1 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| a9795b2ee14b88be00ee | app/src/main/res/layout/donation_pill_toggle.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d1dde8d6700e8b97998a | app/src/main/res/layout/donation_receipt_detail_fragment.xml | text | 100644 | 000000 | 0 | 37 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 541fff4e03ae56ee8850 | app/src/main/res/layout/donation_receipt_detail_fragment.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 1369655950bb984ea175 | app/src/main/res/layout/donation_receipt_png.xml | text | 100644 | 100644 | 15 | 131 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 145d94ff569eae1541c1 | app/src/main/res/layout/donation_receipt_png.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 097212472065fa91763f | app/src/main/res/layout/donation_receipt_png.xml | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| b39c005991f949951fc9 | app/src/main/res/layout/donation_receipt_png.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7e243dcce01941c5f3b1 | app/src/main/res/layout/dsl_banner.xml | text | 100644 | 000000 | 0 | 52 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c1a751784584fb9bca1f | app/src/main/res/layout/dsl_banner.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9267d7e2e2afbab02448 | app/src/main/res/layout/fragment_choose_backup.xml | text | 100644 | 000000 | 0 | 77 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1092,13 +1111,15 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 0f9620d8cce1af46966e | app/src/main/res/layout/item_selectable_contact_field.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7f33334400b0b03f70ce | app/src/main/res/layout/keyboard_pager_emoji_page_fragment.xml | text | 100644 | 000000 | 0 | 86 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ae9ef18e59ae55d53cb0 | app/src/main/res/layout/keyboard_pager_emoji_page_fragment.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 99b3c516fdf9dc7fcd3b | app/src/main/res/layout/link_preview.xml | text | 100644 | 100644 | 13 | 138 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 7ff9f1e6bb8a708788bc | app/src/main/res/layout/link_preview.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 3696f211744e5f7cfac3 | app/src/main/res/layout/link_preview.xml | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| d45cf72d778dfa9f1c61 | app/src/main/res/layout/link_preview.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c86b3f391f09aef98bb7 | app/src/main/res/layout/material3_serarch_toolbar.xml | text | 100644 | 000000 | 0 | 64 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2493131d63619e223a25 | app/src/main/res/layout/material3_serarch_toolbar.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | bc6abf55173363b2ce03 | app/src/main/res/layout/media_viewer_activity.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a53ddeed9d92c6b18182 | app/src/main/res/layout/mediasend_document_fragment.xml | text | 100644 | 000000 | 0 | 56 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | dc1116e5c3878a7231ed | app/src/main/res/layout/mediasend_document_fragment.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 1d3157c42cafbe168443 | app/src/main/res/layout/microphone_recorder_view.xml | text | 100644 | 100644 | 6 | 63 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 6340f01d5e5b55acb18c | app/src/main/res/layout/microphone_recorder_view.xml | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9b85bd86cd7ca4786d1b | app/src/main/res/layout/notification_profile_preference_item.xml | text | 100644 | 000000 | 0 | 70 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4df5c9291e1432b5598f | app/src/main/res/layout/notification_profile_preference_item.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 465f134ca2fc78ba23b9 | app/src/main/res/layout/preference_storage_category.xml | text | 100644 | 000000 | 0 | 95 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1109,7 +1130,11 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 28f2f7308b209acd2ab9 | app/src/main/res/layout/react_with_any_emoji_tabs.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b379d1ecb8368b7d12ef | app/src/main/res/layout/reminder_action_button.xml | text | 100644 | 000000 | 0 | 14 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e90a8b4dc80117e1e9b6 | app/src/main/res/layout/reminder_action_button.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 36e0802b2ba2726c4a12 | app/src/main/res/layout/review_banner_view.xml | text | 100644 | 100644 | 12 | 119 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 5f91c94ce8033de3b898 | app/src/main/res/layout/review_banner_view.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 4f19d94fff054f9a16a1 | app/src/main/res/layout/review_banner_view.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 33a0ef4a80d250ad8fbc | app/src/main/res/layout/review_banner_view.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 5c658c2ef6588dba42a5 | app/src/main/res/layout/review_banner_view.xml | text | 100644 | 100644 | 2 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 24807b8a03685f33d7e8 | app/src/main/res/layout/review_banner_view.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9ff87da60e20f390eb57 | app/src/main/res/layout/safety_number_bottom_sheet.xml | text | 100644 | 000000 | 0 | 61 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4b08747a98a4a95af1de | app/src/main/res/layout/safety_number_bottom_sheet.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8652bb05c3928d54212c | app/src/main/res/layout/safety_number_bucket_row_item.xml | text | 100644 | 000000 | 0 | 44 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1121,11 +1146,14 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | ac0d002c55c871125a54 | app/src/main/res/layout/sticker_grid_header.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ce7c96d15048688abf8f | app/src/main/res/layout/sticker_search_dialog_fragment.xml | text | 100644 | 000000 | 0 | 60 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3763fc069e186a58a97a | app/src/main/res/layout/sticker_search_dialog_fragment.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| bf1fefe6dddd9bee3b73 | app/src/main/res/layout/stories_text_post_creation_fragment.xml | text | 100644 | 100644 | 7 | 66 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| f066bc061d54dd00e599 | app/src/main/res/layout/stories_text_post_creation_fragment.xml | text | 100644 | 100644 | 2 | 11 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| b8f806477df7750bab94 | app/src/main/res/layout/stories_text_post_creation_fragment.xml | text | 100644 | 100644 | 1 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 728298eb5a2f78bb654f | app/src/main/res/layout/story_video_player.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a04c5cb360a6f0fedb7a | app/src/main/res/layout/thanks_for_your_support_bottom_sheet_dialog_fragment.xml | text | 100644 | 100644 | 1 | 91 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6a320da6270dced993a1 | app/src/main/res/layout/thanks_for_your_support_bottom_sheet_dialog_fragment.xml | text | 100644 | 100644 | 1 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| b29f751940ae187786e2 | app/src/main/res/layout/unverified_banner_view.xml | text | 100644 | 100644 | 4 | 71 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| db9c1ca419bd9add4360 | app/src/main/res/layout/unverified_banner_view.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| d85165483d6800b104c0 | app/src/main/res/layout/unverified_banner_view.xml | text | 100644 | 100644 | 2 | 32 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 93273ad1c9aa87609118 | app/src/main/res/layout/unverified_banner_view.xml | text | 100644 | 100644 | 1 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 634615d18837c370ba95 | app/src/main/res/layout/v2_media_review_fragment.xml | text | 100644 | 000000 | 0 | 341 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f8dea04c458114358d1e | app/src/main/res/layout/v2_media_review_fragment.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | df8a19b5c0d5a4953c15 | app/src/main/res/layout/v2_media_review_quality_popup_window.xml | text | 100644 | 000000 | 0 | 45 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1138,14 +1166,23 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | f936ce17fc8bcbbf4a9f | app/src/main/res/menu/enter_phone_number.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 93d41cb39e5afcd48059 | app/src/main/res/menu/text_secure_normal.xml | text | 100644 | 000000 | 0 | 26 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 16683bc2a679ae7d25ef | app/src/main/res/menu/text_secure_normal.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 9149dc023e9da7f9e857 | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 319 | 1321 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 9139a04d690318d1ea36 | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 0 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 2e0a56c1a6f9ca207ecb | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 1f0845c3f39594c72fdd | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 81cebb00ffea617975eb | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 1 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| ce9be8d8b525a8903c68 | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 2 | 8 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 093a2a33b283ec2045d2 | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 4 | 20 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 742d1b4827b71d0af3bd | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 1 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 5f6e75d9a0159c9c524d | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 8a5319e09483a580b691 | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 531530cd8c863b5dcf3b | app/src/main/res/navigation/app_settings_with_change_number.xml | text | 100644 | 100644 | 9 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e67121d6bfcb2ff65c6a | app/src/main/res/navigation/manage_badges.xml | text | 100644 | 000000 | 0 | 50 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1f3e8a25d85fb290c41f | app/src/main/res/navigation/manage_badges.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2ac378572e52fb939008 | app/src/main/res/navigation/privacy_settings.xml | text | 100644 | 100644 | 0 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4ac7c8df6df53505b304 | app/src/main/res/navigation/privacy_settings.xml | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6575964946dfd88a4179 | app/src/main/res/navigation/registration_v3.xml | text | 100644 | 000000 | 0 | 398 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 11b0c9ada52a34953e81 | app/src/main/res/navigation/registration_v3.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 964651216afcdf99924a | app/src/main/res/values-af/strings.xml | text | 100644 | 100644 | 1 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 26a3b126d41c1227168e | app/src/main/res/values-af/strings.xml | text | 100644 | 100644 | 2 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 605749dff678d1cc95a2 | app/src/main/res/values-af/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b558a764435915d97000 | app/src/main/res/values-af/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fbbe51b9a0f11e497ffa | app/src/main/res/values-af/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1173,11 +1210,11 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | b7367559ae8b34079ed2 | app/src/main/res/values-af/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8080b27cf35752b109de | app/src/main/res/values-af/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 046591187ddc26179d34 | app/src/main/res/values-af/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| b6adb19dbf948722b737 | app/src/main/res/values-ar/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 610b87319d5fed232134 | app/src/main/res/values-ar/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0de44bd177645d325597 | app/src/main/res/values-ar/strings.xml | text | 100644 | 100644 | 0 | 20 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1b0c2e283e4bcbf45694 | app/src/main/res/values-ar/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a1926466557029090e99 | app/src/main/res/values-ar/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 82293aea7bdd06ec0cf5 | app/src/main/res/values-az/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| a201eb895f5b20a5f549 | app/src/main/res/values-az/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d557d622257be16a36a2 | app/src/main/res/values-az/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2168eed55fe109bd562f | app/src/main/res/values-az/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 144f591373a89e1ebbcc | app/src/main/res/values-az/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1203,7 +1240,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 4a03866b13fcf063d8fe | app/src/main/res/values-az/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0ef6b96ddb2b6a12d036 | app/src/main/res/values-az/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b6dade11978a891beb3e | app/src/main/res/values-az/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| f0afd4884f36f151c168 | app/src/main/res/values-be/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 45a524f407bd83e8f381 | app/src/main/res/values-be/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 26c651d10024ab51fc01 | app/src/main/res/values-be/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7bf9bdf901bb0155cfa7 | app/src/main/res/values-be/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 47bad2f8172279349426 | app/src/main/res/values-be/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1230,7 +1267,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 4f9c3af9c3c25445405c | app/src/main/res/values-be/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 954cb7770cf087118dec | app/src/main/res/values-be/strings2.xml | text | 000000 | 100644 | 5 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 806e33aef512a6e04d78 | app/src/main/res/values-be/strings2.xml | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| bfe27564766392561271 | app/src/main/res/values-bg/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 5a836f26f1e5f6086cf5 | app/src/main/res/values-bg/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e0c4b802078f176a0168 | app/src/main/res/values-bg/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1f177d9a8bd55ed4f398 | app/src/main/res/values-bg/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 038cd919824d268a6d4c | app/src/main/res/values-bg/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1256,7 +1293,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 8e47d3cf9b24e3c2150f | app/src/main/res/values-bg/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3960bc6f713fd4f583c9 | app/src/main/res/values-bg/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | cd1421dd56e2942ed9cc | app/src/main/res/values-bg/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| e31a6fb92bfd09e87aea | app/src/main/res/values-bn/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| d22ebbbc082029787b44 | app/src/main/res/values-bn/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 5fbccc1eab9c74249954 | app/src/main/res/values-bn/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b7c9ba09c7d60b2f28ea | app/src/main/res/values-bn/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f3fc873d04387ce2bb06 | app/src/main/res/values-bn/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1282,7 +1319,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | faa72e747c5080ec995c | app/src/main/res/values-bn/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9e71bfca6602011e73c9 | app/src/main/res/values-bn/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | bf5f52ba4590a28f9b72 | app/src/main/res/values-bn/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 65d9b61257187cd3b1a6 | app/src/main/res/values-bs/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 6fb27f612fb14269b688 | app/src/main/res/values-bs/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e00f8a3851d372895adf | app/src/main/res/values-bs/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3738d480203f381864a9 | app/src/main/res/values-bs/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6b09448ff02c2052d960 | app/src/main/res/values-bs/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1308,7 +1345,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 8a786644b2e84c3225fb | app/src/main/res/values-bs/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 5234164af222129d89aa | app/src/main/res/values-bs/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | cc846976bca199304275 | app/src/main/res/values-bs/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 89aa0472a25ccbf97650 | app/src/main/res/values-ca/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| adf2a9c5cde787280bd7 | app/src/main/res/values-ca/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8c7c68cebb3b7bc813d1 | app/src/main/res/values-ca/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6b0e01baf7bfa9ce7446 | app/src/main/res/values-ca/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 234eb7d35350b676e4ee | app/src/main/res/values-ca/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1334,7 +1371,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | cd011a760450d6fe0673 | app/src/main/res/values-ca/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7bc861d77a50acc7856e | app/src/main/res/values-ca/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 46fe4068c13856f780b1 | app/src/main/res/values-ca/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 268e8c87b2f5fc4025a6 | app/src/main/res/values-cs/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 591f99e966870caa563d | app/src/main/res/values-cs/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 46d8e2ee8122b4966a3e | app/src/main/res/values-cs/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9468058055ff096c51d8 | app/src/main/res/values-cs/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 606be60863fb512d92ff | app/src/main/res/values-cs/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1359,7 +1396,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 984f86b8ca3d402839c4 | app/src/main/res/values-cs/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 335aa1a1dcb1b35e0dc3 | app/src/main/res/values-cs/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b4407ee1c6c36cd87186 | app/src/main/res/values-cs/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 1cd9523f5520e4b2229b | app/src/main/res/values-da/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 9b4f8e1a7fcb40951dae | app/src/main/res/values-da/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8933c7c84735cc73947d | app/src/main/res/values-da/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 68e1e60ab2a500af7c95 | app/src/main/res/values-da/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e3b3214bc8fc87c01a7b | app/src/main/res/values-da/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1385,7 +1422,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 0e0a0e1e01886f0be0ec | app/src/main/res/values-da/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f8565c5e81221723d493 | app/src/main/res/values-da/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8d6ad984dc1d07b09fae | app/src/main/res/values-da/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| ff95ca24d94200228a7f | app/src/main/res/values-de/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 74bc7aa72c0f6c84cbff | app/src/main/res/values-de/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0f9d589c5626c2a153c2 | app/src/main/res/values-de/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a75b9cc4a7bb6192ca3e | app/src/main/res/values-de/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | abc5f6913ff53f324f58 | app/src/main/res/values-de/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1411,7 +1448,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 521049e15e33a2f529d1 | app/src/main/res/values-de/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ff6707e7e2b4521f3b8f | app/src/main/res/values-de/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 37df80a5332540eb2ad2 | app/src/main/res/values-de/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 58db16a197df4ecfe8fb | app/src/main/res/values-el/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| fa236b7bc3de3898a072 | app/src/main/res/values-el/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d3ee7fac8be083943921 | app/src/main/res/values-el/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3e7cfd91ef940a14c9af | app/src/main/res/values-el/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fb52157e916ecabc95f7 | app/src/main/res/values-el/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1437,7 +1474,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | f940033fa72031f87b1a | app/src/main/res/values-el/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e088342e21f9a22c63e1 | app/src/main/res/values-el/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 720041807ab150d6e21e | app/src/main/res/values-el/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| fd58287ab3ca5c2e1902 | app/src/main/res/values-es/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| b0a04c63f4e66e528e5b | app/src/main/res/values-es/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 01abc0e34e29a3e85745 | app/src/main/res/values-es/strings.xml | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9b607daf907cb62a04b8 | app/src/main/res/values-es/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 63ea6519ae88de809ca0 | app/src/main/res/values-es/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1466,7 +1503,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 415df9cc2fb5a8d6089c | app/src/main/res/values-es/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8956ef3a832c1ed9aeea | app/src/main/res/values-es/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c41f5bf3d374cb202361 | app/src/main/res/values-es/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 4bee15a14d726e67dcba | app/src/main/res/values-et/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 7658f6dad33356af690e | app/src/main/res/values-et/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 96ce736873d1378d0636 | app/src/main/res/values-et/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 73af2a3302a6d95dfadf | app/src/main/res/values-et/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6969e35259e9ab9cc83c | app/src/main/res/values-et/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1492,7 +1529,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 9b8ef9807981e5f17742 | app/src/main/res/values-et/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9613d2af95367184ec6c | app/src/main/res/values-et/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d90c935b3b2bacad0e7e | app/src/main/res/values-et/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 599d89ba618ccd097ec1 | app/src/main/res/values-eu/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 29500e8c358447f60bf0 | app/src/main/res/values-eu/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 211bb2993bd2a3c0c287 | app/src/main/res/values-eu/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a68de1302b29aa2c0e0a | app/src/main/res/values-eu/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | eaf45bb3bdfcd6fffc78 | app/src/main/res/values-eu/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1517,11 +1554,11 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 110b0f079b02136e8d90 | app/src/main/res/values-eu/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f7305182c5ab6c95dade | app/src/main/res/values-eu/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 46e5a345302ec0d45079 | app/src/main/res/values-eu/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 68e9eae183a703aa114d | app/src/main/res/values-fa/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 6be022290e27010001df | app/src/main/res/values-fa/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f024b7cb15ec0bf551d3 | app/src/main/res/values-fa/strings.xml | text | 100644 | 100644 | 0 | 20 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1d63b0306acf8919d0ab | app/src/main/res/values-fa/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a11f7d440170b1113a86 | app/src/main/res/values-fa/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 89666ec06d9a10570258 | app/src/main/res/values-fi/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 4e5622f062f04b0fd380 | app/src/main/res/values-fi/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 26e4790ea208d5daf38d | app/src/main/res/values-fi/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c27f084918eee9482ba9 | app/src/main/res/values-fi/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 235b86b76abc3ea2e832 | app/src/main/res/values-fi/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1547,7 +1584,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 7f985225af44d64038ce | app/src/main/res/values-fi/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3232f1c2b2465acf0e7f | app/src/main/res/values-fi/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 14a4a08974861d06038c | app/src/main/res/values-fi/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| b7ab4aee4afa64a600cd | app/src/main/res/values-fr/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| ee1aa39389a22da73651 | app/src/main/res/values-fr/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9e8b7581ca1a841bd4a0 | app/src/main/res/values-fr/strings.xml | text | 100644 | 100644 | 1 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d5afe450c385c7bbc14b | app/src/main/res/values-fr/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9d84af843fa596fae8f1 | app/src/main/res/values-fr/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1575,7 +1612,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 6d4f71b196ca2ea38cf0 | app/src/main/res/values-fr/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b29fc944d115cbf22047 | app/src/main/res/values-fr/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b8298001745fdebc2dcb | app/src/main/res/values-fr/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 46660e447fa496bc7215 | app/src/main/res/values-ga/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 273678d268b9f9b9d434 | app/src/main/res/values-ga/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | dc0a3ce271917ae8f0a9 | app/src/main/res/values-ga/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 939f58cafbc52eb8f49a | app/src/main/res/values-ga/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f8b1e27181fc96de557b | app/src/main/res/values-ga/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1601,7 +1638,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | c91aa1c5d5a8f0ff1a58 | app/src/main/res/values-ga/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 993bc52b36eeb1cc9c6c | app/src/main/res/values-ga/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f216bbd5d80ae2d56d0f | app/src/main/res/values-ga/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 88bd62168f7cff9dda87 | app/src/main/res/values-gl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 26f173b2506c685b1dd2 | app/src/main/res/values-gl/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4e1b8033f0fd9e8c88d6 | app/src/main/res/values-gl/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f975826d51dee6c7505b | app/src/main/res/values-gl/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | df32c45e5d2499f60639 | app/src/main/res/values-gl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1627,7 +1664,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 92d57b445fe0e5e79ca4 | app/src/main/res/values-gl/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | efcffcf7e63055440010 | app/src/main/res/values-gl/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 705233ab058a139d1166 | app/src/main/res/values-gl/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| fb045c735025752c5223 | app/src/main/res/values-gu/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| a7cad578a2568c0ea67b | app/src/main/res/values-gu/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a94004a9571b9c608e5f | app/src/main/res/values-gu/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e1f36b18171a71887f4d | app/src/main/res/values-gu/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ea7eaa0d41288e60f04a | app/src/main/res/values-gu/strings.xml | text | 100644 | 100644 | 0 | 63 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1652,7 +1689,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | be5442aff5325d45725f | app/src/main/res/values-gu/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f431183720e9fb7deb19 | app/src/main/res/values-gu/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b8f2bc9411f2e88b2fd9 | app/src/main/res/values-gu/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 4164271e4db6feb66f02 | app/src/main/res/values-hi/strings.xml | text | 100644 | 100644 | 1 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| f8c7da6daddc859ebb2b | app/src/main/res/values-hi/strings.xml | text | 100644 | 100644 | 2 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 06dde3a4a356a839952d | app/src/main/res/values-hi/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8b63e73b94ce8c0c542c | app/src/main/res/values-hi/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 451455a18fce73125712 | app/src/main/res/values-hi/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1680,7 +1717,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | d6193aaa05eaa3c75b8c | app/src/main/res/values-hi/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a111f5f4e955e583a336 | app/src/main/res/values-hi/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4918c45390ab18e3726a | app/src/main/res/values-hi/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 8d3f8c275fe118c46d19 | app/src/main/res/values-hr/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| d43d693b6e60505ae3b0 | app/src/main/res/values-hr/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 06c53fe4cb9ae5fdfafe | app/src/main/res/values-hr/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c550a72d8fd58e54a504 | app/src/main/res/values-hr/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c26aac4b0014df0855a3 | app/src/main/res/values-hr/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1706,7 +1743,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 12164b50a5ce61144a58 | app/src/main/res/values-hr/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 04d7877749ce229a351e | app/src/main/res/values-hr/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0a24e8b4e4bf1a3d5628 | app/src/main/res/values-hr/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 70d8424fd7a87e27d234 | app/src/main/res/values-hu/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 0553fd9230117bd166c5 | app/src/main/res/values-hu/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 274545d5088279032684 | app/src/main/res/values-hu/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ca911c127521480e3d31 | app/src/main/res/values-hu/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6fa04ce5571d83975187 | app/src/main/res/values-hu/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1732,7 +1769,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 2c809d82298ba015fdfd | app/src/main/res/values-hu/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 42e00ba35d0d21fa0fce | app/src/main/res/values-hu/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 463424fe748bf1700c83 | app/src/main/res/values-hu/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 98e5eac93118dc892586 | app/src/main/res/values-in/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 55f91abafbab90cecf00 | app/src/main/res/values-in/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3b5a7fe35925659d66ee | app/src/main/res/values-in/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0ecaf61f9acd451f0d16 | app/src/main/res/values-in/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 5a90265c1c6ed7b9246f | app/src/main/res/values-in/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1758,7 +1795,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | a2fac1bb5fa14bbf7468 | app/src/main/res/values-in/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6552a12dcf1470fc34bf | app/src/main/res/values-in/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1af2584b7c08d5da301a | app/src/main/res/values-in/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 8207c5d4de20e3fd3f63 | app/src/main/res/values-it/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 4943a9063702a7004583 | app/src/main/res/values-it/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 297298d64c93633cb897 | app/src/main/res/values-it/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4e4ddd27170ebc127aad | app/src/main/res/values-it/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2a8e44bd5244e6a91bf2 | app/src/main/res/values-it/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1786,7 +1823,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | e8f45175d6e4e36dfeec | app/src/main/res/values-it/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 5e6a9a7600265c8fb69b | app/src/main/res/values-it/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 247f13e0dd5299f7b52a | app/src/main/res/values-it/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 73ba2853d25f9814662e | app/src/main/res/values-iw/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 0aaad7f995aee6216a53 | app/src/main/res/values-iw/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c54242538ed4a8035795 | app/src/main/res/values-iw/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c0cd3f73bce1e3d3cecd | app/src/main/res/values-iw/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4ddfe0a19b7153e8a181 | app/src/main/res/values-iw/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1812,7 +1849,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 9abeb2bd6f4e996dd467 | app/src/main/res/values-iw/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 95adda1ec37fb5f169ff | app/src/main/res/values-iw/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 76f19827becacc15daf9 | app/src/main/res/values-iw/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 76d2b3519b0528548b30 | app/src/main/res/values-ja/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 43040b3b924f19263686 | app/src/main/res/values-ja/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 70dc556f281389a06bdd | app/src/main/res/values-ja/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4e2bf23c950a6d87e0ec | app/src/main/res/values-ja/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1fccf710504ad31dc1a7 | app/src/main/res/values-ja/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1838,7 +1875,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | e7db4783ea1fd1cd9e3e | app/src/main/res/values-ja/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | efd0d0fc1029ed4674b5 | app/src/main/res/values-ja/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f32e6b8204f96ef799ec | app/src/main/res/values-ja/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| c95f0ee4cef0349f27e9 | app/src/main/res/values-ka/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| a5090b8267946964c05e | app/src/main/res/values-ka/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 06a57f37422166df8869 | app/src/main/res/values-ka/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3fdc76e99238d0bc9b83 | app/src/main/res/values-ka/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 5f7ca695e9ba901b8eaa | app/src/main/res/values-ka/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1864,7 +1901,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 97a1115eaa660c3031c0 | app/src/main/res/values-ka/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8a02dfcef1a6106b81b1 | app/src/main/res/values-ka/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 90ae27c7da90c2bb20a1 | app/src/main/res/values-ka/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 5153530e36a743ec1c94 | app/src/main/res/values-kk/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 125d284155dd4fd93662 | app/src/main/res/values-kk/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3f064420478db0e5572f | app/src/main/res/values-kk/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 625615c7d3cae5e412cb | app/src/main/res/values-kk/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | cb275bb51a7068e5b78e | app/src/main/res/values-kk/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1890,7 +1927,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | a22a7e7a5325556dfcd6 | app/src/main/res/values-kk/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | af13ab58ae9c57798508 | app/src/main/res/values-kk/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a6fa97ce2ff12e0471f8 | app/src/main/res/values-kk/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 59534232dd0f92cb2bff | app/src/main/res/values-km/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 88d6d029e71de6894166 | app/src/main/res/values-km/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ce7bba5480705a3a7de2 | app/src/main/res/values-km/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 636d711ca4154841ec53 | app/src/main/res/values-km/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7780898838a5c346353f | app/src/main/res/values-km/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1916,7 +1953,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | f04e75d3cfa826eccc12 | app/src/main/res/values-km/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 75eef1c7ac71d77900c0 | app/src/main/res/values-km/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6d6e2d192212784e1324 | app/src/main/res/values-km/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 1281c1a32ed293c07367 | app/src/main/res/values-kn/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| d0892322247e07b66744 | app/src/main/res/values-kn/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4de50310d6f1e7216d77 | app/src/main/res/values-kn/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c591261de0776fc6570a | app/src/main/res/values-kn/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6f34b015cf566c362d4a | app/src/main/res/values-kn/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1942,7 +1979,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | e9bbfe21e92e4e66eed2 | app/src/main/res/values-kn/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2774b4432907ba73228f | app/src/main/res/values-kn/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 13fdbaa5c5cb6891af14 | app/src/main/res/values-kn/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| a6ea209dcb047bb8b1b2 | app/src/main/res/values-ko/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 09d8c4bd8e72a4ab4de3 | app/src/main/res/values-ko/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 190f8e4917728fba7d3f | app/src/main/res/values-ko/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4aa5d294ff9db14b88e7 | app/src/main/res/values-ko/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c4eb7faacce5b446e7cb | app/src/main/res/values-ko/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -1980,7 +2017,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 8e3540dc76941e39890f | app/src/main/res/values-ko/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 27750b9d7d8f75b822f5 | app/src/main/res/values-ko/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f5822ed0dbb635725b03 | app/src/main/res/values-ko/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| f81d3cc7ccf6baccd6e0 | app/src/main/res/values-ky/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 799f539808dd87c116e1 | app/src/main/res/values-ky/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | de0b9ec935f52cc01e15 | app/src/main/res/values-ky/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6adc32ed9b1ca7186ce1 | app/src/main/res/values-ky/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a7f1343c1882568dcbab | app/src/main/res/values-ky/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2017,7 +2054,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 584dafbe117816b1ff94 | app/src/main/res/values-ky/strings.xml | text | 100644 | 100644 | 0 | 13 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2ec3c157330aef0b10bd | app/src/main/res/values-ky/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 999e393882518c87a4a8 | app/src/main/res/values-ky/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 7114d7b6f3825452c664 | app/src/main/res/values-lt/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 48a936829af37db386f6 | app/src/main/res/values-lt/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 15a77c1a0332a8261202 | app/src/main/res/values-lt/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6fa0fd9ee14c0f49fc84 | app/src/main/res/values-lt/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4772fabd483118c27376 | app/src/main/res/values-lt/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2043,7 +2080,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 79005e1295b375ec92cb | app/src/main/res/values-lt/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 88cbe607d29195391932 | app/src/main/res/values-lt/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e04d22ac804786bcacc1 | app/src/main/res/values-lt/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| c828732056861a8fba22 | app/src/main/res/values-lv/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| b44d5dd4be44c6e2bc42 | app/src/main/res/values-lv/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ebde60371f91908d86d3 | app/src/main/res/values-lv/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 40216802739ed6a1991a | app/src/main/res/values-lv/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a5d57c9ae2aaf5ad5d30 | app/src/main/res/values-lv/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2069,7 +2106,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | a3debdffd9c5c7c98c48 | app/src/main/res/values-lv/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | abf663ecf129117f2270 | app/src/main/res/values-lv/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c9910d0e4ad53e106b52 | app/src/main/res/values-lv/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 06cb043632ef86c27117 | app/src/main/res/values-mk/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 7aae8de4da9946dd2c48 | app/src/main/res/values-mk/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 331e72c0d4e470f2b74f | app/src/main/res/values-mk/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 904b40f48c461fbad551 | app/src/main/res/values-mk/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1262cac41120e055ed7b | app/src/main/res/values-mk/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2095,7 +2132,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 1833bda7e80c1ed08676 | app/src/main/res/values-mk/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fb470f339c96f7f48fcf | app/src/main/res/values-mk/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ca68347dea34df80a2c7 | app/src/main/res/values-mk/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| d9fe38f5efd92d2e6def | app/src/main/res/values-ml/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 055b8ff2bdc75e21ab82 | app/src/main/res/values-ml/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 814946afa6933680f9fb | app/src/main/res/values-ml/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 52a616363cd31a7bcde9 | app/src/main/res/values-ml/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e913ccf3c1c9a45a201a | app/src/main/res/values-ml/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2121,7 +2158,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 0d42063ad8dc8b80b50e | app/src/main/res/values-ml/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 867970f3de06dcba66fb | app/src/main/res/values-ml/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f52888b961fa3036b299 | app/src/main/res/values-ml/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 93cff4f80d38897b4fb2 | app/src/main/res/values-mr/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| bd475ba8bbd8936c5458 | app/src/main/res/values-mr/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f6eb2e356c4176bd14e5 | app/src/main/res/values-mr/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2c50a0eb6c413f548358 | app/src/main/res/values-mr/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 42aabc2607d2fc13b929 | app/src/main/res/values-mr/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2147,7 +2184,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | abc6b96c40e3b401ca31 | app/src/main/res/values-mr/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8c803fc214a5484f84b3 | app/src/main/res/values-mr/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ccc15d4a1b2ed768dd8e | app/src/main/res/values-mr/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| f6fa1488766228473d1c | app/src/main/res/values-ms/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 9c58d84f31d46a7fda1e | app/src/main/res/values-ms/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 117aa7efcf71bb521ad6 | app/src/main/res/values-ms/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 5b36babebd0ccdfb8741 | app/src/main/res/values-ms/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fdf2d8205b8aca910791 | app/src/main/res/values-ms/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2173,7 +2210,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 8ddf3937d1e84199d66c | app/src/main/res/values-ms/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 36f98223dd1e03d0bf77 | app/src/main/res/values-ms/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ab6e4b4c6e6cecfca22f | app/src/main/res/values-ms/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 174c51afba5de9ff6742 | app/src/main/res/values-my/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| baa0a3815e0c75053ff8 | app/src/main/res/values-my/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6c28465076a736fc69c7 | app/src/main/res/values-my/strings.xml | text | 100644 | 100644 | 0 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1f96e63810e117caf201 | app/src/main/res/values-my/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 25d9ee29e0072a660390 | app/src/main/res/values-my/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2200,7 +2237,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 3dfa57296c7c5e1dca03 | app/src/main/res/values-my/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0c3effa12dbd98c8991e | app/src/main/res/values-my/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a45eacef6ceb5683f65b | app/src/main/res/values-my/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 7d8d0297bc7584cdba61 | app/src/main/res/values-nb/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| b2349b4ce2984adf8380 | app/src/main/res/values-nb/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 41293d68cc8a0c8702b9 | app/src/main/res/values-nb/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4696ace3b2a0311abee6 | app/src/main/res/values-nb/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | efad2335746c7565c5b9 | app/src/main/res/values-nb/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2233,7 +2270,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 14e8e78ec687ec30973e | app/src/main/res/values-night/dark_colors.xml | text | 100644 | 100644 | 0 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 92cb169ed7015ac7e80a | app/src/main/res/values-night/dark_colors.xml | text | 100644 | 100644 | 2 | 48 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 992105d90545df59477e | app/src/main/res/values-night/dark_colors.xml | text | 100644 | 100644 | 3 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 98c3765cf5eccab70066 | app/src/main/res/values-nl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| ef29df73604a765c3fdd | app/src/main/res/values-nl/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4f2f78b3031242d9cc79 | app/src/main/res/values-nl/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3ca4f38a6528170f79bc | app/src/main/res/values-nl/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d7bf7d1fffa0c732411e | app/src/main/res/values-nl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2259,7 +2296,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 7d7d8a7db11aa88e38c8 | app/src/main/res/values-nl/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0658db093c2a369c3c07 | app/src/main/res/values-nl/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1691d78d3ffa14d17d10 | app/src/main/res/values-nl/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 7917f91c64497dbb2a9a | app/src/main/res/values-pa/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| c8cccfba343ea12471d3 | app/src/main/res/values-pa/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 68b39193948c943f9f3f | app/src/main/res/values-pa/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3c7c98bd5e1117df159b | app/src/main/res/values-pa/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3dff17d9fa640d2ef921 | app/src/main/res/values-pa/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2285,7 +2322,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | a1a26e174036ca53e000 | app/src/main/res/values-pa/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a093da930d7ab1f77e67 | app/src/main/res/values-pa/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 711a676b4b5a469b3463 | app/src/main/res/values-pa/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 3482daa456a3ab003161 | app/src/main/res/values-pl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 2a094a856601fab248e4 | app/src/main/res/values-pl/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6cd5f425649a5031a2b9 | app/src/main/res/values-pl/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e7a36633608d05676e3a | app/src/main/res/values-pl/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 08e155fa6e797aa62f00 | app/src/main/res/values-pl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2311,7 +2348,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | cea0ecaf860e20af4cc7 | app/src/main/res/values-pl/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fbdbc74d1ccb7eb80efe | app/src/main/res/values-pl/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 35ff4b72bb38a5f7b825 | app/src/main/res/values-pl/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 96411be8260736cbfee1 | app/src/main/res/values-pt-rBR/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 6160367579f427a96913 | app/src/main/res/values-pt-rBR/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 309f55a157f7ba29486e | app/src/main/res/values-pt-rBR/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1b9f732e23940542edf8 | app/src/main/res/values-pt-rBR/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 71a7b3a0371e69e5b6a7 | app/src/main/res/values-pt-rBR/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2337,7 +2374,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 32d771b250831919229a | app/src/main/res/values-pt-rBR/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 5baf9e7a17956a1a10c2 | app/src/main/res/values-pt-rBR/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9026d29282e1419e63a7 | app/src/main/res/values-pt-rBR/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 2bc4d4f6ddf4edf41718 | app/src/main/res/values-pt/strings.xml | text | 100644 | 100644 | 1 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 770f02bf2c0a3a419b64 | app/src/main/res/values-pt/strings.xml | text | 100644 | 100644 | 2 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f19fd4dd25cdc7cf87fb | app/src/main/res/values-pt/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ff4fe89f55e6be2ac23b | app/src/main/res/values-pt/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fc850a960faec7df96f9 | app/src/main/res/values-pt/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2365,7 +2402,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 5ce8bcd8858c056027fa | app/src/main/res/values-pt/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2ff5d9e50d3f089e5bc9 | app/src/main/res/values-pt/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9f7ece4f1d26e29f1e27 | app/src/main/res/values-pt/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| eadc8bcd646e88b0a2cb | app/src/main/res/values-ro/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| deb7e97308692b75d4fd | app/src/main/res/values-ro/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fde73764676f56a7f2f8 | app/src/main/res/values-ro/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4dcceff0f11e4a53e826 | app/src/main/res/values-ro/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2451eea8102dd48bf8af | app/src/main/res/values-ro/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2391,7 +2428,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 2ff4e69d302a35614f9b | app/src/main/res/values-ro/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | aa95e6ac555faf8d66ed | app/src/main/res/values-ro/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d45c40b091f708973544 | app/src/main/res/values-ro/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 4f06b7da67717d71481a | app/src/main/res/values-ru/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 62a31e4696206f426c51 | app/src/main/res/values-ru/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3902173190630ecf6876 | app/src/main/res/values-ru/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1fd8f6531125541da508 | app/src/main/res/values-ru/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | e62ddb392592538c936b | app/src/main/res/values-ru/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2417,7 +2454,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 7250aea9254817e0c088 | app/src/main/res/values-ru/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0056feb01fbb2b28b267 | app/src/main/res/values-ru/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7bb7692454712563329b | app/src/main/res/values-ru/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| a47d80decf6e82547cbb | app/src/main/res/values-sk/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 1aad4231d7a1949777c9 | app/src/main/res/values-sk/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 93d8bd5a42db63a876e4 | app/src/main/res/values-sk/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c958980b1ebaa97b9a9e | app/src/main/res/values-sk/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 877ffa1e2fcb598aecb3 | app/src/main/res/values-sk/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2443,7 +2480,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | baab6ccef70e66f0d4b9 | app/src/main/res/values-sk/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d763d4772536d02a5b00 | app/src/main/res/values-sk/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | cda86ff2d5a5e65625fc | app/src/main/res/values-sk/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 1abb6e048310dc5e7842 | app/src/main/res/values-sl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| a655a87c6c60c5f3c749 | app/src/main/res/values-sl/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 969f3ff426699c6f4a13 | app/src/main/res/values-sl/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b70bd86eef9864af8421 | app/src/main/res/values-sl/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8b922e15069e4292f9e6 | app/src/main/res/values-sl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2468,7 +2505,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | ae5b7cfd13cca0e1851e | app/src/main/res/values-sl/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3a459134084fac71a23d | app/src/main/res/values-sl/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | bc6bff38e195f6a0eb5e | app/src/main/res/values-sl/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 6768a5924e8d6f3430ac | app/src/main/res/values-sq/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 2512e063a4bcd8515d19 | app/src/main/res/values-sq/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1cff52388259dca6ba6c | app/src/main/res/values-sq/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 494aaccadf0abf8bf57d | app/src/main/res/values-sq/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8c78b7b3d1ecbefb65ce | app/src/main/res/values-sq/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2494,7 +2531,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | f8f70eb54ab431fed64b | app/src/main/res/values-sq/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 916b2809d199f1998cd3 | app/src/main/res/values-sq/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fffc7ce88aca5b8f0ec0 | app/src/main/res/values-sq/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 70c521f4ea89abc576be | app/src/main/res/values-sr/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| f76cbbd34d8a41cc7efe | app/src/main/res/values-sr/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6918739100894163fffd | app/src/main/res/values-sr/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 53a608f5f3c2647a9c94 | app/src/main/res/values-sr/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b1b21d962fe9af5e321a | app/src/main/res/values-sr/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2520,7 +2557,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | b51bb42d345dfe9f4070 | app/src/main/res/values-sr/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 81e77b6a6a343a361755 | app/src/main/res/values-sr/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 5067f2e3c24f369c75c2 | app/src/main/res/values-sr/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| f9b65bcab28ccbfc58bb | app/src/main/res/values-sv/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| b7b3686917421fabc086 | app/src/main/res/values-sv/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 710d40e658a309b6a5f2 | app/src/main/res/values-sv/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c015d173679c8fbf6763 | app/src/main/res/values-sv/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 5cd7fbc8f3264c597842 | app/src/main/res/values-sv/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2546,7 +2583,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 1b907046939ff20e5c9b | app/src/main/res/values-sv/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | cfde56a33b147116f1b9 | app/src/main/res/values-sv/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d261b387d4fb46ccd708 | app/src/main/res/values-sv/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 5f11f3d547909d70404b | app/src/main/res/values-sw/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| e34ac29eac5407b3de9f | app/src/main/res/values-sw/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 992c74e246e52756f32b | app/src/main/res/values-sw/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2e0e1000648a617b82ae | app/src/main/res/values-sw/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8f77de7ad2c22088e842 | app/src/main/res/values-sw/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2572,7 +2609,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 46c34d4d7783ea2d7d24 | app/src/main/res/values-sw/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f105c40017de5ce88907 | app/src/main/res/values-sw/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 472da47da412ea6499fb | app/src/main/res/values-sw/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| cf366b12f3d91918be7d | app/src/main/res/values-ta/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 3c7ba584d61789c0a958 | app/src/main/res/values-ta/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 45d2f6955c41dcf0a1f8 | app/src/main/res/values-ta/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 38a43ad2675b76c10e5f | app/src/main/res/values-ta/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0835eedb7a909b1f71f5 | app/src/main/res/values-ta/strings.xml | text | 100644 | 100644 | 0 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2592,7 +2629,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | e0eba201222c2b6ef090 | app/src/main/res/values-ta/strings.xml | text | 100644 | 100644 | 0 | 38 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b356b76b49e99b707d0d | app/src/main/res/values-ta/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 181f7e0931b2970db3a9 | app/src/main/res/values-ta/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| ab040ff324a1155fd733 | app/src/main/res/values-te/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 4b9bd21aa6622022f025 | app/src/main/res/values-te/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 55817c1438c4220bd816 | app/src/main/res/values-te/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | efdb895974a5e86efedc | app/src/main/res/values-te/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a0ca908ee25b23847cf9 | app/src/main/res/values-te/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2618,7 +2655,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 89be6462583c0c5d3c88 | app/src/main/res/values-te/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7e70dc24067e2fedbe07 | app/src/main/res/values-te/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7bede75c144ae8cc45c0 | app/src/main/res/values-te/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 71d977375e4e1f5cf45a | app/src/main/res/values-th/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| e04cf3531e494d17fc08 | app/src/main/res/values-th/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b30687b3596527b35f59 | app/src/main/res/values-th/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3bc4e61fbb22769d3dda | app/src/main/res/values-th/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2eb589e2f7ae359c895f | app/src/main/res/values-th/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2644,7 +2681,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | ff87ef249e87e71eb90c | app/src/main/res/values-th/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 1ce2c0db43335218eb90 | app/src/main/res/values-th/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 4c446cac19476f3d7cee | app/src/main/res/values-th/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| e0a2e3b4f708de15cc94 | app/src/main/res/values-tl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| de0bd17666760259439a | app/src/main/res/values-tl/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 378dd944722ea6028003 | app/src/main/res/values-tl/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3c7d786275d9cc726826 | app/src/main/res/values-tl/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | d2a5bdbed1fc23ad7e94 | app/src/main/res/values-tl/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2670,7 +2707,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | b1f669878f4b999cf3d5 | app/src/main/res/values-tl/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 20d1686920d1309781ae | app/src/main/res/values-tl/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 36613d5a16432a9838a4 | app/src/main/res/values-tl/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 45661eb1258421c4e21c | app/src/main/res/values-tr/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 6631dab5fc59927c6cc7 | app/src/main/res/values-tr/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 2598643b44da53ea0b88 | app/src/main/res/values-tr/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 96f011165c1b2e51d760 | app/src/main/res/values-tr/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 24c9da14a2ecd81cb2bd | app/src/main/res/values-tr/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2696,7 +2733,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | dfecd73e5b088cf1dbc9 | app/src/main/res/values-tr/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c404e0bf15aa887531ed | app/src/main/res/values-tr/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 24bde767f271c6f422b9 | app/src/main/res/values-tr/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 69dab5e74a187c3c4af3 | app/src/main/res/values-ug/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 0dd9f95a3b26fdc04d09 | app/src/main/res/values-ug/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7a53790a0794b4058202 | app/src/main/res/values-ug/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 126ccf7f0940281e43be | app/src/main/res/values-ug/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 68cc5323a0dcbba032eb | app/src/main/res/values-ug/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2719,7 +2756,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 7f34de0896588ee14970 | app/src/main/res/values-ug/strings.xml | text | 100644 | 100644 | 0 | 38 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6bb6caa504bda4e4e906 | app/src/main/res/values-ug/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3822fd3b712e6e7df863 | app/src/main/res/values-ug/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| da0a125bacc74c7eda36 | app/src/main/res/values-uk/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 51cbaadef925c20776ee | app/src/main/res/values-uk/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 46da8f91aa78ea2c569d | app/src/main/res/values-uk/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ed57719eac651ca59c9b | app/src/main/res/values-uk/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6858023245fec157f67b | app/src/main/res/values-uk/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2745,7 +2782,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | f4a2f6cf5c0dfb24999c | app/src/main/res/values-uk/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 36c6917db4dc5f73b7fe | app/src/main/res/values-uk/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0e3d0b0cb451779e67c1 | app/src/main/res/values-uk/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| ffde85d4dde45e34a2a8 | app/src/main/res/values-ur/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 449fc44366e309c842dc | app/src/main/res/values-ur/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | db4d7b5e5a2c0ce615a7 | app/src/main/res/values-ur/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 659c00d2889ad6cc3fa0 | app/src/main/res/values-ur/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | fbe974883560a0665f3a | app/src/main/res/values-ur/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2779,7 +2816,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 2602035b960f1c3f55de | app/src/main/res/values-v27/themes.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8fa61cb2b5cd96bc4ec6 | app/src/main/res/values-v29/arrays.xml | text | 100644 | 000000 | 0 | 16 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 004eb1b1f9314418a03c | app/src/main/res/values-v29/arrays.xml | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| b9abba41d007bbb481ba | app/src/main/res/values-vi/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 27ae8175989f9283fc99 | app/src/main/res/values-vi/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6124a666b6585933d324 | app/src/main/res/values-vi/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | beb1b166de7fb176f66f | app/src/main/res/values-vi/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3afb9763a8ba0d1f470e | app/src/main/res/values-vi/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2805,7 +2842,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 39f57ef0818d7e960f29 | app/src/main/res/values-vi/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 47c1df2bae06f5c015f8 | app/src/main/res/values-vi/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6822f26b5e0a72219a07 | app/src/main/res/values-vi/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| df74b301a06be93f6ac1 | app/src/main/res/values-yue/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 54f84ad6ec1ebea21bdd | app/src/main/res/values-yue/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 374bb0a7a296762aa7ed | app/src/main/res/values-yue/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 166552c29e307c1b6a64 | app/src/main/res/values-yue/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | ce5a2bc5489fee382855 | app/src/main/res/values-yue/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2831,7 +2868,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 40305884579f9e9da0fa | app/src/main/res/values-yue/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9d523a44cd5788113d16 | app/src/main/res/values-yue/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 47c205f40f8c6a318fda | app/src/main/res/values-yue/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| d9ae6abed66eb9e45140 | app/src/main/res/values-zh-rCN/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 5e33d38563e47c988995 | app/src/main/res/values-zh-rCN/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | bd4620260a8a16d3862c | app/src/main/res/values-zh-rCN/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f90a30665846bb46cd86 | app/src/main/res/values-zh-rCN/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 9639d50248ccbe696d70 | app/src/main/res/values-zh-rCN/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2857,7 +2894,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | c07cbcbca76993f14cfd | app/src/main/res/values-zh-rCN/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 665943dbbc33d171d55d | app/src/main/res/values-zh-rCN/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 53329ef09d1f0cc09a1e | app/src/main/res/values-zh-rCN/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 54c0ba59f74a18417a9f | app/src/main/res/values-zh-rHK/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 708ca7d6886f90b5a95f | app/src/main/res/values-zh-rHK/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 985be337b7ab2858b93c | app/src/main/res/values-zh-rHK/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 87d73de5b0c707b2cfd9 | app/src/main/res/values-zh-rHK/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f9a6e134846d15fcae06 | app/src/main/res/values-zh-rHK/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2883,7 +2920,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 3b4632c5b70cb51b09a6 | app/src/main/res/values-zh-rHK/strings.xml | text | 100644 | 100644 | 0 | 238 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 165fe3e31845fc26d03f | app/src/main/res/values-zh-rHK/strings.xml | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0b442e7e20fc55cfad41 | app/src/main/res/values-zh-rHK/strings2.xml | text | 100644 | 100644 | 2 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 8feecb86782fcf6f51a0 | app/src/main/res/values-zh-rTW/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 551357f0d6bf9bdf68e9 | app/src/main/res/values-zh-rTW/strings.xml | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a808c910a1b790075870 | app/src/main/res/values-zh-rTW/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 979104b78eee1e650ea6 | app/src/main/res/values-zh-rTW/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 938b178389b731f7bedb | app/src/main/res/values-zh-rTW/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -2920,13 +2957,11 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 5f4801c418da71c44cce | app/src/main/res/values/light_colors.xml | text | 100644 | 100644 | 0 | 29 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 3d42197d07276b11413f | app/src/main/res/values/light_colors.xml | text | 100644 | 100644 | 0 | 12 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 22aaa6eb897fcd397b68 | app/src/main/res/values/light_colors.xml | text | 100644 | 100644 | 3 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 1f136150733ddd29d5b6 | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 1 | 18 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 306c715d77e3ef421775 | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 1 | 14 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8662bbb5b7c93e172cc2 | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 3 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 36955db6632e8a1af0b2 | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 3 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b8f8ca8a702aaa9cc444 | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | c83de3e1ef7a0d5bea05 | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7c0c652baf58bd79f945 | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 1 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| db34cd1435d00adc038b | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b7b3d9eeb46073fa7105 | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 1 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8a389797537f756afc7a | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 1 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 02e5738e7541c99a5983 | app/src/main/res/values/strings.xml | text | 100644 | 100644 | 0 | 63 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -3033,6 +3068,8 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 86884b74b0126247557d | app/src/test/java/org/thoughtcrime/securesms/backup/FullBackupExporterTest.kt | text | 100644 | 100644 | 55 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0838bec0703926f7affc | app/src/test/java/org/thoughtcrime/securesms/backup/MollyBackupPreferencesTest.kt | text | 000000 | 100644 | 103 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 8384115bc851bc18b18f | app/src/test/java/org/thoughtcrime/securesms/backup/MollyBackupPreferencesTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| ee0ec5e389ec4175cc3b | app/src/test/java/org/thoughtcrime/securesms/backup/MollyLanguageBackupTest.kt | text | 000000 | 100644 | 115 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| fefff7ca2657f581379d | app/src/test/java/org/thoughtcrime/securesms/backup/MollyLanguageBackupTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 81ab4bd881c01cfeefe6 | app/src/test/java/org/thoughtcrime/securesms/badges/self/featured/SelectFeaturedBadgeViewModelTest.kt | text | 100644 | 000000 | 0 | 199 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | efb5a8134b29e84fefd9 | app/src/test/java/org/thoughtcrime/securesms/badges/self/featured/SelectFeaturedBadgeViewModelTest.kt | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b4441f73bb93b1fea9ca | app/src/test/java/org/thoughtcrime/securesms/badges/self/overview/BadgesOverviewViewModelTest.kt | text | 100644 | 000000 | 0 | 245 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -3060,8 +3097,11 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | cd12f0fa3e1901dca573 | app/src/test/java/org/thoughtcrime/securesms/jobs/FcmRefreshJobTest.kt | text | 100644 | 100644 | 71 | 29 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 7b557c3ac6fb5ce79a91 | app/src/test/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJobTest.kt | text | 000000 | 100644 | 117 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | cc60e6222536426a4183 | app/src/test/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJobTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| e74230d1e44614e4f096 | app/src/test/java/org/thoughtcrime/securesms/keyvalue/MollySettingsMigrationTest.kt | text | 000000 | 100644 | 132 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 677558a85327de751f2e | app/src/test/java/org/thoughtcrime/securesms/keyvalue/MollySettingsMigrationTest.kt | text | 000000 | 100644 | 155 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | a4a0e703467622e2d0d4 | app/src/test/java/org/thoughtcrime/securesms/keyvalue/MollySettingsMigrationTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 02761ef1be5ba8e49e57 | app/src/test/java/org/thoughtcrime/securesms/messages/IncomingMessageObserverConnectivityTest.kt | text | 000000 | 100644 | 94 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| af2dd0473b4256b7d363 | app/src/test/java/org/thoughtcrime/securesms/messages/IncomingMessageObserverConnectivityTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 37274d96ad2a24d5f319 | app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt | text | 100644 | 100644 | 3 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 24785f5958489e48072f | app/src/test/java/org/thoughtcrime/securesms/payments/reconciliation/LedgerReconcileTest.java | text | 100644 | 000000 | 0 | 378 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | df3fbf4a3d9a2fcc07e9 | app/src/test/java/org/thoughtcrime/securesms/payments/reconciliation/LedgerReconcileTest.java | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | deef88229c73bc4eaba0 | app/src/test/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageControllerTest.kt | text | 100644 | 100644 | 1 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
@@ -3210,7 +3250,7 @@ Clean merge counts above are whole-file Git diff totals; no clean-merge hunk cla
 | 18fdabd12941be6ba8f3 | core/util/src/main/res/values-zh-rCN/strings.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 6dc6ef7fa6e9222289dd | core/util/src/main/res/values-zh-rHK/strings.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | f04be28b690e6de51e5b | core/util/src/main/res/values-zh-rTW/strings.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
-| 3442c63d2df0abfbbea5 | core/util/src/main/res/values/strings.xml | text | 100644 | 100644 | 2 | 9 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
+| 6226878c8ef259cf392f | core/util/src/main/res/values/strings.xml | text | 100644 | 100644 | 2 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b1362e4383c6afd1a774 | demo/camera/build.gradle.kts | text | 100644 | 000000 | 0 | 101 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | 0078c10841cb6655d47f | demo/camera/build.gradle.kts | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |
 | b611346d8a7a5d0e17d8 | demo/camera/src/main/java/org/signal/camera/demo/CameraDemoApplication.kt | text | 100644 | 000000 | 0 | 33 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured: unmeasured |

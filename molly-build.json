@@ -14,10 +14,10 @@
     "mechanical_tree": "759ef1c309d93aa7e4ac7217b144c04545562f11",
     "series": "patches/ports/signal-8.33.2/series",
     "keep_mechanical": {
-      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI compatibility choice from source merge 90a0bb917ecc49a62236d539f4e7faae01b1d9fe."
+      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge f392c29451f25d6c94316dac316d5aeaf1989206."
     }
   },
-  "target_tree": "2533afec2fe2d7f9fc682f699fc21d7624521889",
+  "target_tree": "129bd88f3f04dfb6b80a93b96ec026f6a5cd3010",
   "native": null,
   "android": {
     "sdk": "37.0",
@@ -48,6 +48,10 @@
       "org.thoughtcrime.securesms.keyvalue.MollySettingsMigrationTest",
       "--tests",
       "org.thoughtcrime.securesms.net.ConnectivityStateCalculatorTest",
+      "--tests",
+      "org.thoughtcrime.securesms.backup.MollyLanguageBackupTest",
+      "--tests",
+      "org.thoughtcrime.securesms.messages.IncomingMessageObserverConnectivityTest",
       "--tests",
       "org.thoughtcrime.securesms.backup.FullBackupExporterTest",
       "--tests",

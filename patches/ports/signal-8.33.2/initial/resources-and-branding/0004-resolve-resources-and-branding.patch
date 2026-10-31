@@ -1,23 +1,22 @@
-From 6a629ec87f8cbf5a6e247921e947bbe841142132 Mon Sep 17 00:00:00 2001
+From ef152280d1c3bf952d702e0a5a6cab182886a1e8 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Thu, 29 Oct 2026 00:01:38 +0100
+Date: Sat, 31 Oct 2026 23:25:32 +0100
 Subject: [PATCH] Port resources-and-branding to Signal 8.33.2, part 4
 
 Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.
 
-These are AI-generated compatibility resolutions from the existing
-PR #7 port source, exported after Git has performed its deterministic
+These are AI-assisted compatibility changes from the recorded
+source checkpoint, exported after Git has performed its deterministic
 three-way merge of the unchanged official Molly 8.19.2-4 snapshot
 with Signal 8.33.2. The original Molly mailboxes remain unchanged.
 Offset-only movement and conflict-free automatic merges are already
 in the parent tree and are not re-exported as patch rewrites.
 
-This batch owns 12 whole-file changes. It preserves the
-previous port tree exactly and makes no new application changes.
+This batch owns 12 whole-file changes. It records AI-assisted compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Source-Commit: f392c29451f25d6c94316dac316d5aeaf1989206
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -36,25 +35,26 @@ index 65f63803320d1a681f6e2a30b28ce252cfd3629d..0327efd8cf534a641eb313cb76672a74
 +    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services diperbarui atau untuk sementara tidak tersedia. Silahkan coba lagi.</string>
  </resources>
 diff --git a/app/src/main/res/values-it/strings.xml b/app/src/main/res/values-it/strings.xml
-index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a54a7facc 100644
+index df9efab05a41218764c5afc83411f548b3510f6b..92a7c30a9ebc9ac51ae011b05b36017cf768acb7 100644
 --- a/app/src/main/res/values-it/strings.xml
 +++ b/app/src/main/res/values-it/strings.xml
-@@ -1,13 +1,5 @@
+@@ -1,13 +1,9 @@
 -<?xml version="1.0" encoding="UTF-8"?><!--
--  ~ Copyright 2024 Signal Messenger, LLC
--  ~ SPDX-License-Identifier: AGPL-3.0-only
++<?xml version="1.0" encoding="UTF-8"?>
++<!--
+   ~ Copyright 2024 Signal Messenger, LLC
+   ~ SPDX-License-Identifier: AGPL-3.0-only
 -<<<<<<< MOLLY
 -  --><!-- smartling.instruction_comments_enabled = on --><resources>
 -=======
--  -->
+   -->
 -<!-- smartling.instruction_comments_enabled = on -->
-+<?xml version="1.0" encoding="UTF-8"?>
  <resources xmlns:tools="http://schemas.android.com/tools">
 ->>>>>>> SIGNAL
    <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
  
    <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
-@@ -432,10 +424,6 @@
+@@ -432,10 +428,6 @@
      <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">Il dispositivo non sembra supportare le telefonate.</string>
      <!-- The content description for button to send a message in a conversation -->
      <string name="ConversationActivity_send_message_content_description">Invia messaggio</string>
@@ -65,7 +65,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <string name="ConversationActivity_specify_recipient">Scegli un contatto</string>
      <string name="ConversationActivity_unable_to_record_audio">Impossibile registrare il messaggio!</string>
      <string name="ConversationActivity_you_cant_send_messages_to_this_group">Non puoi inviare messaggi a questo gruppo perché non sei più un membro.</string>
-@@ -460,16 +448,6 @@
+@@ -460,16 +452,6 @@
      <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Molly deve accedere al tuo microfono per poter registrare un messaggio vocale.</string>
      <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">L\'accesso al microfono è stato disattivato permanentemente. Per poter inviare messaggi vocali, vai nelle impostazioni dell\'app, seleziona “Autorizzazioni” e attiva “Microfono”.</string>
  
@@ -82,7 +82,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
      <string name="ConversationActivity_search_position">%1$d di %2$d</string>
      <string name="ConversationActivity_no_results">Nessun risultato</string>
-@@ -504,19 +482,11 @@
+@@ -504,19 +486,11 @@
      <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
      <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">La messaggistica via SMS non è più supportata su Signal. Invita %1$s su Signal per continuare la conversazione in app.</string>
      <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -103,7 +103,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- Toast message shown when trying to record a voice message during an ongoing call -->
      <string name="ConversationFragment_cannot_record_voice_message_during_call">Impossibile registrare un messaggio vocale durante la chiamata.</string>
  
-@@ -664,11 +634,7 @@
+@@ -664,11 +638,7 @@
      <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
      <string name="ConversationFragment_attachment_backfill_failed_title">Impossibile scaricare il contenuto multimediale</string>
      <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
@@ -116,7 +116,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
      <string name="ConversationFragment_attachment_backfill_not_found">Questo contenuto multimediale non è più disponibile sul tuo telefono e non può essere scaricato.</string>
      <!-- Dialog for how to long to keep a messaged pinned for -->
-@@ -918,11 +884,7 @@
+@@ -918,11 +888,7 @@
      <string name="BackupsPreferenceFragment__d_so_far">%1$d finora…</string>
      <!-- Show percentage of completion of backup -->
      <string name="BackupsPreferenceFragment__s_so_far">%1$s%% finora…</string>
@@ -129,7 +129,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- Title of dialog shown when picking the time to perform a chat backup -->
      <string name="BackupsPreferenceFragment__set_backup_time">Imposta orario per il backup</string>
  
-@@ -1428,69 +1390,6 @@
+@@ -1428,69 +1394,6 @@
      <string name="ManageGroupActivity_add_group_description">Aggiungi descrizione gruppo…</string>
  
      <!-- RemoteRestoreActivity -->
@@ -199,7 +199,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
  
      <!-- ManageProfileFragment -->
      <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
-@@ -1647,32 +1546,6 @@
+@@ -1647,32 +1550,6 @@
      <!-- Button inside an alert dialog confirming the deletion of their draft -->
      <string name="InputPanel__discard">Elimina</string>
  
@@ -232,7 +232,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- LongMessageActivity -->
      <string name="LongMessageActivity_unable_to_find_message">Messaggio non trovato</string>
      <string name="LongMessageActivity_message_from_s">Messaggio da %1$s</string>
-@@ -2105,13 +1978,7 @@
+@@ -2105,13 +1982,7 @@
      </plurals>
  
      <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
@@ -246,7 +246,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- Body for quote when message being quoted is an in-app payment message -->
      <string name="MessageRecord__payment_s">Pagamento: %1$s</string>
      <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
-@@ -2226,16 +2093,7 @@
+@@ -2226,16 +2097,7 @@
      <string name="DeviceProvisioningActivity_link_a_signal_device">Collegare un dispositivo Signal?</string>
      <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Per collegare un desktop o un iPad a questo account Signal, vai nella sezione Dispositivi collegati, tocca \"Collega un nuovo dispositivo\" e scansiona di nuovo il codice QR. Assicurati di scansionare solamente i codici QR inviati direttamente da Signal.</string>
  
@@ -263,7 +263,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
          <item quantity="one">Questa versione di Molly scadrà domani. Aggiorna l\'app alla versione più recente.</item>
          <item quantity="other">Questa versione di Molly scadrà tra %1$d giorni. Aggiorna l\'app alla versione più recente.</item>
-@@ -2349,12 +2207,7 @@
+@@ -2349,12 +2211,7 @@
      <string name="CallScreenPreJoinOverlay__your_camera_is_off">La tua videocamera è disattivata</string>
  
      <!-- WebRtcCallActivity -->
@@ -276,7 +276,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
      <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
      <string name="WebRtcCallActivity__calling">Chiamata…</string>
-@@ -2689,45 +2542,12 @@
+@@ -2689,45 +2546,12 @@
  
      <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
      <string name="RegistrationActivity_additional_verification_required">È richiesta un\'ulteriore verifica</string>
@@ -322,7 +322,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <plurals name="RegistrationActivity_debug_log_hint">
          <item quantity="one">Ti manca solo %1$d passaggio per inviare un log di debug.</item>
          <item quantity="other">Ti mancano solo %1$d passaggi per inviare un log di debug.</item>
-@@ -2776,19 +2596,6 @@
+@@ -2776,19 +2600,6 @@
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
@@ -342,7 +342,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
-@@ -2798,14 +2605,13 @@
+@@ -2798,14 +2609,13 @@
  
      <!-- SharedContactView -->
      <string name="SharedContactView_add_to_contacts">Aggiungi ai contatti</string>
@@ -358,7 +358,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
  
      <!-- SignalBottomActionBar -->
      <!-- Text to describe a button that will show more options -->
-@@ -3317,15 +3123,8 @@
+@@ -3317,15 +3127,8 @@
      <string name="NotificationChannel_additional_message_notifications">Altre notifiche per messaggi</string>
      <!-- Notification channel name for notifications sent when a device has been linked -->
      <string name="NotificationChannel_new_linked_device">Nuovo dispositivo collegato</string>
@@ -374,7 +374,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
  
      <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
      <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">Impossibile salvare i dati nella memoria del dispositivo</string>
-@@ -3478,14 +3277,6 @@
+@@ -3478,14 +3281,6 @@
      <string name="EnclaveFailureReminder_update_signal">Aggiorna Signal per continuare a usare la funzione dei pagamenti. Il tuo saldo potrebbe non essere aggiornato.</string>
      <!-- Banner button to update now -->
  
@@ -389,7 +389,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <string name="WebRtcCallActivity__answered_on_a_linked_device">Hai risposto su un dispositivo collegato.</string>
      <string name="WebRtcCallActivity__declined_on_a_linked_device">Hai rifiutato su un dispositivo collegato.</string>
      <string name="WebRtcCallActivity__busy_on_a_linked_device">Occupato su un dispositivo collegato.</string>
-@@ -3579,24 +3370,6 @@
+@@ -3579,24 +3374,6 @@
      <!-- Text asking for user\'s contact permission -->
      <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">Consenti l\'accesso ai tuoi contatti. I tuoi contatti vengono protetti con crittografia e non sono visibili a Signal.</string>
  
@@ -414,7 +414,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- conversation_activity -->
      <string name="conversation_activity__type_message_push">Messaggio Signal</string>
      <!-- Option in send button context menu to schedule the message instead of sending it directly -->
-@@ -3901,11 +3674,7 @@
+@@ -3901,11 +3678,7 @@
      <!-- Title for auto verification education sheet -->
      <string name="VerifyAutomaticallyEducationSheet__title">Molly ora può verificare automaticamente la crittografia delle chiavi</string>
      <!-- Body for auto verification education sheet -->
@@ -427,7 +427,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- Button to learn more about automatic verification -->
      <string name="VerifyAutomaticallyEducationSheet__learn_more">Scopri di più</string>
      <!-- Button to go to verification page -->
-@@ -4112,34 +3881,6 @@
+@@ -4112,34 +3885,6 @@
      <string name="preferences__conversation_length_limit">Numero massimo di messaggi in chat</string>
      <string name="preferences__keep_messages">Conserva i messaggi</string>
      <string name="preferences__linked_devices">Dispositivi collegati</string>
@@ -462,7 +462,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <string name="preferences__disable_pin">Disabilita PIN</string>
      <string name="preferences__enable_pin">Abilita PIN</string>
      <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">Se disabiliti il PIN, perderai tutti i dati quando ti registri nuovamente con Signal a meno che tu non esegua manualmente il backup e il ripristino. Non è possibile attivare il Blocco registrazione mentre il PIN è disabilitato.</string>
-@@ -4390,17 +4131,9 @@
+@@ -4390,17 +4135,9 @@
      <string name="PaymentsTransferFragment__next">Avanti</string>
      <string name="PaymentsTransferFragment__invalid_address">Indirizzo non valido</string>
      <string name="PaymentsTransferFragment__check_the_wallet_address">Controlla l\'indirizzo del portafoglio a cui stai tentando di trasferire e riprova.</string>
@@ -480,7 +480,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
  
      <!-- PaymentsTransferQrScanFragment -->
      <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Scansiona codice QR dell\'indirizzo</string>
-@@ -4814,49 +4547,13 @@
+@@ -4814,49 +4551,13 @@
      <string name="RegistrationActivity_call_me_instead_available_in">Chiamami (%1$02d:%2$02d)</string>
      <!--    Countdown to when the user can request a new SMS code during registration.-->
      <string name="RegistrationActivity_resend_sms_available_in">Invia di nuovo il codice (%1$02d:%2$02d)</string>
@@ -530,7 +530,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
      <string name="preferences_app_protection__to_use_screen_lock">Per usare il blocco schermo, imposta un PIN, un pattern o una password su questo dispositivo.</string>
      <string name="preferences_app_protection__failed_to_enable_registration_lock">Impossibile abilitare il blocco registrazione.</string>
-@@ -4882,31 +4579,7 @@
+@@ -4882,31 +4583,7 @@
  
      <!-- ScreenLockSettingsFragment -->
      <!-- Text shown when screen lock is not enabled -->
@@ -562,7 +562,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
  
      <string name="Recipient_unknown">Sconosciuto</string>
      <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
-@@ -4952,18 +4625,6 @@
+@@ -4952,18 +4629,6 @@
      <!-- NewDeviceTransferInstructionsFragment -->
  
      <!-- NewDeviceTransferSetupFragment -->
@@ -581,7 +581,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
  
      <!-- OldDeviceTransferSetupFragment -->
      <string name="OldDeviceTransferSetup__searching_for_new_android_device">Ricerca del nuovo dispositivo Android…</string>
-@@ -5679,44 +5340,6 @@
+@@ -5679,44 +5344,6 @@
      <string name="ExpireTimerSettingsFragment__custom_time">Tempo personalizzato</string>
      <string name="ExpireTimerSettingsFragment__save">Salva</string>
  
@@ -626,7 +626,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
  
      <!-- ChatColorSelectionFragment -->
      <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
-@@ -8548,13 +8171,7 @@
+@@ -8548,13 +8175,7 @@
      <!-- Bottom sheet title -->
      <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Tieni la tua chiave al sicuro</string>
      <!-- Bottom sheet subtitle -->
@@ -640,7 +640,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
      <!-- Sheet action button label -->
      <string name="MessageBackupsKeyRecordScreen__continue">Continua</string>
      <!-- Sheet secondary action button label -->
-@@ -8691,244 +8308,6 @@
+@@ -8691,244 +8312,6 @@
      <string name="MessageBackupsTypeSelectionScreen__current_plan">Abbonamento attuale</string>
  
      <!-- ConfirmBackupCancellationDialog -->
@@ -885,7 +885,7 @@ index df9efab05a41218764c5afc83411f548b3510f6b..4a40a80a1f0226dcc921b7d87b1d589a
  
      <!-- Email subject when contacting support on a create backup failure -->
      <string name="BackupAlertBottomSheet_network_failure_support_email">Errore di network per l\'esportazione del backup di Signal Android</string>
-@@ -9513,4 +8892,4 @@
+@@ -9513,4 +8896,4 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Hai esaurito il numero di nuove chiavi che puoi generare. Potrai creare una nuova chiave di ripristino tra 7 giorni.</string>
  
      <!-- EOF -->
@@ -904,25 +904,26 @@ index b6c87f978c441bc9d70a39b0adbc2a23dbf6a595..9e99f1e8352b7c437ce6fca89e06d253
 +    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services si sta aggiornando o non è al momento disponibile. Per favore riprovare.</string>
  </resources>
 diff --git a/app/src/main/res/values-iw/strings.xml b/app/src/main/res/values-iw/strings.xml
-index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4fce3f81a 100644
+index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..fdd1d7d259cd1db7595468dfe29a5eaf957decb5 100644
 --- a/app/src/main/res/values-iw/strings.xml
 +++ b/app/src/main/res/values-iw/strings.xml
-@@ -1,13 +1,5 @@
+@@ -1,13 +1,9 @@
 -<?xml version="1.0" encoding="UTF-8"?><!--
--  ~ Copyright 2024 Signal Messenger, LLC
--  ~ SPDX-License-Identifier: AGPL-3.0-only
++<?xml version="1.0" encoding="UTF-8"?>
++<!--
+   ~ Copyright 2024 Signal Messenger, LLC
+   ~ SPDX-License-Identifier: AGPL-3.0-only
 -<<<<<<< MOLLY
 -  --><!-- smartling.instruction_comments_enabled = on --><resources>
 -=======
--  -->
+   -->
 -<!-- smartling.instruction_comments_enabled = on -->
-+<?xml version="1.0" encoding="UTF-8"?>
  <resources xmlns:tools="http://schemas.android.com/tools">
 ->>>>>>> SIGNAL
    <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
  
    <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
-@@ -440,10 +432,6 @@
+@@ -440,10 +436,6 @@
      <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">נראה כי מכשיר זה אינו תומך בפעולות חיוג.</string>
      <!-- The content description for button to send a message in a conversation -->
      <string name="ConversationActivity_send_message_content_description">שלח הודעה</string>
@@ -933,7 +934,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <string name="ConversationActivity_specify_recipient">אנא בחר איש קשר</string>
      <string name="ConversationActivity_unable_to_record_audio">לא היה ניתן להקליט שמע!</string>
      <string name="ConversationActivity_you_cant_send_messages_to_this_group">אינך יכול לשלוח הודעות אל קבוצה זו מאחר שאינך חבר קבוצה יותר.</string>
-@@ -468,16 +456,6 @@
+@@ -468,16 +460,6 @@
      <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Molly צריכה גישה למיקרופון כדי להקליט הודעה קולית.</string>
      <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Molly דורש את הרשאת המיקרופון על מנת לשלוח הודעות שמע, אבל היא נדחתה לצמיתות. אנא המשך אל הגדרות היישום, בחר \"הרשאות\" ואפשר את \"מיקרופון\".</string>
  
@@ -950,7 +951,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <string name="ConversationActivity_quoted_contact_message">%1$s%2$s</string>
      <string name="ConversationActivity_search_position">%1$d מתוך %2$d</string>
      <string name="ConversationActivity_no_results">אין תוצאות</string>
-@@ -512,19 +490,11 @@
+@@ -512,19 +494,11 @@
      <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
      <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">הודעות SMS כבר לא נתמכות ב–Signal. אפשר להזמין את %1$s ל–Signal כדי להשאיר את השיחה כאן.</string>
      <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -971,7 +972,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <!-- Toast message shown when trying to record a voice message during an ongoing call -->
      <string name="ConversationFragment_cannot_record_voice_message_during_call">לא ניתן להקליט הודעה קולית במהלך שיחה.</string>
  
-@@ -1506,69 +1476,6 @@
+@@ -1506,69 +1480,6 @@
      <string name="ManageGroupActivity_add_group_description">הוסף תיאור קבוצה…</string>
  
      <!-- RemoteRestoreActivity -->
@@ -1041,7 +1042,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
  
      <!-- ManageProfileFragment -->
      <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
-@@ -1733,34 +1640,6 @@
+@@ -1733,34 +1644,6 @@
      <!-- Button inside an alert dialog confirming the deletion of their draft -->
      <string name="InputPanel__discard">השמט</string>
  
@@ -1076,7 +1077,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <!-- LongMessageActivity -->
      <string name="LongMessageActivity_unable_to_find_message">לא היה ניתן למצוא הודעה</string>
      <string name="LongMessageActivity_message_from_s">הודעה מאת %1$s</string>
-@@ -2223,13 +2102,7 @@
+@@ -2223,13 +2106,7 @@
      </plurals>
  
      <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
@@ -1090,7 +1091,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <!-- Body for quote when message being quoted is an in-app payment message -->
      <string name="MessageRecord__payment_s">תשלום: %1$s</string>
      <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
-@@ -2354,16 +2227,7 @@
+@@ -2354,16 +2231,7 @@
      <string name="DeviceProvisioningActivity_link_a_signal_device">לקשר מכשיר Signal?</string>
      <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">כדי לקשר שולחן עבודה או iPad לחשבון Signal זה, יש לעבור אל ״מכשירים מקושרים״ וללחוץ על \"קישור מכשיר חדש\" ולסרוק שוב את קוד ה–QR. חשוב לוודא שסורקים רק את קודי ה–QR שמגיעים ישירות מ–Signal.</string>
  
@@ -1107,7 +1108,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
          <item quantity="one">גרסה זו של Molly תצא מתוקף מחר. כדאי לעדכן לגרסה האחרונה.</item>
          <item quantity="two">גרסה זו של Molly תצא מתוקף עוד יומיים. כדאי לעדכן לגרסה האחרונה.</item>
-@@ -2482,10 +2346,6 @@
+@@ -2482,10 +2350,6 @@
  
      <!-- WebRtcCallActivity -->
      <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">הקש כאן כדי להפעיל את צילום הוידאו שלך</string>
@@ -1118,7 +1119,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
      <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
      <string name="WebRtcCallActivity__calling">מתקשר…</string>
-@@ -2862,45 +2722,12 @@
+@@ -2862,45 +2726,12 @@
  
      <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
      <string name="RegistrationActivity_additional_verification_required">נדרש אימות נוסף</string>
@@ -1164,7 +1165,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <plurals name="RegistrationActivity_debug_log_hint">
          <item quantity="one">אתה כעת במרחק צעד %1$d מהגשת יומן ניפוי תקלים.</item>
          <item quantity="two">אתה כעת במרחק %1$d צעדים מהגשת יומן ניפוי תקלים.</item>
-@@ -2951,19 +2778,6 @@
+@@ -2951,19 +2782,6 @@
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
@@ -1184,7 +1185,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
-@@ -2973,14 +2787,13 @@
+@@ -2973,14 +2791,13 @@
  
      <!-- SharedContactView -->
      <string name="SharedContactView_add_to_contacts">הוסף לאנשי קשר</string>
@@ -1200,7 +1201,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
  
      <!-- SignalBottomActionBar -->
      <!-- Text to describe a button that will show more options -->
-@@ -3348,12 +3161,7 @@
+@@ -3348,12 +3165,7 @@
      <string name="VerifyIdentityActivity_our_signal_safety_number">מספר ביטחון Signal שלנו:</string>
      <string name="VerifyIdentityActivity_no_app_to_share_to">נראה שאין לך יישומים לשתף בהם.</string>
      <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">מספר ביטחון להשוואה לא נמצא בלוח העריכה</string>
@@ -1213,7 +1214,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">אתה חייב תחילה להחליף הודעות על מנת להציג את מספר הביטחון של %1$s.</string>
      <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
      <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">מספר בטיחות ייווצר עם אדם זה אחרי שתחליפו ביניכם הודעות.</string>
-@@ -3513,15 +3321,8 @@
+@@ -3513,15 +3325,8 @@
      <string name="NotificationChannel_additional_message_notifications">עוד התראות של הודעות</string>
      <!-- Notification channel name for notifications sent when a device has been linked -->
      <string name="NotificationChannel_new_linked_device">מכשיר מקושר חדש</string>
@@ -1229,7 +1230,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
  
      <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
      <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">לא ניתן להוסיף לאחסון!</string>
-@@ -3684,14 +3485,6 @@
+@@ -3684,14 +3489,6 @@
      <string name="EnclaveFailureReminder_update_signal">יש לעדכן את Signal כדי להמשיך להשתמש בתשלומים. יתכן שהיתרה שלך לא מעודכנת.</string>
      <!-- Banner button to update now -->
  
@@ -1244,7 +1245,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <string name="WebRtcCallActivity__answered_on_a_linked_device">נענתה על מכשיר מקושר.</string>
      <string name="WebRtcCallActivity__declined_on_a_linked_device">נדחתה על מכשיר מקושר.</string>
      <string name="WebRtcCallActivity__busy_on_a_linked_device">תפוס על מכשיר מקושר.</string>
-@@ -3787,28 +3580,6 @@
+@@ -3787,28 +3584,6 @@
      <!-- Text asking for user\'s contact permission -->
      <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">צריך לאפשר גישה לאנשי הקשר שלך. אנשי הקשר שלך מוצפנים ואינם גלויים לשירות Signal.</string>
  
@@ -1273,7 +1274,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <!-- conversation_activity -->
      <string name="conversation_activity__type_message_push">הודעת Signal</string>
      <!-- Option in send button context menu to schedule the message instead of sending it directly -->
-@@ -4336,34 +4107,6 @@
+@@ -4336,34 +4111,6 @@
      <string name="preferences__conversation_length_limit">מגבלת אורך צ׳אט</string>
      <string name="preferences__keep_messages">שמור הודעות</string>
      <string name="preferences__linked_devices">מכשירים מקושרים</string>
@@ -1308,7 +1309,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <string name="preferences__disable_pin">השבת PIN</string>
      <string name="preferences__enable_pin">אפשר PIN</string>
      <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">אם תשבית את ה־PIN, תאבד את כל הנתונים כאשר תירשם מחדש אל Signal אלא אם תגבה ותשחזר באופן ידני. אינך יכול להפעיל נעילת הרשמה בזמן שה־PIN מושבת.</string>
-@@ -4618,17 +4361,9 @@
+@@ -4618,17 +4365,9 @@
      <string name="PaymentsTransferFragment__next">הבא</string>
      <string name="PaymentsTransferFragment__invalid_address">כתובת בלתי תקפה</string>
      <string name="PaymentsTransferFragment__check_the_wallet_address">בדוק את כתובת הארנק שאתה מנסה להעביר אליה ונסה שוב.</string>
@@ -1326,7 +1327,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
  
      <!-- PaymentsTransferQrScanFragment -->
      <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">סרוק קוד QR של כתובת</string>
-@@ -5060,49 +4795,13 @@
+@@ -5060,49 +4799,13 @@
      <string name="RegistrationActivity_call_me_instead_available_in">תתקשרו אלי (%1$02d:%2$02d)</string>
      <!--    Countdown to when the user can request a new SMS code during registration.-->
      <string name="RegistrationActivity_resend_sms_available_in">שליחה מחדש של קוד (%1$02d:%2$02d)</string>
@@ -1376,7 +1377,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
      <string name="preferences_app_protection__to_use_screen_lock">כדי להשתמש בנעילת מסך יש להגדיר PIN, קו ביטול נעילה, או סיסמה במכשיר זה.</string>
      <string name="preferences_app_protection__failed_to_enable_registration_lock">נכשל באיפשור נעילת הרשמה.</string>
-@@ -5129,29 +4828,6 @@
+@@ -5129,29 +4832,6 @@
      <!-- ScreenLockSettingsFragment -->
      <!-- Text shown when screen lock is not enabled -->
      <string name="ScreenLockSettingsFragment__off">כבויה</string>
@@ -1406,7 +1407,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
  
      <string name="Recipient_unknown">בלתי ידוע</string>
      <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
-@@ -5197,18 +4873,6 @@
+@@ -5197,18 +4877,6 @@
      <!-- NewDeviceTransferInstructionsFragment -->
  
      <!-- NewDeviceTransferSetupFragment -->
@@ -1425,7 +1426,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
  
      <!-- OldDeviceTransferSetupFragment -->
      <string name="OldDeviceTransferSetup__searching_for_new_android_device">מחפש מכשיר Android חדש…</string>
-@@ -5956,44 +5620,6 @@
+@@ -5956,44 +5624,6 @@
      <string name="ExpireTimerSettingsFragment__custom_time">זמן מותאם אישית</string>
      <string name="ExpireTimerSettingsFragment__save">שמור</string>
  
@@ -1470,7 +1471,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
  
      <!-- ChatColorSelectionFragment -->
      <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
-@@ -8917,13 +8543,7 @@
+@@ -8917,13 +8547,7 @@
      <!-- Bottom sheet title -->
      <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">יש לשמור על בטיחות המפתח שלך</string>
      <!-- Bottom sheet subtitle -->
@@ -1484,7 +1485,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
      <!-- Sheet action button label -->
      <string name="MessageBackupsKeyRecordScreen__continue">המשך</string>
      <!-- Sheet secondary action button label -->
-@@ -9064,244 +8684,6 @@
+@@ -9064,244 +8688,6 @@
      <string name="MessageBackupsTypeSelectionScreen__current_plan">תכנית נוכחית</string>
  
      <!-- ConfirmBackupCancellationDialog -->
@@ -1729,7 +1730,7 @@ index 6451d6c5f1ff400fdd6d61374458e529ff9a0131..dc20f90bad1e255336c3552b3750fba4
  
      <!-- Email subject when contacting support on a create backup failure -->
      <string name="BackupAlertBottomSheet_network_failure_support_email">שגיאת רשת בייצוא הגיבוי של Signal Android</string>
-@@ -9900,4 +9282,4 @@
+@@ -9900,4 +9286,4 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">מיצית את מספר המפתחות החדשים שבאפשרותך ליצור. תהיה לך אפשרות ליצור מפתח שחזור חדש בעוד 7 ימים.</string>
  
      <!-- EOF -->
@@ -1748,25 +1749,26 @@ index 7a4afdb2a0589350ae00b90c5af494ca1411f31c..48538612a7cd78a255681825e6723c1b
 +    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">שירותי Google Play מתעדכנים או שהם בלתי זמינים באופן זמני. אנא נסה שוב.</string>
  </resources>
 diff --git a/app/src/main/res/values-ja/strings.xml b/app/src/main/res/values-ja/strings.xml
-index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4460ead2a 100644
+index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..292becb2b0cac2e4ddf6de41a7cb7724f7289225 100644
 --- a/app/src/main/res/values-ja/strings.xml
 +++ b/app/src/main/res/values-ja/strings.xml
-@@ -1,13 +1,5 @@
+@@ -1,13 +1,9 @@
 -<?xml version="1.0" encoding="UTF-8"?><!--
--  ~ Copyright 2024 Signal Messenger, LLC
--  ~ SPDX-License-Identifier: AGPL-3.0-only
++<?xml version="1.0" encoding="UTF-8"?>
++<!--
+   ~ Copyright 2024 Signal Messenger, LLC
+   ~ SPDX-License-Identifier: AGPL-3.0-only
 -<<<<<<< MOLLY
 -  --><!-- smartling.instruction_comments_enabled = on --><resources>
 -=======
--  -->
+   -->
 -<!-- smartling.instruction_comments_enabled = on -->
-+<?xml version="1.0" encoding="UTF-8"?>
  <resources xmlns:tools="http://schemas.android.com/tools">
 ->>>>>>> SIGNAL
    <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
  
    <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
-@@ -428,10 +420,6 @@
+@@ -428,10 +424,6 @@
      <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">お使いの端末はダイヤル機能に対応していないようです。</string>
      <!-- The content description for button to send a message in a conversation -->
      <string name="ConversationActivity_send_message_content_description">メッセージを送信</string>
@@ -1777,7 +1779,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <string name="ConversationActivity_specify_recipient">連絡先を選択してください</string>
      <string name="ConversationActivity_unable_to_record_audio">録音できません！</string>
      <string name="ConversationActivity_you_cant_send_messages_to_this_group">メンバーではなくなったので、このグループにメッセージを送ることはできません。</string>
-@@ -456,16 +444,6 @@
+@@ -456,16 +448,6 @@
      <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Mollyは、音声メッセージを録音するためにマイクへのアクセスが必要です。</string>
      <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">音声メッセージを添付するには、Mollyにマイクへのアクセス許可が必要ですが、無効になっています。アプリ設定メニューの「アプリの権限」で「マイク」を有効にしてください。</string>
  
@@ -1794,7 +1796,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
      <string name="ConversationActivity_search_position">%1$d/%2$d</string>
      <string name="ConversationActivity_no_results">該当なし</string>
-@@ -500,19 +478,11 @@
+@@ -500,19 +482,11 @@
      <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
      <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">SMSメッセージはSignalでサポートされなくなりました。%1$sをSignalへ招待して会話を続けてください。</string>
      <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -1815,7 +1817,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <!-- Toast message shown when trying to record a voice message during an ongoing call -->
      <string name="ConversationFragment_cannot_record_voice_message_during_call">通話中はボイスメッセージを録音できません。</string>
  
-@@ -1377,69 +1347,6 @@
+@@ -1377,69 +1351,6 @@
      <string name="ManageGroupActivity_add_group_description">グループの説明を追加してください…</string>
  
      <!-- RemoteRestoreActivity -->
@@ -1885,7 +1887,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
  
      <!-- ManageProfileFragment -->
      <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
-@@ -1592,31 +1499,6 @@
+@@ -1592,31 +1503,6 @@
      <!-- Button inside an alert dialog confirming the deletion of their draft -->
      <string name="InputPanel__discard">破棄する</string>
  
@@ -1917,7 +1919,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <!-- LongMessageActivity -->
      <string name="LongMessageActivity_unable_to_find_message">メッセージが見つかりません</string>
      <string name="LongMessageActivity_message_from_s">%1$s からのメッセージ</string>
-@@ -2034,13 +1916,7 @@
+@@ -2034,13 +1920,7 @@
      </plurals>
  
      <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
@@ -1931,7 +1933,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <!-- Body for quote when message being quoted is an in-app payment message -->
      <string name="MessageRecord__payment_s">支払い： %1$s</string>
      <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
-@@ -2150,16 +2026,7 @@
+@@ -2150,16 +2030,7 @@
      <string name="DeviceProvisioningActivity_link_a_signal_device">Signal端末をリンクしますか？</string>
      <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">デスクトップまたはiPadをこのSignalアカウントにリンクするには、［リンク済み端末］→［新しい端末をリンクする］をタップし、もう一度QRコードをスキャンしてください。Signalに直接表示されたQRコードのみをスキャンしてください。</string>
  
@@ -1948,7 +1950,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
          <item quantity="other">このバージョンのMollyは、%1$d日後に期限が切れます。最新バージョンにアップデートしてください。</item>
      </plurals>
-@@ -2272,10 +2139,6 @@
+@@ -2272,10 +2143,6 @@
  
      <!-- WebRtcCallActivity -->
      <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">タップして動画を有効にする</string>
@@ -1959,7 +1961,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
      <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
      <string name="WebRtcCallActivity__calling">呼び出しています…</string>
-@@ -2589,45 +2452,12 @@
+@@ -2589,45 +2456,12 @@
  
      <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
      <string name="RegistrationActivity_additional_verification_required">追加の認証手続きが必要です</string>
@@ -2005,7 +2007,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <plurals name="RegistrationActivity_debug_log_hint">
          <item quantity="other">デバッグログの提出まで、あと%1$dステップです。</item>
      </plurals>
-@@ -2675,19 +2505,6 @@
+@@ -2675,19 +2509,6 @@
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
@@ -2025,7 +2027,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
-@@ -2697,14 +2514,13 @@
+@@ -2697,14 +2518,13 @@
  
      <!-- SharedContactView -->
      <string name="SharedContactView_add_to_contacts">連絡先に追加</string>
@@ -2041,7 +2043,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
  
      <!-- SignalBottomActionBar -->
      <!-- Text to describe a button that will show more options -->
-@@ -3054,12 +2870,7 @@
+@@ -3054,12 +2874,7 @@
      <string name="VerifyIdentityActivity_our_signal_safety_number">私たちのSignal安全番号:</string>
      <string name="VerifyIdentityActivity_no_app_to_share_to">共有先として使えるアプリがないようです。</string>
      <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">クリップボードで安全番号が見つかりませんでした</string>
@@ -2054,7 +2056,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">%1$s の安全番号を表示するには、初めにメッセージの交換が必要です。</string>
      <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
      <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">相手との間に安全番号を作成するには、メッセージ交換をする必要があります。</string>
-@@ -3213,15 +3024,8 @@
+@@ -3213,15 +3028,8 @@
      <string name="NotificationChannel_additional_message_notifications">その他のメッセージ通知</string>
      <!-- Notification channel name for notifications sent when a device has been linked -->
      <string name="NotificationChannel_new_linked_device">新しいリンク済み端末</string>
@@ -2070,7 +2072,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
  
      <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
      <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">ストレージに書き込めません！</string>
-@@ -3369,14 +3173,6 @@
+@@ -3369,14 +3177,6 @@
      <string name="EnclaveFailureReminder_update_signal">決済機能を引き続きご利用いただくために、Signalをアップデートしてください。残高が最新の状態ではない可能性があります。</string>
      <!-- Banner button to update now -->
  
@@ -2085,7 +2087,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <string name="WebRtcCallActivity__answered_on_a_linked_device">リンクした端末で応答しました。</string>
      <string name="WebRtcCallActivity__declined_on_a_linked_device">リンクした端末で拒否しました。</string>
      <string name="WebRtcCallActivity__busy_on_a_linked_device">リンクした端末で通話中です。</string>
-@@ -3469,22 +3265,6 @@
+@@ -3469,22 +3269,6 @@
      <!-- Text asking for user\'s contact permission -->
      <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">連絡先へのアクセスを許可しましょう。連絡先は暗号化され、私たちSignalからは見えません。</string>
  
@@ -2108,7 +2110,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <!-- conversation_activity -->
      <string name="conversation_activity__type_message_push">Signalメッセージ</string>
      <!-- Option in send button context menu to schedule the message instead of sending it directly -->
-@@ -3988,34 +3768,6 @@
+@@ -3988,34 +3772,6 @@
      <string name="preferences__conversation_length_limit">チャットの最大メッセージ件数</string>
      <string name="preferences__keep_messages">メッセージの保存期間</string>
      <string name="preferences__linked_devices">リンク済み端末</string>
@@ -2143,7 +2145,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <string name="preferences__disable_pin">PINを無効化</string>
      <string name="preferences__enable_pin">PINを有効化</string>
      <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">PINを無効にすると、自身でバックアップと復元を行わない限り、Signalに再登録する際すべてのデータが失われます。PINを無効にしている間は登録ロックは使用できません。</string>
-@@ -4264,17 +4016,9 @@
+@@ -4264,17 +4020,9 @@
      <string name="PaymentsTransferFragment__next">次へ</string>
      <string name="PaymentsTransferFragment__invalid_address">無効なアドレスです</string>
      <string name="PaymentsTransferFragment__check_the_wallet_address">振替先のウォレットアドレスを確認して、再度試してください。</string>
@@ -2161,7 +2163,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
  
      <!-- PaymentsTransferQrScanFragment -->
      <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">アドレスQRコードのスキャン</string>
-@@ -4679,49 +4423,13 @@
+@@ -4679,49 +4427,13 @@
      <string name="RegistrationActivity_call_me_instead_available_in">電話で確認 (%1$02d:%2$02d)</string>
      <!--    Countdown to when the user can request a new SMS code during registration.-->
      <string name="RegistrationActivity_resend_sms_available_in">コードの再送信まで (%1$02d:%2$02d)</string>
@@ -2211,7 +2213,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
      <string name="preferences_app_protection__to_use_screen_lock">画面ロックを使用するには、この端末でPIN、パターン、またはパスワードを設定します。</string>
      <string name="preferences_app_protection__failed_to_enable_registration_lock">登録ロックを有効にすることに失敗しました。</string>
-@@ -4748,29 +4456,6 @@
+@@ -4748,29 +4460,6 @@
      <!-- ScreenLockSettingsFragment -->
      <!-- Text shown when screen lock is not enabled -->
      <string name="ScreenLockSettingsFragment__off">オフ</string>
@@ -2241,7 +2243,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
  
      <string name="Recipient_unknown">不明</string>
      <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
-@@ -4816,18 +4501,6 @@
+@@ -4816,18 +4505,6 @@
      <!-- NewDeviceTransferInstructionsFragment -->
  
      <!-- NewDeviceTransferSetupFragment -->
@@ -2260,7 +2262,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
  
      <!-- OldDeviceTransferSetupFragment -->
      <string name="OldDeviceTransferSetup__searching_for_new_android_device">新しいAndroid端末を探しています…</string>
-@@ -5527,44 +5200,6 @@
+@@ -5527,44 +5204,6 @@
      <string name="ExpireTimerSettingsFragment__custom_time">カスタム時間</string>
      <string name="ExpireTimerSettingsFragment__save">保存</string>
  
@@ -2305,7 +2307,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
  
      <!-- ChatColorSelectionFragment -->
      <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
-@@ -8350,13 +7985,7 @@
+@@ -8350,13 +7989,7 @@
      <!-- Bottom sheet title -->
      <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">キーの取り扱いは厳重にしてください</string>
      <!-- Bottom sheet subtitle -->
@@ -2319,7 +2321,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
      <!-- Sheet action button label -->
      <string name="MessageBackupsKeyRecordScreen__continue">続行</string>
      <!-- Sheet secondary action button label -->
-@@ -8491,244 +8120,6 @@
+@@ -8491,244 +8124,6 @@
      <string name="MessageBackupsTypeSelectionScreen__current_plan">現在のプラン</string>
  
      <!-- ConfirmBackupCancellationDialog -->
@@ -2564,7 +2566,7 @@ index 7c2944aacb748e7a952d3dd7a8d047a94550dbeb..4c026b81be0738ca461fbd930f01b3e4
  
      <!-- Email subject when contacting support on a create backup failure -->
      <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Androidの、バックアップエクスポート時のネットワークエラーについて</string>
-@@ -9306,4 +8697,4 @@
+@@ -9306,4 +8701,4 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">新しいキーの作成上限回数に達しました。7日後に新しい回復キーを作成できるようになります。</string>
  
      <!-- EOF -->
@@ -2584,25 +2586,26 @@ index e5d8fa39027235dc25d56f6fd6f4b5dbec907d59..e33b3804ac38a853482c362fca447f8b
  </resources>
 \ No newline at end of file
 diff --git a/app/src/main/res/values-ka/strings.xml b/app/src/main/res/values-ka/strings.xml
-index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac28d7584b3 100644
+index a6ccef911f7194cd5c16e11facee15376671a27a..223657b5faeb20e2a1063ee0dfe677c7a84d97d1 100644
 --- a/app/src/main/res/values-ka/strings.xml
 +++ b/app/src/main/res/values-ka/strings.xml
-@@ -1,13 +1,5 @@
+@@ -1,13 +1,9 @@
 -<?xml version="1.0" encoding="UTF-8"?><!--
--  ~ Copyright 2024 Signal Messenger, LLC
--  ~ SPDX-License-Identifier: AGPL-3.0-only
++<?xml version="1.0" encoding="UTF-8"?>
++<!--
+   ~ Copyright 2024 Signal Messenger, LLC
+   ~ SPDX-License-Identifier: AGPL-3.0-only
 -<<<<<<< MOLLY
 -  --><!-- smartling.instruction_comments_enabled = on --><resources>
 -=======
--  -->
+   -->
 -<!-- smartling.instruction_comments_enabled = on -->
-+<?xml version="1.0" encoding="UTF-8"?>
  <resources xmlns:tools="http://schemas.android.com/tools">
 ->>>>>>> SIGNAL
    <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
  
    <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
-@@ -432,10 +424,6 @@
+@@ -432,10 +428,6 @@
      <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">ამ მოწყობილობას არ გააჩნია ნომრის აკრეფის მხარდაჭერა.</string>
      <!-- The content description for button to send a message in a conversation -->
      <string name="ConversationActivity_send_message_content_description">შეტყობინების გაგზავნა</string>
@@ -2613,7 +2616,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <string name="ConversationActivity_specify_recipient">გთხოვთ აირჩიო კონტაქტი</string>
      <string name="ConversationActivity_unable_to_record_audio">აუდიოს ჩაწერა შეუძლებელია!</string>
      <string name="ConversationActivity_you_cant_send_messages_to_this_group">შენ არ შეგიძლია შეტყობინებების გაგზავნა ამ ჯგუფში, რადგან აღარ ხარ მისი წევრი.</string>
-@@ -460,16 +448,6 @@
+@@ -460,16 +452,6 @@
      <string name="ConversationActivity_signal_needs_microphone_access_voice_message">ხმოვანი შეტყობინების ჩასაწერად Molly-ს მიკროფონზე წვდომა სჭირდება.</string>
      <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">აუდიო შეტყობინებების გადასაგზავნად Molly-ს მიკროფონზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპის პარამეტრების მენიუში, აირჩიო \"უფლებები\" და ჩართო \"მიკროფონი\".</string>
  
@@ -2630,7 +2633,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
      <string name="ConversationActivity_search_position">%1$d %2$d-დან</string>
      <string name="ConversationActivity_no_results">შედეგი ვერ მოიძებნა</string>
-@@ -504,19 +482,11 @@
+@@ -504,19 +486,11 @@
      <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
      <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">SMS მიმოწერები Signal-ში აღარ არის ხელმისაწვდომი. მოიწვიე %1$s Signal-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
      <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -2651,7 +2654,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <!-- Toast message shown when trying to record a voice message during an ongoing call -->
      <string name="ConversationFragment_cannot_record_voice_message_during_call">ზარის დროს ხმოვანი შეტყობინების ჩაწერა შეუძლებელია.</string>
  
-@@ -1420,69 +1390,6 @@
+@@ -1420,69 +1394,6 @@
      <string name="ManageGroupActivity_add_group_description">ჯგუფის აღწერის დამატება…</string>
  
      <!-- RemoteRestoreActivity -->
@@ -2721,7 +2724,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
  
      <!-- ManageProfileFragment -->
      <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
-@@ -1639,32 +1546,6 @@
+@@ -1639,32 +1550,6 @@
      <!-- Button inside an alert dialog confirming the deletion of their draft -->
      <string name="InputPanel__discard">გაუქმება</string>
  
@@ -2754,7 +2757,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <!-- LongMessageActivity -->
      <string name="LongMessageActivity_unable_to_find_message">შეტყობინების მოძებნა ვერ მოხერხდა</string>
      <string name="LongMessageActivity_message_from_s">შეტყობინება %1$s-სგან</string>
-@@ -2097,13 +1978,7 @@
+@@ -2097,13 +1982,7 @@
      </plurals>
  
      <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
@@ -2768,7 +2771,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <!-- Body for quote when message being quoted is an in-app payment message -->
      <string name="MessageRecord__payment_s">ტრანზაქცია: %1$s</string>
      <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
-@@ -2218,16 +2093,7 @@
+@@ -2218,16 +2097,7 @@
      <string name="DeviceProvisioningActivity_link_a_signal_device">მივაბათ Signal-ს მოწყობილობა?</string>
      <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">დესკტოპის ან iPad-ის ამ Signal ანგარიშთან მისაბმელად, გადადი დაკავშირებულ მოწყობილობებზე, აირჩიე „ახალი მოწყობილობის მიბმა“ და თავიდან დაასკანირე QR კოდი. დარწმუნდი, რომ მხოლოდ იმ QR კოდებს ასკანირებ, რომლებიც პირდაპირ Signal-იდან მოდის.</string>
  
@@ -2785,7 +2788,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
          <item quantity="one">Molly-ის ამ ვერსიას ვადა ხვალ გაუვა. გადმოწერე უახლესი ვერსია.</item>
          <item quantity="other">Molly-ის ამ ვერსიას ვადა %1$d დღეში გაუვა. გადმოწერე უახლესი ვერსია.</item>
-@@ -2342,10 +2208,6 @@
+@@ -2342,10 +2212,6 @@
  
      <!-- WebRtcCallActivity -->
      <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">დააჭირე აქ შენი ვიდეოს ჩასართავად</string>
@@ -2796,7 +2799,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
      <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
      <string name="WebRtcCallActivity__calling">ვრეკავთ…</string>
-@@ -2680,45 +2542,12 @@
+@@ -2680,45 +2546,12 @@
  
      <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
      <string name="RegistrationActivity_additional_verification_required">საჭიროა დამატებითი ვერიფიკაცია</string>
@@ -2842,7 +2845,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <plurals name="RegistrationActivity_debug_log_hint">
          <item quantity="one">ახლა გაშორებთ %1$d ნაბიჯი პრობლემების მოგვარების ჟურნალის გაგზავნიდან.</item>
          <item quantity="other">ახლა %1$d ნაბიჯი გაშორებს გაუმართაობის რეესტრის გაგზავნისგან.</item>
-@@ -2767,19 +2596,6 @@
+@@ -2767,19 +2600,6 @@
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
@@ -2862,7 +2865,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
-@@ -2789,14 +2605,13 @@
+@@ -2789,14 +2609,13 @@
  
      <!-- SharedContactView -->
      <string name="SharedContactView_add_to_contacts">კონტაქტებში დამატება</string>
@@ -2878,7 +2881,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
  
      <!-- SignalBottomActionBar -->
      <!-- Text to describe a button that will show more options -->
-@@ -3152,12 +2967,7 @@
+@@ -3152,12 +2971,7 @@
      <string name="VerifyIdentityActivity_our_signal_safety_number">ჩვენი Signal-ის უსაფრთხოების ნომერი:</string>
      <string name="VerifyIdentityActivity_no_app_to_share_to">როგორც ჩანს, არ გაქვს ისეთი აპი, რითაც შეძლებ გაზიარებას.</string>
      <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">შესადარებელი უსაფრთხოების ნომერი ბუფერში ვერ მოიძებნა</string>
@@ -2891,7 +2894,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">%1$s-ის უსაფრთხოების ნომრის სანახავად ჯერ შეტყობინებები უნდა გაცვალოთ.</string>
      <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
      <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">ამ ადამიანთან უსაფრთხოების ნომერი შეიქმნება მაშინ, როდესაც ის შენთან მიმოწერას დაიწყებს.</string>
-@@ -3313,15 +3123,8 @@
+@@ -3313,15 +3127,8 @@
      <string name="NotificationChannel_additional_message_notifications">მიმოწერის დამატებითი შეტყობინებები</string>
      <!-- Notification channel name for notifications sent when a device has been linked -->
      <string name="NotificationChannel_new_linked_device">ახალი დაკავშირებული მოწყობილობა</string>
@@ -2907,7 +2910,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
  
      <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
      <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">შეუძლებელია საცავში ჩაწერა!</string>
-@@ -3474,14 +3277,6 @@
+@@ -3474,14 +3281,6 @@
      <string name="EnclaveFailureReminder_update_signal">განაახლე Signal-ი, რათა ტრანზაქციების გამოყენება განაგრძო. შეიძლება, შენი ბალანსი არ იყოს განახლებული.</string>
      <!-- Banner button to update now -->
  
@@ -2922,7 +2925,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <string name="WebRtcCallActivity__answered_on_a_linked_device">ზარი მიღებულია დაკავშირებულ მოწყობილობაზე.</string>
      <string name="WebRtcCallActivity__declined_on_a_linked_device">ზარი უარყოფილია დაკავშირებულ მოწყობილობაზე.</string>
      <string name="WebRtcCallActivity__busy_on_a_linked_device">დაკავებაა დაკავშირებულ მოწყობილობაზე.</string>
-@@ -3575,24 +3370,6 @@
+@@ -3575,24 +3374,6 @@
      <!-- Text asking for user\'s contact permission -->
      <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">შენს კონტაქტებზე წვდომის მიცემა. შენი კონტაქტები დაშიფრულია და Signal-ის სერვისისთვის უხილავია.</string>
  
@@ -2947,7 +2950,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <!-- conversation_activity -->
      <string name="conversation_activity__type_message_push">Signal-ის შეტყობინება</string>
      <!-- Option in send button context menu to schedule the message instead of sending it directly -->
-@@ -4104,34 +3881,6 @@
+@@ -4104,34 +3885,6 @@
      <string name="preferences__conversation_length_limit">ჩატის სიგრძის ლიმიტი</string>
      <string name="preferences__keep_messages">შეტყობინებების შენახვა</string>
      <string name="preferences__linked_devices">დაკავშირებული მოწყობილობები</string>
@@ -2982,7 +2985,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <string name="preferences__disable_pin">პინ-კოდის გამორთვა</string>
      <string name="preferences__enable_pin">პინ-კოდის ჩართვა</string>
      <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">თუ პინ-კოდს გამორთავ, Signal-ზე ხელახლა დარეგისტრირებისას ყველა მონაცემს დაკარგავ, თუ ხელით არ შექმნი სარეზერვო კოპიას და არ აღადგენ. რეგისტრაციის დაბლოკვას ვერ ჩართავ, სანამ პინ-კოდი გამორთულია.</string>
-@@ -4382,17 +4131,9 @@
+@@ -4382,17 +4135,9 @@
      <string name="PaymentsTransferFragment__next">შემდეგი</string>
      <string name="PaymentsTransferFragment__invalid_address">არასწორი მისამართი</string>
      <string name="PaymentsTransferFragment__check_the_wallet_address">შეამოწმე საფულის მისამართი, რომელზეც ცდილობ გადარიცხვას და სცადე ხელახლა.</string>
@@ -3000,7 +3003,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
  
      <!-- PaymentsTransferQrScanFragment -->
      <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">მისამართის QR კოდის სკანირება</string>
-@@ -4806,49 +4547,13 @@
+@@ -4806,49 +4551,13 @@
      <string name="RegistrationActivity_call_me_instead_available_in">დამირეკეთ (%1$02d:%2$02d)</string>
      <!--    Countdown to when the user can request a new SMS code during registration.-->
      <string name="RegistrationActivity_resend_sms_available_in">კოდის თავიდან გაგზავნა (%1$02d:%2$02d)</string>
@@ -3050,7 +3053,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
      <string name="preferences_app_protection__to_use_screen_lock">ეკრანის დაბლოკვის გამოსაყენებლად ამ მოწყობილობაზე პინ-კოდი, პატერნი ან პაროლი დააყენე.</string>
      <string name="preferences_app_protection__failed_to_enable_registration_lock">რეგისტრაციის დაბლოკვა ვერ გააქტიურდა.</string>
-@@ -4875,29 +4580,6 @@
+@@ -4875,29 +4584,6 @@
      <!-- ScreenLockSettingsFragment -->
      <!-- Text shown when screen lock is not enabled -->
      <string name="ScreenLockSettingsFragment__off">გამორთული</string>
@@ -3080,7 +3083,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
  
      <string name="Recipient_unknown">უცნობი</string>
      <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
-@@ -4943,18 +4625,6 @@
+@@ -4943,18 +4629,6 @@
      <!-- NewDeviceTransferInstructionsFragment -->
  
      <!-- NewDeviceTransferSetupFragment -->
@@ -3099,7 +3102,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
  
      <!-- OldDeviceTransferSetupFragment -->
      <string name="OldDeviceTransferSetup__searching_for_new_android_device">ვეძებთ ახალ Android მოწყობილობას…</string>
-@@ -5670,44 +5340,6 @@
+@@ -5670,44 +5344,6 @@
      <string name="ExpireTimerSettingsFragment__custom_time">არასტანდარტული დროით</string>
      <string name="ExpireTimerSettingsFragment__save">შენახვა</string>
  
@@ -3144,7 +3147,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
  
      <!-- ChatColorSelectionFragment -->
      <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
-@@ -8539,13 +8171,7 @@
+@@ -8539,13 +8175,7 @@
      <!-- Bottom sheet title -->
      <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">უსაფრთხოდ შეინახე შენი გასაღები</string>
      <!-- Bottom sheet subtitle -->
@@ -3158,7 +3161,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
      <!-- Sheet action button label -->
      <string name="MessageBackupsKeyRecordScreen__continue">გაგრძელება</string>
      <!-- Sheet secondary action button label -->
-@@ -8682,244 +8308,6 @@
+@@ -8682,244 +8312,6 @@
      <string name="MessageBackupsTypeSelectionScreen__current_plan">ახლანდელი გამოწერა</string>
  
      <!-- ConfirmBackupCancellationDialog -->
@@ -3403,7 +3406,7 @@ index a6ccef911f7194cd5c16e11facee15376671a27a..8c51dea31585bf80433ccf4bda18eac2
  
      <!-- Email subject when contacting support on a create backup failure -->
      <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Android-ის სათადარიგო ასლის აღდგენის ხარვეზი</string>
-@@ -9504,4 +8892,4 @@
+@@ -9504,4 +8896,4 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">ახალი გასაღების შექმნის შესაძლებლობები ამოწურე. ახალი აღდგენის გასაღების შექმნას 7 დღეში შეძლებ.</string>
  
      <!-- EOF -->
@@ -3422,25 +3425,26 @@ index c32ec88afc1d08bcd047e215355ca2e0e261c401..ae29cada9d472e8eec12e23136ded93d
 +    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">მიმდინარეობს Google Play-ის სერვისები ს განახლება ან ისინი დროებით მიუწვდომელია. გთხოვთ სცადოთ ხელახლა.</string>
  </resources>
 diff --git a/app/src/main/res/values-kk/strings.xml b/app/src/main/res/values-kk/strings.xml
-index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea854617267d30e 100644
+index bd9428b4ee798f0cf5292560680d45f8e8489d0f..626f386eb623871431a987a69197ea15294c0dcf 100644
 --- a/app/src/main/res/values-kk/strings.xml
 +++ b/app/src/main/res/values-kk/strings.xml
-@@ -1,13 +1,5 @@
+@@ -1,13 +1,9 @@
 -<?xml version="1.0" encoding="UTF-8"?><!--
--  ~ Copyright 2024 Signal Messenger, LLC
--  ~ SPDX-License-Identifier: AGPL-3.0-only
++<?xml version="1.0" encoding="UTF-8"?>
++<!--
+   ~ Copyright 2024 Signal Messenger, LLC
+   ~ SPDX-License-Identifier: AGPL-3.0-only
 -<<<<<<< MOLLY
 -  --><!-- smartling.instruction_comments_enabled = on --><resources>
 -=======
--  -->
+   -->
 -<!-- smartling.instruction_comments_enabled = on -->
-+<?xml version="1.0" encoding="UTF-8"?>
  <resources xmlns:tools="http://schemas.android.com/tools">
 ->>>>>>> SIGNAL
    <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
  
    <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
-@@ -432,10 +424,6 @@
+@@ -432,10 +428,6 @@
      <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">Бұл құрылғыда нөмір теру мүмкін емес.</string>
      <!-- The content description for button to send a message in a conversation -->
      <string name="ConversationActivity_send_message_content_description">Хат жіберу</string>
@@ -3451,7 +3455,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <string name="ConversationActivity_specify_recipient">Контактіні таңдаңыз</string>
      <string name="ConversationActivity_unable_to_record_audio">Аудио жазу мүмкін болмады!</string>
      <string name="ConversationActivity_you_cant_send_messages_to_this_group">Бұл топқа хат жібере алмайсыз, себебі сіз енді бұл топтың мүшесі емессіз.</string>
-@@ -460,16 +448,6 @@
+@@ -460,16 +452,6 @@
      <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Дауыстық хат жазу үшін Molly қолданбасына микрофонды пайдалануға рұқсат керек.</string>
      <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Аудио хаттар жіберу үшін Molly-ға микрофон ашық болу керек, бірақ параметрлерде микрофонды пайдалануға рұқсат берілмеген. Қолданба параметрлеріне кіріп, \"Рұқсаттар\" бөлімін таңдаңыз да, \"Микрофон\" параметрін қосыңыз.</string>
  
@@ -3468,7 +3472,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
      <string name="ConversationActivity_search_position">%1$d / %2$d</string>
      <string name="ConversationActivity_no_results">Нәтиже жоқ</string>
-@@ -504,19 +482,11 @@
+@@ -504,19 +486,11 @@
      <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
      <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Енді Signal-да SMS-пен алмасу мүмкін емес. Әңгімелеріңізді осы жерде жалғастыру үшін %1$s деген кісіні Signal-ға шақырыңыз.</string>
      <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -3489,7 +3493,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <!-- Toast message shown when trying to record a voice message during an ongoing call -->
      <string name="ConversationFragment_cannot_record_voice_message_during_call">Қоңырау барысында дауыстық хабар жазылмайды.</string>
  
-@@ -1420,69 +1390,6 @@
+@@ -1420,69 +1394,6 @@
      <string name="ManageGroupActivity_add_group_description">Топ сипаттамасын қосу…</string>
  
      <!-- RemoteRestoreActivity -->
@@ -3559,7 +3563,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
  
      <!-- ManageProfileFragment -->
      <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
-@@ -1639,32 +1546,6 @@
+@@ -1639,32 +1550,6 @@
      <!-- Button inside an alert dialog confirming the deletion of their draft -->
      <string name="InputPanel__discard">Тастау</string>
  
@@ -3592,7 +3596,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <!-- LongMessageActivity -->
      <string name="LongMessageActivity_unable_to_find_message">Хатты табу мүмкін болмады</string>
      <string name="LongMessageActivity_message_from_s">%1$s жіберген хат</string>
-@@ -2097,13 +1978,7 @@
+@@ -2097,13 +1982,7 @@
      </plurals>
  
      <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
@@ -3606,7 +3610,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <!-- Body for quote when message being quoted is an in-app payment message -->
      <string name="MessageRecord__payment_s">Төлем: %1$s</string>
      <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
-@@ -2218,16 +2093,7 @@
+@@ -2218,16 +2097,7 @@
      <string name="DeviceProvisioningActivity_link_a_signal_device">Signal құрылғысын байланыстыру керек пе?</string>
      <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Осы Signal аккаунтына компьютерді немесе iPad құрылғысын байланыстырғыңыз келсе, \"Байланыстырылған құрылғылар\" бөліміне өтіңіз және \"Жаңа құрылғыны байланыстыру\" түймесін түртіп, QR кодын қайта сканерлеңіз. Signal-дан тікелей келетін QR кодтарын ғана сканерлеңіз.</string>
  
@@ -3623,7 +3627,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
          <item quantity="one">Molly қолданбасының бұл нұсқасының мерзімі ертең бітеді. Ең соңғы нұсқасын орнатыңыз.</item>
          <item quantity="other">Molly қолданбасының бұл нұсқасының мерзімі %1$d күннен кейін бітеді. Ең соңғы нұсқасын орнатыңыз.</item>
-@@ -2342,10 +2208,6 @@
+@@ -2342,10 +2212,6 @@
  
      <!-- WebRtcCallActivity -->
      <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Бейнефайлды іске қосу үшін түрту</string>
@@ -3634,7 +3638,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
      <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
      <string name="WebRtcCallActivity__calling">Қоңырау шалынуда…</string>
-@@ -2680,45 +2542,12 @@
+@@ -2680,45 +2546,12 @@
  
      <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
      <string name="RegistrationActivity_additional_verification_required">Қосымша верификация қажет</string>
@@ -3680,7 +3684,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <plurals name="RegistrationActivity_debug_log_hint">
          <item quantity="one">You are now %1$d step away from submitting a debug log.</item>
          <item quantity="other">Дұрыстау журналын жіберу үшін енді %1$d қадам қалды.</item>
-@@ -2767,19 +2596,6 @@
+@@ -2767,19 +2600,6 @@
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
@@ -3700,7 +3704,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
-@@ -2789,14 +2605,13 @@
+@@ -2789,14 +2609,13 @@
  
      <!-- SharedContactView -->
      <string name="SharedContactView_add_to_contacts">Байланыстық тұлғаларға қосу</string>
@@ -3716,7 +3720,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
  
      <!-- SignalBottomActionBar -->
      <!-- Text to describe a button that will show more options -->
-@@ -3152,12 +2967,7 @@
+@@ -3152,12 +2971,7 @@
      <string name="VerifyIdentityActivity_our_signal_safety_number">Біздің Signal қауіпсіздік нөміріміз:</string>
      <string name="VerifyIdentityActivity_no_app_to_share_to">Бөлісетін бірде-бір қолданбаңыз жоқ сияқты.</string>
      <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">Буферде салыстыратын қауіпсіздік нөмірі табылмады</string>
@@ -3729,7 +3733,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">%1$s қауіпсіздік нөмірін көру үшін алдымен хат алмасуыңыз керек.</string>
      <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
      <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">Сізбен хат алмасқан соң, қауіпсіздік нөмірі осы адаммен жасалады.</string>
-@@ -3313,15 +3123,8 @@
+@@ -3313,15 +3127,8 @@
      <string name="NotificationChannel_additional_message_notifications">Қосымша хабарландырулар</string>
      <!-- Notification channel name for notifications sent when a device has been linked -->
      <string name="NotificationChannel_new_linked_device">Жаңа байланыстырылған құрылғы</string>
@@ -3745,7 +3749,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
  
      <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
      <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">Жадқа жазу мүмкін емес!</string>
-@@ -3474,14 +3277,6 @@
+@@ -3474,14 +3281,6 @@
      <string name="EnclaveFailureReminder_update_signal">Төлемдерді пайдалана беру үшін Signal-ды жаңартыңыз. Балансыңыз жаңартылмаған болуы мүмкін.</string>
      <!-- Banner button to update now -->
  
@@ -3760,7 +3764,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <string name="WebRtcCallActivity__answered_on_a_linked_device">Байланыстырылған құрылғыда жауап берілді.</string>
      <string name="WebRtcCallActivity__declined_on_a_linked_device">Байланыстырылған құрылғыда қабылданбады.</string>
      <string name="WebRtcCallActivity__busy_on_a_linked_device">Байланыстырылған құрылғыда бос емес.</string>
-@@ -3575,24 +3370,6 @@
+@@ -3575,24 +3374,6 @@
      <!-- Text asking for user\'s contact permission -->
      <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">Контактілеріңізді пайдалануға рұқсат етіңіз. Контактілеріңіз шифрланған және Signal қызметі оларды көре алмайды.</string>
  
@@ -3785,7 +3789,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <!-- conversation_activity -->
      <string name="conversation_activity__type_message_push">Signal хаты</string>
      <!-- Option in send button context menu to schedule the message instead of sending it directly -->
-@@ -4104,34 +3881,6 @@
+@@ -4104,34 +3885,6 @@
      <string name="preferences__conversation_length_limit">Чат ұзақтығына қойылатын лимит</string>
      <string name="preferences__keep_messages">Хаттарды сақтау</string>
      <string name="preferences__linked_devices">Байланыстырылған құрылғылар</string>
@@ -3820,7 +3824,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <string name="preferences__disable_pin">PIN-кодты өшіру</string>
      <string name="preferences__enable_pin">PIN-кодты қосу</string>
      <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">PIN-кодты өшіріп қойсаңыз, резервтік көшірмесін қолмен жасап, оны қалпына келтірмейінше, Signal қолданбасына қайта тіркелгенде, барлық дерегіңіз өшіп қалады. PIN-кодты өшіріп қойып, Тіркелу құлпын аша алмайсыз.</string>
-@@ -4382,17 +4131,9 @@
+@@ -4382,17 +4135,9 @@
      <string name="PaymentsTransferFragment__next">Келесі</string>
      <string name="PaymentsTransferFragment__invalid_address">Мекенжай дұрыс емес</string>
      <string name="PaymentsTransferFragment__check_the_wallet_address">Койн аударайын деп жатқан әмиян мекенжайын тексеріп, қайталап көріңіз.</string>
@@ -3838,7 +3842,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
  
      <!-- PaymentsTransferQrScanFragment -->
      <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Мекенжайдың QR кодын сканерлеңіз</string>
-@@ -4806,49 +4547,13 @@
+@@ -4806,49 +4551,13 @@
      <string name="RegistrationActivity_call_me_instead_available_in">Маған қоңырау шалу (%1$02d:%2$02d)</string>
      <!--    Countdown to when the user can request a new SMS code during registration.-->
      <string name="RegistrationActivity_resend_sms_available_in">Кодты қайта жіберу (%1$02d:%2$02d)</string>
@@ -3888,7 +3892,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
      <string name="preferences_app_protection__to_use_screen_lock">Экран құлпын пайдалану үшін осы құрылғыда PIN-код, өрнек немесе құпиясөз орнатыңыз.</string>
      <string name="preferences_app_protection__failed_to_enable_registration_lock">Тіркеу құлпын іске қосу сәтсіз болды.</string>
-@@ -4875,29 +4580,6 @@
+@@ -4875,29 +4584,6 @@
      <!-- ScreenLockSettingsFragment -->
      <!-- Text shown when screen lock is not enabled -->
      <string name="ScreenLockSettingsFragment__off">Өшіру</string>
@@ -3918,7 +3922,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
  
      <string name="Recipient_unknown">Белгісіз</string>
      <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
-@@ -4943,18 +4625,6 @@
+@@ -4943,18 +4629,6 @@
      <!-- NewDeviceTransferInstructionsFragment -->
  
      <!-- NewDeviceTransferSetupFragment -->
@@ -3937,7 +3941,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
  
      <!-- OldDeviceTransferSetupFragment -->
      <string name="OldDeviceTransferSetup__searching_for_new_android_device">Жаңа Android құрылғысы ізделуде…</string>
-@@ -5670,44 +5340,6 @@
+@@ -5670,44 +5344,6 @@
      <string name="ExpireTimerSettingsFragment__custom_time">Реттелмелі уақыт</string>
      <string name="ExpireTimerSettingsFragment__save">Сақтау</string>
  
@@ -3982,7 +3986,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
  
      <!-- ChatColorSelectionFragment -->
      <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
-@@ -8539,13 +8171,7 @@
+@@ -8539,13 +8175,7 @@
      <!-- Bottom sheet title -->
      <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Кілтіңізді қауіпсіз сақтаңыз</string>
      <!-- Bottom sheet subtitle -->
@@ -3996,7 +4000,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
      <!-- Sheet action button label -->
      <string name="MessageBackupsKeyRecordScreen__continue">Жалғастыру</string>
      <!-- Sheet secondary action button label -->
-@@ -8682,244 +8308,6 @@
+@@ -8682,244 +8312,6 @@
      <string name="MessageBackupsTypeSelectionScreen__current_plan">Қазіргі жоспар</string>
  
      <!-- ConfirmBackupCancellationDialog -->
@@ -4241,7 +4245,7 @@ index bd9428b4ee798f0cf5292560680d45f8e8489d0f..309a4e7856031e1ff032edf36ea85461
  
      <!-- Email subject when contacting support on a create backup failure -->
      <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Android сақтық көшірмесін экспорттау кезінде желі қатесі шықты</string>
-@@ -9504,4 +8892,4 @@
+@@ -9504,4 +8896,4 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">Жаңа кілт жасауға берілген мүмкіндіктеріңіздің барлығын қолданып қойдыңыз. Жаңа қалпына келтіру кілтін 7 күннен кейін жасай аласыз.</string>
  
      <!-- EOF -->
@@ -4260,25 +4264,26 @@ index 473e99df5eb051b55f9f5e614fafbf225184fec0..622ad04428fb988d14e11c2a83ecb7e6
 +    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play қызметтері жаңартылуда немесе уақытша жұмыс істемейді. Тағы да байқап көріңіз.</string>
  </resources>
 diff --git a/app/src/main/res/values-km/strings.xml b/app/src/main/res/values-km/strings.xml
-index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c5453504e0bf01e 100644
+index 539b632ac216f47f4012f61622536636362bb3f7..62bfae0ff67b742712d083f4a7fec5d0acb8140e 100644
 --- a/app/src/main/res/values-km/strings.xml
 +++ b/app/src/main/res/values-km/strings.xml
-@@ -1,13 +1,5 @@
+@@ -1,13 +1,9 @@
 -<?xml version="1.0" encoding="UTF-8"?><!--
--  ~ Copyright 2024 Signal Messenger, LLC
--  ~ SPDX-License-Identifier: AGPL-3.0-only
++<?xml version="1.0" encoding="UTF-8"?>
++<!--
+   ~ Copyright 2024 Signal Messenger, LLC
+   ~ SPDX-License-Identifier: AGPL-3.0-only
 -<<<<<<< MOLLY
 -  --><!-- smartling.instruction_comments_enabled = on --><resources>
 -=======
--  -->
+   -->
 -<!-- smartling.instruction_comments_enabled = on -->
-+<?xml version="1.0" encoding="UTF-8"?>
  <resources xmlns:tools="http://schemas.android.com/tools">
 ->>>>>>> SIGNAL
    <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
  
    <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
-@@ -428,10 +420,6 @@
+@@ -428,10 +424,6 @@
      <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">ឧបករណ៍នេះមិនបង្ហាញដើម្បីគាំទ្រសកម្មភាពការហៅ។</string>
      <!-- The content description for button to send a message in a conversation -->
      <string name="ConversationActivity_send_message_content_description">ផ្ញើសារ</string>
@@ -4289,7 +4294,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <string name="ConversationActivity_specify_recipient">សូមជ្រើសរើសលេខទំនាក់ទំនង១</string>
      <string name="ConversationActivity_unable_to_record_audio">មិនអាចថតសំឡេងបាន!</string>
      <string name="ConversationActivity_you_cant_send_messages_to_this_group">អ្នកមិនអាចផ្ញើសារទៅក្រុមនេះបានទេ ដោយសារអ្នកមិនមែនជាសមាជិកក្រុម។</string>
-@@ -456,16 +444,6 @@
+@@ -456,16 +448,6 @@
      <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Molly ត្រូវការសិទ្ធិចូលប្រើមីក្រូហ្វូនដើម្បីថតសារជាសំឡេង។</string>
      <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Molly សុំសិទ្ធិប្រើប្រាស់ម៉ៃក្រូហ្វូន ដើម្បីផ្ញើសារជាសំឡេង, ប៉ុន្តែ វាត្រូវបានបដិសេធរហូត។ សូមបន្តទៅកាន់ ការកំណត់កម្មវិធី, ជ្រើសរើស \"ការអនុញ្ញាត\", និងបើក \"ប្រដាប់ស្រូបសំឡេង\"។</string>
  
@@ -4306,7 +4311,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
      <string name="ConversationActivity_search_position">%1$d នៃ%2$d</string>
      <string name="ConversationActivity_no_results">គ្មានលទ្ធផល</string>
-@@ -500,19 +478,11 @@
+@@ -500,19 +482,11 @@
      <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
      <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">មិនអាចផ្ញើសារជាអក្សរបាននៅក្នុង Signal ទៀតទេ។ បបួល %1$s ឲ្យប្រើ Signal ដើម្បីរក្សាការសន្ទនានៅទីនេះ។</string>
      <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -4327,7 +4332,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <!-- Toast message shown when trying to record a voice message during an ongoing call -->
      <string name="ConversationFragment_cannot_record_voice_message_during_call">មិនអាចថតសារជាសំឡេងក្នុងអំឡុងពេលហៅទូរសព្ទ។</string>
  
-@@ -1377,69 +1347,6 @@
+@@ -1377,69 +1351,6 @@
      <string name="ManageGroupActivity_add_group_description">បន្ថែមការពណ៌នាក្រុម…</string>
  
      <!-- RemoteRestoreActivity -->
@@ -4397,7 +4402,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
  
      <!-- ManageProfileFragment -->
      <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
-@@ -1592,31 +1499,6 @@
+@@ -1592,31 +1503,6 @@
      <!-- Button inside an alert dialog confirming the deletion of their draft -->
      <string name="InputPanel__discard">បោះបង់</string>
  
@@ -4429,7 +4434,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <!-- LongMessageActivity -->
      <string name="LongMessageActivity_unable_to_find_message">មិនអាចស្វែងរកសារ</string>
      <string name="LongMessageActivity_message_from_s">សារពី %1$s</string>
-@@ -2034,13 +1916,7 @@
+@@ -2034,13 +1920,7 @@
      </plurals>
  
      <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
@@ -4443,7 +4448,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <!-- Body for quote when message being quoted is an in-app payment message -->
      <string name="MessageRecord__payment_s">ការបង់ប្រាក់៖ %1$s</string>
      <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
-@@ -2150,16 +2026,7 @@
+@@ -2150,16 +2030,7 @@
      <string name="DeviceProvisioningActivity_link_a_signal_device">ភ្ជាប់ឧបករណ៍ Signal ១?</string>
      <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">ដើម្បីភ្ជាប់កុំព្យូទ័រលើតុ ឬ iPad ជាមួយគណនី Signal នេះ សូមចូលទៅកាន់ឧបករណ៍ដែលបានភ្ជាប់ ហើយចុច \"ភ្ជាប់ឧបករណ៍ថ្មី\" រួចហើយស្គែនកូដ QR ម្តងទៀត។ ត្រូវប្រាកដថាអ្នកស្គែនតែកូដ QR ដែលមកពី Signal ដោយផ្ទាល់ប៉ុណ្ណោះ។</string>
  
@@ -4460,7 +4465,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
          <item quantity="other">ជំនាន់ Molly នេះ នឹងផុតកំណត់នៅ %1$d ថ្ងៃ។ ធ្វើបច្ចុប្បន្នភាពទៅកាន់ជំនាន់ថ្មីបំផុត។</item>
      </plurals>
-@@ -2272,10 +2139,6 @@
+@@ -2272,10 +2143,6 @@
  
      <!-- WebRtcCallActivity -->
      <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">ចុច​ នៅទីនេះ ដើម្បីបើកវីដេអូរបស់អ្នក</string>
@@ -4471,7 +4476,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
      <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
      <string name="WebRtcCallActivity__calling">កំពុងហៅ…</string>
-@@ -2589,45 +2452,12 @@
+@@ -2589,45 +2456,12 @@
  
      <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
      <string name="RegistrationActivity_additional_verification_required">ទាមទារការផ្ទៀងផ្ទាត់បន្ថែម</string>
@@ -4517,7 +4522,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <plurals name="RegistrationActivity_debug_log_hint">
          <item quantity="other">You are now %1$d steps away from submitting a debug log.</item>
      </plurals>
-@@ -2675,19 +2505,6 @@
+@@ -2675,19 +2509,6 @@
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
@@ -4537,7 +4542,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
    <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
-@@ -2697,14 +2514,13 @@
+@@ -2697,14 +2518,13 @@
  
      <!-- SharedContactView -->
      <string name="SharedContactView_add_to_contacts">បន្ថែមចូល បញ្ជីទំនាក់ទំនង</string>
@@ -4553,7 +4558,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
  
      <!-- SignalBottomActionBar -->
      <!-- Text to describe a button that will show more options -->
-@@ -3054,12 +2870,7 @@
+@@ -3054,12 +2874,7 @@
      <string name="VerifyIdentityActivity_our_signal_safety_number">លេខសុវត្ថិភាព Signalរបស់យើង៖</string>
      <string name="VerifyIdentityActivity_no_app_to_share_to">អ្នកហាក់ដូចជាមិនមានកម្មវិធីណាមួយដើម្បីចែករំលែក។</string>
      <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">ពុំមានលេខសុវត្ថិភាព ដើម្បីប្រៀបធៀបក្នុង clipboard</string>
@@ -4566,7 +4571,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">ដំបូង អ្នកត្រូវផ្លាស់ប្តូរសារ ដើម្បីបង្ហាញលេខសុវត្ថិភាពរបស់ %1$s។</string>
      <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
      <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">លេខសុវត្ថិភាពមួយនឹងត្រូវបានបង្កើតឡើងជាមួយបុគ្គលនេះ បន្ទាប់ពីគេផ្ញើសារទៅវិញទៅមកជាមួយអ្នក។</string>
-@@ -3213,15 +3024,8 @@
+@@ -3213,15 +3028,8 @@
      <string name="NotificationChannel_additional_message_notifications">ការជូនដំណឹងសារបន្ថែម</string>
      <!-- Notification channel name for notifications sent when a device has been linked -->
      <string name="NotificationChannel_new_linked_device">ឧបករណ៍ដែលបានភ្ជាប់ថ្មី</string>
@@ -4582,7 +4587,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
  
      <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
      <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">មិនអាចរក្សាទុកក្នុងទំហំផ្ទុកបាន!</string>
-@@ -3369,14 +3173,6 @@
+@@ -3369,14 +3177,6 @@
      <string name="EnclaveFailureReminder_update_signal">ដំឡើងកំណែ Signal ដើម្បីបន្តប្រើប្រាស់ការបង់ប្រាក់។ សមតុល្យរបស់អ្នកប្រហែលជាមិនមានបច្ចុប្បន្នភាពទេ។</string>
      <!-- Banner button to update now -->
  
@@ -4597,7 +4602,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <string name="WebRtcCallActivity__answered_on_a_linked_device">បានឆ្លើយលើឧបករណ៍ដែលបានតភ្ជាប់។</string>
      <string name="WebRtcCallActivity__declined_on_a_linked_device">បានបដិសេធលើឧបករណ៍ដែលបានតភ្ជាប់។</string>
      <string name="WebRtcCallActivity__busy_on_a_linked_device">ជាប់រវល់លើឧបករណ៍ដែលបានតភ្ជាប់។</string>
-@@ -3469,22 +3265,6 @@
+@@ -3469,22 +3269,6 @@
      <!-- Text asking for user\'s contact permission -->
      <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">អនុញ្ញាតឱ្យចូលប្រើបញ្ជីទំនាក់ទំនងរបស់អ្នក។ បញ្ជីទំនាក់ទំនងរបស់អ្នកត្រូវបានអ៊ីនគ្រីប និងមិនអាចមើលឃើញដោយសេវាកម្ម Signal បានទេ។</string>
  
@@ -4620,7 +4625,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <!-- conversation_activity -->
      <string name="conversation_activity__type_message_push">សារ Signal</string>
      <!-- Option in send button context menu to schedule the message instead of sending it directly -->
-@@ -3988,34 +3768,6 @@
+@@ -3988,34 +3772,6 @@
      <string name="preferences__conversation_length_limit">ដែនកំណត់ការជជែក</string>
      <string name="preferences__keep_messages">រក្សាសារ</string>
      <string name="preferences__linked_devices">ភ្ជាប់ឧបករណ៍</string>
@@ -4655,7 +4660,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <string name="preferences__disable_pin">បិទលេខកូដ PIN</string>
      <string name="preferences__enable_pin">បើកលេខកូដ PIN</string>
      <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">បើអ្នកបានបិទលេខកូដ PIN អ្នកនឹងបាត់បង់ទិន្នន័យទាំងអស់ នៅពេលអ្នកចុះឈ្មោះ Signal ឡើងវិញ លុះត្រាអ្នកបម្រុងទុក និងស្តារឡើងវិញដោយខ្លួនឯង។ អ្នកមិនអាចបើក ការចាក់សោការចុះឈ្មោះ នៅពេលលេខកូដ PIN បានបិទនោះទេ។</string>
-@@ -4264,17 +4016,9 @@
+@@ -4264,17 +4020,9 @@
      <string name="PaymentsTransferFragment__next">បន្ទាប់</string>
      <string name="PaymentsTransferFragment__invalid_address">អាសយដ្ឋានមិនត្រឹមត្រូវ</string>
      <string name="PaymentsTransferFragment__check_the_wallet_address">ពិនិត្យអាសយដ្ឋានកាបូប ដែលអ្នកព្យាយាមផ្ទេរទៅ ហើយសាកល្បងម្តងទៀត។</string>
@@ -4673,7 +4678,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
  
      <!-- PaymentsTransferQrScanFragment -->
      <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">ស្គែនអាសយដ្ឋាន QR Code</string>
-@@ -4679,49 +4423,13 @@
+@@ -4679,49 +4427,13 @@
      <string name="RegistrationActivity_call_me_instead_available_in">ហៅមកខ្ញុំ (%1$02d:%2$02d)</string>
      <!--    Countdown to when the user can request a new SMS code during registration.-->
      <string name="RegistrationActivity_resend_sms_available_in">ផ្ញើលេខកូដឡើងវិញ (%1$02d:%2$02d)</string>
@@ -4723,7 +4728,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
      <string name="preferences_app_protection__to_use_screen_lock">ដើម្បីប្រើការចាក់សោអេក្រង់ សូមកំណត់លេខកូដសម្ងាត់ លំនាំគំនូស ឬពាក្យសម្ងាត់នៅលើឧបករណ៍នេះ។</string>
      <string name="preferences_app_protection__failed_to_enable_registration_lock">មិនអាចបើកការចាក់សោរចុះឈ្មោះ។</string>
-@@ -4748,29 +4456,6 @@
+@@ -4748,29 +4460,6 @@
      <!-- ScreenLockSettingsFragment -->
      <!-- Text shown when screen lock is not enabled -->
      <string name="ScreenLockSettingsFragment__off">បិទ</string>
@@ -4753,7 +4758,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
  
      <string name="Recipient_unknown">មិនស្គាល់</string>
      <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
-@@ -4816,18 +4501,6 @@
+@@ -4816,18 +4505,6 @@
      <!-- NewDeviceTransferInstructionsFragment -->
  
      <!-- NewDeviceTransferSetupFragment -->
@@ -4772,7 +4777,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
  
      <!-- OldDeviceTransferSetupFragment -->
      <string name="OldDeviceTransferSetup__searching_for_new_android_device">កំពុងស្វែងរកឧបករណ៍ Android ថ្មី…</string>
-@@ -5527,44 +5200,6 @@
+@@ -5527,44 +5204,6 @@
      <string name="ExpireTimerSettingsFragment__custom_time">ថេរវេលាកំណត់ខ្លួនឯង</string>
      <string name="ExpireTimerSettingsFragment__save">រក្សាទុក</string>
  
@@ -4817,7 +4822,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
  
      <!-- ChatColorSelectionFragment -->
      <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
-@@ -8350,13 +7985,7 @@
+@@ -8350,13 +7989,7 @@
      <!-- Bottom sheet title -->
      <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">រក្សាសោរបស់អ្នកឱ្យមានសុវត្ថិភាព</string>
      <!-- Bottom sheet subtitle -->
@@ -4831,7 +4836,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
      <!-- Sheet action button label -->
      <string name="MessageBackupsKeyRecordScreen__continue">បន្ត</string>
      <!-- Sheet secondary action button label -->
-@@ -8491,244 +8120,6 @@
+@@ -8491,244 +8124,6 @@
      <string name="MessageBackupsTypeSelectionScreen__current_plan">គម្រោងបច្ចុប្បន្ន</string>
  
      <!-- ConfirmBackupCancellationDialog -->
@@ -5076,7 +5081,7 @@ index 539b632ac216f47f4012f61622536636362bb3f7..eeb6adb8d061f4ab061339bb3c545350
  
      <!-- Email subject when contacting support on a create backup failure -->
      <string name="BackupAlertBottomSheet_network_failure_support_email">បញ្ហាបណ្តាញក្នុងការនាំចេញការបម្រុងទុក Signal Android</string>
-@@ -9306,4 +8697,4 @@
+@@ -9306,4 +8701,4 @@
      <string name="BackupKeyRotationDialogs__limit_exceeded_body_no_backups">ចំនួនសោថ្មីដែលអ្នកអាចបង្កើតបានគឺអ្នកបានប្រើអស់ហើយ។ អ្នកនឹងអាចបង្កើតសោស្តារថ្មីក្នុងរយៈពេល 7 ថ្ងៃ។</string>
  
      <!-- EOF -->

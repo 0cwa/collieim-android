@@ -1,23 +1,22 @@
-From a88d7255b8605df2b5ccb4c873b70cbabb959e39 Mon Sep 17 00:00:00 2001
+From 16e780b91b5b1008b95a42cab5e7438b9d8261b1 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Thu, 29 Oct 2026 00:01:38 +0100
+Date: Sat, 31 Oct 2026 23:25:32 +0100
 Subject: [PATCH] Port privacy-controls to Signal 8.33.2, part 1
 
 Retain Molly privacy policies for calls, unknown contacts and logging in the updated upstream code.
 
-These are AI-generated compatibility resolutions from the existing
-PR #7 port source, exported after Git has performed its deterministic
+These are AI-assisted compatibility changes from the recorded
+source checkpoint, exported after Git has performed its deterministic
 three-way merge of the unchanged official Molly 8.19.2-4 snapshot
 with Signal 8.33.2. The original Molly mailboxes remain unchanged.
 Offset-only movement and conflict-free automatic merges are already
 in the parent tree and are not re-exported as patch rewrites.
 
-This batch owns 6 whole-file changes. It preserves the
-previous port tree exactly and makes no new application changes.
+This batch owns 6 whole-file changes. It records AI-assisted compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 90a0bb917ecc49a62236d539f4e7faae01b1d9fe
+Source-Commit: f392c29451f25d6c94316dac316d5aeaf1989206
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2

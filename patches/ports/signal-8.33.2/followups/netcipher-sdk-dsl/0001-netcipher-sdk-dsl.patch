@@ -1,18 +1,18 @@
-From adf642a1c5e99a353840f0c3ecabc433d4f39ecd Mon Sep 17 00:00:00 2001
-From: 0cwa <kainau@yahoo.com>
-Date: Thu, 29 Oct 2026 00:22:08 +0100
+From bc346e9179725d8cc3a7f42462773f4206c060a8 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sat, 31 Oct 2026 23:25:32 +0100
 Subject: [PATCH] Use the typed SDK DSL for Molly's NetCipher module
 
 AGP 9.4 rejects the numeric SDK catalog string passed to compileSdkVersion.
 Match Signal's compileSdk release DSL while retaining the pinned SDK version
 and strict dependency verification.
 
-Carry this existing AI-generated PR #7 source fix as its own
+Carry this AI-assisted source change as its own
 reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: a8e3343240ae373624945086999d251e9d652180
+Source-Commit: 9348f32d075eeb7d4c7e6a3f032d6b1fc750e014
 AI-Generated: true
 
 diff --git a/lib/netcipher/build.gradle b/lib/netcipher/build.gradle

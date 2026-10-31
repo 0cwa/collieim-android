@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "2533afec2fe2d7f9fc682f699fc21d7624521889",
+  "target_tree": "59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -277,6 +277,70 @@
         "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch"
       ],
       "mailbox_bytes": 2111
+    },
+    {
+      "id": "followups/reregistration-linked-devices-reminder",
+      "source_commit": "d3c917a5be7db6116c83b7e29e09f145e7f38825",
+      "description": "Restore the linked-device reminder after successful primary-device multi-device re-registration; explicitly mark re-registration intents.",
+      "ai_generated": true,
+      "before_tree": "2533afec2fe2d7f9fc682f699fc21d7624521889",
+      "after_tree": "0e5c581b7db3f4429256630011790f3ed4ad141f",
+      "paths": 3,
+      "patches": [
+        "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch"
+      ],
+      "mailbox_bytes": 6623,
+      "source_bundle": "followups/reregistration-linked-devices-reminder/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c",
+      "source_bundle_sha256": "a73b67f65b7a7993595677c2d00d4340f40ec63e634348c3ebafb0a82dadb96e"
+    },
+    {
+      "id": "followups/legacy-backup-precedence",
+      "source_commit": "266d0185d021b2b6a98882205f6b6242152d146e",
+      "description": "Restore migrated Molly settings from preference frames before later KeyValue frames, drain pending store writes before restore, and test restore precedence.",
+      "ai_generated": true,
+      "before_tree": "0e5c581b7db3f4429256630011790f3ed4ad141f",
+      "after_tree": "febafe3aa084d0ca6219e4f10a27ee66fbecfe4e",
+      "paths": 4,
+      "patches": [
+        "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch"
+      ],
+      "mailbox_bytes": 17255,
+      "source_bundle": "followups/legacy-backup-precedence/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "d3c917a5be7db6116c83b7e29e09f145e7f38825",
+      "source_bundle_sha256": "b3b9f29d362b5ffeb4d0f37ea594ebf2ae5b1762ec4e2160a992d8090e05dc73"
+    },
+    {
+      "id": "followups/donation-completion",
+      "source_commit": "0e7a018870f034d547db10e8e4856c515bbe2b80",
+      "description": "Restore immediate donation badge acknowledgement and the eligible monthly sustainer link; remove unsupported profile-display copy and the completed-donation loading spinner.",
+      "ai_generated": true,
+      "before_tree": "febafe3aa084d0ca6219e4f10a27ee66fbecfe4e",
+      "after_tree": "c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d",
+      "paths": 4,
+      "patches": [
+        "followups/donation-completion/0001-donation-completion.patch"
+      ],
+      "mailbox_bytes": 13430,
+      "source_bundle": "followups/donation-completion/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "266d0185d021b2b6a98882205f6b6242152d146e",
+      "source_bundle_sha256": "0182e676732f8c868bb93df9b085f4f79629cc3088130e52d60e48130db44f05"
+    },
+    {
+      "id": "followups/backup-notification-id-upgrade",
+      "source_commit": "a069fdf625d924e517eb6f2aeb0cbd607db3fcdb",
+      "description": "Clean up legacy Molly backup alerts by checking their untagged notification ID and backup channel, while keeping Signal IDs for new alerts.",
+      "ai_generated": true,
+      "before_tree": "c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d",
+      "after_tree": "59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf",
+      "paths": 5,
+      "patches": [
+        "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch"
+      ],
+      "mailbox_bytes": 8315,
+      "source_bundle": "followups/backup-notification-id-upgrade/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "0e7a018870f034d547db10e8e4856c515bbe2b80",
+      "source_bundle_sha256": "94614cf225a350acc70b23a9fe7fea6810cf1fdcd07658a89178b739a404ed7b"
     }
   ],
   "mailbox_sha256": {
@@ -319,6 +383,10 @@
     "followups/restore-preference-import/0001-restore-preference-import.patch": "2d0c57f013dda458075626f1de1ce20a6cf807d736ee54f3caed1d2c3b57a6d5",
     "followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch": "d10f544009cec209f88c505d02f2258a7536d77f638dc19f909bd3e23d3ee510",
     "followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch": "65ca6f4e35a9e6317de3c51426a51122deb643f70ab639c95ccdb503f2865f88",
-    "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch": "52234ff291e7843f20dc040a83f61e306566e2858899a3ad88aade741ca16a90"
+    "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch": "52234ff291e7843f20dc040a83f61e306566e2858899a3ad88aade741ca16a90",
+    "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "04f2c62a65efe3f6f2c293721f791106517321ffb0b210fb5f3e68c6e55ef1f1",
+    "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "2db0f4c241474580b6ad0d99591eff73d72642d3bb4da09c4756d1f8918b2890",
+    "followups/donation-completion/0001-donation-completion.patch": "3e8d9f9937b34d7581f3e7363bfdaa880a1e78f3f19616d9ece8ca257355ba1b",
+    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "d6b92137f493c32b7db15dc6844a182ca500b29ed2882563db67480511ffa688"
   }
 }

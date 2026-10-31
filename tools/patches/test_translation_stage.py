@@ -60,6 +60,40 @@ class TranslationStageTests(unittest.TestCase):
         self.assertIn(b'Molly &amp; molly.im', (self.root / self.path).read_bytes())
         self.assertIn(b'please_wait', (self.root / self.target).read_bytes())
 
+    def test_please_wait_resource_keys_are_parsed_semantically(self):
+        translated = b'<resources><string name="title">Molly</string></resources>'
+        clean_target = b'<resources/>'
+        stage._validate_please_wait(translated, clean_target,
+                                    b" <string translatable='false'\n name = 'please_wait'>Wait</string>\n",
+                                    self.target)
+
+        with self.subTest('single quoted key in target'):
+            with self.assertRaises(forest.ForestError):
+                stage._validate_please_wait(translated,
+                    b"<resources><string name='please_wait'>Attendez</string></resources>",
+                    self.data['please_wait'][self.path]['line'].encode(), self.target)
+
+        with self.subTest('duplicate key across files'):
+            with self.assertRaises(forest.ForestError):
+                stage._validate_please_wait(
+                    b"<resources><plurals name='please_wait'><item quantity='one'>Wait</item></plurals></resources>",
+                    b'<resources><string name="please_wait">Attendez</string></resources>',
+                    self.data['please_wait'][self.path]['line'].encode(), self.target)
+
+    def test_please_wait_resource_line_rejects_malformed_and_extra_content(self):
+        translated, target = b'<resources/>', b'<resources/>'
+        for line in (b'<string name="please_wait">Wait',
+                     b'<string name="please_wait">Wait</string><string name="injected">x</string>',
+                     b'<resources><string name="please_wait">Wait</string></resources>',
+                     b'<string name="other">Wait</string>'):
+            with self.subTest(line=line), self.assertRaises(forest.ForestError):
+                stage._validate_please_wait(translated, target, line, self.target)
+
+    def test_please_wait_rejects_malformed_existing_xml(self):
+        with self.assertRaises(forest.ForestError):
+            stage._validate_please_wait(b'<resources><string></resources>', b'<resources/>',
+                                        self.data['please_wait'][self.path]['line'].encode(), self.target)
+
     def test_rejects_tampered_pins_without_mutating_index_or_files(self):
         before = self.git('rev-parse', 'HEAD')
         for key in ('after_tree', 'output_sha256', 'preimages'):

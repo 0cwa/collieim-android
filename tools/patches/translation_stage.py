@@ -58,6 +58,37 @@ def transform(data, base, rel):
     return data
 
 
+def _resource_root(content, label):
+    try:
+        root = ET.fromstring(content)
+    except ET.ParseError as exc:
+        raise forest.ForestError(f'{label}: malformed resources XML: {exc}') from exc
+    if root.tag != 'resources':
+        raise forest.ForestError(f'{label}: expected resources root')
+    return root
+
+
+def _validate_please_wait(translation, target, line, label):
+    """Check the injected resource and both locale files by parsed resource key."""
+    for content, path in ((translation, label + ' strings.xml'), (target, label + ' strings2.xml')):
+        root = _resource_root(content, path)
+        if any(child.tag in ('string', 'plurals') and child.get('name') == 'please_wait'
+               for child in root):
+            raise forest.ForestError(f'unexpected please_wait resource in {path}')
+
+    try:
+        wrapper = ET.fromstring(b'<resources>' + line + b'</resources>')
+    except ET.ParseError as exc:
+        raise forest.ForestError(f'{label}: malformed please_wait resource line: {exc}') from exc
+    if (wrapper.tag != 'resources' or wrapper.attrib or (wrapper.text and wrapper.text.strip()) or
+            len(wrapper) != 1):
+        raise forest.ForestError(f'{label}: invalid please_wait resource line')
+    resource = wrapper[0]
+    if (resource.tag != 'string' or resource.get('name') != 'please_wait' or
+            len(resource) != 0 or (resource.tail and resource.tail.strip())):
+        raise forest.ForestError(f'{label}: invalid please_wait resource line')
+
+
 def validate(data, label):
     import release
     keys = {'schema', 'type', 'source_commit', 'before_tree', 'after_tree', 'signal_tree',
@@ -171,9 +202,11 @@ def generate(repo, worktree, data, env, *, dry_run=False):
         output[p] = transform(content, bases[base], p)
     for p, item in data['please_wait'].items():
         target = item['target']; content = read_local(target, item['input_sha256'])
-        if b'name="please_wait"' in content or content.count(b'</resources>') != 1 or b'name="please_wait"' in output[p]:
-            raise forest.ForestError(f'unexpected please_wait input: {target}')
-        content = content.replace(b'</resources>', item['line'].encode() + b'</resources>')
+        line = item['line'].encode()
+        _validate_please_wait(output[p], content, line, target)
+        if content.count(b'</resources>') != 1:
+            raise forest.ForestError(f'unexpected resources closing tag count: {target}')
+        content = content.replace(b'</resources>', line + b'</resources>')
         ET.fromstring(content); output[target] = content
     for p, content in output.items():
         if digest(content) != data['output_sha256'][p]:

@@ -67,6 +67,36 @@ def check_scope(repo, scope, base, head='HEAD'):
             raise ValueError('Molly workflow must be added on pipeline branch')
     elif entry(base, '.github/workflows/molly-patch-release.yml') != workflow:
         raise ValueError('Molly workflow must be inherited unchanged')
+    def exists(ref, path):
+        return subprocess.run(['git', '-C', str(repo), 'cat-file', '-e', ref + ':' + path],
+                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+    if scope == 'pipeline':
+        if git(repo, 'rev-parse', base + '^{commit}').decode().strip() != MOLLY:
+            raise ValueError('pipeline base must be the official Molly commit')
+    else:
+        lower_source = {'switch': MOLLY, 'release': OLD, 'followups': NEW}[scope]
+        for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', lower_source, base).split(b'\0')):
+            if not metadata(raw.decode('utf-8', 'surrogateescape')):
+                raise ValueError('lower base has incorrect source projection')
+        base_profile = git(repo, 'show', base + ':molly-build.json', check=False)
+        if scope == 'switch':
+            if base_profile or exists(base, 'patches/molly'):
+                raise ValueError('switch base must be the pipeline phase')
+        else:
+            try:
+                lower = json.loads(base_profile)
+                if lower['signal']['commit'] != lower_source or (lower['port'] is None) != (scope == 'release'):
+                    raise ValueError('incorrect lower base profile')
+            except (KeyError, TypeError, json.JSONDecodeError) as exc:
+                raise ValueError('invalid lower base profile') from exc
+            if not exists(base, 'patches/molly') or git(repo, 'rev-parse', base + ':patches/molly').decode().strip() != FOREST:
+                raise ValueError('incorrect lower base forest')
+        if scope == 'followups' and any(exists(base, 'patches/ports/signal-8.33.2/followups/' + name) for name in BEHAVIOR):
+            raise ValueError('followups base already contains behavior patches')
+    if scope == 'release' and any(exists(head, 'patches/ports/signal-8.33.2/followups/' + name) for name in BEHAVIOR):
+        raise ValueError('release phase contains behavior patches')
+    if scope == 'followups' and not all(exists(head, 'patches/ports/signal-8.33.2/followups/' + name) for name in BEHAVIOR):
+        raise ValueError('followups phase is incomplete')
     source = {'pipeline': MOLLY, 'switch': OLD, 'release': NEW, 'followups': NEW}[scope]
     paths = git(repo, 'diff', '--no-renames', '--name-only', '-z', source, head).split(b'\0')
     for raw in filter(None, paths):

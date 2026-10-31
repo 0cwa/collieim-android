@@ -88,9 +88,13 @@ def totals(records):
 def render(config, evidence, ready=False):
     port = config['port']
     before, target = port['mechanical_tree'], config['target_tree']
+    baseline_before = evidence['baseline_mechanical_tree']
+    baseline_target = evidence['baseline_target_tree']
     source = config['signal']['commit']
-    require_tree(before)
-    require_tree(target)
+    for tree in (before, target, baseline_before, baseline_target):
+        require_tree(tree)
+    if baseline_before != before:
+        raise ValueError('mechanical tree differs from immutable baseline')
     if not isinstance(source, str) or not re.fullmatch('[0-9a-f]{40}', source) or git('cat-file', '-t', source).strip() != b'commit':
         raise ValueError('expected an immutable full Signal commit ID')
     rows = evidence.get('hunks', {})
@@ -103,13 +107,19 @@ def render(config, evidence, ready=False):
         raise ValueError('raw diff paths do not match numstat')
     output = ['# Port report', '', 'Physical Git diff lines; counts do not establish authorship or necessity.', '']
     for label, a, b in [('Molly patchset', OLD, MOLLY), ('Clean merge contribution', source, before),
-                        ('AI-assisted compatibility changes before minimization', before, target),
-                        ('Compared with Molly before minimization', MOLLY, target)]:
+                        ('AI-assisted compatibility changes before minimization', baseline_before, baseline_target),
+                        ('Compared with Molly before minimization', MOLLY, baseline_target)]:
         adds, dels, binary = totals(numstat(a, b))
         output.append(f'- {label}: {adds} added, {dels} deleted, {adds+dels} total text lines; {binary} binary paths (`{a}` → `{b}`).')
-    a, d, _ = totals(stats); ma, md, _ = totals(numstat(OLD, MOLLY))
+    a, d, _ = totals(numstat(baseline_before, baseline_target)); ma, md, _ = totals(numstat(OLD, MOLLY))
+    if evidence.get('minimization_complete'):
+        ca, cd, cb = totals(stats)
+        cm, cn, cmb = totals(numstat(MOLLY, target))
+        after = f'After minimization: mechanical comparison {ca} added, {cd} deleted, {ca+cd} total, {cb} binary; Molly comparison {cm} added, {cn} deleted, {cm+cn} total, {cmb} binary.'
+    else:
+        after = 'After minimization: unmeasured.'
     output += ['', f'Compatibility share: {a+d} / {ma+md} physical added plus deleted text lines = {(a+d)/(ma+md)*100:.3f}%.' if ma+md else 'Compatibility share: undefined (zero denominator).',
-               'After minimization: unmeasured.', '', 'Molly exclusions, including partial-file exclusions: unmeasured.', '',
+               after, '', 'Molly exclusions, including partial-file exclusions: unmeasured.', '',
                'Clean merge counts above are whole-file Git diff totals; no clean-merge hunk classification is asserted.', '',
                '| Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |',
                '|---|---|---|---|---|---:|---:|---|---|---|---|']

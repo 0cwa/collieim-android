@@ -45,9 +45,9 @@ class PortReportTests(unittest.TestCase):
                 return subprocess.check_output(['git', '-C', directory, *args])
             config = {'signal': {'commit': old_commit}, 'port': {'mechanical_tree': old}, 'target_tree': new}
             with patch.object(port_report, 'git', side_effect=invoke), patch.object(port_report, 'OLD', old), patch.object(port_report, 'MOLLY', new):
-                preview = port_report.render(config, {'hunks': {}})
+                preview = port_report.render(config, {'hunks': {}, 'baseline_mechanical_tree': old, 'baseline_target_tree': new})
                 self.assertIn('unmeasured', preview)
                 self.assertIn('| mode | 100644 | 100755 |', preview)
                 self.assertIn('| binary | 000000 | 100644 |', preview)
                 with self.assertRaisesRegex(ValueError, 'missing evidence'):
-                    port_report.render(config, {'hunks': {}}, ready=True)
+                    port_report.render(config, {'hunks': {}, 'baseline_mechanical_tree': old, 'baseline_target_tree': new}, ready=True)

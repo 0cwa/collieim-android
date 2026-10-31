@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "90a0bb917ecc49a62236d539f4e7faae01b1d9fe",
   "complete_source_checkpoint": true,
-  "target_tree": "59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf",
+  "target_tree": "70f2eba69967c4a3ae82dd9204999feb1bd70f9b",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -312,35 +312,35 @@
     },
     {
       "id": "followups/donation-completion",
-      "source_commit": "0e7a018870f034d547db10e8e4856c515bbe2b80",
+      "source_commit": "897b324b84dfdd81a65d0f2302ca3989255ab32b",
       "description": "Restore immediate donation badge acknowledgement and the eligible monthly sustainer link; remove unsupported profile-display copy and the completed-donation loading spinner.",
       "ai_generated": true,
       "before_tree": "febafe3aa084d0ca6219e4f10a27ee66fbecfe4e",
-      "after_tree": "c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d",
+      "after_tree": "33540be50355fd43b776249136554d167625462a",
       "paths": 4,
       "patches": [
         "followups/donation-completion/0001-donation-completion.patch"
       ],
-      "mailbox_bytes": 13430,
+      "mailbox_bytes": 13339,
       "source_bundle": "followups/donation-completion/source-checkpoint.bundle",
       "source_bundle_prerequisite": "266d0185d021b2b6a98882205f6b6242152d146e",
-      "source_bundle_sha256": "0182e676732f8c868bb93df9b085f4f79629cc3088130e52d60e48130db44f05"
+      "source_bundle_sha256": "77bf915ad66839f329b42afc3f58f44595242880edd271ac734e3096d465ba95"
     },
     {
       "id": "followups/backup-notification-id-upgrade",
-      "source_commit": "a069fdf625d924e517eb6f2aeb0cbd607db3fcdb",
+      "source_commit": "0cc30314a985ef4e4b584bfff1d517d05f27cffd",
       "description": "Clean up legacy Molly backup alerts by checking their untagged notification ID and backup channel, while keeping Signal IDs for new alerts.",
       "ai_generated": true,
-      "before_tree": "c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d",
-      "after_tree": "59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf",
+      "before_tree": "33540be50355fd43b776249136554d167625462a",
+      "after_tree": "70f2eba69967c4a3ae82dd9204999feb1bd70f9b",
       "paths": 5,
       "patches": [
         "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch"
       ],
-      "mailbox_bytes": 8315,
+      "mailbox_bytes": 8904,
       "source_bundle": "followups/backup-notification-id-upgrade/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "0e7a018870f034d547db10e8e4856c515bbe2b80",
-      "source_bundle_sha256": "94614cf225a350acc70b23a9fe7fea6810cf1fdcd07658a89178b739a404ed7b"
+      "source_bundle_prerequisite": "897b324b84dfdd81a65d0f2302ca3989255ab32b",
+      "source_bundle_sha256": "1f286706627f2f7d46e48a78dc45061fc22137421b028d3c2e1938e276d5c62b"
     }
   ],
   "mailbox_sha256": {
@@ -386,7 +386,7 @@
     "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch": "52234ff291e7843f20dc040a83f61e306566e2858899a3ad88aade741ca16a90",
     "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "04f2c62a65efe3f6f2c293721f791106517321ffb0b210fb5f3e68c6e55ef1f1",
     "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "2db0f4c241474580b6ad0d99591eff73d72642d3bb4da09c4756d1f8918b2890",
-    "followups/donation-completion/0001-donation-completion.patch": "3e8d9f9937b34d7581f3e7363bfdaa880a1e78f3f19616d9ece8ca257355ba1b",
-    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "d6b92137f493c32b7db15dc6844a182ca500b29ed2882563db67480511ffa688"
+    "followups/donation-completion/0001-donation-completion.patch": "eb6f616b2f6299289fa27d600cec6ec3749b2fa46c14853507a0a1d2891da0b3",
+    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "5234b70b7ea8250129f034b9fa18ac0288c6b28708abd132798d8c0d1b796398"
   }
 }

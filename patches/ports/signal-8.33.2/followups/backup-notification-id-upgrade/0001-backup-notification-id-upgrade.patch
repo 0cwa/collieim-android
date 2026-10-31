@@ -1,4 +1,4 @@
-From a069fdf625d924e517eb6f2aeb0cbd607db3fcdb Mon Sep 17 00:00:00 2001
+From 0cc30314a985ef4e4b584bfff1d517d05f27cffd Mon Sep 17 00:00:00 2001
 From: Molly Port Compatibility Follow-up <port-compatibility@example.invalid>
 Date: Fri, 30 Oct 2026 07:36:09 +0100
 Subject: [PATCH] Clean up legacy backup notifications after upgrade
@@ -7,8 +7,17 @@ Keep the collision-free Signal IDs for new backup alerts, and remove old Molly a
 
 AI-Generated: true
 
-Based-On-Source-Commit: 0e7a018870f034d547db10e8e4856c515bbe2b80
-Source-Commit: a069fdf625d924e517eb6f2aeb0cbd607db3fcdb
+Based-On-Source-Commit: 897b324b84dfdd81a65d0f2302ca3989255ab32b
+Source-Commit: 0cc30314a985ef4e4b584bfff1d517d05f27cffd
+---
+ .../securesms/backup/v2/BackupRepository.kt   | 30 +++++++++++++++++--
+ .../backup/v2/LegacyBackupNotification.kt     | 13 ++++++++
+ .../notifications/NotificationIds.kt          |  6 +++-
+ .../backup/v2/LegacyBackupNotificationTest.kt | 17 +++++++++++
+ .../notifications/NotificationIdsTest.kt      |  7 +++++
+ 5 files changed, 70 insertions(+), 3 deletions(-)
+ create mode 100644 app/src/main/java/org/thoughtcrime/securesms/backup/v2/LegacyBackupNotification.kt
+ create mode 100644 app/src/test/java/org/thoughtcrime/securesms/backup/v2/LegacyBackupNotificationTest.kt
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt
 index c3483573..0bb06105 100644
@@ -162,3 +171,6 @@ index a433c09a..725f3dab 100644
    @Test
    fun `fixed ids are positive`() {
      val nonPositive = fixedIds.filterValues { it <= 0 }
+-- 
+2.56.0
+

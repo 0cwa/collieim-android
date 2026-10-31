@@ -1,4 +1,4 @@
-From 0e7a018870f034d547db10e8e4856c515bbe2b80 Mon Sep 17 00:00:00 2001
+From 897b324b84dfdd81a65d0f2302ca3989255ab32b Mon Sep 17 00:00:00 2001
 From: Molly Port Compatibility Follow-up <port-compatibility@example.invalid>
 Date: Fri, 30 Oct 2026 07:12:36 +0100
 Subject: [PATCH] Restore donation completion acknowledgement
@@ -10,13 +10,13 @@ For long-running donations, stop showing the loading indicator after the badge l
 AI-Generated: true
 
 Based-On-Source-Commit: 266d0185d021b2b6a98882205f6b6242152d146e
-Source-Commit: 0e7a018870f034d547db10e8e4856c515bbe2b80
+Source-Commit: 897b324b84dfdd81a65d0f2302ca3989255ab32b
 ---
  .../completed/TerminalDonationBottomSheet.kt  | 10 ++-
  ...ForYourSupportBottomSheetDialogFragment.kt | 32 +++++++
- ...r_support_bottom_sheet_dialog_fragment.xml | 34 ++++++-
- .../TerminalDonationBottomSheetTest.kt        | 89 +++++++++++++++++++
- 4 files changed, 158 insertions(+), 7 deletions(-)
+ ...r_support_bottom_sheet_dialog_fragment.xml | 34 +++++++-
+ .../TerminalDonationBottomSheetTest.kt        | 87 +++++++++++++++++++
+ 4 files changed, 156 insertions(+), 7 deletions(-)
  create mode 100644 app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheetTest.kt
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt
@@ -183,10 +183,10 @@ index eeb5a0d9..da57e3c0 100644
 +</LinearLayout>
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheetTest.kt b/app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheetTest.kt
 new file mode 100644
-index 00000000..601a5522
+index 00000000..c81643c2
 --- /dev/null
 +++ b/app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheetTest.kt
-@@ -0,0 +1,89 @@
+@@ -0,0 +1,87 @@
 +/*
 + * Copyright 2026 Signal Messenger, LLC
 + * SPDX-License-Identifier: AGPL-3.0-only
@@ -199,11 +199,9 @@ index 00000000..601a5522
 +import androidx.compose.runtime.CompositionLocalProvider
 +import androidx.compose.ui.platform.LocalInspectionMode
 +import androidx.compose.ui.semantics.ProgressBarRangeInfo
-+import androidx.compose.ui.test.assertDoesNotExist
 +import androidx.compose.ui.test.assertIsDisplayed
 +import androidx.compose.ui.test.hasProgressBarRangeInfo
 +import androidx.compose.ui.test.junit4.createComposeRule
-+import androidx.compose.ui.test.onNode
 +import androidx.compose.ui.test.onNodeWithText
 +import androidx.test.core.app.ApplicationProvider
 +import org.junit.Rule

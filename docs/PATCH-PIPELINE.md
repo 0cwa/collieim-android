@@ -124,10 +124,10 @@ AI compatibility decision. Every conflict must be covered by a resolution
 or an explicit unchanged-content decision.
 
 The final source must equal tree
-`59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf`, the tree of synthetic source
-commit `a069fdf625d924e517eb6f2aeb0cbd607db3fcdb`. It extends donation
-checkpoint `0e7a018870f034d547db10e8e4856c515bbe2b80` (tree
-`c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d`) with channel-checked cleanup of
+`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`, the tree of synthetic source
+commit `0cc30314a985ef4e4b584bfff1d517d05f27cffd`. It extends donation
+checkpoint `897b324b84dfdd81a65d0f2302ca3989255ab32b` (tree
+`33540be50355fd43b776249136554d167625462a`) with channel-checked cleanup of
 Molly's old backup alerts at IDs `120500` and `120501`; new backup alerts keep
 Signal's current IDs. The donation checkpoint extends backup checkpoint
 `266d0185d021b2b6a98882205f6b6242152d146e` (tree
@@ -147,7 +147,7 @@ Each synthetic source commit is stored in an incremental bundle. The reminder
 bundle requires `cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c`; the backup bundle
 requires `d3c917a5be7db6116c83b7e29e09f145e7f38825`; the donation bundle
 requires `266d0185d021b2b6a98882205f6b6242152d146e`; and the backup-notification
-bundle requires `0e7a018870f034d547db10e8e4856c515bbe2b80`. Each prerequisite must
+bundle requires `897b324b84dfdd81a65d0f2302ca3989255ab32b`. Each prerequisite must
 already be present in the object database. For a fresh local repository,
 materialize and verify the chain in order:
 
@@ -178,8 +178,8 @@ git rev-parse refs/port-source/backup-notification-id-upgrade^{tree}
 The tree commands must print, in order, `2533afec2fe2d7f9fc682f699fc21d7624521889`,
 `0e5c581b7db3f4429256630011790f3ed4ad141f`,
 `febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`,
-`c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d`, and
-`59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf`. The bundles do not carry their
+`33540be50355fd43b776249136554d167625462a`, and
+`70f2eba69967c4a3ae82dd9204999feb1bd70f9b`. The bundles do not carry their
 prerequisites; a fresh clone cannot verify or fetch a later bundle until the
 earlier checkpoints are materialized.
 

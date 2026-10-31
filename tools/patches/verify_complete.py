@@ -217,7 +217,12 @@ def verify(patches, repo, worktree=None):
               'patches': len(data.metadata), 'features': {}, 'replays': []}
     if requested is not None:
         result['worktree'] = str(requested)
+    retained_head = None
     for reverse in (False, True):
+        if reverse and requested is not None:
+            # Keep the clean replay commit, releasing its worktree while checking
+            # the other legal order. Restore the requested output afterward.
+            forest.git(repo, 'worktree', 'remove', '--force', str(requested))
         order = 'reverse-ready' if reverse else 'ready'
         preserve = requested is not None and not reverse
         with tempfile.TemporaryDirectory(prefix='molly-complete-') as temporary:
@@ -228,6 +233,8 @@ def verify(patches, repo, worktree=None):
                 clean_worktree(destination)
                 if not reverse:
                     head = git_utils.git(destination, 'rev-parse', 'HEAD').stdout.strip()
+                    if preserve:
+                        retained_head = head
                     result['features'] = ownership(data, repo, head, expected_paths, origin=origin)
                 result['replays'].append({'order': order, 'tree': applied['tree_sha'],
                                           'working_tree_clean': True,
@@ -243,6 +250,8 @@ def verify(patches, repo, worktree=None):
             finally:
                 if not preserve and destination.exists():
                     forest.git(repo, 'worktree', 'remove', '--force', str(destination))
+                if reverse and requested is not None and retained_head is not None:
+                    forest.git(repo, 'worktree', 'add', '--detach', str(requested), retained_head)
     return result
 
 

@@ -182,3 +182,21 @@ Reproduce identity for each exact path: `git ls-tree <S|O3|O4|C3|C4> -- <path>`;
 10. `mediasend/v2/review/AddMessageDialogFragment.kt`: old Molly removed the forced dark inflater. C4 also has no such override and derives from `components/KeyboardEntryDialogFragment.kt`. Suitable stated reason for absence of forced dark inflater; resolved appearance/contrast needs light/dark runtime verification.
 11. `util/DynamicLanguage.java`: old Molly read language from `TextSecurePreferences`; C4 `util/DynamicLanguage.java:49` reads `PlainTextKeyValueStore.getLanguage`, rather than the same call. Prior source research identifies the shared preference-backed pathway, but startup/restore/migration timing requires a runnable check; do not assert complete equivalence.
 12. `util/PowerManagerCompat.java`: old Molly extracted the ignore-battery-optimization intent builder and used its result in the existing method. C4 `util/PowerManagerCompat.java:23,27` retains that exact helper (indeed S and M have the same blob). Suitable stated reason; prompt/result behavior on device was not tested.
+
+## Libsignal independent reversion receipts
+
+Historical PR3 input `d756c962296d51e6d910d9821a8df44b0cbd0578`, tree `3a20fd39d1f0e444bcc4711a2909635d8762b67e`; PR4 input `1923f7f681b790fdf53006fa943b61de473a5ef5`, tree `f25a1de0fc87f0f862cc270f823d240857878bc5`. Mechanical tree `759ef1c309d93aa7e4ac7217b144c04545562f11`. Historical baseline module compiles passed for both inputs. Each forward patch was independently reverse applied, gated and restored; each inverse gate exited 1 on both inputs. Gate not rerun on current target.
+
+For reproduction, set `JAVA_HOME`, `ANDROID_HOME`, `TMPDIR` and `PATH` for the local toolchain, and `REPORT_WORKTREE` to this repository checkout. From the historical source checkout, for each ID use:
+
+```sh
+git apply --reverse "$REPORT_WORKTREE/patches/ports/signal-8.33.2/report-evidence/hunk-$ID.patch"
+agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script "$REPORT_WORKTREE/tools/patches/test-worker-heap.init.gradle" -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :lib:libsignal-service:compileJava
+git apply "$REPORT_WORKTREE/patches/ports/signal-8.33.2/report-evidence/hunk-$ID.patch"
+```
+
+PR3 and PR4 forward patches were byte-identical per ID. SHA-256: `92b4aeb23e3a9479eae3` = `451ad530e099fa080e0f30953f54afd32f901474a4240b841d2791776b12682e`; `889e6d1e15e5bdc65692` = `8e31ef9f0faff09bbbbf65e03798c60f772624a4fda59ea2feedcb29a5420b65`; `a194a470661695b89387` = `85a3c601342474786ee7b724715ff4e5c2c84560761588c95461857d662f7cc1`; `b735539990cfa3e6bdb8` = `9d2403f2d23273b78b20b3704ae912797b30ab0e99796068a70c92e0d24f5941`.
+
+Current source commits PR3 `1500ad2a9c9ac9500a22ba77893171730a7f88f8` (tree `c50fa18dab3c5420e93719dae3040b7a4058795f`) and PR4 `cac99e421c14af3fae0251b64a922e235e3708c9` (tree `2a5ccdccacb3e7b77e7f4719dff4db75ff28b2b9`) have the same respective full blobs as both historical inputs for the first three paths: `932e209b0781e43dd8c3088abce07e790df90503`, `6803653710d662c148df6d0b87fff5dad913cd57`, `53d38ec128d36a40e447d92f01138a0a9e3418ce`. PushServiceSocket historical blob `be4becdd684b0afa671949baf203f1b2482eb6cd` differs from both current blobs `224f7cf88878d39b1cc62ad9528c6070ce16bfed` only by the accepted JsonProperty import restoration; the tested hunk body and context are unchanged. This transfers hunk identity, not the historical gate to the current trees.
+
+The registration inverse reported missing DeviceAttributes and RegisterAsSecondaryDeviceResponse; both imports together are required by the existing implementation, but each was not tested alone. The other three inverses restored literal conflict markers and failed parsing (Java, Kotlin, Java respectively). These failures do not measure import policy, semantic choices or Svr3Credentials removal; app and full regression gates were not measured by these checks.

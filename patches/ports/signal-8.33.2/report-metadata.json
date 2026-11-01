@@ -10082,6 +10082,24 @@
       "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob f48306bbf0d1b5007ee0673c6b2c3a26ebcae79a; inverse fragment SHA-256 ac9f01d76105165957e496a2872eb207c8a24ee36cb4505e24257ebfecadee38, reverted blob 0662a0a2e5365e52014a8cff45842447ae693994",
       "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "1c87d9e382a99fab53ad": {
+      "revert_gate": "Gradle targeted Settings migration and backup tests",
+      "gate_input": "PR3 source tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010; SettingsValues.kt blob ec0c3b469a2137adede241c82a0e249dc78fb7aa; LegacySharedPrefs.kt blob 7b339e26b7c3aa43d5310ea79b2418cf5dd7091b; exact test input SHA-256 values in receipt; migration copy removal; patch SHA-256 e4747cdeaae8f845eaa9d13bfaa6d0f2db58034b0ef7b553cd9c453d69c00631",
+      "outcome": "baseline 10/10 passed; candidate 1/10 failed, upgrade expected de, got null; zero skipped",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr3-settings-negative-checks; additional source audit: patches/ports/signal-8.33.2/report-evidence/receipts.md#twelve-path-signal-equality-audit"
+    },
+    "9c616143ddc96d74a2bb": {
+      "revert_gate": "Gradle targeted Settings migration and backup tests",
+      "gate_input": "PR3 source tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010; SettingsValues.kt blob ec0c3b469a2137adede241c82a0e249dc78fb7aa; LegacySharedPrefs.kt blob 7b339e26b7c3aa43d5310ea79b2418cf5dd7091b; exact test input SHA-256 values in receipt; partial setter inverse removing only extra key-value write; patch SHA-256 82ac2920ee8e13f19ecb4636020b295957e592fb701b773f0b5225778b52c24e",
+      "outcome": "baseline 10/10 passed; candidate 1/10 failed, changed language expected fr, got de; zero skipped",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr3-settings-negative-checks; additional source audit: patches/ports/signal-8.33.2/report-evidence/receipts.md#twelve-path-signal-equality-audit"
+    },
+    "66d760f60b510768d21a": {
+      "revert_gate": "Gradle targeted Settings migration and backup tests",
+      "gate_input": "PR3 source tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010; SettingsValues.kt blob ec0c3b469a2137adede241c82a0e249dc78fb7aa; LegacySharedPrefs.kt blob 7b339e26b7c3aa43d5310ea79b2418cf5dd7091b; exact test input SHA-256 values in receipt; fully qualified default reader substitution, not literal inverse; patch SHA-256 ee689534b0f88b5557fafddf689cfa3dc0fa5942a08524da189531c4898f0581",
+      "outcome": "baseline 10/10 passed; candidate 3/10 failed, expected de got zz, expected de got en, encrypted preference migration assertion failed; zero skipped",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr3-settings-negative-checks; additional source audit: patches/ports/signal-8.33.2/report-evidence/receipts.md#twelve-path-signal-equality-audit"
     }
   },
   "exclusions_complete": false,

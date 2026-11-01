@@ -1,6 +1,6 @@
-From aa05e1e1f80f9e2cae692515e3823e64437d63ae Mon Sep 17 00:00:00 2001
+From 300fea86eea1887e7d4242630e6e07a0c446d822 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sun, 1 Nov 2026 11:08:40 +0100
+Date: Sun, 1 Nov 2026 14:37:03 +0100
 Subject: [PATCH] Port registration-and-linking to Signal 8.33.2, part 1
 
 Adapt Molly registration and Android linked-device policies to the new Signal registration architecture.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: a04363b8cb4d172f53c657925ec1a94e570d5504
+Source-Commit: e57a1cda22250339b26fd9fc6ac65f5ad75d9216
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -442,59 +442,6 @@ index 59aa07ffe588ded9dc8a42bd58898c4fb6a3f801..0344db79d55f984850a14f439a749cd0
  import org.signal.registration.RegistrationRoute
  import org.thoughtcrime.securesms.MainActivity
  
-diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt
-new file mode 100644
-index 0000000000000000000000000000000000000000..5348ce38c197d5c338eecbf4ea495cd7e140ca24
---- /dev/null
-+++ b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt
-@@ -0,0 +1,47 @@
-+/*
-+ * Copyright 2026 Molly Project
-+ * SPDX-License-Identifier: AGPL-3.0-only
-+ */
-+
-+package org.thoughtcrime.securesms.registration.ui
-+
-+import android.content.Context
-+import android.content.Intent
-+import android.os.Bundle
-+import android.widget.FrameLayout
-+import org.thoughtcrime.securesms.PassphraseRequiredActivity
-+import org.thoughtcrime.securesms.preferences.NetworkPreferenceFragment
-+import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme
-+
-+/** Lets an unregistered user configure Molly's SOCKS or Orbot proxy before connecting. */
-+class RegistrationNetworkSettingsActivity : PassphraseRequiredActivity() {
-+
-+  private val dynamicTheme = DynamicNoActionBarTheme()
-+
-+  override fun onPreCreate() {
-+    super.onPreCreate()
-+    dynamicTheme.onCreate(this)
-+  }
-+
-+  override fun isRegistrationFlow(): Boolean = true
-+
-+  override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
-+    super.onCreate(savedInstanceState, ready)
-+    setContentView(FrameLayout(this))
-+    if (savedInstanceState == null) {
-+      supportFragmentManager.beginTransaction()
-+        .replace(android.R.id.content, NetworkPreferenceFragment())
-+        .commit()
-+    }
-+  }
-+
-+  override fun onResume() {
-+    super.onResume()
-+    dynamicTheme.onResume(this)
-+  }
-+
-+  companion object {
-+    @JvmStatic
-+    fun createIntent(context: Context): Intent = Intent(context, RegistrationNetworkSettingsActivity::class.java)
-+  }
-+}
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/permissions/GrantPermissionsFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/permissions/GrantPermissionsFragment.kt
 deleted file mode 100644
 index 0974394ad24f227f958d1faee013cbd12dae5c9f..0000000000000000000000000000000000000000
@@ -4524,3 +4471,13 @@ index 5305686860004023fc5fd69e27281ec1820a24d2..8d6cc2a1f8dcc6f42e0dea06c3f865ae
  
      <!-- ArchiveRestoreSelectionScreen -->
      <!-- Title text for the archive restore selection screen -->
+diff --git a/feature/registration/src/main/res/values-pt/strings2.xml b/feature/registration/src/main/res/values-pt/strings2.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..24af182a0cfbf0052126fe49f5d72b6c8cfa257a
+--- /dev/null
++++ b/feature/registration/src/main/res/values-pt/strings2.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="RegistrationActivity_network_settings">Configurações de rede</string>
++</resources>

@@ -1,6 +1,6 @@
-From e95850bbed7989e0d9be667bcf5a3e1b0fb2dd21 Mon Sep 17 00:00:00 2001
+From 78152f4f132937be25ede2dde86975d1f5524235 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sun, 1 Nov 2026 11:08:40 +0100
+Date: Sun, 1 Nov 2026 14:37:03 +0100
 Subject: [PATCH] Adapt Molly integrations and tests to Signal 8.33.2
 
 Update linked-device provisioning and FCM cleanup for the current service APIs while preserving proxy configuration, error types, user-selected delivery and retry credentials. Move remaining event producers and lifecycle-bound subscribers to Signal's event bus.
@@ -20,11 +20,11 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: 8cd3e2148c70f776ac0026478082531d8da719b4
+Source-Commit: dcfdc8b0e5dcf02db8f7d12da2486cfbd9c1250b
 AI-Generated: true
 
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
-index 5aa6a01b7f9e722219b086e1551e121c1df08e0a..11209f3c3f91a1a4336a82a70fb14c1c2f7575c5 100644
+index 035766643bf39c1c14a4aedead1fa712ebd3088b..0251c30d7f837f4886074be40c8c361469336a6d 100644
 --- a/app/src/main/AndroidManifest.xml
 +++ b/app/src/main/AndroidManifest.xml
 @@ -618,7 +618,7 @@
@@ -137,7 +137,7 @@ index d2d0295c5f66dbea51a334156ff1bd3a500a56f4..e9c5c0a040d80754b8e72019f5f7d6f8
    }
  
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
-index 1711ba4cbdc76c26e9a98f381620d0f4611284d9..1ab1dd023099a5fa0e14521d1fdf7c66534d701d 100644
+index 68b6a48fa582222d713aad0f3c3cd3acb6fdea09..e609ad257371e53a4a6dc6795a4b2500ba0937d6 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
 +++ b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
 @@ -197,7 +197,6 @@ public class ApplicationContext extends Application implements AppForegroundObse

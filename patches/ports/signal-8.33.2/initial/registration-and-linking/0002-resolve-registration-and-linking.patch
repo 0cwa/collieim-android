@@ -1,6 +1,6 @@
-From b3b667e2faeeb3f38389179ee67e22739e84a23a Mon Sep 17 00:00:00 2001
+From 6e7161ab6bac415d2654892df492183ed8a93d68 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sun, 1 Nov 2026 11:08:40 +0100
+Date: Sun, 1 Nov 2026 14:37:03 +0100
 Subject: [PATCH] Port registration-and-linking to Signal 8.33.2, part 2
 
 Adapt Molly registration and Android linked-device policies to the new Signal registration architecture.
@@ -12,28 +12,18 @@ with Signal 8.33.2. The original Molly mailboxes remain unchanged.
 Offset-only movement and conflict-free automatic merges are already
 in the parent tree and are not re-exported as patch rewrites.
 
-This batch owns 36 whole-file changes. It records AI-assisted
+This batch owns 35 whole-file changes. It records AI-assisted
 compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: a04363b8cb4d172f53c657925ec1a94e570d5504
+Source-Commit: e57a1cda22250339b26fd9fc6ac65f5ad75d9216
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
 Mechanical-Merge-Tree: 759ef1c309d93aa7e4ac7217b144c04545562f11
 AI-Generated: true
 
-diff --git a/feature/registration/src/main/res/values-pt/strings2.xml b/feature/registration/src/main/res/values-pt/strings2.xml
-new file mode 100644
-index 0000000000000000000000000000000000000000..24af182a0cfbf0052126fe49f5d72b6c8cfa257a
---- /dev/null
-+++ b/feature/registration/src/main/res/values-pt/strings2.xml
-@@ -0,0 +1,4 @@
-+<?xml version="1.0" encoding="utf-8"?>
-+<resources>
-+    <string name="RegistrationActivity_network_settings">Configurações de rede</string>
-+</resources>
 diff --git a/feature/registration/src/main/res/values-ro/strings.xml b/feature/registration/src/main/res/values-ro/strings.xml
 index 42bccfb0ba64f2277d94429e4e012f92468814ba..ef9c2afd443b5d4ca0e774ce42789c75775a6f6c 100644
 --- a/feature/registration/src/main/res/values-ro/strings.xml

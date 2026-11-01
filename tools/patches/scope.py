@@ -39,6 +39,7 @@ def report_evidence(path):
     name = path[len(prefix):]
     locale_evidence = {
         'translation-task-witness.tsv',
+        'native-translation-byte-witness.tsv',
         'locale-revert-cohort.tsv', 'locale-revert-cohort.patch',
         'locale-revert-cohort.md', 'locale-revert-cohort.py',
         'locale-resource-probe.md', 'locale-resource-probe.py', 'locale-resource-probe.log',

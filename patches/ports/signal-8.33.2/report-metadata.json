@@ -13256,6 +13256,46 @@
       "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 58d84f977a40eada32367d3a2a70e00784fed06fb7b11645474a0fc01119473b, reverted blob 5ebb25e2d3a22956357ece6ac9093b6b45574526",
       "outcome": "baseline compile exit 0; inverse compile exit 0; modeled_transform_value_contract_changed; model is not Gradle execution, device behavior or proof of old Molly values",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "92b4aeb23e3a9479eae3": {
+      "type": "signal_api_compile_fix",
+      "reason": "Imports resolve DeviceAttributes and RegisterAsSecondaryDeviceResponse used by retained finishNewDeviceRegistration, which uses RegistrationApi.registerAsSecondaryDevice instead of old Molly delegation.",
+      "molly_equivalent": "Old Molly and older Molly refs delegate to PushServiceSocket and lack both imports; old and new Signal and stable/main lack the method and both imports. No direct equivalent in these files and refs.",
+      "searched_branches": "Exact file search: old Molly 0e202dda, old Signal c47a74ba, new Signal 6e9dddc0, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
+      "revert_gate": "Independent reverse of forward hunk then offline :lib:libsignal-service:compileJava, including Kotlin dependency; exact command in receipts.md",
+      "gate_input": "Historical PR3 source d756c962296d51e6d910d9821a8df44b0cbd0578, tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; current target tree c50fa18dab3c5420e93719dae3040b7a4058795f; blob identity limits in receipts.md; gate not rerun on current target",
+      "outcome": "Java compile exit 1: cannot find both used types. The two imports together are needed for the existing implementation; individual necessity and alternative implementations were not measured.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-92b4aeb23e3a9479eae3.patch and receipts.md#libsignal-independent-reversion-receipts"
+    },
+    "889e6d1e15e5bdc65692": {
+      "type": "conflict_resolution",
+      "reason": "Resolves literal import conflict markers, selecting relocated Signal network types and excluding proxy imports.",
+      "molly_equivalent": "Old Molly and older Molly refs use old package imports and omit TlsProxySocketFactory and SignalProxy; old Signal includes proxy imports; new Signal and stable/main use network packages and include them. No exact resolution in these files and refs.",
+      "searched_branches": "Exact file search: old Molly 0e202dda, old Signal c47a74ba, new Signal 6e9dddc0, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
+      "revert_gate": "Independent reverse of forward hunk then offline :lib:libsignal-service:compileJava, including Kotlin dependency; exact command in receipts.md",
+      "gate_input": "Historical PR3 source d756c962296d51e6d910d9821a8df44b0cbd0578, tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; current target tree c50fa18dab3c5420e93719dae3040b7a4058795f; blob identity limits in receipts.md; gate not rerun on current target",
+      "outcome": "Java compile exit 1: restored conflict markers cause parser errors. Import choices and policy remain unmeasured.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-889e6d1e15e5bdc65692.patch and receipts.md#libsignal-independent-reversion-receipts"
+    },
+    "a194a470661695b89387": {
+      "type": "conflict_resolution",
+      "reason": "Resolves literal import conflict markers, selecting relocated network types and omitting TlsProxySocketFactory.",
+      "molly_equivalent": "Old Molly and older Molly refs use old packages and omit the proxy import; old Signal includes it; new Signal and stable/main use network packages and include it. No exact resolution in these files and refs.",
+      "searched_branches": "Exact file search: old Molly 0e202dda, old Signal c47a74ba, new Signal 6e9dddc0, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
+      "revert_gate": "Independent reverse of forward hunk then offline :lib:libsignal-service:compileJava, including Kotlin dependency; exact command in receipts.md",
+      "gate_input": "Historical PR3 source d756c962296d51e6d910d9821a8df44b0cbd0578, tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; current target tree c50fa18dab3c5420e93719dae3040b7a4058795f; blob identity limits in receipts.md; gate not rerun on current target",
+      "outcome": "Kotlin compile exit 1: restored conflict markers cause parser errors. Import choices and policy remain unmeasured.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-a194a470661695b89387.patch and receipts.md#libsignal-independent-reversion-receipts"
+    },
+    "b735539990cfa3e6bdb8": {
+      "type": "conflict_resolution",
+      "reason": "Resolves literal import conflict markers, selecting relocated network types and omitting TlsProxySocketFactory and SignalProxy; the hunk also removes Svr3Credentials.",
+      "molly_equivalent": "Old Molly and older Molly refs use old packages, omit proxy imports, and retain Svr3Credentials; old Signal includes all three; new Signal and stable/main use relocated packages and include all three. No exact resolution in these files and refs.",
+      "searched_branches": "Exact file search: old Molly 0e202dda, old Signal c47a74ba, new Signal 6e9dddc0, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
+      "revert_gate": "Independent reverse of forward hunk then offline :lib:libsignal-service:compileJava, including Kotlin dependency; exact command in receipts.md",
+      "gate_input": "Historical PR3 source d756c962296d51e6d910d9821a8df44b0cbd0578, tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; current target tree c50fa18dab3c5420e93719dae3040b7a4058795f; blob identity limits in receipts.md; gate not rerun on current target",
+      "outcome": "Java compile exit 1: restored conflict markers cause parser errors. Import choices, policy and Svr3Credentials removal remain unmeasured.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-b735539990cfa3e6bdb8.patch and receipts.md#libsignal-independent-reversion-receipts"
     }
   },
   "exclusions_complete": false,

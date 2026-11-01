@@ -280,6 +280,9 @@ def render(config, evidence, ready=False):
                f'Clean merge excludes all {len(conflicts)} conflicted paths, including clean portions within them: ' + (', '.join('`' + p.replace('`', '\\`') + '`' for p in conflicts) if conflicts else 'none') + '.', '',
                '| Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |',
                '|---|---|---|---|---|---:|---:|---|---|---|---|']
+    summary_position = len(output) - 2
+    semantic = {name: [0, 0, 0] for name in ('conflict_resolution', 'signal_api_compile_fix', 'behavior_preservation', 'unmeasured')}
+    structural = {name: [0, 0, 0] for name in ('text', 'binary', 'mode')}
     for path, expected in sorted(stats.items()):
         display = os.fsdecode(path).replace('|', '\\|').replace('\n', '\\n')
         old_mode, new_mode, old_blob, new_blob = file_modes[path]
@@ -301,8 +304,20 @@ def render(config, evidence, ready=False):
             if category and category not in TYPES: raise ValueError('invalid hunk type ' + key)
             if ready and (category not in TYPES or any(not item.get(k) or item[k] == 'unmeasured' for k in ('reason', 'molly_equivalent', 'searched_branches', 'revert_gate', 'gate_input', 'outcome', 'evidence'))):
                 raise ValueError('missing evidence for ' + key)
+            for summary in (semantic[category or 'unmeasured'], structural[kind]):
+                summary[0] += 1
+                summary[1] += added
+                summary[2] += deleted
             fields = [key, display, kind, old_mode, new_mode, str(added), str(deleted), category or 'unmeasured', item.get('reason', 'unmeasured'), item.get('molly_equivalent', 'unmeasured') + ' (searched: ' + item.get('searched_branches', 'unmeasured') + ')', (item.get('revert_gate', 'unmeasured') + ' (input: ' + item.get('gate_input', 'unmeasured') + '): ' + item.get('outcome', 'unmeasured') + ' (evidence: ' + item.get('evidence', 'unmeasured') + ')')]
             output.append('| ' + ' | '.join(str(f).replace('\n', ' ').replace('|', '\\|') for f in fields) + ' |')
+    summary_output = ['## Hunk summaries', '',
+                      'Semantic type and structural kind are alternative breakdowns of the same rows; do not add them together. Binary and mode rows have zero physical text lines.', '']
+    for title, summary in (('Semantic type', semantic), ('Structural kind', structural)):
+        summary_output += [f'| {title} | Rows | Added | Deleted |', '|---|---:|---:|---:|']
+        summary_output += [f'| {name} | {count} | {added} | {deleted} |'
+                           for name, (count, added, deleted) in summary.items()]
+        summary_output.append('')
+    output[summary_position:summary_position] = summary_output
     stale = set(rows) - seen
     if stale: raise ValueError('stale or overlapping metadata: ' + ', '.join(sorted(stale)))
     if ready and (not evidence.get('exclusions_complete') or not evidence.get('minimization_complete')):

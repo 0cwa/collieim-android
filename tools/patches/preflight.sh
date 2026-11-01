@@ -5,7 +5,7 @@
 #   tools/patches/preflight.sh resources  # proof + Android resource linking (catches missing @color/@string refs)
 #   tools/patches/preflight.sh full       # proof + the profile's assemble and regression tests (as CI)
 #
-# The reconstructed source lands in $MOLLY_PREFLIGHT_DIR (default: /tmp/molly-preflight)
+# The reconstructed source lands in $MOLLY_PREFLIGHT_DIR (default: ~/agent-scratch/mollyim-android/preflight)
 # and is replaced on each run. Android stages need JDK 21 and ANDROID_HOME.
 set -euo pipefail
 
@@ -20,6 +20,18 @@ while (($#)); do
     *) echo "usage: $0 [proof|resources|full] [--scope pipeline|switch|release|followups --base REF]" >&2; exit 2 ;;
   esac
 done
+base=${MOLLY_PREFLIGHT_DIR:-$HOME/agent-scratch/mollyim-android/preflight}
+mkdir -p "$base"
+base=$(realpath -e -- "$base")
+# Temporary forests must have canonical paths; inherited TMPDIR may contain symlinks.
+mkdir -p "$base/tmp"
+export TMPDIR
+TMPDIR=$(realpath -e -- "$base/tmp")
+[[ $TMPDIR == "$base/"* ]] || { echo 'preflight temporary directory escapes its root' >&2; exit 1; }
+worktree="$base/release"
+reports="$base/reports"
+
+
 repo=$(git rev-parse --show-toplevel)
 cd "$repo"
 if [[ -f molly-build.json ]] && python3 -c 'import json; d=json.load(open("molly-build.json")); raise SystemExit(d.get("port") is None)'; then
@@ -32,10 +44,6 @@ if [[ -n $scope || -n $scope_base ]]; then
   python3 tools/patches/scope.py --scope "$scope" --base "$scope_base"
 fi
 
-base=${MOLLY_PREFLIGHT_DIR:-/tmp/molly-preflight}
-worktree="$base/release"
-reports="$base/reports"
-mkdir -p "$base"
 
 if [[ $scope == pipeline ]]; then
   [[ $stage == proof ]] || { echo 'pipeline has no Android profile' >&2; exit 2; }
@@ -99,7 +107,7 @@ build sdk >/dev/null
 
 if [[ $stage == resources ]]; then
   echo '== Android resource linking'
-  (cd "$worktree" && ./gradlew --no-configuration-cache --dependency-verification=strict \
+  (cd "$worktree" && ./gradlew --no-configuration-cache --max-workers=12 --dependency-verification=strict \
      :app:processProdWebsiteDebugResources)
   exit 0
 fi

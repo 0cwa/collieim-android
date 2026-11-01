@@ -52,6 +52,20 @@ class BuildSourceTests(unittest.TestCase):
         (self.repo / 'molly-build.json').write_text(json.dumps(self.config))
         (self.reports / 'source.json').write_text(json.dumps(self.proof))
 
+    def test_gradle_subprocess_keeps_single_worker_limit(self):
+        self.config['android'] = {'assemble': [':app:assembleDebug']}
+        self.save()
+        script = self.app / 'gradlew'
+        script.write_text('#!/bin/sh\nprintf "%s\\n" "$@"\n')
+        script.chmod(0o755)
+        init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
+        init.parent.mkdir(parents=True)
+        init.write_text('// fixture\n')
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof'):
+            runner.gradle('assemble')
+        self.assertIn('--max-workers=1', (self.reports / 'assemble.log').read_text().splitlines())
+
     def test_clean_source_and_generated_outputs_are_allowed(self):
         for path in ('module/build/generated/Generated.kt', 'build/outputs/app.apk',
                      '.gradle/cache/entry', '.kotlin/sessions/entry', 'module/.cxx/object.o'):

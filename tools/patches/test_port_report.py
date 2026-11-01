@@ -3,6 +3,43 @@ import port_report
 
 
 class PortReportTests(unittest.TestCase):
+    def test_current_snapshot_uses_original_patchset_even_when_incomplete(self):
+        import pathlib
+        import subprocess
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory)
+            def run(*args):
+                return subprocess.check_output(['git', '-C', directory, *args])
+            def tree():
+                run('add', '.')
+                return run('write-tree').decode().strip()
+            run('init', '-q')
+            run('config', 'user.name', 'Test')
+            run('config', 'user.email', 'test@example.invalid')
+            (path / 'file').write_text('old\n')
+            run('add', '.')
+            run('commit', '-qm', 'old')
+            commit = run('rev-parse', 'HEAD').decode().strip()
+            old = tree()
+            (path / 'file').write_text('molly\nextra\n')
+            molly = tree()
+            (path / 'file').write_text('mechanical\nother\nmore\n')
+            mechanical = tree()
+            (path / 'file').write_text('changed\nother\nmore\n')
+            target = tree()
+            config = {'signal': {'commit': commit}, 'port': {'mechanical_tree': mechanical}, 'target_tree': target}
+            evidence = {'hunks': {}, 'baseline_mechanical_tree': mechanical, 'baseline_target_tree': target, 'minimization_complete': False}
+            with patch.object(port_report, 'git', side_effect=run), patch.object(port_report, 'OLD', old), patch.object(port_report, 'MOLLY', molly), patch.object(port_report, 'clean_contribution', return_value=((0, 0, 0), [])):
+                report = port_report.render(config, evidence)
+                self.assertIn('Current mechanical comparison: 1 added, 1 deleted, 2 total', report)
+                self.assertIn('current Molly comparison: 3 added, 2 deleted, 5 total', report)
+                self.assertIn('original Molly patchset: 2 / 3 added plus deleted text lines = 66.667%', report)
+                self.assertIn('After minimization: unmeasured.', report)
+                with patch.object(port_report, 'OLD', molly):
+                    self.assertIn('original Molly patchset: undefined (zero denominator)', port_report.render(config, evidence))
+
     def test_header_like_changed_lines_are_hunk_content(self):
         patch = b'diff --git a/f b/f\n--- a/f\n+++ b/f\n@@ -1,2 +1,2 @@\n--- old\n+++ new\n context\n'
         hunks = port_report.parse_hunks(patch)

@@ -14,6 +14,8 @@ import stat
 import subprocess
 import sys
 import time
+import xml.etree.ElementTree as ET
+import zipfile
 
 
 class BuildError(RuntimeError):
@@ -52,6 +54,55 @@ def gradle_tasks(value, label: str, *, tests: bool = False) -> list[str]:
     if selector:
         raise BuildError('a final --tests argument has no class selector')
     return result
+
+
+def local_sdk_valid(root: Path, sdk: str, build_tools: str, ndk: str) -> bool:
+    """Check installed package identity and essential payloads before skipping installation."""
+    packages = [
+        (f'platforms;android-{sdk}', {'AndroidVersion.ApiLevel': sdk},
+         ['android.jar', 'framework.aidl', 'build.prop'], [], ['android.jar']),
+        (f'build-tools;{build_tools}', {'Pkg.Revision': build_tools},
+         ['lib/d8.jar'], ['aapt', 'aapt2', 'zipalign', 'd8'], ['lib/d8.jar']),
+        (f'ndk;{ndk}', {'Pkg.Revision': ndk}, [],
+         ['toolchains/llvm/prebuilt/linux-x86_64/bin/clang'], []),
+    ]
+    try:
+        for identity, expected, files, executables, archives in packages:
+            directory = root.joinpath(*identity.split(';'))
+            properties = {}
+            for line in (directory / 'source.properties').read_text().splitlines():
+                if '=' in line and not line.lstrip().startswith('#'):
+                    key, value = line.split('=', 1)
+                    properties[key.strip()] = value.strip()
+            if any(properties.get(key) != value for key, value in expected.items()):
+                return False
+            xml = ET.parse(directory / 'package.xml').getroot()
+            local = [element for element in xml if element.tag.split('}')[-1] == 'localPackage']
+            if len(local) != 1 or local[0].get('path') != identity:
+                return False
+            revision = next((element for element in local[0] if element.tag.split('}')[-1] == 'revision'), None)
+            if revision is None:
+                return False
+            parts = {element.tag.split('}')[-1]: element.text for element in revision}
+            version = '.'.join(parts.get(name, '0') for name in ('major', 'minor', 'micro'))
+            prop_version = properties.get('Pkg.Revision', '')
+            if not re.fullmatch(r'[0-9]+(?:\.[0-9]+){0,2}', prop_version):
+                return False
+            if tuple(map(int, version.split('.'))) != tuple(map(int, (prop_version + '.0.0').split('.')[:3])):
+                return False
+            for name in files + executables:
+                path = directory / name
+                if not path.is_file() or path.stat().st_size == 0:
+                    return False
+                if name in executables and not os.access(path, os.X_OK):
+                    return False
+            for name in archives:
+                with zipfile.ZipFile(directory / name) as archive:
+                    if not archive.namelist() or archive.testzip() is not None:
+                        return False
+    except (OSError, ValueError, ET.ParseError, zipfile.BadZipFile, TypeError):
+        return False
+    return True
 
 
 class Build:
@@ -256,6 +307,18 @@ class Build:
         if not sdk_root:
             raise BuildError('ANDROID_HOME or ANDROID_SDK_ROOT must identify the Android SDK')
         manager = Path(sdk_root) / 'cmdline-tools/latest/bin/sdkmanager'
+        if local_sdk_valid(Path(sdk_root), sdk, build_tools, ndk):
+            message = 'Pinned Android SDK packages validated locally; sdkmanager was not executed.\n'
+            print(message, end='')
+            (self.reports / 'sdk.log').write_text(message)
+            (self.reports / 'sdk.json').write_text(json.dumps({
+                'status': 'PASS', 'phase': 'sdk', 'command': [], 'executed': False,
+                'method': 'local-validation', 'log': str(self.reports / 'sdk.log')
+            }, indent=2) + '\n')
+            return
+        if getattr(self.args, 'accept_licenses', False):
+            subprocess.run([str(manager), '--licenses'], input='y\n' * 1000, text=True,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
         self.run([str(manager), '--install', f'platforms;android-{sdk}',
                   f'build-tools;{build_tools}', f'ndk;{ndk}'], 'sdk')
 
@@ -321,6 +384,7 @@ def main():
     parser.add_argument('--report-dir', type=Path, required=True)
     parser.add_argument('--native-source-dir', type=Path)
     parser.add_argument('--maven-dir', type=Path)
+    parser.add_argument('--accept-licenses', action='store_true', help='accept SDK licenses if installation is needed')
     parser.add_argument('--heap', default='5g', help='Gradle heap; one 2 GiB test worker runs separately')
     args = parser.parse_args()
     try:

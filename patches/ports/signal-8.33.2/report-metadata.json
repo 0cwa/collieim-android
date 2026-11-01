@@ -17341,6 +17341,156 @@
           "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#logger-and-direct-network-inverses"
         }
       ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt",
+          "input_blob": "67a515ff995d74b0c9c3e0638d56585bdb3bd92b",
+          "output_blob": "4641434ada28a7804881caf12c35420021f691f1",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-41eb884ca0dbef09bc61.patch",
+          "gate_input": "individual PR3 candidate 23c7c3b2a2891f46b9da5848782de30fa941f7dc; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/mediasend/v2/review/AddMessageDialogFragment.kt",
+          "input_blob": "71d24ee8d7bf65664f2eff9a425696daf5555aeb",
+          "output_blob": "cb3b7be6888113b8f6c0d061db0765513ea9fd1e",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-18e837587699c2ccdb07.patch",
+          "gate_input": "individual PR3 candidate 8852e2651697beb09d1f79c548ddf4c6ff884bc5; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/push/SignalServiceNetworkAccess.kt",
+          "input_blob": "2ce6c1db09a5d91b49009e862d131b485652cb72",
+          "output_blob": "a07d65ec8e944349992fcceb128c6d45f6ff9ce9",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-87ce6907dd34cd8a2f48.patch",
+          "gate_input": "individual PR3 candidate 482fc9adcfeded9a83ad508229055cb472470aeb; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java",
+          "input_blob": "5241fec920cca5a81cb327ad04c4dbbea80260fe",
+          "output_blob": "7767f8132650249eaa0b4dfad792e9e6e2fcbfb1",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-a898450028093f6dbe47.patch",
+          "gate_input": "individual PR3 candidate c392b04b024861cfed4db211f43130c1ed3317d3; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java",
+          "input_blob": "5241fec920cca5a81cb327ad04c4dbbea80260fe",
+          "output_blob": "186c82e4dc7f69b297b7a43a573c3327d3f438d3",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-a3356913785cf5890f1d.patch",
+          "gate_input": "individual PR3 candidate 0a6d50be5df97c1cffabb080427171ec80581ddf; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java",
+          "input_blob": "5241fec920cca5a81cb327ad04c4dbbea80260fe",
+          "output_blob": "eec60b5393aa7b0abf6392a33c3720d6eba503b8",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-519b1bae9259228d1178.patch",
+          "gate_input": "individual PR3 candidate 779ac5a0dfe37cff2b739ced7cb50147e70112f9; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt",
+          "input_blob": "67a515ff995d74b0c9c3e0638d56585bdb3bd92b",
+          "output_blob": "a259dc0711a66237d009bd140e5abd70b708d7b5",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-c99169709ac2738fe432.patch",
+          "gate_input": "individual PR3 candidate f8bced165faae067d61f1083359a036c2d88ae14; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt",
+          "input_blob": "67a515ff995d74b0c9c3e0638d56585bdb3bd92b",
+          "output_blob": "f2480e01ff66ca9fdbcafeab94f9da78917af71c",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-b66bfdb0d1545eb6aeaf.patch",
+          "gate_input": "individual PR3 candidate a4dffbf5495149e65070cdaa098bb262bb4de30e; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/ShortcutLauncherActivity.java",
+          "input_blob": "6029533abf442fded9dd0a86823c2384591c7a43",
+          "output_blob": "ec7d48d92ea3b0d12f9a50fa96b1f9656d451160",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-cf2626f0fef0a77480cd.patch",
+          "gate_input": "individual PR3 candidate 9190cffac33d8ec563539aae5f39d8648d7b6219; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/apkupdate/ApkUpdateRefreshListener.java",
+          "input_blob": "5fe4fd1e477db61d15edd5a4e019f70651dc7413",
+          "output_blob": "c48215ed4aec49c983a02bf19076541c3198d361",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-981f51dd421773a09892.patch",
+          "gate_input": "individual PR3 candidate 5d8ee7aad84fbec894171b3c562ac569701c488b; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6",
+          "gate": "offline app Kotlin and Java compiler tasks; exact commands in receipt",
+          "outcome": "individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
+        }
+      ]
     }
   ],
   "groups": {

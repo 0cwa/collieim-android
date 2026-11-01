@@ -1,4 +1,4 @@
-From 6ed38640a13010d291486520d9e8214a932d26c2 Mon Sep 17 00:00:00 2001
+From e95850bbed7989e0d9be667bcf5a3e1b0fb2dd21 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Sun, 1 Nov 2026 11:08:40 +0100
 Subject: [PATCH] Adapt Molly integrations and tests to Signal 8.33.2
@@ -20,7 +20,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: c79aae7b1e010aaf064f09f0bc6bafe05ff17394
+Source-Commit: 8cd3e2148c70f776ac0026478082531d8da719b4
 AI-Generated: true
 
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
@@ -137,10 +137,10 @@ index d2d0295c5f66dbea51a334156ff1bd3a500a56f4..e9c5c0a040d80754b8e72019f5f7d6f8
    }
  
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
-index 40624e83354b3a73fce6e27be5a43bd1a3d1235c..5241fec920cca5a81cb327ad04c4dbbea80260fe 100644
+index 1711ba4cbdc76c26e9a98f381620d0f4611284d9..1ab1dd023099a5fa0e14521d1fdf7c66534d701d 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
 +++ b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
-@@ -194,7 +194,6 @@ public class ApplicationContext extends Application implements AppForegroundObse
+@@ -197,7 +197,6 @@ public class ApplicationContext extends Application implements AppForegroundObse
      super.onCreate();
  
      SqlCipherLibraryLoader.load();
@@ -149,10 +149,10 @@ index 40624e83354b3a73fce6e27be5a43bd1a3d1235c..5241fec920cca5a81cb327ad04c4dbbe
      ScreenLockController.enableAutoLock(TextSecurePreferences.isBiometricScreenLockEnabled(this));
      AppDependencies.installDependencyProviders();
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt
-index 8896384ccf123523821b0a501be84987a32cd729..67a515ff995d74b0c9c3e0638d56585bdb3bd92b 100644
+index 83dda7fa566fcb5d0965bf9c30f016ccb2264844..7b8f0e5a189bf446aa95803aa6c81b0651fe5222 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt
-@@ -339,8 +339,6 @@ class MainActivity :
+@@ -342,8 +342,6 @@ class MainActivity :
        }
      }
  
@@ -161,7 +161,7 @@ index 8896384ccf123523821b0a501be84987a32cd729..67a515ff995d74b0c9c3e0638d56585b
      setContent {
        val mainToolbarState by toolbarViewModel.state.collectAsStateWithLifecycle()
        val mainNavigationState by mainNavigationViewModel.mainNavigationBarState.collectAsStateWithLifecycle()
-@@ -384,7 +382,6 @@ class MainActivity :
+@@ -387,7 +385,6 @@ class MainActivity :
          val detailLocation by mainNavigationViewModel.detailLocation.collectAsStateWithLifecycle()
          val isConversationFullscreen = !isSplitPane && detailLocation is MainDetailRoute.Conversation
  

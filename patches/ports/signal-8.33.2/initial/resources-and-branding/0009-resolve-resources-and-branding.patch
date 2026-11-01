@@ -1,4 +1,4 @@
-From 0b3d0fe07bd9e6b32b61b45d3fe943d6f1c56387 Mon Sep 17 00:00:00 2001
+From f84c02b8e6c01eb191caf690a10ae64e6cfebb22 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sun, 1 Nov 2026 11:08:40 +0100
 Subject: [PATCH] Port resources-and-branding to Signal 8.33.2, part 9
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 969a45e4b0d44bee6fbb78e3c74fcce5463190a3
+Source-Commit: a04363b8cb4d172f53c657925ec1a94e570d5504
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2

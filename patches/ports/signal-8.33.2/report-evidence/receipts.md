@@ -463,3 +463,25 @@ Old Molly `0e202dda90785771ff8c87526eaaf30c655f54f3`, local `origin/signal-8.20.
 Per-file physical additions/deletions against mechanical tree: baseline +16/-10, either inverse +8/-9; against old Molly: baseline +138/-44, either inverse +131/-44. These are unaccepted counterfactual counts. Source restored clean at PR4 parent and tree above; build retained and lease released. No changes integrated.
 
 The network inverse trees above are historical inputs, before the logger change; no new counterfactual network tree is claimed.
+
+
+## Ten import restorations
+
+Each case below restores a subset of an original raw diff hunk; the patch filename uses the first 20 hex digits of the patch SHA-256, not a raw hunk ID. Independent PR3 and PR4 candidates were gated on source parents `34f0a76bcd67a7f0551a9f95067dcf0d1e9a7384` and `bc954052836c79d40322d4f81bc4283f173fb44d` respectively. Both individual gates passed for each case.
+
+| Case | Path | PR3 candidate | Patch SHA-256 |
+|---|---|---|---|
+| main-activity | `app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt` | `23c7c3b2a2891f46b9da5848782de30fa941f7dc` | `41eb884ca0dbef09bc61342e209e8a14b4b20ec1b23b2e1c3808af1b0ee987e8` |
+| add-message | `app/src/main/java/org/thoughtcrime/securesms/mediasend/v2/review/AddMessageDialogFragment.kt` | `8852e2651697beb09d1f79c548ddf4c6ff884bc5` | `18e837587699c2ccdb07667e5ad80a0c47b64c88d8d642de7a368d43dec8bbe6` |
+| network-access | `app/src/main/java/org/thoughtcrime/securesms/push/SignalServiceNetworkAccess.kt` | `482fc9adcfeded9a83ad508229055cb472470aeb` | `87ce6907dd34cd8a2f4876c788013e1f504ad1846afaf6792e7fff4876a34fec` |
+| application-context-incoming-message-observer | `app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java` | `c392b04b024861cfed4db211f43130c1ed3317d3` | `a898450028093f6dbe47a95dba13533adc5bc94e706dd2979979c1e1b51fa381` |
+| application-context-communication-actions | `app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java` | `0a6d50be5df97c1cffabb080427171ec80581ddf` | `a3356913785cf5890f1daf1d002fd538b89aefb4b6101deb0538e4d59594f344` |
+| application-context-support-email-util | `app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java` | `779ac5a0dfe37cff2b739ced7cb50147e70112f9` | `519b1bae9259228d11789fffe7d881b991941803a62f1f48cb4bb4dbabad763e` |
+| main-activity-android-fragment | `app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt` | `f8bced165faae067d61f1083359a036c2d88ae14` | `c99169709ac2738fe432eed7dff619ea8d2fda3515f2b457c53ac1d3a8a8e6f3` |
+| main-activity-transition-specs | `app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt` | `a4dffbf5495149e65070cdaa098bb262bb4de30e` | `b66bfdb0d1545eb6aeafcdf5c89224d7878db0ae09da79453f500b76af635b8e` |
+| shortcut-launcher-activity-task-stack-builder | `app/src/main/java/org/thoughtcrime/securesms/ShortcutLauncherActivity.java` | `9190cffac33d8ec563539aae5f39d8648d7b6219` | `cf2626f0fef0a77480cd7e5d10dce7e300e83239aeee9270f6890658d4d9045d` |
+| apk-update-refresh-listener-text-secure-preferences | `app/src/main/java/org/thoughtcrime/securesms/apkupdate/ApkUpdateRefreshListener.java` | `5d8ee7aad84fbec894171b3c562ac569701c488b` | `981f51dd421773a0989270ad8f0562e1013adc5044d8b24ead27e60e0274f8d6` |
+
+The combined candidate trees `dbfcd0cb03ec7ee164da222069249076819590c0` (PR3) and `da0dd13a3715105c65119054a26ab7a8a294d4f6` (PR4) both passed with Kotlin and Java tasks executed. Command: `agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs="-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3" :app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac` with JDK 21 and Android SDK 37. The init script was supplied by absolute builder path.
+
+Independent old-source counterchecks for `ConversationTransitionState`, `MediaSendActivityContract`, and `org.greenrobot.eventbus.Subscribe` failed on both source parents at Kotlin compilation because the corresponding symbol or package was unresolved. These counters did not run on either combined tree. Static UnifiedPush producer and consumer review found the event migration preserved; runtime behavior was not measured. Restoring `KeyEvent` does not restore keypress behavior.

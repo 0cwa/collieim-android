@@ -141,6 +141,14 @@ class PortReportTests(unittest.TestCase):
                         self.assertIn(f'| {name} | {expected[0]} | {expected[1]} | {expected[2]} |', report)
                 self.assertIn('| signal_api_compile_fix | 0 | 0 | 0 |', report)
                 self.assertIn('| unmeasured | 1 | 0 | 0 |', report)
+                evidence['hunks'][by_kind['text']]['type'] = 'behavior_addition'
+                addition_report = port_report.render(config, evidence)
+                addition_row = next(line for line in addition_report.splitlines()
+                                    if line.startswith('| ' + by_kind['text'] + ' |'))
+                self.assertIn('| behavior_addition |', addition_row)
+                self.assertIn('| behavior_addition | 1 | 1 | 1 |', addition_report)
+                self.assertIn('| behavior_preservation | 1 | 0 | 0 |', addition_report)
+                self.assertIn('| conflict_resolution | 0 | 0 | 0 |', addition_report)
                 evidence['hunks'][by_kind['text']]['type'] = 'unknown'
                 with self.assertRaisesRegex(ValueError, 'invalid hunk type'):
                     port_report.render(config, evidence)

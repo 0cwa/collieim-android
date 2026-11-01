@@ -12,7 +12,7 @@ import tempfile
 
 import release
 
-TYPES = {'conflict_resolution', 'signal_api_compile_fix', 'behavior_preservation'}
+TYPES = {'conflict_resolution', 'signal_api_compile_fix', 'behavior_preservation', 'behavior_addition'}
 HUNK = re.compile(rb'^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@')
 OLD = 'c47a74ba0961903eeaeda6d22347a990056c3e83'
 MOLLY = '0e202dda90785771ff8c87526eaaf30c655f54f3'
@@ -282,6 +282,8 @@ def render(config, evidence, ready=False):
                '|---|---|---|---|---|---:|---:|---|---|---|---|']
     summary_position = len(output) - 2
     semantic = {name: [0, 0, 0] for name in ('conflict_resolution', 'signal_api_compile_fix', 'behavior_preservation', 'unmeasured')}
+    if any(item.get('type') == 'behavior_addition' for item in rows.values()):
+        semantic['behavior_addition'] = [0, 0, 0]
     structural = {name: [0, 0, 0] for name in ('text', 'binary', 'mode')}
     for path, expected in sorted(stats.items()):
         display = os.fsdecode(path).replace('|', '\\|').replace('\n', '\\n')

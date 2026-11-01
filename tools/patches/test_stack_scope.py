@@ -153,6 +153,17 @@ class BundleScopeTests(unittest.TestCase):
 
 
 class ReportEvidenceScopeTests(unittest.TestCase):
+    def test_hunk_evidence_name_requires_exact_lowercase_id(self):
+        prefix = 'patches/ports/signal-8.33.2/report-evidence/'
+        for phase in ('release', 'followups'):
+            self.assertTrue(scope.allowed(phase, prefix + 'hunk-0123456789abcdefabcd.patch'))
+            for name in ('hunk-0123456789abcdefabc.patch',
+                         'hunk-0123456789abcdefabcde.patch',
+                         'hunk-0123456789abcdefabcD.patch',
+                         'hunk-0123456789abcdefabcd.patch.bak',
+                         '../hunk-0123456789abcdefabcd.patch'):
+                self.assertFalse(scope.allowed(phase, prefix + name), name)
+
     def test_only_bounded_report_evidence_paths_are_allowed(self):
         prefix = 'patches/ports/signal-8.33.2/report-evidence/'
         for phase in ('release', 'followups'):

@@ -13386,6 +13386,60 @@
       "gate_input": "Independently tested PR3 and PR4 source parents and private fixture commits; partial inverse mapped by target interval, not a complete raw-hunk inverse. See receipts.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#resource-policy-partial-inverses",
       "outcome": "Both corrected fixture baselines executed and passed four tests. Each five-item inverse executed four tests: two network tests passed and both theme tests failed at dynamic_colors resolution; four subsequent attributes remain unmeasured."
+    },
+    "28e7c9ec6e96541eb7bd": {
+      "reason": "Resolve Molly/Signal overload conflict while preserving the Molly notification warning icon chain.",
+      "molly_equivalent": "Old Molly retains both trailingIcon parameters, forwarding, rendering and notification warning caller.",
+      "searched_branches": "old Molly, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
+      "revert_gate": ":core:ui:compileDebugKotlin --rerun, independent partial inverse",
+      "gate_input": "PR3 and PR4 source parents; resolved ID df5cfd6244c149d95e13; inverse SHA-256 5bafe7acf8011900cc03902a91c038e11b3c7ea7727cc3bf856b71488d8d475b",
+      "outcome": "Both branches FAIL: unresolved trailingIcon and overload errors. Partial inverse does not establish full semantic necessity; no UI assertion.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-28e7c9ec6e96541eb7bd.patch and patches/ports/signal-8.33.2/report-evidence/receipts.md"
+    },
+    "6445214c064774fbc5bf": {
+      "reason": "Resolve Molly/Signal overload conflict while preserving the Molly notification warning icon chain.",
+      "molly_equivalent": "Old Molly retains both trailingIcon parameters, forwarding, rendering and notification warning caller.",
+      "searched_branches": "old Molly, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
+      "revert_gate": ":core:ui:compileDebugKotlin --rerun, independent partial inverse",
+      "gate_input": "PR3 and PR4 source parents; resolved ID ce80f3dd5c60088c5815; inverse SHA-256 11aa03734460ebdb5a894a544859093a557b1be67ba9c44c02d63c9b0a23b731",
+      "outcome": "Both branches PASS: removing forwarding disconnects Molly warning icon and is ineligible. Partial inverse does not establish full semantic necessity; no UI assertion.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-6445214c064774fbc5bf.patch and patches/ports/signal-8.33.2/report-evidence/receipts.md"
+    },
+    "8ee81bb2368c6a09e0b9": {
+      "reason": "Resolve Molly/Signal overload conflict while preserving the Molly notification warning icon chain.",
+      "molly_equivalent": "Old Molly retains both trailingIcon parameters, forwarding, rendering and notification warning caller.",
+      "searched_branches": "old Molly, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
+      "revert_gate": ":core:ui:compileDebugKotlin --rerun, independent partial inverse",
+      "gate_input": "PR3 and PR4 source parents; resolved ID 0269c6aef9f0c55f0c1c; inverse SHA-256 16fa45ceac5e5a33c17b9c9099d3361e84fe44e0e5d78883f5f8a8acba690913",
+      "outcome": "Both branches FAIL: unresolved trailingIcon and overload inference errors. Partial inverse does not establish full semantic necessity; no UI assertion.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-8ee81bb2368c6a09e0b9.patch and patches/ports/signal-8.33.2/report-evidence/receipts.md"
+    },
+    "347758fbddfeba2e2c4b": {
+      "reason": "Availability uses enabled Autofill; Google default label uses an Autofill component heuristic, not a verified provider.",
+      "molly_equivalent": "Old Molly registration and repository use the same Autofill predicate and direct get/create calls.",
+      "searched_branches": "old Molly 0e202dda and current source",
+      "revert_gate": "unmeasured",
+      "gate_input": "Current-source runtime probe is not an inverse gate",
+      "outcome": "Inverse unmeasured. P4 API 28/31 provider probe passed; P3 has equivalent relevant inputs only. Old merged manifest and runtime unverified; no new port regression established.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md"
+    },
+    "73ccc2617e150994010e": {
+      "reason": "Remove Play Services credential compatibility bridge to preserve Molly policy.",
+      "molly_equivalent": "Old Molly lacks the Play bridge and pins AndroidX credentials 1.6.0.",
+      "searched_branches": "old Molly 0e202dda and current source",
+      "revert_gate": "unmeasured",
+      "gate_input": "Current-source runtime probe is not an inverse gate",
+      "outcome": "Inverse unmeasured. P4 API 28/31 provider probe passed; P3 has equivalent relevant inputs only. Old merged manifest and runtime unverified; no new port regression established.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md"
+    },
+    "b39663f97491efa631f0": {
+      "reason": "Guard passkeys at API 34 because the Play bridge is intentionally excluded.",
+      "molly_equivalent": "Old Molly lacks the Play bridge; passkey-only UnknownError UX is separate and unmeasured.",
+      "searched_branches": "old Molly 0e202dda and current source",
+      "revert_gate": "unmeasured",
+      "gate_input": "Current-source runtime probe is not an inverse gate",
+      "outcome": "Inverse unmeasured. P4 API 28/31 provider probe passed; P3 has equivalent relevant inputs only. Old merged manifest and runtime unverified; no new port regression established.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md"
     }
   },
   "exclusions_complete": false,

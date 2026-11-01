@@ -54,6 +54,24 @@ class TranslationStageTests(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(content)
 
+    def test_transform_matches_native_document_whitespace_when_updated(self):
+        base = b'<resources><string name="title" mollyify="true">Signal</string></resources>'
+        original = (b'<?xml version="1.0" encoding="UTF-8"?>\n'
+                    b'<!-- first -->\n<!-- second -->\n'
+                    b'<resources>\n    <string name="title">Signal</string>\n</resources>\n')
+        expected = (b'<?xml version="1.0" encoding="UTF-8"?><!-- first --><!-- second -->'
+                    b'<resources>\n    <string name="title">Molly</string>\n</resources>')
+        self.assertEqual(stage.transform(original, base, self.path), expected)
+        self.assertEqual(stage.transform(original.replace(b'>Signal</string>', b'>Other</string>'),
+                                         base, self.path),
+                         original.replace(b'>Signal</string>', b'>Other</string>'))
+
+    def test_transform_preserves_unmodified_core_blank_line(self):
+        base = b'<resources><string name="title" mollyify="true">Signal</string></resources>'
+        original = (b'<resources>\n    \n    <!-- Title of the system share sheet -->\n'
+                    b'<string name="title">Unchanged</string>\n</resources>\n')
+        self.assertEqual(stage.transform(original, base, 'core/util/src/main/res/values-fr/strings.xml'), original)
+
     def test_generate_uses_signal_tree_and_preserves_entities(self):
         stage.validate(self.data, 'fixture')
         stage.generate(self.root, self.root, self.data, forest.clean_git_env())

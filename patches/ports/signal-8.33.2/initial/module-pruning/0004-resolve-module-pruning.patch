@@ -1,4 +1,4 @@
-From 9d3bb9dc14c41c7dfbf5bfdf7fe7ffa3f64eb0e8 Mon Sep 17 00:00:00 2001
+From 78e220c83017759f6e250b81d069dc125dcae4b6 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sun, 1 Nov 2026 11:08:40 +0100
 Subject: [PATCH] Port module-pruning to Signal 8.33.2, part 4
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 969a45e4b0d44bee6fbb78e3c74fcce5463190a3
+Source-Commit: a04363b8cb4d172f53c657925ec1a94e570d5504
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2

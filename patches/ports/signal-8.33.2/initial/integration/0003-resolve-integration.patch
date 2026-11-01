@@ -1,4 +1,4 @@
-From 4805fc455cce16b1cc2d80629ccab9ae7215484d Mon Sep 17 00:00:00 2001
+From 8c369adc3dc22d568c747923fe456f293fb7a667 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sun, 1 Nov 2026 11:08:40 +0100
 Subject: [PATCH] Port integration to Signal 8.33.2, part 3
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 969a45e4b0d44bee6fbb78e3c74fcce5463190a3
+Source-Commit: a04363b8cb4d172f53c657925ec1a94e570d5504
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -25,21 +25,21 @@ Mechanical-Merge-Tree: 759ef1c309d93aa7e4ac7217b144c04545562f11
 AI-Generated: true
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/mediasend/v2/review/AddMessageDialogFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/mediasend/v2/review/AddMessageDialogFragment.kt
-index 4a842d9d9c2562972444ab85a25832811b0e7c15..71d24ee8d7bf65664f2eff9a425696daf5555aeb 100644
+index 4a842d9d9c2562972444ab85a25832811b0e7c15..cb3b7be6888113b8f6c0d061db0765513ea9fd1e 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/mediasend/v2/review/AddMessageDialogFragment.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/mediasend/v2/review/AddMessageDialogFragment.kt
-@@ -4,10 +4,6 @@ import android.app.Dialog
+@@ -4,10 +4,7 @@ import android.app.Dialog
  import android.content.DialogInterface
  import android.content.res.ColorStateList
  import android.os.Bundle
 -<<<<<<< MOLLY
--import android.view.KeyEvent
+ import android.view.KeyEvent
 -=======
 ->>>>>>> SIGNAL
  import android.view.View
  import android.view.ViewGroup
  import android.view.WindowManager
-@@ -77,8 +73,6 @@ class AddMessageDialogFragment : KeyboardEntryDialogFragment(R.layout.v2_media_a
+@@ -77,8 +74,6 @@ class AddMessageDialogFragment : KeyboardEntryDialogFragment(R.layout.v2_media_a
  
    private val disposables = CompositeDisposable()
  
@@ -48,7 +48,7 @@ index 4a842d9d9c2562972444ab85a25832811b0e7c15..71d24ee8d7bf65664f2eff9a425696da
    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
      startWithEmojiKeyboard = savedInstanceState == null && requireArguments().getBoolean(ARG_INITIAL_EMOJI_TOGGLE)
  
-@@ -90,7 +84,6 @@ class AddMessageDialogFragment : KeyboardEntryDialogFragment(R.layout.v2_media_a
+@@ -90,7 +85,6 @@ class AddMessageDialogFragment : KeyboardEntryDialogFragment(R.layout.v2_media_a
      return dialog
    }
  
@@ -2346,7 +2346,7 @@ index 3287318ceca3ba559a9261f4c155841fd0776dcf..bd47e04e910788ebadf2977ffc93e852
  import org.thoughtcrime.securesms.keyvalue.AccountValues
  import org.thoughtcrime.securesms.keyvalue.SignalStore
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/push/SignalServiceNetworkAccess.kt b/app/src/main/java/org/thoughtcrime/securesms/push/SignalServiceNetworkAccess.kt
-index 2d85644e8b72c8e996f4f900af04d445f5a83946..2ce6c1db09a5d91b49009e862d131b485652cb72 100644
+index 2d85644e8b72c8e996f4f900af04d445f5a83946..a07d65ec8e944349992fcceb128c6d45f6ff9ce9 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/push/SignalServiceNetworkAccess.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/push/SignalServiceNetworkAccess.kt
 @@ -1,10 +1,7 @@
@@ -2360,7 +2360,7 @@ index 2d85644e8b72c8e996f4f900af04d445f5a83946..2ce6c1db09a5d91b49009e862d131b48
  import com.google.i18n.phonenumbers.PhoneNumberUtil
  import okhttp3.CipherSuite
  import okhttp3.ConnectionSpec
-@@ -29,18 +26,7 @@ import org.thoughtcrime.securesms.net.Networking
+@@ -29,16 +26,6 @@ import org.thoughtcrime.securesms.net.Networking
  import org.thoughtcrime.securesms.net.RemoteDeprecationDetectorInterceptor
  import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor
  import org.thoughtcrime.securesms.net.StorageServiceSizeLoggingInterceptor
@@ -2375,11 +2375,9 @@ index 2d85644e8b72c8e996f4f900af04d445f5a83946..2ce6c1db09a5d91b49009e862d131b48
 -=======
 ->>>>>>> SIGNAL
  import java.io.IOException
--import java.util.Optional
+ import java.util.Optional
  import kotlin.time.Duration.Companion.minutes
- 
- /**
-@@ -188,12 +174,9 @@ class SignalServiceNetworkAccess(context: Context) {
+@@ -188,12 +175,9 @@ class SignalServiceNetworkAccess(context: Context) {
        .build()
  
      private val APP_CONNECTION_SPEC = ConnectionSpec.MODERN_TLS
@@ -2392,7 +2390,7 @@ index 2d85644e8b72c8e996f4f900af04d445f5a83946..2ce6c1db09a5d91b49009e862d131b48
    }
  
    private val serviceTrustStore: TrustStore = SignalServiceTrustStore(context)
-@@ -264,14 +247,9 @@ class SignalServiceNetworkAccess(context: Context) {
+@@ -264,14 +248,9 @@ class SignalServiceNetworkAccess(context: Context) {
      signalCdsiUrls = fUrls.map { SignalCdsiUrl(it, F_CDSI_HOST, fTrustStore, APP_CONNECTION_SPEC) }.toTypedArray(),
      signalSvr2Urls = fUrls.map { SignalSvr2Url(it, fTrustStore, F_SVR2_HOST, APP_CONNECTION_SPEC) }.toTypedArray(),
      networkInterceptors = interceptors,
@@ -2407,7 +2405,7 @@ index 2d85644e8b72c8e996f4f900af04d445f5a83946..2ce6c1db09a5d91b49009e862d131b48
      zkGroupServerPublicParams = zkGroupServerPublicParams,
      genericServerPublicParams = genericServerPublicParams,
      backupServerPublicParams = backupServerPublicParams,
-@@ -328,16 +306,10 @@ class SignalServiceNetworkAccess(context: Context) {
+@@ -328,16 +307,10 @@ class SignalServiceNetworkAccess(context: Context) {
      signalStorageUrls = arrayOf(SignalStorageUrl(BuildConfig.STORAGE_URL, serviceTrustStore)),
      signalCdsiUrls = arrayOf(SignalCdsiUrl(BuildConfig.SIGNAL_CDSI_URL, serviceTrustStore)),
      signalSvr2Urls = arrayOf(SignalSvr2Url(BuildConfig.SIGNAL_SVR2_URL, serviceTrustStore)),
@@ -2425,7 +2423,7 @@ index 2d85644e8b72c8e996f4f900af04d445f5a83946..2ce6c1db09a5d91b49009e862d131b48
      zkGroupServerPublicParams = zkGroupServerPublicParams,
      genericServerPublicParams = genericServerPublicParams,
      backupServerPublicParams = backupServerPublicParams,
-@@ -420,14 +392,9 @@ class SignalServiceNetworkAccess(context: Context) {
+@@ -420,14 +393,9 @@ class SignalServiceNetworkAccess(context: Context) {
        signalCdsiUrls = cdsiUrls,
        signalSvr2Urls = svr2Urls,
        networkInterceptors = interceptors,

@@ -1,4 +1,4 @@
-From 241aefceb652743f1015938c0d3e72099d166ddc Mon Sep 17 00:00:00 2001
+From 9802dfa7b55b26a1f924c6cc4825be3861159614 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Sun, 1 Nov 2026 11:08:41 +0100
 Subject: [PATCH] Restore donation completion acknowledgement
@@ -9,8 +9,8 @@ For long-running donations, stop showing the loading indicator after the badge l
 
 AI-Generated: true
 
-Based-On-Source-Commit: 6fa9f5bb6344dc8d0650ceca5b800bfa5342cafc
-Source-Commit: 241aefceb652743f1015938c0d3e72099d166ddc
+Based-On-Source-Commit: d70c94b70f69e611f6c43388bea85a4de83cc835
+Source-Commit: 9802dfa7b55b26a1f924c6cc4825be3861159614
 
 AI-assisted compatibility changes: restore imports across source checkpoints.
 

@@ -14,6 +14,11 @@ WORKFLOWS = {'.github/workflows/android.yml', '.github/workflows/molly-patch-rel
 RELEASE_PATHS = frozenset(['patches/ports/signal-8.33.2/source-checkpoint.bundle', 'patches/ports/signal-8.33.2/.gitattributes', 'patches/ports/signal-8.33.2/followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch', 'patches/ports/signal-8.33.2/followups/cdn-transport-test-fixture/series', 'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch', 'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/series', 'patches/ports/signal-8.33.2/followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch', 'patches/ports/signal-8.33.2/followups/netcipher-sdk-dsl/series', 'patches/ports/signal-8.33.2/followups/restore-preference-import/0001-restore-preference-import.patch', 'patches/ports/signal-8.33.2/followups/restore-preference-import/series', 'patches/ports/signal-8.33.2/initial/app-updates/0001-resolve-app-updates.patch', 'patches/ports/signal-8.33.2/initial/app-updates/series', 'patches/ports/signal-8.33.2/initial/appearance/0001-resolve-appearance.patch', 'patches/ports/signal-8.33.2/initial/appearance/series', 'patches/ports/signal-8.33.2/initial/backup-and-restore/0001-resolve-backup-and-restore.patch', 'patches/ports/signal-8.33.2/initial/backup-and-restore/series', 'patches/ports/signal-8.33.2/initial/build-and-release/0001-resolve-build-and-release.patch', 'patches/ports/signal-8.33.2/initial/build-and-release/series', 'patches/ports/signal-8.33.2/initial/integration/0001-resolve-integration.patch', 'patches/ports/signal-8.33.2/initial/integration/0002-resolve-integration.patch', 'patches/ports/signal-8.33.2/initial/integration/0003-resolve-integration.patch', 'patches/ports/signal-8.33.2/initial/integration/series', 'patches/ports/signal-8.33.2/initial/maps/0001-resolve-maps.patch', 'patches/ports/signal-8.33.2/initial/maps/series', 'patches/ports/signal-8.33.2/initial/module-pruning/0001-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0002-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0003-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0004-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0005-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0006-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0007-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/series', 'patches/ports/signal-8.33.2/initial/networking-and-proxies/0001-resolve-networking-and-proxies.patch', 'patches/ports/signal-8.33.2/initial/networking-and-proxies/series', 'patches/ports/signal-8.33.2/initial/notifications-and-unifiedpush/0001-resolve-notifications-and-unifiedpush.patch', 'patches/ports/signal-8.33.2/initial/notifications-and-unifiedpush/series', 'patches/ports/signal-8.33.2/initial/payments-and-donations/0001-resolve-payments-and-donations.patch', 'patches/ports/signal-8.33.2/initial/payments-and-donations/series', 'patches/ports/signal-8.33.2/initial/privacy-controls/0001-resolve-privacy-controls.patch', 'patches/ports/signal-8.33.2/initial/privacy-controls/series', 'patches/ports/signal-8.33.2/initial/registration-and-linking/0001-resolve-registration-and-linking.patch', 'patches/ports/signal-8.33.2/initial/registration-and-linking/0002-resolve-registration-and-linking.patch', 'patches/ports/signal-8.33.2/initial/registration-and-linking/series', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0001-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0002-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0003-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0004-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0005-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0006-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0007-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0008-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0009-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0010-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0011-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0012-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0013-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0014-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/series', 'patches/ports/signal-8.33.2/initial/security-and-locking/0001-resolve-security-and-locking.patch', 'patches/ports/signal-8.33.2/initial/security-and-locking/series', 'patches/ports/signal-8.33.2/provenance.json', 'patches/ports/signal-8.33.2/series', 'patches/ports/signal-8.33.2/report-metadata.json'])
 BEHAVIOR = {'reregistration-linked-devices-reminder', 'legacy-backup-precedence',
             'donation-completion', 'backup-notification-id-upgrade'}
+ADDITIONS = {'registration-network-settings', 'donation-completion-copy'}
+
+
+def addition_files(name):
+    return ('series', '0001-' + name + '.patch', 'source-checkpoint.bundle')
 
 
 def git(repo, *args, check=True):
@@ -61,18 +66,21 @@ def allowed(scope, path):
         if scope == 'switch':
             return path.startswith('patches/molly/') or path == 'molly-build.json'
         return report_evidence(path) or path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'}
-    if scope == 'followups':
+    if scope in ('followups', 'additions'):
         if report_evidence(path):
             return True
         prefix = 'patches/ports/signal-8.33.2/'
         if path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md', prefix + 'series', prefix + 'provenance.json', prefix + 'report-metadata.json'}:
             return True
-        return any(path.startswith(prefix + 'followups/' + name + '/') for name in BEHAVIOR)
+        if scope == 'followups':
+            return any(path.startswith(prefix + 'followups/' + name + '/') for name in BEHAVIOR)
+        return any(path in {prefix + 'followups/' + layer + '/' + name for name in addition_files(layer)}
+                   for layer in ADDITIONS)
     return False
 
 
 def check_scope(repo, scope, base, head='HEAD'):
-    if scope not in ('pipeline', 'switch', 'release', 'followups'):
+    if scope not in ('pipeline', 'switch', 'release', 'followups', 'additions'):
         raise ValueError('unknown scope')
     if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
@@ -102,7 +110,7 @@ def check_scope(repo, scope, base, head='HEAD'):
         if git(repo, 'rev-parse', base + '^{commit}').decode().strip() != MOLLY:
             raise ValueError('pipeline base must be the official Molly commit')
     else:
-        lower_source = {'switch': MOLLY, 'release': OLD, 'followups': NEW}[scope]
+        lower_source = {'switch': MOLLY, 'release': OLD, 'followups': NEW, 'additions': NEW}[scope]
         for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', lower_source, base).split(b'\0')):
             if not metadata(raw.decode('utf-8', 'surrogateescape')):
                 raise ValueError('lower base has incorrect source projection')
@@ -125,12 +133,19 @@ def check_scope(repo, scope, base, head='HEAD'):
         raise ValueError('release phase contains behavior patches')
     if scope == 'followups' and not all(exists(head, 'patches/ports/signal-8.33.2/followups/' + name) for name in BEHAVIOR):
         raise ValueError('followups phase is incomplete')
+    if scope == 'additions':
+        for layer in ADDITIONS:
+            addition_path = 'patches/ports/signal-8.33.2/followups/' + layer
+            if exists(base, addition_path):
+                raise ValueError('additions base already contains ' + layer)
+            if not all(exists(head, addition_path + '/' + name) for name in addition_files(layer)):
+                raise ValueError('additions phase is incomplete')
     # Verify lower phases from their own ancestors, so changes hidden in a base
     # cannot escape the adjacent diff. Each recursion moves to an earlier phase.
     if scope == 'switch':
         check_scope(repo, 'pipeline', MOLLY, base)
-    elif scope in ('release', 'followups'):
-        lower_phase = 'switch' if scope == 'release' else 'release'
+    elif scope in ('release', 'followups', 'additions'):
+        lower_phase = {'release': 'switch', 'followups': 'release', 'additions': 'followups'}[scope]
         candidates = git(repo, 'rev-list', '--ancestry-path', MOLLY + '..' + base).decode().splitlines()
         for candidate in candidates:
             try:
@@ -140,7 +155,7 @@ def check_scope(repo, scope, base, head='HEAD'):
                 continue
         else:
             raise ValueError('lower base has no validated preceding stack phase')
-    source = {'pipeline': MOLLY, 'switch': OLD, 'release': NEW, 'followups': NEW}[scope]
+    source = {'pipeline': MOLLY, 'switch': OLD, 'release': NEW, 'followups': NEW, 'additions': NEW}[scope]
     paths = git(repo, 'diff', '--no-renames', '--name-only', '-z', source, head).split(b'\0')
     for raw in filter(None, paths):
         path = raw.decode('utf-8', 'surrogateescape')
@@ -167,12 +182,12 @@ def check_scope(repo, scope, base, head='HEAD'):
                 raise ValueError('invalid profile pins')
         except (KeyError, TypeError, json.JSONDecodeError) as exc:
             raise ValueError('invalid profile') from exc
-    return {'scope': scope, 'profile_present': scope != 'pipeline', 'port_present': scope in ('release', 'followups')}
+    return {'scope': scope, 'profile_present': scope != 'pipeline', 'port_present': scope in ('release', 'followups', 'additions')}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups'))
+    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions'))
     parser.add_argument('--base', required=True)
     parser.add_argument('--head', default='HEAD')
     parser.add_argument('--repo', default='.')

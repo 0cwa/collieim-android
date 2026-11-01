@@ -115,6 +115,67 @@ class ScopeTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'no validated preceding stack phase'):
                     scope.check_scope(self.repo, 'release', hidden_tool_base)
 
+    def test_additions_accepts_only_new_layer_and_shared_metadata(self):
+        prefix = 'patches/ports/signal-8.33.2/'
+        for layer in scope.ADDITIONS:
+            for name in scope.addition_files(layer):
+                self.assertTrue(scope.allowed('additions', prefix + 'followups/' + layer + '/' + name))
+        for name in ('series', 'provenance.json', 'report-metadata.json', 'report-evidence/receipts.md'):
+            self.assertTrue(scope.allowed('additions', prefix + name))
+        for path in ('app/src/main/AndroidManifest.xml', 'patches/molly/series',
+                     prefix + 'followups/registration-network-settings/other.patch',
+                     prefix + 'followups/donation-completion-copy/other.patch',
+                     prefix + 'followups/unknown/series',
+                     prefix + 'followups/donation-completion/series',
+                     prefix + 'initial/integration/series', 'tools/patches/scope.py'):
+            self.assertFalse(scope.allowed('additions', path), path)
+
+    def test_additions_requires_existing_followups_and_a_new_layer(self):
+        import json
+        self.commit('tools/patches/tool.py', 'tool\n')
+        signal = self.base
+        forest = self.repo / 'patches/molly/fixture'
+        forest.parent.mkdir(parents=True)
+        forest.write_text('immutable fixture\n')
+        self.git('add', 'patches/molly')
+        forest_tree = self.git('write-tree').strip()
+        forest_id = self.git('rev-parse', forest_tree + ':patches/molly').strip()
+        config = {'signal': {'commit': signal}, 'molly': {'target': self.base, 'tree': '3cd0bb01cf840e4b702187085432020d163d80ce'}, 'port': None, 'native': None}
+        (self.repo / 'molly-build.json').write_text(json.dumps(config))
+        self.git('add', '.')
+        self.git('commit', '-qm', 'switch')
+        config['port'] = {'mechanical_tree': 'unused'}
+        self.commit('molly-build.json', json.dumps(config))
+        release = self.git('rev-parse', 'HEAD').strip()
+        prefix = 'patches/ports/signal-8.33.2/followups/'
+        for name in sorted(scope.BEHAVIOR):
+            self.commit(prefix + name + '/series', 'fixture\n')
+        followups = self.git('rev-parse', 'HEAD').strip()
+        with mock.patch.object(scope, 'MOLLY', self.base), mock.patch.object(scope, 'OLD', signal), mock.patch.object(scope, 'NEW', signal), mock.patch.object(scope, 'FOREST', forest_id):
+            with self.assertRaisesRegex(ValueError, 'additions phase is incomplete'):
+                scope.check_scope(self.repo, 'additions', followups)
+            self.commit(prefix + 'registration-network-settings/series', 'fixture\n')
+            with self.assertRaisesRegex(ValueError, 'additions phase is incomplete'):
+                scope.check_scope(self.repo, 'additions', followups)
+            for layer in sorted(scope.ADDITIONS):
+                for name in scope.addition_files(layer):
+                    if layer != 'registration-network-settings' or name != 'series':
+                        self.commit(prefix + layer + '/' + name, 'fixture\n')
+            self.assertTrue(scope.check_scope(self.repo, 'additions', followups)['port_present'])
+            with self.assertRaisesRegex(ValueError, 'outside scope'):
+                scope.check_scope(self.repo, 'additions', release)
+            with self.assertRaisesRegex(ValueError, 'already contains'):
+                scope.check_scope(self.repo, 'additions', 'HEAD')
+            self.commit(prefix + 'donation-completion/series', 'modified\n')
+            with self.assertRaisesRegex(ValueError, 'outside scope'):
+                scope.check_scope(self.repo, 'additions', followups)
+            self.git('checkout', '-q', '--detach', release)
+            for layer in sorted(scope.ADDITIONS):
+                for name in scope.addition_files(layer):
+                    self.commit(prefix + layer + '/' + name, 'fixture\n')
+            with self.assertRaisesRegex(ValueError, 'no validated preceding stack phase'):
+                scope.check_scope(self.repo, 'additions', release)
+
     def test_followups_allow_only_named_adjacent_report_metadata(self):
         self.assertTrue(scope.allowed('followups', 'patches/ports/signal-8.33.2/report-metadata.json'))
         self.assertFalse(scope.allowed('followups', 'patches/ports/signal-8.33.2/unexpected.json'))

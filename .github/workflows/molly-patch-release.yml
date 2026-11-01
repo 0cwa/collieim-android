@@ -47,6 +47,7 @@ jobs:
               stack/1-patch-pipeline) scope=switch ;;
               stack/2-molly-as-patchset) scope=release ;;
               stack/3-signal-8.33.2) scope=followups ;;
+              stack/4-behavior-followups) scope=additions ;;
               *) echo "Unknown base: $BASE_REF" >&2; exit 1 ;;
             esac
             base="$BASE_SHA"
@@ -56,6 +57,7 @@ jobs:
               stack/2-molly-as-patchset) scope=switch; base_ref=stack/1-patch-pipeline ;;
               stack/3-signal-8.33.2) scope=release; base_ref=stack/2-molly-as-patchset ;;
               stack/4-behavior-followups) scope=followups; base_ref=stack/3-signal-8.33.2 ;;
+              stack/5-behavior-additions) scope=additions; base_ref=stack/4-behavior-followups ;;
               *) echo "Unknown branch: $HEAD_REF" >&2; exit 1 ;;
             esac
             git fetch --no-tags origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref"
@@ -63,14 +65,14 @@ jobs:
           else
             echo "Unsupported event" >&2; exit 1
           fi
-          if [[ "$scope" == release || "$scope" == followups ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           python3 tools/patches/scope.py --scope "$scope" --base "$base"
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
-          if [[ "$scope" == release || "$scope" == followups ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions ]]; then
             python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"

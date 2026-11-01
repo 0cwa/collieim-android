@@ -1,6 +1,6 @@
-From 7527a2df192513b7cac58cf638eaaa4877afd597 Mon Sep 17 00:00:00 2001
+From 246d483289920948cd16ebcd23cb11add24a3b2a Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sat, 31 Oct 2026 23:25:32 +0100
+Date: Sun, 1 Nov 2026 04:39:12 +0100
 Subject: [PATCH] Port integration to Signal 8.33.2, part 2
 
 Resolve shared application, account, service and core integration files whose APIs or feature boundaries changed upstream.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: d6a326e8d173a9f302256edd5451ba59d295da50
+Source-Commit: 15e53970dd36d370223c6bc4290cf2b4cdab88a2
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -343,22 +343,16 @@ index 190ae6ce2be9042fcf897e4460af2da9619b7f98..62c3dbaf114f99e7669a2d1e4afb190b
  import org.thoughtcrime.securesms.R
  import org.thoughtcrime.securesms.badges.BadgeImageView
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/shared/ConversationHeader.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/shared/ConversationHeader.kt
-index c8a5f9b87f508ad62e00dad5c6c90c35f78c7598..bf6851fb9af61e27a35f4863c1bf3523d0040576 100644
+index c8a5f9b87f508ad62e00dad5c6c90c35f78c7598..e70341329cf040d582ee7cdbb4631f7007a6166d 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/shared/ConversationHeader.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/shared/ConversationHeader.kt
-@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.ColumnScope
- import androidx.compose.foundation.layout.Row
- import androidx.compose.foundation.layout.fillMaxWidth
- import androidx.compose.foundation.layout.height
--import androidx.compose.foundation.layout.offset
- import androidx.compose.foundation.layout.padding
- import androidx.compose.foundation.layout.size
- import androidx.compose.foundation.layout.width
-@@ -31,10 +30,10 @@ import androidx.compose.ui.draw.clip
+@@ -31,10 +31,12 @@ import androidx.compose.ui.draw.clip
  import androidx.compose.ui.platform.LocalInspectionMode
  import androidx.compose.ui.res.painterResource
  import androidx.compose.ui.res.stringResource
 +import androidx.compose.ui.res.pluralStringResource
++import androidx.compose.ui.semantics.contentDescription
++import androidx.compose.ui.semantics.semantics
  import androidx.compose.ui.text.style.TextAlign
  import androidx.compose.ui.unit.dp
  import androidx.compose.ui.viewinterop.AndroidView
@@ -366,12 +360,13 @@ index c8a5f9b87f508ad62e00dad5c6c90c35f78c7598..bf6851fb9af61e27a35f4863c1bf3523
  import org.signal.core.ui.compose.Buttons
  import org.signal.core.ui.compose.DayNightPreviews
  import org.signal.core.ui.compose.Previews
-@@ -42,17 +41,12 @@ import org.signal.emoji.EmojiText
+@@ -42,17 +44,13 @@ import org.signal.emoji.EmojiText
  import org.thoughtcrime.securesms.R
  import org.thoughtcrime.securesms.avatar.AvatarImage
  import org.thoughtcrime.securesms.avatar.view.AvatarView
 -import org.thoughtcrime.securesms.badges.BadgeImageView
 -import org.thoughtcrime.securesms.components.settings.app.subscription.BadgeImageSize
++import org.thoughtcrime.securesms.components.settings.app.subscription.BadgeImageLarge
  import org.thoughtcrime.securesms.database.model.StoryViewState
  import org.thoughtcrime.securesms.profiles.ProfileName
  import org.thoughtcrime.securesms.recipients.Recipient
@@ -384,7 +379,7 @@ index c8a5f9b87f508ad62e00dad5c6c90c35f78c7598..bf6851fb9af61e27a35f4863c1bf3523
  private val VERIFIED_BADGE_SIZE = 28.dp
  private val HEADLINE_GLYPH_SIZE = 24.dp
  
-@@ -69,11 +63,10 @@ fun ConversationHeader(
+@@ -69,11 +67,10 @@ fun ConversationHeader(
    modifier: Modifier = Modifier,
    storyViewState: StoryViewState = StoryViewState.NONE,
    subhead: String? = null,
@@ -397,7 +392,7 @@ index c8a5f9b87f508ad62e00dad5c6c90c35f78c7598..bf6851fb9af61e27a35f4863c1bf3523
    onNameClick: (() -> Unit)? = null,
    onAvatarViewCreated: (View) -> Unit = {},
    underName: @Composable ColumnScope.() -> Unit = {}
-@@ -82,9 +75,7 @@ fun ConversationHeader(
+@@ -82,9 +79,7 @@ fun ConversationHeader(
      AvatarHeader(
        recipient = recipient,
        storyViewState = storyViewState,
@@ -407,7 +402,7 @@ index c8a5f9b87f508ad62e00dad5c6c90c35f78c7598..bf6851fb9af61e27a35f4863c1bf3523
        onAvatarViewCreated = onAvatarViewCreated
      )
  
-@@ -113,6 +104,20 @@ fun ConversationHeader(
+@@ -113,6 +108,20 @@ fun ConversationHeader(
            modifier = Modifier.padding(top = 8.dp)
          )
        }
@@ -428,7 +423,7 @@ index c8a5f9b87f508ad62e00dad5c6c90c35f78c7598..bf6851fb9af61e27a35f4863c1bf3523
      }
    }
  }
-@@ -121,9 +126,7 @@ fun ConversationHeader(
+@@ -121,23 +130,22 @@ fun ConversationHeader(
  private fun AvatarHeader(
    recipient: Recipient,
    storyViewState: StoryViewState,
@@ -438,38 +433,50 @@ index c8a5f9b87f508ad62e00dad5c6c90c35f78c7598..bf6851fb9af61e27a35f4863c1bf3523
    onAvatarViewCreated: (View) -> Unit,
    modifier: Modifier = Modifier
  ) {
-@@ -133,11 +136,10 @@ private fun AvatarHeader(
++  val badge = if (recipient.isSelf) null else recipient.featuredBadge
+   Box(
+     contentAlignment = Alignment.Center,
+     modifier = modifier
        .fillMaxWidth()
        .padding(top = 12.dp)
    ) {
 -    // Sized to the avatar rather than the header, so the badge can hang off of the avatar's bottom-end corner.
      Box(
        modifier = Modifier
++        .padding(bottom = if (badge != null) 8.dp else 0.dp)
          .width(AVATAR_SIZE)
 -        .height(if (badges.isNotEmpty()) BADGE_OFFSET_Y + BADGE_SIZE else AVATAR_SIZE)
 +        .height(AVATAR_SIZE)
      ) {
        if (LocalInspectionMode.current) {
          AvatarImage(
-@@ -159,17 +161,7 @@ private fun AvatarHeader(
+@@ -158,17 +166,16 @@ private fun AvatarHeader(
+           avatarView.setOnClickListener { onAvatarClick() }
          }
        }
- 
+-
 -      if (badges.isNotEmpty()) {
 -        AndroidView(
 -          factory = { context -> BadgeImageView(context, BadgeImageSize.LARGE) },
--          modifier = Modifier
++      badge?.let {
++        val badgeDescription = stringResource(R.string.ImageView__badge)
++        BadgeImageLarge(
++          badge = badge,
+           modifier = Modifier
 -            .offset(x = BADGE_OFFSET_X, y = BADGE_OFFSET_Y)
 -            .size(BADGE_SIZE)
 -        ) { badgeView ->
 -          badgeView.setBadgeFromRecipient(recipient)
 -          badgeView.setOnClickListener { onBadgeClick(badges.first()) }
 -        }
--      }
-+
++            .align(Alignment.BottomEnd)
++            .offset(y = 8.dp)
++            .size(36.dp)
++            .semantics { contentDescription = badgeDescription }
++        )
+       }
      }
    }
- }
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/voice/VoiceNotePlaybackService.java b/app/src/main/java/org/thoughtcrime/securesms/components/voice/VoiceNotePlaybackService.java
 index ec47f256de961a46828973d8edc3bd9858f85a93..319aa7a9c9f7a13dbf1abf57fc1c4f3339061dee 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/voice/VoiceNotePlaybackService.java

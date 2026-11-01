@@ -1,6 +1,6 @@
-From 6492df6eba21a3c2a4a5d5840e652d4789dafb25 Mon Sep 17 00:00:00 2001
+From 3a4e93783723304afa085063bf8a9a2b4ecc22d8 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sat, 31 Oct 2026 23:25:32 +0100
+Date: Sun, 1 Nov 2026 04:39:12 +0100
 Subject: [PATCH] Port resources-and-branding to Signal 8.33.2, part 10
 
 Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: d6a326e8d173a9f302256edd5451ba59d295da50
+Source-Commit: 15e53970dd36d370223c6bc4290cf2b4cdab88a2
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -5483,7 +5483,7 @@ index 016f06a5e44214e13678d673ea587a18eaa326fe..39d583e9bc614c15f3b7df0c6a0cbddf
 +
 +    </resources>
 diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
-index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d4e465b5f 100644
+index f3b8a186dc2472d358ae0efb504a5491f52143aa..acdb8f3a783227ae4e2455a4b99534df819943dd 100644
 --- a/app/src/main/res/values/strings.xml
 +++ b/app/src/main/res/values/strings.xml
 @@ -1,23 +1,10 @@
@@ -5511,23 +5511,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <string name="backup_support_url" translatable="false">https://support.signal.org/hc/articles/360007059752</string>
      <string name="remote_backup_support_url" translatable="false">https://support.signal.org/hc/articles/9708267671322</string>
      <string name="transfer_support_url" translatable="false">https://support.signal.org/hc/articles/360007059752</string>
-@@ -126,12 +113,14 @@
-     <!-- Alert dialog description asking for location permission -->
-     <string mollyify="true" name="AttachmentManager_signal_allow_signal_access_location">Allow Molly access to send your location.</string>
-     <!-- Toast text explaining Signal\'s need for location access -->
--    <string mollyify="true" name="AttachmentManager_signal_needs_location_access">Molly needs location access to send your location.</string><!-- Dialog title asking users for gallery storage permission -->
-+    <string mollyify="true" name="AttachmentManager_signal_needs_location_access">Molly needs location access to send your location.</string>
-+    <!-- Dialog title asking users for gallery storage permission -->
-     <string name="AttachmentManager_signal_allow_storage">Allow access to storage</string>
-     <!-- Dialog description that will explain the steps needed to give gallery storage permission -->
-     <string name="AttachmentManager_signal_to_show_photos">To show photos and videos:</string>
-     <!-- Toast text explaining Signal\'s need for storage access -->
-     <string mollyify="true" name="AttachmentManager_signal_needs_storage_access">Molly needs access to show your photos and videos.</string>
-+
-     <!-- Alert dialog title to show the recipient has not activated payments -->
-     <string name="AttachmentManager__not_activated_payments">%1$s hasn\'t activated Payments </string>
-     <!-- Alert dialog description to send the recipient a request to activate payments -->
-@@ -437,10 +426,6 @@
+@@ -437,10 +424,6 @@
      <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">This device does not appear to support dial actions.</string>
      <!-- The content description for button to send a message in a conversation -->
      <string name="ConversationActivity_send_message_content_description">Send message</string>
@@ -5538,7 +5522,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <string name="ConversationActivity_specify_recipient">Please choose a contact</string>
      <string name="ConversationActivity_unable_to_record_audio">Unable to record audio!</string>
      <string name="ConversationActivity_you_cant_send_messages_to_this_group">You can\'t send messages to this group because you\'re no longer a member.</string>
-@@ -465,16 +450,6 @@
+@@ -465,16 +448,6 @@
      <string mollyify="true" name="ConversationActivity_signal_needs_microphone_access_voice_message">Molly needs microphone access to record a voice message.</string>
      <string mollyify="true" name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Molly requires the Microphone permission in order to send audio messages, but it has been permanently denied. Please continue to app settings, select \"Permissions\", and enable \"Microphone\".</string>
  
@@ -5555,7 +5539,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
      <string name="ConversationActivity_search_position">%1$d of %2$d</string>
      <string name="ConversationActivity_no_results">No results</string>
-@@ -509,19 +484,11 @@
+@@ -509,19 +482,11 @@
      <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
      <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">SMS messaging is no longer supported in Signal. Invite %1$s to Signal to keep the conversation here.</string>
      <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -5576,7 +5560,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <!-- Toast message shown when trying to record a voice message during an ongoing call -->
      <string name="ConversationFragment_cannot_record_voice_message_during_call">Cannot record voice message during call.</string>
  
-@@ -1011,11 +978,7 @@
+@@ -1011,11 +976,7 @@
      <!-- Bottom sheet description explaining that messages on linked devices are private -->
      <string name="LinkDeviceFragment__all_messaging_is_private">All messaging on linked devices is private</string>
      <!-- Bottom sheet description explaining that future messages on linked devices will be in sync with your phone but previous messages will not appear -->
@@ -5589,15 +5573,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <!-- Bottom sheet description explaining that for non-desktop/iPad devices, they should go to %s to download Signal where %s is Signal\'s website -->
      <string name="LinkDeviceFragment__on_other_device_visit_signal">On the device you want to link, visit %s to install Molly</string>
      <string name="LinkDeviceFragment__signal_download_url" translatable="false">signal.org/download</string>
-@@ -1305,6 +1268,7 @@
-     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
-     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">You may not be receiving messages. Submit debug log?</string>
- 
-+
-     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
-     <string name="PromptBatterySaverBottomSheet__title">Notifications may be delayed due to battery optimizations</string>
-     <!-- Message explaining that battery saver may delay notifications -->
-@@ -1428,69 +1392,6 @@
+@@ -1428,69 +1389,6 @@
      <string name="ManageGroupActivity_add_group_description">Add group description…</string>
  
      <!-- RemoteRestoreActivity -->
@@ -5667,7 +5643,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
  
      <!-- ManageProfileFragment -->
      <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
-@@ -1647,32 +1548,6 @@
+@@ -1647,32 +1545,6 @@
      <!-- Button inside an alert dialog confirming the deletion of their draft -->
      <string name="InputPanel__discard">Discard</string>
  
@@ -5700,18 +5676,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <!-- LongMessageActivity -->
      <string name="LongMessageActivity_unable_to_find_message">Unable to find message</string>
      <string name="LongMessageActivity_message_from_s">Message from %1$s</string>
-@@ -1727,8 +1602,8 @@
-     <string name="MediaOverviewActivity_audio">Audio</string>
-     <string name="MediaOverviewActivity_video">Video</string>
-     <string name="MediaOverviewActivity_image">Image</string>
--    <string name="MediaOverviewActivity_detail_line_2_part" translatable="false">%1$s &#183; %2$s</string>
--    <string name="MediaOverviewActivity_detail_line_3_part" translatable="false">%1$s &#183; %2$s &#183; %3$s</string>
-+    <string name="MediaOverviewActivity_detail_line_2_part" translatable="false">%1$s · %2$s</string>
-+    <string name="MediaOverviewActivity_detail_line_3_part" translatable="false">%1$s · %2$s · %3$s</string>
- 
-     <string name="MediaOverviewActivity_sent_by_s">Sent by %1$s</string>
-     <string name="MediaOverviewActivity_sent_by_you">Sent by you</string>
-@@ -2105,13 +1980,7 @@
+@@ -2105,13 +1977,7 @@
      </plurals>
  
      <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
@@ -5725,7 +5690,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <!-- Body for quote when message being quoted is an in-app payment message -->
      <string name="MessageRecord__payment_s">Payment: %1$s</string>
      <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
-@@ -2226,22 +2095,10 @@
+@@ -2226,22 +2092,10 @@
      <string name="DeviceProvisioningActivity_link_a_signal_device">Link a Signal device?</string>
      <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">To link a desktop or iPad to this Signal account, go to Linked Devices and tap \"Link a New Device\" and scan the QR code again. Make sure you only scan QR codes that come directly from Signal.</string>
  
@@ -5748,16 +5713,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      </plurals>
  
      <!-- PassphrasePromptActivity -->
-@@ -2298,7 +2155,7 @@
-     <string name="RatingManager_later">Later</string>
- 
-     <!-- ReactionsBottomSheetDialogFragment -->
--    <string name="ReactionsBottomSheetDialogFragment_all">All &#183; %1$d</string>
-+    <string name="ReactionsBottomSheetDialogFragment_all">All · %1$d</string>
-     <string name="ReactionsBottomSheetDialogFragment_tap_to_remove">Tap to remove</string>
- 
-     <!-- ReactionsConversationView -->
-@@ -2353,10 +2210,6 @@
+@@ -2353,10 +2207,6 @@
  
      <!-- WebRtcCallActivity -->
      <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Tap here to turn on your video</string>
@@ -5768,7 +5724,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
      <string mollyify="true" name="WebRtcCallActivity__signal_s">Molly %1$s</string>
      <string name="WebRtcCallActivity__calling">Calling…</string>
-@@ -2692,45 +2545,12 @@
+@@ -2692,45 +2542,12 @@
  
      <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
      <string name="RegistrationActivity_additional_verification_required">Additional verification required</string>
@@ -5814,7 +5770,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <plurals name="RegistrationActivity_debug_log_hint">
          <item quantity="one">You are now %d step away from submitting a debug log.</item>
          <item quantity="other">You are now %d steps away from submitting a debug log.</item>
-@@ -2779,19 +2599,6 @@
+@@ -2779,19 +2596,6 @@
      <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string>
      <string name="ShakeToReport_success" translatable="false">Success!</string>
      <string name="ShakeToReport_share" translatable="false">Share</string>
@@ -5834,7 +5790,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string>
      <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string>
      <string name="ShakeToReport_retry" translatable="false">Retry</string>
-@@ -2801,14 +2608,13 @@
+@@ -2801,14 +2605,13 @@
  
      <!-- SharedContactView -->
      <string name="SharedContactView_add_to_contacts">Add to Contacts</string>
@@ -5850,7 +5806,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
  
      <!-- SignalBottomActionBar -->
      <!-- Text to describe a button that will show more options -->
-@@ -3164,12 +2970,7 @@
+@@ -3164,12 +2967,7 @@
      <string name="VerifyIdentityActivity_our_signal_safety_number">Our Signal safety number:</string>
      <string name="VerifyIdentityActivity_no_app_to_share_to">It looks like you don\'t have any apps to share to.</string>
      <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">No safety number to compare was found in the clipboard</string>
@@ -5863,16 +5819,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">You must first exchange messages in order to view %1$s\'s safety number.</string>
      <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
      <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">A safety number will be created with this person after they exchange messages with you.</string>
-@@ -3284,7 +3085,7 @@
-     <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
-     <string name="MessageNotifier_s_voted_in_poll">%1$s %2$s voted in the poll \"%3$s\"</string>
- 
--    <string mollyify="true" name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Turn off contact joined Molly notifications? You can enable them again in Molly > Settings > Notifications.</string>
-+    <string mollyify="true" name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Turn off contact joined Molly notifications? You can enable them again in Molly &gt; Settings &gt; Notifications.</string>
- 
-     <!-- TurnOnNotificationsBottomSheet -->
-     <!-- Title for sheet explaining how to turn on app notifications -->
-@@ -3325,15 +3126,8 @@
+@@ -3325,15 +3123,8 @@
      <string name="NotificationChannel_additional_message_notifications">Additional message notifications</string>
      <!-- Notification channel name for notifications sent when a device has been linked -->
      <string name="NotificationChannel_new_linked_device">New linked device</string>
@@ -5888,16 +5835,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
  
      <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
      <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">Unable to write to storage!</string>
-@@ -3399,7 +3193,7 @@
-     <string name="SingleRecipientNotificationBuilder_message_request">Message request</string>
-     <string name="SingleRecipientNotificationBuilder_you">You</string>
-     <!-- Notification subtext for group stories -->
--    <string name="SingleRecipientNotificationBuilder__s_dot_story">%1$s &#8226; Story</string>
-+    <string name="SingleRecipientNotificationBuilder__s_dot_story">%1$s • Story</string>
- 
-     <!-- NewWaysToConnectDialogFragment -->
-     <!-- Fragment title, displayed at the top of the content -->
-@@ -3486,14 +3280,6 @@
+@@ -3486,14 +3277,6 @@
      <string name="EnclaveFailureReminder_update_signal">Update Signal to continue using payments. Your balance may not be up-to-date.</string>
      <!-- Banner button to update now -->
  
@@ -5912,16 +5850,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <string name="WebRtcCallActivity__answered_on_a_linked_device">Answered on a linked device.</string>
      <string name="WebRtcCallActivity__declined_on_a_linked_device">Declined on a linked device.</string>
      <string name="WebRtcCallActivity__busy_on_a_linked_device">Busy on a linked device.</string>
-@@ -3553,7 +3339,7 @@
- 
-     <!-- contact_selection_group_activity -->
-     <string name="contact_selection_group_activity__no_contacts">No contacts.</string>
--    <string name="contact_selection_group_activity__finding_contacts">Loading contacts&#8230;</string>
-+    <string name="contact_selection_group_activity__finding_contacts">Loading contacts…</string>
- 
-     <!-- single_contact_selection_activity -->
-     <string name="SingleContactSelectionActivity_contact_photo">Contact Photo</string>
-@@ -3587,24 +3373,6 @@
+@@ -3587,24 +3370,6 @@
      <!-- Text asking for user\'s contact permission -->
      <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">Allow access to your contacts. Your contacts are encrypted and not visible to the Signal service.</string>
  
@@ -5946,7 +5875,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <!-- conversation_activity -->
      <string name="conversation_activity__type_message_push">Signal message</string>
      <!-- Option in send button context menu to schedule the message instead of sending it directly -->
-@@ -4116,34 +3884,6 @@
+@@ -4116,34 +3881,6 @@
      <string name="preferences__conversation_length_limit">Chat length limit</string>
      <string name="preferences__keep_messages">Keep messages</string>
      <string name="preferences__linked_devices">Linked devices</string>
@@ -5981,7 +5910,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <string name="preferences__disable_pin">Disable PIN</string>
      <string name="preferences__enable_pin">Enable PIN</string>
      <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">If you disable the PIN, you will lose all data when you re-register Signal unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.</string>
-@@ -4394,17 +4134,9 @@
+@@ -4394,17 +4131,9 @@
      <string name="PaymentsTransferFragment__next">Next</string>
      <string name="PaymentsTransferFragment__invalid_address">Invalid address</string>
      <string name="PaymentsTransferFragment__check_the_wallet_address">Check the wallet address you\'re attempting to transfer to and try again.</string>
@@ -5999,7 +5928,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
  
      <!-- PaymentsTransferQrScanFragment -->
      <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Scan Address QR Code</string>
-@@ -4818,49 +4550,13 @@
+@@ -4818,49 +4547,13 @@
      <string name="RegistrationActivity_call_me_instead_available_in">Call me (%1$02d:%2$02d)</string>
      <!--    Countdown to when the user can request a new SMS code during registration.-->
      <string name="RegistrationActivity_resend_sms_available_in">Resend Code (%1$02d:%2$02d)</string>
@@ -6049,7 +5978,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
      <string name="preferences_app_protection__to_use_screen_lock">To use screen lock set a PIN, pattern, or password on this device.</string>
      <string name="preferences_app_protection__failed_to_enable_registration_lock">Failed to enable registration lock.</string>
-@@ -4887,29 +4583,6 @@
+@@ -4887,29 +4580,6 @@
      <!-- ScreenLockSettingsFragment -->
      <!-- Text shown when screen lock is not enabled -->
      <string name="ScreenLockSettingsFragment__off">Off</string>
@@ -6079,7 +6008,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
  
      <string name="Recipient_unknown">Unknown</string>
      <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
-@@ -4955,18 +4628,6 @@
+@@ -4955,18 +4625,6 @@
      <!-- NewDeviceTransferInstructionsFragment -->
  
      <!-- NewDeviceTransferSetupFragment -->
@@ -6098,16 +6027,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
  
      <!-- OldDeviceTransferSetupFragment -->
      <string name="OldDeviceTransferSetup__searching_for_new_android_device">Searching for new Android device…</string>
-@@ -5119,7 +4780,7 @@
-     <string name="VoiceNotePlaybackPreparer__failed_to_play_voice_message">Failed to play voice message</string>
- 
-     <!-- VoiceNoteMediaDescriptionCompatFactory -->
--    <string name="VoiceNoteMediaItemFactory__voice_message">Voice message &#183; %1$s</string>
-+    <string name="VoiceNoteMediaItemFactory__voice_message">Voice message · %1$s</string>
-     <!-- This is a title in a banner describing the conversation sender to receiver placeholders of the currently playing voice memo. -->
-     <string name="VoiceNoteMediaItemFactory__s_to_s">%1$s to %2$s</string>
- 
-@@ -5682,44 +5343,6 @@
+@@ -5682,44 +5340,6 @@
      <string name="ExpireTimerSettingsFragment__custom_time">Custom time</string>
      <string name="ExpireTimerSettingsFragment__save">Save</string>
  
@@ -6152,16 +6072,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
  
      <!-- ChatColorSelectionFragment -->
      <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
-@@ -7359,7 +6982,7 @@
- 
-     <!-- Call Log -->
-     <!-- Displayed below the user\'s name in row items on the call log. First placeholder is the call status, second is when it occurred -->
--    <string name="CallLogAdapter__s_dot_s">%1$s &#183; %2$s</string>
-+    <string name="CallLogAdapter__s_dot_s">%1$s · %2$s</string>
-     <!-- Displayed for incoming calls -->
-     <string name="CallLogAdapter__incoming">Incoming</string>
-     <!-- Displayed for outgoing calls -->
-@@ -8551,13 +8174,7 @@
+@@ -8551,13 +8171,7 @@
      <!-- Bottom sheet title -->
      <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Keep your key safe</string>
      <!-- Bottom sheet subtitle -->
@@ -6175,7 +6086,7 @@ index f3b8a186dc2472d358ae0efb504a5491f52143aa..33fcf5e778c15ac93573ea3b1c576d0d
      <!-- Sheet action button label -->
      <string name="MessageBackupsKeyRecordScreen__continue">Continue</string>
      <!-- Sheet secondary action button label -->
-@@ -8694,244 +8311,6 @@
+@@ -8694,244 +8308,6 @@
      <string name="MessageBackupsTypeSelectionScreen__current_plan">Current plan</string>
  
      <!-- ConfirmBackupCancellationDialog -->
@@ -6432,16 +6343,10 @@ index 2a8881c37bd221de5d3a7ea21803a95d77662066..4dc6c30026790623d7447ec0306a7a6c
 +    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services is updating or temporarily unavailable. Please try again.</string>
  </resources>
 diff --git a/app/src/main/res/values/themes.xml b/app/src/main/res/values/themes.xml
-index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f59e18c1d 100644
+index b486736caa095e898e14ed701a26e65c64d98e75..a1619af7ea78f12ee2a6d2868973f07b8f681a45 100644
 --- a/app/src/main/res/values/themes.xml
 +++ b/app/src/main/res/values/themes.xml
-@@ -1,5 +1,4 @@
- <?xml version="1.0" encoding="utf-8"?>
--
- <resources xmlns:tools="http://schemas.android.com/tools">
- 
-     <style name="Signal.Transparent" parent="Theme.AppCompat">
-@@ -13,18 +12,6 @@
+@@ -13,18 +13,6 @@
          <item name="contactCheckboxBackground">@drawable/contact_selection_checkbox</item>
      </style>
  
@@ -6460,7 +6365,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
      <style name="TextSecure.LightNoActionBar" parent="@style/TextSecure.BaseLightNoActionBar">
          <!-- leave empty to allow overriding -->
      </style>
-@@ -75,36 +62,10 @@
+@@ -75,36 +63,10 @@
          <item name="windowActionModeOverlay">true</item>
      </style>
  
@@ -6497,7 +6402,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="android:windowLightStatusBar">false</item>
          <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
      </style>
-@@ -112,11 +73,6 @@
+@@ -112,11 +74,6 @@
      <style name="TextSecure.DarkIntroTheme" parent="@style/Theme.AppCompat">
          <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
          <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="27">default</item>
@@ -6509,7 +6414,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item>
          <item name="android:windowActionBar">false</item>
          <item name="android:windowNoTitle">true</item>
-@@ -141,115 +97,12 @@
+@@ -141,115 +98,12 @@
          <item name="android:backgroundDimEnabled">false</item>
      </style>
  
@@ -6625,7 +6530,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="fullScreenDialogStyle">@style/Signal.DayNight.Dialog.FullScreen</item>
          <item name="fixedRoundedCornerBottomSheetStyle">@style/Widget.Signal.FixedRoundedCorners</item>
          <item name="permissionsRationaleDialogTheme">@style/Theme.Signal.AlertDialog.Light.Cornered</item>
-@@ -262,8 +115,8 @@
+@@ -262,8 +116,8 @@
          <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
          <item name="android:enforceStatusBarContrast" tools:targetApi="29">false</item>
  
@@ -6635,7 +6540,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="textAppearanceBodyMedium">@style/Signal.Text.BodyMedium</item>
          <item name="textAppearanceBodyLarge">@style/Signal.Text.BodyLarge</item>
          <item name="textAppearanceLabelLarge">@style/Signal.Text.LabelLarge</item>
-@@ -325,8 +178,11 @@
+@@ -325,8 +179,11 @@
          <item name="materialCalendarTheme">@style/Signal.ThemeOverlay.Calendar</item>
          <item name="materialCardViewOutlinedStyle">@style/Widget.Material3.CardView.Filled</item>
          <item name="collapsingToolbarLayoutStyle">@style/Signal.Widget.CollapsingToolbar</item>
@@ -6649,7 +6554,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="conversation_toolbar_color">?attr/colorSurface</item>
          <item name="signal_accent_primary">@color/core_ultramarine</item>
          <item name="signal_background_primary">?attr/colorSurface</item>
-@@ -393,26 +249,22 @@
+@@ -393,26 +250,22 @@
          <item name="message_request_bar_background_normal">?attr/colorSurfaceContainerHigh</item>
          <item name="message_request_bar_denyForeground_normal">?attr/colorError</item>
          <item name="message_request_bar_acceptForeground_normal">?attr/colorSurfaceInverse</item>
@@ -6679,7 +6584,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="navbar_active_indicator_color">@color/molly_secondary_container_light</item>
          <item name="navbar_container_color">@color/molly_surface_container_light</item>
      </style>
-@@ -423,11 +275,6 @@
+@@ -423,11 +276,6 @@
  
      <style name="TextSecure.BaseDarkTheme" parent="@style/Theme.Molly.Material3.Dark">
          <item name="theme_type">dark</item>
@@ -6691,7 +6596,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="fullScreenDialogStyle">@style/Signal.DayNight.Dialog.FullScreen</item>
          <item name="fixedRoundedCornerBottomSheetStyle">@style/Widget.Signal.FixedRoundedCorners</item>
          <item name="permissionsRationaleDialogTheme">@style/Theme.Signal.AlertDialog.Dark.Cornered</item>
-@@ -436,8 +283,8 @@
+@@ -436,8 +284,8 @@
          <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
          <item name="android:enforceStatusBarContrast" tools:targetApi="29">false</item>
  
@@ -6701,7 +6606,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="textAppearanceBodyMedium">@style/Signal.Text.BodyMedium</item>
          <item name="textAppearanceBodyLarge">@style/Signal.Text.BodyLarge</item>
          <item name="textAppearanceLabelLarge">@style/Signal.Text.LabelLarge</item>
-@@ -501,8 +348,11 @@
+@@ -501,8 +349,11 @@
          <item name="materialCalendarTheme">@style/Signal.ThemeOverlay.Calendar</item>
          <item name="materialCardViewOutlinedStyle">@style/Widget.Material3.CardView.Filled</item>
          <item name="collapsingToolbarLayoutStyle">@style/Signal.Widget.CollapsingToolbar</item>
@@ -6715,7 +6620,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="conversation_toolbar_color">?attr/colorSurface</item>
          <item name="signal_accent_primary">@color/core_ultramarine_light</item>
          <item name="signal_background_primary">?attr/colorSurface</item>
-@@ -576,19 +426,15 @@
+@@ -576,19 +427,15 @@
          <item name="safety_tip_background">?attr/colorSecondaryContainer</item>
          <item name="safety_tip_image_background">?attr/colorSecondary</item>
  
@@ -6735,7 +6640,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="navbar_active_indicator_color">@color/molly_surface_bright_dark</item>
          <item name="navbar_container_color">@color/molly_surface_container_dark</item>
      </style>
-@@ -631,8 +477,6 @@
+@@ -631,8 +478,6 @@
          <item name="android:windowFullscreen">true</item>
      </style>
  
@@ -6744,7 +6649,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
      <style name="TextSecure.DarkTheme.WebRTCCall">
          <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
          <item name="android:windowActionBar">false</item>
-@@ -643,19 +487,22 @@
+@@ -643,19 +488,22 @@
      </style>
  
      <style name="Theme.Signal.Light.BottomSheetDialog" parent="Theme.Material3.Light.BottomSheetDialog">
@@ -6770,7 +6675,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
      </style>
  
      <style name="Theme.Signal.BottomSheetDialog.Fixed.ReactWithAny">
-@@ -663,8 +510,6 @@
+@@ -663,8 +511,6 @@
          <item name="android:backgroundDimEnabled">true</item>
      </style>
  
@@ -6779,7 +6684,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
      <style name="Widget.Signal.BottomSheet.ReactWithAny" parent="Widget.Material3.BottomSheet">
          <item name="backgroundTint">?attr/colorSurfaceContainerLow</item>
          <item name="behavior_peekHeight">@dimen/react_with_any_emoji_bottom_sheet_dialog_fragment_min_height</item>
-@@ -683,13 +528,9 @@
+@@ -683,13 +529,9 @@
  
      <style name="Widget.Signal.ReactWithAny.BottomSheet" parent="Widget.Material3.BottomSheet">
          <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Signal.BottomSheet.Rounded</item>
@@ -6793,7 +6698,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
      </style>
  
      <style name="Widget.Signal.FixedRoundedCorners" parent="Widget.CoreUi.FixedRoundedCorners">
-@@ -704,11 +545,7 @@
+@@ -704,11 +546,7 @@
      -->
      <style name="Widget.Signal.FixedRoundedCorners.Messages" parent="Widget.Signal.FixedRoundedCorners">
          <item name="bottomSheetStyle">@style/Widget.Signal.FixedRoundedCorners.Messages.BottomSheet</item>
@@ -6805,7 +6710,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
      </style>
  
      <style name="Widget.Signal.FixedRoundedCorners.Messages.BottomSheet" parent="Widget.Material3.BottomSheet">
-@@ -719,11 +556,7 @@
+@@ -719,11 +557,7 @@
  
      <style name="Widget.Signal.FixedRoundedCorners.Stories">
          <item name="bottomSheetStyle">@style/Widget.Signal.FixedRoundedCorners.BottomSheet.Stories</item>
@@ -6817,7 +6722,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
      </style>
  
      <style name="Widget.Signal.FixedRoundedCorners.BottomSheet.Stories" parent="Widget.CoreUi.FixedRoundedCorners.BottomSheet">
-@@ -817,11 +650,7 @@
+@@ -817,11 +651,7 @@
  
          <item name="colorAccent">@color/core_ultramarine</item>
  
@@ -6829,7 +6734,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
  
          <item name="android:colorForeground">@color/black</item>
-@@ -836,11 +665,7 @@
+@@ -836,11 +666,7 @@
  
          <item name="colorAccent">@color/core_ultramarine_light</item>
  
@@ -6841,7 +6746,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
          <item name="android:statusBarColor" tools:ignore="NewApi">@color/transparent</item>
          <item name="materialButtonStyle">@style/Widget.Signal.BottomSheet.MaterialButtonStyle</item>
-@@ -856,11 +681,7 @@
+@@ -856,11 +682,7 @@
  
          <item name="colorAccent">?attr/colorPrimary</item>
  
@@ -6853,7 +6758,7 @@ index b486736caa095e898e14ed701a26e65c64d98e75..5b423c27d15bfbfcec1902e9488c096f
          <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
          <item name="android:statusBarColor" tools:ignore="NewApi">@color/transparent</item>
      </style>
-@@ -889,4 +710,112 @@
+@@ -889,4 +711,112 @@
          <item name="colorControlHighlight">?attr/signal_accent_primary</item>
          <item name="colorControlActivated">?attr/signal_accent_primary</item>
      </style>

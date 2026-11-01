@@ -1,6 +1,6 @@
-From 6abf78adc57f6132fe335e8502d02b0cf53b9a42 Mon Sep 17 00:00:00 2001
+From 84a0b164391d1101886628f136478b8a536adef8 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sat, 31 Oct 2026 23:25:32 +0100
+Date: Sun, 1 Nov 2026 04:39:12 +0100
 Subject: [PATCH] Port resources-and-branding to Signal 8.33.2, part 1
 
 Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: d6a326e8d173a9f302256edd5451ba59d295da50
+Source-Commit: 15e53970dd36d370223c6bc4290cf2b4cdab88a2
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -1256,7 +1256,7 @@ index 496f7833c2d7ccce70b776d1e179a3dc5ce357dd..00000000000000000000000000000000
 -</FrameLayout>
 -
 diff --git a/app/src/main/res/layout/audio_view.xml b/app/src/main/res/layout/audio_view.xml
-index 0c51175e564d67898dbcabcfdb0dcdad3450d97c..698b435c04fd0a12181856f1a273051d28d8effb 100644
+index 0c51175e564d67898dbcabcfdb0dcdad3450d97c..b8fc26f48f8eec74a01f7943ba971c38de7f929e 100644
 --- a/app/src/main/res/layout/audio_view.xml
 +++ b/app/src/main/res/layout/audio_view.xml
 @@ -13,13 +13,6 @@
@@ -1281,15 +1281,6 @@ index 0c51175e564d67898dbcabcfdb0dcdad3450d97c..698b435c04fd0a12181856f1a273051d
              android:visibility="gone"
              tools:text="Recording 2026-10-01.mp3"
              tools:visibility="visible" />
-@@ -39,7 +31,7 @@
-             android:orientation="horizontal"
-             tools:background="#ff00ff">
- 
--            <include layout="@layout/audio_view_circle" />
-+            <include layout="@layout/audio_view_circle"/>
- 
-             <org.thoughtcrime.securesms.components.WaveFormSeekBarView
-                 android:id="@+id/seek"
 @@ -61,7 +53,7 @@
                  android:layout_gravity="center_vertical"
                  android:fontFamily="sans-serif-light"
@@ -1299,13 +1290,6 @@ index 0c51175e564d67898dbcabcfdb0dcdad3450d97c..698b435c04fd0a12181856f1a273051d
                  android:textSize="@dimen/conversation_item_date_text_size"
                  android:visibility="gone"
                  tools:text="00:30"
-@@ -79,4 +71,4 @@
-         android:background="@drawable/circle_tintable"
-         android:visibility="gone"
-         tools:visibility="visible" />
--</merge>
-\ No newline at end of file
-+</merge>
 diff --git a/app/src/main/res/layout/avatar_picker_fragment.xml b/app/src/main/res/layout/avatar_picker_fragment.xml
 deleted file mode 100644
 index df557ef405cd39565eb6b2b18003e29eaabd5c89..0000000000000000000000000000000000000000
@@ -1467,19 +1451,9 @@ index df557ef405cd39565eb6b2b18003e29eaabd5c89..00000000000000000000000000000000
 -</androidx.constraintlayout.widget.ConstraintLayout>
 \ No newline at end of file
 diff --git a/app/src/main/res/layout/blocked_users_adapter_item.xml b/app/src/main/res/layout/blocked_users_adapter_item.xml
-index 05833f22ed13bff9cbc7c6e563eb1046936d1493..33dfe3ffccc330f944dec6009c502f6e2e503a88 100644
+index 05833f22ed13bff9cbc7c6e563eb1046936d1493..99181b6936beaed3e13199e9e1673a50065048d5 100644
 --- a/app/src/main/res/layout/blocked_users_adapter_item.xml
 +++ b/app/src/main/res/layout/blocked_users_adapter_item.xml
-@@ -1,8 +1,8 @@
- <?xml version="1.0" encoding="utf-8"?>
- <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     xmlns:app="http://schemas.android.com/apk/res-auto"
--    tools:viewBindingIgnore="true"
-     xmlns:tools="http://schemas.android.com/tools"
-+    tools:viewBindingIgnore="true"
-     android:layout_width="match_parent"
-     android:layout_height="?attr/listPreferredItemHeight"
-     android:background="?attr/selectableItemBackground">
 @@ -33,13 +33,8 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -1602,18 +1576,9 @@ index c163ec98a5f6fdd67af33e23adfec5e749060f24..00000000000000000000000000000000
 -</ScrollView>
 \ No newline at end of file
 diff --git a/app/src/main/res/layout/conversation_input_panel.xml b/app/src/main/res/layout/conversation_input_panel.xml
-index 2dc20771448723d881d8cc6393352b804421c5b8..0a74ec2d6f97c4520263a7016600b83d66d07733 100644
+index 2dc20771448723d881d8cc6393352b804421c5b8..04e659b5cba6688956107f9a7e222619b05f9f8a 100644
 --- a/app/src/main/res/layout/conversation_input_panel.xml
 +++ b/app/src/main/res/layout/conversation_input_panel.xml
-@@ -158,7 +158,7 @@
-             android:paddingVertical="8dp"
-             tools:hint="Send TextSecure message">
- 
--            <requestFocus />
-+            <requestFocus/>
-         </org.thoughtcrime.securesms.components.ComposeText>
- 
-     </FrameLayout>
 @@ -191,13 +191,8 @@
              android:contentDescription="@string/conversation_activity__quick_attachment_drawer_toggle_camera_description"
              android:foreground="?selectableItemBackgroundBorderless"
@@ -1629,15 +1594,6 @@ index 2dc20771448723d881d8cc6393352b804421c5b8..0a74ec2d6f97c4520263a7016600b83d
  
          <org.thoughtcrime.securesms.components.MicrophoneRecorderView
              android:id="@+id/recorder_view"
-@@ -209,7 +204,7 @@
-             android:clipToPadding="false"
-             tools:visibility="gone">
- 
--            <include layout="@layout/microphone_recorder_view" />
-+            <include layout="@layout/microphone_recorder_view"/>
- 
-         </org.thoughtcrime.securesms.components.MicrophoneRecorderView>
- 
 @@ -234,13 +229,8 @@
              android:background="?selectableItemBackgroundBorderless"
              android:contentDescription="@string/ConversationActivity_add_attachment"
@@ -1689,19 +1645,9 @@ index 52613fa1dd7a9b7c63a7b583e9be0772d44713b0..4af802e248a62016fd3ce8f10f099808
 -    tools:background="@color/signal_colorPrimary"/>
 +    tools:background="?attr/colorPrimary"/>
 diff --git a/app/src/main/res/layout/conversation_item_update.xml b/app/src/main/res/layout/conversation_item_update.xml
-index f4b4e903caa4a61d29670639024c8f720d9d7778..e499b8f310074d4bec379462902f4880c4248275 100644
+index f4b4e903caa4a61d29670639024c8f720d9d7778..821bf6170da6ce2d354be5085d2548169aead922 100644
 --- a/app/src/main/res/layout/conversation_item_update.xml
 +++ b/app/src/main/res/layout/conversation_item_update.xml
-@@ -1,8 +1,8 @@
- <?xml version="1.0" encoding="utf-8"?>
- <org.thoughtcrime.securesms.conversation.ConversationUpdateItem
-     xmlns:android="http://schemas.android.com/apk/res/android"
--    tools:viewBindingIgnore="true"
-     xmlns:tools="http://schemas.android.com/tools"
-+    tools:viewBindingIgnore="true"
-     android:id="@+id/conversation_update_item"
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
 @@ -49,12 +49,8 @@
                  android:layout_height="wrap_content"
                  android:gravity="center"
@@ -1736,19 +1682,9 @@ index ad961a9fb4056cfcc38f716251044aa38387bedc..00000000000000000000000000000000
 -    app:navigationIcon="@drawable/symbol_arrow_start_24"
 -    app:titleTextAppearance="@style/Signal.Text.TitleLarge" />
 diff --git a/app/src/main/res/layout/conversation_list_item_view.xml b/app/src/main/res/layout/conversation_list_item_view.xml
-index 9e53c78715b3bfd6fdfcda18341dd6e60c5d32f9..a8d9eaca92f21f1816acd92cf14d08a9a524c3d8 100644
+index 9e53c78715b3bfd6fdfcda18341dd6e60c5d32f9..1c50865e8cf2302266eec1bfe6f765deb3a83152 100644
 --- a/app/src/main/res/layout/conversation_list_item_view.xml
 +++ b/app/src/main/res/layout/conversation_list_item_view.xml
-@@ -1,8 +1,8 @@
- <?xml version="1.0" encoding="utf-8"?>
- <org.thoughtcrime.securesms.conversationlist.ConversationListItem xmlns:android="http://schemas.android.com/apk/res/android"
-     xmlns:app="http://schemas.android.com/apk/res-auto"
--    tools:viewBindingIgnore="true"
-     xmlns:tools="http://schemas.android.com/tools"
-+    tools:viewBindingIgnore="true"
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
-     android:animateLayoutChanges="true"
 @@ -97,12 +97,8 @@
          android:ellipsize="end"
          android:lines="2"
@@ -2383,19 +2319,9 @@ index e45270fe1e892f0b9db555cd8c023b663fa3fc72..00000000000000000000000000000000
 -</androidx.constraintlayout.widget.ConstraintLayout>
 \ No newline at end of file
 diff --git a/app/src/main/res/layout/donation_receipt_png.xml b/app/src/main/res/layout/donation_receipt_png.xml
-index b649f43994d6a287c9bd9fad351f4882217345c8..2293b8793a15f957f5f767e56ebef308054dceda 100644
+index b649f43994d6a287c9bd9fad351f4882217345c8..53618b0b162bfa5f630966f32db3c9d0cbe64883 100644
 --- a/app/src/main/res/layout/donation_receipt_png.xml
 +++ b/app/src/main/res/layout/donation_receipt_png.xml
-@@ -1,8 +1,8 @@
- <?xml version="1.0" encoding="utf-8"?>
- <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     xmlns:app="http://schemas.android.com/apk/res-auto"
--    tools:viewBindingIgnore="true"
-     xmlns:tools="http://schemas.android.com/tools"
-+    tools:viewBindingIgnore="true"
-     android:layout_width="2180px"
-     android:layout_height="wrap_content"
-     android:background="@color/core_white"
 @@ -16,12 +16,7 @@
          android:layout_marginTop="96px"
          android:importantForAccessibility="no"
@@ -2409,13 +2335,6 @@ index b649f43994d6a287c9bd9fad351f4882217345c8..2293b8793a15f957f5f767e56ebef308
  
      <TextView
          android:id="@+id/date"
-@@ -143,4 +138,4 @@
-         android:textSize="48px"
-         app:layout_constraintTop_toBottomOf="@id/date_paid" />
- 
--</androidx.constraintlayout.widget.ConstraintLayout>
-\ No newline at end of file
-+</androidx.constraintlayout.widget.ConstraintLayout>
 diff --git a/app/src/main/res/layout/dsl_banner.xml b/app/src/main/res/layout/dsl_banner.xml
 deleted file mode 100644
 index c8600da5491962f364036bb042cc940bedd07d9d..0000000000000000000000000000000000000000
@@ -3827,7 +3746,7 @@ index c416ef6481e83673ebe66bc7d42ce24d8c6eebdd..00000000000000000000000000000000
 -</androidx.coordinatorlayout.widget.CoordinatorLayout>
 \ No newline at end of file
 diff --git a/app/src/main/res/layout/link_preview.xml b/app/src/main/res/layout/link_preview.xml
-index 38042ef0895cd10dbb9ee439207b770a03526e24..fc649878bb0b009db022b2601bfb928e1a3b0d4a 100644
+index 38042ef0895cd10dbb9ee439207b770a03526e24..27a0c5e8a314d801d75f8fb686a5bbe0a46595cb 100644
 --- a/app/src/main/res/layout/link_preview.xml
 +++ b/app/src/main/res/layout/link_preview.xml
 @@ -31,12 +31,8 @@
@@ -3859,13 +3778,6 @@ index 38042ef0895cd10dbb9ee439207b770a03526e24..fc649878bb0b009db022b2601bfb928e
              app:layout_constraintTop_toBottomOf="@+id/linkpreview_description"
              tools:text="dailybugle.com" />
  
-@@ -150,4 +141,4 @@
- 
-     </androidx.constraintlayout.widget.ConstraintLayout>
- 
--</merge>
-\ No newline at end of file
-+</merge>
 diff --git a/app/src/main/res/layout/material3_serarch_toolbar.xml b/app/src/main/res/layout/material3_serarch_toolbar.xml
 deleted file mode 100644
 index 1e8479940aec630ae361693b34d1d10eb2c59b97..0000000000000000000000000000000000000000
@@ -4357,7 +4269,7 @@ index eebc388fdd1f264fedf5e9a8c3331fdf485dd010..00000000000000000000000000000000
 -    tools:text="Action" />
 \ No newline at end of file
 diff --git a/app/src/main/res/layout/review_banner_view.xml b/app/src/main/res/layout/review_banner_view.xml
-index 1779c124b4c78135c140a17fa2fa230ef27ccd03..0bd784358a96d1cee53d96278792eab413bfbf1d 100644
+index 1779c124b4c78135c140a17fa2fa230ef27ccd03..f2e81e22ccbd8dec1918f9d31e673af3d5a0a332 100644
 --- a/app/src/main/res/layout/review_banner_view.xml
 +++ b/app/src/main/res/layout/review_banner_view.xml
 @@ -14,17 +14,9 @@
@@ -4413,13 +4325,6 @@ index 1779c124b4c78135c140a17fa2fa230ef27ccd03..0bd784358a96d1cee53d96278792eab4
                  app:layout_constraintBottom_toBottomOf="parent"
                  app:layout_constraintEnd_toStartOf="@id/banner_close"
                  app:layout_constraintStart_toEndOf="@id/banner_message"
-@@ -133,4 +120,4 @@
-         </androidx.constraintlayout.widget.ConstraintLayout>
-     </com.google.android.material.card.MaterialCardView>
- 
--</org.thoughtcrime.securesms.profiles.spoofing.ReviewBannerView>
-\ No newline at end of file
-+</org.thoughtcrime.securesms.profiles.spoofing.ReviewBannerView>
 diff --git a/app/src/main/res/layout/safety_number_bottom_sheet.xml b/app/src/main/res/layout/safety_number_bottom_sheet.xml
 deleted file mode 100644
 index fac052f496294b732d0adc7d2df90ced344e4276..0000000000000000000000000000000000000000
@@ -4753,25 +4658,16 @@ index 9b375d3fa03b06a98bd6b8575fe3fdd475254aa6..b2aa869b346f2a408a8788a9608233aa
 \ No newline at end of file
 +</androidx.constraintlayout.widget.ConstraintLayout>
 diff --git a/app/src/main/res/layout/unverified_banner_view.xml b/app/src/main/res/layout/unverified_banner_view.xml
-index ee2758ab6b338e90d7026ab26ffadf220535f934..ff1c738c271ac0d29adccb47b6d4cde61c098659 100644
+index ee2758ab6b338e90d7026ab26ffadf220535f934..8ceb3b8cbe44c49a5672730b5917eb0c65192b00 100644
 --- a/app/src/main/res/layout/unverified_banner_view.xml
 +++ b/app/src/main/res/layout/unverified_banner_view.xml
-@@ -1,8 +1,8 @@
- <?xml version="1.0" encoding="utf-8"?>
- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
--    tools:viewBindingIgnore="true"
-     xmlns:app="http://schemas.android.com/apk/res-auto"
-     xmlns:tools="http://schemas.android.com/tools"
-+    tools:viewBindingIgnore="true"
-     android:id="@+id/container"
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
 @@ -18,43 +18,13 @@
          android:layout_marginStart="16dp"
          android:layout_gravity="center_vertical"
          android:src="@drawable/ic_warning_40"
 -        app:tint="@color/signal_icon_tint_primary" />
--
++        app:tint="?attr/signal_icon_tint_primary" />
+ 
 -<<<<<<< MOLLY
 -    <ImageView android:layout_width="wrap_content"
 -               android:layout_height="wrap_content"
@@ -4779,8 +4675,7 @@ index ee2758ab6b338e90d7026ab26ffadf220535f934..ff1c738c271ac0d29adccb47b6d4cde6
 -               android:layout_gravity="center_vertical"
 -               android:src="@drawable/ic_warning_40"
 -               app:tint="?attr/signal_icon_tint_primary"/>
-+        app:tint="?attr/signal_icon_tint_primary" />
- 
+-
 -    <TextView android:id="@+id/unverified_text"
 -              android:layout_width="0dp"
 -              android:layout_height="wrap_content"
@@ -5385,7 +5280,7 @@ index 527a73f3d6e727a3e3854a459890ab59f972bf95..00000000000000000000000000000000
 -
 -</menu>
 diff --git a/app/src/main/res/navigation/app_settings_with_change_number.xml b/app/src/main/res/navigation/app_settings_with_change_number.xml
-index 1c419451ba112155f51a3a33c7fa10805e2f1921..4357f6ef913040dd1faf693cec07162de0a1ddc0 100644
+index 1c419451ba112155f51a3a33c7fa10805e2f1921..8e662237d29975cb374283d3752d1d3544f16294 100644
 --- a/app/src/main/res/navigation/app_settings_with_change_number.xml
 +++ b/app/src/main/res/navigation/app_settings_with_change_number.xml
 @@ -100,13 +100,6 @@
@@ -5412,44 +5307,7 @@ index 1c419451ba112155f51a3a33c7fa10805e2f1921..4357f6ef913040dd1faf693cec07162d
  
      <activity
          android:id="@+id/manageProfileActivity"
-@@ -343,7 +337,7 @@
-         android:label="linked_device_account_settings_fragment"
-         tools:layout="@layout/dsl_settings_fragment" />
- 
--    <include app:graph="@navigation/app_settings_change_number" />
-+    <include app:graph="@navigation/app_settings_change_number"/>
- 
-     <fragment
-         android:id="@+id/advancedPinSettingsFragment"
-@@ -397,9 +391,7 @@
-         android:id="@+id/linkDeviceFragment"
-         android:name="org.thoughtcrime.securesms.linkdevice.LinkDeviceFragment"
-         android:label="link_device_fragment">
--        <action
--            android:id="@+id/action_linkDeviceFragment_to_linkDeviceIntroBottomSheet"
--            app:destination="@id/linkDeviceIntroBottomSheet" />
-+        <action android:id="@+id/action_linkDeviceFragment_to_linkDeviceIntroBottomSheet" app:destination="@id/linkDeviceIntroBottomSheet"/>
-         <action
-             android:id="@+id/action_linkDeviceFragment_to_editDeviceNameFragment"
-             app:destination="@id/editDeviceNameFragment"
-@@ -441,14 +433,8 @@
-     </fragment>
-     <dialog
-         android:id="@+id/linkDeviceIntroBottomSheet"
--        android:name="org.thoughtcrime.securesms.linkdevice.LinkDeviceIntroBottomSheet">
--        <action
--            android:id="@+id/action_linkDeviceIntroBottomSheet_to_addLinkDeviceFragment"
--            app:destination="@id/addLinkDeviceFragment"
--            app:enterAnim="@anim/fragment_open_enter"
--            app:exitAnim="@anim/fragment_open_exit"
--            app:popEnterAnim="@anim/fragment_close_enter"
--            app:popExitAnim="@anim/fragment_close_exit" />
-+        android:name="org.thoughtcrime.securesms.linkdevice.LinkDeviceIntroBottomSheet" >
-+        <action android:id="@+id/action_linkDeviceIntroBottomSheet_to_addLinkDeviceFragment" app:destination="@id/addLinkDeviceFragment" app:enterAnim="@anim/fragment_open_enter" app:exitAnim="@anim/fragment_open_exit" app:popEnterAnim="@anim/fragment_close_enter" app:popExitAnim="@anim/fragment_close_exit"/>
-     </dialog>
-     <dialog
-         android:id="@+id/linkDeviceSyncBottomSheet"
-@@ -660,38 +646,22 @@
+@@ -660,38 +654,22 @@
              app:popExitAnim="@anim/fragment_close_exit" />
  
          <action
@@ -5492,22 +5350,7 @@ index 1c419451ba112155f51a3a33c7fa10805e2f1921..4357f6ef913040dd1faf693cec07162d
  
      <!-- region Data and Storage -->
  
-@@ -741,13 +711,7 @@
-             app:exitAnim="@anim/fragment_open_exit"
-             app:popEnterAnim="@anim/fragment_close_enter"
-             app:popExitAnim="@anim/fragment_close_exit" />
--        <action
--            android:id="@+id/action_helpSettingsFragment_to_appUpdatesFragment"
--            app:destination="@id/appUpdatesFragment"
--            app:enterAnim="@anim/fragment_open_enter"
--            app:exitAnim="@anim/fragment_open_exit"
--            app:popEnterAnim="@anim/fragment_close_enter"
--            app:popExitAnim="@anim/fragment_close_exit" />
-+        <action android:id="@+id/action_helpSettingsFragment_to_appUpdatesFragment" app:destination="@id/appUpdatesFragment" app:enterAnim="@anim/fragment_open_enter" app:exitAnim="@anim/fragment_open_exit" app:popEnterAnim="@anim/fragment_close_enter" app:popExitAnim="@anim/fragment_close_exit"/>
-     </fragment>
- 
-     <fragment
-@@ -827,16 +791,6 @@
+@@ -827,16 +805,6 @@
          app:popUpToInclusive="true" />
  
      <action
@@ -5524,7 +5367,7 @@ index 1c419451ba112155f51a3a33c7fa10805e2f1921..4357f6ef913040dd1faf693cec07162d
          android:id="@+id/action_direct_to_notificationsSettingsFragment"
          app:destination="@id/notificationsSettingsFragment"
          app:enterAnim="@anim/fragment_open_enter"
-@@ -1254,11 +1208,6 @@
+@@ -1254,11 +1222,6 @@
              app:popExitAnim="@anim/fragment_close_exit" />
      </fragment>
  
@@ -5536,7 +5379,7 @@ index 1c419451ba112155f51a3a33c7fa10805e2f1921..4357f6ef913040dd1faf693cec07162d
      <fragment
          android:id="@+id/editNotificationProfileFragment"
          android:name="org.thoughtcrime.securesms.components.settings.app.notifications.profiles.edit.EditNotificationProfileFragment">
-@@ -1489,7 +1438,13 @@
+@@ -1489,7 +1452,13 @@
              android:defaultValue="false" />
      </fragment>
  

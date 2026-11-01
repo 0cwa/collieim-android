@@ -1,6 +1,6 @@
-From ce141a6d5a4a1959c61dd505c0d7509d6869c179 Mon Sep 17 00:00:00 2001
+From e78bec32e77daf9fd1883834b2610af82546076e Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sat, 31 Oct 2026 23:25:32 +0100
+Date: Sun, 1 Nov 2026 04:39:12 +0100
 Subject: [PATCH] Port resources-and-branding to Signal 8.33.2, part 11
 
 Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: d6a326e8d173a9f302256edd5451ba59d295da50
+Source-Commit: 15e53970dd36d370223c6bc4290cf2b4cdab88a2
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -597,7 +597,7 @@ index 9dfab3fde08c55786310dea08d38411142068120..68184477a422b40ca647f6e4c6626cb0
 +    <color name="signal_dark_colorNeutral_87">#DE121212</color>
 +    </resources>
 diff --git a/core/ui/src/main/res/values/material3_colors_light.xml b/core/ui/src/main/res/values/material3_colors_light.xml
-index 590c301e3d8d42714d1b2384d7a100edef283086..8e1985e6a5bcb82dbc60bd27d78b3ed1eaf582ee 100644
+index 590c301e3d8d42714d1b2384d7a100edef283086..4fbb542330f297fc80c1087b61c1954694869edb 100644
 --- a/core/ui/src/main/res/values/material3_colors_light.xml
 +++ b/core/ui/src/main/res/values/material3_colors_light.xml
 @@ -1,47 +1,20 @@
@@ -649,13 +649,6 @@ index 590c301e3d8d42714d1b2384d7a100edef283086..8e1985e6a5bcb82dbc60bd27d78b3ed1
      <color name="signal_light_colorTransparent1">#14FFFFFF</color>
      <color name="signal_light_colorTransparent2">#29FFFFFF</color>
      <color name="signal_light_colorTransparent3">#8FFFFFFF</color>
-@@ -56,4 +29,4 @@
-     <color name="signal_light_colorTransparentInverse5">#E0000000</color>
-     <color name="signal_light_colorNeutralInverse">#121212</color>
-     <color name="signal_light_colorNeutralVariantInverse">#5C5C5C</color>
--</resources>
-\ No newline at end of file
-+</resources>
 diff --git a/core/ui/src/main/res/values/themes.xml b/core/ui/src/main/res/values/themes.xml
 index 2d576205019e3149d03bdfdfd912482145f49445..bcd9a21367169904936bf7a7063183375db69fbd 100644
 --- a/core/ui/src/main/res/values/themes.xml

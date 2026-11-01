@@ -1,13 +1,16 @@
 """Verify ordered, pinned whole-file deletion stages."""
 import json
+import hashlib
 import os
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import forest
 import release
+import prepare_port_report
 
 
 class DeletionStages(unittest.TestCase):
@@ -74,6 +77,24 @@ class DeletionStages(unittest.TestCase):
         self.addCleanup(lambda: subprocess.run(['git', '-C', str(self.root), 'worktree', 'remove', '--force', str(second)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
         with self.assertRaisesRegex(forest.ForestError, 'changed after validation'):
             release.apply_resolutions(self.root, second, self.before, records)
+
+    def test_report_preparation_executes_and_checks_stages(self):
+        stage = self.dir / 'one.json'
+        stage.write_text(json.dumps(self.stage('one', self.before, self.middle)))
+        (self.dir / 'series').write_text('one.json\n')
+        config = {'signal': {'commit': self.source}, 'molly': {'target': self.source},
+                  'port': {'mechanical_tree': self.before, 'series': 'stages/series'},
+                  'target_tree': self.middle}
+        provenance = {'origin_base': self.source, 'origin_target': self.source,
+                      'signal': self.source, 'mechanical_tree': self.before,
+                      'target_tree': self.middle,
+                      'mailbox_sha256': {'one.json': hashlib.sha256(stage.read_bytes()).hexdigest()}}
+        index = self.root.parent / (self.root.name + '-index')
+        with patch.object(release, 'mechanical_merge', return_value=(self.before, set(), '')):
+            self.assertEqual(prepare_port_report.materialize(self.root, config, provenance, self.root, index), self.middle)
+            provenance['mailbox_sha256']['one.json'] = '0' * 64
+            with self.assertRaisesRegex(ValueError, 'hash mismatch'):
+                prepare_port_report.materialize(self.root, config, provenance, self.root, index)
 
     def test_disk_mode_and_blob_mismatch_rejected(self):
         data = self.stage('one', self.before, self.middle)

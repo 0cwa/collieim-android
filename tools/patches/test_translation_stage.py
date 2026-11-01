@@ -7,6 +7,7 @@ import tempfile
 import unittest
 
 import forest
+import git_utils
 import translation_stage as stage
 
 
@@ -59,6 +60,13 @@ class TranslationStageTests(unittest.TestCase):
         self.assertEqual(self.git('rev-parse', 'HEAD^{tree}'), self.data['after_tree'])
         self.assertIn(b'Molly &amp; molly.im', (self.root / self.path).read_bytes())
         self.assertIn(b'please_wait', (self.root / self.target).read_bytes())
+
+    def test_private_index_reconstructs_the_same_pinned_tree(self):
+        index = str(self.root / 'private-index')
+        git_utils.git(self.root, 'read-tree', self.data['before_tree'], index_file=index)
+        self.assertEqual(stage.generate_index(self.root, self.data, forest.clean_git_env(), index),
+                         self.data['after_tree'])
+        self.assertEqual(self.git('rev-parse', 'HEAD^{tree}'), self.data['before_tree'])
 
     def test_please_wait_resource_keys_are_parsed_semantically(self):
         translated = b'<resources><string name="title">Molly</string></resources>'

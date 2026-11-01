@@ -189,38 +189,12 @@ def generate(repo, worktree, data, env, *, dry_run=False):
             raise forest.ForestError(f'not a regular translation output: {p}')
         if bool(path.stat().st_mode & 0o111) != (item['mode'] == '100755'):
             raise forest.ForestError(f'translation mode mismatch: {p}')
-    output = {}
-    for p, h in data['translation_inputs'].items():
-        entry = signal_entries.get(os.fsencode(p))
-        if not entry or entry[0] != b'100644' or entry[1] != b'blob':
-            raise forest.ForestError(f'missing Signal translation: {p}')
-        blob = entry[2].decode()
-        content = git_utils.git(repo, 'cat-file', 'blob', blob, env={**env, 'GIT_NO_LAZY_FETCH': '1'}, binary=True).stdout
-        if digest(content) != h:
-            raise forest.ForestError(f'Signal translation mismatch: {p}')
-        base = p.split('/src/main/res/')[0] + '/src/main/res/values/strings.xml'
-        output[p] = transform(content, bases[base], p)
-    for p, item in data['please_wait'].items():
-        target = item['target']; content = read_local(target, item['input_sha256'])
-        line = item['line'].encode()
-        _validate_please_wait(output[p], content, line, target)
-        if content.count(b'</resources>') != 1:
-            raise forest.ForestError(f'unexpected resources closing tag count: {target}')
-        content = content.replace(b'</resources>', line + b'</resources>')
-        ET.fromstring(content); output[target] = content
-    for p, content in output.items():
-        if digest(content) != data['output_sha256'][p]:
-            raise forest.ForestError(f'translation output mismatch: {p}')
-    # Compute the complete tree using a private index before touching the worktree.
+    # Use the same Git-blob computation as report preparation after checking
+    # the materialized worktree's preimages and modes above.
     with tempfile.TemporaryDirectory(prefix='molly-translations-') as tmp:
-        index_env = {**env, 'GIT_INDEX_FILE': str(Path(tmp) / 'index')}
-        index = index_env['GIT_INDEX_FILE']
+        index = str(Path(tmp) / 'index')
         git_utils.git(worktree, 'read-tree', data['before_tree'], env=env, index_file=index)
-        for p, content in output.items():
-            blob = subprocess.run(['git', '-C', str(repo), 'hash-object', '-w', '--stdin'], input=content,
-                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=index_env, check=True).stdout.decode().strip()
-            git_utils.git(worktree, 'update-index', '--add', '--cacheinfo', (data['preimages'][p] or {'mode': '100644'})['mode'], blob, p, env=env, index_file=index)
-        tree = git_utils.git(worktree, 'write-tree', env=env, index_file=index).stdout.strip()
+        tree = generate_index(repo, data, env, index, dry_run=dry_run)
     if dry_run:
         return tree
     if tree != data['after_tree']:
@@ -232,3 +206,59 @@ def generate(repo, worktree, data, env, *, dry_run=False):
     verify_complete.clean_worktree(worktree)
     if forest.git(worktree, 'rev-parse', 'HEAD^{tree}') != tree:
         raise forest.ForestError('translation materialization tree mismatch')
+
+
+def generate_index(repo, data, env, index, *, dry_run=False):
+    """Apply a pinned translation stage to a private index without a checkout."""
+    if git_utils.git(repo, 'write-tree', env=env, index_file=index).stdout.strip() != data['before_tree']:
+        raise forest.ForestError('translation before-tree mismatch')
+    entries = verify_complete.tree_entries(repo, data['before_tree'])
+    signal_entries = verify_complete.tree_entries(repo, data['signal_tree'])
+    signal_paths = {os.fsdecode(p) for p in signal_entries
+                    if re.fullmatch(r'.+/src/main/res/values-[^/]+/strings\.xml', os.fsdecode(p))}
+    if signal_paths != set(data['translation_inputs']):
+        raise forest.ForestError('Signal translation path coverage mismatch')
+
+    def read_entry(tree_entries, path, expected_hash):
+        entry = tree_entries.get(os.fsencode(path))
+        if not entry or entry[0] not in (b'100644', b'100755') or entry[1] != b'blob':
+            raise forest.ForestError(f'not a regular translation input: {path}')
+        content = git_utils.git(repo, 'cat-file', 'blob', entry[2].decode(), env={**env, 'GIT_NO_LAZY_FETCH': '1'}, binary=True).stdout
+        if digest(content) != expected_hash:
+            raise forest.ForestError(f'translation input mismatch: {path}')
+        return content
+
+    bases = {p: read_entry(entries, p, h) for p, h in data['base_inputs'].items()}
+    for p, item in data['preimages'].items():
+        expected = None if item is None else (item['mode'].encode(), b'blob', item['blob'].encode())
+        if entries.get(os.fsencode(p)) != expected:
+            raise forest.ForestError(f'translation preimage mismatch: {p}')
+    output = {}
+    for p, h in data['translation_inputs'].items():
+        if signal_entries.get(os.fsencode(p), (None,))[0] != b'100644':
+            raise forest.ForestError(f'missing Signal translation: {p}')
+        content = read_entry(signal_entries, p, h)
+        base = p.split('/src/main/res/')[0] + '/src/main/res/values/strings.xml'
+        output[p] = transform(content, bases[base], p)
+    for p, item in data['please_wait'].items():
+        target = item['target']
+        content = read_entry(entries, target, item['input_sha256'])
+        line = item['line'].encode()
+        _validate_please_wait(output[p], content, line, target)
+        if content.count(b'</resources>') != 1:
+            raise forest.ForestError(f'unexpected resources closing tag count: {target}')
+        content = content.replace(b'</resources>', line + b'</resources>')
+        ET.fromstring(content)
+        output[target] = content
+    for p, content in output.items():
+        if digest(content) != data['output_sha256'][p]:
+            raise forest.ForestError(f'translation output mismatch: {p}')
+    for p, content in output.items():
+        blob = subprocess.run(['git', '-C', str(repo), 'hash-object', '-w', '--stdin'], input=content,
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, check=True).stdout.decode().strip()
+        mode = (data['preimages'][p] or {'mode': '100644'})['mode']
+        git_utils.git(repo, 'update-index', '--add', '--cacheinfo', mode, blob, p, env=env, index_file=index)
+    actual = git_utils.git(repo, 'write-tree', env=env, index_file=index).stdout.strip()
+    if not dry_run and actual != data['after_tree']:
+        raise forest.ForestError(f'translation after-tree mismatch: {actual}')
+    return actual

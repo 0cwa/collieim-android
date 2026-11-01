@@ -1,6 +1,6 @@
-From d453d60ece07c9b872fd25381cdbe0674f2d4f7e Mon Sep 17 00:00:00 2001
+From 9d678605819e74808acfe9eb94f3c7cb6c06354f Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sun, 1 Nov 2026 05:55:31 +0100
+Date: Sun, 1 Nov 2026 11:08:41 +0100
 Subject: [PATCH] Restore linked-device reminder after re-registration
 
 Mark existing-account registration explicitly and restore the Molly reminder after successful primary-device multi-device re-registration. Add focused coverage for the entry-point marker and reminder policy.
@@ -8,8 +8,10 @@ Mark existing-account registration explicitly and restore the Molly reminder aft
 AI-assisted compatibility changes: restore imports across source checkpoints.
 
 AI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.
-Based-On-Source-Commit: 842e226be91f6b9d664df3b92ef460d07e6bde14
-Source-Commit: d453d60ece07c9b872fd25381cdbe0674f2d4f7e
+
+AI-assisted compatibility changes: restore Molly logger collection.
+Based-On-Source-Commit: 34f0a76bcd67a7f0551a9f95067dcf0d1e9a7384
+Source-Commit: 9d678605819e74808acfe9eb94f3c7cb6c06354f
 ---
  .../registration/ui/RegistrationActivity.kt   | 15 ++++++++-
  .../registration/ui/RegistrationIntents.kt    |  7 +++-

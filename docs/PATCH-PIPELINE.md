@@ -101,7 +101,7 @@ changes are grouped into initial resolution mailboxes and follow-up mailboxes.
 The initial source commit has the pinned Molly and Signal commits as parents.
 Each follow-up records its immediate source parent and resulting tree.
 
-Initial source: `969a45e4b0d44bee6fbb78e3c74fcce5463190a3`. Final source tree: `edba85a25dd843fbe31e00cc36ac4a2a1015781f`.
+Initial source: `969a45e4b0d44bee6fbb78e3c74fcce5463190a3`. Final source tree: `be2e6675d04a03ba4db5bb02b6f1b6a05ea820ac`.
 
 | Follow-up | Source commit | Resulting tree |
 | --- | --- | --- |
@@ -109,6 +109,10 @@ Initial source: `969a45e4b0d44bee6fbb78e3c74fcce5463190a3`. Final source tree: `
 | `followups/netcipher-sdk-dsl` | `811a781e04f111753482877ded9807537efc3de7` | `4dae4d511597a76fd37471cea5d760df42361b4f` |
 | `followups/integration-and-regression-tests` | `c79aae7b1e010aaf064f09f0bc6bafe05ff17394` | `497217c1e371e58bbe79ea1db8dbed08f4eb5c54` |
 | `followups/cdn-transport-test-fixture` | `34f0a76bcd67a7f0551a9f95067dcf0d1e9a7384` | `edba85a25dd843fbe31e00cc36ac4a2a1015781f` |
+| `followups/reregistration-linked-devices-reminder` | `9d678605819e74808acfe9eb94f3c7cb6c06354f` | `cfda1ff0282663b0fc4728b3c4f2f9b5b6eaa80d` |
+| `followups/legacy-backup-precedence` | `6fa9f5bb6344dc8d0650ceca5b800bfa5342cafc` | `1bb84ef6138e0794593b94d23546e29775b73ef4` |
+| `followups/donation-completion` | `241aefceb652743f1015938c0d3e72099d166ddc` | `4426a7a2a850b31a940f3bcc31d8917676139559` |
+| `followups/backup-notification-id-upgrade` | `bc954052836c79d40322d4f81bc4283f173fb44d` | `be2e6675d04a03ba4db5bb02b6f1b6a05ea820ac` |
 
 The `CorrectedPreferenceFragment.java` modify/delete conflict retains Molly's
 file unchanged in the mechanical merge and is an explicit configuration choice.

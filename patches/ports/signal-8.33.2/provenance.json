@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
   "complete_source_checkpoint": true,
-  "target_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+  "target_tree": "be2e6675d04a03ba4db5bb02b6f1b6a05ea820ac",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "cc2faf1ca0b8e93edba478e7daadc8e95869c4717333194dddb1cadb8d9e2cc5",
@@ -288,6 +288,74 @@
         "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch"
       ],
       "mailbox_bytes": 2338
+    },
+    {
+      "id": "followups/reregistration-linked-devices-reminder",
+      "source_commit": "9d678605819e74808acfe9eb94f3c7cb6c06354f",
+      "description": "Restore linked-device reminder after re-registration\n\nMark existing-account registration explicitly and restore the Molly reminder after successful primary-device multi-device re-registration. Add focused coverage for the entry-point marker and reminder policy.\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
+      "ai_generated": true,
+      "before_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
+      "after_tree": "cfda1ff0282663b0fc4728b3c4f2f9b5b6eaa80d",
+      "paths": 3,
+      "patches": [
+        "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch"
+      ],
+      "mailbox_bytes": 6863,
+      "source_bundle": "followups/reregistration-linked-devices-reminder/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "34f0a76bcd67a7f0551a9f95067dcf0d1e9a7384",
+      "source_bundle_sha256": "72052ada4e4dba9a56d1ce730d16d8dec52bb6a7460b412acd3c9bc7830acfea",
+      "source_bundle_bytes": 4306
+    },
+    {
+      "id": "followups/legacy-backup-precedence",
+      "source_commit": "6fa9f5bb6344dc8d0650ceca5b800bfa5342cafc",
+      "description": "Restore migrated settings with backup frame precedence\n\nMap Molly shared-preference frames to their migrated SignalStore keys synchronously as the importer reads them. Later KeyValue frames then replace preference-only values or duplicate older values, matching the legacy exporter order.\n\nDrain queued SignalStore writes before opening the restore transaction and remove the post-restore preference re-read that could replace newer KeyValue data. Add focused coverage for preference-only language/privacy/media settings and notification-privacy KeyValue precedence through importer storage writes.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 9d678605819e74808acfe9eb94f3c7cb6c06354f\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
+      "ai_generated": true,
+      "before_tree": "cfda1ff0282663b0fc4728b3c4f2f9b5b6eaa80d",
+      "after_tree": "1bb84ef6138e0794593b94d23546e29775b73ef4",
+      "paths": 4,
+      "patches": [
+        "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch"
+      ],
+      "mailbox_bytes": 17448,
+      "source_bundle": "followups/legacy-backup-precedence/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "9d678605819e74808acfe9eb94f3c7cb6c06354f",
+      "source_bundle_sha256": "33ff7bea11389ab490bd7a6e702368894ed675a4b65e92fb5c888ba9e651ad35",
+      "source_bundle_bytes": 5918
+    },
+    {
+      "id": "followups/donation-completion",
+      "source_commit": "241aefceb652743f1015938c0d3e72099d166ddc",
+      "description": "Restore donation completion acknowledgement\n\nDisplay the earned badge after immediate donations and restore the eligible first-Boost monthly sustainer link without exposing profile-badge controls. Use existing thank-you copy that does not promise unsupported profile display.\n\nFor long-running donations, stop showing the loading indicator after the badge loads when Molly disables the profile-badge toggle. Keep loading visible while the badge is unavailable, and cover both states with focused Compose UI tests.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 6fa9f5bb6344dc8d0650ceca5b800bfa5342cafc\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
+      "ai_generated": true,
+      "before_tree": "1bb84ef6138e0794593b94d23546e29775b73ef4",
+      "after_tree": "4426a7a2a850b31a940f3bcc31d8917676139559",
+      "paths": 4,
+      "patches": [
+        "followups/donation-completion/0001-donation-completion.patch"
+      ],
+      "mailbox_bytes": 13531,
+      "source_bundle": "followups/donation-completion/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "6fa9f5bb6344dc8d0650ceca5b800bfa5342cafc",
+      "source_bundle_sha256": "e3836d3f6c4f71de66dfdc7630747c6771ad62dc6032819156d1b235d5b0d2e0",
+      "source_bundle_bytes": 7277
+    },
+    {
+      "id": "followups/backup-notification-id-upgrade",
+      "source_commit": "bc954052836c79d40322d4f81bc4283f173fb44d",
+      "description": "Clean up legacy backup notifications after upgrade\n\nKeep the collision-free Signal IDs for new backup alerts, and remove old Molly alerts only when the active notification matches the backup channel. This avoids deleting old conversation notifications that shared the previous numeric range.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 241aefceb652743f1015938c0d3e72099d166ddc\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
+      "ai_generated": true,
+      "before_tree": "4426a7a2a850b31a940f3bcc31d8917676139559",
+      "after_tree": "be2e6675d04a03ba4db5bb02b6f1b6a05ea820ac",
+      "paths": 5,
+      "patches": [
+        "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch"
+      ],
+      "mailbox_bytes": 9096,
+      "source_bundle": "followups/backup-notification-id-upgrade/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "241aefceb652743f1015938c0d3e72099d166ddc",
+      "source_bundle_sha256": "b40feb5134f1202764237f22b430387b7f75ba150aac684ef0b4b3af2f76ffd3",
+      "source_bundle_bytes": 5474
     }
   ],
   "mailbox_sha256": {
@@ -329,6 +397,10 @@
     "followups/restore-preference-import/0001-restore-preference-import.patch": "815b0ce9a442ad500141d993657f4b36f1c734239085bb1436d1aa62f98ae9e9",
     "followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch": "4b934b633eebf813d88aaae6b139f78d85d2fdf55a13501e16eeaef10e172c7b",
     "followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch": "bfac3ca29edeab14eead3edd5884cf4c38bf57118b4dc8c49e1cac75662061ea",
-    "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch": "ea586ea242f96f2dd68674f8406e8a7cd3a2a219b41079117ad6b26723884dde"
+    "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch": "ea586ea242f96f2dd68674f8406e8a7cd3a2a219b41079117ad6b26723884dde",
+    "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "7bbe42405184cd980c25df8c35db7905663bb2182fa2284910c03c05a971f11d",
+    "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "2f4cea6bbe40bb457d05d3e2ebc5d89a129365e546ece562fe51e159741d92b5",
+    "followups/donation-completion/0001-donation-completion.patch": "3590dd21e39fc8f15ec23941ad65c06ba178256a13dc60a3189fba82f01a03b4",
+    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "af1aedb3de66021a93c38df471985f2ff72e130fa512d99063452a84cf881019"
   }
 }

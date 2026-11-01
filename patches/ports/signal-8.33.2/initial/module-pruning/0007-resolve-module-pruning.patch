@@ -1,4 +1,4 @@
-From 23531dd2780d3614054289fb73d66ff32059de5c Mon Sep 17 00:00:00 2001
+From 7c74409384010ffba3de12bd0f304790c1be223f Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
 Date: Sat, 31 Oct 2026 23:25:32 +0100
 Subject: [PATCH] Port module-pruning to Signal 8.33.2, part 7
@@ -12,11 +12,12 @@ with Signal 8.33.2. The original Molly mailboxes remain unchanged.
 Offset-only movement and conflict-free automatic merges are already
 in the parent tree and are not re-exported as patch rewrites.
 
-This batch owns 21 whole-file changes. It records AI-assisted compatibility changes in the pinned source tree.
+This batch owns 21 whole-file changes. It records AI-assisted
+compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: f392c29451f25d6c94316dac316d5aeaf1989206
+Source-Commit: d6a326e8d173a9f302256edd5451ba59d295da50
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2

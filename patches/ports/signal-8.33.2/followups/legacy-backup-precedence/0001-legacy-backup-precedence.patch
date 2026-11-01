@@ -1,4 +1,4 @@
-From 1102fc4430e12d2708747622413f2020a022da19 Mon Sep 17 00:00:00 2001
+From 52a2193411421ab40b22787ba0d2ee22c3b3faff Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Sat, 31 Oct 2026 23:25:33 +0100
 Subject: [PATCH] Restore migrated settings with backup frame precedence
@@ -9,8 +9,8 @@ Drain queued SignalStore writes before opening the restore transaction and remov
 
 AI-Generated: true
 
-Based-On-Source-Commit: 395fc8794221269f9e223b19840503fbfb3c076e
-Source-Commit: 1102fc4430e12d2708747622413f2020a022da19
+Based-On-Source-Commit: 586dd5b09e235c7121d3245902bfa5abb421081f
+Source-Commit: 52a2193411421ab40b22787ba0d2ee22c3b3faff
 ---
  .../securesms/backup/FullBackupImporter.java  | 27 ++++++-
  .../securesms/keyvalue/SettingsValues.kt      | 69 ++++++++++------

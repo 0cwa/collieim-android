@@ -101,18 +101,18 @@ changes are grouped into initial resolution mailboxes and follow-up mailboxes.
 The initial source commit has the pinned Molly and Signal commits as parents.
 Each follow-up records its immediate source parent and resulting tree.
 
-Initial source: `f392c29451f25d6c94316dac316d5aeaf1989206`. Final source tree: `2b0ba46b23fd27974b8cefbd36e0d91791b525bd`.
+Initial source: `d6a326e8d173a9f302256edd5451ba59d295da50`. Final source tree: `f25a1de0fc87f0f862cc270f823d240857878bc5`.
 
 | Follow-up | Source commit | Resulting tree |
 | --- | --- | --- |
-| `followups/restore-preference-import` | `3aff0139f46dabbd2415f2e24208891da4262801` | `e821a9c5148f3f1992689cfcdfbe21d4670e77ae` |
-| `followups/netcipher-sdk-dsl` | `9348f32d075eeb7d4c7e6a3f032d6b1fc750e014` | `44084ad64919e34326e9417c7afeaeccaf3848c9` |
-| `followups/integration-and-regression-tests` | `0698c1aea2ae762edeee34b5a7e5c46b8a4e747f` | `502707151352b89af8099c59dcaeef5c4c324909` |
-| `followups/cdn-transport-test-fixture` | `6bf19c561f1c123269fdeb5d693bff154684998a` | `129bd88f3f04dfb6b80a93b96ec026f6a5cd3010` |
-| `followups/reregistration-linked-devices-reminder` | `395fc8794221269f9e223b19840503fbfb3c076e` | `6b17bf2575da7942c92e8f5d8443b1fed7aaecfc` |
-| `followups/legacy-backup-precedence` | `1102fc4430e12d2708747622413f2020a022da19` | `5df52ea83e1c4c0bb53306f1d2e2a1840a20adc8` |
-| `followups/donation-completion` | `4fa691017fc829a1a47fb5fbb233a92744585c3c` | `f0b2028c31700ea88ed1fab4a17af338ac71d328` |
-| `followups/backup-notification-id-upgrade` | `1dd00085be21d4c8b3b6d1ff8f0d89fdafe63dbc` | `2b0ba46b23fd27974b8cefbd36e0d91791b525bd` |
+| `followups/restore-preference-import` | `da85fb5d37ae5dcc28c354605b6034a33dee6426` | `da14c3b72f1516f80565ded99e2662351cf72115` |
+| `followups/netcipher-sdk-dsl` | `4da2142c210bd78d02bc67a7a43b922ab710885a` | `92e1d034fb9a697f2e8254f1648945bc7ba0246b` |
+| `followups/integration-and-regression-tests` | `c044adfb37230e33ed736198794407dcd98ca754` | `b1c1a7111d760561b8d6b213beafd99a2940ad79` |
+| `followups/cdn-transport-test-fixture` | `d756c962296d51e6d910d9821a8df44b0cbd0578` | `3a20fd39d1f0e444bcc4711a2909635d8762b67e` |
+| `followups/reregistration-linked-devices-reminder` | `586dd5b09e235c7121d3245902bfa5abb421081f` | `e836d320d401f9071ac0135b518dc31b77407d42` |
+| `followups/legacy-backup-precedence` | `52a2193411421ab40b22787ba0d2ee22c3b3faff` | `d0bd1776892312c4b6504b3e027add5cb54c31e6` |
+| `followups/donation-completion` | `4230235f5db875ea87398083268fe46e61523240` | `848a3f3bc1ec56990096c4ab3b3167b0f90e953c` |
+| `followups/backup-notification-id-upgrade` | `1923f7f681b790fdf53006fa943b61de473a5ef5` | `f25a1de0fc87f0f862cc270f823d240857878bc5` |
 
 The `CorrectedPreferenceFragment.java` modify/delete conflict retains Molly's
 file unchanged in the mechanical merge and is an explicit configuration choice.
@@ -121,9 +121,9 @@ The port report records unmeasured hunk evidence without treating it as proof.
 The source checkpoint bundle at `patches/ports/signal-8.33.2/source-checkpoint.bundle`
 contains the initial commit and four core follow-ups. Its prerequisites are the
 pinned official Molly and Signal commits. The bundle has
-11795462 bytes and SHA-256 `072ef4184827357093d9aa3ed7d7b92a035ee33f528d215b85b4ed3326555aeb`; its advertised ref is
-`refs/heads/source-checkpoint/core`, pointing to `6bf19c561f1c123269fdeb5d693bff154684998a` (tree
-`129bd88f3f04dfb6b80a93b96ec026f6a5cd3010`).
+12510938 bytes and SHA-256 `7c4510c2a4d612b8ca3e5a6dcc266caff4a67dd11d5ead73808e94f44d538b45`; its advertised ref is
+`refs/heads/source-checkpoint/core`, pointing to `d756c962296d51e6d910d9821a8df44b0cbd0578` (tree
+`3a20fd39d1f0e444bcc4711a2909635d8762b67e`).
 
 The four behavior follow-ups each have an incremental source bundle requiring
 the immediately preceding source checkpoint. Their paths, byte counts and

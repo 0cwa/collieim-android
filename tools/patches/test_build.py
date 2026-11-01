@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+import zipfile
 from unittest.mock import patch
 
 import build
@@ -154,6 +155,87 @@ class BuildSourceTests(unittest.TestCase):
         (self.app / 'gradle/verification-metadata.xml').write_bytes(b'changed verification\n')
         with self.assertRaisesRegex(build.BuildError, 'working source differs'):
             build.Build(self.args).source_proof()
+
+
+class CachedSdkTests(BuildSourceTests):
+    def setUp(self):
+        super().setUp()
+        self.config['android'] = {'sdk': '36.1', 'build_tools': '36.0.0', 'ndk': '28.0.13004108'}
+        self.save()
+        self.sdk_root = self.root / 'sdk'
+        self.env = patch.dict(os.environ, {'ANDROID_HOME': str(self.sdk_root)})
+        self.env.start()
+        self.addCleanup(self.env.stop)
+        for identity, version, properties, payloads, archives in (
+            ('platforms;android-36.1', '1', 'AndroidVersion.ApiLevel=36.1',
+             ['framework.aidl', 'build.prop'], ['android.jar']),
+            ('build-tools;36.0.0', '36.0.0', '',
+             ['aapt', 'aapt2', 'zipalign', 'd8'], ['lib/d8.jar']),
+            ('ndk;28.0.13004108', '28.0.13004108', '',
+             ['toolchains/llvm/prebuilt/linux-x86_64/bin/clang'], [])):
+            directory = self.sdk_root.joinpath(*identity.split(';'))
+            directory.mkdir(parents=True)
+            parts = (version + '.0.0').split('.')[:3]
+            (directory / 'package.xml').write_text(
+                f'<repository><localPackage path="{identity}"><revision>'
+                f'<major>{parts[0]}</major><minor>{parts[1]}</minor><micro>{parts[2]}</micro>'
+                '</revision></localPackage></repository>')
+            (directory / 'source.properties').write_text(f'Pkg.Revision={version}\n{properties}\n')
+            for name in payloads:
+                path = directory / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b'payload')
+                path.chmod(0o755)
+            for name in archives:
+                path = directory / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                with zipfile.ZipFile(path, 'w') as archive:
+                    archive.writestr('payload', 'fixture')
+
+    def test_valid_cache_skips_manager_and_records_actual_method(self):
+        runner = build.Build(self.args)
+        with patch.object(runner, 'run') as run:
+            runner.sdk()
+        run.assert_not_called()
+        report = json.loads((self.reports / 'sdk.json').read_text())
+        self.assertEqual((report['status'], report['method'], report['executed'], report['command']),
+                         ('PASS', 'local-validation', False, []))
+        self.assertIn('sdkmanager was not executed', (self.reports / 'sdk.log').read_text())
+
+    def test_invalid_cache_calls_installer(self):
+        cases = ('missing', 'malformed', 'identity', 'revision', 'payload', 'archive')
+        for case in cases:
+            with self.subTest(case=case):
+                directory = self.sdk_root / 'build-tools/36.0.0'
+                target = {'missing': 'source.properties', 'malformed': 'package.xml',
+                          'identity': 'package.xml', 'revision': 'source.properties',
+                          'payload': 'aapt2', 'archive': 'lib/d8.jar'}[case]
+                path = directory / target
+                original = path.read_bytes()
+                if case == 'missing': path.unlink()
+                elif case == 'malformed': path.write_text('<broken')
+                elif case == 'identity': path.write_bytes(original.replace(b'build-tools;36.0.0', b'build-tools;35.0.0'))
+                elif case == 'revision': path.write_text('Pkg.Revision=35.0.0\n')
+                elif case == 'payload': path.write_bytes(b'')
+                else: path.write_bytes(b'not a zip')
+                runner = build.Build(self.args)
+                with patch.object(runner, 'run') as run:
+                    runner.sdk()
+                run.assert_called_once_with(
+                    [str(self.sdk_root / 'cmdline-tools/latest/bin/sdkmanager'), '--install',
+                     'platforms;android-36.1', 'build-tools;36.0.0', 'ndk;28.0.13004108'], 'sdk')
+                path.write_bytes(original)
+                if case == 'payload': path.chmod(0o755)
+
+    def test_cold_install_accepts_licenses_only_when_requested(self):
+        (self.sdk_root / 'platforms/android-36.1/android.jar').unlink()
+        self.args.accept_licenses = True
+        runner = build.Build(self.args)
+        with patch('build.subprocess.run') as licenses, patch.object(runner, 'source_proof'), \
+             patch.object(runner, 'run') as install:
+            runner.sdk()
+        self.assertEqual(licenses.call_args.args[0][-1], '--licenses')
+        install.assert_called_once()
 
 
 if __name__ == '__main__':

@@ -102,8 +102,7 @@ if [[ $java_major != 21 ]]; then echo "JDK 21 required (found ${java_major:-none
 build() { python3 tools/patches/build.py "$1" --worktree "$worktree" --report-dir "$reports"; }
 
 echo '== pinned Android SDK components'
-yes 2>/dev/null | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
-build sdk >/dev/null
+python3 tools/patches/build.py sdk --worktree "$worktree" --report-dir "$reports" --accept-licenses >/dev/null
 
 if [[ $stage == resources ]]; then
   echo '== Android resource linking'

@@ -81,6 +81,13 @@ multiple hunks, unchanged mailbox bytes, changed context, and ambient Git
 settings that would otherwise hide a conflict. Do not refresh hunk headers
 or regenerate every mailbox just because an upstream line number changes.
 
+An ordered series can also contain checked JSON records for whole-file
+deletions and translation generation. The assembler checks record and input
+hashes, generated output hashes, and the before and after trees. Translation
+generation follows Molly's transform and matches all 816 pinned native witness
+outputs; the pipeline itself does not execute Gradle. The `please_wait`
+relocation is validated separately.
+
 For a new Signal release, the assembler uses a separate deterministic
 three-way integration step. It first proves the original Molly patches,
 then merges that exact snapshot with the new Signal base using the old

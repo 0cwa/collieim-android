@@ -292,3 +292,28 @@ The exact baseline and counter command on each branch, in its source checkout, w
 JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9 ANDROID_HOME=/home/x/Android/Sdk TMPDIR=/var/home/x/agent-scratch/mollyim-android/pr-stack/tmp PATH=$JAVA_HOME/bin:$PATH
 agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process -Dorg.gradle.jvmargs=-Xmx5g\ -Xms256m\ -XX:MaxMetaspaceSize=1g\ -Dcom.android.tools.r8.threadCount=1\ -XX:+UnlockExperimentalVMOptions\ -XX:hashCode=3 :core:network:test --rerun --tests org.signal.network.config.ProxyConfigTest
 ```
+
+## Resource policy partial inverses
+
+These are partial checks, not complete raw-hunk inverses; no reduction was accepted. The raw report IDs map by target interval: `2e0a56c1a6f9ca207ecb` removes only the network action row in `app/src/main/res/navigation/app_settings_with_change_number.xml`; `3a3380306f801f12ff95` removes only five items in `app/src/main/res/values/themes.xml`. Current respective blob IDs are `8e662237d29975cb374283d3752d1d3544f16294` and `a1619af7ea78f12ee2a6d2868973f07b8f681a45`, matching PR3 and PR4 source parents and prior prepared PR3 parent `1500ad2a9c9ac9500a22ba77893171730a7f88f8`. Old Molly `0e202dda90785771ff8c87526eaaf30c655f54f3` navigation lines 95–102 defines the network destination and four fragment open/close animations; themes lines 227–231 defines `dynamic_colors=false`, navigation and status bar colors as `molly_surface_light`, and both light system bar flags as true. Its `core/ui/src/main/res/values/molly_colors.xml` line 63 defines `#F6F6FF`. Removing the network action removes old Molly policy and is ineligible as a reduction.
+
+PR3 source parent `842e226be91f6b9d664df3b92ef460d07e6bde14`, tree `d4b5d14b580bc2faa8af989c48d34e77cada3ca4`; PR4 source parent `cf3146bb3fcc29eb3059528df52a5f304a6b379a`, tree `96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985`. Corrected fixture baselines and inverse commits are private experimental commits, with trees shown below:
+
+| Branch and case | Commit | Tree | Result |
+|---|---|---|---|
+| PR3 baseline | `643d3067ef4ed3e80f4ad6745b1ef005446faf11` | `3778143bebe74501a67ba78458c15ced04ef99a2` | Four tests executed and passed |
+| PR3 network | `5aa8a7cc902a5231e2c49c5cf3367806e01862b1` | `575ca1912ae06ca37b6603d44bc7cf2b5f498133` | App Kotlin compile failed; no test ran |
+| PR3 theme | `6dae1ea777708a626edfeae9d84f50da44229954` | `baeea45be4a076f9eb88120f77bb28c8e4aca2a4` | Four tests executed; two theme failures, two network passes |
+| PR4 baseline | `b7efc8fa9e997e31e29b4b1c727105f443b5d691` | `535c1e1569a1f652f78ae97a660bf7b0feaffc95` | Four tests executed and passed |
+| PR4 network | `516f9f707e8fb020b8142757685914e5105a0cbc` | `bf5050960161a35435dc0a19391bd2aa8727ad8e` | App Kotlin compile failed; no test ran |
+| PR4 theme | `38da02825905ffa1596d2d065d1b2546491c9ecb` | `f7400722a20a3791924ba8db65ee134d3c07c4ea` | Four tests executed; two theme failures, two network passes |
+
+The two methods were `settingsNetworkActionMatchesMolly` and `baseLightResolvesMollyValues`, each on API 28 and 31. XML names append `[28]` for API 28; unlabelled names correspond to API 31. Both network inverses failed at `AppSettingsFragment.kt:110` on the unresolved action ID; this establishes a dependency in surrounding code, not runtime navigation behavior or global minimality. Both theme inverses failed at the first `dynamic_colors` resolution, expected true but was false (fixture line 28 called from line 32). The following four attribute resolutions, rendering, dynamic themes and other APIs remain unmeasured. The initial fixture setup commit `65c785cb648a9da9a5b7a85c69d1d3cca4db8b9f`, tree `2ff726b4b56bf183cb9c677cb15678b65cd8f5be`, failed fixture compilation because `dynamic_colors` belongs to core UI's R namespace; no tests ran. A test-only namespace correction produced the passing baselines above.
+
+All six cases and the failed initial setup used this exact command in the corresponding source checkout, using cached offline dependencies:
+
+```sh
+export JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9 ANDROID_HOME=/home/x/Android/Sdk TMPDIR=/var/home/x/agent-scratch/mollyim-android/pr-stack/tmp
+export PATH="$JAVA_HOME/bin:$PATH"
+agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:testProdWebsiteDebugUnitTest --rerun --tests org.thoughtcrime.securesms.ResourcePolicyProbeTest
+```

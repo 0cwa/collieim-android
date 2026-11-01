@@ -13368,6 +13368,24 @@
       "gate_input": "Measured partial resolved-reference inverse mapped to this raw hunk by target interval; not a complete raw-hunk inverse. PR3 and PR4 independently tested; see receipts for source trees, commands and limits.",
       "outcome": "Both baselines passed; each partial inverse failed compilation on constructor candidates. This measures consistency with surrounding code, not visual equivalence.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#residual-partial-inverses"
+    },
+    "2e0a56c1a6f9ca207ecb": {
+      "reason": "The network action matches an old Molly action; the check covers only its removal.",
+      "molly_equivalent": "Old Molly resource values and exact anchors in receipts.",
+      "searched_branches": "Old Molly 0e202dda; broader search unmeasured",
+      "revert_gate": "Partial inverse and executed ResourcePolicyProbeTest on API 28 and 31; exact command in receipts.",
+      "gate_input": "Independently tested PR3 and PR4 source parents and private fixture commits; partial inverse mapped by target interval, not a complete raw-hunk inverse. See receipts.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#resource-policy-partial-inverses",
+      "outcome": "Both corrected fixture baselines executed and passed four tests. Each action inverse failed app Kotlin compilation on the missing action ID; no counter test ran. Runtime navigation is unmeasured and removal loses old Molly policy."
+    },
+    "3a3380306f801f12ff95": {
+      "reason": "The five base-light items match old Molly; their individual necessity remains incompletely measured.",
+      "molly_equivalent": "Old Molly resource values and exact anchors in receipts.",
+      "searched_branches": "Old Molly 0e202dda; broader search unmeasured",
+      "revert_gate": "Partial inverse and executed ResourcePolicyProbeTest on API 28 and 31; exact command in receipts.",
+      "gate_input": "Independently tested PR3 and PR4 source parents and private fixture commits; partial inverse mapped by target interval, not a complete raw-hunk inverse. See receipts.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#resource-policy-partial-inverses",
+      "outcome": "Both corrected fixture baselines executed and passed four tests. Each five-item inverse executed four tests: two network tests passed and both theme tests failed at dynamic_colors resolution; four subsequent attributes remain unmeasured."
     }
   },
   "exclusions_complete": false,

@@ -1,6 +1,6 @@
-From ee080e155b51d85a07915ebdf18fa59dfa9bfb46 Mon Sep 17 00:00:00 2001
+From ff211136211d0931871803c323e8a125a7f1ecd0 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sun, 1 Nov 2026 04:39:16 +0100
+Date: Sun, 1 Nov 2026 05:20:20 +0100
 Subject: [PATCH] Restore migrated settings with backup frame precedence
 
 Map Molly shared-preference frames to their migrated SignalStore keys synchronously as the importer reads them. Later KeyValue frames then replace preference-only values or duplicate older values, matching the legacy exporter order.
@@ -9,8 +9,10 @@ Drain queued SignalStore writes before opening the restore transaction and remov
 
 AI-Generated: true
 
-Based-On-Source-Commit: 9a15e91d9c19ddeef59b64d43d2dd387bb9df421
-Source-Commit: ee080e155b51d85a07915ebdf18fa59dfa9bfb46
+
+AI-assisted compatibility changes: restore imports across source checkpoints.
+Based-On-Source-Commit: ebafbfc7ad15ecec6e5bdafcd86645689e18e077
+Source-Commit: ff211136211d0931871803c323e8a125a7f1ecd0
 ---
  .../securesms/backup/FullBackupImporter.java  | 27 ++++++-
  .../securesms/keyvalue/SettingsValues.kt      | 69 ++++++++++------

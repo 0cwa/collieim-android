@@ -1,14 +1,16 @@
-From cac99e421c14af3fae0251b64a922e235e3708c9 Mon Sep 17 00:00:00 2001
+From 8f844ade8c63a2a63e0360e075dde1263abfa313 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sun, 1 Nov 2026 04:39:17 +0100
+Date: Sun, 1 Nov 2026 05:20:21 +0100
 Subject: [PATCH] Clean up legacy backup notifications after upgrade
 
 Keep the collision-free Signal IDs for new backup alerts, and remove old Molly alerts only when the active notification matches the backup channel. This avoids deleting old conversation notifications that shared the previous numeric range.
 
 AI-Generated: true
 
-Based-On-Source-Commit: 02a1a32ca4789ab2e8bf8eff34efca68225efed0
-Source-Commit: cac99e421c14af3fae0251b64a922e235e3708c9
+
+AI-assisted compatibility changes: restore imports across source checkpoints.
+Based-On-Source-Commit: 65a53f80e2e5d8a03513632fcdf81d8bcc342608
+Source-Commit: 8f844ade8c63a2a63e0360e075dde1263abfa313
 ---
  .../securesms/backup/v2/BackupRepository.kt   | 30 +++++++++++++++++--
  .../backup/v2/LegacyBackupNotification.kt     | 13 ++++++++

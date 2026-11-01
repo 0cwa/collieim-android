@@ -1,6 +1,6 @@
-From 02a1a32ca4789ab2e8bf8eff34efca68225efed0 Mon Sep 17 00:00:00 2001
+From 65a53f80e2e5d8a03513632fcdf81d8bcc342608 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sun, 1 Nov 2026 04:39:17 +0100
+Date: Sun, 1 Nov 2026 05:20:20 +0100
 Subject: [PATCH] Restore donation completion acknowledgement
 
 Display the earned badge after immediate donations and restore the eligible first-Boost monthly sustainer link without exposing profile-badge controls. Use existing thank-you copy that does not promise unsupported profile display.
@@ -9,8 +9,10 @@ For long-running donations, stop showing the loading indicator after the badge l
 
 AI-Generated: true
 
-Based-On-Source-Commit: ee080e155b51d85a07915ebdf18fa59dfa9bfb46
-Source-Commit: 02a1a32ca4789ab2e8bf8eff34efca68225efed0
+
+AI-assisted compatibility changes: restore imports across source checkpoints.
+Based-On-Source-Commit: ff211136211d0931871803c323e8a125a7f1ecd0
+Source-Commit: 65a53f80e2e5d8a03513632fcdf81d8bcc342608
 ---
  .../completed/TerminalDonationBottomSheet.kt  | 10 ++-
  ...ForYourSupportBottomSheetDialogFragment.kt | 32 +++++++

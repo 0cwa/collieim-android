@@ -1,6 +1,6 @@
-From c0c886fb12e365531cc58e2f4339d8e0f990812b Mon Sep 17 00:00:00 2001
+From 101ac5db6e45b3db3f9b107337217885e8a8462b Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sun, 1 Nov 2026 05:55:29 +0100
+Date: Sun, 1 Nov 2026 11:08:40 +0100
 Subject: [PATCH] Port payments-and-donations to Signal 8.33.2, part 1
 
 Keep MobileCoin and Google billing excluded while adapting the remaining donation and migration code.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 255ff434961b6653cd2c700865abe6ab7206026b
+Source-Commit: 969a45e4b0d44bee6fbb78e3c74fcce5463190a3
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2

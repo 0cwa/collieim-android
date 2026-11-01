@@ -400,3 +400,66 @@ export JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9 ANDROID_HOME=/home/x/Andro
 export PATH="$JAVA_HOME/bin:$PATH"
 agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:testProdWebsiteDebugUnitTest --rerun --tests org.thoughtcrime.securesms.CredentialProviderProbeTest
 ```
+
+## Logger and direct network inverses
+
+# AndroidLogger whole-hunk inverse
+
+Both private candidates restore the exact old Molly logger blob and both targeted Kotlin compilation tasks executed and passed. Compilation does not assess logcat behavior, OEM View-tag noise, privacy at runtime, or any device behavior.
+
+Path: `core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt`, mode 100644. PR3 source `842e226be91f6b9d664df3b92ef460d07e6bde14`, tree `d4b5d14b580bc2faa8af989c48d34e77cada3ca4`; PR4 source `cf3146bb3fcc29eb3059528df52a5f304a6b379a`, tree `96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985`. Both original blobs `b1f56e285a3e4952e96bbf1041885a6cf2778a56`. Old Molly `0e202dda90785771ff8c87526eaaf30c655f54f3`, mechanical tree `759ef1c309d93aa7e4ac7217b144c04545562f11`, resolved tree `71497b00763044ed070d694329265922d2d79d22`, and both candidates all have exact blob `ab98fa250442b44260128fcbd7eeb8b85e8cdfd3`. Trees are trees, not commits. Signal `6e9dddc01f1b26e608ac683807c51e139c141ed2` has different logger blob `b0d37d7b95f44d847ab50cbceb267772a9702112`. Cached `origin/signal-8.20.4` has old Molly blob; `origin/upstream-stable` and `origin/upstream-main` have Signal blob. No network fetch.
+
+One hunk against both mechanical and resolved reference, `7c3d3009695ca2c58110` from `tools/patches/port_report.py` text_hunks on unified-three Git diff: comment `// Some OEM builds log a View message for every draw pass.` and `exec(arrayOf("logcat", "-d", "View:S", "*:V"))` replace `exec("logcat -d")`. The candidate reverses the complete hunk, preserving all remaining Molly logger bytes and mode. Prior source trees `2533afec2fe2d7f9fc682f699fc21d7624521889` and `59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf` have the same logger as current respective sources. Historical commit `86a6f90e1140b298b702068904fb28180d834dfa` records the filter as part of AI-generated compatibility resolutions from earlier PR #7 port source; historical `9fd7b272e2b546c5fc706315df09c5778590f1fb` explicitly removed the port-only View filter to retain Molly collection. Neither named commit documents an essential workaround; the comment states the noise rationale.
+
+| Candidate | Private ref | Commit | Tree | Gate |
+|---|---|---|---|---|
+| PR3 | `refs/agent/android-logger-minimization/pr3` | `d2bacf744b706b7152866dac564eea391d9b3877` | `edba85a25dd843fbe31e00cc36ac4a2a1015781f` | PASS |
+| PR4 | `refs/agent/android-logger-minimization/pr4` | `f6f8f742d190c2de4cd3b9a59c51d47b1abe86a5` | `be2e6675d04a03ba4db5bb02b6f1b6a05ea820ac` | PASS |
+
+Both exact inverse patches are adjacent (`pr3.patch`, `pr4.patch`), SHA-256 `c321c6f917f0e1438fcc74dec39c73ee62e09bbae65bdf9d1208237508577e2d`. Both logs (`pr3.log`, `pr4.log`) SHA-256 `5e0a479378c33fafc9451ec37e2eb6da22e5f7c234b30499c3240721e4c9cf80`; each reports `:core:util:compileDebugKotlin` executed, BUILD SUCCESSFUL, one executed and 30 up-to-date. Existing exact-parent full preflight logs `full-preflight-current/p3-sdk-cache-fix.log` and `p4-sdk-cache-fix.log` also show this task executed. No focused AndroidLogger unit test found in module test sources. Two disk checks: OK free=247G unallocated=2G metadata=79%.
+
+Each candidate ran, with separate checkout and log:
+
+```sh
+export JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9 ANDROID_HOME=/home/x/Android/Sdk PATH=/var/home/x/.local/opt/jdk-21.0.13+9/bin:$PATH
+agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :core:util:compileDebugKotlin --rerun
+```
+
+Physical additions/deletions (`git diff --no-renames --numstat`, all text files):
+
+| Branch | Base | Before | Candidate |
+|---|---|---|---|
+| PR3 | mechanical | 7407 / 98058 | 7405 / 98057 |
+| PR3 | old Molly | 396668 / 239850 | 396666 / 239849 |
+| PR4 | mechanical | 7800 / 98068 | 7798 / 98067 |
+| PR4 | old Molly | 397035 / 239834 | 397033 / 239833 |
+
+The file itself changes from +2/-1 to +0/-0 against each reference. Restored source checkout is clean at PR4 `cf3146bb3fcc29eb3059528df52a5f304a6b379a`, tree `96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985`; build retained and source lease released.
+
+# Direct network call inverse checks
+
+No reduction nominated. Four independent inverses changed only one direct-client call per candidate to the resolved-reference call; all four selected Kotlin compile tasks executed and failed. These failures show binding incompatibility with the current helper and configuration, not semantic necessity of the complete routing implementation or DNS safety. No runtime, network provider, account, emulator, download, or behavioral test was used.
+
+Source: PR3 `842e226be91f6b9d664df3b92ef460d07e6bde14` tree `d4b5d14b580bc2faa8af989c48d34e77cada3ca4`; PR4 `cf3146bb3fcc29eb3059528df52a5f304a6b379a` tree `96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985`. Their `lib/network/src/main/java/org/signal/network/rest/SignalRestClient.kt` blob is `a4d1ff5c28853e9f144b8e4514b5dcdfec772455`. Resolved reference tree `71497b00763044ed070d694329265922d2d79d22` blob `ab91ec2c721a85e0038360b219d8229213342ef5`; raw mechanical tree `759ef1c309d93aa7e4ac7217b144c04545562f11` blob `1ec4fd53cfde8c02e287001d8688b90bc900b29f`. These are trees, not commits. Both hunk IDs computed using `tools/patches/port_report.py` text_hunks over unified-three Git diffs have identical IDs for the mechanical and resolved references: `a3edbbf20cc72326e4be` direct CDN; `ee3eba752c78552bc3f0` direct storage. Both reference calls pass `uncensoredConfiguration.signalProxy`; current calls pass `uncensoredConfiguration.socketFactory` and `.proxySelector`. Current and resolved-reference helper expects `Dns`, `SocketFactory`, and `ProxySelector`; the reference has no conflict markers in either call. Each patch file contains the precise inverse; same call patch is byte-identical across branches.
+
+| Branch / ID | Private commit | Tree | Candidate file blob | Exit |
+|---|---|---|---|---|
+| PR3 / a3edbbf20cc72326e4be | `2f87e0461545efa8a463cd5039f26963f3c2173d` | `ae7999c40884ab9f1991f8f43e9de70c84e6016a` | `756ca87d7cf1f9fc7b09327165b1a06b98da57f1` | 1 |
+| PR3 / ee3eba752c78552bc3f0 | `9abd14e4cf8c498d5b8b806ff5b67cd8813f2179` | `be94caea0aa9ad1a9462ee0546d99cfdd6757297` | `94f6702177c218ed93d6f168d2b1d50e2fc0f55e` | 1 |
+| PR4 / a3edbbf20cc72326e4be | `ad89afc8bbe914e2b17496d2839c5206f355be15` | `1e58cd97e5dbd875dff7db2ffb59a1285c0bea02` | `756ca87d7cf1f9fc7b09327165b1a06b98da57f1` | 1 |
+| PR4 / ee3eba752c78552bc3f0 | `933f12b131dda9f85ba6ac294e9b7d85d2a14f0c` | `f8412574e58e74de0261acdee82d3e09a9210d0b` | `94f6702177c218ed93d6f168d2b1d50e2fc0f55e` | 1 |
+
+Refs are `refs/agent/direct-network-call-cohort/{pr3,pr4}/<ID>`. CDN inverse patch SHA-256 `0af19dccdb38a23660ae1de58a2a2020f7a1206aaa465e161d24b0d9051bead0`; storage `96b107a49de31399f196d2ce15bec1d407116ca8a02561fd3e306dd17f35ce55`. `cases.tsv`, `results.tsv`, patch files, and logs are adjacent. Every task was `:lib:network:compileKotlin FAILED`, first compiler cause unresolved `signalProxy`; subsequent errors report `OkHttpClient?` where `ProxySelector` expected and no `clientOverride`. The module applies `org.jetbrains.kotlin.jvm`, so no debug variant applies. Existing full-preflight logs `full-preflight-current/p3-sdk-cache-fix.log` and `p4-sdk-cache-fix.log` show the task executed at the exact source trees above. Four disk checks returned `OK free=247G unallocated=2G metadata=79%`.
+
+Each candidate checked out its private commit in the existing source build tree and ran:
+
+```sh
+export JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9 ANDROID_HOME=/home/x/Android/Sdk PATH=/var/home/x/.local/opt/jdk-21.0.13+9/bin:$PATH
+agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :lib:network:compileKotlin --rerun
+```
+
+Old Molly `0e202dda90785771ff8c87526eaaf30c655f54f3`, local `origin/signal-8.20.4` `5551f3023e6093fbb65214acdcc2e568b7b63132`, and `origin/fix/socks-proxy-dns-leak` `aa81fd6312bf1c7a71f5efda1930d23b05bdb739` share client blob `5f014e6fcece49586509617300a29cecfc76c0da`. They contain the matching helper and configure normal clients with socketFactory/proxySelector and DNS; their NetworkAccess constructs configurations using `Networking.socketFactory`, `Networking.proxySelectorForSocks`, and `Networking.dns`. Their client has no direct CDN or direct storage feature, so no exact old Molly equivalent was found in those checked local refs. New Signal `6e9dddc01f1b26e608ac683807c51e139c141ed2` and local upstream-main `515db93fb48206d63406cbfb48c5816f6af1d9e2` share client blob `ad79ff65eb2d4696228c652d31d50dcb2f0976e4`; both have the original direct calls and Signal proxy-based helper. Searches used `GIT_NO_LAZY_FETCH=1` and existing blobs only; no other history was searched.
+
+Per-file physical additions/deletions against mechanical tree: baseline +16/-10, either inverse +8/-9; against old Molly: baseline +138/-44, either inverse +131/-44. These are unaccepted counterfactual counts. Source restored clean at PR4 parent and tree above; build retained and lease released. No changes integrated.
+
+The network inverse trees above are historical inputs, before the logger change; no new counterfactual network tree is claimed.

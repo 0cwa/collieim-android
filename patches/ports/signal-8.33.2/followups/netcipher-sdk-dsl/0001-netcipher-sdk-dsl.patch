@@ -1,6 +1,6 @@
-From a252166778467ee15d7215ed16b177e57f36e6ae Mon Sep 17 00:00:00 2001
+From f472837431542403c9216e7166caa49ff77e3371 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sun, 1 Nov 2026 05:55:30 +0100
+Date: Sun, 1 Nov 2026 11:08:40 +0100
 Subject: [PATCH] Use the typed SDK DSL for Molly's NetCipher module
 
 AGP 9.4 rejects the numeric SDK catalog string passed to compileSdkVersion.
@@ -11,12 +11,14 @@ AI-assisted compatibility changes: restore imports across source checkpoints.
 
 AI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.
 
+AI-assisted compatibility changes: restore Molly logger collection.
+
 Carry this AI-assisted source change as its own
 reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: e27ae213434da6708d2021ccc5734aa32d920422
+Source-Commit: 811a781e04f111753482877ded9807537efc3de7
 AI-Generated: true
 
 diff --git a/lib/netcipher/build.gradle b/lib/netcipher/build.gradle

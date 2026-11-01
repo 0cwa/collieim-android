@@ -14,10 +14,10 @@
     "mechanical_tree": "759ef1c309d93aa7e4ac7217b144c04545562f11",
     "series": "patches/ports/signal-8.33.2/series",
     "keep_mechanical": {
-      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge 255ff434961b6653cd2c700865abe6ab7206026b."
+      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge 969a45e4b0d44bee6fbb78e3c74fcce5463190a3."
     }
   },
-  "target_tree": "d4b5d14b580bc2faa8af989c48d34e77cada3ca4",
+  "target_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
   "native": null,
   "android": {
     "sdk": "37.0",

@@ -13290,7 +13290,7 @@
       "searched_branches": "origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak local tip files only",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#backup-policy-checks",
       "reason": "Retain Molly exclusion of started disappearing messages while adapting revision-chain traversal and removing a conflict marker.",
-      "molly_equivalent": "Molly 0e202dda exporter lines 593–596 uses expiresIn <= 0 || expireStarted <= 0; revision traversal is not an old Molly equivalent.",
+      "molly_equivalent": "Molly 0e202dda exporter lines 593\u2013596 uses expiresIn <= 0 || expireStarted <= 0; revision traversal is not an old Molly equivalent.",
       "revert_gate": "Adjusted Signal-threshold predicate counterexample; marker remains removed",
       "gate_input": "da3131fde031e09017e778c736f7d34f8b5a7600 baseline and 99014fba9d5df76f07d76ac74257c991be7f159a supplement, seven-day fixture",
       "outcome": "Baseline named test passed; counterexample failed its named assertion. Original 24-hour fixture passed the threshold counterexample and did not distinguish policies."
@@ -13440,6 +13440,18 @@
       "gate_input": "Current-source runtime probe is not an inverse gate",
       "outcome": "Inverse unmeasured. P4 API 28/31 provider probe passed; P3 has equivalent relevant inputs only. Old merged manifest and runtime unverified; no new port regression established.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md"
+    },
+    "a3edbbf20cc72326e4be": {
+      "revert_gate": ":lib:network:compileKotlin --rerun (exact command in receipt)",
+      "gate_input": "PR3 and PR4 historical source trees d4b5d14b580bc2faa8af989c48d34e77cada3ca4 and 96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985; inverse patch SHA-256 0af19dccdb38a23660ae1de58a2a2020f7a1206aaa465e161d24b0d9051bead0",
+      "outcome": "Both inverse builds failed: unresolved signalProxy and incompatible helper arguments; conditional API binding evidence only",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#logger-and-direct-network-inverses"
+    },
+    "ee3eba752c78552bc3f0": {
+      "revert_gate": ":lib:network:compileKotlin --rerun (exact command in receipt)",
+      "gate_input": "PR3 and PR4 historical source trees d4b5d14b580bc2faa8af989c48d34e77cada3ca4 and 96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985; inverse patch SHA-256 96b107a49de31399f196d2ce15bec1d407116ca8a02561fd3e306dd17f35ce55",
+      "outcome": "Both inverse builds failed: unresolved signalProxy and incompatible helper arguments; conditional API binding evidence only",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#logger-and-direct-network-inverses"
     }
   },
   "exclusions_complete": false,
@@ -17312,6 +17324,21 @@
           "gate": ":app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac (exact command in receipt)",
           "outcome": "BUILD SUCCESSFUL in 3m 20s; Kotlin EXECUTED; Java EXECUTED",
           "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "d4b5d14b580bc2faa8af989c48d34e77cada3ca4",
+      "actions": [
+        {
+          "path": "core/util/src/main/java/org/signal/core/util/logging/AndroidLogger.kt",
+          "input_blob": "b1f56e285a3e4952e96bbf1041885a6cf2778a56",
+          "output_blob": "ab98fa250442b44260128fcbd7eeb8b85e8cdfd3",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-7c3d3009695ca2c58110.patch",
+          "gate_input": "PR3 candidate d2bacf744b706b7152866dac564eea391d9b3877, tree edba85a25dd843fbe31e00cc36ac4a2a1015781f; PR4 candidate f6f8f742d190c2de4cd3b9a59c51d47b1abe86a5, tree be2e6675d04a03ba4db5bb02b6f1b6a05ea820ac",
+          "gate": ":core:util:compileDebugKotlin --rerun (exact command in receipt)",
+          "outcome": "BUILD SUCCESSFUL on both candidate trees; task executed",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#logger-and-direct-network-inverses"
         }
       ]
     }

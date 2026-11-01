@@ -13263,7 +13263,7 @@
       "molly_equivalent": "Old Molly and older Molly refs delegate to PushServiceSocket and lack both imports; old and new Signal and stable/main lack the method and both imports. No direct equivalent in these files and refs.",
       "searched_branches": "Exact file search: old Molly 0e202dda, old Signal c47a74ba, new Signal 6e9dddc0, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
       "revert_gate": "Independent reverse of forward hunk then offline :lib:libsignal-service:compileJava, including Kotlin dependency; exact command in receipts.md",
-      "gate_input": "Historical PR3 source d756c962296d51e6d910d9821a8df44b0cbd0578, tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; current target tree c50fa18dab3c5420e93719dae3040b7a4058795f; blob identity limits in receipts.md; gate not rerun on current target",
+      "gate_input": "Historical PR4 source 1923f7f681b790fdf53006fa943b61de473a5ef5, tree f25a1de0fc87f0f862cc270f823d240857878bc5; current target tree 2a5ccdccacb3e7b77e7f4719dff4db75ff28b2b9; blob identity limits in receipts.md; gate not rerun on current target",
       "outcome": "Java compile exit 1: cannot find both used types. The two imports together are needed for the existing implementation; individual necessity and alternative implementations were not measured.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-92b4aeb23e3a9479eae3.patch and receipts.md#libsignal-independent-reversion-receipts"
     },
@@ -13273,7 +13273,7 @@
       "molly_equivalent": "Old Molly and older Molly refs use old package imports and omit TlsProxySocketFactory and SignalProxy; old Signal includes proxy imports; new Signal and stable/main use network packages and include them. No exact resolution in these files and refs.",
       "searched_branches": "Exact file search: old Molly 0e202dda, old Signal c47a74ba, new Signal 6e9dddc0, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
       "revert_gate": "Independent reverse of forward hunk then offline :lib:libsignal-service:compileJava, including Kotlin dependency; exact command in receipts.md",
-      "gate_input": "Historical PR3 source d756c962296d51e6d910d9821a8df44b0cbd0578, tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; current target tree c50fa18dab3c5420e93719dae3040b7a4058795f; blob identity limits in receipts.md; gate not rerun on current target",
+      "gate_input": "Historical PR4 source 1923f7f681b790fdf53006fa943b61de473a5ef5, tree f25a1de0fc87f0f862cc270f823d240857878bc5; current target tree 2a5ccdccacb3e7b77e7f4719dff4db75ff28b2b9; blob identity limits in receipts.md; gate not rerun on current target",
       "outcome": "Java compile exit 1: restored conflict markers cause parser errors. Import choices and policy remain unmeasured.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-889e6d1e15e5bdc65692.patch and receipts.md#libsignal-independent-reversion-receipts"
     },
@@ -13283,7 +13283,7 @@
       "molly_equivalent": "Old Molly and older Molly refs use old packages and omit the proxy import; old Signal includes it; new Signal and stable/main use network packages and include it. No exact resolution in these files and refs.",
       "searched_branches": "Exact file search: old Molly 0e202dda, old Signal c47a74ba, new Signal 6e9dddc0, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
       "revert_gate": "Independent reverse of forward hunk then offline :lib:libsignal-service:compileJava, including Kotlin dependency; exact command in receipts.md",
-      "gate_input": "Historical PR3 source d756c962296d51e6d910d9821a8df44b0cbd0578, tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; current target tree c50fa18dab3c5420e93719dae3040b7a4058795f; blob identity limits in receipts.md; gate not rerun on current target",
+      "gate_input": "Historical PR4 source 1923f7f681b790fdf53006fa943b61de473a5ef5, tree f25a1de0fc87f0f862cc270f823d240857878bc5; current target tree 2a5ccdccacb3e7b77e7f4719dff4db75ff28b2b9; blob identity limits in receipts.md; gate not rerun on current target",
       "outcome": "Kotlin compile exit 1: restored conflict markers cause parser errors. Import choices and policy remain unmeasured.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-a194a470661695b89387.patch and receipts.md#libsignal-independent-reversion-receipts"
     },
@@ -13293,7 +13293,7 @@
       "molly_equivalent": "Old Molly and older Molly refs use old packages, omit proxy imports, and retain Svr3Credentials; old Signal includes all three; new Signal and stable/main use relocated packages and include all three. No exact resolution in these files and refs.",
       "searched_branches": "Exact file search: old Molly 0e202dda, old Signal c47a74ba, new Signal 6e9dddc0, origin/signal-8.20.4, origin/fix/socks-proxy-dns-leak, origin/upstream-stable, origin/upstream-main",
       "revert_gate": "Independent reverse of forward hunk then offline :lib:libsignal-service:compileJava, including Kotlin dependency; exact command in receipts.md",
-      "gate_input": "Historical PR3 source d756c962296d51e6d910d9821a8df44b0cbd0578, tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; current target tree c50fa18dab3c5420e93719dae3040b7a4058795f; blob identity limits in receipts.md; gate not rerun on current target",
+      "gate_input": "Historical PR4 source 1923f7f681b790fdf53006fa943b61de473a5ef5, tree f25a1de0fc87f0f862cc270f823d240857878bc5; current target tree 2a5ccdccacb3e7b77e7f4719dff4db75ff28b2b9; blob identity limits in receipts.md; gate not rerun on current target",
       "outcome": "Java compile exit 1: restored conflict markers cause parser errors. Import choices, policy and Svr3Credentials removal remain unmeasured.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-b735539990cfa3e6bdb8.patch and receipts.md#libsignal-independent-reversion-receipts"
     }

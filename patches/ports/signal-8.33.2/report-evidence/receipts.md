@@ -614,3 +614,1540 @@ These two later combined checks are separate from the 26 individual commands. PR
 ```sh
 agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac
 ```
+
+## Historical annotations for replaced locale hunks
+
+These annotations describe hunks in the previous PR3 source tree; generated locale output changes the current hunks, so the old measurements do not prove the new hunks. The historical records are retained verbatim below.
+
+```json
+{
+  "source_tree": "a88d1e244cda745b090bf10fd12235222c8fa224",
+  "annotations": {
+    "0056feb01fbb2b28b267": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob d802bb39878c40f8ee021592af5cdd94781a205d; inverse fragment SHA-256 a3926e09ebb421592be30ae838f621bb713a5edfb3bd6b693d3e21b77fa22fb2, reverted blob 8c1cab07b8b9d7c620629cbbbb1ac8e3655a5faf",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "04d7877749ce229a351e": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 63b2428954aedd946423a0ca62c3e9cf15823770; inverse fragment SHA-256 d5c21e244362d9ca6079df595076a72e46977da9d6350069a9882c47e0d602cf, reverted blob db25e19dc8752e3596aa3fec52c9806fe0ba1fbb",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "0553fd9230117bd166c5": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 76647750dabb808c18360c59c8f9c333caf81800; inverse fragment SHA-256 298903a698f329e6d86a89a86938843e8c853fc9f7aec96341ec7f2e0abc5b4c, reverted blob 5f3a664b52a8dd561a64e272de0237fe1e288e43",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "055b8ff2bdc75e21ab82": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob e8beb6e58f2b2002cdb8a1aef68e8697d90f067e; inverse fragment SHA-256 b7e7d3e9727b78febf1f065627c1fba95e51a8928f940d1681630eeb5050c6c4, reverted blob 845ba2a12e65ca7e3d1bece07d531d5673f73320",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "0658db093c2a369c3c07": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 5259e905089ce3384f4810c79ac37be7e3ef2209; inverse fragment SHA-256 948c8b6c4905a781a405f2e21939d020c47debc6eb86288f48d6351c8aed2584, reverted blob 17d4ba4f1b09d8ce71c865908cacd3a6d6fb8601",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "09d8c4bd8e72a4ab4de3": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 269b2bdc186bf0e350e04c737c10e5fab201eef8; inverse fragment SHA-256 c7f49358d44fee379886a812803b1b4468fab51b7826ec4650203647a701ff19, reverted blob a06f8c0862d3560c28d957adbe6fc9d373d61d00",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "0aaad7f995aee6216a53": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob fcacf3a22625697428bd5763285a039a3de615bd; inverse fragment SHA-256 25792aeb0e6abc935e3ee9b7b81898d350cbef1f9cc1efd59ad1f536063b7da0, reverted blob 0bcd2e7754d56284e1af324e3b34ff816eb720d6",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "0c3effa12dbd98c8991e": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 82abde1c9f9cfe9acb4122c90e5d0177d25a622c; inverse fragment SHA-256 556385cde3eb47094b08f7174bd072fa997a648c7ef47fa2229e26c3720473bf, reverted blob 5c0ebf1a9ea838f2609b64ab09a7573ea296f0df",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "0dd9f95a3b26fdc04d09": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 005bdce197cba3f7181ab311a9351e99dd00b9c3; inverse fragment SHA-256 4e904c340d69ccdb6ed7c6f5c57ac9a094102cc42aa5f7c21b3c5278440d29f8, reverted blob afa135da82dd9e5e82b5e1d9d1feb9f7e101bb6b",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "0ef6b96ddb2b6a12d036": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile; minimal please_wait resource-table compile, link and dump",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 ea11203ded21c166902c37b0f70b68a86663f773eb7c7cadfddedc51595c0a6f, reverted blob c6b95808ca3a3a9ce7be0093637b00a172d81509",
+      "outcome": "baseline and inverse compile exit 0; minimal probe links, but inverse loses the old Molly locale entry",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.tsv and locale-revert-cohort.patch; locale-resource-probe.md"
+    },
+    "125d284155dd4fd93662": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 2d4ad2e00f6687271438a0bfabec455b1845c142; inverse fragment SHA-256 cc2840772c13e74de03fb60b8d009ed32b9566331ceb6199ba6647f8fe925708, reverted blob f5db0e797753dcd715b64ce06da244186824ccb6",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "165fe3e31845fc26d03f": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 5c90fabce0906274dc0c2cd64c9f4195cbd8ab31; inverse fragment SHA-256 ffdc26bf0b3caad601e8796ac2fef0112ecb4ec9661ce627af7d3893227e5009, reverted blob 29a1a783240694b5f276effe472f1b83ea0bb85e",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "1aad4231d7a1949777c9": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 937562767cce4a4de915762487f20977cd2c7b66; inverse fragment SHA-256 c18fcac1867922cc67191598cde1ad9d925a34e109b93d1470f69e7de58901c9, reverted blob a9b3a3bc9fdba52f0dcb1834fee6cc1e64a2dfa3",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "1b0c2e283e4bcbf45694": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile; minimal please_wait resource-table compile, link and dump",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 b8101c713c6a157c7145ccb472f380e3c88c60b45a0b5fe03570cdfb97951ec2, reverted blob b23d455007145d0eb75c6c462eb1ff5cfd5c9eb8",
+      "outcome": "baseline and inverse compile exit 0; minimal probe links, but inverse loses the old Molly locale entry",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.tsv and locale-revert-cohort.patch; locale-resource-probe.md"
+    },
+    "1ce2c0db43335218eb90": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob ba9d7ea2bfe4fc8d7fc499aa7486a5fe6260db90; inverse fragment SHA-256 e96c64a4be40f84ca28f30f6dae2a7a7041a5e0c9d46320914808c162c2ebe32, reverted blob 37cb66db79dcf7828c86079d055fc67ea27cc74b",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "1d63b0306acf8919d0ab": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob cb1198e438707a48b35133819499cc57c3ce96e2; inverse fragment SHA-256 0a1397b27845028598dc813af63c79e257f1a15cd280dddc9f911b54801ba2e9, reverted blob eb77ccfe413d31a27cbec608edef1e81d4781d28",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "20d1686920d1309781ae": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob c12955ca5087a632e940279e9ac4d1b247462681; inverse fragment SHA-256 8261850fa817f40e00161e8ff2b707e920208c2050d8af17d2a3dd7b0303a94c, reverted blob a8d547bc8bc8486b430dc416d9fa786368887ac1",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "2512e063a4bcd8515d19": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 384d234898a56314740ffcf963e0a1aedb212820; inverse fragment SHA-256 b250e79d64749b2d4dd21885ed390d90433818e6e4599aebc992ebe55bcaae9a, reverted blob d08b65efa7cc25496b2066564ada36c2132721db",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "26a3b126d41c1227168e": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 cfd50e876ef4884e5e53a8456c6c27a268a3fe3174b882e7b1c2d1415140b73e, reverted blob b0c1601bdf5a44522d901c64b59c14920fae368b",
+      "outcome": "baseline compile exit 0; inverse file compile exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.tsv and locale-revert-cohort.patch"
+    },
+    "26f173b2506c685b1dd2": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob d5d09b0a2771973d66f832c21bd28cbce835eb50; inverse fragment SHA-256 3644d488b200d0b1665c633d19e4c9d8a086147f0d8bd898398df5f4321b561b, reverted blob 5bfd1ff7b43017184fe1d9379db9c3140359fbfc",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "273678d268b9f9b9d434": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 3c4c607c8226a303a3dcd9cfdd901dd439842c5e; inverse fragment SHA-256 3b7563eced4e3bb8d82648ee1a9faed1001cdde060fef7f8e5d2255a477f11aa, reverted blob 7484280b5112708412b207de9e0093fbec4c9d33",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "2774b4432907ba73228f": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 03d8d0b1ef8d597ab9090a040e328fc22b24bed0; inverse fragment SHA-256 fd3ad911edf3c1d82639f751610f5ca2c44709972b8e19f4ba6c37383a6e9998, reverted blob e607fa9ff07b98dbb599abd2159b223896e79a83",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "27750b9d7d8f75b822f5": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 269b2bdc186bf0e350e04c737c10e5fab201eef8; inverse fragment SHA-256 9b1450ea06c98e91c6d3d3bdab20dd120dea38d89a93b27ec660a718595b1041, reverted blob 5f8304acde1d6485f3751fc8b730f18c230d2a03",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "27ae8175989f9283fc99": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 144211467a5e9247e9bb282e65d8f2d678c985b6; inverse fragment SHA-256 bb95da665f30cde3e8e22fa86f11f88c96b6aea860123c3b05ca598493f95f67, reverted blob 62e5480567158e0ce670e2bdf941f698b66d3343",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "29500e8c358447f60bf0": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 92324ea8b092100062093b55394bf2febfbdb05c; inverse fragment SHA-256 3dbf911a25c0bc13019aecd21d4c02ac6f014756fd4db03ca5602ff8ce68b89b, reverted blob 01fbf8bcbd51f92b9accc9722bf76f9b21c39cbd",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "2a094a856601fab248e4": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 86f72802f1768ed4c64254754e9da6fc1ef57eb0; inverse fragment SHA-256 e622847941ff66764b087ed636001b7569425f6907df0fd0417d913b5db3cd86, reverted blob 217a2ccbb66397c932821af0fdf130f7948cb147",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "2ec3c157330aef0b10bd": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 91916a86bfcd4a113b7cc3787dc659de5c543760; inverse fragment SHA-256 9cd49ba848bb872055e5c763da8b5e77352da617e839d04882617973257afdfa, reverted blob b93062a6384b517f94a9a6266453c5054ee1af93",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "2ff5d9e50d3f089e5bc9": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 570eed87d4b76feb98bf7604f91a388ab2b25c1c; inverse fragment SHA-256 0a49e4d4706014db55e507dabf9351ed699002c02c500416bbbd128d1e99658c, reverted blob b665f3a92a40bf791b06a56158aa39444891457d",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "3232f1c2b2465acf0e7f": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 544918c62e69bc1dce1562c08dc20ba48a2d1fac; inverse fragment SHA-256 536c5c2c326cecca32bc5e9acf6ef51b4d062cb3989832d0f642c4c833039bf2, reverted blob 0e8d8dc132c325ce645df9d1d284d8d33ee6c993",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "335aa1a1dcb1b35e0dc3": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 37118c0ef690252add04b1330b5f870e5d23db91; inverse fragment SHA-256 c1f2509a40ad86c649e6163ae8968435b43e100f827b4067523dc6d0f8df1274, reverted blob decf2de3de3a55789697288d39f9c773fdd22bdd",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "36c6917db4dc5f73b7fe": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 8f97a9d14bcb00b36c176e7e5ed3e5cacc06e6ea; inverse fragment SHA-256 dd4f49f4db52d5987d54c697fd1c4a1f60adbb9a76ac86638de5139b5018829d, reverted blob a12b0d6b7c568781b6171f80dc52541bfd26ab0e",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "36f98223dd1e03d0bf77": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob b1f6240754edb93ecab4a6ef578424012bd72657; inverse fragment SHA-256 6293b9c07c7d5063e6f53fc4f0d52d3595e8b496430bc31fa13835c74e83112a, reverted blob e667be9a7cf98628625e63c67cdefb15c3bf3f60",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "3960bc6f713fd4f583c9": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile; minimal please_wait resource-table compile, link and dump",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 afa8f9e019b4979cdcd0148fb0d3f50d439037da25978966b087a5a8175e237e, reverted blob 2be693482726e78a56e036e74662dc4d4f958442",
+      "outcome": "baseline and inverse compile exit 0; minimal probe links, but inverse loses the old Molly locale entry",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-cohort.tsv and locale-cohort-two-cohort.patch; locale-cohort-two-readme.md and locale-cohort-two-resource.log"
+    },
+    "3a459134084fac71a23d": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob e9e3204fcfb81495194e522b73f23ad061a8aef9; inverse fragment SHA-256 353d42fceca50346246e9d5ec76fedda79986385212c59f8ca8c6c3b19f48715, reverted blob e2f1a93360e5c53d17acf6f72627aec4652d6015",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "3c7ba584d61789c0a958": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 2d43fa6f100443e513224b4f313d1fedac567520; inverse fragment SHA-256 1189edc21f2af7088622050543ad081e2243c2b1bd1ef37dbdd647067b05207a, reverted blob f6c31d02bdeb1418d111e06cb804fdb97c6f8621",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "42e00ba35d0d21fa0fce": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 76647750dabb808c18360c59c8f9c333caf81800; inverse fragment SHA-256 2483400a6bedd40ae60e4c8d8c5e6fdb0e67964fdcb5a0edd28f3234c0be2fec, reverted blob 39f5713d7cbf7d61b374484a62929fe598552b6f",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "43040b3b924f19263686": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 4868bdfe59e80149068c0054da1f61a1bbb3bace; inverse fragment SHA-256 aeb43c1e7ed0ebf7c93a01d3a4133e666775715b4f377cf2f21db80af8d96b4a, reverted blob 09cc2d2f0d0b73fef8f0c685d0084f5a37b85a5e",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "449fc44366e309c842dc": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 13a078b288847ea6cf233ea6956ca5427e965659; inverse fragment SHA-256 e400e453e36d2da88038684216d8a7d3ad539de5d6e91d256012ef7f57c83157, reverted blob 5ae26747a70e9e087eb89b809f7a2671be92d3b3",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "45a524f407bd83e8f381": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 12c194663098fd98b78757fdc221984b9668b0d949947e63ea761c958c47c1e4, reverted blob 6a37db1fa65b3729c9f83e325f00a2077cdf9f13",
+      "outcome": "baseline compile exit 0; inverse file compile exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.tsv and locale-revert-cohort.patch"
+    },
+    "47c1df2bae06f5c015f8": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 144211467a5e9247e9bb282e65d8f2d678c985b6; inverse fragment SHA-256 7816515e601e281257ce0c867903f6fb64afb738c16385f4eb8f2b5a1e9ec203, reverted blob 781d1bf39d8fe7762d22cea3afd4b9d3cb8e5e92",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "48a936829af37db386f6": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 98e162c37b9875b0dd07feba14096b7a9aad8ce5; inverse fragment SHA-256 412a560aed485d3365c7c401667a39bb3d7828bbb6ad59a09e80bb8fb5d0a73d, reverted blob cb4c207ec7d482c03d60d82338e80cbb56985a42",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "4943a9063702a7004583": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 80f74e765c5258b6368001f6273f29f388419cce; inverse fragment SHA-256 5d5de245f5d8bf365989abcd890c75c97a895b0e3072d89be5b6e4d9fae82f2e, reverted blob 84da10b8fc5a84cd80b7fe8d362c4441a4788e8c",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "4b9bd21aa6622022f025": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob cf0813f1eb5fcadca6f77ec14f79ae4140563f4d; inverse fragment SHA-256 1465215d01d5e94483181c18f126823917f30a94e447d2dff6e3b8756d4e5573, reverted blob 3eb773cf601b6109717c06afb587f85341949b3e",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "4e5622f062f04b0fd380": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 544918c62e69bc1dce1562c08dc20ba48a2d1fac; inverse fragment SHA-256 61275388307b3e1fd825e36e612c19384df2058c5e6fdae786d6f9afba542423, reverted blob 4a651b36ebaed3dffb0e0fa830b7d44d2cd28a31",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "4f9c3af9c3c25445405c": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile; minimal please_wait resource-table compile, link and dump",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 d65784f9b2f6fb01d7e1baf00db4737bea768a196b92b99b3281ed9f2f96f53d, reverted blob 7e8f18a55c7cd6446acc6a82c77889ffc73cc5f8",
+      "outcome": "baseline and inverse compile exit 0; minimal probe links, but inverse loses the old Molly locale entry",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.tsv and locale-revert-cohort.patch; locale-resource-probe.md"
+    },
+    "51cbaadef925c20776ee": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 8f97a9d14bcb00b36c176e7e5ed3e5cacc06e6ea; inverse fragment SHA-256 b0e7171ca425e22ce6dafa3e89308fed8dc2712cbb9aca1cf919f06943beef0d, reverted blob 8d66fbf4495daacc94dcfb068b0c30657f6efa31",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "5234164af222129d89aa": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile; minimal please_wait resource-table compile, link and dump",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 81c736308f70237ae32353e289a1366a5cf06623e251a17ccbc0a260e293a884, reverted blob ae4e9444c7118edd528b4495197749cc58ad709e",
+      "outcome": "baseline and inverse compile exit 0; minimal probe links, but inverse loses the old Molly locale entry",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-cohort.tsv and locale-cohort-two-cohort.patch; locale-cohort-two-readme.md and locale-cohort-two-resource.log"
+    },
+    "54f84ad6ec1ebea21bdd": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 688049e2ce13d8dcebd35d32999f64b253559ac2; inverse fragment SHA-256 2c64f2640fad336fb76b32273015ce78d02381383fd5999ebef24c87bde48f15, reverted blob c33904c1590065a3468685488498e1a00d0f3e39",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "551357f0d6bf9bdf68e9": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob f48306bbf0d1b5007ee0673c6b2c3a26ebcae79a; inverse fragment SHA-256 65772ff1ac412cc36cb08efb87e647bde8b9975ca0d8bd8c1eaf372796c28f10, reverted blob ba9d69874631f4e34d791cfb70e743c22090f87e",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "55f91abafbab90cecf00": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 2c538873421441763af319ce738849dd1a2e3084; inverse fragment SHA-256 08004c9381648c14919a0b85d6c44404f2498436528e9402a2d250742dd4c39d, reverted blob ae8087c737941f58902b30f6051bcfd2e499bba4",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "591f99e966870caa563d": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 8e067e2c60df4953bd3e996fdb7415db284de1ef40614f0e6597daa3866ad7e8, reverted blob d10c0ca57d00edc072d3618530709c2c81a1921b",
+      "outcome": "baseline compile exit 0; inverse file compile exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-cohort.tsv and locale-cohort-two-cohort.patch"
+    },
+    "5a836f26f1e5f6086cf5": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 980d3e12817550f297879d8043fa2c45a6cf85bf58d1a70bbfbfd25c5b8c701c, reverted blob b1f3fbb96a37514d760f0e3fcacc8c5dabd4cffc",
+      "outcome": "baseline compile exit 0; inverse file compile exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.tsv and locale-revert-cohort.patch"
+    },
+    "5baf9e7a17956a1a10c2": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 3db127522b3abd9e78cf473dfbd06e5e45ba493e; inverse fragment SHA-256 8cda45f6fed43095f4ce1e5dbbd507bcb9f0e5673d84d02ebd7b369d8c9c46ae, reverted blob 4f0f01fd817d1ecbf9ee45c8a167b8a4cfed9999",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "5e33d38563e47c988995": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 226e4b219aa97621099ff4c72dae427370e9a98b; inverse fragment SHA-256 fdc10d0e91ad1a2646c47bf91f5e5e68d06b47d34f8b2cd793f876ace849d906, reverted blob 28b80f4105a1bec07e747c3c8d73d0c359a3c4a6",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "5e6a9a7600265c8fb69b": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 80f74e765c5258b6368001f6273f29f388419cce; inverse fragment SHA-256 a9956e9261ac026e3c1f927f62ad8fd364cb6d27230f36179b86836ba87180f2, reverted blob cd153a6eb044b2246256027dfb3d73dd33eca6b4",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "610b87319d5fed232134": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 4e732609bd23ccd5b9b4f81fc43e3a7b2e8675e737f9dbf0b3375bb4048ad968, reverted blob 6e2711cb109351e4a289f8dd55a00680270bce09",
+      "outcome": "baseline compile exit 0; inverse file compile exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.tsv and locale-revert-cohort.patch"
+    },
+    "6160367579f427a96913": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 3db127522b3abd9e78cf473dfbd06e5e45ba493e; inverse fragment SHA-256 e4b8b9a8ae80799aa3b561e39232a6bd318f33c467c57189d51da63745f49c56, reverted blob a266af08a3bb67063e5a4157b7c46bf9dde65ff8",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "62a31e4696206f426c51": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob d802bb39878c40f8ee021592af5cdd94781a205d; inverse fragment SHA-256 ddb2e5d747dcb00c5d9ca6bc7f521781b17699180fa4b8d80ea831df8b8b2242, reverted blob a647ea15c685451a726da29424754b4044662933",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "6552a12dcf1470fc34bf": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 2c538873421441763af319ce738849dd1a2e3084; inverse fragment SHA-256 caafda87d6369364e13c9f9858dbf25fe0d586125f8d2e5a02c131ded203c39b, reverted blob 45441dd113fec29e5324073708be7807d0b2a467",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "6631dab5fc59927c6cc7": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 1d9b565274a425ffc1890f8d3a42e3108457d453; inverse fragment SHA-256 29a1ae0d762236ea93abba5b67f79a0fa99de384b3f514f88e9a2f7494b28abd, reverted blob f687f632422d891010a1779af51d76f9ab1cc7e8",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "665943dbbc33d171d55d": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 226e4b219aa97621099ff4c72dae427370e9a98b; inverse fragment SHA-256 4689013b54753f3c076e502aba00fcad0df0b57bbc8b2344a47b1227b13b135e, reverted blob 32de48f1200d1e932d4e51c21b5ff2d52340b4a5",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "6bb6caa504bda4e4e906": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 005bdce197cba3f7181ab311a9351e99dd00b9c3; inverse fragment SHA-256 c0e357f0d78db31bff616a5926e24ad59846ce0102f284e2fc66c8a4ca6c24dd, reverted blob f27ed3de8366d950de71269cf6f45fa810e1e96e",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "6be022290e27010001df": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob cb1198e438707a48b35133819499cc57c3ce96e2; inverse fragment SHA-256 e83f41c8170ea4a02a299e68f5d0f27754da1d051d5f16e259f05a6fdb0a194c, reverted blob 6a0d07df0fb9861fe2efa2e8bc1af816697fc7f9",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "6fb27f612fb14269b688": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 1e48ee5ae938c5235b950a9047acd5afb0d86eec3747490893566a19ef06d662, reverted blob 1a94d2cc479e17f1701a2372a8b4d1e111ad27ae",
+      "outcome": "baseline compile exit 0; inverse file compile exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-cohort.tsv and locale-cohort-two-cohort.patch"
+    },
+    "708ca7d6886f90b5a95f": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 5c90fabce0906274dc0c2cd64c9f4195cbd8ab31; inverse fragment SHA-256 1937c42a7c9e6dfd90984210c7f4aa3bd2ca8e4e0582d531e5b37cf6ff71e765, reverted blob 5cf4f60ba1d3951d34c612a7ef47226864e4b995",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "74bc7aa72c0f6c84cbff": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 51db2996c85a41d8f3cc8613d822eca91e50dd4e; inverse fragment SHA-256 0b300e566b42e8cb8dbf867fbcb67150d7e8f8b89f0ff72faf2f344f2580f9aa, reverted blob 479ac8ce79e4226a7c7c7cdd45531b292a3c1207",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "75eef1c7ac71d77900c0": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 530de8c2ee2617e266ebdb63451bb444994e310b; inverse fragment SHA-256 ff609b049085504197aaa7c0634d0190aaddfd2c3014044ba3bc87115a2d638d, reverted blob 9ee8f03992f0c9c99a456050bd8278ffd2200bb3",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "7658f6dad33356af690e": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 8616a82b791a342b567761636471a16af14983f1; inverse fragment SHA-256 9409e619c82bf6809f0f1a764d65f6f04c81ad51a5ad52a9d4193eb3f9ff5327, reverted blob 346f28c8e8d71e97731a3fac729f72b99c34e186",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "770f02bf2c0a3a419b64": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 570eed87d4b76feb98bf7604f91a388ab2b25c1c; inverse fragment SHA-256 e4811e9ecd488a3bf35382ce16d39b961f8c32a279bca63de5eeca4c758ed656, reverted blob 07874a77d0b823599fe1b28175d1d59002ac88f3",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "799f539808dd87c116e1": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 91916a86bfcd4a113b7cc3787dc659de5c543760; inverse fragment SHA-256 594ee5d2ab546f6aa7692b69461e10114b0750a2e140e1d417001926b4baa2dd, reverted blob af357a860d959486615a557ce6c18c3f37199f1d",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "7aae8de4da9946dd2c48": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob ba0a41246e06c588fed6d358626d40af66cb5f97; inverse fragment SHA-256 bc15e8ee815cd5e70c1b9ea355d34a783ca217087cde9b09e0d83ceb5362dd1d, reverted blob f27ea31b24bf66cf9c61ef93882c5c3772df417c",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "7b90e531fac1be99056f": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob f48306bbf0d1b5007ee0673c6b2c3a26ebcae79a; inverse fragment SHA-256 ac9f01d76105165957e496a2872eb207c8a24ee36cb4505e24257ebfecadee38, reverted blob 0662a0a2e5365e52014a8cff45842447ae693994",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "7bc861d77a50acc7856e": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile; minimal please_wait resource-table compile, link and dump",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 f4a3d51a1de6b9cd5d6def7cf783ff4218300b04d2425def4fd0cfee3e4c4d4e, reverted blob caba8ed604a7e3f4a654c69bcd9a26d106fbb0ee",
+      "outcome": "baseline and inverse compile exit 0; minimal probe links, but inverse loses the old Molly locale entry",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-cohort.tsv and locale-cohort-two-cohort.patch; locale-cohort-two-readme.md and locale-cohort-two-resource.log"
+    },
+    "7e70dc24067e2fedbe07": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob cf0813f1eb5fcadca6f77ec14f79ae4140563f4d; inverse fragment SHA-256 42b567348d35e01f9f82fcc7cee86f6a77a109c3d31f86403e88738918e15def, reverted blob e884570ab657d5a7af20b862936eb96a281a6afe",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "8080b27cf35752b109de": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile; minimal please_wait resource-table compile, link and dump",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 f722dfffe5a69050db816822698c475da06381815e398c8954ca1b58e288b9a3, reverted blob 7a807b2c92abac2780ae9033ca292e31f3b1d2c5",
+      "outcome": "baseline and inverse compile exit 0; minimal probe links, but inverse loses the old Molly locale entry",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.tsv and locale-revert-cohort.patch; locale-resource-probe.md"
+    },
+    "81e77b6a6a343a361755": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 75f19461c318b210bddad54d620788f42f0e157d; inverse fragment SHA-256 7041b5fb971403dda5ed2af71dd6ad6750ece9ad76c14b479714089813027d81, reverted blob 0b848b03f264567f593ec1789f8f3b6e19b93b0d",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "867970f3de06dcba66fb": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob e8beb6e58f2b2002cdb8a1aef68e8697d90f067e; inverse fragment SHA-256 61d52d600dcce46783ac32bc104e067e11f21ed16c0ae50b1c12969a6e607ca1, reverted blob 344fbcc283aec85094c75006ce685632362ef547",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "88cbe607d29195391932": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 98e162c37b9875b0dd07feba14096b7a9aad8ce5; inverse fragment SHA-256 7351707d5bb8b63d50358e45a61df8d8dd51b201de3baa2af132f8c8e192015e, reverted blob 453771c6c29655e72a42fe14ca4b178f0f65c817",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "88d6d029e71de6894166": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 530de8c2ee2617e266ebdb63451bb444994e310b; inverse fragment SHA-256 8eed8c67460527450dc69ce7ee9df260a17ae395697b5fccef4a8f74b2fb5d61, reverted blob 1361904afc48667a92ea9633d3cc44bdd4af8b3b",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "8956ef3a832c1ed9aeea": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 5c66c93be64efc82b29e11fc7a6d5d92e84daa6a; inverse fragment SHA-256 b8dae6682f5a09d0accd84a9868f3e40d04a74bda54affe73bd9c524d56ea0b1, reverted blob 693b9957c5e34daa51ea17a6ab8d8ec49ff2bc68",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "8a02dfcef1a6106b81b1": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob fe271b2d7c9b9f9b756f9c1e74b596bd4254f412; inverse fragment SHA-256 597ebf41b9be1e2202a5d7fcdf5cd3bf9f195cadd9139bcce33286b66af4a006, reverted blob 1abf74e5aa57d9fae50f1cf6e6197fdfdd453ace",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "8c803fc214a5484f84b3": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob ae469101ad679f742ec87c42765136432b84a72c; inverse fragment SHA-256 3b6f924ed1b84e56de680764081de1d279ad58c32b272cb10d579fe37aa6f67f, reverted blob cd52ac5944651b9be0425cc832f71ded67a1fb99",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "916b2809d199f1998cd3": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 384d234898a56314740ffcf963e0a1aedb212820; inverse fragment SHA-256 14ba47565afe634486f9d20daa403e0488f2b619ce4bc2acd5c34240d6342ba7, reverted blob 69fcb99c3357508ba7f475f0ac22a773716ae095",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "95adda1ec37fb5f169ff": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob fcacf3a22625697428bd5763285a039a3de615bd; inverse fragment SHA-256 868b86fc6ddc7232192845685a8bd72a9fc38866ae19a5df27d606c45ee12087, reverted blob 35e89f703cda85973520eae4860c34efbfb62bf8",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "9613d2af95367184ec6c": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 8616a82b791a342b567761636471a16af14983f1; inverse fragment SHA-256 8299a48fafe362ec7b1d5005e650fb1bcc06a433e56e0971934aa525733931f5, reverted blob 102431e9564b46d3b930c3de04b2e96bba1f8a1d",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "993bc52b36eeb1cc9c6c": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 3c4c607c8226a303a3dcd9cfdd901dd439842c5e; inverse fragment SHA-256 94f8085d6e9dff5f8c667e752058f71d160e81479458008166d90a6f26de2b5d, reverted blob 9dd04956a5d425c34b80ba6357ba5e71802ce682",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "9b4f8e1a7fcb40951dae": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 955f2b3e45dabe53bc6a0ecbb6d24eb1603db2b5; inverse fragment SHA-256 3e936df8a74342626311fea51114cff677036699b672a0d8d722b6d4d4be5fce, reverted blob 6a1c69637ea88007f0dcddbdfe7e8c6be4143fc0",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "9c58d84f31d46a7fda1e": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob b1f6240754edb93ecab4a6ef578424012bd72657; inverse fragment SHA-256 ae000f2dbd138b0a149f295486c2bcedb779a1dcb55f5c45097a1a81b3d6066f, reverted blob 788fb8d5111a3ea6dbc0cb290cb81c89f51a3654",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "9d523a44cd5788113d16": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 688049e2ce13d8dcebd35d32999f64b253559ac2; inverse fragment SHA-256 17dcb876e13cc6fa648850a62a4ddb41d1d9b53bc1d1ee403db0c041eb4bdbf5, reverted blob 7c7e7496218504453e948dc6c371723b08e179cf",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "9e71bfca6602011e73c9": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile; minimal please_wait resource-table compile, link and dump",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 8ee2ba92d4115ebf2d5ec7b70446d6a7e012916cf49e15d9af814634500827b1, reverted blob 2e4d764cf16c6aabbc699e04c7955cbab87c24b9",
+      "outcome": "baseline and inverse compile exit 0; minimal probe links, but inverse loses the old Molly locale entry",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-cohort.tsv and locale-cohort-two-cohort.patch; locale-cohort-two-readme.md and locale-cohort-two-resource.log"
+    },
+    "a036a0693aba553128d3": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob aa7572a6400790ef8762623c2610270dca45a90f; inverse fragment SHA-256 273d485968399d97dfff551300dda67cb25886115a83d4d52de3b978f3b552b0, reverted blob 8d9fead63c04b67f7b42243c6f43a17eb202e9f5",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "a093da930d7ab1f77e67": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob c7d615c349f90c0dd0dcd40318ae6df4a5c7fc7b; inverse fragment SHA-256 5dc9916a0d34766d2f068b9a085af731fd45688c3db453f37ca9593779556ea9, reverted blob 354fe0a400e6957e2744b0f4d699ab7fcb8b5c05",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "a111f5f4e955e583a336": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob acbe9d798dc317303525e6079360524d518fb0c8; inverse fragment SHA-256 ce941e019b598f1d51ba78366be1a563179d56372d1a3f97f4bedba19795b5c5, reverted blob bac65507f88d6e11924d28154671d6c4c90fb40d",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "a201eb895f5b20a5f549": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 00f00e9c7bc68b5326580a495b34938c78584081e7bb79d606fdd6e4b488d48e, reverted blob 66511c75d28d538d90ff7f3dcc3d898bd5782aff",
+      "outcome": "baseline compile exit 0; inverse file compile exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.tsv and locale-revert-cohort.patch"
+    },
+    "a5090b8267946964c05e": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob fe271b2d7c9b9f9b756f9c1e74b596bd4254f412; inverse fragment SHA-256 4cf8651e650f38a13ab15912ae37348be292ae8f42a17802c5f646b10e6b7fb3, reverted blob 996acb6927c54a3317cb715bd6e4e1739ba601a1",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "a655a87c6c60c5f3c749": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob e9e3204fcfb81495194e522b73f23ad061a8aef9; inverse fragment SHA-256 84274a0ffe0fdd02423afb9ac10ad01ced21ee8aa0f2ac64704f34ce716b41a7, reverted blob f45913e8c70cd8f33569179f8fe90900f2945f5b",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "a7cad578a2568c0ea67b": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 4e0919cfb5e81099add61abef189326118cd2818; inverse fragment SHA-256 07c9f735bcd00a5330be3e98130aeedbd3f3e61715a686e8b5e11db8ce071fa1, reverted blob 5683354ea98d9bc7339e80828d10f30e4e1acdbb",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "aa95e6ac555faf8d66ed": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob c7d87f7d05795cc954ccdce4d242548c6d8a9f39; inverse fragment SHA-256 7ce1fec726376528649ce243614333d28b0fae5c43b105b5cd4957cf7538c6f2, reverted blob d602f67ba7fab8fde9a33144a149e40ffb7f521a",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "abf663ecf129117f2270": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob b2c84ebb74de44da3108f2fc686f2258f1e2c290; inverse fragment SHA-256 9a44473663e58020e13516b6abb00cf0a6f5c0cc023bbe6770957d05c0a40c1f, reverted blob d535f8f8411a24b7c58fa35e5bd4942c573ffd5a",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "adf2a9c5cde787280bd7": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 31cae62d38a631c38d87ffca55c60b33a8a85245df08bfc5b37392fa4256b81e, reverted blob 04f627ed5f8771bac01ff0e1c3282158edc9ec12",
+      "outcome": "baseline compile exit 0; inverse file compile exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-cohort.tsv and locale-cohort-two-cohort.patch"
+    },
+    "af13ab58ae9c57798508": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 2d4ad2e00f6687271438a0bfabec455b1845c142; inverse fragment SHA-256 a9a49cb80f7af3d8f4bfa14f7e2722315b47aff907e336a87ed7ac5d2cb83ab6, reverted blob 0192b4a29c19d3b69675ebf57a700319a05908dc",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "b0a04c63f4e66e528e5b": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 5c66c93be64efc82b29e11fc7a6d5d92e84daa6a; inverse fragment SHA-256 a5b3ca138f863cd0225d6862fb07980a20d7616e55ae7c738c48dc1ecffdaab9, reverted blob cf8b9d92a8da252b6715fa4a15711901bbf6f9d9",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "b2349b4ce2984adf8380": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob aa7572a6400790ef8762623c2610270dca45a90f; inverse fragment SHA-256 5d9c71d203a532ad59ea35653d483bb8cb8b47a38bef40d2b6f5e94fdf3c1c07, reverted blob b8648925a3744a04f0c471162fb4fa648b671793",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "b29fc944d115cbf22047": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 8b3db188fd08dbdbdce76994a1eccb7618159d65; inverse fragment SHA-256 ddd7c9211defa7ead54d3e7a84b5d2cce39f2d55d3d66a538cbe7bf475e9329f, reverted blob eade076ef34badef5aa6d968640b56972445ba7c",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "b356b76b49e99b707d0d": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 2d43fa6f100443e513224b4f313d1fedac567520; inverse fragment SHA-256 ecbc7e22457aeeadc6fa403d834d51b369d48e421816ffab255c39fea00ed894, reverted blob 83a09282f5f19809e9aef614e830f4172fef639d",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "b44d5dd4be44c6e2bc42": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob b2c84ebb74de44da3108f2fc686f2258f1e2c290; inverse fragment SHA-256 499eb0a1f7287942103a6630959ccc6f9cdba28e3378ee6b61f5dbbcf5776b86, reverted blob 3788388a5c1db3da9a8a0e56e8bbbb7790a80a95",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "b7b3686917421fabc086": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob af7493450bb924a79885d6ea1406e2a31432cc82; inverse fragment SHA-256 3c0b389be8d75880b2f92db274381177c3175c5ec66894e1ee1a4322b1f9ca45, reverted blob 51011ffa8e9df6d5165e5e152307aae166912ee3",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "baa0a3815e0c75053ff8": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 82abde1c9f9cfe9acb4122c90e5d0177d25a622c; inverse fragment SHA-256 7efa4ccb2fdab9933b6290eda24cdc4d5ac9c65974385b4a88789398ebbaea75, reverted blob 55be02155d6396cba8997b698309b84cfc1cbb9f",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "bd475ba8bbd8936c5458": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob ae469101ad679f742ec87c42765136432b84a72c; inverse fragment SHA-256 9b0666ef2f687a1f797da3ce2c22214c53878e00db70ffe81ed0cd2aae58ee53, reverted blob 163e3630b53c7008c90bcfa9ac89da66e64895de",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "c404e0bf15aa887531ed": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 1d9b565274a425ffc1890f8d3a42e3108457d453; inverse fragment SHA-256 0a672e10dcbfa0158ebd8e5e145462f0629665a687f80d6c3182e975dfd71fc3, reverted blob f88d8c39901e8509e348013df9eb611492fdf9bb",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "c8cccfba343ea12471d3": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob c7d615c349f90c0dd0dcd40318ae6df4a5c7fc7b; inverse fragment SHA-256 c53d45f523abe8d4c5eb6aabc983f33609e97cd9287b4dc1d64c4e346eda7282, reverted blob 56ee70a868337f54faa50dba9a2bf084197bbc1b",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "cfde56a33b147116f1b9": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob af7493450bb924a79885d6ea1406e2a31432cc82; inverse fragment SHA-256 322a856ea44433ea9c8dbf8b3f5aed8519690f12982c147c18e0546e8a84586b, reverted blob c75032fb31135890d8679c0056b00e36dd1ba4a8",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "d0892322247e07b66744": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 03d8d0b1ef8d597ab9090a040e328fc22b24bed0; inverse fragment SHA-256 90a53dfb80bcffbfeeefcd37d933277d997ac57000aa4c2ad53f9db43a336fe6, reverted blob 9892c6eaafa36d38a792c7c3c986b289786f3e80",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "d22ebbbc082029787b44": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 bf6eae7d1247d712e6bf0aad89b6968e07f9987f3ac48234072b8e30d8e3abcd, reverted blob d0e00e95fc67212a1ab19ac1d6140a7efa70919a",
+      "outcome": "baseline compile exit 0; inverse file compile exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-cohort.tsv and locale-cohort-two-cohort.patch"
+    },
+    "d43d693b6e60505ae3b0": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 63b2428954aedd946423a0ca62c3e9cf15823770; inverse fragment SHA-256 6982498ec83a593c8e290935a9f5cc758eb7c3578827db46a95ac557d23b6848, reverted blob ffecbb0250d2f3ba20265d6a906cc3b8b2100df0",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "d763d4772536d02a5b00": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 937562767cce4a4de915762487f20977cd2c7b66; inverse fragment SHA-256 41d8f7281995545ae04b2f01818832c88095a0abdcb593b8b5f8b8993c0b1dbd, reverted blob 5c945fee2f29ffe87ae13c7f04ee661bdc0128be",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "de0bd17666760259439a": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob c12955ca5087a632e940279e9ac4d1b247462681; inverse fragment SHA-256 b6c05427a1216d7391d7fd60250ef07f8a49a261a64a566ca6c3b0e37d87e29f, reverted blob 179739c1b12bcb1e6877b752192e0c550d93461e",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "deb7e97308692b75d4fd": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob c7d87f7d05795cc954ccdce4d242548c6d8a9f39; inverse fragment SHA-256 f9390b80132d70e8cb305938808b475f533af755cbe1e7727b0ba0784fdf4473, reverted blob c537b3d868890fc939101d3e073ffbeb0d1f0b27",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "e04cf3531e494d17fc08": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob ba9d7ea2bfe4fc8d7fc499aa7486a5fe6260db90; inverse fragment SHA-256 78b29d1b59963ef7c4fbe75502091c3a340fbeb467e60de15240a7aafa120e6b, reverted blob cda791a4c93583d5d5019bf26809c8c507945608",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "e088342e21f9a22c63e1": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 6dbf595f704cd1325a4d4c03e6ed22e2bfa8dd2f; inverse fragment SHA-256 08b8517054d05da6ae0a831f7843386aaceb335f46db5c4247dee0daf39fe08d, reverted blob 56a08fa249b8b9a19038c914bda465e5d91e7b92",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "e34ac29eac5407b3de9f": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 5702fbe4e5d4a601a048c3cb4262692b83014da4; inverse fragment SHA-256 3b6977e714b8635cfb0156009a9db6bef6a9f3d89e6624971ff4ad8f8b1bdafd, reverted blob 0da60afc6925227c8977672cf79e2cde07a2c4d9",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "e9d19b9838feacabf125": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 13a078b288847ea6cf233ea6956ca5427e965659; inverse fragment SHA-256 782f641c38d98344fae404426d0a2d30d7c9cb34ec61430c68c091f0b2a77abe, reverted blob 1a75bf2f034a9020cf53d6b168d59b19fc37e1b4",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "ee1aa39389a22da73651": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 8b3db188fd08dbdbdce76994a1eccb7618159d65; inverse fragment SHA-256 a5da05bd10836e49ecf89a52644aa91609250dd55d398ca1376d002f76e697ef, reverted blob 1615c4103dc75c3e1506c46b42e9129854aa2154",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "ef29df73604a765c3fdd": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 5259e905089ce3384f4810c79ac37be7e3ef2209; inverse fragment SHA-256 4321d51392205308e0a2708341b87197043d421ca8e4656bfdfd5ac5f821e932, reverted blob 4e26ab4ddc810c7cd43d30ec30d0114300f9e731",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "efcffcf7e63055440010": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob d5d09b0a2771973d66f832c21bd28cbce835eb50; inverse fragment SHA-256 640555d9ce475e896345e6d0a58c36aaac47e5bda3950ff84e4aa7028876f093, reverted blob 92abc00a9cc0002169db95555707ae4a636cc7ec",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "efd0d0fc1029ed4674b5": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 4868bdfe59e80149068c0054da1f61a1bbb3bace; inverse fragment SHA-256 3d6a8c50eb783a0708052ea458bb20347d3c753067dab79faed3e6c382b655e5, reverted blob 8a8c66895c8761ba95f9227600a2a6f557af9113",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "f105c40017de5ce88907": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 5702fbe4e5d4a601a048c3cb4262692b83014da4; inverse fragment SHA-256 c688361e10bcefa02b94988c7e94f3e23c2f096ac80e1ccf84eb819e1c4a6430, reverted blob 33ace2b58b281d317dcd82a7a345bfc8929cf378",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "f431183720e9fb7deb19": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 4e0919cfb5e81099add61abef189326118cd2818; inverse fragment SHA-256 61f18fbe58816c4e868426262aca4d01e0b6dce2d97b96d46c4536497bc21e19, reverted blob e5d1fd33b3c1c94b4a1d8a39f6706cd1cc30cbb0",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "f7305182c5ab6c95dade": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 92324ea8b092100062093b55394bf2febfbdb05c; inverse fragment SHA-256 b9e98be2fe77e8a2f7f8fe528a4cc575e9e1f11caf05ac3057e0b716a3f1892e, reverted blob 314ec841a38ad6cfbdb56e24538ae0444f13cc6f",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "f76cbbd34d8a41cc7efe": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 75f19461c318b210bddad54d620788f42f0e157d; inverse fragment SHA-256 4a46a6ce13e6772795b154e087b60a92c7f8a8a2fa7915267dcd428d5e0f7152, reverted blob ebc348b191b48fc22f61b17bbeb2196a04b20d07",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "f8565c5e81221723d493": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 955f2b3e45dabe53bc6a0ecbb6d24eb1603db2b5; inverse fragment SHA-256 e4dbaff81194766a6c45fd89b16abd7789b4ff65c279a7eeb88f3a5cd66940dd, reverted blob 47a6b3c6535f6bf1bd623ef7a87553a07f6afff3",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "f8c7da6daddc859ebb2b": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob acbe9d798dc317303525e6079360524d518fb0c8; inverse fragment SHA-256 b53254e0c3cfad3273ec923263cd75c386ce45ad6e79f2f34acf96fcdc10b365, reverted blob 52f8180f5fe8814fc56f3c7c4809183a6ed45eb4",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "fa236b7bc3de3898a072": {
+      "revert_gate": "AAPT2 single-file compile",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 6dbf595f704cd1325a4d4c03e6ed22e2bfa8dd2f; inverse fragment SHA-256 690062fe1f9445608c952f93fe137f22de7940b187a5c1e6d3423ee126b5e4d4, reverted blob 6f6907717fbf5473aa72bf38fad7eb09a9ed6fa7",
+      "outcome": "baseline exit 0; inverse exit 1",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "fb470f339c96f7f48fcf": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob ba0a41246e06c588fed6d358626d40af66cb5f97; inverse fragment SHA-256 63e3a0db98208f135ceca741c413defe3d115e3e18aa5a38ecc95186b17f9714, reverted blob e6e0eb4dc216d724333eabb356e4a9cd1f6e9507",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "fbdbc74d1ccb7eb80efe": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 86f72802f1768ed4c64254754e9da6fc1ef57eb0; inverse fragment SHA-256 bfb4480397e5d4eae9d5e37580f49d2c7bda21d239d20a4364780620b6d23f11, reverted blob b902ee207b91538cb370fe200d3dea9ba4f7578d",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    },
+    "ff6707e7e2b4521f3b8f": {
+      "revert_gate": "AAPT2 minimal resource compile/link and old Molly value assertion",
+      "gate_input": "PR3 tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010 and PR4 tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd identical target blob 51db2996c85a41d8f3cc8613d822eca91e50dd4e; inverse fragment SHA-256 dfd714862ed416e51bf260aa6ead6f1b2e0eefa2ff70fb64d5636fcc6ce10e32, reverted blob 80a4ae79d76d4b04eccd0d7c4513c25c0a18ad47",
+      "outcome": "inverse file compile and fixture link exit 0; exact old Molly locale value absent",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md and locale-remaining-cohort.tsv and locale-remaining-cohort.patch"
+    }
+  },
+  "groups": {
+    "locale-file-compile-failures": {
+      "description": {
+        "type": "conflict_resolution",
+        "reason": "Inverse fails file compile; executed build-logic/plugins/src/main/java/mollyify.gradle.kts yields baseline resource values. Individual hunk intent and formatting remain unmeasured.",
+        "molly_equivalent": "Executed Molly translation rule from 0e202dda90785771ff8c87526eaaf30c655f54f3 yields baseline resource values from pinned Signal inputs; old localized values and individual hunk intent remain unmeasured (translation-task-witness.tsv; receipts.md).",
+        "searched_branches": "Molly 0e202dda90785771ff8c87526eaaf30c655f54f3 translation rule; upstream branches unmeasured"
+      },
+      "hunks": [
+        "26a3b126d41c1227168e",
+        "610b87319d5fed232134",
+        "a201eb895f5b20a5f549",
+        "45a524f407bd83e8f381",
+        "5a836f26f1e5f6086cf5",
+        "d22ebbbc082029787b44",
+        "6fb27f612fb14269b688",
+        "adf2a9c5cde787280bd7",
+        "591f99e966870caa563d"
+      ]
+    },
+    "locale-please-wait-preservation": {
+      "description": {
+        "type": "behavior_preservation",
+        "reason": "Retain the old Molly localized please_wait entry in the resource table",
+        "molly_equivalent": "Exact XML element matches old Molly 0e202dda90785771ff8c87526eaaf30c655f54f3",
+        "searched_branches": "Old Molly tree 0e202dda90785771ff8c87526eaaf30c655f54f3; upstream branches unmeasured"
+      },
+      "hunks": [
+        "8080b27cf35752b109de",
+        "1b0c2e283e4bcbf45694",
+        "0ef6b96ddb2b6a12d036",
+        "4f9c3af9c3c25445405c",
+        "3960bc6f713fd4f583c9",
+        "9e71bfca6602011e73c9",
+        "5234164af222129d89aa",
+        "7bc861d77a50acc7856e"
+      ]
+    },
+    "remaining-file-compile": {
+      "description": {
+        "type": "conflict_resolution",
+        "reason": "Individual inverse fails file compile. Executed build-logic/plugins/src/main/java/mollyify.gradle.kts yields baseline resource values; individual hunk intent and formatting remain unmeasured.",
+        "molly_equivalent": "Executed Molly translation rule from 0e202dda90785771ff8c87526eaaf30c655f54f3 yields baseline resource values from pinned Signal inputs; old localized values and individual hunk intent remain unmeasured (translation-task-witness.tsv; receipts.md).",
+        "searched_branches": "Molly 0e202dda90785771ff8c87526eaaf30c655f54f3 translation rule; upstream branches unmeasured"
+      },
+      "hunks": [
+        "9b4f8e1a7fcb40951dae",
+        "74bc7aa72c0f6c84cbff",
+        "fa236b7bc3de3898a072",
+        "b0a04c63f4e66e528e5b",
+        "7658f6dad33356af690e",
+        "29500e8c358447f60bf0",
+        "6be022290e27010001df",
+        "4e5622f062f04b0fd380",
+        "ee1aa39389a22da73651",
+        "273678d268b9f9b9d434",
+        "26f173b2506c685b1dd2",
+        "a7cad578a2568c0ea67b",
+        "f8c7da6daddc859ebb2b",
+        "d43d693b6e60505ae3b0",
+        "0553fd9230117bd166c5",
+        "55f91abafbab90cecf00",
+        "4943a9063702a7004583",
+        "0aaad7f995aee6216a53",
+        "43040b3b924f19263686",
+        "a5090b8267946964c05e",
+        "125d284155dd4fd93662",
+        "88d6d029e71de6894166",
+        "d0892322247e07b66744",
+        "09d8c4bd8e72a4ab4de3",
+        "799f539808dd87c116e1",
+        "48a936829af37db386f6",
+        "b44d5dd4be44c6e2bc42",
+        "7aae8de4da9946dd2c48",
+        "055b8ff2bdc75e21ab82",
+        "bd475ba8bbd8936c5458",
+        "9c58d84f31d46a7fda1e",
+        "baa0a3815e0c75053ff8",
+        "b2349b4ce2984adf8380",
+        "ef29df73604a765c3fdd",
+        "c8cccfba343ea12471d3",
+        "2a094a856601fab248e4",
+        "6160367579f427a96913",
+        "770f02bf2c0a3a419b64",
+        "deb7e97308692b75d4fd",
+        "62a31e4696206f426c51",
+        "1aad4231d7a1949777c9",
+        "a655a87c6c60c5f3c749",
+        "2512e063a4bcd8515d19",
+        "f76cbbd34d8a41cc7efe",
+        "b7b3686917421fabc086",
+        "e34ac29eac5407b3de9f",
+        "3c7ba584d61789c0a958",
+        "4b9bd21aa6622022f025",
+        "e04cf3531e494d17fc08",
+        "de0bd17666760259439a",
+        "6631dab5fc59927c6cc7",
+        "0dd9f95a3b26fdc04d09",
+        "51cbaadef925c20776ee",
+        "449fc44366e309c842dc",
+        "27ae8175989f9283fc99",
+        "54f84ad6ec1ebea21bdd",
+        "5e33d38563e47c988995",
+        "708ca7d6886f90b5a95f",
+        "551357f0d6bf9bdf68e9"
+      ]
+    },
+    "remaining-please-wait": {
+      "description": {
+        "type": "behavior_preservation",
+        "reason": "Reverse removes an old Molly localized please_wait value from a minimal linked fixture.",
+        "molly_equivalent": "Exact XML element matches old Molly 0e202dda90785771ff8c87526eaaf30c655f54f3",
+        "searched_branches": "Old Molly tree; upstream branches unmeasured"
+      },
+      "hunks": [
+        "335aa1a1dcb1b35e0dc3",
+        "f8565c5e81221723d493",
+        "ff6707e7e2b4521f3b8f",
+        "e088342e21f9a22c63e1",
+        "8956ef3a832c1ed9aeea",
+        "9613d2af95367184ec6c",
+        "f7305182c5ab6c95dade",
+        "1d63b0306acf8919d0ab",
+        "3232f1c2b2465acf0e7f",
+        "b29fc944d115cbf22047",
+        "993bc52b36eeb1cc9c6c",
+        "efcffcf7e63055440010",
+        "f431183720e9fb7deb19",
+        "a111f5f4e955e583a336",
+        "04d7877749ce229a351e",
+        "42e00ba35d0d21fa0fce",
+        "6552a12dcf1470fc34bf",
+        "5e6a9a7600265c8fb69b",
+        "95adda1ec37fb5f169ff",
+        "efd0d0fc1029ed4674b5",
+        "8a02dfcef1a6106b81b1",
+        "af13ab58ae9c57798508",
+        "75eef1c7ac71d77900c0",
+        "2774b4432907ba73228f",
+        "27750b9d7d8f75b822f5",
+        "2ec3c157330aef0b10bd",
+        "88cbe607d29195391932",
+        "abf663ecf129117f2270",
+        "fb470f339c96f7f48fcf",
+        "867970f3de06dcba66fb",
+        "8c803fc214a5484f84b3",
+        "36f98223dd1e03d0bf77",
+        "0c3effa12dbd98c8991e",
+        "a036a0693aba553128d3",
+        "0658db093c2a369c3c07",
+        "a093da930d7ab1f77e67",
+        "fbdbc74d1ccb7eb80efe",
+        "5baf9e7a17956a1a10c2",
+        "2ff5d9e50d3f089e5bc9",
+        "aa95e6ac555faf8d66ed",
+        "0056feb01fbb2b28b267",
+        "d763d4772536d02a5b00",
+        "3a459134084fac71a23d",
+        "916b2809d199f1998cd3",
+        "81e77b6a6a343a361755",
+        "cfde56a33b147116f1b9",
+        "f105c40017de5ce88907",
+        "b356b76b49e99b707d0d",
+        "7e70dc24067e2fedbe07",
+        "1ce2c0db43335218eb90",
+        "20d1686920d1309781ae",
+        "c404e0bf15aa887531ed",
+        "6bb6caa504bda4e4e906",
+        "36c6917db4dc5f73b7fe",
+        "e9d19b9838feacabf125",
+        "47c1df2bae06f5c015f8",
+        "9d523a44cd5788113d16",
+        "665943dbbc33d171d55d",
+        "165fe3e31845fc26d03f",
+        "7b90e531fac1be99056f"
+      ]
+    }
+  }
+}
+```
+
+## Native translation output hashes
+
+Signal input commit `6e9dddc01f1b26e608ac683807c51e139c141ed2`; native task base `a715cb9771ff8e74dea7ad8d07238739b42f5b53`; retained native output tree `5b917461f1bf426b6e20472b56010525cfe83936`; plugin blob `266df84b06b09453f47b7c0dd59561a8001d88af` (SHA-256 `09d9968fb3b93e41297711e32a4abaa529981888996d038c8c81bfcc508d05dc`). The 12 default inputs in the TSV match the native task input SHA-256 values. All 816 generated strings.xml files match native Git blob IDs and SHA-256 values; selected paths and per-file input/output pins are in `native-translation-byte-witness.tsv`. The 68 old-Molly `please_wait` values relocated to strings2.xml are outside the native task proof; they were separately compared with old Molly and the prior PR3 source. The generator validates `reference_tree` as a SHA but does not read it; the verified old-Molly values are supplied explicitly in the manifest. Comparing the previous PR3 tree with the regenerated target found 264 changed locale strings.xml files and 68 changed strings2.xml files, with no other changed paths. Parsed resource keys, attributes, values, nested markup and child tails match across each locale pair; root attributes, resource order (excluding relocated please_wait), and top-level comment text/order also match.
+
+Native task command (executed in the source checkout):
+
+```sh
+env JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9 ANDROID_HOME=/var/home/x/Android/Sdk PATH=/var/home/x/.local/opt/jdk-21.0.13+9/bin:$PATH agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --console=plain --info --max-workers=1 --dependency-verification=strict -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' updateTranslationsAll
+```
+
+## Username API inverse compiler measurement
+
+Only the property `usernameApi` was changed to `username` in `app/src/main/java/org/thoughtcrime/securesms/jobs/RefreshOwnProfileJob.kt:308`; all other context and mode 100644 were preserved. The portable inverse patch is included below. This measures one line, not the whole 0/122 raw report hunk 45dbc1792099f68a9160. SignalNetwork declares `usernameApi`, and UsernameApi provides the called method. No Molly port equivalent was verified; no history fetch was performed.
+
+| Source | Base commit | Base tree | Counter commit (private ref) | Counter tree | Baseline | Counter |
+|---|---|---|---|---|---|---|
+| PR3 | 20ed69ce4b62767253a9470308a2636c710f57a5 | a88d1e244cda745b090bf10fd12235222c8fa224 | 0ac07f21d8afdf339931697350feae5efc32359c (`refs/agent/username-api-inverse/pr3`) | c9fa2e4d0e9807b9a173f356e1fcf8925b8ebef2 | exit 0, 9m17s; 342 executed | exit 1, 1m26s; 1 executed, 341 up-to-date |
+| PR4 | a715cb9771ff8e74dea7ad8d07238739b42f5b53 | 1db9d411742f0fbca434de252085db0543b958b7 | 2c13412f89661c3b99420150fa13287111a73822 (`refs/agent/username-api-inverse/pr4`) | aeea934771b09a40a9f429c0673747d9e580eae6 | exit 0, 2m41s; 8 executed, 334 up-to-date | exit 1, 1m24s; 1 executed, 341 up-to-date |
+
+All four app Kotlin tasks executed, not UP-TO-DATE. Both counterexamples failed at `RefreshOwnProfileJob.kt:308:51 Unresolved reference 'username'`; subsequent type inference errors also appear in the logs. The result establishes this property is required for the tested compile, not runtime behavior or necessity of the complete hunk.
+
+PR5 was not compiled separately. PR3, PR4 and PR5 share identical 100644 blobs for RefreshOwnProfileJob.kt (`67d66343288c9dc074cb704540d12788407ebc4a`), SignalNetwork.kt (`69e8e042551782af7940d4097d0be62b9b08b7c4`), and UsernameApi.kt (`8408a2c2e89e699969985cbe95f2ea8c6c4981ca`). This supports transferring the symbol-level finding, but is not a PR5 build result. Both counter blobs are `4a15f1ded622784f3e1697d64e7ab9faa8e3a688`, mode 100644.
+
+Command used in each source checkout, with logs recorded during the runs:
+
+```sh
+export JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9 ANDROID_HOME=/var/home/x/Android/Sdk TMPDIR=/var/home/x/agent-scratch/mollyim-android/pr-stack/tmp PATH=/var/home/x/.local/opt/jdk-21.0.13+9/bin:$PATH
+agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin
+```
+
+Cold PR3 source/build started at 157M; disk check OK free=251G unallocated=3G metadata=78%. Reused source build for remaining gates; offline and no build cache, Gradle incremental outputs were reused as shown by task counts. No infrastructure correction was required. Source restored clean to PR4 base; build retained for the next source lease.
+
+The following patch uses zero context and can be applied with `git apply --unidiff-zero` to the recorded base.
+
+```diff
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/jobs/RefreshOwnProfileJob.kt b/app/src/main/java/org/thoughtcrime/securesms/jobs/RefreshOwnProfileJob.kt
+index 67d6634328..4a15f1ded6 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/jobs/RefreshOwnProfileJob.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/jobs/RefreshOwnProfileJob.kt
+@@ -308 +308 @@ class RefreshOwnProfileJob private constructor(parameters: Parameters) : BaseJob
+-    when (val usernameFetchResult = SignalNetwork.usernameApi.getDecryptedUsernameFromLinkServerIdAndEntropy(localUsernameLink.serverId, localUsernameLink.entropy)) {
++    when (val usernameFetchResult = SignalNetwork.username.getDecryptedUsernameFromLinkServerIdAndEntropy(localUsernameLink.serverId, localUsernameLink.entropy)) {
+```
+
+
+## Additional historical annotations for native-format locale hunks
+
+These prior-tree hunk annotations are historical and do not measure the regenerated hunks.
+
+```json
+{
+  "source_tree": "a88d1e244cda745b090bf10fd12235222c8fa224",
+  "annotations": {
+    "08aa84d09480b833ec46": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 96261c7cfe0e645d3e02ea660942ce362aa07ef289bbe2f749af7d3f9e53401e, reverted blob 4904d9a31521ec9d3dbdbb7cd7dcbf7007dd3017",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "08cbd68b8379846387d7": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 2b042aaa52add2cdeb114ea4f9d51bf0e0d0e452556b824cb401315fa31de0bc, reverted blob 6dbaf954487249c1ac4889adb422a4e43b9e65ae",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "0d10484a303e073bb2c8": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 c42a7c9895b6fd23b9d1b9c7e4df4a984e20e5a5bfaa1431a1b00a363c621292, reverted blob a948bc9eb3387bd9db5df1d6d49dc6153c4eec17",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "12183e1e04d30fc63708": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 d53670c182278dd523933ea74daafd83166fa339cce7f3858afa90fa3838a825, reverted blob 05f62d7a365515542faec0ce2f28022f9d9e5ecb",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "1316149900b57e5e04e9": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 3172d231ef7c7911e36aec3d306fa137c398b6883ad266a8d22a16064d8e87c6, reverted blob 97208a5b9b9febbb1d731c11942518b9be37364e",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "1af2f18213a9e18ee302": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 7f468a8ea6be70df1581751fdb1c93a354c28cb04f9768cdf11844bfc4725911, reverted blob 75a8c6adb7e859a741368aa1469968e99f441215",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "1c4821c59dc1d4743fd1": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 c048bc58ebed154bf61a1b31d5a9881ad7195b499d14669672d08e23d9531887, reverted blob c70fdbd804dc4ac95568517beb0d97caa564bbbc",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "1d7e7b5dbe6b6ac019ab": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 67b8944016e4d08903f58319e04cef975e6097a68c1cb63d7ca2b66606bcea77, reverted blob 77d1a5ca57fffd3fa93c310b12b29ebf4af6b4d2",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "1f41c689b68f8f5f7e9b": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 ce147b736d634a3e2b91d6706b3d2766ee87b45a7c70d62d6bb780ec80afbb64, reverted blob 4cd24939a98323e150ae047f8089f10fd172e956",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "2343af65919dc59e0317": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 e8512957c14b705afeada8b6317e2f51fc97a7f049437a02ebfb6e732030a1e6, reverted blob b117d30e145ef7c43203bc73f71603949b80d31e",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "23628e297343439730a1": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 487a2524fbde77b6b7bee18a0324d46b62e3c3d78ce4179f8eeedf64d89ea954, reverted blob c65afcf8685f5a3ff30a24e9235d346e2f15f7d3",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "2eec53567625ae821ac8": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 120c01af0692d19217bee07d62c48adfbf3f185316292d75e30e4fa34470199a, reverted blob dcce9589637d6ad5af04597f7288476b0eae93bf",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "2fa1d46717f273a02e12": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 4e4d0fed235a4d0df77109d497b2af686678e2ba9d417d22d508286ffcf07e2e, reverted blob 667cf5ada4ae2fb7a788527ef3e1999a741e3e44",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "32e3f03dbd6aa4f4d93d": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 5a51ba47b3b163ada1b7f94443cce1d96f0be3820e3010017c3a2f45dd144930, reverted blob 3153b56f28bdab693f077653b8de7712e6b93a64",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "342f33eb6de645a658d4": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 aad91c93b15bbbe39b7ac1fdeb9dddeacde93ec6d58e65155da1f089559c60ad, reverted blob 2b4ae849c3472116832ec34cc421852576536759",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "419cd4963659a0705fe7": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 16347ff6359a2ed08dc4962f9a8cf1bd084deed893c7468adb39811583dd61ac, reverted blob 541c7d85035d7d365ad76d2cf4d8ea18a4cb5c0f",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "422d3bbfaf61cb4cd5cf": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 0feca363dc087aef37381791858f06d8a77334c83151f0a3ea913d7ec0e973ac, reverted blob e3a13d4af023a614b66af80413bef2fc05576b18",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "45e327cd2aeefb91ce37": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 697f58cf2a7812088dc2de255e597c107ae5d2fb01f84f2bad944dc73ba350da, reverted blob fe16be66deca083041271a9f60524d3d8d39710f",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "49e303f061737d6d3610": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 93b2024a1eda880345c1da7c7954e07901ec8ee572f04ed5a45abc1327de1bd3, reverted blob aa42e88762f5a7d519f6dcd1b67459185a4cf6c4",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "4b3c412d4ad6ade46268": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 352c8d48b789771ed4e16e6c7c9411c99868d3e0733d43d9f60d51cee2c60b49, reverted blob 9e6f9eab6e775243a53f7d4b5542eacbb86f5417",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "4e4db7d3044b0db9217a": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 4206bd29d90c26fdd7124326788e93ff146aa72d220b59a1b7c6e907e9405ec5, reverted blob 9f24ff896e3d5f9a0446608583a3389bc1abd1b6",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "50b0c0b339a3f53a0299": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 cbee21cfbc390a3dfd1f58e5e1e3e04245d2b66781a285f907a660d3ff03cac5, reverted blob c46174f02c3b78af6b707bace1136d70876adc4c",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "58bf5c0467be1fb26edd": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 60b80dcc4f68b6d9c933eae1eee22f892b051211082c96252e55c8292dd493ac, reverted blob 2a7452445ab652249ee92e6f19acfa0ce6eee25e",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "58bf65eafbf0aa72b461": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 8d376fa8aa0890a7e91e8ed2ad5755c2b65256f906f8f2d13d54576b34c85cb9, reverted blob 53928be721d174bcc35e0c5856788834b2ee6c63",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "58bfa9f6a72d85f43d94": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 9cdbf0558f4b1d23db0401c3c799907c514293be95af499e02890c2ba9488766, reverted blob 47cd15de25e582e8720b2e007c6a1ebb1b13dfb0",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "5b776960862a95bdffba": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 acf399760d0b51753ad90baf0a400e6447d85add08763d54cf354e84b50e9338, reverted blob 962a4384619ce78ced21014fa8e1fdec9f75a41e",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "645d14da14aee16e90df": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 09bde7de4ea45983445854449626e9c7b28784e62c6a32ae5560d4a62f79aa2e, reverted blob dea92ea3c15285fe8cdde0705333fbefbf1cf32a",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "7111be3f6d824b440792": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 2c2c99fe69cb9b493c4d4f14f60070e9eb38a493b684c0616a7568f9556893ab, reverted blob 4ade8cbfd88bac1ef1361b174b974793a3ecc202",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "71ad5f4dceb9c12fad9e": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 3bd47bf4cca943dfba8faf59f246909dec623bc1c53e429b2606625f4612fb60, reverted blob c795dc74e2e6acf8bfd5e232354b2475cfc4f9db",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "73627c9954211b40efee": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 f98e84c3bbf8951722fe95d2ce0efd626d9505933dc590be70680a9d07b803f1, reverted blob b241d2ac76397a68fe148b1d7d2a2a3677754f70",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "77b8fe8a5c2ce294e9a3": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 3865b278385e9f51e41391912eedab95c456b2165ee930bddbf5bc82e815ae23, reverted blob 174661faa2928a8280ac823d61e07bf19afb07f0",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "7a273c0a84eb0805316b": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 bf1a440f76e78f54186ac7d47c65a872790dcf6c6427783763e1527220035100, reverted blob a94cd7e1752fae158399235b4ce3a50fc4b2c7da",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "7e7ea440b6a59a2d729a": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 4c1fc1b4e4d71c30c29bf47de28bf1b6d25c6c7d063d3d6092108e833d214d85, reverted blob e7290432ad069e6787a6b01dbc95d253176b9296",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "85fbcfb2d71a0be92f48": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 097c9a9af3d601ac8ce1059f719a7ad5a967e09f7fdb313e4c8e412e682ed2d7, reverted blob 381b33f3b99c6e19ad2e9fe9a08209140c44d347",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "8eedfa7a162b8de671c8": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 7012c837d77489b84e4bc510a7dbc4a00896a81ce27cb682744088aee80ab195, reverted blob 2b6763cc6a339d8280fd68d9f141187d3cca6dd3",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "92c79bb3699ceef71d8c": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 eff7c32b039572a62e18069a0cb671bbf40c1666edfe8d18ab90fe5bdb1f7095, reverted blob d9783c48d0b3655ea07b5b933fa5ed61bd43a8d3",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "93b08e797df6a2dc186c": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 798ab152e369ecd09505059ff96c03d6f07ba14b773cb98a053a45899338cdc6, reverted blob 06d42dc13d01a13b798c3678c5b8e6627e99b985",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "95c539fee77d3946886d": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 7e121683fc355083d68223e4cd2b1f355c8ac9fd9405f5d85abd5217d580ca28, reverted blob be50f766488c7163ffbdacc8a33ccc59e898b219",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "99328c7ab76e2ed62200": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 eb3494dcd6bb93983968bdb441dcbeec37e3c38bef0093be5d5c033545c4198b, reverted blob bdb7aa95671a89bcf06a515822f3d28f9c5dec6c",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "9996d0bee4cc9abd2bb1": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 69458b1e18d0a23a6a08a764284b7c8557f332d2edeea87cc67c4ff41a7283eb, reverted blob 378c532a01d8d5b7f3aa493edb623140d0a68e74",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "9d0210c3846434250ecb": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 0e91c63e392a9885524344daf7005bf85d3c9bbf9d1092e65ab232c5e2683ee1, reverted blob a13a817c8a7092743652a27a30c8785cc4ec1cbe",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "9d735c9c13930b8bde85": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 2baf5acf3ee202b7d8919ab04c54991aaf6a1babc5039488f88bdba33c759825, reverted blob b952c18a1a3e052f03539f50e30af785a268f089",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "a03ed72a9441d561b52b": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 3ca3ac5ec90dcb74601d3155134ef569de0d35fc02c5f106679d05d5fe92eddd, reverted blob cba725faac6a241c34555fc3536b4cd40f19aadd",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "a415af67b95eba32f342": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 6f902fb42371423ab6ba2238d0fbfad14978e8c5b0cb4f69186199dbe23c1995, reverted blob b8749927b87f93e31abd8eb82e41217a5ba55504",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "abf24ceab0ec9e0c6bb3": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 b997361820ee6d496a68ac0e91cbad76856384d5262b6128e57e24574a2dcbf2, reverted blob a57422d92cedb4631813853c61305714d0571691",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "acdb773a5eda235a9591": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 757b2fa0dbeebdd29db17b3e2c07e2d1213de0c6c5c1bf94dfa24a9bdd1f01f6, reverted blob a976c123aae3002792c6d2b756d10469c8081fec",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "ae4f2d6cefe1945d3284": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 67cc6570ce010c7a6efb23507322b1f8d84c8292f147838d30ce0cf4744d8118, reverted blob 4c4cc0bbaea90102a0b2e17822f19c4a8beb7b4a",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "b3cf312ab9c39d68c63f": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 c29edade94eaceb685d757c33132eecd1a8f0c6787b2f6e91e3fea861935c3d8, reverted blob 06e3f4e998f028edd02744c53c2c8c3e65ebbabb",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "bb52c8b43b0245491d3c": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 d6cb6d99906c253a879175b5e32c0c12d5bd62cc769a5d33f5ae80b26402aab1, reverted blob bdb0464744d467bb0c2452195916a5c0633743f9",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "c1b64fb2327a8a66bfa9": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 f502aa0c7d9a0cfd9f8ffdf50df42dc002c12f3ae5752faa5e60d3a4531533ea, reverted blob f406f2e7fa04babe421f1dd6b9a47a752e8b2492",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "c24c7321e603968019d6": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 a12998422a0659f5e965a28b666eea1e98c47841271f970525c5eebd06f11091, reverted blob 2a35ccce0c01e3cb2db8206b3cd31f7345d5e0be",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "c29c89a7329aea8efe00": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 cd378ea5e8d5cfa924b9a3cbfd49a2cf8c2e3fdf9b718e3e7a4a630b636542d5, reverted blob c5127ddcb38b1fc97d820e262ebe3625a3eb0687",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "c349fe856b97f242c602": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 54ae0485c5e5d3efda84e9ab6b43d2d1c0d67ba94297d38e95fe07ae8a730426, reverted blob 81049845cd56aa939171246577903e4ca0cb4969",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "c467cdb7ed5922af44be": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 ab1260b8cf221ef7e8bac38d5769aa6ffd4e7bdf1531110a6b17fa86784b7293, reverted blob b06744fdc3cdcd8edccfa65413f9babcdfb934b1",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "cca216112b9de0ca8893": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 3fcaafef18fcf74279c2e375ed44d17b275ed43f417a1f0edf707c5e01daadb7, reverted blob f910ef10c4987ac81e74ea1fa8ade9f2428696f8",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "d4ec3ea74b7030ff7acc": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 409fbf5d3fe3c7c23fb049d911733bd0a71a8b269a39986eb3be1a2e07bb13f9, reverted blob d245842f774510b73544559f06805c7b0932d886",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "d661eae897fe47a6ebd8": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 5e753972c65107155d2f46a396c2df49623e57c8c0dd0489d2e98d45f5b774f8, reverted blob cfe3b289f8653ab303ab6bcd6f32d264499c15fc",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "d8cacbf00236acdfbf83": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 103766f3d6a3939ce528bbc89c4ea0382bb2260d168e52160a50e3031bc036cc, reverted blob 650af4ba75ab659c47c79ecb39dc46200afa7f72",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "da56d5a2374327c0f46a": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 fe8978eb65221644d155a1b797d426a87026e6f159c69c75ed38ccd38cd5457f, reverted blob 6b4afab851b0bf2deddc3769cb81e6e74084ee20",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "e05721ba303a51ba5013": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 0ebf79660aacc84e8de16cba7e728a7cb809d77fdc68c8eac3f64a168462eb0a, reverted blob 760d6037bca9ddc9d7aaa27021c6494151930c9a",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "ee750fff594fa081dab9": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 df65cb4f4dea35d46e4709aff7fe43ced8a61e01f6b216f1173ff6cd0c67721d, reverted blob 20cb15ec5ca6590c36224d33901e765708daec7a",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "f0cd2e77ab4805cc84f0": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 fdff41cec9c6780f67be22f482c7a1aac5180ddd93969119847c7aac8541157f, reverted blob 636b99da1a260ef3aa6b1ad71f27bdaadda05c63",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "f7f7ddc7c8548fd3e5a5": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 64ca3ffea2f83dcaea867245f5094a30de32f13bad948f152e1016ff38bf2083, reverted blob c324d4f0ec951a0dbfd7a64bdc49000819d7be88",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "f9c66545a3ba64a36a45": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 d44da5f9b94ddd7f20b73316a48fae7e3093c5a1b24c017499a5cd1550537f72, reverted blob ca0294f686eb3a0653e395dec61571dc1295633a",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "fb3ff5bd35789cc73a54": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 15987bde2a1882e1dc12947d4e4a3d08154838d67b507e104cd71e2ccba785ee, reverted blob d8345bbfc1794b4088e485655b870894b8fceba1",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    },
+    "fbcc878a8c4da2341c19": {
+      "revert_gate": "AAPT2 2.20-15978811 single-file compile, XML integrity and pinned translation model",
+      "gate_input": "PR3 source tree 3a20fd39d1f0e444bcc4711a2909635d8762b67e; PR4 source tree f25a1de0fc87f0f862cc270f823d240857878bc5 has identical file blob and hunk; inverse fragment SHA-256 95515ba59b823eb926525a24001f8e765bf7c91bf00787d3e9692071fd2af191, reverted blob c4ad83ab61996543ef3dcd39b7de82a573c27f49",
+      "outcome": "baseline compile exit 0; inverse compile exit 0; restored_anchored_conflict_marker; model is not Gradle execution, device behavior or proof of old Molly values",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/post-format-results.tsv and post-format-cohort.patch"
+    }
+  },
+  "groups": {
+    "remaining-conflict-marker-cleanup": {
+      "description": {
+        "type": "conflict_resolution",
+        "reason": "Inverse restores a conflict marker; executed build-logic/plugins/src/main/java/mollyify.gradle.kts yields baseline resource values, separate from marker and formatting choices.",
+        "molly_equivalent": "Executed Molly translation rule from 0e202dda90785771ff8c87526eaaf30c655f54f3 yields baseline resource values from pinned Signal inputs; old localized values and individual hunk intent remain unmeasured (translation-task-witness.tsv; receipts.md).",
+        "searched_branches": "Molly 0e202dda90785771ff8c87526eaaf30c655f54f3 translation rule; upstream branches unmeasured"
+      },
+      "hunks": [
+        "4e4db7d3044b0db9217a",
+        "c467cdb7ed5922af44be",
+        "c29c89a7329aea8efe00",
+        "73627c9954211b40efee",
+        "fbcc878a8c4da2341c19",
+        "abf24ceab0ec9e0c6bb3",
+        "da56d5a2374327c0f46a",
+        "cca216112b9de0ca8893",
+        "1c4821c59dc1d4743fd1",
+        "9d0210c3846434250ecb",
+        "85fbcfb2d71a0be92f48",
+        "f9c66545a3ba64a36a45",
+        "d8cacbf00236acdfbf83",
+        "50b0c0b339a3f53a0299",
+        "fb3ff5bd35789cc73a54",
+        "0d10484a303e073bb2c8",
+        "1d7e7b5dbe6b6ac019ab",
+        "5b776960862a95bdffba",
+        "2eec53567625ae821ac8",
+        "32e3f03dbd6aa4f4d93d",
+        "99328c7ab76e2ed62200",
+        "e05721ba303a51ba5013",
+        "49e303f061737d6d3610",
+        "9d735c9c13930b8bde85",
+        "c24c7321e603968019d6",
+        "58bfa9f6a72d85f43d94",
+        "ae4f2d6cefe1945d3284",
+        "f7f7ddc7c8548fd3e5a5",
+        "1f41c689b68f8f5f7e9b",
+        "2fa1d46717f273a02e12",
+        "1af2f18213a9e18ee302",
+        "93b08e797df6a2dc186c",
+        "c1b64fb2327a8a66bfa9",
+        "acdb773a5eda235a9591",
+        "a415af67b95eba32f342",
+        "342f33eb6de645a658d4",
+        "d661eae897fe47a6ebd8",
+        "58bf65eafbf0aa72b461",
+        "08cbd68b8379846387d7",
+        "4b3c412d4ad6ade46268",
+        "71ad5f4dceb9c12fad9e",
+        "c349fe856b97f242c602",
+        "95c539fee77d3946886d",
+        "422d3bbfaf61cb4cd5cf",
+        "12183e1e04d30fc63708",
+        "d4ec3ea74b7030ff7acc",
+        "645d14da14aee16e90df",
+        "08aa84d09480b833ec46",
+        "b3cf312ab9c39d68c63f",
+        "f0cd2e77ab4805cc84f0",
+        "7111be3f6d824b440792",
+        "23628e297343439730a1",
+        "2343af65919dc59e0317",
+        "9996d0bee4cc9abd2bb1",
+        "92c79bb3699ceef71d8c",
+        "58bf5c0467be1fb26edd",
+        "8eedfa7a162b8de671c8",
+        "7e7ea440b6a59a2d729a",
+        "419cd4963659a0705fe7",
+        "1316149900b57e5e04e9",
+        "77b8fe8a5c2ce294e9a3",
+        "a03ed72a9441d561b52b",
+        "45e327cd2aeefb91ce37",
+        "7a273c0a84eb0805316b",
+        "bb52c8b43b0245491d3c",
+        "ee750fff594fa081dab9"
+      ]
+    }
+  }
+}
+```

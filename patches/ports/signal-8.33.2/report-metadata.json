@@ -1202,6 +1202,36 @@
       "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; PR3 identical file blob and hunk; inverse fragment SHA-256 7523b0cddd8abb24dfc492c82c7ef86b56d10ddde4bc3ee939f5e5630e3df89a, reverted blob 8c6b58f04c40a2adbae2dea4292ba3aab9efb75c",
       "outcome": "baseline compile exit 0; inverse file compile exit 1",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-cohort.tsv and locale-cohort-two-cohort.patch"
+    },
+    "1c87d9e382a99fab53ad": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Old Molly Java getter/setter uses pref_language; no equivalent Kotlin migration or KV setter write found in compared Molly branches",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4 5551f302, origin/fix/socks-proxy-dns-leak aa81fd63; Signal origin/upstream-stable 6e9dddc0 and origin/upstream-main 515db93f do not establish Molly policy",
+      "revert_gate": "Three focused Gradle unit test classes; baseline 12/12 passed",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; exact candidate and command in receipt; PR3 SettingsValues differs and is unmeasured",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr4-settings-negative-checks",
+      "reason": "Copy legacy language to KV on migration; test observes language export on upgrade",
+      "outcome": "Delete migration copy: 1/12 failed, expected de but got null"
+    },
+    "9c616143ddc96d74a2bb": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Old Molly Java getter/setter uses pref_language; no equivalent Kotlin migration or KV setter write found in compared Molly branches",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4 5551f302, origin/fix/socks-proxy-dns-leak aa81fd63; Signal origin/upstream-stable 6e9dddc0 and origin/upstream-main 515db93f do not establish Molly policy",
+      "revert_gate": "Three focused Gradle unit test classes; baseline 12/12 passed",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; exact candidate and command in receipt; PR3 SettingsValues differs and is unmeasured",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr4-settings-negative-checks",
+      "reason": "Write changed language to KV; test observes export after a language change",
+      "outcome": "Delete only the additional KV setter write, not the whole hunk: 1/12 failed, expected fr but got de"
+    },
+    "66d760f60b510768d21a": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Compared Molly branches used encrypted preferences; no equivalent Kotlin reader found in this comparison",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4 5551f302, origin/fix/socks-proxy-dns-leak aa81fd63; Signal origin/upstream-stable 6e9dddc0 and origin/upstream-main 515db93f do not establish Molly policy",
+      "revert_gate": "Three focused Gradle unit test classes; baseline 12/12 passed",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; exact candidate and command in receipt; PR3 SettingsValues differs and is unmeasured",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr4-settings-negative-checks",
+      "reason": "Read legacy settings from encrypted preferences; test observes migration from the existing Molly preference file",
+      "outcome": "Substitute fully qualified default preference reader, not literal inverse: 3/12 failed, including expected de but got zz and expected de but got en"
     }
   },
   "exclusions_complete": false,

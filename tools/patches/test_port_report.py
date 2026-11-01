@@ -121,6 +121,29 @@ class PortReportTests(unittest.TestCase):
                 self.assertIn('unmeasured', preview)
                 self.assertIn('| mode | 100644 | 100755 |', preview)
                 self.assertIn('| binary | 000000 | 100644 |', preview)
+                # Assign semantic types across kinds, leaving the mode row unmeasured.
+                table_rows = [line.split(' | ') for line in preview.splitlines()
+                              if line.startswith('| ') and len(line.split(' | ')) == 11]
+                by_kind = {row[2]: row[0][2:] for row in table_rows}
+                evidence = {'hunks': {by_kind['text']: {'type': 'conflict_resolution'},
+                                      by_kind['binary']: {'type': 'behavior_preservation'}},
+                            'baseline_mechanical_tree': old, 'baseline_target_tree': new}
+                report = port_report.render(config, evidence)
+                rows = [line.split(' | ') for line in report.splitlines()
+                        if line.startswith('| ') and len(line.split(' | ')) == 11]
+                for field, names in ((7, ('conflict_resolution', 'signal_api_compile_fix',
+                                           'behavior_preservation', 'unmeasured')),
+                                     (2, ('text', 'binary', 'mode'))):
+                    for name in names:
+                        matching = [row for row in rows if row[field] == name]
+                        expected = (len(matching), sum(int(row[5]) for row in matching),
+                                    sum(int(row[6]) for row in matching))
+                        self.assertIn(f'| {name} | {expected[0]} | {expected[1]} | {expected[2]} |', report)
+                self.assertIn('| signal_api_compile_fix | 0 | 0 | 0 |', report)
+                self.assertIn('| unmeasured | 1 | 0 | 0 |', report)
+                evidence['hunks'][by_kind['text']]['type'] = 'unknown'
+                with self.assertRaisesRegex(ValueError, 'invalid hunk type'):
+                    port_report.render(config, evidence)
                 with self.assertRaisesRegex(ValueError, 'missing evidence'):
                     port_report.render(config, {'hunks': {}, 'baseline_mechanical_tree': old, 'baseline_target_tree': new}, ready=True)
 

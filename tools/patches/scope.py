@@ -44,8 +44,11 @@ def report_evidence(path):
         'locale-remaining-cohort.patch', 'locale-remaining-resource.py',
         'locale-remaining-contracts.py', 'locale-remaining-resource.log',
         'locale-remaining-contracts.log',
+        'post-format-README.md', 'post-format-classify.py',
+        'post-format-cohort.patch', 'post-format-probe.py',
+        'post-format-results.tsv', 'post-format-translation-xml-proof.py',
     }
-    return name == 'receipts.md' or name in locale_evidence or bool(re.fullmatch(r'(?:fmt-(?:0[1-9]|1[0-6])|lex-(?:0[1-9]|[1-6][0-9]|7[0-4]))\.patch', name))
+    return name == 'receipts.md' or name in locale_evidence or bool(re.fullmatch(r'(?:fmt-(?:0[1-9]|1[0-6])|lex-(?:0[1-9]|[1-6][0-9]|7[0-4])|locale-format-[0-9a-f]{20})\.patch', name))
 
 
 def allowed(scope, path):

@@ -311,7 +311,7 @@ def render(config, evidence, ready=False):
             fields = [key, display, kind, old_mode, new_mode, str(added), str(deleted), category or 'unmeasured', item.get('reason', 'unmeasured'), item.get('molly_equivalent', 'unmeasured') + ' (searched: ' + item.get('searched_branches', 'unmeasured') + ')', (item.get('revert_gate', 'unmeasured') + ' (input: ' + item.get('gate_input', 'unmeasured') + '): ' + item.get('outcome', 'unmeasured') + ' (evidence: ' + item.get('evidence', 'unmeasured') + ')')]
             output.append('| ' + ' | '.join(str(f).replace('\n', ' ').replace('|', '\\|') for f in fields) + ' |')
     summary_output = ['## Hunk summaries', '',
-                      'Semantic type and structural kind are alternative breakdowns of the same rows; do not add them together. Binary and mode rows have zero physical text lines.', '']
+                      'Semantic type and structural kind are alternative breakdowns of the same rows; do not add them together. Binary and mode rows have zero physical text lines. Mode rows include creation and deletion metadata, so their count is not a count of permission changes.', '']
     for title, summary in (('Semantic type', semantic), ('Structural kind', structural)):
         summary_output += [f'| {title} | Rows | Added | Deleted |', '|---|---:|---:|---:|']
         summary_output += [f'| {name} | {count} | {added} | {deleted} |'

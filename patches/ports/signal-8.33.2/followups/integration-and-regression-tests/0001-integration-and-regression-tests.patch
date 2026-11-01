@@ -1,6 +1,6 @@
-From 9d24d7cdaa8db0e7de764217706e6d4f6f30d808 Mon Sep 17 00:00:00 2001
+From 6ed38640a13010d291486520d9e8214a932d26c2 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sun, 1 Nov 2026 05:55:31 +0100
+Date: Sun, 1 Nov 2026 11:08:40 +0100
 Subject: [PATCH] Adapt Molly integrations and tests to Signal 8.33.2
 
 Update linked-device provisioning and FCM cleanup for the current service APIs while preserving proxy configuration, error types, user-selected delivery and retry credentials. Move remaining event producers and lifecycle-bound subscribers to Signal's event bus.
@@ -13,12 +13,14 @@ AI-assisted compatibility changes: restore imports across source checkpoints.
 
 AI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.
 
+AI-assisted compatibility changes: restore Molly logger collection.
+
 Carry this AI-assisted source change as its own
 reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: a3b9a4f816555fc7bafd3fc17b1159f6d8acc7d7
+Source-Commit: c79aae7b1e010aaf064f09f0bc6bafe05ff17394
 AI-Generated: true
 
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml

@@ -4,16 +4,16 @@
   "signal": "6e9dddc01f1b26e608ac683807c51e139c141ed2",
   "origin_base": "c47a74ba0961903eeaeda6d22347a990056c3e83",
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
-  "initial_source": "255ff434961b6653cd2c700865abe6ab7206026b",
+  "initial_source": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
   "complete_source_checkpoint": true,
-  "target_tree": "96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985",
+  "target_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
-    "sha256": "7e7a1a86b972c616347ab3f607875ad5465040b6370f5e7e2c6c98e40c41c542",
-    "bytes": 12522493,
+    "sha256": "cc2faf1ca0b8e93edba478e7daadc8e95869c4717333194dddb1cadb8d9e2cc5",
+    "bytes": 12534391,
     "ref": "refs/heads/source-checkpoint/core",
-    "source_commit": "842e226be91f6b9d664df3b92ef460d07e6bde14",
-    "source_tree": "d4b5d14b580bc2faa8af989c48d34e77cada3ca4",
+    "source_commit": "34f0a76bcd67a7f0551a9f95067dcf0d1e9a7384",
+    "source_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
     "prerequisites": [
       "0e202dda90785771ff8c87526eaaf30c655f54f3",
       "6e9dddc01f1b26e608ac683807c51e139c141ed2"
@@ -22,7 +22,7 @@
   "layers": [
     {
       "id": "initial/app-updates",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Retain the Molly updater and update preferences on the updated Signal application structure.",
       "ai_generated": true,
       "before_tree": "759ef1c309d93aa7e4ac7217b144c04545562f11",
@@ -36,7 +36,7 @@
     },
     {
       "id": "initial/appearance",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Resolve dynamic colors, themes and moved UI APIs while retaining Molly appearance behavior.",
       "ai_generated": true,
       "before_tree": "1951338ed748a50ab19e5067c83b1b351e91db2d",
@@ -50,7 +50,7 @@
     },
     {
       "id": "initial/backup-and-restore",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Resolve backup and restore API changes while retaining Molly backup preferences and serialization behavior.",
       "ai_generated": true,
       "before_tree": "1fcff6ea474e0d0e559277c61922356202abf355",
@@ -64,7 +64,7 @@
     },
     {
       "id": "initial/maps",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Retain the Molly map implementation and compatibility layer in the upgraded tree.",
       "ai_generated": true,
       "before_tree": "c81172e74081789b809c5bed60a4317e54585a9e",
@@ -78,7 +78,7 @@
     },
     {
       "id": "initial/module-pruning",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Resolve modify/delete conflicts for modules Molly removes and remove new upstream files added beneath those excluded modules.",
       "ai_generated": true,
       "before_tree": "2c6d0cb650c105c57677664b583506e1e0c06ee8",
@@ -98,7 +98,7 @@
     },
     {
       "id": "initial/networking-and-proxies",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Carry Molly SOCKS, Tor, DNS and transport choices through the updated Signal networking interfaces and NetCipher integration.",
       "ai_generated": true,
       "before_tree": "343c616e6f4be2387ac9eb4b223ac832691a5836",
@@ -112,7 +112,7 @@
     },
     {
       "id": "initial/notifications-and-unifiedpush",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Retain MollySocket, UnifiedPush and push-selection behavior while resolving notification and delivery API changes.",
       "ai_generated": true,
       "before_tree": "64d2d6b5d88ebda4ab460cba76e2e04d52921635",
@@ -126,7 +126,7 @@
     },
     {
       "id": "initial/payments-and-donations",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Keep MobileCoin and Google billing excluded while adapting the remaining donation and migration code.",
       "ai_generated": true,
       "before_tree": "163bbb25ed2aa3c402ed0d9aa8845ac7d8290285",
@@ -140,24 +140,24 @@
     },
     {
       "id": "initial/privacy-controls",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Retain Molly privacy policies for calls, unknown contacts and logging in the updated upstream code.",
       "ai_generated": true,
       "before_tree": "5752447ed702c7b32bf0ab6222c0470ffd0f579e",
-      "paths": 6,
+      "paths": 5,
       "conflict_paths": 5,
       "patches": [
         "initial/privacy-controls/0001-resolve-privacy-controls.patch"
       ],
-      "mailbox_bytes": 22800,
-      "after_tree": "828a3bdbda22f7f7c3d588d270ce5a8589d6fb1f"
+      "mailbox_bytes": 21883,
+      "after_tree": "db7c49b898dbe744fc9e8c2b7ae52bf4da168029"
     },
     {
       "id": "initial/registration-and-linking",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Adapt Molly registration and Android linked-device policies to the new Signal registration architecture.",
       "ai_generated": true,
-      "before_tree": "828a3bdbda22f7f7c3d588d270ce5a8589d6fb1f",
+      "before_tree": "db7c49b898dbe744fc9e8c2b7ae52bf4da168029",
       "paths": 136,
       "conflict_paths": 18,
       "patches": [
@@ -165,14 +165,14 @@
         "initial/registration-and-linking/0002-resolve-registration-and-linking.patch"
       ],
       "mailbox_bytes": 249435,
-      "after_tree": "7343842ea2b91f34e90a74e6c3447d73f0f9dde5"
+      "after_tree": "bcf01f3908adc678e86b5e834a2023657cacb227"
     },
     {
       "id": "initial/resources-and-branding",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Resolve shared resource conflicts and relocated resources, retaining the port source's Molly branding and translations.",
       "ai_generated": true,
-      "before_tree": "7343842ea2b91f34e90a74e6c3447d73f0f9dde5",
+      "before_tree": "bcf01f3908adc678e86b5e834a2023657cacb227",
       "paths": 477,
       "conflict_paths": 268,
       "patches": [
@@ -191,28 +191,28 @@
         "initial/resources-and-branding/0013-resolve-resources-and-branding.patch"
       ],
       "mailbox_bytes": 6959066,
-      "after_tree": "df863a85ada35a6cca36386db47b0b536186be44"
+      "after_tree": "4efed83057ade31e729df9d6e6467caadb5d45be"
     },
     {
       "id": "initial/security-and-locking",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Integrate encrypted preferences, secret handling and lock-aware application behavior with the updated Signal classes.",
       "ai_generated": true,
-      "before_tree": "df863a85ada35a6cca36386db47b0b536186be44",
+      "before_tree": "4efed83057ade31e729df9d6e6467caadb5d45be",
       "paths": 8,
       "conflict_paths": 5,
       "patches": [
         "initial/security-and-locking/0001-resolve-security-and-locking.patch"
       ],
       "mailbox_bytes": 24580,
-      "after_tree": "482c2b1cd6541bb46c69e7ba62a3676805d317b2"
+      "after_tree": "016ceaff9477c4af9a69e440a5e6fa331f08bc96"
     },
     {
       "id": "initial/integration",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Resolve shared application, account, service and core integration files whose APIs or feature boundaries changed upstream.",
       "ai_generated": true,
-      "before_tree": "482c2b1cd6541bb46c69e7ba62a3676805d317b2",
+      "before_tree": "016ceaff9477c4af9a69e440a5e6fa331f08bc96",
       "paths": 288,
       "conflict_paths": 215,
       "patches": [
@@ -221,186 +221,114 @@
         "initial/integration/0003-resolve-integration.patch"
       ],
       "mailbox_bytes": 1088868,
-      "after_tree": "03e7243994b6d1746200c3b89d96c6487e7a5fc1"
+      "after_tree": "582a79dd21fe143abc4029f16c2e7841061967cc"
     },
     {
       "id": "initial/build-and-release",
-      "source_commit": "255ff434961b6653cd2c700865abe6ab7206026b",
+      "source_commit": "969a45e4b0d44bee6fbb78e3c74fcce5463190a3",
       "description": "Integrate the new Signal build layout and toolchain with Molly dependency, native-fork and release policies.",
       "ai_generated": true,
-      "before_tree": "03e7243994b6d1746200c3b89d96c6487e7a5fc1",
+      "before_tree": "582a79dd21fe143abc4029f16c2e7841061967cc",
       "paths": 30,
       "conflict_paths": 22,
       "patches": [
         "initial/build-and-release/0001-resolve-build-and-release.patch"
       ],
       "mailbox_bytes": 512140,
-      "after_tree": "c24f6a4ca890033eec1a18a5f00255c81e4c7041"
+      "after_tree": "d2d7fe768482be097128e2679792fc9e561b9efe"
     },
     {
       "id": "followups/restore-preference-import",
-      "source_commit": "edb5e7ac4dcf9d102c10a41beea7c182b587adf8",
-      "description": "Restore the Molly preference import in ported megaphones\n\nAI-assisted compatibility changes: restore imports across source checkpoints.",
+      "source_commit": "671f4fe88ebc3b915ef9310d97dd03c1e5780340",
+      "description": "Restore the Molly preference import in ported megaphones\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
       "ai_generated": true,
-      "before_tree": "c24f6a4ca890033eec1a18a5f00255c81e4c7041",
-      "after_tree": "27143b745fa211bfb467f399d4d2780efbdc166b",
+      "before_tree": "d2d7fe768482be097128e2679792fc9e561b9efe",
+      "after_tree": "e5c917bfd2db8155457fec4383a62e8abdce0d1c",
       "paths": 1,
       "patches": [
         "followups/restore-preference-import/0001-restore-preference-import.patch"
       ],
-      "mailbox_bytes": 1574
+      "mailbox_bytes": 1643
     },
     {
       "id": "followups/netcipher-sdk-dsl",
-      "source_commit": "e27ae213434da6708d2021ccc5734aa32d920422",
-      "description": "Use the typed SDK DSL for Molly's NetCipher module\n\nAGP 9.4 rejects the numeric SDK catalog string passed to compileSdkVersion.\nMatch Signal's compileSdk release DSL while retaining the pinned SDK version\nand strict dependency verification.\n\nAI-assisted compatibility changes: restore imports across source checkpoints.",
+      "source_commit": "811a781e04f111753482877ded9807537efc3de7",
+      "description": "Use the typed SDK DSL for Molly's NetCipher module\n\nAGP 9.4 rejects the numeric SDK catalog string passed to compileSdkVersion.\nMatch Signal's compileSdk release DSL while retaining the pinned SDK version\nand strict dependency verification.\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
       "ai_generated": true,
-      "before_tree": "27143b745fa211bfb467f399d4d2780efbdc166b",
-      "after_tree": "49d3071a42588d132cd89b0e9c70a11ebef221df",
+      "before_tree": "e5c917bfd2db8155457fec4383a62e8abdce0d1c",
+      "after_tree": "4dae4d511597a76fd37471cea5d760df42361b4f",
       "paths": 1,
       "patches": [
         "followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch"
       ],
-      "mailbox_bytes": 1461
+      "mailbox_bytes": 1530
     },
     {
       "id": "followups/integration-and-regression-tests",
-      "source_commit": "a3b9a4f816555fc7bafd3fc17b1159f6d8acc7d7",
-      "description": "Adapt Molly integrations and tests to Signal 8.33.2\n\nUpdate linked-device provisioning and FCM cleanup for the current service APIs while preserving proxy configuration, error types, user-selected delivery and retry credentials. Move remaining event producers and lifecycle-bound subscribers to Signal's event bus.\n\nRepair lock-aware receivers, encrypted backup preference imports, retained donation completion, dynamic theme resources and moved branding references. Keep Molly's excluded profile-badge and payment-wallet features excluded, and adapt inherited test fixtures accordingly.\n\nAdd transport and cleanup regressions for MollySocket, UnifiedPush and FCM.\n\nAI-assisted compatibility changes: restore imports across source checkpoints.",
+      "source_commit": "c79aae7b1e010aaf064f09f0bc6bafe05ff17394",
+      "description": "Adapt Molly integrations and tests to Signal 8.33.2\n\nUpdate linked-device provisioning and FCM cleanup for the current service APIs while preserving proxy configuration, error types, user-selected delivery and retry credentials. Move remaining event producers and lifecycle-bound subscribers to Signal's event bus.\n\nRepair lock-aware receivers, encrypted backup preference imports, retained donation completion, dynamic theme resources and moved branding references. Keep Molly's excluded profile-badge and payment-wallet features excluded, and adapt inherited test fixtures accordingly.\n\nAdd transport and cleanup regressions for MollySocket, UnifiedPush and FCM.\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
       "ai_generated": true,
-      "before_tree": "49d3071a42588d132cd89b0e9c70a11ebef221df",
-      "after_tree": "e3595166d00aab1f77b735b1c91c58c903149a54",
+      "before_tree": "4dae4d511597a76fd37471cea5d760df42361b4f",
+      "after_tree": "497217c1e371e58bbe79ea1db8dbed08f4eb5c54",
       "paths": 138,
       "patches": [
         "followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch"
       ],
-      "mailbox_bytes": 171507
+      "mailbox_bytes": 171576
     },
     {
       "id": "followups/cdn-transport-test-fixture",
-      "source_commit": "842e226be91f6b9d664df3b92ef460d07e6bde14",
-      "description": "Fix CDN test configuration for Molly network transport\n\nAI-assisted compatibility changes: restore imports across source checkpoints.",
+      "source_commit": "34f0a76bcd67a7f0551a9f95067dcf0d1e9a7384",
+      "description": "Fix CDN test configuration for Molly network transport\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
       "ai_generated": true,
-      "before_tree": "e3595166d00aab1f77b735b1c91c58c903149a54",
-      "after_tree": "d4b5d14b580bc2faa8af989c48d34e77cada3ca4",
+      "before_tree": "497217c1e371e58bbe79ea1db8dbed08f4eb5c54",
+      "after_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
       "paths": 1,
       "patches": [
         "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch"
       ],
-      "mailbox_bytes": 2269
-    },
-    {
-      "id": "followups/reregistration-linked-devices-reminder",
-      "source_commit": "d453d60ece07c9b872fd25381cdbe0674f2d4f7e",
-      "description": "Restore linked-device reminder after re-registration\n\nMark existing-account registration explicitly and restore the Molly reminder after successful primary-device multi-device re-registration. Add focused coverage for the entry-point marker and reminder policy.",
-      "ai_generated": true,
-      "before_tree": "d4b5d14b580bc2faa8af989c48d34e77cada3ca4",
-      "after_tree": "293995de45226f1074f871e5e62573462929b499",
-      "paths": 3,
-      "patches": [
-        "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch"
-      ],
-      "mailbox_bytes": 6794,
-      "source_bundle": "followups/reregistration-linked-devices-reminder/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "842e226be91f6b9d664df3b92ef460d07e6bde14",
-      "source_bundle_sha256": "81062ffdac3cf728788583e51e524ebbc731f215c37789a1709a16845e01b0bb",
-      "source_bundle_bytes": 4293
-    },
-    {
-      "id": "followups/legacy-backup-precedence",
-      "source_commit": "016871facf5f2cf2319b6c09babea16fa247bae5",
-      "description": "Restore migrated settings with backup frame precedence\n\nMap Molly shared-preference frames to their migrated SignalStore keys synchronously as the importer reads them. Later KeyValue frames then replace preference-only values or duplicate older values, matching the legacy exporter order.\n\nDrain queued SignalStore writes before opening the restore transaction and remove the post-restore preference re-read that could replace newer KeyValue data. Add focused coverage for preference-only language/privacy/media settings and notification-privacy KeyValue precedence through importer storage writes.\n\nAI-Generated: true\n\nBased-On-Source-Commit: ebafbfc7ad15ecec6e5bdafcd86645689e18e077",
-      "ai_generated": true,
-      "before_tree": "293995de45226f1074f871e5e62573462929b499",
-      "after_tree": "6aa2b4947bed11ac934a0c92d3d639e9a1488cf2",
-      "paths": 4,
-      "patches": [
-        "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch"
-      ],
-      "mailbox_bytes": 17379,
-      "source_bundle": "followups/legacy-backup-precedence/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "d453d60ece07c9b872fd25381cdbe0674f2d4f7e",
-      "source_bundle_sha256": "2184d6a5a61ac87f136315d2f582f4e2ae3ee6a7553dfff347d6a5ef401b44ba",
-      "source_bundle_bytes": 5924
-    },
-    {
-      "id": "followups/donation-completion",
-      "source_commit": "f4adba44ddb41ac752eed028caaa94e6d3526b70",
-      "description": "Restore donation completion acknowledgement\n\nDisplay the earned badge after immediate donations and restore the eligible first-Boost monthly sustainer link without exposing profile-badge controls. Use existing thank-you copy that does not promise unsupported profile display.\n\nFor long-running donations, stop showing the loading indicator after the badge loads when Molly disables the profile-badge toggle. Keep loading visible while the badge is unavailable, and cover both states with focused Compose UI tests.\n\nAI-Generated: true\n\nBased-On-Source-Commit: ff211136211d0931871803c323e8a125a7f1ecd0",
-      "ai_generated": true,
-      "before_tree": "6aa2b4947bed11ac934a0c92d3d639e9a1488cf2",
-      "after_tree": "6bc7f753a04f11ce26bf1536ac996905bea0d472",
-      "paths": 4,
-      "patches": [
-        "followups/donation-completion/0001-donation-completion.patch"
-      ],
-      "mailbox_bytes": 13462,
-      "source_bundle": "followups/donation-completion/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "016871facf5f2cf2319b6c09babea16fa247bae5",
-      "source_bundle_sha256": "6ad02d8b63dd99c78de9e8e96334c8b63c7e302b89dba985e8d0cace31707207",
-      "source_bundle_bytes": 7286
-    },
-    {
-      "id": "followups/backup-notification-id-upgrade",
-      "source_commit": "cf3146bb3fcc29eb3059528df52a5f304a6b379a",
-      "description": "Clean up legacy backup notifications after upgrade\n\nKeep the collision-free Signal IDs for new backup alerts, and remove old Molly alerts only when the active notification matches the backup channel. This avoids deleting old conversation notifications that shared the previous numeric range.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 65a53f80e2e5d8a03513632fcdf81d8bcc342608",
-      "ai_generated": true,
-      "before_tree": "6bc7f753a04f11ce26bf1536ac996905bea0d472",
-      "after_tree": "96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985",
-      "paths": 5,
-      "patches": [
-        "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch"
-      ],
-      "mailbox_bytes": 9027,
-      "source_bundle": "followups/backup-notification-id-upgrade/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "f4adba44ddb41ac752eed028caaa94e6d3526b70",
-      "source_bundle_sha256": "93e6e08863779fbb51b2d5985d0d7e245c721dd631a89753c6e3c81b5899cc60",
-      "source_bundle_bytes": 5481
+      "mailbox_bytes": 2338
     }
   ],
   "mailbox_sha256": {
-    "initial/app-updates/0001-resolve-app-updates.patch": "d368bcc8a12e7c840ac6bf946c69e042457fba4ef95291902bd47f5a24344f0b",
-    "initial/appearance/0001-resolve-appearance.patch": "99f574b51814d07b9776932d73a8235af72e5bdfbcc2bef50e362cea6ee1ab21",
-    "initial/backup-and-restore/0001-resolve-backup-and-restore.patch": "67888b7b079f12f1f65ce84f515d742967a5c16a5bbabcfb089706e4bfbcc4a8",
-    "initial/maps/0001-resolve-maps.patch": "d6da26f2880198c4e5d94b5227588f585321518e9c7c32fcdadd1cc1d0173fe0",
-    "initial/module-pruning/0001-resolve-module-pruning.patch": "4410feb41d453cab66bf369b410c2cd2a8c71031e0007664148b40e99a5afb39",
-    "initial/module-pruning/0002-resolve-module-pruning.patch": "0df2fd6adb2a1dcea138ee5c431413f3a60e50eff69d317f7188252077901ead",
-    "initial/module-pruning/0003-resolve-module-pruning.patch": "fcd8f9a81755a0880ac6046a53446497673f1796c05169632d0ab7fa06ed93a2",
-    "initial/module-pruning/0004-resolve-module-pruning.patch": "9d38aa423561f47fd321cfbb65ae4a3740f6572efb12cf10f9f7e4207d20cc29",
-    "initial/module-pruning/0005-resolve-module-pruning.patch": "ad011812354992f2b65a80383f023e451e27f6314535c9f1755653c107666a96",
-    "initial/module-pruning/0006-resolve-module-pruning.patch": "61b89a01ffa1f52df67aa1b21b0a0acc6e2da5bf9c31555a05b3d21fa6b60ed7",
-    "initial/module-pruning/0007-resolve-module-pruning.patch": "b3cd211c0722ecc0a8c9c4c2ae1fbd7f55c4388421980a27bf86351aa6ca7b5c",
-    "initial/networking-and-proxies/0001-resolve-networking-and-proxies.patch": "4d13c32d7970ee5f94e1e49f5d560b035e5fcac34c0bdd24e07d53c1f249d56d",
-    "initial/notifications-and-unifiedpush/0001-resolve-notifications-and-unifiedpush.patch": "b2225ecb038654a250d5bc4d07b496a9177108a19e1689d5db1e326de944b5ad",
-    "initial/payments-and-donations/0001-resolve-payments-and-donations.patch": "a93a1dd29a70cb50fdaca560e28d91e5db36db7ef0fe4b52e6cc7a8ec7749b74",
-    "initial/privacy-controls/0001-resolve-privacy-controls.patch": "4607c1c55984415bd64c002fb6421616d8f66d7f3ff0c82ca71aecdea7e16623",
-    "initial/registration-and-linking/0001-resolve-registration-and-linking.patch": "aaa4df713c81524d51b82bae320247db1fbc301ac3bd0a0eff7f00021d774125",
-    "initial/registration-and-linking/0002-resolve-registration-and-linking.patch": "b33239abf2da40a2e7404f0f3aab9b7080a6edb83ba65950d7335598e587c2c5",
-    "initial/resources-and-branding/0001-resolve-resources-and-branding.patch": "b90b5a5d9145ce5893c245d1e056e26f9cc505760aa1feb0c6a14a410b20e2f4",
-    "initial/resources-and-branding/0002-resolve-resources-and-branding.patch": "15bc6ed4aad64a788e83d7faec482740ff1771de6565cb7c768f316abc9e4b9c",
-    "initial/resources-and-branding/0003-resolve-resources-and-branding.patch": "2465a75df02456289f5b74e3c2c6007831ae468e2c82d91517fef83d319ebaa6",
-    "initial/resources-and-branding/0004-resolve-resources-and-branding.patch": "9f0f5a558f8cef317e74981334986bd0ce7be129d1403443e3297ea0b6196ee3",
-    "initial/resources-and-branding/0005-resolve-resources-and-branding.patch": "53815012932c3f232409043633d365adcbbc98df069179d7edcbeb4945187080",
-    "initial/resources-and-branding/0006-resolve-resources-and-branding.patch": "ebe004df4402eb23bec1b26ebb7755a7354ec939edcec2af8813ce954c4f9f0f",
-    "initial/resources-and-branding/0007-resolve-resources-and-branding.patch": "16cae5d47c3e86eae591b001ed68289060a4e2115cf8d933ed459bfb11338311",
-    "initial/resources-and-branding/0008-resolve-resources-and-branding.patch": "ce598f5115a66929c40fc93f9d8b556d1c20414d8afdaf630dd4ec11ebdf0cce",
-    "initial/resources-and-branding/0009-resolve-resources-and-branding.patch": "4d95947fd3a2d58797d9ce4df94dd939c5e4685490a60353b037537247c8b430",
-    "initial/resources-and-branding/0010-resolve-resources-and-branding.patch": "5e1242b0e975245c80081dd42713c96369f8e031219ce9df465da6df62c46d02",
-    "initial/resources-and-branding/0011-resolve-resources-and-branding.patch": "d480f20f01c214d03facd1f7742aa3d67038fa6f687caa7eccef0d1595b0b74e",
-    "initial/resources-and-branding/0012-resolve-resources-and-branding.patch": "7f360f308d395c34b08d900d8c526bb980504044449f6eb45e1cf2230c822ece",
-    "initial/resources-and-branding/0013-resolve-resources-and-branding.patch": "27c2c68ae22f9da3548580113c4c2f9018e34151b0c27a7b6c3d5f670e7a8197",
-    "initial/security-and-locking/0001-resolve-security-and-locking.patch": "13127ef5998cea2f63b6e99a8e59fe21bb37991060ae19803cc90b7badb2655c",
-    "initial/integration/0001-resolve-integration.patch": "f7f05732a9b5fe3cdb001e1f456c97239c58756d398cf955c96d69cf2c2530e6",
-    "initial/integration/0002-resolve-integration.patch": "14275edcaa6d3eb590ada5d8f03fbd0e0dd59578ebed18203d93c93db4103b76",
-    "initial/integration/0003-resolve-integration.patch": "6aa8a1ca0b426cd818ccc9bbf1ae3878d33ae0cfe471e46c93bf206cf0ab3ba3",
-    "initial/build-and-release/0001-resolve-build-and-release.patch": "a7c7c70236f9f500eccbf13566688319d41d9ff155b9a327e11fe8fa18145340",
-    "followups/restore-preference-import/0001-restore-preference-import.patch": "e63a2fd1eb4b6e0fe3b10705eb7eb7d9cf771a4004eb83b9f4d7950f9165d0d2",
-    "followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch": "75d2a400313a316e907062680014616652f86617ff5c4cc0b3de0a9bca3d2cff",
-    "followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch": "93473596a91f65ffb337afe7dd14079538fb23e459aa7c067ddc17003e800a25",
-    "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch": "b586e190389f1a6454e1ca0cdf5d1a6b3b8c7b6dde8dcb6cb900a21b09b9c1b3",
-    "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "e80a6bf40fa718d9f5bbea97b69fde0b2e7dab55b4c1a09126b3fee3c1efffbe",
-    "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "594de1e2db8e29d18e26ce7383c72a233e2fdcdaec14c4e5e53dd2d0b78f3411",
-    "followups/donation-completion/0001-donation-completion.patch": "0257055d58445d2b84ac83fc2433944292d2c90d8f5e7b7af0cf599103c7694d",
-    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "1dcdf3ab876be603a4d253dbe512bb671f6c0ded53b3500c428e58e8ae989e1c"
+    "initial/app-updates/0001-resolve-app-updates.patch": "a06d0fd1a2b6d8be48cfd29f2fbf1a122122eafda5398760c83931fea08997fe",
+    "initial/appearance/0001-resolve-appearance.patch": "7b49ad67cc0f76f21b9e647cdaed420d8395f5bd51213d46119598721aa9c8c0",
+    "initial/backup-and-restore/0001-resolve-backup-and-restore.patch": "f223b997c645c54cf63ae0b98be5e237604fd9e3db5e83fc2ee40a15573cb1a1",
+    "initial/maps/0001-resolve-maps.patch": "ccd00eaceb4955a6879cf475fc414b9dec7a9388b296cf34c34105f6b676554d",
+    "initial/module-pruning/0001-resolve-module-pruning.patch": "969268297135e8cbd1bcdac45a0100b1bd2b987b4a607d92e4762b7896df1265",
+    "initial/module-pruning/0002-resolve-module-pruning.patch": "51f326c466961b71287264cd5186935698c48fee71c02ff45edc8b1fdaf438d7",
+    "initial/module-pruning/0003-resolve-module-pruning.patch": "ccda2c6844f789e2a264ce77ad5c28e34924923cf1fee40a017bf8f9d2db068c",
+    "initial/module-pruning/0004-resolve-module-pruning.patch": "63cc01bc76e5280159f25dc70c474b787aed8203fd7d46e0e48ec5f3d9ddfcb1",
+    "initial/module-pruning/0005-resolve-module-pruning.patch": "8afa0faebec4f84a5a0039c10dd27fab4116a7963daed87558701c89acfc00ca",
+    "initial/module-pruning/0006-resolve-module-pruning.patch": "312528da9a8b6c135abf1a2c344d45676d1cd2de6e471702139762e23dfa9ecb",
+    "initial/module-pruning/0007-resolve-module-pruning.patch": "27dc0db2f149a655b9afda7890fe0fe3e3d96ecf3cb7f0788927443e6739e562",
+    "initial/networking-and-proxies/0001-resolve-networking-and-proxies.patch": "8715396a34d4da5d8d534fff1a157312dc3c99227ed6d5cd9011644714181910",
+    "initial/notifications-and-unifiedpush/0001-resolve-notifications-and-unifiedpush.patch": "11703dfdbc7230c973bfbf0a33789a0207c61c274aef8b5abe4cc3031e3591ca",
+    "initial/payments-and-donations/0001-resolve-payments-and-donations.patch": "1f2174991ea01126b12bb3b7f4a5a897955f3db3e26c1ac45ec5daf2bf918d22",
+    "initial/privacy-controls/0001-resolve-privacy-controls.patch": "bbb16d04473b11fd18443679c22f5ac77fb76097ee81337eb2e46966e4ab384a",
+    "initial/registration-and-linking/0001-resolve-registration-and-linking.patch": "fe0b140c642fb586904a9dac0224dfa8b08b22ef54b1427b6f3a7c0ada013b1e",
+    "initial/registration-and-linking/0002-resolve-registration-and-linking.patch": "a90c4d7e6224491b19032898626ecca8a380258cade261500297b25b587220c5",
+    "initial/resources-and-branding/0001-resolve-resources-and-branding.patch": "cab17cd19d1a8019a191c39d3f65b20f628c613464578651b8762833fd3e207a",
+    "initial/resources-and-branding/0002-resolve-resources-and-branding.patch": "37c6efd1c1ffe7d95d0e1201822b5365b62838403f3c335ca3753c678f29b7f7",
+    "initial/resources-and-branding/0003-resolve-resources-and-branding.patch": "2ddf9f6022581c9cb28fc8beea739eab8181283714f6df73fe2c2b60de781825",
+    "initial/resources-and-branding/0004-resolve-resources-and-branding.patch": "6cdb3da4d2287c5288d9f5c30c94d48634dc96f15e607ffb6756cbe9ffa3a8d4",
+    "initial/resources-and-branding/0005-resolve-resources-and-branding.patch": "03b5fefa20f7d72c0f413bb59828ac0ff8c35483bdb2c7baf4b6e2d1afc38b6e",
+    "initial/resources-and-branding/0006-resolve-resources-and-branding.patch": "fe845d9960be68e4392a2808b482dd40054715d496f118f66ce526f5d5b953b5",
+    "initial/resources-and-branding/0007-resolve-resources-and-branding.patch": "1f20b44ab6d1f207db06420cc09b5d34f330b34c690217be7797c7b599acc81a",
+    "initial/resources-and-branding/0008-resolve-resources-and-branding.patch": "5639bdc4569423d42eb684300833f2e39f85f85df442dbf53c29ab2346f1f186",
+    "initial/resources-and-branding/0009-resolve-resources-and-branding.patch": "6836bd7bf1810d59cddd46d47dd27acf73f86f41ec5081f464f6a542793df824",
+    "initial/resources-and-branding/0010-resolve-resources-and-branding.patch": "f3b9ce8bbe2b63421da5bbb4e9d1a24cb27b67aa1fd073df38cbe22d1658d288",
+    "initial/resources-and-branding/0011-resolve-resources-and-branding.patch": "6a9dc1535d3a6741d7fce667fe9e7294908b18b34a14e84e9ab93b9c09ea672a",
+    "initial/resources-and-branding/0012-resolve-resources-and-branding.patch": "56c25f4021e3f10b25e351da94ba927d4d3ef62cdfedcf97d0659bdb49e1a6dc",
+    "initial/resources-and-branding/0013-resolve-resources-and-branding.patch": "21dd8535e3bc8b5c17f6dbcc7cd25163eb77b3b7e2316b96f6afde683a553588",
+    "initial/security-and-locking/0001-resolve-security-and-locking.patch": "2979055b7a1cdea6c4a1e7973d9296aa851e6e9297a92e3decba621022fe198c",
+    "initial/integration/0001-resolve-integration.patch": "9495ae4b87160439c9164efac5869ccec88a4ca315599de6e24d2af9f3129756",
+    "initial/integration/0002-resolve-integration.patch": "0a43ce9798faf6f56548c248af7ab11aeb599c4cdf5bc0e16d311fa579530d03",
+    "initial/integration/0003-resolve-integration.patch": "5c30332f39ed98d9ffd6c0fa732ff5ad25ec2f8d0206cb3cf6d7308c54b8a5da",
+    "initial/build-and-release/0001-resolve-build-and-release.patch": "eec4ed33d7282e62219fa280a1f3a4fe748025dc98500bf3cbbb7459dd438e38",
+    "followups/restore-preference-import/0001-restore-preference-import.patch": "815b0ce9a442ad500141d993657f4b36f1c734239085bb1436d1aa62f98ae9e9",
+    "followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch": "4b934b633eebf813d88aaae6b139f78d85d2fdf55a13501e16eeaef10e172c7b",
+    "followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch": "bfac3ca29edeab14eead3edd5884cf4c38bf57118b4dc8c49e1cac75662061ea",
+    "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch": "ea586ea242f96f2dd68674f8406e8a7cd3a2a219b41079117ad6b26723884dde"
   }
 }

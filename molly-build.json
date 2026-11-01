@@ -14,10 +14,10 @@
     "mechanical_tree": "759ef1c309d93aa7e4ac7217b144c04545562f11",
     "series": "patches/ports/signal-8.33.2/series",
     "keep_mechanical": {
-      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge 255ff434961b6653cd2c700865abe6ab7206026b."
+      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge 969a45e4b0d44bee6fbb78e3c74fcce5463190a3."
     }
   },
-  "target_tree": "96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985",
+  "target_tree": "edba85a25dd843fbe31e00cc36ac4a2a1015781f",
   "native": null,
   "android": {
     "sdk": "37.0",
@@ -47,8 +47,6 @@
       "--tests",
       "org.thoughtcrime.securesms.components.settings.conversation.shared.ConversationHeaderBadgeTest",
       "--tests",
-      "org.thoughtcrime.securesms.registration.ui.RegistrationIntentsTest",
-      "--tests",
       "org.thoughtcrime.securesms.keyvalue.MollySettingsMigrationTest",
       "--tests",
       "org.thoughtcrime.securesms.net.ConnectivityStateCalculatorTest",
@@ -57,15 +55,11 @@
       "--tests",
       "org.thoughtcrime.securesms.messages.IncomingMessageObserverConnectivityTest",
       "--tests",
-      "org.thoughtcrime.securesms.backup.MollyBackupPreferencesTest",
-      "--tests",
       "org.thoughtcrime.securesms.backup.FullBackupExporterTest",
       "--tests",
       "org.thoughtcrime.securesms.backup.FullBackupImporterTest",
       "--tests",
       "org.thoughtcrime.securesms.notifications.NotificationIdsTest",
-      "--tests",
-      "org.thoughtcrime.securesms.backup.v2.LegacyBackupNotificationTest",
       "--tests",
       "org.thoughtcrime.securesms.service.MessageBackupListenerTest",
       "--tests",
@@ -80,8 +74,6 @@
       "org.thoughtcrime.securesms.jobs.FcmRefreshJobTest",
       "--tests",
       "org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJobTest",
-      "--tests",
-      "org.thoughtcrime.securesms.components.settings.app.subscription.completed.TerminalDonationBottomSheetTest",
       "--tests",
       "org.thoughtcrime.securesms.delete.DeleteAccountViewModelTest",
       "--tests",

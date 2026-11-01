@@ -1,18 +1,20 @@
-From 3abc432dde1f419dc8bbe96ea1c710667f39b342 Mon Sep 17 00:00:00 2001
+From 5962ef384a7ac53ef3bae748e6077e197e964ae0 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sun, 1 Nov 2026 05:55:31 +0100
+Date: Sun, 1 Nov 2026 11:08:41 +0100
 Subject: [PATCH] Fix CDN test configuration for Molly network transport
 
 AI-assisted compatibility changes: restore imports across source checkpoints.
 
 AI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.
 
+AI-assisted compatibility changes: restore Molly logger collection.
+
 Carry this AI-assisted source change as its own
 reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: 842e226be91f6b9d664df3b92ef460d07e6bde14
+Source-Commit: 34f0a76bcd67a7f0551a9f95067dcf0d1e9a7384
 AI-Generated: true
 
 diff --git a/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt b/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt

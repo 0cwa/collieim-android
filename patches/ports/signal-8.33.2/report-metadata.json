@@ -1207,31 +1207,31 @@
       "type": "behavior_preservation",
       "molly_equivalent": "Old Molly Java getter/setter uses pref_language; no equivalent Kotlin migration or KV setter write found in compared Molly branches",
       "searched_branches": "Molly 0e202dda, origin/signal-8.20.4 5551f302, origin/fix/socks-proxy-dns-leak aa81fd63; Signal origin/upstream-stable 6e9dddc0 and origin/upstream-main 515db93f do not establish Molly policy",
-      "revert_gate": "Three focused Gradle unit test classes; baseline 12/12 passed",
-      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; exact candidate and command in receipt; PR3 SettingsValues differs and is unmeasured",
-      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr4-settings-negative-checks",
+      "revert_gate": "Three focused Gradle unit test classes; baseline 12/12 passed; PR3 baseline 10/10 passed",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; exact candidate and command in receipt; PR3 source tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010; SettingsValues.kt blob ec0c3b469a2137adede241c82a0e249dc78fb7aa; LegacySharedPrefs.kt blob 7b339e26b7c3aa43d5310ea79b2418cf5dd7091b; exact test input SHA-256 values in receipt; migration copy removal; patch SHA-256 e4747cdeaae8f845eaa9d13bfaa6d0f2db58034b0ef7b553cd9c453d69c00631",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr4-settings-negative-checks; PR3: patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr3-settings-negative-checks; additional source audit: patches/ports/signal-8.33.2/report-evidence/receipts.md#twelve-path-signal-equality-audit",
       "reason": "Copy legacy language to KV on migration; test observes language export on upgrade",
-      "outcome": "Delete migration copy: 1/12 failed, expected de but got null"
+      "outcome": "Delete migration copy: 1/12 failed, expected de but got null; PR3: baseline 10/10 passed; candidate 1/10 failed, upgrade expected de, got null; zero skipped"
     },
     "9c616143ddc96d74a2bb": {
       "type": "behavior_preservation",
       "molly_equivalent": "Old Molly Java getter/setter uses pref_language; no equivalent Kotlin migration or KV setter write found in compared Molly branches",
       "searched_branches": "Molly 0e202dda, origin/signal-8.20.4 5551f302, origin/fix/socks-proxy-dns-leak aa81fd63; Signal origin/upstream-stable 6e9dddc0 and origin/upstream-main 515db93f do not establish Molly policy",
-      "revert_gate": "Three focused Gradle unit test classes; baseline 12/12 passed",
-      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; exact candidate and command in receipt; PR3 SettingsValues differs and is unmeasured",
-      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr4-settings-negative-checks",
+      "revert_gate": "Three focused Gradle unit test classes; baseline 12/12 passed; PR3 baseline 10/10 passed",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; exact candidate and command in receipt; PR3 source tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010; SettingsValues.kt blob ec0c3b469a2137adede241c82a0e249dc78fb7aa; LegacySharedPrefs.kt blob 7b339e26b7c3aa43d5310ea79b2418cf5dd7091b; exact test input SHA-256 values in receipt; partial setter inverse removing only extra key-value write; patch SHA-256 82ac2920ee8e13f19ecb4636020b295957e592fb701b773f0b5225778b52c24e",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr4-settings-negative-checks; PR3: patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr3-settings-negative-checks; additional source audit: patches/ports/signal-8.33.2/report-evidence/receipts.md#twelve-path-signal-equality-audit",
       "reason": "Write changed language to KV; test observes export after a language change",
-      "outcome": "Delete only the additional KV setter write, not the whole hunk: 1/12 failed, expected fr but got de"
+      "outcome": "Delete only the additional KV setter write, not the whole hunk: 1/12 failed, expected fr but got de; PR3: baseline 10/10 passed; candidate 1/10 failed, changed language expected fr, got de; zero skipped"
     },
     "66d760f60b510768d21a": {
       "type": "behavior_preservation",
       "molly_equivalent": "Compared Molly branches used encrypted preferences; no equivalent Kotlin reader found in this comparison",
       "searched_branches": "Molly 0e202dda, origin/signal-8.20.4 5551f302, origin/fix/socks-proxy-dns-leak aa81fd63; Signal origin/upstream-stable 6e9dddc0 and origin/upstream-main 515db93f do not establish Molly policy",
-      "revert_gate": "Three focused Gradle unit test classes; baseline 12/12 passed",
-      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; exact candidate and command in receipt; PR3 SettingsValues differs and is unmeasured",
-      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr4-settings-negative-checks",
+      "revert_gate": "Three focused Gradle unit test classes; baseline 12/12 passed; PR3 baseline 10/10 passed",
+      "gate_input": "PR4 source tree 2b0ba46b23fd27974b8cefbd36e0d91791b525bd; exact candidate and command in receipt; PR3 source tree 129bd88f3f04dfb6b80a93b96ec026f6a5cd3010; SettingsValues.kt blob ec0c3b469a2137adede241c82a0e249dc78fb7aa; LegacySharedPrefs.kt blob 7b339e26b7c3aa43d5310ea79b2418cf5dd7091b; exact test input SHA-256 values in receipt; fully qualified default reader substitution, not literal inverse; patch SHA-256 ee689534b0f88b5557fafddf689cfa3dc0fa5942a08524da189531c4898f0581",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr4-settings-negative-checks; PR3: patches/ports/signal-8.33.2/report-evidence/receipts.md#current-pr3-settings-negative-checks; additional source audit: patches/ports/signal-8.33.2/report-evidence/receipts.md#twelve-path-signal-equality-audit",
       "reason": "Read legacy settings from encrypted preferences; test observes migration from the existing Molly preference file",
-      "outcome": "Substitute fully qualified default preference reader, not literal inverse: 3/12 failed, including expected de but got zz and expected de but got en"
+      "outcome": "Substitute fully qualified default preference reader, not literal inverse: 3/12 failed, including expected de but got zz and expected de but got en; PR3: baseline 10/10 passed; candidate 3/10 failed, expected de got zz, expected de got en, encrypted preference migration assertion failed; zero skipped"
     },
     "32129881479f12687dd1": {
       "revert_gate": "AAPT2 single-file compile",

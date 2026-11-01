@@ -41,6 +41,61 @@ def modes(old, new):
     return result
 
 
+def whole_file_deletions(before, target, molly, annotations):
+    """Inventory deleted paths using Git's own binary and line classification."""
+    if not isinstance(annotations, dict):
+        raise ValueError('deletion annotations must be an object')
+    stats, changes = numstat(before, target), modes(before, target)
+    molly_paths = set()
+    for entry in filter(None, git('ls-tree', '-r', '-z', '--name-only', molly).split(b'\0')):
+        molly_paths.add(entry)
+    deleted = {os.fsdecode(path): (path, values) for path, values in changes.items()
+               if values[1] == '000000'}
+    allowed = {'classification', 'reason', 'molly_equivalent', 'evidence', 'caveat'}
+    for path, item in annotations.items():
+        if path not in deleted:
+            raise ValueError('stale deletion annotation: ' + str(path))
+        if not isinstance(item, dict) or set(item) - allowed or 'classification' not in item or any(
+                not isinstance(value, str) or not value.strip() for value in item.values()):
+            raise ValueError('invalid deletion annotation: ' + path)
+    result = []
+    for name, (path, (old_mode, _, _, _)) in sorted(deleted.items()):
+        count = stats[path]
+        if count is not None and count[0] != 0:
+            raise ValueError('invalid deletion numstat: ' + name)
+        result.append((name, old_mode, None if count is None else count[1], path in molly_paths,
+                       annotations.get(name, {})))
+    return result
+
+
+def deletion_report(inventory):
+    text = [row for row in inventory if row[2] is not None]
+    absent = [row for row in inventory if not row[3]]
+    absent_text = [row for row in absent if row[2] is not None]
+    classes = {}
+    for row in inventory:
+        name = row[4].get('classification', 'unclassified')
+        totals_by_class = classes.setdefault(name, [0, 0, 0, 0])
+        totals_by_class[0] += 1
+        totals_by_class[1 if row[2] is not None else 2] += 1
+        totals_by_class[3] += row[2] or 0
+    output = ['', '## Whole-file deletions from the mechanical merge', '',
+              f'{len(inventory)} paths: {len(text)} text files, {len(inventory)-len(text)} binary files, {sum(row[2] for row in text)} deleted text lines.',
+              f'Scenario excluding paths absent at the same path in Molly: {len(inventory)-len(absent)} of {len(inventory)} deleted paths and {sum(row[2] for row in text)-sum(row[2] for row in absent_text)} of {sum(row[2] for row in text)} deleted text lines remain; {len(absent)-len(absent_text)} of {len(inventory)-len(text)} binary paths are excluded. This is a tree-membership scenario, not authorship, justification, or proof of behavior preservation.',
+              'Partial-file exclusions and deletion necessity remain unmeasured unless separately evidenced.', '',
+              '| Classification | Paths | Text | Binary | Deleted text lines |', '|---|---:|---:|---:|---:|']
+    for name, counts in sorted(classes.items()):
+        output.append('| ' + ' | '.join(str(x).replace('\n', ' ').replace('|', '\\|') for x in (name, *counts)) + ' |')
+    output += ['', '| Path | Old mode | Deleted text lines | Binary | Present in Molly | Classification | Reason | Molly equivalent | Evidence | Caveat |',
+              '|---|---|---:|---|---|---|---|---|---|---|']
+    for path, mode, count, present, item in inventory:
+        fields = (path, mode, '-' if count is None else count, 'yes' if count is None else 'no',
+                  'yes' if present else 'no', *(item.get(k, 'unclassified' if k == 'classification' else 'unmeasured')
+                                                   for k in ('classification', 'reason', 'molly_equivalent', 'evidence', 'caveat')))
+        output.append('| ' + ' | '.join(str(x).replace('\n', ' ').replace('|', '\\|') for x in fields) + ' |')
+    return output
+
+
 def require_tree(value):
     if not isinstance(value, str) or not re.fullmatch('[0-9a-f]{40}', value):
         raise ValueError('expected an immutable full tree ID')
@@ -193,6 +248,7 @@ def render(config, evidence, ready=False):
     cm, cn, cmb = totals(numstat(MOLLY, target))
     current = f'Current mechanical comparison: {ca} added, {cd} deleted, {ca+cd} total, {cb} binary; current Molly comparison: {cm} added, {cn} deleted, {cm+cn} total, {cmb} binary.'
     after = 'After minimization: final.' if evidence.get('minimization_complete') else 'After minimization: unmeasured.'
+    output += deletion_report(whole_file_deletions(before, target, MOLLY, evidence.get('deletions', {})))
     output += ['', f'Compatibility share: {a+d} / {ma+md} physical added plus deleted text lines = {(a+d)/(ma+md)*100:.3f}%.' if ma+md else 'Compatibility share: undefined (zero denominator).',
                current, after, '', 'Molly exclusions, including partial-file exclusions: unmeasured.', '',
                f'Clean merge excludes all {len(conflicts)} conflicted paths, including clean portions within them: ' + (', '.join('`' + p.replace('`', '\\`') + '`' for p in conflicts) if conflicts else 'none') + '.', '',

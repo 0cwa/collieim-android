@@ -188,6 +188,31 @@ class ScopeTests(unittest.TestCase):
 
 
 class BundleScopeTests(unittest.TestCase):
+    def test_converted_release_artifacts_are_exactly_scoped(self):
+        prefix = 'patches/ports/signal-8.33.2/'
+        accepted = (
+            'initial/app-updates/0001-resolve-app-updates-converted.patch',
+            'initial/app-updates/delete-files.json',
+            'initial/build-and-release/generate-translations.json',
+            'followups/integration-and-regression-tests/delete-files.json',
+            'followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl-converted.patch',
+        )
+        for path in accepted:
+            self.assertTrue(scope.allowed('release', prefix + path), path)
+            for phase in ('pipeline', 'switch', 'followups', 'additions'):
+                self.assertFalse(scope.allowed(phase, prefix + path), (phase, path))
+        for path in ('initial/app-updates/0002-resolve-app-updates-converted.patch',
+                     'initial/app-updates/other.json',
+                     'followups/netcipher-sdk-dsl/other-converted.patch',
+                     'followups/donation-completion/0001-donation-completion.patch',
+                     'followups/registration-network-settings/series',
+                     'followups/donation-completion-copy/series'):
+            self.assertFalse(scope.allowed('release', prefix + path), path)
+        self.assertFalse(scope.allowed('release',
+            'patches/ports/signal-8.19.2/' + accepted[0]))
+        for layer in scope.BEHAVIOR | scope.ADDITIONS:
+            self.assertFalse(scope.allowed('release', prefix + 'followups/' + layer + '/series'))
+
     def test_current_locale_evidence_names_are_bounded(self):
         prefix = 'patches/ports/signal-8.33.2/report-evidence/'
         for phase in ('release', 'followups', 'additions'):

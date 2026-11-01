@@ -1,6 +1,6 @@
-From 26a187572193ca69550f8ee8720c2a6e378cf586 Mon Sep 17 00:00:00 2001
+From c69e4a42beab833907b8ad477c9ada0b93829f0a Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sun, 1 Nov 2026 05:20:16 +0100
+Date: Sun, 1 Nov 2026 05:55:29 +0100
 Subject: [PATCH] Port module-pruning to Signal 8.33.2, part 4
 
 Resolve modify/delete conflicts for modules Molly removes and remove new upstream files added beneath those excluded modules.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 85c8c014d014f7ccff01d70599423cede3f8118f
+Source-Commit: 255ff434961b6653cd2c700865abe6ab7206026b
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2

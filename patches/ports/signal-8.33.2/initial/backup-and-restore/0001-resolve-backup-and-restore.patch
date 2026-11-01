@@ -1,6 +1,6 @@
-From 78a0402391dae76b59f2ce9a50c541484a33854b Mon Sep 17 00:00:00 2001
+From 19c2fdbb866369e0bba407abd61391caae40fc42 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sun, 1 Nov 2026 05:20:16 +0100
+Date: Sun, 1 Nov 2026 05:55:29 +0100
 Subject: [PATCH] Port backup-and-restore to Signal 8.33.2, part 1
 
 Resolve backup and restore API changes while retaining Molly backup preferences and serialization behavior.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 85c8c014d014f7ccff01d70599423cede3f8118f
+Source-Commit: 255ff434961b6653cd2c700865abe6ab7206026b
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -661,7 +661,7 @@ index 1fd232bb65a9089bd69e3e08defa299b406aedc4..e179498c9499338e8280d83ae8315c45
      optional bool   isStringSetValue = 6;
  }
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/backup/FullBackupExporterTest.kt b/app/src/test/java/org/thoughtcrime/securesms/backup/FullBackupExporterTest.kt
-index b482bb9132692a758b59848e45bb9268f80503ac..971059b776b31daefe5bfc5b53b64318a4511fb7 100644
+index b482bb9132692a758b59848e45bb9268f80503ac..154847d2fe297c1dc5a835ac2548041a8b9f2007 100644
 --- a/app/src/test/java/org/thoughtcrime/securesms/backup/FullBackupExporterTest.kt
 +++ b/app/src/test/java/org/thoughtcrime/securesms/backup/FullBackupExporterTest.kt
 @@ -1,11 +1,66 @@
@@ -681,7 +681,7 @@ index b482bb9132692a758b59848e45bb9268f80503ac..971059b776b31daefe5bfc5b53b64318
  
    @Test
 +  fun `started disappearing messages are excluded even with substantial time remaining`() {
-+    val row = messageCursor(id = 1, expiresIn = 86_400_000L, expireStarted = System.currentTimeMillis())
++    val row = messageCursor(id = 1, expiresIn = 7 * 86_400_000L, expireStarted = System.currentTimeMillis())
 +
 +    assertFalse(FullBackupExporter.isNonExpiringMessage(mockk(), row))
 +  }

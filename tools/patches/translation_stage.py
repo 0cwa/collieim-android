@@ -52,8 +52,11 @@ def transform(data, base, rel):
                 replacement = new.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').encode()
                 data = data[:a] + replacement + data[z:]
         data = data.replace(b'<item quantity="one"></item>', b'<item quantity="one"/>')
-    if rel.startswith('core/util/src/main/res/values-'):
-        data = data.replace(b'\n    \n    <!-- Title of the system share sheet', b'\n\n    <!-- Title of the system share sheet')
+        # DOM drops whitespace between document-level nodes and after the root.
+        # Preserve the original declaration and comments, including their content.
+        prolog = re.match(rb'(?:[ \t\r\n]*(?:<\?.*?\?>|<!--.*?-->))*[ \t\r\n]*', data, re.DOTALL)
+        tokens = re.findall(rb'<\?.*?\?>|<!--.*?-->', prolog.group(), re.DOTALL)
+        data = b''.join(tokens) + data[prolog.end():].rstrip(b' \t\r\n')
     ET.fromstring(data)
     return data
 

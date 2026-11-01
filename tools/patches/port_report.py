@@ -258,19 +258,25 @@ def render(config, evidence, ready=False):
     output = ['# Port report', '', 'Physical Git diff lines; counts do not establish authorship or necessity.', '']
     (clean_a, clean_d, clean_b), conflicts = clean_contribution(source, before)
     output.append(f'- Clean merge contribution (conservative whole-file count): {clean_a} added, {clean_d} deleted, {clean_a+clean_d} total text lines; {clean_b} binary paths (`{source}` → `{before}`).')
-    for label, a, b in [('Molly patchset', OLD, MOLLY), ('Full Signal to mechanical comparison', source, before),
+    comparisons = [('Molly patchset', OLD, MOLLY), ('Full Signal to mechanical comparison', source, before),
                         ('AI-assisted compatibility changes before minimization', baseline_before, baseline_target),
-                        ('Compared with Molly before minimization', MOLLY, baseline_target)]:
-        adds, dels, binary = totals(numstat(a, b))
+                        ('Compared with Molly before minimization', MOLLY, baseline_target)]
+    counts = {}
+    for label, a, b in comparisons:
+        adds, dels, binary = counts[label] = totals(numstat(a, b))
         output.append(f'- {label}: {adds} added, {dels} deleted, {adds+dels} total text lines; {binary} binary paths (`{a}` → `{b}`).')
-    a, d, _ = totals(numstat(baseline_before, baseline_target)); ma, md, _ = totals(numstat(OLD, MOLLY))
+    a, d, _ = counts['AI-assisted compatibility changes before minimization']
+    ma, md, _ = counts['Molly patchset']
     ca, cd, cb = totals(stats)
     cm, cn, cmb = totals(numstat(MOLLY, target))
     current = f'Current mechanical comparison: {ca} added, {cd} deleted, {ca+cd} total, {cb} binary; current Molly comparison: {cm} added, {cn} deleted, {cm+cn} total, {cmb} binary.'
     after = 'After minimization: final.' if evidence.get('minimization_complete') else 'After minimization: unmeasured.'
     output += deletion_report(whole_file_deletions(before, target, MOLLY, evidence.get('deletions', {})))
     output += ['', f'Compatibility share: {a+d} / {ma+md} physical added plus deleted text lines = {(a+d)/(ma+md)*100:.3f}%.' if ma+md else 'Compatibility share: undefined (zero denominator).',
-               current, after, '', 'Molly exclusions, including partial-file exclusions: unmeasured.', '',
+               current,
+               f'Current gross physical comparison relative to original Molly patchset: {ca+cd} / {ma+md} added plus deleted text lines = {(ca+cd)/(ma+md)*100:.3f}%.' if ma+md else 'Current gross physical comparison relative to original Molly patchset: undefined (zero denominator).',
+               'Gross physical counts include deletions and conflict bookkeeping; they do not establish authorship or necessity.',
+               after, '', 'Molly exclusions, including partial-file exclusions: unmeasured.', '',
                f'Clean merge excludes all {len(conflicts)} conflicted paths, including clean portions within them: ' + (', '.join('`' + p.replace('`', '\\`') + '`' for p in conflicts) if conflicts else 'none') + '.', '',
                '| Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |',
                '|---|---|---|---|---|---:|---:|---|---|---|---|']

@@ -1,6 +1,6 @@
-From fe4bb9a48f48950c76cf673ebf53005341228367 Mon Sep 17 00:00:00 2001
+From 29f8ecc851f5cbcf814eef8ce14fdf4064eddcad Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sun, 1 Nov 2026 11:08:40 +0100
+Date: Sun, 1 Nov 2026 14:37:03 +0100
 Subject: [PATCH] Port integration to Signal 8.33.2, part 1
 
 Resolve shared application, account, service and core integration files whose APIs or feature boundaries changed upstream.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: a04363b8cb4d172f53c657925ec1a94e570d5504
+Source-Commit: e57a1cda22250339b26fd9fc6ac65f5ad75d9216
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -1243,7 +1243,7 @@ index 7002f7aea86990cb835f853e809802fa47465f47..00000000000000000000000000000000
 -  }
 -}
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
-index e88c39c47e8c560fe0c85ebe0987bd0c07010574..5aa6a01b7f9e722219b086e1551e121c1df08e0a 100644
+index e88c39c47e8c560fe0c85ebe0987bd0c07010574..035766643bf39c1c14a4aedead1fa712ebd3088b 100644
 --- a/app/src/main/AndroidManifest.xml
 +++ b/app/src/main/AndroidManifest.xml
 @@ -453,11 +453,7 @@
@@ -1293,7 +1293,7 @@ index e88c39c47e8c560fe0c85ebe0987bd0c07010574..5aa6a01b7f9e722219b086e1551e121c
              android:name=".profiles.manage.EditProfileActivity"
              android:exported="false"
              android:theme="@style/TextSecure.LightTheme"
-@@ -774,6 +748,21 @@
+@@ -774,6 +748,16 @@
  
  
          <activity
@@ -1301,11 +1301,6 @@ index e88c39c47e8c560fe0c85ebe0987bd0c07010574..5aa6a01b7f9e722219b086e1551e121c
 +            android:exported="false"
 +            android:theme="@style/Theme.Signal.DayNight.NoActionBar"
 +            android:windowSoftInputMode="adjustResize" />
-+
-+        <activity
-+            android:name=".registration.ui.RegistrationNetworkSettingsActivity"
-+            android:exported="false"
-+            android:theme="@style/Theme.Signal.DayNight.NoActionBar" />
 +
 +        <activity
 +            android:name="org.signal.registration.RegistrationActivity"
@@ -1393,7 +1388,7 @@ index c8b91e0be36d8b215ca6c67e90b3867699be2a00..d1b0574ed222b513beba310293a2fde1
 ->>>>>>> SIGNAL
  }
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
-index b8707a36796c30ec915e51e193e03b3178624813..1711ba4cbdc76c26e9a98f381620d0f4611284d9 100644
+index b8707a36796c30ec915e51e193e03b3178624813..68b6a48fa582222d713aad0f3c3cd3acb6fdea09 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
 +++ b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
 @@ -54,15 +54,10 @@ import org.signal.ringrtc.CallManager;
@@ -1492,15 +1487,6 @@ index b8707a36796c30ec915e51e193e03b3178624813..1711ba4cbdc76c26e9a98f381620d0f4
                .addPostRender(() -> AppDependencies.getDeletedCallEventManager().scheduleIfNecessary())
                .addPostRender(() -> RateLimitUtil.retryAllRateLimitedMessages(this))
                .addPostRender(this::initializeExpiringMessageManager)
-@@ -564,7 +538,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
-           return Unit.INSTANCE;
-         },
-         context -> {
--          // context.startActivity(EditProxyActivity.intent(context));  // MOLLY: TODO
-+          context.startActivity(org.thoughtcrime.securesms.registration.ui.RegistrationNetworkSettingsActivity.createIntent(context));
-           return Unit.INSTANCE;
-         },
-         new AppContactSupportController()
 @@ -573,8 +547,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
    }
  

@@ -799,8 +799,8 @@ Partial-file exclusions and deletion necessity remain unmeasured unless separate
 | wire-handler/lib/build.gradle.kts | 100644 | 18 | no | no | Both Signal trees; absent in Molly | Tree membership audit | unmeasured | Git tree membership; see patches/ports/signal-8.33.2/report-evidence/receipts.md#whole-file-deletion-inventory | Molly path absence does not establish omission reason. |
 
 Compatibility share: 108564 / 143289 physical added plus deleted text lines = 75.766%.
-Current mechanical comparison: 7405 added, 98047 deleted, 105452 total, 28 binary; current Molly comparison: 396666 added, 239839 deleted, 636505 total, 698 binary.
-Current gross physical comparison relative to original Molly patchset: 105452 / 143289 added plus deleted text lines = 73.594%.
+Current mechanical comparison: 7352 added, 98046 deleted, 105398 total, 28 binary; current Molly comparison: 396613 added, 239838 deleted, 636451 total, 698 binary.
+Current gross physical comparison relative to original Molly patchset: 105398 / 143289 added plus deleted text lines = 73.556%.
 Gross physical counts include deletions and conflict bookkeeping; they do not establish authorship or necessity.
 After minimization: unmeasured.
 
@@ -817,13 +817,13 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | conflict_resolution | 1748 | 299 | 40525 |
 | signal_api_compile_fix | 1 | 2 | 0 |
 | behavior_preservation | 462 | 722 | 595 |
-| unmeasured | 2991 | 6382 | 56927 |
+| unmeasured | 2988 | 6329 | 56926 |
 
 | Structural kind | Rows | Added | Deleted |
 |---|---:|---:|---:|
-| text | 4306 | 7405 | 98047 |
+| text | 4304 | 7352 | 98046 |
 | binary | 28 | 0 | 0 |
-| mode | 868 | 0 | 0 |
+| mode | 867 | 0 | 0 |
 
 | Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |
 |---|---|---|---|---|---:|---:|---|---|---|---|
@@ -893,7 +893,7 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | 3359d2f46e510b3d282c | app/src/main/AndroidManifest.xml | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 3ec2d87587414525c08c | app/src/main/AndroidManifest.xml | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | c8d73430f49fa9c95475 | app/src/main/AndroidManifest.xml | text | 100644 | 100644 | 0 | 22 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| 3b80133da23d089729f5 | app/src/main/AndroidManifest.xml | text | 100644 | 100644 | 15 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 7baee778b71d39a961bb | app/src/main/AndroidManifest.xml | text | 100644 | 100644 | 10 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 849663d99580e380b2a6 | app/src/main/java/com/google/android/gms/maps/GoogleMap.java | text | 100644 | 100644 | 9 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | a655b8efb7a879ba63d0 | app/src/main/java/com/google/android/gms/maps/GoogleMap.java | text | 100644 | 100644 | 3 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 4235901fd9e5836597ff | app/src/main/java/im/molly/unifiedpush/MollySocketRepository.kt | text | 100644 | 100644 | 1 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
@@ -916,7 +916,6 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | f49b97bb73e42c178f97 | app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 2a63b539169d95c7996b | app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java | text | 100644 | 100644 | 0 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 81f478cf325818f45341 | app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| 455ccfbf0d40d6237c6b | app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | dc2d700610e74822c9eb | app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java | text | 100644 | 100644 | 1 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 471c375c1c995c477ba7 | app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java | text | 100644 | 100644 | 1 | 16 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 4efac868f3894bd6cd42 | app/src/main/java/org/thoughtcrime/securesms/AvatarPreviewActivity.java | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
@@ -1651,8 +1650,6 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | 6d894771968e015a9622 | app/src/main/java/org/thoughtcrime/securesms/registration/sms/SmsRetrieverReceiver.java | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 7f53bddb4e158b9fb216 | app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt | text | 100644 | 100644 | 84 | 57 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 476b614662760aee785e | app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntents.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| c93ccc5f4fc91b5ac7c1 | app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt | text | 000000 | 100644 | 47 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| ff9dff3eca6466ca6669 | app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | d77b80a17304909e085d | app/src/main/java/org/thoughtcrime/securesms/registration/ui/permissions/GrantPermissionsFragment.kt | text | 100644 | 000000 | 0 | 92 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 14b8dd5ccc02e5fe9175 | app/src/main/java/org/thoughtcrime/securesms/registration/ui/permissions/GrantPermissionsFragment.kt | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | ea8fb5e51e2112d5f7a1 | app/src/main/java/org/thoughtcrime/securesms/registration/ui/phonenumber/EnterPhoneNumberFragment.kt | text | 100644 | 000000 | 0 | 688 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |

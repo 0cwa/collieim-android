@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "e57a1cda22250339b26fd9fc6ac65f5ad75d9216",
   "complete_source_checkpoint": true,
-  "target_tree": "1db9d411742f0fbca434de252085db0543b958b7",
+  "target_tree": "da0dd13a3715105c65119054a26ab7a8a294d4f6",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "27623abd6416801e3e656261ca86d7e233f598b7eca3a0b19b2fa9de0f73b637",
@@ -356,6 +356,40 @@
       "source_bundle_prerequisite": "8336ae483ceb7e3a8ead460b2087c0f282d3be12",
       "source_bundle_sha256": "d6665b100b50ec19c72af031c9a84e593b9dbf7a4bd81a4098acc966578eb43a",
       "source_bundle_bytes": 5473
+    },
+    {
+      "id": "followups/registration-network-settings",
+      "description": "Add access to Network settings during registration.",
+      "source_commit": "01901a2c6959fdba4223ad15576e402d0dcf15b8",
+      "ai_generated": true,
+      "before_tree": "1db9d411742f0fbca434de252085db0543b958b7",
+      "after_tree": "e677a2fa60b7183fadce8f30502367846d63ba1f",
+      "paths": 3,
+      "patches": [
+        "followups/registration-network-settings/0001-registration-network-settings.patch"
+      ],
+      "mailbox_bytes": 4107,
+      "source_bundle": "followups/registration-network-settings/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "a715cb9771ff8e74dea7ad8d07238739b42f5b53",
+      "source_bundle_sha256": "c1cf65a1cfc344e8640b4537474e8874dd7dc1adc87aad1f6898e8fc80260434",
+      "source_bundle_bytes": 1956
+    },
+    {
+      "id": "followups/donation-completion-copy",
+      "description": "Add donation completion copy.",
+      "source_commit": "9fa31e69b841a462e9fe7b11124c784401f59503",
+      "ai_generated": true,
+      "before_tree": "e677a2fa60b7183fadce8f30502367846d63ba1f",
+      "after_tree": "da0dd13a3715105c65119054a26ab7a8a294d4f6",
+      "paths": 1,
+      "patches": [
+        "followups/donation-completion-copy/0001-donation-completion-copy.patch"
+      ],
+      "mailbox_bytes": 1523,
+      "source_bundle": "followups/donation-completion-copy/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "01901a2c6959fdba4223ad15576e402d0dcf15b8",
+      "source_bundle_sha256": "f607ec43e25d9d89cf9fd4462c7ff2424de5967212b9a904f3e319c4a6220607",
+      "source_bundle_bytes": 1353
     }
   ],
   "mailbox_sha256": {
@@ -401,6 +435,8 @@
     "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "727d5c5f3d4d92543738cf9ba3fe8fcbd9c9abe6eae8699112298ce3b78a1131",
     "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "e3b8b594b7a7d0cccf1d762f3ba7fe03a11a149f5400b0d09527f755cd24f115",
     "followups/donation-completion/0001-donation-completion.patch": "65151da2848b8412b7c04242b7b43428fbe7ee54a7cf5b6c3541e7ea69657ad4",
-    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "64443316ded4e8caef669d93647be9e9e8605f5bfe9642be70e31a2132410a24"
+    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "64443316ded4e8caef669d93647be9e9e8605f5bfe9642be70e31a2132410a24",
+    "followups/registration-network-settings/0001-registration-network-settings.patch": "e727d67a9923b1131d12afd9777a85de506c91e891b229ee2e3e1338e5a0b60d",
+    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "1f2110fc9271ecdd9b127a9efcffc5582199b69768971a7e8e2e50823a594cfa"
   }
 }

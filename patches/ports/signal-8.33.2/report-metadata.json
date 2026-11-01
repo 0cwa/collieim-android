@@ -13464,6 +13464,39 @@
       "gate_input": "PR3 and PR4 historical source trees d4b5d14b580bc2faa8af989c48d34e77cada3ca4 and 96ce7bb4a50dcf1da4952fe07ff59e48ca5fd985; inverse patch SHA-256 96b107a49de31399f196d2ce15bec1d407116ca8a02561fd3e306dd17f35ce55",
       "outcome": "Both inverse builds failed: unresolved signalProxy and incompatible helper arguments; conditional API binding evidence only",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#logger-and-direct-network-inverses"
+    },
+    "455ccfbf0d40d6237c6b": {
+      "type": "behavior_addition",
+      "reason": "Launches the registration Network settings activity from the registration callback.",
+      "molly_equivalent": "unmeasured",
+      "searched_branches": "unmeasured",
+      "revert_gate": "unmeasured",
+      "gate_input": "unmeasured",
+      "outcome": "unmeasured",
+      "evidence": "unmeasured"
+    },
+    "c93ccc5f4fc91b5ac7c1": {
+      "type": "behavior_addition",
+      "reason": "Adds the registration Network settings activity.",
+      "molly_equivalent": "unmeasured",
+      "searched_branches": "unmeasured",
+      "revert_gate": "unmeasured",
+      "gate_input": "unmeasured",
+      "outcome": "unmeasured",
+      "evidence": "unmeasured"
+    },
+    "f11e6b5a119ffa93ebef": {
+      "type": "behavior_addition",
+      "reason": "Adds donation completion copy.",
+      "molly_equivalent": "unmeasured",
+      "searched_branches": "unmeasured",
+      "revert_gate": "unmeasured",
+      "gate_input": "unmeasured",
+      "outcome": "unmeasured",
+      "evidence": "unmeasured"
+    },
+    "3b80133da23d089729f5": {
+      "reason": "Mixed hunk: source commit 01901a2c6959fdba4223ad15576e402d0dcf15b8 adds five manifest lines for registration Network settings alongside ten existing added lines; type left unmeasured to avoid counting all fifteen as additions."
     }
   },
   "exclusions_complete": false,

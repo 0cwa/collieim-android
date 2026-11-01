@@ -1,0 +1,31 @@
+From 9fa31e69b841a462e9fe7b11124c784401f59503 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sun, 1 Nov 2026 14:37:51 +0100
+Subject: [PATCH] Use general donation completion thank-you copy
+
+Use a general thank-you message when a donation completes.
+
+AI-Generated: true
+
+Based-On-Source-Commit: 01901a2c6959fdba4223ad15576e402d0dcf15b8
+Source-Commit: 9fa31e69b841a462e9fe7b11124c784401f59503
+---
+ .../app/subscription/completed/TerminalDonationBottomSheet.kt   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt
+index 1728e926..cc5103da 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt
+@@ -241,7 +241,7 @@ internal fun DonationCompletedSheetContent(
+     )
+ 
+     Text(
+-      text = stringResource(id = R.string.DonationCompleteBottomSheet__your_bank_transfer_was_received),
++      text = stringResource(id = R.string.SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support),
+       color = MaterialTheme.colorScheme.onSurfaceVariant,
+       textAlign = TextAlign.Center,
+       modifier = Modifier
+-- 
+2.56.0
+

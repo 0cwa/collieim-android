@@ -1,0 +1,103 @@
+From 01901a2c6959fdba4223ad15576e402d0dcf15b8 Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
+Date: Sun, 1 Nov 2026 14:37:51 +0100
+Subject: [PATCH] Add network settings during registration
+
+Allow the registration screen to open Molly network settings.
+
+AI-Generated: true
+
+Based-On-Source-Commit: a715cb9771ff8e74dea7ad8d07238739b42f5b53
+Source-Commit: 01901a2c6959fdba4223ad15576e402d0dcf15b8
+---
+ app/src/main/AndroidManifest.xml              |  5 ++
+ .../securesms/ApplicationContext.java         |  2 +-
+ .../ui/RegistrationNetworkSettingsActivity.kt | 47 +++++++++++++++++++
+ 3 files changed, 53 insertions(+), 1 deletion(-)
+ create mode 100644 app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt
+
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+index 0251c30d..11209f3c 100644
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml
+@@ -753,6 +753,11 @@
+             android:theme="@style/Theme.Signal.DayNight.NoActionBar"
+             android:windowSoftInputMode="adjustResize" />
+ 
++        <activity
++            android:name=".registration.ui.RegistrationNetworkSettingsActivity"
++            android:exported="false"
++            android:theme="@style/Theme.Signal.DayNight.NoActionBar" />
++
+         <activity
+             android:name="org.signal.registration.RegistrationActivity"
+             tools:node="remove" />
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
+index e609ad25..1ab1dd02 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
+@@ -537,7 +537,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
+           return Unit.INSTANCE;
+         },
+         context -> {
+-          // context.startActivity(EditProxyActivity.intent(context));  // MOLLY: TODO
++          context.startActivity(org.thoughtcrime.securesms.registration.ui.RegistrationNetworkSettingsActivity.createIntent(context));
+           return Unit.INSTANCE;
+         },
+         new AppContactSupportController()
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt
+new file mode 100644
+index 00000000..5348ce38
+--- /dev/null
++++ b/app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt
+@@ -0,0 +1,47 @@
++/*
++ * Copyright 2026 Molly Project
++ * SPDX-License-Identifier: AGPL-3.0-only
++ */
++
++package org.thoughtcrime.securesms.registration.ui
++
++import android.content.Context
++import android.content.Intent
++import android.os.Bundle
++import android.widget.FrameLayout
++import org.thoughtcrime.securesms.PassphraseRequiredActivity
++import org.thoughtcrime.securesms.preferences.NetworkPreferenceFragment
++import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme
++
++/** Lets an unregistered user configure Molly's SOCKS or Orbot proxy before connecting. */
++class RegistrationNetworkSettingsActivity : PassphraseRequiredActivity() {
++
++  private val dynamicTheme = DynamicNoActionBarTheme()
++
++  override fun onPreCreate() {
++    super.onPreCreate()
++    dynamicTheme.onCreate(this)
++  }
++
++  override fun isRegistrationFlow(): Boolean = true
++
++  override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
++    super.onCreate(savedInstanceState, ready)
++    setContentView(FrameLayout(this))
++    if (savedInstanceState == null) {
++      supportFragmentManager.beginTransaction()
++        .replace(android.R.id.content, NetworkPreferenceFragment())
++        .commit()
++    }
++  }
++
++  override fun onResume() {
++    super.onResume()
++    dynamicTheme.onResume(this)
++  }
++
++  companion object {
++    @JvmStatic
++    fun createIntent(context: Context): Intent = Intent(context, RegistrationNetworkSettingsActivity::class.java)
++  }
++}
+-- 
+2.56.0
+

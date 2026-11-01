@@ -101,7 +101,7 @@ changes are grouped into initial resolution mailboxes and follow-up mailboxes.
 The initial source commit has the pinned Molly and Signal commits as parents.
 Each follow-up records its immediate source parent and resulting tree.
 
-Initial source: `e57a1cda22250339b26fd9fc6ac65f5ad75d9216`. Final source tree: `1db9d411742f0fbca434de252085db0543b958b7`.
+Initial source: `e57a1cda22250339b26fd9fc6ac65f5ad75d9216`. Final source tree: `da0dd13a3715105c65119054a26ab7a8a294d4f6`.
 
 | Follow-up | Source commit | Resulting tree |
 | --- | --- | --- |
@@ -113,6 +113,10 @@ Initial source: `e57a1cda22250339b26fd9fc6ac65f5ad75d9216`. Final source tree: `
 | `followups/legacy-backup-precedence` | `715764a69ba80b809bfdbcd8e607e018ec57f281` | `32c9da7764c17bd50da0863a362b30eb2d242d59` |
 | `followups/donation-completion` | `8336ae483ceb7e3a8ead460b2087c0f282d3be12` | `fcd083c18d7a51fb4c328b6bb8a8ee7b665bc223` |
 | `followups/backup-notification-id-upgrade` | `a715cb9771ff8e74dea7ad8d07238739b42f5b53` | `1db9d411742f0fbca434de252085db0543b958b7` |
+| `followups/registration-network-settings` | `01901a2c6959fdba4223ad15576e402d0dcf15b8` | `e677a2fa60b7183fadce8f30502367846d63ba1f` |
+| `followups/donation-completion-copy` | `9fa31e69b841a462e9fe7b11124c784401f59503` | `da0dd13a3715105c65119054a26ab7a8a294d4f6` |
+
+PR5 additions relative to PR4 add 54 lines and delete 2 physical lines: registration Network settings add 53 and delete 1; donation completion copy adds 1 and deletes 1. Five registration manifest lines share a report hunk with existing changes, so the behavior addition category does not count those five lines.
 
 The `CorrectedPreferenceFragment.java` modify/delete conflict retains Molly's
 file unchanged in the mechanical merge and is an explicit configuration choice.

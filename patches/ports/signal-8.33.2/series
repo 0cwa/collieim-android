@@ -37,3 +37,7 @@ followups/restore-preference-import/0001-restore-preference-import.patch
 followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch
 followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch
 followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch
+followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch
+followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch
+followups/donation-completion/0001-donation-completion.patch
+followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch

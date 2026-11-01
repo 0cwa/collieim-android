@@ -39,14 +39,21 @@ class ExportHunkTests(unittest.TestCase):
             patch = git('diff', '--no-ext-diff', '--no-renames', '--unified=3', base, end, '--', 'file')
             hunks = port_report.text_hunks(b'file', patch)
             self.assertEqual(len(hunks), 2)
-            def cli(key):
+            def cli(key, path=None):
                 return subprocess.run([sys.executable, str(SCRIPT), '--repo', str(repo), '--base', base,
-                                       '--target', end, '--hunk-id', key], cwd=root,
+                                       '--target', end, '--hunk-id', key] + ([] if path is None else ['--path', path]), cwd=root,
                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             index_before = (repo / '.git/index').read_bytes()
             refs_before = git('for-each-ref')
             output = cli(hunks[0][3])
             self.assertEqual(output.returncode, 0, output.stderr)
+            hinted = cli(hunks[0][3], 'file')
+            self.assertEqual(hinted.returncode, 0, hinted.stderr)
+            self.assertEqual(hinted.stdout, output.stdout)
+            wrong = cli(hunks[0][3], 'added')
+            self.assertEqual(wrong.returncode, 1)
+            self.assertIn(b'unknown hunk ID', wrong.stderr)
+            self.assertIn(b'at path: added', wrong.stderr)
             self.assertTrue(output.stdout.endswith(b'\n'))
             self.assertEqual((repo / 'file').read_bytes(), target)
             self.assertEqual((repo / '.git/index').read_bytes(), index_before)

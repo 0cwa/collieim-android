@@ -8,9 +8,16 @@ import sys
 import port_report
 
 
-def export(base, target, wanted):
-    stats = port_report.numstat(base, target)
-    modes = port_report.modes(base, target)
+def export(base, target, wanted, path_hint=None):
+    if path_hint == '':
+        raise ValueError('path must not be empty')
+    stats = port_report.numstat(base, target, path_hint)
+    modes = port_report.modes(base, target, path_hint)
+    if path_hint is not None:
+        # A Git pathspec can also match descendants; the hint is an exact path.
+        selected = os.fsencode(path_hint)
+        stats = {p: value for p, value in stats.items() if p == selected}
+        modes = {p: value for p, value in modes.items() if p == selected}
     if set(stats) != set(modes):
         raise ValueError('raw diff paths do not match numstat')
     matches = []
@@ -56,7 +63,8 @@ def export(base, target, wanted):
                     matches.append((header + patch[pos:end], None))
             offset = end
     if not matches:
-        raise ValueError('unknown hunk ID: ' + wanted)
+        raise ValueError('unknown hunk ID: ' + wanted +
+                         (' at path: ' + path_hint if path_hint is not None else ''))
     if len(matches) != 1:
         raise ValueError('ambiguous hunk ID: ' + wanted)
     result, error = matches[0]
@@ -71,10 +79,11 @@ def main():
     parser.add_argument('--base', required=True)
     parser.add_argument('--target', required=True)
     parser.add_argument('--hunk-id', required=True)
+    parser.add_argument('--path', help='exact path of the hunk (optional)')
     args = parser.parse_args()
     try:
         os.chdir(args.repo)
-        sys.stdout.buffer.write(export(args.base, args.target, args.hunk_id))
+        sys.stdout.buffer.write(export(args.base, args.target, args.hunk_id, args.path))
     except (ValueError, OSError, subprocess.CalledProcessError) as exc:
         print('hunk export failed: ' + str(exc), file=sys.stderr)
         return 1

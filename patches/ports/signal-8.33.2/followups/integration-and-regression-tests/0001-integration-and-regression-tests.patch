@@ -1,6 +1,6 @@
-From 82bee2e8819e5ea76ba7699e60bc81245bbcbd31 Mon Sep 17 00:00:00 2001
+From 452c98c22f574f8f5fa522a63f83f63007f03d18 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sun, 1 Nov 2026 04:39:14 +0100
+Date: Sun, 1 Nov 2026 05:20:18 +0100
 Subject: [PATCH] Adapt Molly integrations and tests to Signal 8.33.2
 
 Update linked-device provisioning and FCM cleanup for the current service APIs while preserving proxy configuration, error types, user-selected delivery and retry credentials. Move remaining event producers and lifecycle-bound subscribers to Signal's event bus.
@@ -9,12 +9,14 @@ Repair lock-aware receivers, encrypted backup preference imports, retained donat
 
 Add transport and cleanup regressions for MollySocket, UnifiedPush and FCM.
 
+AI-assisted compatibility changes: restore imports across source checkpoints.
+
 Carry this AI-assisted source change as its own
 reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: 55989149be8990520dbd981dec8d121fdcd7b99f
+Source-Commit: 06fe856589c2235b49cd6629e5db3ea7bcabbbd1
 AI-Generated: true
 
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
@@ -534,10 +536,10 @@ index 77355c446e46104b38283e6a6e323cd8b2084a55..46d0f17e1617f86403658f7212d28162
        requireActivity().finish()
        requireActivity().startActivity(AppSettingsActivity.manageSubscriptions(requireContext()))
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java b/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java
-index 7cb950dd2536f025bcac9aaa58c2cb6b3be3d8f8..c05cd953e98eb7e229e70731d06ce588e0523825 100644
+index acd9a5f1d846d6c6cb779df9862f9e399b6edf95..8973ebe5a8df38391c1a684b27eba7dfd17b98f8 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java
 +++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java
-@@ -1200,7 +1200,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
+@@ -1202,7 +1202,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
        SpannableString italics        = new SpannableString(deletedMessage);
        italics.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC), 0, deletedMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
        int textColor = hasWallpaper ? colorizer.getOutgoingDeleteTextColor(context)
@@ -546,7 +548,7 @@ index 7cb950dd2536f025bcac9aaa58c2cb6b3be3d8f8..c05cd953e98eb7e229e70731d06ce588
        italics.setSpan(new ForegroundColorSpan(textColor),
                        0,
                        deletedMessage.length(),
-@@ -1656,8 +1656,12 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
+@@ -1658,8 +1658,12 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
  
      linkPreviewActionStub.setVisibility(View.VISIBLE);
      button.setText(label);

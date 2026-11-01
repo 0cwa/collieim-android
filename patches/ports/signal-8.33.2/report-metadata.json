@@ -17050,6 +17050,126 @@
           "evidence": "patches/ports/signal-8.33.2/report-evidence/cohort-receipts.md"
         }
       ]
+    },
+    {
+      "start_tree": "c50fa18dab3c5420e93719dae3040b7a4058795f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java",
+          "input_blob": "c05cd953e98eb7e229e70731d06ce588e0523825",
+          "output_blob": "8973ebe5a8df38391c1a684b27eba7dfd17b98f8",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-67832bd595fbc116d5c9.patch",
+          "gate_input": "7f47e8d352d1212787fb5d196291de9947876be3 tree 345fdf47a388decc36e5d70ab9017e2107d61dea; Per-file partial import restoration; restoration diff hunk IDs 67832bd595fbc116d5c9, a62b3651d3829be23031",
+          "gate": ":app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac (exact command in receipt)",
+          "outcome": "BUILD SUCCESSFUL in 3m 16s; Kotlin EXECUTED; Java EXECUTED",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "c50fa18dab3c5420e93719dae3040b7a4058795f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/dependencies/CoreUiDependenciesProvider.kt",
+          "input_blob": "3c2abc35f6d7be8c9f4b7bcfe6cc3a5d203088ad",
+          "output_blob": "5bd52e1a4e94712e40438b9301d601af3a35f0a8",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-a315df295c7834ff887e.patch",
+          "gate_input": "3d28fe1b04957a65d4db42d40082261e2bba09fa tree 479b63ad7db5fdbd1a802ce3cc3952c540abba7e; Per-file partial import restoration; restoration diff hunk IDs a315df295c7834ff887e",
+          "gate": ":app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac (exact command in receipt)",
+          "outcome": "BUILD SUCCESSFUL in 3m 13s; Kotlin EXECUTED; Java EXECUTED",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "c50fa18dab3c5420e93719dae3040b7a4058795f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/glide/ChunkedImageUrlLoader.java",
+          "input_blob": "c8f0f5e527339e5061921a45ed387fa850103320",
+          "output_blob": "aa549b8d6b740fe23e35cad3760d02300b3f2094",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-b77e19bc0951cc903901.patch",
+          "gate_input": "9160c745bfba68633e46208ab7a9211ed34fc5b5 tree f050073e299516207985ad437d21e062defc7c80; Per-file partial import restoration; restoration diff hunk IDs b77e19bc0951cc903901",
+          "gate": ":app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac (exact command in receipt)",
+          "outcome": "BUILD SUCCESSFUL in 3m 19s; Kotlin EXECUTED; Java EXECUTED",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "c50fa18dab3c5420e93719dae3040b7a4058795f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/keyvalue/AccountValues.kt",
+          "input_blob": "b77b897f05c9401977fc25039109655d064ac3ef",
+          "output_blob": "91942f270fc815f4e6ebce674d2aaaf2f26b0f7d",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-89d2c0a1a74024cddd3d.patch",
+          "gate_input": "22d000a03d8fab4c804a01d8f4d713e934d19f93 tree ff4e297e15a2230079a9df0a9b49aa24146b58d2; Per-file partial import restoration; restoration diff hunk IDs 89d2c0a1a74024cddd3d",
+          "gate": ":app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac (exact command in receipt)",
+          "outcome": "BUILD SUCCESSFUL in 3m 28s; Kotlin EXECUTED; Java EXECUTED",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "c50fa18dab3c5420e93719dae3040b7a4058795f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/maps/PlacePickerActivity.java",
+          "input_blob": "1f2194e5808acb42c47bfe5b3a710e23687eca7c",
+          "output_blob": "a9aed78b0f9a106bf5827bfff7bef69db84394ee",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-cc36c3786d0379aca969.patch",
+          "gate_input": "e29b197f1b418e8b73951e2bee232fe55196877d tree 99fdc3cad67c8ab1bfd3e102b78b8bed123ef61e; Per-file partial import restoration; restoration diff hunk IDs cc36c3786d0379aca969",
+          "gate": ":app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac (exact command in receipt)",
+          "outcome": "BUILD SUCCESSFUL in 3m 17s; Kotlin EXECUTED; Java EXECUTED",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "c50fa18dab3c5420e93719dae3040b7a4058795f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/mediasend/v3/MediaSendV3ForwardFragment.kt",
+          "input_blob": "1c07abc58ac918c83b05aa3796e4b29131f509f9",
+          "output_blob": "90f1358f801a98e0c3fbf167fe857e20d47da27c",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-a10bbcea5de460447caf.patch",
+          "gate_input": "1bbb86678c854f8a454301041220e237bb62c9a4 tree 5ac193c2e22ac2b7a699ab5032b5497a3ac16650; Per-file partial import restoration; restoration diff hunk IDs a10bbcea5de460447caf",
+          "gate": ":app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac (exact command in receipt)",
+          "outcome": "BUILD SUCCESSFUL in 3m 13s; Kotlin EXECUTED; Java EXECUTED",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "c50fa18dab3c5420e93719dae3040b7a4058795f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt",
+          "input_blob": "08b8191ce3163e1c8e15681d9e7446cce6a96c18",
+          "output_blob": "f79482576b6a5ab0af1380494d5f5e961ac0db56",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-84bc91c45c0636a0562d.patch",
+          "gate_input": "bc2f5a0884d48d4659068e0ce62e6e47a4c6cbe1 tree 2b487ba18c343ffba2e2135404d19326fb8b3d40; Per-file partial import restoration; restoration diff hunk IDs 84bc91c45c0636a0562d, 757521f616948c304df1, 5cb94163ea5bb41fae5f",
+          "gate": ":app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac (exact command in receipt)",
+          "outcome": "BUILD SUCCESSFUL in 3m 15s; Kotlin EXECUTED; Java UP-TO-DATE",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#import-restorations"
+        }
+      ]
+    },
+    {
+      "start_tree": "c50fa18dab3c5420e93719dae3040b7a4058795f",
+      "actions": [
+        {
+          "path": "app/src/main/java/org/thoughtcrime/securesms/mms/AttachmentManager.java",
+          "input_blob": "2c1ed791a07746e38be6b8763e0fa0dbee3d4f3d",
+          "output_blob": "560122c8d5f3d3fae04b4494d569bd7772487e36",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-f9f9edb32f3882f72c3f.patch",
+          "gate_input": "639524c00b6bc1dfdc7b315105ce44703344e602 tree 02f4ca8cca4fe424b8f605e2f2944e760a6d7e26; Per-file partial import restoration; restoration diff hunk IDs f9f9edb32f3882f72c3f",
+          "gate": ":app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac (exact command in receipt)",
+          "outcome": "BUILD SUCCESSFUL in 3m 20s; Kotlin EXECUTED; Java EXECUTED",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#import-restorations"
+        }
+      ]
     }
   ],
   "groups": {

@@ -1,4 +1,4 @@
-From 5536acc88c8cbdce2aa3faa501d0b256aea49229 Mon Sep 17 00:00:00 2001
+From 43300fd110e4616470b80f9de6e361223d832f08 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Sat, 31 Oct 2026 23:25:32 +0100
 Subject: [PATCH] Restore the Molly preference import in ported megaphones
@@ -8,7 +8,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: 3aff0139f46dabbd2415f2e24208891da4262801
+Source-Commit: da85fb5d37ae5dcc28c354605b6034a33dee6426
 AI-Generated: true
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java b/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java

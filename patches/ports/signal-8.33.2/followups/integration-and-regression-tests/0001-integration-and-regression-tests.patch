@@ -1,4 +1,4 @@
-From a93ae9d764b3e2851c29cbf0611b4201377be251 Mon Sep 17 00:00:00 2001
+From 2c7b5d18470f7ab0469ce14672dc8a1ae8bdeb28 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Sat, 31 Oct 2026 23:25:33 +0100
 Subject: [PATCH] Adapt Molly integrations and tests to Signal 8.33.2
@@ -14,7 +14,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: 0698c1aea2ae762edeee34b5a7e5c46b8a4e747f
+Source-Commit: c044adfb37230e33ed736198794407dcd98ca754
 AI-Generated: true
 
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml

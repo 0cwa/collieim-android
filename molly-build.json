@@ -14,10 +14,10 @@
     "mechanical_tree": "759ef1c309d93aa7e4ac7217b144c04545562f11",
     "series": "patches/ports/signal-8.33.2/series",
     "keep_mechanical": {
-      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge d6a326e8d173a9f302256edd5451ba59d295da50."
+      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge 15e53970dd36d370223c6bc4290cf2b4cdab88a2."
     }
   },
-  "target_tree": "3a20fd39d1f0e444bcc4711a2909635d8762b67e",
+  "target_tree": "c50fa18dab3c5420e93719dae3040b7a4058795f",
   "native": null,
   "android": {
     "sdk": "37.0",
@@ -44,6 +44,8 @@
       "--tests",
       "org.signal.registration.screens.welcome.WelcomeScreenViewModelTest",
       ":app:testProdWebsiteDebugUnitTest",
+      "--tests",
+      "org.thoughtcrime.securesms.components.settings.conversation.shared.ConversationHeaderBadgeTest",
       "--tests",
       "org.thoughtcrime.securesms.keyvalue.MollySettingsMigrationTest",
       "--tests",

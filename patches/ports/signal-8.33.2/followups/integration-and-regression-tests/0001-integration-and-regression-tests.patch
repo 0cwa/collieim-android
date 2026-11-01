@@ -1,6 +1,6 @@
-From 2c7b5d18470f7ab0469ce14672dc8a1ae8bdeb28 Mon Sep 17 00:00:00 2001
+From 82bee2e8819e5ea76ba7699e60bc81245bbcbd31 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Sat, 31 Oct 2026 23:25:33 +0100
+Date: Sun, 1 Nov 2026 04:39:14 +0100
 Subject: [PATCH] Adapt Molly integrations and tests to Signal 8.33.2
 
 Update linked-device provisioning and FCM cleanup for the current service APIs while preserving proxy configuration, error types, user-selected delivery and retry credentials. Move remaining event producers and lifecycle-bound subscribers to Signal's event bus.
@@ -14,7 +14,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: c044adfb37230e33ed736198794407dcd98ca754
+Source-Commit: 55989149be8990520dbd981dec8d121fdcd7b99f
 AI-Generated: true
 
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
@@ -2819,10 +2819,10 @@ index 2dcd56af2abe0f1e957712a31ceb92ce22e2e304..b30ce26ceff67b5182fc2d3c2f344fa2
     * Set account attributes.
     *
 diff --git a/lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/PushServiceSocket.java b/lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/PushServiceSocket.java
-index 3265da31919ba0307b095d8954ba525c1bbbad72..be4becdd684b0afa671949baf203f1b2482eb6cd 100644
+index a8bc4986f27f3dcb2187a6f307dcf8de6117b873..224f7cf88878d39b1cc62ad9528c6070ce16bfed 100644
 --- a/lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/PushServiceSocket.java
 +++ b/lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/PushServiceSocket.java
-@@ -76,6 +76,7 @@ import org.whispersystems.signalservice.internal.push.exceptions.GroupNotFoundEx
+@@ -77,6 +77,7 @@ import org.whispersystems.signalservice.internal.push.exceptions.GroupNotFoundEx
  import org.whispersystems.signalservice.internal.push.exceptions.GroupPatchNotAcceptedException;
  import org.whispersystems.signalservice.internal.push.exceptions.GroupTerminatedException;
  import org.whispersystems.signalservice.internal.push.exceptions.MismatchedDevicesException;
@@ -2830,7 +2830,7 @@ index 3265da31919ba0307b095d8954ba525c1bbbad72..be4becdd684b0afa671949baf203f1b2
  import org.whispersystems.signalservice.internal.push.exceptions.NotInGroupException;
  import org.whispersystems.signalservice.internal.push.exceptions.StaleDevicesException;
  import org.whispersystems.signalservice.internal.push.http.CancelationSignal;
-@@ -371,7 +372,11 @@ public class PushServiceSocket {
+@@ -372,7 +373,11 @@ public class PushServiceSocket {
    }
  
    public RegisterAsSecondaryDeviceResponse registerAsSecondaryDevice(RegisterAsSecondaryDeviceRequest request) throws IOException {

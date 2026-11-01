@@ -33,6 +33,7 @@ def report_evidence(path):
         return False
     name = path[len(prefix):]
     locale_evidence = {
+        'translation-task-witness.tsv',
         'locale-revert-cohort.tsv', 'locale-revert-cohort.patch',
         'locale-revert-cohort.md', 'locale-revert-cohort.py',
         'locale-resource-probe.md', 'locale-resource-probe.py', 'locale-resource-probe.log',

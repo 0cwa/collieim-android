@@ -1,6 +1,6 @@
-From dc96d12eef16b2cf1a9f1dc6d7d20590162b5a86 Mon Sep 17 00:00:00 2001
+From ecfcac051d5c890af6310d4ca56d9126ab6041e5 Mon Sep 17 00:00:00 2001
 From: Molly Patch Reconstruction <molly-patch-reconstruction@example.invalid>
-Date: Sun, 1 Nov 2026 04:39:12 +0100
+Date: Sun, 1 Nov 2026 05:20:16 +0100
 Subject: [PATCH] Port integration to Signal 8.33.2, part 3
 
 Resolve shared application, account, service and core integration files whose APIs or feature boundaries changed upstream.
@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 15e53970dd36d370223c6bc4290cf2b4cdab88a2
+Source-Commit: 85c8c014d014f7ccff01d70599423cede3f8118f
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -906,20 +906,20 @@ index f875c31a95dad0d9fd4fde9b2367845f7ce65cae..00000000000000000000000000000000
 -  }
 -}
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/mediasend/v3/MediaSendV3ForwardFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/mediasend/v3/MediaSendV3ForwardFragment.kt
-index 17193dd9fd458df62254ed16616dd3058df8ba87..1c07abc58ac918c83b05aa3796e4b29131f509f9 100644
+index 17193dd9fd458df62254ed16616dd3058df8ba87..90f1358f801a98e0c3fbf167fe857e20d47da27c 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/mediasend/v3/MediaSendV3ForwardFragment.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/mediasend/v3/MediaSendV3ForwardFragment.kt
-@@ -8,9 +8,6 @@ package org.thoughtcrime.securesms.mediasend.v3
+@@ -8,9 +8,7 @@ package org.thoughtcrime.securesms.mediasend.v3
  import android.net.Uri
  import android.os.Bundle
  import android.view.View
 -<<<<<<< MOLLY
--import android.view.ViewGroup
+ import android.view.ViewGroup
 -=======
  import androidx.compose.foundation.layout.Box
  import androidx.compose.foundation.layout.fillMaxWidth
  import androidx.compose.foundation.layout.height
-@@ -20,20 +17,15 @@ import androidx.compose.runtime.mutableStateOf
+@@ -20,20 +18,15 @@ import androidx.compose.runtime.mutableStateOf
  import androidx.compose.runtime.setValue
  import androidx.compose.ui.Modifier
  import androidx.compose.ui.unit.dp
@@ -941,7 +941,7 @@ index 17193dd9fd458df62254ed16616dd3058df8ba87..1c07abc58ac918c83b05aa3796e4b291
  import org.signal.core.util.getParcelableArrayListCompat
  import org.signal.core.util.logging.Log
  import org.signal.mediasend.EditorState
-@@ -54,13 +46,9 @@ import org.thoughtcrime.securesms.conversation.mutiselect.forward.SearchConfigur
+@@ -54,13 +47,9 @@ import org.thoughtcrime.securesms.conversation.mutiselect.forward.SearchConfigur
  import org.thoughtcrime.securesms.mediasend.v2.stories.StoryMediaPreviews
  import org.thoughtcrime.securesms.scribbles.ImageEditorFragment
  import org.thoughtcrime.securesms.stories.Stories
@@ -1248,34 +1248,10 @@ index 3dcfa039096e09b0c5c8c926e6b17c966198b96d..9a11443032d44b1203c9631536ccfff0
  import org.thoughtcrime.securesms.components.AvatarImageView;
  import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt b/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
-index 8dc6efd88fc7a29e06b481cdfa62650bd9e3e7d0..08b8191ce3163e1c8e15681d9e7446cce6a96c18 100644
+index 8dc6efd88fc7a29e06b481cdfa62650bd9e3e7d0..f79482576b6a5ab0af1380494d5f5e961ac0db56 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
-@@ -7,7 +7,6 @@ import org.signal.core.models.ServiceId
- import org.signal.core.models.ServiceId.ACI
- import org.signal.core.models.database.StickerRecord
- import org.signal.core.models.recipients.RecipientId
--import org.signal.core.util.Base64
- import org.signal.core.util.Hex
- import org.signal.core.util.UuidUtil
- import org.signal.core.util.isNotEmpty
-@@ -15,7 +14,6 @@ import org.signal.core.util.logging.Log
- import org.signal.core.util.orNull
- import org.signal.core.util.toOptional
- import org.signal.emoji.EmojiUtil
--import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialPresentation
- import org.signal.network.util.Preconditions
- import org.thoughtcrime.securesms.attachments.Attachment
- import org.thoughtcrime.securesms.attachments.LocalStickerAttachment
-@@ -57,7 +55,6 @@ import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob
- import org.thoughtcrime.securesms.jobs.GroupCallPeekJob
- import org.thoughtcrime.securesms.jobs.GroupV2UpdateSelfProfileKeyJob
- import org.thoughtcrime.securesms.jobs.ProfileKeySendJob
--import org.thoughtcrime.securesms.jobs.PushProcessMessageJob
- import org.thoughtcrime.securesms.jobs.RefreshAttributesJob
- import org.thoughtcrime.securesms.jobs.RetrieveProfileJob
- import org.thoughtcrime.securesms.jobs.StorageSyncJob
-@@ -1491,20 +1488,12 @@ object DataMessageProcessor {
+@@ -1491,20 +1491,12 @@ object DataMessageProcessor {
            .firstOrNull()
        }
  
@@ -2270,16 +2246,16 @@ index f5d46b7222da4d0cb740cdcd8eb98c7893c71f56..00000000000000000000000000000000
 -  }
 -}
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/mms/AttachmentManager.java b/app/src/main/java/org/thoughtcrime/securesms/mms/AttachmentManager.java
-index bc933dcbb57f8f6f4bc44417b961b5531313e49b..2c1ed791a07746e38be6b8763e0fa0dbee3d4f3d 100644
+index bc933dcbb57f8f6f4bc44417b961b5531313e49b..560122c8d5f3d3fae04b4494d569bd7772487e36 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/mms/AttachmentManager.java
 +++ b/app/src/main/java/org/thoughtcrime/securesms/mms/AttachmentManager.java
-@@ -60,30 +60,11 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
+@@ -60,30 +60,13 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
  import org.thoughtcrime.securesms.dependencies.AppDependencies;
  import org.thoughtcrime.securesms.giph.ui.GiphyActivity;
  import org.thoughtcrime.securesms.maps.PlacePickerActivity;
 -<<<<<<< MOLLY
--import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory;
--import org.thoughtcrime.securesms.mediapreview.MediaPreviewCache;
+ import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory;
+ import org.thoughtcrime.securesms.mediapreview.MediaPreviewCache;
 -import org.thoughtcrime.securesms.mediapreview.MediaPreviewV2Fragment;
 -import org.thoughtcrime.securesms.mediasend.v2.MediaSelectionActivity;
 -=======
@@ -2304,7 +2280,7 @@ index bc933dcbb57f8f6f4bc44417b961b5531313e49b..2c1ed791a07746e38be6b8763e0fa0db
  import org.thoughtcrime.securesms.util.concurrent.AssertedSuccessListener;
  
  import java.io.IOException;
-@@ -130,12 +111,7 @@ public class AttachmentManager {
+@@ -130,12 +113,7 @@ public class AttachmentManager {
        this.removableMediaView = root.findViewById(R.id.removable_media_view);
  
        removableMediaView.setRemoveClickListener(new RemoveButtonListener());

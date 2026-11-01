@@ -101,14 +101,14 @@ changes are grouped into initial resolution mailboxes and follow-up mailboxes.
 The initial source commit has the pinned Molly and Signal commits as parents.
 Each follow-up records its immediate source parent and resulting tree.
 
-Initial source: `15e53970dd36d370223c6bc4290cf2b4cdab88a2`. Final source tree: `c50fa18dab3c5420e93719dae3040b7a4058795f`.
+Initial source: `85c8c014d014f7ccff01d70599423cede3f8118f`. Final source tree: `142dc8e37ad49cc97cac1fc99f6759bdecd5e11a`.
 
 | Follow-up | Source commit | Resulting tree |
 | --- | --- | --- |
-| `followups/restore-preference-import` | `e049236b14e69ec14486aa86898236ccf4a4ca41` | `9d8465407c34d2e5cee966f9819cda182fec5862` |
-| `followups/netcipher-sdk-dsl` | `2dafc7253c580f9d63236ced700f49ef40d93997` | `fc3da67e8ce4ff4ddf8b08d3e3f221bce7e0fff9` |
-| `followups/integration-and-regression-tests` | `55989149be8990520dbd981dec8d121fdcd7b99f` | `915edef7bf5ae80afb277bbe2a91808f2d3726f3` |
-| `followups/cdn-transport-test-fixture` | `1500ad2a9c9ac9500a22ba77893171730a7f88f8` | `c50fa18dab3c5420e93719dae3040b7a4058795f` |
+| `followups/restore-preference-import` | `a1c3339309841b4da93b5c011f7433189a39caef` | `83669f615ab87a7863fbf503cae728cdc539891a` |
+| `followups/netcipher-sdk-dsl` | `25c869d58818a030dcb0613b2b340c30c1d57a62` | `0485b9100e464088b485b41bc6bb21bf99d15ed9` |
+| `followups/integration-and-regression-tests` | `06fe856589c2235b49cd6629e5db3ea7bcabbbd1` | `56d808b91caa6ed6c981f7a23c972f86de6b4b68` |
+| `followups/cdn-transport-test-fixture` | `e44b692959d9889c1708a88e89c898087b5e08b8` | `142dc8e37ad49cc97cac1fc99f6759bdecd5e11a` |
 
 The `CorrectedPreferenceFragment.java` modify/delete conflict retains Molly's
 file unchanged in the mechanical merge and is an explicit configuration choice.
@@ -117,9 +117,9 @@ The port report records unmeasured hunk evidence without treating it as proof.
 The source checkpoint bundle at `patches/ports/signal-8.33.2/source-checkpoint.bundle`
 contains the initial commit and four core follow-ups. Its prerequisites are the
 pinned official Molly and Signal commits. The bundle has
-12518342 bytes and SHA-256 `b5e44cafb82a5fdac124d245b6115627ce5a1342600f1caef32d9e545c2cc87a`; its advertised ref is
-`refs/heads/source-checkpoint/core`, pointing to `1500ad2a9c9ac9500a22ba77893171730a7f88f8` (tree
-`c50fa18dab3c5420e93719dae3040b7a4058795f`).
+12530631 bytes and SHA-256 `141d18baae13a0dc537a6abc72d24fdb5b2ad6f09a505beb8c6f248ab55f4c20`; its advertised ref is
+`refs/heads/source-checkpoint/core`, pointing to `e44b692959d9889c1708a88e89c898087b5e08b8` (tree
+`142dc8e37ad49cc97cac1fc99f6759bdecd5e11a`).
 
 Prepare the pinned source objects and verify the complete checkpoint chain:
 

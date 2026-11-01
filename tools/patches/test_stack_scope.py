@@ -130,12 +130,13 @@ class BundleScopeTests(unittest.TestCase):
     def test_current_locale_evidence_names_are_bounded(self):
         prefix = 'patches/ports/signal-8.33.2/report-evidence/'
         for phase in ('release', 'followups'):
-            for name in ('locale-format-011d0759474555f6b943.patch',
+            for name in ('translation-task-witness.tsv', 'locale-format-011d0759474555f6b943.patch',
                          'post-format-README.md', 'post-format-classify.py',
                          'post-format-cohort.patch', 'post-format-probe.py',
                          'post-format-results.tsv', 'post-format-translation-xml-proof.py'):
                 self.assertTrue(scope.allowed(phase, prefix + name), name)
-            for name in ('locale-format-011d0759474555f6b94.patch',
+            for name in ('translation-task-witness.tsv.bak', '../translation-task-witness.tsv',
+                         'locale-format-011d0759474555f6b94.patch',
                          'locale-format-011d0759474555f6b9430.patch',
                          'locale-format-011d0759474555f6b94G.patch',
                          'locale-format-011d0759474555f6b943.patch.bak',

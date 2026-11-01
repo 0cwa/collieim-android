@@ -116,10 +116,10 @@ Initial source: `7761e6fdb7170378374221bee386f3a9f58900e5`. Final source tree: `
 | `followups/netcipher-sdk-dsl` | `3e1cd5b3485924ccfe6f8f20624b9288e10061da` | `d3ac1d9662d7072e55082483669a0f2dc2cbd13f` |
 | `followups/integration-and-regression-tests` | `e1ef1d6a93b238c8369620a010e756b3c3f12e27` | `1e01a679249562e550e26f76191725e9d8caf395` |
 | `followups/cdn-transport-test-fixture` | `4e2a3cdb5884437745613e1e17b0511f6c465dff` | `4863181c619a00b732137504d1fdfc2dbe2bf353` |
-| `followups/reregistration-linked-devices-reminder` | `f7e4313a85910cba87682054af1a7565e018a1fa` | `64ad2e081bc82908546ae3136a6a7b5bad551e94` |
-| `followups/legacy-backup-precedence` | `715764a69ba80b809bfdbcd8e607e018ec57f281` | `32c9da7764c17bd50da0863a362b30eb2d242d59` |
-| `followups/donation-completion` | `8336ae483ceb7e3a8ead460b2087c0f282d3be12` | `fcd083c18d7a51fb4c328b6bb8a8ee7b665bc223` |
-| `followups/backup-notification-id-upgrade` | `a715cb9771ff8e74dea7ad8d07238739b42f5b53` | `ba7294b3687ac88aea08f0e5a6439355927c60c8` |
+| `followups/reregistration-linked-devices-reminder` | `d0a308e81fbb3e47a40837ab8a922e50dcdf5f21` | `0e0c1a585d035aeabee6fd785497a5ff9ea6a2f4` |
+| `followups/legacy-backup-precedence` | `fc1979f7777b599d0fd13e4491e292478daeb814` | `2722bb0d4da309e6bccbc27b59ff37a233c6ed62` |
+| `followups/donation-completion` | `e8ee2c0d2eeee6e0c6b9a8c90325480685514b5d` | `83eb798abe1197f132fba913fd34ad88f8d1aa91` |
+| `followups/backup-notification-id-upgrade` | `05d17fb96d86ee1719c76ef435cb167cd1ac3a62` | `ba7294b3687ac88aea08f0e5a6439355927c60c8` |
 
 The `CorrectedPreferenceFragment.java` modify/delete conflict retains Molly's
 file unchanged in the mechanical merge and is an explicit configuration choice.

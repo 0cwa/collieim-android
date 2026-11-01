@@ -12272,7 +12272,7 @@
       "evidence": "unmeasured"
     },
     "3b80133da23d089729f5": {
-      "reason": "Mixed hunk: source commit 01901a2c6959fdba4223ad15576e402d0dcf15b8 adds five manifest lines for registration Network settings alongside ten existing added lines; type left unmeasured to avoid counting all fifteen as additions."
+      "reason": "Mixed hunk: source commit 76bb8d55a3ee04c9f6c3b971fa3cff823b87bf12 adds five manifest lines for registration Network settings alongside ten existing added lines; type left unmeasured to avoid counting all fifteen as additions."
     }
   },
   "exclusions_complete": false,

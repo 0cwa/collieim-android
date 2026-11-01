@@ -120,8 +120,8 @@ Initial source: `7761e6fdb7170378374221bee386f3a9f58900e5`. Final source tree: `
 | `followups/legacy-backup-precedence` | `fc1979f7777b599d0fd13e4491e292478daeb814` | `2722bb0d4da309e6bccbc27b59ff37a233c6ed62` |
 | `followups/donation-completion` | `e8ee2c0d2eeee6e0c6b9a8c90325480685514b5d` | `83eb798abe1197f132fba913fd34ad88f8d1aa91` |
 | `followups/backup-notification-id-upgrade` | `05d17fb96d86ee1719c76ef435cb167cd1ac3a62` | `ba7294b3687ac88aea08f0e5a6439355927c60c8` |
-| `followups/registration-network-settings` | `01901a2c6959fdba4223ad15576e402d0dcf15b8` | `e677a2fa60b7183fadce8f30502367846d63ba1f` |
-| `followups/donation-completion-copy` | `9fa31e69b841a462e9fe7b11124c784401f59503` | `68fa08fd69809463be3aa60ccd232bb50f02e547` |
+| `followups/registration-network-settings` | `76bb8d55a3ee04c9f6c3b971fa3cff823b87bf12` | `f97620eeca056e277ff6ceb425ededac3f7c0cac` |
+| `followups/donation-completion-copy` | `b9f7f076e5c84433ecee890741c2c044b75336f1` | `68fa08fd69809463be3aa60ccd232bb50f02e547` |
 
 PR5 additions relative to PR4 add 54 lines and delete 2 physical lines: registration Network settings add 53 and delete 1; donation completion copy adds 1 and deletes 1. Five registration manifest lines share a report hunk with existing changes, so the behavior addition category does not count those five lines.
 

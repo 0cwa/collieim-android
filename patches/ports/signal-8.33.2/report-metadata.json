@@ -13326,6 +13326,60 @@
       "gate_input": "Historical baseline cac99e421c14af3fae0251b64a922e235e3708c9, timeout inverse 5a15356d88defaa68dcd06b3d6e2128e3fe51c89, translation inverse 107576ebc18d21f792c8426228674a96b2bc12ae; packaged P4 shares importer and test blobs",
       "outcome": "Baseline passed; timeout-only inverse failed 2 of 5 tests (long value 0 and integer-to-long ClassCastException); translation-only inverse failed 1 of 5 (expected fr, got zz). Neither check reverses the entire composite hunk.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#backup-policy-checks"
+    },
+    "7a1001390e195c747030": {
+      "reason": "Update screen retains beta and managed-build update policy. Whole inverse removes Molly behavior and is ineligible.",
+      "molly_equivalent": "Old Molly update fragment includes beta; searched paths in local Molly branches; see receipts.",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak (same-path searches; not all history)",
+      "revert_gate": "AppUpdatesSettingsScreenTest",
+      "gate_input": "Measured partial resolved-reference inverse mapped to this raw hunk by target interval; not a complete raw-hunk inverse. PR3 and PR4 independently tested; see receipts for source trees, commands and limits.",
+      "outcome": "Both baselines passed; each partial inverse ran 10 tests with four assertion failures, including hidden managed-build actions and beta interaction.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#residual-partial-inverses"
+    },
+    "61a49a1d5fe0b4bc6f4b": {
+      "reason": "Update model retains beta handling and guarded update writes and scheduling. Whole inverse removes Molly policy and is ineligible.",
+      "molly_equivalent": "Old Molly retains preference and beta actions; searched paths in local Molly branches; see receipts.",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak (same-path searches; not all history)",
+      "revert_gate": "AppUpdatesSettingsViewModelTest",
+      "gate_input": "Measured partial resolved-reference inverse mapped to this raw hunk by target interval; not a complete raw-hunk inverse. PR3 and PR4 independently tested; see receipts for source trees, commands and limits.",
+      "outcome": "Both baselines passed 11 tests; each partial inverse failed app Kotlin compilation (action handling, autoUpdate and Long/Duration). This measures consistency with surrounding code.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#residual-partial-inverses"
+    },
+    "d8d7bb6195b2ada6285c": {
+      "reason": "Registration resolution changes are not behaviorally established by this compile check.",
+      "molly_equivalent": "No same-path registration implementation in searched Molly 8.20.4 or SOCKS branch; absence is not proof of no equivalent elsewhere.",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak (same-path searches; not all history)",
+      "revert_gate": "registration Kotlin compile",
+      "gate_input": "Measured partial resolved-reference inverse mapped to this raw hunk by target interval; not a complete raw-hunk inverse. PR3 and PR4 independently tested; see receipts for source trees, commands and limits.",
+      "outcome": "Both baselines passed; each partial inverse failed compilation on unresolved makeGooglePlayServicesAvailable. Behavior remains unmeasured.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#residual-partial-inverses"
+    },
+    "e7331e58449f2fac31d3": {
+      "reason": "Whole inverse restores badge click behavior and is ineligible.",
+      "molly_equivalent": "Old Molly uses a non-clickable featured badge in a related header; searched paths in local Molly branches; see receipts.",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak (same-path searches; not all history)",
+      "revert_gate": "ConversationHeaderBadgeTest",
+      "gate_input": "Measured partial resolved-reference inverse mapped to this raw hunk by target interval; not a complete raw-hunk inverse. PR3 and PR4 independently tested; see receipts for source trees, commands and limits.",
+      "outcome": "Both baselines passed three tests; each partial inverse failed app Kotlin compilation on missing badge references. This measures consistency with surrounding code.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#residual-partial-inverses"
+    },
+    "7660ef164061ffc93a96": {
+      "reason": "Source-aware proxy conversion retains user SOCKS remote DNS policy. Whole inverse removes Molly policy and is ineligible.",
+      "molly_equivalent": "Molly SOCKS DNS branch selects remote DNS for user SOCKS and local DNS for system SOCKS; see receipts.",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak (same-path searches; not all history)",
+      "revert_gate": "ProxyConfigTest and LibSignalProxyPolicyTest; focused ProxyConfigTest policy counter",
+      "gate_input": "Measured partial resolved-reference inverse mapped to this raw hunk by target interval; not a complete raw-hunk inverse. PR3 and PR4 independently tested; see receipts for source trees, commands and limits. A separate focused counter replaces user SOCKS remote DNS selection with SOCKS; exact source commits and command in receipts.",
+      "outcome": "Both baselines passed; each partial inverse failed network Kotlin compilation on missing fromProxy. This measures consistency with surrounding code. Separately, both 13-test baselines passed; each focused counter ran 13 tests and failed two assertions expecting SOCKS_REMOTE_DNS but receiving SOCKS. Actual DNS traffic and necessity of the complete raw hunk are unmeasured.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#residual-partial-inverses"
+    },
+    "8dd2f3b524d96720db2f": {
+      "reason": "Material factory and constructor signatures must match surrounding callers in the tested source; visual equivalence remains unmeasured.",
+      "molly_equivalent": "Old Molly status-bar constructor and two-color factory differ from current callers; searched paths in local Molly branches; see receipts.",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak (same-path searches; not all history)",
+      "revert_gate": "app Kotlin compile",
+      "gate_input": "Measured partial resolved-reference inverse mapped to this raw hunk by target interval; not a complete raw-hunk inverse. PR3 and PR4 independently tested; see receipts for source trees, commands and limits.",
+      "outcome": "Both baselines passed; each partial inverse failed compilation on constructor candidates. This measures consistency with surrounding code, not visual equivalence.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#residual-partial-inverses"
     }
   },
   "exclusions_complete": false,

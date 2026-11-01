@@ -399,3 +399,86 @@ export JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9 ANDROID_HOME=/home/x/Andro
 export PATH="$JAVA_HOME/bin:$PATH"
 agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:testProdWebsiteDebugUnitTest --rerun --tests org.thoughtcrime.securesms.ResourcePolicyProbeTest
 ```
+
+## RadioListRow partial inverses
+
+Six independent core UI compiles executed against exact PR3 and PR4 parents. Prior full preflights executed this compile on identical source trees; no new baseline was run. Raw mechanical IDs map to resolved-reference partial inverses below. Each patch applies to both targets and yields its measured counter tree; patch bytes match between branches. The six checks used `agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :core:ui:compileDebugKotlin --rerun` with JDK 21 and cached SDK. Compiles establish binding with current surrounding code, not full semantic necessity or UI behavior. Old Molly uses the warning icon in NotificationsSettingsFragment; removing forwarding is ineligible.
+
+- `28e7c9ec6e96541eb7bd` / resolved `df5cfd6244c149d95e13`: SHA-256 `5bafe7acf8011900cc03902a91c038e11b3c7ea7727cc3bf856b71488d8d475b`; both FAIL: unresolved trailingIcon and overload errors.
+- `6445214c064774fbc5bf` / resolved `ce80f3dd5c60088c5815`: SHA-256 `11aa03734460ebdb5a894a544859093a557b1be67ba9c44c02d63c9b0a23b731`; both PASS: removing forwarding disconnects Molly warning icon and is ineligible.
+- `8ee81bb2368c6a09e0b9` / resolved `0269c6aef9f0c55f0c1c`: SHA-256 `16fa45ceac5e5a33c17b9c9099d3361e84fe44e0e5d78883f5f8a8acba690913`; both FAIL: unresolved trailingIcon and overload inference errors.
+
+## Credential provider probe
+
+P4 only: the actual temporary Robolectric probe below passed API 28 and 31. Production merged manifest and Robolectric service metadata both lacked androidx.credentials.CREDENTIAL_PROVIDER_KEY. Enabled Autofill made isSupported true while AndroidX 1.6.0 direct get and create threw provider-configuration exceptions. The AndroidX factory reads ServiceInfo metadata, not ApplicationInfo. Enabled Autofill does not establish device IME or native Autofill behavior. P3 relevant inputs match, but P3 was not tested. Old Molly pins AndroidX 1.6.0 and uses the same predicate and direct calls; its merged manifest and runtime remain unverified, so a new port regression is not established. No inverse was measured and no change is nominated. The Google default label is an Autofill heuristic, not provider verification; the API 34 passkey guard excludes the Play bridge by policy. Passkey-only UnknownError UX is separate and out of scope.
+
+The exact temporary test source has SHA-256 `fa158f68d06d3979958553bed14105e409207db82d7a1331bf933a62633be8b4`. Place it at app/src/test/java/org/thoughtcrime/securesms/CredentialProviderProbeTest.kt in an isolated reconstructed P4 checkout; adjust its absolute manifest path to that checkout’s prodWebsiteDebug merged manifest. The test asserts parsed service metadata matches Robolectric before checking behavior.
+
+```kotlin
+package org.thoughtcrime.securesms
+
+import android.app.Application
+import android.content.pm.PackageManager
+import android.view.autofill.AutofillManager
+import androidx.credentials.CredentialManager
+import androidx.credentials.CreatePasswordRequest
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetPasswordOption
+import androidx.credentials.exceptions.CreateCredentialProviderConfigurationException
+import androidx.credentials.exceptions.GetCredentialProviderConfigurationException
+import androidx.test.core.app.ApplicationProvider
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.*
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
+import org.signal.passwordmanager.SignalCredentialManager
+import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
+
+@RunWith(RobolectricTestRunner::class)
+@Config(application = Application::class, sdk = [28, 31])
+class CredentialProviderProbeTest {
+  @Test fun enabledAutofillWithoutProvider() = runBlocking {
+    val app = ApplicationProvider.getApplicationContext<Application>()
+    val key = "androidx.credentials.CREDENTIAL_PROVIDER_KEY"
+    val manifest = File("/var/home/x/agent-scratch/mollyim-android/pr-stack/preflight/release/app/build/intermediates/merged_manifest/prodWebsiteDebug/processProdWebsiteDebugMainManifest/AndroidManifest.xml")
+    val doc = DocumentBuilderFactory.newInstance().apply { isNamespaceAware = true }.newDocumentBuilder().parse(manifest)
+    val nodes = doc.getElementsByTagName("service")
+    val actual = (0 until nodes.length).flatMap { i ->
+      val children = nodes.item(i).childNodes
+      (0 until children.length).mapNotNull { j ->
+        val node = children.item(j)
+        val attrs = node.attributes ?: return@mapNotNull null
+        if (node.nodeName == "meta-data" && attrs.getNamedItemNS("http://schemas.android.com/apk/res/android", "name")?.nodeValue == key)
+          attrs.getNamedItemNS("http://schemas.android.com/apk/res/android", "value")?.nodeValue else null
+      }
+    }.sorted()
+    val info = app.packageManager.getPackageInfo(app.packageName, PackageManager.GET_SERVICES or PackageManager.GET_META_DATA)
+    val runtime = info.services.orEmpty().mapNotNull { it.metaData?.getString(key) }.sorted()
+    assertEquals("merged application provider metadata", emptyList<String>(), actual)
+    assertEquals("Robolectric must match merged application provider metadata", actual, runtime)
+    val autofill = app.getSystemService(AutofillManager::class.java)
+    shadowOf(autofill).setAutofillSupported(true)
+    shadowOf(autofill).setEnabled(true)
+    assertTrue(autofill.isAutofillSupported)
+    assertTrue(autofill.isEnabled)
+    assertTrue(SignalCredentialManager.isSupported(app))
+    val manager = CredentialManager.create(app)
+    val getError = try { manager.getCredential(app, GetCredentialRequest(listOf(GetPasswordOption()))); null } catch (e: Exception) { e }
+    assertTrue("get: $getError", getError is GetCredentialProviderConfigurationException)
+    val createError = try { manager.createCredential(app, CreatePasswordRequest("fixture-user", "fixture-password")); null } catch (e: Exception) { e }
+    assertTrue("create: $createError", createError is CreateCredentialProviderConfigurationException)
+  }
+}
+```
+
+
+
+```sh
+export JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9 ANDROID_HOME=/home/x/Android/Sdk TMPDIR=/var/home/x/agent-scratch/mollyim-android/pr-stack/tmp
+export PATH="$JAVA_HOME/bin:$PATH"
+agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-scratch/mollyim-android/pr-stack/worktree/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:testProdWebsiteDebugUnitTest --rerun --tests org.thoughtcrime.securesms.CredentialProviderProbeTest
+```

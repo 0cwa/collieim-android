@@ -40,6 +40,10 @@ def report_evidence(path):
         'locale-cohort-two-cohort.patch', 'locale-cohort-two-probe.py',
         'locale-cohort-two-resource-probe.py', 'locale-cohort-two-run.log',
         'locale-cohort-two-resource.log',
+        'locale-remaining-readme.md', 'locale-remaining-cohort.tsv',
+        'locale-remaining-cohort.patch', 'locale-remaining-resource.py',
+        'locale-remaining-contracts.py', 'locale-remaining-resource.log',
+        'locale-remaining-contracts.log',
     }
     return name == 'receipts.md' or name in locale_evidence or bool(re.fullmatch(r'(?:fmt-(?:0[1-9]|1[0-6])|lex-(?:0[1-9]|[1-6][0-9]|7[0-4]))\.patch', name))
 

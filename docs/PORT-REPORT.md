@@ -800,6 +800,8 @@ Partial-file exclusions and deletion necessity remain unmeasured unless separate
 
 Compatibility share: 108564 / 143289 physical added plus deleted text lines = 75.766%.
 Current mechanical comparison: 7407 added, 98070 deleted, 105477 total, 28 binary; current Molly comparison: 396668 added, 239862 deleted, 636530 total, 698 binary.
+Current gross physical comparison relative to original Molly patchset: 105477 / 143289 added plus deleted text lines = 73.611%.
+Gross physical counts include deletions and conflict bookkeeping; they do not establish authorship or necessity.
 After minimization: unmeasured.
 
 Molly exclusions, including partial-file exclusions: unmeasured.

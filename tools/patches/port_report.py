@@ -22,16 +22,18 @@ def git(*args):
     return subprocess.run(['git', *args], check=True, stdout=subprocess.PIPE).stdout
 
 
-def numstat(old, new):
+def numstat(old, new, path=None):
     records = {}
-    for row in filter(None, git('diff', '--no-renames', '--numstat', '-z', old, new).split(b'\0')):
+    pathspec = ('--', ':(literal)' + path) if path is not None else ()
+    for row in filter(None, git('diff', '--no-renames', '--numstat', '-z', old, new, *pathspec).split(b'\0')):
         added, deleted, path = row.split(b'\t', 2)
         records[path] = None if added == b'-' else (int(added), int(deleted))
     return records
 
 
-def modes(old, new):
-    fields = git('diff', '--no-renames', '--raw', '--no-abbrev', '-z', old, new).split(b'\0')
+def modes(old, new, path=None):
+    pathspec = ('--', ':(literal)' + path) if path is not None else ()
+    fields = git('diff', '--no-renames', '--raw', '--no-abbrev', '-z', old, new, *pathspec).split(b'\0')
     result = {}
     for i in range(0, len(fields) - 1, 2):
         if not fields[i]:

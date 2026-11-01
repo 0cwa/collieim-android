@@ -1,4 +1,4 @@
-From a715cb9771ff8e74dea7ad8d07238739b42f5b53 Mon Sep 17 00:00:00 2001
+From 05d17fb96d86ee1719c76ef435cb167cd1ac3a62 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Sun, 1 Nov 2026 14:37:51 +0100
 Subject: [PATCH] Clean up legacy backup notifications after upgrade
@@ -7,14 +7,14 @@ Keep the collision-free Signal IDs for new backup alerts, and remove old Molly a
 
 AI-Generated: true
 
-Based-On-Source-Commit: 8336ae483ceb7e3a8ead460b2087c0f282d3be12
-Source-Commit: a715cb9771ff8e74dea7ad8d07238739b42f5b53
 
 AI-assisted compatibility changes: restore imports across source checkpoints.
 
 AI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.
 
 AI-assisted compatibility changes: restore Molly logger collection.
+Based-On-Source-Commit: e8ee2c0d2eeee6e0c6b9a8c90325480685514b5d
+Source-Commit: 05d17fb96d86ee1719c76ef435cb167cd1ac3a62
 ---
  .../securesms/backup/v2/BackupRepository.kt   | 30 +++++++++++++++++--
  .../backup/v2/LegacyBackupNotification.kt     | 13 ++++++++

@@ -108,20 +108,20 @@ changes are grouped into initial resolution mailboxes and follow-up mailboxes.
 The initial source commit has the pinned Molly and Signal commits as parents.
 Each follow-up records its immediate source parent and resulting tree.
 
-Initial source: `e57a1cda22250339b26fd9fc6ac65f5ad75d9216`. Final source tree: `da0dd13a3715105c65119054a26ab7a8a294d4f6`.
+Initial source: `7761e6fdb7170378374221bee386f3a9f58900e5`. Final source tree: `68fa08fd69809463be3aa60ccd232bb50f02e547`.
 
 | Follow-up | Source commit | Resulting tree |
 | --- | --- | --- |
-| `followups/restore-preference-import` | `9aaeb14455d0c573e1b074c51674202758cb9160` | `e615b51d896a162dac5fa7b88633088cb1678712` |
-| `followups/netcipher-sdk-dsl` | `ddc51e83c42c765bb7524f30b634443cc053432a` | `095f7241ed54fb139ee17ef53c0f7f52b8888cdf` |
-| `followups/integration-and-regression-tests` | `dcfdc8b0e5dcf02db8f7d12da2486cfbd9c1250b` | `a811a4c3676d2c6c9e7a7932c0ce94bcd53db49a` |
-| `followups/cdn-transport-test-fixture` | `20ed69ce4b62767253a9470308a2636c710f57a5` | `a88d1e244cda745b090bf10fd12235222c8fa224` |
-| `followups/reregistration-linked-devices-reminder` | `f7e4313a85910cba87682054af1a7565e018a1fa` | `64ad2e081bc82908546ae3136a6a7b5bad551e94` |
-| `followups/legacy-backup-precedence` | `715764a69ba80b809bfdbcd8e607e018ec57f281` | `32c9da7764c17bd50da0863a362b30eb2d242d59` |
-| `followups/donation-completion` | `8336ae483ceb7e3a8ead460b2087c0f282d3be12` | `fcd083c18d7a51fb4c328b6bb8a8ee7b665bc223` |
-| `followups/backup-notification-id-upgrade` | `a715cb9771ff8e74dea7ad8d07238739b42f5b53` | `1db9d411742f0fbca434de252085db0543b958b7` |
+| `followups/restore-preference-import` | `288cdc7bfab7d54968007b9545c851eebbc0d362` | `f929420687a8bff839543cf402cb7ee9864bcfee` |
+| `followups/netcipher-sdk-dsl` | `3e1cd5b3485924ccfe6f8f20624b9288e10061da` | `d3ac1d9662d7072e55082483669a0f2dc2cbd13f` |
+| `followups/integration-and-regression-tests` | `e1ef1d6a93b238c8369620a010e756b3c3f12e27` | `1e01a679249562e550e26f76191725e9d8caf395` |
+| `followups/cdn-transport-test-fixture` | `4e2a3cdb5884437745613e1e17b0511f6c465dff` | `4863181c619a00b732137504d1fdfc2dbe2bf353` |
+| `followups/reregistration-linked-devices-reminder` | `d0a308e81fbb3e47a40837ab8a922e50dcdf5f21` | `0e0c1a585d035aeabee6fd785497a5ff9ea6a2f4` |
+| `followups/legacy-backup-precedence` | `fc1979f7777b599d0fd13e4491e292478daeb814` | `2722bb0d4da309e6bccbc27b59ff37a233c6ed62` |
+| `followups/donation-completion` | `e8ee2c0d2eeee6e0c6b9a8c90325480685514b5d` | `83eb798abe1197f132fba913fd34ad88f8d1aa91` |
+| `followups/backup-notification-id-upgrade` | `05d17fb96d86ee1719c76ef435cb167cd1ac3a62` | `ba7294b3687ac88aea08f0e5a6439355927c60c8` |
 | `followups/registration-network-settings` | `01901a2c6959fdba4223ad15576e402d0dcf15b8` | `e677a2fa60b7183fadce8f30502367846d63ba1f` |
-| `followups/donation-completion-copy` | `9fa31e69b841a462e9fe7b11124c784401f59503` | `da0dd13a3715105c65119054a26ab7a8a294d4f6` |
+| `followups/donation-completion-copy` | `9fa31e69b841a462e9fe7b11124c784401f59503` | `68fa08fd69809463be3aa60ccd232bb50f02e547` |
 
 PR5 additions relative to PR4 add 54 lines and delete 2 physical lines: registration Network settings add 53 and delete 1; donation completion copy adds 1 and deletes 1. Five registration manifest lines share a report hunk with existing changes, so the behavior addition category does not count those five lines.
 
@@ -132,9 +132,9 @@ The port report records unmeasured hunk evidence without treating it as proof.
 The source checkpoint bundle at `patches/ports/signal-8.33.2/source-checkpoint.bundle`
 contains the initial commit and four core follow-ups. Its prerequisites are the
 pinned official Molly and Signal commits. The bundle has
-12512709 bytes and SHA-256 `27623abd6416801e3e656261ca86d7e233f598b7eca3a0b19b2fa9de0f73b637`; its advertised ref is
-`refs/heads/source-checkpoint/core`, pointing to `20ed69ce4b62767253a9470308a2636c710f57a5` (tree
-`a88d1e244cda745b090bf10fd12235222c8fa224`).
+6891099 bytes and SHA-256 `4eb35c9720d10122ec711a47d6fad464fe8304545d78724799aeb4fd2b922949`; its advertised ref is
+`refs/heads/source-checkpoint/core`, pointing to `4e2a3cdb5884437745613e1e17b0511f6c465dff` (tree
+`4863181c619a00b732137504d1fdfc2dbe2bf353`).
 
 Prepare the pinned source objects and verify the complete checkpoint chain:
 

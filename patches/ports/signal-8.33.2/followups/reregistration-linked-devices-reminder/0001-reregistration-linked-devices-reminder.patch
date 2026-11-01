@@ -1,4 +1,4 @@
-From f7e4313a85910cba87682054af1a7565e018a1fa Mon Sep 17 00:00:00 2001
+From d0a308e81fbb3e47a40837ab8a922e50dcdf5f21 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Sun, 1 Nov 2026 14:37:03 +0100
 Subject: [PATCH] Restore linked-device reminder after re-registration
@@ -10,8 +10,8 @@ AI-assisted compatibility changes: restore imports across source checkpoints.
 AI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.
 
 AI-assisted compatibility changes: restore Molly logger collection.
-Based-On-Source-Commit: 20ed69ce4b62767253a9470308a2636c710f57a5
-Source-Commit: f7e4313a85910cba87682054af1a7565e018a1fa
+Based-On-Source-Commit: 4e2a3cdb5884437745613e1e17b0511f6c465dff
+Source-Commit: d0a308e81fbb3e47a40837ab8a922e50dcdf5f21
 ---
  .../registration/ui/RegistrationActivity.kt   | 15 ++++++++-
  .../registration/ui/RegistrationIntents.kt    |  7 +++-

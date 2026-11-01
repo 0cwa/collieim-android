@@ -1,14 +1,10 @@
-From 9fa31e69b841a462e9fe7b11124c784401f59503 Mon Sep 17 00:00:00 2001
+From b9f7f076e5c84433ecee890741c2c044b75336f1 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Sun, 1 Nov 2026 14:37:51 +0100
-Subject: [PATCH] Use general donation completion thank-you copy
+Subject: [PATCH] Add donation completion copy.
 
-Use a general thank-you message when a donation completes.
-
-AI-Generated: true
-
-Based-On-Source-Commit: 01901a2c6959fdba4223ad15576e402d0dcf15b8
-Source-Commit: 9fa31e69b841a462e9fe7b11124c784401f59503
+Based-On-Source-Commit: 76bb8d55a3ee04c9f6c3b971fa3cff823b87bf12
+Source-Commit: b9f7f076e5c84433ecee890741c2c044b75336f1
 ---
  .../app/subscription/completed/TerminalDonationBottomSheet.kt   | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

@@ -18,6 +18,41 @@ class PortReportTests(unittest.TestCase):
         with patch.object(port_report, 'git', return_value=raw):
             self.assertEqual(port_report.numstat('a', 'b'), {b'file\tname': (2, 3), b'binary': None})
 
+    def test_deletion_inventory_uses_git_modes_counts_and_validates_annotations(self):
+        import pathlib
+        import subprocess
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory)
+            def run(*args):
+                return subprocess.check_output(['git', '-C', directory, *args])
+            run('init', '-q')
+            (path / 'text').write_bytes(b'one\ntwo')
+            (path / 'text').chmod(0o755)
+            (path / 'binary').write_bytes(b'\0binary')
+            (path / 'modified').write_text('old\n')
+            run('add', '.')
+            before = run('write-tree').decode().strip()
+            (path / 'text').unlink()
+            (path / 'binary').unlink()
+            (path / 'modified').write_text('new\n')
+            run('add', '-A')
+            target = run('write-tree').decode().strip()
+            with patch.object(port_report, 'git', side_effect=run):
+                annotations = {'text': {'classification': 'candidate', 'caveat': 'unverified'}}
+                inventory = port_report.whole_file_deletions(before, target, before, annotations)
+                self.assertEqual([(x[0], x[1], x[2], x[3]) for x in inventory],
+                                 [('binary', '100644', None, True), ('text', '100755', 2, True)])
+                report = '\n'.join(port_report.deletion_report(inventory))
+                self.assertIn('2 paths: 1 text files, 1 binary files, 2 deleted text lines', report)
+                self.assertIn('unclassified', report)
+                for invalid in ({'modified': {'classification': 'x'}},
+                                {'text': {'classification': ''}},
+                                {'text': {'classification': 'x', 'gate': 'pass'}}):
+                    with self.assertRaises(ValueError):
+                        port_report.whole_file_deletions(before, target, before, invalid)
+
     def test_real_git_diff_needs_evidence_before_ready(self):
         import pathlib
         import subprocess

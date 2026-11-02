@@ -54,6 +54,14 @@ def select(config, name):
         raise ProfileError('tests must be a nonempty list of Gradle arguments')
     if not config.get('port') or not isinstance(config.get('android'), dict):
         raise ProfileError('named profiles require a port and Android build settings')
+    if fork:
+        fork_source = config.get('fork_source')
+        if not isinstance(fork_source, dict) or set(fork_source) != {'url', 'head'}:
+            raise ProfileError('fork profiles require a fork_source URL and head pin')
+        if fork_source['url'] != 'https://github.com/tw-hx/Signal-Android' or not isinstance(fork_source['head'], str) or not re.fullmatch(r'[0-9a-f]{40}', fork_source['head']):
+            raise ProfileError('invalid fork_source URL or head')
+        if not isinstance(config.get('signal', {}).get('commit'), str) or not re.fullmatch(r'[0-9a-f]{40}', config['signal']['commit']):
+            raise ProfileError('fork profiles require a pinned Signal commit')
     selected = copy.deepcopy(config)
     selected.pop('profiles', None)
     selected['port']['series'] = entry['base_series']
@@ -62,6 +70,9 @@ def select(config, name):
     selected['_profile'] = {'name': name, 'base_checkpoint': entry['base_checkpoint'],
                             'base_layer': boundary, 'base_tree': entry['base_tree'], 'target_tree': entry['target_tree'],
                             'fork_series': fork, 'firebase_free': entry['firebase_free']}
+    if fork:
+        selected['_profile']['fork_source'] = copy.deepcopy(fork_source)
+        selected['_profile']['signal_commit'] = config['signal']['commit']
     fingerprint = hashlib.sha256(json.dumps(selected, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     selected['_profile']['fingerprint'] = fingerprint
     return selected, selected['_profile']

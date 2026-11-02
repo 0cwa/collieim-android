@@ -119,7 +119,7 @@ def allowed(scope, path):
         return report_evidence(path) or path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'}
     if scope == 'forks':
         prefix = 'patches/forks/signal-foss/'
-        return (path == 'molly-build.json' or path == prefix + 'provenance.json' or
+        return (path == 'molly-build.json' or path in {prefix + 'provenance.json', prefix + 'upstream-source.bundle'} or
                 any(path.startswith(prefix + layer + '/') for layer in ('firebase-free-build', 'retention-controls')))
     if scope in ('followups', 'additions', 'features'):
         if report_evidence(path):
@@ -237,6 +237,7 @@ def check_scope(repo, scope, base, head='HEAD'):
             prior = json.loads(git(repo, 'show', base + ':molly-build.json'))
             current = json.loads(git(repo, 'show', head + ':molly-build.json'))
             current.pop('profiles', None)
+            current.pop('fork_source', None)
             if current != prior:
                 raise ValueError('fork scope may only add named profiles to the base configuration')
         except (TypeError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:

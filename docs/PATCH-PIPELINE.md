@@ -364,8 +364,14 @@ append `patches/forks/signal-foss/retention-controls/series`. Firebase is
 selected only for Molly FOSS Continued and Collie FOSS. These names describe
 release selections and do not change application branding or IDs.
 
-The independent `patches/forks/signal-foss/provenance.json` records schema 1,
-source URL and head, base commit and tree, and ordered `layers`. Each layer
+Fork profiles also require `fork_source` in `molly-build.json` with the original
+fork `url` and `head` pins. The independent `patches/forks/signal-foss/provenance.json` records schema 1,
+source URL and head, base commit and tree, and ordered `layers`. It also records
+`upstream_bundle`, `upstream_bundle_sha256`, `upstream_bundle_bytes`,
+`upstream_bundle_prerequisite`, and `upstream_bundle_ref`; the declared ref is
+`refs/heads/upstream-fork/signal-foss-8.33.2.0-FOSS`, its commit is the fork
+head, and its prerequisite is the pinned Signal source. The bundle supplies the
+original fork commits for provenance checks only; its workflow is never applied. Each layer
 records `id`, `series`, `mailbox`, `mailbox_sha256`, `mailbox_bytes`,
 `source_commit`, `before_tree`, `after_tree`, `source_bundle`,
 `source_bundle_sha256`, `source_bundle_bytes`, `source_bundle_prerequisite`,
@@ -382,5 +388,6 @@ same `--profile NAME` to every `build.py` phase, or use
 Named builds explicitly pass the selected `mollyFirebaseFree` property.
 Omitting `--profile` preserves the existing workflow. The `forks` scope allows
 only the independent fork artifacts and named configuration profiles, and
-requires the port tree and original base configuration to remain unchanged.
+requires the port tree and original base configuration to remain unchanged,
+apart from adding `profiles` and `fork_source`.
 The existing Molly CI workflow does not yet select the named product matrix.

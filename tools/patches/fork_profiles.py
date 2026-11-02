@@ -28,6 +28,12 @@ def port_prefix(repo, config_path, selection, records):
     if len(endpoints) != 1:
         raise forest.ForestError('selected port boundary missing or duplicated')
     end = endpoints[0]
+    boundary = 'followups/backup-notification-id-upgrade'
+    additions = ['followups/registration-network-settings', 'followups/donation-completion-copy']
+    selected_boundaries = [layer['id'] for layer in layers[:end + 1] if layer['id'] in {boundary, *additions}]
+    expected_boundaries = [boundary] + ([] if selection['base_layer'] == boundary else additions)
+    if selected_boundaries != expected_boundaries:
+        raise forest.ForestError('selected port prefix has missing, repeated, or misordered additions')
     layer = layers[end]
     if (layer['source_commit'], layer['after_tree']) != (selection['base_checkpoint'], selection['base_tree']):
         raise forest.ForestError('selected port checkpoint or tree differs')
@@ -43,11 +49,26 @@ def fork_layers(repo, selection):
     if data['schema'] != 1 or data['source_url'] != 'https://github.com/tw-hx/Signal-Android':
         raise forest.ForestError('fork origin or schema differs')
     release.require_sha(data['source_head'], 'fork source head')
+    if (data['source_url'], data['source_head']) != (selection['fork_source']['url'], selection['fork_source']['head']):
+        raise forest.ForestError('fork source differs from build configuration')
+    if data['upstream_bundle_prerequisite'] != selection['signal_commit']:
+        raise forest.ForestError('upstream bundle prerequisite differs from pinned Signal source')
+    if data['upstream_bundle_ref'] != 'refs/heads/upstream-fork/signal-foss-8.33.2.0-FOSS':
+        raise forest.ForestError('upstream bundle ref differs')
+    verify_source_bundles.import_bundle(repo, Path(repo), root, data['upstream_bundle'],
+        data['upstream_bundle_sha256'], data['upstream_bundle_bytes'], data['upstream_bundle_ref'],
+        data['source_head'], [selection['signal_commit']])
     if (data['base_commit'], data['base_tree']) != (selection['base_checkpoint'], selection['base_tree']):
         raise forest.ForestError('fork base checkpoint or tree differs')
     layers = data['layers']
     if not isinstance(layers, list) or [x['id'] for x in layers] != ['firebase-free-build', 'retention-controls']:
         raise forest.ForestError('fork layer order differs')
+    _, upstream_parents = verify_source_bundles.commit_info(repo, data['source_head'])
+    if upstream_parents != [layers[1]['upstream_commit']]:
+        raise forest.ForestError('fork upstream head parent differs from retention origin')
+    if git_utils.git(repo, 'merge-base', '--is-ancestor', selection['signal_commit'],
+                     layers[1]['upstream_commit'], check=False).returncode:
+        raise forest.ForestError('fork retention origin does not descend from pinned Signal source')
     selected = selection['fork_series']
     if [release_profiles.FORK_ROOT + '/' + x['series'] for x in layers[:len(selected)]] != selected:
         raise forest.ForestError('fork series differs from selected prefix')
@@ -84,11 +105,9 @@ def fork_layers(repo, selection):
         author = git_utils.git(repo, 'show', '-s', '--format=%an <%ae>', commit).stdout.strip()
         if author != layer['upstream_author']:
             raise forest.ForestError('fork adapted commit author differs')
-        available = git_utils.git(repo, 'cat-file', '-e', original + '^{commit}', check=False)
-        if available.returncode == 0:
-            author = git_utils.git(repo, 'show', '-s', '--format=%an <%ae>', original).stdout.strip()
-            if author != layer['upstream_author']:
-                raise forest.ForestError('fork upstream commit author differs')
+        author = git_utils.git(repo, 'show', '-s', '--format=%an <%ae>', original).stdout.strip()
+        if author != layer['upstream_author']:
+            raise forest.ForestError('fork upstream commit author differs')
         records.append((mailbox, metadata, layer['after_tree']))
         previous, tree = commit, actual_tree
     if tree != selection['target_tree']:

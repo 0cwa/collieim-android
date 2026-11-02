@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+import textwrap
 import unittest
 import zipfile
 from unittest.mock import patch
@@ -66,6 +67,20 @@ class BuildSourceTests(unittest.TestCase):
         with patch.object(runner, 'source_proof'):
             runner.gradle('assemble')
         self.assertIn('--max-workers=1', (self.reports / 'assemble.log').read_text().splitlines())
+
+    def test_firebase_free_workflow_hands_off_real_source_proof(self):
+        workflow = (Path(__file__).resolve().parents[2] / '.github/workflows/molly-patch-release.yml').read_text()
+        prepare = workflow.split('id: foss_prepare', 1)[1].split('        run: |\n', 1)[1].split('\n      - name:', 1)[0]
+        (self.root / 'molly-release').symlink_to(self.app, target_is_directory=True)
+        env = dict(os.environ, RUNNER_TEMP=str(self.root))
+        subprocess.run(['bash', '-e', '-c', textwrap.dedent(prepare)], env=env, check=True)
+        self.assertEqual((self.root / 'foss-reports/source.json').read_bytes(), (self.reports / 'source.json').read_bytes())
+        self.args.report_dir = self.root / 'foss-reports'
+        self.assertEqual(build.Build(self.args).source_proof(), self.proof)
+        self.proof['tree'] = 'bad-tree'
+        (self.args.report_dir / 'source.json').write_text(json.dumps(self.proof))
+        with self.assertRaisesRegex(build.BuildError, 'different release configuration'):
+            build.Build(self.args).source_proof()
 
     def test_clean_source_and_generated_outputs_are_allowed(self):
         for path in ('module/build/generated/Generated.kt', 'build/outputs/app.apk',

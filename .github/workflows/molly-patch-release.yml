@@ -48,6 +48,7 @@ jobs:
               stack/2-molly-as-patchset) scope=release ;;
               stack/3-signal-8.33.2) scope=followups ;;
               stack/4-behavior-followups) scope=additions ;;
+              stack/5-behavior-additions) scope=features ;;
               *) echo "Unknown base: $BASE_REF" >&2; exit 1 ;;
             esac
             base="$BASE_SHA"
@@ -58,6 +59,7 @@ jobs:
               stack/3-signal-8.33.2) scope=release; base_ref=stack/2-molly-as-patchset ;;
               stack/4-behavior-followups) scope=followups; base_ref=stack/3-signal-8.33.2 ;;
               stack/5-behavior-additions) scope=additions; base_ref=stack/4-behavior-followups ;;
+              feature/foss-8.33.2) scope=features; base_ref=stack/5-behavior-additions ;;
               *) echo "Unknown branch: $HEAD_REF" >&2; exit 1 ;;
             esac
             git fetch --no-tags origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref"
@@ -65,14 +67,14 @@ jobs:
           else
             echo "Unsupported event" >&2; exit 1
           fi
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           python3 tools/patches/scope.py --scope "$scope" --base "$base"
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features ]]; then
             python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"
@@ -224,3 +226,49 @@ jobs:
             ${{ runner.temp }}/molly-release/**/build/reports
             ${{ runner.temp }}/molly-release/**/build/test-results
             ${{ runner.temp }}/molly-release/app/build/outputs/apk/prodWebsite/debug
+
+      - name: Clear default build outputs before Firebase-free validation
+        id: foss_prepare
+        if: ${{ hashFiles('patches/ports/signal-8.33.2/followups/firebase-free-build/series') != '' }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/foss-reports"
+          cp -- "$RUNNER_TEMP/reports/source.json" "$RUNNER_TEMP/foss-reports/source.json"
+          rm -rf -- "$RUNNER_TEMP/molly-release/app/build/outputs/apk/prodWebsite/debug"
+          find "$RUNNER_TEMP/molly-release" -type d \
+            \( -path '*/build/reports' -o -path '*/build/test-results' \) -prune -exec rm -rf -- {} +
+
+      - name: Assemble the Firebase-free Website debug APK
+        id: foss_assemble
+        if: ${{ steps.foss_prepare.outcome == 'success' }}
+        env:
+          ORG_GRADLE_PROJECT_mollyFirebaseFree: 'true'
+        run: |
+          python3 tools/patches/build.py assemble \
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/foss-reports"
+
+      - name: Run the Firebase-free profile regression test tasks
+        if: ${{ hashFiles('patches/ports/signal-8.33.2/followups/firebase-free-build/series') != '' }}
+        env:
+          ORG_GRADLE_PROJECT_mollyFirebaseFree: 'true'
+        run: |
+          python3 tools/patches/build.py test \
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/foss-reports"
+
+      - name: Upload Firebase-free build logs and test results
+        if: ${{ always() && steps.foss_prepare.outcome == 'success' && steps.foss_assemble.outcome != '' && steps.foss_assemble.outcome != 'skipped' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: molly-android-firebase-free-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/foss-reports
+            ${{ runner.temp }}/molly-release/**/build/reports
+            ${{ runner.temp }}/molly-release/**/build/test-results
+
+      - name: Upload the Firebase-free APK after successful assembly
+        if: ${{ always() && steps.foss_assemble.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: molly-android-firebase-free-apk-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          path: ${{ runner.temp }}/molly-release/app/build/outputs/apk/prodWebsite/debug

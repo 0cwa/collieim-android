@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Навигациона трака</string>
+<string name="preferences__enable_debug_log">Омогући логовање грешака</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im вебсајт</string>
+<string name="preferences__never">Никад</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Бета верзије су намењене за тестирање и могу садржати грешке</string>
+    <string name="preferences__autoupdate_molly">Аутоматско ажурирање Моли</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Периодично проверавајте нова издања и питајте да их инсталирате</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Провери ажурирања</string>
+    <string name="preferences__include_beta_updates">Укључи бета ажурирања</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">За новости, молимо вас да проверите вашу апликацију у продавници. Ова верзија не укључује ажурирање у апликацији.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Последњи пут проверено: %s</string>
+</resources>

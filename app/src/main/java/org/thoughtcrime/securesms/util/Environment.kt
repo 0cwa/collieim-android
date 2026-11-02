@@ -17,15 +17,23 @@ object Environment {
   }
 
   @JvmField
-  val USE_NEW_REGISTRATION: Boolean = false // MOLLY: Test before enable
+  val USE_NEW_REGISTRATION: Boolean = true
 
   @JvmField
   val IS_LINK_AND_SYNC_AVAILABLE: Boolean = false // MOLLY: Test before enable
 
+  @JvmField
+  val PHONENUMBERLESS_REGISTRATION: Boolean = true
+
+  @JvmStatic
+  fun supportsGooglePlayBilling(): Boolean {
+    return BuildConfig.APPLICATION_ID == GOOGLE_PLAY_BILLING_APPLICATION_ID
+  }
+
   object Backups {
     @JvmStatic
     fun supportsGooglePlayBilling(): Boolean {
-      return BuildConfig.APPLICATION_ID == GOOGLE_PLAY_BILLING_APPLICATION_ID
+      return Environment.supportsGooglePlayBilling()
     }
 
     @JvmStatic

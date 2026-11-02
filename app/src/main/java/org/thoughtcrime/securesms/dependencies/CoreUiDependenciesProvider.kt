@@ -18,17 +18,16 @@ object CoreUiDependenciesProvider : CoreUiDependencies.Provider {
   }
 
   override fun provideIsIncognitoKeyboardEnabled(): Boolean {
-    return TextSecurePreferences.isIncognitoKeyboardEnabled(AppDependencies.application)
+    if (KeyCachingService.isLocked()) {
+      return true
+    }
+    return SignalStore.settings.isIncognitoKeyboardEnabled
   }
 
   override fun provideIsScreenSecurityEnabled(): Boolean {
     if (ScreenLockController.alwaysSetSecureFlagOnResume || KeyCachingService.isLocked()) {
       return true
     }
-    return TextSecurePreferences.isScreenSecurityEnabled(AppDependencies.application)
-  }
-
-  override fun provideForceSplitPane(): Boolean {
-    return SignalStore.internal.forceSplitPane
+    return SignalStore.settings.isScreenSecurityEnabled
   }
 }

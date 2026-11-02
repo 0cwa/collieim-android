@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.components.settings.app.subscription.donate
 import android.text.SpannableStringBuilder
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
@@ -16,6 +17,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.R as MaterialR
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import org.signal.core.ui.util.SpanUtil
 import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.dp
@@ -47,7 +49,6 @@ import org.thoughtcrime.securesms.payments.currency.CurrencyUtil
 import org.thoughtcrime.securesms.subscription.Subscription
 import org.thoughtcrime.securesms.util.Material3OnScrollHelper
 import org.thoughtcrime.securesms.util.Projection
-import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
@@ -78,7 +79,8 @@ class DonateToSignalFragment :
 
     companion object {
 
-      private const val ARG = "in_app_payment_type"
+      @VisibleForTesting
+      const val ARG = "in_app_payment_type"
 
       @JvmStatic
       fun create(inAppPaymentType: InAppPaymentType): DialogFragment {
@@ -106,6 +108,10 @@ class DonateToSignalFragment :
         }
       )
   }
+
+  override val listScrollsBehindToolbar: Boolean = true
+
+  override val listAvoidsKeyboard: Boolean = true
 
   override fun onToolbarNavigationClicked() {
     requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -222,7 +228,7 @@ class DonateToSignalFragment :
 
   private fun getConfiguration(state: DonateToSignalState): DSLConfiguration {
     return configure {
-      space(36.dp)
+      space(12.dp)
 
       customPref(BadgePreview.BadgeModel.SubscriptionModel(state.badge))
 

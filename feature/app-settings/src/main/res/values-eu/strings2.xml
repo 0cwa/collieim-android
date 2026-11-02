@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences__enable_debug_log">Arazketa-erregistroa gaitu</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im webgunea</string>
+<string name="preferences__never">Inoiz ez</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Aldian-aldian egiaztatu bertsio berririk dagoen eta instalatzeko eskatu</string>
+    <string name="preferences__autoupdate_molly">Eguneratu Molly automatikoki</string>
+    <string name="preferences__include_beta_updates">Beta eguneratzeak jaso</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta bertsioak probetarako dira eta akatsak izan ditzakete</string>
+</resources>

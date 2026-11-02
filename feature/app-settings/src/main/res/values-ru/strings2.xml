@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Панель навигации</string>
+    <string name="app_icon_label_music">Музыка</string>
+    <string name="app_icon_label_zen">Дзен</string>
+    <string name="app_icon_label_moon">Луна</string>
+    <string name="preferences_appearance__dynamic_colors">Динамические цвета</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Используйте системные цвета для темы приложения</string>
+<string name="preferences__enable_debug_log">Включить журнал отладки</string>
+    <string name="HelpSettingsFragment__molly_im_website">Сайт Molly.im</string>
+<string name="preferences__never">Никогда</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Периодически проверять новые релизы и предлагать их установить</string>
+    <string name="preferences__autoupdate_molly">Автообновление Molly</string>
+    <string name="preferences__include_beta_updates">Включить бета-версии обновлений</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Бета-версии предназначены для тестирования и могут содержать ошибки</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Проверить наличие обновлений</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Для получения обновлений проверьте ваш магазин приложений. Эту версию приложения нельзя обновить без магазина.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Последняя проверка: %s</string>
+</resources>

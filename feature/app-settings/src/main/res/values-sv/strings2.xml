@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Navigeringsfält</string>
+    <string name="app_icon_label_zen">Zen</string>
+    <string name="app_icon_label_moon">Månfaser</string>
+    <string name="app_icon_label_music">Musik</string>
+    <string name="preferences_appearance__dynamic_colors">Dynamiska färger</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Använd systemets temafärger även för denna app</string>
+<string name="preferences__enable_debug_log">Slå på felsökningslogg</string>
+    <string name="HelpSettingsFragment__molly_im_website">Vår hemsida: Molly.im</string>
+<string name="preferences__never">Aldrig</string>
+    <string name="preferences__autoupdate_molly">Uppdatera Molly automatiskt</string>
+    <string name="preferences__include_beta_updates">Inkludera betauppdateringar</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Betaversioner är till för testning och kan innehålla buggar</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Kolla regelbundet efter uppdateringar och fråga innan installation</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Den här versionen av Molly stödjer inte automatiska uppdateringar, kolla efter uppdateringar pp din app-platform.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Kontrollera uppdateringar</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Senast kontrollerat: %s</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">شريط التنقل</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">استخدام ألوان النظام لمظهر التطبيق</string>
+    <string name="app_icon_label_zen">زِنْ</string>
+    <string name="app_icon_label_moon">قمر</string>
+    <string name="app_icon_label_music">موسيقى</string>
+    <string name="preferences_appearance__dynamic_colors">ألوان حيوية</string>
+<string name="preferences__enable_debug_log">فعِّل سجل التصحيح</string>
+    <string name="HelpSettingsFragment__molly_im_website">موقع Molly.im</string>
+<string name="preferences__never">أبدًا</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">تحقق دوريًا من وجود إصدارات جديدة واطلب تثبيتها</string>
+    <string name="preferences__autoupdate_molly">حدّث Molly تلقائيًا</string>
+    <string name="preferences__include_beta_updates">تضمين تحديثات تجريبة</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">الإصدارات التجريبية مخصّصة لأغراض الاختبار وقد تحتوي على أخطاء</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">تحقق من وجود تحديثات</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">للحصول على التحديثات، يُرجى مراجعة متجر تطبيقاتك. لا يتضمن هذا الإصدار تحديث مدمج داخل التطبيق.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">آخر فحص: %s</string>
+</resources>

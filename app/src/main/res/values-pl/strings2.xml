@@ -168,4 +168,7 @@
     <string name="preferences_appearance__dynamic_colors">Dynamiczne Kolory</string>
     <string name="UnifiedPushSettingsFragment__status_summary_forbidden_endpoint">Ten Endpoint jest zakazany przez serwer</string>
     <string name="UnifiedPushNotificationBuilder__endpoint_changed_air_gapped">Twój Endpoint UnifiedPush się zmienił. Musisz zaktualizować swoje połączenie z MollySocket.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Powiadamiaj, gdy…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Usługi Google Play są aktualizowane lub czasowo niedostępne. Spróbuj ponownie.</string>
+    <string name="please_wait">Jeszcze chwila…</string>
 </resources>

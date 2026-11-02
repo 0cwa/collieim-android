@@ -38,4 +38,7 @@
     <string name="preferences_appearance__dynamic_colors">Dynamické farby</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Použiť systémové farby ako motív aplikácie</string>
     <string name="preferences_appearance__toggle_to_show_or_hide_the_icon_on_the_navigation_bar">Prepína medzi zobrazením a skrytím ikon na navigačnej lište</string>
+    <string name="NotificationsSettingsFragment__notify_when">Upozorniť, keď…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Služba Google Play sa aktualizuje, alebo je dočasne nedostupná. Prosím, skúste to znova.</string>
+    <string name="please_wait">Čakajte prosím…</string>
 </resources>

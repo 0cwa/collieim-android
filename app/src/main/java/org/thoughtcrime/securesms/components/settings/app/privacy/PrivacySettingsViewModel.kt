@@ -35,13 +35,13 @@ class PrivacySettingsViewModel(
   }
 
   fun setReadReceiptsEnabled(enabled: Boolean) {
-    sharedPreferences.edit().putBoolean(TextSecurePreferences.READ_RECEIPTS_PREF, enabled).apply()
+    SignalStore.settings.isReadReceiptsEnabled = enabled
     repository.syncReadReceiptState()
     refresh()
   }
 
   fun setTypingIndicatorsEnabled(enabled: Boolean) {
-    sharedPreferences.edit().putBoolean(TextSecurePreferences.TYPING_INDICATORS, enabled).apply()
+    SignalStore.settings.isTypingIndicatorsEnabled = enabled
     repository.syncTypingIndicatorsState()
     refresh()
   }
@@ -69,12 +69,12 @@ class PrivacySettingsViewModel(
   }
 
   fun setScreenSecurityEnabled(enabled: Boolean) {
-    sharedPreferences.edit().putBoolean(TextSecurePreferences.SCREEN_SECURITY_PREF, enabled).apply()
+    SignalStore.settings.isScreenSecurityEnabled = enabled
     refresh()
   }
 
   fun setIncognitoKeyboard(enabled: Boolean) {
-    sharedPreferences.edit().putBoolean(TextSecurePreferences.INCOGNITO_KEYBOARD_PREF, enabled).apply()
+    SignalStore.settings.isIncognitoKeyboardEnabled = enabled
     refresh()
   }
 
@@ -84,16 +84,17 @@ class PrivacySettingsViewModel(
 
   private fun getState(): PrivacySettingsState {
     return PrivacySettingsState(
+      hasPhoneNumber = !SignalStore.account.isPhoneNumberless,
       blockedCount = 0,
       blockUnknown = TextSecurePreferences.isBlockUnknownEnabled(application),
-      readReceipts = TextSecurePreferences.isReadReceiptsEnabled(application),
-      typingIndicators = TextSecurePreferences.isTypingIndicatorsEnabled(application),
+      readReceipts = SignalStore.settings.isReadReceiptsEnabled,
+      typingIndicators = SignalStore.settings.isTypingIndicatorsEnabled,
       passphraseLock = TextSecurePreferences.isPassphraseLockEnabled(application),
       passphraseLockTriggerValues = TextSecurePreferences.getPassphraseLockTrigger(application).triggers,
       passphraseLockTimeout = TextSecurePreferences.getPassphraseLockTimeout(application),
       biometricScreenLock = TextSecurePreferences.isBiometricScreenLockEnabled(application),
-      screenSecurity = TextSecurePreferences.isScreenSecurityEnabled(application),
-      incognitoKeyboard = TextSecurePreferences.isIncognitoKeyboardEnabled(application),
+      screenSecurity = SignalStore.settings.isScreenSecurityEnabled,
+      incognitoKeyboard = SignalStore.settings.isIncognitoKeyboardEnabled,
       universalExpireTimer = SignalStore.settings.universalExpireTimer
     )
   }

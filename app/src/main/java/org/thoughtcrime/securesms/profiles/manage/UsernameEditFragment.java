@@ -22,6 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.util.EditTextUtil;
+import org.signal.core.util.UsernameUtil;
 import org.signal.core.util.concurrent.LifecycleDisposable;
 import org.signal.core.ui.logging.LoggingFragment;
 import org.thoughtcrime.securesms.R;
@@ -29,14 +30,15 @@ import org.thoughtcrime.securesms.contactshare.SimpleTextWatcher;
 import org.thoughtcrime.securesms.databinding.UsernameEditFragmentBinding;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.util.FragmentResultContract;
-import org.thoughtcrime.securesms.util.UsernameUtil;
-import org.thoughtcrime.securesms.util.ViewUtil;
+import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
+import org.signal.core.ui.util.ViewUtil;
 import org.thoughtcrime.securesms.util.views.CircularProgressMaterialButton;
 
 public class UsernameEditFragment extends LoggingFragment {
 
-  private static final float DISABLED_ALPHA           = 0.5f;
-  public static final String IGNORE_TEXT_CHANGE_EVENT = "ignore.text.change.event";
+  private static final float  DISABLED_ALPHA           = 0.5f;
+  private static final String USERNAME_SUPPORT_URL     = "https://support.signal.org/hc/articles/6712070553754";
+  public static final  String IGNORE_TEXT_CHANGE_EVENT = "ignore.text.change.event";
 
   public static final int REQUEST_CODE = 4242;
 
@@ -68,6 +70,8 @@ public class UsernameEditFragment extends LoggingFragment {
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    SystemWindowInsetsSetter.attach(view, getViewLifecycleOwner(), SystemWindowInsetsSetter.SAFE_AREA_WITH_KEYBOARD);
+
     Bundle bundle = getArguments();
     if (bundle != null) {
       args = UsernameEditFragmentArgs.fromBundle(bundle);
@@ -128,7 +132,7 @@ public class UsernameEditFragment extends LoggingFragment {
 
     binding.usernameDescription.setLinkColor(ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorPrimary));
     binding.usernameDescription.setLearnMoreVisible(true);
-    binding.usernameDescription.setOnLinkClickListener(this::onLearnMore);
+    binding.usernameDescription.setLink(USERNAME_SUPPORT_URL);
 
     ViewUtil.focusAndShowKeyboard(binding.usernameText);
   }
@@ -152,15 +156,6 @@ public class UsernameEditFragment extends LoggingFragment {
     } else {
       viewModel.onUsernameSubmitted(false);
     }
-  }
-
-
-  private void onLearnMore(@Nullable View unused) {
-    new MaterialAlertDialogBuilder(requireContext())
-        .setTitle(getString(R.string.UsernameEditFragment__what_is_this_number))
-        .setMessage(R.string.UsernameEditFragment__these_digits_help_keep)
-        .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
-        .show();
   }
 
   private void onUiStateChanged(@NonNull UsernameEditViewModel.State state) {

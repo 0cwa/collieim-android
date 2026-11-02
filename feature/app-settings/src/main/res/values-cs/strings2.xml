@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Navigační panel</string>
+    <string name="preferences_appearance__dynamic_colors">Dynamické barvy</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Použít systémové barvy jako motiv aplikace</string>
+    <string name="app_icon_label_zen">Zen</string>
+    <string name="app_icon_label_moon">Měsíc</string>
+    <string name="app_icon_label_music">Hudba</string>
+<string name="preferences__enable_debug_log">Zapnout ladicí log</string>
+    <string name="HelpSettingsFragment__molly_im_website">Stránka Molly.im</string>
+<string name="preferences__never">Nikdy</string>
+    <string name="preferences__include_beta_updates">Zahrnout beta aktualizace</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta verze jsou zamýšleny pro testovací účely a mouhou obsahovat bugy</string>
+    <string name="preferences__autoupdate_molly">Automaticky aktualizovat Molly</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Pravidelně hledat nové aktualizace a požádat vás o jejich instalaci</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Hledat aktualizace</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Aktualizace naleznete v obchodě s aplikacemi. Tato verze neumožňuje aktualizaci skrz aplikaci.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Naposledy zkontrolováno: %s</string>
+</resources>

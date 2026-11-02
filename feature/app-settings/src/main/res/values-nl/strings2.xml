@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Navigatiebalk</string>
+    <string name="app_icon_label_zen">Zen</string>
+    <string name="app_icon_label_moon">Maan</string>
+    <string name="app_icon_label_music">Muziek</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Gebruik de systeemkleuren voor het thema in de app</string>
+    <string name="preferences_appearance__dynamic_colors">Dynamische kleuren</string>
+<string name="preferences__enable_debug_log">Foutopsporingslog inschakelen</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im website</string>
+<string name="preferences__never">Nooit</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Check periodiek voor nieuwe versies en vraag of ze geinstalleerd moeten worden</string>
+    <string name="preferences__autoupdate_molly">Molly automatisch updaten</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta versies zijn bedoeld om te testen en kunnen fouten bevatten</string>
+    <string name="preferences__include_beta_updates">Inclusief beta updates</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Controleren op updates</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Raadpleeg uw appstore voor updates, deze versie heeft geen ingebouwde updater.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Laatste keer gecontroleerd: %s</string>
+</resources>

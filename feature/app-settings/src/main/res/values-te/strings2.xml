@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_icon_label_moon">చంద్రుడు</string>
+    <string name="app_icon_label_music">సంగీతం</string>
+<string name="preferences__never">ఎప్పుడూ</string>
+</resources>

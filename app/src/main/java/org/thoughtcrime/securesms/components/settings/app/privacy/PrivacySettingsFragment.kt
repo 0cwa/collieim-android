@@ -14,8 +14,10 @@ import androidx.biometric.BiometricManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
-import org.signal.core.ui.util.ThemeUtil
+import org.signal.core.ui.util.ExpirationUtil
+import org.signal.core.ui.util.SpanUtil
 import org.signal.core.util.logging.Log
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.ChangePassphraseDialogFragment
 import org.thoughtcrime.securesms.PassphraseActivity
 import org.thoughtcrime.securesms.R
@@ -34,14 +36,13 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.preferences.widgets.PassphraseLockTriggerPreference
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.ConversationUtil
-import org.thoughtcrime.securesms.util.ExpirationUtil
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
-import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.WindowUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.LayoutFactory
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import kotlin.time.Duration.Companion.seconds
+import org.signal.appsettings.R as AppSettingsR
 
 private val TAG = Log.tag(PrivacySettingsFragment::class.java)
 
@@ -85,14 +86,16 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
 
       sectionHeaderPref(R.string.PrivacySettingsFragment__messaging)
 
-      clickPref(
-        title = DSLSettingsText.from(R.string.preferences_app_protection__phone_number),
-        summary = DSLSettingsText.from(R.string.preferences_app_protection__choose_who_can_see),
-        onClick = {
-          Navigation.findNavController(requireView())
-            .safeNavigate(R.id.action_privacySettingsFragment_to_phoneNumberPrivacySettingsFragment)
-        }
-      )
+      if (state.hasPhoneNumber) {
+        clickPref(
+          title = DSLSettingsText.from(AppSettingsR.string.preferences_app_protection__phone_number),
+          summary = DSLSettingsText.from(R.string.preferences_app_protection__choose_who_can_see),
+          onClick = {
+            Navigation.findNavController(requireView())
+              .safeNavigate(R.id.action_privacySettingsFragment_to_phoneNumberPrivacySettingsFragment)
+          }
+        )
+      }
 
       switchPref(
         title = DSLSettingsText.from(R.string.preferences__read_receipts),
@@ -223,7 +226,7 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
       sectionHeaderPref(R.string.PrivacySettingsFragment__app_security)
 
       switchPref(
-        title = DSLSettingsText.from(R.string.preferences_app_protection__screen_lock),
+        title = DSLSettingsText.from(AppSettingsR.string.preferences_app_protection__screen_lock),
         summary = DSLSettingsText.from(R.string.PrivacySettingsFragment__lock_molly_access_with_fingerprint_or_face_recognition),
         isChecked = state.biometricScreenLock,
         onClick = {

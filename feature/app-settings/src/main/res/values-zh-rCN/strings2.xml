@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">导航栏</string>
+    <string name="app_icon_label_zen">禅</string>
+    <string name="app_icon_label_moon">月亮</string>
+    <string name="app_icon_label_music">音乐</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">应用主题使用系统颜色</string>
+    <string name="preferences_appearance__dynamic_colors">动态颜色</string>
+<string name="preferences__enable_debug_log">启用调试日志</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im 网站</string>
+<string name="preferences__never">永不</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">定期检查新版本并请求安装它们</string>
+    <string name="preferences__autoupdate_molly">自动更新Molly</string>
+    <string name="preferences__include_beta_updates">包括测试版更新</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta 版本用于测试目的，可能包含 bug</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">检查更新</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">更新应用请查询你的应用商店。此版本不含应用内更新器。</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">上次检查：%s</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_icon_label_zen">Zen</string>
+    <string name="app_icon_label_moon">Bulan</string>
+    <string name="app_icon_label_music">Musik</string>
+    <string name="preferences_appearance__navigation_bar">Bilah navigasi</string>
+    <string name="preferences_appearance__dynamic_colors">Warna Dinamis</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Gunakan warna sistem untuk tema aplikasi</string>
+<string name="preferences__enable_debug_log">Aktifkan log debug</string>
+    <string name="HelpSettingsFragment__molly_im_website">Situs web Molly.im</string>
+<string name="preferences__never">Tidak pernah</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Periksa rilis baru secara berkala dan minta untuk menginstalnya</string>
+    <string name="preferences__autoupdate_molly">Pembaruan otomatis Molly</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Versi beta dimaksudkan untuk tujuan pengujian dan mungkin mengandung bug</string>
+    <string name="preferences__include_beta_updates">Sertakan pembaruan beta</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Periksa pembaruan</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Untuk pembaruan, silakan periksa app store Anda. Versi ini tidak menyertakan pembaru dalam aplikasi.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Terakhir diperiksa: %s</string>
+</resources>

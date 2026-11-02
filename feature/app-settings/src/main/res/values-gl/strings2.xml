@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Barra de navegación</string>
+    <string name="app_icon_label_moon">Lúa</string>
+    <string name="app_icon_label_zen">Cen</string>
+    <string name="app_icon_label_music">Música</string>
+    <string name="preferences_appearance__dynamic_colors">Cores dinámicas</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Usar cores do sistema no decorado da app</string>
+<string name="preferences__enable_debug_log">Activar rexistro de depuración</string>
+    <string name="HelpSettingsFragment__molly_im_website">Web Molly.im</string>
+<string name="preferences__never">Nunca</string>
+    <string name="preferences__include_beta_updates">Incluir actualización beta</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">As versións Beta están orientadas ao desenvolvemento e poderían ter fallos</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Comprobar con regularidade se hai nova versión e pedir instalala</string>
+    <string name="preferences__autoupdate_molly">Actualización automática</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Buscar actualizacións</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Comproba na tenda de aplicacións se hai actualizacións. Esta versión non inclúe o actualizador propio.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Última comprobación: %s</string>
+</resources>

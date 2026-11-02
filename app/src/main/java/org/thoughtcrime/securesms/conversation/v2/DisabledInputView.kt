@@ -15,6 +15,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.signal.core.ui.util.SpanUtil
 import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
@@ -22,7 +23,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.messagerequests.MessageRequestState
 import org.thoughtcrime.securesms.messagerequests.MessageRequestsBottomView
 import org.thoughtcrime.securesms.recipients.Recipient
-import org.thoughtcrime.securesms.util.SpanUtil
 import org.thoughtcrime.securesms.util.visible
 
 /**
@@ -207,8 +207,12 @@ class DisabledInputView @JvmOverloads constructor(
       bind = {
         findViewById<TextView>(R.id.export_sms_message).text = if (recipient.isMmsGroup) {
           context.getString(R.string.ConversationActivity__sms_messaging_is_no_longer_supported)
+        } else if (threadContainsSms) {
+          context.getString(R.string.ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here, recipient.getDisplayName(context))
+        } else if (recipient.hasAci) {
+          context.getString(R.string.ConversationActivity__this_person_is_no_longer_using_signal)
         } else {
-          context.getString(R.string.NewConversationActivity__s_is_not_registered_with_signal, recipient.getDisplayName(context))
+          context.getString(R.string.ConversationActivity__this_person_is_not_using_signal)
         }
 
         findViewById<MaterialButton>(R.id.export_sms_button).apply {

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Navigationsleiste</string>
+    <string name="app_icon_label_zen">Zen</string>
+    <string name="app_icon_label_moon">Mond</string>
+    <string name="app_icon_label_music">Musik</string>
+    <string name="preferences_appearance__dynamic_colors">Dynamische Farben</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Darstellung farblich an die Systemfarben anpassen</string>
+<string name="preferences__enable_debug_log">Diagnoseprotokoll aktivieren</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im-Website</string>
+<string name="preferences__never">Nie</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Regelmäßig nach neuen Versionen suchen und zur Installation auffordern</string>
+    <string name="preferences__autoupdate_molly">Molly automatisch aktualisieren</string>
+    <string name="preferences__include_beta_updates">Beta-Aktualisierungen einbeziehen</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta-Versionen sind für Testzwecke bestimmt und können Fehler enthalten</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Nach Aktualisierungen suchen</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Bitte überprüfe deinen App-Store auf Molly-Updates. Diese Version enthält keine integrierte Aktualisierungsfunktion.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Letzte Prüfung: %s</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">வழிசெலுத்தல் பட்டி</string>
+    <string name="app_icon_label_zen">சென்</string>
+    <string name="app_icon_label_moon">சந்திரன்</string>
+    <string name="app_icon_label_music">இசை</string>
+    <string name="preferences_appearance__dynamic_colors">மாறும் வண்ணங்கள்</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">பயன்பாட்டின் கருப்பொருளுக்கு கணினி வண்ணங்களைப் பயன்படுத்தவும்</string>
+<string name="HelpSettingsFragment__molly_im_website">Molly.im வலைத்தளம்</string>
+    <string name="preferences__enable_debug_log">பிழைத்திருத்த பதிவை இயக்கவும்</string>
+<string name="preferences__never">ஒருபோதுமில்லை</string>
+    <string name="preferences__include_beta_updates">பீட்டா புதுப்பிப்புகளைச் சேர்க்கவும்</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">புதிய வெளியீடுகளை அவ்வப்போது சரிபார்த்து அவற்றை நிறுவச் சொல்லுங்கள்</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">கடைசியாக சரிபார்க்கப்பட்டது: %s</string>
+    <string name="preferences__autoupdate_molly">தானாக புதுப்பித்தல் மோலி</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">பீட்டா பதிப்புகள் சோதனை நோக்கங்களுக்காக வடிவமைக்கப்பட்டுள்ளன மற்றும் பிழைகள் இருக்கலாம்</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">புதுப்பிப்புகளுக்கு, உங்கள் ஆப் ச்டோரை சரிபார்க்கவும். இந்த பதிப்பில் பயன்பாட்டில் உள்ள புதுப்பிப்பாளர் இல்லை.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">புதுப்பிப்புகளை சரிபார்க்கவும்</string>
+</resources>

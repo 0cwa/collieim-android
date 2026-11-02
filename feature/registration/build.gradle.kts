@@ -40,11 +40,16 @@ dependencies {
 
   // Project dependencies
   api(project(":lib:archive"))
+  api(project(":lib:network"))
   implementation(project(":core:ui"))
   implementation(project(":core:util"))
+  implementation(project(":core-gms:base"))
   implementation(project(":core:models-jvm"))
   implementation(project(":core:serialization"))
   implementation(project(":lib:device-transfer"))
+  implementation(project(":lib:password-manager"))
+  implementation(project(":lib:signal-login"))
+  implementation(project(":lib:ui-components"))
   implementation(libs.libsignal.android)
 
   // Compose BOM
@@ -76,8 +81,7 @@ dependencies {
   // Phone number formatting
   implementation(libs.google.libphonenumber)
 
-  // Phone number hint + SMS verification code retriever
-  // implementation(libs.google.play.services.auth) // MOLLY: TODO
+  // Optional Play Services integration uses Molly's open-source implementations.
   implementation(libs.kotlinx.coroutines.play.services) {
     exclude(group = "com.google.android.gms", module = "play-services-basement")
     exclude(group = "com.google.android.gms", module = "play-services-tasks")

@@ -17,7 +17,7 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.MainActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.gcm.FcmFetchManager;
-import org.thoughtcrime.securesms.jobs.ForegroundServiceUtil;
+import org.signal.core.util.ForegroundServiceUtil;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.util.WakeLockUtil;
 

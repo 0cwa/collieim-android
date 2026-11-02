@@ -174,4 +174,7 @@
     <string name="UnifiedPushNotificationBuilder__registration_failed">فشل التسجيل مع موزع الدفع الموحد(UnifiedPush) الخاص بك. قد يكون ذلك بسبب مشكلة في الشبكة أو متطلبات مفقودة من موزعك.</string>
     <string name="UnifiedPushNotificationBuilder__this_is_a_test_notification">هذا إشعار تجريبي من خادم مولي سوكيت(MollySocket).</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">الإصدار المثبت من خدمات Google Play على هذا الجهاز قديم.</string>
+    <string name="NotificationsSettingsFragment__notify_when">أخبرني عند…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">جارٍ تحديث خدمات Google Play أو أنها غير موجودة مؤقتًا. حاوِل مرّة أخرى.</string>
+    <string name="please_wait">يُرجى الانتظار…</string>
 </resources>

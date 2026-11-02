@@ -54,6 +54,7 @@ import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.horizontalGutters
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.util.Util
+import org.signal.emoji.Emojifier
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.avatar.AvatarImage
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
@@ -64,19 +65,19 @@ import org.thoughtcrime.securesms.banner.banners.UnauthorizedBanner
 import org.thoughtcrime.securesms.banner.ui.compose.Action
 import org.thoughtcrime.securesms.banner.ui.compose.DefaultBanner
 import org.thoughtcrime.securesms.banner.ui.compose.Importance
-import org.thoughtcrime.securesms.components.emoji.Emojifier
 import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRoute
 import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRouter
 import org.thoughtcrime.securesms.components.settings.app.subscription.BadgeImageMedium
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.completed.InAppPaymentsBottomSheetDelegate
-import org.thoughtcrime.securesms.compose.rememberStatusBarColorNestedScrollModifier
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.SignalE164Util
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
+import org.signal.appsettings.R as AppSettingsR
 import org.signal.core.ui.R as CoreUiR
 
 class AppSettingsFragment : ComposeFragment(), Callbacks {
@@ -92,7 +93,11 @@ class AppSettingsFragment : ComposeFragment(), Callbacks {
         appSettingsRouter.currentRoute.collect { route ->
           when (route) {
             is AppSettingsRoute.BackupsRoute.Remote -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_remoteBackupsSettingsFragment)
-            is AppSettingsRoute.AccountRoute.Account -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_accountSettingsFragment)
+            is AppSettingsRoute.AccountRoute.Account -> if (SignalStore.account.isPrimaryDevice) {
+              findNavController().safeNavigate(R.id.action_appSettingsFragment_to_accountSettingsFragment)
+            } else {
+              findNavController().safeNavigate(R.id.action_appSettingsFragment_to_linkedDeviceAccountSettingsFragment)
+            }
             is AppSettingsRoute.LinkDeviceRoute.LinkDevice -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_linkDeviceFragment)
             is AppSettingsRoute.DonationsRoute.Donations -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_manageDonationsFragment)
             is AppSettingsRoute.AppearanceRoute.Appearance -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_appearanceSettingsFragment)
@@ -210,9 +215,7 @@ private fun AppSettingsContent(
     ) {
       bannerManager.Banner()
 
-      LazyColumn(
-        modifier = rememberStatusBarColorNestedScrollModifier()
-      ) {
+      LazyColumn {
         item {
           BioRow(
             self = self,
@@ -290,7 +293,7 @@ private fun AppSettingsContent(
 
         item {
           Rows.TextRow(
-            text = stringResource(R.string.AccountSettingsFragment__account),
+            text = stringResource(AppSettingsR.string.AccountSettingsFragment__account),
             icon = painterResource(CoreUiR.drawable.symbol_person_circle_24),
             onClick = {
               callbacks.navigate(AppSettingsRoute.AccountRoute.Account)
@@ -328,7 +331,7 @@ private fun AppSettingsContent(
 
         item {
           Rows.TextRow(
-            text = stringResource(R.string.preferences__appearance),
+            text = stringResource(AppSettingsR.string.preferences__appearance),
             icon = painterResource(R.drawable.symbol_appearance_24),
             onClick = {
               callbacks.navigate(AppSettingsRoute.AppearanceRoute.Appearance)
@@ -338,7 +341,7 @@ private fun AppSettingsContent(
 
         item {
           Rows.TextRow(
-            text = stringResource(R.string.preferences_chats__chats),
+            text = stringResource(AppSettingsR.string.preferences_chats__chats),
             icon = painterResource(R.drawable.symbol_chat_24),
             onClick = {
               callbacks.navigate(AppSettingsRoute.ChatsRoute.Chats)
@@ -382,13 +385,15 @@ private fun AppSettingsContent(
 
         item {
           Rows.TextRow(
-            icon =  SignalIcons.Backup.imageVector,
+            icon = SignalIcons.Backup.imageVector,
             text = stringResource(R.string.preferences_chats__backups),
             onClick = {
               callbacks.navigate(AppSettingsRoute.BackupsRoute.Backups())
             },
-            onLongClick = {
-              callbacks.copyRemoteBackupsSubscriberIdToClipboard()
+            onLongClick = if (state.isPrimaryDevice) {
+              { callbacks.copyRemoteBackupsSubscriberIdToClipboard() }
+            } else {
+              null
             },
           )
         }
@@ -405,7 +410,7 @@ private fun AppSettingsContent(
 
         item {
           Rows.TextRow(
-            text = stringResource(R.string.preferences__data_and_storage),
+            text = stringResource(AppSettingsR.string.preferences__data_and_storage),
             icon = painterResource(R.drawable.symbol_data_24),
             onClick = {
               callbacks.navigate(AppSettingsRoute.DataAndStorageRoute.DataAndStorage)
@@ -431,7 +436,7 @@ private fun AppSettingsContent(
 
         item {
           Rows.TextRow(
-            text = stringResource(R.string.preferences__help),
+            text = stringResource(AppSettingsR.string.preferences__help),
             icon = painterResource(R.drawable.symbol_help_24),
             onClick = {
               callbacks.navigate(AppSettingsRoute.HelpRoute.Settings())
@@ -505,6 +510,7 @@ private fun BioRow(
   callbacks: Callbacks
 ) {
   val hasUsername by rememberUpdatedState(self.username.isNotBlank())
+  val hasPhoneNumber by rememberUpdatedState(self.e164.isNotBlank())
 
   Row(
     verticalAlignment = Alignment.CenterVertically,
@@ -548,21 +554,23 @@ private fun BioRow(
         )
       }
 
-      val prettyPhoneNumber = if (LocalInspectionMode.current) {
-        self.e164
-      } else {
-        remember(self.e164) {
-          SignalE164Util.prettyPrint(self.e164)
+      if (hasPhoneNumber) {
+        val prettyPhoneNumber = if (LocalInspectionMode.current) {
+          self.e164
+        } else {
+          remember(self.e164) {
+            SignalE164Util.prettyPrint(self.e164)
+          }
         }
-      }
 
-      Text(
-        text = prettyPhoneNumber,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        style = TextStyle(
-          textDirection = TextDirection.ContentOrLtr
+        Text(
+          text = prettyPhoneNumber,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          style = TextStyle(
+            textDirection = TextDirection.ContentOrLtr
+          )
         )
-      )
+      }
 
       if (hasUsername) {
         Text(
@@ -684,6 +692,27 @@ private fun BioRowPreview() {
           profileName = ProfileName.fromParts("Miles", "Morales ❤\uFE0F"),
           isSelf = true,
           e164Value = "+15555555555",
+          usernameValue = "miles.98",
+          aboutEmoji = "❤\uFE0F",
+          about = "About",
+          isResolving = false
+        )
+      ),
+      callbacks = EmptyCallbacks
+    )
+  }
+}
+
+@DayNightPreviews
+@Composable
+private fun BioRowNoPhoneNumberPreview() {
+  Previews.Preview {
+    BioRow(
+      self = BioRecipientState(
+        Recipient(
+          systemContactName = "Miles Morales",
+          profileName = ProfileName.fromParts("Miles", "Morales ❤\uFE0F"),
+          isSelf = true,
           usernameValue = "miles.98",
           aboutEmoji = "❤\uFE0F",
           about = "About",

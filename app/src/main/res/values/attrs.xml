@@ -5,16 +5,6 @@
     <attr name="circularProgressMaterialButtonStyle" format="reference" />
     <attr name="circularProgressIndicatorStyle" format="reference" />
 
-    <attr name="emoji_category_recent" format="reference"/>
-    <attr name="emoji_category_people" format="reference"/>
-    <attr name="emoji_category_nature" format="reference"/>
-    <attr name="emoji_category_foods"  format="reference"/>
-    <attr name="emoji_category_activity" format="reference"/>
-    <attr name="emoji_category_places" format="reference"/>
-    <attr name="emoji_category_objects" format="reference"/>
-    <attr name="emoji_category_symbols" format="reference"/>
-    <attr name="emoji_category_flags" format="reference"/>
-    <attr name="emoji_category_emoticons" format="reference"/>
 
     <attr name="mediaKeyboardBackgroundColor" format="color" />
     <attr name="mediaKeyboardBottomBarBackgroundColor" format="color" />
@@ -27,7 +17,6 @@
 
     <!-- From light_colors.xml, dark_colors.xml -->
     <attr name="conversation_toolbar_color" format="color" />
-    <attr name="signal_accent_primary" format="color" />
     <attr name="signal_background_primary" format="color" />
     <attr name="signal_background_secondary" format="color" />
     <attr name="signal_background_dialog" format="color" />
@@ -117,9 +106,6 @@
         <attr name="segmentSelectedStrokeColor" format="color" />
     </declare-styleable>
 
-    <declare-styleable name="CustomDefaultPreference">
-        <attr name="custom_pref_toggle" format="string"/>
-    </declare-styleable>
 
     <declare-styleable name="ColorPreference">
         <attr name="itemLayout" format="reference" />
@@ -258,8 +244,11 @@
     <declare-styleable name="SharedContactView">
         <attr name="contact_titleColor" format="color" />
         <attr name="contact_captionColor" format="color" />
+        <attr name="contact_chevronColor" format="color" />
         <attr name="contact_footerIconColor" format="color" />
         <attr name="contact_footerAlpha" format="float" />
+        <attr name="contact_actionTextColor" format="color" />
+        <attr name="contact_actionBackgroundColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="LinkPreviewView">
@@ -313,20 +302,6 @@
         <attr name="revealable_unopenedIconColor" format="color" />
         <attr name="revealable_circleColor" format="color" />
         <attr name="revealable_circleColorWithWallpaper" format="color" />
-    </declare-styleable>
-
-    <declare-styleable name="MediaKeyboard">
-        <attr name="tabs_gravity" format="enum">
-            <enum name="bottom" value="0" />
-            <enum name="top" value="1" />
-        </attr>
-        <attr name="media_keyboard_theme" format="reference" />
-    </declare-styleable>
-
-    <declare-styleable name="CameraXFlashState">
-        <attr name="state_flash_auto" format="boolean" />
-        <attr name="state_flash_off" format="boolean" />
-        <attr name="state_flash_on" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ContactFilterView">
@@ -401,14 +376,6 @@
         <attr name="click_only" format="boolean" />
     </declare-styleable>
 
-    <declare-styleable name="TopShadowBehavior">
-        <attr name="app_bar_layout_id" format="reference" />
-    </declare-styleable>
-
-    <declare-styleable name="BottomShadowBehavior">
-        <attr name="bottom_bar_id" format="reference" />
-    </declare-styleable>
-
     <declare-styleable name="ButtonStripItemView">
         <attr name="bsiv_icon" format="reference" />
         <attr name="bsiv_label" format="string" />
@@ -447,4 +414,5 @@
     <declare-styleable name="InsetAwareConstraintLayout">
         <attr name="animateKeyboardChanges" format="boolean" />
     </declare-styleable>
+    <attr name="custom_pref_toggle" format="string"/>
 </resources>

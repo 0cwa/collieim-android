@@ -186,8 +186,8 @@ class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(paramet
 
     val downloadRequest = DownloadManager.Request(uri).apply {
       setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
-      setTitle("Downloading ${R.string.app_name} update")
-      setDescription("Downloading ${R.string.app_name} $versionName")
+      setTitle("Downloading ${context.getString(R.string.app_name)} update")
+      setDescription("Downloading ${context.getString(R.string.app_name)} $versionName")
       setDestinationInExternalFilesDir(context, null, "molly-update.apk")
     }
 

@@ -4,10 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
-import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.livedata.Store
 
 class AppSettingsViewModel : ViewModel() {
@@ -16,7 +14,7 @@ class AppSettingsViewModel : ViewModel() {
     AppSettingsState(
       isPrimaryDevice = SignalStore.account.isPrimaryDevice,
       unreadPaymentsCount = 0,
-      userUnregistered = TextSecurePreferences.isUnauthorizedReceived(AppDependencies.application) || !SignalStore.account.isRegistered,
+      userUnregistered = SignalStore.account.isUnauthorizedReceived || !SignalStore.account.isRegistered,
       isLinkedDevice = SignalStore.account.isLinkedDevice,
       clientDeprecated = SignalStore.misc.isClientDeprecated
     )
@@ -35,7 +33,7 @@ class AppSettingsViewModel : ViewModel() {
     store.update {
       it.copy(
         clientDeprecated = SignalStore.misc.isClientDeprecated,
-        userUnregistered = TextSecurePreferences.isUnauthorizedReceived(AppDependencies.application) || !SignalStore.account.isRegistered
+        userUnregistered = SignalStore.account.isUnauthorizedReceived || !SignalStore.account.isRegistered
       )
     }
   }

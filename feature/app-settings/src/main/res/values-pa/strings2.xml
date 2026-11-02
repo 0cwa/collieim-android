@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_icon_label_moon">ਚੰਦ</string>
+    <string name="app_icon_label_music">ਸੰਗੀਤ</string>
+    <string name="preferences_appearance__navigation_bar">ਨੇਵੀਗੇਸ਼ਨ ਪੱਟੀ</string>
+    <string name="preferences_appearance__dynamic_colors">ਡਾਇਨੇਮਿਕ ਰੰਗ</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">ਐਪ ਦੇ ਥੀਮ ਲਈ ਸਿਸਟਮ ਰੰਗਾਂ ਨੂੰ ਵਰਤੋਂ</string>
+    <string name="app_icon_label_zen">ਜ਼ਿਨ</string>
+<string name="HelpSettingsFragment__molly_im_website">Molly.im ਵੈੱਬਸਾਈਟ</string>
+    <string name="preferences__enable_debug_log">ਡੀਬੱਗ ਲਾਗ ਸਮਰੱਥ ਕਰੋ</string>
+<string name="preferences__never">ਕਦੇ ਨਹੀਂ</string>
+    <string name="preferences__autoupdate_molly">Molly ਨੂੰ ਆਪਣੇ-ਆਪ ਲਾਕ ਕਰੋ</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">ਨਿਯਮਤ ਰੂਪ ਵਿੱਚ ਨਵੇਂ ਰੀਲਿਜ਼ ਲਈ ਜਾਂਚ ਕਰੋ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਪੁੱਛੋ</string>
+    <string name="preferences__include_beta_updates">ਬੀਟੇ ਅੱਪਡੇਟਾਂ ਸਮੇਤ</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">ਬੀਟਾ ਵਰਜ਼ਨ ਟੈਸਟ ਕਰਨ ਲਈ ਬਣਾਏ ਜਾਂਦੇ ਹਨ ਅਤੇ ਬੱਗ ਹੋ ਸਕਦੇ ਹਨ</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">ਅੱਪਡੇਟ ਲਈ ਜਾਂਚਕ ਰੋ</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">ਅੱਪਡੇਟ ਲਈ, ਆਪਣੇ ਐਪ ਸਟੋਰ ਨੂੰ ਵੇਖੋ। ਇਹ ਵਰਜ਼ਨ ਵਿੱਚ ਇਨ-ਐਪ ਅੱਪਡੇਟਰ ਮੌਜੂਦ ਨਹੀਂ ਹੈ।</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">ਆਖਰੀ ਜਾਂਚ: %s</string>
+</resources>

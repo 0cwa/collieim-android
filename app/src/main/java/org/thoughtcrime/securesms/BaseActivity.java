@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -43,6 +44,7 @@ public abstract class BaseActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     AppStartup.getInstance().onCriticalRenderEventStart();
     logEvent("onCreate()");
+    EdgeToEdge.enable(this);
     super.onCreate(savedInstanceState);
     blockRecentAppsScreenshot(ScreenLockController.getAutoLock());
     AppStartup.getInstance().onCriticalRenderEventEnd();
@@ -266,7 +268,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
   @Override
   public void applyOverrideConfiguration(@NonNull Configuration overrideConfiguration) {
-    DynamicLanguageContextWrapper.prepareOverrideConfiguration(this, overrideConfiguration);
+    DynamicLanguageContextWrapper.prepareOverrideConfiguration(overrideConfiguration);
     super.applyOverrideConfiguration(overrideConfiguration);
   }
 

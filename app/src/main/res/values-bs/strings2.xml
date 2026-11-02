@@ -170,4 +170,7 @@
     <string name="UnifiedPushSettingsFragment__mollysocket_server">MollySocket server</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server_air_gapped">Izolovan</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">Instalirana verzija Google Play usluga na ovom uređaju je zastarjela.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Obavijesti kad…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services se ažuriraju ili su privremeno nedostupni. Pokušajte ponovo.</string>
+    <string name="please_wait">Molimo pričekajte…</string>
 </resources>

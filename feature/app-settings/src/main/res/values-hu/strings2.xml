@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Navigációs csík</string>
+<string name="preferences__enable_debug_log">Hibakeresési napló engedélyezése</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im weboldal</string>
+<string name="preferences__never">Soha</string>
+    <string name="preferences__autoupdate_molly">Molly auto frissítése</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Frissítések keresése</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Időközönként új verziók keresése és telepítése</string>
+    <string name="preferences__include_beta_updates">Beleértve a béta frissítéseket is</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">A béta verziók lényege a tesztelés, ezért tartalmazhatnak hibákat</string>
+</resources>

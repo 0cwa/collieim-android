@@ -81,4 +81,7 @@
     <string name="PrivacySettingsFragment__no_biometric_features_available_on_this_device">Gailu honetan ez dago funtzio biometrikorik</string>
     <string name="PrivacySettingsFragment__please_first_setup_your_biometrics_in_android_settings">Mesedez, lehenengo konfiguratu zure datu biometrikoak Androiden ezarpenetan</string>
     <string name="prompt_passphrase_activity__molly_is_locked">Molly blokeatuta dago</string>
+    <string name="NotificationsSettingsFragment__notify_when">Jakinarazi…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services eguneratzen ari da edo tenporalki ez dago erabilgarri. Mesedez, berriro saia zaitez.</string>
+    <string name="please_wait">Itxaron, mesedez…</string>
 </resources>

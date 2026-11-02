@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Barra loingseoireachta</string>
+    <string name="app_icon_label_zen">Zen</string>
+    <string name="app_icon_label_moon">Gealach</string>
+    <string name="app_icon_label_music">Ceol</string>
+    <string name="preferences_appearance__dynamic_colors">Dathanna Dinimiciúla</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Úsáid dathanna an chórais do théama an aip</string>
+<string name="preferences__enable_debug_log">Cumasaigh logáil dífhabhtaithe</string>
+    <string name="HelpSettingsFragment__molly_im_website">láithreán gréasáin Molly.im</string>
+<string name="preferences__never">Choíche</string>
+    <string name="preferences__include_beta_updates">Cuir nuashonruithe béite san áireamh</string>
+    <string name="preferences__autoupdate_molly">Molly a nuashonrú go huathoibríoch</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Seiceáil go tréimhsiúil le haghaidh eisiúintí nua agus iarr orthu iad a shuiteáil</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Tá leaganacha béite beartaithe chun críocha tástála agus d’fhéadfadh fabhtanna a bheith iontu</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Le haghaidh nuashonruithe, seiceáil le do thoil do siopa app. Níl nuashonróir in-app san áireamh sa leagan seo.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Seiceáil le haghaidh nuashonruithe</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Seiceáilte go deireanach: %s</string>
+</resources>

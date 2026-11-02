@@ -10,4 +10,7 @@
     <string name="preferences__passphrase_lock">Penyulitan pangkalan data</string>
     <string name="preferences__protect_molly_database_with_a_passphrase">Lindungi pangkalan data Molly dengan frasa laluan</string>
     <string name="arrays__on_inactivity_timeout">Jika anda pergi pada masa tertentu tanpa ‘unlock’ peranti anda</string>
+    <string name="NotificationsSettingsFragment__notify_when">Maklumkan apabila…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Perkhidmatan Google Play sedang dikemas kini atau tidak tersedia sementara waktu. Sila cuba sekali lagi.</string>
+    <string name="please_wait">Sila tunggu…</string>
 </resources>

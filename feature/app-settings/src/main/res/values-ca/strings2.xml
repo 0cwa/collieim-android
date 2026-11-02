@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Barra de navegació</string>
+    <string name="app_icon_label_moon">Lluna</string>
+    <string name="app_icon_label_music">Música</string>
+    <string name="preferences_appearance__dynamic_colors">Dinàmica de Colors</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Empra els colors del sistema com a tema de l\'applicació</string>
+<string name="preferences__enable_debug_log">Activa el registre de depuració</string>
+    <string name="HelpSettingsFragment__molly_im_website">Pàgina web de Molly.im</string>
+<string name="preferences__never">Mai</string>
+    <string name="preferences__include_beta_updates">Incloure actualitzacions beta</string>
+    <string name="preferences__autoupdate_molly">Actualitza Molly automàticament</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Les versions beta són versions de prova i poden contenir errors</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Comprovar periòdicament si hi ha noves versions i demanar que s\'instal·lin</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Per obtenir actualitzacions, consulta la teva botiga d\'aplicacions. Aquesta versió no inclou un actualitzador dins de l\'aplicació.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Comprova si hi ha actualitzacions</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Última comprovació: %s</string>
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Μπάρα πλοήγησης</string>
+    <string name="app_icon_label_zen">Ζεν</string>
+    <string name="app_icon_label_moon">Σελήνη</string>
+    <string name="app_icon_label_music">Μουσική</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Χρήση χρωμάτων συστήματος για το θέμα της εφαρμογής</string>
+    <string name="preferences_appearance__dynamic_colors">Δυναμικά Χρώματα</string>
+<string name="preferences__enable_debug_log">Ενεργοποίηση αρχείου καταγραφής εντοπισμού σφαλμάτων</string>
+    <string name="HelpSettingsFragment__molly_im_website">Ιστοσελίδα Molly.im</string>
+<string name="preferences__never">Ποτέ</string>
+    <string name="preferences__include_beta_updates">Συμπερίληψη δοκιμαστικών εκδόσεων</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Οι δοκιμαστικές εκδόσεις προορίζονται για δοκιμές και ίσως περιέχουν σφάλματα</string>
+    <string name="preferences__autoupdate_molly">Αυτόματη ενημέρωση Molly</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Περιοδικός έλεγχος για νέες κυκλοφορίες και αίτηση για εγκατάσταση</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Έλεγχος για ενημερώσεις</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Για ενημερώσεις, παρακαλώ έλεγξε το κατάστημα των εφαρμογών σου. Αυτή η έκδοση δεν περιέχει ενσωματωμένο πρόγραμμα ενημέρωσης.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Τελευταίος έλεγχος: %s</string>
+</resources>

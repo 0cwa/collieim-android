@@ -22,15 +22,7 @@ object ApkUpdateInstaller {
 
   private val TAG = Log.tag(ApkUpdateInstaller::class.java)
 
-  /**
-   * Installs the downloaded APK silently if possible. If not, prompts the user with a notification to install.
-   * May show errors instead under certain conditions.
-   *
-   * A common pattern you may see is that this is called with [userInitiated] = false (or some other state
-   * that prevents us from auto-updating, like the app being in the foreground), causing this function
-   * to show an install prompt notification. The user clicks that notification, calling this with
-   * [userInitiated] = true, and then everything installs.
-   */
+  /** Verifies the downloaded APK digest and prompts the user to install it. */
   fun installOrPromptForInstall(context: Context, downloadId: Long, userInitiated: Boolean) {
     if (downloadId != SignalStore.apkUpdate.downloadId) {
       Log.w(TAG, "DownloadId doesn't match the one we're waiting for (current: $downloadId, expected: ${SignalStore.apkUpdate.downloadId})! We likely have newer data. Ignoring.")

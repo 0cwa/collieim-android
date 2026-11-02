@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 
 import java.util.stream.Collectors;
 
+import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.database.CallTable;
@@ -21,7 +22,6 @@ import org.thoughtcrime.securesms.jobs.CallLogEventSendJob;
 import org.thoughtcrime.securesms.jobs.MultiDeviceReadUpdateJob;
 import org.thoughtcrime.securesms.jobs.SendReadReceiptJob;
 import org.thoughtcrime.securesms.notifications.v2.ConversationId;
-import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.service.ExportedBroadcastReceiver;
 
 import java.util.ArrayList;
@@ -50,10 +50,12 @@ public class MarkReadReceiver extends ExportedBroadcastReceiver {
         notifier.removeStickyThread(thread);
       }
 
-      NotificationCancellationHelper.cancelLegacy(context, intent.getIntExtra(NOTIFICATION_ID_EXTRA, -1));
+      int notificationId = intent.getIntExtra(NOTIFICATION_ID_EXTRA, -1);
 
       PendingResult finisher = goAsync();
       SignalExecutors.BOUNDED.execute(() -> {
+        NotificationCancellationHelper.cancel(context, notificationId);
+
         List<MarkedMessageInfo> messageIdsCollection = new LinkedList<>();
 
         for (ConversationId thread : threads) {

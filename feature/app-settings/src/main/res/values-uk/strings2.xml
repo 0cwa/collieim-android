@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Панель навігації</string>
+    <string name="app_icon_label_music">Музика</string>
+    <string name="app_icon_label_zen">Це було</string>
+    <string name="app_icon_label_moon">Місяць</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Використовуйте системні кольори для теми програми</string>
+    <string name="preferences_appearance__dynamic_colors">Динамічні кольори</string>
+<string name="preferences__enable_debug_log">Увімкнути ведення журналу налагодження</string>
+    <string name="HelpSettingsFragment__molly_im_website">Вебсторінка molly.im</string>
+<string name="preferences__never">Ніколи</string>
+    <string name="preferences__autoupdate_molly">Автоматично оновлювати Molly</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Час від часу перевіряти наявність нових версій, і питати чи встановлювати</string>
+    <string name="preferences__include_beta_updates">Включати оновлення до бета-версій</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">бета-версії призначені для тестування, і можуть містити вади</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Для оновлення, будь ласка, перевірте ваш магазин застосунків. Ця версія застосунку не містить вбудованого оновлювача.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Перевіряти наявність оновлень</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Остання перевірка: %s</string>
+</resources>

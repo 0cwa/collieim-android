@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_icon_label_moon">Mesiac</string>
+    <string name="app_icon_label_music">Hudba</string>
+    <string name="preferences_appearance__navigation_bar">Navigačný panel</string>
+    <string name="preferences_appearance__dynamic_colors">Dynamické farby</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Použiť systémové farby ako motív aplikácie</string>
+<string name="preferences__enable_debug_log">Povoliť ladiaci denník</string>
+<string name="preferences__never">Nikdy</string>
+    <string name="preferences__autoupdate_molly">Automaticky aktualizovať Molly</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Pravidelne kontrolovať nové vydania a požiadať vás o ich inštaláciu</string>
+    <string name="preferences__include_beta_updates">Zahrnúť beta aktualizácie</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta verzie sú určené na testovacie účely a môžu obsahovať chyby</string>
+</resources>

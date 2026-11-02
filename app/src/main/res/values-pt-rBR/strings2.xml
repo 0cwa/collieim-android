@@ -170,4 +170,7 @@
     <string name="UnifiedPushSettingsFragment__status_summary_no_distributor">Nenhum distribuidor do UnifiedPush instalado</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server_air_gapped">Isolado da rede</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">A versão do Google Play Services instalada neste dispositivo está desatualizada.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Notifique-me quando…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services está sendo atualizado ou temporariamente indisponível. Por favor, tente novamente.</string>
+    <string name="please_wait">Aguarde…</string>
 </resources>

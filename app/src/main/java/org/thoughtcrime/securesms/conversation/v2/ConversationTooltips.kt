@@ -8,8 +8,9 @@ import androidx.lifecycle.ViewModel
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.TooltipPopup
+import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.stickers.StickerPackInstallEvent
-import org.thoughtcrime.securesms.util.TextSecurePreferences
+import org.signal.core.ui.R as CoreUiR
 
 /**
  * Any and all tooltips that the conversation can display, and a light amount of related presentation logic.

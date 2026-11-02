@@ -86,4 +86,7 @@
     <string name="EnableAppUpdatesMegaphone_molly_can_periodically_check_for_new_releases_and_ask_you_to_install_them">Molli kan periodisk se etter nye utgaver og spørre om du vil installere dem.</string>
     <string name="EnableAppUpdatesMegaphone_you_will_be_notified_when_updates_are_available">Du vil få beskjed når en ny versjon er tilgjengelig</string>
     <string name="prompt_passphrase_activity__molly_is_locked">Molly er låst</string>
+    <string name="NotificationsSettingsFragment__notify_when">Varsle når…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play-tjenester er opptatt eller midlertidig utilgjengelig. Vent litt, og prøv på nytt.</string>
+    <string name="please_wait">Vennligst vent…</string>
 </resources>

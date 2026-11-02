@@ -8,6 +8,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.RefreshAttributesJob
 import org.thoughtcrime.securesms.jobs.RemoteConfigRefreshJob
 import org.thoughtcrime.securesms.jobs.RetrieveRemoteAnnouncementsJob
+import org.thoughtcrime.securesms.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import java.time.Duration
 
@@ -17,6 +18,16 @@ object VersionTracker {
   @JvmStatic
   fun getLastSeenVersionForMolly(context: Context): Int {
     return TextSecurePreferences.getLastVersionCodeForMolly(context)
+  }
+
+  @JvmStatic
+  fun getLastSeenVersion(): Int {
+    return getLastSeenVersionForMolly(AppDependencies.application)
+  }
+
+  @JvmStatic
+  fun updateLastSeenVersion() {
+    updateLastSeenVersion(AppDependencies.application)
   }
 
   @JvmStatic
@@ -35,6 +46,7 @@ object VersionTracker {
     }
 
     TextSecurePreferences.setLastVersionCodeForMolly(context, currentVersionCode)
+    PlainTextKeyValueStore.lastVersionCode = currentVersionCode
   }
 
   @JvmStatic

@@ -34,6 +34,7 @@ class ApkDiff:
 
         if len(firstNameListSorted) != len(secondNameListSorted):
             print("Manifest lengths differ!")
+            return False
 
         for (firstEntryName, secondEntryName) in zip(firstNameListSorted, secondNameListSorted):
             if firstEntryName != secondEntryName:

@@ -6,6 +6,7 @@ import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import org.json.JSONArray
 import org.json.JSONException
+import org.signal.core.models.badges.Badge
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R

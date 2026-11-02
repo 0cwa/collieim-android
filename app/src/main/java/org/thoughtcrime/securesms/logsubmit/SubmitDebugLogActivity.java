@@ -16,11 +16,15 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -40,7 +44,7 @@ import org.thoughtcrime.securesms.util.LongClickCopySpan;
 import org.thoughtcrime.securesms.util.LongClickMovementMethod;
 import org.thoughtcrime.securesms.util.SupportEmailUtil;
 import org.signal.core.ui.util.ThemeUtil;
-import org.thoughtcrime.securesms.util.ViewUtil;
+import org.signal.core.ui.util.ViewUtil;
 import org.thoughtcrime.securesms.util.views.CircularProgressMaterialButton;
 
 import java.util.ArrayList;
@@ -101,9 +105,28 @@ public class SubmitDebugLogActivity extends BaseActivity {
     dynamicTheme.onCreate(this);
     setContentView(R.layout.submit_debug_log_activity);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setTitle(R.string.HelpSettingsFragment__debug_log);
+    getSupportActionBar().setTitle(org.signal.appsettings.R.string.HelpSettingsFragment__debug_log);
+
+    // Insets are re-dispatched by appcompat's ActionBarOverlayLayout with the action bar height folded into the top inset.
+    ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, insets) -> {
+      Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+      v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+      return WindowInsetsCompat.CONSUMED;
+    });
 
     this.viewModel = new ViewModelProvider(this, new SubmitDebugLogViewModel.Factory()).get(SubmitDebugLogViewModel.class);
+    getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+      @Override
+      public void handleOnBackPressed() {
+        if (!viewModel.onBackPressed()) {
+          final Intent nextIntent = getIntent().getParcelableExtra("next_intent");
+          if (nextIntent != null) {
+            startActivity(nextIntent);
+          }
+          finish();
+        }
+      }
+    });
 
     initView();
     initViewModel();
@@ -299,7 +322,7 @@ public class SubmitDebugLogActivity extends BaseActivity {
     super.onOptionsItemSelected(item);
 
     if (item.getItemId() == android.R.id.home) {
-      onBackPressed();
+      getOnBackPressedDispatcher().onBackPressed();
       return true;
     } else if (item.getItemId() == R.id.menu_save) {
       onSaveClicked();
@@ -315,18 +338,6 @@ public class SubmitDebugLogActivity extends BaseActivity {
     intent.putExtra(Intent.EXTRA_TITLE, BackupUtil.getBackupFilenamePrefix() + "-log-" + System.currentTimeMillis() + ".zip");
 
     startActivityForResult(intent, CODE_SAVE);
-  }
-
-  @Override
-  public void onBackPressed() {
-    if (!viewModel.onBackPressed()) {
-      super.onBackPressed();
-      final Intent nextIntent = getIntent().getParcelableExtra("next_intent");
-      if (nextIntent != null) {
-        startActivity(nextIntent);
-      }
-      finish();
-    }
   }
 
   @Override

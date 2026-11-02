@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">يولباشچى بالداق</string>
+    <string name="app_icon_label_zen">ئىستىقامەت</string>
+    <string name="app_icon_label_music">نەغمە</string>
+    <string name="app_icon_label_moon">ئاي</string>
+    <string name="preferences_appearance__dynamic_colors">ھەرىكەتچان رەڭ</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">ئەپ ئۆرنىكى سىستېما رەڭگىنى ئىشلىتىدۇ</string>
+<string name="preferences__enable_debug_log">سازلاش خاتىرىسىنى قوزغىتىدۇ</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im تور بېكىتى</string>
+<string name="preferences__never">ھەرگىز</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">سىناق نەشرى سىناش مەقسىتىدە ئىشلىتىلىدۇ، كەمتۈكلۈك بار بولۇشى مۇمكىن</string>
+    <string name="preferences__autoupdate_molly">Molly نى ئۆزلۈكىدىن يېڭىلايدۇ</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">يېڭى نەشرىنى قەرەللىك تەكشۈرۈپ يېڭىلاشنى سورايدۇ</string>
+    <string name="preferences__include_beta_updates">سىناق نەشرى يېڭىلىنىشىنى ئۆز ئىچىگە ئالىدۇ</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">يېڭىلاش ئۈچۈن ئەپ دۇكىنىڭىزنى تەكشۈرۈڭ. بۇ نەشرىدە ئەپ ئىچىدە يېڭىلىغۇچ يوق.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">يېڭىلاش تەكشۈر</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">ئاخىرقى قېتىم تەكشۈرۈلگەن ۋاقىت: %s</string>
+</resources>

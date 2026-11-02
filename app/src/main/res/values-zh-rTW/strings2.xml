@@ -48,4 +48,7 @@
     <string name="arrays__none">沒有</string>
     <string name="BlockUnblockDialog_block_and_delete">封鎖並刪除</string>
     <string name="prompt_passphrase_activity__molly_is_locked">Molly 已被鎖定</string>
+    <string name="NotificationsSettingsFragment__notify_when">發生以下事件時通知你</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play 服務正在更新或暫時無法使用。請再重試。</string>
+    <string name="please_wait">請稍候…</string>
 </resources>

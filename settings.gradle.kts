@@ -84,6 +84,7 @@ include(":core:models-jvm")
 include(":core:network")
 include(":core:ui")
 include(":core:serialization")
+include(":core:database")
 
 // FOSS GMS modules
 include(":core-gms:base")
@@ -109,14 +110,23 @@ include(":lib:image-editor")
 include(":lib:debuglogs-viewer")
 include(":lib:blurhash")
 include(":lib:apng")
+include(":lib:emoji")
 include(":lib:archive")
+include(":lib:ui-components")
+include(":lib:signal-login")
+include(":lib:password-manager")
 
 // Feature modules
+include(":feature:app-settings")
 include(":feature:registration")
 include(":feature:camera")
 include(":feature:media-send")
+include(":feature:chat-settings")
+include(":feature:media-keyboard")
+include(":feature:media-viewer")
 
 // Testing/Lint modules
+include(":screener")
 include(":lintchecks")
 include(":fast-lint")
 

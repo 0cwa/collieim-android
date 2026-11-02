@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_icon_label_zen">Zen</string>
+    <string name="app_icon_label_moon">Kuu</string>
+    <string name="app_icon_label_music">Muusika</string>
+    <string name="preferences_appearance__navigation_bar">Navigeerimisriba</string>
+    <string name="preferences_appearance__dynamic_colors">Dünaamilised värvid</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Kasuta rakenduse teema jaoks süsteemi värve</string>
+<string name="preferences__enable_debug_log">Luba silumislogi</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im veebisait</string>
+<string name="preferences__never">Mitte kunagi</string>
+    <string name="preferences__autoupdate_molly">Molly automaatuuendus</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Kontrollige perioodiliselt uusi versioone ja paluge need installida</string>
+    <string name="preferences__include_beta_updates">Kaasa beetaversioonid</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beetaversioonid on mõeldud testimiseks ja võivad sisaldada vigu</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Värskenduste saamiseks kasutage oma rakenduste poodi. See versioon ei sisalda rakendusesisest värskendajat.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Kontrolli rakenduse uuendusi</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Viimati kontrollitud: %s</string>
+</resources>

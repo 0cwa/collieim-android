@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Navigointipalkki</string>
+    <string name="app_icon_label_zen">Zen</string>
+    <string name="app_icon_label_moon">Kuu</string>
+    <string name="app_icon_label_music">Musiikki</string>
+    <string name="preferences_appearance__dynamic_colors">Dynaamiset värit</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Käytä järjestelmän värejä sovelluksen teemassa</string>
+<string name="preferences__enable_debug_log">Ota virheenkorjausloki käyttöön</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im-verkkosivusto</string>
+<string name="preferences__never">Älä toista</string>
+    <string name="preferences__include_beta_updates">Sisällytä beta-päivitykset</string>
+    <string name="preferences__autoupdate_molly">Päivitä Molly automaattisesti</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Tarkista säännöllisesti uudet julkaisut ja pyydä asentamaan ne</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta-versiot on tarkoitettu testaustarkoituksiin, ja ne voivat sisältää virheitä</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Tarkista päivitykset</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Tarkista päivitysten saatavuutta sovelluskaupastasi. Tämä versio ei sisällä sovelluksen sisäistä päivitysohjelmaa.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Viimeksi tarkistettu: %s</string>
+</resources>

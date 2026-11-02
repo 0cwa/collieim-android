@@ -163,4 +163,7 @@
     <string name="UnifiedPushNotificationBuilder__mollysocket_device_limit_hit">Достигли сте ограничење од %d повезаних уређаја. Да бисте повезали ваш MollySocket сервер, молимо вас да прво уклоните уређај.</string>
     <string name="LinkDeviceFragment__molly_supports_linking_to_other_android_devices">Моли подржава повезивање са другим Android уређајима који користе Моли, као и рачунарима и iPad-има који користе Signal.</string>
     <string name="GcmRefreshJob_switch_to_an_alternative_push_service_in_settings_notifications">Пребаците се на алтернативну пуш услугу у Подешавањима &gt; Обавештења или решите проблем са Play услугама.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Пошаљи обавештење када…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play сервиси се ажурирају или су привремено недоступни. Пробајте поново касније.</string>
+    <string name="please_wait">Сачекајте…</string>
 </resources>

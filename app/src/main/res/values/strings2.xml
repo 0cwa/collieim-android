@@ -177,4 +177,6 @@
     <string name="MollySocketLink_experienced_a_network_error_please_try_again">Experienced a network error. Please try again.</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server">MollySocket server</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server_air_gapped">Air gapped</string>
+    <string name="NotificationsSettingsFragment__notify_when">Notify when…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services is updating or temporarily unavailable. Please try again.</string>
 </resources>

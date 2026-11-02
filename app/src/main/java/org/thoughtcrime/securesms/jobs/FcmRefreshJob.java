@@ -46,8 +46,7 @@ import org.thoughtcrime.securesms.net.SignalNetwork;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.notifications.NotificationIds;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
-import org.thoughtcrime.securesms.util.TextSecurePreferences;
-import org.whispersystems.signalservice.api.NetworkResultUtil;
+import org.whispersystems.signalservice.api.RequestResultUtil;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -91,7 +90,7 @@ public class FcmRefreshJob extends BaseJob {
       if (wasFcmTokenSet) {
         Log.i(TAG, "FCM is disabled: clearing existing token...");
         try {
-          NetworkResultUtil.toBasicLegacy(SignalNetwork.account().clearFcmToken());
+          RequestResultUtil.successOrThrowNoError(SignalNetwork.accountApi().clearFcmToken());
         } finally {
           SignalStore.account().invalidateFcmToken();
           FcmUtil.deleteFirebaseInstallationId(context);
@@ -101,7 +100,7 @@ public class FcmRefreshJob extends BaseJob {
       return;
     }
 
-    if (TextSecurePreferences.isUnauthorizedReceived(context)) {
+    if (SignalStore.account().isUnauthorizedReceived()) {
       Log.i(TAG, "No longer authorized. Ignoring.");
       return;
     }
@@ -126,7 +125,7 @@ public class FcmRefreshJob extends BaseJob {
           Log.i(TAG, "Token didn't change.");
         }
 
-        NetworkResultUtil.toBasicLegacy(SignalNetwork.account().setFcmToken(token.get()));
+        RequestResultUtil.successOrThrowNoError(SignalNetwork.accountApi().setFcmToken(token.get()));
         SignalStore.account().setFcmToken(token.get());
         if (oldToken == null) {
           AppDependencies.resetNetwork(true);

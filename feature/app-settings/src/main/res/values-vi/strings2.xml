@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_icon_label_zen">Thiền</string>
+    <string name="app_icon_label_moon">Mặt trăng</string>
+    <string name="app_icon_label_music">Âm nhạc</string>
+    <string name="preferences_appearance__navigation_bar">Thanh điều hướng</string>
+    <string name="preferences_appearance__dynamic_colors">Màu linh động</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Sử dụng màu của hệ thống cho giao diện ứng dụng</string>
+<string name="preferences__enable_debug_log">Bật chế độ ghi lỗi</string>
+    <string name="HelpSettingsFragment__molly_im_website">Trang chủ Molly.im</string>
+<string name="preferences__never">Không bao giờ</string>
+    <string name="preferences__autoupdate_molly">Tự động cập nhật Molly</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Kiểm tra định kỳ và hỏi để cài đặt các bản cập nhật mới</string>
+    <string name="preferences__include_beta_updates">Bảo gồm các bản cập nhật beta</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Các phiên bản beta chỉ nên được dùng cho mục đính thử nghiệm và có thể phát sinh lỗi</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Để cập nhật, kiểm tra cửa hành ứng dụng của bạn. Phiên bản này không bảo gồm trình cập nhật.</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Kiểm tra cập nhật</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Lần cuối kiểm tra: %s</string>
+</resources>

@@ -21,7 +21,6 @@ import org.signal.debuglogsviewer.DebugLogsViewer;
 import org.thoughtcrime.securesms.database.LogDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.net.Networking;
-import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.RemoteConfig;
 
@@ -312,7 +311,7 @@ public class SubmitDebugLogRepository {
 
   @WorkerThread
   private @NonNull String uploadContent(@NonNull String contentType, @NonNull RequestBody requestBody) throws IOException {
-    OkHttpClient client = new OkHttpClient.Builder()
+    OkHttpClient client = AppDependencies.getOkHttpClient().newBuilder()
         .addInterceptor(new StandardUserAgentInterceptor())
         .socketFactory(Networking.getSocketFactory())
         .proxySelector(Networking.getProxySelectorForSocks())

@@ -39,7 +39,9 @@ class RemoteConfig_StaticValuesTest {
       "100",
       "12345678910111213141516",
       "*",
-      "1.0.0"
+      "1.0.0",
+      "[]",
+      "[\"foo\"]"
     )
 
     val configKeys = RemoteConfig.configsByKey.keys
@@ -57,6 +59,8 @@ class RemoteConfig_StaticValuesTest {
       "DEVICE_SPECIFIC_NOTIFICATION_CONFIG",
       "PROMPT_BATTERY_SAVER",
       "PROMPT_FOR_NOTIFICATION_LOGS",
+      "overridableConfigs",
+      "overrides",
       "REMOTE_VALUES"
     )
 

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="preferences_appearance__navigation_bar">Gezinme çubuğu</string>
+    <string name="app_icon_label_moon">Ay</string>
+    <string name="app_icon_label_music">Müzik</string>
+    <string name="preferences_appearance__dynamic_colors">Dinamik Renkler</string>
+    <string name="preferences_appearance__use_system_colors_for_the_app_theme">Uygulamanın teması için sistem renklerini kullan</string>
+<string name="preferences__enable_debug_log">Hata ayıklama günlüğünü etkinleştir</string>
+    <string name="HelpSettingsFragment__molly_im_website">Molly.im web sitesi</string>
+<string name="preferences__never">Asla</string>
+    <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Düzenli aralıklarla yeni sürümleri denetle ve kurmayı iste</string>
+    <string name="preferences__autoupdate_molly">Molly\'i otomatik güncelle</string>
+    <string name="preferences__include_beta_updates">Beta güncellemelerini dahil et</string>
+    <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta sürümleri test amaçlıdır ve hatalar içerebilir</string>
+    <string name="EnableAppUpdatesMegaphone_check_for_updates">Güncellemeleri denetle</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Güncellemeler için lütfen uygulama mağazanıza bakın. Bu sürüm uygulama içi güncelleyici içermez.</string>
+    <string name="AppUpdatesSettingsFragment__last_checked_s">Son denetleme: %s</string>
+</resources>

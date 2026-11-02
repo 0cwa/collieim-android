@@ -108,4 +108,7 @@
     <string name="preferences_appearance__show_calls">Hívások mutatása</string>
     <string name="preferences_appearance__toggle_to_show_or_hide_the_icon_on_the_navigation_bar">A navigációs csíkon levő ikon mutatásának ki/be kapcsolása</string>
     <string name="prompt_passphrase_activity__molly_is_locked">Molly zárolva</string>
+    <string name="NotificationsSettingsFragment__notify_when">Értesítsen mikor…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">A Google Play Szolgáltatások épp frissítés alatt áll, vagy átmenetileg nem elérhető. Kérlek próbáld újra.</string>
+    <string name="please_wait">Kérlek várj…</string>
 </resources>

@@ -14,9 +14,9 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.Dimension
 import androidx.core.content.ContextCompat
+import org.signal.core.ui.util.ViewUtil
 import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.util.ViewUtil
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.atan2

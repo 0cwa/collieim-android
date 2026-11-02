@@ -289,3 +289,61 @@ Initial and unbundled follow-up `mailbox_bytes` and `paths` are historical
 pre-conversion export metadata and remain unchanged. Bundled follow-up
 `mailbox_bytes` records the current mailbox size. Candidate verification does
 not replace the applicable branch preflight, port report update or build tests.
+
+## Named release profiles and fork checkpoints
+
+`molly-build.json` may contain a `profiles` object keyed by `molly-minimal`,
+`molly-continued`, `molly-foss-continued`, `collie`, and `collie-foss`. Each
+entry contains exactly `base_series` (the port series path), `base_checkpoint`
+(full source commit), `base_tree` and `target_tree` (full tree IDs),
+`fork_series` (ordered repository-relative series paths), `tests` (Gradle
+arguments) and `firebase_free` (boolean). Pins are supplied by the release
+configuration, not compiled into the tools. The tests and Firebase selection
+are part of the source proof fingerprint.
+
+Minimal selects the verified port prefix ending at
+`followups/backup-notification-id-upgrade`; the other products select the
+prefix ending at `followups/donation-completion-copy`. Continued products
+without fork features have an empty `fork_series`. Molly FOSS Continued adds
+`patches/forks/signal-foss/firebase-free-build/series`; Collie and Collie FOSS
+append `patches/forks/signal-foss/retention-controls/series`. Firebase is
+selected only for Molly FOSS Continued and Collie FOSS. These names describe
+release selections and do not change application branding or IDs.
+
+Fork profiles also require `fork_source` in `molly-build.json` with the original
+fork `url` and `head` pins. The independent `patches/forks/signal-foss/provenance.json` records schema 1,
+source URL and head, base commit and tree, and ordered `layers`. It also records
+`upstream_bundle`, `upstream_bundle_sha256`, `upstream_bundle_bytes`,
+`upstream_bundle_prerequisite`, and `upstream_bundle_ref`; the declared ref is
+`refs/heads/upstream-fork/signal-foss-8.33.2.0-FOSS`, its commit is the fork
+head, and its prerequisite is the pinned Signal source. The bundle supplies the
+original fork commits for provenance checks only; its workflow is never applied. Each layer
+records `id`, `series`, `mailbox`, `mailbox_sha256`, `mailbox_bytes`,
+`source_commit`, `before_tree`, `after_tree`, `source_bundle`,
+`source_bundle_sha256`, `source_bundle_bytes`, `source_bundle_prerequisite`,
+`source_bundle_ref`, `upstream_commit`, and `upstream_author`. File paths in
+this document are relative to the fork root. Each series contains one path to
+its layer's mailbox, relative to that series file. Checkpoint bundles must
+advertise the declared `refs/heads/source-checkpoint/` ref and require exactly
+the previous source commit. The selected base checkpoint must match the
+verified port layer. Replay checks the resulting tree after each fork layer.
+
+Use `release.py --profile NAME` for a profile-bound source proof, then pass the
+same `--profile NAME` to every `build.py` phase, or use
+`preflight.sh full --scope forks --base stack/5-behavior-additions --profile NAME`.
+Named builds explicitly pass the selected `mollyFirebaseFree` property.
+Omitting `--profile` preserves the existing workflow. The `forks` scope allows
+only the independent fork artifacts and named configuration profiles, and
+requires the port tree and original base configuration to remain unchanged,
+apart from adding `profiles` and `fork_source`.
+The existing Molly CI workflow does not yet select the named product matrix.
+
+### Independent compatibility surface assessment
+
+`python3 tools/patches/compatibility_surface.py MECHANICAL_TREE FINAL_TREE --scratch TASK_SCRATCH` emits a deterministic JSON inventory and physical Git diff counts. Supply full tree object IDs and an existing private scratch directory. This optional assessment does not change the port report. Each changed path records both tree entries (mode, type, blob ID); absent entries represent additions or deletions.
+
+For a conflict path, a region qualifies only if exactly one nonempty side, together with the immediately preceding and following mechanical lines, appears exactly once in the final blob. The marker labels must be `MOLLY` and `SIGNAL`; all regions must qualify and their contextual matches must not overlap. The selected sides form a marker-free baseline; Git measures its physical diff to the final blob. A changed context, empty choice, malformed marker, repeated match, mixed resolution, or overlap excludes the entire path. Ordinary text paths are reported separately. Deleted, binary, mode and non-blob paths are excluded. `--generated PATH` may be repeated to exclude declared generated paths; declarations are not verified, and undeclared generated files are not detected. Feature ownership is not assigned. No choice assertion manifest is accepted.
+
+Both gross and residual counts use isolated `git diff --no-index --text --diff-algorithm=myers`, with external diff and text conversion disabled. System, global and repository Git configuration and all attributes are ignored; tracked `binary` attributes therefore do not affect these counts. A NUL anywhere in either blob defines a binary path and excludes that path from text counts. Gross sums text diffs over all changed blob paths, including deletions and declared generated paths; non-blob entries are excluded. The binary count includes binary deletions and other excluded paths. Mode changes alone contribute no lines. These explicitly defined counts can differ from a normal repository `git diff --numstat`.
+
+Residual counts are not a partition of the gross counts and do not establish authorship, semantic complexity, or necessity. Coverage counts reconcile with the changed-path inventory; inspect exclusions before interpreting the result.

@@ -299,5 +299,52 @@ class ReleaseTests(unittest.TestCase):
             verify_complete.clean_worktree(output)
 
 
+class NamedProfileReleaseTests(ReleaseTests):
+    def test_named_base_profile_binds_tree_and_rejects_unverified_fork(self):
+        self.port_fixture()
+        self.config['android'] = {'tests': [':app:test']}
+        entry = {'base_series': self.config['port']['series'],
+                 'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'], 'fork_series': [],
+                 'target_tree': self.config['target_tree'], 'tests': [':app:test'],
+                 'firebase_free': False}
+        entry['base_series'] = 'patches/ports/signal-8.33.2/series'
+        self.config['profiles'] = {'molly-minimal': entry}
+        self.save_config()
+        with patch.object(release.release_profiles, 'PORT_SERIES', self.config['port']['series']), \
+             patch('fork_profiles.port_prefix', side_effect=lambda repo, cfg, sel, records: records):
+            entry['base_series'] = self.config['port']['series']
+            self.save_config()
+            result = release.assemble(self.repo, self.config_path, self.home / 'named', profile='molly-minimal')
+        self.assertEqual(result['profile']['name'], 'molly-minimal')
+        self.assertEqual(result['tree'], entry['base_tree'])
+        entry['base_tree'] = 'a' * 40
+        self.save_config()
+        with patch.object(release.release_profiles, 'PORT_SERIES', self.config['port']['series']), \
+             patch('fork_profiles.port_prefix', side_effect=lambda repo, cfg, sel, records: records), \
+             self.assertRaisesRegex(forest.ForestError, 'base source tree differs'):
+            release.assemble(self.repo, self.config_path, self.home / 'wrong', profile='molly-minimal')
+        entry['fork_series'] = ['patches/forks/signal-foss/firebase/series']
+        self.save_config()
+        with patch.object(release.release_profiles, 'PORT_SERIES', self.config['port']['series']), \
+             self.assertRaisesRegex(ValueError, 'fork_series does not match'):
+            release.assemble(self.repo, self.config_path, self.home / 'fork', profile='molly-minimal')
+
+
+    def test_fork_products_reject_even_empty_fork_series(self):
+        self.port_fixture()
+        self.config['android'] = {'tests': [':app:test']}
+        for name, firebase_free in (('molly-foss-continued', True), ('collie', False),
+                                    ('collie-foss', True)):
+            with self.subTest(name=name):
+                self.config['profiles'] = {name: {
+                    'base_series': 'patches/ports/signal-8.33.2/series',
+                    'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'], 'fork_series': [],
+                    'target_tree': self.config['target_tree'], 'tests': [':app:test'],
+                    'firebase_free': firebase_free}}
+                self.config_path.write_text(json.dumps(self.config))
+                with self.assertRaisesRegex(ValueError, 'fork_series does not match'):
+                    release.assemble(self.repo, self.config_path, self.home / name, profile=name)
+
+
 if __name__ == '__main__':
     unittest.main()

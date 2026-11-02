@@ -16319,6 +16319,21 @@
           "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations"
         }
       ]
+    },
+    {
+      "start_tree": "68fa08fd69809463be3aa60ccd232bb50f02e547",
+      "actions": [
+        {
+          "path": "feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt",
+          "input_blob": "73d154a0b9277bdf16288b3fe7603d0f7e844235",
+          "output_blob": "755d040b4b801963f2d4bfdcd9d734dc05befbaa",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/kotlin-indent-reverts.patch",
+          "gate_input": "PR5 baseline tree 68fa08fd69809463be3aa60ccd232bb50f02e547 and isolated and combined indentation inverse candidates; PR3/PR4 matching file blobs only",
+          "gate": "agent-heavy -- ./gradlew :feature:app-settings:compileDebugKotlin --max-workers=12 --console=plain",
+          "outcome": "baseline build passed with task up to date; each of three individual inverses and combined inverse executed task and passed on PR5",
+          "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#kotlin-indentation-reversions"
+        }
+      ]
     }
   ],
   "groups": {

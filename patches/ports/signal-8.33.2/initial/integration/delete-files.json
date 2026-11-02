@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "delete-files",
-  "source_commit": "7761e6fdb7170378374221bee386f3a9f58900e5",
-  "before_tree": "2b7d76819b967e1bf5d3cca5d2d205c69bf5820a",
-  "after_tree": "c047b3bdcda3f8591ee81eeb654ff1c5b47a41d7",
+  "source_commit": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
+  "before_tree": "c2f3a562216a23dd39e932010c90f7bf9b4e9396",
+  "after_tree": "a0dc7adbaf6b046d13440929f24956ab668c0ca4",
   "files": [
     {
       "path": "app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/BecomeASustainerUpsellTest.kt",

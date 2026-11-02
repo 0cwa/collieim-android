@@ -14,7 +14,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: 288cdc7bfab7d54968007b9545c851eebbc0d362
+Source-Commit: 42096880eb94dd50397abf1fe843d92b9e2a4ce5
 AI-Generated: true
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java b/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java

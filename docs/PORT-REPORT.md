@@ -799,8 +799,8 @@ Partial-file exclusions and deletion necessity remain unmeasured unless separate
 | wire-handler/lib/build.gradle.kts | 100644 | 18 | no | no | Both Signal trees; absent in Molly | Tree membership audit | unmeasured | Git tree membership; see patches/ports/signal-8.33.2/report-evidence/receipts.md#whole-file-deletion-inventory | Molly path absence does not establish omission reason. |
 
 Compatibility share: 108969 / 143289 physical added plus deleted text lines = 76.048%.
-Current mechanical comparison: 7936 added, 98510 deleted, 106446 total, 28 binary; current Molly comparison: 396708 added, 239813 deleted, 636521 total, 698 binary.
-Current gross physical comparison relative to original Molly patchset: 106446 / 143289 added plus deleted text lines = 74.288%.
+Current mechanical comparison: 7921 added, 98495 deleted, 106416 total, 28 binary; current Molly comparison: 396708 added, 239813 deleted, 636521 total, 698 binary.
+Current gross physical comparison relative to original Molly patchset: 106416 / 143289 added plus deleted text lines = 74.267%.
 Gross physical counts include deletions and conflict bookkeeping; they do not establish authorship or necessity.
 After minimization: unmeasured.
 
@@ -817,11 +817,11 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | conflict_resolution | 1614 | 163 | 40048 |
 | signal_api_compile_fix | 5 | 24 | 12 |
 | behavior_preservation | 394 | 593 | 527 |
-| unmeasured | 3402 | 7156 | 57923 |
+| unmeasured | 3403 | 7141 | 57908 |
 
 | Structural kind | Rows | Added | Deleted |
 |---|---:|---:|---:|
-| text | 4516 | 7936 | 98510 |
+| text | 4517 | 7921 | 98495 |
 | binary | 28 | 0 | 0 |
 | mode | 871 | 0 | 0 |
 
@@ -4134,7 +4134,8 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | 791428e370948c3e17b2 | feature/app-settings/src/main/java/org/signal/appsettings/appicon/AppIconPreset.kt | text | 100644 | 100644 | 26 | 35 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 7d6da366fd48601d0ca0 | feature/app-settings/src/main/java/org/signal/appsettings/appicon/AppIconSelectionScreen.kt | text | 100644 | 100644 | 4 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 6adc931d339b8d916cd1 | feature/app-settings/src/main/java/org/signal/appsettings/appicon/AppIconSelectionScreen.kt | text | 100644 | 100644 | 3 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| e0cd16838d2a30101790 | feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt | text | 100644 | 100644 | 27 | 25 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| be7d1e54b9b8f4b1ad49 | feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt | text | 100644 | 100644 | 4 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 1123d1a889fe94679d7d | feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt | text | 100644 | 100644 | 8 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | c42572a7714366828ca3 | feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsState.kt | text | 100644 | 100644 | 1 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | a75e0e4bb4310bf6a678 | feature/app-settings/src/main/java/org/signal/appsettings/help/HelpSettingsAction.kt | text | 100644 | 100644 | 4 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | ce973875cd13c368e01c | feature/app-settings/src/main/java/org/signal/appsettings/help/HelpSettingsEvent.kt | text | 100644 | 100644 | 5 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
@@ -6518,3 +6519,4 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | app/src/main/java/org/thoughtcrime/securesms/MainActivity.kt | 67a515ff995d74b0c9c3e0638d56585bdb3bd92b | f2480e01ff66ca9fdbcafeab94f9da78917af71c | patches/ports/signal-8.33.2/report-evidence/hunk-b66bfdb0d1545eb6aeaf.patch | individual PR3 candidate a4dffbf5495149e65070cdaa098bb262bb4de30e; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6 | offline app Kotlin and Java compiler tasks; exact commands in receipt | individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree | patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations |
 | app/src/main/java/org/thoughtcrime/securesms/ShortcutLauncherActivity.java | 6029533abf442fded9dd0a86823c2384591c7a43 | ec7d48d92ea3b0d12f9a50fa96b1f9656d451160 | patches/ports/signal-8.33.2/report-evidence/hunk-cf2626f0fef0a77480cd.patch | individual PR3 candidate 9190cffac33d8ec563539aae5f39d8648d7b6219; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6 | offline app Kotlin and Java compiler tasks; exact commands in receipt | individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree | patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations |
 | app/src/main/java/org/thoughtcrime/securesms/apkupdate/ApkUpdateRefreshListener.java | 5fe4fd1e477db61d15edd5a4e019f70651dc7413 | c48215ed4aec49c983a02bf19076541c3198d361 | patches/ports/signal-8.33.2/report-evidence/hunk-981f51dd421773a09892.patch | individual PR3 candidate 5d8ee7aad84fbec894171b3c562ac569701c488b; PR4 matching individual source in import restoration receipt; combined PR3 tree dbfcd0cb03ec7ee164da222069249076819590c0 and PR4 tree da0dd13a3715105c65119054a26ab7a8a294d4f6 | offline app Kotlin and Java compiler tasks; exact commands in receipt | individual PR3 and PR4 compiler gates passed; both tasks executed on each combined tree | patches/ports/signal-8.33.2/report-evidence/receipts.md#ten-import-restorations |
+| feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt | 73d154a0b9277bdf16288b3fe7603d0f7e844235 | 755d040b4b801963f2d4bfdcd9d734dc05befbaa | patches/ports/signal-8.33.2/report-evidence/kotlin-indent-reverts.patch | PR5 baseline tree 68fa08fd69809463be3aa60ccd232bb50f02e547 and isolated and combined indentation inverse candidates; PR3/PR4 matching file blobs only | agent-heavy -- ./gradlew :feature:app-settings:compileDebugKotlin --max-workers=12 --console=plain | baseline build passed with task up to date; each of three individual inverses and combined inverse executed task and passed on PR5 | patches/ports/signal-8.33.2/report-evidence/receipts.md#kotlin-indentation-reversions |

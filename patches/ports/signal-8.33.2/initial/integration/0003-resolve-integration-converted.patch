@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 7761e6fdb7170378374221bee386f3a9f58900e5
+Source-Commit: 49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2
@@ -3150,10 +3150,10 @@ index 08d5f6a08ac3eb05816349529bd575e86d7be79a..ff0c932bdfa6507445aa7039f1e2f92d
      modifier = modifier
        .size(bitmapSize.dp)
 diff --git a/feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt b/feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt
-index 18e1d9c90bcf56031b8c0d407e82b39b9c9a9507..73d154a0b9277bdf16288b3fe7603d0f7e844235 100644
+index 18e1d9c90bcf56031b8c0d407e82b39b9c9a9507..755d040b4b801963f2d4bfdcd9d734dc05befbaa 100644
 --- a/feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt
 +++ b/feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt
-@@ -147,35 +147,37 @@ fun DataAndStorageSettingsScreen(
+@@ -147,9 +147,10 @@ fun DataAndStorageSettingsScreen(
          Description(stringResource(R.string.preference_data_and_storage__using_less_data_may_improve_calls_on_bad_networks))
        }
  
@@ -3165,38 +3165,11 @@ index 18e1d9c90bcf56031b8c0d407e82b39b9c9a9507..73d154a0b9277bdf16288b3fe7603d0f
 +          Dividers.Default()
 +        }
  
--      item {
--        Rows.ToggleRow(
--          checked = state.isStayConnectedInBackgroundChecked,
--          text = stringResource(R.string.DataAndStorageSettingsFragment__stay_connected_in_background),
--          enabled = state.playServicesAvailable,
--          onCheckChanged = { onEvent(DataAndStorageSettingsEvent.StayConnectedInBackgroundToggled(it)) },
--          modifier = Modifier.testTag(DataAndStorageSettingsTestTags.ROW_STAY_CONNECTED)
--        )
--      }
-+        item {
-+          Rows.ToggleRow(
-+            checked = state.isStayConnectedInBackgroundChecked,
-+            text = stringResource(R.string.DataAndStorageSettingsFragment__stay_connected_in_background),
-+            enabled = state.playServicesAvailable,
-+            onCheckChanged = { onEvent(DataAndStorageSettingsEvent.StayConnectedInBackgroundToggled(it)) },
-+            modifier = Modifier.testTag(DataAndStorageSettingsTestTags.ROW_STAY_CONNECTED)
-+          )
-+        }
- 
--      item {
--        Dividers.Default()
--      }
-+        item {
-+          Dividers.Default()
-+        }
- 
--      item {
--        Texts.SectionHeader(stringResource(R.string.preferences_proxy))
--      }
-+        item {
-+          Texts.SectionHeader(stringResource(R.string.preferences_proxy))
-+        }
+       item {
+         Rows.ToggleRow(
+@@ -169,13 +170,14 @@ fun DataAndStorageSettingsScreen(
+         Texts.SectionHeader(stringResource(R.string.preferences_proxy))
+       }
  
 -      item {
 -        Rows.TextRow(

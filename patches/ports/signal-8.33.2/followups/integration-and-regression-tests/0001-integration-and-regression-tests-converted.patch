@@ -20,7 +20,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: e1ef1d6a93b238c8369620a010e756b3c3f12e27
+Source-Commit: 0fd34d542166482b6c58fae49d554f61d2e8d15f
 AI-Generated: true
 
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml

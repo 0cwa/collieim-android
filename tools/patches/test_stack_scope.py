@@ -1,4 +1,6 @@
 import pathlib
+import copy
+import json
 import subprocess
 import tempfile
 import unittest
@@ -162,6 +164,22 @@ class ScopeTests(unittest.TestCase):
                     if layer != 'registration-network-settings' or name != 'series':
                         self.commit(prefix + layer + '/' + name, 'fixture\n')
             self.assertTrue(scope.check_scope(self.repo, 'additions', followups)['port_present'])
+            additions = self.git('rev-parse', 'HEAD').strip()
+            with self.assertRaisesRegex(ValueError, 'features phase is incomplete'):
+                scope.check_scope(self.repo, 'features', additions)
+            for layer in sorted(scope.FEATURES):
+                for name in scope.addition_files(layer):
+                    self.commit(prefix + layer + '/' + name, 'fixture\n')
+            with mock.patch.object(scope, 'check_feature_chain'):
+                self.assertTrue(scope.check_scope(self.repo, 'features', additions)['port_present'])
+            with self.assertRaisesRegex(ValueError, 'already contains'):
+                scope.check_scope(self.repo, 'features', 'HEAD')
+            with self.assertRaisesRegex(ValueError, 'outside scope'):
+                scope.check_scope(self.repo, 'features', followups)
+            self.commit(prefix + 'initial/unrelated/series', 'fixture\n')
+            with self.assertRaisesRegex(ValueError, 'outside scope'):
+                scope.check_scope(self.repo, 'features', additions)
+            self.git('reset', '--hard', '-q', additions)
             with self.assertRaisesRegex(ValueError, 'outside scope'):
                 scope.check_scope(self.repo, 'additions', release)
             with self.assertRaisesRegex(ValueError, 'already contains'):
@@ -175,6 +193,60 @@ class ScopeTests(unittest.TestCase):
                     self.commit(prefix + layer + '/' + name, 'fixture\n')
             with self.assertRaisesRegex(ValueError, 'no validated preceding stack phase'):
                 scope.check_scope(self.repo, 'additions', release)
+
+    def test_features_chain_rejects_unused_reordered_and_changed_metadata(self):
+        paths = ['followups/' + name + '/0001-' + name + '.patch' for name in scope.FEATURES]
+        old = {'id': 'followups/old', 'source_commit': 'old-commit', 'after_tree': 'old-tree'}
+        first = {'id': 'followups/' + scope.FEATURES[0], 'patches': [paths[0]],
+                 'source_bundle': 'followups/' + scope.FEATURES[0] + '/source-checkpoint.bundle',
+                 'source_bundle_prerequisite': 'old-commit', 'before_tree': 'old-tree',
+                 'source_commit': 'first-commit', 'after_tree': 'first-tree'}
+        second = {'id': 'followups/' + scope.FEATURES[1], 'patches': [paths[1]],
+                  'source_bundle': 'followups/' + scope.FEATURES[1] + '/source-checkpoint.bundle',
+                  'source_bundle_prerequisite': 'first-commit', 'before_tree': 'first-tree',
+                  'source_commit': 'second-commit', 'after_tree': 'second-tree'}
+        base = {'layers': [old], 'target_tree': 'old-tree', 'mailbox_sha256': {'old': 'hash'}}
+        head = {'layers': [old, first, second], 'target_tree': 'second-tree',
+                'mailbox_sha256': {'old': 'hash', paths[0]: 'one', paths[1]: 'two'}}
+        profile = {'target_tree': 'second-tree'}
+        series = ['old', *paths]
+        def check(current_series, current_head, current_profile):
+            def read(repo, command, spec):
+                ref, path = spec.split(':', 1)
+                if path.endswith('/series'):
+                    return ('\n'.join(['old'] if ref == 'base' else current_series) + '\n').encode()
+                value = (base if ref == 'base' else current_head) if path.endswith('provenance.json') else ({'target_tree': 'old-tree'} if ref == 'base' else current_profile)
+                return json.dumps(value).encode()
+            with mock.patch.object(scope, 'git', side_effect=read):
+                scope.check_feature_chain(self.repo, 'base', 'head')
+        check(series, head, profile)
+        for bad_series in (['old'], ['old', paths[0]], ['old', *reversed(paths)], [*paths, 'old']):
+            with self.subTest(series=bad_series), self.assertRaises(ValueError):
+                check(bad_series, head, profile)
+        for change in ('prior', 'omit', 'reorder', 'prerequisite', 'final', 'hash'):
+            bad = copy.deepcopy(head)
+            if change == 'prior': bad['layers'][0]['after_tree'] = 'changed'
+            if change == 'omit': bad['layers'].pop()
+            if change == 'reorder': bad['layers'][1:] = reversed(bad['layers'][1:])
+            if change == 'prerequisite': bad['layers'][2]['source_bundle_prerequisite'] = 'old-commit'
+            if change == 'final': bad['target_tree'] = 'old-tree'
+            if change == 'hash': bad['mailbox_sha256']['old'] = 'changed'
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                check(series, bad, profile)
+        with self.assertRaises(ValueError):
+            check(series, head, {'target_tree': 'old-tree'})
+
+    def test_features_allow_only_complete_named_layer_paths_and_metadata(self):
+        prefix = 'patches/ports/signal-8.33.2/'
+        for layer in scope.FEATURES:
+            for name in scope.addition_files(layer):
+                self.assertTrue(scope.allowed('features', prefix + 'followups/' + layer + '/' + name))
+        for path in ('series', 'provenance.json', 'report-metadata.json', 'report-evidence/receipts.md'):
+            self.assertTrue(scope.allowed('features', prefix + path))
+        for path in ('patches/molly/series', prefix + 'initial/integration/series',
+                     prefix + 'followups/retention-controls/other.patch',
+                     prefix + 'followups/registration-network-settings/series', 'tools/patches/scope.py'):
+            self.assertFalse(scope.allowed('features', path), path)
 
     def test_followups_allow_only_named_adjacent_report_metadata(self):
         self.assertTrue(scope.allowed('followups', 'patches/ports/signal-8.33.2/report-metadata.json'))

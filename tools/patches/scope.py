@@ -64,6 +64,7 @@ RELEASE_PATHS = RELEASE_PATHS.union({
 BEHAVIOR = {'reregistration-linked-devices-reminder', 'legacy-backup-precedence',
             'donation-completion', 'backup-notification-id-upgrade'}
 ADDITIONS = {'registration-network-settings', 'donation-completion-copy'}
+FEATURES = ('retention-controls', 'firebase-free-build')
 
 
 def addition_files(name):
@@ -116,7 +117,7 @@ def allowed(scope, path):
         if scope == 'switch':
             return path.startswith('patches/molly/') or path == 'molly-build.json'
         return report_evidence(path) or path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'}
-    if scope in ('followups', 'additions'):
+    if scope in ('followups', 'additions', 'features'):
         if report_evidence(path):
             return True
         prefix = 'patches/ports/signal-8.33.2/'
@@ -125,12 +126,47 @@ def allowed(scope, path):
         if scope == 'followups':
             return any(path.startswith(prefix + 'followups/' + name + '/') for name in BEHAVIOR)
         return any(path in {prefix + 'followups/' + layer + '/' + name for name in addition_files(layer)}
-                   for layer in ADDITIONS)
+                   for layer in (ADDITIONS if scope == 'additions' else FEATURES))
     return False
 
 
+def check_feature_chain(repo, base, head):
+    prefix = 'patches/ports/signal-8.33.2/'
+    def read(ref, path):
+        return git(repo, 'show', ref + ':' + path)
+    try:
+        base_series = read(base, prefix + 'series').splitlines()
+        head_series = read(head, prefix + 'series').splitlines()
+        patches = ['followups/' + name + '/0001-' + name + '.patch' for name in FEATURES]
+        if head_series != base_series + [path.encode() for path in patches]:
+            raise ValueError('features series is not the exact ordered extension')
+        before = json.loads(read(base, prefix + 'provenance.json'))
+        after = json.loads(read(head, prefix + 'provenance.json'))
+        base_profile = json.loads(read(base, 'molly-build.json'))
+        profile = json.loads(read(head, 'molly-build.json'))
+        old_layers, layers = before['layers'], after['layers']
+        if layers[:-2] != old_layers or len(layers) != len(old_layers) + 2:
+            raise ValueError('features provenance changed prior layers')
+        if before['target_tree'] != base_profile['target_tree'] or old_layers[-1]['after_tree'] != before['target_tree']:
+            raise ValueError('features base checkpoint differs')
+        previous_commit, previous_tree = old_layers[-1]['source_commit'], before['target_tree']
+        for layer, name, patch in zip(layers[-2:], FEATURES, patches):
+            if (layer['id'] != 'followups/' + name or layer['patches'] != [patch] or
+                layer['source_bundle'] != 'followups/' + name + '/source-checkpoint.bundle' or
+                layer['source_bundle_prerequisite'] != previous_commit or layer['before_tree'] != previous_tree or
+                patch not in after['mailbox_sha256']):
+                raise ValueError('features provenance chain differs')
+            previous_commit, previous_tree = layer['source_commit'], layer['after_tree']
+        if after['target_tree'] != previous_tree or profile['target_tree'] != previous_tree:
+            raise ValueError('features final checkpoint differs')
+        if any(after['mailbox_sha256'].get(k) != v for k, v in before['mailbox_sha256'].items()):
+            raise ValueError('features provenance changed prior mailbox pins')
+    except (KeyError, IndexError, TypeError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
+        raise ValueError('invalid features chain metadata') from exc
+
+
 def check_scope(repo, scope, base, head='HEAD'):
-    if scope not in ('pipeline', 'switch', 'release', 'followups', 'additions'):
+    if scope not in ('pipeline', 'switch', 'release', 'followups', 'additions', 'features'):
         raise ValueError('unknown scope')
     if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
@@ -160,7 +196,7 @@ def check_scope(repo, scope, base, head='HEAD'):
         if git(repo, 'rev-parse', base + '^{commit}').decode().strip() != MOLLY:
             raise ValueError('pipeline base must be the official Molly commit')
     else:
-        lower_source = {'switch': MOLLY, 'release': OLD, 'followups': NEW, 'additions': NEW}[scope]
+        lower_source = {'switch': MOLLY, 'release': OLD, 'followups': NEW, 'additions': NEW, 'features': NEW}[scope]
         for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', lower_source, base).split(b'\0')):
             if not metadata(raw.decode('utf-8', 'surrogateescape')):
                 raise ValueError('lower base has incorrect source projection')
@@ -190,12 +226,20 @@ def check_scope(repo, scope, base, head='HEAD'):
                 raise ValueError('additions base already contains ' + layer)
             if not all(exists(head, addition_path + '/' + name) for name in addition_files(layer)):
                 raise ValueError('additions phase is incomplete')
+    if scope == 'features':
+        for layer in FEATURES:
+            feature_path = 'patches/ports/signal-8.33.2/followups/' + layer
+            if exists(base, feature_path):
+                raise ValueError('features base already contains ' + layer)
+            if not all(exists(head, feature_path + '/' + name) for name in addition_files(layer)):
+                raise ValueError('features phase is incomplete')
+        check_feature_chain(repo, base, head)
     # Verify lower phases from their own ancestors, so changes hidden in a base
     # cannot escape the adjacent diff. Each recursion moves to an earlier phase.
     if scope == 'switch':
         check_scope(repo, 'pipeline', MOLLY, base)
-    elif scope in ('release', 'followups', 'additions'):
-        lower_phase = {'release': 'switch', 'followups': 'release', 'additions': 'followups'}[scope]
+    elif scope in ('release', 'followups', 'additions', 'features'):
+        lower_phase = {'release': 'switch', 'followups': 'release', 'additions': 'followups', 'features': 'additions'}[scope]
         candidates = git(repo, 'rev-list', '--ancestry-path', MOLLY + '..' + base).decode().splitlines()
         for candidate in candidates:
             try:
@@ -205,7 +249,7 @@ def check_scope(repo, scope, base, head='HEAD'):
                 continue
         else:
             raise ValueError('lower base has no validated preceding stack phase')
-    source = {'pipeline': MOLLY, 'switch': OLD, 'release': NEW, 'followups': NEW, 'additions': NEW}[scope]
+    source = {'pipeline': MOLLY, 'switch': OLD, 'release': NEW, 'followups': NEW, 'additions': NEW, 'features': NEW}[scope]
     paths = git(repo, 'diff', '--no-renames', '--name-only', '-z', source, head).split(b'\0')
     for raw in filter(None, paths):
         path = raw.decode('utf-8', 'surrogateescape')
@@ -232,12 +276,12 @@ def check_scope(repo, scope, base, head='HEAD'):
                 raise ValueError('invalid profile pins')
         except (KeyError, TypeError, json.JSONDecodeError) as exc:
             raise ValueError('invalid profile') from exc
-    return {'scope': scope, 'profile_present': scope != 'pipeline', 'port_present': scope in ('release', 'followups', 'additions')}
+    return {'scope': scope, 'profile_present': scope != 'pipeline', 'port_present': scope in ('release', 'followups', 'additions', 'features')}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions'))
+    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features'))
     parser.add_argument('--base', required=True)
     parser.add_argument('--head', default='HEAD')
     parser.add_argument('--repo', default='.')

@@ -12273,6 +12273,46 @@
     },
     "3b80133da23d089729f5": {
       "reason": "Mixed hunk: source commit 76bb8d55a3ee04c9f6c3b971fa3cff823b87bf12 adds five manifest lines for registration Network settings alongside ten existing added lines; type left unmeasured to avoid counting all fifteen as additions."
+    },
+    "d314327781b510373bf0": {
+      "type": "signal_api_compile_fix",
+      "reason": "Whole import hunk reversed: Signal EventBus and ThreadMode replaced by all three old greenrobot imports. Classification describes the API change, not proof every line is necessary.",
+      "molly_equivalent": "Old Molly and human ports 5551f3023e6093fbb65214acdcc2e568b7b63132 and aa81fd6312bf1c7a71f5efda1930d23b05bdb739 preserve the old implementation; no verified Molly equivalent using the new API.",
+      "searched_branches": "Molly signal-8.20.4 and fix/socks-proxy-dns-leak; upstream-stable and upstream-main are plain Signal baselines",
+      "revert_gate": "Isolated real-file javac against owner task configuration and profile 5 outputs; not a module or runtime check",
+      "gate_input": "Profile 5 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, baseline blob 19b8ef8ca9c345f38b199e78ddf93abfb15b83a1, counter blob c70a2fc98c7bc923d7d791a29a61c6edd2dd759c; profile 3 and 4 identical file blobs support only conditional transfer",
+      "outcome": "baseline exit 0; counter exit 1: greenrobot package absent and EventBus/ThreadMode unresolved; no production change or accepted minimization",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-d314327781b510373bf0.patch and receipts.md#binding-evidence-v1"
+    },
+    "23fbf7e6ed4bd45b4dbd": {
+      "type": "signal_api_compile_fix",
+      "reason": "Whole callback hunk inverse restores the old anonymous subscriber with current imports unchanged. Classification describes the API change, not independent necessity of each line.",
+      "molly_equivalent": "Old Molly and human ports 5551f3023e6093fbb65214acdcc2e568b7b63132 and aa81fd6312bf1c7a71f5efda1930d23b05bdb739 preserve the old implementation; no verified Molly equivalent using the new API.",
+      "searched_branches": "Molly signal-8.20.4 and fix/socks-proxy-dns-leak; upstream-stable and upstream-main are plain Signal baselines",
+      "revert_gate": "Isolated real-file javac against owner task configuration and profile 5 outputs; not a module or runtime check",
+      "gate_input": "Profile 5 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, baseline blob 19b8ef8ca9c345f38b199e78ddf93abfb15b83a1, whole inverse blob 068a1b05cdf40c911c4acda6aafa44f45e0a98d4; current imports and dependencies unchanged; profile 3 and 4 identical file blobs support only conditional transfer",
+      "outcome": "baseline exit 0; whole inverse exit 1: Subscribe unresolved and Signal EventBus has no register(anonymous Object); not independent necessity, full-module, runtime, unique implementation or global minimality proof; no production change or accepted minimization",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-23fbf7e6ed4bd45b4dbd.patch and receipts.md#whole-callback-binding-evidence-v2"
+    },
+    "efe95a23f05268a99f97": {
+      "type": "signal_api_compile_fix",
+      "reason": "Whole one-line EventBus import inverse; sticky TransferStatus guard retained. Classification describes the API change, not proof every line is necessary.",
+      "molly_equivalent": "Old Molly and human ports 5551f3023e6093fbb65214acdcc2e568b7b63132 and aa81fd6312bf1c7a71f5efda1930d23b05bdb739 preserve the old implementation; no verified Molly equivalent using the new API.",
+      "searched_branches": "Molly signal-8.20.4 and fix/socks-proxy-dns-leak; upstream-stable and upstream-main are plain Signal baselines",
+      "revert_gate": "Isolated real-file javac against owner task configuration and profile 5 outputs; not a module or runtime check",
+      "gate_input": "Profile 5 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, baseline blob 8b392dc3ba3adf6b6abb6f0125ab766ca537994a, counter blob be99680a42a2ef40a5e67fd0c7ddf599cb5752b5; profile 3 and 4 identical file blobs support only conditional transfer",
+      "outcome": "baseline exit 0; counter exit 1: greenrobot package absent and EventBus unresolved; no production change or accepted minimization",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-efe95a23f05268a99f97.patch and receipts.md#binding-evidence-v1"
+    },
+    "7d2f8e90ce08e18c8f21": {
+      "type": "signal_api_compile_fix",
+      "reason": "Whole 16-addition/2-deletion method-body hunk reversed to old two-line delegate; existing attributes parameter used. Classification describes the API change, not proof every line is necessary.",
+      "molly_equivalent": "Old Molly and human ports 5551f3023e6093fbb65214acdcc2e568b7b63132 and aa81fd6312bf1c7a71f5efda1930d23b05bdb739 preserve the old implementation; no verified Molly equivalent using the new API.",
+      "searched_branches": "Molly signal-8.20.4 and fix/socks-proxy-dns-leak; upstream-stable and upstream-main are plain Signal baselines",
+      "revert_gate": "Isolated real-file javac against owner task configuration and profile 5 outputs; not a module or runtime check",
+      "gate_input": "Profile 5 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, baseline blob 932e209b0781e43dd8c3088abce07e790df90503, counter blob ce05d451dc6477366a470e0657ddf2bcacd74de9; profile 3 and 4 identical file blobs support only conditional transfer",
+      "outcome": "baseline exit 0; counter exit 1: PushServiceSocket has no matching finishNewDeviceRegistration method; no production change or accepted minimization",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-7d2f8e90ce08e18c8f21.patch and receipts.md#binding-evidence-v1"
     }
   },
   "exclusions_complete": false,

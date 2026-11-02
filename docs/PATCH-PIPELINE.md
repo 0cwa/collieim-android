@@ -277,7 +277,8 @@ acceptance is assumed by these patches.
 
 For a stack boundary, pass its explicit base to the preflight, for example
 `tools/patches/preflight.sh --scope pipeline --base stack/0-molly-8.19.2-4`.
-Use `switch`, `release`, `followups`, or `additions` for the subsequent boundaries.
+Use `switch`, `release`, `followups`, `additions`, or `features` for the subsequent boundaries.
+For the feature branch, use `--scope features --base stack/5-behavior-additions`.
 For the fifth branch, use `--scope additions --base stack/4-behavior-followups`. The
 scope check validates the base ancestry, source projection, approved workflow
 paths, Molly forest identity, and profile pins. The pipeline branch has no

@@ -388,7 +388,7 @@ def main():
     parser.add_argument('--config', type=Path, default=Path('molly-build.json'))
     parser.add_argument('--worktree', type=Path, required=True)
     parser.add_argument('--report', type=Path)
-    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions'))
+    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features'))
     parser.add_argument('--base')
     args = parser.parse_args()
     try:

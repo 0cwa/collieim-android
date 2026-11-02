@@ -162,6 +162,21 @@ class ScopeTests(unittest.TestCase):
                     if layer != 'registration-network-settings' or name != 'series':
                         self.commit(prefix + layer + '/' + name, 'fixture\n')
             self.assertTrue(scope.check_scope(self.repo, 'additions', followups)['port_present'])
+            additions = self.git('rev-parse', 'HEAD').strip()
+            with self.assertRaisesRegex(ValueError, 'features phase is incomplete'):
+                scope.check_scope(self.repo, 'features', additions)
+            for layer in sorted(scope.FEATURES):
+                for name in scope.addition_files(layer):
+                    self.commit(prefix + layer + '/' + name, 'fixture\n')
+            self.assertTrue(scope.check_scope(self.repo, 'features', additions)['port_present'])
+            with self.assertRaisesRegex(ValueError, 'already contains'):
+                scope.check_scope(self.repo, 'features', 'HEAD')
+            with self.assertRaisesRegex(ValueError, 'outside scope'):
+                scope.check_scope(self.repo, 'features', followups)
+            self.commit(prefix + 'initial/unrelated/series', 'fixture\n')
+            with self.assertRaisesRegex(ValueError, 'outside scope'):
+                scope.check_scope(self.repo, 'features', additions)
+            self.git('reset', '--hard', '-q', additions)
             with self.assertRaisesRegex(ValueError, 'outside scope'):
                 scope.check_scope(self.repo, 'additions', release)
             with self.assertRaisesRegex(ValueError, 'already contains'):
@@ -175,6 +190,18 @@ class ScopeTests(unittest.TestCase):
                     self.commit(prefix + layer + '/' + name, 'fixture\n')
             with self.assertRaisesRegex(ValueError, 'no validated preceding stack phase'):
                 scope.check_scope(self.repo, 'additions', release)
+
+    def test_features_allow_only_complete_named_layer_paths_and_metadata(self):
+        prefix = 'patches/ports/signal-8.33.2/'
+        for layer in scope.FEATURES:
+            for name in scope.addition_files(layer):
+                self.assertTrue(scope.allowed('features', prefix + 'followups/' + layer + '/' + name))
+        for path in ('series', 'provenance.json', 'report-metadata.json', 'report-evidence/receipts.md'):
+            self.assertTrue(scope.allowed('features', prefix + path))
+        for path in ('patches/molly/series', prefix + 'initial/integration/series',
+                     prefix + 'followups/retention-controls/other.patch',
+                     prefix + 'followups/registration-network-settings/series', 'tools/patches/scope.py'):
+            self.assertFalse(scope.allowed('features', path), path)
 
     def test_followups_allow_only_named_adjacent_report_metadata(self):
         self.assertTrue(scope.allowed('followups', 'patches/ports/signal-8.33.2/report-metadata.json'))

@@ -17,7 +17,7 @@ while (($#)); do
     proof|resources|full) stage=$1; shift ;;
     --scope) scope=${2:?missing scope}; shift 2 ;;
     --base) scope_base=${2:?missing base}; shift 2 ;;
-    *) echo "usage: $0 [proof|resources|full] [--scope pipeline|switch|release|followups|additions --base REF]" >&2; exit 2 ;;
+    *) echo "usage: $0 [proof|resources|full] [--scope pipeline|switch|release|followups|additions|features --base REF]" >&2; exit 2 ;;
   esac
 done
 base=${MOLLY_PREFLIGHT_DIR:-$HOME/agent-scratch/mollyim-android/preflight}

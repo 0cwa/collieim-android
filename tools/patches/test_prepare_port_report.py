@@ -83,3 +83,15 @@ class PrepareReportTests(unittest.TestCase):
         preflight = (root / 'tools/patches/preflight.sh').read_text()
         self.assertLess(preflight.index('python3 tools/patches/prepare_port_report.py'), preflight.index('python3 tools/patches/scope.py'))
         self.assertLess(preflight.index('python3 tools/patches/prepare_port_report.py'), preflight.index('python3 tools/patches/release.py'))
+
+    def test_feature_workflow_routes_and_runs_both_profiles(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / '.github/workflows/molly-patch-release.yml').read_text()
+        self.assertIn('stack/5-behavior-additions) scope=features ;;', workflow)
+        self.assertIn('feature/foss-8.33.2) scope=features; base_ref=stack/5-behavior-additions ;;', workflow)
+        self.assertEqual(workflow.count("hashFiles('patches/ports/signal-8.33.2/followups/firebase-free-build/series') != ''"), 2)
+        self.assertEqual(workflow.count('ORG_GRADLE_PROJECT_mollyFirebaseFree:'), 2)
+        self.assertEqual(workflow.count('python3 tools/patches/build.py assemble'), 2)
+        self.assertEqual(workflow.count('python3 tools/patches/build.py test'), 2)
+        self.assertLess(workflow.index('name: molly-android-${{'), workflow.index('id: foss_assemble'))
+        self.assertIn('name: molly-android-firebase-free-${{', workflow)

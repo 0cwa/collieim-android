@@ -40,6 +40,7 @@ import org.thoughtcrime.securesms.database.SignedPreKeyTable;
 import org.thoughtcrime.securesms.database.StickerTables;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.keyvalue.KeyValueDataSet;
+import org.thoughtcrime.securesms.keyvalue.KeyValuePersistentStorage;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.thoughtcrime.securesms.util.BackupUtil;
@@ -120,6 +121,9 @@ public class FullBackupImporter extends FullBackupBase {
       throws IOException
   {
     int count = 0;
+
+    // The restore writes key-values directly through KeyValueDatabase, so finish any queued SignalStore writes first.
+    SignalStore.blockUntilAllWritesFinished();
 
     SQLiteDatabase keyValueDatabase = KeyValueDatabase.getInstance(AppDependencies.getApplication()).getSqlCipherDatabase();
 
@@ -306,6 +310,11 @@ public class FullBackupImporter extends FullBackupBase {
   }
 
   private static void processKeyValue(KeyValue keyValue) {
+    processKeyValue(keyValue, KeyValueDatabase.getInstance(AppDependencies.getApplication()));
+  }
+
+  @VisibleForTesting
+  static void processKeyValue(KeyValue keyValue, KeyValuePersistentStorage storage) {
     KeyValueDataSet dataSet = new KeyValueDataSet();
 
     if (keyValue.key == null) {
@@ -330,7 +339,7 @@ public class FullBackupImporter extends FullBackupBase {
       return;
     }
 
-    KeyValueDatabase.getInstance(AppDependencies.getApplication()).writeDataSet(dataSet, Collections.emptyList());
+    storage.writeDataSet(dataSet, Collections.emptyList());
   }
 
   private static final List<String> defaultSharedPreferencesFileNames = Arrays.asList(
@@ -342,6 +351,15 @@ public class FullBackupImporter extends FullBackupBase {
   @SuppressLint("ApplySharedPref")
   @VisibleForTesting
   static void processPreference(@NonNull Context context, SharedPreference preference) {
+    processPreference(context, preference, KeyValueDatabase.getInstance(AppDependencies.getApplication()));
+  }
+
+  @SuppressLint("ApplySharedPref")
+  @VisibleForTesting
+  static void processPreference(@NonNull Context context,
+                                SharedPreference preference,
+                                KeyValuePersistentStorage storage)
+  {
     SharedPreferences preferences;
 
     // Identity keys were moved from shared prefs into SignalStore. Need to handle importing backups made before the migration.
@@ -375,6 +393,13 @@ public class FullBackupImporter extends FullBackupBase {
         preferences.edit().putLong(preference.key, Integer.toUnsignedLong(preference.integerValue)).commit();
       } else {
         preferences.edit().putInt(preference.key, preference.integerValue).commit();
+      }
+    }
+
+    if (defaultSharedPreferencesFileNames.contains(preference.file_)) {
+      KeyValueDataSet legacySetting = SignalStore.settings().legacySharedPreferenceToKeyValue(preference);
+      if (legacySetting != null) {
+        storage.writeDataSet(legacySetting, Collections.emptyList());
       }
     }
   }

@@ -145,7 +145,6 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
     @JvmStatic
     fun onPostBackupRestore() {
       instance!!.store.resetCache()
-      instance!!.settingsValues.restoreLegacySharedPrefsAfterBackupRestore()
     }
 
     @JvmStatic

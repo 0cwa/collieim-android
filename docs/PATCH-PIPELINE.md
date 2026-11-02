@@ -309,6 +309,57 @@ committed so replay works in a fresh checkout. The starting tree must be
 available from the report preparation step. The clean-merge measurement omits
 whole conflicted files, including any clean portions within those files.
 
+## Measure the lines the compatibility changes wrote
+
+The port report opens with one measurement: which lines of each stage's
+reconstructed source come from neither of its inputs. `line_origin.py` records
+the stage's tree as a synthetic merge whose parents are the released Molly
+commit and the new Signal commit, then reads Git's combined diff
+(`git diff-tree --cc -M`):
+
+- **written**: lines in no parent (every prefix column is `+`);
+- **removed**: lines in every parent but not in the result (every column is `-`).
+
+A line taken unchanged from either input, including either side of a merge
+conflict, is not counted, and a path equal to one input is skipped. This makes
+conflict side choices and Git's own clean merge free, so the count is the
+review surface of the AI-assisted compatibility changes. Synthetic commits go
+to a private object directory; the repository is not modified.
+
+Counts are split into fixed classes: production (shipped source, default-locale
+resources and build scripts), translations (`res/values-<locale>/strings*.xml`),
+tests (test, screenshot-test and benchmark source sets), generated
+(`gradle/verification-metadata.xml`) and repository (patches, tools, docs, CI).
+Production is the headline. The report also counts **Molly lines not carried**:
+Molly's own non-blank lines (old Signal to Molly) missing from the same path.
+That count is textual, so rewritten or moved code counts as missing.
+
+Every port checkpoint is measured. Initial layers own the paths their mailboxes
+and stage records touch, and split the initial result by path. Each follow-up
+row is that follow-up's physical diff from the previous checkpoint (added /
+deleted, with renames), so it reads as the lines the follow-up changes. A
+stage's total is its last checkpoint, and the stage of a follow-up comes from the scope check's
+layer sets.
+
+Fork layers need the fork's head as a third parent, so lines the fork itself
+wrote are not counted as ours. Fork layers kept in the port series have no fork
+input; their stage row is labelled as including the fork's lines and is not a
+measure of our changes. When `molly-build.json` declares named release
+profiles, the report adds one row per profile: profiles with fork layers load
+the fork's upstream bundle into the private object directory and use its head
+as the third parent, and **from the fork** counts the production lines the fork
+wrote that the profile carries.
+
+```sh
+python3 tools/patches/line_origin.py port --markdown [--config molly-build.json]
+python3 tools/patches/line_origin.py tree TREE --parent MOLLY --parent SIGNAL \
+  [--parent FORK_HEAD] [--molly-old OLD_SIGNAL MOLLY]
+```
+
+Comparisons with the mechanical tree, patch-file sizes and whole-file deletion
+totals remain in the report as raw physical diffs. They include conflict
+markers and bookkeeping and are not a measure of the compatibility changes.
+
 ## Re-export an existing current-format series
 
 After replaying the source commits separately, use `reexport_current.py` to

@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -48,6 +49,23 @@ class ChatsSettingsScreenTest {
   val composeTestRule = createComposeRule()
 
   private val events = mutableListOf<ChatsSettingsEvents>()
+
+  @Test
+  fun retentionControlsStartOffAndDispatchTheirToggleEvents() {
+    setContent(createState())
+    val controls = listOf(
+      R.string.ChatsSettingsFragment__keep_expiring_messages to ChatsSettingsEvents.KeepExpiringMessagesChanged(true),
+      R.string.ChatsSettingsFragment__keep_view_once_messages to ChatsSettingsEvents.KeepViewOnceMessagesChanged(true),
+      R.string.ChatsSettingsFragment__ignore_remote_delete to ChatsSettingsEvents.IgnoreRemoteDeleteChanged(true),
+      R.string.ChatsSettingsFragment__delete_media_only to ChatsSettingsEvents.DeleteMediaOnlyChanged(true)
+    )
+    controls.forEach { (label, event) ->
+      val text = context.getString(label)
+      composeTestRule.onNodeWithTag(ChatsSettingsTestTags.SCROLLER).performScrollToNode(hasText(text))
+      composeTestRule.onNodeWithText(text).performClick()
+      assertThat(events).contains(event)
+    }
+  }
 
   @Test
   fun whenScreenResumes_thenIExpectRefreshEvent() {

@@ -227,14 +227,22 @@ jobs:
             ${{ runner.temp }}/molly-release/**/build/test-results
             ${{ runner.temp }}/molly-release/app/build/outputs/apk/prodWebsite/debug
 
+      - name: Clear default build outputs before Firebase-free validation
+        id: foss_prepare
+        if: ${{ hashFiles('patches/ports/signal-8.33.2/followups/firebase-free-build/series') != '' }}
+        run: |
+          rm -rf -- "$RUNNER_TEMP/molly-release/app/build/outputs/apk/prodWebsite/debug"
+          find "$RUNNER_TEMP/molly-release" -type d \
+            \( -path '*/build/reports' -o -path '*/build/test-results' \) -prune -exec rm -rf -- {} +
+
       - name: Assemble the Firebase-free Website debug APK
         id: foss_assemble
-        if: ${{ hashFiles('patches/ports/signal-8.33.2/followups/firebase-free-build/series') != '' }}
+        if: ${{ steps.foss_prepare.outcome == 'success' }}
         env:
           ORG_GRADLE_PROJECT_mollyFirebaseFree: 'true'
         run: |
           python3 tools/patches/build.py assemble \
-            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports"
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/foss-reports"
 
       - name: Run the Firebase-free profile regression test tasks
         if: ${{ hashFiles('patches/ports/signal-8.33.2/followups/firebase-free-build/series') != '' }}
@@ -242,16 +250,16 @@ jobs:
           ORG_GRADLE_PROJECT_mollyFirebaseFree: 'true'
         run: |
           python3 tools/patches/build.py test \
-            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports"
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/foss-reports"
 
       - name: Upload Firebase-free build logs, APK and test results
-        if: ${{ always() && steps.foss_assemble.outcome != '' && steps.foss_assemble.outcome != 'skipped' }}
+        if: ${{ always() && steps.foss_prepare.outcome == 'success' && steps.foss_assemble.outcome != '' && steps.foss_assemble.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: molly-android-firebase-free-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: warn
           path: |
-            ${{ runner.temp }}/reports
+            ${{ runner.temp }}/foss-reports
             ${{ runner.temp }}/molly-release/**/build/reports
             ${{ runner.temp }}/molly-release/**/build/test-results
             ${{ runner.temp }}/molly-release/app/build/outputs/apk/prodWebsite/debug

@@ -95,3 +95,10 @@ class PrepareReportTests(unittest.TestCase):
         self.assertEqual(workflow.count('python3 tools/patches/build.py test'), 2)
         self.assertLess(workflow.index('name: molly-android-${{'), workflow.index('id: foss_assemble'))
         self.assertIn('name: molly-android-firebase-free-${{', workflow)
+        foss = workflow.split('id: foss_prepare', 1)[1]
+        self.assertLess(foss.index('rm -rf --'), foss.index('python3 tools/patches/build.py assemble'))
+        self.assertIn("-path '*/build/test-results'", foss)
+        self.assertEqual(foss.count('--report-dir "$RUNNER_TEMP/foss-reports"'), 2)
+        self.assertNotIn('${{ runner.temp }}/reports', foss)
+        self.assertIn("steps.foss_prepare.outcome == 'success'", foss)
+        self.assertIn("steps.foss_assemble.outcome != 'skipped'", foss)

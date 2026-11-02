@@ -64,7 +64,7 @@ RELEASE_PATHS = RELEASE_PATHS.union({
 BEHAVIOR = {'reregistration-linked-devices-reminder', 'legacy-backup-precedence',
             'donation-completion', 'backup-notification-id-upgrade'}
 ADDITIONS = {'registration-network-settings', 'donation-completion-copy'}
-FEATURES = {'retention-controls', 'firebase-free-build'}
+FEATURES = ('retention-controls', 'firebase-free-build')
 
 
 def addition_files(name):
@@ -128,6 +128,41 @@ def allowed(scope, path):
         return any(path in {prefix + 'followups/' + layer + '/' + name for name in addition_files(layer)}
                    for layer in (ADDITIONS if scope == 'additions' else FEATURES))
     return False
+
+
+def check_feature_chain(repo, base, head):
+    prefix = 'patches/ports/signal-8.33.2/'
+    def read(ref, path):
+        return git(repo, 'show', ref + ':' + path)
+    try:
+        base_series = read(base, prefix + 'series').splitlines()
+        head_series = read(head, prefix + 'series').splitlines()
+        patches = ['followups/' + name + '/0001-' + name + '.patch' for name in FEATURES]
+        if head_series != base_series + [path.encode() for path in patches]:
+            raise ValueError('features series is not the exact ordered extension')
+        before = json.loads(read(base, prefix + 'provenance.json'))
+        after = json.loads(read(head, prefix + 'provenance.json'))
+        base_profile = json.loads(read(base, 'molly-build.json'))
+        profile = json.loads(read(head, 'molly-build.json'))
+        old_layers, layers = before['layers'], after['layers']
+        if layers[:-2] != old_layers or len(layers) != len(old_layers) + 2:
+            raise ValueError('features provenance changed prior layers')
+        if before['target_tree'] != base_profile['target_tree'] or old_layers[-1]['after_tree'] != before['target_tree']:
+            raise ValueError('features base checkpoint differs')
+        previous_commit, previous_tree = old_layers[-1]['source_commit'], before['target_tree']
+        for layer, name, patch in zip(layers[-2:], FEATURES, patches):
+            if (layer['id'] != 'followups/' + name or layer['patches'] != [patch] or
+                layer['source_bundle'] != 'followups/' + name + '/source-checkpoint.bundle' or
+                layer['source_bundle_prerequisite'] != previous_commit or layer['before_tree'] != previous_tree or
+                patch not in after['mailbox_sha256']):
+                raise ValueError('features provenance chain differs')
+            previous_commit, previous_tree = layer['source_commit'], layer['after_tree']
+        if after['target_tree'] != previous_tree or profile['target_tree'] != previous_tree:
+            raise ValueError('features final checkpoint differs')
+        if any(after['mailbox_sha256'].get(k) != v for k, v in before['mailbox_sha256'].items()):
+            raise ValueError('features provenance changed prior mailbox pins')
+    except (KeyError, IndexError, TypeError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
+        raise ValueError('invalid features chain metadata') from exc
 
 
 def check_scope(repo, scope, base, head='HEAD'):
@@ -198,6 +233,7 @@ def check_scope(repo, scope, base, head='HEAD'):
                 raise ValueError('features base already contains ' + layer)
             if not all(exists(head, feature_path + '/' + name) for name in addition_files(layer)):
                 raise ValueError('features phase is incomplete')
+        check_feature_chain(repo, base, head)
     # Verify lower phases from their own ancestors, so changes hidden in a base
     # cannot escape the adjacent diff. Each recursion moves to an earlier phase.
     if scope == 'switch':

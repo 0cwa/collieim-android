@@ -324,7 +324,7 @@ def apply_resolutions(repo, worktree, tree, records, existing=False):
 
 def assemble(repo, config_path, worktree, scope=None, base=None, profile=None):
     repo = Path(repo).resolve()
-    config, selection = release_profiles.select(load_config(config_path), profile)
+    config, selection = release_profiles.select(load_config(config_path), profile, repo)
     destination = forest.destination(repo, worktree)
     signal = config['signal']['commit']
     check_source_boundary(repo, signal, scope, base)

@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import json
+from pathlib import Path
 import re
 
 
@@ -26,7 +27,60 @@ class ProfileError(ValueError):
     pass
 
 
-def select(config, name):
+TEST_SOURCE = re.compile(r'^(?P<module>.+?)/src/test/(?:java|kotlin)/(?P<name>.+)\.(?:kt|java)$')
+OTHER_TEST_SOURCE = re.compile(r'(^|/)src/(androidTest|testFixtures|screenshotTest\w*)/')
+
+
+def layer_test_classes(repo, series):
+    """Test classes a fork layer adds or changes, as (module, class), in mailbox order."""
+    root = Path(repo) / FORK_ROOT
+    provenance = json.loads((root / 'provenance.json').read_text())
+    layers = [x for x in provenance['layers'] if FORK_ROOT + '/' + x['series'] == series]
+    if len(layers) != 1:
+        raise ProfileError('fork series has no single provenance layer: ' + series)
+    text = (root / layers[0]['mailbox']).read_text(errors='surrogateescape')
+    found = []
+    for block in re.split(r'^(?=diff --git )', text, flags=re.M)[1:]:
+        header = re.match(r'diff --git a/(\S+) b/(\S+)\n', block)
+        if header is None:
+            raise ProfileError('unreadable fork mailbox header in ' + series)
+        path = header.group(2)
+        if re.search(r'^deleted file mode ', block.split('\n@@', 1)[0], flags=re.M):
+            continue
+        match = TEST_SOURCE.match(path)
+        if match:
+            found.append((match['module'], match['name'].replace('/', '.')))
+        elif OTHER_TEST_SOURCE.search(path):
+            raise ProfileError('no unit test task rule for fork test source: ' + path)
+    return found
+
+
+def derived_tests(repo, base, fork_series):
+    """Base Gradle test arguments plus the test classes each selected fork layer adds or changes.
+
+    A class joins the filters of its module's existing test task. A task that already runs
+    unfiltered keeps running everything; a module without a test task is an error.
+    """
+    groups, i = [], 0
+    while i < len(base):
+        if base[i] == '--tests':
+            if not groups or i + 1 >= len(base):
+                raise ProfileError('test filters must follow a Gradle task')
+            groups[-1][1].append(base[i + 1]); i += 2
+        else:
+            groups.append([base[i], []]); i += 1
+    for series in fork_series:
+        for module, name in layer_test_classes(repo, series):
+            prefix = ':' + module.replace('/', ':') + ':'
+            tasks = [g for g in groups if g[0].startswith(prefix)]
+            if len(tasks) != 1:
+                raise ProfileError(f'fork test {name} needs exactly one {prefix} test task in android.tests')
+            if tasks[0][1] and name not in tasks[0][1]:
+                tasks[0][1].append(name)
+    return [arg for task, filters in groups for arg in [task] + [x for f in filters for x in ('--tests', f)]]
+
+
+def select(config, name, repo='.'):
     if name is None:
         return config, None
     if name not in NAMES:
@@ -34,7 +88,7 @@ def select(config, name):
     entry = config.get('profiles', {}).get(name)
     if not isinstance(entry, dict):
         raise ProfileError('release profile is not configured: ' + name)
-    required = {'base_series', 'base_checkpoint', 'base_tree', 'fork_series', 'target_tree', 'tests', 'firebase_free'}
+    required = {'base_series', 'base_checkpoint', 'base_tree', 'fork_series', 'target_tree', 'firebase_free'}
     if set(entry) != required:
         raise ProfileError('profile must specify exactly: ' + ', '.join(sorted(required)))
     for field in ('base_checkpoint', 'base_tree', 'target_tree'):
@@ -50,10 +104,11 @@ def select(config, name):
         raise ProfileError('fork_series does not match the product composition')
     if type(entry['firebase_free']) is not bool or entry['firebase_free'] != expected_free:
         raise ProfileError('firebase_free does not match the product')
-    if not isinstance(entry['tests'], list) or not entry['tests'] or any(not isinstance(x, str) or not x for x in entry['tests']):
-        raise ProfileError('tests must be a nonempty list of Gradle arguments')
     if not config.get('port') or not isinstance(config.get('android'), dict):
         raise ProfileError('named profiles require a port and Android build settings')
+    base_tests = config['android'].get('tests')
+    if not isinstance(base_tests, list) or not base_tests or any(not isinstance(x, str) or not x for x in base_tests):
+        raise ProfileError('android.tests must be a nonempty list of Gradle arguments')
     if fork:
         fork_source = config.get('fork_source')
         if not isinstance(fork_source, dict) or set(fork_source) != {'url', 'head'}:
@@ -66,7 +121,7 @@ def select(config, name):
     selected.pop('profiles', None)
     selected['port']['series'] = entry['base_series']
     selected['target_tree'] = entry['target_tree']
-    selected['android']['tests'] = entry['tests']
+    selected['android']['tests'] = derived_tests(repo, base_tests, fork)
     selected['_profile'] = {'name': name, 'base_checkpoint': entry['base_checkpoint'],
                             'base_layer': boundary, 'base_tree': entry['base_tree'], 'target_tree': entry['target_tree'],
                             'fork_series': fork, 'firebase_free': entry['firebase_free']}

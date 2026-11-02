@@ -142,13 +142,19 @@ class ForkProfilesTests(unittest.TestCase):
         for name, (_, expected, free) in release_profiles.POLICY.items():
             entry = {'base_series': release_profiles.PORT_SERIES, 'base_checkpoint': 'a'*40,
                      'base_tree': 'b'*40, 'fork_series': list(expected), 'target_tree': 'c'*40,
-                     'tests': [':app:test'], 'firebase_free': free}
-            config = {'profiles': {name: entry}, 'port': {}, 'android': {},
+                     'firebase_free': free}
+            config = {'profiles': {name: entry}, 'port': {}, 'android': {'tests': [':app:test']},
                       'signal': {'commit': 'd'*40},
                       'fork_source': {'url': 'https://github.com/tw-hx/Signal-Android', 'head': 'e'*40}}
             config['port'] = {'series': release_profiles.PORT_SERIES}
-            _, selected = release_profiles.select(config, name)
+            with patch.object(release_profiles, 'derived_tests', return_value=[':app:test']) as derived:
+                _, selected = release_profiles.select(config, name, self.repo)
+            derived.assert_called_once_with(self.repo, [':app:test'], expected)
             self.assertEqual(selected['fork_series'], expected)
+            entry['tests'] = [':app:test']
+            with self.assertRaisesRegex(ValueError, 'exactly'):
+                release_profiles.select(config, name, self.repo)
+            del entry['tests']
             entry['firebase_free'] = not free
             with self.assertRaisesRegex(ValueError, 'firebase_free'):
                 release_profiles.select(config, name)
@@ -156,6 +162,37 @@ class ForkProfilesTests(unittest.TestCase):
             entry['fork_series'] = list(reversed(expected)) if len(expected) == 2 else ['wrong']
             with self.assertRaisesRegex(ValueError, 'fork_series'):
                 release_profiles.select(config, name)
+
+    def test_profile_tests_derive_from_fork_layer_test_sources(self):
+        root = self.repo / release_profiles.FORK_ROOT
+        (root / 'one').mkdir(parents=True)
+        (root / 'two').mkdir(parents=True)
+        def diff(path, deleted=False):
+            mode = 'deleted file mode 100644\n' if deleted else 'new file mode 100644\n'
+            return f'diff --git a/{path} b/{path}\n{mode}index 0000000..1111111\n--- a/{path}\n+++ b/{path}\n@@ -0,0 +1 @@\n+x\n'
+        (root / 'one/0001.patch').write_text('From x\n\n---\n' + diff('app/src/main/java/A.kt')
+            + diff('app/src/test/java/org/x/NewTest.kt') + diff('app/src/test/java/org/x/OldTest.kt', deleted=True)
+            + diff('app/src/test/java/org/x/KeptTest.kt') + '-- \n2.0\n')
+        (root / 'two/0001.patch').write_text(diff('feature/app-settings/src/test/java/org/s/ScreenTest.kt')
+            + diff('lib/network/src/test/java/org/n/NetTest.kt') + diff('app/src/test/java/org/x/NewTest.kt'))
+        (root / 'provenance.json').write_text(json.dumps({'layers': [
+            {'series': 'one/series', 'mailbox': 'one/0001.patch'},
+            {'series': 'two/series', 'mailbox': 'two/0001.patch'}]}))
+        base = [':lib:network:test', ':app:testDebugUnitTest', '--tests', 'org.x.KeptTest',
+                ':feature:app-settings:testDebugUnitTest', '--tests', 'org.s.Other']
+        one, two = release_profiles.FORK_ROOT + '/one/series', release_profiles.FORK_ROOT + '/two/series'
+        self.assertEqual(release_profiles.derived_tests(self.repo, base, []), base)
+        self.assertEqual(release_profiles.derived_tests(self.repo, base, [one, two]),
+                         [':lib:network:test', ':app:testDebugUnitTest', '--tests', 'org.x.KeptTest',
+                          '--tests', 'org.x.NewTest', ':feature:app-settings:testDebugUnitTest',
+                          '--tests', 'org.s.Other', '--tests', 'org.s.ScreenTest'])
+        with self.assertRaisesRegex(ValueError, 'exactly one :feature:app-settings: test task'):
+            release_profiles.derived_tests(self.repo, base[:4], [two])
+        with self.assertRaisesRegex(ValueError, 'no single provenance layer'):
+            release_profiles.derived_tests(self.repo, base, [release_profiles.FORK_ROOT + '/three/series'])
+        (root / 'one/0001.patch').write_text(diff('app/src/androidTest/java/org/x/DeviceTest.kt'))
+        with self.assertRaisesRegex(ValueError, 'no unit test task rule'):
+            release_profiles.derived_tests(self.repo, base, [one])
 
     def test_port_prefix_requires_verified_order_and_exact_boundary(self):
         directory = self.repo / 'patches/ports/signal-8.33.2'

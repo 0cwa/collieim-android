@@ -71,6 +71,7 @@ import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRout
 import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRouter
 import org.thoughtcrime.securesms.components.settings.models.Banner
 import org.thoughtcrime.securesms.events.PushServiceEvent
+import org.thoughtcrime.securesms.gcm.FcmUtil
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.TurnOnNotificationsBottomSheet
@@ -779,13 +780,7 @@ fun NotificationsSettingsScreen(
         )
       }
 
-      val notificationMethods = NotificationDeliveryMethod.entries.filter { method ->
-        when (method) {
-          NotificationDeliveryMethod.FCM -> true
-          NotificationDeliveryMethod.WEBSOCKET -> true
-          NotificationDeliveryMethod.UNIFIEDPUSH -> !state.isLinkedDevice
-        }
-      }
+      val notificationMethods = availableNotificationMethods(state.isLinkedDevice, FcmUtil.isSupported())
 
       val showAlertIcon = when (state.preferredNotificationMethod) {
         NotificationDeliveryMethod.FCM -> !state.canReceiveFcm
@@ -830,6 +825,15 @@ fun NotificationsSettingsScreen(
     }
   }
 }
+
+internal fun availableNotificationMethods(isLinkedDevice: Boolean, isFcmSupported: Boolean): List<NotificationDeliveryMethod> =
+  NotificationDeliveryMethod.entries.filter { method ->
+    when (method) {
+      NotificationDeliveryMethod.FCM -> isFcmSupported
+      NotificationDeliveryMethod.WEBSOCKET -> true
+      NotificationDeliveryMethod.UNIFIEDPUSH -> !isLinkedDevice
+    }
+  }
 
 @Composable
 private fun getWhileMutedString(state: NotificationsSettingsState): String {

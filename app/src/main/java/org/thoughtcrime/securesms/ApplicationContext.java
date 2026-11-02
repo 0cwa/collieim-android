@@ -308,6 +308,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
     AppDependencies.getMegaphoneRepository().onAppForegrounded();
     AppDependencies.getDeadlockDetector().start();
     FcmFetchManager.onForeground(this);
+    FcmRefreshJob.enqueueUnsupportedCleanupIfNeeded();
 
     SignalExecutors.BOUNDED.execute(() -> {
       SealedSenderConstraint.refreshAndRotateIfNeeded();
@@ -593,6 +594,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
         updateFcmStatus(false);
       } else {
         Log.d(TAG, "FCM is already disabled.");
+        FcmRefreshJob.enqueueUnsupportedCleanupIfNeeded();
       }
       if (method == NotificationDeliveryMethod.UNIFIEDPUSH) {
         if (SignalStore.account().isLinkedDevice()) {

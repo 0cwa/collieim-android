@@ -241,7 +241,7 @@ internal fun DonationCompletedSheetContent(
     )
 
     Text(
-      text = stringResource(id = R.string.DonationCompleteBottomSheet__your_bank_transfer_was_received),
+      text = stringResource(id = R.string.SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       textAlign = TextAlign.Center,
       modifier = Modifier

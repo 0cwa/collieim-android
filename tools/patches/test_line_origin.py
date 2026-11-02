@@ -122,6 +122,13 @@ class LineOriginTests(unittest.TestCase):
         }
         self.assertEqual({p: line_origin.classify(p) for p in cases}, cases)
 
+    def test_stage_of_uses_scope_layer_sets(self):
+        self.assertEqual(line_origin.stage_of('initial/maps'), 'PR3 compatibility')
+        self.assertEqual(line_origin.stage_of('followups/netcipher-sdk-dsl'), 'PR3 compatibility')
+        self.assertEqual(line_origin.stage_of('followups/legacy-backup-precedence'), 'PR4 behavior fixes')
+        self.assertEqual(line_origin.stage_of('followups/donation-completion-copy'), 'PR5 behavior additions')
+        self.assertEqual(line_origin.stage_of('followups/retention-controls'), 'Feature branch fork layers')
+
     def test_quoted_paths(self):
         self.assertEqual(line_origin.unquote(b'"a\\tb\\303\\251"'), 'a\tbé')
         self.assertEqual(line_origin.unquote(b'plain/path'), 'plain/path')

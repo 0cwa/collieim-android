@@ -217,6 +217,8 @@ def stage_of(layer_id):
         return 'PR4 behavior fixes'
     if layer_id.startswith('followups/') and name in scope.ADDITIONS:
         return 'PR5 behavior additions'
+    if layer_id.startswith('followups/') and name in scope.FEATURES:
+        return 'Feature branch fork layers'
     return 'PR3 compatibility'
 
 

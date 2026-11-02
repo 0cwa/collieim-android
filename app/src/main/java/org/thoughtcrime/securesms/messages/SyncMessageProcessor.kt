@@ -94,6 +94,7 @@ import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.hasRemoteDelet
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isEmptyGroupV2Message
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isExpirationUpdate
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isGroupV2Update
+import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isInvalid
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isMediaMessage
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isProfileKeyUpdate
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isUnidentified
@@ -260,6 +261,7 @@ object SyncMessageProcessor {
         }
         dataMessage.hasRemoteDelete -> DataMessageProcessor.handleRemoteDelete(context, envelope, dataMessage, senderRecipient.id, earlyMessageCacheEntry, batchCache)
         dataMessage.payment != null -> log(envelope.clientTimestamp!!, "Ignoring payment notification/activation from sync transcript; payment row arrives via SyncMessage.OutgoingPayment.")
+        SignalStore.settings.isKeepViewOnceMessages && dataMessage.isViewOnce == true && dataMessage.attachments.isNotEmpty() && dataMessage.isInvalid -> warn(envelope.clientTimestamp!!, "Ignoring invalid view-once sent media.")
         dataMessage.isMediaMessage || dataMessage.giftBadge != null -> threadId = handleSynchronizeSentMediaMessage(context, sent, envelope.clientTimestamp!!, senderRecipient)
         dataMessage.pollCreate != null -> threadId = handleSynchronizedPollCreate(envelope, dataMessage, sent, senderRecipient)
         dataMessage.pollVote != null -> {
@@ -849,7 +851,7 @@ object SyncMessageProcessor {
     val previews: List<LinkPreview> = DataMessageProcessor.getLinkPreviews(dataMessage.preview, dataMessage.body ?: "", false)
     val mentions: List<Mention> = DataMessageProcessor.getMentions(dataMessage.bodyRanges)
     val giftBadge: GiftBadge? = if (dataMessage.giftBadge?.receiptCredentialPresentation != null) GiftBadge.Builder().redemptionToken(dataMessage.giftBadge!!.receiptCredentialPresentation!!).build() else null
-    val viewOnce: Boolean = dataMessage.isViewOnce == true
+    val viewOnce = !SignalStore.settings.isKeepViewOnceMessages && dataMessage.isViewOnce == true
     val bodyRanges: BodyRangeList? = dataMessage.bodyRanges.toBodyRangeList()
     val syncAttachments: List<Attachment> = listOfNotNull(sticker) + if (viewOnce) listOf<Attachment>(TombstoneAttachment.forNonQuote(MediaUtil.VIEW_ONCE)) else dataMessage.attachments.toPointersWithinLimit()
 
@@ -1088,7 +1090,7 @@ object SyncMessageProcessor {
     val record: MessageRecord? = SignalDatabase.messages.getMessageFor(timestamp, author)
 
     if (record != null) {
-      SignalDatabase.attachments.deleteAttachmentFilesForViewOnceMessage(record.id)
+      if (!SignalStore.settings.isKeepViewOnceMessages) SignalDatabase.attachments.deleteAttachmentFilesForViewOnceMessage(record.id)
     } else {
       warn(envelopeTimestamp.toString(), "Got a view-once open message for a message we don't have!")
       if (earlyMessageCacheEntry != null) {

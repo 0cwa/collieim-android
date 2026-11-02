@@ -61,6 +61,7 @@ class AttachmentUtilTest {
     every { SignalStore.settings.wifiMediaDownloadAllowed } returns emptySet()
     every { SignalStore.settings.roamingMediaDownloadAllowed } returns emptySet()
     every { SignalStore.settings.mobileMediaDownloadAllowed } returns emptySet()
+    every { SignalStore.settings.isDeleteMediaOnly } returns false
 
     every { messageTable.getMessageRecord(any()) } returns messageRecord
     every { messageRecord.fromRecipient } returns fromRecipient
@@ -403,6 +404,21 @@ class AttachmentUtilTest {
   }
 
   @Test
+  fun `media-only deletion keeps the message and does not sync deletion of the last attachment`() {
+    val attachment = attachment()
+    every { attachmentTable.getAttachmentsForMessage(42L) } returns listOf(attachment)
+    every { messageTable.getMessageRecordOrNull(42L) } returns messageRecord
+    every { SignalStore.settings.isDeleteMediaOnly } returns true
+
+    val result = AttachmentUtil.deleteAttachment(attachment)
+
+    assertTrue(result == null)
+    verify { messageTable.deleteAttachmentsOnly(42L) }
+    verify(exactly = 0) { MultiDeviceDeleteSyncJob.enqueueAttachmentDelete(any(), any()) }
+    verify(exactly = 0) { messageTable.deleteMessage(any()) }
+  }
+
+  @Test
   fun `deleteAttachment with multiple attachments deletes only the attachment and returns null`() {
     val attachment = attachment()
     every { attachmentTable.getAttachmentsForMessage(42L) } returns listOf(attachment, attachment)
@@ -412,6 +428,7 @@ class AttachmentUtilTest {
 
     assertTrue(result == null)
     verify { attachmentTable.deleteAttachment(AttachmentId(1L)) }
+    verify { MultiDeviceDeleteSyncJob.enqueueAttachmentDelete(messageRecord, attachment) }
     verify(exactly = 0) { messageTable.deleteMessage(any()) }
   }
 

@@ -12280,6 +12280,18 @@
       "gate_input": "Profile 5 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, baseline blob 932e209b0781e43dd8c3088abce07e790df90503, counter blob ce05d451dc6477366a470e0657ddf2bcacd74de9; profile 3 and 4 identical file blobs support only conditional transfer",
       "outcome": "baseline exit 0; counter exit 1: PushServiceSocket has no matching finishNewDeviceRegistration method; no production change or accepted minimization",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-7d2f8e90ce08e18c8f21.patch and receipts.md#binding-evidence-v1"
+    },
+    "be7d1e54b9b8f4b1ad49": {
+      "reason": "Residual semantic portion of historical aggregate e0cd16838d2a30101790; semantic evidence is unmeasured",
+      "revert_gate": "unmeasured",
+      "outcome": "unmeasured",
+      "evidence": "The three indentation-only reversions are recorded separately in receipts.md#kotlin-indentation-reversions"
+    },
+    "1123d1a889fe94679d7d": {
+      "reason": "Residual semantic portion of historical aggregate e0cd16838d2a30101790; semantic evidence is unmeasured",
+      "revert_gate": "unmeasured",
+      "outcome": "unmeasured",
+      "evidence": "The three indentation-only reversions are recorded separately in receipts.md#kotlin-indentation-reversions"
     }
   },
   "exclusions_complete": false,
@@ -16327,7 +16339,7 @@
           "path": "feature/app-settings/src/main/java/org/signal/appsettings/dataandstorage/DataAndStorageSettingsScreen.kt",
           "input_blob": "73d154a0b9277bdf16288b3fe7603d0f7e844235",
           "output_blob": "755d040b4b801963f2d4bfdcd9d734dc05befbaa",
-          "patch": "patches/ports/signal-8.33.2/report-evidence/kotlin-indent-reverts.patch",
+          "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-e0cd16838d2a30101790.patch",
           "gate_input": "PR5 baseline tree 68fa08fd69809463be3aa60ccd232bb50f02e547 and isolated and combined indentation inverse candidates; PR3/PR4 matching file blobs only",
           "gate": "agent-heavy -- ./gradlew :feature:app-settings:compileDebugKotlin --max-workers=12 --console=plain",
           "outcome": "baseline build passed with task up to date; each of three individual inverses and combined inverse executed task and passed on PR5",

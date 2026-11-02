@@ -1,7 +1,5 @@
 package org.thoughtcrime.securesms.components.settings.app.privacy.advanced
 
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.installations.FirebaseInstallations
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.signal.core.util.concurrent.SignalExecutors
@@ -10,6 +8,7 @@ import org.signal.libsignal.net.DeviceDeregisteredException
 import org.signal.libsignal.net.RequestResult
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.gcm.FcmUtil
 import org.thoughtcrime.securesms.jobs.MultiDeviceConfigurationUpdateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
@@ -38,7 +37,7 @@ class AdvancedPrivacySettingsRepository {
 
     try {
       if (SignalStore.account.fcmEnabled) {
-        Tasks.await(FirebaseInstallations.getInstance().delete())
+        FcmUtil.deleteInstallationForPrivacySettings()
       }
       DisablePushMessagesResult.SUCCESS
     } catch (ioe: IOException) {

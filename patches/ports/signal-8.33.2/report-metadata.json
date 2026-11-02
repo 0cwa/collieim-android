@@ -12253,13 +12253,13 @@
     },
     "23fbf7e6ed4bd45b4dbd": {
       "type": "signal_api_compile_fix",
-      "reason": "One-token subscribe to register probe only; whole callback inverse remains unmeasured. Classification describes the API change, not proof every line is necessary.",
+      "reason": "Whole callback hunk inverse restores the old anonymous subscriber with current imports unchanged. Classification describes the API change, not independent necessity of each line.",
       "molly_equivalent": "Old Molly and human ports 5551f3023e6093fbb65214acdcc2e568b7b63132 and aa81fd6312bf1c7a71f5efda1930d23b05bdb739 preserve the old implementation; no verified Molly equivalent using the new API.",
       "searched_branches": "Molly signal-8.20.4 and fix/socks-proxy-dns-leak; upstream-stable and upstream-main are plain Signal baselines",
       "revert_gate": "Isolated real-file javac against owner task configuration and profile 5 outputs; not a module or runtime check",
-      "gate_input": "Profile 5 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, baseline blob 19b8ef8ca9c345f38b199e78ddf93abfb15b83a1, counter blob d0374b64abc40726db3238701536de50179112e4; profile 3 and 4 identical file blobs support only conditional transfer",
-      "outcome": "baseline exit 0; counter exit 1: no matching Signal EventBus register method; no production change or accepted minimization",
-      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-23fbf7e6ed4bd45b4dbd.patch and receipts.md#binding-evidence-v1"
+      "gate_input": "Profile 5 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, baseline blob 19b8ef8ca9c345f38b199e78ddf93abfb15b83a1, whole inverse blob 068a1b05cdf40c911c4acda6aafa44f45e0a98d4; current imports and dependencies unchanged; profile 3 and 4 identical file blobs support only conditional transfer",
+      "outcome": "baseline exit 0; whole inverse exit 1: Subscribe unresolved and Signal EventBus has no register(anonymous Object); not independent necessity, full-module, runtime, unique implementation or global minimality proof; no production change or accepted minimization",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-23fbf7e6ed4bd45b4dbd.patch and receipts.md#whole-callback-binding-evidence-v2"
     },
     "efe95a23f05268a99f97": {
       "type": "signal_api_compile_fix",

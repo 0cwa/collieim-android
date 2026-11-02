@@ -343,3 +343,11 @@ Initial and unbundled follow-up `mailbox_bytes` and `paths` are historical
 pre-conversion export metadata and remain unchanged. Bundled follow-up
 `mailbox_bytes` records the current mailbox size. Candidate verification does
 not replace the applicable branch preflight, port report update or build tests.
+
+### Independent compatibility surface assessment
+
+`python3 tools/patches/compatibility_surface.py MECHANICAL_TREE FINAL_TREE --scratch TASK_SCRATCH` emits a deterministic JSON inventory and raw physical Git diff counts. Supply full tree object IDs and an existing private scratch directory. This optional assessment does not change the port report. Each changed path records both tree entries (mode, type, blob ID); absent entries represent additions or deletions.
+
+For a conflict path, a region qualifies only if exactly one nonempty side, together with the immediately preceding and following mechanical lines, appears exactly once in the final blob. The marker labels must be `MOLLY` and `SIGNAL`; all regions must qualify and their contextual matches must not overlap. The selected sides form a marker-free baseline; Git measures its physical diff to the final blob. A changed context, empty choice, malformed marker, repeated match, mixed resolution, or overlap excludes the entire path. Ordinary text paths are reported separately. Deleted, binary, mode and non-blob paths are excluded. `--generated PATH` may be repeated to exclude declared generated paths; declarations are not verified, and undeclared generated files are not detected. Feature ownership is not assigned. No choice assertion manifest is accepted.
+
+Residual counts are not a partition of the gross counts and do not establish authorship, semantic complexity, or necessity. Coverage counts reconcile with the changed-path inventory; inspect exclusions before interpreting the result.

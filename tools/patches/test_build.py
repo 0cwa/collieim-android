@@ -259,11 +259,11 @@ class NamedProfileBuildTests(BuildSourceTests):
         self.config['android'] = {'assemble': ':app:assembleDebug', 'tests': [':app:test']}
         entry = {'base_series': 'patches/ports/signal-8.33.2/series', 'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'],
                  'fork_series': [], 'target_tree': self.config['target_tree'],
-                 'tests': [':app:test'], 'firebase_free': False}
+                 'firebase_free': False}
         self.config['profiles'] = {'molly-minimal': entry,
                                    'molly-continued': dict(entry)}
         self.args.profile = 'molly-minimal'
-        _, selection = build.release_profiles.select(self.config, self.args.profile)
+        _, selection = build.release_profiles.select(self.config, self.args.profile, self.repo)
         self.proof['profile'] = selection
         self.save()
         runner = build.Build(self.args)
@@ -281,7 +281,7 @@ class NamedProfileBuildTests(BuildSourceTests):
         with self.assertRaisesRegex(build.BuildError, 'different release profile'):
             build.Build(self.args).source_proof()
         self.args.profile = 'molly-minimal'
-        self.config['profiles']['molly-minimal']['tests'] = [':app:otherTest']
+        self.config['android']['tests'] = [':app:otherTest']
         self.save()
         with self.assertRaisesRegex(build.BuildError, 'different release profile'):
             build.Build(self.args).source_proof()

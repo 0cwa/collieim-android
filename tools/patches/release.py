@@ -25,7 +25,7 @@ import release_profiles
 
 
 METADATA_PATHS = (
-    'tools/patches/', 'tools/native/', 'patches/molly/', 'patches/ports/',
+    'tools/patches/', 'tools/native/', 'patches/molly/', 'patches/ports/', 'patches/forks/',
     'molly-build.json', 'native-ringrtc.json', 'docs/PATCH-PIPELINE.md',
     '.github/workflows/android.yml', '.github/workflows/diffuse.yml',
     '.github/workflows/molly-patch-release.yml',
@@ -279,7 +279,7 @@ def apply_deletions(repo, worktree, manifest, env):
     git_utils.git(worktree, 'reset', '--quiet', '--hard', commit, env=env)
 
 
-def apply_resolutions(repo, worktree, tree, records):
+def apply_resolutions(repo, worktree, tree, records, existing=False):
     # A synthetic local commit materializes the mechanical result. It never
     # enters the source PR history; only its fully pinned tree matters.
     env = forest.clean_git_env()
@@ -289,10 +289,14 @@ def apply_resolutions(repo, worktree, tree, records):
                GIT_COMMITTER_EMAIL='patch-assembly@example.invalid',
                GIT_AUTHOR_DATE='2000-01-01T00:00:00Z',
                GIT_COMMITTER_DATE='2000-01-01T00:00:00Z')
-    commit = git_utils.git(repo, '-c', 'commit.gpgSign=false', 'commit-tree', tree,
-                          '-m', 'Materialize the pinned deterministic Molly/Signal merge',
-                          env=env).stdout.strip()
-    forest.add_worktree(repo, worktree, commit)
+    if existing:
+        if forest.git(worktree, 'rev-parse', 'HEAD^{tree}') != tree:
+            raise forest.ForestError('existing source tree differs before replay')
+    else:
+        commit = git_utils.git(repo, '-c', 'commit.gpgSign=false', 'commit-tree', tree,
+                              '-m', 'Materialize the pinned deterministic Molly/Signal merge',
+                              env=env).stdout.strip()
+        forest.add_worktree(repo, worktree, commit)
     changed = set()
     applied = []
     for patch, metadata in records:
@@ -321,8 +325,6 @@ def apply_resolutions(repo, worktree, tree, records):
 def assemble(repo, config_path, worktree, scope=None, base=None, profile=None):
     repo = Path(repo).resolve()
     config, selection = release_profiles.select(load_config(config_path), profile)
-    if selection and selection['fork_series']:
-        raise forest.ForestError('fork profile reconstruction requires fork checkpoint verification, which is not implemented yet')
     destination = forest.destination(repo, worktree)
     signal = config['signal']['commit']
     check_source_boundary(repo, signal, scope, base)
@@ -354,6 +356,9 @@ def assemble(repo, config_path, worktree, scope=None, base=None, profile=None):
         raise forest.ForestError(f'unadapted review checkpoint: {len(conflicts)} paths need explicit '
                                 'port decisions; no buildable target has been approved')
     records = resolution_series(repo, port['series'])
+    if selection:
+        import fork_profiles
+        records = fork_profiles.port_prefix(repo, config_path, selection, records)
     if not records and conflicts:
         raise forest.ForestError('conflicted merge has no explicit resolution mailboxes')
     signal_tree = forest.git(repo, 'rev-parse', signal + '^{tree}')
@@ -377,6 +382,13 @@ def assemble(repo, config_path, worktree, scope=None, base=None, profile=None):
     if changed_kept:
         raise forest.ForestError('keep_mechanical paths changed during resolution: '
                                 + ', '.join(sorted(changed_kept)))
+    if selection and selection['fork_series']:
+        for patch, metadata, expected_layer_tree in fork_profiles.fork_layers(repo, selection):
+            _, fork_applied = apply_resolutions(repo, destination, actual, [(patch, metadata)], existing=True)
+            applied.extend(fork_applied)
+            actual = forest.git(destination, 'rev-parse', 'HEAD^{tree}')
+            if actual != expected_layer_tree:
+                raise forest.ForestError('replayed fork layer tree differs')
     if actual != expected:
         raise forest.ForestError(f'final tree mismatch: expected {expected}, got {actual}')
     verify_complete.clean_worktree(destination)
@@ -394,7 +406,7 @@ def main():
     parser.add_argument('--profile', choices=sorted(release_profiles.NAMES))
     parser.add_argument('--worktree', type=Path, required=True)
     parser.add_argument('--report', type=Path)
-    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features'))
+    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features', 'forks'))
     parser.add_argument('--base')
     args = parser.parse_args()
     try:

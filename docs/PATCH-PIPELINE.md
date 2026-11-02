@@ -344,23 +344,43 @@ pre-conversion export metadata and remain unchanged. Bundled follow-up
 `mailbox_bytes` records the current mailbox size. Candidate verification does
 not replace the applicable branch preflight, port report update or build tests.
 
-## Named release profile plumbing (in progress)
+## Named release profiles and fork checkpoints
 
-An optional `profiles` object in `molly-build.json` can define named product
-inputs. Allowed names are `molly-minimal`, `molly-continued`,
-`molly-foss-continued`, `collie`, and `collie-foss`. Each entry has exactly
-`base_series` (repository-relative port series), `base_tree` (full tree ID),
-`fork_series` (ordered list of repository-relative series paths), `target_tree`
-(full tree ID), `tests` (Gradle test arguments), and `firebase_free` (boolean).
-Entries may be added only once their source pins and applicable tests are known.
-Minimal selects the PR4 base; Continued selects PR5. These names describe
+`molly-build.json` may contain a `profiles` object keyed by `molly-minimal`,
+`molly-continued`, `molly-foss-continued`, `collie`, and `collie-foss`. Each
+entry contains exactly `base_series` (the port series path), `base_checkpoint`
+(full source commit), `base_tree` and `target_tree` (full tree IDs),
+`fork_series` (ordered repository-relative series paths), `tests` (Gradle
+arguments) and `firebase_free` (boolean). Pins are supplied by the release
+configuration, not compiled into the tools. The tests and Firebase selection
+are part of the source proof fingerprint.
+
+Minimal selects the verified port prefix ending at
+`followups/backup-notification-id-upgrade`; the other products select the
+prefix ending at `followups/donation-completion-copy`. Continued products
+without fork features have an empty `fork_series`. Molly FOSS Continued adds
+`patches/forks/signal-foss/firebase-free-build/series`; Collie and Collie FOSS
+append `patches/forks/signal-foss/retention-controls/series`. Firebase is
+selected only for Molly FOSS Continued and Collie FOSS. These names describe
 release selections and do not change application branding or IDs.
 
-Use `release.py --profile NAME` to bind the selected configuration and tree to
-its source report, then pass the same `--profile NAME` to every `build.py`
-phase. Build proof checks the profile fingerprint, including tests and Firebase
-selection. Gradle receives the selected `mollyFirebaseFree` value explicitly.
-Omitting `--profile` keeps the existing workflow. The three fork-bearing product names and any fork series are deliberately
-rejected until the independent fork checkpoint verifier is implemented; these
-options do not yet constitute a five-product build or CI matrix. Preflight and
-CI have not yet been taught named selections.
+The independent `patches/forks/signal-foss/provenance.json` records schema 1,
+source URL and head, base commit and tree, and ordered `layers`. Each layer
+records `id`, `series`, `mailbox`, `mailbox_sha256`, `mailbox_bytes`,
+`source_commit`, `before_tree`, `after_tree`, `source_bundle`,
+`source_bundle_sha256`, `source_bundle_bytes`, `source_bundle_prerequisite`,
+`source_bundle_ref`, `upstream_commit`, and `upstream_author`. File paths in
+this document are relative to the fork root. Each series contains one path to
+its layer's mailbox, relative to that series file. Checkpoint bundles must
+advertise the declared `refs/heads/source-checkpoint/` ref and require exactly
+the previous source commit. The selected base checkpoint must match the
+verified port layer. Replay checks the resulting tree after each fork layer.
+
+Use `release.py --profile NAME` for a profile-bound source proof, then pass the
+same `--profile NAME` to every `build.py` phase, or use
+`preflight.sh full --scope forks --base stack/5-behavior-additions --profile NAME`.
+Named builds explicitly pass the selected `mollyFirebaseFree` property.
+Omitting `--profile` preserves the existing workflow. The `forks` scope allows
+only the independent fork artifacts and named configuration profiles, and
+requires the port tree and original base configuration to remain unchanged.
+The existing Molly CI workflow does not yet select the named product matrix.

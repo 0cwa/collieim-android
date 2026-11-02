@@ -257,7 +257,7 @@ class NamedProfileBuildTests(BuildSourceTests):
     def test_profile_bound_to_proof_and_forces_firebase_property(self):
         self.config['port'] = {'series': 'patches/ports/test/series'}
         self.config['android'] = {'assemble': ':app:assembleDebug', 'tests': [':app:test']}
-        entry = {'base_series': 'patches/ports/test/series', 'base_tree': self.config['target_tree'],
+        entry = {'base_series': 'patches/ports/signal-8.33.2/series', 'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'],
                  'fork_series': [], 'target_tree': self.config['target_tree'],
                  'tests': [':app:test'], 'firebase_free': False}
         self.config['profiles'] = {'molly-minimal': entry,

@@ -231,6 +231,8 @@ jobs:
         id: foss_prepare
         if: ${{ hashFiles('patches/ports/signal-8.33.2/followups/firebase-free-build/series') != '' }}
         run: |
+          mkdir -p "$RUNNER_TEMP/foss-reports"
+          cp -- "$RUNNER_TEMP/reports/source.json" "$RUNNER_TEMP/foss-reports/source.json"
           rm -rf -- "$RUNNER_TEMP/molly-release/app/build/outputs/apk/prodWebsite/debug"
           find "$RUNNER_TEMP/molly-release" -type d \
             \( -path '*/build/reports' -o -path '*/build/test-results' \) -prune -exec rm -rf -- {} +
@@ -252,7 +254,7 @@ jobs:
           python3 tools/patches/build.py test \
             --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/foss-reports"
 
-      - name: Upload Firebase-free build logs, APK and test results
+      - name: Upload Firebase-free build logs and test results
         if: ${{ always() && steps.foss_prepare.outcome == 'success' && steps.foss_assemble.outcome != '' && steps.foss_assemble.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
@@ -262,4 +264,11 @@ jobs:
             ${{ runner.temp }}/foss-reports
             ${{ runner.temp }}/molly-release/**/build/reports
             ${{ runner.temp }}/molly-release/**/build/test-results
-            ${{ runner.temp }}/molly-release/app/build/outputs/apk/prodWebsite/debug
+
+      - name: Upload the Firebase-free APK after successful assembly
+        if: ${{ always() && steps.foss_assemble.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: molly-android-firebase-free-apk-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          path: ${{ runner.temp }}/molly-release/app/build/outputs/apk/prodWebsite/debug

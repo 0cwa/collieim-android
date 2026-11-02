@@ -102,3 +102,7 @@ class PrepareReportTests(unittest.TestCase):
         self.assertNotIn('${{ runner.temp }}/reports', foss)
         self.assertIn("steps.foss_prepare.outcome == 'success'", foss)
         self.assertIn("steps.foss_assemble.outcome != 'skipped'", foss)
+        logs, apk = foss.split('      - name: Upload the Firebase-free APK', 1)
+        self.assertNotIn('outputs/apk', logs.split('      - name: Upload Firebase-free build logs', 1)[1])
+        self.assertIn("steps.foss_assemble.outcome == 'success'", apk)
+        self.assertIn('if-no-files-found: error', apk)

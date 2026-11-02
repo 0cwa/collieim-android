@@ -285,11 +285,19 @@ and stage records touch, and split the initial result by path. Each follow-up
 row is that follow-up's physical diff from the previous checkpoint (added /
 deleted, with renames), so it reads as the lines the follow-up changes. A
 stage's total is its last checkpoint, and the stage of a follow-up comes from the scope check's
-layer sets. Fork layers use the same method with a third parent, the fork's
-head, so lines the fork itself wrote are not counted as ours:
+layer sets.
+
+Fork layers need the fork's head as a third parent, so lines the fork itself
+wrote are not counted as ours. Fork layers kept in the port series have no fork
+input; their stage row is labelled as including the fork's lines and is not a
+measure of our changes. When `molly-build.json` declares named release
+profiles, the report adds one row per profile: profiles with fork layers load
+the fork's upstream bundle into the private object directory and use its head
+as the third parent, and **from the fork** counts the production lines the fork
+wrote that the profile carries.
 
 ```sh
-python3 tools/patches/line_origin.py port --markdown
+python3 tools/patches/line_origin.py port --markdown [--config molly-build.json]
 python3 tools/patches/line_origin.py tree TREE --parent MOLLY --parent SIGNAL \
   [--parent FORK_HEAD] [--molly-old OLD_SIGNAL MOLLY]
 ```

@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "source_url": "https://github.com/tw-hx/Signal-Android",
+  "source_head": "b13bff463547475bbe1ae55335add689f52532e0",
+  "base_commit": "47ecc87d5151703b6a8c9cfe113cc7d415d2fdf6",
+  "base_tree": "7ef06dd1458ed7793a27a74010dcbb98de967438",
+  "layers": [
+    {
+      "id": "firebase-free-build",
+      "series": "firebase-free-build/series",
+      "mailbox": "firebase-free-build/0001-firebase-free-build.patch",
+      "mailbox_sha256": "ebb97dfd377d728e3734535f3c7a204901a9292866285435e4f311477d695c54",
+      "mailbox_bytes": 30050,
+      "source_commit": "d5a1fe29fda1bbfb47d66a6b3fca0e60a4ea1e7d",
+      "before_tree": "7ef06dd1458ed7793a27a74010dcbb98de967438",
+      "after_tree": "9e7dda3bf16cda8d084aea7b19fa3b8864f49fb0",
+      "source_bundle": "firebase-free-build/source-checkpoint.bundle",
+      "source_bundle_sha256": "1e662e430f9c6cbc9118ca9cbe3fa5d956460a32fd2fc162defc8c50547cd103",
+      "source_bundle_bytes": 23553,
+      "source_bundle_prerequisite": "47ecc87d5151703b6a8c9cfe113cc7d415d2fdf6",
+      "source_bundle_ref": "refs/heads/source-checkpoint/fork-signal-foss/firebase-free-build",
+      "upstream_commit": "b13bff463547475bbe1ae55335add689f52532e0",
+      "upstream_author": "Angus Turnbull <github@twinhelix.com>"
+    },
+    {
+      "id": "retention-controls",
+      "series": "retention-controls/series",
+      "mailbox": "retention-controls/0001-retention-controls.patch",
+      "mailbox_sha256": "113e17b206c06af06c5a8eb7f6374aefe80ff5e95b218823723a73530eda4c4c",
+      "mailbox_bytes": 52179,
+      "source_commit": "42c7e64ccc94511b848c451b888e25c1d717d05b",
+      "before_tree": "9e7dda3bf16cda8d084aea7b19fa3b8864f49fb0",
+      "after_tree": "fb17c7eb7efdadb57f2f00eefe4feb2430431791",
+      "source_bundle": "retention-controls/source-checkpoint.bundle",
+      "source_bundle_sha256": "665cfdd153f3654eed55d4d957d94cbe88b79a7a9d8859ad03268b0c7f116c86",
+      "source_bundle_bytes": 33330,
+      "source_bundle_prerequisite": "d5a1fe29fda1bbfb47d66a6b3fca0e60a4ea1e7d",
+      "source_bundle_ref": "refs/heads/source-checkpoint/fork-signal-foss/retention-controls",
+      "upstream_commit": "fc0daac37774d9c20238a34ac4786d9398adc07f",
+      "upstream_author": "Angus Turnbull <github@twinhelix.com>"
+    }
+  ]
+}

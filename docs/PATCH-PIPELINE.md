@@ -307,3 +307,38 @@ cannot establish an individual revert failure. Historical patches must be
 committed so replay works in a fresh checkout. The starting tree must be
 available from the report preparation step. The clean-merge measurement omits
 whole conflicted files, including any clean portions within those files.
+
+## Re-export an existing current-format series
+
+After replaying the source commits separately, use `reexport_current.py` to
+produce an isolated candidate. It does not choose changes or replay source code.
+The output directory must not exist; it contains a Git repository for validation
+and only the profile, resolution series, provenance and checkpoint bundles, so
+review these artifacts as an overlay on the existing release tree.
+
+```sh
+python3 tools/patches/reexport_current.py --repo /path/to/release \
+  --output /path/to/new-candidate \
+  --checkpoint OLD_FULL_COMMIT=NEW_FULL_COMMIT \
+  --checkpoint OLD_FOLLOWUP_COMMIT=NEW_FOLLOWUP_COMMIT \
+  --replacement initial/example/0001-example.patch=/path/to/replayed.patch
+```
+
+Repeat the checkpoint and replacement options as needed. Checkpoint keys are
+source commit IDs in the existing provenance; omitted IDs stay unchanged.
+Replacement keys are paths relative to the series directory. Supply changed
+initial and unbundled follow-up mailboxes explicitly; their diff bytes are retained.
+Bundled follow-up mailboxes use `git format-patch --stdout --abbrev=8 -1`
+for the specified commit. Their parent trailer is added or normalized to the
+actual parent, followed immediately by the source-commit trailer; other message
+and diff bytes come from Git. If supplied, a bundled replacement must match
+the generated mailbox exactly. The command checks the old
+series and bundle chain first, then validates generated deletion and translation
+preimages and output, reconstructed trees, commit parents and new bundles. It
+fails if a later source checkpoint was not replayed onto its new parent. It
+leaves the input repository and its index untouched.
+
+Initial and unbundled follow-up `mailbox_bytes` and `paths` are historical
+pre-conversion export metadata and remain unchanged. Bundled follow-up
+`mailbox_bytes` records the current mailbox size. Candidate verification does
+not replace the applicable branch preflight, port report update or build tests.

@@ -93,6 +93,7 @@ def baseline(mechanical, final):
 
 def numstat(old, new, scratch):
     with tempfile.TemporaryDirectory(dir=scratch) as directory:
+        directory = str(Path(directory).resolve())
         a, b = Path(directory) / 'old', Path(directory) / 'new'
         a.write_bytes(old); b.write_bytes(new)
         # Run outside the source repository, with no user/system config or attributes.

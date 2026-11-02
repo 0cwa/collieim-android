@@ -1,3 +1,4 @@
+import contextlib
 import os
 import subprocess
 import tempfile
@@ -38,6 +39,18 @@ class ChoiceTests(unittest.TestCase):
 
 
 class InventoryTests(unittest.TestCase):
+    def test_relative_temporary_directory(self):
+        with tempfile.TemporaryDirectory() as root:
+            previous = os.getcwd()
+            try:
+                os.chdir(root)
+                Path('scratch/relative').mkdir(parents=True)
+                with patch.object(surface.tempfile, 'TemporaryDirectory',
+                                  return_value=contextlib.nullcontext('scratch/relative')):
+                    self.assertEqual(surface.numstat(b'old\n', b'new\n', 'scratch'), [1, 1])
+            finally:
+                os.chdir(previous)
+
     def test_inventory_and_pinned_trees(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

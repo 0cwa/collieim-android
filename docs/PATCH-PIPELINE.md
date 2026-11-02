@@ -336,8 +336,9 @@ That count is textual, so rewritten or moved code counts as missing.
 
 Every port checkpoint is measured. Initial layers own the paths their mailboxes
 and stage records touch, and split the initial result by path. Each follow-up
-row is the signed change from the previous checkpoint. A stage's total is its
-last checkpoint, and the stage of a follow-up comes from the scope check's
+row is that follow-up's physical diff from the previous checkpoint (added /
+deleted, with renames), so it reads as the lines the follow-up changes. A
+stage's total is its last checkpoint, and the stage of a follow-up comes from the scope check's
 layer sets. Fork layers use the same method with a third parent, the fork's
 head, so lines the fork itself wrote are not counted as ours:
 

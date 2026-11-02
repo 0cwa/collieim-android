@@ -81,6 +81,13 @@ class LineOriginTests(unittest.TestCase):
         self.assertEqual(result['production'], {'molly_lines': 2, 'not_carried': 2, 'in_removed_paths': 1})
         self.assertEqual(files, {'app/src/main/A.kt': [1, True], 'app/src/main/Gone.kt': [1, False]})
 
+    def test_physical_diff_follows_renames(self):
+        before = self.fixture.commit({'app/src/main/A.kt': 'a\nb\nc\nd\ne\nf\n', 'app/src/test/T.kt': 't\n'})
+        after = self.fixture.commit({'app/src/main/B.kt': 'a\nb\nc\nd\ne\nF\n', 'app/src/test/T.kt': 't\nu\n'})
+        result = line_origin.physical(self.repo, before, after)
+        self.assertEqual(result['production'], {'files': 1, 'written': 1, 'removed': 1})
+        self.assertEqual(result['tests'], {'files': 1, 'written': 1, 'removed': 0})
+
     def test_three_parents_exclude_fork_lines(self):
         fork = self.fixture.commit({'app/src/main/A.kt': 'a\nb\nc\nd\nFORK\nf\ng\nSIGNAL\n',
                                     'app/src/main/Gone.kt': 'x\ny\n',
@@ -115,11 +122,18 @@ class LineOriginTests(unittest.TestCase):
         }
         self.assertEqual({p: line_origin.classify(p) for p in cases}, cases)
 
+    def test_stage_of_uses_scope_layer_sets(self):
+        self.assertEqual(line_origin.stage_of('initial/maps'), 'PR3 compatibility')
+        self.assertEqual(line_origin.stage_of('followups/netcipher-sdk-dsl'), 'PR3 compatibility')
+        self.assertEqual(line_origin.stage_of('followups/legacy-backup-precedence'), 'PR4 behavior fixes')
+        self.assertEqual(line_origin.stage_of('followups/donation-completion-copy'), 'PR5 behavior additions')
+        self.assertEqual(line_origin.stage_of('followups/retention-controls'), 'Feature branch fork layers')
+
     def test_quoted_paths(self):
         self.assertEqual(line_origin.unquote(b'"a\\tb\\303\\251"'), 'a\tbé')
         self.assertEqual(line_origin.unquote(b'plain/path'), 'plain/path')
 
-    def test_markdown_names_both_inputs_and_signs_followups(self):
+    def test_markdown_names_both_inputs(self):
         zero = {k: {'files': 0, 'written': 0, 'removed': 0} for k in line_origin.CLASSES}
         molly = {k: {'molly_lines': 0, 'not_carried': 0, 'in_removed_paths': 0} for k in line_origin.CLASSES}
         molly['production'].update(molly_lines=100, not_carried=5)
@@ -128,8 +142,8 @@ class LineOriginTests(unittest.TestCase):
                   'stages': {'PR3 compatibility': {'tree': 't' * 40, 'classes': classes, 'molly': molly,
                                                    'top_production_files': [], 'top_not_carried': []}},
                   'layers': [{'layer': 'followups/x', 'stage': 'PR4 behavior fixes',
-                              'kind': 'change from previous checkpoint',
-                              'classes': dict(zero, production={'files': 1, 'written': 3, 'removed': -2})}]}
+                              'kind': 'physical diff from previous checkpoint',
+                              'classes': dict(zero, production={'files': 1, 'written': 3, 'removed': 2})}]}
         text = line_origin.markdown(result)
         self.assertIn('Molly `mmmmmmmmmmmm` and Signal `ssssssssssss`', text)
         self.assertIn('| +7 / −2 | 7.0% | 5 (of which 0 in removed paths) |', text)

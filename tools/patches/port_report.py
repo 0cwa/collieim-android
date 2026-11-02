@@ -347,7 +347,8 @@ def main():
         config = json.loads(Path(args.config).read_text())
         with tempfile.TemporaryDirectory(prefix='molly-report-origin-') as objects:
             series_dir = Path(config['port']['series']).parent
-            origin = line_origin.markdown(line_origin.port(line_origin.Repo('.', objects), series_dir))
+            repo = line_origin.Repo('.', objects)
+            origin = line_origin.markdown(line_origin.port(repo, series_dir), line_origin.profiles(repo, '.', config))
         result = render(config, json.loads(Path(args.metadata).read_text()), args.ready, origin)
         if args.check:
             if Path(args.output).read_text() != result: raise ValueError('port report is stale')

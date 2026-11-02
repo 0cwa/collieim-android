@@ -13,6 +13,10 @@ are not counted. Paths whose result equals one parent's version are omitted by G
 Renames are detected with Git's default similarity threshold. The synthetic commit is
 written to a private object directory; the repository is never modified.
 
+Release profiles (``profiles``) are measured the same way; a profile with fork layers
+adds the fork head as a third parent, loaded from the fork's upstream bundle into the
+private object directory, so lines the fork wrote are reported separately.
+
 ``not_carried`` separately counts Molly's own non-blank lines (old Signal to Molly)
 that no longer appear in the file at the same path. It is a textual comparison and
 does not distinguish dropped code from code that was rewritten or moved elsewhere.
@@ -41,6 +45,7 @@ TRANSLATIONS = re.compile(r'(^|/)res/values-[a-z]{2,3}(-r[A-Z]{2,3})?/strings[^/
 GENERATED = re.compile(r'^gradle/verification-metadata\.xml$')
 REPOSITORY = re.compile(r'^(patches|tools|docs|\.github)/|^[^/]+\.md$|^(molly-build|native-ringrtc)\.json$')
 FIXED_DATE = '@0 +0000'
+FORK_STAGE = 'Feature branch fork layers'
 
 
 def classify(path):
@@ -99,6 +104,10 @@ class Repo:
 
     def commit(self, revision):
         return self.git('rev-parse', '--verify', revision + '^{commit}').decode().strip()
+
+    def load_bundle(self, bundle):
+        """Copy a bundle's objects into the private object directory; refs are not written."""
+        self.git('bundle', 'unbundle', str(bundle))
 
 
 def combined(repo, tree, parents):
@@ -218,7 +227,7 @@ def stage_of(layer_id):
     if layer_id.startswith('followups/') and name in scope.ADDITIONS:
         return 'PR5 behavior additions'
     if layer_id.startswith('followups/') and name in scope.FEATURES:
-        return 'Feature branch fork layers'
+        return FORK_STAGE
     return 'PR3 compatibility'
 
 
@@ -268,11 +277,70 @@ def port(repo, series_dir):
                      'classes': physical(repo, checkpoints[i - 1][1], tree)})
     stages = collections.OrderedDict()
     for (name, _, stage), result in zip(checkpoints, measured):
-        stages[stage] = dict(result, checkpoint=name)
+        # Fork layers in the port series have no fork input here, so their stage also counts
+        # the fork's own lines. Release profiles measure them with the fork as a parent.
+        stages[stage] = dict(result, checkpoint=name, includes_fork_lines=stage == FORK_STAGE)
     for result in measured:
         result.pop('_files')
     return {'schema': 1, 'molly': molly, 'old_signal': old, 'signal': signal,
             'classes': CLASS_NOTES, 'stages': stages, 'layers': rows}
+
+
+def profiles(repo, root, config):
+    """Measure each named release profile in a build configuration, or return []."""
+    entries = config.get('profiles') or {}
+    if not entries:
+        return []
+    provenance = json.loads((Path(root) / config['port']['series']).parent.joinpath('provenance.json').read_text())
+    molly, signal = provenance['origin_target'], provenance['signal']
+    index = molly_lines(repo, provenance['origin_base'], molly)
+    fork, loaded, cache, rows = None, set(), {}, []
+    for name, entry in entries.items():
+        layers = entry.get('fork_series') or []
+        if layers:
+            fork = config['fork_source']['head']
+            fork_root = Path(root) / Path(layers[0]).parent.parent
+            if fork_root not in loaded:
+                bundle = json.loads((fork_root / 'provenance.json').read_text())['upstream_bundle']
+                repo.load_bundle(fork_root / bundle)
+                loaded.add(fork_root)
+        key = (entry['target_tree'], bool(layers))
+        if key not in cache:
+            ours = measure(repo, entry['target_tree'], [molly, signal] + ([fork] if layers else []), index)
+            ours.pop('_files')
+            from_fork = None
+            if layers:
+                two = summarize(combined(repo, entry['target_tree'], [molly, signal]))
+                from_fork = {k: two[k]['written'] - ours['classes'][k]['written'] for k in CLASSES}
+            cache[key] = (ours, from_fork)
+        ours, from_fork = cache[key]
+        rows.append({'name': name, 'tree': ours['tree'], 'parents': ours['parents'], 'fork_series': layers,
+                     'firebase_free': entry.get('firebase_free'), 'classes': ours['classes'],
+                     'molly': ours['molly'], 'from_fork': from_fork})
+    return rows
+
+
+def markdown_profiles(rows, molly_total):
+    """Render the release profile table; empty when there are no profiles."""
+    if not rows:
+        return ''
+    out = ['### Release profiles', '',
+           'Each profile\'s source compared with Molly and Signal and, for profiles with fork layers, the fork head '
+           'as a third input, so **written** excludes lines the fork wrote. **From the fork** counts production lines '
+           'the fork wrote that the profile carries.', '',
+           '| Profile | Tree | Fork layers | Firebase | Production written / removed | Written as % of Molly\'s '
+           'production lines | From the fork | Molly lines not carried | Tests |',
+           '|---|---|---|---|---:|---:|---:|---:|---:|']
+    for row in rows:
+        c = row['classes']
+        share = f'{c["production"]["written"] / molly_total * 100:.1f}%' if molly_total else 'n/a'
+        fork = '—' if row['from_fork'] is None else f'{row["from_fork"]["production"]:,}'
+        layers = ', '.join(f'`{Path(x).parent.name}`' for x in row['fork_series']) or 'none'
+        firebase = {True: 'removed', False: 'included'}.get(row['firebase_free'], 'n/a')
+        out.append(f'| {row["name"]} | `{row["tree"][:12]}` | {layers} | {firebase} | '
+                   f'{fmt(c["production"]["written"], c["production"]["removed"])} | {share} | {fork} | '
+                   f'{row["molly"]["production"]["not_carried"]:,} | {fmt(c["tests"]["written"], c["tests"]["removed"])} |')
+    return '\n'.join(out) + '\n'
 
 
 def fmt(written, removed):
@@ -282,7 +350,7 @@ def fmt(written, removed):
 SHOWN = ('production', 'translations', 'tests', 'generated')
 
 
-def markdown(result):
+def markdown(result, profile_rows=()):
     """Render the headline section of the port report."""
     stages = list(result['stages'].items())
     molly_total = stages[-1][1]['molly']['production']['molly_lines'] if stages else 0
@@ -301,9 +369,14 @@ def markdown(result):
     for stage, item in stages:
         c, mol = item['classes'], item['molly']['production']
         share = f'{c["production"]["written"] / molly_total * 100:.1f}%' if molly_total else 'n/a'
-        out.append(f'| {stage}, tree `{item["tree"][:12]}` | {fmt(c["production"]["written"], c["production"]["removed"])} '
+        label = stage + (' (includes lines the fork wrote)' if item.get('includes_fork_lines') else '')
+        out.append(f'| {label}, tree `{item["tree"][:12]}` | {fmt(c["production"]["written"], c["production"]["removed"])} '
                    f'| {share} | {mol["not_carried"]:,} (of which {mol["in_removed_paths"]:,} in removed paths) | '
                    + ' | '.join(fmt(c[k]['written'], c[k]['removed']) for k in SHOWN[1:]) + ' |')
+    if any(item.get('includes_fork_lines') for _, item in stages):
+        out += ['', f'The {FORK_STAGE} row has no fork input, so its written lines include the fork\'s own code; '
+                'it is not a measure of our changes. Release profiles that declare the fork source measure fork '
+                'layers with the fork head as a third input.']
     out += ['', 'Classes: ' + '; '.join(f'**{k}**: {v}' for k, v in result['classes'].items()) + '.', '',
             '### By layer', '',
             'Initial layers own the paths their mailboxes touch, so their rows split the initial result by path and '
@@ -324,6 +397,8 @@ def markdown(result):
         out += ['', f'### Most Molly production lines not carried at {stages[-1][0]}', '',
                 '| Path | Lines | Path still exists |', '|---|---:|---|']
         out += [f'| `{p}` | {n:,} | {"yes" if exists else "no"} |' for p, n, exists in last['top_not_carried']]
+    if profile_rows:
+        out += ['', markdown_profiles(profile_rows, molly_total).rstrip('\n')]
     return '\n'.join(out) + '\n'
 
 
@@ -334,6 +409,7 @@ def main():
     p = sub.add_parser('port', help='measure every checkpoint of a port series')
     p.add_argument('--series-dir', default='patches/ports/signal-8.33.2')
     p.add_argument('--markdown', action='store_true')
+    p.add_argument('--config', help='also measure the named release profiles in this build configuration')
     t = sub.add_parser('tree', help='measure one tree against explicit parents')
     t.add_argument('tree')
     t.add_argument('--parent', action='append', required=True, help='repeat; order is reported')
@@ -344,7 +420,11 @@ def main():
             repo = Repo(args.repo, objects)
             if args.command == 'port':
                 result = port(repo, Path(args.repo) / args.series_dir)
-                print(markdown(result) if args.markdown else json.dumps(result, indent=1), end='' if args.markdown else '\n')
+                rows = profiles(repo, args.repo, json.loads(Path(args.config).read_text())) if args.config else []
+                if args.markdown:
+                    print(markdown(result, rows), end='')
+                else:
+                    print(json.dumps(dict(result, profiles=rows), indent=1))
             else:
                 index = molly_lines(repo, *args.molly_old) if args.molly_old else None
                 result = measure(repo, args.tree, args.parent, index)

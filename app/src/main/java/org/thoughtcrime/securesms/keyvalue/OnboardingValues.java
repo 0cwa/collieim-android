@@ -10,8 +10,6 @@ import java.util.List;
 public final class OnboardingValues extends SignalStoreValues {
 
   private static final String SHOW_STORIES         = "onboarding.stories_molly";
-  private static final String SHOW_NEW_GROUP       = "onboarding.new_group";
-  private static final String SHOW_INVITE_FRIENDS  = "onboarding.invite_friends";
   private static final String SHOW_APPEARANCE      = "onboarding.appearance";
   private static final String SHOW_ADD_PHOTO       = "onboarding.add_photo";
   private static final String SHOW_SET_UP_USERNAME = "onboarding.set_up_username";
@@ -42,8 +40,6 @@ public final class OnboardingValues extends SignalStoreValues {
 
   public boolean hasOnboarding(@NonNull Context context) {
     return shouldShowStories()       ||
-           shouldShowNewGroup()      ||
-           shouldShowInviteFriends() ||
            shouldShowAppearance()    ||
            shouldShowAddPhoto()      ||
            shouldShowSetUpUsername();

@@ -391,7 +391,6 @@ private class StarredMessageClickListener(
   override fun onShowGroupDescriptionClicked(groupName: String, description: String, shouldLinkifyWebLinks: Boolean) = Unit
   override fun onJoinCallLink(callLinkRootKey: CallLinkRootKey) = Unit
   override fun onViewStickerPackLink(packId: String, packKey: String) = Unit
-  override fun onPaymentTombstoneClicked() = Unit
   override fun onDisplayMediaNoLongerAvailableSheet() = Unit
   override fun onShowUnverifiedProfileSheet(forGroup: Boolean) = Unit
   override fun onUpdateSignalClicked() = Unit

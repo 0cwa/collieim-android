@@ -1,5 +1,6 @@
 package im.molly.unifiedpush
 
+import androidx.annotation.WorkerThread
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonMappingException
@@ -8,6 +9,7 @@ import im.molly.unifiedpush.model.ConnectionResult
 import im.molly.unifiedpush.model.LinkStatus
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.Response
+import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -15,6 +17,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.signal.core.util.Base64
 import org.signal.core.util.JsonUtils
 import org.signal.core.util.Util
+import org.signal.core.util.ThreadUtil
 import org.signal.core.util.crypto.DeviceNameCipher
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.protocol.SessionBuilder
@@ -129,12 +132,18 @@ object MollySocketRepository {
     }
   }
 
+  @WorkerThread
   @Throws(IOException::class)
   fun removeDevice(device: MollySocketDevice) {
-    LinkDeviceRepository.removeDevice(device.deviceId)
+    ThreadUtil.assertNotMainThread()
+    if (!runBlocking { LinkDeviceRepository.removeDevice(device.deviceId) }) {
+      throw IOException("Failed to remove MollySocket linked device")
+    }
   }
 
+  @WorkerThread
   fun getDeviceStatus(device: MollySocketDevice): LinkStatus {
+    ThreadUtil.assertNotMainThread()
     return when (device.isLinked()) {
       true -> LinkStatus.LINKED
       false -> LinkStatus.NOT_LINKED
@@ -143,7 +152,7 @@ object MollySocketRepository {
   }
 
   private fun MollySocketDevice.isLinked(): Boolean? {
-    return LinkDeviceRepository.loadDevices()?.any {
+    return runBlocking { LinkDeviceRepository.loadDevices() }?.any {
       it.id == deviceId && it.name == DEVICE_NAME
     }
   }

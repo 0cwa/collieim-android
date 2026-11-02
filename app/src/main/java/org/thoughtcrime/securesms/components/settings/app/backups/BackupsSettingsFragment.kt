@@ -105,11 +105,11 @@ class BackupsSettingsFragment : ComposeFragment() {
       backupsSettingsState = state,
       onNavigationClick = { requireActivity().onNavigateUp() },
       onBackupsRowClick = {
-        when (state.backupState) {
+        when (val backupState = state.backupState) {
           is BackupState.Error -> Unit
 
           is BackupState.None -> {
-            if (!state.isLinkedDevice && state.backupState.featureSupported) {
+            if (!state.isLinkedDevice && backupState.featureSupported) {
               checkoutLauncher.launch(null)
             }
           }

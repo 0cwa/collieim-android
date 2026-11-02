@@ -618,7 +618,7 @@
             android:exported="false"
             android:label="@string/AndroidManifest__media_preview"
             android:launchMode="singleTask"
-            android:theme="@style/Signal.DayNight.NoActionBar"
+            android:theme="@style/Theme.Signal.DayNight.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
 
         <activity

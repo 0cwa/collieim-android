@@ -23,7 +23,7 @@
         android:layout_height="48dp"
         android:layout_gravity="center"
         style="?android:attr/progressBarStyleLarge"
-        android:indeterminateTint="@color/signal_colorOnSurfaceVariant"
+        android:indeterminateTint="?attr/colorOnSurfaceVariant"
         android:indeterminate="true" />
 
 </FrameLayout>

@@ -353,7 +353,7 @@ public final class Megaphones {
         .setTitle(R.string.DonateMegaphone_molly_is_free_software)
         .setBody(R.string.DonateMegaphone_we_maintain_molly_with_your_support_consider_donating_at_open_collective)
         .setImage(R.drawable.ic_donate_megaphone)
-        .setActionButton(R.string.BecomeASustainerMegaphone__donate, (megaphone, listener) -> {
+        .setActionButton(R.string.ConversationUpdateItem_donate, (megaphone, listener) -> {
           CommunicationActions.openBrowserLink(listener.getMegaphoneActivity(), context.getString(R.string.donate_url));
           listener.onMegaphoneCompleted(megaphone.getEvent());
         })

@@ -342,8 +342,6 @@ class MainActivity :
       }
     }
 
-    shareDataTimestampViewModel.setTimestampFromActivityCreation(savedInstanceState, intent)
-
     setContent {
       val mainToolbarState by toolbarViewModel.state.collectAsStateWithLifecycle()
       val mainNavigationState by mainNavigationViewModel.mainNavigationBarState.collectAsStateWithLifecycle()
@@ -387,7 +385,6 @@ class MainActivity :
         val detailLocation by mainNavigationViewModel.detailLocation.collectAsStateWithLifecycle()
         val isConversationFullscreen = !isSplitPane && detailLocation is MainDetailRoute.Conversation
 
-        val context = LocalContext.current
         val isDarkTheme = isSystemInDarkTheme()
         val navBarColor = when {
           isSplitPane -> SignalTheme.colors.colorSurface1.toArgb()

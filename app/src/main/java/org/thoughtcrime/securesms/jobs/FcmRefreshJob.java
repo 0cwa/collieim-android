@@ -30,7 +30,7 @@ import androidx.core.app.NotificationManagerCompat;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-import org.greenrobot.eventbus.EventBus;
+import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.PendingIntentFlags;
 import org.signal.core.util.logging.Log;
 import org.signal.network.exceptions.NonSuccessfulResponseCodeException;
@@ -90,7 +90,7 @@ public class FcmRefreshJob extends BaseJob {
       if (wasFcmTokenSet) {
         Log.i(TAG, "FCM is disabled: clearing existing token...");
         try {
-          RequestResultUtil.successOrThrowNoError(SignalNetwork.accountApi().clearFcmToken());
+          RequestResultUtil.successOrThrowNoError(SignalNetwork.accountApi().clearFcmTokenSync());
         } finally {
           SignalStore.account().invalidateFcmToken();
           FcmUtil.deleteFirebaseInstallationId(context);

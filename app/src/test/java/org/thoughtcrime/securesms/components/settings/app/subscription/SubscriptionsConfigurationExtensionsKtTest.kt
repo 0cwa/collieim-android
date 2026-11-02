@@ -30,7 +30,7 @@ class SubscriptionsConfigurationExtensionsKtTest {
 
   @Before
   fun setUp() {
-    CoreUtilDependencies.init(ApplicationProvider.getApplicationContext(), mockk(relaxed = true), CoreUtilDependencies.BuildInfo(0, 0))
+    CoreUtilDependencies.init(ApplicationProvider.getApplicationContext(), mockk(relaxed = true), CoreUtilDependencies.BuildInfo(buildTimestamp = 0))
   }
 
   @Test

@@ -95,7 +95,7 @@ object FcmFetchManager {
 
     val mayHaveMessagesNotification: Notification = NotificationCompat.Builder(context, NotificationChannels.ADDITIONAL_MESSAGE_NOTIFICATIONS)
       .setSmallIcon(R.drawable.ic_notification)
-      .setColor(ContextCompat.getColor(context, R.color.core_ultramarine))
+      .setColor(ContextCompat.getColor(context, org.signal.core.ui.R.color.core_ultramarine))
       .setContentTitle(context.getString(R.string.FcmFetchManager__you_may_have_messages))
       .setCategory(NotificationCompat.CATEGORY_MESSAGE)
       .setContentIntent(PendingIntent.getActivity(context, 0, MainActivity.clearTop(context), mutable()))

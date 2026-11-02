@@ -50,9 +50,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrScannerActivity
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
+import org.signal.core.util.eventbus.EventBus
+import org.signal.core.util.eventbus.RestartableSubscription
+import org.signal.core.util.eventbus.ThreadMode
 import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.ui.compose.ComposeFragment
 import org.signal.core.ui.compose.DayNightPreviews
@@ -70,7 +70,6 @@ import org.thoughtcrime.securesms.components.PromptBatterySaverDialogFragment
 import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRoute
 import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRouter
 import org.thoughtcrime.securesms.components.settings.models.Banner
-import org.thoughtcrime.securesms.conversation.v2.registerForLifecycle
 import org.thoughtcrime.securesms.events.PushServiceEvent
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.notifications.NotificationChannels
@@ -125,7 +124,8 @@ class NotificationsSettingsFragment : ComposeFragment() {
       viewModel.setPlayServicesErrorCode(args.playServicesErrorCode)
     }
 
-    EventBus.getDefault().registerForLifecycle(subscriber = this, lifecycleOwner = viewLifecycleOwner)
+    RestartableSubscription { EventBus.default.subscribe<PushServiceEvent>(ThreadMode.MAIN, ::onPushServiceEvent) }
+      .bindTo(viewLifecycleOwner, Lifecycle.State.RESUMED)
   }
 
   override fun onResume() {
@@ -133,8 +133,7 @@ class NotificationsSettingsFragment : ComposeFragment() {
     viewModel.refresh()
   }
 
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  fun onPushServiceEvent(event: PushServiceEvent) {
+  private fun onPushServiceEvent(event: PushServiceEvent) {
     viewModel.refresh()
   }
 

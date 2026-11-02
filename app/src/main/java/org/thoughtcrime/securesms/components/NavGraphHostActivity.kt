@@ -6,15 +6,14 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.PassphraseRequiredActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme
 import org.thoughtcrime.securesms.util.DynamicTheme
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * Hosts a [NavHostFragment] for the nav graph and start bundle passed via [ARG_NAV_GRAPH] and [ARG_START_BUNDLE].
@@ -73,7 +72,7 @@ open class NavGraphHostActivity : PassphraseRequiredActivity() {
   }
 
   private fun enableSettingsEdgeToEdge() {
-    val navBarColor = ContextCompat.getColor(this, CoreUiR.color.signal_colorSurface2)
+    val navBarColor = ThemeUtil.getThemedColor(this, com.google.android.material.R.attr.colorSurfaceContainer)
     val isDark = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
     if (Build.VERSION.SDK_INT >= 26) {

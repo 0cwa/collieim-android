@@ -77,6 +77,7 @@ import org.whispersystems.signalservice.internal.push.exceptions.GroupNotFoundEx
 import org.whispersystems.signalservice.internal.push.exceptions.GroupPatchNotAcceptedException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupTerminatedException;
 import org.whispersystems.signalservice.internal.push.exceptions.MismatchedDevicesException;
+import org.whispersystems.signalservice.internal.push.exceptions.MissingCapabilitiesException;
 import org.whispersystems.signalservice.internal.push.exceptions.NotInGroupException;
 import org.whispersystems.signalservice.internal.push.exceptions.StaleDevicesException;
 import org.whispersystems.signalservice.internal.push.http.CancelationSignal;
@@ -372,7 +373,11 @@ public class PushServiceSocket {
   }
 
   public RegisterAsSecondaryDeviceResponse registerAsSecondaryDevice(RegisterAsSecondaryDeviceRequest request) throws IOException {
-    String responseText = makeServiceRequest("/v1/devices/link", "PUT", JsonUtil.toJson(request));
+    String responseText = makeServiceRequest(DEVICE_LINK_PATH, "PUT", JsonUtil.toJson(request), NO_HEADERS,
+                                            (responseCode, body, getHeader) -> {
+                                              // This endpoint uses 409 for a missing account capability.
+                                              if (responseCode == 409) throw new MissingCapabilitiesException();
+                                            }, SealedSenderAccess.NONE);
     return JsonUtil.fromJson(responseText, RegisterAsSecondaryDeviceResponse.class);
   }
 

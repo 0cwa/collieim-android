@@ -47,6 +47,7 @@ import org.thoughtcrime.securesms.service.LocalBackupListener;
 import org.thoughtcrime.securesms.util.BackupUtil;
 import org.thoughtcrime.securesms.util.Environment;
 import org.thoughtcrime.securesms.util.LocalTimeExtensionsKt;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.text.NumberFormat;
 import java.time.LocalTime;

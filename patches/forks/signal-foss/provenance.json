@@ -39,5 +39,10 @@
       "upstream_commit": "fc0daac37774d9c20238a34ac4786d9398adc07f",
       "upstream_author": "Angus Turnbull <github@twinhelix.com>"
     }
-  ]
+  ],
+  "upstream_bundle": "upstream-source.bundle",
+  "upstream_bundle_sha256": "e0e3b786f89d042fa4e3430fd1f09718c12ef4e6316e24976bfc665be931fb57",
+  "upstream_bundle_bytes": 51136,
+  "upstream_bundle_prerequisite": "6e9dddc01f1b26e608ac683807c51e139c141ed2",
+  "upstream_bundle_ref": "refs/heads/upstream-fork/signal-foss-8.33.2.0-FOSS"
 }

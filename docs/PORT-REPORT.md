@@ -14,7 +14,7 @@ Classes: **production**: app and library source, default-locale resources and bu
 
 ### By layer
 
-Initial layers own the paths their mailboxes touch, so their rows split the initial result by path. Each follow-up row is the signed change from the previous checkpoint.
+Initial layers own the paths their mailboxes touch, so their rows split the initial result by path and show lines written / removed. Each follow-up row shows the lines that follow-up changes: its physical diff from the previous checkpoint, added / deleted.
 
 | Layer | Stage | Production | Translations | Tests | Generated |
 |---|---|---:|---:|---:|---:|
@@ -31,9 +31,10 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `initial/integration` | PR3 compatibility | +534 / −26 | +0 / −0 | +418 / −317 | +0 / −0 |
 | `initial/build-and-release` | PR3 compatibility | +19 / −1 | +1,086 / −192 | +0 / −0 | +51 / −10 |
 | `mechanical merge (paths no AI layer touched)` | PR3 compatibility | +6 / −0 | +0 / −0 | +0 / −0 | +0 / −0 |
-| `followups/netcipher-sdk-dsl` | PR3 compatibility | +3 / +0 | +0 / +0 | +0 / +0 | +0 / +0 |
-| `followups/integration-and-regression-tests` | PR3 compatibility | +116 / +156 | +0 / +0 | +415 / +0 | +0 / +0 |
-| `followups/cdn-transport-test-fixture` | PR3 compatibility | +0 / +0 | +0 / +0 | +6 / +0 | +0 / +0 |
+| `followups/restore-preference-import` | PR3 compatibility | +1 / −0 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `followups/netcipher-sdk-dsl` | PR3 compatibility | +3 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `followups/integration-and-regression-tests` | PR3 compatibility | +139 / −288 | +0 / −0 | +430 / −452 | +0 / −0 |
+| `followups/cdn-transport-test-fixture` | PR3 compatibility | +0 / −0 | +0 / −0 | +6 / −3 | +0 / −0 |
 
 ### Largest production files at PR3 compatibility
 

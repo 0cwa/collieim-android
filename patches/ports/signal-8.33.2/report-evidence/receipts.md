@@ -2206,3 +2206,18 @@ Reproduce using the v1 owner-scoped Gradle export of `:app:compileProdWebsiteDeb
 On PR5 source tree `68fa08fd69809463be3aa60ccd232bb50f02e547`, the baseline `:feature:app-settings:compileDebugKotlin` task was up to date and the build exited zero. The individual toggle, divider, and header inverses and their combined inverse each executed that task and exited zero. The command was `agent-heavy -- ./gradlew :feature:app-settings:compileDebugKotlin --max-workers=12 --console=plain`, with JDK 21.0.13+9 and Android SDK at `/var/home/x/Android/Sdk`. The combined patch has SHA-256 `e5c6baa3b440385f366f6398349e427d847191fd3ab4a837c1374cd4e54dea11`.
 
 The tested input file blob `73d154a0b9277bdf16288b3fe7603d0f7e844235` also occurs in the previous PR3 and PR4 source trees; those branches were not compiled in these checks. The inverse changes only indentation; the whitespace-insensitive diff is empty. Against the mechanical file the physical count changed from 27 additions and 25 deletions to 12 additions and 10 deletions. Against the Molly source both counts are 296 additions and no deletions. Old Molly and `origin/signal-8.20.4` use `DataAndStorageSettingsFragment.kt` and lack these rows; `origin/upstream-stable` and `origin/upstream-main` contain the same rows at original indentation. This evidence covers only those three indentation reversions, not the remaining semantic content of the old aggregate hunk or global minimality.
+
+Historical aggregate hunk `e0cd16838d2a30101790` splits after the indentation reversions into current hunks `be7d1e54b9b8f4b1ad49` and `1123d1a889fe94679d7d`. The semantic remainder of both current hunks is unmeasured; the three indentation checks above are partial evidence only.
+
+## Socket and settings whole-hunk inverses
+
+On original PR5 source `b9f7f076e5c84433ecee890741c2c044b75336f1`, tree `68fa08fd69809463be3aa60ccd232bb50f02e547`, the configured offline Kotlin build succeeded with its task UP-TO-DATE. Each portable forward patch below was reversed individually, restoring both files between cases. The command in each report row ran with JDK 21.0.13+9 and the Android SDK; the four inverse builds failed with exit 1. This was a cached build, not a clean build or full preflight. The original PR3 and PR4 source files have identical blobs, but these gates ran only on original PR5, not the newly replayed heads.
+
+| Hunk | Original file blob | Inverse blob | Compiler failure |
+|---|---|---|---|
+| `0a71dc5fd4885bc8ea81` | `2404bc4683658f8234fef9fce31a3fe8a9c0c636` | `7606e4642d5cc4d78642168ca6651d1635778650` | suspend `removeDevice` outside coroutine |
+| `2144342eb29427cab628` | `2404bc4683658f8234fef9fce31a3fe8a9c0c636` | `d9689366112e3fb9e1c29befd9c393bf23a3f89a` | suspend `loadDevices` outside coroutine |
+| `bbe02e6ede61938f98c1` | `e9c5c0a040d80754b8e72019f5f7d6f89cbd2f8a` | `be34629b9f6cb01c22e4f07e68e335b4378b135a` | greenrobot imports and current subscription symbols unresolved |
+| `42393357b34645095fb1` | `e9c5c0a040d80754b8e72019f5f7d6f89cbd2f8a` | `b286a9325d18d204d08927d45a0973dff2d31b2a` | `getDefault` and `Subscribe` unresolved |
+
+The socket failures establish a coroutine call constraint, not the necessity of the annotation, assertion, or false `IOException`. The settings failures are conditional on the other current settings hunk remaining in place; they do not establish runtime or lifecycle behavior, retention, or uniqueness. These failures did not accept a source change.

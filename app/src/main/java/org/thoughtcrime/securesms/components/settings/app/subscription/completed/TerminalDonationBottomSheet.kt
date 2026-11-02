@@ -6,6 +6,7 @@
 package org.thoughtcrime.securesms.components.settings.app.subscription.completed
 
 import android.content.DialogInterface
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -209,7 +210,8 @@ private fun DonationPaymentFailureBottomSheet(
 }
 
 @Composable
-private fun DonationCompletedSheetContent(
+@VisibleForTesting
+internal fun DonationCompletedSheetContent(
   badge: Badge?,
   isToggleChecked: Boolean,
   toggleType: TerminalDonationViewModel.ToggleType,
@@ -248,9 +250,9 @@ private fun DonationCompletedSheetContent(
         .padding(horizontal = 45.dp)
     )
 
-    if (toggleType == TerminalDonationViewModel.ToggleType.NONE) {
+    if (badge == null) {
       CircularProgressIndicator()
-    } else {
+    } else if (toggleType != TerminalDonationViewModel.ToggleType.NONE) {
       DonationToggleRow(
         checked = isToggleChecked,
         text = stringResource(id = toggleType.copyId),

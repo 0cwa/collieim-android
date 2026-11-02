@@ -134,6 +134,21 @@ def summarize(files):
     return result
 
 
+def physical(repo, before, after):
+    """Physical Git diff by class between two trees, with renames: the lines a layer changes."""
+    raw = repo.git('diff', '-M', '--numstat', '-z', '--no-ext-diff', '--no-textconv', before, after)
+    fields, files, i = raw.split(b'\0'), {}, 0
+    while i < len(fields) and fields[i]:
+        added, deleted, path = fields[i].split(b'\t', 2)
+        if not path:
+            path, i = fields[i + 2], i + 3
+        else:
+            i += 1
+        if added != b'-':
+            files[path.decode('utf-8', 'surrogateescape')] = [int(added), int(deleted)]
+    return summarize(files)
+
+
 def molly_lines(repo, old, molly):
     """Molly's own non-blank added lines per resulting path (old Signal to Molly, with renames)."""
     output = repo.git('diff', '-M', '-U0', '--no-ext-diff', '--no-textconv', old, molly)
@@ -202,6 +217,8 @@ def stage_of(layer_id):
         return 'PR4 behavior fixes'
     if layer_id.startswith('followups/') and name in scope.ADDITIONS:
         return 'PR5 behavior additions'
+    if layer_id.startswith('followups/') and name in scope.FEATURES:
+        return 'Feature branch fork layers'
     return 'PR3 compatibility'
 
 
@@ -246,15 +263,9 @@ def port(repo, series_dir):
     for name, item in layers.items():
         rows.append({'layer': name, 'stage': item['stage'], 'kind': 'share of initial result',
                      'classes': summarize(item['files'])})
-    for i, (name, _, stage) in enumerate(checkpoints[1:], 1):
-        before, after = measured[i - 1]['_files'], measured[i]['_files']
-        delta = {}
-        for path in set(before) | set(after):
-            b, a = before.get(path, [0, 0]), after.get(path, [0, 0])
-            if a != b:
-                delta[path] = [a[0] - b[0], a[1] - b[1]]
-        rows.append({'layer': name, 'stage': stage, 'kind': 'change from previous checkpoint',
-                     'classes': summarize(delta)})
+    for i, (name, tree, stage) in enumerate(checkpoints[1:], 1):
+        rows.append({'layer': name, 'stage': stage, 'kind': 'physical diff from previous checkpoint',
+                     'classes': physical(repo, checkpoints[i - 1][1], tree)})
     stages = collections.OrderedDict()
     for (name, _, stage), result in zip(checkpoints, measured):
         stages[stage] = dict(result, checkpoint=name)
@@ -264,9 +275,7 @@ def port(repo, series_dir):
             'classes': CLASS_NOTES, 'stages': stages, 'layers': rows}
 
 
-def fmt(written, removed, signed=False):
-    if signed:
-        return f'{written:+,} / {removed:+,}'.replace('-', '−')
+def fmt(written, removed):
     return f'+{written:,} / −{removed:,}'
 
 
@@ -297,15 +306,16 @@ def markdown(result):
                    + ' | '.join(fmt(c[k]['written'], c[k]['removed']) for k in SHOWN[1:]) + ' |')
     out += ['', 'Classes: ' + '; '.join(f'**{k}**: {v}' for k, v in result['classes'].items()) + '.', '',
             '### By layer', '',
-            'Initial layers own the paths their mailboxes touch, so their rows split the initial result by path. '
-            'Each follow-up row is the signed change from the previous checkpoint.', '',
+            'Initial layers own the paths their mailboxes touch, so their rows split the initial result by path and '
+            'show lines written / removed. Each follow-up row shows the lines that follow-up changes: its physical '
+            'diff from the previous checkpoint, added / deleted.', '',
             '| Layer | Stage | Production | Translations | Tests | Generated |', '|---|---|---:|---:|---:|---:|']
     for row in result['layers']:
-        c, signed = row['classes'], row['kind'] != 'share of initial result'
+        c = row['classes']
         if all(c[k]['written'] == 0 and c[k]['removed'] == 0 for k in SHOWN):
             continue
         out.append(f'| `{row["layer"]}` | {row["stage"]} | '
-                   + ' | '.join(fmt(c[k]['written'], c[k]['removed'], signed) for k in SHOWN) + ' |')
+                   + ' | '.join(fmt(c[k]['written'], c[k]['removed']) for k in SHOWN) + ' |')
     if stages:
         last = stages[-1][1]
         out += ['', f'### Largest production files at {stages[-1][0]}', '',

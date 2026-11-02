@@ -2069,3 +2069,38 @@ These prior-tree hunk annotations are historical and do not measure the regenera
   }
 }
 ```
+
+## Binding evidence v1
+
+These AI-assisted compatibility checks ran on reconstructed profile 5 SOURCE commit `3a81e04ead24cccd43406d952f73b5368e887a99`, tree `68fa08fd69809463be3aa60ccd232bb50f02e547`. Source commits 3 `4e2a3cdb5884437745613e1e17b0511f6c465dff`, 4 `05d17fb96d86ee1719c76ef435cb167cd1ac3a62`, and 5 `b9f7f076e5c84433ecee890741c2c044b75336f1` have identical relevant file blobs. Transfer to 3/4 is conditional; neither profile was measured. Mechanical tree `759ef1c309d93aa7e4ac7217b144c04545562f11`. These isolated real-file javac checks are not full-module or runtime checks and do not establish every changed line is necessary. No counter was accepted, no production code changed, and no action chain was extended.
+
+Old Molly and human ports `5551f3023e6093fbb65214acdcc2e568b7b63132` and `aa81fd6312bf1c7a71f5efda1930d23b05bdb739` preserve old implementations; no new-API Molly equivalent was verified. Observer old blob `0736adfbf10f16abe75186ccd2f4ba72bcee5fc4`; KeyCachingService old `8a369ef31c76b21c47c168b112005cb880028fea`; manager old `16a01f9f3ebc8b085bb930ea01f1d51c4ff521a5`, socket old `1daa76c8d9f51743e01209d91f19fe1564b7e378`. Signal uses `RegistrationApi.registerAsSecondaryDevice`; keep 409 MissingCapabilities policy. The event producer uses Signal bus; the sticky-event guard is retained. Neither observation proves runtime behavior.
+
+The service export initially failed twice before any counters: session 97339 exit 1, root task resolved Android JDK image without project lock; session 26070 exit 1, included build lacked the requested project. Those are setup failures, not counter outcomes. Corrected owner-scoped export session 52464 exit 0; observer export session 61642 exit 0. Observer runner session 10113 exit 0; service runner session 97163 exit 0. Baseline and counter results below are individual javac exits.
+
+- `d314327781b510373bf0`: Whole import hunk reversed: Signal EventBus and ThreadMode replaced by all three old greenrobot imports. Baseline `19b8ef8ca9c345f38b199e78ddf93abfb15b83a1` exit 0; counter `c70a2fc98c7bc923d7d791a29a61c6edd2dd759c` exit 1: greenrobot package absent and EventBus/ThreadMode unresolved. Original patch SHA-256 `5ddf7908b9ea3cd02b249096b32be84e4c89de30946c77cc00cf49d0eb658005`; portable patch SHA-256 `ad449b9afdf0f1195057cd1ad0899d4c22527cea5f9201d2d2e1a91835ca6f18`.
+- `23fbf7e6ed4bd45b4dbd`: One-token subscribe to register probe only; whole callback inverse remains unmeasured. Baseline `19b8ef8ca9c345f38b199e78ddf93abfb15b83a1` exit 0; counter `d0374b64abc40726db3238701536de50179112e4` exit 1: no matching Signal EventBus register method. Original patch SHA-256 `e85d86e15bb68d12d0df3afc63128a3ae9fc74c4d46c9721f641fa5ebadb3bb4`; portable patch SHA-256 `08f6025d22dd28aa581967f0361b6ec64e15941b7be7a098de2fa23701b038b2`.
+- `efe95a23f05268a99f97`: Whole one-line EventBus import inverse; sticky TransferStatus guard retained. Baseline `8b392dc3ba3adf6b6abb6f0125ab766ca537994a` exit 0; counter `be99680a42a2ef40a5e67fd0c7ddf599cb5752b5` exit 1: greenrobot package absent and EventBus unresolved. Original patch SHA-256 `2da8563f2fe6c3ded6c1bc33f380c6a9064af5de023a8389a48a31aa493e7afd`; portable patch SHA-256 `2da8563f2fe6c3ded6c1bc33f380c6a9064af5de023a8389a48a31aa493e7afd`.
+- `7d2f8e90ce08e18c8f21`: Whole 16-addition/2-deletion method-body hunk reversed to old two-line delegate; existing attributes parameter used. Baseline `932e209b0781e43dd8c3088abce07e790df90503` exit 0; counter `ce05d451dc6477366a470e0657ddf599cb5752b5` exit 1: PushServiceSocket has no matching finishNewDeviceRegistration method. Original patch SHA-256 `6efd50532d353b68e0309f13e4ddfb70f8b626ee6b0e4787b73dae46a60d14d0`; portable patch SHA-256 `6efd50532d353b68e0309f13e4ddfb70f8b626ee6b0e4787b73dae46a60d14d0`.
+
+The observer method-name probe retains receiver, lambda, arguments and checks; it does not restore the old anonymous Object, register call and @Subscribe callback. The whole callback inverse remains unmeasured. The observer imports inverse restores all old imports in order. The manager method body inverse matches the complete raw 16+/2- hunk; separate imports remain.
+
+### Reproduction recipe
+
+Use a clean reconstructed profile 5 source with its built outputs. Set `JAVA_HOME=/var/home/x/.local/opt/jdk-21.0.13+9`, `ANDROID_HOME=/var/home/x/Android/Sdk`; use `agent-heavy -- env JAVA_HOME="$JAVA_HOME" ANDROID_HOME="$ANDROID_HOME" ./gradlew --offline --no-daemon --max-workers=1 --no-configuration-cache -I <init.gradle> :app:exportObserverProbeConfig :lib:libsignal-service:exportServiceProbeConfig`. The actual app export used max-workers=12 and only the app selector. Export owner task properties in a project-local task, guarding missing projects in included builds, as in the following Groovy. Replace output paths with scratch files and instantiate the block for both pairs; `kotlinOutput` is `classes/kotlin/main` for service and app uses the actual output path below.
+
+```groovy
+import groovy.json.JsonOutput
+gradle.projectsEvaluated {
+  [[':app','compileProdWebsiteDebugJavaWithJavac','exportObserverProbeConfig','APP_CONFIG'], [':lib:libsignal-service','compileJava','exportServiceProbeConfig','SERVICE_CONFIG']].each { spec ->
+    def p = gradle.rootProject.findProject(spec[0]); if (p == null) return
+    def t = p.tasks.named(spec[1]).get()
+    p.tasks.register(spec[2]) { doLast {
+      def o = t.options
+      new File(spec[3]).text = JsonOutput.prettyPrint(JsonOutput.toJson([task:t.path, sourceCompatibility:t.sourceCompatibility, targetCompatibility:t.targetCompatibility, encoding:o.encoding, release:o.release.orNull, compiler:t.javaCompiler.orNull?.executablePath?.asFile?.absolutePath, compilerArgs:o.compilerArgs, argumentProviders:o.compilerArgumentProviders.collect { it.asArguments().toList() }, bootstrapClasspath:o.bootstrapClasspath?.files?.collect { it.absolutePath }, annotationProcessorPath:o.annotationProcessorPath?.files?.collect { it.absolutePath }, classpath:t.classpath.files.collect { it.absolutePath }, javaOutput:t.destinationDirectory.get().asFile.absolutePath]))
+    } }
+  }
+}
+```
+
+For each file, copy the complete baseline into a private source directory, compile it, then apply its portable patch to another copy and compile again. Use exported compiler and classpath, append owner Java output and Kotlin output, and pass `-processorpath <empty-dir> -sourcepath <private-source-dir> -classpath <exported-plus-outputs> -d <private-classes-dir> <private-source-file>`. Preserve every exported compiler argument and argument-provider value. App actual arguments were `-source 21 -target 21 -encoding UTF-8 -XDstringConcat=inline --system /var/home/x/.gradle/caches/9.6.0/transforms/ac7ebc01a1efefae22c644559f3a2c4c/transformed/output/jdkImage`; 271 classpath entries, empty processor path, no explicit release or bootstrap. App Kotlin output was `app/build/intermediates/built_in_kotlinc/prodWebsiteDebug/compileProdWebsiteDebugKotlin/classes`, not the initially guessed tmp path. Service actual arguments were `-source 21 -target 21`; 35 classpath entries, including two absent Kotlin-only dependency Java-output paths passed unchanged, empty processor path, no encoding, compiler arguments, providers, release or bootstrap override. Service Kotlin output was `lib/libsignal-service/build/classes/kotlin/main`. Both used `/var/home/x/.local/opt/jdk-21.0.13+9/bin/javac`. Empty processor path was preserved; Java and Kotlin owner outputs were added to resolve same-module dependencies.

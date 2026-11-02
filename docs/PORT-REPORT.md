@@ -9,6 +9,7 @@ Molly itself adds 26,922 non-blank production lines to Signal `c47a74ba0961`. **
 | Stage (cumulative) | Production written / removed | Written as % of Molly's production lines | Molly lines not carried | Translations | Tests | Generated |
 |---|---:|---:|---:|---:|---:|---:|
 | PR3 compatibility, tree `2a78679e2344` | +1,290 / −327 | 4.8% | 1,491 (of which 546 in removed paths) | +2,059 / −192 | +1,288 / −317 | +51 / −10 |
+| PR4 behavior fixes, tree `d508b6d42898` | +1,459 / −307 | 5.4% | 1,489 (of which 546 in removed paths) | +2,059 / −192 | +1,507 / −317 | +51 / −10 |
 
 Classes: **production**: app and library source, default-locale resources and build scripts that ship in the APK; **translations**: localized strings (res/values-<locale>/strings*.xml), generated or relocated; **tests**: test, screenshot-test and benchmark source sets and benchmark modules; **generated**: gradle/verification-metadata.xml dependency hashes; **repository**: patch series, pipeline tools, documentation and CI.
 
@@ -35,28 +36,32 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `followups/netcipher-sdk-dsl` | PR3 compatibility | +3 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 | `followups/integration-and-regression-tests` | PR3 compatibility | +139 / −288 | +0 / −0 | +430 / −452 | +0 / −0 |
 | `followups/cdn-transport-test-fixture` | PR3 compatibility | +0 / −0 | +0 / −0 | +6 / −3 | +0 / −0 |
+| `followups/reregistration-linked-devices-reminder` | PR4 behavior fixes | +20 / −2 | +0 / −0 | +32 / −0 | +0 / −0 |
+| `followups/legacy-backup-precedence` | PR4 behavior fixes | +69 / −28 | +0 / −0 | +78 / −2 | +0 / −0 |
+| `followups/donation-completion` | PR4 behavior fixes | +68 / −6 | +0 / −0 | +87 / −0 | +0 / −0 |
+| `followups/backup-notification-id-upgrade` | PR4 behavior fixes | +46 / −3 | +0 / −0 | +24 / −0 | +0 / −0 |
 
-### Largest production files at PR3 compatibility
+### Largest production files at PR4 behavior fixes
 
 | Path | Written | Removed |
 |---|---:|---:|
 | `app/src/main/res/values/themes.xml` | 128 | 5 |
-| `app/src/main/res/layout/thanks_for_your_support_bottom_sheet_dialog_fragment.xml` | 2 | 85 |
-| `app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt` | 86 | 0 |
-| `app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt` | 84 | 0 |
-| `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/thanks/ThanksForYourSupportBottomSheetDialogFragment.kt` | 0 | 68 |
+| `app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt` | 128 | 0 |
+| `app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt` | 97 | 0 |
+| `app/src/main/res/layout/thanks_for_your_support_bottom_sheet_dialog_fragment.xml` | 16 | 72 |
+| `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/thanks/ThanksForYourSupportBottomSheetDialogFragment.kt` | 21 | 56 |
 | `feature/app-settings/src/main/java/org/signal/appsettings/updates/AppUpdatesSettingsScreen.kt` | 58 | 0 |
 | `feature/registration/src/main/java/org/signal/registration/screens/welcome/WelcomeScreen.kt` | 49 | 0 |
+| `app/src/main/java/org/thoughtcrime/securesms/backup/FullBackupImporter.java` | 34 | 1 |
 | `app/src/main/res/drawable-night/image_signal_backups_plans.xml` | 18 | 15 |
 | `app/src/main/res/drawable/image_signal_backups_plans.xml` | 17 | 15 |
 | `app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/shared/ConversationHeader.kt` | 31 | 0 |
+| `app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt` | 28 | 2 |
 | `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/updates/AppUpdatesSettingsViewModel.kt` | 28 | 0 |
 | `app/src/main/res/navigation/app_settings_with_change_number.xml` | 15 | 11 |
 | `feature/app-settings/src/main/java/org/signal/appsettings/appicon/AppIconPreset.kt` | 26 | 0 |
-| `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/help/HelpSettingsFragment.kt` | 25 | 0 |
-| `feature/registration/src/main/java/org/signal/registration/RegistrationRepository.kt` | 11 | 14 |
 
-### Most Molly production lines not carried at PR3 compatibility
+### Most Molly production lines not carried at PR4 behavior fixes
 
 | Path | Lines | Path still exists |
 |---|---:|---|

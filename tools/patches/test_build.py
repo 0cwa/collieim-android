@@ -253,5 +253,39 @@ class CachedSdkTests(BuildSourceTests):
         install.assert_called_once()
 
 
+class NamedProfileBuildTests(BuildSourceTests):
+    def test_profile_bound_to_proof_and_forces_firebase_property(self):
+        self.config['port'] = {'series': 'patches/ports/test/series'}
+        self.config['android'] = {'assemble': ':app:assembleDebug', 'tests': [':app:test']}
+        entry = {'base_series': 'patches/ports/test/series', 'base_tree': self.config['target_tree'],
+                 'fork_series': [], 'target_tree': self.config['target_tree'],
+                 'tests': [':app:test'], 'firebase_free': False}
+        self.config['profiles'] = {'molly-minimal': entry,
+                                   'molly-continued': dict(entry)}
+        self.args.profile = 'molly-minimal'
+        _, selection = build.release_profiles.select(self.config, self.args.profile)
+        self.proof['profile'] = selection
+        self.save()
+        runner = build.Build(self.args)
+        self.assertEqual(runner.source_proof(), self.proof)
+        script = self.app / 'gradlew'
+        script.write_text('#!/bin/sh\nprintf "%s\\n" "$@"\n')
+        script.chmod(0o755)
+        init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
+        init.parent.mkdir(parents=True)
+        init.write_text('// fixture\n')
+        with patch.object(runner, 'source_proof', return_value=self.proof):
+            runner.gradle('assemble')
+        self.assertIn('-PmollyFirebaseFree=false', (self.reports / 'assemble.log').read_text().splitlines())
+        self.args.profile = 'molly-continued'
+        with self.assertRaisesRegex(build.BuildError, 'different release profile'):
+            build.Build(self.args).source_proof()
+        self.args.profile = 'molly-minimal'
+        self.config['profiles']['molly-minimal']['tests'] = [':app:otherTest']
+        self.save()
+        with self.assertRaisesRegex(build.BuildError, 'different release profile'):
+            build.Build(self.args).source_proof()
+
+
 if __name__ == '__main__':
     unittest.main()

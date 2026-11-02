@@ -17,6 +17,8 @@ import time
 import xml.etree.ElementTree as ET
 import zipfile
 
+import release_profiles
+
 
 class BuildError(RuntimeError):
     pass
@@ -113,6 +115,10 @@ class Build:
         self.config = json.loads(self.config_path.read_text())
         if self.config.get('schema') != 1:
             raise BuildError('unsupported build configuration schema')
+        try:
+            self.config, self.profile = release_profiles.select(self.config, getattr(args, 'profile', None))
+        except release_profiles.ProfileError as exc:
+            raise BuildError(str(exc)) from exc
         self.android = self.config['android']
         if not isinstance(self.android, dict):
             raise BuildError('android must be a build-profile object')
@@ -269,6 +275,8 @@ class Build:
         if (proof['signal'], proof['tree'], proof.get('native')) != (
                 self.config['signal']['commit'], self.config['target_tree'], self.config.get('native')):
             raise BuildError('source proof belongs to a different release configuration')
+        if proof.get('profile') != self.profile:
+            raise BuildError('source proof belongs to a different release profile')
         if self.git('rev-parse', 'HEAD^{tree}').stdout.decode().strip() != proof['tree']:
             raise BuildError('the materialized source commit differs from the verified release tree')
         self.working_source_proof()
@@ -360,6 +368,8 @@ class Build:
                    '--max-workers=1', '--dependency-verification=strict',
                    '--init-script', str(init), '-Pkotlin.compiler.execution.strategy=in-process',
                    '-Dorg.gradle.jvmargs=' + jvm_args]
+        if self.profile is not None:
+            command.append('-PmollyFirebaseFree=' + str(self.profile['firebase_free']).lower())
         if self.config.get('native') is not None:
             native_init = self.native_proof / 'ringrtc.init.gradle'
             integration = self.native_proof / 'integration.json'
@@ -380,6 +390,7 @@ def main():
                                          'native-prepare', 'native-build', 'native-integrate'))
     parser.add_argument('--repo', type=Path, default=Path('.'))
     parser.add_argument('--config', default='molly-build.json')
+    parser.add_argument('--profile', choices=sorted(release_profiles.NAMES))
     parser.add_argument('--worktree', type=Path, required=True)
     parser.add_argument('--report-dir', type=Path, required=True)
     parser.add_argument('--native-source-dir', type=Path)

@@ -343,3 +343,24 @@ Initial and unbundled follow-up `mailbox_bytes` and `paths` are historical
 pre-conversion export metadata and remain unchanged. Bundled follow-up
 `mailbox_bytes` records the current mailbox size. Candidate verification does
 not replace the applicable branch preflight, port report update or build tests.
+
+## Named release profile plumbing (in progress)
+
+An optional `profiles` object in `molly-build.json` can define named product
+inputs. Allowed names are `molly-minimal`, `molly-continued`,
+`molly-foss-continued`, `collie`, and `collie-foss`. Each entry has exactly
+`base_series` (repository-relative port series), `base_tree` (full tree ID),
+`fork_series` (ordered list of repository-relative series paths), `target_tree`
+(full tree ID), `tests` (Gradle test arguments), and `firebase_free` (boolean).
+Entries may be added only once their source pins and applicable tests are known.
+Minimal selects the PR4 base; Continued selects PR5. These names describe
+release selections and do not change application branding or IDs.
+
+Use `release.py --profile NAME` to bind the selected configuration and tree to
+its source report, then pass the same `--profile NAME` to every `build.py`
+phase. Build proof checks the profile fingerprint, including tests and Firebase
+selection. Gradle receives the selected `mollyFirebaseFree` value explicitly.
+Omitting `--profile` keeps the existing workflow. The three fork-bearing product names and any fork series are deliberately
+rejected until the independent fork checkpoint verifier is implemented; these
+options do not yet constitute a five-product build or CI matrix. Preflight and
+CI have not yet been taught named selections.

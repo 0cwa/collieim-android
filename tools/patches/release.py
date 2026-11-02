@@ -21,6 +21,7 @@ import scope as stack_scope
 import git_utils
 import verify_complete
 import translation_stage
+import release_profiles
 
 
 METADATA_PATHS = (
@@ -317,9 +318,11 @@ def apply_resolutions(repo, worktree, tree, records):
     return changed, applied
 
 
-def assemble(repo, config_path, worktree, scope=None, base=None):
+def assemble(repo, config_path, worktree, scope=None, base=None, profile=None):
     repo = Path(repo).resolve()
-    config = load_config(config_path)
+    config, selection = release_profiles.select(load_config(config_path), profile)
+    if selection and selection['fork_series']:
+        raise forest.ForestError('fork profile reconstruction requires fork checkpoint verification, which is not implemented yet')
     destination = forest.destination(repo, worktree)
     signal = config['signal']['commit']
     check_source_boundary(repo, signal, scope, base)
@@ -367,6 +370,8 @@ def assemble(repo, config_path, worktree, scope=None, base=None):
     if unresolved:
         raise forest.ForestError('unreviewed merge conflicts: ' + ', '.join(sorted(unresolved)))
     actual = forest.git(destination, 'rev-parse', 'HEAD^{tree}')
+    if selection and actual != selection['base_tree']:
+        raise forest.ForestError('base source tree differs from selected profile')
     changed_kept = set(kept) & {os.fsdecode(path) for path in
                               verify_complete.changed_paths(repo, tree, actual)}
     if changed_kept:
@@ -379,20 +384,21 @@ def assemble(repo, config_path, worktree, scope=None, base=None):
             'mechanical_tree': tree, 'conflict_paths': len(conflicts),
             'keep_mechanical': kept, 'merge_output': merge_output,
             'resolutions': applied, 'tree': actual, 'worktree': str(destination),
-            'native': config.get('native')}
+            'native': config.get('native'), **({'profile': selection} if selection else {})}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--repo', type=Path, default=Path('.'))
     parser.add_argument('--config', type=Path, default=Path('molly-build.json'))
+    parser.add_argument('--profile', choices=sorted(release_profiles.NAMES))
     parser.add_argument('--worktree', type=Path, required=True)
     parser.add_argument('--report', type=Path)
     parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features'))
     parser.add_argument('--base')
     args = parser.parse_args()
     try:
-        result = assemble(args.repo, args.config, args.worktree, args.scope, args.base)
+        result = assemble(args.repo, args.config, args.worktree, args.scope, args.base, args.profile)
         code = 0
     except (forest.ForestError, git_utils.GitError, OSError, UnicodeError, ValueError, KeyError) as exc:
         result, code = {'status': 'FAIL', 'error': str(exc)}, 1

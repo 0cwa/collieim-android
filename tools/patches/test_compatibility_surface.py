@@ -26,6 +26,11 @@ class ChoiceTests(unittest.TestCase):
                    b'<<<<<<< MOLLY\nb\n=======\ny\n>>>>>>> SIGNAL\ntail\n')
         self.assertEqual(surface.baseline(overlap, b'head\na\nmid\nb\ntail\n')[0], 'ambiguous')
 
+    def test_malformed_opening_markers_are_unmatched(self):
+        for marker in (b'<<<<<<<', b'<<<<<<<MOLLY'):
+            with self.subTest(marker=marker):
+                self.assertEqual(surface.baseline(b'head\n' + marker + b'\nbody\n', b'head\nbody\n')[0], 'unmatched')
+
     def test_changed_context_and_empty_choice_are_not_guessed(self):
         conflict = b'head\n<<<<<<< MOLLY\none\n=======\n>>>>>>> SIGNAL\ntail\n'
         self.assertEqual(surface.baseline(conflict, b'changed\none\ntail\n')[0], 'unmatched')
@@ -59,6 +64,12 @@ class InventoryTests(unittest.TestCase):
                 self.assertEqual(report['inventory_count'], 5)
                 row = next(x for x in report['paths'] if x['path'] == 'conflict')
                 self.assertEqual(row['residual_add_delete'], [1, 1])
+                # Repository settings and attributes cannot change physical text counts.
+                run('config', 'diff.algorithm', 'histogram')
+                (root / '.git' / 'info' / 'attributes').write_text('conflict binary\n')
+                self.assertEqual(surface.assess(old, new, directory, ['generated']), report)
+                run('config', 'diff.algorithm', 'patience')
+                self.assertEqual(surface.assess(old, new, directory, ['generated']), report)
                 with self.assertRaises(ValueError): surface.assess(old, new, directory, ['missing'])
                 with self.assertRaises(ValueError): surface.assess(old, new, directory, ['generated', 'generated'])
                 with self.assertRaises(subprocess.CalledProcessError): surface.assess('0' * 40, new, directory)

@@ -39,6 +39,8 @@ def baseline(mechanical, final):
     while i < len(lines):
         if lines[i].startswith((b'=======', b'>>>>>>>', b'|||||||')):
             return 'unmatched', None, []
+        if lines[i].startswith(b'<<<<<<<') and not lines[i].startswith(b'<<<<<<< '):
+            return 'unmatched', None, []
         if not lines[i].startswith(b'<<<<<<< '):
             i += 1
             continue
@@ -46,14 +48,14 @@ def baseline(mechanical, final):
         first = lines[i][8:].strip()
         i += 1
         a = i
-        while i < len(lines) and not lines[i].startswith((b'=======', b'<<<<<<< ', b'|||||||', b'>>>>>>>')):
+        while i < len(lines) and not lines[i].startswith((b'=======', b'<<<<<<<', b'|||||||', b'>>>>>>>')):
             i += 1
         if i == len(lines) or lines[i].strip() != b'=======':
             return 'unmatched', None, []
         left = lines[a:i]
         i += 1
         b = i
-        while i < len(lines) and not lines[i].startswith((b'>>>>>>> ', b'<<<<<<< ', b'|||||||', b'=======')):
+        while i < len(lines) and not lines[i].startswith((b'>>>>>>> ', b'<<<<<<<', b'|||||||', b'=======')):
             i += 1
         if i == len(lines) or not lines[i].startswith(b'>>>>>>> '):
             return 'unmatched', None, []
@@ -63,7 +65,7 @@ def baseline(mechanical, final):
         if {first, second} != {b'MOLLY', b'SIGNAL'} or start == 0 or stop == len(lines):
             return 'unmatched', None, []
         before, after = lines[start - 1], lines[stop]
-        if before.startswith((b'>>>>>>> ', b'=======')) or after.startswith(b'<<<<<<< '):
+        if before.startswith((b'>>>>>>> ', b'=======')) or after.startswith(b'<<<<<<<'):
             return 'unmatched', None, []
         matches = []
         for label, side in ((first, left), (second, right)):
@@ -93,8 +95,13 @@ def numstat(old, new, scratch):
     with tempfile.TemporaryDirectory(dir=scratch) as directory:
         a, b = Path(directory) / 'old', Path(directory) / 'new'
         a.write_bytes(old); b.write_bytes(new)
-        result = subprocess.run(['git', 'diff', '--no-index', '--no-ext-diff', '--numstat', '--', str(a), str(b)],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Run outside the source repository, with no user/system config or attributes.
+        env = {'PATH': os.environ.get('PATH', ''), 'HOME': directory, 'LC_ALL': 'C',
+               'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': os.devnull,
+               'GIT_ATTR_NOSYSTEM': '1', 'GIT_CEILING_DIRECTORIES': str(Path(directory).parent)}
+        result = subprocess.run(['git', 'diff', '--no-index', '--no-ext-diff', '--no-textconv',
+                                 '--text', '--diff-algorithm=myers', '--numstat', '--', str(a), str(b)],
+                                cwd=directory, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         if result.returncode not in (0, 1):
             raise ValueError(result.stderr.decode(errors='replace'))
         if not result.stdout:
@@ -115,9 +122,18 @@ def assess(mechanical_tree, final_tree, scratch, declared_generated=()):
     if len(declared) != len(declared_generated) or not declared <= set(changed):
         raise ValueError('generated declarations must be unique changed paths')
     result = []
+    ga = gd = binaries = 0
     for path in changed:
         a, b = old.get(path), new.get(path)
         row = {'path': path, 'mechanical': a, 'final': b}
+        before = git('cat-file', 'blob', a[2]) if a and a[1] == 'blob' else b''
+        after = git('cat-file', 'blob', b[2]) if b and b[1] == 'blob' else b''
+        binary = b'\0' in before or b'\0' in after
+        if binary:
+            binaries += 1
+        elif (not a or a[1] == 'blob') and (not b or b[1] == 'blob'):
+            add, delete = numstat(before, after, scratch)
+            ga += add; gd += delete
         if path in declared:
             row['category'] = 'declared_generated_unverified'
         elif not b:
@@ -125,9 +141,7 @@ def assess(mechanical_tree, final_tree, scratch, declared_generated=()):
         elif (a and (a[0] != b[0] or a[1] != 'blob')) or b[1] != 'blob':
             row['category'] = 'mode_or_nonblob'
         else:
-            before = git('cat-file', 'blob', a[2]) if a else b''
-            after = git('cat-file', 'blob', b[2])
-            if b'\0' in before or b'\0' in after:
+            if binary:
                 row['category'] = 'binary'
             else:
                 category, base, choices = baseline(before, after)
@@ -137,16 +151,10 @@ def assess(mechanical_tree, final_tree, scratch, declared_generated=()):
                     if choices:
                         row['choices'] = choices
         result.append(row)
-    gross = git('diff', '--no-ext-diff', '--no-renames', '--numstat', '-z', mechanical_tree, final_tree)
-    ga = gd = binaries = 0
-    for item in gross.split(b'\0'):
-        if item:
-            x, y, _ = item.split(b'\t', 2)
-            if x == b'-': binaries += 1
-            else: ga += int(x); gd += int(y)
     counts = dict(sorted(Counter(r['category'] for r in result).items()))
     return {'mechanical_tree': mechanical_tree, 'final_tree': final_tree,
             'gross_physical_add_delete': [ga, gd], 'gross_binary_paths': binaries,
+            'diff_semantics': 'Git no-index Myers text diff; NUL anywhere marks a binary path; system, global and repository config and attributes ignored',
             'inventory_count': len(result), 'coverage_counts': counts,
             'generated_declarations': 'unverified; undeclared generated paths are not detected',
             'interpretation': 'Physical diffs only; no authorship, complexity or necessity inference. Gross and residual counts are not a partition.',

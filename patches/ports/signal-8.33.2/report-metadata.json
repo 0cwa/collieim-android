@@ -12277,7 +12277,7 @@
       "molly_equivalent": "Old Molly and human ports 5551f3023e6093fbb65214acdcc2e568b7b63132 and aa81fd6312bf1c7a71f5efda1930d23b05bdb739 preserve the old implementation; no verified Molly equivalent using the new API.",
       "searched_branches": "Molly signal-8.20.4 and fix/socks-proxy-dns-leak; upstream-stable and upstream-main are plain Signal baselines",
       "revert_gate": "Isolated real-file javac against owner task configuration and profile 5 outputs; not a module or runtime check",
-      "gate_input": "Profile 5 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, baseline blob 932e209b0781e43dd8c3088abce07e790df90503, counter blob ce05d451dc6477366a470e0657ddf599cb5752b5; profile 3 and 4 identical file blobs support only conditional transfer",
+      "gate_input": "Profile 5 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, baseline blob 932e209b0781e43dd8c3088abce07e790df90503, counter blob ce05d451dc6477366a470e0657ddf2bcacd74de9; profile 3 and 4 identical file blobs support only conditional transfer",
       "outcome": "baseline exit 0; counter exit 1: PushServiceSocket has no matching finishNewDeviceRegistration method; no production change or accepted minimization",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/hunk-7d2f8e90ce08e18c8f21.patch and receipts.md#binding-evidence-v1"
     }

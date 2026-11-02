@@ -460,7 +460,7 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
   var fcmEnabled: Boolean by booleanValue(KEY_FCM_ENABLED, false)
 
   val canReceiveFcm: Boolean
-    get() = fcmEnabled && fcmToken != null
+    get() = org.thoughtcrime.securesms.gcm.FcmUtil.isSupported() && fcmEnabled && fcmToken != null
 
   @get:JvmName("isPushAvailable")
   val pushAvailable: Boolean

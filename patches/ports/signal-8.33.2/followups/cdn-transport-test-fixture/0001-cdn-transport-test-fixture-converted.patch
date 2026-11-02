@@ -14,7 +14,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: 4e2a3cdb5884437745613e1e17b0511f6c465dff
+Source-Commit: e8a0ac3c8af37fa22d891633379392344d690e6e
 AI-Generated: true
 
 diff --git a/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt b/lib/network/src/test/java/org/signal/network/api/CdnApiTest.kt

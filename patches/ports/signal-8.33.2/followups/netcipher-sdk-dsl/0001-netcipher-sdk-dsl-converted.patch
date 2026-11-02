@@ -18,7 +18,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: 3e1cd5b3485924ccfe6f8f20624b9288e10061da
+Source-Commit: 486866564ee2f4a0d861639b35dbebed22be0743
 AI-Generated: true
 
 diff --git a/lib/netcipher/build.gradle b/lib/netcipher/build.gradle

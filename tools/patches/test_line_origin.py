@@ -107,6 +107,47 @@ class LineOriginTests(unittest.TestCase):
         self.assertEqual(self.fixture.run('count-objects', '-v'), before)
         self.assertTrue(os.listdir(self.objects.name))
 
+    def test_profiles_load_fork_bundle_and_separate_fork_lines(self):
+        f = self.fixture
+        fork = f.commit({'app/src/main/A.kt': 'a\nb\nc\nd\nFORK\nf\ng\nSIGNAL\n',
+                         'app/src/main/Gone.kt': 'x\ny\n',
+                         'app/src/main/res/values-de/strings.xml': 'de\nneu\n'}, self.signal)
+        target = f.commit({'app/src/main/A.kt': 'a\nMOLLY\nc\nd\nFORK\nf\nOURS\nSIGNAL\n',
+                           'app/src/main/Gone.kt': 'x\ny\nmolly-only\n',
+                           'app/src/main/res/values-de/strings.xml': 'de\nneu\n'})
+        base = f.commit({'app/src/main/A.kt': 'a\nMOLLY\nc\nd\ne\nf\nOURS\nSIGNAL\n',
+                         'app/src/main/Gone.kt': 'x\ny\nmolly-only\n',
+                         'app/src/main/res/values-de/strings.xml': 'de\nneu\n'})
+        root = Path(self.tmp.name)
+        (root / 'patches/ports/p').mkdir(parents=True)
+        (root / 'patches/ports/p/provenance.json').write_text(json.dumps(
+            {'origin_base': self.old, 'origin_target': self.molly, 'signal': self.signal}))
+        (root / 'patches/forks/f/layer').mkdir(parents=True)
+        f.run('update-ref', 'refs/heads/fork', fork)
+        f.run('bundle', 'create', str(root / 'patches/forks/f/upstream.bundle'), 'refs/heads/fork', '^' + self.signal)
+        f.run('update-ref', '-d', 'refs/heads/fork')
+        (root / '.git/objects' / fork[:2] / fork[2:]).unlink()
+        (root / 'patches/forks/f/provenance.json').write_text(json.dumps({'upstream_bundle': 'upstream.bundle'}))
+        with self.assertRaises(ValueError):
+            self.repo.commit(fork)
+        config = {'port': {'series': 'patches/ports/p/series'}, 'fork_source': {'head': fork},
+                  'profiles': {'plain': {'target_tree': base, 'fork_series': []},
+                               'forked': {'target_tree': target, 'fork_series': ['patches/forks/f/layer/series'],
+                                          'firebase_free': True}}}
+        before = f.run('count-objects', '-v')
+        rows = line_origin.profiles(self.repo, root, config)
+        self.assertEqual(f.run('count-objects', '-v'), before)
+        self.assertEqual([r['name'] for r in rows], ['plain', 'forked'])
+        self.assertIsNone(rows[0]['from_fork'])
+        self.assertEqual(rows[0]['classes']['production']['written'], 1)
+        self.assertEqual(rows[1]['parents'][2], fork)
+        self.assertEqual(rows[1]['classes']['production']['written'], 1)
+        self.assertEqual(rows[1]['from_fork']['production'], 1)
+        text = line_origin.markdown_profiles(rows, 10)
+        self.assertIn('| forked | `', text)
+        self.assertIn('| `layer` | removed | +1 / −1 | 10.0% | 1 |', text)
+        self.assertEqual(line_origin.profiles(self.repo, root, {'port': None}), [])
+
     def test_classification(self):
         cases = {
             'app/src/main/java/A.kt': 'production',
@@ -145,6 +186,9 @@ class LineOriginTests(unittest.TestCase):
                               'kind': 'physical diff from previous checkpoint',
                               'classes': dict(zero, production={'files': 1, 'written': 3, 'removed': 2})}]}
         text = line_origin.markdown(result)
+        self.assertNotIn('includes lines the fork wrote', text)
+        result['stages'][line_origin.FORK_STAGE] = dict(result['stages']['PR3 compatibility'], includes_fork_lines=True)
+        self.assertIn('| Feature branch fork layers (includes lines the fork wrote), tree', line_origin.markdown(result))
         self.assertIn('Molly `mmmmmmmmmmmm` and Signal `ssssssssssss`', text)
         self.assertIn('| +7 / −2 | 7.0% | 5 (of which 0 in removed paths) |', text)
         self.assertIn('| `followups/x` | PR4 behavior fixes | +3 / −2 |', text)

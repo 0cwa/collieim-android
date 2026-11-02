@@ -466,7 +466,7 @@ object DataMessageProcessor {
         receivedTimeMillis = System.currentTimeMillis(),
         parentStoryId = parentStoryId,
         isStoryReaction = true,
-        expiresIn = expiresIn.inWholeMilliseconds,
+        expiresIn = if (SignalStore.settings.isKeepExpiringMessages) 0 else expiresIn.inWholeMilliseconds,
         isUnidentified = metadata.sealedSender,
         body = emoji,
         groupId = groupId,
@@ -586,6 +586,8 @@ object DataMessageProcessor {
     val targetMessage: MessageRecord? = SignalDatabase.messages.getMessageFor(targetSentTimestamp, senderRecipientId)
 
     return if (targetMessage != null && MessageConstraintsUtil.isValidRemoteDeleteReceive(targetMessage, senderRecipientId, envelope.serverTimestamp!!)) {
+      if (SignalStore.settings.isIgnoreRemoteDelete && senderRecipientId != Recipient.self().id) return null
+
       SignalDatabase.messages.markAsRemoteDelete(targetMessage, senderRecipientId)
       if (targetMessage.isStory()) {
         SignalDatabase.messages.deleteRemotelyDeletedStory(targetMessage.id)
@@ -635,7 +637,7 @@ object DataMessageProcessor {
         sentTimeMillis = envelope.clientTimestamp!!,
         serverTimeMillis = envelope.serverTimestamp!!,
         receivedTimeMillis = receivedTime,
-        expiresIn = message.expireTimerDuration.inWholeMilliseconds,
+        expiresIn = if (SignalStore.settings.isKeepExpiringMessages) 0 else message.expireTimerDuration.inWholeMilliseconds,
         isUnidentified = metadata.sealedSender,
         serverGuid = UuidUtil.getStringUUID(envelope.serverGuid, envelope.serverGuidBinary),
         type = if (isActivatePaymentsRequest) MessageType.ACTIVATE_PAYMENTS_REQUEST else MessageType.PAYMENTS_ACTIVATED
@@ -754,7 +756,7 @@ object DataMessageProcessor {
         serverTimeMillis = envelope.serverTimestamp!!,
         receivedTimeMillis = System.currentTimeMillis(),
         parentStoryId = parentStoryId,
-        expiresIn = expiresInMillis.inWholeMilliseconds,
+        expiresIn = if (SignalStore.settings.isKeepExpiringMessages) 0 else expiresInMillis.inWholeMilliseconds,
         isUnidentified = metadata.sealedSender,
         body = message.body,
         groupId = groupId,
@@ -831,6 +833,7 @@ object DataMessageProcessor {
     notifyTypingStoppedFromIncomingMessage(senderRecipient, threadRecipient.id, metadata.sourceDeviceId)
 
     val insertResult: InsertResult?
+    val viewOnce = !SignalStore.settings.isKeepViewOnceMessages && message.isViewOnce == true
 
     SignalDatabase.messages.beginTransaction()
     try {
@@ -851,8 +854,8 @@ object DataMessageProcessor {
         sentTimeMillis = envelope.clientTimestamp!!,
         serverTimeMillis = envelope.serverTimestamp!!,
         receivedTimeMillis = receivedTime,
-        expiresIn = message.expireTimerDuration.inWholeMilliseconds,
-        isViewOnce = message.isViewOnce == true,
+        expiresIn = if (SignalStore.settings.isKeepExpiringMessages) 0 else message.expireTimerDuration.inWholeMilliseconds,
+        isViewOnce = viewOnce,
         isUnidentified = metadata.sealedSender,
         body = message.body?.ifEmpty { null },
         groupId = groupId,
@@ -906,7 +909,7 @@ object DataMessageProcessor {
         AppDependencies.messageNotifier.updateNotification(context, ConversationId.forConversation(insertResult.threadId))
         TrimThreadJob.enqueueAsync(insertResult.threadId)
 
-        if (message.isViewOnce == true) {
+        if (viewOnce) {
           AppDependencies.viewOnceMessageManager.scheduleIfNecessary()
         }
       }
@@ -946,7 +949,7 @@ object DataMessageProcessor {
       receivedTimeMillis = receivedTime,
       body = body,
       groupId = groupId,
-      expiresIn = message.expireTimerDuration.inWholeMilliseconds,
+      expiresIn = if (SignalStore.settings.isKeepExpiringMessages) 0 else message.expireTimerDuration.inWholeMilliseconds,
       isUnidentified = metadata.sealedSender,
       serverGuid = UuidUtil.getStringUUID(envelope.serverGuid, envelope.serverGuidBinary)
     )
@@ -1036,7 +1039,7 @@ object DataMessageProcessor {
       serverTimeMillis = envelope.serverTimestamp!!,
       receivedTimeMillis = receivedTime,
       groupId = groupId,
-      expiresIn = message.expireTimerDuration.inWholeMilliseconds,
+      expiresIn = if (SignalStore.settings.isKeepExpiringMessages) 0 else message.expireTimerDuration.inWholeMilliseconds,
       isUnidentified = metadata.sealedSender,
       serverGuid = UuidUtil.getStringUUID(envelope.serverGuid, envelope.serverGuidBinary),
       poll = Poll(
@@ -1102,7 +1105,7 @@ object DataMessageProcessor {
       serverTimeMillis = envelope.serverTimestamp!!,
       receivedTimeMillis = receivedTime,
       groupId = groupId,
-      expiresIn = message.expireTimerDuration.inWholeMilliseconds,
+      expiresIn = if (SignalStore.settings.isKeepExpiringMessages) 0 else message.expireTimerDuration.inWholeMilliseconds,
       isUnidentified = metadata.sealedSender,
       serverGuid = UuidUtil.getStringUUID(envelope.serverGuid, envelope.serverGuidBinary),
       messageExtras = MessageExtras(pollTerminate = PollTerminate(poll.question, poll.messageId, targetSentTimestamp))
@@ -1264,7 +1267,7 @@ object DataMessageProcessor {
       sentTimeMillis = envelope.clientTimestamp!!,
       serverTimeMillis = envelope.serverTimestamp!!,
       receivedTimeMillis = receivedTime,
-      expiresIn = message.expireTimerDuration.inWholeMilliseconds,
+      expiresIn = if (SignalStore.settings.isKeepExpiringMessages) 0 else message.expireTimerDuration.inWholeMilliseconds,
       groupId = groupId,
       isUnidentified = metadata.sealedSender,
       serverGuid = UuidUtil.getStringUUID(envelope.serverGuid, envelope.serverGuidBinary),

@@ -117,6 +117,10 @@ def allowed(scope, path):
         if scope == 'switch':
             return path.startswith('patches/molly/') or path == 'molly-build.json'
         return report_evidence(path) or path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'}
+    if scope == 'forks':
+        prefix = 'patches/forks/signal-foss/'
+        return (path == 'molly-build.json' or path in {prefix + 'provenance.json', prefix + 'upstream-source.bundle'} or
+                any(path.startswith(prefix + layer + '/') for layer in ('firebase-free-build', 'retention-controls')))
     if scope in ('followups', 'additions', 'features'):
         if report_evidence(path):
             return True
@@ -166,7 +170,7 @@ def check_feature_chain(repo, base, head):
 
 
 def check_scope(repo, scope, base, head='HEAD'):
-    if scope not in ('pipeline', 'switch', 'release', 'followups', 'additions', 'features'):
+    if scope not in ('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks'):
         raise ValueError('unknown scope')
     if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
@@ -196,7 +200,7 @@ def check_scope(repo, scope, base, head='HEAD'):
         if git(repo, 'rev-parse', base + '^{commit}').decode().strip() != MOLLY:
             raise ValueError('pipeline base must be the official Molly commit')
     else:
-        lower_source = {'switch': MOLLY, 'release': OLD, 'followups': NEW, 'additions': NEW, 'features': NEW}[scope]
+        lower_source = {'switch': MOLLY, 'release': OLD, 'followups': NEW, 'additions': NEW, 'features': NEW, 'forks': NEW}[scope]
         for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', lower_source, base).split(b'\0')):
             if not metadata(raw.decode('utf-8', 'surrogateescape')):
                 raise ValueError('lower base has incorrect source projection')
@@ -226,6 +230,18 @@ def check_scope(repo, scope, base, head='HEAD'):
                 raise ValueError('additions base already contains ' + layer)
             if not all(exists(head, addition_path + '/' + name) for name in addition_files(layer)):
                 raise ValueError('additions phase is incomplete')
+    if scope == 'forks':
+        if git(repo, 'rev-parse', base + ':patches/ports').strip() != git(repo, 'rev-parse', head + ':patches/ports').strip():
+            raise ValueError('fork scope must preserve the base port series')
+        try:
+            prior = json.loads(git(repo, 'show', base + ':molly-build.json'))
+            current = json.loads(git(repo, 'show', head + ':molly-build.json'))
+            current.pop('profiles', None)
+            current.pop('fork_source', None)
+            if current != prior:
+                raise ValueError('fork scope may only add named profiles to the base configuration')
+        except (TypeError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
+            raise ValueError('invalid fork profile configuration') from exc
     if scope == 'features':
         for layer in FEATURES:
             feature_path = 'patches/ports/signal-8.33.2/followups/' + layer
@@ -238,8 +254,8 @@ def check_scope(repo, scope, base, head='HEAD'):
     # cannot escape the adjacent diff. Each recursion moves to an earlier phase.
     if scope == 'switch':
         check_scope(repo, 'pipeline', MOLLY, base)
-    elif scope in ('release', 'followups', 'additions', 'features'):
-        lower_phase = {'release': 'switch', 'followups': 'release', 'additions': 'followups', 'features': 'additions'}[scope]
+    elif scope in ('release', 'followups', 'additions', 'features', 'forks'):
+        lower_phase = {'release': 'switch', 'followups': 'release', 'additions': 'followups', 'features': 'additions', 'forks': 'additions'}[scope]
         candidates = git(repo, 'rev-list', '--ancestry-path', MOLLY + '..' + base).decode().splitlines()
         for candidate in candidates:
             try:
@@ -249,7 +265,7 @@ def check_scope(repo, scope, base, head='HEAD'):
                 continue
         else:
             raise ValueError('lower base has no validated preceding stack phase')
-    source = {'pipeline': MOLLY, 'switch': OLD, 'release': NEW, 'followups': NEW, 'additions': NEW, 'features': NEW}[scope]
+    source = {'pipeline': MOLLY, 'switch': OLD, 'release': NEW, 'followups': NEW, 'additions': NEW, 'features': NEW, 'forks': NEW}[scope]
     paths = git(repo, 'diff', '--no-renames', '--name-only', '-z', source, head).split(b'\0')
     for raw in filter(None, paths):
         path = raw.decode('utf-8', 'surrogateescape')
@@ -276,12 +292,12 @@ def check_scope(repo, scope, base, head='HEAD'):
                 raise ValueError('invalid profile pins')
         except (KeyError, TypeError, json.JSONDecodeError) as exc:
             raise ValueError('invalid profile') from exc
-    return {'scope': scope, 'profile_present': scope != 'pipeline', 'port_present': scope in ('release', 'followups', 'additions', 'features')}
+    return {'scope': scope, 'profile_present': scope != 'pipeline', 'port_present': scope in ('release', 'followups', 'additions', 'features', 'forks')}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features'))
+    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks'))
     parser.add_argument('--base', required=True)
     parser.add_argument('--head', default='HEAD')
     parser.add_argument('--repo', default='.')

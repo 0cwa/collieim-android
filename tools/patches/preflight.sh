@@ -12,12 +12,14 @@ set -euo pipefail
 stage=proof
 scope=
 scope_base=
+profile=
 while (($#)); do
   case "$1" in
     proof|resources|full) stage=$1; shift ;;
     --scope) scope=${2:?missing scope}; shift 2 ;;
     --base) scope_base=${2:?missing base}; shift 2 ;;
-    *) echo "usage: $0 [proof|resources|full] [--scope pipeline|switch|release|followups|additions|features --base REF]" >&2; exit 2 ;;
+    --profile) profile=${2:?missing profile}; shift 2 ;;
+    *) echo "usage: $0 [proof|resources|full] [--scope pipeline|switch|release|followups|additions|features|forks --base REF] [--profile NAME]" >&2; exit 2 ;;
   esac
 done
 base=${MOLLY_PREFLIGHT_DIR:-$HOME/agent-scratch/mollyim-android/preflight}
@@ -46,6 +48,7 @@ fi
 
 
 if [[ $scope == pipeline ]]; then
+  [[ -z $profile ]] || { echo 'pipeline cannot select a release profile' >&2; exit 2; }
   [[ $stage == proof ]] || { echo 'pipeline has no Android profile' >&2; exit 2; }
   echo '== patch-tool tests'
   python3 -m unittest discover -s tools/patches -p 'test_*.py'
@@ -74,8 +77,10 @@ git worktree prune
 echo '== source reconstruction and tree proof'
 stack_args=()
 if [[ -n $scope ]]; then stack_args=(--scope "$scope" --base "$scope_base"); fi
+profile_args=()
+if [[ -n $profile ]]; then profile_args=(--profile "$profile"); fi
 python3 tools/patches/release.py --repo . --config molly-build.json \
-  --worktree "$worktree" --report "$reports/source.json" "${stack_args[@]}" >/dev/null
+  --worktree "$worktree" --report "$reports/source.json" "${stack_args[@]}" "${profile_args[@]}" >/dev/null
 python3 - "$reports/source.json" <<'PY'
 import json, sys
 report = json.load(open(sys.argv[1]))
@@ -99,14 +104,26 @@ export ANDROID_HOME
 java_major=$(java -XshowSettings:properties -version 2>&1 | sed -n 's/.*java.specification.version = //p')
 if [[ $java_major != 21 ]]; then echo "JDK 21 required (found ${java_major:-none}); set JAVA_HOME/PATH" >&2; exit 1; fi
 
-build() { python3 tools/patches/build.py "$1" --worktree "$worktree" --report-dir "$reports"; }
+build() { python3 tools/patches/build.py "$1" --worktree "$worktree" --report-dir "$reports" "${profile_args[@]}"; }
 
 echo '== pinned Android SDK components'
-python3 tools/patches/build.py sdk --worktree "$worktree" --report-dir "$reports" --accept-licenses >/dev/null
+python3 tools/patches/build.py sdk --worktree "$worktree" --report-dir "$reports" --accept-licenses "${profile_args[@]}" >/dev/null
 
 if [[ $stage == resources ]]; then
   echo '== Android resource linking'
-  (cd "$worktree" && ./gradlew --no-configuration-cache --max-workers=12 --dependency-verification=strict \
+  resource_profile=()
+  if [[ -n $profile ]]; then
+    firebase_free=$(python3 - "$profile" <<'PYCODE'
+import json, sys
+sys.path.insert(0, 'tools/patches')
+import release_profiles
+_, selected = release_profiles.select(json.load(open('molly-build.json')), sys.argv[1])
+print(str(selected['firebase_free']).lower())
+PYCODE
+)
+    resource_profile=("-PmollyFirebaseFree=$firebase_free")
+  fi
+  (cd "$worktree" && ./gradlew "${resource_profile[@]}" --no-configuration-cache --max-workers=12 --dependency-verification=strict \
      :app:processProdWebsiteDebugResources)
   exit 0
 fi

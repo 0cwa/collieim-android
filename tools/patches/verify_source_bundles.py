@@ -74,9 +74,9 @@ def commit_info(repo, commit):
     return fields[0], fields[1:]
 
 
-def verify(repo):
+def verify(repo, config_path=None):
     root = Path(repo).resolve()
-    config = release.load_config(root / 'molly-build.json')
+    config = release.load_config(config_path or root / 'molly-build.json')
     if config['port'] is None:
         print('Source bundle verification skipped: profile has no port')
         return

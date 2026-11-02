@@ -537,7 +537,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
           return Unit.INSTANCE;
         },
         context -> {
-          // context.startActivity(EditProxyActivity.intent(context));  // MOLLY: TODO
+          context.startActivity(org.thoughtcrime.securesms.registration.ui.RegistrationNetworkSettingsActivity.createIntent(context));
           return Unit.INSTANCE;
         },
         new AppContactSupportController()

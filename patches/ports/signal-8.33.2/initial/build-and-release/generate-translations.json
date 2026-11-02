@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "type": "generate-translations",
-  "source_commit": "7761e6fdb7170378374221bee386f3a9f58900e5",
-  "before_tree": "50c143dc416c3f0d2a79bfc0411ce2cdd9772782",
-  "after_tree": "9abf8e1fcb03605e9536e5a8fc447129cfa61552",
+  "source_commit": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
+  "before_tree": "d2d2ff7d3b25fbb140e5b4d89bcafcd1e25c0037",
+  "after_tree": "a7d990b86268903479faabcafd283c3cc16b7eba",
   "signal_tree": "74449a3e2caf449c781a5b77a5cda9883150e60a",
   "reference_tree": "3cd0bb01cf840e4b702187085432020d163d80ce",
   "base_inputs": {

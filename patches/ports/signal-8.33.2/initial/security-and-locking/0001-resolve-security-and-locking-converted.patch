@@ -17,7 +17,7 @@ compatibility changes in the pinned source tree.
 The source commit records a derived candidate, not an official
 Molly release or a claim of upstream authorship.
 
-Source-Commit: 7761e6fdb7170378374221bee386f3a9f58900e5
+Source-Commit: 49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb
 Origin-Base: c47a74ba0961903eeaeda6d22347a990056c3e83
 Origin-Target: 0e202dda90785771ff8c87526eaaf30c655f54f3
 Signal-Base: 6e9dddc01f1b26e608ac683807c51e139c141ed2

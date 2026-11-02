@@ -10,6 +10,7 @@ Molly itself adds 26,922 non-blank production lines to Signal `c47a74ba0961`. **
 |---|---:|---:|---:|---:|---:|---:|
 | PR3 compatibility, tree `2a78679e2344` | +1,290 / −327 | 4.8% | 1,491 (of which 546 in removed paths) | +2,059 / −192 | +1,288 / −317 | +51 / −10 |
 | PR4 behavior fixes, tree `d508b6d42898` | +1,459 / −307 | 5.4% | 1,489 (of which 546 in removed paths) | +2,059 / −192 | +1,507 / −317 | +51 / −10 |
+| PR5 behavior additions, tree `7ef06dd1458e` | +1,508 / −308 | 5.6% | 1,490 (of which 546 in removed paths) | +2,059 / −192 | +1,507 / −317 | +51 / −10 |
 
 Classes: **production**: app and library source, default-locale resources and build scripts that ship in the APK; **translations**: localized strings (res/values-<locale>/strings*.xml), generated or relocated; **tests**: test, screenshot-test and benchmark source sets and benchmark modules; **generated**: gradle/verification-metadata.xml dependency hashes; **repository**: patch series, pipeline tools, documentation and CI.
 
@@ -40,8 +41,10 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `followups/legacy-backup-precedence` | PR4 behavior fixes | +69 / −28 | +0 / −0 | +78 / −2 | +0 / −0 |
 | `followups/donation-completion` | PR4 behavior fixes | +68 / −6 | +0 / −0 | +87 / −0 | +0 / −0 |
 | `followups/backup-notification-id-upgrade` | PR4 behavior fixes | +46 / −3 | +0 / −0 | +24 / −0 | +0 / −0 |
+| `followups/registration-network-settings` | PR5 behavior additions | +53 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `followups/donation-completion-copy` | PR5 behavior additions | +1 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 
-### Largest production files at PR4 behavior fixes
+### Largest production files at PR5 behavior additions
 
 | Path | Written | Removed |
 |---|---:|---:|
@@ -52,6 +55,7 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/thanks/ThanksForYourSupportBottomSheetDialogFragment.kt` | 21 | 56 |
 | `feature/app-settings/src/main/java/org/signal/appsettings/updates/AppUpdatesSettingsScreen.kt` | 58 | 0 |
 | `feature/registration/src/main/java/org/signal/registration/screens/welcome/WelcomeScreen.kt` | 49 | 0 |
+| `app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt` | 47 | 0 |
 | `app/src/main/java/org/thoughtcrime/securesms/backup/FullBackupImporter.java` | 34 | 1 |
 | `app/src/main/res/drawable-night/image_signal_backups_plans.xml` | 18 | 15 |
 | `app/src/main/res/drawable/image_signal_backups_plans.xml` | 17 | 15 |
@@ -59,9 +63,8 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt` | 28 | 2 |
 | `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/updates/AppUpdatesSettingsViewModel.kt` | 28 | 0 |
 | `app/src/main/res/navigation/app_settings_with_change_number.xml` | 15 | 11 |
-| `feature/app-settings/src/main/java/org/signal/appsettings/appicon/AppIconPreset.kt` | 26 | 0 |
 
-### Most Molly production lines not carried at PR4 behavior fixes
+### Most Molly production lines not carried at PR5 behavior additions
 
 | Path | Lines | Path still exists |
 |---|---:|---|

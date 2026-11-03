@@ -32,6 +32,9 @@ class ScopeTests(unittest.TestCase):
         if not workflow.exists():
             workflow.parent.mkdir(parents=True, exist_ok=True)
             workflow.write_text('name: Molly\n')
+        release_workflow = self.repo / '.github/workflows/molly-unsigned-release.yml'
+        if not release_workflow.exists():
+            release_workflow.write_text('name: Unsigned release\n')
         self.git('add', '.')
         self.git('commit', '-qm', 'change')
 

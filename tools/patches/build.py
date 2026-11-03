@@ -358,8 +358,19 @@ class Build:
         self.source_proof()
         if not re.fullmatch(r'[1-9][0-9]*[mg]', self.args.heap):
             raise BuildError('--heap must be a JVM memory size such as 5g')
-        tasks = gradle_tasks(self.android['assemble' if phase == 'assemble' else 'tests'],
-                             'assemble' if phase == 'assemble' else 'tests', tests=phase == 'test')
+        if phase == 'assemble-release':
+            if 'CI_KEYSTORE_PATH' in os.environ:
+                raise BuildError('unset CI_KEYSTORE_PATH: release assembly must be unsigned')
+            version_name = getattr(self.args, 'release_version_name', None)
+            version_code = getattr(self.args, 'release_version_code', None)
+            if not version_name or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._+-]{0,79}', version_name):
+                raise BuildError('assemble-release requires a valid --release-version-name')
+            if not version_code or not re.fullmatch(r'[1-9][0-9]{0,9}', version_code) or int(version_code) > 2100000000:
+                raise BuildError('assemble-release requires --release-version-code from 1 to 2100000000')
+            tasks = [':app:assembleProdWebsiteRelease']
+        else:
+            tasks = gradle_tasks(self.android['assemble' if phase == 'assemble' else 'tests'],
+                                 'assemble' if phase == 'assemble' else 'tests', tests=phase == 'test')
         init = relative_file(self.repo, 'tools/patches/test-worker-heap.init.gradle', 'test-worker heap script')
         jvm_args = (f'-Xmx{self.args.heap} -Xms256m -XX:MaxMetaspaceSize=1g '
                     '-Dcom.android.tools.r8.threadCount=1 '
@@ -373,6 +384,10 @@ class Build:
             app = self.profile['app']
             command += ['-PbaseAppTitle=' + app['title'], '-PbaseAppFileName=' + app['file_name'],
                         '-PbasePackageId=' + app['package_id']]
+        if phase == 'assemble-release':
+            version_init = relative_file(self.repo, 'tools/patches/release-version.init.gradle', 'release version script')
+            command += ['--init-script', str(version_init), '-PreleaseVersionName=' + version_name,
+                        '-PreleaseVersionCode=' + version_code]
         if self.config.get('native') is not None:
             native_init = self.native_proof / 'ringrtc.init.gradle'
             integration = self.native_proof / 'integration.json'
@@ -389,7 +404,7 @@ class Build:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('phase', choices=('sdk', 'assemble', 'test',
+    parser.add_argument('phase', choices=('sdk', 'assemble', 'assemble-release', 'test',
                                          'native-prepare', 'native-build', 'native-integrate'))
     parser.add_argument('--repo', type=Path, default=Path('.'))
     parser.add_argument('--config', default='molly-build.json')
@@ -400,6 +415,8 @@ def main():
     parser.add_argument('--maven-dir', type=Path)
     parser.add_argument('--accept-licenses', action='store_true', help='accept SDK licenses if installation is needed')
     parser.add_argument('--heap', default='5g', help='Gradle heap; one 2 GiB test worker runs separately')
+    parser.add_argument('--release-version-name')
+    parser.add_argument('--release-version-code')
     args = parser.parse_args()
     try:
         build = Build(args)

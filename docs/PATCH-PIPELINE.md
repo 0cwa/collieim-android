@@ -14,7 +14,8 @@ the original Molly snapshot, and any compatibility changes as separate commits.
 | Signal 8.33.2 | `6e9dddc01f1b26e608ac683807c51e139c141ed2` |
 | Pipeline and historical export origin | [PR #7 at cef8e04](https://github.com/0cwa/mollyim-android/tree/cef8e044f55d1a47c5634f500e01b3956ee31f4f) |
 
-`molly-build.json` selects the release. The pinned Signal commit supplies the source projection for the branch. The assembler rejects changes to the tracked Signal source
+`molly-build.json` selects the release. Its Signal commit must be an ancestor
+of the branch. The assembler rejects changes to the tracked Signal source
 outside the explicitly named pipeline, documentation, patch, and CI paths.
 An application edit cannot disappear behind a broad source projection.
 
@@ -31,8 +32,8 @@ Use the commands in this guide for this branch; the old `tools/827` pilot,
 pilot-specific source adaptations, reports, and CI jobs are not imported.
 
 The pipeline and its tests are AI-assisted infrastructure. Compatibility
-mailboxes under `patches/ports` are described as AI-assisted
-compatibility changes. They never replace or silently regenerate the
+mailboxes under `patches/ports` are explicitly identified as AI-generated
+application adaptations. They never replace or silently regenerate the
 official Molly mailboxes.
 
 ## Reconstruct and prove the source
@@ -103,45 +104,98 @@ the expected hash.
 
 ## Review the Signal 8.33.2 adaptations
 
-The original Molly snapshot remains unchanged. AI-assisted compatibility
-changes are grouped into initial resolution mailboxes and follow-up mailboxes.
-The initial source commit has the pinned Molly and Signal commits as parents.
-Each follow-up records its immediate source parent and resulting tree.
+The first two commits on the upgrade branch contain the pipeline and original
+Molly snapshot with **no AI compatibility patches**. This is an intentionally
+unadapted review checkpoint: source assembly reports the conflicts and refuses
+to label the result buildable.
 
-Initial source: `49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb`. Final source tree: `d508b6d4289831ed7b4f5302d100718cc23e49e5`.
+Subsequent commits add ordinary mailbox resolutions, grouped by application
+feature. Their parent source is Git's mechanical merge, so they show changes
+that remain after deterministic integration. The initial groups reproduce
+the existing PR #7 source merge
+`90a0bb917ecc49a62236d539f4e7faae01b1d9fe`; eight subsequent layers retain
+the preference-import, NetCipher SDK DSL, broader integration/regression, CDN
+test-fixture, linked-device reminder, backup preference precedence, donation
+completion, and legacy backup-notification cleanup corrections as individual
+review steps. Each mailbox
+records its source commit and AI-generation status.
+Previous mailboxes do not receive new provenance headers when a later fix is
+added.
 
-| Follow-up | Source commit | Resulting tree |
-| --- | --- | --- |
-| `followups/restore-preference-import` | `42096880eb94dd50397abf1fe843d92b9e2a4ce5` | `ceb07921744306e26f5726457acc190457187eb4` |
-| `followups/netcipher-sdk-dsl` | `486866564ee2f4a0d861639b35dbebed22be0743` | `3d702c23393a3fc61e7ad5ccefdc0f4319c6b6e8` |
-| `followups/integration-and-regression-tests` | `0fd34d542166482b6c58fae49d554f61d2e8d15f` | `bf3223b3d3d6e558d01ef8810b8704785e2039b5` |
-| `followups/cdn-transport-test-fixture` | `e8a0ac3c8af37fa22d891633379392344d690e6e` | `2a78679e2344ddf3fc6bbaa5079d5f8a274d3dda` |
-| `followups/reregistration-linked-devices-reminder` | `e20a7f97953750aaee42a3bbc4fe1726f875c417` | `1438dc7360ca95efcc1ddea212d1b23f50ed9bf0` |
-| `followups/legacy-backup-precedence` | `34fea6d8be8536e24c904156cfeef630b3bf9830` | `ada1f548f84529b6da40a787315f240103398cbf` |
-| `followups/donation-completion` | `30ec0b2e3e5eec1ba30696b6006a52a914c42cc3` | `de8edc7da2bfc5084f663e9ee947fd417efe6be6` |
-| `followups/backup-notification-id-upgrade` | `ee4bd246eb235b66f29498d5f8160ad2d6b71e1f` | `d508b6d4289831ed7b4f5302d100718cc23e49e5` |
+The port has 764 conflict paths. Initial resolution patches change 763 of
+them; the retained `CorrectedPreferenceFragment.java` modify/delete conflict
+is recorded as an explicit keep-Molly decision in the configuration. A
+content diff is unnecessary for that choice because Git already leaves
+Molly's version in the conflicted tree. The choice is still reviewed as an
+AI compatibility decision. Every conflict must be covered by a resolution
+or an explicit unchanged-content decision.
 
-The `CorrectedPreferenceFragment.java` modify/delete conflict retains Molly's
-file unchanged in the mechanical merge and is an explicit configuration choice.
-The port report records unmeasured hunk evidence without treating it as proof.
+The final source must equal tree
+`59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf`, the tree of synthetic source
+commit `a069fdf625d924e517eb6f2aeb0cbd607db3fcdb`. It extends donation
+checkpoint `0e7a018870f034d547db10e8e4856c515bbe2b80` (tree
+`c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d`) with channel-checked cleanup of
+Molly's old backup alerts at IDs `120500` and `120501`; new backup alerts keep
+Signal's current IDs. The donation checkpoint extends backup checkpoint
+`266d0185d021b2b6a98882205f6b6242152d146e` (tree
+`febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`) with the restored donation badge
+acknowledgement, eligible monthly-sustainer link, and a completion-sheet
+loading-state fix plus Compose coverage. The backup checkpoint extends
+re-registration checkpoint `d3c917a5be7db6116c83b7e29e09f145e7f38825` (tree
+`0e5c581b7db3f4429256630011790f3ed4ad141f`). That checkpoint extends
+`cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c` (tree
+`2533afec2fe2d7f9fc682f699fc21d7624521889`) with the explicit
+re-registration marker, linked-device reminder assignment after successful
+primary-device multi-device registration, and marker test. These settings
+restore Molly's prior reminder behavior while leaving new registrations
+unchanged. This remains a development port, not an official Molly release.
 
-The source checkpoint bundle at `patches/ports/signal-8.33.2/source-checkpoint.bundle`
-contains the initial commit and four core follow-ups. Its prerequisites are the
-pinned official Molly and Signal commits. The bundle has
-6788387 bytes and SHA-256 `14b1273e2be125fb4bf8034b50e8a4b3a8e104d6f8760bf22945bde2d97118b4`; its advertised ref is
-`refs/heads/source-checkpoint/core`, pointing to `e8a0ac3c8af37fa22d891633379392344d690e6e` (tree
-`2a78679e2344ddf3fc6bbaa5079d5f8a274d3dda`).
-
-Prepare the pinned source objects and verify the complete checkpoint chain:
+Each synthetic source commit is stored in an incremental bundle. The reminder
+bundle requires `cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c`; the backup bundle
+requires `d3c917a5be7db6116c83b7e29e09f145e7f38825`; the donation bundle
+requires `266d0185d021b2b6a98882205f6b6242152d146e`; and the backup-notification
+bundle requires `0e7a018870f034d547db10e8e4856c515bbe2b80`. Each prerequisite must
+already be present in the object database. For a fresh local repository,
+materialize and verify the chain in order:
 
 ```sh
-python3 tools/patches/prepare_port_report.py
-python3 tools/patches/verify_source_bundles.py
+git cat-file -e cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c^{commit}
+git rev-parse cb8173a9ed5a4965d433e10e1a0a64e241b2ce4c^{tree}
+git bundle verify patches/ports/signal-8.33.2/followups/reregistration-linked-devices-reminder/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/reregistration-linked-devices-reminder/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/reregistration-linked-devices-reminder:refs/port-source/reregistration-linked-devices-reminder
+git rev-parse refs/port-source/reregistration-linked-devices-reminder^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/legacy-backup-precedence/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/legacy-backup-precedence/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/legacy-backup-precedence:refs/port-source/legacy-backup-precedence
+git rev-parse refs/port-source/legacy-backup-precedence^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/donation-completion/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/donation-completion/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/donation-completion:refs/port-source/donation-completion
+git rev-parse refs/port-source/donation-completion^{tree}
+
+git bundle verify patches/ports/signal-8.33.2/followups/backup-notification-id-upgrade/source-checkpoint.bundle
+git fetch patches/ports/signal-8.33.2/followups/backup-notification-id-upgrade/source-checkpoint.bundle \
+  refs/heads/source-checkpoint/backup-notification-id-upgrade:refs/port-source/backup-notification-id-upgrade
+git rev-parse refs/port-source/backup-notification-id-upgrade^{tree}
 ```
 
-The verifier checks bundle bytes, hashes, advertised refs, prerequisites, source
-parents and trees. Mailbox reconstruction separately proves the selected final
-tree. These checks do not establish that every compatibility hunk is minimal.
+The tree commands must print, in order, `2533afec2fe2d7f9fc682f699fc21d7624521889`,
+`0e5c581b7db3f4429256630011790f3ed4ad141f`,
+`febafe3aa084d0ca6219e4f10a27ee66fbecfe4e`,
+`c9e7ee6396f5109c8d29e5e87f551cd4e4b9c68d`, and
+`59fa2b2af25d82ffd11d0198d5e9e8f5b5b3eadf`. The bundles do not carry their
+prerequisites; a fresh clone cannot verify or fetch a later bundle until the
+earlier checkpoints are materialized.
+
+When changing a resolution, update only the affected mailbox and its reviewed
+target-tree pin. Leave unrelated mailbox envelopes and the historical forest
+alone. `export_complete.py` remains available for exporting a new official
+source snapshot; it is not a command to refresh unchanged patches for line
+offsets. An upstream release with genuinely changed APIs still requires
+explicit compatibility work and review.
 
 ## The microphone fix is a native source cherry-pick
 
@@ -534,3 +588,89 @@ The fork patchset and its tools exist only on the private release line.
    `release_profiles.POLICY` and `pins.LAYER_NAMES`.
 6. Gates: the `forks` scope proof, all five profile proofs, and `full` for Collie
    (Firebase on) and the FOSS profiles (Firebase off).
+
+## Publishing a release
+
+This flow builds five unsigned APKs on CI and signs them offline. The additional
+`.github/workflows/molly-unsigned-release.yml` is a new Signal-tree workflow
+exception and requires contributor approval before propagation. The release
+line must already contain the shared `im.collie.app` profile change. The flow
+must be rehearsed and a real release build checked before production use.
+
+Create the `unsigned-release` GitHub environment and protect it with required
+reviewers and restricted deployment branches. Protect the release tag pattern
+with a repository ruleset, limit who can create tags and releases, and enable
+immutable releases in repository settings. Use a separate credential with only
+the required repository release/tag permissions for publishing; the build uses
+read-only repository permission and no signing secrets. The immutable-release
+setting applies when a draft is published; check the current repository settings
+before every release.
+
+Keep the release keystore offline. Record the certificate SHA-256 through a
+separate trusted channel. Store encrypted backups of the key and recovery
+instructions on separate media, and periodically rehearse restoring the backup
+and checking its certificate without using it to sign a release. Never place
+keys or passwords in the repository or CI. Key access is supplied to the signer
+as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
+`MOLLY_KEYSTORE_PASSWORD` and `MOLLY_KEY_PASSWORD`; absent passwords are prompted.
+
+1. Approve the full release-line commit, version name and a version code higher
+   than every previously published code, and the expected certificate digest.
+   Dispatch **Build unsigned release** on that commit with these inputs. The
+   dispatch requires the workflow revision and selected commit to match. Review
+   the environment approval and wait for all five source proofs, assemblies and
+   tests to pass. The workflow checks each APK's package, version and unsigned
+   state. Record the run ID and attempt.
+2. From the authenticated GitHub run page, record the SHA-256 digest of the
+   `unsigned-release-<run>-<attempt>` artifact. Download the artifact ZIP over
+   an authenticated connection and verify its SHA-256 against that separately
+   recorded digest **before** extracting it. Calculate SHA-256 of the extracted
+   `manifest.json` and carry that digest, the commit, run ID and certificate
+   fingerprint to the offline signing machine through a trusted channel. Review
+   the manifest, including workflow revision, pins and all five APK hashes.
+   If a GitHub provenance attestation is available, the signer can additionally
+   verify it using `--attestation-repo OWNER/REPO`; configure gh's trusted root
+   and any offline verification material beforehand. The current workflow does
+   not itself create attestations, so the authenticated artifact digest is
+   required.
+3. On the offline signing machine, use the manifest's pinned Android SDK
+   build-tools directory and run:
+
+   ```sh
+   python3 tools/patches/release_sign.py \
+     --manifest unsigned/manifest.json --manifest-sha256 MANIFEST_SHA256 \
+     --approved-commit COMMIT --approved-run RUN_ID --certificate-sha256 CERT_SHA256 \
+     --apks unsigned --output signed --build-tools "$ANDROID_HOME/build-tools/VERSION" --scratch SCRATCH
+   ```
+
+   The output directory must not already exist. The signer verifies hashes and
+   metadata, aligns and signs the APKs, checks the certificate and v2/v3
+   signatures, and records the mapping in `signed/final-manifest.json`. Use a
+   private scratch directory and add `--rehearse` to exercise
+   the signer with a disposable key. Rehearsal output is marked and rejected by
+   the publishing tool; never use that output for a real release.
+4. Transfer the signed directory and the original manifest as provenance to the
+   publishing machine. Review and independently approve the SHA-256 of
+   `signed/final-manifest.json`. Supply a release notes file, an existing private
+   scratch directory, and the separate publishing credential. Preview with
+   `--dry-run`; the following `draft` command creates a tag at the approved
+   commit, creates a draft and uploads the APKs, checksums, final manifest,
+   provenance and notes. It downloads every asset again and compares its hash.
+
+   ```sh
+   python3 tools/patches/release_publish.py draft --repo OWNER/REPO --tag vVERSION \
+     --approved-commit COMMIT --final-manifest signed/final-manifest.json \
+     --final-manifest-sha256 FINAL_MANIFEST_SHA256 --provenance unsigned/manifest.json \
+     --notes RELEASE_NOTES --scratch SCRATCH --dry-run
+   ```
+
+   Remove `--dry-run` only when ready to create the tag and draft. A failed
+   attempt may leave a tag or draft behind; inspect and resolve that state
+   explicitly. Publishing is a separate command with the same arguments, using
+   `publish` in place of `draft`. It rechecks the tag, draft, exact asset list
+   and downloaded hashes immediately before publishing.
+
+If a published immutable release is bad, issue a new tag with a higher version
+code. Before shipping the replacement, check that database migrations and data
+written by the bad version are compatible with the replacement. Do not rely on
+an Android downgrade as recovery.

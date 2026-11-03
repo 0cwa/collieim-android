@@ -216,7 +216,7 @@ class ForkProfilesTests(unittest.TestCase):
         directory = self.repo / 'patches/ports/signal-8.33.2'
         directory.mkdir(parents=True)
         (directory / 'series').write_text('a.patch\nr.patch\nb.patch\n')
-        layers = [{'id': 'followups/backup-revision-walk', 'source_commit': 'a'*40,
+        layers = [{'id': 'followups/restore-badges-log-theme', 'source_commit': 'a'*40,
                    'after_tree': 'b'*40, 'patches': ['a.patch']},
                   {'id': 'followups/registration-network-settings', 'source_commit': 'e'*40,
                    'after_tree': 'f'*40, 'patches': ['r.patch']},

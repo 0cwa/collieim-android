@@ -445,3 +445,89 @@ Initial and unbundled follow-up `mailbox_bytes` and `paths` are historical
 pre-conversion export metadata and remain unchanged. Bundled follow-up
 `mailbox_bytes` records the current mailbox size. Candidate verification does
 not replace the applicable branch preflight, port report update or build tests.
+
+## Publishing a release
+
+This flow builds five unsigned APKs on CI and signs them offline. The additional
+`.github/workflows/molly-unsigned-release.yml` is a new Signal-tree workflow
+exception and requires contributor approval before propagation. The release
+line must already contain the shared `im.collie.app` profile change. The flow
+must be rehearsed and a real release build checked before production use.
+
+Create the `unsigned-release` GitHub environment and protect it with required
+reviewers and restricted deployment branches. Protect the release tag pattern
+with a repository ruleset, limit who can create tags and releases, and enable
+immutable releases in repository settings. Use a separate credential with only
+the required repository release/tag permissions for publishing; the build uses
+read-only repository permission and no signing secrets. The immutable-release
+setting applies when a draft is published; check the current repository settings
+before every release.
+
+Keep the release keystore offline. Record the certificate SHA-256 through a
+separate trusted channel. Store encrypted backups of the key and recovery
+instructions on separate media, and periodically rehearse restoring the backup
+and checking its certificate without using it to sign a release. Never place
+keys or passwords in the repository or CI. Key access is supplied to the signer
+as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
+`MOLLY_KEYSTORE_PASSWORD` and `MOLLY_KEY_PASSWORD`; absent passwords are prompted.
+
+1. Approve the full release-line commit, version name and a version code higher
+   than every previously published code, and the expected certificate digest.
+   Dispatch **Build unsigned release** on that commit with these inputs. The
+   dispatch requires the workflow revision and selected commit to match. Review
+   the environment approval and wait for all five source proofs, assemblies and
+   tests to pass. The workflow checks each APK's package, version and unsigned
+   state. Record the run ID and attempt.
+2. From the authenticated GitHub run page, record the SHA-256 digest of the
+   `unsigned-release-<run>-<attempt>` artifact. Download the artifact ZIP over
+   an authenticated connection and verify its SHA-256 against that separately
+   recorded digest **before** extracting it. Calculate SHA-256 of the extracted
+   `manifest.json` and carry that digest, the commit, run ID and certificate
+   fingerprint to the offline signing machine through a trusted channel. Review
+   the manifest, including workflow revision, pins and all five APK hashes.
+   If a GitHub provenance attestation is available, the signer can additionally
+   verify it using `--attestation-repo OWNER/REPO`; configure gh's trusted root
+   and any offline verification material beforehand. The current workflow does
+   not itself create attestations, so the authenticated artifact digest is
+   required.
+3. On the offline signing machine, use the manifest's pinned Android SDK
+   build-tools directory and run:
+
+   ```sh
+   python3 tools/patches/release_sign.py \
+     --manifest unsigned/manifest.json --manifest-sha256 MANIFEST_SHA256 \
+     --approved-commit COMMIT --approved-run RUN_ID --certificate-sha256 CERT_SHA256 \
+     --apks unsigned --output signed --build-tools "$ANDROID_HOME/build-tools/VERSION" --scratch SCRATCH
+   ```
+
+   The output directory must not already exist. The signer verifies hashes and
+   metadata, aligns and signs the APKs, checks the certificate and v2/v3
+   signatures, and records the mapping in `signed/final-manifest.json`. Use a
+   private scratch directory and add `--rehearse` to exercise
+   the signer with a disposable key. Rehearsal output is marked and rejected by
+   the publishing tool; never use that output for a real release.
+4. Transfer the signed directory and the original manifest as provenance to the
+   publishing machine. Review and independently approve the SHA-256 of
+   `signed/final-manifest.json`. Supply a release notes file, an existing private
+   scratch directory, and the separate publishing credential. Preview with
+   `--dry-run`; the following `draft` command creates a tag at the approved
+   commit, creates a draft and uploads the APKs, checksums, final manifest,
+   provenance and notes. It downloads every asset again and compares its hash.
+
+   ```sh
+   python3 tools/patches/release_publish.py draft --repo OWNER/REPO --tag vVERSION \
+     --approved-commit COMMIT --final-manifest signed/final-manifest.json \
+     --final-manifest-sha256 FINAL_MANIFEST_SHA256 --provenance unsigned/manifest.json \
+     --notes RELEASE_NOTES --scratch SCRATCH --dry-run
+   ```
+
+   Remove `--dry-run` only when ready to create the tag and draft. A failed
+   attempt may leave a tag or draft behind; inspect and resolve that state
+   explicitly. Publishing is a separate command with the same arguments, using
+   `publish` in place of `draft`. It rechecks the tag, draft, exact asset list
+   and downloaded hashes immediately before publishing.
+
+If a published immutable release is bad, issue a new tag with a higher version
+code. Before shipping the replacement, check that database migrations and data
+written by the bad version are compatible with the replacement. Do not rely on
+an Android downgrade as recovery.

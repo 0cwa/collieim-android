@@ -23,7 +23,7 @@ PROFILES = 'tools/patches/release_profiles.py'
 # (value, meaning, upstream whose new release changes it, files that contain it)
 PINS = [
     ('0e202dda90785771ff8c87526eaaf30c655f54f3', 'Molly 8.19.2-4 release commit, the Molly input', 'Molly',
-     [SCOPE, REPORT, RELEASE_WORKFLOW]),
+     [SCOPE, REPORT, RELEASE_WORKFLOW, '.github/workflows/molly-unsigned-release.yml']),
     ('c47a74ba0961903eeaeda6d22347a990056c3e83', 'Signal 8.19.2 commit under Molly 8.19.2-4', 'Molly',
      [SCOPE, REPORT]),
     ('3cd0bb01cf840e4b702187085432020d163d80ce', 'Molly 8.19.2-4 tree that stack 2 must rebuild', 'Molly', [SCOPE]),
@@ -33,7 +33,7 @@ PINS = [
      [SCOPE, REPORT, ORIGIN, RELEASE_WORKFLOW, PROFILES]),
     ('8.33.2.0-FOSS', 'tw-hx fork release named by the upstream bundle ref', 'fork', [FORK]),
     ('github.com/tw-hx/Signal-Android', 'fork source URL', 'fork', [FORK, PROFILES]),
-    ('github.com/mollyim/mollyim-android.git', 'Molly source URL', 'none', [PREFLIGHT, PREPARE, RELEASE_WORKFLOW]),
+    ('github.com/mollyim/mollyim-android.git', 'Molly source URL', 'none', [PREFLIGHT, PREPARE, RELEASE_WORKFLOW, '.github/workflows/molly-unsigned-release.yml']),
     ('github.com/signalapp/Signal-Android.git', 'Signal source URL', 'none', [PREPARE, SYNC_WORKFLOW]),
 ]
 

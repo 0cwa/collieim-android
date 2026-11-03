@@ -1,12 +1,22 @@
-From d5a1fe29fda1bbfb47d66a6b3fca0e60a4ea1e7d Mon Sep 17 00:00:00 2001
-From: Angus Turnbull <github@twinhelix.com>
+From 8e698d9e12470a933087cccfd62efd899e15f71d Mon Sep 17 00:00:00 2001
+From: 0cwa <0@none.org>
 Date: Mon, 2 Nov 2026 04:05:28 +0100
 Subject: [PATCH] Add a Firebase-free build while preserving push choices
 
-Adapt b13bff463547475bbe1ae55335add689f52532e0 with AI-assisted compatibility changes. Reuse Molly open-source services and proxy-aware maps, keep the standard Firebase build, and retain UnifiedPush and websocket paths.
+Add a Firebase-free build with AI-assisted compatibility changes. Reuse
+Molly open-source services and proxy-aware maps, keep the standard Firebase
+build, and retain UnifiedPush and websocket paths.
+
+Inspired by Angus Turnbull's b13bff463547475bbe1ae55335add689f52532e0
+("Stub out Google Mobile Services and Firebase with Open Source library,
+new build flavor 'gms' to use it") in https://github.com/tw-hx/Signal-Android.
+This layer uses Molly's own open-source services instead of that commit's
+stub library.
+
+Inspired-by: Angus Turnbull <github@twinhelix.com>
 
 Based-On-Source-Commit: 47ecc87d5151703b6a8c9cfe113cc7d415d2fdf6
-Source-Commit: d5a1fe29fda1bbfb47d66a6b3fca0e60a4ea1e7d
+Source-Commit: 8e698d9e12470a933087cccfd62efd899e15f71d
 
 ---
  app/build.gradle.kts                          | 17 +++++++-

@@ -84,6 +84,18 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `app/src/main/res/layout/fragment_registration_welcome_v3.xml` | 23 | no |
 | `app/src/main/java/org/thoughtcrime/securesms/dependencies/NetworkProxyState.kt` | 21 | no |
 
+### Release profiles
+
+Each profile's source compared with Molly and Signal and, for profiles with fork layers, the fork head as a third input, so **written** excludes lines the fork wrote. **From the fork** counts production lines the fork wrote that the profile carries.
+
+| Profile | Tree | Fork layers | Firebase | Production written / removed | Written as % of Molly's production lines | From the fork | Molly lines not carried | Tests |
+|---|---|---|---|---:|---:|---:|---:|---:|
+| molly-minimal | `d508b6d42898` | none | included | +1,459 / −307 | 5.4% | — | 1,489 | +1,507 / −317 |
+| molly-continued | `7ef06dd1458e` | none | included | +1,508 / −308 | 5.6% | — | 1,490 | +1,507 / −317 |
+| molly-foss-continued | `9e7dda3bf16c` | `firebase-free-build` | removed | +1,685 / −380 | 6.3% | 2 | 1,548 | +1,625 / −317 |
+| collie | `fb17c7eb7efd` | `firebase-free-build`, `retention-controls` | included | +1,718 / −389 | 6.4% | 181 | 1,548 | +1,990 / −317 |
+| collie-foss | `fb17c7eb7efd` | `firebase-free-build`, `retention-controls` | removed | +1,718 / −389 | 6.4% | 181 | 1,548 | +1,990 / −317 |
+
 ## Raw physical Git diffs
 
 Physical Git diff lines; counts do not establish authorship or necessity. Comparisons with the mechanical tree include its conflict markers and both sides of every conflict, so they are bookkeeping for reviewers, not a measure of the AI-assisted compatibility changes.

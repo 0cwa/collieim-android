@@ -210,6 +210,51 @@ class PortReportTests(unittest.TestCase):
                     port_report.render(config, evidence)
 
 
+class StartTreeBundleTests(unittest.TestCase):
+    def test_fresh_clone_imports_start_trees_and_rejects_missing_ones(self):
+        import hashlib, json, os, subprocess, tempfile
+        from pathlib import Path
+        env = {k: v for k, v in os.environ.items() if not k.startswith('GIT_')}
+        env.update(GIT_AUTHOR_NAME='t', GIT_AUTHOR_EMAIL='t@example.invalid', GIT_COMMITTER_NAME='t',
+                   GIT_COMMITTER_EMAIL='t@example.invalid')
+        with tempfile.TemporaryDirectory() as tmp:
+            source, clone = Path(tmp, 'source'), Path(tmp, 'clone')
+            def git(repo, *args):
+                return subprocess.run(['git', '-C', str(repo), *args], env=env, check=True,
+                                      stdout=subprocess.PIPE).stdout.decode().strip()
+            source.mkdir(); git(source, 'init', '-q', '-b', 'main')
+            (source / 'a').write_text('base\n'); git(source, 'add', 'a'); git(source, 'commit', '-qm', 'base')
+            base = git(source, 'rev-parse', 'HEAD')
+            subprocess.run(['git', 'clone', '-q', '--no-local', str(source), str(clone)], env=env, check=True)
+            (source / 'a').write_text('evidence\n'); git(source, 'add', 'a')
+            tree = git(source, 'write-tree')
+            commit = git(source, 'commit-tree', tree, '-p', base, '-m', 'start tree')
+            port = clone / 'patches/ports/p'; (port / 'report-evidence').mkdir(parents=True)
+            ref = 'refs/heads/report-evidence/action-start-trees'
+            git(source, 'update-ref', ref, commit)
+            bundle = port / 'report-evidence/action-start-trees.bundle'
+            git(source, 'bundle', 'create', '-q', str(bundle), ref, '^' + base)
+            data = bundle.read_bytes()
+            evidence = {'baseline_target_tree': '0' * 40, 'action_chains': [{'start_tree': tree}],
+                        'start_tree_bundle': {'path': 'report-evidence/action-start-trees.bundle', 'ref': ref,
+                                              'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data),
+                                              'commit': commit, 'prerequisites': [base]}}
+            config = {'port': {'series': 'patches/ports/p/series'}}
+            cwd = os.getcwd()
+            os.chdir(clone)
+            try:
+                with self.assertRaises(subprocess.CalledProcessError):
+                    git(clone, 'cat-file', '-e', tree)
+                port_report.import_start_trees(config, evidence)
+                self.assertEqual(git(clone, 'cat-file', '-t', tree), 'tree')
+                evidence['action_chains'].append({'start_tree': 'f' * 40})
+                with self.assertRaisesRegex(ValueError, 'lacks action chain trees'):
+                    port_report.import_start_trees(config, evidence)
+                port_report.import_start_trees(config, {'action_chains': []})
+            finally:
+                os.chdir(cwd)
+
+
 class EvidenceModelTests(unittest.TestCase):
     def test_groups_require_explicit_nonoverlapping_ids_and_cannot_claim_gates(self):
         group = {'hunks': ['a'], 'description': {'reason': 'shared'}}

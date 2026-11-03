@@ -39,7 +39,7 @@ PINS = [
 
 # Layer IDs that tools name directly. A new layer in these positions means updating them.
 LAYER_NAMES = [
-    ('followups/backup-revision-walk', 'last PR4 layer; Molly Minimal ends here', [FORK, PROFILES]),
+    ('followups/restore-badges-log-theme', 'last PR4 layer; Molly Minimal ends here', [FORK, PROFILES]),
     ('followups/donation-completion-copy', 'last PR5 layer; Continued profiles end here', [FORK, PROFILES]),
     ('firebase-free-build', 'first fork layer', [FORK, PROFILES]),
     ('retention-controls', 'second fork layer (adapted from the fork)', [FORK, PROFILES]),

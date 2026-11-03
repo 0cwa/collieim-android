@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
   "complete_source_checkpoint": true,
-  "target_tree": "4f6156b341b574b1abd1dcaeca6f21eabd497607",
+  "target_tree": "d49f1d77ce33560fe231198c58cea69abf74c213",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "14b1273e2be125fb4bf8034b50e8a4b3a8e104d6f8760bf22945bde2d97118b4",
@@ -398,38 +398,55 @@
       "source_bundle_bytes": 3917
     },
     {
-      "id": "followups/registration-network-settings",
-      "description": "Add access to Network settings during registration.",
-      "source_commit": "76cbc4558b089f56f11d3c2bff1687a5b3194034",
+      "id": "followups/restore-badges-log-theme",
+      "source_commit": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
+      "description": "Restore Molly's badges, locked debug log details and dynamic colors\n\nAI-assisted compatibility changes. The port lost three Molly 8.19.2-4\nbehaviors that a later fix on another branch restored but that never\nreached this release: contact settings show the recipient's badges again,\nwith their names for accessibility; the debug log's system information no\nlonger reads the locked SignalStore for the first installed version; and\ndynamic-color themes use Molly's light extended-color base again.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 164b3f3c2d8910acd04b0c2743219ae293e5cac9",
       "ai_generated": true,
       "before_tree": "00b38e9683f142c8ce012f69caa04ade992d6088",
-      "after_tree": "9647fbb561bc96114cd062ba3f3b4d5868aa1960",
+      "after_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
+      "paths": 4,
+      "patches": [
+        "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch"
+      ],
+      "mailbox_bytes": 10100,
+      "source_bundle": "followups/restore-badges-log-theme/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "164b3f3c2d8910acd04b0c2743219ae293e5cac9",
+      "source_bundle_sha256": "3fa6307c532e03e9852559a897602415bbd6426fe77b04f77fa7c6678a1f2b15",
+      "source_bundle_bytes": 6278
+    },
+    {
+      "id": "followups/registration-network-settings",
+      "description": "Add access to Network settings during registration.",
+      "source_commit": "1f06f1d7382ead31fc932165101388d67837e402",
+      "ai_generated": true,
+      "before_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
+      "after_tree": "408600751bf960c388e6bb28a970bf90727769be",
       "paths": 3,
       "patches": [
         "followups/registration-network-settings/0001-registration-network-settings.patch"
       ],
       "mailbox_bytes": 4037,
       "source_bundle": "followups/registration-network-settings/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "164b3f3c2d8910acd04b0c2743219ae293e5cac9",
-      "source_bundle_sha256": "d4a20a54286275236c616184ab0b41edf51f7955e744a4f13ea2cb221dd6057c",
-      "source_bundle_bytes": 2142
+      "source_bundle_prerequisite": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
+      "source_bundle_sha256": "6b2580ef510ef2fec2a8d3c18164dc672e406ff7e53e70391921dc54f9ff2801",
+      "source_bundle_bytes": 2145
     },
     {
       "id": "followups/donation-completion-copy",
       "description": "Add donation completion copy.",
-      "source_commit": "40c5723ed6150eca9545c327d1bc387185fbe7d7",
+      "source_commit": "03999be43376589ca06db09671e660d0ffe30ee6",
       "ai_generated": true,
-      "before_tree": "9647fbb561bc96114cd062ba3f3b4d5868aa1960",
-      "after_tree": "4f6156b341b574b1abd1dcaeca6f21eabd497607",
+      "before_tree": "408600751bf960c388e6bb28a970bf90727769be",
+      "after_tree": "d49f1d77ce33560fe231198c58cea69abf74c213",
       "paths": 1,
       "patches": [
         "followups/donation-completion-copy/0001-donation-completion-copy.patch"
       ],
       "mailbox_bytes": 1428,
       "source_bundle": "followups/donation-completion-copy/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "76cbc4558b089f56f11d3c2bff1687a5b3194034",
-      "source_bundle_sha256": "ee690bc979ca11b835afd69ab06a6fddfe0f76451ad3f5f292811b902b129b88",
-      "source_bundle_bytes": 1522
+      "source_bundle_prerequisite": "1f06f1d7382ead31fc932165101388d67837e402",
+      "source_bundle_sha256": "717750be6e7d2cfc0b63e5fcf831272aeaf407a57b51a1052262c9aca6650ead",
+      "source_bundle_bytes": 1519
     }
   ],
   "mailbox_sha256": {
@@ -484,7 +501,8 @@
     "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "c7ddc23eb1c8dc0c298027a38b663a2e9546c8db7077df862f7e44333cf5edcf",
     "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch": "d9ae204c0d2ee2bc907a1fd804247c97dc946e4e3a0ffc93976e2e060cbf1e43",
     "followups/backup-revision-walk/0001-backup-revision-walk.patch": "9d99ec5d48c489212eff9e20a73a9a2231080b50b24d07e0006a32e4d8021ed9",
-    "followups/registration-network-settings/0001-registration-network-settings.patch": "585eb4f0235a17b501d399213b87343c5463d25c3bbbe29abb07b363cd20637e",
-    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "22322747e1fad9f54cb69d1d8c54f8d113a82294ab633fb0d3fa59cdefef0711"
+    "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch": "fb2bc5a1874513228744c375c72ee813a3bc6a03191e1d331e3a4782f835c534",
+    "followups/registration-network-settings/0001-registration-network-settings.patch": "08762b2de7f5ca0e623843c36174b2d69ecb2485e5c7e3d847745323ab37a4a9",
+    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "8a18030ecd1be8a8f57accbb5d4ebf6d62b14d4793bcf1d8c62cb8802bc5ccb8"
   }
 }

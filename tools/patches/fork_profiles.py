@@ -28,7 +28,7 @@ def port_prefix(repo, config_path, selection, records):
     if len(endpoints) != 1:
         raise forest.ForestError('selected port boundary missing or duplicated')
     end = endpoints[0]
-    boundary = 'followups/backup-revision-walk'
+    boundary = 'followups/restore-badges-log-theme'
     additions = ['followups/registration-network-settings', 'followups/donation-completion-copy']
     selected_boundaries = [layer['id'] for layer in layers[:end + 1] if layer['id'] in {boundary, *additions}]
     expected_boundaries = [boundary] + ([] if selection['base_layer'] == boundary else additions)

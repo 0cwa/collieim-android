@@ -68,6 +68,24 @@ class BuildSourceTests(unittest.TestCase):
             runner.gradle('assemble')
         self.assertIn('--max-workers=1', (self.reports / 'assemble.log').read_text().splitlines())
 
+    def test_release_assembly_uses_release_task_and_rejects_ci_signing(self):
+        self.save()
+        init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
+        init.parent.mkdir(parents=True)
+        init.write_text('// fixture\n')
+        (init.parent / 'release-version.init.gradle').write_text('// fixture\n')
+        self.args.release_version_name = '8.33.2-1'
+        self.args.release_version_code = '177201'
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof'), patch.object(runner, 'run') as run:
+            with patch.dict(os.environ, {}, clear=True):
+                runner.gradle('assemble-release')
+            self.assertEqual(run.call_args.args[0][-1], ':app:assembleProdWebsiteRelease')
+            with patch.dict(os.environ, {'CI_KEYSTORE_PATH': '/key'}, clear=True):
+                with self.assertRaisesRegex(build.BuildError, 'must be unsigned'):
+                    runner.gradle('assemble-release')
+            self.assertEqual(run.call_count, 1)
+
     def test_firebase_free_workflow_hands_off_real_source_proof(self):
         workflow = (Path(__file__).resolve().parents[2] / '.github/workflows/molly-patch-release.yml').read_text()
         prepare = workflow.split('id: foss_prepare', 1)[1].split('        run: |\n', 1)[1].split('\n      - name:', 1)[0]

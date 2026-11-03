@@ -462,8 +462,8 @@ without fork features have an empty `fork_series`. Molly FOSS Continued adds
 append `patches/forks/signal-foss/retention-controls/series` and
 `patches/forks/signal-foss/retention-controls-fixes/series`. Firebase is
 selected only for Molly FOSS Continued and Collie FOSS. Each profile also sets its
-app title, backup file name and package ID (`release_profiles.APP`): the Molly
-profiles keep `im.molly.app`; Collie and Collie FOSS use `im.collie.app`.
+app title, backup file name and package ID (`release_profiles.APP`): all five
+use `im.collie.app` and retain their individual profile titles and backup names.
 
 Fork profiles also require `fork_source` in `molly-build.json` with the original
 fork `url` and `head` pins. The independent `patches/forks/signal-foss/provenance.json` records schema 1,

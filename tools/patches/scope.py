@@ -62,7 +62,8 @@ RELEASE_PATHS = RELEASE_PATHS.union({
     'patches/ports/signal-8.33.2/initial/security-and-locking/delete-files.json',
 })
 BEHAVIOR = {'reregistration-linked-devices-reminder', 'legacy-backup-precedence',
-            'donation-completion', 'backup-notification-id-upgrade'}
+            'donation-completion', 'backup-notification-id-upgrade',
+            'passphrase-timeout-fallback', 'backup-revision-walk'}
 ADDITIONS = {'registration-network-settings', 'donation-completion-copy'}
 FEATURES = ('retention-controls', 'firebase-free-build')
 

@@ -511,11 +511,12 @@ screenshot test source, is an error. The derived tests and Firebase selection
 are part of the source proof fingerprint.
 
 Minimal selects the verified port prefix ending at
-`followups/backup-notification-id-upgrade`; the other products select the
+`followups/backup-revision-walk`; the other products select the
 prefix ending at `followups/donation-completion-copy`. Continued products
 without fork features have an empty `fork_series`. Molly FOSS Continued adds
 `patches/forks/signal-foss/firebase-free-build/series`; Collie and Collie FOSS
-append `patches/forks/signal-foss/retention-controls/series`. Firebase is
+append `patches/forks/signal-foss/retention-controls/series` and
+`patches/forks/signal-foss/retention-controls-fixes/series`. Firebase is
 selected only for Molly FOSS Continued and Collie FOSS. These names describe
 release selections and do not change application branding or IDs.
 
@@ -534,7 +535,10 @@ records `id`, `series`, `mailbox`, `mailbox_sha256`, `mailbox_bytes`,
 `upstream_credit`. `author` is the adapted commit's author. An `adapted` layer
 is mostly the fork's code and keeps the upstream author. An `inspired` layer is
 our own code that follows a fork commit: we are its author, and its message
-carries `Inspired-by: <upstream_author>` and names the upstream commit. File
+carries `Inspired-by: <upstream_author>` and names the upstream commit. An
+`ours` layer holds our fixes to the `adapted` layer directly before it, named by
+its `fixes` field; it has no upstream commit or author and is never authored as
+the fork author. File
 paths in this document are relative to the fork root. Each series contains one path to
 its layer's mailbox, relative to that series file. Checkpoint bundles must
 advertise the declared `refs/heads/source-checkpoint/` ref and require exactly

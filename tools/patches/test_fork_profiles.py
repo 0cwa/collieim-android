@@ -44,15 +44,16 @@ class ForkProfilesTests(unittest.TestCase):
         self.git('bundle', 'create', str(upstream_bundle), upstream_ref, '^' + base)
         previous, before = base, base_tree
         layers = []
-        for label in ('firebase-free-build', 'retention-controls'):
+        for label in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes'):
             directory = self.root / label
             directory.mkdir()
             (self.repo / 'app').write_text(label + '\n')
             self.git('add', 'app')
             inspired = label == 'firebase-free-build'
-            if inspired:
+            ours = label == 'retention-controls-fixes'
+            if inspired or ours:
                 self.git('-c', 'user.name=Port Author', '-c', 'user.email=port@example.invalid', 'commit', '-qm',
-                         label + '\n\nInspired by ' + upstream_head + '.\n\nInspired-by: Fork Author <author@example.invalid>')
+                         label + ('' if ours else '\n\nInspired by ' + upstream_head + '.\n\nInspired-by: Fork Author <author@example.invalid>'))
             else:
                 self.git('commit', '-qm', label)
             commit = self.git('rev-parse', 'HEAD')
@@ -66,16 +67,17 @@ class ForkProfilesTests(unittest.TestCase):
             self.git('update-ref', ref, commit)
             bundle = directory / 'checkpoint.bundle'
             self.git('bundle', 'create', str(bundle), ref, '^' + previous)
-            layers.append({'id': label, 'series': label + '/series', 'mailbox': label + '/change.patch',
+            layers.append(({'fixes': 'retention-controls'} if ours else {}) | {'id': label, 'series': label + '/series', 'mailbox': label + '/change.patch',
                 'mailbox_sha256': hashlib.sha256(raw).hexdigest(), 'mailbox_bytes': len(raw),
                 'source_commit': commit, 'before_tree': before, 'after_tree': tree,
                 'source_bundle': label + '/checkpoint.bundle',
                 'source_bundle_sha256': hashlib.sha256(bundle.read_bytes()).hexdigest(),
                 'source_bundle_bytes': bundle.stat().st_size, 'source_bundle_prerequisite': previous,
-                'source_bundle_ref': ref, 'upstream_commit': upstream_head if label == 'firebase-free-build' else upstream_retention,
-                'upstream_author': 'Fork Author <author@example.invalid>',
-                'author': 'Port Author <port@example.invalid>' if inspired else 'Fork Author <author@example.invalid>',
-                'upstream_credit': 'inspired' if inspired else 'adapted'})
+                'source_bundle_ref': ref,
+                'author': 'Port Author <port@example.invalid>' if inspired or ours else 'Fork Author <author@example.invalid>',
+                'upstream_credit': 'ours' if ours else 'inspired' if inspired else 'adapted'} | ({} if ours else {
+                'upstream_commit': upstream_head if label == 'firebase-free-build' else upstream_retention,
+                'upstream_author': 'Fork Author <author@example.invalid>'}))
             previous, before = commit, tree
         self.data = {'schema': 1, 'source_url': 'https://github.com/tw-hx/Signal-Android',
                      'source_head': upstream_head, 'base_commit': base,
@@ -87,7 +89,8 @@ class ForkProfilesTests(unittest.TestCase):
         self.selection = {'base_checkpoint': base, 'base_tree': base_tree,
                           'target_tree': layers[-1]['after_tree'],
                           'signal_commit': base, 'fork_source': {'url': self.data['source_url'], 'head': upstream_head},
-                          'fork_series': [release_profiles.FIREBASE, release_profiles.RETENTION]}
+                          'fork_series': [release_profiles.FIREBASE, release_profiles.RETENTION,
+                                          release_profiles.RETENTION_FIXES]}
         self.save()
 
     def git(self, *args):
@@ -126,6 +129,10 @@ class ForkProfilesTests(unittest.TestCase):
             lambda d: d['layers'][0].__setitem__('upstream_credit', 'adapted'),
             lambda d: d['layers'][1].__setitem__('upstream_credit', 'inspired'),
             lambda d: d['layers'][1].pop('upstream_credit'),
+            lambda d: d['layers'][2].__setitem__('fixes', 'firebase-free-build'),
+            lambda d: d['layers'][2].__setitem__('author', 'Fork Author <author@example.invalid>'),
+            lambda d: d['layers'][2].__setitem__('upstream_commit', d['layers'][1]['upstream_commit']),
+            lambda d: d['layers'][2].__setitem__('upstream_credit', 'adapted'),
             lambda d: d['layers'][0].__setitem__('mailbox', '../escape.patch'),
         ]
         for mutate in cases:
@@ -209,7 +216,7 @@ class ForkProfilesTests(unittest.TestCase):
         directory = self.repo / 'patches/ports/signal-8.33.2'
         directory.mkdir(parents=True)
         (directory / 'series').write_text('a.patch\nr.patch\nb.patch\n')
-        layers = [{'id': 'followups/backup-notification-id-upgrade', 'source_commit': 'a'*40,
+        layers = [{'id': 'followups/backup-revision-walk', 'source_commit': 'a'*40,
                    'after_tree': 'b'*40, 'patches': ['a.patch']},
                   {'id': 'followups/registration-network-settings', 'source_commit': 'e'*40,
                    'after_tree': 'f'*40, 'patches': ['r.patch']},

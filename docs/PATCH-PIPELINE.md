@@ -457,11 +457,12 @@ screenshot test source, is an error. The derived tests and Firebase selection
 are part of the source proof fingerprint.
 
 Minimal selects the verified port prefix ending at
-`followups/backup-notification-id-upgrade`; the other products select the
+`followups/backup-revision-walk`; the other products select the
 prefix ending at `followups/donation-completion-copy`. Continued products
 without fork features have an empty `fork_series`. Molly FOSS Continued adds
 `patches/forks/signal-foss/firebase-free-build/series`; Collie and Collie FOSS
-append `patches/forks/signal-foss/retention-controls/series`. Firebase is
+append `patches/forks/signal-foss/retention-controls/series` and
+`patches/forks/signal-foss/retention-controls-fixes/series`. Firebase is
 selected only for Molly FOSS Continued and Collie FOSS. These names describe
 release selections and do not change application branding or IDs.
 
@@ -480,7 +481,10 @@ records `id`, `series`, `mailbox`, `mailbox_sha256`, `mailbox_bytes`,
 `upstream_credit`. `author` is the adapted commit's author. An `adapted` layer
 is mostly the fork's code and keeps the upstream author. An `inspired` layer is
 our own code that follows a fork commit: we are its author, and its message
-carries `Inspired-by: <upstream_author>` and names the upstream commit. File
+carries `Inspired-by: <upstream_author>` and names the upstream commit. An
+`ours` layer holds our fixes to the `adapted` layer directly before it, named by
+its `fixes` field; it has no upstream commit or author and is never authored as
+the fork author. File
 paths in this document are relative to the fork root. Each series contains one path to
 its layer's mailbox, relative to that series file. Checkpoint bundles must
 advertise the declared `refs/heads/source-checkpoint/` ref and require exactly
@@ -496,3 +500,34 @@ only the independent fork artifacts and named configuration profiles, and
 requires the port tree and original base configuration to remain unchanged,
 apart from adding `profiles` and `fork_source`.
 The existing Molly CI workflow does not yet select the named product matrix.
+
+### New fork release
+
+The fork patchset and its tools exist only on the private release line.
+
+1. Check the new fork head's ancestry and history shape first. `fork_profiles.py`
+   rejects a retention origin that does not descend from the pinned Signal and
+   expects the current two-commit upstream history; anything else is
+   unsupported until the tool changes.
+2. Create the upstream bundle (prerequisite: the pinned Signal commit), then
+   change `fork_source.head`, the bundle ref name and the provenance.
+3. Import the fork's changes: diff each new upstream commit against the
+   previous one and carry the changes into our layer. Separately, adapt a layer
+   where a changed Molly or Signal base, or one of our own fork-behavior fixes,
+   requires it. Replay both layers in order and keep the recorded behavior
+   decisions.
+4. Credit comes from the source commits. A layer that carries the fork's code
+   is `adapted` and keeps the fork author. A layer that only follows the fork's
+   idea is `inspired`: we are its author and its message carries
+   `Inspired-by: <author>` and names the upstream commit. `line_origin.py`
+   counts are supporting evidence only. Keep every credit the upstream commit
+   carries, and get the contributor's confirmation before changing a credit mode
+   or author.
+5. Fixes we make to an `adapted` layer go in a separate layer that we author,
+   placed directly after it, so the fork author's commit stays theirs. Fixes to
+   an `inspired` layer go into that layer. A new fork layer, whether a fix or a
+   new feature, needs the contributor's approval and changes
+   `scope.allowed('forks', …)`, the `fork_profiles.py` layer order,
+   `release_profiles.POLICY` and `pins.LAYER_NAMES`.
+6. Gates: the `forks` scope proof, all five profile proofs, and `full` for Collie
+   (Firebase on) and the FOSS profiles (Firebase off).

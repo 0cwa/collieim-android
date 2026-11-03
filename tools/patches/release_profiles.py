@@ -13,12 +13,13 @@ PORT_SERIES = 'patches/ports/signal-8.33.2/series'
 FORK_ROOT = 'patches/forks/signal-foss'
 FIREBASE = FORK_ROOT + '/firebase-free-build/series'
 RETENTION = FORK_ROOT + '/retention-controls/series'
+RETENTION_FIXES = FORK_ROOT + '/retention-controls-fixes/series'
 POLICY = {
-    'molly-minimal': ('followups/backup-notification-id-upgrade', [], False),
+    'molly-minimal': ('followups/backup-revision-walk', [], False),
     'molly-continued': ('followups/donation-completion-copy', [], False),
     'molly-foss-continued': ('followups/donation-completion-copy', [FIREBASE], True),
-    'collie': ('followups/donation-completion-copy', [FIREBASE, RETENTION], False),
-    'collie-foss': ('followups/donation-completion-copy', [FIREBASE, RETENTION], True),
+    'collie': ('followups/donation-completion-copy', [FIREBASE, RETENTION, RETENTION_FIXES], False),
+    'collie-foss': ('followups/donation-completion-copy', [FIREBASE, RETENTION, RETENTION_FIXES], True),
 }
 
 

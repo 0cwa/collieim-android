@@ -338,6 +338,27 @@ def render(config, evidence, ready=False, origin=None):
     return '\n'.join(output) + '\n'
 
 
+def import_start_trees(config, evidence):
+    """Load the historical start trees of measured action chains from their committed evidence bundle.
+
+    Minimization evidence replays patches from trees that a fresh clone does not otherwise contain. The bundle
+    holds one chain of synthetic commits whose trees are those start trees; its prerequisites are commits the
+    verified source bundles already provide.
+    """
+    record = evidence.get('start_tree_bundle')
+    if not record:
+        return
+    import verify_source_bundles
+    root = Path('.').resolve()
+    series_dir = root / Path(config['port']['series']).parent
+    verify_source_bundles.import_bundle(root, root, series_dir, record['path'], record['sha256'], record['bytes'],
+                                        record['ref'], record['commit'], record['prerequisites'])
+    trees = set(git('log', '--format=%T', record['commit']).decode().split())
+    missing = {chain['start_tree'] for chain in evidence.get('action_chains', [])} - trees - {evidence['baseline_target_tree']}
+    if missing:
+        raise ValueError('start tree bundle lacks action chain trees: ' + ', '.join(sorted(missing)))
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config', default='molly-build.json'); p.add_argument('--metadata', default='patches/ports/signal-8.33.2/report-metadata.json')
@@ -345,11 +366,13 @@ def main():
     args = p.parse_args()
     try:
         config = json.loads(Path(args.config).read_text())
+        evidence = json.loads(Path(args.metadata).read_text())
+        import_start_trees(config, evidence)
         with tempfile.TemporaryDirectory(prefix='molly-report-origin-') as objects:
             series_dir = Path(config['port']['series']).parent
             repo = line_origin.Repo('.', objects)
             origin = line_origin.markdown(line_origin.port(repo, series_dir), line_origin.profiles(repo, '.', config))
-        result = render(config, json.loads(Path(args.metadata).read_text()), args.ready, origin)
+        result = render(config, evidence, args.ready, origin)
         if args.check:
             if Path(args.output).read_text() != result: raise ValueError('port report is stale')
         else: Path(args.output).write_text(result)

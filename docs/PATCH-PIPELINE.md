@@ -460,13 +460,14 @@ are part of the source proof fingerprint.
 
 Minimal selects the verified port prefix ending at
 `followups/restore-badges-log-theme`; the other products select the
-prefix ending at `followups/donation-completion-copy`. Continued products
+prefix ending at `followups/unifiedpush-registration-retry`. Continued products
 without fork features have an empty `fork_series`. Molly FOSS Continued adds
 `patches/forks/signal-foss/firebase-free-build/series`; Collie and Collie FOSS
 append `patches/forks/signal-foss/retention-controls/series` and
 `patches/forks/signal-foss/retention-controls-fixes/series`. Firebase is
-selected only for Molly FOSS Continued and Collie FOSS. These names describe
-release selections and do not change application branding or IDs.
+selected only for Molly FOSS Continued and Collie FOSS. Each profile also sets its
+app title, backup file name and package ID (`release_profiles.APP`): the Molly
+profiles keep `im.molly.app`; Collie and Collie FOSS use `im.collie.app`.
 
 Fork profiles also require `fork_source` in `molly-build.json` with the original
 fork `url` and `head` pins. The independent `patches/forks/signal-foss/provenance.json` records schema 1,

@@ -63,6 +63,8 @@
       "--tests",
       "org.thoughtcrime.securesms.backup.FullBackupImporterTest",
       "--tests",
+      "org.thoughtcrime.securesms.service.KeyCachingServiceTest",
+      "--tests",
       "org.thoughtcrime.securesms.notifications.NotificationIdsTest",
       "--tests",
       "org.thoughtcrime.securesms.backup.v2.LegacyBackupNotificationTest",

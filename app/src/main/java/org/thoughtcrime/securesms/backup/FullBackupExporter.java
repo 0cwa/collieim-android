@@ -615,13 +615,9 @@ public class FullBackupExporter extends FullBackupBase {
     Set<Long> visited = new HashSet<>();
 
     while (latestRevisionId > 0 && latestRevisionId != id) {
-      // An edited revision must not reintroduce a message whose expiration has already started.
-      if (expiresIn > 0 && expireStarted > 0) {
-        return false;
-      }
       if (!visited.add(id)) {
-        Log.w(TAG, "Detected a cycle in the message revision chain! Excluding message " + id);
-        return false;
+        Log.w(TAG, "Detected a cycle in the message revision chain! Stopping the walk at " + id);
+        break;
       }
 
       try (Cursor cursor = db.query(MessageTable.TABLE_NAME, columns, where, SqlUtil.buildArgs(latestRevisionId), null, null, null)) {

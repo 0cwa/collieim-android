@@ -112,44 +112,44 @@
     },
     "molly-continued": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "03999be43376589ca06db09671e660d0ffe30ee6",
-      "base_tree": "d49f1d77ce33560fe231198c58cea69abf74c213",
+      "base_checkpoint": "28139ddca643a2eba64780ebf56c963094776dff",
+      "base_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
       "fork_series": [],
-      "target_tree": "d49f1d77ce33560fe231198c58cea69abf74c213",
+      "target_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
       "firebase_free": false
     },
     "molly-foss-continued": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "03999be43376589ca06db09671e660d0ffe30ee6",
-      "base_tree": "d49f1d77ce33560fe231198c58cea69abf74c213",
+      "base_checkpoint": "28139ddca643a2eba64780ebf56c963094776dff",
+      "base_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series"
       ],
-      "target_tree": "f5118b48ae1340c917bb37d0f1780f56d4b4a396",
+      "target_tree": "37f097ba236a6dddf559572051cc5cd36ed247f5",
       "firebase_free": true
     },
     "collie": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "03999be43376589ca06db09671e660d0ffe30ee6",
-      "base_tree": "d49f1d77ce33560fe231198c58cea69abf74c213",
+      "base_checkpoint": "28139ddca643a2eba64780ebf56c963094776dff",
+      "base_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series",
         "patches/forks/signal-foss/retention-controls/series",
         "patches/forks/signal-foss/retention-controls-fixes/series"
       ],
-      "target_tree": "18526701694689b524722268b21b075a40c237cf",
+      "target_tree": "7d123fbdaa6d89fcede3bb37bbe727f8220a91d0",
       "firebase_free": false
     },
     "collie-foss": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "03999be43376589ca06db09671e660d0ffe30ee6",
-      "base_tree": "d49f1d77ce33560fe231198c58cea69abf74c213",
+      "base_checkpoint": "28139ddca643a2eba64780ebf56c963094776dff",
+      "base_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series",
         "patches/forks/signal-foss/retention-controls/series",
         "patches/forks/signal-foss/retention-controls-fixes/series"
       ],
-      "target_tree": "18526701694689b524722268b21b075a40c237cf",
+      "target_tree": "7d123fbdaa6d89fcede3bb37bbe727f8220a91d0",
       "firebase_free": true
     }
   }

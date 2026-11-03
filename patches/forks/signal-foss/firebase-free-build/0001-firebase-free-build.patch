@@ -1,4 +1,4 @@
-From 4479a12e821a9cc3aa21ae499fbef34cd885c838 Mon Sep 17 00:00:00 2001
+From 4f8b616831781720f81c957fa152ab72e0dedbfb Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Mon, 2 Nov 2026 04:05:28 +0100
 Subject: [PATCH] Add a Firebase-free build while preserving push choices
@@ -15,8 +15,8 @@ stub library.
 
 Inspired-by: Angus Turnbull <github@twinhelix.com>
 
-Based-On-Source-Commit: 03999be43376589ca06db09671e660d0ffe30ee6
-Source-Commit: 4479a12e821a9cc3aa21ae499fbef34cd885c838
+Based-On-Source-Commit: 28139ddca643a2eba64780ebf56c963094776dff
+Source-Commit: 4f8b616831781720f81c957fa152ab72e0dedbfb
 
 ---
  app/build.gradle.kts                          | 17 ++++-
@@ -253,10 +253,10 @@ index 11209f3c..8ce63bce 100644
              android:name=".gcm.FcmJobService"
              android:exported="false"
 diff --git a/app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt b/app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt
-index 604075eb..5a7e084a 100644
+index f382303f..a0a22f6b 100644
 --- a/app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt
 +++ b/app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt
-@@ -1,14 +1,12 @@
+@@ -1,8 +1,6 @@
  package im.molly.unifiedpush.receiver
  
  import android.content.Context
@@ -265,14 +265,16 @@ index 604075eb..5a7e084a 100644
  import im.molly.unifiedpush.UnifiedPushNotificationBuilder
  import org.signal.core.util.concurrent.SignalExecutors
  import org.signal.core.util.logging.Log
+@@ -10,7 +8,7 @@ import org.signal.core.util.eventbus.EventBus
  import org.thoughtcrime.securesms.dependencies.AppDependencies
+ import org.thoughtcrime.securesms.events.PushServiceEvent
  import org.thoughtcrime.securesms.gcm.FcmFetchManager
 -import org.thoughtcrime.securesms.gcm.FcmReceiveService
 +import org.thoughtcrime.securesms.gcm.PushFetchHandler
  import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
  import org.thoughtcrime.securesms.keyvalue.SignalStore
  import org.thoughtcrime.securesms.service.KeyCachingService
-@@ -97,7 +95,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
+@@ -113,7 +111,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
          if (SignalStore.account.isRegistered && SignalStore.unifiedpush.enabled) {
            Log.d(TAG, "New message")
            executor.enqueue {

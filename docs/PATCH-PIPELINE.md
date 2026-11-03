@@ -259,6 +259,68 @@ committed so replay works in a fresh checkout. The starting tree must be
 available from the report preparation step. The clean-merge measurement omits
 whole conflicted files, including any clean portions within those files.
 
+## Pinned upstream inputs
+
+The tools refuse inputs that differ from the pinned releases, so their upstream
+commits, trees, port directory, fork release and source URLs are compiled in.
+`tools/patches/pins.py` lists every such pin with the files that contain it and
+the upstream whose next release changes it; `python3 tools/patches/pins.py`
+prints the table. `test_pins.py` fails when a tool or workflow contains an
+unlisted pin, or when a listed pin is missing from a file it names. GitHub
+Action pins are not upstream inputs and are not listed. Data pins in
+`molly-build.json` and the series provenance change with each port.
+
+## Measure the lines the compatibility changes wrote
+
+The port report opens with one measurement: which lines of each stage's
+reconstructed source come from neither of its inputs. `line_origin.py` records
+the stage's tree as a synthetic merge whose parents are the released Molly
+commit and the new Signal commit, then reads Git's combined diff
+(`git diff-tree --cc -M`):
+
+- **written**: lines in no parent (every prefix column is `+`);
+- **removed**: lines in every parent but not in the result (every column is `-`).
+
+A line taken unchanged from either input, including either side of a merge
+conflict, is not counted, and a path equal to one input is skipped. This makes
+conflict side choices and Git's own clean merge free, so the count is the
+review surface of the AI-assisted compatibility changes. Synthetic commits go
+to a private object directory; the repository is not modified.
+
+Counts are split into fixed classes: production (shipped source, default-locale
+resources and build scripts), translations (`res/values-<locale>/strings*.xml`),
+tests (test, screenshot-test and benchmark source sets), generated
+(`gradle/verification-metadata.xml`) and repository (patches, tools, docs, CI).
+Production is the headline. The report also counts **Molly lines not carried**:
+Molly's own non-blank lines (old Signal to Molly) missing from the same path.
+That count is textual, so rewritten or moved code counts as missing.
+
+Every port checkpoint is measured. Initial layers own the paths their mailboxes
+and stage records touch, and split the initial result by path. Each follow-up
+row is that follow-up's physical diff from the previous checkpoint (added /
+deleted, with renames), so it reads as the lines the follow-up changes. A
+stage's total is its last checkpoint, and the stage of a follow-up comes from the scope check's
+layer sets.
+
+Fork layers need the fork's head as a third parent, so lines the fork itself
+wrote are not counted as ours. Fork layers kept in the port series have no fork
+input; their stage row is labelled as including the fork's lines and is not a
+measure of our changes. When `molly-build.json` declares named release
+profiles, the report adds one row per profile: profiles with fork layers load
+the fork's upstream bundle into the private object directory and use its head
+as the third parent, and **from the fork** counts the production lines the fork
+wrote that the profile carries.
+
+```sh
+python3 tools/patches/line_origin.py port --markdown [--config molly-build.json]
+python3 tools/patches/line_origin.py tree TREE --parent MOLLY --parent SIGNAL \
+  [--parent FORK_HEAD] [--molly-old OLD_SIGNAL MOLLY]
+```
+
+Comparisons with the mechanical tree, patch-file sizes and whole-file deletion
+totals remain in the report as raw physical diffs. They include conflict
+markers and bookkeeping and are not a measure of the compatibility changes.
+
 ## Re-export an existing current-format series
 
 After replaying the source commits separately, use `reexport_current.py` to
@@ -300,9 +362,14 @@ not replace the applicable branch preflight, port report update or build tests.
 `molly-continued`, `molly-foss-continued`, `collie`, and `collie-foss`. Each
 entry contains exactly `base_series` (the port series path), `base_checkpoint`
 (full source commit), `base_tree` and `target_tree` (full tree IDs),
-`fork_series` (ordered repository-relative series paths), `tests` (Gradle
-arguments) and `firebase_free` (boolean). Pins are supplied by the release
-configuration, not compiled into the tools. The tests and Firebase selection
+`fork_series` (ordered repository-relative series paths) and `firebase_free`
+(boolean). Pins are supplied by the release configuration, not compiled into
+the tools. A profile's tests are derived, not listed: they are `android.tests`
+plus every unit test class that a selected fork layer's mailbox adds or
+changes (`<module>/src/test/{java,kotlin}/...`), added to the filters of that
+module's existing test task. A task that already runs unfiltered is left as
+is; a fork test in a module without a test task, or an instrumented or
+screenshot test source, is an error. The derived tests and Firebase selection
 are part of the source proof fingerprint.
 
 Minimal selects the verified port prefix ending at
@@ -325,8 +392,12 @@ original fork commits for provenance checks only; its workflow is never applied.
 records `id`, `series`, `mailbox`, `mailbox_sha256`, `mailbox_bytes`,
 `source_commit`, `before_tree`, `after_tree`, `source_bundle`,
 `source_bundle_sha256`, `source_bundle_bytes`, `source_bundle_prerequisite`,
-`source_bundle_ref`, `upstream_commit`, and `upstream_author`. File paths in
-this document are relative to the fork root. Each series contains one path to
+`source_bundle_ref`, `upstream_commit`, `upstream_author`, `author`, and
+`upstream_credit`. `author` is the adapted commit's author. An `adapted` layer
+is mostly the fork's code and keeps the upstream author. An `inspired` layer is
+our own code that follows a fork commit: we are its author, and its message
+carries `Inspired-by: <upstream_author>` and names the upstream commit. File
+paths in this document are relative to the fork root. Each series contains one path to
 its layer's mailbox, relative to that series file. Checkpoint bundles must
 advertise the declared `refs/heads/source-checkpoint/` ref and require exactly
 the previous source commit. The selected base checkpoint must match the
@@ -341,13 +412,3 @@ only the independent fork artifacts and named configuration profiles, and
 requires the port tree and original base configuration to remain unchanged,
 apart from adding `profiles` and `fork_source`.
 The existing Molly CI workflow does not yet select the named product matrix.
-
-### Independent compatibility surface assessment
-
-`python3 tools/patches/compatibility_surface.py MECHANICAL_TREE FINAL_TREE --scratch TASK_SCRATCH` emits a deterministic JSON inventory and physical Git diff counts. Supply full tree object IDs and an existing private scratch directory. This optional assessment does not change the port report. Each changed path records both tree entries (mode, type, blob ID); absent entries represent additions or deletions.
-
-For a conflict path, a region qualifies only if exactly one nonempty side, together with the immediately preceding and following mechanical lines, appears exactly once in the final blob. The marker labels must be `MOLLY` and `SIGNAL`; all regions must qualify and their contextual matches must not overlap. The selected sides form a marker-free baseline; Git measures its physical diff to the final blob. A changed context, empty choice, malformed marker, repeated match, mixed resolution, or overlap excludes the entire path. Ordinary text paths are reported separately. Deleted, binary, mode and non-blob paths are excluded. `--generated PATH` may be repeated to exclude declared generated paths; declarations are not verified, and undeclared generated files are not detected. Feature ownership is not assigned. No choice assertion manifest is accepted.
-
-Both gross and residual counts use isolated `git diff --no-index --text --diff-algorithm=myers`, with external diff and text conversion disabled. System, global and repository Git configuration and all attributes are ignored; tracked `binary` attributes therefore do not affect these counts. A NUL anywhere in either blob defines a binary path and excludes that path from text counts. Gross sums text diffs over all changed blob paths, including deletions and declared generated paths; non-blob entries are excluded. The binary count includes binary deletions and other excluded paths. Mode changes alone contribute no lines. These explicitly defined counts can differ from a normal repository `git diff --numstat`.
-
-Residual counts are not a partition of the gross counts and do not establish authorship, semantic complexity, or necessity. Coverage counts reconcile with the changed-path inventory; inspect exclusions before interpreting the result.

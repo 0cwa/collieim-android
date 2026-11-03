@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 
+import line_origin
 import release
 
 TYPES = {'conflict_resolution', 'signal_api_compile_fix', 'behavior_preservation', 'behavior_addition'}
@@ -236,7 +237,7 @@ def action_history(evidence):
     return output
 
 
-def render(config, evidence, ready=False):
+def render(config, evidence, ready=False, origin=None):
     port = config['port']
     before, target = port['mechanical_tree'], config['target_tree']
     baseline_before = evidence['baseline_mechanical_tree']
@@ -255,7 +256,13 @@ def render(config, evidence, ready=False):
     file_modes = modes(before, target)
     if set(file_modes) != set(stats):
         raise ValueError('raw diff paths do not match numstat')
-    output = ['# Port report', '', 'Physical Git diff lines; counts do not establish authorship or necessity.', '']
+    output = ['# Port report', '']
+    if origin:
+        output += origin.rstrip('\n').split('\n') + ['']
+    output += ['## Raw physical Git diffs', '',
+               'Physical Git diff lines; counts do not establish authorship or necessity. Comparisons with the '
+               'mechanical tree include its conflict markers and both sides of every conflict, so they are '
+               'bookkeeping for reviewers, not a measure of the AI-assisted compatibility changes.', '']
     (clean_a, clean_d, clean_b), conflicts = clean_contribution(source, before)
     output.append(f'- Clean merge contribution (conservative whole-file count): {clean_a} added, {clean_d} deleted, {clean_a+clean_d} total text lines; {clean_b} binary paths (`{source}` → `{before}`).')
     comparisons = [('Molly patchset', OLD, MOLLY), ('Full Signal to mechanical comparison', source, before),
@@ -337,7 +344,12 @@ def main():
     p.add_argument('--output', default='docs/PORT-REPORT.md'); p.add_argument('--check', action='store_true'); p.add_argument('--ready', action='store_true')
     args = p.parse_args()
     try:
-        result = render(json.loads(Path(args.config).read_text()), json.loads(Path(args.metadata).read_text()), args.ready)
+        config = json.loads(Path(args.config).read_text())
+        with tempfile.TemporaryDirectory(prefix='molly-report-origin-') as objects:
+            series_dir = Path(config['port']['series']).parent
+            repo = line_origin.Repo('.', objects)
+            origin = line_origin.markdown(line_origin.port(repo, series_dir), line_origin.profiles(repo, '.', config))
+        result = render(config, json.loads(Path(args.metadata).read_text()), args.ready, origin)
         if args.check:
             if Path(args.output).read_text() != result: raise ValueError('port report is stale')
         else: Path(args.output).write_text(result)

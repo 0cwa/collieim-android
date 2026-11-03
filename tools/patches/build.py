@@ -116,7 +116,7 @@ class Build:
         if self.config.get('schema') != 1:
             raise BuildError('unsupported build configuration schema')
         try:
-            self.config, self.profile = release_profiles.select(self.config, getattr(args, 'profile', None))
+            self.config, self.profile = release_profiles.select(self.config, getattr(args, 'profile', None), self.repo)
         except release_profiles.ProfileError as exc:
             raise BuildError(str(exc)) from exc
         self.android = self.config['android']

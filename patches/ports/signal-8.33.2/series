@@ -47,3 +47,5 @@ followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devi
 followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch
 followups/donation-completion/0001-donation-completion.patch
 followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch
+followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch
+followups/backup-revision-walk/0001-backup-revision-walk.patch

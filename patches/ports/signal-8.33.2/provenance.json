@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
   "complete_source_checkpoint": true,
-  "target_tree": "d508b6d4289831ed7b4f5302d100718cc23e49e5",
+  "target_tree": "00b38e9683f142c8ce012f69caa04ade992d6088",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "14b1273e2be125fb4bf8034b50e8a4b3a8e104d6f8760bf22945bde2d97118b4",
@@ -362,6 +362,40 @@
       "source_bundle_prerequisite": "30ec0b2e3e5eec1ba30696b6006a52a914c42cc3",
       "source_bundle_sha256": "a51856504c477a0974b4fb050a88efe53f697e27b391f844f5aee0ba7ef0088c",
       "source_bundle_bytes": 5474
+    },
+    {
+      "id": "followups/passphrase-timeout-fallback",
+      "source_commit": "4c79f87faa74a7f97b0e41678c0db258ce2292d4",
+      "description": "Keep the passphrase timeout when foreground promotion is refused\n\nAI-assisted compatibility changes. The port caught Android's refusal to\npromote KeyCachingService to the foreground and continued, where Molly let\nthe exception propagate. If the service was then destroyed while the process\nsurvived, a later screen-off could miss scheduling the passphrase timeout.\nSchedule the configured timeout when promotion is refused and keep it until\npromotion succeeds with the screen on and unlocked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: ee4bd246eb235b66f29498d5f8160ad2d6b71e1f",
+      "ai_generated": true,
+      "before_tree": "d508b6d4289831ed7b4f5302d100718cc23e49e5",
+      "after_tree": "987277b822fe52c8bd4840a011989ab06e3089ce",
+      "paths": 2,
+      "patches": [
+        "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch"
+      ],
+      "mailbox_bytes": 9197,
+      "source_bundle": "followups/passphrase-timeout-fallback/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "ee4bd246eb235b66f29498d5f8160ad2d6b71e1f",
+      "source_bundle_sha256": "d59f100f77e089ef794344e23746c0808c6051cce8d61772644558d584f812f6",
+      "source_bundle_bytes": 5402
+    },
+    {
+      "id": "followups/backup-revision-walk",
+      "source_commit": "164b3f3c2d8910acd04b0c2743219ae293e5cac9",
+      "description": "Apply Molly's backup timer rule to the latest message revision\n\nAI-assisted compatibility changes. The port excluded a message from backups\nwhen any earlier revision had a started disappearing timer, and dropped\nmessages whose revision chain contained a cycle. Walk revisions as Signal\ndoes, stopping at a cycle, and apply Molly's started-timer exclusion to the\nrevision the walk ends on.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 4c79f87faa74a7f97b0e41678c0db258ce2292d4",
+      "ai_generated": true,
+      "before_tree": "987277b822fe52c8bd4840a011989ab06e3089ce",
+      "after_tree": "00b38e9683f142c8ce012f69caa04ade992d6088",
+      "paths": 2,
+      "patches": [
+        "followups/backup-revision-walk/0001-backup-revision-walk.patch"
+      ],
+      "mailbox_bytes": 4678,
+      "source_bundle": "followups/backup-revision-walk/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "4c79f87faa74a7f97b0e41678c0db258ce2292d4",
+      "source_bundle_sha256": "410179f9b772755606b74735fad1b80a6e5730f1fbd12681d7f4c16002265604",
+      "source_bundle_bytes": 3917
     }
   ],
   "mailbox_sha256": {
@@ -413,6 +447,8 @@
     "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "a48354c2710c5fb820dc23116684381fdf8091eb881cad412d036136d6e48207",
     "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "2aee262bf3d3d6e534584b5b708ef04a11e1c1ba9fcf527f9285a5913372d4e1",
     "followups/donation-completion/0001-donation-completion.patch": "03c61185cedfd5b8f36b339b7a555deca85f41064e9d1fa1f0a4f846f14d983f",
-    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "c7ddc23eb1c8dc0c298027a38b663a2e9546c8db7077df862f7e44333cf5edcf"
+    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "c7ddc23eb1c8dc0c298027a38b663a2e9546c8db7077df862f7e44333cf5edcf",
+    "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch": "d9ae204c0d2ee2bc907a1fd804247c97dc946e4e3a0ffc93976e2e060cbf1e43",
+    "followups/backup-revision-walk/0001-backup-revision-walk.patch": "9d99ec5d48c489212eff9e20a73a9a2231080b50b24d07e0006a32e4d8021ed9"
   }
 }

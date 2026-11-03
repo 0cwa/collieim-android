@@ -255,6 +255,17 @@ committed so replay works in a fresh checkout. The starting tree must be
 available from the report preparation step. The clean-merge measurement omits
 whole conflicted files, including any clean portions within those files.
 
+## Pinned upstream inputs
+
+The tools refuse inputs that differ from the pinned releases, so their upstream
+commits, trees, port directory, fork release and source URLs are compiled in.
+`tools/patches/pins.py` lists every such pin with the files that contain it and
+the upstream whose next release changes it; `python3 tools/patches/pins.py`
+prints the table. `test_pins.py` fails when a tool or workflow contains an
+unlisted pin, or when a listed pin is missing from a file it names. GitHub
+Action pins are not upstream inputs and are not listed. Data pins in
+`molly-build.json` and the series provenance change with each port.
+
 ## Measure the lines the compatibility changes wrote
 
 The port report opens with one measurement: which lines of each stage's

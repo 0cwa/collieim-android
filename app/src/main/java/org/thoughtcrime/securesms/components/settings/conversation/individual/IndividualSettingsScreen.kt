@@ -6,6 +6,12 @@
 package org.thoughtcrime.securesms.components.settings.conversation.individual
 
 import android.view.View
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -14,12 +20,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import org.signal.core.ui.compose.AllDevicePreviews
 import org.signal.core.ui.compose.Dividers
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.Rows
 import org.signal.core.ui.compose.Texts
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.badges.BadgeImageView
+import org.thoughtcrime.securesms.components.settings.app.subscription.BadgeImageSize
 import org.thoughtcrime.securesms.components.settings.conversation.individual.IndividualSettingsState.Dialog
 import org.thoughtcrime.securesms.components.settings.conversation.shared.BlockRow
 import org.thoughtcrime.securesms.components.settings.conversation.shared.CallBar
@@ -176,6 +186,7 @@ fun IndividualSettingsScreen(
       onEvent = { onEvent(IndividualSettingsEvent.MediaRailEvent(it)) }
     )
 
+    badgeSection(state)
     groupsInCommonSection(state, onEvent)
 
     if (state.canModifyBlockedState) {
@@ -202,6 +213,33 @@ fun IndividualSettingsScreen(
     state = state,
     onEvent = onEvent
   )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+private fun LazyListScope.badgeSection(state: IndividualSettingsState) {
+  if (state.recipient.isSelf || state.recipient.badges.isEmpty()) return
+
+  item { Dividers.Default() }
+  item { Texts.SectionHeader(text = stringResource(R.string.ManageProfileFragment_badges)) }
+  item {
+    FlowRow(
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp)
+    ) {
+      state.recipient.badges.forEach { badge ->
+        AndroidView(
+          factory = { context -> BadgeImageView(context, BadgeImageSize.BADGE_64) },
+          modifier = Modifier.size(64.dp),
+          update = {
+            it.setBadge(badge)
+            it.contentDescription = badge.name
+            it.isClickable = false
+          }
+        )
+      }
+    }
+  }
 }
 
 /** Groups the two of you are both in. */

@@ -111,7 +111,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          filter: blob:none
           persist-credentials: false
           lfs: false
 
@@ -126,7 +125,7 @@ jobs:
 
       - name: Fetch the exact official Molly source oracle
         run: |
-          git fetch --no-tags --filter=blob:none https://github.com/mollyim/mollyim-android.git \
+          git fetch --no-tags https://github.com/mollyim/mollyim-android.git \
             0e202dda90785771ff8c87526eaaf30c655f54f3
 
       - name: Reconstruct the selected release and prove its complete tree
@@ -170,13 +169,12 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-          filter: blob:none
           persist-credentials: false
           lfs: false
 
       - name: Fetch the pinned official Molly history
         run: |
-          git fetch --no-tags --filter=blob:none https://github.com/mollyim/mollyim-android.git \
+          git fetch --no-tags https://github.com/mollyim/mollyim-android.git \
             0e202dda90785771ff8c87526eaaf30c655f54f3
 
       # Worktrees are machine-local. Reconstruct on this runner instead of

@@ -24,6 +24,7 @@ jobs:
       port: ${{ steps.scope.outputs.port }}
       stack_scope: ${{ steps.scope.outputs.stack_scope }}
       base: ${{ steps.scope.outputs.base }}
+      profiles: ${{ steps.scope.outputs.profiles }}
     steps:
       - name: Check out immutable head
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -49,6 +50,7 @@ jobs:
               stack/3-signal-8.33.2) scope=followups ;;
               stack/4-behavior-followups) scope=additions ;;
               stack/5-behavior-additions) scope=features ;;
+              private/release-base-5) scope=forks ;;
               *) echo "Unknown base: $BASE_REF" >&2; exit 1 ;;
             esac
             base="$BASE_SHA"
@@ -60,6 +62,7 @@ jobs:
               stack/4-behavior-followups) scope=followups; base_ref=stack/3-signal-8.33.2 ;;
               stack/5-behavior-additions) scope=additions; base_ref=stack/4-behavior-followups ;;
               feature/foss-8.33.2) scope=features; base_ref=stack/5-behavior-additions ;;
+              private/release-variants) scope=forks; base_ref=private/release-base-5 ;;
               *) echo "Unknown branch: $HEAD_REF" >&2; exit 1 ;;
             esac
             git fetch --no-tags origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref"
@@ -67,14 +70,14 @@ jobs:
           else
             echo "Unsupported event" >&2; exit 1
           fi
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           python3 tools/patches/scope.py --scope "$scope" --base "$base"
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks ]]; then
             python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"
@@ -82,11 +85,23 @@ jobs:
             echo 'port=false' >> "$GITHUB_OUTPUT"
           fi
           if [[ "$scope" == pipeline ]]; then echo 'profile=false' >> "$GITHUB_OUTPUT"; else echo 'profile=true' >> "$GITHUB_OUTPUT"; fi
+          # The release line builds every named release profile; other branches build their one configuration.
+          if [[ "$scope" == forks ]]; then
+            echo 'profiles=["molly-minimal","molly-continued","molly-foss-continued","collie","collie-foss"]' >> "$GITHUB_OUTPUT"
+          else
+            echo 'profiles=[""]' >> "$GITHUB_OUTPUT"
+          fi
 
   source-proof:
     needs: scope
     if: needs.scope.outputs.profile == 'true'
-    name: Prove source reconstruction and upstream provenance
+    name: Prove source reconstruction and upstream provenance${{ matrix.profile && format(' ({0})', matrix.profile) || '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: ${{ fromJSON(needs.scope.outputs.profiles) }}
+    env:
+      PROFILE_ARGS: ${{ matrix.profile && format('--profile {0}', matrix.profile) || '' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -122,23 +137,29 @@ jobs:
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
             --report "$RUNNER_TEMP/reports/source.json" \
-            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}"
+            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" $PROFILE_ARGS
 
       - name: Prove the upstream native cherry-pick when configured
         run: |
           python3 tools/patches/build.py native-prepare \
-            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports"
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
 
       - name: Upload source and native provenance evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: molly-source-proof-${{ github.run_id }}-${{ github.run_attempt }}
+          name: molly-source-proof-${{ matrix.profile || 'default' }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/reports
           if-no-files-found: warn
 
   android:
-    name: Build the proved source and run its regression tests
+    name: Build the proved source and run its regression tests${{ matrix.profile && format(' ({0})', matrix.profile) || '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: ${{ fromJSON(needs.scope.outputs.profiles) }}
+    env:
+      PROFILE_ARGS: ${{ matrix.profile && format('--profile {0}', matrix.profile) || '' }}
     needs: [scope, source-proof]
     runs-on: ubuntu-24.04
     timeout-minutes: 360
@@ -168,12 +189,12 @@ jobs:
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
             --report "$RUNNER_TEMP/reports/source.json" \
-            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}"
+            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" $PROFILE_ARGS
 
       - name: Prepare the optional native backport from its immutable sources
         run: |
           python3 tools/patches/build.py native-prepare \
-            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports"
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
 
       # The historical hotfix uses the original native API and all three Molly
       # ABIs. A resource, native-test or build failure stops the job; it must not
@@ -181,12 +202,12 @@ jobs:
       - name: Test and build all required native ABIs when configured
         run: |
           python3 tools/patches/build.py native-build \
-            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports"
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
 
       - name: Integrate the verified native artifact without disabling verification
         run: |
           python3 tools/patches/build.py native-integrate \
-            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports"
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
 
       - name: Set up JDK 21
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5
@@ -202,23 +223,23 @@ jobs:
       - name: Install the profile's pinned Android SDK components
         run: |
           python3 tools/patches/build.py sdk \
-            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports"
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
 
       - name: Assemble the Website debug APK with strict dependency verification
         run: |
           python3 tools/patches/build.py assemble \
-            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports"
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
 
       - name: Run the profile's regression test tasks
         run: |
           python3 tools/patches/build.py test \
-            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports"
+            --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
 
       - name: Upload proof, build logs, native artifacts, APKs and test results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: molly-android-${{ github.run_id }}-${{ github.run_attempt }}
+          name: molly-android-${{ matrix.profile || 'default' }}-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: warn
           path: |
             ${{ runner.temp }}/reports

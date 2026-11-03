@@ -305,8 +305,10 @@ replays the patches in a private index, checks the blob IDs and single changed
 path, and displays the reported gate separately from current-hunk evidence.
 The input description must identify the actual tested state; a passing build
 cannot establish an individual revert failure. Historical patches must be
-committed so replay works in a fresh checkout. The starting tree must be
-available from the report preparation step. The clean-merge measurement omits
+committed so replay works in a fresh checkout. Starting trees that a fresh clone lacks are
+shipped as one chain of synthetic commits in `report-evidence/action-start-trees.bundle`,
+declared by `start_tree_bundle` in the report metadata and imported before
+the report is rendered. The clean-merge measurement omits
 whole conflicted files, including any clean portions within those files.
 
 ## Pinned upstream inputs

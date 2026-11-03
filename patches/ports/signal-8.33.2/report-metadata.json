@@ -12083,16 +12083,6 @@
       "gate_input": "da3131fde031e09017e778c736f7d34f8b5a7600 baseline and 99014fba9d5df76f07d76ac74257c991be7f159a supplement, seven-day fixture",
       "outcome": "Baseline named test passed; counterexample failed its named assertion. Original 24-hour fixture passed the threshold counterexample and did not distinguish policies."
     },
-    "e987574c43c572243a5d": {
-      "type": "behavior_preservation",
-      "searched_branches": "origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak local tip files only",
-      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#backup-policy-checks",
-      "reason": "Use seven days in an existing test fixture so the policy test distinguishes the one-day threshold; this is test quality, not an app build necessity.",
-      "molly_equivalent": "No direct equivalent for the new test in the bounded local tip search.",
-      "revert_gate": "Named seven-day test against baseline and adjusted threshold",
-      "gate_input": "da3131fde031e09017e778c736f7d34f8b5a7600 and 99014fba9d5df76f07d76ac74257c991be7f159a",
-      "outcome": "Baseline passed and threshold counterexample failed; the former 24-hour test passed both predicates. Reverting fixture loses this failure probe; production code is unchanged."
-    },
     "5cddb239a1ac58825fbb": {
       "type": "behavior_preservation",
       "reason": "Retain long and unsigned timeout preference restoration and translate legacy settings frames before later KeyValue frames.",
@@ -12365,6 +12355,56 @@
       "gate_input": "Original PR5 source b9f7f076e5c84433ecee890741c2c044b75336f1 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, literal inverse counter blob b286a9325d18d204d08927d45a0973dff2d31b2a; PR3/PR4 have identical original file blobs, but were not tested",
       "outcome": "baseline task UP-TO-DATE with build exit 0; inverse exit 1: getDefault and Subscribe unresolved",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#socket-and-settings-whole-hunk-inverses; patches/ports/signal-8.33.2/report-evidence/hunk-42393357b34645095fb1.patch"
+    },
+    "eec3986bf4c9247dc707": {
+      "type": "behavior_preservation",
+      "searched_branches": "origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak local tip files only",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#backup-policy-checks",
+      "reason": "Use seven days in an existing test fixture so the policy test distinguishes the one-day threshold; this is test quality, not an app build necessity. The hunk now also contains the PR4 backup-revision-walk tests; the recorded gate covers only the seven-day fixture.",
+      "molly_equivalent": "No direct equivalent for the new test in the bounded local tip search.",
+      "revert_gate": "Named seven-day test against baseline and adjusted threshold",
+      "gate_input": "da3131fde031e09017e778c736f7d34f8b5a7600 and 99014fba9d5df76f07d76ac74257c991be7f159a",
+      "outcome": "Baseline passed and threshold counterexample failed; the former 24-hour test passed both predicates. Reverting fixture loses this failure probe; production code is unchanged."
+    },
+    "fa189ed905f51d85743b": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Old Molly 0e202dda let ForegroundServiceStartNotAllowedException propagate; no timeout fallback exists in Molly.",
+      "searched_branches": "unmeasured",
+      "revert_gate": "Gradle :app:testProdWebsiteDebugUnitTest --tests KeyCachingServiceTest --tests FullBackupExporterTest on the PR4 source with the fix and with only the production change reverted",
+      "gate_input": "source commits 4c79f87f (K1) and 164b3f3c (B3)",
+      "outcome": "With the fix: KeyCachingServiceTest 4/4 and FullBackupExporterTest 14/14 pass. Reverted: 4 and 2 tests fail.",
+      "evidence": "followups/passphrase-timeout-fallback commit message; local Gradle run 2026-11-03",
+      "reason": "Schedule the configured passphrase timeout when foreground promotion is refused, and cancel it only once promotion succeeds with the screen on and unlocked."
+    },
+    "1225bc921d1e63a7f0ac": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Old Molly 0e202dda let ForegroundServiceStartNotAllowedException propagate; no timeout fallback exists in Molly.",
+      "searched_branches": "unmeasured",
+      "revert_gate": "Gradle :app:testProdWebsiteDebugUnitTest --tests KeyCachingServiceTest --tests FullBackupExporterTest on the PR4 source with the fix and with only the production change reverted",
+      "gate_input": "source commits 4c79f87f (K1) and 164b3f3c (B3)",
+      "outcome": "With the fix: KeyCachingServiceTest 4/4 and FullBackupExporterTest 14/14 pass. Reverted: 4 and 2 tests fail.",
+      "evidence": "followups/passphrase-timeout-fallback commit message; local Gradle run 2026-11-03",
+      "reason": "Keep the fallback timeout across screen-on and user-present broadcasts while foreground promotion is refused."
+    },
+    "ca5524ea80330db67213": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Old Molly 0e202dda let ForegroundServiceStartNotAllowedException propagate; no timeout fallback exists in Molly.",
+      "searched_branches": "unmeasured",
+      "revert_gate": "Gradle :app:testProdWebsiteDebugUnitTest --tests KeyCachingServiceTest --tests FullBackupExporterTest on the PR4 source with the fix and with only the production change reverted",
+      "gate_input": "source commits 4c79f87f (K1) and 164b3f3c (B3)",
+      "outcome": "With the fix: KeyCachingServiceTest 4/4 and FullBackupExporterTest 14/14 pass. Reverted: 4 and 2 tests fail.",
+      "evidence": "followups/passphrase-timeout-fallback commit message; local Gradle run 2026-11-03",
+      "reason": "Tests for the passphrase timeout fallback."
+    },
+    "b94918d9a8e795cc2d8a": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Old Molly 0e202dda checked the current row only; Signal 6e9dddc0 walks revisions and stops on a cycle.",
+      "searched_branches": "unmeasured",
+      "revert_gate": "Gradle :app:testProdWebsiteDebugUnitTest --tests KeyCachingServiceTest --tests FullBackupExporterTest on the PR4 source with the fix and with only the production change reverted",
+      "gate_input": "source commits 4c79f87f (K1) and 164b3f3c (B3)",
+      "outcome": "With the fix: KeyCachingServiceTest 4/4 and FullBackupExporterTest 14/14 pass. Reverted: 4 and 2 tests fail.",
+      "evidence": "followups/backup-revision-walk commit message; local Gradle run 2026-11-03",
+      "reason": "Walk message revisions as Signal does, stopping on a cycle, and apply Molly's started-timer exclusion to the revision the walk ends on."
     }
   },
   "exclusions_complete": false,

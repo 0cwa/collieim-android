@@ -1,11 +1,11 @@
-From 337f76afb8f4555f3a842870f0aa3703668fffa6 Mon Sep 17 00:00:00 2001
+From 76cbc4558b089f56f11d3c2bff1687a5b3194034 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Mon, 2 Nov 2026 02:19:23 +0100
 Subject: [PATCH] Add access to Network settings during registration.
 
 
-Based-On-Source-Commit: ee4bd246eb235b66f29498d5f8160ad2d6b71e1f
-Source-Commit: 337f76afb8f4555f3a842870f0aa3703668fffa6
+Based-On-Source-Commit: 164b3f3c2d8910acd04b0c2743219ae293e5cac9
+Source-Commit: 76cbc4558b089f56f11d3c2bff1687a5b3194034
 
 ---
  app/src/main/AndroidManifest.xml              |  5 ++

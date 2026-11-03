@@ -270,6 +270,94 @@ unlisted pin, or when a listed pin is missing from a file it names. GitHub
 Action pins are not upstream inputs and are not listed. Data pins in
 `molly-build.json` and the series provenance change with each port.
 
+## Updating to new upstream releases
+
+Signal, Molly and the optional fork release on their own schedules. These
+runbooks keep the four sources (Signal, the Molly snapshot, the fork and our
+AI-assisted compatibility changes) consistent through an update. They use the
+mechanism described above; no step is automatic unless it names a tool.
+
+### Choose the inputs first
+
+1. List the candidate Signal release, the latest Molly release with its Signal
+   base, and the latest fork release with its Signal base, each as a commit.
+2. Supported updates: our own change on the current inputs; a new Signal with
+   the same Molly; a new Molly with the same Signal target; a new Molly and a new
+   Signal together. When the fork has no release for the target Signal, fork
+   profiles stay on their current inputs and are reported as not built for the
+   new target. Any other combination is unsupported: stop and ask.
+3. Update Molly first, then Signal, then the fork, then our own changes.
+4. The contributor approves the input set. That approval covers every pin the
+   tools then compute: trees, hashes, bundle prerequisites.
+5. `python3 tools/patches/pins.py` lists each compiled pin, its files and the
+   upstream that changes it.
+
+### Rebuild rule
+
+A new Molly or Signal changes the mechanical tree, so every checkpoint is
+rebuilt, from the initial source commit through the last layer, PR3 included.
+Keep a layer's application diff when it still applies and is still needed, but
+regenerate its envelope: source commit and parents, bundle and prerequisite,
+trees, hashes, and translation and deletion records. Never edit a mailbox only
+to refresh offsets, and never edit a hash by hand. Replaying the source commits
+is manual; `reexport_current.py` re-exports a series once they exist and does
+not create a port or insert layers. Keep the previous series and forest
+unchanged until the new chain passes every gate.
+
+### New Signal release
+
+1. `python3 tools/patches/port_impact.py --base NEW_SIGNAL` shows the
+   structural impact of the Molly forest on the new base. It does not size merge
+   conflicts; the mechanical merge does.
+2. Create `patches/ports/signal-NEW/` and its configuration, change the Signal
+   pins, then inspect and pin the new mechanical tree.
+3. Replay the old layers in order and keep each one's stage: PR3 compatibility,
+   PR4 fix, PR5 addition. For a PR3 layer, first look for Molly's own fix of
+   the same conflict on its other upstream branches and prefer it. Record the
+   Molly equivalent or the search result. Run revert checks where the report
+   rules require them; otherwise mark the hunk unmeasured. A failed PR4 or PR5
+   layer stays a PR4 or PR5 change and is reviewed as such.
+4. Re-pin `target_tree`, regenerate the port report, measure each stage with
+   `line_origin.py`, and record its change from the previous port.
+5. Build the new stack from the stack-2 baseline (`stack/3-signal-NEW` and up),
+   keep the old branches until the new ones pass, then archive them. Do not
+   rewrite shared history.
+
+### New Molly release
+
+1. Export the new snapshot with `export_complete.py` into a new forest and
+   prove the byte-identical rebuild on a new stack 2. The Molly pins, the
+   pipeline anchor and its source-projection checks change together. Keep the
+   previous forest unchanged.
+2. Rebuild the whole chain under the rebuild rule, whether or not Molly's
+   Signal base reaches the port's target.
+3. When Molly's Signal base is newer than the target, choose the target with
+   the contributor. For each of our layers, record whether Molly now has an
+   equivalent; drop layers Molly made unnecessary only after asking.
+4. Re-measure; Molly lines not carried restart from the new Molly.
+
+### Our own change
+
+1. Classify it as compatibility (PR3), behavior-preserving fix (PR4) or
+   behavior addition (PR5). A change to fork behavior belongs to the fork
+   patchset, never the port series. Ask when the class is unclear.
+2. Add it at the end of its group (a PR4 fix goes before the PR5 layers) and
+   apply the rebuild rule from that point. App tests go in the same layer.
+3. Scope changes are tool changes on stack 1, merged upward: a PR4 or PR5 layer
+   ID joins `BEHAVIOR` or `ADDITIONS` in `scope.py`; a new PR3 layer's paths
+   join `RELEASE_PATHS`, without which the release scope check rejects it.
+4. Profile boundaries are named by layer ID; move one only when the new layer
+   ends its group.
+
+### Gates and stop points
+
+Run `preflight.sh proof` for every branch from the changed one up, each with its
+scope and base, and `full` for each release profile in both Firebase modes. CI
+runs only after publication is authorized. Stop and ask before choosing the
+input set, changing layer order or profile composition, dropping one of our
+layers because Molly has an equivalent, changing behavior to make a replayed
+layer apply, or changing a credit mode or author.
+
 ## Measure the lines the compatibility changes wrote
 
 The port report opens with one measurement: which lines of each stage's

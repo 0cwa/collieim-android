@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
   "complete_source_checkpoint": true,
-  "target_tree": "d49f1d77ce33560fe231198c58cea69abf74c213",
+  "target_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "14b1273e2be125fb4bf8034b50e8a4b3a8e104d6f8760bf22945bde2d97118b4",
@@ -447,6 +447,23 @@
       "source_bundle_prerequisite": "1f06f1d7382ead31fc932165101388d67837e402",
       "source_bundle_sha256": "717750be6e7d2cfc0b63e5fcf831272aeaf407a57b51a1052262c9aca6650ead",
       "source_bundle_bytes": 1519
+    },
+    {
+      "id": "followups/unifiedpush-registration-retry",
+      "description": "Recover from a failed UnifiedPush registration visibly and boundedly\n\nAI-assisted compatibility changes. A failed distributor registration only\nshowed a notification and never retried, so UnifiedPush could stay broken\nsilently. Now the failure shows in UnifiedPush settings with a Retry\nregistration action, and one automatic UnifiedPushRefreshJob runs per failure\nepisode (network constraint, three attempts, six-hour lifespan) instead of an\nendless background retry. Choosing a distributor, or a successful endpoint\ncallback, clears the failure. Nothing touches the encrypted store while the\napp is locked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 03999be43376589ca06db09671e660d0ffe30ee6",
+      "source_commit": "28139ddca643a2eba64780ebf56c963094776dff",
+      "ai_generated": true,
+      "before_tree": "d49f1d77ce33560fe231198c58cea69abf74c213",
+      "after_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
+      "paths": 11,
+      "patches": [
+        "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch"
+      ],
+      "mailbox_bytes": 26374,
+      "source_bundle": "followups/unifiedpush-registration-retry/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "03999be43376589ca06db09671e660d0ffe30ee6",
+      "source_bundle_sha256": "94c326331dacf647e145d2722c96fd96ee0831cf47ac1ea09b8e5858c9416a10",
+      "source_bundle_bytes": 6243
     }
   ],
   "mailbox_sha256": {
@@ -503,6 +520,7 @@
     "followups/backup-revision-walk/0001-backup-revision-walk.patch": "9d99ec5d48c489212eff9e20a73a9a2231080b50b24d07e0006a32e4d8021ed9",
     "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch": "fb2bc5a1874513228744c375c72ee813a3bc6a03191e1d331e3a4782f835c534",
     "followups/registration-network-settings/0001-registration-network-settings.patch": "08762b2de7f5ca0e623843c36174b2d69ecb2485e5c7e3d847745323ab37a4a9",
-    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "8a18030ecd1be8a8f57accbb5d4ebf6d62b14d4793bcf1d8c62cb8802bc5ccb8"
+    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "8a18030ecd1be8a8f57accbb5d4ebf6d62b14d4793bcf1d8c62cb8802bc5ccb8",
+    "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "cfb4f73d7843f21f3061b7d37af2f976aa6dbfd293ca4a96b1f207e425ffe2a4"
   }
 }

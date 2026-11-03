@@ -14,12 +14,21 @@ FORK_ROOT = 'patches/forks/signal-foss'
 FIREBASE = FORK_ROOT + '/firebase-free-build/series'
 RETENTION = FORK_ROOT + '/retention-controls/series'
 RETENTION_FIXES = FORK_ROOT + '/retention-controls-fixes/series'
+# User-visible app title, backup file base name and package ID per profile. Molly profiles keep Molly's
+# package so they upgrade existing Molly installs; Collie is a separate app.
+APP = {
+    'molly-minimal': ('Molly Minimal', 'Molly-Minimal', 'im.molly.app'),
+    'molly-continued': ('Molly Continued', 'Molly-Continued', 'im.molly.app'),
+    'molly-foss-continued': ('Molly FOSS Continued', 'Molly-FOSS-Continued', 'im.molly.app'),
+    'collie': ('Collie', 'Collie', 'im.collie.app'),
+    'collie-foss': ('Collie FOSS', 'Collie-FOSS', 'im.collie.app'),
+}
 POLICY = {
     'molly-minimal': ('followups/restore-badges-log-theme', [], False),
-    'molly-continued': ('followups/donation-completion-copy', [], False),
-    'molly-foss-continued': ('followups/donation-completion-copy', [FIREBASE], True),
-    'collie': ('followups/donation-completion-copy', [FIREBASE, RETENTION, RETENTION_FIXES], False),
-    'collie-foss': ('followups/donation-completion-copy', [FIREBASE, RETENTION, RETENTION_FIXES], True),
+    'molly-continued': ('followups/unifiedpush-registration-retry', [], False),
+    'molly-foss-continued': ('followups/unifiedpush-registration-retry', [FIREBASE], True),
+    'collie': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES], False),
+    'collie-foss': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES], True),
 }
 
 
@@ -125,7 +134,8 @@ def select(config, name, repo='.'):
     selected['android']['tests'] = derived_tests(repo, base_tests, fork)
     selected['_profile'] = {'name': name, 'base_checkpoint': entry['base_checkpoint'],
                             'base_layer': boundary, 'base_tree': entry['base_tree'], 'target_tree': entry['target_tree'],
-                            'fork_series': fork, 'firebase_free': entry['firebase_free']}
+                            'fork_series': fork, 'firebase_free': entry['firebase_free'],
+                            'app': dict(zip(('title', 'file_name', 'package_id'), APP[name]))}
     if fork:
         selected['_profile']['fork_source'] = copy.deepcopy(fork_source)
         selected['_profile']['signal_commit'] = config['signal']['commit']

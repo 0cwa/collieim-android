@@ -215,42 +215,44 @@ class ForkProfilesTests(unittest.TestCase):
     def test_port_prefix_requires_verified_order_and_exact_boundary(self):
         directory = self.repo / 'patches/ports/signal-8.33.2'
         directory.mkdir(parents=True)
-        (directory / 'series').write_text('a.patch\nr.patch\nb.patch\n')
+        (directory / 'series').write_text('a.patch\nr.patch\nb.patch\nu.patch\n')
         layers = [{'id': 'followups/restore-badges-log-theme', 'source_commit': 'a'*40,
                    'after_tree': 'b'*40, 'patches': ['a.patch']},
                   {'id': 'followups/registration-network-settings', 'source_commit': 'e'*40,
                    'after_tree': 'f'*40, 'patches': ['r.patch']},
-                  {'id': 'followups/donation-completion-copy', 'source_commit': 'c'*40,
-                   'after_tree': 'd'*40, 'patches': ['b.patch']}]
-        provenance = {'layers': layers, 'mailbox_sha256': {'a.patch': '1', 'r.patch': '3', 'b.patch': '2'}}
+                  {'id': 'followups/donation-completion-copy', 'source_commit': '9'*40,
+                   'after_tree': '8'*40, 'patches': ['b.patch']},
+                  {'id': 'followups/unifiedpush-registration-retry', 'source_commit': 'c'*40,
+                   'after_tree': 'd'*40, 'patches': ['u.patch']}]
+        provenance = {'layers': layers, 'mailbox_sha256': {'a.patch': '1', 'r.patch': '3', 'b.patch': '2', 'u.patch': '4'}}
         (directory / 'provenance.json').write_text(json.dumps(provenance))
         records = [(directory / 'a.patch', {'sha256': '1'}), (directory / 'r.patch', {'sha256': '3'}),
-                   (directory / 'b.patch', {'sha256': '2'})]
+                   (directory / 'b.patch', {'sha256': '2'}), (directory / 'u.patch', {'sha256': '4'})]
         selection = {'base_layer': layers[0]['id'], 'base_checkpoint': 'a'*40, 'base_tree': 'b'*40}
         with patch.object(fork_profiles.verify_source_bundles, 'verify') as verify:
             self.assertEqual(fork_profiles.port_prefix(self.repo, 'config.json', selection, records), records[:1])
             verify.assert_called_once_with(self.repo, 'config.json')
             with self.assertRaisesRegex(forest.ForestError, 'checkpoint or tree'):
                 fork_profiles.port_prefix(self.repo, 'config.json', dict(selection, base_tree='d'*40), records)
-            continued = {'base_layer': layers[2]['id'], 'base_checkpoint': 'c'*40, 'base_tree': 'd'*40}
+            continued = {'base_layer': layers[3]['id'], 'base_checkpoint': 'c'*40, 'base_tree': 'd'*40}
             self.assertEqual(fork_profiles.port_prefix(self.repo, 'config.json', continued, records), records)
-            missing = dict(provenance, layers=[layers[0], layers[2]])
+            missing = dict(provenance, layers=[layers[0], layers[2], layers[3]])
             (directory / 'provenance.json').write_text(json.dumps(missing))
-            (directory / 'series').write_text('a.patch\nb.patch\n')
+            (directory / 'series').write_text('a.patch\nb.patch\nu.patch\n')
             with self.assertRaisesRegex(forest.ForestError, 'missing, repeated, or misordered'):
-                fork_profiles.port_prefix(self.repo, 'config.json', continued, [records[0], records[2]])
-            for altered in ([layers[1], layers[0], layers[2]],
-                            [layers[0], layers[1], layers[1], layers[2]]):
+                fork_profiles.port_prefix(self.repo, 'config.json', continued, [records[0], records[2], records[3]])
+            for altered in ([layers[1], layers[0], layers[2], layers[3]],
+                            [layers[0], layers[1], layers[1], layers[2], layers[3]]):
                 (directory / 'provenance.json').write_text(json.dumps(dict(provenance, layers=altered)))
                 flattened = [p for item in altered for p in item['patches']]
                 if len(set(flattened)) != len(flattened):
                     continue  # series parser rejects duplicate mailbox entries before layer validation
                 (directory / 'series').write_text('\n'.join(flattened) + '\n')
-                by_path = {'a.patch': records[0], 'r.patch': records[1], 'b.patch': records[2]}
+                by_path = {'a.patch': records[0], 'r.patch': records[1], 'b.patch': records[2], 'u.patch': records[3]}
                 with self.assertRaisesRegex(forest.ForestError, 'missing, repeated, or misordered'):
                     fork_profiles.port_prefix(self.repo, 'config.json', continued, [by_path[p] for p in flattened])
             (directory / 'provenance.json').write_text(json.dumps(provenance))
-            (directory / 'series').write_text('b.patch\na.patch\nr.patch\n')
+            (directory / 'series').write_text('b.patch\na.patch\nr.patch\nu.patch\n')
             with self.assertRaisesRegex(forest.ForestError, 'order'):
                 fork_profiles.port_prefix(self.repo, 'config.json', selection, records)
 

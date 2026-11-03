@@ -74,6 +74,7 @@ public class KeyCachingService extends Service {
   private final IBinder binder  = new KeySetBinder();
 
   private boolean pendingAlarm;
+  private boolean foregroundPromotionFailed;
 
   private static MasterSecret masterSecret;
 
@@ -260,9 +261,17 @@ public class KeyCachingService extends Service {
 
     try {
       startForeground(NotificationIds.KEY_CACHING_SERVICE, builder.build());
+      if (foregroundPromotionFailed && ServiceUtil.getPowerManager(this).isInteractive() &&
+          !ServiceUtil.getKeyguardManager(this).isKeyguardLocked()) {
+        cancelTimeout();
+      }
+      foregroundPromotionFailed = false;
     } catch (Exception e) {
       if (Build.VERSION.SDK_INT >= 31 && e instanceof ForegroundServiceStartNotAllowedException) {
         Log.w(TAG, "Not allowed to start foreground service.", e);
+        // The service may be destroyed before the next screen-off event.
+        foregroundPromotionFailed = true;
+        startTimeoutIfAppropriate();
       } else {
         throw e;
       }
@@ -325,12 +334,14 @@ public class KeyCachingService extends Service {
           startTimeoutIfAppropriate();
           break;
         case Intent.ACTION_SCREEN_ON:
-          if (!ServiceUtil.getKeyguardManager(context).isKeyguardLocked()) {
+          if (!foregroundPromotionFailed && !ServiceUtil.getKeyguardManager(context).isKeyguardLocked()) {
             cancelTimeout();
           }
           break;
         case Intent.ACTION_USER_PRESENT:
-          cancelTimeout();
+          if (!foregroundPromotionFailed) {
+            cancelTimeout();
+          }
           break;
       }
     }

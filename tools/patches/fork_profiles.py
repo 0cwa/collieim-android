@@ -28,7 +28,7 @@ def port_prefix(repo, config_path, selection, records):
     if len(endpoints) != 1:
         raise forest.ForestError('selected port boundary missing or duplicated')
     end = endpoints[0]
-    boundary = 'followups/backup-notification-id-upgrade'
+    boundary = 'followups/backup-revision-walk'
     additions = ['followups/registration-network-settings', 'followups/donation-completion-copy']
     selected_boundaries = [layer['id'] for layer in layers[:end + 1] if layer['id'] in {boundary, *additions}]
     expected_boundaries = [boundary] + ([] if selection['base_layer'] == boundary else additions)
@@ -61,7 +61,8 @@ def fork_layers(repo, selection):
     if (data['base_commit'], data['base_tree']) != (selection['base_checkpoint'], selection['base_tree']):
         raise forest.ForestError('fork base checkpoint or tree differs')
     layers = data['layers']
-    if not isinstance(layers, list) or [x['id'] for x in layers] != ['firebase-free-build', 'retention-controls']:
+    if not isinstance(layers, list) or [x['id'] for x in layers] != ['firebase-free-build', 'retention-controls',
+                                                                      'retention-controls-fixes']:
         raise forest.ForestError('fork layer order differs')
     _, upstream_parents = verify_source_bundles.commit_info(repo, data['source_head'])
     if upstream_parents != [layers[1]['upstream_commit']]:
@@ -76,13 +77,23 @@ def fork_layers(repo, selection):
     records = []
     for layer in layers[:len(selected)]:
         commit = release.require_sha(layer['source_commit'], 'fork source commit')
-        original = release.require_sha(layer['upstream_commit'], 'fork upstream commit')
-        for field in ('author', 'upstream_author'):
-            if not isinstance(layer.get(field), str) or not layer[field]:
-                raise forest.ForestError('fork layer ' + field + ' missing')
         credit = layer.get('upstream_credit')
-        if credit not in ('adapted', 'inspired'):
-            raise forest.ForestError('fork upstream_credit must be adapted or inspired')
+        if credit not in ('adapted', 'inspired', 'ours'):
+            raise forest.ForestError('fork upstream_credit must be adapted, inspired or ours')
+        if not isinstance(layer.get('author'), str) or not layer['author']:
+            raise forest.ForestError('fork layer author missing')
+        if credit == 'ours':
+            # Our fixes to an adapted layer: no upstream commit, never authored as the fork author.
+            fixed = [x for x in layers if x['id'] == layer.get('fixes')]
+            if (not fixed or fixed[0]['upstream_credit'] != 'adapted' or layers.index(fixed[0]) != layers.index(layer) - 1
+                    or 'upstream_commit' in layer or 'upstream_author' in layer
+                    or layer['author'] == fixed[0]['upstream_author']):
+                raise forest.ForestError('fork fix layer must directly follow the adapted layer it fixes and be ours')
+            original = None
+        else:
+            original = release.require_sha(layer.get('upstream_commit'), 'fork upstream commit')
+            if not isinstance(layer.get('upstream_author'), str) or not layer['upstream_author']:
+                raise forest.ForestError('fork layer upstream_author missing')
         if layer['id'] == 'firebase-free-build' and original != data['source_head']:
             raise forest.ForestError('Firebase origin does not match fork source head')
         if (layer['source_bundle_prerequisite'], layer['before_tree']) != (previous, tree):
@@ -119,9 +130,10 @@ def fork_layers(repo, selection):
                 raise forest.ForestError('inspired fork layer must be authored by us')
             if ('Inspired-by: ' + layer['upstream_author']) not in message.splitlines() or original not in message:
                 raise forest.ForestError('inspired fork layer must credit the upstream author and commit')
-        author = git_utils.git(repo, 'show', '-s', '--format=%an <%ae>', original).stdout.strip()
-        if author != layer['upstream_author']:
-            raise forest.ForestError('fork upstream commit author differs')
+        if original is not None:
+            author = git_utils.git(repo, 'show', '-s', '--format=%an <%ae>', original).stdout.strip()
+            if author != layer['upstream_author']:
+                raise forest.ForestError('fork upstream commit author differs')
         records.append((mailbox, metadata, layer['after_tree']))
         previous, tree = commit, actual_tree
     if tree != selection['target_tree']:

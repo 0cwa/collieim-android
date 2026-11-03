@@ -62,7 +62,8 @@ RELEASE_PATHS = RELEASE_PATHS.union({
     'patches/ports/signal-8.33.2/initial/security-and-locking/delete-files.json',
 })
 BEHAVIOR = {'reregistration-linked-devices-reminder', 'legacy-backup-precedence',
-            'donation-completion', 'backup-notification-id-upgrade'}
+            'donation-completion', 'backup-notification-id-upgrade',
+            'passphrase-timeout-fallback', 'backup-revision-walk'}
 ADDITIONS = {'registration-network-settings', 'donation-completion-copy'}
 FEATURES = ('retention-controls', 'firebase-free-build')
 
@@ -119,8 +120,10 @@ def allowed(scope, path):
         return report_evidence(path) or path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'}
     if scope == 'forks':
         prefix = 'patches/forks/signal-foss/'
-        return (path == 'molly-build.json' or path in {prefix + 'provenance.json', prefix + 'upstream-source.bundle'} or
-                any(path.startswith(prefix + layer + '/') for layer in ('firebase-free-build', 'retention-controls')))
+        return (path in {'molly-build.json', 'docs/PORT-REPORT.md'} or
+                path in {prefix + 'provenance.json', prefix + 'upstream-source.bundle'} or
+                any(path.startswith(prefix + layer + '/')
+                    for layer in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes')))
     if scope in ('followups', 'additions', 'features'):
         if report_evidence(path):
             return True

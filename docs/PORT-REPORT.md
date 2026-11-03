@@ -1,6 +1,92 @@
 # Port report
 
-Physical Git diff lines; counts do not establish authorship or necessity.
+## Lines written by the AI-assisted compatibility changes
+
+Each stage's reconstructed source is compared with both of its inputs, Molly `0e202dda9078` and Signal `6e9dddc01f1b`. **Written** lines appear in neither input. **Removed** lines appear in both inputs but not in the result. Lines taken unchanged from either input, including either side of a merge conflict, are not counted. These are physical lines; they do not establish necessity.
+
+Molly itself adds 26,922 non-blank production lines to Signal `c47a74ba0961`. **Molly lines not carried** counts those lines that are missing from the same path; code that was rewritten or moved counts as missing.
+
+| Stage (cumulative) | Production written / removed | Written as % of Molly's production lines | Molly lines not carried | Translations | Tests | Generated |
+|---|---:|---:|---:|---:|---:|---:|
+| PR3 compatibility, tree `2a78679e2344` | +1,290 / −327 | 4.8% | 1,491 (of which 546 in removed paths) | +2,059 / −192 | +1,288 / −317 | +51 / −10 |
+| PR4 behavior fixes, tree `d508b6d42898` | +1,459 / −307 | 5.4% | 1,489 (of which 546 in removed paths) | +2,059 / −192 | +1,507 / −317 | +51 / −10 |
+| PR5 behavior additions, tree `7ef06dd1458e` | +1,508 / −308 | 5.6% | 1,490 (of which 546 in removed paths) | +2,059 / −192 | +1,507 / −317 | +51 / −10 |
+
+Classes: **production**: app and library source, default-locale resources and build scripts that ship in the APK; **translations**: localized strings (res/values-<locale>/strings*.xml), generated or relocated; **tests**: test, screenshot-test and benchmark source sets and benchmark modules; **generated**: gradle/verification-metadata.xml dependency hashes; **repository**: patch series, pipeline tools, documentation and CI.
+
+### By layer
+
+Initial layers own the paths their mailboxes touch, so their rows split the initial result by path and show lines written / removed. Each follow-up row shows the lines that follow-up changes: its physical diff from the previous checkpoint, added / deleted.
+
+| Layer | Stage | Production | Translations | Tests | Generated |
+|---|---|---:|---:|---:|---:|
+| `initial/app-updates` | PR3 compatibility | +32 / −10 | +0 / −0 | +59 / −0 | +0 / −0 |
+| `initial/appearance` | PR3 compatibility | +10 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `initial/backup-and-restore` | PR3 compatibility | +34 / −2 | +0 / −0 | +273 / −0 | +0 / −0 |
+| `initial/maps` | PR3 compatibility | +12 / −0 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `initial/networking-and-proxies` | PR3 compatibility | +56 / −0 | +0 / −0 | +70 / −0 | +0 / −0 |
+| `initial/notifications-and-unifiedpush` | PR3 compatibility | +8 / −0 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `initial/privacy-controls` | PR3 compatibility | +4 / −0 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `initial/registration-and-linking` | PR3 compatibility | +197 / −25 | +156 / −0 | +47 / −0 | +0 / −0 |
+| `initial/resources-and-branding` | PR3 compatibility | +251 / −106 | +817 / −0 | +0 / −0 | +0 / −0 |
+| `initial/security-and-locking` | PR3 compatibility | +8 / −0 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `initial/integration` | PR3 compatibility | +534 / −26 | +0 / −0 | +418 / −317 | +0 / −0 |
+| `initial/build-and-release` | PR3 compatibility | +19 / −1 | +1,086 / −192 | +0 / −0 | +51 / −10 |
+| `mechanical merge (paths no AI layer touched)` | PR3 compatibility | +6 / −0 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `followups/restore-preference-import` | PR3 compatibility | +1 / −0 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `followups/netcipher-sdk-dsl` | PR3 compatibility | +3 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `followups/integration-and-regression-tests` | PR3 compatibility | +139 / −288 | +0 / −0 | +430 / −452 | +0 / −0 |
+| `followups/cdn-transport-test-fixture` | PR3 compatibility | +0 / −0 | +0 / −0 | +6 / −3 | +0 / −0 |
+| `followups/reregistration-linked-devices-reminder` | PR4 behavior fixes | +20 / −2 | +0 / −0 | +32 / −0 | +0 / −0 |
+| `followups/legacy-backup-precedence` | PR4 behavior fixes | +69 / −28 | +0 / −0 | +78 / −2 | +0 / −0 |
+| `followups/donation-completion` | PR4 behavior fixes | +68 / −6 | +0 / −0 | +87 / −0 | +0 / −0 |
+| `followups/backup-notification-id-upgrade` | PR4 behavior fixes | +46 / −3 | +0 / −0 | +24 / −0 | +0 / −0 |
+| `followups/registration-network-settings` | PR5 behavior additions | +53 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
+| `followups/donation-completion-copy` | PR5 behavior additions | +1 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
+
+### Largest production files at PR5 behavior additions
+
+| Path | Written | Removed |
+|---|---:|---:|
+| `app/src/main/res/values/themes.xml` | 128 | 5 |
+| `app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt` | 128 | 0 |
+| `app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationActivity.kt` | 97 | 0 |
+| `app/src/main/res/layout/thanks_for_your_support_bottom_sheet_dialog_fragment.xml` | 16 | 72 |
+| `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/thanks/ThanksForYourSupportBottomSheetDialogFragment.kt` | 21 | 56 |
+| `feature/app-settings/src/main/java/org/signal/appsettings/updates/AppUpdatesSettingsScreen.kt` | 58 | 0 |
+| `feature/registration/src/main/java/org/signal/registration/screens/welcome/WelcomeScreen.kt` | 49 | 0 |
+| `app/src/main/java/org/thoughtcrime/securesms/registration/ui/RegistrationNetworkSettingsActivity.kt` | 47 | 0 |
+| `app/src/main/java/org/thoughtcrime/securesms/backup/FullBackupImporter.java` | 34 | 1 |
+| `app/src/main/res/drawable-night/image_signal_backups_plans.xml` | 18 | 15 |
+| `app/src/main/res/drawable/image_signal_backups_plans.xml` | 17 | 15 |
+| `app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/shared/ConversationHeader.kt` | 31 | 0 |
+| `app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt` | 28 | 2 |
+| `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/updates/AppUpdatesSettingsViewModel.kt` | 28 | 0 |
+| `app/src/main/res/navigation/app_settings_with_change_number.xml` | 15 | 11 |
+
+### Most Molly production lines not carried at PR5 behavior additions
+
+| Path | Lines | Path still exists |
+|---|---:|---|
+| `app/src/main/java/org/thoughtcrime/securesms/net/InternetConnectivityMonitor.kt` | 103 | yes |
+| `app/src/main/res/values/light_colors.xml` | 72 | yes |
+| `app/src/main/java/org/thoughtcrime/securesms/net/NetworkProxy.kt` | 70 | yes |
+| `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/updates/AppUpdatesSettingsFragment.kt` | 64 | yes |
+| `app/src/main/res/values-night/dark_colors.xml` | 61 | yes |
+| `app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.java` | 60 | no |
+| `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/account/AccountSettingsFragment.kt` | 46 | yes |
+| `app/src/main/res/values/strings.xml` | 39 | yes |
+| `app/src/main/java/org/thoughtcrime/securesms/registration/ui/welcome/WelcomeFragment.kt` | 33 | no |
+| `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/help/HelpSettingsViewModel.kt` | 30 | no |
+| `app/src/main/res/values/themes.xml` | 28 | yes |
+| `app/src/main/java/org/thoughtcrime/securesms/components/settings/app/help/HelpSettingsFragment.kt` | 25 | yes |
+| `core/ui/src/main/res/values/material3_colors_dark.xml` | 24 | yes |
+| `app/src/main/res/layout/fragment_registration_welcome_v3.xml` | 23 | no |
+| `app/src/main/java/org/thoughtcrime/securesms/dependencies/NetworkProxyState.kt` | 21 | no |
+
+## Raw physical Git diffs
+
+Physical Git diff lines; counts do not establish authorship or necessity. Comparisons with the mechanical tree include its conflict markers and both sides of every conflict, so they are bookkeeping for reviewers, not a measure of the AI-assisted compatibility changes.
 
 - Clean merge contribution (conservative whole-file count): 32381 added, 43572 deleted, 75953 total text lines; 284 binary paths (`6e9dddc01f1b26e608ac683807c51e139c141ed2` → `759ef1c309d93aa7e4ac7217b144c04545562f11`).
 - Molly patchset: 50641 added, 92648 deleted, 143289 total text lines; 290 binary paths (`c47a74ba0961903eeaeda6d22347a990056c3e83` → `0e202dda90785771ff8c87526eaaf30c655f54f3`).

@@ -23121,5 +23121,15 @@
       "evidence": "Git tree membership; see patches/ports/signal-8.33.2/report-evidence/receipts.md#whole-file-deletion-inventory",
       "caveat": "Molly path absence does not establish omission reason."
     }
+  },
+  "start_tree_bundle": {
+    "path": "report-evidence/action-start-trees.bundle",
+    "sha256": "0af2ff5483f72b89b7fc530f906c81b3dfd21d4ee9fd0a7402a21ab1b08722f8",
+    "bytes": 8247521,
+    "ref": "refs/heads/report-evidence/action-start-trees",
+    "commit": "f8c752a20e69911a376c5845ace3bd9f7d2e3176",
+    "prerequisites": [
+      "e8a0ac3c8af37fa22d891633379392344d690e6e"
+    ]
   }
 }

@@ -3,11 +3,11 @@
   <!-- Keep messages -->
   <string name="ChatsSettingsFragment__control_message_deletion">Control message deletion</string>
   <string name="ChatsSettingsFragment__keep_view_once_messages">Keep view-once media</string>
-  <string name="ChatsSettingsFragment__keep_view_once_messages_summary">Keep received view-once media after viewing. Redacted sent copies contain no media to keep.</string>
+  <string name="ChatsSettingsFragment__keep_view_once_messages_summary">Keep received view-once media after viewing. Redacted sent copies contain no media to keep. Turning this off does not delete messages or media already kept.</string>
   <string name="ChatsSettingsFragment__keep_expiring_messages">Keep expiring messages</string>
-  <string name="ChatsSettingsFragment__keep_expiring_messages_summary">Keep incoming messages on this device after their expiration time</string>
+  <string name="ChatsSettingsFragment__keep_expiring_messages_summary">Keep incoming messages on this device after their expiration time. Turning this off does not delete messages or media already kept.</string>
   <string name="ChatsSettingsFragment__ignore_remote_delete">Ignore remote delete</string>
-  <string name="ChatsSettingsFragment__ignore_remote_delete_summary">Keep messages when their author requests deletion; group admin and linked-device deletions still apply</string>
+  <string name="ChatsSettingsFragment__ignore_remote_delete_summary">Keep messages when their author requests deletion; group admin and linked-device deletions still apply. Turning this off does not delete messages or media already kept.</string>
   <string name="ChatsSettingsFragment__delete_media_only">Delete media only</string>
-  <string name="ChatsSettingsFragment__delete_media_only_summary">Keep the message when you delete its last media attachment; that removal stays on this device</string>
+  <string name="ChatsSettingsFragment__delete_media_only_summary">Keep the message when you delete its last media attachment; that removal stays on this device. Turning this off does not delete messages or media already kept.</string>
 </resources>

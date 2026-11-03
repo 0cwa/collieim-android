@@ -1,0 +1,108 @@
+name: Build unsigned release
+
+on:
+  workflow_dispatch:
+    inputs:
+      approved_commit:
+        description: Full commit SHA approved for release (dispatch this workflow at that commit)
+        required: true
+        type: string
+      version_name:
+        description: Release version name
+        required: true
+        type: string
+      version_code:
+        description: Shared Android version code
+        required: true
+        type: string
+      certificate_sha256:
+        description: Expected signing certificate SHA-256 (lowercase hex)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  GIT_LFS_SKIP_SMUDGE: '1'
+  GIT_TERMINAL_PROMPT: '0'
+
+jobs:
+  unsigned-release:
+    environment: unsigned-release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Check out the approved workflow and source
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          lfs: false
+      - name: Validate the dispatch and prepare proof
+        env:
+          APPROVED: ${{ inputs.approved_commit }}
+          WORKFLOW_REVISION: ${{ github.workflow_sha }}
+        run: |
+          [[ "$APPROVED" =~ ^[0-9a-f]{40}$ && "$APPROVED" == "$GITHUB_SHA" && "$WORKFLOW_REVISION" == "$APPROVED" ]]
+          git fetch --no-tags origin refs/heads/private/release-base-5:refs/remotes/origin/private/release-base-5
+          git fetch --no-tags https://github.com/mollyim/mollyim-android.git 0e202dda90785771ff8c87526eaaf30c655f54f3
+          python3 -m unittest discover -s tools/patches -p 'test_*.py'
+          python3 tools/patches/prepare_port_report.py
+          python3 tools/patches/scope.py --scope forks --base refs/remotes/origin/private/release-base-5
+          python3 tools/patches/verify_source_bundles.py
+          python3 tools/patches/port_report.py --check
+      - name: Set up JDK 21
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+        with:
+          cache-read-only: true
+      - name: Prove, build, and test all five profiles
+        env:
+          VERSION_NAME: ${{ inputs.version_name }}
+          VERSION_CODE: ${{ inputs.version_code }}
+        run: |
+          set -euo pipefail
+          unset CI_KEYSTORE_PATH CI_KEYSTORE_PASSWORD CI_KEYSTORE_ALIAS
+          mkdir -p "$RUNNER_TEMP/release-apks" "$RUNNER_TEMP/release-proofs"
+          for profile in molly-minimal molly-continued molly-foss-continued collie collie-foss; do
+            worktree="$RUNNER_TEMP/source-$profile"
+            report="$RUNNER_TEMP/release-proofs/$profile"
+            python3 tools/patches/release.py --repo . --config molly-build.json --worktree "$worktree" --report "$report/source.json" --scope forks --base refs/remotes/origin/private/release-base-5 --profile "$profile"
+            for phase in native-prepare native-build native-integrate sdk; do
+              python3 tools/patches/build.py "$phase" --worktree "$worktree" --report-dir "$report" --profile "$profile"
+            done
+            python3 tools/patches/build.py assemble-release --worktree "$worktree" --report-dir "$report" --profile "$profile" --release-version-name "$VERSION_NAME" --release-version-code "$VERSION_CODE"
+            python3 tools/patches/build.py test --worktree "$worktree" --report-dir "$report" --profile "$profile"
+            mapfile -t apks < <(find "$worktree/app/build/outputs/apk/prodWebsite/release" -maxdepth 1 -type f -name '*.apk')
+            [[ ${#apks[@]} == 1 ]]
+            cp -- "${apks[0]}" "$RUNNER_TEMP/release-apks/$profile.apk"
+            git worktree remove --force "$worktree"
+          done
+      - name: Verify APKs and write manifest
+        env:
+          APPROVED: ${{ inputs.approved_commit }}
+          VERSION_NAME: ${{ inputs.version_name }}
+          VERSION_CODE: ${{ inputs.version_code }}
+          CERTIFICATE: ${{ inputs.certificate_sha256 }}
+          WORKFLOW_REVISION: ${{ github.workflow_sha }}
+        run: |
+          build_tools=$(python3 -c 'import json; print(json.load(open("molly-build.json"))["android"]["build_tools"])')
+          python3 tools/patches/release_collect.py --directory "$RUNNER_TEMP/release-apks" --build-tools "$ANDROID_HOME/build-tools/$build_tools" --config molly-build.json --commit "$APPROVED" --workflow-revision "$WORKFLOW_REVISION" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" --version-name "$VERSION_NAME" --version-code "$VERSION_CODE" --certificate-sha256 "$CERTIFICATE"
+      - name: Upload unsigned APKs and manifest
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: unsigned-release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-apks
+          if-no-files-found: error
+      - name: Upload source and build proofs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: release-proofs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-proofs
+          if-no-files-found: error

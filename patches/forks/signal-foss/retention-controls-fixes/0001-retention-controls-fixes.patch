@@ -1,4 +1,4 @@
-From 9c5a47f426d4a852341f41632ab078be7fd391e1 Mon Sep 17 00:00:00 2001
+From f73f715c688e675216cfd10d7ecbc65e1d276ab2 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Tue, 3 Nov 2026 02:58:19 +0100
 Subject: [PATCH] Keep ordinary media on view-once sync and explain retention
@@ -9,10 +9,11 @@ Angus Turnbull's fork. A linked device's view-once open event deleted the
 attachments of whatever message it named once view-once retention was off,
 including media of a message that is not view-once. Delete only for view-once
 messages. The settings now say that turning an option off does not delete
-messages or media already kept.
+messages or media already kept, and that kept content may appear in backups
+and exports, including on another device after restore.
 
-Based-On-Source-Commit: 4a92b953b54649c0a367b952717e361ccd5b29e0
-Source-Commit: 9c5a47f426d4a852341f41632ab078be7fd391e1
+Based-On-Source-Commit: 59cd34146441982b8c06988954d0302280057666
+Source-Commit: f73f715c688e675216cfd10d7ecbc65e1d276ab2
 
 ---
  .../messages/SyncMessageProcessor.kt          |  2 +-
@@ -81,7 +82,7 @@ index 3c4174e7..23db6f4c 100644
 +  }
  }
 diff --git a/feature/app-settings/src/main/res/values/strings1.xml b/feature/app-settings/src/main/res/values/strings1.xml
-index e10f7280..a4354525 100644
+index e10f7280..0da14a69 100644
 --- a/feature/app-settings/src/main/res/values/strings1.xml
 +++ b/feature/app-settings/src/main/res/values/strings1.xml
 @@ -3,11 +3,11 @@
@@ -89,16 +90,16 @@ index e10f7280..a4354525 100644
    <string name="ChatsSettingsFragment__control_message_deletion">Control message deletion</string>
    <string name="ChatsSettingsFragment__keep_view_once_messages">Keep view-once media</string>
 -  <string name="ChatsSettingsFragment__keep_view_once_messages_summary">Keep received view-once media after viewing. Redacted sent copies contain no media to keep.</string>
-+  <string name="ChatsSettingsFragment__keep_view_once_messages_summary">Keep received view-once media after viewing. Redacted sent copies contain no media to keep. Turning this off does not delete messages or media already kept.</string>
++  <string name="ChatsSettingsFragment__keep_view_once_messages_summary">Keep received view-once media after viewing. Redacted sent copies contain no media to keep. Kept media may appear in backups and exports, including on another device after restore. Turning this off does not delete messages or media already kept.</string>
    <string name="ChatsSettingsFragment__keep_expiring_messages">Keep expiring messages</string>
 -  <string name="ChatsSettingsFragment__keep_expiring_messages_summary">Keep incoming messages on this device after their expiration time</string>
-+  <string name="ChatsSettingsFragment__keep_expiring_messages_summary">Keep incoming messages on this device after their expiration time. Turning this off does not delete messages or media already kept.</string>
++  <string name="ChatsSettingsFragment__keep_expiring_messages_summary">Keep incoming messages on this device after their expiration time. Kept messages may appear in backups and exports, including on another device after restore. Turning this off does not delete messages or media already kept.</string>
    <string name="ChatsSettingsFragment__ignore_remote_delete">Ignore remote delete</string>
 -  <string name="ChatsSettingsFragment__ignore_remote_delete_summary">Keep messages when their author requests deletion; group admin and linked-device deletions still apply</string>
-+  <string name="ChatsSettingsFragment__ignore_remote_delete_summary">Keep messages when their author requests deletion; group admin and linked-device deletions still apply. Turning this off does not delete messages or media already kept.</string>
++  <string name="ChatsSettingsFragment__ignore_remote_delete_summary">Keep messages when their author requests deletion; group admin and linked-device deletions still apply. Kept messages may appear in backups and exports, including on another device after restore. Turning this off does not delete messages or media already kept.</string>
    <string name="ChatsSettingsFragment__delete_media_only">Delete media only</string>
 -  <string name="ChatsSettingsFragment__delete_media_only_summary">Keep the message when you delete its last media attachment; that removal stays on this device</string>
-+  <string name="ChatsSettingsFragment__delete_media_only_summary">Keep the message when you delete its last media attachment; that removal stays on this device. Turning this off does not delete messages or media already kept.</string>
++  <string name="ChatsSettingsFragment__delete_media_only_summary">Keep the message when you delete its last media attachment; that removal stays on this device. Kept message text may appear in backups and exports, including on another device after restore. Turning this off does not delete messages or media already kept.</string>
  </resources>
 diff --git a/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt b/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt
 index f8be863a..9b44541d 100644

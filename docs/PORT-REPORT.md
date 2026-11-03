@@ -9,8 +9,8 @@ Molly itself adds 26,922 non-blank production lines to Signal `c47a74ba0961`. **
 | Stage (cumulative) | Production written / removed | Written as % of Molly's production lines | Molly lines not carried | Translations | Tests | Generated |
 |---|---:|---:|---:|---:|---:|---:|
 | PR3 compatibility, tree `2a78679e2344` | +1,290 / −327 | 4.8% | 1,491 (of which 546 in removed paths) | +2,059 / −192 | +1,288 / −317 | +51 / −10 |
-| PR4 behavior fixes, tree `00b38e9683f1` | +1,466 / −307 | 5.4% | 1,490 (of which 546 in removed paths) | +2,059 / −192 | +1,658 / −317 | +51 / −10 |
-| PR5 behavior additions, tree `4f6156b341b5` | +1,515 / −308 | 5.6% | 1,491 (of which 546 in removed paths) | +2,059 / −192 | +1,658 / −317 | +51 / −10 |
+| PR4 behavior fixes, tree `febcc55e8ac8` | +1,487 / −307 | 5.5% | 1,489 (of which 546 in removed paths) | +2,059 / −192 | +1,720 / −317 | +51 / −10 |
+| PR5 behavior additions, tree `d49f1d77ce33` | +1,536 / −308 | 5.7% | 1,490 (of which 546 in removed paths) | +2,059 / −192 | +1,720 / −317 | +51 / −10 |
 
 Classes: **production**: app and library source, default-locale resources and build scripts that ship in the APK; **translations**: localized strings (res/values-<locale>/strings*.xml), generated or relocated; **tests**: test, screenshot-test and benchmark source sets and benchmark modules; **generated**: gradle/verification-metadata.xml dependency hashes; **repository**: patch series, pipeline tools, documentation and CI.
 
@@ -43,6 +43,7 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `followups/backup-notification-id-upgrade` | PR4 behavior fixes | +46 / −3 | +0 / −0 | +24 / −0 | +0 / −0 |
 | `followups/passphrase-timeout-fallback` | PR4 behavior fixes | +13 / −2 | +0 / −0 | +125 / −0 | +0 / −0 |
 | `followups/backup-revision-walk` | PR4 behavior fixes | +2 / −6 | +0 / −0 | +28 / −2 | +0 / −0 |
+| `followups/restore-badges-log-theme` | PR4 behavior fixes | +41 / −2 | +0 / −0 | +62 / −0 | +0 / −0 |
 | `followups/registration-network-settings` | PR5 behavior additions | +53 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 | `followups/donation-completion-copy` | PR5 behavior additions | +1 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 
@@ -887,8 +888,8 @@ Partial-file exclusions and deletion necessity remain unmeasured unless separate
 | wire-handler/lib/build.gradle.kts | 100644 | 18 | no | no | Both Signal trees; absent in Molly | Tree membership audit | unmeasured | Git tree membership; see patches/ports/signal-8.33.2/report-evidence/receipts.md#whole-file-deletion-inventory | Molly path absence does not establish omission reason. |
 
 Compatibility share: 108969 / 143289 physical added plus deleted text lines = 76.048%.
-Current mechanical comparison: 8133 added, 98497 deleted, 106630 total, 28 binary; current Molly comparison: 396922 added, 239817 deleted, 636739 total, 698 binary.
-Current gross physical comparison relative to original Molly patchset: 106630 / 143289 added plus deleted text lines = 74.416%.
+Current mechanical comparison: 8217 added, 98480 deleted, 106697 total, 28 binary; current Molly comparison: 397021 added, 239815 deleted, 636836 total, 698 binary.
+Current gross physical comparison relative to original Molly patchset: 106697 / 143289 added plus deleted text lines = 74.463%.
 Gross physical counts include deletions and conflict bookkeeping; they do not establish authorship or necessity.
 After minimization: unmeasured.
 
@@ -905,14 +906,14 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | conflict_resolution | 1614 | 163 | 40048 |
 | signal_api_compile_fix | 9 | 39 | 21 |
 | behavior_preservation | 398 | 758 | 535 |
-| unmeasured | 3399 | 7124 | 57891 |
+| unmeasured | 3402 | 7208 | 57874 |
 | behavior_addition | 3 | 49 | 2 |
 
 | Structural kind | Rows | Added | Deleted |
 |---|---:|---:|---:|
-| text | 4522 | 8133 | 98497 |
+| text | 4524 | 8217 | 98480 |
 | binary | 28 | 0 | 0 |
-| mode | 873 | 0 | 0 |
+| mode | 874 | 0 | 0 |
 
 | Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |
 |---|---|---|---|---|---:|---:|---|---|---|---|
@@ -1305,12 +1306,13 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | 4532572a696365c0cf6b | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/ConversationSettingsRepository.kt | text | 100644 | 100644 | 4 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 0c05560ef11d1d896a29 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/ConversationSettingsState.kt | text | 100644 | 000000 | 0 | 111 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | e5ab0fc2bfbdf23c5b12 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/ConversationSettingsState.kt | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| ecd1eae9568a5adea174 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 0 | 13 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 0ae3e3c6505c8a8eb2de | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 0 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 199a2bccae18ee94baed | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 1a182f78d035842f247f | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 0 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | cc400472603b6a99205b | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 1 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 901b5934e719984ce625 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| 50cdda4aae79956d0aba | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| 95a76c4bd27b4aa288f4 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 0 | 30 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 3a371d25ed17a62903d3 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 198250feb854da342f47 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 20 | 23 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | d2880ce935b675306f21 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt | text | 100644 | 100644 | 0 | 26 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 2a228830b2135e6536c8 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsState.kt | text | 100644 | 100644 | 1 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 96fe27f6d6dc48a876c6 | app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsViewModel.kt | text | 100644 | 100644 | 1 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
@@ -1553,7 +1555,8 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | f195b85210af31458c2d | app/src/main/java/org/thoughtcrime/securesms/logsubmit/LogSectionKeyPreferences.java | text | 100644 | 100644 | 1 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 4927ee0cc2be442efe5f | app/src/main/java/org/thoughtcrime/securesms/logsubmit/LogSectionLogcat.java | text | 100644 | 100644 | 0 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 82a164be034fc326c35c | app/src/main/java/org/thoughtcrime/securesms/logsubmit/LogSectionLogcat.java | text | 100644 | 100644 | 0 | 8 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| 43358185aae5dffb7e19 | app/src/main/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfo.kt | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 999f4ccccda9555548fd | app/src/main/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfo.kt | text | 100644 | 100644 | 1 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 1eddb2588cb2d38dc02f | app/src/main/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfo.kt | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | e1dee674e8d3540d607e | app/src/main/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfo.kt | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 9b9a5dd9a561a4666c13 | app/src/main/java/org/thoughtcrime/securesms/logsubmit/SubmitDebugLogActivity.java | text | 100644 | 100644 | 1 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | f799a512595c50eb4590 | app/src/main/java/org/thoughtcrime/securesms/logsubmit/SubmitDebugLogActivity.java | text | 100644 | 100644 | 10 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
@@ -3919,6 +3922,8 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | cc60e6222536426a4183 | app/src/test/java/org/thoughtcrime/securesms/jobs/UnifiedPushRefreshJobTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 677558a85327de751f2e | app/src/test/java/org/thoughtcrime/securesms/keyvalue/MollySettingsMigrationTest.kt | text | 000000 | 100644 | 155 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | a4a0e703467622e2d0d4 | app/src/test/java/org/thoughtcrime/securesms/keyvalue/MollySettingsMigrationTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 6706b9b819ca751f1f19 | app/src/test/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfoTest.kt | text | 000000 | 100644 | 62 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 0ff6c19b9c9763885f73 | app/src/test/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfoTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 02761ef1be5ba8e49e57 | app/src/test/java/org/thoughtcrime/securesms/messages/IncomingMessageObserverConnectivityTest.kt | text | 000000 | 100644 | 94 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | af2dd0473b4256b7d363 | app/src/test/java/org/thoughtcrime/securesms/messages/IncomingMessageObserverConnectivityTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 37274d96ad2a24d5f319 | app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt | text | 100644 | 100644 | 3 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
@@ -3971,7 +3976,6 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | a46f64946ab2d2af0a7a | core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt | text | 100644 | 100644 | 0 | 8 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 3edcfa49cbe393dfebd0 | core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt | text | 100644 | 100644 | 1 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | f9f8ff5969ba97b35b8d | core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| b6c5f251d850b07810b9 | core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 6f1b16e923799417a125 | core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt | text | 100644 | 100644 | 3 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 6af5db368e77e42e6eec | core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 439f19871605402265a5 | core/ui/src/main/java/org/signal/core/ui/fonts/SignalSymbols.kt | text | 100644 | 100644 | 1 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |

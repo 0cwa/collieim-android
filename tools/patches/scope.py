@@ -10,7 +10,7 @@ MOLLY = '0e202dda90785771ff8c87526eaaf30c655f54f3'
 OLD = 'c47a74ba0961903eeaeda6d22347a990056c3e83'
 NEW = '6e9dddc01f1b26e608ac683807c51e139c141ed2'
 FOREST = '7a280ac23b61cef2c09009a6dbed02773fff3dfa'
-WORKFLOWS = {'.github/workflows/android.yml', '.github/workflows/diffuse.yml', '.github/workflows/molly-patch-release.yml'}
+WORKFLOWS = {'.github/workflows/android.yml', '.github/workflows/diffuse.yml', '.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml'}
 RELEASE_PATHS = frozenset(['patches/ports/signal-8.33.2/source-checkpoint.bundle', 'patches/ports/signal-8.33.2/.gitattributes', 'patches/ports/signal-8.33.2/followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch', 'patches/ports/signal-8.33.2/followups/cdn-transport-test-fixture/series', 'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch', 'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/series', 'patches/ports/signal-8.33.2/followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch', 'patches/ports/signal-8.33.2/followups/netcipher-sdk-dsl/series', 'patches/ports/signal-8.33.2/followups/restore-preference-import/0001-restore-preference-import.patch', 'patches/ports/signal-8.33.2/followups/restore-preference-import/series', 'patches/ports/signal-8.33.2/initial/app-updates/0001-resolve-app-updates.patch', 'patches/ports/signal-8.33.2/initial/app-updates/series', 'patches/ports/signal-8.33.2/initial/appearance/0001-resolve-appearance.patch', 'patches/ports/signal-8.33.2/initial/appearance/series', 'patches/ports/signal-8.33.2/initial/backup-and-restore/0001-resolve-backup-and-restore.patch', 'patches/ports/signal-8.33.2/initial/backup-and-restore/series', 'patches/ports/signal-8.33.2/initial/build-and-release/0001-resolve-build-and-release.patch', 'patches/ports/signal-8.33.2/initial/build-and-release/series', 'patches/ports/signal-8.33.2/initial/integration/0001-resolve-integration.patch', 'patches/ports/signal-8.33.2/initial/integration/0002-resolve-integration.patch', 'patches/ports/signal-8.33.2/initial/integration/0003-resolve-integration.patch', 'patches/ports/signal-8.33.2/initial/integration/series', 'patches/ports/signal-8.33.2/initial/maps/0001-resolve-maps.patch', 'patches/ports/signal-8.33.2/initial/maps/series', 'patches/ports/signal-8.33.2/initial/module-pruning/0001-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0002-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0003-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0004-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0005-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0006-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0007-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/series', 'patches/ports/signal-8.33.2/initial/networking-and-proxies/0001-resolve-networking-and-proxies.patch', 'patches/ports/signal-8.33.2/initial/networking-and-proxies/series', 'patches/ports/signal-8.33.2/initial/notifications-and-unifiedpush/0001-resolve-notifications-and-unifiedpush.patch', 'patches/ports/signal-8.33.2/initial/notifications-and-unifiedpush/series', 'patches/ports/signal-8.33.2/initial/payments-and-donations/0001-resolve-payments-and-donations.patch', 'patches/ports/signal-8.33.2/initial/payments-and-donations/series', 'patches/ports/signal-8.33.2/initial/privacy-controls/0001-resolve-privacy-controls.patch', 'patches/ports/signal-8.33.2/initial/privacy-controls/series', 'patches/ports/signal-8.33.2/initial/registration-and-linking/0001-resolve-registration-and-linking.patch', 'patches/ports/signal-8.33.2/initial/registration-and-linking/0002-resolve-registration-and-linking.patch', 'patches/ports/signal-8.33.2/initial/registration-and-linking/series', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0001-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0002-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0003-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0004-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0005-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0006-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0007-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0008-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0009-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0010-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0011-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0012-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0013-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0014-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/series', 'patches/ports/signal-8.33.2/initial/security-and-locking/0001-resolve-security-and-locking.patch', 'patches/ports/signal-8.33.2/initial/security-and-locking/series', 'patches/ports/signal-8.33.2/provenance.json', 'patches/ports/signal-8.33.2/series', 'patches/ports/signal-8.33.2/report-metadata.json'])
 
 # Exact AI-assisted compatibility conversion artifacts for existing release layers.
@@ -183,7 +183,7 @@ def check_scope(repo, scope, base, head='HEAD'):
         path = raw.decode('utf-8', 'surrogateescape')
         if not allowed(scope, path):
             raise ValueError('path outside scope: ' + path)
-    # These are the only workflow exceptions: two deletions and one regular file addition. Signal's APK diff
+    # These are the only workflow exceptions: two deletions and two regular file additions. Signal's APK diff
     # workflow needs a runner that only Signal's organization has, so it would stay queued forever.
     def entry(ref, path):
         return git(repo, 'ls-tree', ref, '--', path).decode().strip()
@@ -191,14 +191,15 @@ def check_scope(repo, scope, base, head='HEAD'):
         raise ValueError('Signal Android workflow must be absent')
     if scope != 'pipeline' and entry(head, '.github/workflows/diffuse.yml'):
         raise ValueError('Signal APK diff workflow must be absent')
-    workflow = entry(head, '.github/workflows/molly-patch-release.yml')
-    if not workflow.startswith('100644 blob '):
-        raise ValueError('Molly workflow must be a regular 100644 file')
-    if scope == 'pipeline':
-        if entry(base, '.github/workflows/molly-patch-release.yml'):
-            raise ValueError('Molly workflow must be added on pipeline branch')
-    elif entry(base, '.github/workflows/molly-patch-release.yml') != workflow:
-        raise ValueError('Molly workflow must be inherited unchanged')
+    for path in ('.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml'):
+        workflow = entry(head, path)
+        if not workflow.startswith('100644 blob '):
+            raise ValueError('Molly workflow must be a regular 100644 file: ' + path)
+        if scope == 'pipeline':
+            if entry(base, path):
+                raise ValueError('Molly workflow must be added on pipeline branch: ' + path)
+        elif entry(base, path) != workflow:
+            raise ValueError('Molly workflow must be inherited unchanged: ' + path)
     def exists(ref, path):
         return subprocess.run(['git', '-C', str(repo), 'cat-file', '-e', ref + ':' + path],
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0

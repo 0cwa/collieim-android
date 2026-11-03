@@ -12,7 +12,7 @@ the original Molly snapshot, and any compatibility changes as separate commits.
 | Official Molly 8.19.2-4 | `0e202dda90785771ff8c87526eaaf30c655f54f3` |
 | Official Molly source tree | `3cd0bb01cf840e4b702187085432020d163d80ce` |
 | Signal 8.33.2 | `6e9dddc01f1b26e608ac683807c51e139c141ed2` |
-| Pipeline and historical export origin | [PR #7 at cef8e04](https://github.com/0cwa/mollyim-android/tree/cef8e044f55d1a47c5634f500e01b3956ee31f4f) |
+| Pipeline and historical export origin | [PR #7 at cef8e04](https://github.com/0cwa/collieim-android/tree/cef8e044f55d1a47c5634f500e01b3956ee31f4f) |
 
 `molly-build.json` selects the release. Its Signal commit must be an ancestor
 of the branch. The assembler rejects changes to the tracked Signal source

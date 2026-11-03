@@ -15,7 +15,7 @@ FIREBASE = FORK_ROOT + '/firebase-free-build/series'
 RETENTION = FORK_ROOT + '/retention-controls/series'
 RETENTION_FIXES = FORK_ROOT + '/retention-controls-fixes/series'
 POLICY = {
-    'molly-minimal': ('followups/backup-revision-walk', [], False),
+    'molly-minimal': ('followups/restore-badges-log-theme', [], False),
     'molly-continued': ('followups/donation-completion-copy', [], False),
     'molly-foss-continued': ('followups/donation-completion-copy', [FIREBASE], True),
     'collie': ('followups/donation-completion-copy', [FIREBASE, RETENTION, RETENTION_FIXES], False),

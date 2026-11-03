@@ -21,6 +21,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testutil.RecipientTestRule
 import org.thoughtcrime.securesms.util.RemoteConfig
+import org.thoughtcrime.securesms.util.MediaUtil
 import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
 import org.whispersystems.signalservice.internal.push.AttachmentPointer
 import org.whispersystems.signalservice.internal.push.Content
@@ -90,5 +91,34 @@ class RetentionViewOnceValidationTest {
     assertNotNull(record)
     assertEquals(false, record!!.isViewOnce)
     assertEquals(1, SignalDatabase.attachments.getAttachmentsForMessage(record.id).size)
+  }
+
+  @Test fun `linked device open after disabling retention preserves only previously kept media`() {
+    val peer = Recipient.resolved(recipients.createRecipient("Carol"))
+    val cache = mockk<BatchCache>(relaxed = true)
+    every { cache.getGroupInfo(any()) } returns (null to null)
+    every { recipients.signalStore.misc.lastCdsForegroundSyncTime } returns System.currentTimeMillis()
+    every { RemoteConfig.cdsForegroundSyncInterval } returns 3_600_000L
+    every { recipients.signalStore.settings.isTypingIndicatorsEnabled } returns false
+    every { RemoteConfig.maxAttachmentCount } returns 32
+    val metadata = EnvelopeMetadata(peer.requireAci(), null, 1, true, null, recipients.selfAci, 0)
+    val context = ApplicationProvider.getApplicationContext<Application>()
+    val pointer = AttachmentPointer(cdnKey = "test", cdnNumber = 3, key = ByteArray(64).toByteString(), contentType = "image/jpeg", size = 1)
+
+    listOf(true, false).forEachIndexed { index, keep ->
+      val timestamp = 9000L + index
+      every { recipients.signalStore.settings.isKeepViewOnceMessages } returns keep
+      val message = DataMessage(timestamp = timestamp, isViewOnce = true, attachments = listOf(pointer))
+      DataMessageProcessor.process(context, peer, peer, Envelope(clientTimestamp = timestamp, serverTimestamp = timestamp), Content(dataMessage = message), metadata, timestamp + 1, null, null, cache)
+      val record = SignalDatabase.messages.getMessageFor(timestamp, peer.id)!!
+      assertEquals(!keep, record.isViewOnce)
+
+      every { recipients.signalStore.settings.isKeepViewOnceMessages } returns false
+      val open = SyncMessage.ViewOnceOpen(senderAci = peer.requireAci().toString(), timestamp = timestamp)
+      SyncMessageProcessor.process(context, peer, peer, Envelope(clientTimestamp = timestamp + 10, serverTimestamp = timestamp + 10), Content(syncMessage = SyncMessage(viewOnceOpen = open)), metadata, null, cache)
+
+      val attachment = SignalDatabase.attachments.getAttachmentsForMessage(record.id).single()
+      assertEquals(if (keep) "image/jpeg" else MediaUtil.VIEW_ONCE, attachment.contentType)
+    }
   }
 }

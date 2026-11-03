@@ -350,7 +350,7 @@ def import_start_trees(config, evidence):
         return
     import verify_source_bundles
     root = Path('.').resolve()
-    series_dir = Path(config['port']['series']).parent.as_posix()
+    series_dir = root / Path(config['port']['series']).parent
     verify_source_bundles.import_bundle(root, root, series_dir, record['path'], record['sha256'], record['bytes'],
                                         record['ref'], record['commit'], record['prerequisites'])
     trees = set(git('log', '--format=%T', record['commit']).decode().split())

@@ -14,12 +14,11 @@ FORK_ROOT = 'patches/forks/signal-foss'
 FIREBASE = FORK_ROOT + '/firebase-free-build/series'
 RETENTION = FORK_ROOT + '/retention-controls/series'
 RETENTION_FIXES = FORK_ROOT + '/retention-controls-fixes/series'
-# User-visible app title, backup file base name and package ID per profile. Molly profiles keep Molly's
-# package so they upgrade existing Molly installs; Collie is a separate app.
+# User-visible app title, backup file base name and shared package ID per profile.
 APP = {
-    'molly-minimal': ('Molly Minimal', 'Molly-Minimal', 'im.molly.app'),
-    'molly-continued': ('Molly Continued', 'Molly-Continued', 'im.molly.app'),
-    'molly-foss-continued': ('Molly FOSS Continued', 'Molly-FOSS-Continued', 'im.molly.app'),
+    'molly-minimal': ('Molly Minimal', 'Molly-Minimal', 'im.collie.app'),
+    'molly-continued': ('Molly Continued', 'Molly-Continued', 'im.collie.app'),
+    'molly-foss-continued': ('Molly FOSS Continued', 'Molly-FOSS-Continued', 'im.collie.app'),
     'collie': ('Collie', 'Collie', 'im.collie.app'),
     'collie-foss': ('Collie FOSS', 'Collie-FOSS', 'im.collie.app'),
 }

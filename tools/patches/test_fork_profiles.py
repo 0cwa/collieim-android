@@ -169,6 +169,7 @@ class ForkProfilesTests(unittest.TestCase):
                 _, selected = release_profiles.select(config, name, self.repo)
             derived.assert_called_once_with(self.repo, [':app:test'], expected)
             self.assertEqual(selected['fork_series'], expected)
+            self.assertEqual(selected['app']['package_id'], 'im.collie.app')
             entry['tests'] = [':app:test']
             with self.assertRaisesRegex(ValueError, 'exactly'):
                 release_profiles.select(config, name, self.repo)

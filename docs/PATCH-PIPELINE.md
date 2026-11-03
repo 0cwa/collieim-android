@@ -351,9 +351,14 @@ not replace the applicable branch preflight, port report update or build tests.
 `molly-continued`, `molly-foss-continued`, `collie`, and `collie-foss`. Each
 entry contains exactly `base_series` (the port series path), `base_checkpoint`
 (full source commit), `base_tree` and `target_tree` (full tree IDs),
-`fork_series` (ordered repository-relative series paths), `tests` (Gradle
-arguments) and `firebase_free` (boolean). Pins are supplied by the release
-configuration, not compiled into the tools. The tests and Firebase selection
+`fork_series` (ordered repository-relative series paths) and `firebase_free`
+(boolean). Pins are supplied by the release configuration, not compiled into
+the tools. A profile's tests are derived, not listed: they are `android.tests`
+plus every unit test class that a selected fork layer's mailbox adds or
+changes (`<module>/src/test/{java,kotlin}/...`), added to the filters of that
+module's existing test task. A task that already runs unfiltered is left as
+is; a fork test in a module without a test task, or an instrumented or
+screenshot test source, is an error. The derived tests and Firebase selection
 are part of the source proof fingerprint.
 
 Minimal selects the verified port prefix ending at
@@ -392,13 +397,3 @@ only the independent fork artifacts and named configuration profiles, and
 requires the port tree and original base configuration to remain unchanged,
 apart from adding `profiles` and `fork_source`.
 The existing Molly CI workflow does not yet select the named product matrix.
-
-### Independent compatibility surface assessment
-
-`python3 tools/patches/compatibility_surface.py MECHANICAL_TREE FINAL_TREE --scratch TASK_SCRATCH` emits a deterministic JSON inventory and physical Git diff counts. Supply full tree object IDs and an existing private scratch directory. This optional assessment does not change the port report. Each changed path records both tree entries (mode, type, blob ID); absent entries represent additions or deletions.
-
-For a conflict path, a region qualifies only if exactly one nonempty side, together with the immediately preceding and following mechanical lines, appears exactly once in the final blob. The marker labels must be `MOLLY` and `SIGNAL`; all regions must qualify and their contextual matches must not overlap. The selected sides form a marker-free baseline; Git measures its physical diff to the final blob. A changed context, empty choice, malformed marker, repeated match, mixed resolution, or overlap excludes the entire path. Ordinary text paths are reported separately. Deleted, binary, mode and non-blob paths are excluded. `--generated PATH` may be repeated to exclude declared generated paths; declarations are not verified, and undeclared generated files are not detected. Feature ownership is not assigned. No choice assertion manifest is accepted.
-
-Both gross and residual counts use isolated `git diff --no-index --text --diff-algorithm=myers`, with external diff and text conversion disabled. System, global and repository Git configuration and all attributes are ignored; tracked `binary` attributes therefore do not affect these counts. A NUL anywhere in either blob defines a binary path and excludes that path from text counts. Gross sums text diffs over all changed blob paths, including deletions and declared generated paths; non-blob entries are excluded. The binary count includes binary deletions and other excluded paths. Mode changes alone contribute no lines. These explicitly defined counts can differ from a normal repository `git diff --numstat`.
-
-Residual counts are not a partition of the gross counts and do not establish authorship, semantic complexity, or necessity. Coverage counts reconcile with the changed-path inventory; inspect exclusions before interpreting the result.

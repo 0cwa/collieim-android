@@ -305,7 +305,7 @@ class NamedProfileReleaseTests(ReleaseTests):
         self.config['android'] = {'tests': [':app:test']}
         entry = {'base_series': self.config['port']['series'],
                  'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'], 'fork_series': [],
-                 'target_tree': self.config['target_tree'], 'tests': [':app:test'],
+                 'target_tree': self.config['target_tree'],
                  'firebase_free': False}
         entry['base_series'] = 'patches/ports/signal-8.33.2/series'
         self.config['profiles'] = {'molly-minimal': entry}
@@ -339,7 +339,7 @@ class NamedProfileReleaseTests(ReleaseTests):
                 self.config['profiles'] = {name: {
                     'base_series': 'patches/ports/signal-8.33.2/series',
                     'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'], 'fork_series': [],
-                    'target_tree': self.config['target_tree'], 'tests': [':app:test'],
+                    'target_tree': self.config['target_tree'],
                     'firebase_free': firebase_free}}
                 self.config_path.write_text(json.dumps(self.config))
                 with self.assertRaisesRegex(ValueError, 'fork_series does not match'):

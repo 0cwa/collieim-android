@@ -77,8 +77,12 @@ def fork_layers(repo, selection):
     for layer in layers[:len(selected)]:
         commit = release.require_sha(layer['source_commit'], 'fork source commit')
         original = release.require_sha(layer['upstream_commit'], 'fork upstream commit')
-        if not isinstance(layer['upstream_author'], str) or not layer['upstream_author']:
-            raise forest.ForestError('fork upstream author missing')
+        for field in ('author', 'upstream_author'):
+            if not isinstance(layer.get(field), str) or not layer[field]:
+                raise forest.ForestError('fork layer ' + field + ' missing')
+        credit = layer.get('upstream_credit')
+        if credit not in ('adapted', 'inspired'):
+            raise forest.ForestError('fork upstream_credit must be adapted or inspired')
         if layer['id'] == 'firebase-free-build' and original != data['source_head']:
             raise forest.ForestError('Firebase origin does not match fork source head')
         if (layer['source_bundle_prerequisite'], layer['before_tree']) != (previous, tree):
@@ -102,9 +106,19 @@ def fork_layers(repo, selection):
         actual_tree, parents = verify_source_bundles.commit_info(repo, commit)
         if parents != [previous] or actual_tree != layer['after_tree']:
             raise forest.ForestError('fork source commit parent or tree differs')
+        # An adapted layer is mostly the fork's code and keeps its author. An inspired layer is
+        # our own code: we are the author and the commit credits the fork commit it follows.
         author = git_utils.git(repo, 'show', '-s', '--format=%an <%ae>', commit).stdout.strip()
-        if author != layer['upstream_author']:
+        if author != layer['author']:
             raise forest.ForestError('fork adapted commit author differs')
+        if credit == 'adapted' and author != layer['upstream_author']:
+            raise forest.ForestError('adapted fork layer must keep the upstream author')
+        if credit == 'inspired':
+            message = git_utils.git(repo, 'show', '-s', '--format=%B', commit).stdout
+            if author == layer['upstream_author']:
+                raise forest.ForestError('inspired fork layer must be authored by us')
+            if ('Inspired-by: ' + layer['upstream_author']) not in message.splitlines() or original not in message:
+                raise forest.ForestError('inspired fork layer must credit the upstream author and commit')
         author = git_utils.git(repo, 'show', '-s', '--format=%an <%ae>', original).stdout.strip()
         if author != layer['upstream_author']:
             raise forest.ForestError('fork upstream commit author differs')

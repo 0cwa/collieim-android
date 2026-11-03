@@ -49,7 +49,12 @@ class ForkProfilesTests(unittest.TestCase):
             directory.mkdir()
             (self.repo / 'app').write_text(label + '\n')
             self.git('add', 'app')
-            self.git('commit', '-qm', label)
+            inspired = label == 'firebase-free-build'
+            if inspired:
+                self.git('-c', 'user.name=Port Author', '-c', 'user.email=port@example.invalid', 'commit', '-qm',
+                         label + '\n\nInspired by ' + upstream_head + '.\n\nInspired-by: Fork Author <author@example.invalid>')
+            else:
+                self.git('commit', '-qm', label)
             commit = self.git('rev-parse', 'HEAD')
             tree = self.git('rev-parse', 'HEAD^{tree}')
             raw = subprocess.check_output(['git', '-C', str(self.repo), 'format-patch', '--stdout', '-1', commit])
@@ -68,7 +73,9 @@ class ForkProfilesTests(unittest.TestCase):
                 'source_bundle_sha256': hashlib.sha256(bundle.read_bytes()).hexdigest(),
                 'source_bundle_bytes': bundle.stat().st_size, 'source_bundle_prerequisite': previous,
                 'source_bundle_ref': ref, 'upstream_commit': upstream_head if label == 'firebase-free-build' else upstream_retention,
-                'upstream_author': 'Fork Author <author@example.invalid>'})
+                'upstream_author': 'Fork Author <author@example.invalid>',
+                'author': 'Port Author <port@example.invalid>' if inspired else 'Fork Author <author@example.invalid>',
+                'upstream_credit': 'inspired' if inspired else 'adapted'})
             previous, before = commit, tree
         self.data = {'schema': 1, 'source_url': 'https://github.com/tw-hx/Signal-Android',
                      'source_head': upstream_head, 'base_commit': base,
@@ -115,6 +122,10 @@ class ForkProfilesTests(unittest.TestCase):
             lambda d: d['layers'][0].__setitem__('source_bundle_sha256', '0' * 64),
             lambda d: d['layers'][0].__setitem__('source_commit', '0' * 40),
             lambda d: d['layers'][0].__setitem__('upstream_author', 'wrong'),
+            lambda d: d['layers'][0].__setitem__('author', 'Fork Author <author@example.invalid>'),
+            lambda d: d['layers'][0].__setitem__('upstream_credit', 'adapted'),
+            lambda d: d['layers'][1].__setitem__('upstream_credit', 'inspired'),
+            lambda d: d['layers'][1].pop('upstream_credit'),
             lambda d: d['layers'][0].__setitem__('mailbox', '../escape.patch'),
         ]
         for mutate in cases:

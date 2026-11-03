@@ -388,8 +388,12 @@ original fork commits for provenance checks only; its workflow is never applied.
 records `id`, `series`, `mailbox`, `mailbox_sha256`, `mailbox_bytes`,
 `source_commit`, `before_tree`, `after_tree`, `source_bundle`,
 `source_bundle_sha256`, `source_bundle_bytes`, `source_bundle_prerequisite`,
-`source_bundle_ref`, `upstream_commit`, and `upstream_author`. File paths in
-this document are relative to the fork root. Each series contains one path to
+`source_bundle_ref`, `upstream_commit`, `upstream_author`, `author`, and
+`upstream_credit`. `author` is the adapted commit's author. An `adapted` layer
+is mostly the fork's code and keeps the upstream author. An `inspired` layer is
+our own code that follows a fork commit: we are its author, and its message
+carries `Inspired-by: <upstream_author>` and names the upstream commit. File
+paths in this document are relative to the fork root. Each series contains one path to
 its layer's mailbox, relative to that series file. Checkpoint bundles must
 advertise the declared `refs/heads/source-checkpoint/` ref and require exactly
 the previous source commit. The selected base checkpoint must match the

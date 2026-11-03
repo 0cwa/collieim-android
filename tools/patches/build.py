@@ -370,6 +370,9 @@ class Build:
                    '-Dorg.gradle.jvmargs=' + jvm_args]
         if self.profile is not None:
             command.append('-PmollyFirebaseFree=' + str(self.profile['firebase_free']).lower())
+            app = self.profile['app']
+            command += ['-PbaseAppTitle=' + app['title'], '-PbaseAppFileName=' + app['file_name'],
+                        '-PbasePackageId=' + app['package_id']]
         if self.config.get('native') is not None:
             native_init = self.native_proof / 'ringrtc.init.gradle'
             integration = self.native_proof / 'integration.json'

@@ -49,6 +49,7 @@ jobs:
               stack/3-signal-8.33.2) scope=followups ;;
               stack/4-behavior-followups) scope=additions ;;
               stack/5-behavior-additions) scope=features ;;
+              private/release-base-5) scope=forks ;;
               *) echo "Unknown base: $BASE_REF" >&2; exit 1 ;;
             esac
             base="$BASE_SHA"
@@ -60,6 +61,7 @@ jobs:
               stack/4-behavior-followups) scope=followups; base_ref=stack/3-signal-8.33.2 ;;
               stack/5-behavior-additions) scope=additions; base_ref=stack/4-behavior-followups ;;
               feature/foss-8.33.2) scope=features; base_ref=stack/5-behavior-additions ;;
+              private/release-variants) scope=forks; base_ref=private/release-base-5 ;;
               *) echo "Unknown branch: $HEAD_REF" >&2; exit 1 ;;
             esac
             git fetch --no-tags origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref"
@@ -67,14 +69,14 @@ jobs:
           else
             echo "Unsupported event" >&2; exit 1
           fi
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           python3 tools/patches/scope.py --scope "$scope" --base "$base"
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks ]]; then
             python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"

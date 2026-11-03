@@ -4,7 +4,9 @@ import android.content.Context
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
+import org.signal.core.util.eventbus.EventBus
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.events.PushServiceEvent
 import org.thoughtcrime.securesms.gcm.FcmFetchManager
 import org.thoughtcrime.securesms.gcm.PushFetchHandler
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
@@ -32,7 +34,18 @@ class UnifiedPushReceiver : MessagingReceiver() {
   override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
     Log.i(TAG, "onNewEndpoint($instance)")
     if (!appLocked) {
-      if (refreshEndpoint(endpoint.url) && SignalStore.unifiedpush.airGapped) {
+      val failed = SignalStore.unifiedpush.registrationFailed
+      SignalStore.unifiedpush.registrationFailed = false
+      SignalStore.unifiedpush.registrationRetryScheduled = false
+      if (failed) {
+        UnifiedPushNotificationBuilder(context).clearRegistrationFailed()
+        EventBus.default.post(PushServiceEvent)
+      }
+      val changed = refreshEndpoint(endpoint.url)
+      if (failed && !changed) {
+        AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
+      }
+      if (changed && SignalStore.unifiedpush.airGapped) {
         updateLastReceivedTime(0)
         UnifiedPushNotificationBuilder(context).setNotificationEndpointChangedAirGapped()
       }
@@ -40,13 +53,16 @@ class UnifiedPushReceiver : MessagingReceiver() {
   }
 
   override fun onRegistrationFailed(context: Context, reason: FailedReason, instance: String) {
-    // called when the registration is not possible, eg. no network
-    Log.w(TAG, "onRegistrationFailed($instance)")
+    Log.w(TAG, "onRegistrationFailed($instance): $reason")
     if (!appLocked) {
-      // TODO when `reason` is INTERNAL_ERROR, try to register again _one time_
-      // TODO when `reason` is ACTION_REQUIRED, tell the distributor requires a user interaction
-      // TODO when `reason` is NETWORK, tell to try again when network is back, or implement it.
+      val retryScheduled = SignalStore.unifiedpush.registrationRetryScheduled
+      SignalStore.unifiedpush.registrationFailed = true
       UnifiedPushNotificationBuilder(context).setNotificationRegistrationFailed()
+      EventBus.default.post(PushServiceEvent)
+      if (!retryScheduled) {
+        SignalStore.unifiedpush.registrationRetryScheduled = true
+        AppDependencies.jobManager.add(UnifiedPushRefreshJob())
+      }
     }
   }
 

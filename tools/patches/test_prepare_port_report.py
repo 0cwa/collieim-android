@@ -93,7 +93,7 @@ class PrepareReportTests(unittest.TestCase):
         self.assertEqual(workflow.count('ORG_GRADLE_PROJECT_mollyFirebaseFree:'), 2)
         self.assertEqual(workflow.count('python3 tools/patches/build.py assemble'), 2)
         self.assertEqual(workflow.count('python3 tools/patches/build.py test'), 2)
-        self.assertLess(workflow.index('name: molly-android-${{'), workflow.index('id: foss_assemble'))
+        self.assertLess(workflow.index("name: ${{ matrix.profile || 'molly' }}-android-${{"), workflow.index('id: foss_assemble'))
         self.assertIn('name: molly-android-firebase-free-${{', workflow)
         foss = workflow.split('id: foss_prepare', 1)[1]
         self.assertLess(foss.index('rm -rf --'), foss.index('python3 tools/patches/build.py assemble'))

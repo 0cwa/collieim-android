@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
   "complete_source_checkpoint": true,
-  "target_tree": "7ef06dd1458ed7793a27a74010dcbb98de967438",
+  "target_tree": "4f6156b341b574b1abd1dcaeca6f21eabd497607",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "14b1273e2be125fb4bf8034b50e8a4b3a8e104d6f8760bf22945bde2d97118b4",
@@ -364,38 +364,72 @@
       "source_bundle_bytes": 5474
     },
     {
-      "id": "followups/registration-network-settings",
-      "description": "Add access to Network settings during registration.",
-      "source_commit": "337f76afb8f4555f3a842870f0aa3703668fffa6",
+      "id": "followups/passphrase-timeout-fallback",
+      "source_commit": "4c79f87faa74a7f97b0e41678c0db258ce2292d4",
+      "description": "Keep the passphrase timeout when foreground promotion is refused\n\nAI-assisted compatibility changes. The port caught Android's refusal to\npromote KeyCachingService to the foreground and continued, where Molly let\nthe exception propagate. If the service was then destroyed while the process\nsurvived, a later screen-off could miss scheduling the passphrase timeout.\nSchedule the configured timeout when promotion is refused and keep it until\npromotion succeeds with the screen on and unlocked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: ee4bd246eb235b66f29498d5f8160ad2d6b71e1f",
       "ai_generated": true,
       "before_tree": "d508b6d4289831ed7b4f5302d100718cc23e49e5",
-      "after_tree": "5dbe59d09578c203286bfbb854ca090988b6d836",
+      "after_tree": "987277b822fe52c8bd4840a011989ab06e3089ce",
+      "paths": 2,
+      "patches": [
+        "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch"
+      ],
+      "mailbox_bytes": 9197,
+      "source_bundle": "followups/passphrase-timeout-fallback/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "ee4bd246eb235b66f29498d5f8160ad2d6b71e1f",
+      "source_bundle_sha256": "d59f100f77e089ef794344e23746c0808c6051cce8d61772644558d584f812f6",
+      "source_bundle_bytes": 5402
+    },
+    {
+      "id": "followups/backup-revision-walk",
+      "source_commit": "164b3f3c2d8910acd04b0c2743219ae293e5cac9",
+      "description": "Apply Molly's backup timer rule to the latest message revision\n\nAI-assisted compatibility changes. The port excluded a message from backups\nwhen any earlier revision had a started disappearing timer, and dropped\nmessages whose revision chain contained a cycle. Walk revisions as Signal\ndoes, stopping at a cycle, and apply Molly's started-timer exclusion to the\nrevision the walk ends on.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 4c79f87faa74a7f97b0e41678c0db258ce2292d4",
+      "ai_generated": true,
+      "before_tree": "987277b822fe52c8bd4840a011989ab06e3089ce",
+      "after_tree": "00b38e9683f142c8ce012f69caa04ade992d6088",
+      "paths": 2,
+      "patches": [
+        "followups/backup-revision-walk/0001-backup-revision-walk.patch"
+      ],
+      "mailbox_bytes": 4678,
+      "source_bundle": "followups/backup-revision-walk/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "4c79f87faa74a7f97b0e41678c0db258ce2292d4",
+      "source_bundle_sha256": "410179f9b772755606b74735fad1b80a6e5730f1fbd12681d7f4c16002265604",
+      "source_bundle_bytes": 3917
+    },
+    {
+      "id": "followups/registration-network-settings",
+      "description": "Add access to Network settings during registration.",
+      "source_commit": "76cbc4558b089f56f11d3c2bff1687a5b3194034",
+      "ai_generated": true,
+      "before_tree": "00b38e9683f142c8ce012f69caa04ade992d6088",
+      "after_tree": "9647fbb561bc96114cd062ba3f3b4d5868aa1960",
       "paths": 3,
       "patches": [
         "followups/registration-network-settings/0001-registration-network-settings.patch"
       ],
       "mailbox_bytes": 4037,
       "source_bundle": "followups/registration-network-settings/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "ee4bd246eb235b66f29498d5f8160ad2d6b71e1f",
-      "source_bundle_sha256": "97a2711c3be41d05b67367173f35dc3f46ae691832d4cb1a57ac14a6009865c9",
-      "source_bundle_bytes": 1893
+      "source_bundle_prerequisite": "164b3f3c2d8910acd04b0c2743219ae293e5cac9",
+      "source_bundle_sha256": "d4a20a54286275236c616184ab0b41edf51f7955e744a4f13ea2cb221dd6057c",
+      "source_bundle_bytes": 2142
     },
     {
       "id": "followups/donation-completion-copy",
       "description": "Add donation completion copy.",
-      "source_commit": "47ecc87d5151703b6a8c9cfe113cc7d415d2fdf6",
+      "source_commit": "40c5723ed6150eca9545c327d1bc387185fbe7d7",
       "ai_generated": true,
-      "before_tree": "5dbe59d09578c203286bfbb854ca090988b6d836",
-      "after_tree": "7ef06dd1458ed7793a27a74010dcbb98de967438",
+      "before_tree": "9647fbb561bc96114cd062ba3f3b4d5868aa1960",
+      "after_tree": "4f6156b341b574b1abd1dcaeca6f21eabd497607",
       "paths": 1,
       "patches": [
         "followups/donation-completion-copy/0001-donation-completion-copy.patch"
       ],
       "mailbox_bytes": 1428,
       "source_bundle": "followups/donation-completion-copy/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "337f76afb8f4555f3a842870f0aa3703668fffa6",
-      "source_bundle_sha256": "972daef36b0d641c899c2f0b6601f1ce43f1660b69e7f5dc85f623fc37de3dda",
-      "source_bundle_bytes": 1281
+      "source_bundle_prerequisite": "76cbc4558b089f56f11d3c2bff1687a5b3194034",
+      "source_bundle_sha256": "ee690bc979ca11b835afd69ab06a6fddfe0f76451ad3f5f292811b902b129b88",
+      "source_bundle_bytes": 1522
     }
   ],
   "mailbox_sha256": {
@@ -448,7 +482,9 @@
     "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "2aee262bf3d3d6e534584b5b708ef04a11e1c1ba9fcf527f9285a5913372d4e1",
     "followups/donation-completion/0001-donation-completion.patch": "03c61185cedfd5b8f36b339b7a555deca85f41064e9d1fa1f0a4f846f14d983f",
     "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "c7ddc23eb1c8dc0c298027a38b663a2e9546c8db7077df862f7e44333cf5edcf",
-    "followups/registration-network-settings/0001-registration-network-settings.patch": "3e916dd8832dc3933e99182a3b0b9070931afe1f03a54e17acdc31007cd27d30",
-    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "f53dd5f65ce56a31d9868d103b8a049c3081473fe634673971f2bf135a5e3da9"
+    "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch": "d9ae204c0d2ee2bc907a1fd804247c97dc946e4e3a0ffc93976e2e060cbf1e43",
+    "followups/backup-revision-walk/0001-backup-revision-walk.patch": "9d99ec5d48c489212eff9e20a73a9a2231080b50b24d07e0006a32e4d8021ed9",
+    "followups/registration-network-settings/0001-registration-network-settings.patch": "585eb4f0235a17b501d399213b87343c5463d25c3bbbe29abb07b363cd20637e",
+    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "22322747e1fad9f54cb69d1d8c54f8d113a82294ab633fb0d3fa59cdefef0711"
   }
 }

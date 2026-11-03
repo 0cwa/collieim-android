@@ -1090,7 +1090,7 @@ object SyncMessageProcessor {
     val record: MessageRecord? = SignalDatabase.messages.getMessageFor(timestamp, author)
 
     if (record != null) {
-      if (!SignalStore.settings.isKeepViewOnceMessages) SignalDatabase.attachments.deleteAttachmentFilesForViewOnceMessage(record.id)
+      if (record.isViewOnce && !SignalStore.settings.isKeepViewOnceMessages) SignalDatabase.attachments.deleteAttachmentFilesForViewOnceMessage(record.id)
     } else {
       warn(envelopeTimestamp.toString(), "Got a view-once open message for a message we don't have!")
       if (earlyMessageCacheEntry != null) {

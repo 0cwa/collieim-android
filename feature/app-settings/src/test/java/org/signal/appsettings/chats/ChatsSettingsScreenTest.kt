@@ -68,6 +68,22 @@ class ChatsSettingsScreenTest {
   }
 
   @Test
+  fun retentionSummariesExplainThatDisablingDoesNotDeleteKeptContent() {
+    setContent(createState())
+    listOf(
+      R.string.ChatsSettingsFragment__keep_view_once_messages_summary,
+      R.string.ChatsSettingsFragment__keep_expiring_messages_summary,
+      R.string.ChatsSettingsFragment__ignore_remote_delete_summary,
+      R.string.ChatsSettingsFragment__delete_media_only_summary
+    ).forEach { summary ->
+      val text = context.getString(summary)
+      assertThat(text).contains("Turning this off does not delete messages or media already kept.")
+      composeTestRule.onNodeWithTag(ChatsSettingsTestTags.SCROLLER).performScrollToNode(hasText(text))
+      composeTestRule.onNodeWithText(text).assertIsDisplayed()
+    }
+  }
+
+  @Test
   fun whenScreenResumes_thenIExpectRefreshEvent() {
     setContent(createState())
 

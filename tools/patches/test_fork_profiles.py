@@ -209,8 +209,38 @@ class ForkProfilesTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'no single provenance layer'):
             release_profiles.derived_tests(self.repo, base, [release_profiles.FORK_ROOT + '/three/series'])
         (root / 'one/0001.patch').write_text(diff('app/src/androidTest/java/org/x/DeviceTest.kt'))
+        self.assertEqual(release_profiles.derived_tests(self.repo, base, [one]), base)
+        self.assertEqual(release_profiles.instrumentation_sources(self.repo, [one]),
+                         ['app/src/androidTest/java/org/x/DeviceTest.kt'])
+        (root / 'one/0001.patch').write_text(diff('app/src/testFixtures/java/org/x/Fixture.kt'))
         with self.assertRaisesRegex(ValueError, 'no unit test task rule'):
             release_profiles.derived_tests(self.repo, base, [one])
+
+    def test_device_sources_are_recorded_for_both_gated_profiles(self):
+        path = 'app/src/androidTest/java/org/x/DeviceTest.kt'
+        mailbox = self.root / 'collie-branding/change.patch'
+        mailbox.write_text(f'diff --git a/{path} b/{path}\nnew file mode 100644\n')
+        base_tests = [':app:testDebugUnitTest', '--tests', 'org.x.UnitTest']
+        for name in ('collie', 'collie-foss'):
+            boundary, fork, free = release_profiles.POLICY[name]
+            config = {'profiles': {name: {'base_series': release_profiles.PORT_SERIES,
+                'base_checkpoint': 'a'*40, 'base_tree': 'b'*40, 'fork_series': list(fork),
+                'target_tree': 'c'*40, 'firebase_free': free}},
+                'port': {'series': release_profiles.PORT_SERIES},
+                'android': {'tests': base_tests}, 'signal': {'commit': 'd'*40},
+                'fork_source': {'url': 'https://github.com/tw-hx/Signal-Android', 'head': 'e'*40}}
+            selected, profile = release_profiles.select(config, name, self.repo)
+            self.assertEqual(selected['android']['tests'], base_tests)
+            self.assertEqual(profile['instrumentation_sources'], [path])
+
+        name = 'molly-foss-continued'
+        _, fork, free = release_profiles.POLICY[name]
+        (self.root / 'firebase-free-build/change.patch').write_text(mailbox.read_text())
+        config['profiles'][name] = {'base_series': release_profiles.PORT_SERIES,
+            'base_checkpoint': 'a'*40, 'base_tree': 'b'*40, 'fork_series': list(fork),
+            'target_tree': 'c'*40, 'firebase_free': free}
+        with self.assertRaisesRegex(ValueError, 'profile with a device test gate'):
+            release_profiles.select(config, name, self.repo)
 
     def test_port_prefix_requires_verified_order_and_exact_boundary(self):
         directory = self.repo / 'patches/ports/signal-8.33.2'

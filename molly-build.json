@@ -17,7 +17,7 @@
       "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge 7761e6fdb7170378374221bee386f3a9f58900e5."
     }
   },
-  "target_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
+  "target_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
   "native": null,
   "android": {
     "sdk": "37.0",
@@ -92,6 +92,8 @@
       "org.thoughtcrime.securesms.delete.DeleteAccountViewModelTest",
       "--tests",
       "org.thoughtcrime.securesms.registration.v2.AppRegistrationStorageControllerTest",
+      "--tests",
+      "org.thoughtcrime.securesms.dependencies.NetworkDependenciesModuleTest",
       ":feature:app-settings:testDebugUnitTest",
       "--tests",
       "org.signal.appsettings.updates.AppUpdatesSettingsScreenTest"
@@ -104,34 +106,34 @@
   "profiles": {
     "molly-minimal": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
-      "base_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
+      "base_checkpoint": "f9c51c9695eaabfd9be7712723eac0413c5c7aba",
+      "base_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
       "fork_series": [],
-      "target_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
+      "target_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
       "firebase_free": false
     },
     "molly-continued": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "28139ddca643a2eba64780ebf56c963094776dff",
-      "base_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
+      "base_checkpoint": "5d36d0da8a44a5ce8863703e9dc2027d5c4ebe00",
+      "base_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
       "fork_series": [],
-      "target_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
+      "target_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
       "firebase_free": false
     },
     "molly-foss-continued": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "28139ddca643a2eba64780ebf56c963094776dff",
-      "base_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
+      "base_checkpoint": "5d36d0da8a44a5ce8863703e9dc2027d5c4ebe00",
+      "base_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series"
       ],
-      "target_tree": "37f097ba236a6dddf559572051cc5cd36ed247f5",
+      "target_tree": "c8f8f33a855448162a57872a22ac65ecbb3f4aa2",
       "firebase_free": true
     },
     "collie": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "28139ddca643a2eba64780ebf56c963094776dff",
-      "base_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
+      "base_checkpoint": "5d36d0da8a44a5ce8863703e9dc2027d5c4ebe00",
+      "base_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series",
         "patches/forks/signal-foss/retention-controls/series",
@@ -139,13 +141,13 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series"
       ],
-      "target_tree": "df292afcbedb2290a72fa06f67c1425c44becc12",
+      "target_tree": "6376045794b7533e225fee12fe5011119867f772",
       "firebase_free": false
     },
     "collie-foss": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "28139ddca643a2eba64780ebf56c963094776dff",
-      "base_tree": "826a6091341c437eb6139605094848a02ff0b9b6",
+      "base_checkpoint": "5d36d0da8a44a5ce8863703e9dc2027d5c4ebe00",
+      "base_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series",
         "patches/forks/signal-foss/retention-controls/series",
@@ -153,7 +155,7 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series"
       ],
-      "target_tree": "df292afcbedb2290a72fa06f67c1425c44becc12",
+      "target_tree": "6376045794b7533e225fee12fe5011119867f772",
       "firebase_free": true
     }
   }

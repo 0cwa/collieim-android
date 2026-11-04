@@ -1,11 +1,11 @@
-From ba3ffb2128934e30a1cec0ea2eda07c4e68b3215 Mon Sep 17 00:00:00 2001
+From 6c40af1576e3a15f27803f5da8c318f0a66ba2f4 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Wed, 4 Nov 2026 17:44:09 +0100
+Date: Wed, 4 Nov 2026 18:11:58 +0100
 Subject: [PATCH] Restore shared Android instrumentation compatibility
 
 
 Based-On-Source-Commit: 8c230f133ca618ac2daaddddd356e1e5580a9659
-Source-Commit: ba3ffb2128934e30a1cec0ea2eda07c4e68b3215
+Source-Commit: 6c40af1576e3a15f27803f5da8c318f0a66ba2f4
 
 ---
  app/build.gradle.kts                          |  12 +-
@@ -20,9 +20,13 @@ Source-Commit: ba3ffb2128934e30a1cec0ea2eda07c4e68b3215
  ...SignalInstrumentationApplicationContext.kt |  11 +-
  .../backup/v2/ArchiveImportExportTests.kt     |  74 +++++-
  .../v2/EncryptedArchiveRoundTripTest.kt       |  14 +-
+ .../MessageBackupsCheckoutActivityTest.kt     |   3 +-
+ .../conversation/ConversationItemPreviewer.kt |   2 +-
+ .../SafetyNumberChangeDialogPreviewer.kt      |   3 +-
  .../v2/items/V2ConversationItemShapeTest.kt   |   2 -
  .../securesms/database/CallLinkTableTest.kt   |   6 +
  .../ArchiveAttachmentReconciliationJobTest.kt |  44 ++--
+ .../jobs/JobManagerPerformanceTests.kt        |   4 +-
  .../megaphone/DonationMegaphoneTest.kt        |   4 +-
  .../manage/UsernameEditFragmentTest.kt        |   2 +-
  .../securesms/testing/SignalActivityRule.kt   |   5 +-
@@ -30,7 +34,7 @@ Source-Commit: ba3ffb2128934e30a1cec0ea2eda07c4e68b3215
  .../websocket/BenchmarkWebSocketConnection.kt | 187 +++++++++++++
  .../conversation/colors/ChatColorsPalette.kt  |  10 +-
  .../backup/v2/util/ChatStyleConverterTest.kt  |  35 +++
- 22 files changed, 1104 insertions(+), 60 deletions(-)
+ 26 files changed, 1112 insertions(+), 64 deletions(-)
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/Generator.kt
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/Harness.kt
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/NoOpJob.kt
@@ -1144,6 +1148,78 @@ index a8d47c6c..56036947 100644
  
      SignalStore.account.resetAccountEntropyPool()
      SignalStore.account.setE164(SELF_E164)
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/ui/subscription/MessageBackupsCheckoutActivityTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/ui/subscription/MessageBackupsCheckoutActivityTest.kt
+index 690be544..d1730d91 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/ui/subscription/MessageBackupsCheckoutActivityTest.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/ui/subscription/MessageBackupsCheckoutActivityTest.kt
+@@ -47,7 +47,6 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
+ import java.math.BigDecimal
+ import java.util.Currency
+ 
+-@Ignore
+ @RunWith(AndroidJUnit4::class)
+ class MessageBackupsCheckoutActivityTest {
+ 
+@@ -71,6 +70,7 @@ class MessageBackupsCheckoutActivityTest {
+     coEvery { AppDependencies.billingApi.launchBillingFlow(any()) } returns Unit
+   }
+ 
++  @Ignore
+   @Test
+   fun e2e_paid_happy_path() {
+     val scenario = launchCheckoutFlow()
+@@ -114,6 +114,7 @@ class MessageBackupsCheckoutActivityTest {
+     )
+   }
+ 
++  @Ignore
+   @Test
+   fun e2e_free_happy_path() {
+     val scenario = launchCheckoutFlow()
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/ConversationItemPreviewer.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/ConversationItemPreviewer.kt
+index a745c9e6..aa3edcf4 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/ConversationItemPreviewer.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/ConversationItemPreviewer.kt
+@@ -25,12 +25,12 @@ import java.util.Optional
+  * Helper test for rendering conversation items for preview.
+  */
+ @RunWith(AndroidJUnit4::class)
+-@Ignore("For testing/previewing manually, no assertions")
+ class ConversationItemPreviewer {
+ 
+   @get:Rule
+   val harness = SignalActivityRule(othersCount = 10)
+ 
++  @Ignore("For testing/previewing manually, no assertions")
+   @Test
+   fun testShowLongName() {
+     val other: Recipient = Recipient.resolved(harness.others.first())
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/SafetyNumberChangeDialogPreviewer.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/SafetyNumberChangeDialogPreviewer.kt
+index f6d94001..ac9ed447 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/SafetyNumberChangeDialogPreviewer.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/SafetyNumberChangeDialogPreviewer.kt
+@@ -21,12 +21,12 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
+ /**
+  * Android test to help show SNC dialog quickly with custom data to make sure it displays properly.
+  */
+-@Ignore("For testing/previewing manually, no assertions")
+ @RunWith(AndroidJUnit4::class)
+ class SafetyNumberChangeDialogPreviewer {
+ 
+   @get:Rule val harness = SignalActivityRule(othersCount = 10)
+ 
++  @Ignore("For testing/previewing manually, no assertions")
+   @Test
+   fun testShowLongName() {
+     val other: Recipient = Recipient.resolved(harness.others.first())
+@@ -45,6 +45,7 @@ class SafetyNumberChangeDialogPreviewer {
+     // ThreadUtil.sleep(15000)
+   }
+ 
++  @Ignore("For testing/previewing manually, no assertions")
+   @Test
+   fun testShowLargeSheet() {
+     SignalDatabase.distributionLists.setPrivacyMode(DistributionListId.MY_STORY, DistributionListPrivacyMode.ONLY_WITH)
 diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/v2/items/V2ConversationItemShapeTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/v2/items/V2ConversationItemShapeTest.kt
 index dc97c3c0..62083179 100644
 --- a/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/v2/items/V2ConversationItemShapeTest.kt
@@ -1377,6 +1453,38 @@ index 67881754..c73d422c 100644
  
      assertThat(SignalStore.backup.lastCompletedReconciliationSnapshotVersion).isEqualTo(-1L)
    }
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/JobManagerPerformanceTests.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/JobManagerPerformanceTests.kt
+index 2a951a4d..47b81e38 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/JobManagerPerformanceTests.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/JobManagerPerformanceTests.kt
+@@ -22,7 +22,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
+ import java.util.concurrent.CountDownLatch
+ import kotlin.random.Random
+ 
+-@Ignore("This is just for testing performance, not correctness, and they can therefore take a long time. Run them manually when you need to.")
+ @RunWith(AndroidJUnit4::class)
+ class JobManagerPerformanceTests {
+ 
+@@ -30,16 +29,19 @@ class JobManagerPerformanceTests {
+     val TAG = Log.tag(JobManagerPerformanceTests::class.java)
+   }
+ 
++  @Ignore("This is just for testing performance, not correctness, and they can therefore take a long time. Run them manually when you need to.")
+   @Test
+   fun testPerformance_singleQueue() {
+     runTest("singleQueue", 2000) { TestJob(queue = "queue") }
+   }
+ 
++  @Ignore("This is just for testing performance, not correctness, and they can therefore take a long time. Run them manually when you need to.")
+   @Test
+   fun testPerformance_fourQueues() {
+     runTest("fourQueues", 2000) { TestJob(queue = "queue-${Random.nextInt(1, 5)}") }
+   }
+ 
++  @Ignore("This is just for testing performance, not correctness, and they can therefore take a long time. Run them manually when you need to.")
+   @Test
+   fun testPerformance_noQueues() {
+     runTest("noQueues", 2000) { TestJob(queue = null) }
 diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt
 index 8ddd532e..fe211538 100644
 --- a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt

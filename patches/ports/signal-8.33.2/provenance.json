@@ -415,38 +415,38 @@
       "source_bundle_bytes": 6278
     },
     {
-      "id": "followups/network-initialization-cycle",
-      "source_commit": "f9c51c9695eaabfd9be7712723eac0413c5c7aba",
-      "description": "Avoid circular network initialization during first-run unlock\n\nAI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.\n\nAI-Generated: true\nBased-On-Source-Commit: 2e69e329f52fe9d8083b631303df0aa93e252ebd",
+      "id": "followups/enable-linked-history-transfer",
+      "source_commit": "8c230f133ca618ac2daaddddd356e1e5580a9659",
+      "description": "Enable linked-device history transfer on clean registration\n\nAI-assisted compatibility changes. Match Signal 8.33 so a newly linked phone advertises history transfer while retaining the existing clean-start guard.\n\nBased-On-Source-Commit: 2e69e329f52fe9d8083b631303df0aa93e252ebd",
       "ai_generated": true,
       "before_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
-      "after_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
+      "after_tree": "6070508036858197241d342690f747ef77424505",
+      "paths": 2,
+      "patches": [
+        "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch"
+      ],
+      "mailbox_bytes": 3654,
+      "source_bundle": "followups/enable-linked-history-transfer/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
+      "source_bundle_sha256": "0190670e76a3ccd9a6e6573057f592b5092fd61d1d6aa3e9de4bc0336e487160",
+      "source_bundle_bytes": 4021
+    },
+    {
+      "id": "followups/network-initialization-cycle",
+      "source_commit": "21f8e350baaf33a9247b35988dfc8883ebc9f885",
+      "description": "Avoid circular network initialization during first-run unlock\n\nAI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.\n\nAI-Generated: true\nBased-On-Source-Commit: 8c230f133ca618ac2daaddddd356e1e5580a9659",
+      "ai_generated": true,
+      "before_tree": "6070508036858197241d342690f747ef77424505",
+      "after_tree": "61260ff702887bbc2fc81ecc1a284570a48788e5",
       "paths": 3,
       "patches": [
         "followups/network-initialization-cycle/0001-network-initialization-cycle.patch"
       ],
       "mailbox_bytes": 4361,
       "source_bundle": "followups/network-initialization-cycle/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
-      "source_bundle_sha256": "55a2825c42840552704f7d5fecf5102bc523f7f781b37d8e624efe01e51b380d",
-      "source_bundle_bytes": 3962
-    },
-    {
-      "id": "followups/enable-linked-history-transfer",
-      "source_commit": "37c2ff0a953536cc924cb1e3fa46808628720281",
-      "description": "Enable linked-device history transfer on clean registration\n\nAI-assisted compatibility changes. Match Signal 8.33 so a newly linked phone advertises history transfer while retaining the existing clean-start guard.\n\nBased-On-Source-Commit: f9c51c9695eaabfd9be7712723eac0413c5c7aba",
-      "ai_generated": true,
-      "before_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
-      "after_tree": "61260ff702887bbc2fc81ecc1a284570a48788e5",
-      "paths": 2,
-      "patches": [
-        "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch"
-      ],
-      "mailbox_bytes": 3655,
-      "source_bundle": "followups/enable-linked-history-transfer/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "f9c51c9695eaabfd9be7712723eac0413c5c7aba",
-      "source_bundle_sha256": "68569b8d62ab47484c5d8fc94f0a0760933634e0ae89bb28d4d86a1965d9846a",
-      "source_bundle_bytes": 4020
+      "source_bundle_prerequisite": "8c230f133ca618ac2daaddddd356e1e5580a9659",
+      "source_bundle_sha256": "8e8ebfd5740ba13230289998b95eed5ca08d7cc9869519d2646d986f4e43c3c5",
+      "source_bundle_bytes": 6274
     }
   ],
   "mailbox_sha256": {
@@ -502,7 +502,7 @@
     "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch": "d9ae204c0d2ee2bc907a1fd804247c97dc946e4e3a0ffc93976e2e060cbf1e43",
     "followups/backup-revision-walk/0001-backup-revision-walk.patch": "9d99ec5d48c489212eff9e20a73a9a2231080b50b24d07e0006a32e4d8021ed9",
     "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch": "fb2bc5a1874513228744c375c72ee813a3bc6a03191e1d331e3a4782f835c534",
-    "followups/network-initialization-cycle/0001-network-initialization-cycle.patch": "150e9c0ab72623f7cd39b71dabb0b2640beb0d4487a06e720eb5456e66037a97",
-    "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch": "2eed4ef2469a411a16e92fd15d0b10e2cbb4db56d272c824834709b0eb32a770"
+    "followups/network-initialization-cycle/0001-network-initialization-cycle.patch": "9bd52909f2782929c1675d116d880a054210f5cc7caa5749f5c80b242ae00cc2",
+    "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch": "417da0cfdaa8713393073d3fe64ffddd43961ad7669088e8366526ad674082e7"
   }
 }

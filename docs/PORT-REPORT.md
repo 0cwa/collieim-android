@@ -43,8 +43,8 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `followups/passphrase-timeout-fallback` | PR4 behavior fixes | +13 / −2 | +0 / −0 | +125 / −0 | +0 / −0 |
 | `followups/backup-revision-walk` | PR4 behavior fixes | +2 / −6 | +0 / −0 | +28 / −2 | +0 / −0 |
 | `followups/restore-badges-log-theme` | PR4 behavior fixes | +41 / −2 | +0 / −0 | +62 / −0 | +0 / −0 |
-| `followups/network-initialization-cycle` | PR4 behavior fixes | +6 / −3 | +0 / −0 | +28 / −0 | +0 / −0 |
 | `followups/enable-linked-history-transfer` | PR4 behavior fixes | +1 / −1 | +0 / −0 | +50 / −0 | +0 / −0 |
+| `followups/network-initialization-cycle` | PR4 behavior fixes | +6 / −3 | +0 / −0 | +28 / −0 | +0 / −0 |
 
 ### Largest production files at PR4 behavior fixes
 

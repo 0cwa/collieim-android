@@ -12078,7 +12078,7 @@
       "searched_branches": "origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak local tip files only",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#backup-policy-checks",
       "reason": "Retain Molly exclusion of started disappearing messages while adapting revision-chain traversal and removing a conflict marker.",
-      "molly_equivalent": "Molly 0e202dda exporter lines 593–596 uses expiresIn <= 0 || expireStarted <= 0; revision traversal is not an old Molly equivalent.",
+      "molly_equivalent": "Molly 0e202dda exporter lines 593\u2013596 uses expiresIn <= 0 || expireStarted <= 0; revision traversal is not an old Molly equivalent.",
       "revert_gate": "Adjusted Signal-threshold predicate counterexample; marker remains removed",
       "gate_input": "da3131fde031e09017e778c736f7d34f8b5a7600 baseline and 99014fba9d5df76f07d76ac74257c991be7f159a supplement, seven-day fixture",
       "outcome": "Baseline named test passed; counterexample failed its named assertion. Original 24-hour fixture passed the threshold counterexample and did not distinguish policies."
@@ -12422,6 +12422,36 @@
       "gate_input": "Collie debug source tree at 3a79e1b07d without the fix versus e396ea7df6 with the fix; published v8.33.2-1-rc1 also checked",
       "outcome": "Unfixed first-run crashed with StackOverflowError twice; fixed first-run reached registration. This measures the fix as a cohort, not each individual hunk.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#network-initialization-cycle"
+    },
+    "62abdcef3828e72a44b8": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Signal 8.33.2 enables link-and-sync; Molly 8.19 disabled the newer registration flow and its flag.",
+      "searched_branches": "Signal 6e9dddc0 and Molly 0e202dda source",
+      "revert_gate": "Partial inverse: run :app:testProdWebsiteDebugUnitTest --tests org.thoughtcrime.securesms.registration.LinkAndSyncAvailabilityTest with only the availability flag false, then true",
+      "gate_input": "PR4 source f9c51c9695 with the new test and then source 37c2ff0a95",
+      "outcome": "Flag false: clean-device capability assertion failed (provisioning received false); existing-registration guard passed. Flag true: both tests passed. No end-to-end cross-version archive transfer was performed.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#linked-device-history-transfer",
+      "reason": "Enable the upstream history-transfer capability in the new registration flow; the rest of this combined hunk is not individually measured."
+    },
+    "a37b6d394385184c18f5": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Signal 8.33.2 enables link-and-sync; Molly 8.19 disabled the newer registration flow and its flag.",
+      "searched_branches": "Signal 6e9dddc0 and Molly 0e202dda source",
+      "revert_gate": "Partial inverse: run :app:testProdWebsiteDebugUnitTest --tests org.thoughtcrime.securesms.registration.LinkAndSyncAvailabilityTest with only the availability flag false, then true",
+      "gate_input": "PR4 source f9c51c9695 with the new test and then source 37c2ff0a95",
+      "outcome": "Flag false: clean-device capability assertion failed (provisioning received false); existing-registration guard passed. Flag true: both tests passed. No end-to-end cross-version archive transfer was performed.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#linked-device-history-transfer",
+      "reason": "Test the production flag through linked-device provisioning on clean and existing registrations."
+    },
+    "e0f1d0da3d544671b97e": {
+      "type": "behavior_preservation",
+      "molly_equivalent": "Signal 8.33.2 enables link-and-sync; Molly 8.19 disabled the newer registration flow and its flag.",
+      "searched_branches": "Signal 6e9dddc0 and Molly 0e202dda source",
+      "revert_gate": "Partial inverse: run :app:testProdWebsiteDebugUnitTest --tests org.thoughtcrime.securesms.registration.LinkAndSyncAvailabilityTest with only the availability flag false, then true",
+      "gate_input": "PR4 source f9c51c9695 with the new test and then source 37c2ff0a95",
+      "outcome": "Flag false: clean-device capability assertion failed (provisioning received false); existing-registration guard passed. Flag true: both tests passed. No end-to-end cross-version archive transfer was performed.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#linked-device-history-transfer",
+      "reason": "Add the linked-device capability regression test as a regular source file."
     }
   },
   "exclusions_complete": false,

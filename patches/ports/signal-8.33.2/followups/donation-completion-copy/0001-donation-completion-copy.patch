@@ -1,11 +1,11 @@
-From 73cb3518c1bad6d3fde216bf3575484b95a2dc1e Mon Sep 17 00:00:00 2001
+From ba9b28504814ff8aefe0210c1cd7a3207f02dd23 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Mon, 2 Nov 2026 02:19:23 +0100
 Subject: [PATCH] Add donation completion copy.
 
 
-Based-On-Source-Commit: d67f25172e15a6816fd4a24fea8875071dee1b50
-Source-Commit: 73cb3518c1bad6d3fde216bf3575484b95a2dc1e
+Based-On-Source-Commit: 08d63f009f373fe8c1a019db2a081edecaa31108
+Source-Commit: ba9b28504814ff8aefe0210c1cd7a3207f02dd23
 
 ---
  .../app/subscription/completed/TerminalDonationBottomSheet.kt   | 2 +-

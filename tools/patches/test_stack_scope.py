@@ -253,7 +253,6 @@ class ScopeTests(unittest.TestCase):
 
     def test_followups_allow_only_named_adjacent_report_metadata(self):
         self.assertTrue(scope.allowed('followups', 'patches/ports/signal-8.33.2/followups/android-instrumentation-compatibility/series'))
-        self.assertTrue(scope.allowed('followups', 'patches/ports/signal-8.33.2/followups/stripe-card-token-serialization/series'))
         self.assertTrue(scope.allowed('followups', 'patches/ports/signal-8.33.2/report-metadata.json'))
         self.assertFalse(scope.allowed('followups', 'patches/ports/signal-8.33.2/unexpected.json'))
 

@@ -1,4 +1,4 @@
-From c5935f38cd608d81cf7fdd6d8a3d8074e3aa3d7c Mon Sep 17 00:00:00 2001
+From 3ca56de9e8521ec82a24fdce4f7ec70d9e27eaea Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Tue, 3 Nov 2026 02:58:19 +0100
 Subject: [PATCH] Keep ordinary media on view-once sync and explain retention
@@ -12,7 +12,7 @@ messages. The settings now say that turning an option off does not delete
 messages or media already kept, and that kept content may appear in backups
 and exports, including on another device after restore.
 
-Source-Commit: c5935f38cd608d81cf7fdd6d8a3d8074e3aa3d7c
+Source-Commit: 3ca56de9e8521ec82a24fdce4f7ec70d9e27eaea
 
 ---
  .../messages/SyncMessageProcessor.kt          |  2 +-

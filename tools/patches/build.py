@@ -381,6 +381,9 @@ class Build:
                    '-Dorg.gradle.jvmargs=' + jvm_args]
         if self.profile is not None:
             command.append('-PmollyFirebaseFree=' + str(self.profile['firebase_free']).lower())
+            app = self.profile['app']
+            command += ['-PbaseAppTitle=' + app['title'], '-PbaseAppFileName=' + app['file_name'],
+                        '-PbasePackageId=' + app['package_id']]
         if phase == 'assemble-release':
             version_init = relative_file(self.repo, 'tools/patches/release-version.init.gradle', 'release version script')
             command += ['--init-script', str(version_init), '-PreleaseVersionName=' + version_name,

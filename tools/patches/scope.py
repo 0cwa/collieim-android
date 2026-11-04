@@ -121,7 +121,11 @@ def allowed(scope, path):
         return report_evidence(path) or path in RELEASE_PATHS or path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'}
     if scope == 'forks':
         prefix = 'patches/forks/signal-foss/'
-        return (path in {'molly-build.json', 'docs/PORT-REPORT.md'} or
+        return (path in {'molly-build.json', 'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md',
+                         'tools/patches/build.py', 'tools/patches/release_profiles.py',
+                         'tools/patches/release_artifacts.py', 'tools/patches/test_build.py',
+                         'tools/patches/test_fork_profiles.py', 'tools/patches/test_release_artifacts.py',
+                         'tools/patches/scope.py', 'tools/patches/test_stack_scope.py'} or
                 path in {prefix + 'provenance.json', prefix + 'upstream-source.bundle'} or
                 any(path.startswith(prefix + layer + '/')
                     for layer in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes', 'collie-icon', 'collie-branding')))

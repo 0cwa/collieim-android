@@ -34,8 +34,8 @@ class ReleaseArtifactsTests(unittest.TestCase):
             a.validate_manifest(self.manifest, self.commit, '123', self.cert)
 
     def test_manifest_rejects_wrong_package_and_certificate(self):
-        self.assertEqual(a.PACKAGE, 'im.molly.app')
-        self.manifest['package'] = 'im.collie.app'
+        self.assertEqual(a.PACKAGE, 'im.collie.app')
+        self.manifest['package'] = 'im.molly.app'
         with self.assertRaisesRegex(ValueError, 'package'):
             a.validate_manifest(self.manifest, self.commit, '123', self.cert)
         self.manifest['package'] = a.PACKAGE
@@ -43,7 +43,7 @@ class ReleaseArtifactsTests(unittest.TestCase):
             a.validate_manifest(self.manifest, self.commit, '123', 'd' * 64)
 
     def test_apk_metadata_rejects_wrong_package(self):
-        with patch.object(a, 'apk_metadata', return_value=('im.collie.app', '42', '1.2.3')):
+        with patch.object(a, 'apk_metadata', return_value=('im.molly.app', '42', '1.2.3')):
             with self.assertRaisesRegex(ValueError, 'package or version'):
                 a.check_metadata('aapt2', 'app.apk', 42, '1.2.3')
 

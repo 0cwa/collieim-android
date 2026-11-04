@@ -42,6 +42,17 @@ class ScopeTests(unittest.TestCase):
         with mock.patch.object(scope, 'MOLLY', self.base):
             return scope.check_scope(self.repo, 'pipeline', self.base)
 
+    def test_forks_allows_only_explicit_identity_tool_changes(self):
+        for path in ('docs/PATCH-PIPELINE.md', 'tools/patches/build.py',
+                     'tools/patches/release_profiles.py', 'tools/patches/release_artifacts.py',
+                     'tools/patches/test_build.py', 'tools/patches/test_fork_profiles.py',
+                     'tools/patches/test_release_artifacts.py'):
+            self.assertTrue(scope.allowed('forks', path), path)
+        for path in ('tools/patches/scope.py', 'tools/patches/test_stack_scope.py',
+                     'tools/patches/release_sign.py', 'tools/patches/other.py',
+                     'docs/OTHER.md', 'tools/patches/build.py.extra'):
+            self.assertFalse(scope.allowed('forks', path), path)
+
     def test_locale_evidence_allowlist_does_not_admit_other_files(self):
         prefix = 'patches/ports/signal-8.33.2/report-evidence/'
         for scope_name in ('release', 'followups'):

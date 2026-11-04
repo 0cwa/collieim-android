@@ -16,14 +16,6 @@ RETENTION = FORK_ROOT + '/retention-controls/series'
 RETENTION_FIXES = FORK_ROOT + '/retention-controls-fixes/series'
 COLLIE_ICON = FORK_ROOT + '/collie-icon/series'
 COLLIE_BRANDING = FORK_ROOT + '/collie-branding/series'
-# User-visible app title, backup file base name and shared package ID per profile.
-APP = {
-    'molly-minimal': ('Molly Minimal', 'Molly-Minimal', 'im.collie.app'),
-    'molly-continued': ('Molly Continued', 'Molly-Continued', 'im.collie.app'),
-    'molly-foss-continued': ('Molly FOSS Continued', 'Molly-FOSS-Continued', 'im.collie.app'),
-    'collie': ('Collie', 'Collie', 'im.collie.app'),
-    'collie-foss': ('Collie FOSS', 'Collie-FOSS', 'im.collie.app'),
-}
 POLICY = {
     'molly-minimal': ('followups/network-initialization-cycle', [], False),
     'molly-continued': ('followups/unifiedpush-registration-retry', [], False),
@@ -135,8 +127,7 @@ def select(config, name, repo='.'):
     selected['android']['tests'] = derived_tests(repo, base_tests, fork)
     selected['_profile'] = {'name': name, 'base_checkpoint': entry['base_checkpoint'],
                             'base_layer': boundary, 'base_tree': entry['base_tree'], 'target_tree': entry['target_tree'],
-                            'fork_series': fork, 'firebase_free': entry['firebase_free'],
-                            'app': dict(zip(('title', 'file_name', 'package_id'), APP[name]))}
+                            'fork_series': fork, 'firebase_free': entry['firebase_free']}
     if fork:
         selected['_profile']['fork_source'] = copy.deepcopy(fork_source)
         selected['_profile']['signal_commit'] = config['signal']['commit']

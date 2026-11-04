@@ -24,17 +24,17 @@ class EmulatorPathTest(unittest.TestCase):
                 sdk = root / 'sdk'
                 bin_dir = root / 'bin'
                 bin_dir.mkdir()
-                for name in ('bash', 'timeout', 'tr', 'sleep', 'yes'):
+                for name in ('bash', 'timeout', 'tr', 'sleep', 'yes', 'mkdir', 'touch'):
                     (bin_dir / name).symlink_to('/usr/bin/' + name)
                 for name in ('sudo', 'python3'):
                     path = bin_dir / name
                     path.write_text('#!/bin/bash\nexit 0\n')
                     path.chmod(0o755)
                 for relative, body in (
-                    ('cmdline-tools/latest/bin/avdmanager', 'exit 0'),
+                    ('cmdline-tools/latest/bin/avdmanager', 'if [[ ${AVD_CREATE_FAIL:-} == 1 ]]; then exit 0; fi; dir="${ANDROID_AVD_HOME:-$JAVA_USER_HOME/.android/avd}"; mkdir -p "$dir"; echo avd > "$dir/instrumentation.ini"'),
                     ('cmdline-tools/latest/bin/sdkmanager', 'printf \"%s\\n\" \"$*\" >> \"$RUNNER_TEMP/sdkmanager.log\"'),
-                    ('emulator/emulator', 'exit 0'),
-                    ('platform-tools/adb', 'if [[ "$*" == *getprop* ]]; then echo 1; fi; exit 0'),
+                    ('emulator/emulator', 'dir="${ANDROID_AVD_HOME:-$HOME/.android/avd}"; if [[ ! -s "$dir/instrumentation.ini" ]]; then echo "Unknown AVD name [instrumentation]" >&2; touch "$RUNNER_TEMP/no-avd"; exit 1; fi; touch "$RUNNER_TEMP/avd-ok"'),
+                    ('platform-tools/adb', 'if [[ "$*" == *getprop* ]]; then echo 1; exit 0; fi; for i in {1..100}; do [[ -f "$RUNNER_TEMP/no-avd" ]] && exit 124; [[ -f "$RUNNER_TEMP/avd-ok" ]] && exit 0; sleep 0.01; done; exit 124'),
                 ):
                     path = sdk / relative
                     path.parent.mkdir(parents=True, exist_ok=True)
@@ -46,7 +46,7 @@ class EmulatorPathTest(unittest.TestCase):
                 gate.chmod(0o755)
                 workflow = (ROOT / '.github/workflows' / filename).read_text()
                 install = workflow_step(workflow, 'Install Android SDK')
-                env = {'PATH': str(bin_dir), 'ANDROID_HOME': str(sdk), 'HOME': temp, 'RUNNER_TEMP': temp}
+                env = {'PATH': str(bin_dir), 'ANDROID_HOME': str(sdk), 'HOME': temp, 'RUNNER_TEMP': temp, 'JAVA_USER_HOME': str(root / 'java-home')}
                 installed = subprocess.run(['/usr/bin/bash', '-e', '-o', 'pipefail', '-c', install], cwd=root,
                                            env=env, text=True, capture_output=True, timeout=10)
                 self.assertEqual(installed.returncode, 0, installed.stderr)
@@ -55,6 +55,13 @@ class EmulatorPathTest(unittest.TestCase):
                 result = subprocess.run(['/usr/bin/bash', '-e', '-o', 'pipefail', '-c', step], cwd=root,
                                         env=env, text=True, capture_output=True, timeout=10)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                missing_root = root / 'missing'
+                missing_root.mkdir()
+                env.update(RUNNER_TEMP=str(missing_root), AVD_CREATE_FAIL='1')
+                missing = subprocess.run(['/usr/bin/bash', '-e', '-o', 'pipefail', '-c', step], cwd=root,
+                                         env=env, text=True, capture_output=True, timeout=10)
+                self.assertNotEqual(missing.returncode, 0)
+                self.assertFalse((missing_root / 'no-avd').exists(), 'emulator started without an AVD')
 
 
 if __name__ == '__main__':

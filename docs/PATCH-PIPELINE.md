@@ -519,7 +519,8 @@ without fork features have an empty `fork_series`. Molly FOSS Continued adds
 `patches/forks/signal-foss/firebase-free-build/series`; Collie and Collie FOSS
 append `patches/forks/signal-foss/retention-controls/series` and
 `patches/forks/signal-foss/retention-controls-fixes/series` and
-`patches/forks/signal-foss/collie-icon/series`. The final layer supplies Collie launcher artwork. Firebase is
+`patches/forks/signal-foss/collie-icon/series` and
+`patches/forks/signal-foss/collie-branding/series`. These layers supply Collie launcher artwork and the Collie theme and app identity. Firebase is
 selected only for Molly FOSS Continued and Collie FOSS. Each profile also sets its
 app title, backup file name and package ID (`release_profiles.APP`): all five
 use `im.collie.app` and retain their individual profile titles and backup names.

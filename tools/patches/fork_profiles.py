@@ -63,7 +63,7 @@ def fork_layers(repo, selection):
         raise forest.ForestError('fork base checkpoint or tree differs')
     layers = data['layers']
     if not isinstance(layers, list) or [x['id'] for x in layers] != ['firebase-free-build', 'retention-controls',
-                                                                      'retention-controls-fixes']:
+                                                                      'retention-controls-fixes', 'collie-icon']:
         raise forest.ForestError('fork layer order differs')
     _, upstream_parents = verify_source_bundles.commit_info(repo, data['source_head'])
     if upstream_parents != [layers[1]['upstream_commit']]:
@@ -86,7 +86,11 @@ def fork_layers(repo, selection):
         if credit == 'ours':
             # Our fixes to an adapted layer: no upstream commit, never authored as the fork author.
             fixed = [x for x in layers if x['id'] == layer.get('fixes')]
-            if (not fixed or fixed[0]['upstream_credit'] != 'adapted' or layers.index(fixed[0]) != layers.index(layer) - 1
+            if layer['id'] == 'collie-icon':
+                if 'fixes' in layer or 'upstream_commit' in layer or 'upstream_author' in layer:
+                    raise forest.ForestError('Collie icon layer must be original work')
+                fixed = None
+            if fixed is not None and (not fixed or fixed[0]['upstream_credit'] != 'adapted' or layers.index(fixed[0]) != layers.index(layer) - 1
                     or 'upstream_commit' in layer or 'upstream_author' in layer
                     or layer['author'] == fixed[0]['upstream_author']):
                 raise forest.ForestError('fork fix layer must directly follow the adapted layer it fixes and be ours')

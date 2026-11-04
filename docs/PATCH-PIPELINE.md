@@ -513,7 +513,7 @@ screenshot test source, is an error. The derived tests and Firebase selection
 are part of the source proof fingerprint.
 
 Minimal selects the verified port prefix ending at
-`followups/restore-badges-log-theme`; the other products select the
+`followups/network-initialization-cycle`; the other products select the
 prefix ending at `followups/unifiedpush-registration-retry`. Continued products
 without fork features have an empty `fork_series`. Molly FOSS Continued adds
 `patches/forks/signal-foss/firebase-free-build/series`; Collie and Collie FOSS

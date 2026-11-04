@@ -12,7 +12,7 @@ Collie is an independent Android messenger built on [Signal](https://signal.org/
 
 This project keeps Molly's features available as Signal develops, while offering Collie as a separate app for people who want more control over what stays on their phone. The releases share the same source and build on one another.
 
-## Releases
+## Current releases
 
 | Release | What it offers | Install |
 | --- | --- | --- |
@@ -22,11 +22,19 @@ This project keeps Molly's features available as Signal develops, while offering
 | **Molly FOSS Continued** | Molly Continued without Firebase. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 | **Molly Minimal** | **Not recommended.** The updated Molly foundation, without the later improvements. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 
-Molly Minimal lacks network settings during registration for proxy users, visible errors and retry options for failed UnifiedPush registration, and updated donation confirmation text. The other releases include these changes.
+Molly Minimal provides the updated Molly foundation. Both Molly Continued releases and both Collie releases add network settings during registration for proxy users, visible errors and retry options for failed UnifiedPush registration, and updated donation confirmation text. Collie and Collie FOSS also add the four optional retention controls described below. The two FOSS releases omit Firebase; the other three include it.
 
 All five releases use the package `im.collie.app`, so users can switch between them and install Collie alongside upstream Molly.
 
 Releases are published on the [Releases page](https://github.com/0cwa/collieim-android/releases) as APKs, currently marked as pre-releases. The Obtainium links above add this repository to [Obtainium](https://obtainium.imranr.dev/) with pre-releases enabled and select that release's APK, so Obtainium can install and update it. The releases share one app identity, so Obtainium tracks only one of them at a time.
+
+## Planned release names and direction
+
+These changes are planned; the current downloads and names are listed above.
+
+- **Mollie** will be the new name for Molly Minimal: Minimal Collie, or Minimal Molly Continued. Its aim is Molly, up to date, with fast bug and security fixes: Molly's minimalist feature set, patched quicker.
+- **Collie** will mean Continued Molly. Molly Continued is planned to adopt the current Collie changes before taking the Collie name.
+- **Collie+** will evolve from today's Collie into an edition for power users and community feedback, with cutting-edge features while remaining secure and stable. It is not intended as a beta.
 
 ## Features
 

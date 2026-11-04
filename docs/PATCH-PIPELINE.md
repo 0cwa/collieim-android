@@ -513,7 +513,9 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
      --notes RELEASE_NOTES --scratch SCRATCH --dry-run
    ```
 
-   Remove `--dry-run` only when ready to create the tag and draft. A failed
+   For alpha or beta builds, add `--prerelease` to both `draft` and `publish`;
+   the tool marks the draft as a prerelease and verifies that setting before
+   publishing. Remove `--dry-run` only when ready to create the tag and draft. A failed
    attempt may leave a tag or draft behind; inspect and resolve that state
    explicitly. Publishing is a separate command with the same arguments, using
    `publish` in place of `draft`. It rechecks the tag, draft, exact asset list

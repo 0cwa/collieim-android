@@ -108,34 +108,34 @@
   "profiles": {
     "molly-minimal": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "f9c51c9695eaabfd9be7712723eac0413c5c7aba",
-      "base_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
+      "base_checkpoint": "21f8e350baaf33a9247b35988dfc8883ebc9f885",
+      "base_tree": "61260ff702887bbc2fc81ecc1a284570a48788e5",
       "fork_series": [],
-      "target_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
+      "target_tree": "61260ff702887bbc2fc81ecc1a284570a48788e5",
       "firebase_free": false
     },
     "molly-continued": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "5d36d0da8a44a5ce8863703e9dc2027d5c4ebe00",
-      "base_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
+      "base_checkpoint": "9d6f0361b112a58e3dcca4087b57463eb4efe138",
+      "base_tree": "b74aea8a2d630f687b72315d6130de7fff8b95f2",
       "fork_series": [],
-      "target_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
+      "target_tree": "b74aea8a2d630f687b72315d6130de7fff8b95f2",
       "firebase_free": false
     },
     "molly-foss-continued": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "5d36d0da8a44a5ce8863703e9dc2027d5c4ebe00",
-      "base_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
+      "base_checkpoint": "9d6f0361b112a58e3dcca4087b57463eb4efe138",
+      "base_tree": "b74aea8a2d630f687b72315d6130de7fff8b95f2",
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series"
       ],
-      "target_tree": "c8f8f33a855448162a57872a22ac65ecbb3f4aa2",
+      "target_tree": "1d5c0b390994a6c0a96b1c85f26d8e4b939dba64",
       "firebase_free": true
     },
     "collie": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "5d36d0da8a44a5ce8863703e9dc2027d5c4ebe00",
-      "base_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
+      "base_checkpoint": "9d6f0361b112a58e3dcca4087b57463eb4efe138",
+      "base_tree": "b74aea8a2d630f687b72315d6130de7fff8b95f2",
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series",
         "patches/forks/signal-foss/retention-controls/series",
@@ -143,13 +143,13 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series"
       ],
-      "target_tree": "6376045794b7533e225fee12fe5011119867f772",
+      "target_tree": "f812786399d132f846c6a6014db68957a14339dc",
       "firebase_free": false
     },
     "collie-foss": {
       "base_series": "patches/ports/signal-8.33.2/series",
-      "base_checkpoint": "5d36d0da8a44a5ce8863703e9dc2027d5c4ebe00",
-      "base_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
+      "base_checkpoint": "9d6f0361b112a58e3dcca4087b57463eb4efe138",
+      "base_tree": "b74aea8a2d630f687b72315d6130de7fff8b95f2",
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series",
         "patches/forks/signal-foss/retention-controls/series",
@@ -157,7 +157,7 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series"
       ],
-      "target_tree": "6376045794b7533e225fee12fe5011119867f772",
+      "target_tree": "f812786399d132f846c6a6014db68957a14339dc",
       "firebase_free": true
     }
   }

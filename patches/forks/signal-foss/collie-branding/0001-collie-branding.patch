@@ -1,11 +1,11 @@
-From b297198d7af9e16de2b7ff5305dd3fe920682ba2 Mon Sep 17 00:00:00 2001
+From cd038505991878bb4a2a7153868566d1e0d5207d Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Wed, 4 Nov 2026 05:25:46 +0100
 Subject: [PATCH] Apply Collie palette and app identity
 
 Use warm light and dark theme roles and translate app identity references while preserving Molly donations and services. Disable the Molly updater for Collie builds because it cannot provide Collie releases.
 
-Source-Commit: b297198d7af9e16de2b7ff5305dd3fe920682ba2
+Source-Commit: cd038505991878bb4a2a7153868566d1e0d5207d
 
 ---
  app/build.gradle.kts                          |   3 +-

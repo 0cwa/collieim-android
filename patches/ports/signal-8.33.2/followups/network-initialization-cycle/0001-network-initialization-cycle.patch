@@ -1,13 +1,13 @@
-From 4798fb8f861e8472e16412c4f3587ea2b478284e Mon Sep 17 00:00:00 2001
+From 2513586cc10add1d5358e819ec89b2a0e43d28e2 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Wed, 4 Nov 2026 16:27:01 +0100
+Date: Wed, 4 Nov 2026 05:56:02 +0100
 Subject: [PATCH] Avoid circular network initialization during first-run unlock
 
 AI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.
 
 AI-Generated: true
-Based-On-Source-Commit: 2579e12ef6a5e82c74494652ddbc8dc3551eb051
-Source-Commit: 4798fb8f861e8472e16412c4f3587ea2b478284e
+Based-On-Source-Commit: 23e86c8b3e3ae798e3743110215e889789d67fdf
+Source-Commit: 2513586cc10add1d5358e819ec89b2a0e43d28e2
 ---
  .../securesms/dependencies/AppDependencies.kt |  2 +-
  .../dependencies/NetworkDependenciesModule.kt |  7 +++--

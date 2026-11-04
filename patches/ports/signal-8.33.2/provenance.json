@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
   "complete_source_checkpoint": true,
-  "target_tree": "c82986a8b6df914bcef451b64bce0a6177320539",
+  "target_tree": "dd95ae6f227173f799a0e4f43ef9ca47dd958153",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "14b1273e2be125fb4bf8034b50e8a4b3a8e104d6f8760bf22945bde2d97118b4",
@@ -433,37 +433,37 @@
     },
     {
       "id": "followups/android-instrumentation-compatibility",
-      "source_commit": "2579e12ef6a5e82c74494652ddbc8dc3551eb051",
+      "source_commit": "23e86c8b3e3ae798e3743110215e889789d67fdf",
       "description": "Restore shared Android instrumentation compatibility\n\nBased-On-Source-Commit: 8c230f133ca618ac2daaddddd356e1e5580a9659",
       "ai_generated": true,
       "before_tree": "6070508036858197241d342690f747ef77424505",
-      "after_tree": "7a2ef0f637b7a23e154ae9f3d186e6efb30fb4bf",
+      "after_tree": "a9525e716dbb8716d698f514cac1c706696ce769",
       "paths": 21,
       "patches": [
         "followups/android-instrumentation-compatibility/0001-android-instrumentation-compatibility.patch"
       ],
-      "mailbox_bytes": 68390,
+      "mailbox_bytes": 71976,
       "source_bundle": "followups/android-instrumentation-compatibility/source-checkpoint.bundle",
       "source_bundle_prerequisite": "8c230f133ca618ac2daaddddd356e1e5580a9659",
-      "source_bundle_sha256": "b4d020a5793a17de7693edf3b2df6e37a157bf8ddaebb745a1a392d0329a3982",
-      "source_bundle_bytes": 28413
+      "source_bundle_sha256": "c48301d1e44feca9dfa2b65eb8dc4ef1d8f526762dc52109c6223e66907e7fec",
+      "source_bundle_bytes": 29120
     },
     {
       "id": "followups/network-initialization-cycle",
-      "source_commit": "4798fb8f861e8472e16412c4f3587ea2b478284e",
-      "description": "Avoid circular network initialization during first-run unlock\n\nAI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 2579e12ef6a5e82c74494652ddbc8dc3551eb051",
+      "source_commit": "2513586cc10add1d5358e819ec89b2a0e43d28e2",
+      "description": "Avoid circular network initialization during first-run unlock\n\nAI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 23e86c8b3e3ae798e3743110215e889789d67fdf",
       "ai_generated": true,
-      "before_tree": "7a2ef0f637b7a23e154ae9f3d186e6efb30fb4bf",
-      "after_tree": "c82986a8b6df914bcef451b64bce0a6177320539",
+      "before_tree": "a9525e716dbb8716d698f514cac1c706696ce769",
+      "after_tree": "dd95ae6f227173f799a0e4f43ef9ca47dd958153",
       "paths": 3,
       "patches": [
         "followups/network-initialization-cycle/0001-network-initialization-cycle.patch"
       ],
       "mailbox_bytes": 4361,
       "source_bundle": "followups/network-initialization-cycle/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "2579e12ef6a5e82c74494652ddbc8dc3551eb051",
-      "source_bundle_sha256": "513152ee9be0127abba5970b5e2a39237413b7b6164b929b3e6ecbdeb383a5b6",
-      "source_bundle_bytes": 6036
+      "source_bundle_prerequisite": "23e86c8b3e3ae798e3743110215e889789d67fdf",
+      "source_bundle_sha256": "5cf669012473be9e6bab57fedba630c453140f58539ee39a73de319348a7d1af",
+      "source_bundle_bytes": 6035
     }
   ],
   "mailbox_sha256": {
@@ -519,8 +519,8 @@
     "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch": "d9ae204c0d2ee2bc907a1fd804247c97dc946e4e3a0ffc93976e2e060cbf1e43",
     "followups/backup-revision-walk/0001-backup-revision-walk.patch": "9d99ec5d48c489212eff9e20a73a9a2231080b50b24d07e0006a32e4d8021ed9",
     "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch": "fb2bc5a1874513228744c375c72ee813a3bc6a03191e1d331e3a4782f835c534",
-    "followups/network-initialization-cycle/0001-network-initialization-cycle.patch": "93ff29bf368da8c8431cfbf1339db2ad99ae13a51a600e8c7c8b6e168bde4c88",
+    "followups/network-initialization-cycle/0001-network-initialization-cycle.patch": "1582f18d397ba428ecb6b8e8023c6981db022c667c48d902c37ac7df0fd8c6ce",
     "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch": "417da0cfdaa8713393073d3fe64ffddd43961ad7669088e8366526ad674082e7",
-    "followups/android-instrumentation-compatibility/0001-android-instrumentation-compatibility.patch": "0a66cbc8689e36f1548a7b9fb01bc1a3af0bff869df7d7e16ece9b877edc82f0"
+    "followups/android-instrumentation-compatibility/0001-android-instrumentation-compatibility.patch": "d440c91a7ba85527da74d58e0642bd5870d9bd29fd4daf969648e93a9692e93b"
   }
 }

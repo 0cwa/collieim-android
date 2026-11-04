@@ -1,11 +1,11 @@
-From 2579e12ef6a5e82c74494652ddbc8dc3551eb051 Mon Sep 17 00:00:00 2001
+From 23e86c8b3e3ae798e3743110215e889789d67fdf Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Wed, 4 Nov 2026 16:27:01 +0100
+Date: Wed, 4 Nov 2026 16:49:22 +0100
 Subject: [PATCH] Restore shared Android instrumentation compatibility
 
 
 Based-On-Source-Commit: 8c230f133ca618ac2daaddddd356e1e5580a9659
-Source-Commit: 2579e12ef6a5e82c74494652ddbc8dc3551eb051
+Source-Commit: 23e86c8b3e3ae798e3743110215e889789d67fdf
 
 ---
  app/build.gradle.kts                          |  12 +-
@@ -18,7 +18,7 @@ Source-Commit: 2579e12ef6a5e82c74494652ddbc8dc3551eb051
  .../org/signal/benchmark/setup/TestUsers.kt   | 223 ++++++++++++++++
  ...serverInstrumentationApplicationContext.kt |  26 +-
  ...SignalInstrumentationApplicationContext.kt |  11 +-
- .../backup/v2/ArchiveImportExportTests.kt     |  37 ++-
+ .../backup/v2/ArchiveImportExportTests.kt     |  74 +++++-
  .../v2/EncryptedArchiveRoundTripTest.kt       |   4 +-
  .../v2/items/V2ConversationItemShapeTest.kt   |   2 -
  .../securesms/database/CallLinkTableTest.kt   |   2 +
@@ -29,7 +29,7 @@ Source-Commit: 2579e12ef6a5e82c74494652ddbc8dc3551eb051
  .../websocket/BenchmarkWebSocketConnection.kt | 187 +++++++++++++
  .../conversation/colors/ChatColorsPalette.kt  |  10 +-
  .../backup/v2/util/ChatStyleConverterTest.kt  |  35 +++
- 21 files changed, 1041 insertions(+), 28 deletions(-)
+ 21 files changed, 1073 insertions(+), 33 deletions(-)
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/Generator.kt
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/Harness.kt
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/NoOpJob.kt
@@ -946,18 +946,20 @@ index f675ce88..266ceb7c 100644
  
      // Stage any test-declared remote config into the store to be read in RemoteConfig.init().
 diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/ArchiveImportExportTests.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/ArchiveImportExportTests.kt
-index ea67a702..f54c78d3 100644
+index ea67a702..2a84e590 100644
 --- a/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/ArchiveImportExportTests.kt
 +++ b/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/ArchiveImportExportTests.kt
-@@ -15,6 +15,7 @@ import org.junit.Test
+@@ -14,7 +14,9 @@ import org.junit.Before
+ import org.junit.Test
  import org.junit.runner.RunWith
  import org.signal.archive.proto.Frame
++import org.signal.archive.proto.SimpleChatUpdate
  import org.signal.archive.stream.PlainTextBackupReader
 +import org.signal.archive.stream.PlainTextBackupWriter
  import org.signal.core.models.ServiceId
  import org.signal.core.util.Base64
  import org.signal.core.util.logging.Log
-@@ -26,6 +27,7 @@ import org.thoughtcrime.securesms.database.KeyValueDatabase
+@@ -26,6 +28,7 @@ import org.thoughtcrime.securesms.database.KeyValueDatabase
  import org.thoughtcrime.securesms.dependencies.AppDependencies
  import org.thoughtcrime.securesms.keyvalue.SignalStore
  import java.io.ByteArrayInputStream
@@ -965,7 +967,7 @@ index ea67a702..f54c78d3 100644
  import java.util.UUID
  
  @RunWith(AndroidJUnit4::class)
-@@ -43,7 +45,7 @@ class ArchiveImportExportTests {
+@@ -43,12 +46,18 @@ class ArchiveImportExportTests {
  
    @Before
    fun setup() {
@@ -973,8 +975,50 @@ index ea67a702..f54c78d3 100644
 +    AppDependencies.jobManager.shutdown(10_000)
    }
  
-   @Test
-@@ -331,6 +333,8 @@ class ArchiveImportExportTests {
+-  @Test
+-  fun all() {
+-    runTests()
++  // Each fixture maps to exactly one shard. Separate instrumentation processes keep
++  // the complete corpus below the runner's per-test connection timeout.
++  @Test fun shard0() = runShard(0)
++  @Test fun shard1() = runShard(1)
++  @Test fun shard2() = runShard(2)
++  @Test fun shard3() = runShard(3)
++
++  private fun runShard(shard: Int) {
++    runTests { Math.floorMod(it.hashCode(), 4) == shard }
+   }
+ 
+ //  @Test
+@@ -273,6 +282,7 @@ class ArchiveImportExportTests {
+ 
+   private fun runTests(predicate: (String) -> Boolean = { true }) {
+     val testFiles = InstrumentationRegistry.getInstrumentation().context.resources.assets.list(TESTS_FOLDER)!!.filter(predicate)
++    check(testFiles.isNotEmpty()) { "No backup fixtures found for this test" }
+     val results: MutableList<TestResult> = mutableListOf()
+ 
+     Log.d(TAG, "About to run ${testFiles.size} tests.")
+@@ -299,6 +309,10 @@ class ArchiveImportExportTests {
+         Log.e(TAG, "----------------------------------")
+       }
+ 
++    val expectedPaymentLosses = results.filterIsInstance<TestResult.Success>().filter { it.unsupportedPaymentRecords > 0 }
++    Log.i(TAG, "Expected unsupported payment history: ${expectedPaymentLosses.size} fixtures, ${expectedPaymentLosses.sumOf { it.unsupportedPaymentRecords }} records")
++    expectedPaymentLosses.forEach { Log.i(TAG, "Expected unsupported payment history: ${it.name} (${it.unsupportedPaymentRecords} records)") }
++
+     if (results.any { it is TestResult.Failure }) {
+       val successCount = results.count { it is TestResult.Success }
+       val failingTestNames = results.filterIsInstance<TestResult.Failure>().joinToString(separator = "\n") { "  \uD83D\uDD34 ${it.name}" }
+@@ -323,7 +337,7 @@ class ArchiveImportExportTests {
+     val generatedBackupData = BackupRepository.exportInMemoryForTests(plaintext = true, currentTime = success.backupTime)
+     checkEquivalent(filename, inputFileBytes, generatedBackupData)?.let { return it }
+ 
+-    return TestResult.Success(filename)
++    return TestResult.Success(filename, inputFileBytes.toFrames().count { it.isUnsupportedPaymentRecord() })
+   }
+ 
+   private fun resetAllData() {
+@@ -331,6 +345,8 @@ class ArchiveImportExportTests {
  
      KeyValueDatabase.getInstance(AppDependencies.application).clear()
      SignalStore.resetCache()
@@ -983,7 +1027,7 @@ index ea67a702..f54c78d3 100644
  
      SignalStore.account.resetAccountEntropyPool()
      SignalStore.account.setE164(SELF_E164)
-@@ -371,7 +375,36 @@ class ArchiveImportExportTests {
+@@ -371,7 +387,43 @@ class ArchiveImportExportTests {
  //      return TestResult.Failure(testName, "Imported backup contains unknown fields: ${importComparable.unknownFieldMessages.contentToString()}")
  //    }
  
@@ -992,15 +1036,22 @@ index ea67a702..f54c78d3 100644
 +    // Check that the exported backup omits it, then remove only that field from the expected backup.
 +    val importFrames = import.toFrames()
 +    val hasScreenLockTimeout = importFrames.any { it.account?.accountSettings?.screenLockTimeoutMinutes != null }
-+    val canonicalImport = if (hasScreenLockTimeout) {
-+      if (export.toFrames().any { it.account?.accountSettings?.screenLockTimeoutMinutes != null }) {
++    val hasUnsupportedPaymentRecords = importFrames.any { it.isUnsupportedPaymentRecord() }
++    val canonicalImport = if (hasScreenLockTimeout || hasUnsupportedPaymentRecords) {
++      val exportFrames = export.toFrames()
++      if (hasScreenLockTimeout && exportFrames.any { it.account?.accountSettings?.screenLockTimeoutMinutes != null }) {
 +        return TestResult.Failure(testName, "Export unexpectedly retained the device-local screen-lock timeout")
++      }
++      if (hasUnsupportedPaymentRecords && exportFrames.any { it.isUnsupportedPaymentRecord() }) {
++        return TestResult.Failure(testName, "Export unexpectedly retained unsupported payment history")
 +      }
 +      val normalized = ByteArrayOutputStream()
 +      PlainTextBackupReader(import.inputStream(), import.size.toLong()).use { reader ->
 +        PlainTextBackupWriter(normalized).use { writer ->
 +          writer.write(requireNotNull(reader.backupInfo))
 +          for (frame in reader) {
++            // Molly does not support Signal payments: these exact history records are omitted.
++            if (frame.isUnsupportedPaymentRecord()) continue
 +            val account = frame.account
 +            val settings = account?.accountSettings
 +            writer.write(
@@ -1021,6 +1072,24 @@ index ea67a702..f54c78d3 100644
      val canonicalExport = exportComparable.comparableString
  
      if (canonicalImport != canonicalExport) {
+@@ -405,8 +457,16 @@ class ArchiveImportExportTests {
+     return PlainTextBackupReader(this.inputStream(), this.size.toLong()).use { it.asSequence().toList() }
+   }
+ 
++  private fun Frame.isUnsupportedPaymentRecord(): Boolean {
++    val item = chatItem ?: return false
++    return item.paymentNotification != null || item.updateMessage?.simpleUpdate?.type in setOf(
++      SimpleChatUpdate.Type.PAYMENTS_ACTIVATED,
++      SimpleChatUpdate.Type.PAYMENT_ACTIVATION_REQUEST
++    )
++  }
++
+   private sealed class TestResult(val name: String) {
+-    class Success(name: String) : TestResult(name)
++    class Success(name: String, val unsupportedPaymentRecords: Int) : TestResult(name)
+     class Failure(name: String, val message: String) : TestResult(name)
+   }
+ }
 diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/EncryptedArchiveRoundTripTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/EncryptedArchiveRoundTripTest.kt
 index a8d47c6c..35869eb2 100644
 --- a/app/src/androidTest/java/org/thoughtcrime/securesms/backup/v2/EncryptedArchiveRoundTripTest.kt

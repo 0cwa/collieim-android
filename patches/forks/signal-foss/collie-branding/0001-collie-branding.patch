@@ -1,11 +1,11 @@
-From cd038505991878bb4a2a7153868566d1e0d5207d Mon Sep 17 00:00:00 2001
+From 9ddd67c6381cd5449b722d94eff07501afd64367 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Wed, 4 Nov 2026 05:25:46 +0100
 Subject: [PATCH] Apply Collie palette and app identity
 
 Use warm light and dark theme roles and translate app identity references while preserving Molly donations and services. Disable the Molly updater for Collie builds because it cannot provide Collie releases.
 
-Source-Commit: cd038505991878bb4a2a7153868566d1e0d5207d
+Source-Commit: 9ddd67c6381cd5449b722d94eff07501afd64367
 
 ---
  app/build.gradle.kts                          |   3 +-
@@ -398,10 +398,10 @@ Source-Commit: cd038505991878bb4a2a7153868566d1e0d5207d
  387 files changed, 10814 insertions(+), 10813 deletions(-)
 
 diff --git a/app/build.gradle.kts b/app/build.gradle.kts
-index f0bf37ae..b7f80b9b 100644
+index 63af7536..333b0e3a 100644
 --- a/app/build.gradle.kts
 +++ b/app/build.gradle.kts
-@@ -291,7 +291,8 @@ android {
+@@ -301,7 +301,8 @@ android {
  
      create("website") {
        dimension = "distribution"

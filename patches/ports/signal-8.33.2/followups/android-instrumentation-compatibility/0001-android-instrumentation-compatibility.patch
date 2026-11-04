@@ -1,11 +1,11 @@
-From 6c40af1576e3a15f27803f5da8c318f0a66ba2f4 Mon Sep 17 00:00:00 2001
+From e9a5d664642dc3e253a6d76cb4b224315640ffeb Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Wed, 4 Nov 2026 18:11:58 +0100
+Date: Wed, 4 Nov 2026 18:30:51 +0100
 Subject: [PATCH] Restore shared Android instrumentation compatibility
 
 
 Based-On-Source-Commit: 8c230f133ca618ac2daaddddd356e1e5580a9659
-Source-Commit: 6c40af1576e3a15f27803f5da8c318f0a66ba2f4
+Source-Commit: e9a5d664642dc3e253a6d76cb4b224315640ffeb
 
 ---
  app/build.gradle.kts                          |  12 +-
@@ -17,7 +17,7 @@ Source-Commit: 6c40af1576e3a15f27803f5da8c318f0a66ba2f4
  .../java/org/signal/benchmark/setup/README.md |   5 +
  .../org/signal/benchmark/setup/TestUsers.kt   | 223 ++++++++++++++++
  ...serverInstrumentationApplicationContext.kt |  26 +-
- ...SignalInstrumentationApplicationContext.kt |  11 +-
+ ...SignalInstrumentationApplicationContext.kt |  14 +-
  .../backup/v2/ArchiveImportExportTests.kt     |  74 +++++-
  .../v2/EncryptedArchiveRoundTripTest.kt       |  14 +-
  .../MessageBackupsCheckoutActivityTest.kt     |   3 +-
@@ -34,7 +34,7 @@ Source-Commit: 6c40af1576e3a15f27803f5da8c318f0a66ba2f4
  .../websocket/BenchmarkWebSocketConnection.kt | 187 +++++++++++++
  .../conversation/colors/ChatColorsPalette.kt  |  10 +-
  .../backup/v2/util/ChatStyleConverterTest.kt  |  35 +++
- 26 files changed, 1112 insertions(+), 64 deletions(-)
+ 26 files changed, 1115 insertions(+), 64 deletions(-)
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/Generator.kt
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/Harness.kt
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/NoOpJob.kt
@@ -915,7 +915,7 @@ index 55833c1f..94d293a9 100644
  
    fun beginJobLoopForTests() {
 diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/SignalInstrumentationApplicationContext.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/SignalInstrumentationApplicationContext.kt
-index f675ce88..266ceb7c 100644
+index f675ce88..66681096 100644
 --- a/app/src/androidTest/java/org/thoughtcrime/securesms/SignalInstrumentationApplicationContext.kt
 +++ b/app/src/androidTest/java/org/thoughtcrime/securesms/SignalInstrumentationApplicationContext.kt
 @@ -6,6 +6,7 @@ import org.signal.core.util.logging.AndroidLogger
@@ -926,7 +926,7 @@ index f675ce88..266ceb7c 100644
  import org.thoughtcrime.securesms.database.LogDatabase
  import org.thoughtcrime.securesms.dependencies.AppDependencies
  import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider
-@@ -22,7 +23,13 @@ import org.thoughtcrime.securesms.util.Environment
+@@ -22,20 +23,29 @@ import org.thoughtcrime.securesms.util.Environment
   */
  class SignalInstrumentationApplicationContext : ApplicationContext() {
    override fun onCreate() {
@@ -941,7 +941,15 @@ index f675ce88..266ceb7c 100644
      super.onCreate()
    }
  
-@@ -35,7 +42,7 @@ class SignalInstrumentationApplicationContext : ApplicationContext() {
+   val inMemoryLogger: InMemoryLogger = InMemoryLogger()
+ 
+   override fun attachBaseContext(base: Context?) {
++    // Initialize Kotlin's Random classes before application startup schedules background work.
++    // Concurrent first use from a test and a periodic task can deadlock their class initializers.
++    kotlin.random.Random.nextLong()
+     Environment.IS_INSTRUMENTATION = true
+     super.attachBaseContext(base)
+   }
  
    override fun initializeAppDependencies() {
      val default = ApplicationDependencyProvider(this)

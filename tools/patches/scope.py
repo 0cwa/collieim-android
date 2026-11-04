@@ -65,7 +65,7 @@ BEHAVIOR = {'reregistration-linked-devices-reminder', 'legacy-backup-precedence'
             'donation-completion', 'backup-notification-id-upgrade',
             'passphrase-timeout-fallback', 'backup-revision-walk', 'restore-badges-log-theme',
             'network-initialization-cycle', 'enable-linked-history-transfer',
-            'android-instrumentation-compatibility'}
+            'android-instrumentation-compatibility', 'stripe-card-token-serialization'}
 ADDITIONS = {'registration-network-settings', 'donation-completion-copy', 'unifiedpush-registration-retry'}
 FEATURES = ('retention-controls', 'firebase-free-build')
 

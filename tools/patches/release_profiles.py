@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 import re
 
+import fork_test_sources
+
 
 NAMES = {'molly-minimal', 'molly-continued', 'molly-foss-continued',
          'collie', 'collie-foss'}
@@ -30,12 +32,8 @@ class ProfileError(ValueError):
     pass
 
 
-TEST_SOURCE = re.compile(r'^(?P<module>.+?)/src/test/(?:java|kotlin)/(?P<name>.+)\.(?:kt|java)$')
-OTHER_TEST_SOURCE = re.compile(r'(^|/)src/(androidTest|testFixtures|screenshotTest\w*)/')
-
-
-def layer_test_classes(repo, series):
-    """Test classes a fork layer adds or changes, as (module, class), in mailbox order."""
+def layer_test_sources(repo, series):
+    """Classify test sources a fork layer adds or changes in mailbox order."""
     root = Path(repo) / FORK_ROOT
     provenance = json.loads((root / 'provenance.json').read_text())
     layers = [x for x in provenance['layers'] if FORK_ROOT + '/' + x['series'] == series]
@@ -50,12 +48,24 @@ def layer_test_classes(repo, series):
         path = header.group(2)
         if re.search(r'^deleted file mode ', block.split('\n@@', 1)[0], flags=re.M):
             continue
-        match = TEST_SOURCE.match(path)
-        if match:
-            found.append((match['module'], match['name'].replace('/', '.')))
-        elif OTHER_TEST_SOURCE.search(path):
+        source = fork_test_sources.classify(path)
+        if source and source[0] == 'unsupported':
             raise ProfileError('no unit test task rule for fork test source: ' + path)
+        if source:
+            found.append(source)
     return found
+
+
+def layer_test_classes(repo, series):
+    """JVM test classes a fork layer adds or changes, in mailbox order."""
+    return [identity for kind, identity in layer_test_sources(repo, series) if kind == 'unit']
+
+
+def instrumentation_sources(repo, fork_series):
+    """Device test source paths covered by the selected profile's device gate."""
+    return list(dict.fromkeys(identity for series in fork_series
+                              for kind, identity in layer_test_sources(repo, series)
+                              if kind == 'instrumentation'))
 
 
 def derived_tests(repo, base, fork_series):
@@ -125,9 +135,14 @@ def select(config, name, repo='.'):
     selected['port']['series'] = entry['base_series']
     selected['target_tree'] = entry['target_tree']
     selected['android']['tests'] = derived_tests(repo, base_tests, fork)
+    device_sources = instrumentation_sources(repo, fork)
+    if device_sources and name not in ('collie', 'collie-foss'):
+        raise ProfileError('fork instrumentation sources require a profile with a device test gate')
     selected['_profile'] = {'name': name, 'base_checkpoint': entry['base_checkpoint'],
                             'base_layer': boundary, 'base_tree': entry['base_tree'], 'target_tree': entry['target_tree'],
                             'fork_series': fork, 'firebase_free': entry['firebase_free']}
+    if device_sources:
+        selected['_profile']['instrumentation_sources'] = device_sources
     if fork:
         selected['_profile']['fork_source'] = copy.deepcopy(fork_source)
         selected['_profile']['signal_commit'] = config['signal']['commit']

@@ -1,4 +1,4 @@
-From cc487e9601747c246d0efb6ada860bc53e199f2f Mon Sep 17 00:00:00 2001
+From efc4fd24b2be7862051c5066be9031c13a6855d8 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Mon, 2 Nov 2026 04:05:28 +0100
 Subject: [PATCH] Add a Firebase-free build while preserving push choices
@@ -15,7 +15,7 @@ stub library.
 
 Inspired-by: Angus Turnbull <github@twinhelix.com>
 
-Source-Commit: cc487e9601747c246d0efb6ada860bc53e199f2f
+Source-Commit: efc4fd24b2be7862051c5066be9031c13a6855d8
 
 ---
  app/build.gradle.kts                          | 17 ++++-

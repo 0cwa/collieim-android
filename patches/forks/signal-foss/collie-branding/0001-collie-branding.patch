@@ -1,15 +1,26 @@
-From 456e9884149060cf98cf0cfe1b236c595cde44ef Mon Sep 17 00:00:00 2001
+From aca061b46615e8eaf036668706c7d6854a158213 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Wed, 4 Nov 2026 05:25:46 +0100
-Subject: [PATCH] Apply Collie palette and app identity
+Date: Wed, 4 Nov 2026 19:11:11 +0100
+Subject: [PATCH] Apply Collie branding and expressive theme
 
-Use warm light and dark theme roles and translate app identity references while preserving Molly donations and services. Disable the Molly updater for Collie builds because it cannot provide Collie releases.
+Use the Collie identity and palette, and keep automatic chat colors legible while preserving explicit presets and wallpaper-derived colors.
 
-Source-Commit: 456e9884149060cf98cf0cfe1b236c595cde44ef
+AI-assisted compatibility changes.
+
+Source-Commit: aca061b46615e8eaf036668706c7d6854a158213
 
 ---
  app/build.gradle.kts                          |   3 +-
+ .../backup/v2/util/ChatStyleConverter.kt      |   2 +-
  .../app/internal/InternalSettingsFragment.kt  |   2 +-
+ .../conversation/colors/ChatColorsPalette.kt  |   4 +
+ .../colors/ui/ChatColorSelectionAdapter.kt    |   3 +-
+ .../colors/ui/ChatColorSelectionRepository.kt |   2 +-
+ .../colors/ui/ChatColorSelectionState.kt      |   2 +-
+ .../securesms/recipients/Recipient.kt         |   2 +-
+ .../wallpaper/ChatWallpaperRepository.java    |   2 +-
+ .../drawable-v21/cta_button_background.xml    |   2 +-
+ .../res/layout/chat_wallpaper_fragment.xml    |   2 +-
  app/src/main/res/values-af/strings.xml        | 270 ++++++++---------
  app/src/main/res/values-af/strings2.xml       |   2 +-
  app/src/main/res/values-ar/strings2.xml       |   8 +-
@@ -148,15 +159,17 @@ Source-Commit: 456e9884149060cf98cf0cfe1b236c595cde44ef
  app/src/main/res/values/light_colors.xml      |   4 +-
  app/src/main/res/values/strings.xml           | 274 ++++++++---------
  app/src/main/res/values/strings2.xml          |  30 +-
- app/src/main/res/values/themes.xml            |  12 +-
- .../core/ui/compose/theme/SignalTheme.kt      | 138 ++++-----
+ app/src/main/res/values/themes.xml            |  18 +-
+ .../backup/v2/util/ChatStyleColorTest.kt      |  36 +++
+ .../recipients/Recipient_getChatColorsTest.kt |   6 +-
+ .../core/ui/compose/theme/SignalTheme.kt      | 140 ++++-----
  .../res/drawable/ic_radio_button_checked.xml  |   4 +-
- .../res/values-night/material3_colors.xml     |  24 +-
- core/ui/src/main/res/values/core_colors.xml   |  14 +-
- .../src/main/res/values/material3_colors.xml  |  26 +-
+ .../res/values-night/material3_colors.xml     |  30 +-
+ core/ui/src/main/res/values/core_colors.xml   |  19 +-
+ .../src/main/res/values/material3_colors.xml  |  32 +-
  .../main/res/values/material3_colors_dark.xml |   2 +-
  .../res/values/material3_colors_light.xml     |  16 +-
- core/ui/src/main/res/values/molly_colors.xml  | 148 +++++-----
+ core/ui/src/main/res/values/molly_colors.xml  | 152 +++++-----
  .../src/main/res/values-af/strings.xml        |  12 +-
  .../src/main/res/values-ar/strings2.xml       |   2 +-
  .../src/main/res/values-az/strings.xml        |  12 +-
@@ -395,7 +408,8 @@ Source-Commit: 456e9884149060cf98cf0cfe1b236c595cde44ef
  .../src/main/res/values-zh-rHK/strings.xml    |   2 +-
  .../src/main/res/values-zh-rTW/strings.xml    |   2 +-
  .../src/main/res/values/strings.xml           |   2 +-
- 387 files changed, 10814 insertions(+), 10813 deletions(-)
+ 398 files changed, 10881 insertions(+), 10838 deletions(-)
+ create mode 100644 app/src/test/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleColorTest.kt
 
 diff --git a/app/build.gradle.kts b/app/build.gradle.kts
 index 63af7536..333b0e3a 100644
@@ -411,6 +425,19 @@ index 63af7536..333b0e3a 100644
        isDefault = true
      }
  
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleConverter.kt b/app/src/main/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleConverter.kt
+index 38f3bba2..5a7a9e33 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleConverter.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleConverter.kt
+@@ -127,7 +127,7 @@ fun ChatStyle.toLocal(importState: ImportState): ChatColors? {
+   }
+ 
+   if (this.autoBubbleColor != null) {
+-    return ChatColorsPalette.Bubbles.default.withId(ChatColors.Id.Auto)
++    return ChatColorsPalette.Bubbles.autoDefault
+   }
+ 
+   if (this.customColorId != null) {
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/InternalSettingsFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/InternalSettingsFragment.kt
 index ad641a2c..a058c15a 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/InternalSettingsFragment.kt
@@ -424,6 +451,119 @@ index ad641a2c..a058c15a 100644
          onClick = {
            MaterialAlertDialogBuilder(requireContext())
              .setTitle("Delete UnifiedPush ping?")
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ChatColorsPalette.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ChatColorsPalette.kt
+index a37d86c6..da3f05f7 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ChatColorsPalette.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ChatColorsPalette.kt
+@@ -163,6 +163,10 @@ object ChatColorsPalette {
+     @JvmStatic
+     val default = ULTRAMARINE
+ 
++    // Automatic chats without wallpaper use Collie copper; explicit presets stay unchanged.
++    @JvmStatic
++    val autoDefault = ChatColors.forColor(ChatColors.Id.Auto, 0xFF96390C.toInt())
++
+     /*
+      * If updating this list of colors, make sure to update the backup import/export colors as well.
+      */
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionAdapter.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionAdapter.kt
+index b0226dba..c9ae53d9 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionAdapter.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionAdapter.kt
+@@ -1,7 +1,6 @@
+ package org.thoughtcrime.securesms.conversation.colors.ui
+ 
+ import android.content.Context
+-import android.graphics.Color
+ import android.view.View
+ import android.widget.ImageView
+ import android.widget.TextView
+@@ -95,7 +94,7 @@ class ChatColorSelectionAdapter(
+         TooltipPopup.forTarget(itemView)
+           .setText(R.string.ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper)
+           .setBackgroundTint(ThemeUtil.getThemedColor(context, org.signal.core.ui.R.attr.signal_accent_primary))
+-          .setTextColor(Color.WHITE)
++          .setTextColor(ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorOnPrimary))
+           .show(TooltipPopup.POSITION_BELOW)
+       }
+     }
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionRepository.kt
+index 022b7f58..7549fc89 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionRepository.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionRepository.kt
+@@ -51,7 +51,7 @@ sealed class ChatColorSelectionRepository(context: Context) {
+           if (wallpaper != null) {
+             consumer(wallpaper.autoChatColors)
+           } else {
+-            consumer(ChatColorsPalette.Bubbles.default.withId(ChatColors.Id.Auto))
++            consumer(ChatColorsPalette.Bubbles.autoDefault)
+           }
+         }
+       }
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionState.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionState.kt
+index 7e701801..241ece83 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionState.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ui/ChatColorSelectionState.kt
+@@ -30,7 +30,7 @@ data class ChatColorSelectionState(
+       )
+     } else {
+       ChatColorMappingModel(
+-        ChatColorsPalette.Bubbles.default.withId(ChatColors.Id.Auto),
++        ChatColorsPalette.Bubbles.autoDefault,
+         chatColors?.id == ChatColors.Id.Auto,
+         true
+       )
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/recipients/Recipient.kt b/app/src/main/java/org/thoughtcrime/securesms/recipients/Recipient.kt
+index 0f1697d9..83948413 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/recipients/Recipient.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/recipients/Recipient.kt
+@@ -442,7 +442,7 @@ class Recipient(
+ 
+   /** The chat color to use when the "automatic" chat color setting is active, which derives a color from the wallpaper. */
+   private val autoChatColor: ChatColors
+-    get() = wallpaper?.autoChatColors ?: ChatColorsPalette.Bubbles.default.withId(Auto)
++    get() = wallpaper?.autoChatColors ?: ChatColorsPalette.Bubbles.autoDefault
+ 
+   /** A fully resolved copy of this recipient, if needed. */
+   private val resolved: Recipient
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/wallpaper/ChatWallpaperRepository.java b/app/src/main/java/org/thoughtcrime/securesms/wallpaper/ChatWallpaperRepository.java
+index 808a2ca0..3c9f2adc 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/wallpaper/ChatWallpaperRepository.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/wallpaper/ChatWallpaperRepository.java
+@@ -41,7 +41,7 @@ class ChatWallpaperRepository {
+     } else if (SignalStore.wallpaper().hasWallpaperSet()) {
+       return Objects.requireNonNull(SignalStore.wallpaper().getWallpaper()).getAutoChatColors();
+     } else {
+-      return ChatColorsPalette.Bubbles.getDefault().withId(ChatColors.Id.Auto.INSTANCE);
++      return ChatColorsPalette.Bubbles.getAutoDefault();
+     }
+   }
+ 
+diff --git a/app/src/main/res/drawable-v21/cta_button_background.xml b/app/src/main/res/drawable-v21/cta_button_background.xml
+index 059e9cc2..a1f270d9 100644
+--- a/app/src/main/res/drawable-v21/cta_button_background.xml
++++ b/app/src/main/res/drawable-v21/cta_button_background.xml
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <ripple xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:color="@color/core_ultramarine">
++    android:color="@color/core_ultramarine_dark">
+ 
+     <item android:id="@android:id/mask">
+         <shape android:shape="rectangle">
+diff --git a/app/src/main/res/layout/chat_wallpaper_fragment.xml b/app/src/main/res/layout/chat_wallpaper_fragment.xml
+index 930b05a0..58308f69 100644
+--- a/app/src/main/res/layout/chat_wallpaper_fragment.xml
++++ b/app/src/main/res/layout/chat_wallpaper_fragment.xml
+@@ -177,7 +177,7 @@
+                 app:layout_constraintStart_toEndOf="@id/chat_wallpaper_preview_bottom_bar_input"
+                 app:layout_constraintTop_toTopOf="@id/chat_wallpaper_preview_bottom_bar"
+                 app:srcCompat="@drawable/ic_plus_24"
+-                app:tint="@color/core_white" />
++                app:tint="?attr/colorOnPrimary" />
+ 
+             <androidx.appcompat.widget.AppCompatImageView
+                 android:id="@+id/chat_wallpaper_preview_today"
 diff --git a/app/src/main/res/values-af/strings.xml b/app/src/main/res/values-af/strings.xml
 index 6d0e9002..912330b3 100644
 --- a/app/src/main/res/values-af/strings.xml
@@ -63360,7 +63500,7 @@ index cdb06b64..b8f5fd9c 100644
      <string name="GcmRefreshJob_unable_to_register_with_Google_Play_Services">"Unable to register with Play Services</string>
      <string name="GcmRefreshJob_switch_to_an_alternative_push_service_in_settings_notifications">Switch to an alternative push service in Settings &gt; Notifications or fix the issue with Play Services.</string>
 diff --git a/app/src/main/res/values/themes.xml b/app/src/main/res/values/themes.xml
-index e57b5d4b..28b95b9c 100644
+index e57b5d4b..2ad5d929 100644
 --- a/app/src/main/res/values/themes.xml
 +++ b/app/src/main/res/values/themes.xml
 @@ -255,11 +255,11 @@
@@ -63373,11 +63513,20 @@ index e57b5d4b..28b95b9c 100644
          <item name="switchThemeOverlay">@style/ThemeOverlay.MaterialSwitch.DayNight</item>
 -        <item name="extended_action_button_container_color">@color/molly_tertiary_container_light</item>
 -        <item name="extended_action_button_icon_color">@color/molly_on_tertiary_container_light</item>
-+        <item name="extended_action_button_container_color">?attr/colorPrimary</item>
-+        <item name="extended_action_button_icon_color">?attr/colorOnPrimary</item>
++        <item name="extended_action_button_container_color">@color/collie_red</item>
++        <item name="extended_action_button_icon_color">@color/collie_bark_black</item>
  
          <item name="filled_tonal_icon_button_container_color">@color/molly_surface_container_highest_light</item>
          <item name="filled_tonal_icon_button_icon_color">@color/molly_on_surface_light</item>
+@@ -267,7 +267,7 @@
+         <item name="context_menu_container_color">@color/molly_surface_container_light</item>
+ 
+         <item name="navbar_active_indicator_color">@color/molly_secondary_container_light</item>
+-        <item name="navbar_container_color">@color/molly_surface_container_light</item>
++        <item name="navbar_container_color">@color/molly_secondary_fixed</item>
+     </style>
+ 
+     <style name="TextSecure.DarkTheme" parent="@style/TextSecure.BaseDarkTheme">
 @@ -370,7 +370,7 @@
          <item name="signal_icon_tint_tab_unselected">?attr/colorOnSurfaceVariant</item>
          <item name="signal_button_primary">@color/core_ultramarine_light</item>
@@ -63387,7 +63536,16 @@ index e57b5d4b..28b95b9c 100644
          <item name="signal_button_primary_text_disabled">@color/transparent_white_20</item>
          <item name="signal_button_secondary">@color/core_grey_75</item>
          <item name="signal_button_secondary_ripple">@color/core_grey_80</item>
-@@ -428,8 +428,8 @@
+@@ -381,7 +381,7 @@
+         <item name="contact_filter_edit_background">?attr/colorSurfaceContainerHighest</item>
+         <item name="reactions_pill_selected_color">?attr/colorSurfaceContainer</item>
+         <item name="qr_card_color">@color/molly_on_primary_light</item>
+-        <item name="qr_card_text_color">?attr/colorOnSurfaceVariant</item>
++        <item name="qr_card_text_color">@color/molly_on_surface_light</item>
+         <item name="conversation_item_update_text_color">?attr/colorOnSurfaceVariant</item>
+         <item name="conversation_item_quote_text_color">@color/core_grey_05</item>
+         <item name="conversation_item_quote_text_color_sent">?attr/colorOnSurface</item>
+@@ -428,15 +428,15 @@
          <item name="safety_tip_image_background">?attr/colorSecondary</item>
  
          <item name="switchThemeOverlay">@style/ThemeOverlay.MaterialSwitch.DayNight</item>
@@ -63398,8 +63556,89 @@ index e57b5d4b..28b95b9c 100644
  
          <item name="filled_tonal_icon_button_container_color">@color/molly_surface_container_highest_dark</item>
          <item name="filled_tonal_icon_button_icon_color">@color/molly_on_surface_dark</item>
+ 
+         <item name="context_menu_container_color">@color/molly_surface_container_high_dark</item>
+ 
+-        <item name="navbar_active_indicator_color">@color/molly_surface_bright_dark</item>
++        <item name="navbar_active_indicator_color">@color/molly_secondary_container_dark</item>
+         <item name="navbar_container_color">@color/molly_surface_container_dark</item>
+     </style>
+ 
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleColorTest.kt b/app/src/test/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleColorTest.kt
+new file mode 100644
+index 00000000..4a366c46
+--- /dev/null
++++ b/app/src/test/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleColorTest.kt
+@@ -0,0 +1,36 @@
++package org.thoughtcrime.securesms.backup.v2.util
++
++import io.mockk.mockk
++import org.junit.Assert.assertEquals
++import org.junit.Assert.assertNotNull
++import org.junit.Assert.assertTrue
++import org.junit.Test
++import org.signal.archive.proto.ChatStyle
++import org.thoughtcrime.securesms.backup.v2.BackupMode
++import org.thoughtcrime.securesms.backup.v2.ImportState
++import org.thoughtcrime.securesms.conversation.colors.ChatColors
++import org.thoughtcrime.securesms.conversation.colors.ChatColorsPalette
++import org.thoughtcrime.securesms.database.SignalDatabase
++
++class ChatStyleColorTest {
++  private val importState: ImportState = mockk()
++  private val database: SignalDatabase = mockk()
++  private val backupMode = BackupMode.LOCAL
++
++  @Test
++  fun `automatic color survives export and import as automatic copper`() {
++    val auto = ChatColorsPalette.Bubbles.autoDefault
++    val exported = ChatStyleConverter.constructRemoteChatStyle(database, auto, ChatColors.Id.Auto, null, backupMode)!!
++    assertNotNull(exported.autoBubbleColor)
++    assertEquals(ChatColors.forColor(ChatColors.Id.Auto, 0xFF96390C.toInt()), exported.toLocal(importState))
++  }
++
++  @Test
++  fun `explicit ultramarine remains selectable and survives export and import`() {
++    val ultramarine = ChatColorsPalette.Bubbles.ULTRAMARINE
++    assertTrue(ChatColorsPalette.Bubbles.all.contains(ultramarine))
++    val exported = ChatStyleConverter.constructRemoteChatStyle(database, ultramarine, ChatColors.Id.BuiltIn, null, backupMode)!!
++    assertEquals(ChatStyle.BubbleColorPreset.SOLID_ULTRAMARINE, exported.bubbleColorPreset)
++    assertEquals(ultramarine, exported.toLocal(importState))
++  }
++}
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/recipients/Recipient_getChatColorsTest.kt b/app/src/test/java/org/thoughtcrime/securesms/recipients/Recipient_getChatColorsTest.kt
+index 67d4b7d9..715d2344 100644
+--- a/app/src/test/java/org/thoughtcrime/securesms/recipients/Recipient_getChatColorsTest.kt
++++ b/app/src/test/java/org/thoughtcrime/securesms/recipients/Recipient_getChatColorsTest.kt
+@@ -29,7 +29,7 @@ import org.thoughtcrime.securesms.wallpaper.ChatWallpaper
+ @RunWith(RobolectricTestRunner::class)
+ @Config(manifest = Config.NONE, application = Application::class)
+ class Recipient_getChatColorsTest {
+-  private val defaultChatColors = ChatColorsPalette.Bubbles.default.withId(ChatColors.Id.Auto)
++  private val defaultChatColors = ChatColors.forColor(ChatColors.Id.Auto, 0xFF96390C.toInt())
+   private val globalWallpaperChatColor = ChatColors.forColor(ChatColors.Id.BuiltIn, Color.RED)
+   private val globalChatColor = ChatColors.forColor(ChatColors.Id.BuiltIn, Color.GREEN)
+ 
+@@ -210,7 +210,7 @@ class Recipient_getChatColorsTest {
+   }
+ 
+   @Test
+-  fun `Given no recipient colors and auto global colors and no wallpaper set, when I getChatColors, then I expect default blue`() {
++  fun `Given no recipient colors and auto global colors and no wallpaper set, when I getChatColors, then I expect default copper`() {
+     // GIVEN
+     every { wallpaperValues.wallpaper } answers { null }
+     every { chatColorsValues.chatColors } answers { globalChatColor.withId(ChatColors.Id.Auto) }
+@@ -224,7 +224,7 @@ class Recipient_getChatColorsTest {
+   }
+ 
+   @Test
+-  fun `Given no colors or wallpaper set, when I getChatColors, then I expect default blue`() {
++  fun `Given no colors or wallpaper set, when I getChatColors, then I expect default copper`() {
+     // GIVEN
+     every { wallpaperValues.wallpaper } answers { null }
+     every { chatColorsValues.chatColors } answers { null }
 diff --git a/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt b/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt
-index 06763d59..e4fb6026 100644
+index 06763d59..13c24d95 100644
 --- a/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt
 +++ b/core/ui/src/main/java/org/signal/core/ui/compose/theme/SignalTheme.kt
 @@ -91,40 +91,40 @@ private val typography = Typography().run {
@@ -63431,7 +63670,7 @@ index 06763d59..e4fb6026 100644
    onError = Color(0xFFFFFFFF),
    onErrorContainer = Color(0xFF6D0028),
 -  tertiary = Color(0xFF5A5379),
-+  tertiary = Color(0xFF2F4F3A),
++  tertiary = Color(0xFF891E07),
    onTertiary = Color(0xFFFFFFFF),
 -  tertiaryContainer = Color(0xFFD1C6FB),
 -  onTertiaryContainer = Color(0xFF180D49),
@@ -63442,12 +63681,12 @@ index 06763d59..e4fb6026 100644
 -  surface = Color(0xFFF6F6FF),
 -  surfaceVariant = Color(0xFFE7E6F2),
 -  background = Color(0xFFF6F6FF),
-+  tertiaryContainer = Color(0xFFB7C597),
-+  onTertiaryContainer = Color(0xFF1B3021),
++  tertiaryContainer = Color(0xFFEE9024),
++  onTertiaryContainer = Color(0xFF3C1207),
 +  primary = Color(0xFF96390C),
-+  primaryContainer = Color(0xFFF8E2C0),
++  primaryContainer = Color(0xFFF2982B),
 +  secondary = Color(0xFF2F4F3A),
-+  secondaryContainer = Color(0xFFDDE8C8),
++  secondaryContainer = Color(0xFFB7C597),
 +  surface = Color(0xFFFFF8F0),
 +  surfaceVariant = Color(0xFFF8E2C0),
 +  background = Color(0xFFFFF8F0),
@@ -63466,7 +63705,7 @@ index 06763d59..e4fb6026 100644
 +  onSurface = Color(0xFF24130D),
 +  onSurfaceVariant = Color(0xFF5A4033),
 +  onBackground = Color(0xFF24130D),
-+  outline = Color(0xFF806B5D)
++  outline = Color(0xFF687E59)
  )
  
  private val lightExtendedColors = ExtendedColors(
@@ -63543,10 +63782,10 @@ index 06763d59..e4fb6026 100644
 -  surface = Color(0xFF100E1F),
 -  surfaceVariant = Color(0xFF302F33),
 -  background = Color(0xFF100E1F),
-+  tertiary = Color(0xFFB7C597),
-+  onTertiary = Color(0xFF203A29),
-+  tertiaryContainer = Color(0xFF2F4F3A),
-+  onTertiaryContainer = Color(0xFFE2EBCF),
++  tertiary = Color(0xFFEE9024),
++  onTertiary = Color(0xFF24130D),
++  tertiaryContainer = Color(0xFFEE9024),
++  onTertiaryContainer = Color(0xFF24130D),
 +  primary = Color(0xFFF2982B),
 +  primaryContainer = Color(0xFF6F270F),
 +  secondary = Color(0xFFB7C597),
@@ -63575,6 +63814,15 @@ index 06763d59..e4fb6026 100644
  )
  
  // MOLLY: Replaced by snackbarColors()
+@@ -356,7 +356,7 @@ private fun isThemeUsingDynamicColors(context: Context): Boolean {
+ 
+ private fun extendedColors(colorScheme: ColorScheme, isDarkMode: Boolean, isDynamic: Boolean): ExtendedColors {
+   return when {
+-    isDynamic -> lightExtendedColors.copy(
++    isDynamic -> (if (isDarkMode) darkExtendedColors else lightExtendedColors).copy(
+       colorSurface1 = colorScheme.surfaceContainerLow,
+       colorSurface2 = colorScheme.surfaceContainer,
+       colorSurface3 = colorScheme.surfaceContainerHigh,
 @@ -376,8 +376,8 @@ private fun snackbarColors(colorScheme: ColorScheme, isDarkMode: Boolean, isDyna
    return SnackbarColors(
      color = colorScheme.inverseSurface,
@@ -63601,7 +63849,7 @@ index 1094d1c2..fdfcd506 100644
      
  </vector>
 diff --git a/core/ui/src/main/res/values-night/material3_colors.xml b/core/ui/src/main/res/values-night/material3_colors.xml
-index c2146c26..35010fdb 100644
+index c2146c26..ff24b10c 100644
 --- a/core/ui/src/main/res/values-night/material3_colors.xml
 +++ b/core/ui/src/main/res/values-night/material3_colors.xml
 @@ -28,22 +28,22 @@
@@ -63630,20 +63878,23 @@ index c2146c26..35010fdb 100644
 +    <color name="signal_colorBackground_0">#0024130D</color>
  
      <!-- Core color alpha variants without alpha channel -->
-     <color name="signal_colorSurfaceVariant_16_no_alpha">#3F4249</color>
-     <color name="signal_colorSurfaceVariant_32_no_alpha">#5D5E62</color>
+-    <color name="signal_colorSurfaceVariant_16_no_alpha">#3F4249</color>
+-    <color name="signal_colorSurfaceVariant_32_no_alpha">#5D5E62</color>
++    <color name="signal_colorSurfaceVariant_16_no_alpha">#544237</color>
++    <color name="signal_colorSurfaceVariant_32_no_alpha">#756457</color>
  
      <color name="reminder_background">#26221D</color>
 -<color name="signal_colorTertiaryContainer_12">#1F423290</color>
 -    <color name="signal_colorOutlineVariant_38">#615D5D66</color>
-+<color name="signal_colorTertiaryContainer_12">#1F2F4F3A</color>
+-    </resources>
++    <color name="signal_colorTertiaryContainer_12">#1FEE9024</color>
 +    <color name="signal_colorOutlineVariant_38">#61705849</color>
-     </resources>
++</resources>
 diff --git a/core/ui/src/main/res/values/core_colors.xml b/core/ui/src/main/res/values/core_colors.xml
-index df13d04e..31b04102 100644
+index df13d04e..bd3457e9 100644
 --- a/core/ui/src/main/res/values/core_colors.xml
 +++ b/core/ui/src/main/res/values/core_colors.xml
-@@ -1,12 +1,12 @@
+@@ -1,12 +1,15 @@
  <?xml version="1.0" encoding="utf-8"?>
  <resources>
 -    <color name="core_ultramarine">#7152FF</color>
@@ -63653,9 +63904,12 @@ index df13d04e..31b04102 100644
 -    <color name="core_ultramarine_icon_dark">#3F1AAA</color>
 -    <color name="core_ultramarine_33">#557152FF</color>
 -    <color name="core_ultramarine_50">#807152FF</color>
++    <!-- Collie accents used for filled controls with legible dark foregrounds. -->
++    <color name="collie_red">#D85B09</color>
++    <color name="collie_bark_black">#24130D</color>
 +    <color name="core_ultramarine">#96390C</color>
 +    <color name="core_ultramarine_light">#F2982B</color>
-+    <color name="core_ultramarine_dark">#96390C</color>
++    <color name="core_ultramarine_dark">#6F270F</color>
 +    <color name="core_ultramarine_icon">#D85B09</color>
 +    <color name="core_ultramarine_icon_dark">#6F270F</color>
 +    <color name="core_ultramarine_33">#5596390C</color>
@@ -63663,8 +63917,15 @@ index df13d04e..31b04102 100644
  
      <color name="core_green">#4caf50</color>            <!-- green_500 -->
      <color name="core_yellow">#ffd624</color>
+@@ -36,4 +39,4 @@
+     <color name="core_grey_85">#262626</color>
+     <color name="core_grey_90">#1b1b1b</color>
+     <color name="core_grey_95">#121212</color>
+-</resources>
+\ No newline at end of file
++</resources>
 diff --git a/core/ui/src/main/res/values/material3_colors.xml b/core/ui/src/main/res/values/material3_colors.xml
-index 3340b4ce..9ab16739 100644
+index 3340b4ce..eb4362cf 100644
 --- a/core/ui/src/main/res/values/material3_colors.xml
 +++ b/core/ui/src/main/res/values/material3_colors.xml
 @@ -28,23 +28,23 @@
@@ -63682,7 +63943,7 @@ index 3340b4ce..9ab16739 100644
 -    <color name="signal_colorOnBackground_60">#99171719</color>
 -    <color name="signal_colorOutline_38">#6182808A</color>
 -    <color name="signal_colorBackground_0">#00F6F6FF</color>
-+    <color name="signal_colorSecondaryContainer_12">#1FDDE8C8</color>
++    <color name="signal_colorSecondaryContainer_12">#1FB7C597</color>
 +    <color name="signal_colorSurface_60">#99FFF8F0</color>
 +    <color name="signal_colorSurfaceVariant_38">#61F8E2C0</color>
 +    <color name="signal_colorSurfaceVariant_64">#A3F8E2C0</color>
@@ -63691,19 +63952,22 @@ index 3340b4ce..9ab16739 100644
 +    <color name="signal_colorOnSurface_50">#8024130D</color>
 +    <color name="signal_colorOnSurfaceVariant_60">#995A4033</color>
 +    <color name="signal_colorOnBackground_60">#9924130D</color>
-+    <color name="signal_colorOutline_38">#61806B5D</color>
++    <color name="signal_colorOutline_38">#61687E59</color>
 +    <color name="signal_colorBackground_0">#00FFF8F0</color>
  
      <!-- Core color alpha variants without alpha channel -->
-     <color name="signal_colorSurfaceVariant_16_no_alpha">#D0CFDB</color>
-     <color name="signal_colorSurfaceVariant_32_no_alpha">#B9B8C4</color>
+-    <color name="signal_colorSurfaceVariant_16_no_alpha">#D0CFDB</color>
+-    <color name="signal_colorSurfaceVariant_32_no_alpha">#B9B8C4</color>
++    <color name="signal_colorSurfaceVariant_16_no_alpha">#DCCDBD</color>
++    <color name="signal_colorSurfaceVariant_32_no_alpha">#B9A99B</color>
  
      <color name="reminder_background">#faf0dc</color>
 -<color name="signal_colorTertiaryContainer_12">#1FD1C6FB</color>
 -    <color name="signal_colorOutlineVariant_38">#619384E2</color>
-+<color name="signal_colorTertiaryContainer_12">#1FB7C597</color>
+-    </resources>
++    <color name="signal_colorTertiaryContainer_12">#1FEE9024</color>
 +    <color name="signal_colorOutlineVariant_38">#61B49D89</color>
-     </resources>
++</resources>
 diff --git a/core/ui/src/main/res/values/material3_colors_dark.xml b/core/ui/src/main/res/values/material3_colors_dark.xml
 index 68184477..82c2fd1e 100644
 --- a/core/ui/src/main/res/values/material3_colors_dark.xml
@@ -63718,7 +63982,7 @@ index 68184477..82c2fd1e 100644
      <color name="signal_dark_neutralFill">#33FFFFFF</color>
      <color name="signal_dark_colorOnCustom">#FFFFFF</color>
 diff --git a/core/ui/src/main/res/values/material3_colors_light.xml b/core/ui/src/main/res/values/material3_colors_light.xml
-index 4fbb5423..1a69788b 100644
+index 4fbb5423..433c8fe5 100644
 --- a/core/ui/src/main/res/values/material3_colors_light.xml
 +++ b/core/ui/src/main/res/values/material3_colors_light.xml
 @@ -1,15 +1,15 @@
@@ -63728,7 +63992,7 @@ index 4fbb5423..1a69788b 100644
 -    <color name="signal_light_colorSecondaryContainer">#E3DBF9</color>
 -    <color name="signal_light_colorSurface">#F6F6FF</color>
 +    <color name="signal_light_colorPrimary">#96390C</color>
-+    <color name="signal_light_colorSecondaryContainer">#DDE8C8</color>
++    <color name="signal_light_colorSecondaryContainer">@color/molly_secondary_container_light</color>
 +    <color name="signal_light_colorSurface">#FFF8F0</color>
      <color name="signal_light_colorSurfaceVariantFill">#CCFFFFFF</color>
 -    <color name="signal_light_colorBackground">#F6F6FF</color>
@@ -63741,12 +64005,12 @@ index 4fbb5423..1a69788b 100644
 +    <color name="signal_light_colorOnSecondaryContainer">#203A29</color>
 +    <color name="signal_light_colorOnSurface">#24130D</color>
 +    <color name="signal_light_colorOnSurfaceVariant">#5A4033</color>
-+    <color name="signal_light_colorOutline">#806B5D</color>
++    <color name="signal_light_colorOutline">@color/molly_outline_light</color>
      <color name="signal_light_neutralSurface">#99FFFFFF</color>
      <color name="signal_light_neutralFill">#1A000000</color>
      <color name="signal_light_colorOnCustom">#FFFFFF</color>
 diff --git a/core/ui/src/main/res/values/molly_colors.xml b/core/ui/src/main/res/values/molly_colors.xml
-index 7d2d3eab..5445bc1e 100644
+index 7d2d3eab..0b04f0ee 100644
 --- a/core/ui/src/main/res/values/molly_colors.xml
 +++ b/core/ui/src/main/res/values/molly_colors.xml
 @@ -3,105 +3,105 @@
@@ -63765,7 +64029,7 @@ index 7d2d3eab..5445bc1e 100644
      <color name="stock_on_primary_light">#FFFFFF</color>
  
 -    <color name="molly_primary_container_light">#C1B4FB</color>
-+    <color name="molly_primary_container_light">#F8E2C0</color>
++    <color name="molly_primary_container_light">#F2982B</color>
      <color name="stock_primary_container_light">#D2DFFB</color>
  
 -    <color name="molly_on_primary_container_light">#180D49</color>
@@ -63796,7 +64060,7 @@ index 7d2d3eab..5445bc1e 100644
      <color name="stock_on_secondary_light">#FFFFFF</color>
  
 -    <color name="molly_secondary_container_light">#E3DBF9</color>    <!-- Variant of #E3DCF9 -->
-+    <color name="molly_secondary_container_light">#DDE8C8</color>    <!-- Variant of #E3DCF9 -->
++    <color name="molly_secondary_container_light">#B7C597</color>
      <color name="stock_secondary_container_light">#DCE5F9</color>    <!-- Variant of #DCE1F9 -->
  
 -    <color name="molly_on_secondary_container_light">#1E1835</color>
@@ -63879,7 +64143,7 @@ index 7d2d3eab..5445bc1e 100644
      <color name="stock_on_surface_variant_light">#545863</color>
  
 -    <color name="molly_outline_light">#82808A</color>
-+    <color name="molly_outline_light">#806B5D</color>
++    <color name="molly_outline_light">#687E59</color>
      <color name="stock_outline_light">#808389</color>
  
 -    <color name="molly_outline_variant_light">#9384E2</color>
@@ -63892,27 +64156,27 @@ index 7d2d3eab..5445bc1e 100644
      <color name="molly_on_error_container_light">#6D0028</color>
  
 -    <color name="molly_tertiary_light">#5A5379</color>
-+    <color name="molly_tertiary_light">#2F4F3A</color>
++    <color name="molly_tertiary_light">#891E07</color>
  
      <color name="molly_on_tertiary_light">#FFFFFF</color>
  
 -    <color name="molly_tertiary_container_light">#D1C6FB</color>
-+    <color name="molly_tertiary_container_light">#B7C597</color>
++    <color name="molly_tertiary_container_light">#EE9024</color>
  
 -    <color name="molly_on_tertiary_container_light">#180D49</color>
-+    <color name="molly_on_tertiary_container_light">#1B3021</color>
++    <color name="molly_on_tertiary_container_light">#3C1207</color>
  
 -    <color name="molly_tertiary_fixed">#EAE5FF</color>
-+    <color name="molly_tertiary_fixed">#DDE8C8</color>
++    <color name="molly_tertiary_fixed">#F8E2C0</color>
  
 -    <color name="molly_tertiary_fixed_dim">#5A5379</color>
-+    <color name="molly_tertiary_fixed_dim">#B7C597</color>
++    <color name="molly_tertiary_fixed_dim">#EE9024</color>
  
 -    <color name="molly_on_tertiary_fixed">#180D49</color>
-+    <color name="molly_on_tertiary_fixed">#203A29</color>
++    <color name="molly_on_tertiary_fixed">#3C1207</color>
  
 -    <color name="molly_on_tertiary_fixed_variant">#423290</color>
-+    <color name="molly_on_tertiary_fixed_variant">#2F4F3A</color>
++    <color name="molly_on_tertiary_fixed_variant">#891E07</color>
  
      <!-- material3_colors_dark.xml -->
  
@@ -64020,25 +64284,31 @@ index 7d2d3eab..5445bc1e 100644
      <color name="stock_outline_variant_dark">#4D5059</color>    <!-- Previously signal_dark_colorOnSurfaceVariant1 -->
  
      <color name="molly_error_dark">#FE006E</color>
-@@ -219,13 +219,13 @@
+@@ -219,37 +219,37 @@
  
      <color name="molly_on_error_container_dark">#FFDAD6</color>
  
 -    <color name="molly_tertiary_dark">#B3ABDA</color>
-+    <color name="molly_tertiary_dark">#B7C597</color>
++    <color name="molly_tertiary_dark">#EE9024</color>
  
 -    <color name="molly_on_tertiary_dark">#36304F</color>
-+    <color name="molly_on_tertiary_dark">#203A29</color>
++    <color name="molly_on_tertiary_dark">#24130D</color>
  
 -    <color name="molly_tertiary_container_dark">#423290</color>
-+    <color name="molly_tertiary_container_dark">#2F4F3A</color>
++    <color name="molly_tertiary_container_dark">#EE9024</color>
  
 -    <color name="molly_on_tertiary_container_dark">#EAE5FF</color>
-+    <color name="molly_on_tertiary_container_dark">#E2EBCF</color>
++    <color name="molly_on_tertiary_container_dark">#24130D</color>
  
      <!-- material3_colors.xml -->
  
-@@ -237,19 +237,19 @@
+-    <color name="molly_surface_variant_16_no_alpha_light">#D0CFDB</color>
++    <color name="molly_surface_variant_16_no_alpha_light">#DCCDBD</color>
+     <color name="stock_surface_variant_16_no_alpha_light">#D5D8DE</color>
+ 
+-    <color name="molly_surface_variant_32_no_alpha_light">#B9B8C4</color>
++    <color name="molly_surface_variant_32_no_alpha_light">#B9A99B</color>
+     <color name="stock_surface_variant_32_no_alpha_light">#B8BCC5</color>
  
      <!-- core_colors.xml -->
  
@@ -64047,7 +64317,7 @@ index 7d2d3eab..5445bc1e 100644
      <color name="stock_core_ultramarine">#2C6BED</color>
  
 -    <color name="molly_core_ultramarine_dark">#4924F1</color>
-+    <color name="molly_core_ultramarine_dark">#96390C</color>
++    <color name="molly_core_ultramarine_dark">#6F270F</color>
      <color name="stock_core_ultramarine_dark">#1851B4</color>
  
 -    <color name="molly_core_ultramarine_icon">#7051FF</color>   <!-- Variant of #7152FF -->

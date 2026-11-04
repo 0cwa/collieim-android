@@ -97,11 +97,11 @@ Each profile's source compared with Molly and Signal and, for profiles with fork
 
 | Profile | Tree | Fork layers | Firebase | Production written / removed | Written as % of Molly's production lines | From the fork | Molly lines not carried | Tests |
 |---|---|---|---|---:|---:|---:|---:|---:|
-| molly-minimal | `ad5c8a62804e` | none | included | +1,500 / −307 | 5.6% | — | 1,492 | +2,013 / −342 |
-| molly-continued | `23dbee2091c6` | none | included | +1,620 / −308 | 6.0% | — | 1,505 | +2,180 / −342 |
-| molly-foss-continued | `64340b8804d0` | `firebase-free-build` | removed | +1,802 / −380 | 6.7% | 2 | 1,563 | +2,357 / −342 |
-| collie | `d473354788c3` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | included | +2,199 / −398 | 8.2% | 181 | 1,992 | +2,768 / −342 |
-| collie-foss | `d473354788c3` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | removed | +2,199 / −398 | 8.2% | 181 | 1,992 | +2,768 / −342 |
+| molly-minimal | `3f425aada892` | none | included | +1,500 / −307 | 5.6% | — | 1,492 | +2,028 / −349 |
+| molly-continued | `cfd28b498a56` | none | included | +1,620 / −308 | 6.0% | — | 1,505 | +2,195 / −349 |
+| molly-foss-continued | `e8f42243d746` | `firebase-free-build` | removed | +1,802 / −380 | 6.7% | 2 | 1,563 | +2,372 / −349 |
+| collie | `c13e470ed170` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | included | +2,199 / −398 | 8.2% | 181 | 1,992 | +2,783 / −349 |
+| collie-foss | `c13e470ed170` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | removed | +2,199 / −398 | 8.2% | 181 | 1,992 | +2,783 / −349 |
 
 ## Raw physical Git diffs
 

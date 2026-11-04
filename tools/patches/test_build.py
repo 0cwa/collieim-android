@@ -295,8 +295,7 @@ class NamedProfileBuildTests(BuildSourceTests):
         with patch.object(runner, 'source_proof', return_value=self.proof):
             runner.gradle('assemble')
         self.assertIn('-PmollyFirebaseFree=false', (self.reports / 'assemble.log').read_text().splitlines())
-        self.assertIn('-PbasePackageId=im.collie.app', (self.reports / 'assemble.log').read_text().splitlines())
-        self.assertIn('-PbaseAppTitle=Molly Minimal', (self.reports / 'assemble.log').read_text().splitlines())
+        self.assertFalse(any(arg.startswith('-PbasePackageId=') for arg in (self.reports / 'assemble.log').read_text().splitlines()))
         self.args.profile = 'molly-continued'
         with self.assertRaisesRegex(build.BuildError, 'different release profile'):
             build.Build(self.args).source_proof()

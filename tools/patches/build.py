@@ -362,6 +362,8 @@ class Build:
             tasks = [':app:assembleProdWebsiteRelease']
         elif phase in ('instrumentation', 'instrumentation-imo'):
             tasks = [':app:connectedProdWebsiteDebugAndroidTest', '--console=plain']
+            if phase == 'instrumentation':
+                tasks += ['-Pandroid.testInstrumentationRunnerArguments.notPackage=org.thoughtcrime.securesms.messages.incomingmessageobserver']
             if phase == 'instrumentation-imo':
                 tasks += ['-PimoTests', '-Pandroid.testInstrumentationRunnerArguments.package=org.thoughtcrime.securesms.messages.incomingmessageobserver']
         else:

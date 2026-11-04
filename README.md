@@ -1,5 +1,9 @@
 # Collie
 
+<p align="center">
+  <img src="assets/collie-foreground.svg" alt="Collie icon" width="180">
+</p>
+
 Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It brings their private messaging features together with more choice over what stays on your device.
 
 Collie uses the Signal network, so you can talk to your Signal contacts. Its optional retention controls let you keep disappearing messages and view-once media, ignore remote deletion requests, or delete media without deleting messages. These controls are off by default.

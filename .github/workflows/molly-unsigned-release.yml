@@ -29,6 +29,7 @@ env:
 
 jobs:
   unsigned-release:
+    needs: instrumentation
     environment: unsigned-release
     runs-on: ubuntu-24.04
     timeout-minutes: 360
@@ -106,3 +107,68 @@ jobs:
           name: release-proofs-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/release-proofs
           if-no-files-found: error
+
+  instrumentation:
+    name: Instrumentation on reconstructed ${{ matrix.profile }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: collie
+          - profile: collie-foss
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Check out the exact head
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          lfs: false
+      - name: Reconstruct the selected actual fork source
+        env:
+          APPROVED: ${{ inputs.approved_commit }}
+          WORKFLOW_REVISION: ${{ github.workflow_sha }}
+        run: |
+          [[ "$APPROVED" =~ ^[0-9a-f]{40}$ && "$APPROVED" == "$GITHUB_SHA" && "$WORKFLOW_REVISION" == "$APPROVED" ]]
+          git fetch --no-tags origin refs/heads/private/release-base-5:refs/remotes/origin/private/release-base-5
+          git fetch --no-tags https://github.com/mollyim/mollyim-android.git 0e202dda90785771ff8c87526eaaf30c655f54f3
+          python3 tools/patches/prepare_port_report.py
+          python3 tools/patches/release.py --repo . --config molly-build.json \
+            --worktree "$RUNNER_TEMP/molly-instrumentation" --report "$RUNNER_TEMP/instrumentation/source.json" \
+            --scope forks --base refs/remotes/origin/private/release-base-5 --profile '${{ matrix.profile }}'
+          python3 tools/patches/build.py native-prepare --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
+          python3 tools/patches/build.py native-build --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
+          python3 tools/patches/build.py native-integrate --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
+      - name: Set up JDK 21
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+        with:
+          cache-read-only: true
+      - name: Install Android SDK
+        run: |
+          python3 tools/patches/build.py sdk --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'emulator' 'system-images;android-35;google_apis;x86_64'
+      - name: Run default and IMO instrumentation on a disposable emulator
+        run: |
+          test -w /dev/kvm || sudo chmod a+rw /dev/kvm
+          echo 'no' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd -n instrumentation -k 'system-images;android-35;google_apis;x86_64' --force
+          "$ANDROID_HOME/emulator/emulator" -avd instrumentation -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
+          emulator_pid=$!
+          trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
+          adb wait-for-device
+          timeout 300 bash -c 'until [[ "$(adb shell getprop sys.boot_completed | tr -d "\r")" == 1 ]]; do sleep 2; done'
+          tools/patches/instrumentation_gate.sh "$RUNNER_TEMP/molly-instrumentation" "$RUNNER_TEMP/instrumentation" '${{ matrix.profile }}'
+      - name: Upload instrumentation results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ${{ matrix.profile }}-instrumentation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/instrumentation
+          if-no-files-found: warn

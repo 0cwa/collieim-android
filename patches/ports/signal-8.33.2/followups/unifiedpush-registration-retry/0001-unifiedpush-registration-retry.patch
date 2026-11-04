@@ -1,6 +1,6 @@
-From 52dfd7b7a80c05bcd441ccfae92cc93e4136a221 Mon Sep 17 00:00:00 2001
+From 05802a223d08f63e37b452ee7898d539e1680457 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Wed, 4 Nov 2026 16:27:02 +0100
+Date: Tue, 3 Nov 2026 16:19:04 +0100
 Subject: [PATCH] Recover from a failed UnifiedPush registration visibly and
  boundedly
 
@@ -15,8 +15,8 @@ app is locked.
 
 AI-Generated: true
 
-Based-On-Source-Commit: be4b97bb303890750db239e2dd45ca871220eb4b
-Source-Commit: 52dfd7b7a80c05bcd441ccfae92cc93e4136a221
+Based-On-Source-Commit: 73cb3518c1bad6d3fde216bf3575484b95a2dc1e
+Source-Commit: 05802a223d08f63e37b452ee7898d539e1680457
 ---
  ...ifiedPushDefaultDistributorLinkActivity.kt |   6 +-
  .../unifiedpush/UnifiedPushDistributor.kt     |  10 +-

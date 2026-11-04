@@ -4,23 +4,29 @@
   <img src="assets/collie-foreground.svg" alt="Collie icon" width="180">
 </p>
 
+<p align="center">
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D"><img src="assets/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a>
+</p>
+
 Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.
 
 This project keeps Molly's features available as Signal develops, while offering Collie as a separate app for people who want more control over what stays on their phone. The releases share the same source and build on one another.
 
-## Planned releases
+## Releases
 
-| Release | What it offers |
-| --- | --- |
-| **Collie** | **Recommended.** Molly Continued plus optional controls for keeping messages and media. |
-| **Collie FOSS** | Collie without Firebase. |
-| **Molly Continued** | Molly on a newer Signal version, with further registration and notification improvements. |
-| **Molly FOSS Continued** | Molly Continued without Firebase. |
-| **Molly Minimal** | **Not recommended.** The updated Molly foundation, without the later improvements. |
+| Release | What it offers | Install |
+| --- | --- | --- |
+| **Collie** | **Recommended.** Molly Continued plus optional controls for keeping messages and media. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Collie FOSS** | Collie without Firebase. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%20FOSS%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C-foss%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Molly Continued** | Molly on a newer Signal version, with further registration and notification improvements. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.molly.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Molly FOSS Continued** | Molly Continued without Firebase. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.molly.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Molly Minimal** | **Not recommended.** The updated Molly foundation, without the later improvements. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.molly.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 
 Molly Minimal lacks network settings during registration for proxy users, visible errors and retry options for failed UnifiedPush registration, and updated donation confirmation text. The other releases include these changes.
 
-The Molly releases retain Molly's app identity so they can replace an existing Molly installation. Collie has its own app identity and can be installed alongside it. These releases are planned; they are not yet available for download.
+The Molly releases retain Molly's app identity so they can replace an existing Molly installation. Collie has its own app identity and can be installed alongside it.
+
+Releases are published on the [Releases page](https://github.com/0cwa/collieim-android/releases) as APKs, currently marked as pre-releases. The Obtainium links above add this repository to [Obtainium](https://obtainium.imranr.dev/) with pre-releases enabled and select that release's APK, so Obtainium can install and update it. The three Molly releases share one app identity, so Obtainium tracks only one of them at a time.
 
 ## Features
 

@@ -154,15 +154,16 @@ jobs:
         run: |
           python3 tools/patches/build.py sdk --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'emulator' 'system-images;android-35;google_apis;x86_64'
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platform-tools' 'emulator' 'system-images;android-35;google_apis;x86_64'
       - name: Run default and IMO instrumentation on a disposable emulator
         run: |
+          export PATH="$ANDROID_HOME/platform-tools:$PATH"
           test -w /dev/kvm || sudo chmod a+rw /dev/kvm
           echo 'no' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd -n instrumentation -k 'system-images;android-35;google_apis;x86_64' --force
           "$ANDROID_HOME/emulator/emulator" -avd instrumentation -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
           emulator_pid=$!
           trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
-          adb wait-for-device
+          timeout 300 adb wait-for-device
           timeout 300 bash -c 'until [[ "$(adb shell getprop sys.boot_completed | tr -d "\r")" == 1 ]]; do sleep 2; done'
           tools/patches/instrumentation_gate.sh "$RUNNER_TEMP/molly-instrumentation" "$RUNNER_TEMP/instrumentation" '${{ matrix.profile }}'
       - name: Upload instrumentation results

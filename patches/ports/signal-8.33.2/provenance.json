@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
   "complete_source_checkpoint": true,
-  "target_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
+  "target_tree": "b74aea8a2d630f687b72315d6130de7fff8b95f2",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "14b1273e2be125fb4bf8034b50e8a4b3a8e104d6f8760bf22945bde2d97118b4",
@@ -415,72 +415,89 @@
       "source_bundle_bytes": 6278
     },
     {
-      "id": "followups/network-initialization-cycle",
-      "source_commit": "f9c51c9695eaabfd9be7712723eac0413c5c7aba",
-      "description": "Avoid circular network initialization during first-run unlock\n\nAI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.\n\nAI-Generated: true\nBased-On-Source-Commit: 2e69e329f52fe9d8083b631303df0aa93e252ebd",
+      "id": "followups/enable-linked-history-transfer",
+      "source_commit": "8c230f133ca618ac2daaddddd356e1e5580a9659",
+      "description": "Enable linked-device history transfer on clean registration\n\nAI-assisted compatibility changes. Match Signal 8.33 so a newly linked phone advertises history transfer while retaining the existing clean-start guard.\n\nBased-On-Source-Commit: 2e69e329f52fe9d8083b631303df0aa93e252ebd",
       "ai_generated": true,
       "before_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
-      "after_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
+      "after_tree": "6070508036858197241d342690f747ef77424505",
+      "paths": 2,
+      "patches": [
+        "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch"
+      ],
+      "mailbox_bytes": 3654,
+      "source_bundle": "followups/enable-linked-history-transfer/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
+      "source_bundle_sha256": "0190670e76a3ccd9a6e6573057f592b5092fd61d1d6aa3e9de4bc0336e487160",
+      "source_bundle_bytes": 4021
+    },
+    {
+      "id": "followups/network-initialization-cycle",
+      "source_commit": "21f8e350baaf33a9247b35988dfc8883ebc9f885",
+      "description": "Avoid circular network initialization during first-run unlock\n\nAI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.\n\nAI-Generated: true\nBased-On-Source-Commit: 8c230f133ca618ac2daaddddd356e1e5580a9659",
+      "ai_generated": true,
+      "before_tree": "6070508036858197241d342690f747ef77424505",
+      "after_tree": "61260ff702887bbc2fc81ecc1a284570a48788e5",
       "paths": 3,
       "patches": [
         "followups/network-initialization-cycle/0001-network-initialization-cycle.patch"
       ],
       "mailbox_bytes": 4361,
       "source_bundle": "followups/network-initialization-cycle/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
-      "source_bundle_sha256": "55a2825c42840552704f7d5fecf5102bc523f7f781b37d8e624efe01e51b380d",
-      "source_bundle_bytes": 3962
+      "source_bundle_prerequisite": "8c230f133ca618ac2daaddddd356e1e5580a9659",
+      "source_bundle_sha256": "8e8ebfd5740ba13230289998b95eed5ca08d7cc9869519d2646d986f4e43c3c5",
+      "source_bundle_bytes": 6274
     },
     {
       "id": "followups/registration-network-settings",
       "description": "Add access to Network settings during registration.",
-      "source_commit": "17d333ffabfae496c595aca1657a87f79c7e276c",
+      "source_commit": "c3918279494d0853a759e8fa7606fdb9a2f1536f",
       "ai_generated": true,
-      "before_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
-      "after_tree": "695052b0cbddb79b4f4d6763a8e3225c0f384370",
+      "before_tree": "61260ff702887bbc2fc81ecc1a284570a48788e5",
+      "after_tree": "9538f1b627bea3c41ccdb66578d16cfb31394fbf",
       "paths": 3,
       "patches": [
         "followups/registration-network-settings/0001-registration-network-settings.patch"
       ],
       "mailbox_bytes": 4037,
       "source_bundle": "followups/registration-network-settings/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "f9c51c9695eaabfd9be7712723eac0413c5c7aba",
-      "source_bundle_sha256": "ae3bc3c232dfe29750ab39f072a1eac2f6b94dd36bdf17d3870b06fbd513007b",
-      "source_bundle_bytes": 2135
+      "source_bundle_prerequisite": "21f8e350baaf33a9247b35988dfc8883ebc9f885",
+      "source_bundle_sha256": "bd0bbf1c80a94e55c5297d5c8ab522331a3f17b512cb89f728f8fd7d165a87d7",
+      "source_bundle_bytes": 2141
     },
     {
       "id": "followups/donation-completion-copy",
       "description": "Add donation completion copy.",
-      "source_commit": "faed714a5bfb278dd0269c5053dc0710e86ce542",
+      "source_commit": "8c649ad69d80cd12609cca5e6b14ffb6d5b2033c",
       "ai_generated": true,
-      "before_tree": "695052b0cbddb79b4f4d6763a8e3225c0f384370",
-      "after_tree": "8de95e89d03dcd14b42359f7483c338c9a1bad5c",
+      "before_tree": "9538f1b627bea3c41ccdb66578d16cfb31394fbf",
+      "after_tree": "223130fd68f42462292ff30c6652760cafbc5e60",
       "paths": 1,
       "patches": [
         "followups/donation-completion-copy/0001-donation-completion-copy.patch"
       ],
       "mailbox_bytes": 1428,
       "source_bundle": "followups/donation-completion-copy/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "17d333ffabfae496c595aca1657a87f79c7e276c",
-      "source_bundle_sha256": "bd2a581acc204057243740f90ee29818b058fb4e6482ce225bb2936aa3b9db65",
-      "source_bundle_bytes": 1525
+      "source_bundle_prerequisite": "c3918279494d0853a759e8fa7606fdb9a2f1536f",
+      "source_bundle_sha256": "860cbabf204f8c5678d02c8b9114cf4e7098c7c7ba3e0ece670c3de914c5a49b",
+      "source_bundle_bytes": 1521
     },
     {
       "id": "followups/unifiedpush-registration-retry",
-      "description": "Recover from a failed UnifiedPush registration visibly and boundedly\n\nAI-assisted compatibility changes. A failed distributor registration only\nshowed a notification and never retried, so UnifiedPush could stay broken\nsilently. Now the failure shows in UnifiedPush settings with a Retry\nregistration action, and one automatic UnifiedPushRefreshJob runs per failure\nepisode (network constraint, three attempts, six-hour lifespan) instead of an\nendless background retry. Choosing a distributor, or a successful endpoint\ncallback, clears the failure. Nothing touches the encrypted store while the\napp is locked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: faed714a5bfb278dd0269c5053dc0710e86ce542",
-      "source_commit": "5d36d0da8a44a5ce8863703e9dc2027d5c4ebe00",
+      "description": "Recover from a failed UnifiedPush registration visibly and boundedly\n\nAI-assisted compatibility changes. A failed distributor registration only\nshowed a notification and never retried, so UnifiedPush could stay broken\nsilently. Now the failure shows in UnifiedPush settings with a Retry\nregistration action, and one automatic UnifiedPushRefreshJob runs per failure\nepisode (network constraint, three attempts, six-hour lifespan) instead of an\nendless background retry. Choosing a distributor, or a successful endpoint\ncallback, clears the failure. Nothing touches the encrypted store while the\napp is locked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 8c649ad69d80cd12609cca5e6b14ffb6d5b2033c",
+      "source_commit": "9d6f0361b112a58e3dcca4087b57463eb4efe138",
       "ai_generated": true,
-      "before_tree": "8de95e89d03dcd14b42359f7483c338c9a1bad5c",
-      "after_tree": "2cc978c2464856b531033a6ec70c596e97f97385",
+      "before_tree": "223130fd68f42462292ff30c6652760cafbc5e60",
+      "after_tree": "b74aea8a2d630f687b72315d6130de7fff8b95f2",
       "paths": 11,
       "patches": [
         "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch"
       ],
       "mailbox_bytes": 26374,
       "source_bundle": "followups/unifiedpush-registration-retry/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "faed714a5bfb278dd0269c5053dc0710e86ce542",
-      "source_bundle_sha256": "378d31b0574e370affc64f3770296a5691a991981874e365afc6e4a6f45c5814",
-      "source_bundle_bytes": 6274
+      "source_bundle_prerequisite": "8c649ad69d80cd12609cca5e6b14ffb6d5b2033c",
+      "source_bundle_sha256": "e472ab0c463e8f898ac7dcdb913447a31b7af18422edbecf0b458d9da4446cec",
+      "source_bundle_bytes": 6275
     }
   ],
   "mailbox_sha256": {
@@ -536,9 +553,10 @@
     "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch": "d9ae204c0d2ee2bc907a1fd804247c97dc946e4e3a0ffc93976e2e060cbf1e43",
     "followups/backup-revision-walk/0001-backup-revision-walk.patch": "9d99ec5d48c489212eff9e20a73a9a2231080b50b24d07e0006a32e4d8021ed9",
     "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch": "fb2bc5a1874513228744c375c72ee813a3bc6a03191e1d331e3a4782f835c534",
-    "followups/registration-network-settings/0001-registration-network-settings.patch": "884d071cc260423e018dcb2e707b86cb950fdf00935ca2ef9350163cbdaa9c89",
-    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "31b8586524a71905ccafb5169d9fdd3ee106095e92892d70dadb590f5ec90072",
-    "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "f695e3ef20e687181efc9f318dc9601c41ecae76ddf053f3e2f42fa3f07ff92d",
-    "followups/network-initialization-cycle/0001-network-initialization-cycle.patch": "150e9c0ab72623f7cd39b71dabb0b2640beb0d4487a06e720eb5456e66037a97"
+    "followups/registration-network-settings/0001-registration-network-settings.patch": "c27885a731379361276832a1edf55de1ab195bc7a132bf1e296e2e7eca3f202e",
+    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "9cc8b7e1ac0628e7a156661df20feb5d64807e2b287eac05a4f6f723f95efeb3",
+    "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "4a5be246d8b513ad7123dd949f9239d9cdb002ce9d930fc65516f0ff923f2750",
+    "followups/network-initialization-cycle/0001-network-initialization-cycle.patch": "9bd52909f2782929c1675d116d880a054210f5cc7caa5749f5c80b242ae00cc2",
+    "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch": "417da0cfdaa8713393073d3fe64ffddd43961ad7669088e8366526ad674082e7"
   }
 }

@@ -9,8 +9,8 @@ Molly itself adds 26,922 non-blank production lines to Signal `c47a74ba0961`. **
 | Stage (cumulative) | Production written / removed | Written as % of Molly's production lines | Molly lines not carried | Translations | Tests | Generated |
 |---|---:|---:|---:|---:|---:|---:|
 | PR3 compatibility, tree `2a78679e2344` | +1,290 / −327 | 4.8% | 1,491 (of which 546 in removed paths) | +2,059 / −192 | +1,288 / −317 | +51 / −10 |
-| PR4 behavior fixes, tree `2bd1981ef751` | +1,492 / −307 | 5.5% | 1,489 (of which 546 in removed paths) | +2,059 / −192 | +1,748 / −317 | +51 / −10 |
-| PR5 behavior additions, tree `2cc978c24648` | +1,612 / −308 | 6.0% | 1,502 (of which 546 in removed paths) | +2,059 / −192 | +1,915 / −317 | +51 / −10 |
+| PR4 behavior fixes, tree `61260ff70288` | +1,492 / −307 | 5.5% | 1,490 (of which 546 in removed paths) | +2,059 / −192 | +1,798 / −317 | +51 / −10 |
+| PR5 behavior additions, tree `b74aea8a2d63` | +1,612 / −308 | 6.0% | 1,503 (of which 546 in removed paths) | +2,059 / −192 | +1,965 / −317 | +51 / −10 |
 
 Classes: **production**: app and library source, default-locale resources and build scripts that ship in the APK; **translations**: localized strings (res/values-<locale>/strings*.xml), generated or relocated; **tests**: test, screenshot-test and benchmark source sets and benchmark modules; **generated**: gradle/verification-metadata.xml dependency hashes; **repository**: patch series, pipeline tools, documentation and CI.
 
@@ -44,6 +44,7 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `followups/passphrase-timeout-fallback` | PR4 behavior fixes | +13 / −2 | +0 / −0 | +125 / −0 | +0 / −0 |
 | `followups/backup-revision-walk` | PR4 behavior fixes | +2 / −6 | +0 / −0 | +28 / −2 | +0 / −0 |
 | `followups/restore-badges-log-theme` | PR4 behavior fixes | +41 / −2 | +0 / −0 | +62 / −0 | +0 / −0 |
+| `followups/enable-linked-history-transfer` | PR4 behavior fixes | +1 / −1 | +0 / −0 | +50 / −0 | +0 / −0 |
 | `followups/network-initialization-cycle` | PR4 behavior fixes | +6 / −3 | +0 / −0 | +28 / −0 | +0 / −0 |
 | `followups/registration-network-settings` | PR5 behavior additions | +53 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 | `followups/donation-completion-copy` | PR5 behavior additions | +1 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
@@ -890,8 +891,8 @@ Partial-file exclusions and deletion necessity remain unmeasured unless separate
 | wire-handler/lib/build.gradle.kts | 100644 | 18 | no | no | Both Signal trees; absent in Molly | Tree membership audit | unmeasured | Git tree membership; see patches/ports/signal-8.33.2/report-evidence/receipts.md#whole-file-deletion-inventory | Molly path absence does not establish omission reason. |
 
 Compatibility share: 108969 / 143289 physical added plus deleted text lines = 76.048%.
-Current mechanical comparison: 8489 added, 98496 deleted, 106985 total, 28 binary; current Molly comparison: 397289 added, 239827 deleted, 637116 total, 698 binary.
-Current gross physical comparison relative to original Molly patchset: 106985 / 143289 added plus deleted text lines = 74.664%.
+Current mechanical comparison: 8539 added, 98496 deleted, 107035 total, 28 binary; current Molly comparison: 397340 added, 239828 deleted, 637168 total, 698 binary.
+Current gross physical comparison relative to original Molly patchset: 107035 / 143289 added plus deleted text lines = 74.699%.
 Gross physical counts include deletions and conflict bookkeeping; they do not establish authorship or necessity.
 After minimization: unmeasured.
 
@@ -907,15 +908,15 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 |---|---:|---:|---:|
 | conflict_resolution | 1614 | 163 | 40048 |
 | signal_api_compile_fix | 9 | 39 | 21 |
-| behavior_preservation | 403 | 792 | 539 |
-| unmeasured | 3425 | 7446 | 57886 |
+| behavior_preservation | 406 | 843 | 545 |
+| unmeasured | 3424 | 7445 | 57880 |
 | behavior_addition | 3 | 49 | 2 |
 
 | Structural kind | Rows | Added | Deleted |
 |---|---:|---:|---:|
-| text | 4550 | 8489 | 98496 |
+| text | 4551 | 8539 | 98496 |
 | binary | 28 | 0 | 0 |
-| mode | 876 | 0 | 0 |
+| mode | 877 | 0 | 0 |
 
 | Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |
 |---|---|---|---|---|---:|---:|---|---|---|---|
@@ -1858,7 +1859,7 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | 9a37525e86d1dc2645bf | app/src/main/java/org/thoughtcrime/securesms/util/AdaptiveSleepTimer.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | d814f172a4073c22fb68 | app/src/main/java/org/thoughtcrime/securesms/util/DynamicLanguage.java | text | 100644 | 100644 | 0 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 19cd1a0cf2d3ff99fa03 | app/src/main/java/org/thoughtcrime/securesms/util/DynamicLanguage.java | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| 80744cb4dca2f6fdcb07 | app/src/main/java/org/thoughtcrime/securesms/util/Environment.kt | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 62abdcef3828e72a44b8 | app/src/main/java/org/thoughtcrime/securesms/util/Environment.kt | text | 100644 | 100644 | 1 | 6 | behavior_preservation | Enable the upstream history-transfer capability in the new registration flow; the rest of this combined hunk is not individually measured. | Signal 8.33.2 enables link-and-sync; Molly 8.19 disabled the newer registration flow and its flag. (searched: Signal 6e9dddc0 and Molly 0e202dda source) | Partial inverse: run :app:testProdWebsiteDebugUnitTest --tests org.thoughtcrime.securesms.registration.LinkAndSyncAvailabilityTest with only the availability flag false, then true (input: PR4 source f9c51c9695 with the new test and then source 37c2ff0a95): Flag false: clean-device capability assertion failed (provisioning received false); existing-registration guard passed. Flag true: both tests passed. No end-to-end cross-version archive transfer was performed. (evidence: patches/ports/signal-8.33.2/report-evidence/receipts.md#linked-device-history-transfer) |
 | 76508f2d0412316a456e | app/src/main/java/org/thoughtcrime/securesms/util/LocalTimeExtensions.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | aa01d83f0ecde7eb4b92 | app/src/main/java/org/thoughtcrime/securesms/util/LocalTimeExtensions.kt | text | 100644 | 100644 | 2 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | cdfdda215156891b4d8c | app/src/main/java/org/thoughtcrime/securesms/util/Material3OnScrollHelper.kt | text | 100644 | 100644 | 4 | 14 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
@@ -3961,6 +3962,8 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | 9b40d5d7c50eaa1a82a3 | app/src/test/java/org/thoughtcrime/securesms/notifications/NotificationIdsTest.kt | text | 100644 | 100644 | 6 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 24785f5958489e48072f | app/src/test/java/org/thoughtcrime/securesms/payments/reconciliation/LedgerReconcileTest.java | text | 100644 | 000000 | 0 | 378 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | df3fbf4a3d9a2fcc07e9 | app/src/test/java/org/thoughtcrime/securesms/payments/reconciliation/LedgerReconcileTest.java | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| a37b6d394385184c18f5 | app/src/test/java/org/thoughtcrime/securesms/registration/LinkAndSyncAvailabilityTest.kt | text | 000000 | 100644 | 50 | 0 | behavior_preservation | Test the production flag through linked-device provisioning on clean and existing registrations. | Signal 8.33.2 enables link-and-sync; Molly 8.19 disabled the newer registration flow and its flag. (searched: Signal 6e9dddc0 and Molly 0e202dda source) | Partial inverse: run :app:testProdWebsiteDebugUnitTest --tests org.thoughtcrime.securesms.registration.LinkAndSyncAvailabilityTest with only the availability flag false, then true (input: PR4 source f9c51c9695 with the new test and then source 37c2ff0a95): Flag false: clean-device capability assertion failed (provisioning received false); existing-registration guard passed. Flag true: both tests passed. No end-to-end cross-version archive transfer was performed. (evidence: patches/ports/signal-8.33.2/report-evidence/receipts.md#linked-device-history-transfer) |
+| e0f1d0da3d544671b97e | app/src/test/java/org/thoughtcrime/securesms/registration/LinkAndSyncAvailabilityTest.kt | mode | 000000 | 100644 | 0 | 0 | behavior_preservation | Add the linked-device capability regression test as a regular source file. | Signal 8.33.2 enables link-and-sync; Molly 8.19 disabled the newer registration flow and its flag. (searched: Signal 6e9dddc0 and Molly 0e202dda source) | Partial inverse: run :app:testProdWebsiteDebugUnitTest --tests org.thoughtcrime.securesms.registration.LinkAndSyncAvailabilityTest with only the availability flag false, then true (input: PR4 source f9c51c9695 with the new test and then source 37c2ff0a95): Flag false: clean-device capability assertion failed (provisioning received false); existing-registration guard passed. Flag true: both tests passed. No end-to-end cross-version archive transfer was performed. (evidence: patches/ports/signal-8.33.2/report-evidence/receipts.md#linked-device-history-transfer) |
 | abbc03970123b73f99e1 | app/src/test/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntentsTest.kt | text | 000000 | 100644 | 32 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | cc452d0be88f9b804d7f | app/src/test/java/org/thoughtcrime/securesms/registration/ui/RegistrationIntentsTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | deef88229c73bc4eaba0 | app/src/test/java/org/thoughtcrime/securesms/registration/v2/AppRegistrationStorageControllerTest.kt | text | 100644 | 100644 | 1 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |

@@ -50,6 +50,7 @@ followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.pat
 followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch
 followups/backup-revision-walk/0001-backup-revision-walk.patch
 followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch
+followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch
 followups/network-initialization-cycle/0001-network-initialization-cycle.patch
 followups/registration-network-settings/0001-registration-network-settings.patch
 followups/donation-completion-copy/0001-donation-completion-copy.patch

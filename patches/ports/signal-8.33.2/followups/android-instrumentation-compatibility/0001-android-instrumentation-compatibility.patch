@@ -1,11 +1,11 @@
-From e9a5d664642dc3e253a6d76cb4b224315640ffeb Mon Sep 17 00:00:00 2001
+From 6ec2a7ee52850ef01742911f16c2f24291e1f52c Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Wed, 4 Nov 2026 18:30:51 +0100
+Date: Wed, 4 Nov 2026 18:57:12 +0100
 Subject: [PATCH] Restore shared Android instrumentation compatibility
 
 
 Based-On-Source-Commit: 8c230f133ca618ac2daaddddd356e1e5580a9659
-Source-Commit: e9a5d664642dc3e253a6d76cb4b224315640ffeb
+Source-Commit: 6ec2a7ee52850ef01742911f16c2f24291e1f52c
 
 ---
  app/build.gradle.kts                          |  12 +-
@@ -26,15 +26,19 @@ Source-Commit: e9a5d664642dc3e253a6d76cb4b224315640ffeb
  .../v2/items/V2ConversationItemShapeTest.kt   |   2 -
  .../securesms/database/CallLinkTableTest.kt   |   6 +
  .../ArchiveAttachmentReconciliationJobTest.kt |  44 ++--
+ .../securesms/jobs/BackupDeleteJobTest.kt     |   1 -
+ .../jobs/BackupSubscriptionCheckJobTest.kt    |   4 -
  .../jobs/JobManagerPerformanceTests.kt        |   4 +-
+ .../megaphone/DonationMegaphoneGatingTest.kt  |  31 +--
  .../megaphone/DonationMegaphoneTest.kt        |   4 +-
  .../manage/UsernameEditFragmentTest.kt        |   2 +-
+ .../securesms/testing/RemoteConfigForTest.kt  |   3 +-
  .../securesms/testing/SignalActivityRule.kt   |   5 +-
  .../IncomingMessageObserverRule.kt            |  11 +
  .../websocket/BenchmarkWebSocketConnection.kt | 187 +++++++++++++
  .../conversation/colors/ChatColorsPalette.kt  |  10 +-
  .../backup/v2/util/ChatStyleConverterTest.kt  |  35 +++
- 26 files changed, 1115 insertions(+), 64 deletions(-)
+ 30 files changed, 1130 insertions(+), 88 deletions(-)
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/Generator.kt
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/Harness.kt
  create mode 100644 app/src/androidTest/java/org/signal/benchmark/setup/NoOpJob.kt
@@ -1461,6 +1465,41 @@ index 67881754..c73d422c 100644
  
      assertThat(SignalStore.backup.lastCompletedReconciliationSnapshotVersion).isEqualTo(-1L)
    }
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupDeleteJobTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupDeleteJobTest.kt
+index 10841eda..7cdccd65 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupDeleteJobTest.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupDeleteJobTest.kt
+@@ -46,7 +46,6 @@ import java.util.UUID
+ 
+ @RemoteConfigForTest(
+   flags = [
+-    Flag(TestRemoteConfigFlag.INTERNAL_USER, "true"),
+     Flag(TestRemoteConfigFlag.DEFAULT_MAX_BACKOFF, "1")
+   ]
+ )
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupSubscriptionCheckJobTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupSubscriptionCheckJobTest.kt
+index bc815a63..3ec3dd57 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupSubscriptionCheckJobTest.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupSubscriptionCheckJobTest.kt
+@@ -46,10 +46,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
+ import org.thoughtcrime.securesms.jobmanager.Job
+ import org.thoughtcrime.securesms.keyvalue.SignalStore
+ import org.thoughtcrime.securesms.net.SignalNetwork
+-import org.thoughtcrime.securesms.testing.Flag
+-import org.thoughtcrime.securesms.testing.RemoteConfigForTest
+ import org.thoughtcrime.securesms.testing.SignalActivityRule
+-import org.thoughtcrime.securesms.testing.TestRemoteConfigFlag
+ import org.whispersystems.signalservice.api.storage.IAPSubscriptionId
+ import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
+ import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription.ChargeFailure
+@@ -61,7 +58,6 @@ import java.util.Currency
+ import kotlin.time.Duration.Companion.days
+ import kotlin.time.Duration.Companion.milliseconds
+ 
+-@RemoteConfigForTest(flags = [Flag(TestRemoteConfigFlag.INTERNAL_USER, "true") ])
+ @RunWith(AndroidJUnit4::class)
+ class BackupSubscriptionCheckJobTest {
+ 
 diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/JobManagerPerformanceTests.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/JobManagerPerformanceTests.kt
 index 2a951a4d..47b81e38 100644
 --- a/app/src/androidTest/java/org/thoughtcrime/securesms/jobs/JobManagerPerformanceTests.kt
@@ -1493,6 +1532,84 @@ index 2a951a4d..47b81e38 100644
    @Test
    fun testPerformance_noQueues() {
      runTest("noQueues", 2000) { TestJob(queue = null) }
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt
+index 67bd943c..e4deaaaa 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt
+@@ -12,9 +12,7 @@ import assertk.assertions.isFalse
+ import assertk.assertions.isNull
+ import assertk.assertions.isTrue
+ import io.mockk.every
+-import io.mockk.mockkObject
+ import io.mockk.mockkStatic
+-import io.mockk.unmockkObject
+ import io.mockk.unmockkStatic
+ import org.junit.After
+ import org.junit.Before
+@@ -22,18 +20,13 @@ import org.junit.Rule
+ import org.junit.Test
+ import org.junit.runner.RunWith
+ import org.signal.core.database.deleteAll
+-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppDonations
+ import org.thoughtcrime.securesms.database.InAppPaymentTable
+ import org.thoughtcrime.securesms.database.SignalDatabase
+ import org.thoughtcrime.securesms.testing.InAppPaymentsRule
+ import org.thoughtcrime.securesms.testing.SignalActivityRule
+ import org.thoughtcrime.securesms.util.VersionTracker
+ 
+-/**
+- * The "user might be a sustainer" rule for the donations remote megaphone: the `standard_donate`
+- * conditional (via [RemoteMegaphoneRepository.getRemoteMegaphoneToShow]) suppresses the megaphone for
+- * existing donors and shows it otherwise.
+- */
++/** Molly's donation prompt is gated by installation age and registration, not Signal donor badges. */
+ @RunWith(AndroidJUnit4::class)
+ class DonationMegaphoneGatingTest {
+ 
+@@ -49,19 +42,13 @@ class DonationMegaphoneGatingTest {
+     SignalDatabase.remoteMegaphones.debugRemoveAll()
+     setSelfBadges(emptyList())
+ 
+-    // Freshly-installed test APKs report 0 days installed and no configured payment methods, both of
+-    // which independently fail shouldShowDonateMegaphone. Fix them so the donor badge is the only
+-    // variable across the gating tests.
+     mockkStatic(VersionTracker::class)
+-    mockkObject(InAppDonations)
+-    every { VersionTracker.getDaysSinceFirstInstalled(any()) } returns 30L
+-    every { InAppDonations.hasAtLeastOnePaymentMethodAvailable() } returns true
++    every { VersionTracker.getDaysSinceFirstInstalled(any()) } returns 7L
+   }
+ 
+   @After
+   fun tearDown() {
+     unmockkStatic(VersionTracker::class)
+-    unmockkObject(InAppDonations)
+   }
+ 
+   @Test
+@@ -74,10 +61,20 @@ class DonationMegaphoneGatingTest {
+   }
+ 
+   @Test
+-  fun sustainer_donorBadge_suppressesStandardDonateMegaphone() {
+-    SignalDatabase.remoteMegaphones.insert(donateMegaphoneRecord(conditionalId = "standard_donate"))
++  fun signalDonorBadge_doesNotSuppressMollyDonateMegaphone() {
++    val record = donateMegaphoneRecord(conditionalId = "standard_donate")
++    SignalDatabase.remoteMegaphones.insert(record)
+     setSelfBadges(listOf(donorBadge()))
+ 
++    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()?.uuid).isEqualTo(record.uuid)
++    assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isTrue()
++  }
++
++  @Test
++  fun youngInstallation_suppressesMollyDonateMegaphone() {
++    every { VersionTracker.getDaysSinceFirstInstalled(any()) } returns 6L
++    SignalDatabase.remoteMegaphones.insert(donateMegaphoneRecord(conditionalId = "standard_donate"))
++
+     assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()).isNull()
+     assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isFalse()
+   }
 diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt
 index 8ddd532e..fe211538 100644
 --- a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt
@@ -1533,6 +1650,27 @@ index 25400b42..84f67858 100644
      )
    }
  }
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/testing/RemoteConfigForTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/testing/RemoteConfigForTest.kt
+index f670d85b..c9ab0db1 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/testing/RemoteConfigForTest.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/testing/RemoteConfigForTest.kt
+@@ -20,7 +20,7 @@ import kotlin.reflect.jvm.isAccessible
+  *
+  * ```
+  * @RemoteConfigForTest(
+- *   flags = [Flag(TestRemoteConfigFlag.INTERNAL_USER, "true")],
++ *   flags = [Flag(TestRemoteConfigFlag.DEFAULT_MAX_BACKOFF, "1")],
+  *   rawFlags = [RawFlag("android.someOtherKey", "1")]
+  * )
+  * class MyTest { ... }
+@@ -45,7 +45,6 @@ annotation class RawFlag(val key: String, val value: String)
+  * Typed handles for remote config flags referenced by tests.
+  */
+ enum class TestRemoteConfigFlag(private val property: KProperty0<*>) {
+-  INTERNAL_USER(RemoteConfig::internalUser),
+   DEFAULT_MAX_BACKOFF(RemoteConfig::defaultMaxBackoff);
+ 
+   val key: String
 diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/testing/SignalActivityRule.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/testing/SignalActivityRule.kt
 index 675fe841..c7f7734d 100644
 --- a/app/src/androidTest/java/org/thoughtcrime/securesms/testing/SignalActivityRule.kt

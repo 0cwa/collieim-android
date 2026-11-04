@@ -1,10 +1,11 @@
 import subprocess
+import json
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from instrumentation_results import check, confirmed_ignored
+from instrumentation_results import check, confirmed_ignored, compare_coverage
 
 CLASS = 'org.thoughtcrime.securesms.profiles.manage.UsernameEditFragmentTest'
 IGNORED = f'''INSTRUMENTATION_STATUS: class={CLASS}
@@ -60,6 +61,28 @@ class ResultsTest(unittest.TestCase):
             run.side_effect = lambda command, **kwargs: subprocess.CompletedProcess([], 0, discovery(['pass']).replace('numtests=1', 'numtests=2'), '')
             with self.assertRaisesRegex(ValueError, 'incomplete or inconsistent'):
                 check(tmp, 'example/Runner', run)
+
+    def test_partition_must_cover_discovery_without_overlap(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = [Path(tmp) / name for name in ('all', 'default', 'imo')]
+            full = [["sample.DefaultTest", "one"], ["sample.imo.Test", "two"]]
+            for path, value in zip(paths, (full, full[:1], full[1:])):
+                path.write_text(json.dumps(value))
+            self.assertEqual(compare_coverage(paths), (1, 1))
+            paths[2].write_text('[]')
+            with self.assertRaisesRegex(ValueError, 'coverage does not match'):
+                compare_coverage(paths)
+            paths[2].write_text(json.dumps(full))
+            with self.assertRaisesRegex(ValueError, 'coverage does not match'):
+                compare_coverage(paths)
+
+    def test_discovery_uses_matching_package_exclusion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'TEST-device.xml'
+            path.write_text(xml(f'<testcase classname="{CLASS}" name="pass"/>', 1))
+            run = Mock(return_value=subprocess.CompletedProcess([], 0, discovery(['pass']), ''))
+            check(tmp, 'example/Runner', run, not_package='sample.imo')
+            self.assertEqual(run.call_args.args[0][-4:], ['-e', 'notPackage', 'sample.imo', 'example/Runner'])
 
     def test_captured_archive_xml(self):
         # Same counters and cases as the UTP result captured on the emulator.

@@ -14,11 +14,13 @@ We bring Molly's features to newer Signal releases, make the fixes needed along 
 
 | Release | What it includes |
 | --- | --- |
-| **Molly Minimal** | Molly's established features on a newer Signal version. |
-| **Molly Continued** | Molly Minimal with additional improvements to registration and notification setup. |
-| **Molly FOSS Continued** | Molly Continued without Firebase. |
-| **Collie** | Molly Continued with optional controls for keeping messages and media. |
+| **Collie** | **Recommended.** Molly Continued with optional controls for keeping messages and media. |
 | **Collie FOSS** | Collie without Firebase. |
+| **Molly Continued** | Molly's features on a newer Signal version, with additional registration and notification fixes. |
+| **Molly FOSS Continued** | Molly Continued without Firebase. |
+| **Molly Minimal** | **Not recommended.** A basic Molly update without the later fixes. |
+
+Molly Minimal lacks network settings during registration for people using proxies, visible errors and retry options when UnifiedPush registration fails, and updated donation completion text. All four other releases include these changes.
 
 The FOSS releases omit Firebase, a Google service used to deliver notifications. The Molly releases keep Molly's app identity; Collie has its own, so it can be installed alongside Molly. These are planned releases, not currently available downloads.
 

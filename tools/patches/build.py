@@ -368,6 +368,10 @@ class Build:
             if not version_code or not re.fullmatch(r'[1-9][0-9]{0,9}', version_code) or int(version_code) > 2100000000:
                 raise BuildError('assemble-release requires --release-version-code from 1 to 2100000000')
             tasks = [':app:assembleProdWebsiteRelease']
+        elif phase in ('instrumentation', 'instrumentation-imo'):
+            tasks = [':app:connectedProdWebsiteDebugAndroidTest', '--console=plain']
+            if phase == 'instrumentation-imo':
+                tasks += ['-PimoTests', '-Pandroid.testInstrumentationRunnerArguments.package=org.thoughtcrime.securesms.messages.incomingmessageobserver']
         else:
             tasks = gradle_tasks(self.android['assemble' if phase == 'assemble' else 'tests'],
                                  'assemble' if phase == 'assemble' else 'tests', tests=phase == 'test')
@@ -404,7 +408,7 @@ class Build:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('phase', choices=('sdk', 'assemble', 'assemble-release', 'test',
+    parser.add_argument('phase', choices=('sdk', 'assemble', 'assemble-release', 'test', 'instrumentation', 'instrumentation-imo',
                                          'native-prepare', 'native-build', 'native-integrate'))
     parser.add_argument('--repo', type=Path, default=Path('.'))
     parser.add_argument('--config', default='molly-build.json')

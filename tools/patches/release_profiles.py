@@ -15,6 +15,7 @@ FIREBASE = FORK_ROOT + '/firebase-free-build/series'
 RETENTION = FORK_ROOT + '/retention-controls/series'
 RETENTION_FIXES = FORK_ROOT + '/retention-controls-fixes/series'
 COLLIE_ICON = FORK_ROOT + '/collie-icon/series'
+COLLIE_BRANDING = FORK_ROOT + '/collie-branding/series'
 # User-visible app title, backup file base name and shared package ID per profile.
 APP = {
     'molly-minimal': ('Molly Minimal', 'Molly-Minimal', 'im.collie.app'),
@@ -27,8 +28,8 @@ POLICY = {
     'molly-minimal': ('followups/restore-badges-log-theme', [], False),
     'molly-continued': ('followups/unifiedpush-registration-retry', [], False),
     'molly-foss-continued': ('followups/unifiedpush-registration-retry', [FIREBASE], True),
-    'collie': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES, COLLIE_ICON], False),
-    'collie-foss': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES, COLLIE_ICON], True),
+    'collie': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES, COLLIE_ICON, COLLIE_BRANDING], False),
+    'collie-foss': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES, COLLIE_ICON, COLLIE_BRANDING], True),
 }
 
 

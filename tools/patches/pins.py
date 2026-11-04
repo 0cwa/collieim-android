@@ -45,6 +45,7 @@ LAYER_NAMES = [
     ('retention-controls', 'second fork layer (adapted from the fork)', [FORK, PROFILES]),
     ('retention-controls-fixes', 'third fork layer: our fixes to the adapted retention layer', [FORK, PROFILES]),
     ('collie-icon', 'Collie launcher icon layer', [FORK, PROFILES]),
+    ('collie-branding', 'Collie theme and app identity layer', [FORK, PROFILES]),
 ]
 
 

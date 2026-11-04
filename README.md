@@ -27,7 +27,7 @@ The Molly releases retain Molly's app identity so they can replace an existing M
 The releases retain Signal's messaging and calling features and Molly's additions, including:
 
 - Passphrase encryption for the local message database and automatic locking.
-- Memory protection and the option to disable debug logging.
+- Clearing sensitive data from memory and the option to disable debug logging.
 - Linked devices, including Android tablets.
 - Blocking messages and calls from unknown contacts.
 - Disappearing call history and scheduled local backups.
@@ -38,9 +38,9 @@ Collie also offers four optional controls: keep received view-once media, keep i
 
 ## Free and open source
 
-All releases are open source. The FOSS versions omit Firebase, Google's service for push notifications. They can receive messages through WebSocket or [UnifiedPush](https://unifiedpush.org/) instead.
+The code is open source. Standard builds include Google's Firebase service for push notifications; FOSS builds omit it. They can receive messages through WebSocket or [UnifiedPush](https://unifiedpush.org/) instead.
 
-UnifiedPush lets you choose a notification provider. It requires access to a [MollySocket](https://github.com/mollyim/mollysocket) server, either your own or a public one. Android battery restrictions can affect notification delivery.
+UnifiedPush lets you choose a notification provider. It requires access to a [MollySocket](https://github.com/mollyim/mollysocket) server, either your own or a public one. UnifiedPush is not available on linked devices. Android battery restrictions can affect notification delivery.
 
 ## Compatibility with Signal
 

@@ -24,7 +24,7 @@ This project keeps Molly's features available as Signal develops, while offering
 
 Molly Minimal lacks network settings during registration for proxy users, visible errors and retry options for failed UnifiedPush registration, and updated donation confirmation text. The other releases include these changes.
 
-The Molly releases retain Molly's app identity so they can replace an existing Molly installation. Collie has its own app identity and can be installed alongside it.
+The Molly releases retain Molly's app identity so they can replace an existing Molly installation. Collie has its own app identity and can also be installed alongside Upstream Molly.  However, all variants run as the package `im.collie.app` so that users can switch variants at-will.
 
 Releases are published on the [Releases page](https://github.com/0cwa/collieim-android/releases) as APKs, currently marked as pre-releases. The Obtainium links above add this repository to [Obtainium](https://obtainium.imranr.dev/) with pre-releases enabled and select that release's APK, so Obtainium can install and update it. The three Molly releases share one app identity, so Obtainium tracks only one of them at a time.
 

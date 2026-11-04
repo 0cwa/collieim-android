@@ -2221,3 +2221,8 @@ On original PR5 source `b9f7f076e5c84433ecee890741c2c044b75336f1`, tree `68fa08f
 | `42393357b34645095fb1` | `e9c5c0a040d80754b8e72019f5f7d6f89cbd2f8a` | `b286a9325d18d204d08927d45a0973dff2d31b2a` | `getDefault` and `Subscribe` unresolved |
 
 The socket failures establish a coroutine call constraint, not the necessity of the annotation, assertion, or false `IOException`. The settings failures are conditional on the other current settings hunk remaining in place; they do not establish runtime or lifecycle behavior, retention, or uniqueness. These failures did not accept a source change.
+
+
+## Network initialization cycle
+
+On 2026-11-04, an isolated Android 15 x86_64 emulator reproduced a first-run `StackOverflowError` after selecting No thanks at database encryption with the published v8.33.2-1-rc1 APK and with the Collie debug source at `3a79e1b07d` before the fix. The same fresh-install sequence with source `e396ea7df6` reached registration. The sequence clears only the disposable emulator app data, launches the app, selects No thanks, and checks AndroidRuntime and the resumed activity. The cohort was checked twice unfixed and once fixed; individual hunk reverts were not measured. The focused `NetworkDependenciesModuleTest` passed under `:app:testProdWebsiteDebugUnitTest`.

@@ -31,6 +31,7 @@ def main():
     p.add_argument('--provenance', type=Path, required=True)
     p.add_argument('--notes', type=Path, required=True)
     p.add_argument('--scratch', type=Path, required=True)
+    p.add_argument('--prerelease', action='store_true', help='create and verify a testing prerelease')
     p.add_argument('--dry-run', action='store_true')
     args = p.parse_args()
     try:
@@ -86,7 +87,8 @@ def main():
                 command(['gh', 'api', '--method', 'POST', f'repos/{args.repo}/git/refs',
                          '-f', 'ref=refs/tags/' + args.tag, '-f', 'sha=' + args.approved_commit], args.dry_run)
                 command(['gh', 'release', 'create', args.tag, '--repo', args.repo, '--verify-tag', '--draft',
-                         '--title', args.tag, '--notes-file', notes, *assets], args.dry_run)
+                         '--title', args.tag, '--notes-file', notes,
+                         *(['--prerelease', '--latest=false'] if args.prerelease else []), *assets], args.dry_run)
             # Re-download and check on both commands, including immediately before publishing.
             if not args.dry_run:
                 ref = command(['gh', 'api', f'repos/{args.repo}/git/ref/tags/{args.tag}'],
@@ -94,11 +96,12 @@ def main():
                 obj = json.loads(ref.stdout)['object']
                 if obj.get('type') != 'commit' or obj.get('sha') != args.approved_commit:
                     raise ValueError('remote tag does not point directly at approved commit')
-                info = command(['gh', 'release', 'view', args.tag, '--repo', args.repo, '--json', 'isDraft,assets'],
+                info = command(['gh', 'release', 'view', args.tag, '--repo', args.repo, '--json', 'isDraft,isPrerelease,assets'],
                                stdout=subprocess.PIPE, text=True)
                 release = json.loads(info.stdout)
-                if not release['isDraft'] or {x['name'] for x in release['assets']} != {x.name for x in assets}:
-                    raise ValueError('draft state or exact asset list differs')
+                if (not release['isDraft'] or release['isPrerelease'] is not args.prerelease
+                        or {x['name'] for x in release['assets']} != {x.name for x in assets}):
+                    raise ValueError('draft state, prerelease setting or exact asset list differs')
             downloads = tmp / 'downloaded'
             downloads.mkdir()
             command(['gh', 'release', 'download', args.tag, '--repo', args.repo, '--dir', downloads], args.dry_run)

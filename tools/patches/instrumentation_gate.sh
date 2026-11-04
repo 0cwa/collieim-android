@@ -29,15 +29,24 @@ run_suite() {
     return 1
   fi
   local -a filter=()
-  if [[ -n "$package" ]]; then filter=(--package "$package"); fi
-  python3 "$runner_check" "$report_dir/$suite-results" "$component" "${filter[@]}" || return 1
+  if [[ "$suite" == default ]]; then
+    filter=(--not-package "$package" --all-coverage-output "$report_dir/all-tests.json")
+  else
+    filter=(--package "$package")
+  fi
+  python3 "$runner_check" "$report_dir/$suite-results" "$component" "${filter[@]}" \
+    --coverage-output "$report_dir/$suite-tests.json" || return 1
   if (( status != 0 )); then
     echo "$suite Gradle task failed with exit $status" >&2
     return 1
   fi
 }
 failed=0
-run_suite default org.thoughtcrime.securesms.testing.SignalTestRunner '' instrumentation || failed=1
+run_suite default org.thoughtcrime.securesms.testing.SignalTestRunner org.thoughtcrime.securesms.messages.incomingmessageobserver instrumentation || failed=1
 run_suite imo org.thoughtcrime.securesms.testing.incomingmessageobserver.IncomingMessageObserverTestRunner org.thoughtcrime.securesms.messages.incomingmessageobserver \
   instrumentation-imo || failed=1
+if (( failed == 0 )); then
+  python3 "$runner_check" --compare "$report_dir/all-tests.json" \
+    "$report_dir/default-tests.json" "$report_dir/imo-tests.json" || failed=1
+fi
 exit "$failed"

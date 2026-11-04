@@ -135,9 +135,10 @@
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series",
         "patches/forks/signal-foss/retention-controls/series",
-        "patches/forks/signal-foss/retention-controls-fixes/series"
+        "patches/forks/signal-foss/retention-controls-fixes/series",
+        "patches/forks/signal-foss/collie-icon/series"
       ],
-      "target_tree": "7d123fbdaa6d89fcede3bb37bbe727f8220a91d0",
+      "target_tree": "82e1870451aff67b09eccfda295f139087ee7f62",
       "firebase_free": false
     },
     "collie-foss": {
@@ -147,9 +148,10 @@
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series",
         "patches/forks/signal-foss/retention-controls/series",
-        "patches/forks/signal-foss/retention-controls-fixes/series"
+        "patches/forks/signal-foss/retention-controls-fixes/series",
+        "patches/forks/signal-foss/collie-icon/series"
       ],
-      "target_tree": "7d123fbdaa6d89fcede3bb37bbe727f8220a91d0",
+      "target_tree": "82e1870451aff67b09eccfda295f139087ee7f62",
       "firebase_free": true
     }
   }

@@ -60,6 +60,23 @@
       "author": "0cwa <0@none.org>",
       "upstream_credit": "ours",
       "fixes": "retention-controls"
+    },
+    {
+      "id": "collie-icon",
+      "series": "collie-icon/series",
+      "mailbox": "collie-icon/0001-collie-icon.patch",
+      "mailbox_sha256": "248821eeb7766da6a739472251e02933a36942e03d7153f5744ce56245a0d0e5",
+      "mailbox_bytes": 438427,
+      "source_commit": "118418e85713f6d2645480896e05daab211e65e5",
+      "before_tree": "7d123fbdaa6d89fcede3bb37bbe727f8220a91d0",
+      "after_tree": "82e1870451aff67b09eccfda295f139087ee7f62",
+      "source_bundle": "collie-icon/source-checkpoint.bundle",
+      "source_bundle_sha256": "ddde4ea99c2da6d00ef60ec83b1ea78dd0ea950fc1b5c23ceb86a6bfb533eada",
+      "source_bundle_bytes": 329959,
+      "source_bundle_prerequisite": "82a62522853c99410c12897a8a022eb2c296cdde",
+      "source_bundle_ref": "refs/heads/source-checkpoint/fork-signal-foss/collie-icon",
+      "author": "0cwa <0@none.org>",
+      "upstream_credit": "ours"
     }
   ],
   "upstream_bundle": "upstream-source.bundle",

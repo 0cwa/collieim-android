@@ -97,8 +97,8 @@ Each profile's source compared with Molly and Signal and, for profiles with fork
 | molly-minimal | `febcc55e8ac8` | none | included | +1,487 / −307 | 5.5% | — | 1,489 | +1,720 / −317 |
 | molly-continued | `826a6091341c` | none | included | +1,607 / −308 | 6.0% | — | 1,502 | +1,887 / −317 |
 | molly-foss-continued | `37f097ba236a` | `firebase-free-build` | removed | +1,789 / −380 | 6.6% | 2 | 1,560 | +2,064 / −317 |
-| collie | `7d123fbdaa6d` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes` | included | +1,822 / −389 | 6.8% | 181 | 1,560 | +2,475 / −317 |
-| collie-foss | `7d123fbdaa6d` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes` | removed | +1,822 / −389 | 6.8% | 181 | 1,560 | +2,475 / −317 |
+| collie | `82e1870451af` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon` | included | +1,829 / −396 | 6.8% | 181 | 1,638 | +2,475 / −317 |
+| collie-foss | `82e1870451af` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon` | removed | +1,829 / −396 | 6.8% | 181 | 1,638 | +2,475 / −317 |
 
 ## Raw physical Git diffs
 

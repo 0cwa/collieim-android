@@ -44,13 +44,13 @@ class ForkProfilesTests(unittest.TestCase):
         self.git('bundle', 'create', str(upstream_bundle), upstream_ref, '^' + base)
         previous, before = base, base_tree
         layers = []
-        for label in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes', 'collie-icon'):
+        for label in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes', 'collie-icon', 'collie-branding'):
             directory = self.root / label
             directory.mkdir()
             (self.repo / 'app').write_text(label + '\n')
             self.git('add', 'app')
             inspired = label == 'firebase-free-build'
-            ours = label in ('retention-controls-fixes', 'collie-icon')
+            ours = label in ('retention-controls-fixes', 'collie-icon', 'collie-branding')
             if inspired or ours:
                 self.git('-c', 'user.name=Port Author', '-c', 'user.email=port@example.invalid', 'commit', '-qm',
                          label + ('' if ours else '\n\nInspired by ' + upstream_head + '.\n\nInspired-by: Fork Author <author@example.invalid>'))
@@ -90,7 +90,7 @@ class ForkProfilesTests(unittest.TestCase):
                           'target_tree': layers[-1]['after_tree'],
                           'signal_commit': base, 'fork_source': {'url': self.data['source_url'], 'head': upstream_head},
                           'fork_series': [release_profiles.FIREBASE, release_profiles.RETENTION,
-                                          release_profiles.RETENTION_FIXES, release_profiles.COLLIE_ICON]}
+                                          release_profiles.RETENTION_FIXES, release_profiles.COLLIE_ICON, release_profiles.COLLIE_BRANDING]}
         self.save()
 
     def git(self, *args):

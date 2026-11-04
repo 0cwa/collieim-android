@@ -12372,6 +12372,56 @@
       "outcome": "With the fix: KeyCachingServiceTest 4/4 and FullBackupExporterTest 14/14 pass. Reverted: 4 and 2 tests fail.",
       "evidence": "followups/backup-revision-walk commit message; local Gradle run 2026-11-03",
       "reason": "Walk message revisions as Signal does, stopping on a cycle, and apply Molly's started-timer exclusion to the revision the walk ends on."
+    },
+    "a33f7ecd9067bf2a94ce": {
+      "type": "behavior_preservation",
+      "reason": "Avoid the first-run socket/network-module initialization cycle; test that network access does not eagerly construct sockets. The reported hunk may include adjacent inherited differences.",
+      "molly_equivalent": "The inspected Molly upstream-main and pinned Signal 8.33.2 construct the module with eager sockets; the older Molly first-run flow reaches this latent cycle.",
+      "searched_branches": "origin/upstream-main and Signal 6e9dddc01f1b26e608ac683807c51e139c141ed2",
+      "revert_gate": "Emulator first-run: clear the disposable app, start it, and choose No thanks on database encryption; inspect AndroidRuntime for StackOverflowError and the foreground registration activity",
+      "gate_input": "Collie debug source tree at 3a79e1b07d without the fix versus e396ea7df6 with the fix; published v8.33.2-1-rc1 also checked",
+      "outcome": "Unfixed first-run crashed with StackOverflowError twice; fixed first-run reached registration. This measures the fix as a cohort, not each individual hunk.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#network-initialization-cycle"
+    },
+    "ef7f73ad4924a3d59980": {
+      "type": "behavior_preservation",
+      "reason": "Avoid the first-run socket/network-module initialization cycle; test that network access does not eagerly construct sockets. The reported hunk may include adjacent inherited differences.",
+      "molly_equivalent": "The inspected Molly upstream-main and pinned Signal 8.33.2 construct the module with eager sockets; the older Molly first-run flow reaches this latent cycle.",
+      "searched_branches": "origin/upstream-main and Signal 6e9dddc01f1b26e608ac683807c51e139c141ed2",
+      "revert_gate": "Emulator first-run: clear the disposable app, start it, and choose No thanks on database encryption; inspect AndroidRuntime for StackOverflowError and the foreground registration activity",
+      "gate_input": "Collie debug source tree at 3a79e1b07d without the fix versus e396ea7df6 with the fix; published v8.33.2-1-rc1 also checked",
+      "outcome": "Unfixed first-run crashed with StackOverflowError twice; fixed first-run reached registration. This measures the fix as a cohort, not each individual hunk.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#network-initialization-cycle"
+    },
+    "e6f7784dd9d3886d950a": {
+      "type": "behavior_preservation",
+      "reason": "Avoid the first-run socket/network-module initialization cycle; test that network access does not eagerly construct sockets. The reported hunk may include adjacent inherited differences.",
+      "molly_equivalent": "The inspected Molly upstream-main and pinned Signal 8.33.2 construct the module with eager sockets; the older Molly first-run flow reaches this latent cycle.",
+      "searched_branches": "origin/upstream-main and Signal 6e9dddc01f1b26e608ac683807c51e139c141ed2",
+      "revert_gate": "Emulator first-run: clear the disposable app, start it, and choose No thanks on database encryption; inspect AndroidRuntime for StackOverflowError and the foreground registration activity",
+      "gate_input": "Collie debug source tree at 3a79e1b07d without the fix versus e396ea7df6 with the fix; published v8.33.2-1-rc1 also checked",
+      "outcome": "Unfixed first-run crashed with StackOverflowError twice; fixed first-run reached registration. This measures the fix as a cohort, not each individual hunk.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#network-initialization-cycle"
+    },
+    "aeb73277ee82624730c5": {
+      "type": "behavior_preservation",
+      "reason": "Avoid the first-run socket/network-module initialization cycle; test that network access does not eagerly construct sockets. The reported hunk may include adjacent inherited differences.",
+      "molly_equivalent": "The inspected Molly upstream-main and pinned Signal 8.33.2 construct the module with eager sockets; the older Molly first-run flow reaches this latent cycle.",
+      "searched_branches": "origin/upstream-main and Signal 6e9dddc01f1b26e608ac683807c51e139c141ed2",
+      "revert_gate": "Emulator first-run: clear the disposable app, start it, and choose No thanks on database encryption; inspect AndroidRuntime for StackOverflowError and the foreground registration activity",
+      "gate_input": "Collie debug source tree at 3a79e1b07d without the fix versus e396ea7df6 with the fix; published v8.33.2-1-rc1 also checked",
+      "outcome": "Unfixed first-run crashed with StackOverflowError twice; fixed first-run reached registration. This measures the fix as a cohort, not each individual hunk.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#network-initialization-cycle"
+    },
+    "33c15dd17efa98a5b64c": {
+      "type": "behavior_preservation",
+      "reason": "Avoid the first-run socket/network-module initialization cycle; test that network access does not eagerly construct sockets. The reported hunk may include adjacent inherited differences.",
+      "molly_equivalent": "The inspected Molly upstream-main and pinned Signal 8.33.2 construct the module with eager sockets; the older Molly first-run flow reaches this latent cycle.",
+      "searched_branches": "origin/upstream-main and Signal 6e9dddc01f1b26e608ac683807c51e139c141ed2",
+      "revert_gate": "Emulator first-run: clear the disposable app, start it, and choose No thanks on database encryption; inspect AndroidRuntime for StackOverflowError and the foreground registration activity",
+      "gate_input": "Collie debug source tree at 3a79e1b07d without the fix versus e396ea7df6 with the fix; published v8.33.2-1-rc1 also checked",
+      "outcome": "Unfixed first-run crashed with StackOverflowError twice; fixed first-run reached registration. This measures the fix as a cohort, not each individual hunk.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#network-initialization-cycle"
     }
   },
   "exclusions_complete": false,

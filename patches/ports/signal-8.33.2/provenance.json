@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
   "complete_source_checkpoint": true,
-  "target_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
+  "target_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "14b1273e2be125fb4bf8034b50e8a4b3a8e104d6f8760bf22945bde2d97118b4",
@@ -413,6 +413,23 @@
       "source_bundle_prerequisite": "164b3f3c2d8910acd04b0c2743219ae293e5cac9",
       "source_bundle_sha256": "3fa6307c532e03e9852559a897602415bbd6426fe77b04f77fa7c6678a1f2b15",
       "source_bundle_bytes": 6278
+    },
+    {
+      "id": "followups/network-initialization-cycle",
+      "source_commit": "f9c51c9695eaabfd9be7712723eac0413c5c7aba",
+      "description": "Avoid circular network initialization during first-run unlock\n\nAI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.\n\nAI-Generated: true\nBased-On-Source-Commit: 2e69e329f52fe9d8083b631303df0aa93e252ebd",
+      "ai_generated": true,
+      "before_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
+      "after_tree": "2bd1981ef7517c7d4cc1b00990f6b746e6e9f88e",
+      "paths": 3,
+      "patches": [
+        "followups/network-initialization-cycle/0001-network-initialization-cycle.patch"
+      ],
+      "mailbox_bytes": 4361,
+      "source_bundle": "followups/network-initialization-cycle/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
+      "source_bundle_sha256": "55a2825c42840552704f7d5fecf5102bc523f7f781b37d8e624efe01e51b380d",
+      "source_bundle_bytes": 3962
     }
   ],
   "mailbox_sha256": {
@@ -467,6 +484,7 @@
     "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "c7ddc23eb1c8dc0c298027a38b663a2e9546c8db7077df862f7e44333cf5edcf",
     "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch": "d9ae204c0d2ee2bc907a1fd804247c97dc946e4e3a0ffc93976e2e060cbf1e43",
     "followups/backup-revision-walk/0001-backup-revision-walk.patch": "9d99ec5d48c489212eff9e20a73a9a2231080b50b24d07e0006a32e4d8021ed9",
-    "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch": "fb2bc5a1874513228744c375c72ee813a3bc6a03191e1d331e3a4782f835c534"
+    "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch": "fb2bc5a1874513228744c375c72ee813a3bc6a03191e1d331e3a4782f835c534",
+    "followups/network-initialization-cycle/0001-network-initialization-cycle.patch": "150e9c0ab72623f7cd39b71dabb0b2640beb0d4487a06e720eb5456e66037a97"
   }
 }

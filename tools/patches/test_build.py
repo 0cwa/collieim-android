@@ -68,6 +68,22 @@ class BuildSourceTests(unittest.TestCase):
             runner.gradle('assemble')
         self.assertIn('--max-workers=1', (self.reports / 'assemble.log').read_text().splitlines())
 
+    def test_instrumentation_uses_proved_source_and_separate_imo_runner(self):
+        init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
+        init.parent.mkdir(parents=True)
+        init.write_text('// fixture\n')
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof') as proof, patch.object(runner, 'run') as run:
+            runner.gradle('instrumentation')
+            default = run.call_args.args[0]
+            runner.gradle('instrumentation-imo')
+            imo = run.call_args.args[0]
+        self.assertEqual(proof.call_count, 2)
+        self.assertIn(':app:connectedProdWebsiteDebugAndroidTest', default)
+        self.assertNotIn('-PimoTests', default)
+        self.assertIn('-PimoTests', imo)
+        self.assertIn('-Pandroid.testInstrumentationRunnerArguments.package=org.thoughtcrime.securesms.messages.incomingmessageobserver', imo)
+
     def test_release_assembly_uses_release_task_and_rejects_ci_signing(self):
         self.save()
         init = self.repo / 'tools/patches/test-worker-heap.init.gradle'

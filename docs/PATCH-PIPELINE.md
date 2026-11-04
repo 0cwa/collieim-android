@@ -468,8 +468,16 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
    Dispatch **Build unsigned release** on that commit with these inputs. The
    dispatch requires the workflow revision and selected commit to match. Review
    the environment approval and wait for all five source proofs, assemblies and
-   tests to pass. The workflow checks each APK's package, version and unsigned
-   state. Record the run ID and attempt.
+   tests to pass, including the default and IMO instrumentation runs on the
+   reconstructed Collie and Collie FOSS profiles. The workflow checks each APK's
+   package, version and unsigned state. Record the run ID and attempt.
+
+   When building a release locally instead, run and inspect both instrumentation
+   suites for both reconstructed profiles from the exact commit to be signed,
+   including all selected theme layers. Record the commit, profile, test counts,
+   ignored tests, failures and commands before signing. A run on an earlier PR
+   head is not evidence for a later release commit. Use a disposable emulator
+   and synthetic data; never distribute the IMO test APK.
 2. From the authenticated GitHub run page, record the SHA-256 digest of the
    `unsigned-release-<run>-<attempt>` artifact. Download the artifact ZIP over
    an authenticated connection and verify its SHA-256 against that separately

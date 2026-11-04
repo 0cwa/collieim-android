@@ -340,8 +340,11 @@ jobs:
       - name: Run default and IMO instrumentation on a disposable emulator
         run: |
           export PATH="$ANDROID_HOME/platform-tools:$PATH"
+          export ANDROID_AVD_HOME="$RUNNER_TEMP/android-avd"
+          mkdir -p "$ANDROID_AVD_HOME"
           test -w /dev/kvm || sudo chmod a+rw /dev/kvm
           echo 'no' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd -n instrumentation -k 'system-images;android-35;google_apis;x86_64' --force
+          test -s "$ANDROID_AVD_HOME/instrumentation.ini"
           "$ANDROID_HOME/emulator/emulator" -avd instrumentation -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
           emulator_pid=$!
           trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT

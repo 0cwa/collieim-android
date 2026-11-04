@@ -46,10 +46,10 @@ class ScopeTests(unittest.TestCase):
         for path in ('docs/PATCH-PIPELINE.md', 'tools/patches/build.py',
                      'tools/patches/release_profiles.py', 'tools/patches/release_artifacts.py',
                      'tools/patches/test_build.py', 'tools/patches/test_fork_profiles.py',
-                     'tools/patches/test_release_artifacts.py', 'tools/patches/scope.py',
-                     'tools/patches/test_stack_scope.py'):
+                     'tools/patches/test_release_artifacts.py'):
             self.assertTrue(scope.allowed('forks', path), path)
-        for path in ('tools/patches/release_sign.py', 'tools/patches/other.py',
+        for path in ('tools/patches/scope.py', 'tools/patches/test_stack_scope.py',
+                     'tools/patches/release_sign.py', 'tools/patches/other.py',
                      'docs/OTHER.md', 'tools/patches/build.py.extra'):
             self.assertFalse(scope.allowed('forks', path), path)
 

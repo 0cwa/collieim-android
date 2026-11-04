@@ -1,4 +1,5 @@
 import json
+import subprocess
 from pathlib import Path
 import tempfile
 import types
@@ -125,7 +126,8 @@ class ReleaseArtifactsTests(unittest.TestCase):
         args = ['release_publish', 'draft', '--repo', 'owner/repo', '--tag', 'v1.2.3',
                 '--approved-commit', self.commit, '--final-manifest', str(final),
                 '--final-manifest-sha256', a.sha256(final), '--provenance', str(provenance), '--notes', str(final),
-                '--scratch', str(self.root), '--dry-run']
+                '--scratch', str(self.root), '--dry-run', '--signing-key', '/key',
+                '--tagger-name', 'Signer', '--tagger-email', 'signer@example.invalid']
         with patch('sys.argv', args), patch.object(release_publish.subprocess, 'run') as run:
             self.assertEqual(release_publish.main(), 0)
             run.assert_not_called()
@@ -192,10 +194,56 @@ class ReleaseArtifactsTests(unittest.TestCase):
                             (dest / entries[0]['file']).write_bytes(b'replaced')
                     return types.SimpleNamespace(stdout='')
 
-                with patch('sys.argv', args), patch.object(release_publish, 'command', side_effect=gh):
+                with patch('sys.argv', args), patch.object(release_publish, 'command', side_effect=gh), \
+                     patch.object(release_publish, 'create_signed_tag'), \
+                     patch.object(release_publish, 'verify_remote_tag',
+                                  side_effect=ValueError('wrong tag') if failure == 'tag' else None):
                     self.assertEqual(release_publish.main(), 0 if failure == 'none' else 1)
                 self.assertEqual(any(len(c) > 2 and c[1:3] == ['release', 'edit'] for c in commands),
                                  action == 'publish' and failure == 'none')
+
+    def test_signed_tag_creation_passes_keychain_helper_and_removes_local_tag(self):
+        with patch.object(release_publish, 'command') as command:
+            release_publish.create_signed_tag('owner/repo', 'v1', self.commit, Path('/key'),
+                                              'Signer', 'signer@example.invalid', Path('/askpass'), False)
+        calls = command.call_args_list
+        self.assertEqual(len(calls), 3)
+        tag_command = calls[0].args[0]
+        self.assertIn('user.signingkey=/key', tag_command)
+        self.assertIn('-s', tag_command)
+        self.assertEqual(calls[0].kwargs['env']['SSH_ASKPASS'], '/askpass')
+        self.assertEqual(calls[0].kwargs['env']['SSH_ASKPASS_REQUIRE'], 'force')
+        self.assertEqual(calls[-1].args[0], ['git', 'tag', '-d', 'v1'])
+
+    def test_signed_tag_cleanup_does_not_remove_existing_local_tag(self):
+        failure = subprocess.CalledProcessError(1, 'git')
+        with patch.object(release_publish, 'command', side_effect=failure) as command:
+            with self.assertRaises(subprocess.CalledProcessError):
+                release_publish.create_signed_tag('owner/repo', 'v1', self.commit, Path('/key'),
+                                                  'Signer', 'signer@example.invalid', None, False)
+            self.assertEqual(command.call_count, 1)
+        with patch.object(release_publish, 'command', side_effect=[None, failure, None]) as command:
+            with self.assertRaises(subprocess.CalledProcessError):
+                release_publish.create_signed_tag('owner/repo', 'v1', self.commit, Path('/key'),
+                                                  'Signer', 'signer@example.invalid', None, False)
+            self.assertEqual(command.call_args_list[-1].args[0], ['git', 'tag', '-d', 'v1'])
+
+    def test_rejects_unsigned_unverified_and_wrong_commit_tags(self):
+        valid = {'tag': 'v1', 'object': {'type': 'commit', 'sha': self.commit},
+                 'verification': {'verified': True}}
+        cases = [({'type': 'commit', 'sha': self.commit}, valid),
+                 ({'type': 'tag', 'sha': 'd' * 40}, dict(valid, verification={'verified': False})),
+                 ({'type': 'tag', 'sha': 'd' * 40}, dict(valid, object={'type': 'commit', 'sha': 'e' * 40}))]
+        for ref, tag in cases:
+            responses = [types.SimpleNamespace(stdout=json.dumps({'object': ref})),
+                         types.SimpleNamespace(stdout=json.dumps(tag))]
+            with self.subTest(ref=ref, tag=tag), patch.object(release_publish, 'command', side_effect=responses):
+                with self.assertRaises(ValueError):
+                    release_publish.verify_remote_tag('owner/repo', 'v1', self.commit)
+        responses = [types.SimpleNamespace(stdout=json.dumps({'object': {'type': 'tag', 'sha': 'd' * 40}})),
+                     types.SimpleNamespace(stdout=json.dumps(valid))]
+        with patch.object(release_publish, 'command', side_effect=responses):
+            release_publish.verify_remote_tag('owner/repo', 'v1', self.commit)
 
     def test_snapshot_rejects_symlinks_and_nonregular_files(self):
         import os

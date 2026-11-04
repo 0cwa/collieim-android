@@ -359,6 +359,23 @@ def import_start_trees(config, evidence):
         raise ValueError('start tree bundle lacks action chain trees: ' + ', '.join(sorted(missing)))
 
 
+def import_profile_trees(config):
+    """Verify and import fork checkpoints needed by release profile measurements."""
+    profiles = config.get('profiles') or {}
+    forked = [name for name, entry in profiles.items() if entry.get('fork_series')]
+    if not forked:
+        return
+    import fork_profiles
+    import release_profiles
+    import verify_source_bundles
+    # The longest profile contains every preceding checkpoint in the fork chain.
+    name = max(forked, key=lambda item: len(profiles[item]['fork_series']))
+    root = Path('.').resolve()
+    _, selection = release_profiles.select(config, name, root)
+    verify_source_bundles.verify(root)
+    fork_profiles.fork_layers(root, selection)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config', default='molly-build.json'); p.add_argument('--metadata', default='patches/ports/signal-8.33.2/report-metadata.json')
@@ -368,6 +385,7 @@ def main():
         config = json.loads(Path(args.config).read_text())
         evidence = json.loads(Path(args.metadata).read_text())
         import_start_trees(config, evidence)
+        import_profile_trees(config)
         with tempfile.TemporaryDirectory(prefix='molly-report-origin-') as objects:
             series_dir = Path(config['port']['series']).parent
             repo = line_origin.Repo('.', objects)

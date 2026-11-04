@@ -123,7 +123,7 @@ def allowed(scope, path):
         return (path in {'molly-build.json', 'docs/PORT-REPORT.md'} or
                 path in {prefix + 'provenance.json', prefix + 'upstream-source.bundle'} or
                 any(path.startswith(prefix + layer + '/')
-                    for layer in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes')))
+                    for layer in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes', 'collie-icon')))
     if scope in ('followups', 'additions', 'features'):
         if report_evidence(path):
             return True

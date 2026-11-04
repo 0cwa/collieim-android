@@ -131,10 +131,14 @@ class ReleaseArtifactsTests(unittest.TestCase):
             run.assert_not_called()
 
     def test_publish_remote_verification_and_input_replacement(self):
-        cases = [('publish', x) for x in ('none', 'tag', 'non-draft', 'missing', 'extra', 'download', 'snapshot-and-download')]
+        cases = [('publish', x) for x in ('none', 'tag', 'non-draft', 'wrong-prerelease', 'missing', 'extra', 'download', 'snapshot-and-download')]
         cases += [('draft', 'none'), ('draft', 'download')]
+        cases += [('prerelease-' + action, failure) for action in ('draft', 'publish')
+                  for failure in ('none', 'wrong-prerelease')]
         for action, failure in cases:
             with self.subTest(action=action, failure=failure), tempfile.TemporaryDirectory(dir=self.root) as directory:
+                prerelease = action.startswith('prerelease-')
+                action = action.removeprefix('prerelease-')
                 root = Path(directory)
                 entries = []
                 for profile in sorted(a.PROFILES):
@@ -151,7 +155,7 @@ class ReleaseArtifactsTests(unittest.TestCase):
                 args = ['release_publish', action, '--repo', 'owner/repo', '--tag', 'v1',
                         '--approved-commit', self.commit, '--final-manifest', str(final),
                         '--final-manifest-sha256', a.sha256(final), '--provenance', str(provenance),
-                        '--notes', str(notes), '--scratch', str(root)]
+                        '--notes', str(notes), '--scratch', str(root)] + (['--prerelease'] if prerelease else [])
                 commands = []
 
                 def gh(command, *unused, **kwargs):
@@ -166,6 +170,8 @@ class ReleaseArtifactsTests(unittest.TestCase):
                         sha = 'd' * 40 if failure == 'tag' else self.commit
                         return types.SimpleNamespace(stdout=json.dumps({'object': {'type': 'commit', 'sha': sha}}))
                     if command[2] == 'create':
+                        self.assertEqual('--prerelease' in command, prerelease)
+                        self.assertEqual('--latest=false' in command, prerelease)
                         for entry in entries:
                             self.assertIn(inputs / entry['file'], command)
                             self.assertEqual(a.sha256(inputs / entry['file']), entry['signed_sha256'])
@@ -174,6 +180,7 @@ class ReleaseArtifactsTests(unittest.TestCase):
                         if failure == 'missing': names.pop()
                         if failure == 'extra': names.append('extra.apk')
                         return types.SimpleNamespace(stdout=json.dumps({'isDraft': failure != 'non-draft',
+                                                                         'isPrerelease': (not prerelease if failure == 'wrong-prerelease' else prerelease),
                                                                          'assets': [{'name': n} for n in names]}))
                     if command[2] == 'download':
                         dest = Path(command[command.index('--dir') + 1])

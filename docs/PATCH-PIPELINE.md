@@ -655,22 +655,29 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
    `signed/final-manifest.json`. Supply a release notes file, an existing private
    scratch directory, and the separate publishing credential. Preview with
    `--dry-run`; the following `draft` command creates a tag at the approved
-   commit, creates a draft and uploads the APKs, checksums, final manifest,
+   commit as a signed annotated SSH tag, requires GitHub to verify its signature,
+   creates a draft and uploads the APKs, checksums, final manifest,
    provenance and notes. It downloads every asset again and compares its hash.
 
    ```sh
    python3 tools/patches/release_publish.py draft --repo OWNER/REPO --tag vVERSION \
      --approved-commit COMMIT --final-manifest signed/final-manifest.json \
      --final-manifest-sha256 FINAL_MANIFEST_SHA256 --provenance unsigned/manifest.json \
-     --notes RELEASE_NOTES --scratch SCRATCH --dry-run
+     --notes RELEASE_NOTES --scratch SCRATCH --signing-key SSH_PRIVATE_KEY \
+     --tagger-name NAME --tagger-email VERIFIED_GITHUB_EMAIL \
+     --ssh-askpass OPTIONAL_KEYCHAIN_HELPER --dry-run
    ```
 
+   Supply `--ssh-askpass` when an askpass helper is needed; it is optional.
+   The tagger email must be verified on GitHub. Signing options are required
+   only for `draft`; `publish` verifies the existing signed tag again.
    For alpha or beta builds, add `--prerelease` to both `draft` and `publish`;
    the tool marks the draft as a prerelease and verifies that setting before
    publishing. Remove `--dry-run` only when ready to create the tag and draft. A failed
    attempt may leave a tag or draft behind; inspect and resolve that state
    explicitly. Publishing is a separate command with the same arguments, using
-   `publish` in place of `draft`. It rechecks the tag, draft, exact asset list
+   `publish` in place of `draft` (without the signing options). It rechecks
+   the signed tag, draft, exact asset list
    and downloaded hashes immediately before publishing.
 
 If a published immutable release is bad, issue a new tag with a higher version

@@ -9,8 +9,8 @@ Molly itself adds 26,922 non-blank production lines to Signal `c47a74ba0961`. **
 | Stage (cumulative) | Production written / removed | Written as % of Molly's production lines | Molly lines not carried | Translations | Tests | Generated |
 |---|---:|---:|---:|---:|---:|---:|
 | PR3 compatibility, tree `2a78679e2344` | +1,290 / −327 | 4.8% | 1,491 (of which 546 in removed paths) | +2,059 / −192 | +1,288 / −317 | +51 / −10 |
-| PR4 behavior fixes, tree `ad5c8a62804e` | +1,500 / −307 | 5.6% | 1,492 (of which 546 in removed paths) | +2,059 / −192 | +2,013 / −342 | +51 / −10 |
-| PR5 behavior additions, tree `23dbee2091c6` | +1,620 / −308 | 6.0% | 1,505 (of which 546 in removed paths) | +2,059 / −192 | +2,180 / −342 | +51 / −10 |
+| PR4 behavior fixes, tree `3f425aada892` | +1,500 / −307 | 5.6% | 1,492 (of which 546 in removed paths) | +2,059 / −192 | +2,028 / −349 | +51 / −10 |
+| PR5 behavior additions, tree `cfd28b498a56` | +1,620 / −308 | 6.0% | 1,505 (of which 546 in removed paths) | +2,059 / −192 | +2,195 / −349 | +51 / −10 |
 
 Classes: **production**: app and library source, default-locale resources and build scripts that ship in the APK; **translations**: localized strings (res/values-<locale>/strings*.xml), generated or relocated; **tests**: test, screenshot-test and benchmark source sets and benchmark modules; **generated**: gradle/verification-metadata.xml dependency hashes; **repository**: patch series, pipeline tools, documentation and CI.
 
@@ -45,7 +45,7 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `followups/backup-revision-walk` | PR4 behavior fixes | +2 / −6 | +0 / −0 | +28 / −2 | +0 / −0 |
 | `followups/restore-badges-log-theme` | PR4 behavior fixes | +41 / −2 | +0 / −0 | +62 / −0 | +0 / −0 |
 | `followups/enable-linked-history-transfer` | PR4 behavior fixes | +1 / −1 | +0 / −0 | +50 / −0 | +0 / −0 |
-| `followups/android-instrumentation-compatibility` | PR4 behavior fixes | +20 / −2 | +0 / −0 | +1,095 / −62 | +0 / −0 |
+| `followups/android-instrumentation-compatibility` | PR4 behavior fixes | +20 / −2 | +0 / −0 | +1,110 / −86 | +0 / −0 |
 | `followups/network-initialization-cycle` | PR4 behavior fixes | +6 / −3 | +0 / −0 | +28 / −0 | +0 / −0 |
 | `followups/registration-network-settings` | PR5 behavior additions | +53 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 | `followups/donation-completion-copy` | PR5 behavior additions | +1 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
@@ -892,8 +892,8 @@ Partial-file exclusions and deletion necessity remain unmeasured unless separate
 | wire-handler/lib/build.gradle.kts | 100644 | 18 | no | no | Both Signal trees; absent in Molly | Tree membership audit | unmeasured | Git tree membership; see patches/ports/signal-8.33.2/report-evidence/receipts.md#whole-file-deletion-inventory | Molly path absence does not establish omission reason. |
 
 Compatibility share: 108969 / 143289 physical added plus deleted text lines = 76.048%.
-Current mechanical comparison: 9654 added, 98560 deleted, 108214 total, 28 binary; current Molly comparison: 398420 added, 239857 deleted, 638277 total, 698 binary.
-Current gross physical comparison relative to original Molly patchset: 108214 / 143289 added plus deleted text lines = 75.521%.
+Current mechanical comparison: 9669 added, 98584 deleted, 108253 total, 28 binary; current Molly comparison: 398418 added, 239864 deleted, 638282 total, 698 binary.
+Current gross physical comparison relative to original Molly patchset: 108253 / 143289 added plus deleted text lines = 75.549%.
 Gross physical counts include deletions and conflict bookkeeping; they do not establish authorship or necessity.
 After minimization: unmeasured.
 
@@ -910,12 +910,12 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | conflict_resolution | 1614 | 163 | 40048 |
 | signal_api_compile_fix | 9 | 39 | 21 |
 | behavior_preservation | 406 | 843 | 545 |
-| unmeasured | 3502 | 8560 | 57944 |
+| unmeasured | 3511 | 8575 | 57968 |
 | behavior_addition | 3 | 49 | 2 |
 
 | Structural kind | Rows | Added | Deleted |
 |---|---:|---:|---:|
-| text | 4621 | 9654 | 98560 |
+| text | 4630 | 9669 | 98584 |
 | binary | 28 | 0 | 0 |
 | mode | 885 | 0 | 0 |
 
@@ -1029,13 +1029,22 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | eaeb53f28523699c770b | app/src/androidTest/java/org/thoughtcrime/securesms/jobs/ArchiveAttachmentReconciliationJobTest.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | e71e599980dcff17f144 | app/src/androidTest/java/org/thoughtcrime/securesms/jobs/ArchiveAttachmentReconciliationJobTest.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 1f0b49153781981b778a | app/src/androidTest/java/org/thoughtcrime/securesms/jobs/ArchiveAttachmentReconciliationJobTest.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 11ab7a75726ae46ab01b | app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupDeleteJobTest.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| b7683183cddd3a6c89b0 | app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupSubscriptionCheckJobTest.kt | text | 100644 | 100644 | 0 | 3 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| cfc65f9965bffe60e763 | app/src/androidTest/java/org/thoughtcrime/securesms/jobs/BackupSubscriptionCheckJobTest.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | a0a7644a61f9a9366111 | app/src/androidTest/java/org/thoughtcrime/securesms/jobs/JobManagerPerformanceTests.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 0898d7642251c910ecf7 | app/src/androidTest/java/org/thoughtcrime/securesms/jobs/JobManagerPerformanceTests.kt | text | 100644 | 100644 | 3 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 3cbc6863adeb5bef020a | app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt | text | 100644 | 100644 | 0 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 8a94fd92b311b3b9c853 | app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| b2dd8248e8dc7a39f825 | app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt | text | 100644 | 100644 | 1 | 7 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 1058ef5fd2ea6fd3eb01 | app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt | text | 100644 | 100644 | 12 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | b94f5b7c7b1e237cab04 | app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | f7bc572688ad30bdb7b0 | app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | ec52ac65263637bb8655 | app/src/androidTest/java/org/thoughtcrime/securesms/profiles/manage/UsernameEditFragmentTest.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 8ede741e95adf7d92ccb | app/src/androidTest/java/org/thoughtcrime/securesms/testing/GooglePayTestRule.kt | text | 100644 | 000000 | 0 | 49 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 71f1b01df53f20593827 | app/src/androidTest/java/org/thoughtcrime/securesms/testing/GooglePayTestRule.kt | mode | 100644 | 000000 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 31ab3ad4a7f6357f7e12 | app/src/androidTest/java/org/thoughtcrime/securesms/testing/RemoteConfigForTest.kt | text | 100644 | 100644 | 1 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 9109efbd2e9e0b9f2643 | app/src/androidTest/java/org/thoughtcrime/securesms/testing/RemoteConfigForTest.kt | text | 100644 | 100644 | 0 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | f850002f692c314276db | app/src/androidTest/java/org/thoughtcrime/securesms/testing/SignalActivityRule.kt | text | 100644 | 100644 | 1 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 450340fc4b122344e2e5 | app/src/androidTest/java/org/thoughtcrime/securesms/testing/SignalActivityRule.kt | text | 100644 | 100644 | 3 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 4d2b47d504349ebc1110 | app/src/androidTest/java/org/thoughtcrime/securesms/testing/incomingmessageobserver/IncomingMessageObserverRule.kt | text | 100644 | 100644 | 1 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |

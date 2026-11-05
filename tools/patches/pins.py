@@ -22,6 +22,7 @@ PROFILES = 'tools/patches/release_profiles.py'
 
 # (value, meaning, upstream whose new release changes it, files that contain it)
 PINS = [
+    ('89bd7d6368a509470c4612d079746f66dfac8b55', 'reviewed release profile composition', 'none', [SCOPE]),
     ('0e202dda90785771ff8c87526eaaf30c655f54f3', 'Molly 8.19.2-4 release commit, the Molly input', 'Molly',
      [SCOPE, REPORT, RELEASE_WORKFLOW, '.github/workflows/molly-unsigned-release.yml']),
     ('c47a74ba0961903eeaeda6d22347a990056c3e83', 'Signal 8.19.2 commit under Molly 8.19.2-4', 'Molly',

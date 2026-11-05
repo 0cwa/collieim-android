@@ -199,7 +199,7 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = '8f9587ace1b25f6a3c5cbc18176859f55a8d7495'
+MAIN_CLEAN_ENTRIES_BLOB = '27adcb6ef24f6eaa419e8a1de21b0785ff4eef35'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -280,7 +280,7 @@ def check_main_docs(repo, base, head):
         raise ValueError('main base is not an ancestor of head')
     for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')):
         path = raw.decode('utf-8', 'surrogateescape')
-        if not (path in {'README.md', 'SECURITY.md', '.github/README.md'} or path.startswith(('docs/', 'assets/'))):
+        if not mutable_main_documentation(path):
             raise ValueError('main documentation scope excludes: ' + path)
     return {'scope': 'main-docs', 'profile_present': False, 'port_present': False}
 

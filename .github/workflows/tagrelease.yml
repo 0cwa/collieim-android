@@ -1,49 +1,18 @@
-name: Tag Commit for Release
+name: Collie release automation setup
 
 on:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
-  push_tag:
-    name: Push version tag
+  release_setup_incomplete:
+    name: Hosted release setup is incomplete
     runs-on: ubuntu-24.04
-    outputs:
-      version: ${{ steps.extract_version.outputs.version }}
-      should_call_release: ${{ steps.release_trigger.outputs.should_call_release }}
-
     steps:
-      - uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.PUBLISH_PAT || secrets.GITHUB_TOKEN }}
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Extract version from source
-        id: extract_version
+      - name: Explain current release status
+        shell: bash
         run: |
-          ver=$(./gradlew -q :app:printVersion | jq -r .android.versionName)
-          echo "version=v$ver" >> $GITHUB_OUTPUT
-
-      - name: Tag current commit and push
-        run: |
-          git tag -f "${{ steps.extract_version.outputs.version }}"
-          git push -f origin "${{ steps.extract_version.outputs.version }}"
-
-      - name: Determine release trigger
-        id: release_trigger
-        run: echo "should_call_release=$IS_PAT_MISSING" >> $GITHUB_OUTPUT
-        env:
-          IS_PAT_MISSING: ${{ secrets.PUBLISH_PAT == '' }}
-
-  call_release_workflow:
-    name: Release workflow
-    if: "needs.push_tag.outputs.should_call_release == 'true'"
-    needs: push_tag
-    uses: ./.github/workflows/release.yml
-    with:
-      version: ${{ needs.push_tag.outputs.version }}
-    secrets: inherit
+          echo "Hosted Collie release signing and publishing are not configured yet." >&2
+          echo "This workflow cannot create a tag or publish a release." >&2
+          exit 1

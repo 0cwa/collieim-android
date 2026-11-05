@@ -2,6 +2,7 @@
 import hashlib
 import json
 from pathlib import Path
+import tempfile
 
 import forest
 import git_utils
@@ -42,7 +43,7 @@ def port_prefix(repo, config_path, selection, records):
     return records[:count]
 
 
-def fork_layers(repo, selection):
+def fork_layers(repo, selection, *, check_target=True):
     """Import and verify the selected fork prefix anchored to the port checkpoint."""
     root = release.inside(repo, release_profiles.FORK_ROOT, 'fork root')
     provenance_path = release.inside(repo, release_profiles.FORK_ROOT + '/provenance.json', 'fork provenance')
@@ -141,6 +142,57 @@ def fork_layers(repo, selection):
                 raise forest.ForestError('fork upstream commit author differs')
         records.append((mailbox, metadata, layer['after_tree']))
         previous, tree = commit, actual_tree
-    if tree != selection['target_tree']:
+    if check_target and tree != selection['target_tree']:
         raise forest.ForestError('fork final source tree differs from profile')
     return records
+
+
+def continued_icon(repo, selection):
+    """Verify the original icon checkpoint chain, then return only its mailbox.
+
+    Its preceding fork layers establish provenance; they are not replayed.
+    """
+    if selection.get('icon_overlay') != release_profiles.COLLIE_ICON:
+        raise forest.ForestError('invalid Continued icon overlay')
+    original = dict(selection, fork_series=[release_profiles.FIREBASE, release_profiles.RETENTION,
+                    release_profiles.RETENTION_FIXES, release_profiles.COLLIE_ICON])
+    return fork_layers(repo, original, check_target=False)[-1]
+
+
+def materialize_continued_icon(repo, selection):
+    """Create and verify a Continued tree in the repository object database.
+
+    The index is private; like source bundle imports, this requires writable Git objects.
+    """
+    mailbox, metadata, _ = continued_icon(repo, selection)
+    records = fork_layers(repo, selection, check_target=False) if selection['fork_series'] else []
+    base = records[-1][2] if records else selection['base_tree']
+    if hashlib.sha256(mailbox.read_bytes()).hexdigest() != metadata['sha256']:
+        raise forest.ForestError('icon mailbox changed after validation')
+    with tempfile.TemporaryDirectory(prefix='continued-icon-index-') as directory:
+        index = Path(directory) / 'index'
+        git_utils.git(repo, 'read-tree', base, index_file=index)
+        git_utils.git(repo, 'apply', '--cached', str(mailbox), index_file=index)
+        tree = git_utils.git(repo, 'write-tree', index_file=index).stdout.strip()
+    if tree != selection['target_tree']:
+        raise forest.ForestError('Continued icon source tree differs from profile')
+    return tree
+
+
+def prepare_profile_trees(repo, config, config_path=None):
+    """Verify and materialize profile trees in a writable repository for reports."""
+    profiles = config.get('profiles') or {}
+    forked = [name for name, entry in profiles.items() if entry.get('fork_series')]
+    continued = [name for name, entry in profiles.items() if entry.get('icon_overlay')]
+    if not forked and not continued:
+        return
+    root = Path(repo).resolve()
+    verify_source_bundles.verify(root, config_path)
+    if forked:
+        # The longest profile contains every preceding fork checkpoint.
+        name = max(forked, key=lambda item: len(profiles[item]['fork_series']))
+        _, selection = release_profiles.select(config, name, root)
+        fork_layers(root, selection, check_target=not selection.get('icon_overlay'))
+    for name in continued:
+        _, selection = release_profiles.select(config, name, root)
+        materialize_continued_icon(root, selection)

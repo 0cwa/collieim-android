@@ -1,9 +1,12 @@
 import json
+import contextlib
+import io
 import os
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import line_origin
 
@@ -133,20 +136,55 @@ class LineOriginTests(unittest.TestCase):
         config = {'port': {'series': 'patches/ports/p/series'}, 'fork_source': {'head': fork},
                   'profiles': {'plain': {'target_tree': base, 'fork_series': []},
                                'forked': {'target_tree': target, 'fork_series': ['patches/forks/f/layer/series'],
-                                          'firebase_free': True}}}
+                                          'firebase_free': True},
+                               'molly-continued': {'target_tree': base, 'fork_series': [], 'firebase_free': False, 'icon_overlay': line_origin.release_profiles.COLLIE_ICON},
+                               'molly-foss-continued': {'target_tree': target, 'fork_series': ['patches/forks/f/layer/series'],
+                                                        'firebase_free': True, 'icon_overlay': line_origin.release_profiles.COLLIE_ICON}}}
         before = f.run('count-objects', '-v')
         rows = line_origin.profiles(self.repo, root, config)
         self.assertEqual(f.run('count-objects', '-v'), before)
-        self.assertEqual([r['name'] for r in rows], ['plain', 'forked'])
+        self.assertEqual([r['name'] for r in rows], ['plain', 'forked', 'molly-continued', 'molly-foss-continued'])
         self.assertIsNone(rows[0]['from_fork'])
         self.assertEqual(rows[0]['classes']['production']['written'], 1)
         self.assertEqual(rows[1]['parents'][2], fork)
         self.assertEqual(rows[1]['classes']['production']['written'], 1)
         self.assertEqual(rows[1]['from_fork']['production'], 1)
+        self.assertEqual(rows[0]['release_overlays'], [])
+        self.assertEqual(rows[2]['release_overlays'], [line_origin.release_profiles.COLLIE_ICON])
+        self.assertEqual(rows[3]['release_overlays'], [line_origin.release_profiles.COLLIE_ICON])
+        self.assertEqual(len(rows[2]['parents']), 2)
+        self.assertIsNone(rows[2]['from_fork'])
+        self.assertEqual(rows[3]['parents'][2], fork)
+        self.assertEqual(rows[3]['from_fork']['production'], 1)
         text = line_origin.markdown_profiles(rows, 10)
         self.assertIn('| forked | `', text)
-        self.assertIn('| `layer` | removed | +1 / −1 | 10.0% | 1 |', text)
+        self.assertIn('| `layer` | none | removed | +1 / −1 | 10.0% | 1 |', text)
+        self.assertIn('| none | `collie-icon` | included |', text)
+        self.assertIn('| `layer` | `collie-icon` | removed |', text)
         self.assertEqual(line_origin.profiles(self.repo, root, {'port': None}), [])
+
+    def test_configured_cli_prepares_profile_trees_before_measurement(self):
+        import fork_profiles
+        root = Path(self.tmp.name)
+        config_file = root / 'config.json'
+        config = {'profiles': {'molly-continued': {}}}
+        config_file.write_text(json.dumps(config))
+        events = []
+        def prepare(repo, selected, path):
+            events.append(('prepare', repo, selected, path))
+        def measure_port(repo, series):
+            events.append(('port',))
+            return {}
+        def measure_profiles(repo, source, selected):
+            events.append(('profiles', selected))
+            return []
+        with patch('sys.argv', ['line_origin.py', '--repo', str(root), 'port', '--config', str(config_file)]), \
+             patch.object(fork_profiles, 'prepare_profile_trees', side_effect=prepare), \
+             patch.object(line_origin, 'port', side_effect=measure_port), \
+             patch.object(line_origin, 'profiles', side_effect=measure_profiles), \
+             contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(line_origin.main(), 0)
+        self.assertEqual(events, [('prepare', str(root), config, config_file.resolve()), ('port',), ('profiles', config)])
 
     def test_classification(self):
         cases = {

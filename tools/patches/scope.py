@@ -199,11 +199,11 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = 'e06107fb2794f901df9ac837106d2ca3e2e0d684'
+MAIN_CLEAN_ENTRIES_BLOB = '86e6bde21e0e9f8398840179154ed49649efe9ad'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
-    '.github/workflows/tagrelease.yml', 'README.md', 'SECURITY.md',
+    '.github/workflows/tagrelease.yml', '.github/workflows/retarget-main-prs.yml', 'README.md', 'SECURITY.md',
     'assets/badge_obtainium.png', 'assets/collie-foreground.svg',
     'assets/collie-icon.svg', 'pkcs11.config',
 })
@@ -285,6 +285,56 @@ def check_main_docs(repo, base, head):
     return {'scope': 'main-docs', 'profile_present': False, 'port_present': False}
 
 
+def main_docs_only(repo, base, head):
+    """Select the inexpensive documentation gate only for an entirely docs diff."""
+    changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')
+    return all(mutable_main_documentation(p.decode('utf-8', 'surrogateescape'))
+               for p in filter(None, changed))
+
+
+def check_main_maintenance(repo, base, head, integration_lower):
+    """Check patch/tool maintenance on main without admitting direct source edits."""
+    check_trusted_integration_lower(repo, integration_lower)
+    if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        raise ValueError('main base is not an ancestor of head')
+    changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')
+    for raw in filter(None, changed):
+        path = raw.decode('utf-8', 'surrogateescape')
+        if path.startswith('patches/molly/'):
+            raise ValueError('official Molly forest must remain unchanged: ' + path)
+        if not (mutable_main_documentation(path) or
+                path.startswith(('tools/patches/', 'patches/ports/', 'patches/forks/')) or
+                path in {'molly-build.json', 'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'} or
+                path in WORKFLOWS or path == '.github/workflows/retarget-main-prs.yml'):
+            raise ValueError('main maintenance excludes direct source change: ' + path)
+    if git(repo, 'rev-parse', head + ':patches/molly').decode().strip() != FOREST:
+        raise ValueError('Molly forest does not match the official snapshot')
+    # Compare the maintained tree to the trusted upstream source projection as
+    # well as checking the PR diff. This also makes a trusted main snapshot
+    # verifiable after earlier maintenance commits have landed.
+    projected = git(repo, 'diff', '--no-renames', '--name-only', '-z', integration_lower, head).split(b'\0')
+    for raw in filter(None, projected):
+        path = raw.decode('utf-8', 'surrogateescape')
+        if not (metadata(path) or path in MAIN_PROJECTION_EXCEPTIONS or
+                mutable_main_documentation(path) or path == '.github/workflows/retarget-main-prs.yml'):
+            raise ValueError('main source projection differs: ' + path)
+    if git(repo, 'ls-tree', head, '--', 'pkcs11.config'):
+        raise ValueError('main must not reintroduce the nonportable PKCS#11 configuration')
+    try:
+        prior = json.loads(git(repo, 'show', base + ':molly-build.json'))
+        current = json.loads(git(repo, 'show', head + ':molly-build.json'))
+        trusted = json.loads(git(repo, 'show', integration_lower + ':molly-build.json'))
+        for key in ('signal', 'molly', 'native'):
+            if prior[key] != current[key] or current[key] != trusted[key]:
+                raise ValueError('main maintenance cannot change upstream source pin: ' + key)
+        if ('profiles' in prior) != ('profiles' in current):
+            raise ValueError('profile introduction requires fork scope')
+    except (KeyError, TypeError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
+        raise ValueError('invalid main maintenance profile') from exc
+    return {'scope': 'main-maintenance', 'profile_present': True, 'port_present': True}
+
+
 def check_main_integration(repo, base, head, integration_lower, allow_main_docs=False):
     check_clean_projection(repo, base, integration_lower, allow_main_docs=True)
     for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')):
@@ -315,6 +365,10 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
         if integration_lower is not None:
             raise ValueError('main documentation must not use release base')
         return check_main_docs(repo, base, head)
+    if scope == 'main-maintenance':
+        if integration_lower is None:
+            raise ValueError('main maintenance requires pinned release base')
+        return check_main_maintenance(repo, base, head, integration_lower)
     if integration_lower is not None:
         if scope != 'forks':
             raise ValueError('main integration is supported only for forks scope')
@@ -473,7 +527,7 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-docs', 'main-snapshot', 'main-snapshot-transition'))
+    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-docs', 'main-maintenance', 'main-snapshot', 'main-snapshot-transition'))
     parser.add_argument('--base', required=True)
     parser.add_argument('--head', default='HEAD')
     parser.add_argument('--repo', default='.')

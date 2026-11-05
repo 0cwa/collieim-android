@@ -10,6 +10,11 @@ WORKFLOW = Path(__file__).resolve().parents[2] / '.github/workflows/molly-patch-
 
 
 class ScopeMappingTests(unittest.TestCase):
+    def test_collie_fork_does_not_retarget_main_prs(self):
+        retarget = (WORKFLOW.parent / 'retarget-main-prs.yml').read_text()
+        self.assertIn("github.repository != '0cwa/collieim-android'", retarget)
+        self.assertIn("github.repository != 'signalapp/Signal-Android'", retarget)
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         root = Path(self.tmp.name)
@@ -183,6 +188,21 @@ class ScopeMappingTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(result.stdout.strip(), 'forks ' + self.lower)
 
+    def test_main_maintenance_after_profiles_does_not_use_docs_scope(self):
+        self.mapping = self.mapping.replace('7f0eb01a0ab472deeef3b528e7f508425044fa6a', self.lower)
+        for path in ('tools/patches/example.py', 'patches/ports/example', 'patches/forks/example',
+                     '.github/workflows/molly-patch-release.yml'):
+            with self.subTest(path=path):
+                self.git('reset', '--hard', '-q', self.head)
+                target = self.repo / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text('change')
+                self.git('add', path)
+                self.git('commit', '-qm', 'maintenance')
+                result = self.run_mapping('pull_request', 'main', self.head)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.strip().splitlines()[-1], 'main-maintenance ' + self.head)
+
     def test_dispatch_main_before_and_after_profiles(self):
         self.mapping = self.mapping.replace('7f0eb01a0ab472deeef3b528e7f508425044fa6a', self.lower)
         self.git('checkout', '-q', '--orphan', 'clean-main-dispatch')
@@ -196,7 +216,7 @@ class ScopeMappingTests(unittest.TestCase):
         base = self.git('rev-parse', 'HEAD').strip()
         result = self.run_mapping('workflow_dispatch', head_ref='main')
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertTrue(result.stdout.strip().startswith('main-snapshot-transition '))
+        self.assertEqual(result.stdout.strip(), 'main-maintenance ' + base)
         (self.repo / 'molly-build.json').write_text('{"profiles": {}}')
         self.git('add', 'molly-build.json')
         self.git('commit', '-qm', 'profiles')
@@ -205,7 +225,7 @@ class ScopeMappingTests(unittest.TestCase):
         self.git('commit', '-qm', 'docs')
         result = self.run_mapping('workflow_dispatch', head_ref='main')
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.strip().splitlines()[-1], 'main-snapshot ' + base)
+        self.assertEqual(result.stdout.strip().splitlines()[-1], 'main-maintenance ' + self.git('rev-parse', 'HEAD').strip())
 
 
 if __name__ == '__main__':

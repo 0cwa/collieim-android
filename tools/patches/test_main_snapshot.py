@@ -42,12 +42,12 @@ class MainSnapshotTests(unittest.TestCase):
         return output.getvalue().strip()
 
     def test_pre_and_post_profile_snapshot_with_later_docs(self):
-        self.commit('molly-build.json', '{}')
         self.assertEqual(self.result(), 'main-snapshot-transition ' + main_snapshot.INITIAL_MAIN)
-        base = self.commit('README.md', 'clean base')
+        base = self.commit('molly-build.json', '{}')
+        self.assertEqual(self.result(), 'main-maintenance ' + base)
         self.commit('molly-build.json', json.dumps({'profiles': {}}))
-        self.commit('README.md', 'later docs')
-        self.assertEqual(self.result(), 'main-snapshot ' + base)
+        final = self.commit('README.md', 'later docs')
+        self.assertEqual(self.result(), 'main-maintenance ' + final)
 
     def test_malformed_profile_is_rejected(self):
         self.commit('molly-build.json', '{')
@@ -55,10 +55,10 @@ class MainSnapshotTests(unittest.TestCase):
             self.result()
 
     def test_merge_from_side_branch_uses_main_first_parent(self):
-        base = self.commit('molly-build.json', '{}')
+        self.commit('molly-build.json', '{}')
         main_branch = self.git('branch', '--show-current')
         self.git('checkout', '-qb', 'fork')
         self.commit('molly-build.json', json.dumps({'profiles': {}}))
         self.git('checkout', '-q', main_branch)
         self.git('merge', '-q', '--no-ff', '-m', 'land fork', 'fork')
-        self.assertEqual(self.result(), 'main-snapshot ' + base)
+        self.assertEqual(self.result(), 'main-maintenance ' + self.git('rev-parse', 'HEAD'))

@@ -168,6 +168,53 @@ class ScopeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'main documentation scope excludes'):
             scope.check_scope(self.repo, 'main-docs', base)
 
+    def test_main_maintenance_allows_patch_and_tool_work_but_rejects_source_edits(self):
+        config = {'signal': {'commit': 'a' * 40}, 'molly': {'target': 'b' * 40}, 'native': None}
+        self.commit('molly-build.json', json.dumps(config))
+        self.commit('patches/molly/fixture', 'synthetic test forest')
+        base = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        with mock.patch.object(scope, 'FOREST', forest), mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', base):
+            with self.assertRaisesRegex(ValueError, 'requires pinned release base'):
+                scope.check_scope(self.repo, 'main-maintenance', base)
+            with self.assertRaisesRegex(ValueError, 'unexpected trusted release-base'):
+                scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=self.base)
+            for path in ('tools/patches/example.py', 'patches/ports/example', 'patches/forks/example',
+                         '.github/workflows/molly-patch-release.yml', 'docs/PORT-REPORT.md'):
+                self.commit(path, 'maintenance')
+                self.assertEqual(scope.check_scope(self.repo, 'main-maintenance', base,
+                                                   integration_lower=base)['scope'], 'main-maintenance')
+            self.commit('app.txt', 'direct source edit')
+            with self.assertRaisesRegex(ValueError, 'excludes direct source change'):
+                scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
+
+    def test_main_maintenance_rejects_upstream_pin_and_forest_changes(self):
+        config = {'signal': {'commit': 'a' * 40}, 'molly': {'target': 'b' * 40}, 'native': None}
+        self.commit('molly-build.json', json.dumps(config))
+        self.commit('patches/molly/fixture', 'synthetic test forest')
+        base = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        with mock.patch.object(scope, 'FOREST', forest), mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', base):
+            config['signal']['commit'] = 'c' * 40
+            self.commit('molly-build.json', json.dumps(config))
+            with self.assertRaisesRegex(ValueError, 'cannot change upstream source pin'):
+                scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
+            self.git('reset', '--hard', '-q', base)
+            self.commit('patches/molly/fixture', 'modified synthetic forest')
+            with self.assertRaisesRegex(ValueError, 'official Molly forest must remain unchanged'):
+                scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
+
+    def test_main_maintenance_snapshot_detects_prior_direct_source_edit(self):
+        config = {'signal': {'commit': 'a' * 40}, 'molly': {'target': 'b' * 40}, 'native': None}
+        self.commit('molly-build.json', json.dumps(config))
+        self.commit('patches/molly/fixture', 'synthetic test forest')
+        trusted = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        self.commit('app.txt', 'already landed direct edit')
+        with mock.patch.object(scope, 'FOREST', forest), mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', trusted):
+            with self.assertRaisesRegex(ValueError, 'main source projection differs'):
+                scope.check_scope(self.repo, 'main-maintenance', 'HEAD', integration_lower=trusted)
+
     def test_main_docs_cannot_change_pinned_port_documentation(self):
         self.commit('README.md', 'initial documentation')
         base = self.git('rev-parse', 'HEAD').strip()

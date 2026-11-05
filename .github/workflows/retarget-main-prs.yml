@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   retarget:
-    if: ${{ github.repository != 'signalapp/Signal-Android' }}
+    if: ${{ github.repository != 'signalapp/Signal-Android' && github.repository != '0cwa/collieim-android' }}
 
     runs-on: ubuntu-latest
 

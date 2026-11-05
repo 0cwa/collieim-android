@@ -71,8 +71,10 @@ jobs:
                   scope=main-transition
                 elif python3 -c 'import json, subprocess, sys; b=json.loads(subprocess.check_output(["git", "show", sys.argv[1] + ":molly-build.json"])); h=json.load(open("molly-build.json")); sys.exit(0 if "profiles" not in b and "profiles" in h else 1)' "$BASE_SHA"; then
                   scope=forks
-                else
+                elif PYTHONPATH=tools/patches python3 -c 'import scope,sys; sys.exit(0 if scope.main_docs_only(".", sys.argv[1], "HEAD") else 1)' "$BASE_SHA"; then
                   scope=main-docs
+                else
+                  scope=main-maintenance
                 fi
                 if [[ "$scope" != main-docs ]]; then
                   integration_lower=7f0eb01a0ab472deeef3b528e7f508425044fa6a
@@ -119,7 +121,7 @@ jobs:
           if [[ -n ${immediate_base:-} ]]; then
             python3 tools/patches/check_collie_scope.py --base "$immediate_base"
           fi
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-maintenance || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           if [[ "$scope" == forks || "$scope" == main-snapshot ]]; then
@@ -134,7 +136,7 @@ jobs:
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-maintenance || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
             python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"
@@ -143,7 +145,7 @@ jobs:
           fi
           if [[ "$scope" == pipeline || "$scope" == main-docs ]]; then echo 'profile=false' >> "$GITHUB_OUTPUT"; else echo 'profile=true' >> "$GITHUB_OUTPUT"; fi
           # The release line builds every named release profile; other branches build their one configuration.
-          if [[ "$scope" == forks || "$scope" == main-snapshot ]]; then
+          if [[ "$scope" == forks || "$scope" == main-snapshot || ( "$scope" == main-maintenance && $(python3 -c 'import json; print("yes" if "profiles" in json.load(open("molly-build.json")) else "no")') == yes ) ]]; then
             echo 'profiles=["molly-minimal","molly-continued","molly-foss-continued","collie","collie-foss"]' >> "$GITHUB_OUTPUT"
           else
             echo 'profiles=[""]' >> "$GITHUB_OUTPUT"
@@ -376,7 +378,7 @@ jobs:
   instrumentation:
     name: Instrumentation on reconstructed ${{ matrix.profile }}
     needs: [scope, source-proof]
-    if: needs.scope.outputs.stack_scope == 'forks' || needs.scope.outputs.stack_scope == 'main-snapshot'
+    if: needs.scope.outputs.stack_scope == 'forks' || needs.scope.outputs.stack_scope == 'main-snapshot' || (needs.scope.outputs.stack_scope == 'main-maintenance' && needs.scope.outputs.profiles != '[""]')
     strategy:
       fail-fast: false
       matrix:

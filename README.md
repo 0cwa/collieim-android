@@ -1,4 +1,4 @@
-# Collie
+# Collie - The Signal Fork
 
 <p align="center">
   <img src="assets/collie-icon.svg" alt="Collie icon" width="240">

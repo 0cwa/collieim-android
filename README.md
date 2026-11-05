@@ -1,7 +1,7 @@
 # Collie
 
 <p align="center">
-  <img src="assets/collie-foreground.svg" alt="Collie icon" width="180">
+  <img src="assets/collie-icon.svg" alt="Collie icon" width="240">
 </p>
 
 <p align="center">

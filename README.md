@@ -54,7 +54,10 @@ The releases retain Signal's messaging and calling features and Molly's addition
 - Blocking messages and calls from unknown contacts.
 - Disappearing call history and scheduled local backups.
 - Proxy and Tor support.
-- WebSocket and UnifiedPush notifications as alternatives to Google's push service. ***If you use Unifiedpush only do so with a server you entrust your entire account and all the metadata of your account.*** (I found, reported, and verified this major security risk to the Mollysocket developer - more details will be disclosed at a later date.)
+- WebSocket and UnifiedPush notifications as alternatives to Google's push service.
+
+> [!CAUTION]
+> ***If you use Unifiedpush only do so with a server you entrust your entire account and all the metadata of your account.*** (I found, reported, and verified this new major security risk to the Mollysocket developer - more details will be disclosed at a later date.)
 
 Collie also offers four optional controls: keep received view-once media, keep incoming disappearing messages after they expire, ignore a sender's request to delete a message, and remove media without removing its message. All four are off by default. Content you choose to keep may appear in backups or exports. (this feature is experimental)
 

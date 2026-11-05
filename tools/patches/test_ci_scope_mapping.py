@@ -10,6 +10,11 @@ WORKFLOW = Path(__file__).resolve().parents[2] / '.github/workflows/molly-patch-
 
 
 class ScopeMappingTests(unittest.TestCase):
+    def test_collie_fork_does_not_retarget_main_prs(self):
+        retarget = (WORKFLOW.parent / 'retarget-main-prs.yml').read_text()
+        self.assertIn("github.repository != '0cwa/collieim-android'", retarget)
+        self.assertIn("github.repository != 'signalapp/Signal-Android'", retarget)
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         root = Path(self.tmp.name)
@@ -46,6 +51,8 @@ class ScopeMappingTests(unittest.TestCase):
         tools = self.repo / 'tools/patches'
         tools.mkdir(parents=True)
         shutil.copyfile(WORKFLOW.parents[2] / 'tools/patches/check_collie_scope.py', tools / 'check_collie_scope.py')
+        for name in ('main_snapshot.py', 'scope.py', 'main-clean-entries.json'):
+            shutil.copyfile(WORKFLOW.parents[2] / 'tools/patches' / name, tools / name)
         self.env = dict(os.environ, PATH=str(wrapper) + ':' + os.environ['PATH'],
                         TEST_TRUSTED_REPO=str(self.repo), GITHUB_SERVER_URL='https://github.example',
                         GITHUB_REPOSITORY='trusted/repo')
@@ -180,6 +187,45 @@ class ScopeMappingTests(unittest.TestCase):
                 result = self.run_mapping('workflow_dispatch', head_ref=ref)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(result.stdout.strip(), 'forks ' + self.lower)
+
+    def test_main_maintenance_after_profiles_does_not_use_docs_scope(self):
+        self.mapping = self.mapping.replace('7f0eb01a0ab472deeef3b528e7f508425044fa6a', self.lower)
+        for path in ('tools/patches/example.py', 'patches/ports/example', 'patches/forks/example',
+                     '.github/workflows/molly-patch-release.yml'):
+            with self.subTest(path=path):
+                self.git('reset', '--hard', '-q', self.head)
+                target = self.repo / path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text('change')
+                self.git('add', path)
+                self.git('commit', '-qm', 'maintenance')
+                result = self.run_mapping('pull_request', 'main', self.head)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.strip().splitlines()[-1], 'main-maintenance ' + self.head)
+
+    def test_dispatch_main_before_and_after_profiles(self):
+        self.mapping = self.mapping.replace('7f0eb01a0ab472deeef3b528e7f508425044fa6a', self.lower)
+        self.git('checkout', '-q', '--orphan', 'clean-main-dispatch')
+        self.git('rm', '-q', '-rf', '.')
+        (self.repo / 'README.md').write_text('initial')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'initial')
+        (self.repo / 'molly-build.json').write_text('{}')
+        self.git('add', 'molly-build.json')
+        self.git('commit', '-qm', 'base')
+        base = self.git('rev-parse', 'HEAD').strip()
+        result = self.run_mapping('workflow_dispatch', head_ref='main')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), 'main-maintenance ' + base)
+        (self.repo / 'molly-build.json').write_text('{"profiles": {}}')
+        self.git('add', 'molly-build.json')
+        self.git('commit', '-qm', 'profiles')
+        (self.repo / 'README.md').write_text('later documentation')
+        self.git('add', 'README.md')
+        self.git('commit', '-qm', 'docs')
+        result = self.run_mapping('workflow_dispatch', head_ref='main')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip().splitlines()[-1], 'main-maintenance ' + self.git('rev-parse', 'HEAD').strip())
 
 
 if __name__ == '__main__':

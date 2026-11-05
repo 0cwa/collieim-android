@@ -78,8 +78,10 @@ class ScopeTests(unittest.TestCase):
         with mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', {'README.md': entry}), \
              mock.patch.object(scope, 'MAIN_SCOPE_FILES', {'.github/workflows/molly-patch-release.yml',
                                                           '.github/workflows/molly-unsigned-release.yml',
-                                                          'app.txt'}):
+                                                          'app.txt'}), \
+             mock.patch.object(scope, 'check_main_maintenance') as maintained:
             scope.check_main_integration(self.repo, main, head, self.base)
+            maintained.assert_called_with(self.repo, main, main, self.base)
             self.commit('README.md', 'changed readme')
             with self.assertRaisesRegex(ValueError, 'main (projection|documentation) changed'):
                 scope.check_main_integration(self.repo, main, 'HEAD', self.base)
@@ -87,8 +89,6 @@ class ScopeTests(unittest.TestCase):
             self.commit('pkcs11.config', 'unexpected')
             with self.assertRaisesRegex(ValueError, 'main projection changed'):
                 scope.check_main_integration(self.repo, main, 'HEAD', self.base)
-            with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
-                scope.check_main_integration(self.repo, head, head, self.base)
 
     def test_mutable_main_documentation_excludes_release_evidence(self):
         for path in ('README.md', 'SECURITY.md', '.github/README.md', 'docs/new-guide.md', 'assets/icon.svg'):
@@ -167,6 +167,88 @@ class ScopeTests(unittest.TestCase):
         self.commit('app.txt', 'unexpected production change')
         with self.assertRaisesRegex(ValueError, 'main documentation scope excludes'):
             scope.check_scope(self.repo, 'main-docs', base)
+
+    def test_main_maintenance_allows_patch_and_tool_work_but_rejects_source_edits(self):
+        config = {'signal': {'commit': 'a' * 40}, 'molly': {'target': 'b' * 40}, 'native': None}
+        self.commit('molly-build.json', json.dumps(config))
+        self.commit('patches/molly/fixture', 'synthetic test forest')
+        base = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        with mock.patch.object(scope, 'FOREST', forest), mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', base):
+            with self.assertRaisesRegex(ValueError, 'requires pinned release base'):
+                scope.check_scope(self.repo, 'main-maintenance', base)
+            with self.assertRaisesRegex(ValueError, 'unexpected trusted release-base'):
+                scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=self.base)
+            for path in ('tools/patches/example.py', 'patches/ports/example', 'patches/forks/example',
+                         '.github/workflows/molly-patch-release.yml', 'docs/PORT-REPORT.md'):
+                self.commit(path, 'maintenance')
+                self.assertEqual(scope.check_scope(self.repo, 'main-maintenance', base,
+                                                   integration_lower=base)['scope'], 'main-maintenance')
+            self.commit('app.txt', 'direct source edit')
+            with self.assertRaisesRegex(ValueError, 'excludes direct source change'):
+                scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
+
+    def test_main_maintenance_rejects_upstream_pin_and_forest_changes(self):
+        config = {'signal': {'commit': 'a' * 40}, 'molly': {'target': 'b' * 40}, 'native': None}
+        self.commit('molly-build.json', json.dumps(config))
+        self.commit('patches/molly/fixture', 'synthetic test forest')
+        base = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        with mock.patch.object(scope, 'FOREST', forest), mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', base):
+            config['signal']['commit'] = 'c' * 40
+            self.commit('molly-build.json', json.dumps(config))
+            with self.assertRaisesRegex(ValueError, 'cannot change upstream source pin'):
+                scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
+            self.git('reset', '--hard', '-q', base)
+            self.commit('patches/molly/fixture', 'modified synthetic forest')
+            with self.assertRaisesRegex(ValueError, 'official Molly forest must remain unchanged'):
+                scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
+
+    def test_main_maintenance_and_snapshot_enforce_workflow_invariants(self):
+        config = {'signal': {'commit': 'a' * 40}, 'molly': {'target': 'b' * 40}, 'native': None}
+        self.commit('molly-build.json', json.dumps(config))
+        self.commit('patches/molly/fixture', 'synthetic test forest')
+        base = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        invalid = (
+            ('.github/workflows/android.yml', 'add', 'Signal workflow must be absent'),
+            ('.github/workflows/diffuse.yml', 'add', 'Signal workflow must be absent'),
+            ('.github/workflows/molly-patch-release.yml', 'delete', 'Molly workflow must be a regular'),
+            ('.github/workflows/molly-unsigned-release.yml', 'delete', 'Molly workflow must be a regular'),
+            ('.github/workflows/molly-patch-release.yml', 'symlink', 'Molly workflow must be a regular'),
+            ('.github/workflows/molly-unsigned-release.yml', 'symlink', 'Molly workflow must be a regular'),
+        )
+        with mock.patch.object(scope, 'FOREST', forest), mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', base):
+            self.assertEqual(scope.check_scope(self.repo, 'main-maintenance', base,
+                                               integration_lower=base)['scope'], 'main-maintenance')
+            for name, operation, message in invalid:
+                with self.subTest(path=name, operation=operation):
+                    path = self.repo / name
+                    if operation == 'add':
+                        path.write_text('unexpected workflow\n')
+                    elif operation == 'delete':
+                        path.unlink()
+                    else:
+                        path.unlink()
+                        path.symlink_to('target.yml')
+                    self.git('add', '-A')
+                    self.git('commit', '-qm', 'invalid workflow')
+                    with self.assertRaisesRegex(ValueError, message):
+                        scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
+                    with self.assertRaisesRegex(ValueError, message):
+                        scope.check_scope(self.repo, 'main-maintenance', 'HEAD', integration_lower=base)
+                    self.git('reset', '--hard', '-q', base)
+
+    def test_main_maintenance_snapshot_detects_prior_direct_source_edit(self):
+        config = {'signal': {'commit': 'a' * 40}, 'molly': {'target': 'b' * 40}, 'native': None}
+        self.commit('molly-build.json', json.dumps(config))
+        self.commit('patches/molly/fixture', 'synthetic test forest')
+        trusted = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        self.commit('app.txt', 'already landed direct edit')
+        with mock.patch.object(scope, 'FOREST', forest), mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', trusted):
+            with self.assertRaisesRegex(ValueError, 'main source projection differs'):
+                scope.check_scope(self.repo, 'main-maintenance', 'HEAD', integration_lower=trusted)
 
     def test_main_docs_cannot_change_pinned_port_documentation(self):
         self.commit('README.md', 'initial documentation')

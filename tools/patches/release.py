@@ -411,7 +411,7 @@ def main():
     parser.add_argument('--profile', choices=sorted(release_profiles.NAMES))
     parser.add_argument('--worktree', type=Path, required=True)
     parser.add_argument('--report', type=Path)
-    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition'))
+    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-maintenance', 'main-snapshot', 'main-snapshot-transition'))
     parser.add_argument('--base')
     parser.add_argument('--integration-lower')
     args = parser.parse_args()

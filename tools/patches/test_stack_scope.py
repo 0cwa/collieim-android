@@ -168,6 +168,18 @@ class ScopeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'main documentation scope excludes'):
             scope.check_scope(self.repo, 'main-docs', base)
 
+    def test_main_docs_cannot_change_pinned_port_documentation(self):
+        self.commit('README.md', 'initial documentation')
+        base = self.git('rev-parse', 'HEAD').strip()
+        self.commit('docs/OTHER.md', 'ordinary documentation')
+        self.assertEqual(scope.check_scope(self.repo, 'main-docs', base)['scope'], 'main-docs')
+        for path in ('docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'):
+            with self.subTest(path=path):
+                self.commit(path, 'changed pinned documentation')
+                with self.assertRaisesRegex(ValueError, 'main documentation scope excludes'):
+                    scope.check_scope(self.repo, 'main-docs', base)
+                self.git('reset', '--hard', '-q', 'HEAD^')
+
     def test_forks_allows_only_explicit_identity_tool_changes(self):
         for path in ('docs/PATCH-PIPELINE.md', 'tools/patches/build.py',
                      'tools/patches/release_profiles.py', 'tools/patches/release_artifacts.py',

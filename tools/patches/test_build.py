@@ -347,6 +347,32 @@ class CachedSdkTests(BuildSourceTests):
 
 
 class NamedProfileBuildTests(BuildSourceTests):
+    def test_release_profiles_preserve_firebase_setting_with_isolated_cache(self):
+        self.save()
+        init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
+        init.parent.mkdir(parents=True)
+        for name in ('test-worker-heap.init.gradle', 'release-version.init.gradle', 'release-cache.init.gradle'):
+            (init.parent / name).write_text('// fixture\n')
+        self.args.release_version_name = '8.33.2-1-rc3'
+        self.args.release_version_code = '177203'
+        self.args.workers = 2
+        self.args.build_cache = True
+        self.args.release_cache_dir = Path('/runner/release-task-cache')
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof'), patch.object(runner, 'run') as run, patch.dict(os.environ, {}, clear=True):
+            for profile in sorted(build.release_profiles.NAMES):
+                with self.subTest(profile=profile):
+                    runner.profile = {'firebase_free': profile in build.release_profiles.FOSS}
+                    runner.gradle('assemble-release')
+                    command = run.call_args.args[0]
+                    self.assertIn('-PmollyFirebaseFree=' + str(profile in build.release_profiles.FOSS).lower(), command)
+                    self.assertIn('--build-cache', command)
+                    self.assertIn('-Dcollie.releaseTaskCache=/runner/release-task-cache', command)
+                    self.assertIn('--max-workers=2', command)
+                    self.assertIn('--dependency-verification=strict', command)
+                    self.assertIn('-PreleaseVersionName=8.33.2-1-rc3', command)
+                    self.assertIn('-PreleaseVersionCode=177203', command)
+
     def test_profile_bound_to_proof_and_forces_firebase_property(self):
         self.config['port'] = {'series': 'patches/ports/test/series'}
         self.config['android'] = {'assemble': ':app:assembleDebug', 'tests': [':app:test']}

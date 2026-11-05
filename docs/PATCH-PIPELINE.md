@@ -449,7 +449,10 @@ measure of our changes. When `molly-build.json` declares named release
 profiles, the report adds one row per profile: profiles with fork layers load
 the fork's upstream bundle into the private object directory and use its head
 as the third parent, and **from the fork** counts the production lines the fork
-wrote that the profile carries.
+wrote that the profile carries. With `--config`, the command verifies source bundles
+and prepares profile trees first; this requires writable Git objects and checkpoint
+refs in the target repository. The measurements themselves use a private object
+directory.
 
 ```sh
 python3 tools/patches/line_origin.py port --markdown [--config molly-build.json]

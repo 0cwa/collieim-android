@@ -119,7 +119,8 @@
       "base_checkpoint": "3b8051b7199026e5e922001b46c9e307a76bc0f6",
       "base_tree": "cfd28b498a56d5877c4f373e0663e925df1ac875",
       "fork_series": [],
-      "target_tree": "cfd28b498a56d5877c4f373e0663e925df1ac875",
+      "icon_overlay": "patches/forks/signal-foss/collie-icon/series",
+      "target_tree": "fa0904b3592bc081342056671721fc6f41f58d05",
       "firebase_free": false
     },
     "molly-foss-continued": {
@@ -129,7 +130,8 @@
       "fork_series": [
         "patches/forks/signal-foss/firebase-free-build/series"
       ],
-      "target_tree": "e8f42243d746edf7346b99e35cb2356a488d8693",
+      "icon_overlay": "patches/forks/signal-foss/collie-icon/series",
+      "target_tree": "b89021ccd4f697e3aa0a9d1ec8019b54fbbc4bbd",
       "firebase_free": true
     },
     "collie": {

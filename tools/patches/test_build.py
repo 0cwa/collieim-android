@@ -68,6 +68,59 @@ class BuildSourceTests(unittest.TestCase):
             runner.gradle('assemble')
         self.assertIn('--max-workers=1', (self.reports / 'assemble.log').read_text().splitlines())
 
+    def test_release_cache_requires_opt_in_and_absolute_path(self):
+        self.config['android'] = {'assemble': [':app:assembleDebug']}
+        self.save()
+        init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
+        init.parent.mkdir(parents=True)
+        init.write_text('// fixture\n')
+        cache_init = self.repo / 'tools/patches/release-cache.init.gradle'
+        cache_init.write_text('// fixture\n')
+        runner = build.Build(self.args)
+        self.args.release_cache_dir = Path('/runner/release-task-cache')
+        with patch.object(runner, 'source_proof'), patch.object(runner, 'run') as run:
+            with self.assertRaisesRegex(build.BuildError, '--release-cache-dir'):
+                runner.gradle('assemble')
+            self.args.build_cache = True
+            self.args.release_cache_dir = Path('relative')
+            with self.assertRaisesRegex(build.BuildError, '--release-cache-dir'):
+                runner.gradle('assemble')
+            self.args.release_cache_dir = Path('/runner/release-task-cache')
+            runner.gradle('assemble')
+            command = run.call_args.args[0]
+            self.assertIn('--build-cache', command)
+            self.assertIn(str(cache_init), command)
+            self.assertIn('-Dcollie.releaseTaskCache=/runner/release-task-cache', command)
+            self.assertEqual(run.call_count, 1)
+
+    def test_gradle_parallelism_is_explicit_and_bounded(self):
+        self.config['android'] = {'assemble': [':app:assembleDebug']}
+        self.save()
+        init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
+        init.parent.mkdir(parents=True)
+        init.write_text('// fixture\n')
+        runner = build.Build(self.args)
+        self.args.workers = 3
+        self.args.parallel_projects = True
+        with patch.object(runner, 'source_proof'), patch.object(runner, 'run') as run:
+            runner.gradle('assemble')
+            command = run.call_args.args[0]
+            self.assertIn('--max-workers=3', command)
+            self.assertIn('--parallel', command)
+            self.assertNotIn('--no-parallel', command)
+            self.assertIn('--dependency-verification=strict', command)
+            self.assertNotIn('--build-cache', command)
+            self.args.build_cache = True
+            runner.gradle('assemble')
+            command = run.call_args.args[0]
+            self.assertIn('--build-cache', command)
+            self.assertIn('--dependency-verification=strict', command)
+            for invalid in (0, 13, True, '3'):
+                self.args.workers = invalid
+                with self.assertRaisesRegex(build.BuildError, '--workers'):
+                    runner.gradle('assemble')
+            self.assertEqual(run.call_count, 2)
+
     def test_instrumentation_uses_proved_source_and_separate_imo_runner(self):
         init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
         init.parent.mkdir(parents=True)
@@ -97,10 +150,16 @@ class BuildSourceTests(unittest.TestCase):
             with patch.dict(os.environ, {}, clear=True):
                 runner.gradle('assemble-release')
             self.assertEqual(run.call_args.args[0][-1], ':app:assembleProdWebsiteRelease')
+            self.assertNotIn('--build-cache', run.call_args.args[0])
+            self.args.build_cache = True
+            with patch.dict(os.environ, {}, clear=True):
+                runner.gradle('assemble-release')
+            self.assertIn('--build-cache', run.call_args.args[0])
+            self.assertIn('--dependency-verification=strict', run.call_args.args[0])
             with patch.dict(os.environ, {'CI_KEYSTORE_PATH': '/key'}, clear=True):
                 with self.assertRaisesRegex(build.BuildError, 'must be unsigned'):
                     runner.gradle('assemble-release')
-            self.assertEqual(run.call_count, 1)
+            self.assertEqual(run.call_count, 2)
 
     def test_firebase_free_workflow_hands_off_real_source_proof(self):
         workflow = (Path(__file__).resolve().parents[2] / '.github/workflows/molly-patch-release.yml').read_text()

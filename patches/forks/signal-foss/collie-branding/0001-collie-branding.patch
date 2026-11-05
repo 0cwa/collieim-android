@@ -1,166 +1,189 @@
-From aca061b46615e8eaf036668706c7d6854a158213 Mon Sep 17 00:00:00 2001
+From f4244e3c44e1ed773b3e40fd311473c6d86bb827 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
-Date: Wed, 4 Nov 2026 19:11:11 +0100
-Subject: [PATCH] Apply Collie branding and expressive theme
+Date: Thu, 5 Nov 2026 09:46:28 +0100
+Subject: [PATCH] Apply Collie branding, expressive theme and donation links
 
-Use the Collie identity and palette, and keep automatic chat colors legible while preserving explicit presets and wallpaper-derived colors.
 
-AI-assisted compatibility changes.
-
-Source-Commit: aca061b46615e8eaf036668706c7d6854a158213
+Source-Commit: f4244e3c44e1ed773b3e40fd311473c6d86bb827
 
 ---
  app/build.gradle.kts                          |   3 +-
+ .../settings/app/DonationLinksTest.kt         |  53 ++++
+ .../donate/DonationsCheckoutSpecTest.kt       | 293 +++++-------------
+ .../v2/InlineDonationPromptTest.kt            |  50 +--
+ .../megaphone/DonationMegaphoneGatingTest.kt  |  18 +-
+ .../megaphone/DonationMegaphoneTest.kt        | 123 +++-----
+ .../util/DonationBrowserFailureTest.kt        |  30 ++
  .../backup/v2/util/ChatStyleConverter.kt      |   2 +-
+ .../settings/app/AppSettingsFragment.kt       |  47 ++-
+ .../settings/app/AppSettingsState.kt          |   1 +
+ .../settings/app/AppSettingsViewModel.kt      |  16 +
  .../app/internal/InternalSettingsFragment.kt  |   2 +-
+ .../donate/CheckoutNavHostFragment.kt         |   8 +
+ .../donate/DonateToSignalFragment.kt          |  75 +----
+ .../donate/DonationCheckoutDestinations.kt    |  18 ++
+ .../manage/ManageDonationsFragment.kt         |  35 +--
+ .../manage/ManageDonationsState.kt            |   1 +
+ .../manage/ManageDonationsViewModel.kt        |   9 +-
+ .../conversation/ConversationItem.java        |   2 +-
+ .../conversation/ConversationUpdateItem.java  |  11 +-
  .../conversation/colors/ChatColorsPalette.kt  |   4 +
  .../colors/ui/ChatColorSelectionAdapter.kt    |   3 +-
  .../colors/ui/ChatColorSelectionRepository.kt |   2 +-
  .../colors/ui/ChatColorSelectionState.kt      |   2 +-
+ .../conversation/v2/ConversationFragment.kt   |   3 -
+ .../securesms/database/InAppPaymentTable.kt   |  17 +
+ .../securesms/megaphone/Megaphones.java       |  11 +-
+ .../megaphone/RemoteMegaphoneRepository.kt    |   2 +
  .../securesms/recipients/Recipient.kt         |   2 +-
+ .../securesms/util/CommunicationActions.java  |   8 +
  .../wallpaper/ChatWallpaperRepository.java    |   2 +-
  .../drawable-v21/cta_button_background.xml    |   2 +-
  .../res/layout/chat_wallpaper_fragment.xml    |   2 +-
- app/src/main/res/values-af/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-af/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-af/strings2.xml       |   2 +-
  app/src/main/res/values-ar/strings2.xml       |   8 +-
- app/src/main/res/values-az/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-az/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-az/strings2.xml       |   2 +-
- app/src/main/res/values-be/strings.xml        | 274 ++++++++---------
- app/src/main/res/values-bg/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-be/strings.xml        | 274 ++++++++--------
+ app/src/main/res/values-bg/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-bg/strings2.xml       |   4 +-
- app/src/main/res/values-bn/strings.xml        | 262 ++++++++---------
+ app/src/main/res/values-bn/strings.xml        | 262 ++++++++--------
  app/src/main/res/values-bn/strings2.xml       |   2 +-
- app/src/main/res/values-bs/strings.xml        | 272 ++++++++---------
+ app/src/main/res/values-bs/strings.xml        | 272 ++++++++--------
  app/src/main/res/values-bs/strings2.xml       |  30 +-
- app/src/main/res/values-ca/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-ca/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-ca/strings2.xml       |  24 +-
- app/src/main/res/values-cs/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-cs/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-cs/strings2.xml       |  30 +-
- app/src/main/res/values-da/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-da/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-da/strings2.xml       |   8 +-
- app/src/main/res/values-de/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-de/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-de/strings2.xml       |  30 +-
- app/src/main/res/values-el/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-el/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-el/strings2.xml       |  30 +-
- app/src/main/res/values-es/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-es/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-es/strings2.xml       |  30 +-
- app/src/main/res/values-et/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-et/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-et/strings2.xml       |  30 +-
- app/src/main/res/values-eu/strings.xml        | 264 ++++++++---------
+ app/src/main/res/values-eu/strings.xml        | 264 ++++++++--------
  app/src/main/res/values-eu/strings2.xml       |  20 +-
  app/src/main/res/values-fa/strings.xml        |   2 +-
- app/src/main/res/values-fi/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-fi/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-fi/strings2.xml       |  30 +-
- app/src/main/res/values-fr/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-fr/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-fr/strings2.xml       |  30 +-
- app/src/main/res/values-ga/strings.xml        | 276 +++++++++---------
+ app/src/main/res/values-ga/strings.xml        | 276 ++++++++---------
  app/src/main/res/values-ga/strings2.xml       |  30 +-
- app/src/main/res/values-gl/strings.xml        | 260 ++++++++---------
+ app/src/main/res/values-gl/strings.xml        | 260 ++++++++--------
  app/src/main/res/values-gl/strings2.xml       |  28 +-
- app/src/main/res/values-gu/strings.xml        | 260 ++++++++---------
+ app/src/main/res/values-gu/strings.xml        | 260 ++++++++--------
  app/src/main/res/values-gu/strings2.xml       |   2 +-
- app/src/main/res/values-hi/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-hi/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-hi/strings2.xml       |   2 +-
- app/src/main/res/values-hr/strings.xml        | 272 ++++++++---------
+ app/src/main/res/values-hr/strings.xml        | 272 ++++++++--------
  app/src/main/res/values-hr/strings2.xml       |  28 +-
- app/src/main/res/values-hu/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-hu/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-hu/strings2.xml       |  22 +-
- app/src/main/res/values-in/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-in/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-in/strings2.xml       |  30 +-
- app/src/main/res/values-it/strings.xml        | 258 ++++++++--------
+ app/src/main/res/values-it/strings.xml        | 258 +++++++--------
  app/src/main/res/values-it/strings2.xml       |  30 +-
- app/src/main/res/values-iw/strings.xml        | 274 ++++++++---------
+ app/src/main/res/values-iw/strings.xml        | 274 ++++++++--------
  app/src/main/res/values-iw/strings2.xml       |  22 +-
- app/src/main/res/values-ja/strings.xml        | 266 ++++++++---------
+ app/src/main/res/values-ja/strings.xml        | 266 ++++++++--------
  app/src/main/res/values-ja/strings2.xml       |  26 +-
- app/src/main/res/values-ka/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-ka/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-ka/strings2.xml       |   2 +-
- app/src/main/res/values-kk/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-kk/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-kk/strings2.xml       |   6 +-
- app/src/main/res/values-km/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-km/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-km/strings2.xml       |   2 +-
- app/src/main/res/values-kn/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-kn/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-kn/strings2.xml       |   2 +-
- app/src/main/res/values-ko/strings.xml        | 266 ++++++++---------
+ app/src/main/res/values-ko/strings.xml        | 266 ++++++++--------
  app/src/main/res/values-ko/strings2.xml       |  28 +-
- app/src/main/res/values-ky/strings.xml        | 258 ++++++++--------
+ app/src/main/res/values-ky/strings.xml        | 258 +++++++--------
  app/src/main/res/values-ky/strings2.xml       |   2 +-
- app/src/main/res/values-lt/strings.xml        | 274 ++++++++---------
+ app/src/main/res/values-lt/strings.xml        | 274 ++++++++--------
  app/src/main/res/values-lt/strings2.xml       |  22 +-
- app/src/main/res/values-lv/strings.xml        | 272 ++++++++---------
+ app/src/main/res/values-lv/strings.xml        | 272 ++++++++--------
  app/src/main/res/values-lv/strings2.xml       |  30 +-
- app/src/main/res/values-mk/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-mk/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-mk/strings2.xml       |   2 +-
- app/src/main/res/values-ml/strings.xml        | 266 ++++++++---------
+ app/src/main/res/values-ml/strings.xml        | 266 ++++++++--------
  app/src/main/res/values-ml/strings2.xml       |   2 +-
- app/src/main/res/values-mr/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-mr/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-mr/strings2.xml       |   2 +-
- app/src/main/res/values-ms/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-ms/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-ms/strings2.xml       |   4 +-
- app/src/main/res/values-my/strings.xml        | 266 ++++++++---------
+ app/src/main/res/values-my/strings.xml        | 266 ++++++++--------
  app/src/main/res/values-my/strings2.xml       |   2 +-
- app/src/main/res/values-nb/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-nb/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-nb/strings2.xml       |  20 +-
  app/src/main/res/values-night/dark_colors.xml |   4 +-
- app/src/main/res/values-nl/strings.xml        | 264 ++++++++---------
+ app/src/main/res/values-nl/strings.xml        | 264 ++++++++--------
  app/src/main/res/values-nl/strings2.xml       |  30 +-
- app/src/main/res/values-pa/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-pa/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-pa/strings2.xml       |  24 +-
- app/src/main/res/values-pl/strings.xml        | 272 ++++++++---------
+ app/src/main/res/values-pl/strings.xml        | 272 ++++++++--------
  app/src/main/res/values-pl/strings2.xml       |  30 +-
- app/src/main/res/values-pt-rBR/strings.xml    | 268 ++++++++---------
+ app/src/main/res/values-pt-rBR/strings.xml    | 268 ++++++++--------
  app/src/main/res/values-pt-rBR/strings2.xml   |  30 +-
- app/src/main/res/values-pt/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-pt/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-pt/strings2.xml       |  30 +-
- app/src/main/res/values-ro/strings.xml        | 266 ++++++++---------
+ app/src/main/res/values-ro/strings.xml        | 266 ++++++++--------
  app/src/main/res/values-ro/strings2.xml       |  30 +-
- app/src/main/res/values-ru/strings.xml        | 274 ++++++++---------
+ app/src/main/res/values-ru/strings.xml        | 274 ++++++++--------
  app/src/main/res/values-ru/strings2.xml       |  30 +-
- app/src/main/res/values-sk/strings.xml        | 274 ++++++++---------
+ app/src/main/res/values-sk/strings.xml        | 274 ++++++++--------
  app/src/main/res/values-sk/strings2.xml       |  10 +-
- app/src/main/res/values-sl/strings.xml        | 254 ++++++++--------
+ app/src/main/res/values-sl/strings.xml        | 254 +++++++--------
  app/src/main/res/values-sl/strings2.xml       |   2 +-
- app/src/main/res/values-sq/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-sq/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-sq/strings2.xml       |   2 +-
- app/src/main/res/values-sr/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-sr/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-sr/strings2.xml       |   2 +-
- app/src/main/res/values-sv/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-sv/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-sv/strings2.xml       |  28 +-
- app/src/main/res/values-sw/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-sw/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-sw/strings2.xml       |   2 +-
- app/src/main/res/values-ta/strings.xml        | 132 ++++-----
+ app/src/main/res/values-ta/strings.xml        | 132 ++++----
  app/src/main/res/values-ta/strings2.xml       |   2 +-
- app/src/main/res/values-te/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-te/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-te/strings2.xml       |   2 +-
- app/src/main/res/values-th/strings.xml        | 268 ++++++++---------
+ app/src/main/res/values-th/strings.xml        | 268 ++++++++--------
  app/src/main/res/values-th/strings2.xml       |   2 +-
- app/src/main/res/values-tl/strings.xml        | 270 ++++++++---------
+ app/src/main/res/values-tl/strings.xml        | 270 ++++++++--------
  app/src/main/res/values-tl/strings2.xml       |   2 +-
- app/src/main/res/values-tr/strings.xml        | 266 ++++++++---------
+ app/src/main/res/values-tr/strings.xml        | 266 ++++++++--------
  app/src/main/res/values-tr/strings2.xml       |  30 +-
- app/src/main/res/values-ug/strings.xml        | 240 +++++++--------
+ app/src/main/res/values-ug/strings.xml        | 240 +++++++-------
  app/src/main/res/values-ug/strings2.xml       |  30 +-
- app/src/main/res/values-uk/strings.xml        | 274 ++++++++---------
+ app/src/main/res/values-uk/strings.xml        | 274 ++++++++--------
  app/src/main/res/values-uk/strings2.xml       |  24 +-
- app/src/main/res/values-ur/strings.xml        | 262 ++++++++---------
+ app/src/main/res/values-ur/strings.xml        | 262 ++++++++--------
  app/src/main/res/values-ur/strings2.xml       |   2 +-
- app/src/main/res/values-vi/strings.xml        | 266 ++++++++---------
+ app/src/main/res/values-vi/strings.xml        | 266 ++++++++--------
  app/src/main/res/values-vi/strings2.xml       |  30 +-
- app/src/main/res/values-yue/strings.xml       | 268 ++++++++---------
+ app/src/main/res/values-yue/strings.xml       | 268 ++++++++--------
  app/src/main/res/values-yue/strings2.xml      |   2 +-
- app/src/main/res/values-zh-rCN/strings.xml    | 268 ++++++++---------
+ app/src/main/res/values-zh-rCN/strings.xml    | 268 ++++++++--------
  app/src/main/res/values-zh-rCN/strings2.xml   |  30 +-
- app/src/main/res/values-zh-rHK/strings.xml    | 268 ++++++++---------
+ app/src/main/res/values-zh-rHK/strings.xml    | 268 ++++++++--------
  app/src/main/res/values-zh-rHK/strings2.xml   |   2 +-
- app/src/main/res/values-zh-rTW/strings.xml    | 268 ++++++++---------
+ app/src/main/res/values-zh-rTW/strings.xml    | 268 ++++++++--------
  app/src/main/res/values-zh-rTW/strings2.xml   |  12 +-
  app/src/main/res/values/colors.xml            |   2 +-
  app/src/main/res/values/light_colors.xml      |   4 +-
- app/src/main/res/values/strings.xml           | 274 ++++++++---------
+ app/src/main/res/values/strings.xml           | 282 +++++++++--------
  app/src/main/res/values/strings2.xml          |  30 +-
  app/src/main/res/values/themes.xml            |  18 +-
  .../backup/v2/util/ChatStyleColorTest.kt      |  36 +++
+ .../DonationCheckoutDestinationsTest.kt       |  39 +++
+ .../database/InAppPaymentTableTest.kt         |  22 ++
+ .../database/MegaphoneDatabaseTest.kt         |  11 +
+ .../RemoteMegaphoneRepositoryTest.kt          |  13 +
  .../recipients/Recipient_getChatColorsTest.kt |   6 +-
  .../core/ui/compose/theme/SignalTheme.kt      | 140 ++++-----
  .../res/drawable/ic_radio_button_checked.xml  |   4 +-
@@ -169,7 +192,7 @@ Source-Commit: aca061b46615e8eaf036668706c7d6854a158213
  .../src/main/res/values/material3_colors.xml  |  32 +-
  .../main/res/values/material3_colors_dark.xml |   2 +-
  .../res/values/material3_colors_light.xml     |  16 +-
- core/ui/src/main/res/values/molly_colors.xml  | 152 +++++-----
+ core/ui/src/main/res/values/molly_colors.xml  | 152 ++++-----
  .../src/main/res/values-af/strings.xml        |  12 +-
  .../src/main/res/values-ar/strings2.xml       |   2 +-
  .../src/main/res/values-az/strings.xml        |  12 +-
@@ -408,8 +431,12 @@ Source-Commit: aca061b46615e8eaf036668706c7d6854a158213
  .../src/main/res/values-zh-rHK/strings.xml    |   2 +-
  .../src/main/res/values-zh-rTW/strings.xml    |   2 +-
  .../src/main/res/values/strings.xml           |   2 +-
- 398 files changed, 10881 insertions(+), 10838 deletions(-)
+ 424 files changed, 11321 insertions(+), 11322 deletions(-)
+ create mode 100644 app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/DonationLinksTest.kt
+ create mode 100644 app/src/androidTest/java/org/thoughtcrime/securesms/util/DonationBrowserFailureTest.kt
+ create mode 100644 app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinations.kt
  create mode 100644 app/src/test/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleColorTest.kt
+ create mode 100644 app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinationsTest.kt
 
 diff --git a/app/build.gradle.kts b/app/build.gradle.kts
 index 63af7536..333b0e3a 100644
@@ -425,6 +452,766 @@ index 63af7536..333b0e3a 100644
        isDefault = true
      }
  
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/DonationLinksTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/DonationLinksTest.kt
+new file mode 100644
+index 00000000..68131d1f
+--- /dev/null
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/DonationLinksTest.kt
+@@ -0,0 +1,53 @@
++/*
++ * Copyright 2026 Signal Messenger, LLC
++ * SPDX-License-Identifier: AGPL-3.0-only
++ */
++package org.thoughtcrime.securesms.components.settings.app
++
++import androidx.compose.ui.test.junit4.v2.createComposeRule
++import androidx.compose.ui.test.onNodeWithText
++import androidx.compose.ui.test.performClick
++import androidx.compose.ui.semantics.SemanticsProperties
++import androidx.compose.ui.text.font.FontWeight
++import androidx.test.ext.junit.runners.AndroidJUnit4
++import assertk.assertThat
++import assertk.assertions.isLessThan
++import assertk.assertions.isEqualTo
++import io.mockk.every
++import io.mockk.mockkStatic
++import io.mockk.unmockkStatic
++import io.mockk.verify
++import org.junit.After
++import org.junit.Before
++import org.junit.Rule
++import org.junit.Test
++import org.junit.runner.RunWith
++import org.signal.core.ui.compose.theme.SignalTheme
++import org.thoughtcrime.securesms.util.CommunicationActions
++
++@RunWith(AndroidJUnit4::class)
++class DonationLinksTest {
++  @get:Rule val composeRule = createComposeRule()
++
++  @Before fun setUp() {
++    mockkStatic(CommunicationActions::class)
++    every { CommunicationActions.openBrowserLink(any(), any()) } returns Unit
++  }
++
++  @After fun tearDown() = unmockkStatic(CommunicationActions::class)
++
++  @Test fun colliePrecedesMollyAndEachLinkOpensItsOwnRecipient() {
++    composeRule.setContent { SignalTheme { DonationLinks() } }
++    val collie = composeRule.onNodeWithText("Donate to Collie 🧡🦴")
++    val molly = composeRule.onNodeWithText("Donate to Molly")
++    assertThat(collie.fetchSemanticsNode().boundsInRoot.top).isLessThan(molly.fetchSemanticsNode().boundsInRoot.top)
++    val collieText = collie.fetchSemanticsNode().config[SemanticsProperties.Text].single()
++    val mollyText = molly.fetchSemanticsNode().config[SemanticsProperties.Text].single()
++    assertThat(collieText.spanStyles.single().item.fontWeight).isEqualTo(FontWeight.Bold)
++    assertThat(mollyText.spanStyles.isEmpty()).isEqualTo(true)
++    collie.performClick()
++    molly.performClick()
++    verify(exactly = 1) { CommunicationActions.openBrowserLink(any(), "https://liberapay.com/Collie") }
++    verify(exactly = 1) { CommunicationActions.openBrowserLink(any(), "https://opencollective.com/mollyim") }
++  }
++}
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationsCheckoutSpecTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationsCheckoutSpecTest.kt
+index 501b8fdd..f32ac310 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationsCheckoutSpecTest.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationsCheckoutSpecTest.kt
+@@ -1,258 +1,109 @@
+ package org.thoughtcrime.securesms.components.settings.app.subscription.donate
+ 
+-import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+ import androidx.test.core.app.ActivityScenario
+ import androidx.test.espresso.Espresso.onView
++import androidx.test.espresso.action.ViewActions.click
++import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
+ import androidx.test.espresso.assertion.ViewAssertions.matches
+-import androidx.test.espresso.matcher.RootMatchers.isDialog
+ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+ import androidx.test.espresso.matcher.ViewMatchers.withText
++import androidx.test.ext.junit.runners.AndroidJUnit4
+ import androidx.test.platform.app.InstrumentationRegistry
+-import assertk.assertThat
+-import assertk.assertions.isNotEmpty
+-import assertk.assertions.isNotNull
+-import assertk.assertions.isNull
+ import io.mockk.unmockkObject
+ import org.junit.After
++import org.junit.Assert.assertFalse
++import org.junit.Assert.assertTrue
+ import org.junit.Before
+ import org.junit.Rule
+ import org.junit.Test
+ import org.junit.runner.RunWith
+-import org.junit.runners.Parameterized
+ import org.signal.core.database.deleteAll
+ import org.signal.donations.InAppPaymentType
+ import org.thoughtcrime.securesms.R
++import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
+ import org.thoughtcrime.securesms.components.settings.app.subscription.permits.DonationPermits
+-import org.thoughtcrime.securesms.database.DonationReceiptTable
+ import org.thoughtcrime.securesms.database.InAppPaymentTable
+ import org.thoughtcrime.securesms.database.SignalDatabase
+-import org.thoughtcrime.securesms.database.model.InAppPaymentReceiptRecord
++import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
++import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData
++import org.thoughtcrime.securesms.keyvalue.SignalStore
+ import org.thoughtcrime.securesms.testing.DisableAnimationsRule
+ import org.thoughtcrime.securesms.testing.InAppPaymentsRule
+-import org.thoughtcrime.securesms.testing.RawFlag
+-import org.thoughtcrime.securesms.testing.RemoteConfigForTest
+-import org.thoughtcrime.securesms.testing.RxTestSchedulerRule
+ import org.thoughtcrime.securesms.testing.SignalActivityRule
+-import org.thoughtcrime.securesms.testing.flushUntil
+-
+-/**
+- * Spec-driven integration test for donation checkout. Each [DonationsCheckoutTestSpec] declares a
+- * "world" (what each endpoint returns) and an expected outcome; this runner applies the world, drives
+- * [CheckoutFlowActivity] through the real UI via [CheckoutFlowDriver], and asserts the outcome.
+- *
+- * Adding coverage is data: append a spec to [DonationsCheckoutSpecs.ALL].
+- */
+-@RunWith(Parameterized::class)
+-@RemoteConfigForTest(
+-  rawFlags = [
+-    RawFlag("android.sepa.debit.donations.5", "true"),
+-    RawFlag("android.ideal.donations.5", "true"),
+-    // Region codes are matched against the digit-only self E164 ("15555550101"), so no leading "+".
+-    RawFlag("global.donations.sepaEnabledRegions", "1"),
+-    RawFlag("global.donations.idealEnabledRegions", "1")
+-  ]
+-)
+-class DonationsCheckoutSpecTest(private val spec: DonationsCheckoutTestSpec) {
+-
+-  @get:Rule
+-  val harness = SignalActivityRule(othersCount = 10)
+-
+-  @get:Rule
+-  val iapRule = InAppPaymentsRule()
+-
+-  @get:Rule
+-  val rxRule = RxTestSchedulerRule()
+-
+-  @get:Rule
+-  val composeRule = createEmptyComposeRule()
+-
+-  @get:Rule
+-  val animationsRule = DisableAnimationsRule()
+-
+-  @Before
+-  fun setUp() {
++import org.thoughtcrime.securesms.testing.endpoints.MockEndpoints
++import org.thoughtcrime.securesms.testing.endpoints.failure
++import org.thoughtcrime.securesms.testing.endpoints.ok
++import org.whispersystems.signalservice.api.subscriptions.SubscriberId
++import java.util.Currency
++import java.util.concurrent.CountDownLatch
++import java.util.concurrent.TimeUnit
++
++/** Existing subscribers can cancel; Collie offers no new native donation checkout. */
++@RunWith(AndroidJUnit4::class)
++class DonationsCheckoutSpecTest {
++  @get:Rule val harness = SignalActivityRule()
++  @get:Rule val iapRule = InAppPaymentsRule()
++  @get:Rule val animations = DisableAnimationsRule()
++
++  @Before fun setUp() {
+     SignalDatabase.inAppPayments.writableDatabase.deleteAll(InAppPaymentTable.TABLE_NAME)
+-    SignalDatabase.donationReceipts.writableDatabase.deleteAll(DonationReceiptTable.TABLE_NAME)
+-    startJobLoopForTests()
+-    spec.world.apply()
+-  }
+-
+-  @After
+-  fun tearDown() {
+-    unmockkObject(DonationPermits)
++    InAppPaymentsRepository.setSubscriber(
++      InAppPaymentSubscriberRecord(
++        subscriberId = SubscriberId.generate(),
++        type = InAppPaymentSubscriberRecord.Type.DONATION,
++        requiresCancel = false,
++        paymentMethodType = InAppPaymentData.PaymentMethodType.UNKNOWN,
++        currency = Currency.getInstance("USD"),
++        iapSubscriptionId = null
++      )
++    )
++    SignalStore.inAppPayments.updateLocalStateForLocalSubscribe(InAppPaymentSubscriberRecord.Type.DONATION)
++    WorldState(existingSubscription = SubscriptionState.ACTIVE).apply()
+   }
+ 
+-  @Test
+-  fun runSpec() {
+-    val intent = CheckoutFlowActivity.createIntent(InstrumentationRegistry.getInstrumentation().targetContext, spec.inAppPaymentType)
+-    val scenario = ActivityScenario.launch<CheckoutFlowActivity>(intent)
++  @After fun tearDown() { unmockkObject(DonationPermits) }
+ 
+-    CheckoutFlowDriver(composeRule, rxRule.defaultTestScheduler).drive(scenario, spec)
++  @Test fun cancellationContinuesAcrossRecreation() = checkCancellationAcrossRecreation(success = true)
++  @Test fun failedCancellationSurvivesRecreation() = checkCancellationAcrossRecreation(success = false)
+ 
+-    when (val expected = spec.expected) {
+-      is ExpectedOutcome.Redeemed -> {
+-        rxRule.defaultTestScheduler.flushUntil { receipts().isNotEmpty() }
+-        assertThat(receipts()).isNotEmpty()
+-      }
++  private fun checkCancellationAcrossRecreation(success: Boolean) {
++    val requestStarted = CountDownLatch(1)
++    val allowResponse = CountDownLatch(1)
++    MockEndpoints.responder.register({ it.method == "DELETE" && it.path.startsWith("/v1/subscription/") }) {
++      requestStarted.countDown()
++      check(allowResponse.await(20, TimeUnit.SECONDS))
++      if (success) ok() else failure(500)
++    }
+ 
+-      is ExpectedOutcome.ErrorDialog -> {
+-        awaitDialog(rxRule.defaultTestScheduler, expected.titleRes)
+-        if (expected.messageRes != null) {
+-          onView(withText(expected.messageRes)).inRoot(isDialog()).check(matches(isDisplayed()))
++    val intent = CheckoutFlowActivity.createIntent(InstrumentationRegistry.getInstrumentation().targetContext, InAppPaymentType.RECURRING_DONATION)
++    ActivityScenario.launch<CheckoutFlowActivity>(intent).use { scenario ->
++      try {
++        await { onView(withText(R.string.SubscribeFragment__cancel_subscription)).check(matches(isDisplayed())) }
++        onView(withText(R.string.DonateToSignalFragment__continue)).check(doesNotExist())
++        onView(withText(R.string.SubscribeFragment__update_subscription)).check(doesNotExist())
++        onView(withText(R.string.SubscribeFragment__cancel_subscription)).perform(click())
++        onView(withText(R.string.SubscribeFragment__confirm)).perform(click())
++        assertTrue("Cancellation request did not start", requestStarted.await(15, TimeUnit.SECONDS))
++        scenario.recreate()
++        allowResponse.countDown()
++        if (success) {
++          await { assertTrue(SignalStore.inAppPayments.isDonationSubscriptionManuallyCancelled()) }
++        } else {
++          await { onView(withText(R.string.DonationsErrors__failed_to_cancel_subscription)).check(matches(isDisplayed())) }
++          assertFalse(SignalStore.inAppPayments.isDonationSubscriptionManuallyCancelled())
+         }
+-      }
+-
+-      is ExpectedOutcome.PaymentSubmitted -> {
+-        rxRule.defaultTestScheduler.flushUntil { submittedPayment() != null }
+-        val payment = submittedPayment()
+-        assertThat(payment).isNotNull()
+-        assertThat(payment!!.data.error).isNull()
++      } finally {
++        allowResponse.countDown()
+       }
+     }
+   }
+ 
+-  /** The latest payment once it has moved past CREATED with no error, or null if not yet there. */
+-  private fun submittedPayment(): InAppPaymentTable.InAppPayment? {
+-    return SignalDatabase.inAppPayments.getLatestInAppPaymentByType(spec.inAppPaymentType)
+-      ?.takeIf { it.state != InAppPaymentTable.State.CREATED && it.data.error == null }
+-  }
+-
+-  private fun receipts(): List<InAppPaymentReceiptRecord> {
+-    val type = if (spec.inAppPaymentType == InAppPaymentType.ONE_TIME_DONATION) {
+-      InAppPaymentReceiptRecord.Type.ONE_TIME_DONATION
+-    } else {
+-      InAppPaymentReceiptRecord.Type.RECURRING_DONATION
++  private fun await(assertion: () -> Unit) {
++    val deadline = System.currentTimeMillis() + 15_000
++    var last: Throwable? = null
++    while (System.currentTimeMillis() < deadline) {
++      try { assertion(); return } catch (error: Throwable) { last = error; Thread.sleep(100) }
+     }
+-    return SignalDatabase.donationReceipts.getReceipts(type)
+-  }
+-
+-  companion object {
+-    @JvmStatic
+-    @Parameterized.Parameters(name = "{0}")
+-    fun specs(): Collection<DonationsCheckoutTestSpec> = DonationsCheckoutSpecs.ALL
++    throw AssertionError("Timed out waiting for donation screen", last)
+   }
+ }
+-
+-/**
+- * The enumerated donation checkout scenarios. Currently seeded with Google Pay coverage; the other
+- * payment-method drivers (card, SEPA, iDEAL, PayPal) and their scenarios are added alongside their
+- * [CheckoutFlowDriver] strategies.
+- */
+-object DonationsCheckoutSpecs {
+-
+-  private val paymentErrorDialog = ExpectedOutcome.ErrorDialog(
+-    titleRes = R.string.DonationsErrors__error_processing_payment,
+-    messageRes = R.string.DonationsErrors__your_payment
+-  )
+-
+-  val ALL: List<DonationsCheckoutTestSpec> = listOf(
+-    DonationsCheckoutTestSpec(
+-      name = "creditCard_oneTime_happyPath_isRedeemed",
+-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+-      world = WorldState(),
+-      expected = ExpectedOutcome.Redeemed
+-    ),
+-    DonationsCheckoutTestSpec(
+-      name = "creditCard_oneTime_permitFailure_showsError",
+-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+-      world = WorldState(permit = PermitOutcome.FAILURE),
+-      expected = paymentErrorDialog
+-    ),
+-    DonationsCheckoutTestSpec(
+-      name = "creditCard_oneTime_stripeDecline_showsError",
+-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+-      world = WorldState(stripe = StripeOutcome.DECLINE),
+-      expected = paymentErrorDialog
+-    ),
+-    DonationsCheckoutTestSpec(
+-      name = "creditCard_oneTime_signalCreateIntent402_showsError",
+-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+-      world = WorldState(signalCreatePaymentStatus = 402),
+-      expected = paymentErrorDialog
+-    ),
+-    DonationsCheckoutTestSpec(
+-      name = "creditCard_recurring_permitFailure_showsError",
+-      inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
+-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+-      world = WorldState(permit = PermitOutcome.FAILURE),
+-      expected = paymentErrorDialog
+-    ),
+-
+-
+-    DonationsCheckoutTestSpec(
+-      name = "creditCard_oneTime_3dsApproved_isRedeemed",
+-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+-      world = WorldState(stripe = StripeOutcome.REQUIRES_3DS),
+-      expected = ExpectedOutcome.Redeemed
+-    ),
+-    DonationsCheckoutTestSpec(
+-      name = "payPal_oneTime_happyPath_isRedeemed",
+-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+-      paymentMethod = TestPaymentMethod.PAYPAL,
+-      world = WorldState(),
+-      expected = ExpectedOutcome.Redeemed
+-    ),
+-    DonationsCheckoutTestSpec(
+-      name = "sepa_oneTime_happyPath_isSubmitted",
+-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+-      paymentMethod = TestPaymentMethod.SEPA_DEBIT,
+-      world = WorldState(currencyCode = "EUR"),
+-      expected = ExpectedOutcome.PaymentSubmitted
+-    ),
+-    DonationsCheckoutTestSpec(
+-      name = "ideal_oneTime_happyPath_isSubmitted",
+-      inAppPaymentType = InAppPaymentType.ONE_TIME_DONATION,
+-      paymentMethod = TestPaymentMethod.IDEAL,
+-      world = WorldState(currencyCode = "EUR"),
+-      expected = ExpectedOutcome.PaymentSubmitted
+-    ),
+-
+-    // Recurring happy paths. Asserted as "submitted": the recurring-specific work is the setup
+-    // pipeline (create subscriber, setup intent, set default, set level); receipt redemption is
+-    // shared with the one-time path already covered above.
+-    DonationsCheckoutTestSpec(
+-      name = "creditCard_recurring_happyPath_isSubmitted",
+-      inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
+-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+-      world = WorldState(recurringActivatesAfterSetup = true),
+-      expected = ExpectedOutcome.PaymentSubmitted
+-    ),
+-
+-    DonationsCheckoutTestSpec(
+-      name = "payPal_recurring_happyPath_isSubmitted",
+-      inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
+-      paymentMethod = TestPaymentMethod.PAYPAL,
+-      world = WorldState(recurringActivatesAfterSetup = true),
+-      expected = ExpectedOutcome.PaymentSubmitted
+-    ),
+-    DonationsCheckoutTestSpec(
+-      name = "sepa_recurring_happyPath_isSubmitted",
+-      inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
+-      paymentMethod = TestPaymentMethod.SEPA_DEBIT,
+-      world = WorldState(currencyCode = "EUR"),
+-      expected = ExpectedOutcome.PaymentSubmitted
+-    ),
+-
+-    // Additional error cases.
+-
+-    DonationsCheckoutTestSpec(
+-      name = "creditCard_recurring_stripeDecline_showsError",
+-      inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
+-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+-      world = WorldState(stripe = StripeOutcome.DECLINE),
+-      expected = paymentErrorDialog
+-    ),
+-    DonationsCheckoutTestSpec(
+-      name = "creditCard_recurring_signalCreatePaymentMethod402_showsError",
+-      inAppPaymentType = InAppPaymentType.RECURRING_DONATION,
+-      paymentMethod = TestPaymentMethod.CREDIT_CARD,
+-      world = WorldState(signalCreatePaymentStatus = 402),
+-      expected = paymentErrorDialog
+-    )
+-  )
+-}
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/v2/InlineDonationPromptTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/v2/InlineDonationPromptTest.kt
+index 4f5f5fa0..c6eae951 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/v2/InlineDonationPromptTest.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/conversation/v2/InlineDonationPromptTest.kt
+@@ -12,23 +12,18 @@ import android.content.Intent
+ import android.net.Uri
+ import android.os.Bundle
+ import android.view.View
+-import androidx.fragment.app.FragmentActivity
+ import androidx.test.ext.junit.runners.AndroidJUnit4
+ import androidx.test.platform.app.InstrumentationRegistry
+ import assertk.assertThat
+ import assertk.assertions.isEqualTo
+-import assertk.assertions.isInstanceOf
+ import org.junit.Before
+ import org.junit.Rule
+ import org.junit.Test
+ import org.junit.runner.RunWith
+ import org.signal.core.models.badges.Badge
+ import org.signal.core.models.recipients.RecipientId
+-import org.signal.core.util.getSerializableCompat
+-import org.signal.donations.InAppPaymentType
+ import org.thoughtcrime.securesms.MainActivity
+ import org.thoughtcrime.securesms.R
+-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.DonateToSignalFragment
+ import org.thoughtcrime.securesms.conversation.ConversationIntents
+ import org.thoughtcrime.securesms.database.SignalDatabase
+ import org.thoughtcrime.securesms.keyvalue.SignalStore
+@@ -38,18 +33,7 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
+ import java.util.concurrent.CountDownLatch
+ import java.util.concurrent.TimeUnit
+ 
+-/**
+- * Entry-path coverage for the inline chat donation prompt: the Release-Channel "donation request"
+- * conversation item that renders a "Donate" action button and opens the one-time checkout.
+- *
+- * The conversation is hosted by [MainActivity], so this drives it the same way
+- * [org.thoughtcrime.securesms.main.MainNavigationLaunchTest] does — a manual lifecycle-callback launch
+- * plus direct view interaction, since ActivityScenario/Espresso misbehave for the conversation
+- * custom-action intent.
+- *
+- * Unlike the megaphone and subscriber-upsell paths, this prompt is intentionally NOT gated by sustainer
+- * status; [sustainer_donatePromptStillShown] documents that.
+- */
++/** Historical release-channel donation requests remain visible without a native checkout button. */
+ @RunWith(AndroidJUnit4::class)
+ class InlineDonationPromptTest {
+ 
+@@ -69,36 +53,29 @@ class InlineDonationPromptTest {
+   }
+ 
+   @Test
+-  fun nonSustainer_donatePromptOpensOneTimeCheckout() {
++  fun nonSustainer_donationButtonIsHidden() {
+     seedDonationRequest()
+ 
+-    assertDonatePromptOpensCheckout()
++    assertDonationButtonHidden()
+   }
+ 
+   @Test
+-  fun sustainer_donatePromptStillShown() {
++  fun sustainer_donationButtonIsHidden() {
+     SignalStore.inAppPayments.setLastEndOfPeriod(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + TimeUnit.DAYS.toSeconds(30))
+     SignalDatabase.recipients.setBadges(Recipient.self().id, listOf(donorBadge()))
+     Recipient.self().fresh()
+ 
+     seedDonationRequest()
+ 
+-    assertDonatePromptOpensCheckout()
++    assertDonationButtonHidden()
+   }
+ 
+-  private fun assertDonatePromptOpensCheckout() {
++  private fun assertDonationButtonHidden() {
+     val activity = launchConversation()
+-
+-    val donateButton = awaitView(activity, R.id.conversation_update_action)
+-    runOnMainSync { donateButton.performClick() }
+-
+-    val dialog = await(description = "one-time checkout dialog") {
+-      activity.supportFragmentManager.findFragmentByTag(ONE_TIME_NAV_TAG)
++    val donateButton = await(description = "historical donation item") {
++      activity.findViewById<View>(R.id.conversation_update_action)
+     }
+-
+-    assertThat(dialog).isInstanceOf(DonateToSignalFragment.Dialog::class)
+-    val type = dialog.requireArguments().getSerializableCompat(DonateToSignalFragment.Dialog.ARG, InAppPaymentType::class.java)
+-    assertThat(type).isEqualTo(InAppPaymentType.ONE_TIME_DONATION)
++    assertThat(runOnMainSync { donateButton.visibility }).isEqualTo(View.GONE)
+   }
+ 
+   private fun seedDonationRequest() {
+@@ -153,12 +130,6 @@ class InlineDonationPromptTest {
+     return holder[0] ?: error("MainActivity was not captured")
+   }
+ 
+-  private fun awaitView(activity: FragmentActivity, viewId: Int): View {
+-    return await(description = "view $viewId") {
+-      activity.findViewById<View>(viewId)?.takeIf { it.isShown }
+-    }
+-  }
+-
+   private fun <T> await(
+     timeoutMs: Long = 15_000,
+     pollMs: Long = 50,
+@@ -194,7 +165,4 @@ class InlineDonationPromptTest {
+     )
+   }
+ 
+-  companion object {
+-    private const val ONE_TIME_NAV_TAG = "one_time_nav"
+-  }
+ }
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt
+index e4deaaaa..c8c43121 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneGatingTest.kt
+@@ -7,10 +7,8 @@ package org.thoughtcrime.securesms.megaphone
+ 
+ import androidx.test.ext.junit.runners.AndroidJUnit4
+ import assertk.assertThat
+-import assertk.assertions.isEqualTo
+ import assertk.assertions.isFalse
+ import assertk.assertions.isNull
+-import assertk.assertions.isTrue
+ import io.mockk.every
+ import io.mockk.mockkStatic
+ import io.mockk.unmockkStatic
+@@ -26,7 +24,7 @@ import org.thoughtcrime.securesms.testing.InAppPaymentsRule
+ import org.thoughtcrime.securesms.testing.SignalActivityRule
+ import org.thoughtcrime.securesms.util.VersionTracker
+ 
+-/** Molly's donation prompt is gated by installation age and registration, not Signal donor badges. */
++/** Remote donation prompts are suppressed for donors and non-donors alike. */
+ @RunWith(AndroidJUnit4::class)
+ class DonationMegaphoneGatingTest {
+ 
+@@ -52,26 +50,26 @@ class DonationMegaphoneGatingTest {
+   }
+ 
+   @Test
+-  fun nonDonor_showsStandardDonateMegaphone() {
++  fun nonDonor_suppressesStandardDonateMegaphone() {
+     val record = donateMegaphoneRecord(conditionalId = "standard_donate")
+     SignalDatabase.remoteMegaphones.insert(record)
+ 
+-    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()?.uuid).isEqualTo(record.uuid)
+-    assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isTrue()
++    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()).isNull()
++    assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isFalse()
+   }
+ 
+   @Test
+-  fun signalDonorBadge_doesNotSuppressMollyDonateMegaphone() {
++  fun signalDonorBadge_suppressesStandardDonateMegaphone() {
+     val record = donateMegaphoneRecord(conditionalId = "standard_donate")
+     SignalDatabase.remoteMegaphones.insert(record)
+     setSelfBadges(listOf(donorBadge()))
+ 
+-    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()?.uuid).isEqualTo(record.uuid)
+-    assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isTrue()
++    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()).isNull()
++    assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isFalse()
+   }
+ 
+   @Test
+-  fun youngInstallation_suppressesMollyDonateMegaphone() {
++  fun youngInstallation_suppressesStandardDonateMegaphone() {
+     every { VersionTracker.getDaysSinceFirstInstalled(any()) } returns 6L
+     SignalDatabase.remoteMegaphones.insert(donateMegaphoneRecord(conditionalId = "standard_donate"))
+ 
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt
+index fe211538..8d4c10fd 100644
+--- a/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/megaphone/DonationMegaphoneTest.kt
+@@ -2,112 +2,71 @@
+  * Copyright 2026 Signal Messenger, LLC
+  * SPDX-License-Identifier: AGPL-3.0-only
+  */
+-
+ package org.thoughtcrime.securesms.megaphone
+ 
+-import android.content.Context
+-import android.content.Intent
+-import androidx.compose.ui.test.junit4.v2.createComposeRule
+-import androidx.compose.ui.test.onNodeWithText
+-import androidx.compose.ui.test.performClick
+ import androidx.fragment.app.FragmentActivity
+-import androidx.fragment.app.DialogFragment
+ import androidx.test.ext.junit.runners.AndroidJUnit4
+ import androidx.test.platform.app.InstrumentationRegistry
+ import assertk.assertThat
+ import assertk.assertions.isEqualTo
+-import assertk.assertions.isNotNull
++import assertk.assertions.isFalse
++import assertk.assertions.isTrue
++import io.mockk.every
++import io.mockk.mockk
++import io.mockk.mockkStatic
++import io.mockk.unmockkStatic
++import io.mockk.verify
++import org.junit.After
+ import org.junit.Before
+-import org.junit.Rule
+ import org.junit.Test
+ import org.junit.runner.RunWith
+-import org.signal.core.ui.compose.theme.SignalTheme
+-import org.signal.core.util.getSerializableCompat
+-import org.signal.donations.InAppPaymentType
+-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.CheckoutFlowActivity
+-import org.thoughtcrime.securesms.database.SignalDatabase
+-import org.thoughtcrime.securesms.database.model.RemoteMegaphoneRecord
+-import org.thoughtcrime.securesms.testing.InAppPaymentsRule
+-import org.thoughtcrime.securesms.testing.SignalActivityRule
++import org.thoughtcrime.securesms.util.CommunicationActions
++import java.util.concurrent.TimeUnit
+ 
+-/**
+- * Entry-path coverage for the donations remote megaphone: the megaphone shown on the conversation list
+- * that carries a "Donate" action into the one-time checkout flow.
+- *
+- * The megaphone renders through [MegaphoneComponent], so this renders that composable directly (rather
+- * than launching the full [org.thoughtcrime.securesms.MainActivity]) and asserts that tapping Donate
+- * runs the production [RemoteMegaphoneRepository] action, which navigates to [CheckoutFlowActivity]
+- * with [InAppPaymentType.ONE_TIME_DONATION]. The sustainer gating is covered by [DonationMegaphoneGatingTest].
+- */
+ @RunWith(AndroidJUnit4::class)
+ class DonationMegaphoneTest {
+-
+-  @get:Rule
+-  val harness = SignalActivityRule()
+-
+-  @get:Rule
+-  val iapRule = InAppPaymentsRule()
+-
+-  @get:Rule
+-  val composeRule = createComposeRule()
+-
+-  private val context: Context get() = InstrumentationRegistry.getInstrumentation().targetContext
++  private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
++  private val activity = mockk<FragmentActivity>()
++  private val controller = mockk<MegaphoneActionController>(relaxed = true)
+ 
+   @Before
+   fun setUp() {
+-    SignalDatabase.remoteMegaphones.debugRemoveAll()
++    mockkStatic(CommunicationActions::class)
++    every { controller.megaphoneActivity } returns activity
+   }
+ 
+-  @Test
+-  fun donateMegaphone_donateClick_opensOneTimeCheckout() {
+-    val record = donateMegaphoneRecord(conditionalId = null)
+-    SignalDatabase.remoteMegaphones.insert(record)
+-
+-    val controller = RecordingMegaphoneActionController()
++  @After
++  fun tearDown() = unmockkStatic(CommunicationActions::class)
+ 
+-    composeRule.setContent {
+-      SignalTheme {
+-        MegaphoneComponent(buildDonateMegaphone(record), controller)
+-      }
+-    }
+-
+-    composeRule.onNodeWithText(record.primaryActionText!!).performClick()
++  @Test
++  fun localPromptOpensCollieAndCompletesOnlyOnSuccess() {
++    val prompt = Megaphones.buildDonateQ2Megaphone(context)
++    every { CommunicationActions.tryOpenBrowserLink(activity, any()) } returns false andThen true
+ 
+-    val intent = controller.navigationIntent
+-    assertThat(intent).isNotNull()
+-    assertThat(intent!!.component?.className).isEqualTo(CheckoutFlowActivity::class.java.name)
++    assertThat(prompt.title.resolve(context)).isEqualTo("Support Collie")
++    prompt.buttonClickListener!!.onEvent(prompt, controller)
++    verify(exactly = 1) { CommunicationActions.tryOpenBrowserLink(activity, "https://liberapay.com/Collie") }
++    verify(exactly = 0) { controller.onMegaphoneCompleted(any()) }
+ 
+-    val type = intent.extras!!.getSerializableCompat(CheckoutFlowActivity.ARG_IN_APP_PAYMENT_TYPE, InAppPaymentType::class.java)
+-    assertThat(type).isEqualTo(InAppPaymentType.ONE_TIME_DONATION)
++    prompt.buttonClickListener!!.onEvent(prompt, controller)
++    verify(exactly = 1) { controller.onMegaphoneCompleted(Megaphones.Event.DONATE_MOLLY) }
+   }
+ 
+-  /** Mirrors [Megaphones.buildRemoteMegaphone]: wires the primary button to the real repository action. */
+-  private fun buildDonateMegaphone(record: RemoteMegaphoneRecord): Megaphone {
+-    return Megaphone.Builder(Megaphones.Event.REMOTE_MEGAPHONE, Megaphone.Style.BASIC)
+-      .setTitle(record.title)
+-      .setBody(record.body)
+-      .setActionButton(record.primaryActionText!!) { _, controller ->
+-        RemoteMegaphoneRepository.getAction(record.primaryActionId!!).run(context, controller, record)
+-      }
+-      .build()
++  @Test
++  fun dismissalKeepsTheExistingEventKey() {
++    val prompt = Megaphones.buildDonateQ2Megaphone(context)
++    assertThat(Megaphones.Event.fromKey("donate_molly")).isEqualTo(prompt.event)
++    prompt.secondaryButtonClickListener!!.onEvent(prompt, controller)
++    verify(exactly = 1) { controller.onMegaphoneCompleted(Megaphones.Event.DONATE_MOLLY) }
+   }
+ 
+-  private class RecordingMegaphoneActionController : MegaphoneActionController {
+-    var navigationIntent: Intent? = null
+-      private set
+-
+-    override fun onMegaphoneNavigationRequested(intent: Intent) {
+-      navigationIntent = intent
+-    }
+-
+-    override fun onMegaphoneNavigationRequested(intent: Intent, requestCode: Int) {
+-      navigationIntent = intent
+-    }
+-
+-    override fun onMegaphoneToastRequested(string: String) = Unit
+-    override fun getMegaphoneActivity(): FragmentActivity = throw UnsupportedOperationException("not used")
+-    override fun onMegaphoneSnooze(event: Megaphones.Event) = Unit
+-    override fun onMegaphoneCompleted(event: Megaphones.Event) = Unit
+-    override fun onMegaphoneDialogFragmentRequested(dialogFragment: DialogFragment) = Unit
++  @Test
++  fun displayWindowEndsSevenDaysAfterFirstVisibility() {
++    val schedule = ShowForDurationSchedule.showForDays(7)
++    val firstVisible = 1000L
++    val end = firstVisible + TimeUnit.DAYS.toMillis(7)
++    assertThat(schedule.shouldDisplay(0, 0, 0, end)).isTrue()
++    assertThat(schedule.shouldDisplay(0, 0, firstVisible, end - 1)).isTrue()
++    assertThat(schedule.shouldDisplay(0, 0, firstVisible, end)).isFalse()
+   }
+ }
+diff --git a/app/src/androidTest/java/org/thoughtcrime/securesms/util/DonationBrowserFailureTest.kt b/app/src/androidTest/java/org/thoughtcrime/securesms/util/DonationBrowserFailureTest.kt
+new file mode 100644
+index 00000000..670d78e7
+--- /dev/null
++++ b/app/src/androidTest/java/org/thoughtcrime/securesms/util/DonationBrowserFailureTest.kt
+@@ -0,0 +1,30 @@
++/*
++ * Copyright 2026 Signal Messenger, LLC
++ * SPDX-License-Identifier: AGPL-3.0-only
++ */
++package org.thoughtcrime.securesms.util
++
++import android.content.ActivityNotFoundException
++import android.content.ContextWrapper
++import android.content.Intent
++import androidx.test.ext.junit.runners.AndroidJUnit4
++import androidx.test.platform.app.InstrumentationRegistry
++import assertk.assertThat
++import assertk.assertions.isFalse
++import org.junit.Test
++import org.junit.runner.RunWith
++
++@RunWith(AndroidJUnit4::class)
++class DonationBrowserFailureTest {
++  @Test fun reportsFailureWhenNoBrowserCanHandleTheLink() {
++    val instrumentation = InstrumentationRegistry.getInstrumentation()
++    val noBrowser = object : ContextWrapper(instrumentation.targetContext) {
++      override fun startActivity(intent: Intent) {
++        throw ActivityNotFoundException()
++      }
++    }
++    instrumentation.runOnMainSync {
++      assertThat(CommunicationActions.tryOpenBrowserLink(noBrowser, "https://liberapay.com/Collie")).isFalse()
++    }
++  }
++}
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleConverter.kt b/app/src/main/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleConverter.kt
 index 38f3bba2..5a7a9e33 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/backup/v2/util/ChatStyleConverter.kt
@@ -438,6 +1225,129 @@ index 38f3bba2..5a7a9e33 100644
    }
  
    if (this.customColorId != null) {
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsFragment.kt
+index acffaf07..5d6a57c5 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsFragment.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsFragment.kt
+@@ -30,8 +30,12 @@ import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.platform.LocalInspectionMode
+ import androidx.compose.ui.res.painterResource
+ import androidx.compose.ui.res.stringResource
++import androidx.compose.ui.text.SpanStyle
+ import androidx.compose.ui.text.TextStyle
++import androidx.compose.ui.text.buildAnnotatedString
++import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.text.style.TextDirection
++import androidx.compose.ui.text.withStyle
+ import androidx.compose.ui.unit.dp
+ import androidx.fragment.app.viewModels
+ import androidx.lifecycle.Lifecycle
+@@ -195,6 +199,30 @@ class AppSettingsFragment : ComposeFragment(), Callbacks {
+   }
+ }
+ 
++@Composable
++internal fun DonationLinks() {
++  val context = LocalContext.current
++  val collieUrl = stringResource(R.string.donate_collie_url)
++  val mollyUrl = stringResource(R.string.donate_molly_url)
++
++  Column {
++    Rows.TextRow(
++      text = buildAnnotatedString {
++        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
++          append(context.getString(R.string.AppSettingsFragment__donate_to_collie))
++        }
++      },
++      icon = painterResource(R.drawable.symbol_heart_24),
++      onClick = { CommunicationActions.openBrowserLink(context, collieUrl) }
++    )
++    Rows.TextRow(
++      text = stringResource(R.string.AppSettingsFragment__donate_to_molly),
++      icon = painterResource(R.drawable.symbol_heart_24),
++      onClick = { CommunicationActions.openBrowserLink(context, mollyUrl) }
++    )
++  }
++}
++
+ @Composable
+ private fun AppSettingsContent(
+   self: BioRecipientState,
+@@ -313,16 +341,17 @@ private fun AppSettingsContent(
+         }
+ 
+         item {
+-          val context = LocalContext.current
+-          val donateUrl = stringResource(R.string.donate_url)
++          DonationLinks()
++        }
+ 
+-          Rows.TextRow(
+-            text = stringResource(R.string.preferences__donate_to_signal),
+-            icon = painterResource(R.drawable.symbol_heart_24),
+-            onClick = {
+-              CommunicationActions.openBrowserLink(context, donateUrl)
+-            },
+-          )
++        if (state.showDonationManagement) {
++          item {
++            Rows.TextRow(
++              text = stringResource(R.string.AppSettingsFragment__manage_existing_signal_donations),
++              icon = painterResource(R.drawable.symbol_heart_24),
++              onClick = { callbacks.navigate(AppSettingsRoute.DonationsRoute.Donations()) }
++            )
++          }
+         }
+ 
+         item {
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsState.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsState.kt
+index 02951985..132e62b8 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsState.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsState.kt
+@@ -13,6 +13,7 @@ data class AppSettingsState(
+   val clientDeprecated: Boolean,
+   val showInternalPreferences: Boolean = RemoteConfig.internalUser,
+   val showAppUpdates: Boolean = BuildConfig.MANAGE_MOLLY_UPDATES,
++  val showDonationManagement: Boolean = false,
+   val backupFailureState: BackupFailureState = BackupFailureState.NONE
+ ) {
+   fun isRegisteredAndUpToDate(): Boolean {
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsViewModel.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsViewModel.kt
+index 2183030d..6ac24fe1 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsViewModel.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/AppSettingsViewModel.kt
+@@ -3,8 +3,15 @@ package org.thoughtcrime.securesms.components.settings.app
+ import androidx.lifecycle.LiveData
+ import androidx.lifecycle.ViewModel
+ import androidx.lifecycle.map
++import androidx.lifecycle.viewModelScope
++import kotlinx.coroutines.Dispatchers
++import kotlinx.coroutines.launch
++import kotlinx.coroutines.withContext
+ import io.reactivex.rxjava3.disposables.CompositeDisposable
+ import org.thoughtcrime.securesms.keyvalue.SignalStore
++import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
++import org.thoughtcrime.securesms.database.SignalDatabase
++import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
+ import org.thoughtcrime.securesms.recipients.Recipient
+ import org.thoughtcrime.securesms.util.livedata.Store
+ 
+@@ -39,6 +46,15 @@ class AppSettingsViewModel : ViewModel() {
+   }
+ 
+   fun refresh() {
++    viewModelScope.launch {
++      val hasDonationHistory = withContext(Dispatchers.IO) {
++        InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION) != null ||
++          SignalDatabase.inAppPayments.hasDonationInProgress() ||
++          SignalDatabase.donationReceipts.hasReceipts() ||
++          SignalStore.inAppPayments.isLikelyASustainer()
++      }
++      store.update { it.copy(showDonationManagement = hasDonationHistory) }
++    }
+     store.update {
+       it.copy(
+         backupFailureState = getBackupFailureState()
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/InternalSettingsFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/InternalSettingsFragment.kt
 index ad641a2c..a058c15a 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/InternalSettingsFragment.kt
@@ -451,6 +1361,291 @@ index ad641a2c..a058c15a 100644
          onClick = {
            MaterialAlertDialogBuilder(requireContext())
              .setTitle("Delete UnifiedPush ping?")
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/CheckoutNavHostFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/CheckoutNavHostFragment.kt
+index af288e13..b163db01 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/CheckoutNavHostFragment.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/CheckoutNavHostFragment.kt
+@@ -53,5 +53,13 @@ class CheckoutNavHostFragment : NavHostFragment() {
+     navController.setGraph(navGraph, startBundle)
+ 
+     super.onCreate(savedInstanceState)
++
++    // A restored checkout may contain payment-entry screens from an older version.
++    // Keep cancellation and payment progress alive, but never return to entry forms.
++    navController.addOnDestinationChangedListener { controller, destination, _ ->
++      if (DonationCheckoutDestinations.isPaymentEntry(destination.id)) {
++        controller.popBackStack(R.id.donateToSignalFragment, false)
++      }
++    }
+   }
+ }
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonateToSignalFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonateToSignalFragment.kt
+index ed0c730a..da13b5b3 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonateToSignalFragment.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonateToSignalFragment.kt
+@@ -250,68 +250,14 @@ class DonateToSignalFragment :
+ 
+       space(24.dp)
+ 
+-      customPref(
+-        CurrencySelection.Model(
+-          selectedCurrency = state.selectedCurrency,
+-          isEnabled = state.canSetCurrency,
+-          onClick = {
+-            viewModel.requestChangeCurrency()
+-          }
+-        )
+-      )
+-
+-      space(16.dp)
+-
+-      customPref(
+-        DonationPillToggle.Model(
+-          selected = state.inAppPaymentType,
+-          onClick = {
+-            viewModel.toggleDonationType()
+-          }
+-        )
+-      )
+-
+-      space(10.dp)
+-
+-      when (state.inAppPaymentType) {
+-        InAppPaymentType.ONE_TIME_DONATION -> displayOneTimeSelection(state.areFieldsEnabled, state.oneTimeDonationState)
+-        InAppPaymentType.RECURRING_DONATION -> displayMonthlySelection(state.areFieldsEnabled, state.monthlyDonationState)
+-        else -> error("This fragment does not support ${state.inAppPaymentType}.")
++      // Retain the existing subscription cancellation flow without offering new payments.
++      if (state.inAppPaymentType == InAppPaymentType.RECURRING_DONATION) {
++        displayMonthlySelection(false, state.monthlyDonationState)
+       }
+ 
+       space(20.dp)
+ 
+       if (state.inAppPaymentType == InAppPaymentType.RECURRING_DONATION && (state.monthlyDonationState.isSubscriptionActive || state.monthlyDonationState.isSubscriptionInProgress)) {
+-        primaryButton(
+-          text = DSLSettingsText.from(R.string.SubscribeFragment__update_subscription),
+-          isEnabled = state.canUpdate,
+-          onClick = {
+-            if (state.monthlyDonationState.transactionState.isTransactionJobPending) {
+-              showDonationPendingDialog(state)
+-            } else {
+-              MaterialAlertDialogBuilder(requireContext())
+-                .setTitle(R.string.SubscribeFragment__update_subscription_question)
+-                .setMessage(
+-                  getString(
+-                    R.string.SubscribeFragment__you_will_be_charged_the_full_amount_s_of,
+-                    FiatMoneyUtil.format(
+-                      requireContext().resources,
+-                      viewModel.getSelectedSubscriptionCost(),
+-                      FiatMoneyUtil.formatOptions().trimZerosAfterDecimal()
+-                    )
+-                  )
+-                )
+-                .setPositiveButton(R.string.SubscribeFragment__update) { _, _ ->
+-                  viewModel.updateSubscription()
+-                }
+-                .setNegativeButton(android.R.string.cancel) { _, _ -> }
+-                .show()
+-            }
+-          }
+-        )
+-
+-        space(4.dp)
+-
+         secondaryButtonNoOutline(
+           text = DSLSettingsText.from(R.string.SubscribeFragment__cancel_subscription),
+           isEnabled = state.areFieldsEnabled,
+@@ -330,19 +276,6 @@ class DonateToSignalFragment :
+             }
+           }
+         )
+-      } else {
+-        primaryButton(
+-          text = DSLSettingsText.from(R.string.DonateToSignalFragment__continue),
+-          isEnabled = state.continueEnabled,
+-          onClick = {
+-            if (state.canContinue) {
+-              requireView().clearFocus()
+-              viewModel.requestSelectGateway()
+-            } else {
+-              showDonationPendingDialog(state)
+-            }
+-          }
+-        )
+       }
+ 
+       space(24.dp)
+@@ -412,7 +345,7 @@ class DonateToSignalFragment :
+       DonateToSignalState.DonationStage.INIT -> customPref(Subscription.LoaderModel())
+       DonateToSignalState.DonationStage.FAILURE -> customPref(NetworkFailure.Model { viewModel.retryMonthlyDonationState() })
+       else -> {
+-        state.subscriptions.forEach { subscription ->
++        state.subscriptions.filter { it.level == state.activeLevel }.forEach { subscription ->
+ 
+           val isActive = state.activeLevel == subscription.level && state.isSubscriptionActive
+ 
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinations.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinations.kt
+new file mode 100644
+index 00000000..9fe47909
+--- /dev/null
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinations.kt
+@@ -0,0 +1,18 @@
++package org.thoughtcrime.securesms.components.settings.app.subscription.donate
++
++import org.thoughtcrime.securesms.R
++
++/** Destinations that can initiate a new payment, including dialogs over entry forms. */
++internal object DonationCheckoutDestinations {
++  fun isPaymentEntry(destinationId: Int): Boolean = destinationId in setOf(
++    R.id.creditCardFragment,
++    R.id.yourInformationIsPrivateBottomSheet,
++    R.id.paypalCompleteOrderBottomSheet,
++    R.id.bankTransferMandateFragment,
++    R.id.bankTransferDetailsFragment,
++    R.id.idealTransferDetailsFragment,
++    R.id.idealTransferBankSelectionDialogFragment,
++    R.id.gatewaySelectorBottomSheet,
++    R.id.setCurrencyFragment
++  )
++}
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsFragment.kt
+index 0a55eec5..533e47a8 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsFragment.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsFragment.kt
+@@ -164,14 +164,13 @@ class ManageDonationsFragment :
+ 
+       space(24.dp)
+ 
+-      primaryWrappedButton(
+-        text = DSLSettingsText.from(R.string.ManageDonationsFragment__donate_to_signal),
+-        onClick = {
+-          launcher.launch(InAppPaymentType.ONE_TIME_DONATION)
+-        }
+-      )
+-
+-      space(16.dp)
++      if (state.hasDonationSubscriber) {
++        primaryWrappedButton(
++          text = DSLSettingsText.from(R.string.ManageDonationsFragment__manage_monthly_donation),
++          onClick = { launcher.launch(InAppPaymentType.RECURRING_DONATION) }
++        )
++        space(16.dp)
++      }
+ 
+       if (!state.isLoaded) {
+         customPref(IndeterminateLoadingCircle)
+@@ -212,8 +211,6 @@ class ManageDonationsFragment :
+     // MOLLY: TODO
+     // presentBadges()
+ 
+-    presentOtherWaysToGive()
+-
+     presentMore()
+   }
+ 
+@@ -317,33 +314,15 @@ class ManageDonationsFragment :
+     // MOLLY: TODO
+     // presentBadges()
+ 
+-    presentOtherWaysToGive()
+-
+     presentMore()
+   }
+ 
+   private fun DSLConfiguration.presentNotADonorSettings(hasReceipts: Boolean) {
+-    presentOtherWaysToGive()
+-
+     if (hasReceipts) {
+       presentMore()
+     }
+   }
+ 
+-  private fun DSLConfiguration.presentOtherWaysToGive() {
+-    dividerPref()
+-
+-    sectionHeaderPref(R.string.ManageDonationsFragment__other_ways_to_give)
+-
+-    clickPref(
+-      title = DSLSettingsText.from(R.string.ManageDonationsFragment__donate_for_a_friend),
+-      icon = DSLSettingsIcon.from(R.drawable.symbol_gift_24),
+-      onClick = {
+-        launcher.launch(InAppPaymentType.ONE_TIME_GIFT)
+-      }
+-    )
+-  }
+-
+   // MOLLY: TODO
+   // private fun DSLConfiguration.presentBadges() {
+   //   clickPref(
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsState.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsState.kt
+index dd48f469..4852cf86 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsState.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsState.kt
+@@ -8,6 +8,7 @@ import org.thoughtcrime.securesms.subscription.Subscription
+ data class ManageDonationsState(
+   val hasOneTimeBadge: Boolean = false,
+   val hasReceipts: Boolean = false,
++  val hasDonationSubscriber: Boolean = false,
+   val featuredBadge: Badge? = null,
+   val isLoaded: Boolean = false,
+   val networkError: Boolean = false,
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsViewModel.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsViewModel.kt
+index fcdccdde..14f46d83 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsViewModel.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/manage/ManageDonationsViewModel.kt
+@@ -107,11 +107,14 @@ class ManageDonationsViewModel : ViewModel() {
+     InAppPaymentKeepAliveJob.enqueueAndTrackTime(System.currentTimeMillis().milliseconds)
+ 
+     disposables += Single.fromCallable {
+-      InAppPaymentsRepository.getShouldCancelSubscriptionBeforeNextSubscribeAttempt(InAppPaymentSubscriberRecord.Type.DONATION)
++      Pair(
++        InAppPaymentsRepository.getShouldCancelSubscriptionBeforeNextSubscribeAttempt(InAppPaymentSubscriberRecord.Type.DONATION),
++        InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION) != null
++      )
+     }.subscribeOn(Schedulers.io()).subscribeBy(
+-      onSuccess = { requiresCancel ->
++      onSuccess = { (requiresCancel, hasSubscriber) ->
+         store.update {
+-          it.copy(subscriberRequiresCancel = requiresCancel)
++          it.copy(subscriberRequiresCancel = requiresCancel, hasDonationSubscriber = hasSubscriber)
+         }
+       },
+       onError = { throwable ->
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java b/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java
+index 8973ebe5..640f7df6 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationItem.java
+@@ -1271,7 +1271,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
+       bodyText.setTextAsync(StringUtil.trim(styledText));
+       bodyText.setVisibility(View.VISIBLE);
+ 
+-      if (conversationMessage.getBottomButton() != null) {
++      if (conversationMessage.getBottomButton() != null && !"donate".equals(conversationMessage.getBottomButton().action)) {
+         callToActionStub.get().setVisibility(View.VISIBLE);
+         callToActionStub.get().setText(conversationMessage.getBottomButton().label);
+         callToActionStub.get().setOnClickListener(v -> {
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationUpdateItem.java b/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationUpdateItem.java
+index a8ef6e99..ebd75ed4 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationUpdateItem.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/ConversationUpdateItem.java
+@@ -676,16 +676,7 @@ public final class ConversationUpdateItem extends FrameLayout
+         }
+       });
+     } else if (conversationMessage.getMessageRecord().isReleaseChannelDonationRequest()) {
+-      actionButton.setVisibility(VISIBLE);
+-      actionButton.setOnClickListener(v -> {
+-        if (batchSelected.isEmpty() && eventListener != null) {
+-          eventListener.onDonateClicked();
+-        } else {
+-          passthroughClickListener.onClick(v);
+-        }
+-      });
+-
+-      actionButton.setText(R.string.ConversationUpdateItem_donate);
++      actionButton.setVisibility(GONE);
+     } else if (conversationMessage.getMessageRecord().isSmsExportType()) {
+       actionButton.setVisibility(View.VISIBLE);
+       actionButton.setOnClickListener(v -> {
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ChatColorsPalette.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ChatColorsPalette.kt
 index a37d86c6..da3f05f7 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/conversation/colors/ChatColorsPalette.kt
@@ -513,6 +1708,100 @@ index 7e701801..241ece83 100644
          chatColors?.id == ChatColors.Id.Auto,
          true
        )
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/ConversationFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/ConversationFragment.kt
+index de4a8fdc..67e4b7b9 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/ConversationFragment.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/conversation/v2/ConversationFragment.kt
+@@ -138,7 +138,6 @@ import org.signal.core.ui.isSplitPane
+ import org.signal.core.ui.logging.LoggingFragment
+ import org.signal.core.ui.permissions.Permissions
+ import org.signal.core.ui.util.ThemeUtil
+-import org.signal.donations.InAppPaymentType
+ import org.signal.core.ui.util.ViewUtil
+ import org.signal.core.ui.view.Stub
+ import org.signal.core.ui.viewModel
+@@ -200,7 +199,6 @@ import org.thoughtcrime.securesms.components.mention.MentionAnnotation
+ import org.thoughtcrime.securesms.components.menu.ActionItem
+ import org.thoughtcrime.securesms.components.menu.SignalBottomActionBar
+ import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
+-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.CheckoutFlowActivity
+ import org.thoughtcrime.securesms.components.snackbars.makeSnackbar
+ import org.thoughtcrime.securesms.components.spoiler.SpoilerAnnotation
+ import org.thoughtcrime.securesms.components.voice.VoiceNoteDraft
+@@ -4362,7 +4360,6 @@ class ConversationFragment :
+     override fun onCallToAction(action: String) {
+       when (action) {
+         "gift_badge" -> Unit  // MOLLY: No action
+-        "donate" -> startActivity(CheckoutFlowActivity.createIntent(requireContext(), InAppPaymentType.ONE_TIME_DONATION))
+         "username_edit" -> startActivity(EditProfileActivity.getIntentForUsernameEdit(requireContext()))
+         "calls_tab" -> startActivity(MainActivity.clearTopAndOpenTab(requireContext(), MainListRoute.Calls))
+         "chat_folder" -> startActivity(AppSettingsActivity.chatFolders(requireContext()))
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/database/InAppPaymentTable.kt b/app/src/main/java/org/thoughtcrime/securesms/database/InAppPaymentTable.kt
+index 176b75b5..6dde8409 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/database/InAppPaymentTable.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/database/InAppPaymentTable.kt
+@@ -364,6 +364,23 @@ class InAppPaymentTable(context: Context, databaseHelper: SignalDatabase) : Data
+       .run()
+   }
+ 
++  /** Donations still in progress, including those awaiting external authorization. */
++  fun hasDonationInProgress(): Boolean {
++    return readableDatabase.exists(TABLE_NAME)
++      .where(
++        "$STATE IN (?, ?, ?, ?, ?) AND $TYPE IN (?, ?, ?)",
++        State.serialize(State.PENDING),
++        State.serialize(State.TRANSACTING),
++        State.serialize(State.REQUIRES_ACTION),
++        State.serialize(State.REQUIRED_ACTION_COMPLETED),
++        State.serialize(State.WAITING_FOR_AUTHORIZATION),
++        InAppPaymentType.serialize(InAppPaymentType.ONE_TIME_DONATION),
++        InAppPaymentType.serialize(InAppPaymentType.RECURRING_DONATION),
++        InAppPaymentType.serialize(InAppPaymentType.ONE_TIME_GIFT)
++      )
++      .run()
++  }
++
+   fun hasPendingBackupRedemption(): Boolean {
+     return readableDatabase.exists(TABLE_NAME)
+       .where("$STATE = ? AND $TYPE = ?", State.serialize(State.PENDING), InAppPaymentType.serialize(InAppPaymentType.RECURRING_BACKUP))
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java b/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java
+index 354c545c..d5c968e6 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/megaphone/Megaphones.java
+@@ -348,14 +348,15 @@ public final class Megaphones {
+         .build();
+   }
+ 
+-  private static @NonNull Megaphone buildDonateQ2Megaphone(@NonNull Context context) {
++  static @NonNull Megaphone buildDonateQ2Megaphone(@NonNull Context context) {
+     return new Megaphone.Builder(Event.DONATE_MOLLY, Megaphone.Style.BASIC)
+-        .setTitle(R.string.DonateMegaphone_molly_is_free_software)
+-        .setBody(R.string.DonateMegaphone_we_maintain_molly_with_your_support_consider_donating_at_open_collective)
++        .setTitle(R.string.DonateMegaphone__support_collie)
++        .setBody(R.string.DonateMegaphone__collie_support_body)
+         .setImage(R.drawable.ic_donate_megaphone)
+         .setActionButton(R.string.ConversationUpdateItem_donate, (megaphone, listener) -> {
+-          CommunicationActions.openBrowserLink(listener.getMegaphoneActivity(), context.getString(R.string.donate_url));
+-          listener.onMegaphoneCompleted(megaphone.getEvent());
++          if (CommunicationActions.tryOpenBrowserLink(listener.getMegaphoneActivity(), context.getString(R.string.donate_collie_url))) {
++            listener.onMegaphoneCompleted(megaphone.getEvent());
++          }
+         })
+         .setSecondaryButton(R.string.RatingManager_no_thanks, (megaphone, controller) -> controller.onMegaphoneCompleted(megaphone.getEvent()))
+         .build();
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/megaphone/RemoteMegaphoneRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/megaphone/RemoteMegaphoneRepository.kt
+index ed01f96e..23aed14d 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/megaphone/RemoteMegaphoneRepository.kt
++++ b/app/src/main/java/org/thoughtcrime/securesms/megaphone/RemoteMegaphoneRepository.kt
+@@ -80,6 +80,8 @@ object RemoteMegaphoneRepository {
+   fun getRemoteMegaphoneToShow(now: Long = System.currentTimeMillis()): RemoteMegaphoneRecord? {
+     return db.getPotentialMegaphonesAndClearOld(now)
+       .asSequence()
++      // Remote donation copy may name a different recipient than our donation links.
++      .filter { it.conditionalId != "standard_donate" && it.primaryActionId?.isDonateAction != true && it.secondaryActionId?.isDonateAction != true }
+       .filter { it.imageUrl == null || it.imageUri != null }
+       .filter { it.countries == null || LocaleRemoteConfig.shouldShowReleaseNote(it.uuid, it.countries) }
+       .filter { it.conditionalId == null || checkCondition(it.conditionalId) }
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/recipients/Recipient.kt b/app/src/main/java/org/thoughtcrime/securesms/recipients/Recipient.kt
 index 0f1697d9..83948413 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/recipients/Recipient.kt
@@ -526,6 +1815,33 @@ index 0f1697d9..83948413 100644
  
    /** A fully resolved copy of this recipient, if needed. */
    private val resolved: Recipient
+diff --git a/app/src/main/java/org/thoughtcrime/securesms/util/CommunicationActions.java b/app/src/main/java/org/thoughtcrime/securesms/util/CommunicationActions.java
+index a3e5c897..7ad999fe 100644
+--- a/app/src/main/java/org/thoughtcrime/securesms/util/CommunicationActions.java
++++ b/app/src/main/java/org/thoughtcrime/securesms/util/CommunicationActions.java
+@@ -209,7 +209,14 @@ public class CommunicationActions {
+   }
+ 
+   public static void openBrowserLink(@NonNull Context context, @NonNull String link) {
++    tryOpenBrowserLink(context, link);
++  }
++
++  /** Returns false when no browser could handle the link. */
++  public static boolean tryOpenBrowserLink(@NonNull Context context, @NonNull String link) {
++    boolean[] opened = { true };
+     LinkActions.openUrl(context, link, error -> {
++      opened[0] = false;
+       if (error instanceof OpenUrlError.NoBrowserFound) {
+         Toast.makeText(context, R.string.CommunicationActions_no_browser_found, Toast.LENGTH_SHORT).show();
+       } else {
+@@ -217,6 +224,7 @@ public class CommunicationActions {
+       }
+       return Unit.INSTANCE;
+     });
++    return opened[0];
+   }
+ 
+   public static void openEmail(@NonNull Context context, @NonNull String address, @Nullable String subject, @Nullable String body) {
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/wallpaper/ChatWallpaperRepository.java b/app/src/main/java/org/thoughtcrime/securesms/wallpaper/ChatWallpaperRepository.java
 index 808a2ca0..3c9f2adc 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/wallpaper/ChatWallpaperRepository.java
@@ -62509,10 +63825,23 @@ index 39d583e9..91253d07 100644
      <color name="top_toast_background_color">@color/core_white</color>
  
 diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
-index acdb8f3a..22673c4b 100644
+index acdb8f3a..69cd35ab 100644
 --- a/app/src/main/res/values/strings.xml
 +++ b/app/src/main/res/values/strings.xml
-@@ -31,12 +31,12 @@
+@@ -5,6 +5,12 @@
+   -->
+ <resources xmlns:tools="http://schemas.android.com/tools">
+     <string name="donate_url" translatable="false">https://opencollective.com/mollyim</string>
++    <string name="donate_collie_url" translatable="false">https://liberapay.com/Collie</string>
++    <string name="donate_molly_url" translatable="false">https://opencollective.com/mollyim</string>
++    <string name="AppSettingsFragment__donate_to_collie">Donate to Collie 🧡🦴</string>
++    <string name="AppSettingsFragment__donate_to_molly">Donate to Molly</string>
++    <string name="DonateMegaphone__support_collie">Support Collie</string>
++    <string name="DonateMegaphone__collie_support_body">If you enjoy Collie, consider supporting its development with a donation.</string>
+     <string name="backup_support_url" translatable="false">https://support.signal.org/hc/articles/360007059752</string>
+     <string name="remote_backup_support_url" translatable="false">https://support.signal.org/hc/articles/9708267671322</string>
+     <string name="transfer_support_url" translatable="false">https://support.signal.org/hc/articles/360007059752</string>
+@@ -31,12 +37,12 @@
      <string name="AlbumThumbnailView_plus" translatable="false">\+%d</string>
  
      <!-- ApplicationMigrationActivity -->
@@ -62527,7 +63856,7 @@ index acdb8f3a..22673c4b 100644
      <string name="ApplicationPreferencesActivity_disable">Disable</string>
      <string name="ApplicationPreferencesActivity_error_connecting_to_server">Error connecting to server!</string>
      <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">PINs are required for registration lock. To disable PINs, please first disable registration lock.</string>
-@@ -81,7 +81,7 @@
+@@ -81,7 +87,7 @@
      <string name="AttachmentKeyboard_location">Location</string>
      <!-- Text for a button that will allow users to create a poll -->
      <string name="AttachmentKeyboard_poll">Poll</string>
@@ -62536,7 +63865,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Text for a button prompting users to allow Signal access to their gallery storage -->
      <string name="AttachmentKeyboard_allow_access">Allow Access</string>
      <string name="AttachmentKeyboard_payment">Payment</string>
-@@ -92,33 +92,33 @@
+@@ -92,33 +98,33 @@
      <!-- Option in menu to go to settings -->
      <string name="AttachmentKeyboard_go_to_settings">Go to Settings</string>
      <!-- Text explaining that Signal has limited access to photos -->
@@ -62578,7 +63907,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Alert dialog title to show the recipient has not activated payments -->
      <string name="AttachmentManager__not_activated_payments">%1$s hasn\'t activated Payments </string>
      <!-- Alert dialog description to send the recipient a request to activate payments -->
-@@ -270,12 +270,12 @@
+@@ -270,12 +276,12 @@
      <string name="CensorshipCircumventionMegaphone_no_thanks">No thanks</string>
  
      <!-- ClientDeprecatedActivity -->
@@ -62593,7 +63922,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- ClockSkewActivity -->
      <!-- Title of the full-screen dialog shown when the device clock is too far off from the real time -->
-@@ -307,7 +307,7 @@
+@@ -307,7 +313,7 @@
      <!-- Title on dialog when quick restore qr code is scanned in system camera -->
      <string name="CommunicationActions__transfer_dialog_title">Transfer account to new device?</string>
      <!-- Message on dialog when quick restore qr code is scanned in system camera -->
@@ -62602,7 +63931,7 @@ index acdb8f3a..22673c4b 100644
      <string name="CommunicationActions__dont_transfer">Don\'t transfer</string>
  
      <!-- ConfirmIdentityDialog -->
-@@ -331,8 +331,8 @@
+@@ -331,8 +337,8 @@
  
      <!-- ContactsDatabase -->
      <string name="ContactsDatabase_message_s">Message %s</string>
@@ -62613,7 +63942,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- ContactNameEditActivity -->
      <!-- Toolbar title for contact name edit activity -->
-@@ -443,10 +443,10 @@
+@@ -443,10 +449,10 @@
      <!-- Dialog description that will explain the steps needed to give microphone permissions -->
      <string name="ConversationActivity_signal_to_send_audio_messages">To send voice messages:</string>
      <!-- Alert dialog description asking for microphone permission in order to send voice messages -->
@@ -62627,7 +63956,7 @@ index acdb8f3a..22673c4b 100644
  
      <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
      <string name="ConversationActivity_search_position">%1$d of %2$d</string>
-@@ -466,9 +466,9 @@
+@@ -466,9 +472,9 @@
      <!-- Dialog description that will explain the steps needed to give microphone permissions for a voice call -->
      <string name="ConversationActivity__to_start_call">To start a call:</string>
      <!-- Alert dialog description asking for microphone permission in order to start a voice call -->
@@ -62639,7 +63968,7 @@ index acdb8f3a..22673c4b 100644
  
  
      <string name="ConversationActivity_join">Join</string>
-@@ -482,11 +482,11 @@
+@@ -482,11 +488,11 @@
      <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
      <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">SMS messaging is no longer supported in Signal. Invite %1$s to Signal to keep the conversation here.</string>
      <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
@@ -62653,7 +63982,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Toast message shown when trying to record a voice message during an ongoing call -->
      <string name="ConversationFragment_cannot_record_voice_message_during_call">Cannot record voice message during call.</string>
  
-@@ -579,15 +579,15 @@
+@@ -579,15 +585,15 @@
      <!-- Message shown after successfully blocking join requests for a user -->
      <string name="ConversationFragment__blocked">Blocked</string>
      <!-- Action shown to allow a user to update their application because it has expired -->
@@ -62672,7 +64001,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
      <string name="ConversationFragment__no_longer_verified">No longer verified</string>
      <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
-@@ -634,7 +634,7 @@
+@@ -634,7 +640,7 @@
      <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
      <string name="ConversationFragment_attachment_backfill_failed_title">Can\'t download media</string>
      <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
@@ -62681,7 +64010,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
      <string name="ConversationFragment_attachment_backfill_not_found">This media is no longer available on your phone and can\'t be downloaded.</string>
      <!-- Dialog for how to long to keep a messaged pinned for -->
-@@ -704,7 +704,7 @@
+@@ -704,7 +710,7 @@
      <!-- Bottom sheet text explaining that profile names are chosen by the account holder. Placeholder will be \'Profile names\' -->
      <string name="ProfileNameBottomSheet__profile_names_on_signal">%s on Signal are chosen by their account holder.</string>
      <!-- Bottom sheet text explaining that Signal can\'t verify names and photos -->
@@ -62690,7 +64019,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Bottom sheet text explaining that Signal will never contact you for registration code, PIN, or recovery key -->
      <string name="ProfileNameBottomSheet__signal_will_never_contact">Signal will never contact you for your registration code, PIN, or recovery key</string>
      <!-- Bottom sheet text explaining that accounts can impersonate other people and to be cautious -->
-@@ -847,9 +847,9 @@
+@@ -847,9 +853,9 @@
      <!-- Toolbar title for this screen -->
      <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">Who can find me by number?</string>
      <!-- Description for radio item stating anyone can see your phone number -->
@@ -62702,7 +64031,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- ChooseBackupFragment -->
  
-@@ -875,7 +875,7 @@
+@@ -875,7 +881,7 @@
      <string name="BackupsPreferenceFragment__test_your_backup_passphrase">Test your backup passphrase and verify that it matches</string>
      <string name="BackupsPreferenceFragment__turn_on">Turn on backups</string>
      <string name="BackupsPreferenceFragment__turn_off">Turn off</string>
@@ -62711,7 +64040,7 @@ index acdb8f3a..22673c4b 100644
      <string name="BackupsPreferenceFragment__learn_more">Learn more</string>
      <string name="BackupsPreferenceFragment__in_progress">In progress…</string>
      <!-- Status text shown in backup preferences when verifying a backup -->
-@@ -884,7 +884,7 @@
+@@ -884,7 +890,7 @@
      <string name="BackupsPreferenceFragment__d_so_far">%1$d so far…</string>
      <!-- Show percentage of completion of backup -->
      <string name="BackupsPreferenceFragment__s_so_far">%1$s%% so far…</string>
@@ -62720,7 +64049,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Title of dialog shown when picking the time to perform a chat backup -->
      <string name="BackupsPreferenceFragment__set_backup_time">Set backup time</string>
  
-@@ -962,7 +962,7 @@
+@@ -962,7 +968,7 @@
  
      <!-- DecryptionFailedDialog -->
      <string name="DecryptionFailedDialog_chat_session_refreshed">Chat session refreshed</string>
@@ -62729,7 +64058,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- LinkDeviceFragment -->
      <!-- Description for how Signal will work with a linked device (eg desktop, iPad) -->
-@@ -976,9 +976,9 @@
+@@ -976,9 +982,9 @@
      <!-- Bottom sheet description explaining that messages on linked devices are private -->
      <string name="LinkDeviceFragment__all_messaging_is_private">All messaging on linked devices is private</string>
      <!-- Bottom sheet description explaining that future messages on linked devices will be in sync with your phone but previous messages will not appear -->
@@ -62741,7 +64070,7 @@ index acdb8f3a..22673c4b 100644
      <string name="LinkDeviceFragment__signal_download_url" translatable="false">signal.org/download</string>
      <!-- Header title listing out current linked devices -->
      <string name="LinkDeviceFragment__my_linked_devices">My linked devices</string>
-@@ -1071,7 +1071,7 @@
+@@ -1071,7 +1077,7 @@
      <!-- Bottom sheet title telling users to complete the linking process on the other device  -->
      <string name="AddLinkDeviceFragment__finish_linking_on_other_device">Finish linking on your other device</string>
      <!-- Bottom sheet description telling users to complete the linking process -->
@@ -62750,7 +64079,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Title of dialog when the QR code being scanned is invalid -->
      <string name="AddLinkDeviceFragment__linking_device_failed">Linking device failed</string>
      <!-- Text shown in a dialog when the QR code being scanned is invalid -->
-@@ -1119,16 +1119,16 @@
+@@ -1119,16 +1125,16 @@
      <string mollyify="true" name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">This device does not support Play Services. Tap to disable system battery optimizations that prevent Molly from retrieving messages while inactive.</string>
  
      <!-- ExpiredBuildReminder -->
@@ -62770,7 +64099,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- PendingGroupJoinRequestsReminder -->
      <plurals name="PendingGroupJoinRequestsReminder_d_pending_member_requests">
-@@ -1262,19 +1262,19 @@
+@@ -1262,19 +1268,19 @@
      <!-- Message for dialog asking user to submit logs for debugging a crash -->
      <string name="PromptLogsSlowNotificationsDialog__message">Debug logs helps us diagnose and fix the issue, and do not contain identifying information.</string>
      <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
@@ -62793,7 +64122,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Button to dismiss notification help prompt -->
      <string name="DeviceSpecificNotificationBottomSheet__no_thanks">No thanks</string>
      <!-- Button to continue and go to Signal support website -->
-@@ -1283,7 +1283,7 @@
+@@ -1283,7 +1289,7 @@
      <!-- Title of a bottom sheet that is shown when the user is having connectivity issues -->
      <string name="ConnectivityWarningBottomSheet_title">You may not be receiving messages</string>
      <!-- Body of a bottom sheet that is shown when the user is having connectivity issues -->
@@ -62802,7 +64131,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Text for a button in a bottom sheet that is shown when the user is having connectivity issues. Clicking it will dismiss the bottom sheet. -->
      <string name="ConnectivityWarningBottomSheet_dismiss_button">Got it</string>
  
-@@ -1551,7 +1551,7 @@
+@@ -1551,7 +1557,7 @@
      <string name="LongMessageActivity_your_message">Your message</string>
  
      <!-- MessageRetrievalService -->
@@ -62811,7 +64140,7 @@ index acdb8f3a..22673c4b 100644
      <string name="MessageRetrievalService_background_connection_enabled">Background connection enabled</string>
  
      <!-- MediaOverviewActivity -->
-@@ -1643,10 +1643,10 @@
+@@ -1643,10 +1649,10 @@
      <string name="StarredMessages__s_chevron_s" translatable="false">%1$s \u203A %2$s</string>
  
      <!-- NotificationBarManager -->
@@ -62825,7 +64154,7 @@ index acdb8f3a..22673c4b 100644
      <string name="NotificationBarManager__cancel_call">Cancel call</string>
  
      <!-- NotificationsMegaphone -->
-@@ -1977,7 +1977,7 @@
+@@ -1977,7 +1983,7 @@
      </plurals>
  
      <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
@@ -62834,7 +64163,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Body for quote when message being quoted is an in-app payment message -->
      <string name="MessageRecord__payment_s">Payment: %1$s</string>
      <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
-@@ -2092,20 +2092,20 @@
+@@ -2092,20 +2098,20 @@
      <string name="DeviceProvisioningActivity_link_a_signal_device">Link a Signal device?</string>
      <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">To link a desktop or iPad to this Signal account, go to Linked Devices and tap \"Link a New Device\" and scan the QR code again. Make sure you only scan QR codes that come directly from Signal.</string>
  
@@ -62861,7 +64190,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- PlacePickerActivity -->
      <string name="PlacePickerActivity_title">Map</string>
-@@ -2163,7 +2163,7 @@
+@@ -2163,7 +2169,7 @@
  
      <!-- RecaptchaRequiredBottomSheetFragment -->
      <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">Verify to continue messaging</string>
@@ -62870,7 +64199,7 @@ index acdb8f3a..22673c4b 100644
      <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">After verifying, you can continue messaging. Any paused messages will automatically be sent.</string>
  
      <!-- Recipient -->
-@@ -2171,7 +2171,7 @@
+@@ -2171,7 +2177,7 @@
      <!-- Name of recipient representing user\'s \'My Story\' -->
      <string name="Recipient_my_story">My Story</string>
      <!-- Name of recipient for a call link without a name -->
@@ -62879,7 +64208,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- RecipientPreferencesActivity -->
      <string name="RecipientPreferenceActivity_block">Block</string>
-@@ -2208,7 +2208,7 @@
+@@ -2208,7 +2214,7 @@
      <!-- WebRtcCallActivity -->
      <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Tap here to turn on your video</string>
      <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
@@ -62888,7 +64217,7 @@ index acdb8f3a..22673c4b 100644
      <string name="WebRtcCallActivity__calling">Calling…</string>
      <!-- Title for dialog warning about lacking bluetooth permissions during a call -->
      <string name="WebRtcCallActivity__bluetooth_permission_denied">Bluetooth permission denied</string>
-@@ -2273,15 +2273,15 @@
+@@ -2273,15 +2279,15 @@
      <!-- Dialog title asking users for camera permission -->
      <string name="WebRtcCallActivity__allow_access_camera">Allow access to your camera</string>
      <!-- Dialog description explaining why camera and microphone permissions are needed to start or join a call -->
@@ -62909,7 +64238,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Dialog description that will explain the steps needed to give microphone permissions -->
      <string name="WebRtcCallActivity__to_start_call">To start or join a call:</string>
      <!-- Dialog description that will explain the steps needed to give camera permissions -->
-@@ -2294,8 +2294,8 @@
+@@ -2294,8 +2300,8 @@
      <string name="MoveableLocalVideoRenderer__expand_local_video">Expand local video</string>
  
      <!-- WebRtcCallView -->
@@ -62920,7 +64249,7 @@ index acdb8f3a..22673c4b 100644
      <string name="WebRtcCallView__start_call">Start Call</string>
      <string name="WebRtcCallView__join_call">Join Call</string>
      <string name="WebRtcCallView__call_is_full">Call is full</string>
-@@ -2605,7 +2605,7 @@
+@@ -2605,7 +2611,7 @@
  
      <!-- SharedContactView -->
      <string name="SharedContactView_add_to_contacts">Add to Contacts</string>
@@ -62929,7 +64258,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
      <string name="SharedContactView_message_button">Message</string>
      <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
-@@ -2898,11 +2898,11 @@
+@@ -2898,11 +2904,11 @@
      <string name="ThreadRecord_blocked_group">Blocked</string>
  
      <!-- ApkUpdateNotifications -->
@@ -62945,7 +64274,7 @@ index acdb8f3a..22673c4b 100644
      <string name="ApkUpdateNotifications_auto_update_success_body">You were automatically updated to version %1$s.</string>
      <string name="ApkUpdateNotifications_manual_update_success_body">You updated to version %1$s.</string>
  
-@@ -2967,7 +2967,7 @@
+@@ -2967,7 +2973,7 @@
      <string name="VerifyIdentityActivity_our_signal_safety_number">Our Signal safety number:</string>
      <string name="VerifyIdentityActivity_no_app_to_share_to">It looks like you don\'t have any apps to share to.</string>
      <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">No safety number to compare was found in the clipboard</string>
@@ -62954,7 +64283,7 @@ index acdb8f3a..22673c4b 100644
      <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">You must first exchange messages in order to view %1$s\'s safety number.</string>
      <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
      <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">A safety number will be created with this person after they exchange messages with you.</string>
-@@ -3004,8 +3004,8 @@
+@@ -3004,8 +3010,8 @@
  
      <!-- KeyCachingService -->
      <string name="KeyCachingService_signal_passphrase_cached">Touch to open.</string>
@@ -62965,7 +64294,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- MediaPreviewActivity -->
      <string name="MediaPreviewActivity_you">You</string>
-@@ -3058,7 +3058,7 @@
+@@ -3058,7 +3064,7 @@
      <string name="MessageNotifier_failed_to_deliver_message">Failed to deliver message.</string>
      <string name="MessageNotifier_error_delivering_message">Error delivering message.</string>
      <string name="MessageNotifier_message_delivery_paused">Message delivery paused.</string>
@@ -62974,7 +64303,7 @@ index acdb8f3a..22673c4b 100644
      <string name="MessageNotifier_mark_all_as_read">Mark all as read</string>
      <string name="MessageNotifier_mark_read">Mark read</string>
      <string name="MessageNotifier_turn_off_these_notifications">Turn off these notifications</string>
-@@ -3082,7 +3082,7 @@
+@@ -3082,7 +3088,7 @@
      <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
      <string name="MessageNotifier_s_voted_in_poll">%1$s %2$s voted in the poll \"%3$s\"</string>
  
@@ -62983,7 +64312,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- TurnOnNotificationsBottomSheet -->
      <!-- Title for sheet explaining how to turn on app notifications -->
-@@ -3158,7 +3158,7 @@
+@@ -3158,7 +3164,7 @@
      </plurals>
  
      <!-- Message shown when the app requests permission to save media to the device storage, but that permission has been permanently denied by the user. -->
@@ -62992,7 +64321,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- Message explaining that it is not possible to save media to the device storage after the user denied the system save to storage permission. -->
      <string name="AttachmentSaver__unable_to_write_to_external_storage_without_permission">Unable to save to external storage without permissions</string>
-@@ -3168,11 +3168,11 @@
+@@ -3168,11 +3174,11 @@
      <!-- Dialog title shown when attempting to save media that has been offloaded from the device by the storage optimization feature. -->
      <string name="AttachmentSaver__cant_save_media">Can\'t save media</string>
      <!-- Dialog message explaining that media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
@@ -63006,7 +64335,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Button label in the offloaded media dialog that navigates to the storage settings screen. -->
      <string name="AttachmentSaver__view_storage_settings">View storage settings</string>
  
-@@ -3185,7 +3185,7 @@
+@@ -3185,7 +3191,7 @@
      <string name="ShortcutLauncherActivity_invalid_shortcut">Invalid shortcut</string>
  
      <!-- SingleRecipientNotificationBuilder -->
@@ -63015,7 +64344,7 @@ index acdb8f3a..22673c4b 100644
      <string name="SingleRecipientNotificationBuilder_new_message">New message</string>
      <string name="SingleRecipientNotificationBuilder_message_request">Message request</string>
      <string name="SingleRecipientNotificationBuilder_you">You</string>
-@@ -3261,7 +3261,7 @@
+@@ -3261,7 +3267,7 @@
  
      <!-- UnauthorizedReminder -->
      <!-- Message shown in a reminder banner when the user\'s device is no longer registered -->
@@ -63024,7 +64353,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Action in reminder banner that will take user to re-register -->
      <string name="UnauthorizedReminder_reregister_action">Re-register device</string>
      <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
-@@ -3270,7 +3270,7 @@
+@@ -3270,7 +3276,7 @@
      <string name="UnauthorizedReminder_relink_action">Re-link device</string>
  
      <!-- Push notification when the app is forcibly logged out by the server. -->
@@ -63033,7 +64362,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- EnclaveFailureReminder -->
      <!-- Banner message to update app to use payments -->
-@@ -3316,14 +3316,14 @@
+@@ -3316,14 +3322,14 @@
      <string name="change_passphrase_activity__repeat_new_passphrase">Repeat new passphrase</string>
  
      <!-- contact_selection_activity -->
@@ -63050,7 +64379,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Row item description asking users for access to their contacts to find people they know -->
      <string name="contact_selection_activity__allow_access_to_contacts">Allow access to your contacts</string>
      <!-- Row header title for more section -->
-@@ -3342,7 +3342,7 @@
+@@ -3342,7 +3348,7 @@
      <string name="SingleContactSelectionActivity_contact_photo">Contact Photo</string>
  
      <!-- ContactSelectionListFragment-->
@@ -63059,7 +64388,7 @@ index acdb8f3a..22673c4b 100644
      <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">Error retrieving contacts, check your network connection</string>
      <string name="ContactSelectionListFragment_username_not_found">Username not found</string>
      <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"%1$s" is not a Signal user. Please check the username and try again.</string>
-@@ -3362,7 +3362,7 @@
+@@ -3362,7 +3368,7 @@
      <!-- Dialog title asking users for contact permission -->
      <string name="ContactSelectionListFragment_allow_access_contacts">Allow access to contacts</string>
      <!-- Dialog description that will explain the steps needed to give contact permissions -->
@@ -63068,7 +64397,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Text on button prompting users to give Signal contact permissions -->
      <string name="ContactSelectionListFragment__allow_access">Allow access</string>
      <!-- Text on button to dismiss Signal\'s request for contact permissions -->
-@@ -3492,7 +3492,7 @@
+@@ -3492,7 +3498,7 @@
  
      <!-- BubbleOptOutTooltip -->
      <!-- Message to inform the user of what Android chat bubbles are -->
@@ -63077,7 +64406,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Button to dismiss the tooltip for opting out of using Android bubbles -->
      <string name="BubbleOptOutTooltip__not_now">Not now</string>
      <!-- Button to move to the system settings to control the use of Android bubbles -->
-@@ -3611,9 +3611,9 @@
+@@ -3611,9 +3617,9 @@
      <string name="EditProfileFragment__group_description">Group description</string>
      <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string>
      <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
@@ -63089,7 +64418,7 @@ index acdb8f3a..22673c4b 100644
      <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
      <string name="EditProfileFragment_deprecated_dialog_update_button">Update</string>
      <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
-@@ -3661,20 +3661,20 @@
+@@ -3661,20 +3667,20 @@
      <!-- Bottom sheet title when encryption is auto-verified -->
      <string name="EncryptionVerifiedSheet__title_success">Encryption was auto-verified for this chat</string>
      <!-- Bottom sheet body when encryption is auto-verified -->
@@ -63115,7 +64444,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Button to learn more about automatic verification -->
      <string name="VerifyAutomaticallyEducationSheet__learn_more">Learn more</string>
      <!-- Button to go to verification page -->
-@@ -3965,7 +3965,7 @@
+@@ -3965,7 +3971,7 @@
      <string name="preferences_communication__category_censorship_circumvention">Censorship circumvention</string>
      <!-- Title of the \'censorship circumvention\' toggle switch -->
      <string name="preferences_communication__censorship_circumvention">Censorship circumvention</string>
@@ -63124,7 +64453,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
      <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Censorship circumvention has been activated based on your account\'s phone number.</string>
      <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
-@@ -3993,7 +3993,7 @@
+@@ -3993,7 +3999,7 @@
      <!-- Preference title for automatic key verification -->
      <string name="preferences_automatic_key_verification">Automatic key verification</string>
      <!-- Preference summary for automatic key verification -->
@@ -63133,7 +64462,7 @@ index acdb8f3a..22673c4b 100644
  
  
      <!-- Internal only preferences -->
-@@ -4010,7 +4010,7 @@
+@@ -4010,7 +4016,7 @@
  
      <!-- Displayed on a welcome screen for payments -->
      <string name="PaymentsHomeFragment_introducing_payments">Introducing payments</string>
@@ -63142,7 +64471,7 @@ index acdb8f3a..22673c4b 100644
      <string name="PaymentsHomeFragment__activate_payments">Activate Payments</string>
      <string name="PaymentsHomeFragment__activating_payments">Activating payments…</string>
      <string name="PaymentsHomeFragment__restore_payments_account">Restore payments account</string>
-@@ -4036,7 +4036,7 @@
+@@ -4036,7 +4042,7 @@
      <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">Payments is not available in your region.</string>
      <string name="PaymentsHomeFragment__could_not_enable_payments">Could not enable payments. Try again later.</string>
      <string name="PaymentsHomeFragment__deactivate_payments_question">Deactivate Payments?</string>
@@ -63151,7 +64480,7 @@ index acdb8f3a..22673c4b 100644
      <string name="PaymentsHomeFragment__deactivate">Deactivate</string>
      <string name="PaymentsHomeFragment__continue">Continue</string>
      <string name="PaymentsHomeFragment__balance_is_not_currently_available">Balance is not currently available.</string>
-@@ -4045,10 +4045,10 @@
+@@ -4045,10 +4051,10 @@
      <string name="PaymentsHomeFragment__details">Details</string>
      <string name="PaymentsHomeFragment__learn_more__activate_payments" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_activate</string>
      <!-- Displayed as a description in a dialog when the user tries to activate payments -->
@@ -63164,7 +64493,7 @@ index acdb8f3a..22673c4b 100644
  
      <string name="PaymentsHomeFragment__mobile_coin_terms_url" translatable="false">https://www.mobilecoin.com/terms-of-use.html</string>
      <!-- Alert dialog title which shows up after a payment to turn on payment lock -->
-@@ -4131,9 +4131,9 @@
+@@ -4131,9 +4137,9 @@
      <string name="PaymentsTransferFragment__next">Next</string>
      <string name="PaymentsTransferFragment__invalid_address">Invalid address</string>
      <string name="PaymentsTransferFragment__check_the_wallet_address">Check the wallet address you\'re attempting to transfer to and try again.</string>
@@ -63177,7 +64506,7 @@ index acdb8f3a..22673c4b 100644
  
      <!-- PaymentsTransferQrScanFragment -->
      <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Scan Address QR Code</string>
-@@ -4494,17 +4494,17 @@
+@@ -4494,17 +4500,17 @@
  
      <!-- CallNotificationBuilder -->
      <!-- Displayed in a notification when a Signal voice call is ringing -->
@@ -63201,7 +64530,7 @@ index acdb8f3a..22673c4b 100644
  
      <string name="CallNotificationBuilder_connecting">Connecting…</string>
      <string name="enter_backup_passphrase_dialog__backup_passphrase">Backup passphrase</string>
-@@ -4530,9 +4530,9 @@
+@@ -4530,9 +4536,9 @@
      <string name="BackupDialog_verify">Verify</string>
      <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">You successfully entered your backup passphrase</string>
      <string name="BackupDialog_passphrase_was_not_correct">Passphrase was not correct</string>
@@ -63213,7 +64542,7 @@ index acdb8f3a..22673c4b 100644
      <string name="LocalBackupJobApi29_backup_failed">Backup failed</string>
      <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">Your backup directory has been deleted or moved.</string>
      <string name="LocalBackupJobApi29_your_backup_file_is_too_large">Your backup file is too large to store on this volume.</string>
-@@ -4553,7 +4553,7 @@
+@@ -4553,7 +4559,7 @@
      <!-- Subtext below last backup time when we do not know when the last backup was -->
      <string name="BackupUtil_unknown">Unknown</string>
      <!-- Subtext below option to launch into phone number privacy settings screen -->
@@ -63222,7 +64551,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
      <string name="preferences_app_protection__to_use_screen_lock">To use screen lock set a PIN, pattern, or password on this device.</string>
      <string name="preferences_app_protection__failed_to_enable_registration_lock">Failed to enable registration lock.</string>
-@@ -4567,11 +4567,11 @@
+@@ -4567,11 +4573,11 @@
      <string name="preferences_chats__backups">Backups</string>
  
      <!-- Title text shown when Signal is locked and needs to be unlocked -->
@@ -63237,7 +64566,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Button in a dialog that will contact Signal support if pressed -->
      <string name="prompt_passphrase_activity__contact_support">Contact support</string>
      <!-- Button text to try again after unlocking has previously failed -->
-@@ -4628,9 +4628,9 @@
+@@ -4628,9 +4634,9 @@
  
      <!-- OldDeviceTransferSetupFragment -->
      <string name="OldDeviceTransferSetup__searching_for_new_android_device">Searching for new Android device…</string>
@@ -63250,7 +64579,7 @@ index acdb8f3a..22673c4b 100644
      <string mollyify="true" name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Sorry, it appears this device does not support Wi-Fi Direct. Molly uses Wi-Fi Direct to discover and connect with your new Android device. You can still create a backup to restore your account on your new Android device.</string>
      <string name="OldDeviceTransferSetup__create_a_backup">Create a backup</string>
      <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">An unexpected error occurred while attempting to connect to your new Android device.</string>
-@@ -4671,7 +4671,7 @@
+@@ -4671,7 +4677,7 @@
  
      <!-- DeviceTransferFragment -->
      <string name="DeviceTransfer__transferring_data">Transferring data</string>
@@ -63259,7 +64588,7 @@ index acdb8f3a..22673c4b 100644
      <string name="DeviceTransfer__d_messages_so_far">%1$d messages so far…</string>
      <!-- Filled in with total percentage of messages transferred -->
      <string name="DeviceTransfer__s_of_messages_so_far">%1$s%% of messages so far…</string>
-@@ -4685,7 +4685,7 @@
+@@ -4685,7 +4691,7 @@
      <!-- OldDeviceTransferInstructionsFragment -->
      <string name="OldDeviceTransferInstructions__transfer_account">Transfer Account</string>
      <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
@@ -63268,7 +64597,7 @@ index acdb8f3a..22673c4b 100644
      <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
      <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">Tap on "Transfer or restore account"</string>
      <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
-@@ -4766,7 +4766,7 @@
+@@ -4766,7 +4772,7 @@
      <!-- GroupLinkBottomSheetDialogFragment -->
      <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Anyone with this link can view the group\'s name and photo and request to join. Share it with people you trust.</string>
      <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Anyone with this link can view the group\'s name and photo and join the group. Share it with people you trust.</string>
@@ -63277,7 +64606,7 @@ index acdb8f3a..22673c4b 100644
      <string name="GroupLinkBottomSheet_copy">Copy</string>
      <string name="GroupLinkBottomSheet_qr_code">QR Code</string>
      <string name="GroupLinkBottomSheet_share">Share</string>
-@@ -4924,7 +4924,7 @@
+@@ -4924,7 +4930,7 @@
      <string name="payment_info_card_about_mobilecoin">About MobileCoin</string>
      <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">MobileCoin is a new privacy focused digital currency.</string>
      <string name="payment_info_card_adding_funds">Adding funds</string>
@@ -63286,7 +64615,7 @@ index acdb8f3a..22673c4b 100644
      <string name="payment_info_card_cashing_out">Cashing out</string>
      <string name="payment_info_card_you_can_cash_out_mobilecoin">You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.</string>
      <string name="payment_info_card_hide_this_card">Hide this card?</string>
-@@ -4945,12 +4945,12 @@
+@@ -4945,12 +4951,12 @@
      <!-- DeactivateWalletFragment -->
      <string name="DeactivateWalletFragment__deactivate_wallet">Deactivate Wallet</string>
      <string name="DeactivateWalletFragment__your_balance">Your balance</string>
@@ -63301,7 +64630,16 @@ index acdb8f3a..22673c4b 100644
      <string name="DeactivateWalletFragment__error_deactivating_wallet">Error deactivating wallet.</string>
      <string name="DeactivateWalletFragment__learn_more__we_recommend_transferring_your_funds" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_deactivate</string>
  
-@@ -5738,9 +5738,9 @@
+@@ -5695,6 +5701,8 @@
+     <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal is a nonprofit with no advertisers or investors, supported only by people like you.</string>
+ 
+     <!-- Button label for creating a donation -->
++    <string name="ManageDonationsFragment__manage_monthly_donation">Manage monthly Signal donation</string>
++    <string name="AppSettingsFragment__manage_existing_signal_donations">Manage existing Signal donations</string>
+     <string name="ManageDonationsFragment__donate_to_signal">Donate to Signal</string>
+     <!-- Heading for more area of manage subscriptions page -->
+     <string name="ManageDonationsFragment__more">More</string>
+@@ -5738,9 +5746,9 @@
      <string name="MySupportPreference__checking_subscription">Checking subscription…</string>
  
      <!-- Title of dialog telling user they need to update signal as it expired -->
@@ -63313,7 +64651,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Button text of expiration dialog, will take user to update the app -->
      <string name="UpdateSignalExpiredDialog__update_action">Update</string>
      <!-- Button text of expiration dialog to cancel the dialog.  -->
-@@ -5749,7 +5749,7 @@
+@@ -5749,7 +5757,7 @@
      <!-- Title of dialog telling user they need to re-register signal -->
      <string name="ReregisterSignalDialog__title">Device not registered</string>
      <!-- Message of dialog telling user they need to re-register signal as it is no longer registered -->
@@ -63322,7 +64660,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Button text of re-registration dialog to re-register the device.  -->
      <string name="ReregisterSignalDialog__reregister_action">Re-register</string>
      <!-- Button text of re-registration dialog to cancel the dialog.  -->
-@@ -6044,7 +6044,7 @@
+@@ -6044,7 +6052,7 @@
      <!-- Displayed in a toast when we fail to open the ringtone picker -->
      <string name="NotificationSettingsFragment__failed_to_open_picker">Failed to open picker.</string>
      <!-- Banner title when notification permission is disabled -->
@@ -63331,7 +64669,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Banner action when notification permission is disabled -->
      <string name="NotificationSettingsFragment__turn_on">Turn on</string>
  
-@@ -7291,7 +7291,7 @@
+@@ -7291,7 +7299,7 @@
      <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
      <string name="TurnOnSignalBackups__title">Turn on Signal Secure Backups</string>
      <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
@@ -63340,7 +64678,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
      <string name="TurnOnSignalBackups__turn_on">Turn on</string>
      <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
-@@ -7361,16 +7361,16 @@
+@@ -7361,16 +7369,16 @@
      <string name="BackupSetupCompleteBottomSheet__back_up_now">Back up now</string>
  
      <!-- Title of a megaphone shown to prompt the user to open Signal on their primary device -->
@@ -63360,7 +64698,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
      <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">You have \"Optimize Signal storage\" on. If you want to include all media in your on-device backup, turn the setting off.</string>
      <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
-@@ -7725,9 +7725,9 @@
+@@ -7725,9 +7733,9 @@
      <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
      <string name="ManageStorageSettingsFragment_apply_limits_description">When enabled, chat limits will also delete messages from your linked devices.</string>
      <!-- Setting section title header for storage optimization -->
@@ -63372,7 +64710,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Setting row explanation for storage optimization -->
      <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Unused media will be offloaded, but can be downloaded from your backup anytime.</string>
      <!-- Dialog message for paid tier pending dialog -->
-@@ -7893,7 +7893,7 @@
+@@ -7893,7 +7901,7 @@
      <!-- Displays the date the subscription expired. Placeholder is the date. -->
      <string name="RemoteBackupsSettingsFragment__expired_on_s">Expired on %1$s</string>
      <!-- Displayed at the top of the screen when no backup is currently enabled -->
@@ -63381,7 +64719,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Section header for other ways to back up -->
      <string name="RemoteBackupsSettingsFragment__other_ways_to_backup">Other ways to backup</string>
      <!-- Row title for performing on-device backup -->
-@@ -8171,7 +8171,7 @@
+@@ -8171,7 +8179,7 @@
      <!-- Bottom sheet title -->
      <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Keep your key safe</string>
      <!-- Bottom sheet subtitle -->
@@ -63390,7 +64728,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Sheet action button label -->
      <string name="MessageBackupsKeyRecordScreen__continue">Continue</string>
      <!-- Sheet secondary action button label -->
-@@ -8181,13 +8181,13 @@
+@@ -8181,13 +8189,13 @@
      <!-- Dialog title for confirming you need to disable optimized storage and download media to rotate AEP key -->
      <string name="MessageBackupsKeyRecordScreen__download_media">Download media</string>
      <!-- Dialog body for confirming you need to disable optimized storage and download media to rotate AEP key -->
@@ -63406,7 +64744,7 @@ index acdb8f3a..22673c4b 100644
      <!-- Dialog title shown when user attempts to exit backup setup before completion -->
      <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">Exit backup setup?</string>
      <!-- Dialog body warning user that backup setup is incomplete -->
-@@ -8702,7 +8702,7 @@
+@@ -8702,7 +8710,7 @@
      <string name="CouldNotCompleteBackupRestoreSheet__body_error">An error occurred and your backup can\'t be restored. This may be because the backup folder was moved on your device while your backup was restoring.</string>
  
      <!-- Body of the sheet shown when a local backup restore could not be completed, explaining how to try again -->
@@ -63606,6 +64944,137 @@ index 00000000..4a366c46
 +    assertEquals(ultramarine, exported.toLocal(importState))
 +  }
 +}
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinationsTest.kt b/app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinationsTest.kt
+new file mode 100644
+index 00000000..4bfb7e1f
+--- /dev/null
++++ b/app/src/test/java/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutDestinationsTest.kt
+@@ -0,0 +1,39 @@
++package org.thoughtcrime.securesms.components.settings.app.subscription.donate
++
++import org.junit.Assert.assertFalse
++import org.junit.Assert.assertTrue
++import org.junit.Test
++import org.thoughtcrime.securesms.R
++
++class DonationCheckoutDestinationsTest {
++  @Test
++  fun `old payment entry destinations cannot be restored`() {
++    val entryDestinations = listOf(
++      R.id.creditCardFragment,
++      R.id.yourInformationIsPrivateBottomSheet,
++      R.id.paypalCompleteOrderBottomSheet,
++      R.id.bankTransferMandateFragment,
++      R.id.bankTransferDetailsFragment,
++      R.id.idealTransferDetailsFragment,
++      R.id.idealTransferBankSelectionDialogFragment,
++      R.id.gatewaySelectorBottomSheet,
++      R.id.setCurrencyFragment
++    )
++
++    entryDestinations.forEach { assertTrue(DonationCheckoutDestinations.isPaymentEntry(it)) }
++  }
++
++  @Test
++  fun `subscription cancellation and pending payment screens survive restoration`() {
++    val retainedDestinations = listOf(
++      R.id.donateToSignalFragment,
++      R.id.stripePaymentInProgressFragment,
++      R.id.paypalPaymentInProgressFragment,
++      R.id.stripe3dsDialogFragment,
++      R.id.paypalConfirmationFragment,
++      R.id.donationPendingBottomSheet
++    )
++
++    retainedDestinations.forEach { assertFalse(DonationCheckoutDestinations.isPaymentEntry(it)) }
++  }
++}
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/database/InAppPaymentTableTest.kt b/app/src/test/java/org/thoughtcrime/securesms/database/InAppPaymentTableTest.kt
+index cec0c35a..16b89549 100644
+--- a/app/src/test/java/org/thoughtcrime/securesms/database/InAppPaymentTableTest.kt
++++ b/app/src/test/java/org/thoughtcrime/securesms/database/InAppPaymentTableTest.kt
+@@ -73,6 +73,28 @@ class InAppPaymentTableTest {
+     assertThat(paymentAfterUpdate?.state).isEqualTo(InAppPaymentTable.State.PENDING)
+   }
+ 
++  @Test
++  fun `donation management detects every in-flight one-time donation`() {
++    val states = listOf(
++      InAppPaymentTable.State.PENDING,
++      InAppPaymentTable.State.TRANSACTING,
++      InAppPaymentTable.State.REQUIRES_ACTION,
++      InAppPaymentTable.State.REQUIRED_ACTION_COMPLETED,
++      InAppPaymentTable.State.WAITING_FOR_AUTHORIZATION
++    )
++    states.forEach { state ->
++      SignalDatabase.inAppPayments.writableDatabase.deleteAll(InAppPaymentTable.TABLE_NAME)
++      insertPayment(InAppPaymentType.ONE_TIME_DONATION, false, state, InAppPaymentData())
++      assertThat(SignalDatabase.inAppPayments.hasDonationInProgress()).isTrue()
++    }
++  }
++
++  @Test
++  fun `backup payments alone do not expose donation management`() {
++    insertBackup(notified = false, state = InAppPaymentTable.State.WAITING_FOR_AUTHORIZATION)
++    assertThat(SignalDatabase.inAppPayments.hasDonationInProgress()).isFalse()
++  }
++
+   // region getLatestInAppPaymentByType
+ 
+   @Test
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/database/MegaphoneDatabaseTest.kt b/app/src/test/java/org/thoughtcrime/securesms/database/MegaphoneDatabaseTest.kt
+index 72351615..33836dd4 100644
+--- a/app/src/test/java/org/thoughtcrime/securesms/database/MegaphoneDatabaseTest.kt
++++ b/app/src/test/java/org/thoughtcrime/securesms/database/MegaphoneDatabaseTest.kt
+@@ -46,6 +46,17 @@ class MegaphoneDatabaseTest {
+     jdbcDatabase.close()
+   }
+ 
++  @Test
++  fun `completed donation reminder stays completed after upgrade`() {
++    jdbcDatabase.execSQL("INSERT INTO megaphone (event, interaction_count, last_interaction_timestamp, first_visible, last_visible, finished) VALUES ('donate_molly', 0, 0, 1, 1, 1)")
++
++    db.insert(listOf(Megaphones.Event.DONATE_MOLLY))
++
++    val record = db.getAllAndDeleteMissing().single()
++    assertThat(record.event).isEqualTo(Megaphones.Event.DONATE_MOLLY)
++    assertThat(record.finished).isTrue()
++  }
++
+   @Test
+   fun `insert adds events`() {
+     db.insert(listOf(Megaphones.Event.PINS_FOR_ALL, Megaphones.Event.NOTIFICATIONS))
+diff --git a/app/src/test/java/org/thoughtcrime/securesms/megaphone/RemoteMegaphoneRepositoryTest.kt b/app/src/test/java/org/thoughtcrime/securesms/megaphone/RemoteMegaphoneRepositoryTest.kt
+index ce471526..69027700 100644
+--- a/app/src/test/java/org/thoughtcrime/securesms/megaphone/RemoteMegaphoneRepositoryTest.kt
++++ b/app/src/test/java/org/thoughtcrime/securesms/megaphone/RemoteMegaphoneRepositoryTest.kt
+@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.megaphone
+ import android.app.Application
+ import android.net.Uri
+ import assertk.assertThat
++import assertk.assertions.isEqualTo
+ import assertk.assertions.isNotNull
+ import assertk.assertions.isNull
+ import io.mockk.clearMocks
+@@ -128,6 +129,18 @@ class RemoteMegaphoneRepositoryTest {
+     assertThat(record).isNotNull()
+   }
+ 
++  @Test
++  fun donationPromptsAreSkippedWithoutHidingOtherRemotePrompts() {
++    val primaryDonation = megaphone(id = 1, primaryActionId = RemoteMegaphoneRecord.ActionId.DONATE)
++    val secondaryDonation = megaphone(id = 2, secondaryActionId = RemoteMegaphoneRecord.ActionId.DONATE)
++    val conditionalDonation = megaphone(id = 3, conditionalId = "standard_donate")
++    val other = megaphone(id = 4)
++    every { remoteMegaphoneTable.getPotentialMegaphonesAndClearOld(any()) } returns
++      listOf(primaryDonation, secondaryDonation, conditionalDonation, other)
++
++    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow(0)).isEqualTo(other)
++  }
++
+   companion object {
+     private val now = LocalDateTime.of(2021, 11, 5, 12, 0)
+ 
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/recipients/Recipient_getChatColorsTest.kt b/app/src/test/java/org/thoughtcrime/securesms/recipients/Recipient_getChatColorsTest.kt
 index 67d4b7d9..715d2344 100644
 --- a/app/src/test/java/org/thoughtcrime/securesms/recipients/Recipient_getChatColorsTest.kt

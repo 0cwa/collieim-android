@@ -383,12 +383,17 @@ def assemble(repo, config_path, worktree, scope=None, base=None, profile=None):
         raise forest.ForestError('keep_mechanical paths changed during resolution: '
                                 + ', '.join(sorted(changed_kept)))
     if selection and selection['fork_series']:
-        for patch, metadata, expected_layer_tree in fork_profiles.fork_layers(repo, selection):
+        for patch, metadata, expected_layer_tree in fork_profiles.fork_layers(repo, selection, check_target=not selection.get('icon_overlay')):
             _, fork_applied = apply_resolutions(repo, destination, actual, [(patch, metadata)], existing=True)
             applied.extend(fork_applied)
             actual = forest.git(destination, 'rev-parse', 'HEAD^{tree}')
             if actual != expected_layer_tree:
                 raise forest.ForestError('replayed fork layer tree differs')
+    if selection and selection.get('icon_overlay'):
+        patch, metadata, _ = fork_profiles.continued_icon(repo, selection)
+        _, icon_applied = apply_resolutions(repo, destination, actual, [(patch, metadata)], existing=True)
+        applied.extend(icon_applied)
+        actual = forest.git(destination, 'rev-parse', 'HEAD^{tree}')
     if actual != expected:
         raise forest.ForestError(f'final tree mismatch: expected {expected}, got {actual}')
     verify_complete.clean_worktree(destination)

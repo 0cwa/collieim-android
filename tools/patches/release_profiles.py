@@ -11,6 +11,7 @@ import fork_test_sources
 NAMES = {'molly-minimal', 'molly-continued', 'molly-foss-continued',
          'collie', 'collie-foss'}
 FOSS = {'molly-foss-continued', 'collie-foss'}
+CONTINUED_ICON = {'molly-continued', 'molly-foss-continued'}
 PORT_SERIES = 'patches/ports/signal-8.33.2/series'
 FORK_ROOT = 'patches/forks/signal-foss'
 FIREBASE = FORK_ROOT + '/firebase-free-build/series'
@@ -110,11 +111,14 @@ def select(config, name, repo='.'):
     if not isinstance(entry, dict):
         raise ProfileError('release profile is not configured: ' + name)
     required = {'base_series', 'base_checkpoint', 'base_tree', 'fork_series', 'target_tree', 'firebase_free'}
-    if set(entry) != required:
+    if set(entry) not in (required, required | {'icon_overlay'}):
         raise ProfileError('profile must specify exactly: ' + ', '.join(sorted(required)))
     for field in ('base_checkpoint', 'base_tree', 'target_tree'):
         if not isinstance(entry[field], str) or not re.fullmatch(r'[0-9a-f]{40}', entry[field]):
             raise ProfileError(field + ' must be a full lowercase tree ID')
+    overlay = entry.get('icon_overlay')
+    if 'icon_overlay' in entry and (name not in CONTINUED_ICON or overlay != COLLIE_ICON):
+        raise ProfileError('invalid Continued icon overlay')
     boundary, expected_fork, expected_free = POLICY[name]
     if entry['base_series'] != PORT_SERIES:
         raise ProfileError('base_series does not match the port series')
@@ -130,7 +134,7 @@ def select(config, name, repo='.'):
     base_tests = config['android'].get('tests')
     if not isinstance(base_tests, list) or not base_tests or any(not isinstance(x, str) or not x for x in base_tests):
         raise ProfileError('android.tests must be a nonempty list of Gradle arguments')
-    if fork:
+    if fork or overlay:
         fork_source = config.get('fork_source')
         if not isinstance(fork_source, dict) or set(fork_source) != {'url', 'head'}:
             raise ProfileError('fork profiles require a fork_source URL and head pin')
@@ -142,8 +146,9 @@ def select(config, name, repo='.'):
     selected.pop('profiles', None)
     selected['port']['series'] = entry['base_series']
     selected['target_tree'] = entry['target_tree']
-    selected['android']['tests'] = derived_tests(repo, base_tests, fork)
-    device_sources = instrumentation_sources(repo, fork)
+    test_layers = fork + ([COLLIE_ICON] if overlay else [])
+    selected['android']['tests'] = derived_tests(repo, base_tests, test_layers)
+    device_sources = instrumentation_sources(repo, test_layers)
     if device_sources and name not in ('collie', 'collie-foss'):
         raise ProfileError('fork instrumentation sources require a profile with a device test gate')
     selected['_profile'] = {'name': name, 'base_checkpoint': entry['base_checkpoint'],
@@ -152,7 +157,9 @@ def select(config, name, repo='.'):
                             'app': dict(zip(('title', 'file_name', 'package_id'), APP[name]))}
     if device_sources:
         selected['_profile']['instrumentation_sources'] = device_sources
-    if fork:
+    if overlay:
+        selected['_profile']['icon_overlay'] = COLLIE_ICON
+    if fork or overlay:
         selected['_profile']['fork_source'] = copy.deepcopy(fork_source)
         selected['_profile']['signal_commit'] = config['signal']['commit']
     fingerprint = hashlib.sha256(json.dumps(selected, sort_keys=True, separators=(',', ':')).encode()).hexdigest()

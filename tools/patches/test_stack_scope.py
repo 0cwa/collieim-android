@@ -53,6 +53,27 @@ class ScopeTests(unittest.TestCase):
                      'docs/OTHER.md', 'tools/patches/build.py.extra'):
             self.assertFalse(scope.allowed('forks', path), path)
 
+    def test_release_profiles_allow_only_reviewed_changes(self):
+        names = ('molly-minimal', 'molly-continued', 'molly-foss-continued', 'collie', 'collie-foss')
+        reviewed = {'fork_source': {'url': 'source', 'head': 'a' * 40},
+                    'profiles': {name: {'target_tree': 'b' * 40, 'firebase_free': False} for name in names}}
+        current = copy.deepcopy(reviewed)
+        for name in ('molly-continued', 'molly-foss-continued'):
+            current['profiles'][name]['icon_overlay'] = scope.ICON_OVERLAY
+        for name in names[1:]:
+            current['profiles'][name]['target_tree'] = 'c' * 40
+        scope.check_release_profiles(reviewed, current)
+        for change in ('minimal', 'field', 'source', 'extra', 'overlay', 'target'):
+            candidate = copy.deepcopy(current)
+            if change == 'minimal': candidate['profiles']['molly-minimal']['target_tree'] = 'c' * 40
+            if change == 'field': candidate['profiles']['collie']['firebase_free'] = True
+            if change == 'source': candidate['fork_source']['head'] = 'd' * 40
+            if change == 'extra': candidate['profiles']['extra'] = {}
+            if change == 'overlay': candidate['profiles']['molly-continued']['icon_overlay'] = 'wrong'
+            if change == 'target': candidate['profiles']['collie']['target_tree'] = 'invalid'
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                scope.check_release_profiles(reviewed, candidate)
+
     def test_locale_evidence_allowlist_does_not_admit_other_files(self):
         prefix = 'patches/ports/signal-8.33.2/report-evidence/'
         for scope_name in ('release', 'followups'):

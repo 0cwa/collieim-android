@@ -47,8 +47,9 @@ class ForkProfilesTests(unittest.TestCase):
         for label in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes', 'collie-icon', 'collie-branding'):
             directory = self.root / label
             directory.mkdir()
-            (self.repo / 'app').write_text(label + '\n')
-            self.git('add', 'app')
+            path = 'icon' if label == 'collie-icon' else 'app'
+            (self.repo / path).write_text(label + '\n')
+            self.git('add', path)
             inspired = label == 'firebase-free-build'
             ours = label in ('retention-controls-fixes', 'collie-icon', 'collie-branding')
             if inspired or ours:
@@ -112,6 +113,35 @@ class ForkProfilesTests(unittest.TestCase):
         single = dict(self.selection, fork_series=[release_profiles.FIREBASE], target_tree=self.data['layers'][0]['after_tree'])
         self.assertEqual(len(fork_profiles.fork_layers(self.repo, single)), 1)
 
+    def test_continued_overlay_keeps_each_existing_prefix(self):
+        for count in (0, 1):
+            base = self.data['base_tree'] if not count else self.data['layers'][0]['after_tree']
+            self.git('read-tree', base)
+            (self.repo / 'icon').write_text('collie-icon\n')
+            self.git('add', 'icon')
+            expected = self.git('write-tree')
+            selected = dict(self.selection, fork_series=[release_profiles.FIREBASE][:count],
+                            icon_overlay=release_profiles.COLLIE_ICON, target_tree=expected)
+            self.assertEqual(fork_profiles.materialize_continued_icon(self.repo, selected), expected)
+            self.assertEqual(self.git('diff-tree', '--no-commit-id', '--name-only', '-r', base, expected), 'icon')
+            with self.assertRaisesRegex(forest.ForestError, 'source tree differs'):
+                fork_profiles.materialize_continued_icon(self.repo, dict(selected, target_tree='0' * 40))
+            with self.assertRaisesRegex(forest.ForestError, 'invalid Continued'):
+                fork_profiles.continued_icon(self.repo, dict(selected, icon_overlay='wrong'))
+
+    def test_preparation_handles_a_single_foss_continued_profile(self):
+        selection = dict(self.selection, fork_series=[release_profiles.FIREBASE],
+                         icon_overlay=release_profiles.COLLIE_ICON)
+        config = {'profiles': {'molly-foss-continued': {'fork_series': [release_profiles.FIREBASE], 'icon_overlay': release_profiles.COLLIE_ICON}}}
+        with patch.object(fork_profiles.verify_source_bundles, 'verify') as verify, \
+             patch.object(release_profiles, 'select', return_value=(config, selection)), \
+             patch.object(fork_profiles, 'fork_layers') as layers, \
+             patch.object(fork_profiles, 'materialize_continued_icon') as overlay:
+            fork_profiles.prepare_profile_trees(self.repo, config)
+        verify.assert_called_once_with(self.repo, None)
+        layers.assert_called_once_with(self.repo, selection, check_target=False)
+        overlay.assert_called_once_with(self.repo, selection)
+
     def test_rejects_wrong_pins_order_bytes_and_prerequisites(self):
         original = copy.deepcopy(self.data)
         cases = [
@@ -170,6 +200,18 @@ class ForkProfilesTests(unittest.TestCase):
             derived.assert_called_once_with(self.repo, [':app:test'], expected)
             self.assertEqual(selected['fork_series'], expected)
             self.assertEqual(selected['app']['package_id'], 'im.collie.app')
+            entry['icon_overlay'] = release_profiles.COLLIE_ICON
+            if name in release_profiles.CONTINUED_ICON:
+                with patch.object(release_profiles, 'derived_tests', return_value=[':app:test']):
+                    _, selected = release_profiles.select(config, name, self.repo)
+                self.assertEqual(selected['icon_overlay'], release_profiles.COLLIE_ICON)
+            else:
+                with self.assertRaisesRegex(ValueError, 'invalid Continued icon overlay'):
+                    release_profiles.select(config, name, self.repo)
+            entry['icon_overlay'] = 'wrong'
+            with self.assertRaisesRegex(ValueError, 'invalid Continued icon overlay'):
+                release_profiles.select(config, name, self.repo)
+            del entry['icon_overlay']
             entry['tests'] = [':app:test']
             with self.assertRaisesRegex(ValueError, 'exactly'):
                 release_profiles.select(config, name, self.repo)

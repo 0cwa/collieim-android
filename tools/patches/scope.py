@@ -3,6 +3,7 @@
 import argparse
 import copy
 import json
+from pathlib import Path
 import subprocess
 import re
 import sys
@@ -209,8 +210,8 @@ MAIN_PROJECTION_EXCEPTIONS = frozenset({
 
 
 # Exact audited main-preservation and portability entries; includes absence and mode.
-MAIN_CLEAN_ENTRIES = {'.github/FUNDING.yml': '100644 blob 11753b3922973457294af7b56b15e331ba0727c0', '.github/workflows/sync.yml': '100644 blob bdf031c73da6958ebdc9b0c6bebaab544f17044e', '.github/workflows/tagrelease.yml': '100644 blob 1ac9505d768d2d735f99f3617ce7895ff6c1779d', 'README.md': '100644 blob 8683baec492bb93941f1d79e1d35ebf5fde1cae5', 'SECURITY.md': '100644 blob b6cf6842d3bfad6e695f0a557e52ce0f9ccbfa11', 'assets/badge_obtainium.png': '100644 blob 6972dfce0c53c771613eac3b39f117c6286e86ff', 'assets/collie-foreground.svg': '100644 blob 84a52ead814cd088baca5872220965b3c2dce829', 'assets/collie-icon.svg': '100644 blob e25657dfeea8d446b8e72de14235241367841cbb', 'docs/PORT-REPORT.md': '100644 blob 747b2ee92f0ff3d30d892a3fb94933ad7dfd08bd', 'patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-probe.py': '100644 blob 38663e381bc82a783e43f1cd7728d9d76e370aa2', 'patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-readme.md': '100644 blob 7931f5846e361e26f8017d56c7a13a8f3b196be1', 'patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-resource-probe.py': '100644 blob b2f37a8d1076b1d0e983d413b55384ddad4b19dd', 'patches/ports/signal-8.33.2/report-evidence/locale-cohort-two-resource.log': '100644 blob d8658aed6c8a3f48464a832c71151a036446c6bf', 'patches/ports/signal-8.33.2/report-evidence/locale-remaining-contracts.log': '100644 blob 629b5a9eaadfedb948784f88b10db7585f79a561', 'patches/ports/signal-8.33.2/report-evidence/locale-remaining-readme.md': '100644 blob 55ca274dd01aeeabd646fed123c57c788e4a643f', 'patches/ports/signal-8.33.2/report-evidence/locale-remaining-resource.log': '100644 blob 1274898e32c64371cfcde44ed8283b6d0e5e4bd9', 'patches/ports/signal-8.33.2/report-evidence/locale-resource-probe.log': '100644 blob 860ee298a3464da794e6df2acd15433f458ddea6', 'patches/ports/signal-8.33.2/report-evidence/locale-resource-probe.md': '100644 blob 02022af680729f809d25e1ae21659b813c91755e', 'patches/ports/signal-8.33.2/report-evidence/locale-resource-probe.py': '100644 blob 85f65dc1892f65466dd960155f5ba41121a383d6', 'patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.md': '100644 blob 864ca61436f0af9dcc22dd16321df68632696a93', 'patches/ports/signal-8.33.2/report-evidence/locale-revert-cohort.py': '100644 blob 47526bd3ad22424a71eb2f689223dad33b8a3f5d', 'patches/ports/signal-8.33.2/report-evidence/post-format-README.md': '100644 blob e21f6a282e1207360bc18afc9862b04a1abc1ddc', 'patches/ports/signal-8.33.2/report-evidence/post-format-classify.py': '100644 blob b1215bb6d68071faeeeaf2e0d67d97ce32da7a63', 'patches/ports/signal-8.33.2/report-evidence/post-format-probe.py': '100644 blob a9e04fd79dc7ee9b3ef3517003c706b058a634e6', 'patches/ports/signal-8.33.2/report-evidence/post-format-translation-xml-proof.py': '100644 blob 17b0840733244e57310f3b3f9e3dc65ea41642ab', 'patches/ports/signal-8.33.2/report-evidence/receipts.md': '100644 blob 89e2fd5b7a6e527f2d802dceafe14fbaa82c59dd', 'patches/ports/signal-8.33.2/report-metadata.json': '100644 blob 5bab057aa66fecb766102cc3d5613c9034b06318', 'pkcs11.config': ''}
-MAIN_SCOPE_FILES = frozenset(['.github/workflows/molly-patch-release.yml', 'tools/patches/preflight.sh', 'tools/patches/release.py', 'tools/patches/scope.py', 'tools/patches/test_ci_scope_mapping.py', 'tools/patches/test_preflight.py', 'tools/patches/test_prepare_port_report.py', 'tools/patches/test_release.py', 'tools/patches/test_stack_scope.py'])
+MAIN_CLEAN_ENTRIES = json.loads((Path(__file__).parent / 'main-clean-entries.json').read_text())
+MAIN_SCOPE_FILES = frozenset(['tools/patches/main-clean-entries.json', 'tools/patches/pins.py', '.github/workflows/molly-patch-release.yml', 'tools/patches/preflight.sh', 'tools/patches/release.py', 'tools/patches/scope.py', 'tools/patches/test_ci_scope_mapping.py', 'tools/patches/test_preflight.py', 'tools/patches/test_prepare_port_report.py', 'tools/patches/test_release.py', 'tools/patches/test_stack_scope.py'])
 INITIAL_MAIN = '2d537903ec2b3f9f24d40208d164651c989c159d'
 
 def check_trusted_integration_lower(repo, integration_lower):
@@ -353,7 +354,7 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
             if not all(exists(head, addition_path + '/' + name) for name in addition_files(layer)):
                 raise ValueError('additions phase is incomplete')
     if scope == 'forks':
-        for path in ('tools/patches/scope.py', 'tools/patches/fork_profiles.py',
+        for path in ('tools/patches/main-clean-entries.json', 'tools/patches/scope.py', 'tools/patches/fork_profiles.py',
                      'tools/patches/line_origin.py', 'tools/patches/port_report.py',
                      'tools/patches/release.py'):
             if git(repo, 'rev-parse', base + ':' + path).strip() != git(repo, 'rev-parse', head + ':' + path).strip():

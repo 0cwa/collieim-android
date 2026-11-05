@@ -377,17 +377,30 @@ jobs:
           test -s "$ANDROID_AVD_HOME/instrumentation.ini"
           source tools/patches/emulator_startup.sh
           check_avd_disk_space
-          "$ANDROID_HOME/emulator/emulator" -avd instrumentation -no-window -no-audio -no-boot-anim -gpu swangle &
-          emulator_pid=$!
+          # Start a foreground traced server before the emulator or any adb client.
+          # The wrapper refuses to replace an existing server; this job uses a fresh runner.
+          python3 tools/patches/adb_trace_server.py "$RUNNER_TEMP/instrumentation" &
+          adb_trace_pid=$!
+          emulator_pid=
           diagnostics_pid=
           cleanup() {
             if [[ -n "$diagnostics_pid" ]]; then
               kill "$diagnostics_pid" 2>/dev/null || true
               wait "$diagnostics_pid" || true
             fi
-            kill "$emulator_pid" 2>/dev/null || true
+            if [[ -n "$emulator_pid" ]]; then kill "$emulator_pid" 2>/dev/null || true; fi
+            kill "$adb_trace_pid" 2>/dev/null || true
+            wait "$adb_trace_pid" || true
           }
           trap cleanup EXIT
+          for attempt in {1..50}; do
+            kill -0 "$adb_trace_pid" 2>/dev/null || { echo 'Traced ADB server exited' >&2; exit 1; }
+            if (echo > /dev/tcp/127.0.0.1/5037) 2>/dev/null; then break; fi
+            sleep .1
+          done
+          (echo > /dev/tcp/127.0.0.1/5037) 2>/dev/null || { echo 'Traced ADB server did not start' >&2; exit 1; }
+          "$ANDROID_HOME/emulator/emulator" -avd instrumentation -no-window -no-audio -no-boot-anim -gpu swangle &
+          emulator_pid=$!
           wait_for_emulator_boot "$emulator_pid"
           # This fresh CI emulator contains synthetic test data only; do not use real accounts.
           python3 tools/patches/instrumentation_diagnostics.py "$RUNNER_TEMP/instrumentation" emulator-5554 &

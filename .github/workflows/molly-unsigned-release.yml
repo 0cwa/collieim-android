@@ -119,6 +119,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
+      - name: Free space for the instrumentation emulator
+        run: |
+          # Hosted runners are disposable; retain their Android SDK and Java tools.
+          df -h "$RUNNER_TEMP"
+          sudo rm -rf /usr/share/dotnet /usr/share/swift /usr/local/.ghcup /usr/local/julia*
+          df -h "$RUNNER_TEMP"
       - name: Check out the exact head
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -163,11 +169,12 @@ jobs:
           test -w /dev/kvm || sudo chmod a+rw /dev/kvm
           echo 'no' | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd -n instrumentation -k 'system-images;android-35;google_apis;x86_64' --force
           test -s "$ANDROID_AVD_HOME/instrumentation.ini"
+          source tools/patches/emulator_startup.sh
+          check_avd_disk_space
           "$ANDROID_HOME/emulator/emulator" -avd instrumentation -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
           emulator_pid=$!
           trap 'kill "$emulator_pid" 2>/dev/null || true' EXIT
-          timeout 300 adb wait-for-device
-          timeout 300 bash -c 'until [[ "$(adb shell getprop sys.boot_completed | tr -d "\r")" == 1 ]]; do sleep 2; done'
+          wait_for_emulator_boot "$emulator_pid"
           tools/patches/instrumentation_gate.sh "$RUNNER_TEMP/molly-instrumentation" "$RUNNER_TEMP/instrumentation" '${{ matrix.profile }}'
       - name: Upload instrumentation results
         if: always()

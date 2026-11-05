@@ -46,6 +46,8 @@ class ScopeMappingTests(unittest.TestCase):
         tools = self.repo / 'tools/patches'
         tools.mkdir(parents=True)
         shutil.copyfile(WORKFLOW.parents[2] / 'tools/patches/check_collie_scope.py', tools / 'check_collie_scope.py')
+        for name in ('main_snapshot.py', 'scope.py', 'main-clean-entries.json'):
+            shutil.copyfile(WORKFLOW.parents[2] / 'tools/patches' / name, tools / name)
         self.env = dict(os.environ, PATH=str(wrapper) + ':' + os.environ['PATH'],
                         TEST_TRUSTED_REPO=str(self.repo), GITHUB_SERVER_URL='https://github.example',
                         GITHUB_REPOSITORY='trusted/repo')
@@ -180,6 +182,30 @@ class ScopeMappingTests(unittest.TestCase):
                 result = self.run_mapping('workflow_dispatch', head_ref=ref)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(result.stdout.strip(), 'forks ' + self.lower)
+
+    def test_dispatch_main_before_and_after_profiles(self):
+        self.mapping = self.mapping.replace('7f0eb01a0ab472deeef3b528e7f508425044fa6a', self.lower)
+        self.git('checkout', '-q', '--orphan', 'clean-main-dispatch')
+        self.git('rm', '-q', '-rf', '.')
+        (self.repo / 'README.md').write_text('initial')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'initial')
+        (self.repo / 'molly-build.json').write_text('{}')
+        self.git('add', 'molly-build.json')
+        self.git('commit', '-qm', 'base')
+        base = self.git('rev-parse', 'HEAD').strip()
+        result = self.run_mapping('workflow_dispatch', head_ref='main')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(result.stdout.strip().startswith('main-snapshot-transition '))
+        (self.repo / 'molly-build.json').write_text('{"profiles": {}}')
+        self.git('add', 'molly-build.json')
+        self.git('commit', '-qm', 'profiles')
+        (self.repo / 'README.md').write_text('later documentation')
+        self.git('add', 'README.md')
+        self.git('commit', '-qm', 'docs')
+        result = self.run_mapping('workflow_dispatch', head_ref='main')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip().splitlines()[-1], 'main-snapshot ' + base)
 
 
 if __name__ == '__main__':

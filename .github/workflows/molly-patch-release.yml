@@ -85,6 +85,13 @@ jobs:
             esac
           elif [[ "$EVENT_NAME" == workflow_dispatch ]]; then
             case "$HEAD_REF" in
+              main)
+                read -r scope base < <(python3 tools/patches/main_snapshot.py)
+                [[ -n "$scope" && "$base" =~ ^[0-9a-f]{40}$ ]] || { echo 'Could not determine main snapshot base' >&2; exit 1; }
+                integration_lower=7f0eb01a0ab472deeef3b528e7f508425044fa6a
+                git fetch --no-tags "$trusted_url" "$integration_lower"
+                [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$integration_lower" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
+                main_snapshot=1 ;;
               stack/1-patch-pipeline) scope=pipeline; base_ref=stack/0-molly-8.19.2-4 ;;
               stack/2-molly-as-patchset) scope=switch; base_ref=stack/1-patch-pipeline ;;
               stack/3-signal-8.33.2) scope=release; base_ref=stack/2-molly-as-patchset ;;
@@ -96,7 +103,9 @@ jobs:
               feature/collie-donation-pr17-126352) scope=forks; base_ref=feature/collie-theme-pr17-126352; collie_stack=1 ;;
               *) echo "Unknown branch: $HEAD_REF" >&2; exit 1 ;;
             esac
-            if [[ ${collie_stack:-} == 1 ]]; then
+            if [[ ${main_snapshot:-} == 1 ]]; then
+              : # The snapshot base was selected from trusted main first-parent history.
+            elif [[ ${collie_stack:-} == 1 ]]; then
               git fetch --no-tags "$trusted_url" "refs/heads/$base_ref"
               immediate_base=$(git rev-parse --verify 'FETCH_HEAD^{commit}')
               check_collie_base "$immediate_base"
@@ -110,7 +119,7 @@ jobs:
           if [[ -n ${immediate_base:-} ]]; then
             python3 tools/patches/check_collie_scope.py --base "$immediate_base"
           fi
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-transition ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           scope_extra=()
@@ -122,7 +131,7 @@ jobs:
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-transition ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
             python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"
@@ -131,7 +140,7 @@ jobs:
           fi
           if [[ "$scope" == pipeline || "$scope" == main-docs ]]; then echo 'profile=false' >> "$GITHUB_OUTPUT"; else echo 'profile=true' >> "$GITHUB_OUTPUT"; fi
           # The release line builds every named release profile; other branches build their one configuration.
-          if [[ "$scope" == forks ]]; then
+          if [[ "$scope" == forks || "$scope" == main-snapshot ]]; then
             echo 'profiles=["molly-minimal","molly-continued","molly-foss-continued","collie","collie-foss"]' >> "$GITHUB_OUTPUT"
           else
             echo 'profiles=[""]' >> "$GITHUB_OUTPUT"
@@ -358,7 +367,7 @@ jobs:
   instrumentation:
     name: Instrumentation on reconstructed ${{ matrix.profile }}
     needs: [scope, source-proof]
-    if: needs.scope.outputs.stack_scope == 'forks'
+    if: needs.scope.outputs.stack_scope == 'forks' || needs.scope.outputs.stack_scope == 'main-snapshot'
     strategy:
       fail-fast: false
       matrix:
@@ -397,7 +406,7 @@ jobs:
           python3 tools/patches/prepare_port_report.py
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-instrumentation" --report "$RUNNER_TEMP/instrumentation/source.json" \
-            --scope forks --base '${{ needs.scope.outputs.base }}' "${scope_extra[@]}" --profile '${{ matrix.profile }}'
+            --scope '${{ needs.scope.outputs.stack_scope }}' --base '${{ needs.scope.outputs.base }}' "${scope_extra[@]}" --profile '${{ matrix.profile }}'
           python3 tools/patches/build.py native-prepare --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
           python3 tools/patches/build.py native-build --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
           python3 tools/patches/build.py native-integrate --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'

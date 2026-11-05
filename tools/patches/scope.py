@@ -199,7 +199,7 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = '27adcb6ef24f6eaa419e8a1de21b0785ff4eef35'
+MAIN_CLEAN_ENTRIES_BLOB = '1066d71abc4845441821291b403dcb6420a00f55'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -252,7 +252,7 @@ def check_clean_projection(repo, candidate, lower, allow_main_docs=False):
             raise ValueError('audited integration entry differs: ' + path)
 
 
-def check_main_transition(repo, base, head, integration_lower):
+def check_main_transition(repo, base, head, integration_lower, allow_main_docs=False):
     check_trusted_integration_lower(repo, integration_lower)
     actual_base = git(repo, 'rev-parse', '--verify', base + '^{commit}').decode().strip()
     if actual_base != INITIAL_MAIN:
@@ -260,7 +260,7 @@ def check_main_transition(repo, base, head, integration_lower):
     if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
         raise ValueError('main base is not an ancestor of transition head')
-    check_clean_projection(repo, head, integration_lower)
+    check_clean_projection(repo, head, integration_lower, allow_main_docs=allow_main_docs)
     # Verify the whole historic stack against its pinned source checkpoints.
     candidates = git(repo, 'rev-list', '--ancestry-path', MOLLY + '..' + integration_lower).decode().splitlines()
     for candidate in candidates:
@@ -285,19 +285,28 @@ def check_main_docs(repo, base, head):
     return {'scope': 'main-docs', 'profile_present': False, 'port_present': False}
 
 
-def check_main_integration(repo, base, head, integration_lower):
+def check_main_integration(repo, base, head, integration_lower, allow_main_docs=False):
     check_clean_projection(repo, base, integration_lower, allow_main_docs=True)
     for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')):
         path = raw.decode('utf-8', 'surrogateescape')
-        if mutable_main_documentation(path):
+        if mutable_main_documentation(path) and not allow_main_docs:
             raise ValueError('main documentation changed: ' + path)
     # Compare the complete tree entries, including mode and absence.
     for path in MAIN_PROJECTION_EXCEPTIONS:
-        if git(repo, 'ls-tree', base, '--', path) != git(repo, 'ls-tree', head, '--', path):
+        if not (allow_main_docs and mutable_main_documentation(path)) and git(repo, 'ls-tree', base, '--', path) != git(repo, 'ls-tree', head, '--', path):
             raise ValueError('main projection changed: ' + path)
 
 
 def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
+    main_snapshot = scope == 'main-snapshot'
+    if scope == 'main-snapshot-transition':
+        if integration_lower is None:
+            raise ValueError('main snapshot requires pinned release base')
+        return check_main_transition(repo, base, head, integration_lower, allow_main_docs=True)
+    if main_snapshot:
+        if integration_lower is None:
+            raise ValueError('main snapshot requires pinned release base')
+        scope = 'forks'
     if scope == 'main-transition':
         if integration_lower is None:
             raise ValueError('main transition requires pinned release base')
@@ -310,7 +319,7 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
         if scope != 'forks':
             raise ValueError('main integration is supported only for forks scope')
         check_trusted_integration_lower(repo, integration_lower)
-        check_main_integration(repo, base, head, integration_lower)
+        check_main_integration(repo, base, head, integration_lower, allow_main_docs=main_snapshot)
     if scope not in ('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks'):
         raise ValueError('unknown scope')
     if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
@@ -319,7 +328,7 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
     changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')
     for raw in filter(None, changed):
         path = raw.decode('utf-8', 'surrogateescape')
-        if not allowed(scope, path):
+        if not allowed(scope, path) and not (main_snapshot and mutable_main_documentation(path)):
             raise ValueError('path outside scope: ' + path)
     # These are the only workflow exceptions: two deletions and two regular file additions. Signal's APK diff
     # workflow needs a runner that only Signal's organization has, so it would stay queued forever.
@@ -464,7 +473,7 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-docs'))
+    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-docs', 'main-snapshot', 'main-snapshot-transition'))
     parser.add_argument('--base', required=True)
     parser.add_argument('--head', default='HEAD')
     parser.add_argument('--repo', default='.')

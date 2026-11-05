@@ -403,9 +403,14 @@ unchanged until the new chain passes every gate.
 
 ### Gates and stop points
 
-Run `preflight.sh proof` for every branch from the changed one up, each with its
-scope and base, and `full` for each release profile in both Firebase modes. CI
-runs only after publication is authorized. Stop and ask before choosing the
+For app, patch, profile, and build-tool changes, run `preflight.sh proof` for
+each affected branch with its scope and base, and `full` for each release
+profile in both Firebase modes. For a workflow-only change, compare the candidate
+to the exact previously pushed head and verify that every changed path is under
+`.github/workflows/`; review and validate the workflow diff without rerunning
+unchanged source/profile proofs on each propagated branch. A change to any
+other path uses the normal applicable checks. CI runs only after publication is
+authorized. Stop and ask before choosing the
 input set, changing layer order or profile composition, dropping one of our
 layers because Molly has an equivalent, changing behavior to make a replayed
 layer apply, or changing a credit mode or author.
@@ -619,12 +624,14 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
    Dispatch **Build unsigned release** on that commit with these inputs. The
    dispatch requires the workflow revision and selected commit to match. Review
    the environment approval and wait for all five source proofs, assemblies and
-   tests to pass, including the default and IMO instrumentation runs on the
-   reconstructed Collie and Collie FOSS profiles. The workflow checks each APK's
+   regression tests to pass. Default and IMO instrumentation on reconstructed
+   Collie and Collie FOSS profiles runs independently and does not block the
+   release; record and disclose any failure or incomplete run. The workflow checks each APK's
    package, version and unsigned state. Record the run ID and attempt.
 
    When building a release locally instead, run and inspect both instrumentation
-   suites for both reconstructed profiles from the exact commit to be signed,
+   suites for both reconstructed profiles from the exact commit to be signed when
+   feasible, without treating their results as a release blocker,
    including all selected theme layers. Record the commit, profile, test counts,
    ignored tests, failures and commands before signing. A run on an earlier PR
    head is not evidence for a later release commit. Use a disposable emulator

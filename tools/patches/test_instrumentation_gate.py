@@ -20,6 +20,10 @@ class GateTest(unittest.TestCase):
             (scripts / 'build.py').write_text('''import json, os, pathlib, sys
 with open(os.environ['EVENTS'], 'a') as f: f.write('build ' + sys.argv[1] + '\\n')
 root = pathlib.Path(sys.argv[sys.argv.index('--worktree') + 1])
+if not os.environ.get('MISSING_RESULTS'):
+ results = root / 'app/build/outputs/androidTest-results/connected'
+ results.mkdir(parents=True, exist_ok=True)
+ (results / 'current.xml').write_text('<testsuite/>')
 for kind in ('apk/prodWebsite/debug', 'apk/androidTest/prodWebsite/debug'):
  p = root / 'app/build/outputs' / kind
  p.mkdir(parents=True, exist_ok=True)
@@ -44,20 +48,37 @@ if [[ "$*" == 'shell pm list instrumentation' ]]; then
 fi
 ''')
             adb.chmod(0o755)
+            rm = bin_dir / 'rm'
+            rm.write_text('''#!/bin/bash
+if [[ "${FAIL_CLEANUP:-}" == 1 ]]; then exit 1; fi
+exec /usr/bin/rm "$@"
+''')
+            rm.chmod(0o755)
             events = root / 'events'
             env = dict(os.environ, PATH=str(bin_dir) + ':' + os.environ['PATH'], EVENTS=str(events))
+            stale = root / 'reports/default-results/stale.xml'
+            stale.parent.mkdir(parents=True)
+            stale.write_text('<testsuite/>')
             result = subprocess.run(['bash', str(scripts / 'instrumentation_gate.sh'), str(root / 'source'), str(root / 'reports'), 'collie'], env=env, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertFalse(stale.exists())
+            self.assertTrue((stale.parent / 'current.xml').is_file())
             lines = events.read_text().splitlines()
             self.assertEqual([line.split()[0] for line in lines], ['build', 'install', 'install', 'shell', 'discover', 'build', 'install', 'install', 'shell', 'discover', 'discover'])
             self.assertIn('instrumentation', lines[0])
             self.assertIn('instrumentation-imo', lines[5])
-            for flag in ('FAIL_BUILD', 'WRONG_ID', 'FAIL_INSTALL', 'FAIL_RUNNER', 'FAIL_DISCOVERY', 'CI_PACKAGE_ID'):
+            for flag in ('FAIL_CLEANUP', 'FAIL_BUILD', 'WRONG_ID', 'FAIL_INSTALL', 'FAIL_RUNNER', 'FAIL_DISCOVERY', 'CI_PACKAGE_ID', 'MISSING_RESULTS'):
                 with self.subTest(failure=flag):
                     events.unlink(missing_ok=True)
                     bad_env = dict(env, **{flag: 'im.other.app' if flag == 'CI_PACKAGE_ID' else '1'})
                     failed = subprocess.run(['bash', str(scripts / 'instrumentation_gate.sh'), str(root / 'source'), str(root / 'reports'), 'collie'], env=bad_env, capture_output=True, text=True)
                     self.assertNotEqual(failed.returncode, 0, flag)
+                    if flag == 'FAIL_CLEANUP':
+                        self.assertIn('Failed to clean default instrumentation outputs', failed.stderr)
+                        self.assertFalse(events.exists(), 'cleanup failure must stop before any build')
+                    if flag == 'MISSING_RESULTS':
+                        self.assertIn('Failed to copy default instrumentation results', failed.stderr)
+                        self.assertFalse(stale.parent.exists())
                     failed_lines = events.read_text().splitlines() if events.exists() else []
                     self.assertFalse(any('build instrumentation-imo' in line for line in failed_lines), failed_lines)
                     if flag in ('WRONG_ID', 'CI_PACKAGE_ID'):

@@ -39,6 +39,8 @@ elif args[0] == 'logcat':
         print('transport disconnected', file=sys.stderr, flush=True)
         sys.exit(7)
     print('reconnected-log', flush=True)
+    print('11-05 18:08:41 I adbd    : host offline', flush=True)
+    print('11-05 18:08:41 E ShellCommandClient: binder missing', flush=True)
     time.sleep(30)
 elif args[0] == 'get-state':
     if (root / 'hang').exists():
@@ -88,6 +90,10 @@ class DiagnosticsTest(unittest.TestCase):
                 state = (logs / 'device-liveness.txt').read_text()
                 self.assertLessEqual(len(log), 5 * 1024 * 1024)
                 self.assertIn(b'reconnected-log', log)
+                filtered = (logs / 'filtered-lifecycle.txt').read_text()
+                self.assertIn('adbd    : host offline', filtered)
+                self.assertIn('ShellCommandClient: binder missing', filtered)
+                self.assertNotIn('reconnected-log', filtered)
                 self.assertIn('transport disconnected', events)
                 self.assertIn('exit=7', events)
                 self.assertIn('timeout', state)

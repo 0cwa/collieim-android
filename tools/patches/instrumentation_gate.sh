@@ -24,12 +24,18 @@ run_suite() {
   local suite=$1 runner=$2 package=$3
   shift 3
   # Remove old outputs so metadata cannot describe a previous suite or profile.
-  rm -rf -- "$results" "$source_tree/app/build/outputs/apk/prodWebsite/debug" \
-    "$source_tree/app/build/outputs/apk/androidTest/prodWebsite/debug"
+  rm -rf -- "$results" "$report_dir/$suite-results" "$source_tree/app/build/outputs/apk/prodWebsite/debug" \
+    "$source_tree/app/build/outputs/apk/androidTest/prodWebsite/debug" || {
+    echo "Failed to clean $suite instrumentation outputs" >&2
+    return 1
+  }
   local status=0 component
   python3 "$(dirname "$runner_check")/build.py" "$@" --worktree "$source_tree" \
     --report-dir "$report_dir" --profile "$profile" > "$report_dir/$suite.log" 2>&1 || status=$?
-  cp -a -- "$results" "$report_dir/$suite-results" 2>/dev/null || true
+  cp -a -- "$results" "$report_dir/$suite-results" || {
+    echo "Failed to copy $suite instrumentation results" >&2
+    return 1
+  }
   component=$(python3 "$(dirname "$runner_check")/instrumentation_install.py" "$source_tree" "$suite" "$runner") || return 1
   local -a filter=()
   if [[ "$suite" == default ]]; then

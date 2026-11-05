@@ -39,5 +39,5 @@
   "tools/patches/test_preflight.py": "100644 blob df478986318c29eb618288757958a65766fa571f",
   "tools/patches/test_prepare_port_report.py": "100644 blob 8915763d40d3efabdbc5582b80c690bf87287fd9",
   "tools/patches/test_release.py": "100644 blob 56e5981c584ad2d1cada77cb64ce1e973ffbab32",
-  "tools/patches/test_stack_scope.py": "100644 blob 842e163c87067f9c6033f28e5e3aba546a2d7a93"
+  "tools/patches/test_stack_scope.py": "100644 blob 6f5b6c8850cbe37aa69345f3368532a17f13c052"
 }

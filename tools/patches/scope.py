@@ -199,7 +199,7 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = '86e6bde21e0e9f8398840179154ed49649efe9ad'
+MAIN_CLEAN_ENTRIES_BLOB = '92060250e66363fead02d7b15fbb43710b2e41ef'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -336,7 +336,10 @@ def check_main_maintenance(repo, base, head, integration_lower):
 
 
 def check_main_integration(repo, base, head, integration_lower, allow_main_docs=False):
-    check_clean_projection(repo, base, integration_lower, allow_main_docs=True)
+    # Main is the trusted merge base, and its tools and evidence may have
+    # evolved through maintenance PRs after the initial clean integration.
+    # Verify its current source boundary instead of requiring old tool blobs.
+    check_main_maintenance(repo, base, base, integration_lower)
     for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')):
         path = raw.decode('utf-8', 'surrogateescape')
         if mutable_main_documentation(path) and not allow_main_docs:

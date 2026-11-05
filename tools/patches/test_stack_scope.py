@@ -78,8 +78,10 @@ class ScopeTests(unittest.TestCase):
         with mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', {'README.md': entry}), \
              mock.patch.object(scope, 'MAIN_SCOPE_FILES', {'.github/workflows/molly-patch-release.yml',
                                                           '.github/workflows/molly-unsigned-release.yml',
-                                                          'app.txt'}):
+                                                          'app.txt'}), \
+             mock.patch.object(scope, 'check_main_maintenance') as maintained:
             scope.check_main_integration(self.repo, main, head, self.base)
+            maintained.assert_called_with(self.repo, main, main, self.base)
             self.commit('README.md', 'changed readme')
             with self.assertRaisesRegex(ValueError, 'main (projection|documentation) changed'):
                 scope.check_main_integration(self.repo, main, 'HEAD', self.base)
@@ -87,8 +89,6 @@ class ScopeTests(unittest.TestCase):
             self.commit('pkcs11.config', 'unexpected')
             with self.assertRaisesRegex(ValueError, 'main projection changed'):
                 scope.check_main_integration(self.repo, main, 'HEAD', self.base)
-            with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
-                scope.check_main_integration(self.repo, head, head, self.base)
 
     def test_mutable_main_documentation_excludes_release_evidence(self):
         for path in ('README.md', 'SECURITY.md', '.github/README.md', 'docs/new-guide.md', 'assets/icon.svg'):

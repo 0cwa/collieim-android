@@ -199,7 +199,7 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = 'feb59259f507fee947489ffa5e252fe8bb033ba5'
+MAIN_CLEAN_ENTRIES_BLOB = 'b027dfb47e95b2dece9ac633b8d44d86fd8cbbc3'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -212,7 +212,10 @@ MAIN_PROJECTION_EXCEPTIONS = frozenset({
 
 # Exact audited main-preservation and portability entries; includes absence and mode.
 MAIN_CLEAN_ENTRIES = json.loads((Path(__file__).parent / 'main-clean-entries.json').read_text())
-MAIN_SCOPE_FILES = frozenset(['tools/patches/main-clean-entries.json', 'tools/patches/pins.py', '.github/workflows/molly-patch-release.yml', 'tools/patches/preflight.sh', 'tools/patches/release.py', 'tools/patches/scope.py', 'tools/patches/test_ci_scope_mapping.py', 'tools/patches/test_preflight.py', 'tools/patches/test_prepare_port_report.py', 'tools/patches/test_release.py', 'tools/patches/test_stack_scope.py'])
+# The validator and pin registry contain the manifest hash, so pinning their
+# own blobs in that manifest would be circular. All other scope files are
+# checked. PR-controlled code makes this an accidental-change check only.
+MAIN_SCOPE_FILES = frozenset(['tools/patches/main-clean-entries.json', 'tools/patches/scope.py', 'tools/patches/pins.py'])
 INITIAL_MAIN = '2d537903ec2b3f9f24d40208d164651c989c159d'
 
 def check_trusted_integration_lower(repo, integration_lower):

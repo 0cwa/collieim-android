@@ -112,6 +112,31 @@ class ScopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
                 scope.check_clean_projection(self.repo, 'HEAD', self.base)
 
+    def test_clean_projection_rejects_scope_tool_and_workflow_changes(self):
+        paths = ('tools/patches/release.py', '.github/workflows/molly-patch-release.yml')
+        for path in paths:
+            self.commit(path, 'reviewed content')
+        reviewed = self.git('rev-parse', 'HEAD').strip()
+        entries = {path: self.git('ls-tree', reviewed, '--', path).strip().split('\t')[0]
+                   for path in paths}
+        entries['.github/workflows/molly-unsigned-release.yml'] = self.git(
+            'ls-tree', reviewed, '--', '.github/workflows/molly-unsigned-release.yml').strip().split('\t')[0]
+        with mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', entries):
+            scope.check_clean_projection(self.repo, reviewed, self.base)
+            for path in paths:
+                with self.subTest(path=path):
+                    self.commit(path, 'unreviewed change')
+                    with self.assertRaisesRegex(ValueError, 'audited integration entry differs'):
+                        scope.check_clean_projection(self.repo, 'HEAD', self.base)
+                    self.git('reset', '--hard', '-q', reviewed)
+
+    def test_scope_validator_requires_independent_trust(self):
+        # A validator cannot authenticate its own code against an attacker who
+        # can edit both that code and its expected hash. The pin is deliberately
+        # an accidental-change gate; trusted CI must load this module elsewhere.
+        self.assertEqual(scope.MAIN_SCOPE_FILES,
+                         {'tools/patches/main-clean-entries.json', 'tools/patches/scope.py', 'tools/patches/pins.py'})
+
     def test_main_docs_scope_is_narrow_and_checks_ancestry(self):
         self.commit('README.md', 'initial documentation')
         base = self.git('rev-parse', 'HEAD').strip()

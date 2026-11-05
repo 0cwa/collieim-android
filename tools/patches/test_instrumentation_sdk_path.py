@@ -28,10 +28,20 @@ class EmulatorPathTest(unittest.TestCase):
                     (bin_dir / name).symlink_to('/usr/bin/' + name)
                 (bin_dir / 'df').write_text('#!/bin/bash\nprintf "Filesystem 1024-blocks Used Available Capacity Mounted on\\nfixture 20000000 1 10000000 1%% /\\n"\n')
                 (bin_dir / 'df').chmod(0o755)
-                for name in ('sudo', 'python3'):
-                    path = bin_dir / name
-                    path.write_text('#!/bin/bash\nexit 0\n')
-                    path.chmod(0o755)
+                sudo = bin_dir / 'sudo'
+                sudo.write_text('#!/bin/bash\nexit 0\n')
+                sudo.chmod(0o755)
+                # The workflow starts a traced server and waits for its socket.
+                # Simulate its lifecycle without binding the host's ADB port.
+                python = bin_dir / 'python3'
+                python.write_text('''#!/bin/bash
+if [[ "$1" == tools/patches/adb_trace_server.py ]]; then
+  touch "$RUNNER_TEMP/fixture-server"
+  exec sleep 30
+fi
+exit 0
+''')
+                python.chmod(0o755)
                 for relative, body in (
                     ('cmdline-tools/latest/bin/avdmanager', 'if [[ ${AVD_CREATE_FAIL:-} == 1 ]]; then exit 0; fi; dir="${ANDROID_AVD_HOME:-$JAVA_USER_HOME/.android/avd}"; mkdir -p "$dir"; echo avd > "$dir/instrumentation.ini"'),
                     ('cmdline-tools/latest/bin/sdkmanager', 'printf \"%s\\n\" \"$*\" >> \"$RUNNER_TEMP/sdkmanager.log\"'),
@@ -55,9 +65,12 @@ class EmulatorPathTest(unittest.TestCase):
                 self.assertEqual(installed.returncode, 0, installed.stderr)
                 self.assertIn('platform-tools', (root / 'sdkmanager.log').read_text())
                 step = workflow_step(workflow, 'Run default and IMO instrumentation on a disposable emulator')
+                step = step.replace('(echo > /dev/tcp/127.0.0.1/5037)', 'test -e "$RUNNER_TEMP/fixture-server"')
                 result = subprocess.run(['/usr/bin/bash', '-e', '-o', 'pipefail', '-c', step], cwd=root,
                                         env=env, text=True, capture_output=True, timeout=10)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                if 'adb_trace_server.py' in step:
+                    self.assertTrue((root / 'fixture-server').exists(), 'traced server did not start')
                 self.assertEqual((root / 'emulator-args').read_text().splitlines(),
                                  ['-avd', 'instrumentation', '-no-window', '-no-audio',
                                   '-no-boot-anim', '-gpu', 'swangle'])

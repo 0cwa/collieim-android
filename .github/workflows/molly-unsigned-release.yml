@@ -28,8 +28,8 @@ env:
   GIT_TERMINAL_PROMPT: '0'
 
 jobs:
+  # Instrumentation remains visible as its own job but does not block APK collection.
   unsigned-release:
-    needs: instrumentation
     environment: unsigned-release
     runs-on: ubuntu-24.04
     timeout-minutes: 360
@@ -62,7 +62,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
-          cache-read-only: true
+          cache-disabled: true
       - name: Prove, build, and test all five profiles
         env:
           VERSION_NAME: ${{ inputs.version_name }}
@@ -70,7 +70,8 @@ jobs:
         run: |
           set -euo pipefail
           unset CI_KEYSTORE_PATH CI_KEYSTORE_PASSWORD CI_KEYSTORE_ALIAS
-          mkdir -p "$RUNNER_TEMP/release-apks" "$RUNNER_TEMP/release-proofs"
+          export GRADLE_USER_HOME="$RUNNER_TEMP/release-gradle-user-home"
+          mkdir -p "$GRADLE_USER_HOME" "$RUNNER_TEMP/release-task-cache" "$RUNNER_TEMP/release-apks" "$RUNNER_TEMP/release-proofs"
           for profile in molly-minimal molly-continued molly-foss-continued collie collie-foss; do
             worktree="$RUNNER_TEMP/source-$profile"
             report="$RUNNER_TEMP/release-proofs/$profile"
@@ -78,8 +79,8 @@ jobs:
             for phase in native-prepare native-build native-integrate sdk; do
               python3 tools/patches/build.py "$phase" --worktree "$worktree" --report-dir "$report" --profile "$profile"
             done
-            python3 tools/patches/build.py assemble-release --worktree "$worktree" --report-dir "$report" --profile "$profile" --release-version-name "$VERSION_NAME" --release-version-code "$VERSION_CODE"
-            python3 tools/patches/build.py test --worktree "$worktree" --report-dir "$report" --profile "$profile"
+            python3 tools/patches/build.py assemble-release --worktree "$worktree" --report-dir "$report" --profile "$profile" --release-version-name "$VERSION_NAME" --release-version-code "$VERSION_CODE" --workers 2 --build-cache --release-cache-dir "$RUNNER_TEMP/release-task-cache"
+            python3 tools/patches/build.py test --worktree "$worktree" --report-dir "$report" --profile "$profile" --workers 2 --build-cache --release-cache-dir "$RUNNER_TEMP/release-task-cache"
             mapfile -t apks < <(find "$worktree/app/build/outputs/apk/prodWebsite/release" -maxdepth 1 -type f -name '*.apk')
             [[ ${#apks[@]} == 1 ]]
             cp -- "${apks[0]}" "$RUNNER_TEMP/release-apks/$profile.apk"

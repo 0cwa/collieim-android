@@ -24,8 +24,10 @@ class EmulatorPathTest(unittest.TestCase):
                 sdk = root / 'sdk'
                 bin_dir = root / 'bin'
                 bin_dir.mkdir()
-                for name in ('bash', 'timeout', 'tr', 'sleep', 'yes', 'mkdir', 'touch'):
+                for name in ('awk', 'bash', 'timeout', 'tr', 'sleep', 'yes', 'mkdir', 'touch'):
                     (bin_dir / name).symlink_to('/usr/bin/' + name)
+                (bin_dir / 'df').write_text('#!/bin/bash\nprintf "Filesystem 1024-blocks Used Available Capacity Mounted on\\nfixture 20000000 1 10000000 1%% /\\n"\n')
+                (bin_dir / 'df').chmod(0o755)
                 for name in ('sudo', 'python3'):
                     path = bin_dir / name
                     path.write_text('#!/bin/bash\nexit 0\n')
@@ -33,7 +35,7 @@ class EmulatorPathTest(unittest.TestCase):
                 for relative, body in (
                     ('cmdline-tools/latest/bin/avdmanager', 'if [[ ${AVD_CREATE_FAIL:-} == 1 ]]; then exit 0; fi; dir="${ANDROID_AVD_HOME:-$JAVA_USER_HOME/.android/avd}"; mkdir -p "$dir"; echo avd > "$dir/instrumentation.ini"'),
                     ('cmdline-tools/latest/bin/sdkmanager', 'printf \"%s\\n\" \"$*\" >> \"$RUNNER_TEMP/sdkmanager.log\"'),
-                    ('emulator/emulator', 'dir="${ANDROID_AVD_HOME:-$HOME/.android/avd}"; if [[ ! -s "$dir/instrumentation.ini" ]]; then echo "Unknown AVD name [instrumentation]" >&2; touch "$RUNNER_TEMP/no-avd"; exit 1; fi; touch "$RUNNER_TEMP/avd-ok"'),
+                    ('emulator/emulator', 'dir="${ANDROID_AVD_HOME:-$HOME/.android/avd}"; if [[ ! -s "$dir/instrumentation.ini" ]]; then echo "Unknown AVD name [instrumentation]" >&2; touch "$RUNNER_TEMP/no-avd"; exit 1; fi; touch "$RUNNER_TEMP/avd-ok"; exec sleep 30'),
                     ('platform-tools/adb', 'if [[ "$*" == *getprop* ]]; then echo 1; exit 0; fi; for i in {1..100}; do [[ -f "$RUNNER_TEMP/no-avd" ]] && exit 124; [[ -f "$RUNNER_TEMP/avd-ok" ]] && exit 0; sleep 0.01; done; exit 124'),
                 ):
                     path = sdk / relative
@@ -42,6 +44,7 @@ class EmulatorPathTest(unittest.TestCase):
                     path.chmod(0o755)
                 gate = root / 'tools/patches/instrumentation_gate.sh'
                 gate.parent.mkdir(parents=True)
+                (gate.parent / 'emulator_startup.sh').write_bytes((ROOT / 'tools/patches/emulator_startup.sh').read_bytes())
                 gate.write_text('#!/bin/bash\ncommand -v adb >/dev/null\n')
                 gate.chmod(0o755)
                 workflow = (ROOT / '.github/workflows' / filename).read_text()

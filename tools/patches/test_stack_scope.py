@@ -81,7 +81,7 @@ class ScopeTests(unittest.TestCase):
                                                           'app.txt'}):
             scope.check_main_integration(self.repo, main, head, self.base)
             self.commit('README.md', 'changed readme')
-            with self.assertRaisesRegex(ValueError, 'main projection changed'):
+            with self.assertRaisesRegex(ValueError, 'main (projection|documentation) changed'):
                 scope.check_main_integration(self.repo, main, 'HEAD', self.base)
             self.git('reset', '--hard', '-q', head)
             self.commit('pkcs11.config', 'unexpected')
@@ -89,6 +89,28 @@ class ScopeTests(unittest.TestCase):
                 scope.check_main_integration(self.repo, main, 'HEAD', self.base)
             with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
                 scope.check_main_integration(self.repo, head, head, self.base)
+
+    def test_mutable_main_documentation_excludes_release_evidence(self):
+        for path in ('README.md', 'SECURITY.md', '.github/README.md', 'docs/new-guide.md', 'assets/icon.svg'):
+            self.assertTrue(scope.mutable_main_documentation(path), path)
+        for path in ('docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md', 'app/src/example.kt'):
+            self.assertFalse(scope.mutable_main_documentation(path), path)
+
+    def test_clean_projection_allows_evolving_main_docs_only_for_integration(self):
+        self.commit('README.md', 'original')
+        reviewed = self.git('rev-parse', 'HEAD').strip()
+        entry = self.git('ls-tree', reviewed, '--', 'README.md').strip().split('\t')[0]
+        self.commit('README.md', 'updated on main')
+        self.commit('docs/new-guide.md', 'new main documentation')
+        scope_files = {'.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml'}
+        with mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', {'README.md': entry}), \
+             mock.patch.object(scope, 'MAIN_SCOPE_FILES', scope_files):
+            with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
+                scope.check_clean_projection(self.repo, 'HEAD', self.base)
+            scope.check_clean_projection(self.repo, 'HEAD', self.base, allow_main_docs=True)
+            self.commit('docs/PORT-REPORT.md', 'tampered port evidence')
+            with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
+                scope.check_clean_projection(self.repo, 'HEAD', self.base, allow_main_docs=True)
 
     def test_clean_projection_rejects_manifest_and_app_tampering(self):
         self.commit('tools/patches/main-clean-entries.json', '{"app.txt":"fake"}')

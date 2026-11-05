@@ -199,7 +199,7 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = 'b027dfb47e95b2dece9ac633b8d44d86fd8cbbc3'
+MAIN_CLEAN_ENTRIES_BLOB = '8f9587ace1b25f6a3c5cbc18176859f55a8d7495'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -224,7 +224,15 @@ def check_trusted_integration_lower(repo, integration_lower):
         raise ValueError('unexpected trusted release-base commit')
 
 
-def check_clean_projection(repo, candidate, lower):
+def mutable_main_documentation(path):
+    # The generated report and pipeline documentation are part of the pinned
+    # port evidence; other public documentation can evolve on trusted main.
+    return (path in {'README.md', 'SECURITY.md', '.github/README.md'} or
+            path.startswith('assets/') or
+            (path.startswith('docs/') and path not in {'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'}))
+
+
+def check_clean_projection(repo, candidate, lower, allow_main_docs=False):
     # The audited tree, not historical ancestry, establishes the clean base.
     manifest = 'tools/patches/main-clean-entries.json'
     entry = git(repo, 'ls-tree', candidate, '--', manifest).decode().strip().split('\t')[0]
@@ -233,9 +241,12 @@ def check_clean_projection(repo, candidate, lower):
     changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', lower, candidate).split(b'\0')
     for raw in filter(None, changed):
         path = raw.decode('utf-8', 'surrogateescape')
-        if path not in MAIN_CLEAN_ENTRIES and path not in MAIN_SCOPE_FILES:
+        if (path not in MAIN_CLEAN_ENTRIES and path not in MAIN_SCOPE_FILES and
+            not (allow_main_docs and mutable_main_documentation(path))):
             raise ValueError('unexpected change to release base: ' + path)
     for path, expected in MAIN_CLEAN_ENTRIES.items():
+        if allow_main_docs and mutable_main_documentation(path):
+            continue
         entry = git(repo, 'ls-tree', candidate, '--', path).decode().strip().split('\t')[0]
         if entry != expected:
             raise ValueError('audited integration entry differs: ' + path)
@@ -275,7 +286,11 @@ def check_main_docs(repo, base, head):
 
 
 def check_main_integration(repo, base, head, integration_lower):
-    check_clean_projection(repo, base, integration_lower)
+    check_clean_projection(repo, base, integration_lower, allow_main_docs=True)
+    for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')):
+        path = raw.decode('utf-8', 'surrogateescape')
+        if mutable_main_documentation(path):
+            raise ValueError('main documentation changed: ' + path)
     # Compare the complete tree entries, including mode and absence.
     for path in MAIN_PROJECTION_EXCEPTIONS:
         if git(repo, 'ls-tree', base, '--', path) != git(repo, 'ls-tree', head, '--', path):
@@ -333,7 +348,7 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
         lower_source = {'switch': MOLLY, 'release': OLD, 'followups': NEW, 'additions': NEW, 'features': NEW, 'forks': NEW}[scope]
         for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', lower_source, base).split(b'\0')):
             path = raw.decode('utf-8', 'surrogateescape')
-            if not metadata(path) and not (integration_lower is not None and path in MAIN_PROJECTION_EXCEPTIONS):
+            if not metadata(path) and not (integration_lower is not None and (path in MAIN_PROJECTION_EXCEPTIONS or mutable_main_documentation(path))):
                 raise ValueError('lower base has incorrect source projection')
         base_profile = git(repo, 'show', base + ':molly-build.json', check=False)
         if scope == 'switch':
@@ -421,7 +436,7 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
     paths = git(repo, 'diff', '--no-renames', '--name-only', '-z', source, head).split(b'\0')
     for raw in filter(None, paths):
         path = raw.decode('utf-8', 'surrogateescape')
-        if not metadata(path) and not (integration_lower is not None and path in MAIN_PROJECTION_EXCEPTIONS):
+        if not metadata(path) and not (integration_lower is not None and (path in MAIN_PROJECTION_EXCEPTIONS or mutable_main_documentation(path))):
             raise ValueError('source projection differs: ' + path)
     probe = subprocess.run(['git', '-C', str(repo), 'rev-parse', head + ':patches/molly'],
                            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)

@@ -129,7 +129,7 @@ class ScopeMappingTests(unittest.TestCase):
         self.mapping = self.mapping.replace('7f0eb01a0ab472deeef3b528e7f508425044fa6a', self.lower)
         result = self.run_mapping('pull_request', 'main', self.variants)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.strip(), 'forks ' + self.variants)
+        self.assertEqual(result.stdout.strip(), 'main-docs ' + self.variants)
         for sha in ('bad', self.unrelated):
             self.assertNotEqual(self.run_mapping('pull_request', 'main', sha).returncode, 0)
         self.git('checkout', '-q', '--detach', self.unrelated)
@@ -156,6 +156,21 @@ class ScopeMappingTests(unittest.TestCase):
         result = self.run_mapping('pull_request', 'main', transition)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.strip(), 'main-docs ' + transition)
+        # Adding release profiles is a fork transition; subsequent docs inherit
+        # profiles from main and must not be misclassified as another transition.
+        (self.repo / 'molly-build.json').write_text('{"profiles": {}}')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'add profiles')
+        profiles_head = self.git('rev-parse', 'HEAD').strip()
+        result = self.run_mapping('pull_request', 'main', transition)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip().splitlines()[-1], 'forks ' + transition)
+        (self.repo / 'README.md').write_text('post-profile documentation')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'post-profile documentation')
+        result = self.run_mapping('pull_request', 'main', profiles_head)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), 'main-docs ' + profiles_head)
         self.git('checkout', '-q', '--detach', self.unrelated)
         self.assertNotEqual(self.run_mapping('pull_request', 'main', transition).returncode, 0)
 

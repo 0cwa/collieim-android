@@ -17,8 +17,15 @@ class ScopeTests(unittest.TestCase):
         self.git('config', 'user.email', 'test@example.invalid')
         self.git('config', 'user.name', 'Test')
         (self.repo / 'app.txt').write_text('original\n')
+        manifest = self.repo / 'tools/patches/main-clean-entries.json'
+        manifest.parent.mkdir(parents=True)
+        manifest.write_text('{}\n')
         self.git('add', '.')
         self.git('commit', '-qm', 'base')
+        pin = self.git('rev-parse', 'HEAD:tools/patches/main-clean-entries.json').strip()
+        patcher = mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES_BLOB', pin)
+        patcher.start()
+        self.addCleanup(patcher.stop)
         self.base = self.git('rev-parse', 'HEAD').strip()
 
     def git(self, *args):
@@ -59,6 +66,9 @@ class ScopeTests(unittest.TestCase):
         self.git('checkout', '-q', '--orphan', 'clean-main')
         self.git('rm', '-q', '-rf', '.')
         (self.repo / 'README.md').write_text('main readme')
+        manifest = self.repo / 'tools/patches/main-clean-entries.json'
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text('{}\n')
         self.git('add', '.')
         self.git('commit', '-qm', 'clean main')
         main = self.git('rev-parse', 'HEAD').strip()
@@ -79,6 +89,12 @@ class ScopeTests(unittest.TestCase):
                 scope.check_main_integration(self.repo, main, 'HEAD', self.base)
             with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
                 scope.check_main_integration(self.repo, head, head, self.base)
+
+    def test_clean_projection_rejects_manifest_and_app_tampering(self):
+        self.commit('tools/patches/main-clean-entries.json', '{"app.txt":"fake"}')
+        self.commit('app.txt', 'malicious')
+        with self.assertRaisesRegex(ValueError, 'audited integration manifest differs'):
+            scope.check_clean_projection(self.repo, 'HEAD', self.base)
 
     def test_clean_projection_rejects_changed_and_extra_files(self):
         self.commit('README.md', 'audited')

@@ -93,6 +93,8 @@ class PrepareReportTests(unittest.TestCase):
             self.assertIn('"${scope_extra[@]}"', job.split('\n\n', 1)[0])
         self.assertEqual(workflow.count('INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}'), 3)
         self.assertEqual(workflow.count('scope_extra+=(--integration-lower "$INTEGRATION_LOWER")'), 3)
+        for job in workflow.split('INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}')[1:]:
+            self.assertLess(job.index('git fetch --no-tags'), job.index('python3 tools/patches/prepare_port_report.py'))
 
     def test_feature_workflow_routes_and_runs_both_profiles(self):
         root = Path(__file__).resolve().parents[2]

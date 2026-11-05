@@ -199,6 +199,7 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
+MAIN_CLEAN_ENTRIES_BLOB = 'feb59259f507fee947489ffa5e252fe8bb033ba5'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -222,6 +223,10 @@ def check_trusted_integration_lower(repo, integration_lower):
 
 def check_clean_projection(repo, candidate, lower):
     # The audited tree, not historical ancestry, establishes the clean base.
+    manifest = 'tools/patches/main-clean-entries.json'
+    entry = git(repo, 'ls-tree', candidate, '--', manifest).decode().strip().split('\t')[0]
+    if entry != '100644 blob ' + MAIN_CLEAN_ENTRIES_BLOB:
+        raise ValueError('audited integration manifest differs')
     changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', lower, candidate).split(b'\0')
     for raw in filter(None, changed):
         path = raw.decode('utf-8', 'surrogateescape')

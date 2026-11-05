@@ -35,7 +35,7 @@ class EmulatorPathTest(unittest.TestCase):
                 for relative, body in (
                     ('cmdline-tools/latest/bin/avdmanager', 'if [[ ${AVD_CREATE_FAIL:-} == 1 ]]; then exit 0; fi; dir="${ANDROID_AVD_HOME:-$JAVA_USER_HOME/.android/avd}"; mkdir -p "$dir"; echo avd > "$dir/instrumentation.ini"'),
                     ('cmdline-tools/latest/bin/sdkmanager', 'printf \"%s\\n\" \"$*\" >> \"$RUNNER_TEMP/sdkmanager.log\"'),
-                    ('emulator/emulator', 'dir="${ANDROID_AVD_HOME:-$HOME/.android/avd}"; if [[ ! -s "$dir/instrumentation.ini" ]]; then echo "Unknown AVD name [instrumentation]" >&2; touch "$RUNNER_TEMP/no-avd"; exit 1; fi; touch "$RUNNER_TEMP/avd-ok"; exec sleep 30'),
+                    ('emulator/emulator', 'printf "%s\\n" "$@" > "$RUNNER_TEMP/emulator-args"; dir="${ANDROID_AVD_HOME:-$HOME/.android/avd}"; if [[ ! -s "$dir/instrumentation.ini" ]]; then echo "Unknown AVD name [instrumentation]" >&2; touch "$RUNNER_TEMP/no-avd"; exit 1; fi; touch "$RUNNER_TEMP/avd-ok"; exec sleep 30'),
                     ('platform-tools/adb', 'if [[ "$*" == *getprop* ]]; then echo 1; exit 0; fi; for i in {1..100}; do [[ -f "$RUNNER_TEMP/no-avd" ]] && exit 124; [[ -f "$RUNNER_TEMP/avd-ok" ]] && exit 0; sleep 0.01; done; exit 124'),
                 ):
                     path = sdk / relative
@@ -58,6 +58,9 @@ class EmulatorPathTest(unittest.TestCase):
                 result = subprocess.run(['/usr/bin/bash', '-e', '-o', 'pipefail', '-c', step], cwd=root,
                                         env=env, text=True, capture_output=True, timeout=10)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual((root / 'emulator-args').read_text().splitlines(),
+                                 ['-avd', 'instrumentation', '-no-window', '-no-audio',
+                                  '-no-boot-anim', '-gpu', 'swangle'])
                 missing_root = root / 'missing'
                 missing_root.mkdir()
                 env.update(RUNNER_TEMP=str(missing_root), AVD_CREATE_FAIL='1')

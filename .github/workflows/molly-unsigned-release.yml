@@ -171,7 +171,7 @@ jobs:
           test -s "$ANDROID_AVD_HOME/instrumentation.ini"
           source tools/patches/emulator_startup.sh
           check_avd_disk_space
-          "$ANDROID_HOME/emulator/emulator" -avd instrumentation -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
+          "$ANDROID_HOME/emulator/emulator" -avd instrumentation -no-window -no-audio -no-boot-anim -gpu swangle &
           emulator_pid=$!
           diagnostics_pid=
           cleanup() {

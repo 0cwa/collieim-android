@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check a stack boundary against its explicit base and immutable source trees."""
 import argparse
+import copy
 import json
 import subprocess
 import re
@@ -10,6 +11,8 @@ MOLLY = '0e202dda90785771ff8c87526eaaf30c655f54f3'
 OLD = 'c47a74ba0961903eeaeda6d22347a990056c3e83'
 NEW = '6e9dddc01f1b26e608ac683807c51e139c141ed2'
 FOREST = '7a280ac23b61cef2c09009a6dbed02773fff3dfa'
+REVIEWED_PROFILES = '89bd7d6368a509470c4612d079746f66dfac8b55'
+ICON_OVERLAY = 'patches/forks/signal-foss/collie-icon/series'
 WORKFLOWS = {'.github/workflows/android.yml', '.github/workflows/diffuse.yml', '.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml'}
 RELEASE_PATHS = frozenset(['patches/ports/signal-8.33.2/source-checkpoint.bundle', 'patches/ports/signal-8.33.2/.gitattributes', 'patches/ports/signal-8.33.2/followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture.patch', 'patches/ports/signal-8.33.2/followups/cdn-transport-test-fixture/series', 'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/0001-integration-and-regression-tests.patch', 'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/series', 'patches/ports/signal-8.33.2/followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl.patch', 'patches/ports/signal-8.33.2/followups/netcipher-sdk-dsl/series', 'patches/ports/signal-8.33.2/followups/restore-preference-import/0001-restore-preference-import.patch', 'patches/ports/signal-8.33.2/followups/restore-preference-import/series', 'patches/ports/signal-8.33.2/initial/app-updates/0001-resolve-app-updates.patch', 'patches/ports/signal-8.33.2/initial/app-updates/series', 'patches/ports/signal-8.33.2/initial/appearance/0001-resolve-appearance.patch', 'patches/ports/signal-8.33.2/initial/appearance/series', 'patches/ports/signal-8.33.2/initial/backup-and-restore/0001-resolve-backup-and-restore.patch', 'patches/ports/signal-8.33.2/initial/backup-and-restore/series', 'patches/ports/signal-8.33.2/initial/build-and-release/0001-resolve-build-and-release.patch', 'patches/ports/signal-8.33.2/initial/build-and-release/series', 'patches/ports/signal-8.33.2/initial/integration/0001-resolve-integration.patch', 'patches/ports/signal-8.33.2/initial/integration/0002-resolve-integration.patch', 'patches/ports/signal-8.33.2/initial/integration/0003-resolve-integration.patch', 'patches/ports/signal-8.33.2/initial/integration/series', 'patches/ports/signal-8.33.2/initial/maps/0001-resolve-maps.patch', 'patches/ports/signal-8.33.2/initial/maps/series', 'patches/ports/signal-8.33.2/initial/module-pruning/0001-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0002-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0003-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0004-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0005-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0006-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/0007-resolve-module-pruning.patch', 'patches/ports/signal-8.33.2/initial/module-pruning/series', 'patches/ports/signal-8.33.2/initial/networking-and-proxies/0001-resolve-networking-and-proxies.patch', 'patches/ports/signal-8.33.2/initial/networking-and-proxies/series', 'patches/ports/signal-8.33.2/initial/notifications-and-unifiedpush/0001-resolve-notifications-and-unifiedpush.patch', 'patches/ports/signal-8.33.2/initial/notifications-and-unifiedpush/series', 'patches/ports/signal-8.33.2/initial/payments-and-donations/0001-resolve-payments-and-donations.patch', 'patches/ports/signal-8.33.2/initial/payments-and-donations/series', 'patches/ports/signal-8.33.2/initial/privacy-controls/0001-resolve-privacy-controls.patch', 'patches/ports/signal-8.33.2/initial/privacy-controls/series', 'patches/ports/signal-8.33.2/initial/registration-and-linking/0001-resolve-registration-and-linking.patch', 'patches/ports/signal-8.33.2/initial/registration-and-linking/0002-resolve-registration-and-linking.patch', 'patches/ports/signal-8.33.2/initial/registration-and-linking/series', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0001-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0002-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0003-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0004-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0005-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0006-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0007-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0008-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0009-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0010-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0011-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0012-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0013-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/0014-resolve-resources-and-branding.patch', 'patches/ports/signal-8.33.2/initial/resources-and-branding/series', 'patches/ports/signal-8.33.2/initial/security-and-locking/0001-resolve-security-and-locking.patch', 'patches/ports/signal-8.33.2/initial/security-and-locking/series', 'patches/ports/signal-8.33.2/provenance.json', 'patches/ports/signal-8.33.2/series', 'patches/ports/signal-8.33.2/report-metadata.json'])
 
@@ -177,6 +180,21 @@ def check_feature_chain(repo, base, head):
         raise ValueError('invalid features chain metadata') from exc
 
 
+def check_release_profiles(reviewed, current):
+    """Constrain release composition to the reviewed products and icon opt-in."""
+    expected = copy.deepcopy(reviewed)
+    actual = copy.deepcopy(current)
+    for name in ('molly-continued', 'molly-foss-continued'):
+        if actual['profiles'][name].pop('icon_overlay', None) != ICON_OVERLAY:
+            raise ValueError('Continued profiles must select the icon overlay')
+    for name in ('molly-continued', 'molly-foss-continued', 'collie', 'collie-foss'):
+        if not re.fullmatch(r'[0-9a-f]{40}', actual['profiles'][name].get('target_tree', '')):
+            raise ValueError('invalid release profile target tree')
+        actual['profiles'][name]['target_tree'] = expected['profiles'][name]['target_tree']
+    if actual != expected:
+        raise ValueError('release profiles differ from reviewed composition')
+
+
 def check_scope(repo, scope, base, head='HEAD'):
     if scope not in ('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks'):
         raise ValueError('unknown scope')
@@ -243,16 +261,36 @@ def check_scope(repo, scope, base, head='HEAD'):
             if not all(exists(head, addition_path + '/' + name) for name in addition_files(layer)):
                 raise ValueError('additions phase is incomplete')
     if scope == 'forks':
+        for path in ('tools/patches/scope.py', 'tools/patches/fork_profiles.py',
+                     'tools/patches/line_origin.py', 'tools/patches/port_report.py',
+                     'tools/patches/release.py'):
+            if git(repo, 'rev-parse', base + ':' + path).strip() != git(repo, 'rev-parse', head + ':' + path).strip():
+                raise ValueError('release tool differs from trusted base: ' + path)
+        # PR17 introduced application identities; all other selector code must
+        # remain exactly the trusted lower implementation.
+        path = 'tools/patches/release_profiles.py'
+        selector = git(repo, 'show', base + ':' + path).decode()
+        identity = git(repo, 'show', REVIEWED_PROFILES + ':' + path).decode()
+        start = identity.index('# User-visible app title')
+        end = identity.index('POLICY =', start)
+        selector = selector.replace('POLICY =', identity[start:end] + 'POLICY =', 1)
+        old = "'fork_series': fork, 'firebase_free': entry['firebase_free']}"
+        new = "'fork_series': fork, 'firebase_free': entry['firebase_free'],\n                            'app': dict(zip(('title', 'file_name', 'package_id'), APP[name]))}"
+        if selector.count(old) != 1 or selector.replace(old, new, 1) != git(repo, 'show', head + ':' + path).decode():
+            raise ValueError('release profile selector differs from trusted code and reviewed identity')
         if git(repo, 'rev-parse', base + ':patches/ports').strip() != git(repo, 'rev-parse', head + ':patches/ports').strip():
             raise ValueError('fork scope must preserve the base port series')
         try:
             prior = json.loads(git(repo, 'show', base + ':molly-build.json'))
             current = json.loads(git(repo, 'show', head + ':molly-build.json'))
+            reviewed = json.loads(git(repo, 'show', REVIEWED_PROFILES + ':molly-build.json'))
+            check_release_profiles({'profiles': reviewed['profiles'], 'fork_source': reviewed['fork_source']},
+                                   {'profiles': current['profiles'], 'fork_source': current['fork_source']})
             current.pop('profiles', None)
             current.pop('fork_source', None)
             if current != prior:
                 raise ValueError('fork scope may only add named profiles to the base configuration')
-        except (TypeError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
+        except (KeyError, TypeError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
             raise ValueError('invalid fork profile configuration') from exc
     if scope == 'features':
         for layer in FEATURES:

@@ -10,6 +10,16 @@
 
 Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.
 
+## Star History
+
+<a href="https://www.star-history.com/?repos=0cwa%2Fcollieim-android&type=date&releases=&legend=bottom-right">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=0cwa/collieim-android&type=date&theme=dark&legend=bottom-right" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=0cwa/collieim-android&type=date&legend=bottom-right" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=0cwa/collieim-android&type=date&legend=bottom-right" />
+ </picture>
+</a>
+
 This project keeps Molly's features available as Signal develops, while offering Collie as a separate app for people who want more control over what stays on their phone. The releases share the same source and build on one another.
 
 ## Current releases

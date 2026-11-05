@@ -8,7 +8,7 @@
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D"><img src="assets/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a>
 </p>
 
-Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.
+Welcome!  Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.  We use a patch-based release system for maximum code auditability, fast security updates ⚡, and interoperability.  [We contribute](https://github.com/mollyim/mollyim-android/pull/852) [back upstream](https://github.com/mollyim/mollyim-android/pull/853).
 
 <b>🌟 Stars! 🧡</b>
 
@@ -39,6 +39,8 @@ Molly Minimal provides the updated Molly foundation. Both Molly Continued releas
 All five releases use the package `im.collie.app`, so users can switch between them and install Collie alongside upstream Molly.
 
 Releases are published on the [Releases page](https://github.com/0cwa/collieim-android/releases) as APKs, currently marked as pre-releases. The Obtainium links above add this repository to [Obtainium](https://obtainium.imranr.dev/) with pre-releases enabled and select that release's APK, so Obtainium can install and update it. The releases share one app identity, so Obtainium tracks only one of them at a time.
+
+_[Throw the dog a bone? 🐶🦴](https://liberapay.com/Collie)_
 
 ## Planned release names and direction
 

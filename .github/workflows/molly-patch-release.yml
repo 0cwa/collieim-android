@@ -390,7 +390,7 @@ jobs:
           trap cleanup EXIT
           wait_for_emulator_boot "$emulator_pid"
           # This fresh CI emulator contains synthetic test data only; do not use real accounts.
-          python3 tools/patches/instrumentation_diagnostics.py "$RUNNER_TEMP/instrumentation" &
+          python3 tools/patches/instrumentation_diagnostics.py "$RUNNER_TEMP/instrumentation" emulator-5554 &
           diagnostics_pid=$!
           tools/patches/instrumentation_gate.sh "$RUNNER_TEMP/molly-instrumentation" "$RUNNER_TEMP/instrumentation" '${{ matrix.profile }}'
       - name: Upload instrumentation results
@@ -398,5 +398,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ${{ matrix.profile }}-instrumentation-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/instrumentation
+          path: |
+            ${{ runner.temp }}/instrumentation
+            !${{ runner.temp }}/instrumentation/**/*.tmp
           if-no-files-found: warn

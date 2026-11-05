@@ -199,7 +199,7 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = '92060250e66363fead02d7b15fbb43710b2e41ef'
+MAIN_CLEAN_ENTRIES_BLOB = '96b55e8a603554bce012ec0dd750e078a9381cf7'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -298,6 +298,14 @@ def check_main_maintenance(repo, base, head, integration_lower):
     if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
         raise ValueError('main base is not an ancestor of head')
+    # Maintenance may edit the fork's workflows, but must not restore Signal's
+    # disabled workflows or replace the required workflows with symlinks.
+    for path in ('.github/workflows/android.yml', '.github/workflows/diffuse.yml'):
+        if git(repo, 'ls-tree', head, '--', path):
+            raise ValueError('Signal workflow must be absent: ' + path)
+    for path in ('.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml'):
+        if not git(repo, 'ls-tree', head, '--', path).decode().startswith('100644 blob '):
+            raise ValueError('Molly workflow must be a regular 100644 file: ' + path)
     changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')
     for raw in filter(None, changed):
         path = raw.decode('utf-8', 'surrogateescape')

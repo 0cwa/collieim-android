@@ -204,6 +204,41 @@ class ScopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'official Molly forest must remain unchanged'):
                 scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
 
+    def test_main_maintenance_and_snapshot_enforce_workflow_invariants(self):
+        config = {'signal': {'commit': 'a' * 40}, 'molly': {'target': 'b' * 40}, 'native': None}
+        self.commit('molly-build.json', json.dumps(config))
+        self.commit('patches/molly/fixture', 'synthetic test forest')
+        base = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        invalid = (
+            ('.github/workflows/android.yml', 'add', 'Signal workflow must be absent'),
+            ('.github/workflows/diffuse.yml', 'add', 'Signal workflow must be absent'),
+            ('.github/workflows/molly-patch-release.yml', 'delete', 'Molly workflow must be a regular'),
+            ('.github/workflows/molly-unsigned-release.yml', 'delete', 'Molly workflow must be a regular'),
+            ('.github/workflows/molly-patch-release.yml', 'symlink', 'Molly workflow must be a regular'),
+            ('.github/workflows/molly-unsigned-release.yml', 'symlink', 'Molly workflow must be a regular'),
+        )
+        with mock.patch.object(scope, 'FOREST', forest), mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', base):
+            self.assertEqual(scope.check_scope(self.repo, 'main-maintenance', base,
+                                               integration_lower=base)['scope'], 'main-maintenance')
+            for name, operation, message in invalid:
+                with self.subTest(path=name, operation=operation):
+                    path = self.repo / name
+                    if operation == 'add':
+                        path.write_text('unexpected workflow\n')
+                    elif operation == 'delete':
+                        path.unlink()
+                    else:
+                        path.unlink()
+                        path.symlink_to('target.yml')
+                    self.git('add', '-A')
+                    self.git('commit', '-qm', 'invalid workflow')
+                    with self.assertRaisesRegex(ValueError, message):
+                        scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
+                    with self.assertRaisesRegex(ValueError, message):
+                        scope.check_scope(self.repo, 'main-maintenance', 'HEAD', integration_lower=base)
+                    self.git('reset', '--hard', '-q', base)
+
     def test_main_maintenance_snapshot_detects_prior_direct_source_edit(self):
         config = {'signal': {'commit': 'a' * 40}, 'molly': {'target': 'b' * 40}, 'native': None}
         self.commit('molly-build.json', json.dumps(config))

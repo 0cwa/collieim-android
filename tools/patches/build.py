@@ -373,10 +373,22 @@ class Build:
         jvm_args = (f'-Xmx{self.args.heap} -Xms256m -XX:MaxMetaspaceSize=1g '
                     '-Dcom.android.tools.r8.threadCount=1 '
                     '-XX:+UnlockExperimentalVMOptions -XX:hashCode=3')
-        command = ['./gradlew', '--no-daemon', '--no-parallel', '--no-configuration-cache',
-                   '--max-workers=1', '--dependency-verification=strict',
+        workers = getattr(self.args, 'workers', 1)
+        if isinstance(workers, bool) or not isinstance(workers, int) or not 1 <= workers <= 12:
+            raise BuildError('--workers must be an integer between 1 and 12')
+        parallel = getattr(self.args, 'parallel_projects', False)
+        command = ['./gradlew', '--no-daemon', '--parallel' if parallel else '--no-parallel', '--no-configuration-cache',
+                   f'--max-workers={workers}', '--dependency-verification=strict',
                    '--init-script', str(init), '-Pkotlin.compiler.execution.strategy=in-process',
                    '-Dorg.gradle.jvmargs=' + jvm_args]
+        if getattr(self.args, 'build_cache', False):
+            command.append('--build-cache')
+        cache_dir = getattr(self.args, 'release_cache_dir', None)
+        if cache_dir is not None:
+            if not getattr(self.args, 'build_cache', False) or not cache_dir.is_absolute():
+                raise BuildError('--release-cache-dir requires --build-cache and an absolute path')
+            cache_init = relative_file(self.repo, 'tools/patches/release-cache.init.gradle', 'release cache script')
+            command += ['--init-script', str(cache_init), '-Dcollie.releaseTaskCache=' + str(cache_dir)]
         if phase == 'assemble-release':
             version_init = relative_file(self.repo, 'tools/patches/release-version.init.gradle', 'release version script')
             command += ['--init-script', str(version_init), '-PreleaseVersionName=' + version_name,
@@ -407,6 +419,10 @@ def main():
     parser.add_argument('--maven-dir', type=Path)
     parser.add_argument('--accept-licenses', action='store_true', help='accept SDK licenses if installation is needed')
     parser.add_argument('--heap', default='5g', help='Gradle heap; one 2 GiB test worker runs separately')
+    parser.add_argument('--workers', type=int, default=1, help='Gradle workers (1-12); increase only with sufficient memory')
+    parser.add_argument('--parallel-projects', action='store_true', help='opt into parallel Gradle project execution')
+    parser.add_argument('--build-cache', action='store_true', help='opt into Gradle task output cache; use only trusted cache entries')
+    parser.add_argument('--release-cache-dir', type=Path, help='isolate release task outputs in this absolute directory and disable remote caches')
     parser.add_argument('--release-version-name')
     parser.add_argument('--release-version-code')
     args = parser.parse_args()

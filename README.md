@@ -75,7 +75,7 @@ These changes are planned; the current downloads and names are listed above.
 
 The code is open source. Standard builds include Google's Firebase service for push notifications; FOSS builds omit it. They can receive messages through WebSocket or [UnifiedPush](https://unifiedpush.org/) instead.
 
-UnifiedPush lets you choose a notification provider. It requires access to a [MollySocket](https://github.com/mollyim/mollysocket) server, either your own or a public one. UnifiedPush is not available on linked devices. Android battery restrictions can affect notification delivery.
+UnifiedPush lets you choose a notification provider. It requires access to a [MollySocket](https://github.com/mollyim/mollysocket) server, *use your own!* **Do not use a public one!** UnifiedPush has never been available on linked devices, [this is a planned Collie feature.](https://github.com/0cwa/collieim-android/issues/21) Android battery restrictions can affect notification delivery.
 
 ## Compatibility with Signal
 

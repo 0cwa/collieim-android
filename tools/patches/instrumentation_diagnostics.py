@@ -19,6 +19,7 @@ SERIAL = 'emulator-5554'
 LOG_LIMIT = 5 * 1024 * 1024
 EVENT_LIMIT = 1024 * 1024
 STATE_LIMIT = 2 * 1024 * 1024
+FILTER_LIMIT = 2 * 1024 * 1024
 stop = threading.Event()
 offline = threading.Event()
 
@@ -100,7 +101,7 @@ def run_bounded(command, timeout=.6, limit=4096):
         proc.stdout.close()
 
 
-def capture_logcat(log, events):
+def capture_logcat(log, events, filtered):
     while not stop.is_set():
         if offline.is_set():
             stop.wait(.2)
@@ -124,6 +125,7 @@ def capture_logcat(log, events):
             os.set_blocking(stream.fileno(), False)
             selector.register(stream, selectors.EVENT_READ, kind)
         reason = 'shutdown'
+        partial = b''
         exited_at = None
         eof_at = None
         try:
@@ -142,6 +144,13 @@ def capture_logcat(log, events):
                             eof_at = time.monotonic()
                     elif key.data == 'stdout':
                         log.append(data)
+                        # Keep a longer history of transport and test-service events.
+                        # This is a line-filtered tail from the same synthetic device.
+                        parts = (partial + data).split(b'\n')
+                        partial = parts.pop()[-65536:]
+                        for line in parts:
+                            if any(tag in line for tag in (b' adbd ', b'AndroidRuntime', b'ShellCommandClient', b'ShellExecutorImpl', b'ActivityManager', b'am_crash')):
+                                filtered.append(line + b'\n')
                     else:
                         event(events, 'logcat stderr: ' + data.decode(errors='replace').rstrip())
                 if eof_at is not None and (not selector.get_map() or time.monotonic() - eof_at >= .5):
@@ -218,12 +227,12 @@ def main():
     directory.mkdir(parents=True, exist_ok=True)
     signal.signal(signal.SIGTERM, lambda *_: stop.set())
     signal.signal(signal.SIGINT, lambda *_: stop.set())
-    log, events, state = Tail(LOG_LIMIT), Tail(EVENT_LIMIT), Tail(STATE_LIMIT)
-    thread = threading.Thread(target=capture_logcat, args=(log, events), daemon=True)
+    log, events, state, filtered = Tail(LOG_LIMIT), Tail(EVENT_LIMIT), Tail(STATE_LIMIT), Tail(FILTER_LIMIT)
+    thread = threading.Thread(target=capture_logcat, args=(log, events, filtered), daemon=True)
     thread.start()
 
     def checkpoint():
-        for tail, name in ((log, 'system-logcat.txt'), (events, 'logcat-events.txt'), (state, 'device-liveness.txt')):
+        for tail, name in ((log, 'system-logcat.txt'), (events, 'logcat-events.txt'), (state, 'device-liveness.txt'), (filtered, 'filtered-lifecycle.txt')):
             tail.checkpoint(directory / name)
 
     try:

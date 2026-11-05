@@ -29,9 +29,9 @@ This project keeps Molly's features available as Signal develops, while offering
 | Release | What it offers | Install |
 | --- | --- | --- |
 | **<ins>Collie</ins>** | **<ins>Recommended</ins>.** Molly Continued plus optional controls for keeping messages and media. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Collie FOSS** | Collie without Firebase. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%20FOSS%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C-foss%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Collie FOSS** | Collie without Firebase. (be aware of the new risks with Mollysocket detailed below in the Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%20FOSS%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C-foss%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 | **Molly, Continued** | Molly on a newer Signal version, with further registration and notification improvements. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Molly FOSS, Continued** | Molly Continued without Firebase. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Molly FOSS, Continued** | Molly Continued without Firebase.  (be aware of the new risks with Mollysocket detailed below in Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 | **Mollie, Minimal** | Molly's minimalist feature set on a newer Signal version, without the Continued additions. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 
 Note: *App names are planned to shift as features are adopted - don't be surprised if Molly, Continued becomes Collie and Collie becomes Collie+ (or maybe Collie!) - I'm collecting community feedback to decide official variants - you will always be able to install a different variant over the last. 🧡*
@@ -44,14 +44,6 @@ Releases are published on the [Releases page](https://github.com/0cwa/collieim-a
 
 _[Throw the dog a bone? 🐶🦴](https://liberapay.com/Collie)_
 
-## Planned release names and direction
-
-These changes are planned; the current downloads and names are listed above.
-
-- **Mollie** will be the new name for Molly Minimal: Minimal Collie, or Minimal Molly Continued. Its aim is Molly, up to date, with fast bug and security fixes: Molly's minimalist feature set, patched quicker.
-- **Collie** will mean Continued Molly. Molly Continued is planned to adopt the current Collie changes before taking the Collie name.
-- **Collie+** will evolve from today's Collie into an edition for power users and community feedback, with cutting-edge features while remaining secure and stable. It is not intended as a beta.
-
 ## Features
 
 The releases retain Signal's messaging and calling features and Molly's additions, including:
@@ -62,9 +54,17 @@ The releases retain Signal's messaging and calling features and Molly's addition
 - Blocking messages and calls from unknown contacts.
 - Disappearing call history and scheduled local backups.
 - Proxy and Tor support.
-- WebSocket and UnifiedPush notifications as alternatives to Google's push service.
+- WebSocket and UnifiedPush notifications as alternatives to Google's push service. ***If you use Unifiedpush only do so with a server you entrust your entire account and all the metadata of your account.*** (I found, reported, and verified this major security risk to the Mollysocket developer - more details will be disclosed at a later date.)
 
-Collie also offers four optional controls: keep received view-once media, keep incoming disappearing messages after they expire, ignore a sender's request to delete a message, and remove media without removing its message. All four are off by default. Content you choose to keep may appear in backups or exports. Turning a setting off does not erase content already kept.
+Collie also offers four optional controls: keep received view-once media, keep incoming disappearing messages after they expire, ignore a sender's request to delete a message, and remove media without removing its message. All four are off by default. Content you choose to keep may appear in backups or exports. (this feature is experimental)
+
+## Planned release names and direction
+
+These changes are planned; the current downloads and names are listed above.
+
+- **Mollie** will be the new name for Molly Minimal: Minimal Collie, or Minimal Molly Continued. Its aim is Molly, up to date, with fast bug and security fixes: Molly's minimalist feature set, patched quicker.
+- **Collie** will mean Continued Molly. Molly Continued is planned to adopt the current Collie changes before taking the Collie name.
+- **Collie+** will evolve from today's Collie into an edition for power users and community feedback, with cutting-edge features while remaining secure and stable. It is not intended as a beta.
 
 ## Free and open source
 

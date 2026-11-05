@@ -145,7 +145,7 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series"
       ],
-      "target_tree": "c13e470ed17088268606e6f325af58f5d85bf733",
+      "target_tree": "cc53321c0bf1ff10d3c5346368963118c4da800d",
       "firebase_free": false
     },
     "collie-foss": {
@@ -159,7 +159,7 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series"
       ],
-      "target_tree": "c13e470ed17088268606e6f325af58f5d85bf733",
+      "target_tree": "cc53321c0bf1ff10d3c5346368963118c4da800d",
       "firebase_free": true
     }
   }

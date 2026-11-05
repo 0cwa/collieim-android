@@ -23,6 +23,7 @@ does not distinguish dropped code from code that was rewritten or moved elsewher
 """
 import argparse
 import collections
+import contextlib
 import json
 import os
 from pathlib import Path
@@ -30,6 +31,8 @@ import re
 import subprocess
 import sys
 import tempfile
+
+import release_profiles
 
 CLASSES = ('production', 'translations', 'tests', 'generated', 'repository')
 CLASS_NOTES = {
@@ -314,7 +317,9 @@ def profiles(repo, root, config):
                 from_fork = {k: two[k]['written'] - ours['classes'][k]['written'] for k in CLASSES}
             cache[key] = (ours, from_fork)
         ours, from_fork = cache[key]
+        overlays = [entry['icon_overlay']] if entry.get('icon_overlay') else []
         rows.append({'name': name, 'tree': ours['tree'], 'parents': ours['parents'], 'fork_series': layers,
+                     'release_overlays': overlays,
                      'firebase_free': entry.get('firebase_free'), 'classes': ours['classes'],
                      'molly': ours['molly'], 'from_fork': from_fork})
     return rows
@@ -327,17 +332,19 @@ def markdown_profiles(rows, molly_total):
     out = ['### Release profiles', '',
            'Each profile\'s source compared with Molly and Signal and, for profiles with fork layers, the fork head '
            'as a third input, so **written** excludes lines the fork wrote. **From the fork** counts production lines '
-           'the fork wrote that the profile carries.', '',
-           '| Profile | Tree | Fork layers | Firebase | Production written / removed | Written as % of Molly\'s '
+           'the fork wrote that the profile carries. The Collie icon overlay is original work and does not by itself '
+           'add the upstream fork as an input.', '',
+           '| Profile | Tree | Fork layers | Release overlays | Firebase | Production written / removed | Written as % of Molly\'s '
            'production lines | From the fork | Molly lines not carried | Tests |',
-           '|---|---|---|---|---:|---:|---:|---:|---:|']
+           '|---|---|---|---|---|---:|---:|---:|---:|---:|']
     for row in rows:
         c = row['classes']
         share = f'{c["production"]["written"] / molly_total * 100:.1f}%' if molly_total else 'n/a'
         fork = '—' if row['from_fork'] is None else f'{row["from_fork"]["production"]:,}'
         layers = ', '.join(f'`{Path(x).parent.name}`' for x in row['fork_series']) or 'none'
+        overlays = ', '.join(f'`{Path(x).parent.name}`' for x in row['release_overlays']) or 'none'
         firebase = {True: 'removed', False: 'included'}.get(row['firebase_free'], 'n/a')
-        out.append(f'| {row["name"]} | `{row["tree"][:12]}` | {layers} | {firebase} | '
+        out.append(f'| {row["name"]} | `{row["tree"][:12]}` | {layers} | {overlays} | {firebase} | '
                    f'{fmt(c["production"]["written"], c["production"]["removed"])} | {share} | {fork} | '
                    f'{row["molly"]["production"]["not_carried"]:,} | {fmt(c["tests"]["written"], c["tests"]["removed"])} |')
     return '\n'.join(out) + '\n'
@@ -409,18 +416,25 @@ def main():
     p = sub.add_parser('port', help='measure every checkpoint of a port series')
     p.add_argument('--series-dir', default='patches/ports/signal-8.33.2')
     p.add_argument('--markdown', action='store_true')
-    p.add_argument('--config', help='also measure the named release profiles in this build configuration')
+    p.add_argument('--config', help='also measure named release profiles; requires writable Git objects and refs')
     t = sub.add_parser('tree', help='measure one tree against explicit parents')
     t.add_argument('tree')
     t.add_argument('--parent', action='append', required=True, help='repeat; order is reported')
     t.add_argument('--molly-old', nargs=2, metavar=('OLD_SIGNAL', 'MOLLY'), help='also count Molly lines not carried')
     args = parser.parse_args()
     try:
+        config = json.loads(Path(args.config).read_text()) if args.command == 'port' and args.config else None
+        if config is not None:
+            import fork_profiles
+            # Bundle verification and profile tree preparation use the repository's
+            # object database and checkpoint refs; keep progress out of report output.
+            with contextlib.redirect_stdout(sys.stderr):
+                fork_profiles.prepare_profile_trees(args.repo, config, Path(args.config).resolve())
         with tempfile.TemporaryDirectory(prefix='line-origin-') as objects:
             repo = Repo(args.repo, objects)
             if args.command == 'port':
                 result = port(repo, Path(args.repo) / args.series_dir)
-                rows = profiles(repo, args.repo, json.loads(Path(args.config).read_text())) if args.config else []
+                rows = profiles(repo, args.repo, config) if config is not None else []
                 if args.markdown:
                     print(markdown(result, rows), end='')
                 else:

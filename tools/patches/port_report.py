@@ -360,20 +360,9 @@ def import_start_trees(config, evidence):
 
 
 def import_profile_trees(config):
-    """Verify and import fork checkpoints needed by release profile measurements."""
-    profiles = config.get('profiles') or {}
-    forked = [name for name, entry in profiles.items() if entry.get('fork_series')]
-    if not forked:
-        return
+    """Verify and import profile checkpoints needed by release measurements."""
     import fork_profiles
-    import release_profiles
-    import verify_source_bundles
-    # The longest profile contains every preceding checkpoint in the fork chain.
-    name = max(forked, key=lambda item: len(profiles[item]['fork_series']))
-    root = Path('.').resolve()
-    _, selection = release_profiles.select(config, name, root)
-    verify_source_bundles.verify(root)
-    fork_profiles.fork_layers(root, selection)
+    fork_profiles.prepare_profile_trees('.', config)
 
 
 def main():

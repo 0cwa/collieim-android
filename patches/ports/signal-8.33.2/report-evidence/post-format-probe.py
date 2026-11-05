@@ -2,11 +2,11 @@ import sys, types, os, subprocess, pathlib, hashlib, re, csv, shutil
 sys.modules['release']=types.ModuleType('release')
 pr=types.ModuleType('port_report')
 exec(subprocess.run(['git','show','fbee68f36ccb20cb3c76cb80359ecd7d423efcad:tools/patches/port_report.py'],check=True,stdout=subprocess.PIPE).stdout,pr.__dict__)
-ROOT=pathlib.Path.home()/'agent-scratch/mollyim-android/pr-stack'
+ROOT=pathlib.Path(os.environ['EVIDENCE_WORK'])
 WORK=ROOT/'post-format-module-gates'
 WORK.mkdir(exist_ok=True)
 M='759ef1c309d93aa7e4ac7217b144c04545562f11'; T='f25a1de0fc87f0f862cc270f823d240857878bc5'; T3='3a20fd39d1f0e444bcc4711a2909635d8762b67e'
-A='/var/home/x/.gradle/caches/9.6.0/transforms/db7e385e81351d1a8da4d35a4e20239c/transformed/aapt2-9.4.0-15978811-linux/aapt2'
+A=os.environ['AAPT2']
 def run(*a,**kw): return subprocess.run(a,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=True,**kw).stdout
 def git(*a,**kw): return run('git',*a,**kw)
 stats=pr.numstat(M,T); modes=pr.modes(M,T); selected=[]

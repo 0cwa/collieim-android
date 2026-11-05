@@ -1,70 +1,102 @@
-# Signal Android
+# Collie - The Signal Fork
 
-Signal is a simple, powerful, and secure messenger that uses your phone's data connection (WiFi/4G/5G) to communicate securely.
+<p align="center">
+  <img src="assets/collie-icon.svg" alt="Collie icon" width="240">
+</p>
 
-Millions of people use Signal every day for free and instantaneous communication anywhere in the world. Send and receive high-fidelity messages, participate in HD voice/video calls, and explore a growing set of new features that help you stay connected. 
+<p align="center">
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D"><img src="assets/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a> <a href="https://liberapay.com/Collie/">
+  <img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/LiberaPay.png" alt="Donate via Liberapay" height="80">
+</a>
+</p>
 
-Signal’s advanced privacy-preserving technology is always enabled, so you can focus on sharing the moments that matter with the people who matter to you.
+Welcome!  Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.  We use a patch-based release system for maximum code auditability, fast security updates ⚡, and interoperability.  [We contribute](https://github.com/mollyim/mollyim-android/pull/852) [back upstream](https://github.com/mollyim/mollyim-android/pull/853).
 
-Currently available on the [Play Store](https://play.google.com/store/apps/details?id=org.thoughtcrime.securesms) and [signal.org](https://signal.org/android/apk/).
+<b>🌟 Stars! 🧡</b>
 
-<a href='https://play.google.com/store/apps/details?id=org.thoughtcrime.securesms&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' height='80px'/></a>
+<a href="https://www.star-history.com/?repos=0cwa%2Fcollieim-android&type=date&releases=&legend=bottom-right">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=0cwa/collieim-android&type=date&theme=dark&legend=bottom-right" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=0cwa/collieim-android&type=date&legend=bottom-right" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=0cwa/collieim-android&type=date&legend=bottom-right" width="600" />
+ </picture>
+</a>
 
-Also available on [iOS](https://github.com/signalapp/signal-ios) and [Desktop](https://github.com/signalapp/signal-desktop).
+This project keeps Molly's features available as Signal develops, while offering Collie as a separate app for people who want more control over what stays on their phone. The releases share the same source and build on one another.
 
-## Contributing Bug Reports
-We use GitHub for bug tracking. Please search the existing issues for your bug and create a new one if the issue is not yet tracked!
+## Current releases
 
-https://github.com/signalapp/Signal-Android/issues
+| Release | What it offers | Install |
+| --- | --- | --- |
+| **<ins>Collie</ins>** | **<ins>Recommended</ins>.** Molly Continued plus optional controls for keeping messages and media. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Collie FOSS** | Collie without Firebase. (be aware of the new risks with Mollysocket detailed below in the Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%20FOSS%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C-foss%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Molly, Continued** | Molly on a newer Signal version, with further registration and notification improvements. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Molly FOSS, Continued** | Molly Continued without Firebase.  (be aware of the new risks with Mollysocket detailed below in Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Mollie, Minimal** | Molly's minimalist feature set on a newer Signal version, without the Continued additions. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 
-## Joining the Beta
-Want to live life on the bleeding edge and help out with testing?
+> [!NOTE]
+> *App names are planned to shift as features are adopted* - don't be surprised if Molly, Continued becomes Collie and Collie becomes Collie+ (or maybe Collie!) - I'm collecting community feedback to decide official variants. 🧡
 
-You can subscribe to Signal Android Beta releases here:
-https://play.google.com/apps/testing/org.thoughtcrime.securesms
+Molly Minimal provides the updated Molly foundation. Both Molly Continued releases and both Collie releases add network settings during registration for proxy users, visible errors and retry options for failed UnifiedPush registration, and updated donation confirmation text. Collie and Collie FOSS also add the four optional retention controls described below. The two FOSS releases omit Firebase; the other three include it.
 
-If you're interested in a life of peace and tranquility, stick with the standard releases.
+> [!TIP]
+> All five releases use the package `im.collie.app`, so users can switch between them and install Collie alongside upstream Molly.
 
-## Contributing Translations
-Interested in helping translate Signal? Contribute here:
+Releases are published on the [Releases page](https://github.com/0cwa/collieim-android/releases) as APKs. The Obtainium links above add this repository to [Obtainium](https://obtainium.imranr.dev/) with pre-releases disabled and select that release's APK, so Obtainium can install and update it. The releases share one app identity, so Obtainium tracks only one of them at a time.
 
-https://community.signalusers.org/c/translation-feedback/
+_[Throw the dog a bone? 🐶🦴](https://liberapay.com/Collie)_
 
-## Contributing Code
+## Features
 
-If you're new to the Signal codebase, we recommend going through our issues and picking out a simple bug to fix in order to get yourself familiar. Also please have a look at the [CONTRIBUTING.md](https://github.com/signalapp/Signal-Android/blob/main/CONTRIBUTING.md), that might answer some of your questions.
+The releases retain Signal's messaging and calling features and Molly's additions, including:
 
-For larger changes and feature ideas, we ask that you propose it on the [unofficial Community Forum](https://community.signalusers.org) for a high-level discussion with the wider community before implementation.
+- Passphrase encryption for the local message database and automatic locking.
+- Clearing sensitive data from memory and the option to disable debug logging.
+- Linked devices, including Android tablets.
+- Blocking messages and calls from unknown contacts.
+- Disappearing call history and scheduled local backups.
+- Proxy and Tor support.
+- WebSocket and UnifiedPush notifications as alternatives to Google's push service.
 
-## Contributing Ideas
-Have something you want to say about Signal projects or want to be part of the conversation? Get involved in the [community forum](https://community.signalusers.org).
+> [!CAUTION]
+> ***If you use Unifiedpush only do so with a server you entrust your entire account and all the metadata of your account.*** (I found, reported, and verified this new major security risk to the Mollysocket developer - more details will be disclosed at a later date.)
 
-Help
-====
-## Support
-For troubleshooting and questions, please visit our support center!
+Collie also offers four optional controls: keep received view-once media, keep incoming disappearing messages after they expire, ignore a sender's request to delete a message, and remove media without removing its message. All four are off by default. Content you choose to keep may appear in backups or exports. (this feature is experimental)
 
-https://support.signal.org/
+## Planned release names and direction
 
-## Documentation
-Looking for documentation? Check out the wiki!
+These changes are planned; the current downloads and names are listed above.
 
-https://github.com/signalapp/Signal-Android/wiki
+- **Mollie** will be the new name for Molly Minimal: Minimal Collie, or Minimal Molly Continued. Its aim is Molly, up to date, with fast bug and security fixes: Molly's minimalist feature set, patched quicker.
+- **Collie** will mean Continued Molly. Molly Continued is planned to adopt the current Collie changes before taking the Collie name.
+- **Collie+** will evolve from today's Collie into an edition for power users and community feedback, with cutting-edge features while remaining secure and stable. It is not intended as a beta.
 
-# Legal things
-## Cryptography Notice
+## Free and open source
 
-This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software.
-BEFORE using any encryption software, please check your country's laws, regulations and policies concerning the import, possession, or use, and re-export of encryption software, to see if this is permitted.
-See <http://www.wassenaar.org/> for more information.
+The code is open source. Standard builds include Google's Firebase service for push notifications; FOSS builds omit it. They can receive messages through WebSocket or [UnifiedPush](https://unifiedpush.org/) instead.
 
-The U.S. Government Department of Commerce, Bureau of Industry and Security (BIS), has classified this software as Export Commodity Control Number (ECCN) 5D002.C.1, which includes information security software using or performing cryptographic functions with asymmetric algorithms.
-The form and manner of this distribution makes it eligible for export under the License Exception ENC Technology Software Unrestricted (TSU) exception (see the BIS Export Administration Regulations, Section 740.13) for both object code and source code.
+UnifiedPush lets you choose a notification provider. It requires access to a [MollySocket](https://github.com/mollyim/mollysocket) server, *use your own!* **Do not use a public one!** UnifiedPush has never been available on linked devices, [this is a planned Collie feature.](https://github.com/0cwa/collieim-android/issues/21) Android battery restrictions can affect notification delivery.
+
+## Compatibility with Signal
+
+Collie connects to Signal's servers and can communicate with Signal contacts. You can install Collie alongside Signal or Molly.
+
+To use the same Signal account in two apps, one must be linked as a secondary device. Registering the same phone number independently in a second app will disconnect the first. You can also use separate numbers for separate accounts.
+
+Signal's [Terms and Privacy Policy](https://signal.org/legal/) apply when using its service.
+
+## Backups
+
+The project retains Molly's support for local Signal-format backups. Restoring a backup requires an app version that supports the version of the backup being imported. Content kept using Collie's retention controls may also be included in backups.
+
+## Feedback
+
+[Report bugs or suggest changes](https://github.com/0cwa/collieim-android/issues) in this repository.
 
 ## License
 
-Copyright 2013 Signal Messenger, LLC
+Licensed under the GNU Affero General Public License, version 3 only ([AGPL-3.0-only](LICENSE)). See [LEGAL.md](LEGAL.md) for legal and copyright information.
 
-Licensed under the GNU AGPLv3: https://www.gnu.org/licenses/agpl-3.0.html
+## Acknowledgements
 
-Google Play and the Google Play logo are trademarks of Google LLC.
+Collie is independent of Signal and Molly and builds on the work of their contributors. Its retention controls are adapted from [Angus Turnbull's Signal FOSS fork](https://github.com/tw-hx/Signal-Android), including media deletion work by johanw.

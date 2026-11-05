@@ -82,6 +82,16 @@ class ReleaseTests(unittest.TestCase):
         self.save_config()
         return patch_bytes
 
+    def test_source_boundary_forwards_integration_lower_and_rejects_bad_pin(self):
+        pinned = release.stack_scope.MAIN_INTEGRATION_LOWER
+        with patch.object(release.stack_scope, 'check_scope') as check:
+            release.check_source_boundary(self.repo, self.source.base, 'forks', 'main', pinned)
+            check.assert_called_once_with(self.repo, 'forks', 'main', integration_lower=pinned)
+        with self.assertRaisesRegex(forest.ForestError, 'unexpected trusted release-base commit'):
+            release.check_source_boundary(self.repo, self.source.base, 'forks', 'HEAD', self.source.base)
+        with self.assertRaisesRegex(forest.ForestError, 'valid stack scope'):
+            release.check_source_boundary(self.repo, self.source.base, integration_lower=pinned)
+
     def test_historical_assembly_is_exact_and_complete(self):
         result = self.assemble()
         self.assertEqual(result['tree'], self.source.target_tree)

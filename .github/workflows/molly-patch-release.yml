@@ -24,6 +24,7 @@ jobs:
       port: ${{ steps.scope.outputs.port }}
       stack_scope: ${{ steps.scope.outputs.stack_scope }}
       base: ${{ steps.scope.outputs.base }}
+      integration_lower: ${{ steps.scope.outputs.integration_lower }}
       profiles: ${{ steps.scope.outputs.profiles }}
     steps:
       - name: Check out immutable head
@@ -63,6 +64,21 @@ jobs:
               stack/4-behavior-followups) scope=additions ;;
               stack/5-behavior-additions) scope=features ;;
               private/release-base-5) scope=forks ;;
+              main)
+                [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid main base SHA' >&2; exit 1; }
+                git merge-base --is-ancestor "$BASE_SHA" HEAD || { echo 'Main base is not an ancestor of head' >&2; exit 1; }
+                if ! git cat-file -e "$BASE_SHA:molly-build.json" 2>/dev/null; then
+                  scope=main-transition
+                elif python3 -c 'import json, subprocess, sys; b=json.loads(subprocess.check_output(["git", "show", sys.argv[1] + ":molly-build.json"])); h=json.load(open("molly-build.json")); sys.exit(0 if "profiles" not in b and "profiles" in h else 1)' "$BASE_SHA"; then
+                  scope=forks
+                else
+                  scope=main-docs
+                fi
+                if [[ "$scope" != main-docs ]]; then
+                  integration_lower=7f0eb01a0ab472deeef3b528e7f508425044fa6a
+                  git fetch --no-tags "$trusted_url" "$integration_lower"
+                  [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$integration_lower" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
+                fi ;;
               private/release-variants|feature/collie-theme-pr17-126352)
                 scope=forks; immediate_base=$BASE_SHA; check_collie_base "$immediate_base" ;;
               *) echo "Unknown base: $BASE_REF" >&2; exit 1 ;;
@@ -94,21 +110,26 @@ jobs:
           if [[ -n ${immediate_base:-} ]]; then
             python3 tools/patches/check_collie_scope.py --base "$immediate_base"
           fi
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-transition ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
-          python3 tools/patches/scope.py --scope "$scope" --base "$base"
+          scope_extra=()
+          if [[ -n ${integration_lower:-} ]]; then
+            scope_extra+=(--integration-lower "$integration_lower")
+          fi
+          python3 tools/patches/scope.py --scope "$scope" --base "$base" "${scope_extra[@]}"
+          echo "integration_lower=${integration_lower:-}" >> "$GITHUB_OUTPUT"
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-transition ]]; then
             python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"
           else
             echo 'port=false' >> "$GITHUB_OUTPUT"
           fi
-          if [[ "$scope" == pipeline ]]; then echo 'profile=false' >> "$GITHUB_OUTPUT"; else echo 'profile=true' >> "$GITHUB_OUTPUT"; fi
+          if [[ "$scope" == pipeline || "$scope" == main-docs ]]; then echo 'profile=false' >> "$GITHUB_OUTPUT"; else echo 'profile=true' >> "$GITHUB_OUTPUT"; fi
           # The release line builds every named release profile; other branches build their one configuration.
           if [[ "$scope" == forks ]]; then
             echo 'profiles=["molly-minimal","molly-continued","molly-foss-continued","collie","collie-foss"]' >> "$GITHUB_OUTPUT"
@@ -153,14 +174,23 @@ jobs:
             0e202dda90785771ff8c87526eaaf30c655f54f3
 
       - name: Reconstruct the selected release and prove its complete tree
+        env:
+          INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}
         run: |
+          scope_extra=()
+          if [[ -n "$INTEGRATION_LOWER" ]]; then
+            [[ "$INTEGRATION_LOWER" == 7f0eb01a0ab472deeef3b528e7f508425044fa6a ]] || { echo 'Unexpected integration base' >&2; exit 1; }
+            git fetch --no-tags "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "$INTEGRATION_LOWER"
+            [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$INTEGRATION_LOWER" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
+            scope_extra+=(--integration-lower "$INTEGRATION_LOWER")
+          fi
           if [[ "${{ needs.scope.outputs.port }}" == true ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
             --report "$RUNNER_TEMP/reports/source.json" \
-            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" $PROFILE_ARGS
+            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" "${scope_extra[@]}" $PROFILE_ARGS
 
       - name: Prove the upstream native cherry-pick when configured
         run: |
@@ -204,14 +234,23 @@ jobs:
       # Worktrees are machine-local. Reconstruct on this runner instead of
       # trusting a tarball whose .git file points to a different runner.
       - name: Materialize and verify the source on the build runner
+        env:
+          INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}
         run: |
+          scope_extra=()
+          if [[ -n "$INTEGRATION_LOWER" ]]; then
+            [[ "$INTEGRATION_LOWER" == 7f0eb01a0ab472deeef3b528e7f508425044fa6a ]] || { echo 'Unexpected integration base' >&2; exit 1; }
+            git fetch --no-tags "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "$INTEGRATION_LOWER"
+            [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$INTEGRATION_LOWER" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
+            scope_extra+=(--integration-lower "$INTEGRATION_LOWER")
+          fi
           if [[ "${{ needs.scope.outputs.port }}" == true ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
             --report "$RUNNER_TEMP/reports/source.json" \
-            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" $PROFILE_ARGS
+            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" "${scope_extra[@]}" $PROFILE_ARGS
 
       - name: Prepare the optional native backport from its immutable sources
         run: |
@@ -344,12 +383,21 @@ jobs:
           persist-credentials: false
           lfs: false
       - name: Reconstruct the selected actual fork source
+        env:
+          INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}
         run: |
           git fetch --no-tags https://github.com/mollyim/mollyim-android.git 0e202dda90785771ff8c87526eaaf30c655f54f3
+          scope_extra=()
+          if [[ -n "$INTEGRATION_LOWER" ]]; then
+            [[ "$INTEGRATION_LOWER" == 7f0eb01a0ab472deeef3b528e7f508425044fa6a ]] || { echo 'Unexpected integration base' >&2; exit 1; }
+            git fetch --no-tags "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "$INTEGRATION_LOWER"
+            [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$INTEGRATION_LOWER" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
+            scope_extra+=(--integration-lower "$INTEGRATION_LOWER")
+          fi
           python3 tools/patches/prepare_port_report.py
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-instrumentation" --report "$RUNNER_TEMP/instrumentation/source.json" \
-            --scope forks --base '${{ needs.scope.outputs.base }}' --profile '${{ matrix.profile }}'
+            --scope forks --base '${{ needs.scope.outputs.base }}' "${scope_extra[@]}" --profile '${{ matrix.profile }}'
           python3 tools/patches/build.py native-prepare --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
           python3 tools/patches/build.py native-build --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
           python3 tools/patches/build.py native-integrate --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'

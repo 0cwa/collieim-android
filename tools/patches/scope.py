@@ -3,6 +3,7 @@
 import argparse
 import copy
 import json
+from pathlib import Path
 import subprocess
 import re
 import sys
@@ -195,7 +196,121 @@ def check_release_profiles(reviewed, current):
         raise ValueError('release profiles differ from reviewed composition')
 
 
-def check_scope(repo, scope, base, head='HEAD'):
+# Exact legacy-main files deliberately retained when the release-base is integrated.
+# No other source projection difference is accepted for the main-based fork PR.
+MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
+MAIN_CLEAN_ENTRIES_BLOB = '8f9587ace1b25f6a3c5cbc18176859f55a8d7495'
+
+MAIN_PROJECTION_EXCEPTIONS = frozenset({
+    '.github/FUNDING.yml', '.github/workflows/sync.yml',
+    '.github/workflows/tagrelease.yml', 'README.md', 'SECURITY.md',
+    'assets/badge_obtainium.png', 'assets/collie-foreground.svg',
+    'assets/collie-icon.svg', 'pkcs11.config',
+})
+
+
+
+# Exact audited main-preservation and portability entries; includes absence and mode.
+MAIN_CLEAN_ENTRIES = json.loads((Path(__file__).parent / 'main-clean-entries.json').read_text())
+# The validator and pin registry contain the manifest hash, so pinning their
+# own blobs in that manifest would be circular. All other scope files are
+# checked. PR-controlled code makes this an accidental-change check only.
+MAIN_SCOPE_FILES = frozenset(['tools/patches/main-clean-entries.json', 'tools/patches/scope.py', 'tools/patches/pins.py'])
+INITIAL_MAIN = '2d537903ec2b3f9f24d40208d164651c989c159d'
+
+def check_trusted_integration_lower(repo, integration_lower):
+    actual = git(repo, 'rev-parse', '--verify', integration_lower + '^{commit}').decode().strip()
+    if actual != MAIN_INTEGRATION_LOWER:
+        raise ValueError('unexpected trusted release-base commit')
+
+
+def mutable_main_documentation(path):
+    # The generated report and pipeline documentation are part of the pinned
+    # port evidence; other public documentation can evolve on trusted main.
+    return (path in {'README.md', 'SECURITY.md', '.github/README.md'} or
+            path.startswith('assets/') or
+            (path.startswith('docs/') and path not in {'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'}))
+
+
+def check_clean_projection(repo, candidate, lower, allow_main_docs=False):
+    # The audited tree, not historical ancestry, establishes the clean base.
+    manifest = 'tools/patches/main-clean-entries.json'
+    entry = git(repo, 'ls-tree', candidate, '--', manifest).decode().strip().split('\t')[0]
+    if entry != '100644 blob ' + MAIN_CLEAN_ENTRIES_BLOB:
+        raise ValueError('audited integration manifest differs')
+    changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', lower, candidate).split(b'\0')
+    for raw in filter(None, changed):
+        path = raw.decode('utf-8', 'surrogateescape')
+        if (path not in MAIN_CLEAN_ENTRIES and path not in MAIN_SCOPE_FILES and
+            not (allow_main_docs and mutable_main_documentation(path))):
+            raise ValueError('unexpected change to release base: ' + path)
+    for path, expected in MAIN_CLEAN_ENTRIES.items():
+        if allow_main_docs and mutable_main_documentation(path):
+            continue
+        entry = git(repo, 'ls-tree', candidate, '--', path).decode().strip().split('\t')[0]
+        if entry != expected:
+            raise ValueError('audited integration entry differs: ' + path)
+
+
+def check_main_transition(repo, base, head, integration_lower):
+    check_trusted_integration_lower(repo, integration_lower)
+    actual_base = git(repo, 'rev-parse', '--verify', base + '^{commit}').decode().strip()
+    if actual_base != INITIAL_MAIN:
+        raise ValueError('unexpected transition base')
+    if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        raise ValueError('main base is not an ancestor of transition head')
+    check_clean_projection(repo, head, integration_lower)
+    # Verify the whole historic stack against its pinned source checkpoints.
+    candidates = git(repo, 'rev-list', '--ancestry-path', MOLLY + '..' + integration_lower).decode().splitlines()
+    for candidate in candidates:
+        try:
+            check_scope(repo, 'additions', candidate, integration_lower)
+            break
+        except (ValueError, subprocess.CalledProcessError):
+            continue
+    else:
+        raise ValueError('pinned release base has no validated additions phase')
+    return {'scope': 'main-transition', 'profile_present': True, 'port_present': True}
+
+
+def check_main_docs(repo, base, head):
+    if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        raise ValueError('main base is not an ancestor of head')
+    for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')):
+        path = raw.decode('utf-8', 'surrogateescape')
+        if not (path in {'README.md', 'SECURITY.md', '.github/README.md'} or path.startswith(('docs/', 'assets/'))):
+            raise ValueError('main documentation scope excludes: ' + path)
+    return {'scope': 'main-docs', 'profile_present': False, 'port_present': False}
+
+
+def check_main_integration(repo, base, head, integration_lower):
+    check_clean_projection(repo, base, integration_lower, allow_main_docs=True)
+    for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')):
+        path = raw.decode('utf-8', 'surrogateescape')
+        if mutable_main_documentation(path):
+            raise ValueError('main documentation changed: ' + path)
+    # Compare the complete tree entries, including mode and absence.
+    for path in MAIN_PROJECTION_EXCEPTIONS:
+        if git(repo, 'ls-tree', base, '--', path) != git(repo, 'ls-tree', head, '--', path):
+            raise ValueError('main projection changed: ' + path)
+
+
+def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
+    if scope == 'main-transition':
+        if integration_lower is None:
+            raise ValueError('main transition requires pinned release base')
+        return check_main_transition(repo, base, head, integration_lower)
+    if scope == 'main-docs':
+        if integration_lower is not None:
+            raise ValueError('main documentation must not use release base')
+        return check_main_docs(repo, base, head)
+    if integration_lower is not None:
+        if scope != 'forks':
+            raise ValueError('main integration is supported only for forks scope')
+        check_trusted_integration_lower(repo, integration_lower)
+        check_main_integration(repo, base, head, integration_lower)
     if scope not in ('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks'):
         raise ValueError('unknown scope')
     if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
@@ -232,7 +347,8 @@ def check_scope(repo, scope, base, head='HEAD'):
     else:
         lower_source = {'switch': MOLLY, 'release': OLD, 'followups': NEW, 'additions': NEW, 'features': NEW, 'forks': NEW}[scope]
         for raw in filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', lower_source, base).split(b'\0')):
-            if not metadata(raw.decode('utf-8', 'surrogateescape')):
+            path = raw.decode('utf-8', 'surrogateescape')
+            if not metadata(path) and not (integration_lower is not None and (path in MAIN_PROJECTION_EXCEPTIONS or mutable_main_documentation(path))):
                 raise ValueError('lower base has incorrect source projection')
         base_profile = git(repo, 'show', base + ':molly-build.json', check=False)
         if scope == 'switch':
@@ -261,7 +377,7 @@ def check_scope(repo, scope, base, head='HEAD'):
             if not all(exists(head, addition_path + '/' + name) for name in addition_files(layer)):
                 raise ValueError('additions phase is incomplete')
     if scope == 'forks':
-        for path in ('tools/patches/scope.py', 'tools/patches/fork_profiles.py',
+        for path in ('tools/patches/main-clean-entries.json', 'tools/patches/scope.py', 'tools/patches/fork_profiles.py',
                      'tools/patches/line_origin.py', 'tools/patches/port_report.py',
                      'tools/patches/release.py'):
             if git(repo, 'rev-parse', base + ':' + path).strip() != git(repo, 'rev-parse', head + ':' + path).strip():
@@ -306,10 +422,11 @@ def check_scope(repo, scope, base, head='HEAD'):
         check_scope(repo, 'pipeline', MOLLY, base)
     elif scope in ('release', 'followups', 'additions', 'features', 'forks'):
         lower_phase = {'release': 'switch', 'followups': 'release', 'additions': 'followups', 'features': 'additions', 'forks': 'additions'}[scope]
-        candidates = git(repo, 'rev-list', '--ancestry-path', MOLLY + '..' + base).decode().splitlines()
+        history_base = integration_lower if integration_lower is not None else base
+        candidates = git(repo, 'rev-list', '--ancestry-path', MOLLY + '..' + history_base).decode().splitlines()
         for candidate in candidates:
             try:
-                check_scope(repo, lower_phase, candidate, base)
+                check_scope(repo, lower_phase, candidate, history_base)
                 break
             except (ValueError, subprocess.CalledProcessError):
                 continue
@@ -319,7 +436,7 @@ def check_scope(repo, scope, base, head='HEAD'):
     paths = git(repo, 'diff', '--no-renames', '--name-only', '-z', source, head).split(b'\0')
     for raw in filter(None, paths):
         path = raw.decode('utf-8', 'surrogateescape')
-        if not metadata(path):
+        if not metadata(path) and not (integration_lower is not None and (path in MAIN_PROJECTION_EXCEPTIONS or mutable_main_documentation(path))):
             raise ValueError('source projection differs: ' + path)
     probe = subprocess.run(['git', '-C', str(repo), 'rev-parse', head + ':patches/molly'],
                            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
@@ -347,13 +464,14 @@ def check_scope(repo, scope, base, head='HEAD'):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks'))
+    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-docs'))
     parser.add_argument('--base', required=True)
     parser.add_argument('--head', default='HEAD')
     parser.add_argument('--repo', default='.')
+    parser.add_argument('--integration-lower', help='trusted historical release-base for a main-based forks PR')
     args = parser.parse_args()
     try:
-        print(json.dumps(check_scope(args.repo, args.scope, args.base, args.head), sort_keys=True))
+        print(json.dumps(check_scope(args.repo, args.scope, args.base, args.head, args.integration_lower), sort_keys=True))
     except (ValueError, subprocess.CalledProcessError) as exc:
         print('scope check failed: ' + str(exc), file=sys.stderr)
         return 1

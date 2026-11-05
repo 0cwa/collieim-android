@@ -5,24 +5,26 @@
 #   tools/patches/preflight.sh resources  # proof + Android resource linking (catches missing @color/@string refs)
 #   tools/patches/preflight.sh full       # proof + the profile's assemble and regression tests (as CI)
 #
-# The reconstructed source lands in $MOLLY_PREFLIGHT_DIR (default: ~/agent-scratch/mollyim-android/preflight)
+# The reconstructed source lands in $MOLLY_PREFLIGHT_DIR (default: $HOME/.cache/collie/preflight)
 # and is replaced on each run. Android stages need JDK 21 and ANDROID_HOME.
 set -euo pipefail
 
 stage=proof
 scope=
 scope_base=
+integration_lower=
 profile=
 while (($#)); do
   case "$1" in
     proof|resources|full) stage=$1; shift ;;
     --scope) scope=${2:?missing scope}; shift 2 ;;
     --base) scope_base=${2:?missing base}; shift 2 ;;
+    --integration-lower) integration_lower=${2:?missing integration lower}; shift 2 ;;
     --profile) profile=${2:?missing profile}; shift 2 ;;
-    *) echo "usage: $0 [proof|resources|full] [--scope pipeline|switch|release|followups|additions|features|forks --base REF] [--profile NAME]" >&2; exit 2 ;;
+    *) echo "usage: $0 [proof|resources|full] [--scope pipeline|switch|release|followups|additions|features|forks --base REF] [--profile NAME] [--integration-lower REF]" >&2; exit 2 ;;
   esac
 done
-base=${MOLLY_PREFLIGHT_DIR:-$HOME/agent-scratch/mollyim-android/preflight}
+base=${MOLLY_PREFLIGHT_DIR:-$HOME/.cache/collie/preflight}
 mkdir -p "$base"
 base=$(realpath -e -- "$base")
 # Temporary forests must have canonical paths; inherited TMPDIR may contain symlinks.
@@ -41,9 +43,11 @@ if [[ -f molly-build.json ]] && python3 -c 'import json; d=json.load(open("molly
   python3 tools/patches/prepare_port_report.py
 fi
 
-if [[ -n $scope || -n $scope_base ]]; then
+scope_args=()
+if [[ -n $integration_lower ]]; then scope_args=(--integration-lower "$integration_lower"); fi
+if [[ -n $scope || -n $scope_base || -n $integration_lower ]]; then
   [[ -n $scope && -n $scope_base ]] || { echo '--scope and --base are both required' >&2; exit 2; }
-  python3 tools/patches/scope.py --scope "$scope" --base "$scope_base"
+  python3 tools/patches/scope.py --scope "$scope" --base "$scope_base" "${scope_args[@]}"
 fi
 
 
@@ -76,7 +80,7 @@ git worktree prune
 
 echo '== source reconstruction and tree proof'
 stack_args=()
-if [[ -n $scope ]]; then stack_args=(--scope "$scope" --base "$scope_base"); fi
+if [[ -n $scope ]]; then stack_args=(--scope "$scope" --base "$scope_base" "${scope_args[@]}"); fi
 profile_args=()
 if [[ -n $profile ]]; then profile_args=(--profile "$profile"); fi
 python3 tools/patches/release.py --repo . --config molly-build.json \

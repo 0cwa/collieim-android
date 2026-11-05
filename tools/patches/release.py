@@ -75,14 +75,14 @@ def load_config(path):
     return data
 
 
-def check_source_boundary(repo, signal, scope=None, base=None):
+def check_source_boundary(repo, signal, scope=None, base=None, integration_lower=None):
     """A new base edit must be reviewed explicitly, never silently excluded."""
     verify_complete.commit(repo, signal, 'Signal source')
-    if scope or base:
+    if scope or base or integration_lower:
         if not scope or not base or scope == 'pipeline':
             raise forest.ForestError('a release requires a valid stack scope and lower base')
         try:
-            stack_scope.check_scope(repo, scope, base)
+            stack_scope.check_scope(repo, scope, base, integration_lower=integration_lower)
         except ValueError as exc:
             raise forest.ForestError(str(exc)) from exc
         return
@@ -322,12 +322,12 @@ def apply_resolutions(repo, worktree, tree, records, existing=False):
     return changed, applied
 
 
-def assemble(repo, config_path, worktree, scope=None, base=None, profile=None):
+def assemble(repo, config_path, worktree, scope=None, base=None, profile=None, integration_lower=None):
     repo = Path(repo).resolve()
     config, selection = release_profiles.select(load_config(config_path), profile, repo)
     destination = forest.destination(repo, worktree)
     signal = config['signal']['commit']
-    check_source_boundary(repo, signal, scope, base)
+    check_source_boundary(repo, signal, scope, base, integration_lower)
     patches = inside(repo, config['molly']['patches'], 'Molly forest')
     data = forest.Forest(patches)
     identity = verify_complete.validate_identity(data, repo)
@@ -411,11 +411,12 @@ def main():
     parser.add_argument('--profile', choices=sorted(release_profiles.NAMES))
     parser.add_argument('--worktree', type=Path, required=True)
     parser.add_argument('--report', type=Path)
-    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features', 'forks'))
+    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition'))
     parser.add_argument('--base')
+    parser.add_argument('--integration-lower')
     args = parser.parse_args()
     try:
-        result = assemble(args.repo, args.config, args.worktree, args.scope, args.base, args.profile)
+        result = assemble(args.repo, args.config, args.worktree, args.scope, args.base, args.profile, args.integration_lower)
         code = 0
     except (forest.ForestError, git_utils.GitError, OSError, UnicodeError, ValueError, KeyError) as exc:
         result, code = {'status': 'FAIL', 'error': str(exc)}, 1

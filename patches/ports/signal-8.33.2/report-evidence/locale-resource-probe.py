@@ -1,7 +1,7 @@
 import os, pathlib, subprocess, xml.etree.ElementTree as ET, shutil, hashlib
-root=pathlib.Path.home()/'agent-scratch/mollyim-android/pr-stack'; work=root/'locale-probe-work'; res=work/'res'; out=work/'out'
-aapt=pathlib.Path('/var/home/x/.gradle/caches/9.6.0/transforms/db7e385e81351d1a8da4d35a4e20239c/transformed/aapt2-9.4.0-15978811-linux/aapt2')
-jar=pathlib.Path.home()/'Android/Sdk/platforms/android-36.1/android.jar'
+root=pathlib.Path(os.environ['EVIDENCE_WORK']); work=root/'locale-probe-work'; res=work/'res'; out=work/'out'
+aapt=pathlib.Path(os.environ['AAPT2'])
+jar=pathlib.Path(os.environ['ANDROID_JAR'])
 T='2b0ba46b23fd27974b8cefbd36e0d91791b525bd'; OLD='0e202dda90785771ff8c87526eaaf30c655f54f3'
 quals=['af','ar','az','be']
 def run(*args):

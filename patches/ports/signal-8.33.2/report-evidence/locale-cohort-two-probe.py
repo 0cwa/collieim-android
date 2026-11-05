@@ -2,13 +2,13 @@ import sys, types, os, subprocess, pathlib, hashlib, re, csv, shutil
 sys.modules['release']=types.ModuleType('release')
 pr=types.ModuleType('port_report')
 exec(subprocess.run(['git','show','fbee68f36ccb20cb3c76cb80359ecd7d423efcad:tools/patches/port_report.py'],check=True,stdout=subprocess.PIPE).stdout,pr.__dict__)
-ROOT=pathlib.Path.home()/'agent-scratch/mollyim-android/pr-stack'
+ROOT=pathlib.Path(os.environ['EVIDENCE_WORK'])
 WORK=ROOT/'locale-cohort-two'
-prior={r['hunk_id'] for r in csv.DictReader((ROOT/'LOCALE-REVERT-COHORT.tsv').open(),delimiter='\t')}
+prior={r['hunk_id'] for r in csv.DictReader(pathlib.Path(__file__).with_name('locale-revert-cohort.tsv').open(),delimiter='\t')}
 assert len(prior)==100
 WORK.mkdir(exist_ok=True)
 M='759ef1c309d93aa7e4ac7217b144c04545562f11'; T='2b0ba46b23fd27974b8cefbd36e0d91791b525bd'; T3='129bd88f3f04dfb6b80a93b96ec026f6a5cd3010'
-A='/var/home/x/.gradle/caches/9.6.0/transforms/db7e385e81351d1a8da4d35a4e20239c/transformed/aapt2-9.4.0-15978811-linux/aapt2'
+A=os.environ['AAPT2']
 def run(*a,**kw): return subprocess.run(a,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=True,**kw).stdout
 def git(*a,**kw): return run('git',*a,**kw)
 stats=pr.numstat(M,T); modes=pr.modes(M,T); selected=[]

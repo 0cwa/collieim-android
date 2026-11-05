@@ -1,8 +1,5 @@
-agent-heavy: all 2 slots busy, waiting:
-357982 01:08:02 ./gradlew --no-daemon --no-parallel --no-configuration-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/agent-sc
-361383 01:11:24 /home/x/Dev/omni-mic/edda-venv/bin/python ts.py
 AAPT2 Android Asset Packaging Tool (aapt) 2.20-15978811 sha256 7f0587c898f8401986b9c32385fb25d1ecea1e9007907376215f30f99c4894a9
-ANDROID_JAR /home/x/Android/Sdk/platforms/android-36.1/android.jar sha256 2981111371989ae7141868d6162070c89f0f1d505f66ac9dc7fdfd4d8c744264
+ANDROID_JAR ${ANDROID_HOME}/platforms/android-36.1/android.jar sha256 2981111371989ae7141868d6162070c89f0f1d505f66ac9dc7fdfd4d8c744264
 
 CASE baseline 
 Binary APK

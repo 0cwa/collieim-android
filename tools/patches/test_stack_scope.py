@@ -17,8 +17,15 @@ class ScopeTests(unittest.TestCase):
         self.git('config', 'user.email', 'test@example.invalid')
         self.git('config', 'user.name', 'Test')
         (self.repo / 'app.txt').write_text('original\n')
+        manifest = self.repo / 'tools/patches/main-clean-entries.json'
+        manifest.parent.mkdir(parents=True)
+        manifest.write_text('{}\n')
         self.git('add', '.')
         self.git('commit', '-qm', 'base')
+        pin = self.git('rev-parse', 'HEAD:tools/patches/main-clean-entries.json').strip()
+        patcher = mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES_BLOB', pin)
+        patcher.start()
+        self.addCleanup(patcher.stop)
         self.base = self.git('rev-parse', 'HEAD').strip()
 
     def git(self, *args):
@@ -41,6 +48,125 @@ class ScopeTests(unittest.TestCase):
     def check(self):
         with mock.patch.object(scope, 'MOLLY', self.base):
             return scope.check_scope(self.repo, 'pipeline', self.base)
+
+    def test_main_integration_lower_is_pinned_to_exact_commit(self):
+        with mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', self.base):
+            scope.check_trusted_integration_lower(self.repo, self.base)
+            self.commit('unrelated.txt', 'different')
+            with self.assertRaisesRegex(ValueError, 'unexpected trusted release-base'):
+                scope.check_trusted_integration_lower(self.repo, 'HEAD')
+
+    def test_main_forks_scope_cannot_admit_local_evidence_changes(self):
+        for path in ('patches/ports/signal-8.33.2/report-evidence/receipts.md',
+                     'patches/ports/signal-8.33.2/report-metadata.json',
+                     'patches/ports/signal-8.33.2/report-evidence/locale-resource-probe.py'):
+            self.assertFalse(scope.allowed('forks', path), path)
+
+    def test_main_integration_validates_clean_tree_without_lower_ancestry(self):
+        self.git('checkout', '-q', '--orphan', 'clean-main')
+        self.git('rm', '-q', '-rf', '.')
+        (self.repo / 'README.md').write_text('main readme')
+        manifest = self.repo / 'tools/patches/main-clean-entries.json'
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text('{}\n')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'clean main')
+        main = self.git('rev-parse', 'HEAD').strip()
+        entry = self.git('ls-tree', main, '--', 'README.md').strip().split('\t')[0]
+        self.commit('patches/forks/signal-foss/collie-branding/change', 'brand')
+        head = self.git('rev-parse', 'HEAD').strip()
+        with mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', {'README.md': entry}), \
+             mock.patch.object(scope, 'MAIN_SCOPE_FILES', {'.github/workflows/molly-patch-release.yml',
+                                                          '.github/workflows/molly-unsigned-release.yml',
+                                                          'app.txt'}):
+            scope.check_main_integration(self.repo, main, head, self.base)
+            self.commit('README.md', 'changed readme')
+            with self.assertRaisesRegex(ValueError, 'main (projection|documentation) changed'):
+                scope.check_main_integration(self.repo, main, 'HEAD', self.base)
+            self.git('reset', '--hard', '-q', head)
+            self.commit('pkcs11.config', 'unexpected')
+            with self.assertRaisesRegex(ValueError, 'main projection changed'):
+                scope.check_main_integration(self.repo, main, 'HEAD', self.base)
+            with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
+                scope.check_main_integration(self.repo, head, head, self.base)
+
+    def test_mutable_main_documentation_excludes_release_evidence(self):
+        for path in ('README.md', 'SECURITY.md', '.github/README.md', 'docs/new-guide.md', 'assets/icon.svg'):
+            self.assertTrue(scope.mutable_main_documentation(path), path)
+        for path in ('docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md', 'app/src/example.kt'):
+            self.assertFalse(scope.mutable_main_documentation(path), path)
+
+    def test_clean_projection_allows_evolving_main_docs_only_for_integration(self):
+        self.commit('README.md', 'original')
+        reviewed = self.git('rev-parse', 'HEAD').strip()
+        entry = self.git('ls-tree', reviewed, '--', 'README.md').strip().split('\t')[0]
+        self.commit('README.md', 'updated on main')
+        self.commit('docs/new-guide.md', 'new main documentation')
+        scope_files = {'.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml'}
+        with mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', {'README.md': entry}), \
+             mock.patch.object(scope, 'MAIN_SCOPE_FILES', scope_files):
+            with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
+                scope.check_clean_projection(self.repo, 'HEAD', self.base)
+            scope.check_clean_projection(self.repo, 'HEAD', self.base, allow_main_docs=True)
+            self.commit('docs/PORT-REPORT.md', 'tampered port evidence')
+            with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
+                scope.check_clean_projection(self.repo, 'HEAD', self.base, allow_main_docs=True)
+
+    def test_clean_projection_rejects_manifest_and_app_tampering(self):
+        self.commit('tools/patches/main-clean-entries.json', '{"app.txt":"fake"}')
+        self.commit('app.txt', 'malicious')
+        with self.assertRaisesRegex(ValueError, 'audited integration manifest differs'):
+            scope.check_clean_projection(self.repo, 'HEAD', self.base)
+
+    def test_clean_projection_rejects_changed_and_extra_files(self):
+        self.commit('README.md', 'audited')
+        head = self.git('rev-parse', 'HEAD').strip()
+        entry = self.git('ls-tree', head, '--', 'README.md').strip().split('\t')[0]
+        scope_files = {'.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml'}
+        with mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', {'README.md': entry}), \
+             mock.patch.object(scope, 'MAIN_SCOPE_FILES', scope_files):
+            scope.check_clean_projection(self.repo, head, self.base)
+            self.commit('README.md', 'tampered')
+            with self.assertRaisesRegex(ValueError, 'audited integration entry differs'):
+                scope.check_clean_projection(self.repo, 'HEAD', self.base)
+            self.git('reset', '--hard', '-q', head)
+            self.commit('tools/patches/hidden-local.py', 'unexpected')
+            with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
+                scope.check_clean_projection(self.repo, 'HEAD', self.base)
+
+    def test_clean_projection_rejects_scope_tool_and_workflow_changes(self):
+        paths = ('tools/patches/release.py', '.github/workflows/molly-patch-release.yml')
+        for path in paths:
+            self.commit(path, 'reviewed content')
+        reviewed = self.git('rev-parse', 'HEAD').strip()
+        entries = {path: self.git('ls-tree', reviewed, '--', path).strip().split('\t')[0]
+                   for path in paths}
+        entries['.github/workflows/molly-unsigned-release.yml'] = self.git(
+            'ls-tree', reviewed, '--', '.github/workflows/molly-unsigned-release.yml').strip().split('\t')[0]
+        with mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', entries):
+            scope.check_clean_projection(self.repo, reviewed, self.base)
+            for path in paths:
+                with self.subTest(path=path):
+                    self.commit(path, 'unreviewed change')
+                    with self.assertRaisesRegex(ValueError, 'audited integration entry differs'):
+                        scope.check_clean_projection(self.repo, 'HEAD', self.base)
+                    self.git('reset', '--hard', '-q', reviewed)
+
+    def test_scope_validator_requires_independent_trust(self):
+        # A validator cannot authenticate its own code against an attacker who
+        # can edit both that code and its expected hash. The pin is deliberately
+        # an accidental-change gate; trusted CI must load this module elsewhere.
+        self.assertEqual(scope.MAIN_SCOPE_FILES,
+                         {'tools/patches/main-clean-entries.json', 'tools/patches/scope.py', 'tools/patches/pins.py'})
+
+    def test_main_docs_scope_is_narrow_and_checks_ancestry(self):
+        self.commit('README.md', 'initial documentation')
+        base = self.git('rev-parse', 'HEAD').strip()
+        self.commit('README.md', 'safe documentation')
+        self.assertEqual(scope.check_scope(self.repo, 'main-docs', base)['scope'], 'main-docs')
+        self.commit('app.txt', 'unexpected production change')
+        with self.assertRaisesRegex(ValueError, 'main documentation scope excludes'):
+            scope.check_scope(self.repo, 'main-docs', base)
 
     def test_forks_allows_only_explicit_identity_tool_changes(self):
         for path in ('docs/PATCH-PIPELINE.md', 'tools/patches/build.py',

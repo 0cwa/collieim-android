@@ -12321,7 +12321,7 @@
       "reason": "Literal whole-hunk inverse fails the configured Kotlin compiler; The socket result demonstrates the coroutine call constraint only, not necessity of annotations, assertions, or false IOException.",
       "molly_equivalent": "Molly 0e202dda calls without coroutine wrappers; signal-8.20.4 5551f302 wraps removeDevice but calls loadDevices directly.",
       "searched_branches": "Molly 8.19.2-4 0e202dda and origin/signal-8.20.4 5551f302",
-      "revert_gate": "agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/Dev/mollyim-android/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin",
+      "revert_gate": "./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script ${REPO}/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin",
       "gate_input": "Original PR5 source b9f7f076e5c84433ecee890741c2c044b75336f1 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, literal inverse counter blob 7606e4642d5cc4d78642168ca6651d1635778650; PR3/PR4 have identical original file blobs, but were not tested",
       "outcome": "baseline task UP-TO-DATE with build exit 0; inverse exit 1: suspend removeDevice called outside a coroutine",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#socket-and-settings-whole-hunk-inverses; patches/ports/signal-8.33.2/report-evidence/hunk-0a71dc5fd4885bc8ea81.patch"
@@ -12331,7 +12331,7 @@
       "reason": "Literal whole-hunk inverse fails the configured Kotlin compiler; The socket result demonstrates the coroutine call constraint only, not necessity of annotations, assertions, or false IOException.",
       "molly_equivalent": "Molly 0e202dda calls without coroutine wrappers; signal-8.20.4 5551f302 wraps removeDevice but calls loadDevices directly.",
       "searched_branches": "Molly 8.19.2-4 0e202dda and origin/signal-8.20.4 5551f302",
-      "revert_gate": "agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/Dev/mollyim-android/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin",
+      "revert_gate": "./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script ${REPO}/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin",
       "gate_input": "Original PR5 source b9f7f076e5c84433ecee890741c2c044b75336f1 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, literal inverse counter blob d9689366112e3fb9e1c29befd9c393bf23a3f89a; PR3/PR4 have identical original file blobs, but were not tested",
       "outcome": "baseline task UP-TO-DATE with build exit 0; inverse exit 1: suspend loadDevices called outside a coroutine",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#socket-and-settings-whole-hunk-inverses; patches/ports/signal-8.33.2/report-evidence/hunk-2144342eb29427cab628.patch"
@@ -12341,7 +12341,7 @@
       "reason": "Literal whole-hunk inverse fails the configured Kotlin compiler; The failure is conditional on the other current settings hunk retained; runtime, lifecycle, retention and uniqueness are unmeasured.",
       "molly_equivalent": "Molly 0e202dda and signal-8.20.4 5551f302 use greenrobot EventBus and Subscribe.",
       "searched_branches": "Molly 8.19.2-4 0e202dda and origin/signal-8.20.4 5551f302",
-      "revert_gate": "agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/Dev/mollyim-android/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin",
+      "revert_gate": "./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script ${REPO}/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin",
       "gate_input": "Original PR5 source b9f7f076e5c84433ecee890741c2c044b75336f1 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, literal inverse counter blob be34629b9f6cb01c22e4f07e68e335b4378b135a; PR3/PR4 have identical original file blobs, but were not tested",
       "outcome": "baseline task UP-TO-DATE with build exit 0; inverse exit 1: greenrobot imports and current subscription symbols unresolved",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#socket-and-settings-whole-hunk-inverses; patches/ports/signal-8.33.2/report-evidence/hunk-bbe02e6ede61938f98c1.patch"
@@ -12351,7 +12351,7 @@
       "reason": "Literal whole-hunk inverse fails the configured Kotlin compiler; The failure is conditional on the other current settings hunk retained; runtime, lifecycle, retention and uniqueness are unmeasured.",
       "molly_equivalent": "Molly 0e202dda and signal-8.20.4 5551f302 use greenrobot EventBus and Subscribe.",
       "searched_branches": "Molly 8.19.2-4 0e202dda and origin/signal-8.20.4 5551f302",
-      "revert_gate": "agent-heavy -- ./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script /var/home/x/Dev/mollyim-android/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin",
+      "revert_gate": "./gradlew --offline --no-daemon --no-parallel --no-configuration-cache --no-build-cache --max-workers=1 --dependency-verification=strict --init-script ${REPO}/tools/patches/test-worker-heap.init.gradle -Pkotlin.compiler.execution.strategy=in-process '-Dorg.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -Dcom.android.tools.r8.threadCount=1 -XX:+UnlockExperimentalVMOptions -XX:hashCode=3' :app:compileProdWebsiteDebugKotlin",
       "gate_input": "Original PR5 source b9f7f076e5c84433ecee890741c2c044b75336f1 tree 68fa08fd69809463be3aa60ccd232bb50f02e547, literal inverse counter blob b286a9325d18d204d08927d45a0973dff2d31b2a; PR3/PR4 have identical original file blobs, but were not tested",
       "outcome": "baseline task UP-TO-DATE with build exit 0; inverse exit 1: getDefault and Subscribe unresolved",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#socket-and-settings-whole-hunk-inverses; patches/ports/signal-8.33.2/report-evidence/hunk-42393357b34645095fb1.patch"
@@ -16534,7 +16534,7 @@
           "output_blob": "755d040b4b801963f2d4bfdcd9d734dc05befbaa",
           "patch": "patches/ports/signal-8.33.2/report-evidence/hunk-e0cd16838d2a30101790.patch",
           "gate_input": "PR5 baseline tree 68fa08fd69809463be3aa60ccd232bb50f02e547 and isolated and combined indentation inverse candidates; PR3/PR4 matching file blobs only",
-          "gate": "agent-heavy -- ./gradlew :feature:app-settings:compileDebugKotlin --max-workers=12 --console=plain",
+          "gate": "./gradlew :feature:app-settings:compileDebugKotlin --max-workers=12 --console=plain",
           "outcome": "baseline build passed with task up to date; each of three individual inverses and combined inverse executed task and passed on PR5",
           "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#kotlin-indentation-reversions"
         }

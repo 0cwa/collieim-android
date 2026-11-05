@@ -1,8 +1,8 @@
 import os,pathlib,subprocess,csv,re,ast,xml.dom.minidom as D,xml.parsers.expat,collections,hashlib,shutil
-P=pathlib.Path.home()/'agent-scratch/mollyim-android/pr-stack'; W=P/'post-format-module-gates'; T='f25a1de0fc87f0f862cc270f823d240857878bc5'; S='6e9dddc01f1b26e608ac683807c51e139c141ed2'
+P=pathlib.Path(os.environ['EVIDENCE_WORK']); W=P/'post-format-module-gates'; T='f25a1de0fc87f0f862cc270f823d240857878bc5'; S='6e9dddc01f1b26e608ac683807c51e139c141ed2'
 def git(*a,env=None,input=None):
  p=subprocess.run(['git',*a],env=env,input=input,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=True); return p.stdout
-source=(P/'translation-xml-proof.py').read_text(); mod=ast.parse(source); exec(compile(ast.Module(body=[n for n in mod.body if isinstance(n,ast.FunctionDef) and n.name in ('dom','text','norm','elements','transform')],type_ignores=[]),'<translation-proof-functions>','exec'))
+source=pathlib.Path(__file__).with_name('post-format-translation-xml-proof.py').read_text(); mod=ast.parse(source); exec(compile(ast.Module(body=[n for n in mod.body if isinstance(n,ast.FunctionDef) and n.name in ('dom','text','norm','elements','transform')],type_ignores=[]),'<translation-proof-functions>','exec'))
 rows=list(csv.DictReader((W/'cohort.tsv').open(),delimiter='\t')); assert len(rows)==524
 patches={}
 for chunk in (W/'cohort.patch').read_bytes().split(b'# hunk ')[1:]:

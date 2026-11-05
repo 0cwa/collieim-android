@@ -32,6 +32,8 @@ exit 0
         self.executable('python3', '''#!/usr/bin/python3
 import json, os, pathlib, sys
 args = sys.argv[1:]
+if args and (args[0].endswith('scope.py') or args[0].endswith('release.py')):
+    with open(os.environ['TEST_ARGS'], 'a') as log: log.write(json.dumps(args) + '\\n')
 if args and args[0] == '-c':
     if 'get("port")' in args[1]: sys.exit(1)
     print('fixture-target')
@@ -54,7 +56,7 @@ elif args and args[0] == '-':
         manager.write_text('#!/bin/sh\nexit 0\n')
         manager.chmod(0o755)
         self.env = dict(os.environ, HOME=str(self.alias), PATH=str(self.bin) + ':' + os.environ['PATH'],
-                        TEST_REPO=str(self.repo), TEST_LOG=str(self.log),
+                        TEST_REPO=str(self.repo), TEST_LOG=str(self.log), TEST_ARGS=str(self.root / 'args'),
                         ANDROID_HOME=str(self.root / 'sdk'), TMPDIR=str(self.alias))
         self.env.pop('MOLLY_PREFLIGHT_DIR', None)
 
@@ -70,9 +72,17 @@ elif args and args[0] == '-':
     def test_default_root_and_resource_command_with_symlinked_home(self):
         self.run_preflight('resources')
         lines = self.log.read_text().splitlines()
-        self.assertEqual(lines[0], str(self.home / 'agent-scratch/mollyim-android/preflight/tmp'))
+        self.assertEqual(lines[0], str(self.home / '.cache/collie/preflight/tmp'))
         self.assertIn('--max-workers=12', lines[1:])
         self.assertIn(':app:processProdWebsiteDebugResources', lines[1:])
+
+    def test_integration_lower_is_passed_to_scope_and_reconstruction(self):
+        lower = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
+        self.run_preflight('proof', '--scope', 'forks', '--base', 'main', '--integration-lower', lower)
+        calls = [json.loads(line) for line in (self.root / 'args').read_text().splitlines()]
+        self.assertEqual(len(calls), 2)
+        for args in calls:
+            self.assertEqual(args[args.index('--integration-lower') + 1], lower)
 
     def test_explicit_symlinked_root_is_resolved(self):
         self.env['MOLLY_PREFLIGHT_DIR'] = str(self.alias / 'custom')

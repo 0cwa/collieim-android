@@ -1,6 +1,7 @@
+import os
 import subprocess,re,collections,xml.dom.minidom as D,hashlib,difflib
 from pathlib import Path
-P=Path('/var/home/x/agent-scratch/mollyim-android/pr-stack')
+P=Path(os.environ['EVIDENCE_WORK'])
 S='6e9dddc01f1b26e608ac683807c51e139c141ed2'; A='2533afec2fe2d7f9fc682f699fc21d7624521889'; B='70f2eba69967c4a3ae82dd9204999feb1bd70f9b'; O='c47a74ba0961903eeaeda6d22347a990056c3e83'; M='0e202dda90785771ff8c87526eaaf30c655f54f3'
 def tree(ref):
  out=subprocess.check_output(['git','ls-tree','-rz',ref]); return {p.decode():h.decode() for x in out.split(b'\0') if x for meta,p in [x.split(b'\t',1)] for h in [meta.split()[2]]}

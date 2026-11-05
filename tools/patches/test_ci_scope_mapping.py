@@ -135,6 +135,30 @@ class ScopeMappingTests(unittest.TestCase):
         self.git('checkout', '-q', '--detach', self.unrelated)
         self.assertNotEqual(self.run_mapping('pull_request', 'main', self.variants).returncode, 0)
 
+    def test_main_transition_and_ordinary_docs_have_distinct_scopes(self):
+        self.mapping = self.mapping.replace('7f0eb01a0ab472deeef3b528e7f508425044fa6a', self.lower)
+        self.git('checkout', '-q', '--orphan', 'clean-main')
+        self.git('rm', '-q', '-rf', '.')
+        (self.repo / 'README.md').write_text('initial main')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'main')
+        clean_base = self.git('rev-parse', 'HEAD').strip()
+        (self.repo / 'molly-build.json').write_text('{}')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'transition')
+        transition = self.git('rev-parse', 'HEAD').strip()
+        result = self.run_mapping('pull_request', 'main', clean_base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip().splitlines()[-1], 'main-transition ' + clean_base)
+        (self.repo / 'README.md').write_text('updated')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'documentation')
+        result = self.run_mapping('pull_request', 'main', transition)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), 'main-docs ' + transition)
+        self.git('checkout', '-q', '--detach', self.unrelated)
+        self.assertNotEqual(self.run_mapping('pull_request', 'main', transition).returncode, 0)
+
     def test_dispatch_mappings(self):
         for ref in ('feature/collie-theme-pr17-126352', 'feature/collie-donation-pr17-126352'):
             with self.subTest(ref=ref):

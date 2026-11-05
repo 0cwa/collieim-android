@@ -80,6 +80,22 @@ class ScopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
                 scope.check_main_integration(self.repo, head, head, self.base)
 
+    def test_clean_projection_rejects_changed_and_extra_files(self):
+        self.commit('README.md', 'audited')
+        head = self.git('rev-parse', 'HEAD').strip()
+        entry = self.git('ls-tree', head, '--', 'README.md').strip().split('\t')[0]
+        scope_files = {'.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml'}
+        with mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', {'README.md': entry}), \
+             mock.patch.object(scope, 'MAIN_SCOPE_FILES', scope_files):
+            scope.check_clean_projection(self.repo, head, self.base)
+            self.commit('README.md', 'tampered')
+            with self.assertRaisesRegex(ValueError, 'audited integration entry differs'):
+                scope.check_clean_projection(self.repo, 'HEAD', self.base)
+            self.git('reset', '--hard', '-q', head)
+            self.commit('tools/patches/hidden-local.py', 'unexpected')
+            with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
+                scope.check_clean_projection(self.repo, 'HEAD', self.base)
+
     def test_main_docs_scope_is_narrow_and_checks_ancestry(self):
         self.commit('README.md', 'initial documentation')
         base = self.git('rev-parse', 'HEAD').strip()

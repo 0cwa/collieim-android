@@ -122,6 +122,9 @@ jobs:
           if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
+          if [[ "$scope" == forks || "$scope" == main-snapshot ]]; then
+            python3 tools/patches/fetch_reviewed_profiles.py "$trusted_url"
+          fi
           scope_extra=()
           if [[ -n ${integration_lower:-} ]]; then
             scope_extra+=(--integration-lower "$integration_lower")
@@ -193,6 +196,9 @@ jobs:
             [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$INTEGRATION_LOWER" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
             scope_extra+=(--integration-lower "$INTEGRATION_LOWER")
           fi
+          if [[ "${{ needs.scope.outputs.stack_scope }}" == forks || "${{ needs.scope.outputs.stack_scope }}" == main-snapshot ]]; then
+            python3 tools/patches/fetch_reviewed_profiles.py "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
+          fi
           if [[ "${{ needs.scope.outputs.port }}" == true ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
@@ -252,6 +258,9 @@ jobs:
             git fetch --no-tags "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "$INTEGRATION_LOWER"
             [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$INTEGRATION_LOWER" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
             scope_extra+=(--integration-lower "$INTEGRATION_LOWER")
+          fi
+          if [[ "${{ needs.scope.outputs.stack_scope }}" == forks || "${{ needs.scope.outputs.stack_scope }}" == main-snapshot ]]; then
+            python3 tools/patches/fetch_reviewed_profiles.py "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
           fi
           if [[ "${{ needs.scope.outputs.port }}" == true ]]; then
             python3 tools/patches/prepare_port_report.py
@@ -403,6 +412,7 @@ jobs:
             [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$INTEGRATION_LOWER" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
             scope_extra+=(--integration-lower "$INTEGRATION_LOWER")
           fi
+          python3 tools/patches/fetch_reviewed_profiles.py "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
           python3 tools/patches/prepare_port_report.py
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-instrumentation" --report "$RUNNER_TEMP/instrumentation/source.json" \

@@ -96,6 +96,16 @@ class PrepareReportTests(unittest.TestCase):
         for job in workflow.split('INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}')[1:]:
             self.assertLess(job.index('git fetch --no-tags'), job.index('python3 tools/patches/prepare_port_report.py'))
 
+    def test_reviewed_profiles_fetched_before_all_fork_scope_checks(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / '.github/workflows/molly-patch-release.yml').read_text()
+        scope_job, rest = workflow.split('  source-proof:', 1)
+        source_job, rest = rest.split('  android:', 1)
+        android_job, instrumentation_job = rest.split('  instrumentation:', 1)
+        self.assertLess(scope_job.index('python3 tools/patches/fetch_reviewed_profiles.py'), scope_job.index('python3 tools/patches/scope.py'))
+        for job in (source_job, android_job, instrumentation_job):
+            self.assertLess(job.index('python3 tools/patches/fetch_reviewed_profiles.py'), job.index('python3 tools/patches/release.py'))
+
     def test_feature_workflow_routes_and_runs_both_profiles(self):
         root = Path(__file__).resolve().parents[2]
         workflow = (root / '.github/workflows/molly-patch-release.yml').read_text()

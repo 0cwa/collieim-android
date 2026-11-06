@@ -27,7 +27,9 @@ def diagnostic_build(lock_path, sources, workspace, sdk, java_home, rust_bin, ou
     workspace = workspace.resolve(strict=True)
     lock_path = lock_path.resolve(strict=True)
     sources = sources.resolve(strict=True)
+    lock_sha = stage_artifacts.digest(lock_path)
     lock = stage_artifacts.load_lock(lock_path)
+    require(stage_artifacts.digest(lock_path) == lock_sha, 'Native lock changed during loading')
     source_proof = prepare_sources.verify_prepared(lock_path, sources)
     receipt_path = workspace / 'setup-receipt.json'
     require(receipt_path.is_file() and not receipt_path.is_symlink() and receipt_path.stat().st_size <= 16384, 'WebRTC setup receipt must be a small regular file')
@@ -94,7 +96,17 @@ def diagnostic_build(lock_path, sources, workspace, sdk, java_home, rust_bin, ou
         require(len(aar) == 1, 'Expected exactly one RingRTC release AAR')
         item = next(m for m in lock['modules'] if m['name'] == 'ringrtc-android')
         digest = stage_artifacts.digest(aar[0])
-        require(digest == item['binary_sha256'], 'RingRTC artifact differs from locked candidate; reproducibility is unproved')
+        require(stage_artifacts.digest(lock_path) == lock_sha, 'Native lock changed during diagnostic build')
+        if digest != item['binary_sha256']:
+            # Failure evidence cannot be used to stage or authorize this artifact.
+            failure = {'schema': 1, 'status': 'FAILED_ARTIFACT_MISMATCH', 'release_allowed': False,
+                       'scope': 'failed diagnostic; artifact is not approved for staging or release',
+                       'lock_sha256': lock_sha, 'sources': source_proof['sources'],
+                       'aar_sha256': digest, 'expected_aar_sha256': item['binary_sha256']}
+            with (output / 'failure-receipt.json').open('x') as destination:
+                json.dump(failure, destination, indent=2, sort_keys=True)
+                destination.write('\n')
+            raise Failure('RingRTC artifact differs from locked candidate; reproducibility is unproved')
         proof = {'schema': 1, 'status': 'PARTIAL_RINGRTC_BUILD', 'release_allowed': False,
                  'scope': 'diagnostic only; downloaded closure and proxy runtime unverified',
                  'lock_sha256': stage_artifacts.digest(lock_path), 'sources': source_proof['sources'], 'aar_sha256': digest}

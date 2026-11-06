@@ -87,6 +87,30 @@ class RingRtcDiagnosticTest(unittest.TestCase):
         self.assertFalse((self.output / 'build-receipt.json').exists())
         self.assertFalse((self.workspace / 'src/ringrtc/rffi/api').is_symlink())
 
+    def test_mismatched_output_fails_with_failure_only_receipt(self):
+        self.expected = b'different artifact'
+        with self.assertRaisesRegex(build_ringrtc.Failure, 'reproducibility is unproved'):
+            self.run_build()
+        receipt = json.loads((self.output / 'failure-receipt.json').read_text())
+        self.assertEqual('FAILED_ARTIFACT_MISMATCH', receipt['status'])
+        self.assertFalse(receipt['release_allowed'])
+        self.assertNotEqual(receipt['aar_sha256'], receipt['expected_aar_sha256'])
+        self.assertFalse((self.output / 'build-receipt.json').exists())
+        with self.assertRaisesRegex(build_ringrtc.Failure, 'already exists'):
+            self.run_build()
+
+    def test_lock_change_during_build_rejects_report(self):
+        old_digest = build_ringrtc.stage_artifacts.digest
+        def changing_digest(path):
+            self.digest_calls += 1
+            return 'changed' if self.digest_calls > 3 else old_digest(path)
+        self.digest_calls = 0
+        with patch.object(build_ringrtc.stage_artifacts, 'digest', side_effect=changing_digest):
+            with self.assertRaisesRegex(build_ringrtc.Failure, 'lock changed'):
+                self.run_build()
+        self.assertFalse((self.output / 'build-receipt.json').exists())
+        self.assertFalse((self.output / 'failure-receipt.json').exists())
+
     def test_existing_api_link_is_preserved(self):
         api = self.workspace / 'src/ringrtc/rffi/api'
         api.symlink_to(self.sources / 'ringrtc/src/rust/src/webrtc_include', target_is_directory=True)

@@ -99,9 +99,27 @@ class PartialSourceBuildTest(unittest.TestCase):
                 for path in (self.sources/'libsignal/java/android/build', self.sources/'libsignal/java/client/build'):
                     if path.exists(): shutil.rmtree(path)
 
-    def test_mismatched_output_fails_without_receipt(self):
+    def test_mismatched_output_fails_with_failure_only_receipt(self):
         self.binaries['libsignal-client'] = b'unexpected'
         with self.assertRaisesRegex(subject.Failure, 'reproducibility is unproved'):
+            self.run_build()
+        failure = json.loads(self.report.read_text())
+        self.assertEqual('FAILED_ARTIFACT_MISMATCH', failure['status'])
+        self.assertFalse(failure['release_allowed'])
+        self.assertNotEqual(failure['artifacts']['libsignal-client'], failure['expected_artifacts']['libsignal-client'])
+        with self.assertRaisesRegex(subject.Failure, 'already exists'):
+            self.run_build()
+
+    def test_lock_change_during_build_rejects_report(self):
+        original_runner = self.runner
+        def changing_runner(args, cwd, env):
+            result = original_runner(args, cwd, env)
+            if args[0] == str(self.root / 'verified-gradle/bin/gradle'):
+                with self.fixture.lock_file.open('a') as output:
+                    output.write(' ')
+            return result
+        self.runner = changing_runner
+        with self.assertRaisesRegex(subject.Failure, 'lock changed'):
             self.run_build()
         self.assertFalse(self.report.exists())
 

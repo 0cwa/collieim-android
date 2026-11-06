@@ -95,7 +95,9 @@ def preflight(lock_path, source_root, sdk_root, java_home, rust_bin, runner=run,
 def diagnostic_build(lock_path, source_root, sdk_root, java_home, rust_bin, report, gradle_zip, gradle_distribution, runner=run):
     require(not report.exists(), 'Native diagnostic report already exists')
     gradle = verify_gradle.verify(gradle_zip, gradle_distribution, '87a2216cc1f9122192d4e0fe905ffdf1b4c72cff797e9f733b174e157cadd396', top='gradle-9.6.0')
+    lock_sha = stage_artifacts.digest(lock_path)
     lock, proof, env, cargo = preflight(lock_path, source_root, sdk_root, java_home, rust_bin, runner)
+    require(stage_artifacts.digest(lock_path) == lock_sha, 'Native lock changed during preflight')
     libsignal = source_root / 'libsignal'
     result = runner([cargo, 'test', '--locked', '-p', 'libsignal-net', 'configured_proxy_never_falls_back_to_direct'], libsignal, env)
     require(any(re.search(r'test result: ok[.]\s+4 passed;', line) for line in result), 'Expected four proxy-mode tests did not pass')
@@ -111,8 +113,19 @@ def diagnostic_build(lock_path, source_root, sdk_root, java_home, rust_bin, repo
     require(len(aar) == 1 and len(jars) == 1, 'Cannot identify exactly one built libsignal AAR and client JAR')
     modules = {m['name']: m for m in lock['modules']}
     hashes = {'libsignal-android': stage_artifacts.digest(aar[0]), 'libsignal-client': stage_artifacts.digest(jars[0])}
-    require(all(hashes[name] == modules[name]['binary_sha256'] for name in hashes),
-            'Local libsignal artifacts differ from locked candidate bytes; reproducibility is unproved')
+    require(stage_artifacts.digest(lock_path) == lock_sha, 'Native lock changed during diagnostic build')
+    expected = {name: modules[name]['binary_sha256'] for name in hashes}
+    if hashes != expected:
+        # This is a failure record, never a staging or release authorization.
+        failure = {'schema': 1, 'status': 'FAILED_ARTIFACT_MISMATCH', 'release_allowed': False,
+                   'scope': 'failed diagnostic; artifacts are not approved for staging or release',
+                   'lock_sha256': lock_sha, 'sources': proof['sources'],
+                   'artifacts': hashes, 'expected_artifacts': expected}
+        report.parent.mkdir(parents=True, exist_ok=True)
+        with report.open('x') as output:
+            json.dump(failure, output, indent=2, sort_keys=True)
+            output.write('\n')
+        raise Failure('Local libsignal artifacts differ from locked candidate bytes; reproducibility is unproved')
     receipt = {'schema': 1, 'status': 'PARTIAL_LIBSIGNAL_ONLY', 'release_allowed': False,
                'scope': 'libsignal diagnostic build only; RingRTC, WebRTC closure and runtime unverified',
                'lock_sha256': stage_artifacts.digest(lock_path), 'sources': proof['sources'], 'artifacts': hashes}

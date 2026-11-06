@@ -209,7 +209,7 @@ jobs:
       - name: Test the optional native provenance and artifact checks
         run: |
           if [[ -d tools/native ]]; then
-            python3 -m unittest discover -s tools/native -p 'test_*.py' -v
+            PYTHONPATH=tools/patches python3 -m unittest discover -s tools/native -p 'test_*.py' -v
           fi
 
       - name: Fetch the exact official Molly source oracle

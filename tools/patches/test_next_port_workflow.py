@@ -8,6 +8,19 @@ import unittest
 
 
 class NextPortWorkflowTests(unittest.TestCase):
+    def test_native_discovery_uses_repository_build_module(self):
+        repo = Path(__file__).resolve().parents[2]
+        workflow = (repo / '.github/workflows/molly-patch-release.yml').read_text()
+        self.assertIn("PYTHONPATH=tools/patches python3 -m unittest discover -s tools/native", workflow)
+        self.assertEqual(workflow.count("python3 -m unittest discover -s tools/native"), 1)
+        scope_job, source_job = workflow.split('  source-proof:', 1)
+        self.assertNotIn("python3 -m unittest discover -s tools/native", scope_job)
+        self.assertIn("python3 -m unittest discover -s tools/native", source_job)
+        env = {key: value for key, value in os.environ.items() if key != 'PYTHONPATH'}
+        env['PYTHONPATH'] = 'tools/patches'
+        actual = subprocess.check_output(['python3', '-c', 'import build; print(build.__file__)'], cwd=repo, env=env, text=True).strip()
+        self.assertEqual(Path(actual).resolve(), repo / 'tools/patches/build.py')
+
     def test_private_release_variants_selects_only_the_exact_candidate(self):
         workflow = (Path(__file__).resolve().parents[2] / '.github/workflows/molly-patch-release.yml').read_text()
         start = workflow.index('              private/release-variants)')

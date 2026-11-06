@@ -58,7 +58,19 @@ jobs:
             base="$BASE_SHA"
             case "$BASE_REF" in
               stack/0-molly-8.19.2-4) scope=pipeline ;;
-              stack/1-patch-pipeline) scope=switch ;;
+              stack/1-patch-pipeline)
+                if git cat-file -e HEAD:molly-build.json 2>/dev/null; then
+                  scope=switch
+                else
+                  # A pipeline maintenance PR targets stack/1 itself, while a
+                  # switch PR adds a profile on top of that same base.
+                  # Require the head to include the current base: otherwise the
+                  # checked head would not represent the proposed merge result.
+                  anchor=0e202dda90785771ff8c87526eaaf30c655f54f3
+                  git merge-base --is-ancestor "$base" HEAD || { echo 'Pipeline PR base is not an ancestor of head' >&2; exit 1; }
+                  git merge-base --is-ancestor "$anchor" "$base" || { echo 'Pipeline PR base is outside official Molly history' >&2; exit 1; }
+                  base="$anchor"; scope=pipeline
+                fi ;;
               stack/2-molly-as-patchset) scope=release ;;
               stack/3-signal-8.33.2) scope=followups ;;
               stack/4-behavior-followups) scope=additions ;;

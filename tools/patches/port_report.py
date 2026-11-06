@@ -85,6 +85,7 @@ def deletion_report(inventory):
     output = ['', '## Whole-file deletions from the mechanical merge', '',
               f'{len(inventory)} paths: {len(text)} text files, {len(inventory)-len(text)} binary files, {sum(row[2] for row in text)} deleted text lines.',
               f'Scenario excluding paths absent at the same path in Molly: {len(inventory)-len(absent)} of {len(inventory)} deleted paths and {sum(row[2] for row in text)-sum(row[2] for row in absent_text)} of {sum(row[2] for row in text)} deleted text lines remain; {len(absent)-len(absent_text)} of {len(inventory)-len(text)} binary paths are excluded. This is a tree-membership scenario, not authorship, justification, or proof of behavior preservation.',
+              'Git LFS pointer files are counted as text when Git reports them as text; these counts do not measure the referenced image or other payload.',
               'Partial-file exclusions and deletion necessity remain unmeasured unless separately evidenced.', '',
               '| Classification | Paths | Text | Binary | Deleted text lines |', '|---|---:|---:|---:|---:|']
     for name, counts in sorted(classes.items()):

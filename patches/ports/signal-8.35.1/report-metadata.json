@@ -39,11 +39,151 @@
       "reason": "The old file is absent; a related implementation exists at lib/storage/src/main/java/org/signal/storage/keyvalue/UiHintValues.kt."
     },
     "app/src/main/java/org/thoughtcrime/securesms/notifications/NotificationIds.java": {
-      "caveat": "Some notification numeric IDs changed. Cleanup of active notifications during installed upgrades is unverified.",
+      "caveat": "Molly 8.19 uses different numeric IDs; Collie RC3 and this port both use summary 10, linked-device 170, and thread base 10000000. All 15 recorded RC1, RC2 and RC3 product trees use linked-device ID 170.",
       "classification": "source successor present",
       "evidence": "Git tree comparison at the pinned mechanical and port trees.",
       "molly_equivalent": "A successor exists; equivalence is not established.",
       "reason": "The old file is absent; a related implementation exists at app/src/main/java/org/thoughtcrime/securesms/notifications/NotificationIds.kt."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/BankTransferDetails_day mode_7e480c1c_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/BankTransferDetails_night mode_c0572229_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/BankTransferDetails_rtl_5f2f3345_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/BankTransferMandate_rtl_5f2f3345_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/DonationPending_rtl_5f2f3345_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/FindAccountInfoSheet_rtl_5f2f3345_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorLoading_day mode_7e480c1c_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorLoading_rtl_5f2f3345_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorNetherlands_day mode_7e480c1c_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorNetherlands_night mode_c0572229_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorNetherlands_rtl_5f2f3345_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorNorthAmerica_day mode_7e480c1c_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorNorthAmerica_night mode_c0572229_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorNorthAmerica_rtl_5f2f3345_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorSepa_day mode_7e480c1c_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorSepa_night mode_c0572229_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/GatewaySelectorSepa_rtl_5f2f3345_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/IdealTransferDetails_day mode_7e480c1c_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/IdealTransferDetails_night mode_c0572229_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
+    },
+    "app/src/screenshotTestPlayProdDebug/reference/org/thoughtcrime/securesms/components/settings/app/subscription/donate/DonationCheckoutScreenshotTests/IdealTransferDetails_rtl_5f2f3345_0.png": {
+      "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",
+      "classification": "removed screenshot coverage",
+      "evidence": "Present in Signal 8.35.1 and the mechanical tree; absent from the selected source tree.",
+      "molly_equivalent": "Not established.",
+      "reason": "A Signal screenshot test or its reference image is absent from the reconstructed port."
     },
     "feature/media-send/src/screenshotTest/kotlin/org/signal/mediasend/screens/capture/MediaCaptureScreenScreenshotTests.kt": {
       "caveat": "This removes visual regression coverage; it does not by itself establish a runtime behavior change.",

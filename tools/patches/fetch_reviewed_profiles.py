@@ -8,7 +8,7 @@ import scope
 
 
 def fetch(repo: Path, remote: str, commit: str) -> None:
-    # A temporary promisor remote lets Git fetch just the two reviewed blobs;
+    # A temporary promisor remote lets Git fetch only the reviewed blobs;
     # do not use --depth, which could alter ancestry checks for the main repo.
     git = ['git', '-C', str(repo), '-c', f'remote.reviewed-profile.url={remote}',
            '-c', 'remote.reviewed-profile.promisor=true',
@@ -17,7 +17,8 @@ def fetch(repo: Path, remote: str, commit: str) -> None:
     actual = subprocess.check_output(git + ['rev-parse', '--verify', 'FETCH_HEAD^{commit}'], text=True).strip()
     if actual != commit:
         raise ValueError('reviewed profile fetch did not return the pinned commit')
-    for path in ('tools/patches/release_profiles.py', 'molly-build.json'):
+    for path in ('tools/patches/release_profiles.py', 'molly-build.json',
+                 'patches/ports/signal-8.33.2/provenance.json'):
         subprocess.run(git + ['cat-file', '-e', f'{commit}:{path}'], check=True)
 
 

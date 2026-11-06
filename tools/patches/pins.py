@@ -19,12 +19,13 @@ RELEASE_WORKFLOW = '.github/workflows/molly-patch-release.yml'
 SYNC_WORKFLOW = '.github/workflows/sync.yml'
 FORK = 'tools/patches/fork_profiles.py'
 PROFILES = 'tools/patches/release_profiles.py'
+FETCH_REVIEWED = 'tools/patches/fetch_reviewed_profiles.py'
 
 # (value, meaning, upstream whose new release changes it, files that contain it)
 PINS = [
-    ('608bdec221293b1b8b80217bb264e51163bdb101', 'audited clean integration entries manifest', 'none', [SCOPE]),
+    ('b06a83f6e4584f27811c3f406579b7db296f4b59', 'audited clean integration entries manifest', 'none', [SCOPE]),
     ('7f0eb01a0ab472deeef3b528e7f508425044fa6a', 'audited historical release base for clean main', 'none', [SCOPE, RELEASE_WORKFLOW]),
-    ('e15fa401eaab25e9256042c05f4166142d74d2aa', 'audited main transition boundary', 'none', [SCOPE]),
+    ('1861543f3ba23b0bc396cb39a0595346537b6df6', 'audited main transition boundary', 'none', [SCOPE]),
     ('89bd7d6368a509470c4612d079746f66dfac8b55', 'reviewed release profile composition', 'none', [SCOPE]),
     ('0e202dda90785771ff8c87526eaaf30c655f54f3', 'Molly 8.19.2-4 release commit, the Molly input', 'Molly',
      [SCOPE, REPORT, RELEASE_WORKFLOW, '.github/workflows/molly-unsigned-release.yml']),
@@ -34,7 +35,7 @@ PINS = [
     ('7a280ac23b61cef2c09009a6dbed02773fff3dfa', 'tree of the protected patches/molly forest', 'Molly', [SCOPE]),
     ('6e9dddc01f1b26e608ac683807c51e139c141ed2', 'Signal 8.33.2 commit, the new Signal input', 'Signal', [SCOPE]),
     ('signal-8.33.2', 'port directory patches/ports/signal-8.33.2', 'Signal',
-     [SCOPE, REPORT, ORIGIN, RELEASE_WORKFLOW, PROFILES]),
+     [SCOPE, REPORT, ORIGIN, RELEASE_WORKFLOW, PROFILES, FETCH_REVIEWED]),
     ('8.33.2.0-FOSS', 'tw-hx fork release named by the upstream bundle ref', 'fork', [FORK]),
     ('github.com/tw-hx/Signal-Android', 'fork source URL', 'fork', [FORK, PROFILES]),
     ('github.com/mollyim/mollyim-android.git', 'Molly source URL', 'none', [PREFLIGHT, PREPARE, RELEASE_WORKFLOW, '.github/workflows/molly-unsigned-release.yml']),

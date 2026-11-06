@@ -1,11 +1,11 @@
-From d1b4b6175d803f2d9809b953796ccf8f70776024 Mon Sep 17 00:00:00 2001
+From 94732df9bb0787267fd52f0aea3ae76a7cf78c47 Mon Sep 17 00:00:00 2001
 From: Angus Turnbull <github@twinhelix.com>
 Date: Mon, 2 Nov 2026 03:28:48 +0100
 Subject: [PATCH] Add opt-in message retention controls
 
 Adapt fc0daac37774d9c20238a34ac4786d9398adc07f with AI-assisted compatibility changes. Media deletion is credited to johanw in the source. Keep privacy defaults disabled, preserve linked-device deletion and expiry configuration, and avoid overwriting user reactions.
 
-Source-Commit: d1b4b6175d803f2d9809b953796ccf8f70776024
+Source-Commit: 94732df9bb0787267fd52f0aea3ae76a7cf78c47
 
 ---
  .../app/chats/ChatsSettingsRepository.kt      |  26 ++++

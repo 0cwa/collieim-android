@@ -1,4 +1,4 @@
-From 4c79f87faa74a7f97b0e41678c0db258ce2292d4 Mon Sep 17 00:00:00 2001
+From 53bb4511abbfd5339db82305f1da8cb1f0655516 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Tue, 3 Nov 2026 02:57:06 +0100
 Subject: [PATCH] Keep the passphrase timeout when foreground promotion is
@@ -13,8 +13,8 @@ promotion succeeds with the screen on and unlocked.
 
 AI-Generated: true
 
-Based-On-Source-Commit: ee4bd246eb235b66f29498d5f8160ad2d6b71e1f
-Source-Commit: 4c79f87faa74a7f97b0e41678c0db258ce2292d4
+Based-On-Source-Commit: 27347983e6669e4c7689213e1c9447e43694f0d2
+Source-Commit: 53bb4511abbfd5339db82305f1da8cb1f0655516
 ---
  .../securesms/service/KeyCachingService.java  |  15 ++-
  .../service/KeyCachingServiceTest.kt          | 125 ++++++++++++++++++

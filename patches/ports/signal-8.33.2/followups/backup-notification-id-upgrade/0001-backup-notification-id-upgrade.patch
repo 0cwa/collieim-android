@@ -1,4 +1,4 @@
-From ee4bd246eb235b66f29498d5f8160ad2d6b71e1f Mon Sep 17 00:00:00 2001
+From 27347983e6669e4c7689213e1c9447e43694f0d2 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Mon, 2 Nov 2026 02:19:23 +0100
 Subject: [PATCH] Clean up legacy backup notifications after upgrade
@@ -7,8 +7,8 @@ Keep the collision-free Signal IDs for new backup alerts, and remove old Molly a
 
 AI-Generated: true
 
-Based-On-Source-Commit: 30ec0b2e3e5eec1ba30696b6006a52a914c42cc3
-Source-Commit: ee4bd246eb235b66f29498d5f8160ad2d6b71e1f
+Based-On-Source-Commit: e6194d5b335b7066c80297ba0b334bd975e55e56
+Source-Commit: 27347983e6669e4c7689213e1c9447e43694f0d2
 
 AI-assisted compatibility changes: restore imports across source checkpoints.
 

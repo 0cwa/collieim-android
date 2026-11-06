@@ -2,6 +2,7 @@
 """Check a stack boundary against its explicit base and immutable source trees."""
 import argparse
 import copy
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -19,6 +20,12 @@ RELEASE_PATHS = frozenset(['patches/ports/signal-8.33.2/source-checkpoint.bundle
 
 # Exact AI-assisted compatibility conversion artifacts for existing release layers.
 RELEASE_PATHS = RELEASE_PATHS.union({
+    'patches/ports/signal-8.33.2/followups/molly-behavior-unit-tests/0001-molly-behavior-unit-tests.patch',
+    'patches/ports/signal-8.33.2/followups/molly-behavior-unit-tests/series',
+    'patches/ports/signal-8.33.2/followups/molly-behavior-unit-tests/source-checkpoint.bundle',
+    'patches/ports/signal-8.33.2/followups/lint-fixes/0001-lint-fixes.patch',
+    'patches/ports/signal-8.33.2/followups/lint-fixes/series',
+    'patches/ports/signal-8.33.2/followups/lint-fixes/source-checkpoint.bundle',
     'patches/ports/signal-8.33.2/followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture-converted.patch',
     'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/0001-integration-and-regression-tests-converted.patch',
     'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/delete-files.json',
@@ -130,7 +137,8 @@ def allowed(scope, path):
                          'tools/patches/build.py', 'tools/patches/release_profiles.py',
                          'tools/patches/release_artifacts.py', 'tools/patches/test_build.py',
                          'tools/patches/test_fork_profiles.py', 'tools/patches/test_release_artifacts.py'} or
-                path in {prefix + 'provenance.json', prefix + 'upstream-source.bundle'} or
+                path in {prefix + 'provenance.json', prefix + 'upstream-source.bundle',
+                         prefix + 'reviewed-profiles.json'} or
                 any(path.startswith(prefix + layer + '/')
                     for layer in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes', 'collie-icon', 'collie-branding')))
     if scope in ('followups', 'additions', 'features'):
@@ -181,10 +189,32 @@ def check_feature_chain(repo, base, head):
         raise ValueError('invalid features chain metadata') from exc
 
 
-def check_release_profiles(reviewed, current):
-    """Constrain release composition to the reviewed products and icon opt-in."""
+def check_release_profiles(reviewed, current, reviewed_port=None, base_port=None):
+    """Constrain products to reviewed composition and trusted port boundaries."""
     expected = copy.deepcopy(reviewed)
     actual = copy.deepcopy(current)
+    rebased = False
+    if (reviewed_port is None) != (base_port is None):
+        raise ValueError('both reviewed and base port provenance are required')
+    if reviewed_port is not None:
+        def find_one(layers, **fields):
+            matches = [layer for layer in layers if all(layer.get(k) == v for k, v in fields.items())]
+            if len(matches) != 1:
+                raise ValueError('profile port boundary is missing or ambiguous')
+            return matches[0]
+        for profile in expected['profiles'].values():
+            old_tree = profile['base_tree']
+            old = find_one(reviewed_port['layers'], source_commit=profile['base_checkpoint'], after_tree=old_tree)
+            boundary = find_one(base_port['layers'], id=old['id'])
+            commit, tree = boundary['source_commit'], boundary['after_tree']
+            if not all(isinstance(value, str) and re.fullmatch(r'[0-9a-f]{40}', value)
+                       for value in (commit, tree)):
+                raise ValueError('invalid profile port boundary')
+            rebased = rebased or (profile['base_checkpoint'], old_tree) != (commit, tree)
+            profile['base_checkpoint'], profile['base_tree'] = commit, tree
+            # A product with no fork or overlay is exactly its base source tree.
+            if not profile['fork_series'] and profile['target_tree'] == old_tree:
+                profile['target_tree'] = tree
     for name in ('molly-continued', 'molly-foss-continued'):
         if actual['profiles'][name].pop('icon_overlay', None) != ICON_OVERLAY:
             raise ValueError('Continued profiles must select the icon overlay')
@@ -194,12 +224,39 @@ def check_release_profiles(reviewed, current):
         actual['profiles'][name]['target_tree'] = expected['profiles'][name]['target_tree']
     if actual != expected:
         raise ValueError('release profiles differ from reviewed composition')
+    return rebased
+
+
+def check_reviewed_profile_snapshot(current, provenance, snapshot):
+    """Check the fork's explicit review snapshot and its declared byte hash."""
+    info = provenance.get('reviewed_profiles')
+    if not isinstance(info, dict) or set(info) != {'path', 'sha256'}:
+        raise ValueError('missing reviewed profile snapshot metadata')
+    if info['path'] != 'reviewed-profiles.json' or not isinstance(info['sha256'], str) or not re.fullmatch(r'[0-9a-f]{64}', info['sha256']):
+        raise ValueError('invalid reviewed profile snapshot metadata')
+    if hashlib.sha256(snapshot).hexdigest() != info['sha256']:
+        raise ValueError('reviewed profile snapshot hash differs')
+    try:
+        expected = json.loads(snapshot)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError('invalid reviewed profile snapshot') from exc
+    if expected != current:
+        raise ValueError('reviewed profile snapshot differs from selected profiles')
+    # For an ordinary fork prefix the resulting tree is fixed by its last
+    # checkpoint. Overlay targets are checked by materializing the overlay.
+    for profile in current['profiles'].values():
+        fork = profile.get('fork_series', [])
+        if fork and not profile.get('icon_overlay'):
+            matches = [layer for layer in provenance['layers']
+                       if 'patches/forks/signal-foss/' + layer['series'] == fork[-1]]
+            if len(matches) != 1 or profile.get('target_tree') != matches[0]['after_tree']:
+                raise ValueError('profile target differs from fork checkpoint')
 
 
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = '608bdec221293b1b8b80217bb264e51163bdb101'
+MAIN_CLEAN_ENTRIES_BLOB = 'b06a83f6e4584f27811c3f406579b7db296f4b59'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -216,7 +273,7 @@ MAIN_CLEAN_ENTRIES = json.loads((Path(__file__).parent / 'main-clean-entries.jso
 # own blobs in that manifest would be circular. All other scope files are
 # checked. PR-controlled code makes this an accidental-change check only.
 MAIN_SCOPE_FILES = frozenset(['tools/patches/main-clean-entries.json', 'tools/patches/scope.py', 'tools/patches/pins.py'])
-INITIAL_MAIN = 'e15fa401eaab25e9256042c05f4166142d74d2aa'
+INITIAL_MAIN = '1861543f3ba23b0bc396cb39a0595346537b6df6'
 
 def check_trusted_integration_lower(repo, integration_lower):
     actual = git(repo, 'rev-parse', '--verify', integration_lower + '^{commit}').decode().strip()
@@ -474,8 +531,15 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
             prior = json.loads(git(repo, 'show', base + ':molly-build.json'))
             current = json.loads(git(repo, 'show', head + ':molly-build.json'))
             reviewed = json.loads(git(repo, 'show', REVIEWED_PROFILES + ':molly-build.json'))
-            check_release_profiles({'profiles': reviewed['profiles'], 'fork_source': reviewed['fork_source']},
-                                   {'profiles': current['profiles'], 'fork_source': current['fork_source']})
+            reviewed_port = json.loads(git(repo, 'show', REVIEWED_PROFILES + ':patches/ports/signal-8.33.2/provenance.json'))
+            base_port = json.loads(git(repo, 'show', base + ':patches/ports/signal-8.33.2/provenance.json'))
+            selection = {'profiles': current['profiles'], 'fork_source': current['fork_source']}
+            rebased = check_release_profiles({'profiles': reviewed['profiles'], 'fork_source': reviewed['fork_source']},
+                                             selection, reviewed_port, base_port)
+            if rebased:
+                fork_provenance = json.loads(git(repo, 'show', head + ':patches/forks/signal-foss/provenance.json'))
+                snapshot = git(repo, 'show', head + ':patches/forks/signal-foss/reviewed-profiles.json')
+                check_reviewed_profile_snapshot(selection, fork_provenance, snapshot)
             current.pop('profiles', None)
             current.pop('fork_source', None)
             if current != prior:

@@ -1,0 +1,64 @@
+{
+  "fork_source": {
+    "head": "b13bff463547475bbe1ae55335add689f52532e0",
+    "url": "https://github.com/tw-hx/Signal-Android"
+  },
+  "profiles": {
+    "collie": {
+      "base_checkpoint": "b3c3bac2229b2e7a4a251fd4377a6e7d56868677",
+      "base_series": "patches/ports/signal-8.33.2/series",
+      "base_tree": "610c9293f105188809dedd0a287bc4fe8c1b7e7f",
+      "firebase_free": false,
+      "fork_series": [
+        "patches/forks/signal-foss/firebase-free-build/series",
+        "patches/forks/signal-foss/retention-controls/series",
+        "patches/forks/signal-foss/retention-controls-fixes/series",
+        "patches/forks/signal-foss/collie-icon/series",
+        "patches/forks/signal-foss/collie-branding/series"
+      ],
+      "target_tree": "807ad4b20431eda6b653cf0afd0d51adac2f1cc5"
+    },
+    "collie-foss": {
+      "base_checkpoint": "b3c3bac2229b2e7a4a251fd4377a6e7d56868677",
+      "base_series": "patches/ports/signal-8.33.2/series",
+      "base_tree": "610c9293f105188809dedd0a287bc4fe8c1b7e7f",
+      "firebase_free": true,
+      "fork_series": [
+        "patches/forks/signal-foss/firebase-free-build/series",
+        "patches/forks/signal-foss/retention-controls/series",
+        "patches/forks/signal-foss/retention-controls-fixes/series",
+        "patches/forks/signal-foss/collie-icon/series",
+        "patches/forks/signal-foss/collie-branding/series"
+      ],
+      "target_tree": "807ad4b20431eda6b653cf0afd0d51adac2f1cc5"
+    },
+    "molly-continued": {
+      "base_checkpoint": "b3c3bac2229b2e7a4a251fd4377a6e7d56868677",
+      "base_series": "patches/ports/signal-8.33.2/series",
+      "base_tree": "610c9293f105188809dedd0a287bc4fe8c1b7e7f",
+      "firebase_free": false,
+      "fork_series": [],
+      "icon_overlay": "patches/forks/signal-foss/collie-icon/series",
+      "target_tree": "a493dcb4df6645693af33592a789016963333d0a"
+    },
+    "molly-foss-continued": {
+      "base_checkpoint": "b3c3bac2229b2e7a4a251fd4377a6e7d56868677",
+      "base_series": "patches/ports/signal-8.33.2/series",
+      "base_tree": "610c9293f105188809dedd0a287bc4fe8c1b7e7f",
+      "firebase_free": true,
+      "fork_series": [
+        "patches/forks/signal-foss/firebase-free-build/series"
+      ],
+      "icon_overlay": "patches/forks/signal-foss/collie-icon/series",
+      "target_tree": "2d7bb493e28da49090183216e5244c1a2d42df84"
+    },
+    "molly-minimal": {
+      "base_checkpoint": "b30b8f2d800f5c26307ea221653b2869a6350d74",
+      "base_series": "patches/ports/signal-8.33.2/series",
+      "base_tree": "f35dba73953741ec3571b686c4a5709b9da2f498",
+      "firebase_free": false,
+      "fork_series": [],
+      "target_tree": "f35dba73953741ec3571b686c4a5709b9da2f498"
+    }
+  }
+}

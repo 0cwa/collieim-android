@@ -479,7 +479,8 @@ class NamedProfileBuildTests(BuildSourceTests):
         self.config['android'] = {'assemble': ':app:assembleDebug', 'tests': [':app:test']}
         self.config['fork_source'] = {'url': 'https://github.com/tw-hx/Signal-Android', 'head': 'c' * 40}
         fork_series = [build.release_profiles.FIREBASE, build.release_profiles.COLLIE_ICON,
-                       build.release_profiles.COLLIE_BRANDING, build.release_profiles.COLLIE_VISUALS]
+                       build.release_profiles.COLLIE_BRANDING, build.release_profiles.COLLIE_VISUALS,
+                       build.release_profiles.RESTORE_PICKER]
         entry = {'base_series': build.release_profiles.PORT_SERIES, 'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'],
                  'fork_series': fork_series, 'target_tree': self.config['target_tree'],
                  'firebase_free': False}

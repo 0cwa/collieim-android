@@ -166,6 +166,10 @@ class ScopeTests(unittest.TestCase):
                 self.commit(path, 'reviewed host JNI diagnostic')
                 self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
                 self.git('reset', '--hard', '-q', head)
+            for path in ('tools/native/nested_git.py', 'tools/native/test_nested_git.py', 'tools/native/webrtc-git-dependencies.json'):
+                self.commit(path, 'reviewed nested Git check')
+                self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+                self.git('reset', '--hard', '-q', head)
             self.commit('tools/patches/test_optional_instrumentation_workflow.py', 'reviewed optional instrumentation check')
             self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
             self.git('reset', '--hard', '-q', head)

@@ -33,7 +33,7 @@ class RingRtcDiagnosticTest(unittest.TestCase):
         if args[0] == 'diff': return ''
         raise AssertionError(args)
 
-    def run_build(self, fail=False):
+    def run_build(self, fail=False, nested_effect=None):
         def runner(args, cwd, env):
             self.assertEqual('--release', args[-1])
             self.assertEqual(str(self.root / 'gradle/bin/gradle'), env['COLLIE_VERIFIED_GRADLE'])
@@ -44,7 +44,7 @@ class RingRtcDiagnosticTest(unittest.TestCase):
             aar = self.output / 'gradle/outputs/aar/ringrtc-release.aar'
             aar.parent.mkdir(parents=True)
             aar.write_bytes(self.expected)
-        with patch.object(build_ringrtc.stage_artifacts, 'load_lock', return_value=self.config), patch.object(build_ringrtc.verify_gradle, 'verify', return_value=self.root / 'gradle/bin/gradle'), patch.object(build_ringrtc.build_sources, 'preflight', return_value=(self.config,self.proof,self.env,'cargo')), patch.object(build_ringrtc.prepare_sources, 'git', side_effect=self.git), patch.object(build_ringrtc.prepare_sources, 'verify_prepared', return_value=self.proof):
+        with patch.object(build_ringrtc.stage_artifacts, 'load_lock', return_value=self.config), patch.object(build_ringrtc.verify_gradle, 'verify', return_value=self.root / 'gradle/bin/gradle'), patch.object(build_ringrtc.nested_git, 'verify', return_value=70, side_effect=nested_effect), patch.object(build_ringrtc.build_sources, 'preflight', return_value=(self.config,self.proof,self.env,'cargo')), patch.object(build_ringrtc.prepare_sources, 'git', side_effect=self.git), patch.object(build_ringrtc.prepare_sources, 'verify_prepared', return_value=self.proof):
             return build_ringrtc.diagnostic_build(self.lock, self.sources, self.workspace, self.root, self.java, self.root, self.output, self.root / 'gradle.zip', self.root / 'gradle', runner)
 
     def test_only_partial_receipt_and_no_upload_credentials(self):
@@ -53,6 +53,15 @@ class RingRtcDiagnosticTest(unittest.TestCase):
         self.assertEqual('PARTIAL_RINGRTC_BUILD', result['status'])
         self.assertFalse((self.sources / 'ringrtc/src/webrtc').exists())
         self.assertFalse((self.workspace / 'src/ringrtc/rffi/api').is_symlink())
+
+    def test_nested_dependency_change_before_or_after_build_rejects_receipt(self):
+        for effect in ([build_ringrtc.nested_git.Failure('before')], [70, build_ringrtc.nested_git.Failure('after')]):
+            with self.subTest(effect=effect):
+                with self.assertRaises(build_ringrtc.nested_git.Failure): self.run_build(nested_effect=effect)
+                self.assertFalse((self.output / 'build-receipt.json').exists())
+                if self.output.exists():
+                    import shutil
+                    shutil.rmtree(self.output)
 
     def test_failure_removes_only_own_link(self):
         with self.assertRaises(build_ringrtc.Failure): self.run_build(fail=True)

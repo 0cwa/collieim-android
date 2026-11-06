@@ -50,3 +50,12 @@ Native diagnostic Gradle invocations reject inherited Gradle/JVM options, user-h
 The `native-build-libsignal` and native app diagnostic phases require `--native-gradle-zip` and `--native-gradle-distribution` pointing to the Gradle 9.6.0 all ZIP and its extracted directory. The ZIP must match the checksum already pinned by the 8.35.1 source, `87a2216cc1f9122192d4e0fe905ffdf1b4c72cff797e9f733b174e157cadd396`; the directory is checked against the ZIP before and after execution. The build runs the verified distribution directly with the intended project directory, leaving unrelated legacy build flows unchanged. The cached 9.6.0 ZIP and extracted distribution passed this verifier.
 
 An offline strict-verification fixture for direct and transitive upstream-coordinate substitution is available via `COLLIE_NATIVE_TEST_GRADLE=/path/to/verified/gradle python3 tools/native/native_fallback_smoke.py`. It creates and removes a small temporary Maven repository and checks all three native modules resolve only to Collie coordinates.
+
+The partial RingRTC diagnostic also checks 70 nested Git checkouts against the
+pinned retained gclient snapshot before and after the build. It hashes tracked
+working files, checks file modes and symlinks, permits pinned Git CRLF checkout
+conversion, and checks Signal's exact upstream Java-release hook output. The
+27 recorded Gitlinks must be absent or empty. This is a consistency check, not
+independent authentication of the snapshot against DEPS; ignored and untracked
+files, CIPD package contents, compiler provenance and concurrent mutations are
+not attested. It cannot authorize a release.

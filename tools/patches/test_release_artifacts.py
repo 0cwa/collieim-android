@@ -188,6 +188,42 @@ class ReleaseArtifactsTests(unittest.TestCase):
             self.assertEqual(release_publish.main(), 1)
             command.assert_not_called()
 
+    def test_publisher_requires_commit_bound_assessment_for_both_actions(self):
+        apks = []
+        for profile in sorted(a.PROFILES):
+            path = self.root / (profile + '.apk')
+            path.write_bytes(profile.encode())
+            apks.append({'profile': profile, 'file': path.name, 'signed_sha256': a.sha256(path)})
+        final = self.root / 'final-manifest.json'
+        provenance = self.root / 'provenance.json'
+        provenance.write_text('provenance')
+        cases = [
+            (None, False),
+            ({'commit': 'c' * 40, 'status': 'passed', 'evidence': 'test', 'reason': ''}, False),
+            ({'commit': self.commit, 'status': 'passed', 'evidence': '', 'reason': ''}, False),
+            ({'commit': self.commit, 'status': 'failed', 'evidence': '', 'reason': ''}, False),
+            ({'commit': self.commit, 'status': 'passed', 'evidence': 'test', 'reason': ''}, True),
+            ({'commit': self.commit, 'status': 'failed', 'evidence': '', 'reason': 'accepted'}, True),
+            ({'commit': self.commit, 'status': 'not run', 'evidence': '', 'reason': 'accepted'}, True),
+        ]
+        for action in ('draft', 'publish'):
+            for record, accepted in cases:
+                with self.subTest(action=action, record=record):
+                    manifest = {'schema': 1, 'rehearsal': False, 'commit': self.commit, 'apks': apks,
+                                'unsigned_manifest_sha256': a.sha256(provenance)}
+                    if record is not None:
+                        manifest['instrumentation_checklist'] = record
+                    final.write_text(json.dumps(manifest))
+                    args = ['release_publish', action, '--repo', 'owner/repo', '--tag', 'v1.2.3',
+                            '--approved-commit', self.commit, '--final-manifest', str(final),
+                            '--final-manifest-sha256', a.sha256(final), '--provenance', str(provenance),
+                            '--notes', str(final), '--scratch', str(self.root), '--dry-run', '--signing-key', '/key',
+                            '--tagger-name', 'Signer', '--tagger-email', 'signer@example.invalid']
+                    with patch('sys.argv', args), patch.object(release_publish, 'command') as command:
+                        self.assertEqual(release_publish.main(), 0 if accepted else 1)
+                        if not accepted:
+                            command.assert_not_called()
+
     def test_publish_dry_run_never_calls_subprocess(self):
         apks = []
         for profile in sorted(a.PROFILES):
@@ -198,7 +234,8 @@ class ReleaseArtifactsTests(unittest.TestCase):
         provenance = self.root / 'provenance.json'
         provenance.write_text('provenance')
         final.write_text(json.dumps({'schema': 1, 'rehearsal': False, 'commit': self.commit, 'apks': apks,
-                                     'unsigned_manifest_sha256': a.sha256(provenance)}))
+                                     'unsigned_manifest_sha256': a.sha256(provenance),
+                                     'instrumentation_checklist': {'commit': self.commit, 'status': 'not run', 'evidence': '', 'reason': 'fixture'}}))
         args = ['release_publish', 'draft', '--repo', 'owner/repo', '--tag', 'v1.2.3',
                 '--approved-commit', self.commit, '--final-manifest', str(final),
                 '--final-manifest-sha256', a.sha256(final), '--provenance', str(provenance), '--notes', str(final),
@@ -229,7 +266,8 @@ class ReleaseArtifactsTests(unittest.TestCase):
                 notes.write_bytes(b'notes')
                 final = root / 'final-manifest.json'
                 final.write_text(json.dumps({'schema': 1, 'rehearsal': False, 'commit': self.commit,
-                                             'apks': entries, 'unsigned_manifest_sha256': a.sha256(provenance)}))
+                                             'apks': entries, 'unsigned_manifest_sha256': a.sha256(provenance),
+                                     'instrumentation_checklist': {'commit': self.commit, 'status': 'not run', 'evidence': '', 'reason': 'fixture'}}))
                 args = ['release_publish', action, '--repo', 'owner/repo', '--tag', 'v1',
                         '--approved-commit', self.commit, '--final-manifest', str(final),
                         '--final-manifest-sha256', a.sha256(final), '--provenance', str(provenance),

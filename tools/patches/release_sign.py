@@ -41,6 +41,10 @@ def read_instrumentation_checklist(path, approved_commit):
             result[key] = value
         return result
     checklist = json.loads(raw, object_pairs_hook=unique_object)
+    return validate_instrumentation_checklist(checklist, approved_commit)
+
+
+def validate_instrumentation_checklist(checklist, approved_commit):
     if not isinstance(checklist, dict) or set(checklist) != {'commit', 'status', 'evidence', 'reason'}:
         raise ValueError('instrumentation checklist must contain exactly commit, status, evidence and reason')
     if any(not isinstance(checklist[key], str) for key in checklist):

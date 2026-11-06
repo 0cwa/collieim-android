@@ -728,6 +728,11 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
    this maintainer-provided record before signing and copies it into the final
    manifest. It does not independently verify the evidence. Do not include
    secrets or private user data in this record, which may be published.
+   The publisher also checks this record against the approved commit before
+   creating or publishing a draft. Already-published historical releases are
+   unaffected. An older draft whose final manifest lacks the record must be
+   replaced with newly generated, signed artifacts and manifest; do not alter
+   existing immutable release assets.
 
    ```json
    {"commit":"FULL_APPROVED_COMMIT_SHA", "status":"not run", "evidence":"", "reason":"Document the accepted test gap"}

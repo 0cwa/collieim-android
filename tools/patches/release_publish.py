@@ -11,6 +11,7 @@ import sys
 import tempfile
 
 import release_artifacts as a
+from release_sign import validate_instrumentation_checklist
 
 
 def command(args, dry=False, **kwargs):
@@ -97,6 +98,7 @@ def main():
                 raise ValueError('final manifest is not a real release of the approved commit')
             if args.repo.lower() == '0cwa/collieim-android':
                 a.validate_version_code(manifest.get('version_code'), a.PACKAGE)
+            validate_instrumentation_checklist(manifest.get('instrumentation_checklist'), args.approved_commit)
             entries = manifest['apks']
             if len(entries) != 5 or {x['profile'] for x in entries} != a.PROFILES:
                 raise ValueError('final manifest must contain all five profiles')

@@ -20,7 +20,7 @@
     }
   },
   "target_tree": "ea8f70a544723465a11082768c2a7cea1c7f1b2b",
-  "native": null,
+  "native": "tools/native/native-lock.json",
   "android": {
     "sdk": "37.0",
     "build_tools": "36.0.0",

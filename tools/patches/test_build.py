@@ -76,6 +76,16 @@ class BuildSourceTests(unittest.TestCase):
                     runner.gradle('assemble-release')
                 run.assert_not_called()
 
+    def test_835_profiles_require_the_same_staged_native_lock(self):
+        self.args.repo = Path(__file__).resolve().parents[2]
+        for name in sorted(build.release_profiles.NAMES):
+            self.args.profile = name
+            runner = build.Build(self.args)
+            with self.subTest(profile=name):
+                self.assertEqual(runner.artifact_native_lock(), self.args.repo / 'tools/native/native-lock.json')
+                with self.assertRaisesRegex(build.BuildError, 'no fallback'):
+                    runner.native_verification_bytes()
+
     def test_incomplete_port_allows_debug_but_rejects_release_task_aliases(self):
         self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
         self.config['android'] = {'assemble': ':app:assembleProdWebsiteDebug', 'tests': [':core:network:test']}
@@ -84,7 +94,7 @@ class BuildSourceTests(unittest.TestCase):
         init.parent.mkdir(parents=True)
         init.write_text('// fixture\n')
         runner = build.Build(self.args)
-        with patch.object(runner, 'source_proof'), patch.object(runner, 'run') as run:
+        with patch.object(runner, 'source_proof'), patch.object(runner, 'artifact_native_lock', return_value=None), patch.object(runner, 'run') as run:
             runner.gradle('assemble')
             runner.gradle('test')
             self.assertEqual(run.call_count, 2)
@@ -97,6 +107,25 @@ class BuildSourceTests(unittest.TestCase):
                 with self.subTest(task=task), self.assertRaisesRegex(build.BuildError, 'non-release test'):
                     runner.gradle('test')
             self.assertEqual(run.call_count, 2)
+
+    def test_incomplete_signal_port_does_not_allow_missing_native_lock(self):
+        self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.proof['signal'] = build.BLOCKED_SIGNAL_PORT
+        self.save()
+        runner = build.Build(self.args)
+        with patch.object(runner, 'run') as run:
+            with self.assertRaisesRegex(build.BuildError, 'requires the pinned native dependency lock'):
+                runner.source_proof()
+            run.assert_not_called()
+
+    def test_incomplete_signal_port_rejects_altered_valid_native_lock(self):
+        self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.config['native'] = 'candidate-lock.json'
+        (self.repo / 'candidate-lock.json').write_text(json.dumps({'source_provenance': {'libsignal': 'x'}, 'modules': ['x']}))
+        self.save()
+        runner = build.Build(self.args)
+        with self.assertRaisesRegex(build.BuildError, 'native dependency lock differs from its pin'):
+            runner.artifact_native_lock()
 
     def test_old_signal_release_is_not_blocked_by_port_guard(self):
         self.config['signal']['commit'] = '6e9dddc01f1b26e608ac683807c51e139c141ed2'

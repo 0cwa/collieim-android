@@ -22,6 +22,7 @@ import release_profiles
 
 # This port is not releasable until its native build and port report are reviewed.
 BLOCKED_SIGNAL_PORT = 'a74583b01e260944f699c4da03ba4e8ce04de32b'
+PINNED_NATIVE_LOCK_SHA256 = '9866196dec36f096d2757bbf9e9d774c7147548542dd2a041e6438f79dbd73e4'
 DIAGNOSTIC_TEST_TASKS = frozenset({
     ':core:network:test', ':lib:network:test', ':lib:libsignal-service:test',
     ':feature:registration:testDebugUnitTest', ':feature:app-settings:testDebugUnitTest',
@@ -154,8 +155,63 @@ class Build:
             raise BuildError('source inspection failed: ' + result.stderr.decode(errors='replace'))
         return result
 
+    def artifact_native_lock(self):
+        """Select the multi-artifact gate without changing historical hotfix behavior."""
+        value = self.config.get('native')
+        if value is None:
+            if self.config.get('signal', {}).get('commit') == BLOCKED_SIGNAL_PORT:
+                raise BuildError('Signal 8.35.1 requires the pinned native dependency lock')
+            return None
+        path = relative_file(self.repo, value, 'native dependency lock')
+        lock = json.loads(path.read_text())
+        if not isinstance(lock, dict):
+            raise BuildError('native dependency lock must be an object')
+        multi = (self.config.get('signal', {}).get('commit') == BLOCKED_SIGNAL_PORT or
+                 value == 'tools/native/native-lock.json' or bool({'source_provenance', 'modules'} & lock.keys()))
+        if multi and (not isinstance(lock.get('source_provenance'), dict) or not lock['source_provenance'] or
+                      not isinstance(lock.get('modules'), list) or not lock['modules']):
+            raise BuildError('multi-artifact native dependency lock is malformed')
+        if self.config.get('signal', {}).get('commit') == BLOCKED_SIGNAL_PORT and hashlib.sha256(path.read_bytes()).hexdigest() != PINNED_NATIVE_LOCK_SHA256:
+            raise BuildError('Signal 8.35.1 native dependency lock differs from its pin')
+        return path if multi else None
+
+    def artifact_native_driver(self):
+        path = relative_file(self.repo, 'tools/native/native_driver.py', 'native artifact driver')
+        spec = importlib.util.spec_from_file_location('collie_native_driver', path)
+        if spec is None or spec.loader is None:
+            raise BuildError('cannot load native artifact driver')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def verified_native_gradle(self):
+        archive = getattr(self.args, 'native_gradle_zip', None)
+        distribution = getattr(self.args, 'native_gradle_distribution', None)
+        if archive is None or distribution is None:
+            raise BuildError('native diagnostics require --native-gradle-zip and --native-gradle-distribution')
+        path = relative_file(self.repo, 'tools/native/verify_gradle.py', 'Gradle distribution verifier')
+        spec = importlib.util.spec_from_file_location('collie_gradle_verifier', path)
+        if spec is None or spec.loader is None:
+            raise BuildError('cannot load Gradle distribution verifier')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        try:
+            return module.verify(archive, distribution, '87a2216cc1f9122192d4e0fe905ffdf1b4c72cff797e9f733b174e157cadd396', top='gradle-9.6.0')
+        except (module.Failure, OSError, ValueError) as exc:
+            raise BuildError('native diagnostic Gradle distribution is not verified: ' + str(exc)) from exc
+
     def native_verification_bytes(self):
         """Allow precisely the receipt-bound metadata appended by native integration."""
+        artifact_lock = self.artifact_native_lock()
+        if artifact_lock is not None:
+            if not (self.native_proof / 'artifact-stage' / 'receipt.json').is_file():
+                raise BuildError('pinned native artifacts must be integrated before Gradle; no fallback is allowed')
+            original = self.git('show', 'HEAD:gradle/verification-metadata.xml').stdout
+            try:
+                self.artifact_native_driver().verify(self.repo, self.app, artifact_lock, self.native_proof, original)
+            except ValueError as exc:
+                raise BuildError('native artifact integration no longer matches its proof: ' + str(exc)) from exc
+            return (self.app / 'gradle/verification-metadata.xml').read_bytes()
         if self.config.get('native') is None or not (self.native_proof / 'integration.json').exists():
             return None
         helper_path = relative_file(self.repo, 'tools/native/ringrtc.py', 'native build helper')
@@ -178,7 +234,7 @@ class Build:
             raise BuildError('native verification metadata changed after its proof')
         return expected
 
-    def working_source_proof(self):
+    def working_source_proof(self, *, allow_unintegrated_native=False):
         """Check actual tracked bytes/modes, not Git's potentially cached clean status."""
         sparse = self.git('config', '--bool', 'core.sparseCheckout', check=False)
         if sparse.returncode not in (0, 1) or sparse.stdout.strip() == b'true':
@@ -231,7 +287,10 @@ class Build:
             return digest.hexdigest().encode()
 
         native_path = b'gradle/verification-metadata.xml'
-        native = self.native_verification_bytes()
+        if allow_unintegrated_native and self.artifact_native_lock() is not None and not (self.native_proof / 'artifact-stage' / 'receipt.json').is_file():
+            native = None  # Prove the untouched source tree before preparing native inputs.
+        else:
+            native = self.native_verification_bytes()
         if native is not None and native_path not in expected:
             raise BuildError('native integration refers to metadata absent from the source tree')
         directories = set()
@@ -275,7 +334,7 @@ class Build:
             if actual_id != allowed_id:
                 raise BuildError('working source differs from the verified tree: ' + os.fsdecode(path))
 
-    def source_proof(self):
+    def source_proof(self, *, allow_unintegrated_native=False):
         path = self.reports / 'source.json'
         if not path.is_file():
             raise BuildError('run release.py with --report <report-dir>/source.json before building')
@@ -289,7 +348,7 @@ class Build:
             raise BuildError('source proof belongs to a different release profile')
         if self.git('rev-parse', 'HEAD^{tree}').stdout.decode().strip() != proof['tree']:
             raise BuildError('the materialized source commit differs from the verified release tree')
-        self.working_source_proof()
+        self.working_source_proof(allow_unintegrated_native=allow_unintegrated_native)
         return proof
 
     def run(self, command: list[str], phase: str, *, cwd: Path | None = None):
@@ -341,8 +400,10 @@ class Build:
                   f'build-tools;{build_tools}', f'ndk;{ndk}'], 'sdk')
 
     def native(self, phase: str):
-        self.source_proof()
+        self.source_proof(allow_unintegrated_native=True)
         lock_value = self.config.get('native')
+        if lock_value is None and self.config.get('signal', {}).get('commit') == BLOCKED_SIGNAL_PORT:
+            raise BuildError('Signal 8.35.1 requires the pinned native dependency lock')
         if lock_value is None:
             print('This release uses its verified published native dependencies; no native backport is configured.')
             (self.reports / (phase + '.json')).write_text(json.dumps({
@@ -350,6 +411,44 @@ class Build:
                 'reason': 'No native source backport is configured for this release.'}, indent=2) + '\n')
             return
         lock = relative_file(self.repo, lock_value, 'native dependency lock')
+        if self.artifact_native_lock() is not None:
+            if phase == 'native-prepare':
+                names = ('libsignal', 'ringrtc', 'webrtc')
+                inputs = {name: getattr(self.args, name + '_repo', None) for name in names}
+                if any(value is None for value in inputs.values()):
+                    raise BuildError('native preparation requires all three local source repositories')
+                helper = relative_file(self.repo, 'tools/native/prepare_sources.py', 'native source preparer')
+                command = [sys.executable, str(helper), '--lock', str(lock), '--output', str(self.native_source)]
+                for name in names:
+                    command += ['--' + name, str(inputs[name].resolve())]
+                self.run(command, phase, cwd=self.repo)
+            elif phase == 'native-build-libsignal':
+                sdk = os.environ.get('ANDROID_HOME') or os.environ.get('ANDROID_SDK_ROOT')
+                java_home = os.environ.get('JAVA_HOME')
+                rust_bin = getattr(self.args, 'native_rust_bin', None)
+                if not sdk or not java_home or rust_bin is None:
+                    raise BuildError('partial native build requires ANDROID_HOME, JAVA_HOME and --native-rust-bin')
+                archive = getattr(self.args, 'native_gradle_zip', None)
+                distribution = getattr(self.args, 'native_gradle_distribution', None)
+                if archive is None or distribution is None:
+                    raise BuildError('partial native build requires --native-gradle-zip and --native-gradle-distribution')
+                helper = relative_file(self.repo, 'tools/native/build_sources.py', 'native diagnostic builder')
+                self.native_proof.mkdir(parents=True, exist_ok=True)
+                command = [sys.executable, str(helper), '--lock', str(lock), '--sources', str(self.native_source),
+                           '--sdk', sdk, '--java-home', java_home, '--rust-bin', str(rust_bin.resolve()),
+                           '--report', str(self.native_proof / 'libsignal-build.json'),
+                           '--gradle-zip', str(archive), '--gradle-distribution', str(distribution)]
+                self.run(command, phase, cwd=self.repo)
+            elif phase == 'native-build':
+                raise BuildError('complete RingRTC/WebRTC source build orchestration is not implemented; release remains blocked')
+            elif phase == 'native-integrate':
+                original = self.git('show', 'HEAD:gradle/verification-metadata.xml').stdout
+                try:
+                    self.artifact_native_driver().integrate(self.repo, self.app, lock, self.maven, self.native_proof, original)
+                except ValueError as exc:
+                    raise BuildError('native artifact integration failed: ' + str(exc)) from exc
+                self.source_proof()
+            return
         helper = relative_file(self.repo, 'tools/native/ringrtc.py', 'native build helper')
         subcommand = phase.removeprefix('native-')
         command = [sys.executable, str(helper), subcommand, '--lock', str(lock),
@@ -425,7 +524,16 @@ class Build:
             version_init = relative_file(self.repo, 'tools/patches/release-version.init.gradle', 'release version script')
             command += ['--init-script', str(version_init), '-PreleaseVersionName=' + version_name,
                         '-PreleaseVersionCode=' + version_code]
-        if self.config.get('native') is not None:
+        artifact_lock = self.artifact_native_lock()
+        if artifact_lock is not None:
+            if phase == 'assemble-release':
+                raise BuildError('native source build proof is not implemented; release remains blocked')
+            if self.native_verification_bytes() is None:
+                raise BuildError('pinned native artifacts must be integrated before Gradle; no fallback is allowed')
+            verified_gradle = self.verified_native_gradle()
+            command[0:1] = [str(verified_gradle), '--project-dir', str(self.app)]
+            command += ['--init-script', str(self.native_proof / 'artifact-stage' / 'native.init.gradle')]
+        elif self.config.get('native') is not None:
             native_init = self.native_proof / 'ringrtc.init.gradle'
             integration = self.native_proof / 'integration.json'
             if not native_init.is_file() or not integration.is_file():
@@ -437,18 +545,27 @@ class Build:
                 raise BuildError('native integration receipt does not match this source, worktree and init script')
             command += ['--init-script', str(native_init)]
         self.run(command + tasks, phase, cwd=self.app)
+        if artifact_lock is not None:
+            if self.verified_native_gradle() != verified_gradle:
+                raise BuildError('native diagnostic Gradle distribution changed during execution')
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('phase', choices=('sdk', 'assemble', 'assemble-release', 'test', 'instrumentation', 'instrumentation-imo',
-                                         'native-prepare', 'native-build', 'native-integrate'))
+                                         'native-prepare', 'native-build', 'native-build-libsignal', 'native-integrate'))
     parser.add_argument('--repo', type=Path, default=Path('.'))
     parser.add_argument('--config', default='molly-build.json')
     parser.add_argument('--profile', choices=sorted(release_profiles.NAMES))
     parser.add_argument('--worktree', type=Path, required=True)
     parser.add_argument('--report-dir', type=Path, required=True)
     parser.add_argument('--native-source-dir', type=Path)
+    parser.add_argument('--native-rust-bin', type=Path)
+    parser.add_argument('--native-gradle-zip', type=Path)
+    parser.add_argument('--native-gradle-distribution', type=Path)
+    parser.add_argument('--libsignal-repo', type=Path)
+    parser.add_argument('--ringrtc-repo', type=Path)
+    parser.add_argument('--webrtc-repo', type=Path)
     parser.add_argument('--maven-dir', type=Path)
     parser.add_argument('--accept-licenses', action='store_true', help='accept SDK licenses if installation is needed')
     parser.add_argument('--heap', default='5g', help='Gradle heap; one 2 GiB test worker runs separately')

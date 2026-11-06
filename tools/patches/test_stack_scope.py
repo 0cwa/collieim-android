@@ -64,8 +64,10 @@ class ScopeTests(unittest.TestCase):
         snapshot = (fork_root / 'reviewed-profiles.json').read_bytes()
         fork_provenance = (fork_root / 'provenance.json').read_bytes()
         fork_bundle = (fork_root / 'upstream-source.bundle').read_bytes()
+        native_lock = (pathlib.Path(__file__).resolve().parents[2] / 'tools/native/native-lock.json').read_bytes()
         config = {'signal': {'commit': scope.NEXT_PORT_SIGNAL}, 'molly': {'target': scope.MOLLY},
-                  'port': {'series': 'patches/ports/signal-8.35.1/series'}, **json.loads(snapshot)}
+                  'port': {'series': 'patches/ports/signal-8.35.1/series'},
+                  'native': 'tools/native/native-lock.json', **json.loads(snapshot)}
         forest = scope.FOREST
         def fake_git(repo, *args, **kwargs):
             if args[:2] == ('rev-parse', '--verify'):
@@ -82,6 +84,8 @@ class ScopeTests(unittest.TestCase):
                 return fork_provenance
             if args[0] == 'show' and args[1].endswith(':patches/forks/signal-foss/upstream-source.bundle'):
                 return fork_bundle
+            if args[0] == 'show' and args[1].endswith(':tools/native/native-lock.json'):
+                return native_lock
             if args[0] == 'show':
                 return b'initial/one.patch\n'
             raise AssertionError(args)
@@ -128,13 +132,17 @@ class ScopeTests(unittest.TestCase):
         snapshot = (fork_root / 'reviewed-profiles.json').read_bytes()
         fork_provenance = (fork_root / 'provenance.json').read_bytes()
         fork_bundle = (fork_root / 'upstream-source.bundle').read_bytes()
+        native_lock = (pathlib.Path(__file__).resolve().parents[2] / 'tools/native/native-lock.json').read_bytes()
         fixture_fork = self.repo / 'patches/forks/signal-foss'
         fixture_fork.mkdir(parents=True)
         (fixture_fork / 'reviewed-profiles.json').write_bytes(snapshot)
         (fixture_fork / 'provenance.json').write_bytes(fork_provenance)
         (fixture_fork / 'upstream-source.bundle').write_bytes(fork_bundle)
+        (self.repo / 'tools/native').mkdir(parents=True)
+        (self.repo / 'tools/native/native-lock.json').write_bytes(native_lock)
         config = {'signal': {'commit': signal}, 'molly': {'target': scope.MOLLY},
-                  'port': {'series': 'patches/ports/signal-8.35.1/series'}, **json.loads(snapshot)}
+                  'port': {'series': 'patches/ports/signal-8.35.1/series'},
+                  'native': 'tools/native/native-lock.json', **json.loads(snapshot)}
         (self.repo / 'molly-build.json').write_text(json.dumps(config))
         self.git('add', '.')
         self.git('commit', '-qm', 'port')
@@ -148,6 +156,13 @@ class ScopeTests(unittest.TestCase):
                 scope.check_next_port(self.repo, base, 'HEAD')
             self.git('reset', '--hard', '-q', head)
             self.commit('tools/patches/unlisted.py', 'unreviewed')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            self.commit('tools/native/README.md', 'native diagnostics')
+            self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+            self.git('reset', '--hard', '-q', head)
+            self.commit('tools/native/unreviewed.py', 'unreviewed')
             with self.assertRaisesRegex(ValueError, 'unreviewed change'):
                 scope.check_next_port(self.repo, base, 'HEAD')
             self.git('reset', '--hard', '-q', head)
@@ -199,6 +214,18 @@ class ScopeTests(unittest.TestCase):
             (fixture_fork / 'upstream-source.bundle').write_bytes(fork_bundle + b'bad')
             self.git('add', 'patches/forks/signal-foss/upstream-source.bundle'); self.git('commit', '-qm', 'altered fork bundle')
             with self.assertRaisesRegex(ValueError, 'fork bundle differs'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            config['native'] = None
+            (self.repo / 'molly-build.json').write_text(json.dumps(config))
+            self.git('add', 'molly-build.json'); self.git('commit', '-qm', 'missing native lock')
+            with self.assertRaisesRegex(ValueError, 'native lock is missing'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            config['native'] = 'tools/native/native-lock.json'
+            self.git('reset', '--hard', '-q', head)
+            (self.repo / 'tools/native/native-lock.json').write_bytes(native_lock + b' ')
+            self.git('add', 'tools/native/native-lock.json'); self.git('commit', '-qm', 'altered native lock')
+            with self.assertRaisesRegex(ValueError, 'native lock bytes differ'):
                 scope.check_next_port(self.repo, base, 'HEAD')
             self.git('reset', '--hard', '-q', head)
             del config['profiles']['collie']

@@ -268,6 +268,7 @@ MAIN_PROJECTION_EXCEPTIONS = frozenset({
 # This scope is deliberately separate from the historical stack validators.
 NEXT_PORT_BASE = '7d486880ddc991af0d36f1e4709030255ef4dbad'
 NEXT_PORT_SIGNAL = 'a74583b01e260944f699c4da03ba4e8ce04de32b'
+NEXT_PORT_NATIVE_LOCK_SHA256 = '9866196dec36f096d2757bbf9e9d774c7147548542dd2a041e6438f79dbd73e4'
 NEXT_PORT_REVIEWED_PROFILES_SHA256 = '156c318765138122a2bb428d8ce772d30d4f7ea62e1194359e42af57234bb5bd'
 NEXT_PORT_FORK_CREDITS_SHA256 = 'ca2faaf368c8695861ec9b8ab656b1c0c76329ac71bf61e6b175149daf7cd1e5'
 NEXT_PORT_FORK_BUNDLE_SHA256 = 'e0e3b786f89d042fa4e3430fd1f09718c12ef4e6316e24976bfc665be931fb57'
@@ -284,6 +285,39 @@ NEXT_PORT_TOOLS = frozenset({
     'tools/patches/line_origin.py', 'tools/patches/test_line_origin.py', 'tools/patches/fetch_reviewed_profiles.py',
 })
 
+NEXT_PORT_NATIVE_PATHS = frozenset({
+    'tools/native/ATTRIBUTION.md',
+    'tools/native/README.md',
+    'tools/native/build_ringrtc.py',
+    'tools/native/build_sources.py',
+    'tools/native/efficient_ringrtc.py',
+    'tools/native/native-lock.json',
+    'tools/native/native_driver.py',
+    'tools/native/native_fallback_smoke.py',
+    'tools/native/patches/libsignal-0.106.1-attributed.mbox',
+    'tools/native/patches/ringrtc-2.74-attributed.mbox',
+    'tools/native/patches/test_webrtc_socks_ipv6.py',
+    'tools/native/patches/test_webrtc_unknown_proxy.py',
+    'tools/native/patches/webrtc-8037b-molly-proxy-UNTESTED.patch',
+    'tools/native/patches/webrtc-socks-ipv6-fix.patch',
+    'tools/native/patches/webrtc-unknown-proxy-fix.patch',
+    'tools/native/prepare_sources.py',
+    'tools/native/setup_webrtc.py',
+    'tools/native/stage_artifacts.py',
+    'tools/native/test_build_native_driver.py',
+    'tools/native/test_build_ringrtc.py',
+    'tools/native/test_build_sources.py',
+    'tools/native/test_efficient_ringrtc.py',
+    'tools/native/test_gradle_environment.py',
+    'tools/native/test_prepare_sources.py',
+    'tools/native/test_setup_webrtc.py',
+    'tools/native/test_stage_artifacts.py',
+    'tools/native/test_verify_gradle.py',
+    'tools/native/test_webrtc_deps.py',
+    'tools/native/verify_gradle.py',
+    'tools/native/webrtc_deps.py',
+})
+
 def check_next_port(repo, base, head):
     """Verify an 8.35.1 projection against the exact reviewed fork base."""
     actual_base = git(repo, 'rev-parse', '--verify', base + '^{commit}').decode().strip()
@@ -297,19 +331,24 @@ def check_next_port(repo, base, head):
     changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')
     for raw in filter(None, changed):
         path = raw.decode('utf-8', 'surrogateescape')
-        if path.startswith(('patches/ports/signal-8.35.1/', 'patches/forks/signal-foss/')) or path in NEXT_PORT_TOOLS or path in {
+        if path.startswith(('patches/ports/signal-8.35.1/', 'patches/forks/signal-foss/')) or path in NEXT_PORT_TOOLS or path in NEXT_PORT_NATIVE_PATHS or path in {
                 'molly-build.json', 'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'}:
             continue
         if path in MAIN_PROJECTION_EXCEPTIONS or metadata(path) or path in projection:
             raise ValueError('next port contains an unreviewed change: ' + path)
     for path in projection:
-        if not metadata(path) and path not in MAIN_PROJECTION_EXCEPTIONS and path != '.github/FUNDING.yml':
+        if not metadata(path) and path not in NEXT_PORT_NATIVE_PATHS and path not in MAIN_PROJECTION_EXCEPTIONS and path != '.github/FUNDING.yml':
             raise ValueError('next port source projection differs: ' + path)
     if git(repo, 'rev-parse', head + ':patches/molly').decode().strip() != FOREST:
         raise ValueError('next port Molly forest differs')
     config = json.loads(git(repo, 'show', head + ':molly-build.json'))
     if config.get('signal', {}).get('commit') != NEXT_PORT_SIGNAL or config.get('molly', {}).get('target') != MOLLY:
         raise ValueError('next port profile source pins differ')
+    if config.get('native') != 'tools/native/native-lock.json':
+        raise ValueError('next port native lock is missing or differs')
+    native_lock = git(repo, 'show', head + ':tools/native/native-lock.json', check=False)
+    if hashlib.sha256(native_lock).hexdigest() != NEXT_PORT_NATIVE_LOCK_SHA256:
+        raise ValueError('next port native lock bytes differ from pin')
     port = config.get('port')
     expected_series = 'patches/ports/signal-8.35.1/series'
     if not isinstance(port, dict) or port.get('series') != expected_series or not git(repo, 'show', head + ':' + expected_series, check=False).strip():

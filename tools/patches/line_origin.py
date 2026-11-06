@@ -229,7 +229,7 @@ def stage_of(layer_id):
     import scope
     name = layer_id.split('/', 1)[1]
     universal_fixes = {'locked-startup-notification-restore', 'molly-donation-label',
-                       'arabic-molly-donation', 'persian-molly-donation'}
+                       'arabic-molly-donation', 'persian-molly-donation', 'native-catalog'}
     if layer_id.startswith('followups/') and (name in scope.BEHAVIOR or name in universal_fixes):
         return 'PR4 behavior fixes'
     if layer_id.startswith('followups/') and name in scope.ADDITIONS:

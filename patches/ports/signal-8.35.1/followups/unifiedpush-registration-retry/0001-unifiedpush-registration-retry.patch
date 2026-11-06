@@ -22,7 +22,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: c07f24b4ebd3bfa3ced0741a2c5e4a4237e10f4e
+Source-Commit: ecfe29cfdfdcc265fd2b2e99c410bb2f3dcc343e
 AI-Generated: true
 
 diff --git a/app/src/main/java/im/molly/unifiedpush/UnifiedPushDefaultDistributorLinkActivity.kt b/app/src/main/java/im/molly/unifiedpush/UnifiedPushDefaultDistributorLinkActivity.kt

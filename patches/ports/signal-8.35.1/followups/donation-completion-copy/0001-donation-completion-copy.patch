@@ -8,7 +8,7 @@ reviewable patch, preserving the original source author and diff.
 The official Molly snapshot and earlier resolution patches do
 not receive regenerated provenance headers.
 
-Source-Commit: d62681ca6e122b848f9557692aa4e2bcb8baff8a
+Source-Commit: 8a988a4260f8949c327fbee4e283852f13ad6f13
 AI-Generated: true
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/subscription/completed/TerminalDonationBottomSheet.kt

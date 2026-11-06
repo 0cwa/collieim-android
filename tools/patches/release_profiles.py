@@ -28,7 +28,7 @@ APP = {
     'collie-foss': ('Collie FOSS', 'Collie-FOSS', 'im.collie.app'),
 }
 POLICY = {
-    'molly-minimal': ('followups/persian-molly-donation', [], False),
+    'molly-minimal': ('followups/native-catalog', [], False),
     'molly-continued': ('followups/unifiedpush-registration-retry', [], False),
     'molly-foss-continued': ('followups/unifiedpush-registration-retry', [FIREBASE], True),
     'collie': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES, COLLIE_ICON, COLLIE_BRANDING], False),

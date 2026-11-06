@@ -47,8 +47,8 @@
   "mechanical_changes_retained_without_resolution": 2023,
   "initial_target": "f2a6b716b37cf8816223f392dc127dde319be968",
   "initial_target_tree": "48b4508257e5637779cf7dab802657ecdd63050a",
-  "target": "c07f24b4ebd3bfa3ced0741a2c5e4a4237e10f4e",
-  "target_tree": "ea8f70a544723465a11082768c2a7cea1c7f1b2b",
+  "target": "ecfe29cfdfdcc265fd2b2e99c410bb2f3dcc343e",
+  "target_tree": "f851dcd6ce9f4a22e0e0f4efa75bc8e8e8ef4aa1",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -631,63 +631,81 @@
       "source_bundle_ref": "refs/heads/source-checkpoint/persian-molly-donation"
     },
     {
-      "id": "followups/registration-network-settings",
-      "source_commit": "ce6a4a74ee898765ca4021265d2d41220460d043",
-      "description": "Add access to Network settings during registration.",
+      "id": "followups/native-catalog",
+      "source_commit": "d6a8c624baf607229468820896e3e994c6827afe",
+      "description": "Require Collie native artifact coordinates for all products",
       "ai_generated": true,
       "before_tree": "f43551918053e983218c98beb64ecd67b6cb99a7",
-      "after_tree": "0fb5fe2ad4ed935320d038c2816665edde9b98c1",
+      "after_tree": "525617a7f0b04b31edffb6d7629a16c2fd2c2419",
+      "paths": 1,
+      "patches": [
+        "followups/native-catalog/0001-native-catalog.patch"
+      ],
+      "mailbox_bytes": 1826,
+      "source_bundle": "followups/native-catalog/source-checkpoint.bundle",
+      "source_bundle_sha256": "a1e8cc33bd11f42e2c9df0630f9b3f57faf5067f9e327339e842f68ab961f905",
+      "source_bundle_bytes": 683,
+      "source_bundle_prerequisite": "485f32894fb895caac6d7ef3f37f0865698e949a",
+      "source_bundle_ref": "refs/heads/source-checkpoint/native-catalog"
+    },
+    {
+      "id": "followups/registration-network-settings",
+      "source_commit": "65e4a2a7ecc0e99ba3d591b6ee0564402004f2e1",
+      "description": "Add access to Network settings during registration.",
+      "ai_generated": true,
+      "before_tree": "525617a7f0b04b31edffb6d7629a16c2fd2c2419",
+      "after_tree": "225965e51840a4dbb4973df437d1dc7a60579bd1",
       "paths": 3,
       "patches": [
         "followups/registration-network-settings/0001-registration-network-settings.patch"
       ],
       "mailbox_bytes": 3966,
       "source_bundle": "followups/registration-network-settings/source-checkpoint.bundle",
-      "source_bundle_sha256": "6e2b4eafb902c063a1ab65de6fc59641dff14a6604405f1ef2960e3c90e40c6f",
-      "source_bundle_bytes": 1889,
-      "source_bundle_prerequisite": "485f32894fb895caac6d7ef3f37f0865698e949a",
+      "source_bundle_sha256": "b64d8838863401152c8580b4d3b6cf93f05ce453e88f7b4e6aab049c060d088a",
+      "source_bundle_bytes": 1922,
+      "source_bundle_prerequisite": "d6a8c624baf607229468820896e3e994c6827afe",
       "source_bundle_ref": "refs/heads/source-checkpoint/registration-network-settings"
     },
     {
       "id": "followups/donation-completion-copy",
-      "source_commit": "d62681ca6e122b848f9557692aa4e2bcb8baff8a",
+      "source_commit": "8a988a4260f8949c327fbee4e283852f13ad6f13",
       "description": "Add donation completion copy.",
       "ai_generated": true,
-      "before_tree": "0fb5fe2ad4ed935320d038c2816665edde9b98c1",
-      "after_tree": "ab450621731e980d9da34cd29f185410a420f358",
+      "before_tree": "225965e51840a4dbb4973df437d1dc7a60579bd1",
+      "after_tree": "9dbb6f5caf238599d8d4f92acfa3dd457c0e4e99",
       "paths": 1,
       "patches": [
         "followups/donation-completion-copy/0001-donation-completion-copy.patch"
       ],
       "mailbox_bytes": 1530,
       "source_bundle": "followups/donation-completion-copy/source-checkpoint.bundle",
-      "source_bundle_sha256": "40beff668575368ed531c8d4a5a7419997d4824465bfab4a0610a69ecc3b0f20",
-      "source_bundle_bytes": 1288,
-      "source_bundle_prerequisite": "ce6a4a74ee898765ca4021265d2d41220460d043",
+      "source_bundle_sha256": "c30c725e872cfcea88a801621addfa8b5cd32cc95002c3ad4145041da85a6d59",
+      "source_bundle_bytes": 1321,
+      "source_bundle_prerequisite": "65e4a2a7ecc0e99ba3d591b6ee0564402004f2e1",
       "source_bundle_ref": "refs/heads/source-checkpoint/donation-completion-copy"
     },
     {
       "id": "followups/unifiedpush-registration-retry",
-      "source_commit": "c07f24b4ebd3bfa3ced0741a2c5e4a4237e10f4e",
+      "source_commit": "ecfe29cfdfdcc265fd2b2e99c410bb2f3dcc343e",
       "description": "Recover from a failed UnifiedPush registration visibly and boundedly\n\nAI-assisted compatibility changes. A failed distributor registration only\nshowed a notification and never retried, so UnifiedPush could stay broken\nsilently. Now the failure shows in UnifiedPush settings with a Retry\nregistration action, and one automatic UnifiedPushRefreshJob runs per failure\nepisode (network constraint, three attempts, six-hour lifespan) instead of an\nendless background retry. Choosing a distributor, or a successful endpoint\ncallback, clears the failure. Nothing touches the encrypted store while the\napp is locked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 15f7295a60711b116e83fda111b120018412f7be",
       "ai_generated": true,
-      "before_tree": "ab450621731e980d9da34cd29f185410a420f358",
-      "after_tree": "ea8f70a544723465a11082768c2a7cea1c7f1b2b",
+      "before_tree": "9dbb6f5caf238599d8d4f92acfa3dd457c0e4e99",
+      "after_tree": "f851dcd6ce9f4a22e0e0f4efa75bc8e8e8ef4aa1",
       "paths": 11,
       "patches": [
         "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch"
       ],
       "mailbox_bytes": 26525,
       "source_bundle": "followups/unifiedpush-registration-retry/source-checkpoint.bundle",
-      "source_bundle_sha256": "30e3c758841474188a49226ec7de1dca3b08b34eeb1dc613564448cb1d67fa4b",
-      "source_bundle_bytes": 6048,
-      "source_bundle_prerequisite": "d62681ca6e122b848f9557692aa4e2bcb8baff8a",
+      "source_bundle_sha256": "7a0bee6b0f1db2fbbd594ac42a1369f9555d48d8434c9c4cc0a80571014b1f25",
+      "source_bundle_bytes": 6071,
+      "source_bundle_prerequisite": "8a988a4260f8949c327fbee4e283852f13ad6f13",
       "source_bundle_ref": "refs/heads/source-checkpoint/unifiedpush-registration-retry"
     }
   ],
-  "patch_count": 61,
-  "total_mailbox_bytes": 13045113,
-  "final_export_commit": "523c87aa321def7278c0112cda8e84a7f47481da",
+  "patch_count": 62,
+  "total_mailbox_bytes": 13046939,
+  "final_export_commit": "ecfe29cfdfdcc265fd2b2e99c410bb2f3dcc343e",
   "patch_sha256": {
     "initial/app-updates/0001-resolve-app-updates.patch": "335837b0fe40d8b2ff5380a0f659f3083b1f40e7565b1cf452ff6c2905120663",
     "initial/appearance/0001-resolve-appearance.patch": "414a3ebbfb741a7b8c8631976cc5e9f63d011db140727e71fc7597bac649f59a",
@@ -747,9 +765,10 @@
     "followups/molly-donation-label/0001-molly-donation-label.patch": "6ac274b762c0a66386f5510342077bf49823fe47d4f051a444834d1628b245da",
     "followups/arabic-molly-donation/0001-arabic-molly-donation.patch": "dc83f27af52e8a9cf2d04d3e2c6e301e831fe76e4964d87c2cb3a4c412fb4d8a",
     "followups/persian-molly-donation/0001-persian-molly-donation.patch": "f7a37ddd4e5bee5a7e8db1a83143c7fdb372c69e84dea5b93f24f55e1b258a97",
-    "followups/registration-network-settings/0001-registration-network-settings.patch": "9ae3b1c98aebc469c62227c8e124b5e640e98cf44518dc38fbfec587b111602a",
-    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "4830cc097a208efb35ea247ebef2c7d9eacd8979e7c8856e69d299d509c1b9a4",
-    "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "fb79875a50d9467e03054a542413f7bbf2c3b7b01430f44cfbd14b40d072d9ad"
+    "followups/registration-network-settings/0001-registration-network-settings.patch": "0a2dcd54d3593fb011ffca96e6eba33eaa658bab28cf9953e407dd19d11e41b9",
+    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "6abfcf77427a5ac1f5bdf7e528e02ad4277d6b96a7dd82aedb45d2d57c64f100",
+    "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "e59c4995e89a92a1615e3765a6733b55085718975a867112fb7d759b3e310b9e",
+    "followups/native-catalog/0001-native-catalog.patch": "226e651dd3b3de2c25f87189ad04a48290573830c6194b3a1a7cc858db456dd4"
   },
   "schema": 1,
   "origin_base": "c47a74ba0961903eeaeda6d22347a990056c3e83",
@@ -815,9 +834,10 @@
     "followups/molly-donation-label/0001-molly-donation-label.patch": "6ac274b762c0a66386f5510342077bf49823fe47d4f051a444834d1628b245da",
     "followups/arabic-molly-donation/0001-arabic-molly-donation.patch": "dc83f27af52e8a9cf2d04d3e2c6e301e831fe76e4964d87c2cb3a4c412fb4d8a",
     "followups/persian-molly-donation/0001-persian-molly-donation.patch": "f7a37ddd4e5bee5a7e8db1a83143c7fdb372c69e84dea5b93f24f55e1b258a97",
-    "followups/registration-network-settings/0001-registration-network-settings.patch": "9ae3b1c98aebc469c62227c8e124b5e640e98cf44518dc38fbfec587b111602a",
-    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "4830cc097a208efb35ea247ebef2c7d9eacd8979e7c8856e69d299d509c1b9a4",
-    "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "fb79875a50d9467e03054a542413f7bbf2c3b7b01430f44cfbd14b40d072d9ad"
+    "followups/registration-network-settings/0001-registration-network-settings.patch": "0a2dcd54d3593fb011ffca96e6eba33eaa658bab28cf9953e407dd19d11e41b9",
+    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "6abfcf77427a5ac1f5bdf7e528e02ad4277d6b96a7dd82aedb45d2d57c64f100",
+    "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "e59c4995e89a92a1615e3765a6733b55085718975a867112fb7d759b3e310b9e",
+    "followups/native-catalog/0001-native-catalog.patch": "226e651dd3b3de2c25f87189ad04a48290573830c6194b3a1a7cc858db456dd4"
   },
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",

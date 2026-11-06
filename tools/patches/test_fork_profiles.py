@@ -382,7 +382,7 @@ class ForkProfilesTests(unittest.TestCase):
         directory = self.repo / release_profiles.PORT_SERIES.rsplit('/', 1)[0]
         directory.mkdir(parents=True)
         names = ['network-initialization-cycle', 'locked-startup-notification-restore',
-                 'molly-donation-label', 'arabic-molly-donation', 'persian-molly-donation',
+                 'molly-donation-label', 'arabic-molly-donation', 'persian-molly-donation', 'native-catalog',
                  'registration-network-settings', 'donation-completion-copy', 'unifiedpush-registration-retry']
         layers = [{'id': 'followups/' + name, 'source_commit': 'a' * 40, 'after_tree': 'b' * 40,
                    'patches': [name + '.patch']} for name in names]
@@ -393,10 +393,15 @@ class ForkProfilesTests(unittest.TestCase):
         def save(items):
             (directory / 'provenance.json').write_text(json.dumps(dict(provenance, layers=items)))
             (directory / 'series').write_text(''.join(x['patches'][0] + '\n' for x in items))
-        selection = {'base_layer': layers[4]['id'], 'base_checkpoint': 'a' * 40, 'base_tree': 'b' * 40}
+        selection = {'base_layer': layers[5]['id'], 'base_checkpoint': 'a' * 40, 'base_tree': 'b' * 40}
         with patch.object(fork_profiles.verify_source_bundles, 'verify'):
             save(layers)
-            self.assertEqual(fork_profiles.port_prefix(self.repo, 'config.json', selection, records), records[:5])
+            self.assertEqual(fork_profiles.port_prefix(self.repo, 'config.json', selection, records), records[:6])
+            without_catalog = layers[:5] + layers[6:]
+            save(without_catalog)
+            with self.assertRaisesRegex(forest.ForestError, 'boundary missing or duplicated'):
+                fork_profiles.port_prefix(self.repo, 'config.json', selection, records[:5] + records[6:])
+            save(layers)
             with self.assertRaisesRegex(forest.ForestError, 'missing, repeated, or misordered'):
                 fork_profiles.port_prefix(self.repo, 'config.json', dict(selection, base_layer=layers[0]['id']), records)
             missing = layers[:1] + layers[2:]

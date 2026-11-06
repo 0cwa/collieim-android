@@ -39,7 +39,7 @@ def port_prefix(repo, config_path, selection, records):
     common_fixes = []
     if provenance.get('signal') == 'a74583b01e260944f699c4da03ba4e8ce04de32b':
         common_fixes = ['followups/locked-startup-notification-restore', 'followups/molly-donation-label',
-                        'followups/arabic-molly-donation', 'followups/persian-molly-donation']
+                        'followups/arabic-molly-donation', 'followups/persian-molly-donation', 'followups/native-catalog']
     additions = ['followups/registration-network-settings', 'followups/donation-completion-copy',
                  'followups/unifiedpush-registration-retry']
     minimal_boundary = common_fixes[-1] if common_fixes else boundary

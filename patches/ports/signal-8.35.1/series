@@ -56,6 +56,7 @@ followups/locked-startup-notification-restore/0001-locked-startup-notification-r
 followups/molly-donation-label/0001-molly-donation-label.patch
 followups/arabic-molly-donation/0001-arabic-molly-donation.patch
 followups/persian-molly-donation/0001-persian-molly-donation.patch
+followups/native-catalog/0001-native-catalog.patch
 followups/registration-network-settings/0001-registration-network-settings.patch
 followups/donation-completion-copy/0001-donation-completion-copy.patch
 followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch

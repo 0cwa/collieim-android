@@ -9,8 +9,8 @@ Molly itself adds 26,922 non-blank production lines to Signal `c47a74ba0961`. **
 | Stage (cumulative) | Production written / removed | Written as % of Molly's production lines | Molly lines not carried | Translations | Tests | Generated |
 |---|---:|---:|---:|---:|---:|---:|
 | PR3 compatibility, tree `12366bc6cc50` | +1,903 / −321 | 7.1% | 1,758 (of which 758 in removed paths) | +2,000 / −192 | +2,045 / −326 | +55 / −10 |
-| PR4 behavior fixes, tree `f43551918053` | +2,121 / −301 | 7.9% | 1,759 (of which 758 in removed paths) | +2,002 / −194 | +2,854 / −357 | +55 / −10 |
-| PR5 behavior additions, tree `ea8f70a54472` | +2,241 / −302 | 8.3% | 1,772 (of which 758 in removed paths) | +2,002 / −194 | +3,021 / −357 | +55 / −10 |
+| PR4 behavior fixes, tree `525617a7f0b0` | +2,123 / −301 | 7.9% | 1,761 (of which 758 in removed paths) | +2,002 / −194 | +2,854 / −357 | +55 / −10 |
+| PR5 behavior additions, tree `f851dcd6ce9f` | +2,243 / −302 | 8.3% | 1,774 (of which 758 in removed paths) | +2,002 / −194 | +3,021 / −357 | +55 / −10 |
 
 Classes: **production**: app and library source, default-locale resources and build scripts that ship in the APK; **translations**: localized strings (res/values-<locale>/strings*.xml), generated or relocated; **tests**: test, screenshot-test and benchmark source sets and benchmark modules; **generated**: gradle/verification-metadata.xml dependency hashes; **repository**: patch series, pipeline tools, documentation and CI.
 
@@ -53,6 +53,7 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `followups/molly-donation-label` | PR4 behavior fixes | +3 / −1 | +0 / −0 | +8 / −1 | +0 / −0 |
 | `followups/arabic-molly-donation` | PR4 behavior fixes | +0 / −0 | +1 / −1 | +0 / −0 | +0 / −0 |
 | `followups/persian-molly-donation` | PR4 behavior fixes | +0 / −0 | +1 / −1 | +0 / −0 | +0 / −0 |
+| `followups/native-catalog` | PR4 behavior fixes | +4 / −4 | +0 / −0 | +0 / −0 | +0 / −0 |
 | `followups/registration-network-settings` | PR5 behavior additions | +53 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 | `followups/donation-completion-copy` | PR5 behavior additions | +1 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 | `followups/unifiedpush-registration-retry` | PR5 behavior additions | +71 / −13 | +0 / −0 | +167 / −0 | +0 / −0 |
@@ -103,11 +104,11 @@ Each profile's source compared with Molly, Signal and Molly's old Signal base an
 
 | Profile | Tree | Fork layers | Release overlays | Firebase | Production written / removed | Written as % of Molly's production lines | Fork matches | Molly lines not carried | Tests |
 |---|---|---|---|---|---:|---:|---:|---:|---:|
-| collie | `3f31cdb17063` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | included | +2,727 / −510 | 10.1% | 175 | 2,271 | +3,922 / −360 |
-| collie-foss | `3f31cdb17063` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | removed | +2,727 / −510 | 10.1% | 175 | 2,271 | +3,922 / −360 |
-| molly-continued | `db77a4b7cd1b` | none | `collie-icon` | included | +2,237 / −308 | 8.3% | — | 1,850 | +3,021 / −357 |
-| molly-foss-continued | `0fe649fd16df` | `firebase-free-build` | `collie-icon` | removed | +2,158 / −379 | 8.0% | 2 | 1,908 | +3,196 / −357 |
-| molly-minimal | `f43551918053` | none | none | included | +2,108 / −300 | 7.8% | — | 1,759 | +2,854 / −357 |
+| collie | `8212fd078902` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | included | +2,729 / −510 | 10.1% | 175 | 2,273 | +3,922 / −360 |
+| collie-foss | `8212fd078902` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | removed | +2,729 / −510 | 10.1% | 175 | 2,273 | +3,922 / −360 |
+| molly-continued | `5ef3f203274a` | none | `collie-icon` | included | +2,239 / −308 | 8.3% | — | 1,852 | +3,021 / −357 |
+| molly-foss-continued | `1f6a2d78fd4d` | `firebase-free-build` | `collie-icon` | removed | +2,160 / −379 | 8.0% | 2 | 1,910 | +3,196 / −357 |
+| molly-minimal | `525617a7f0b0` | none | none | included | +2,110 / −300 | 7.8% | — | 1,761 | +2,854 / −357 |
 
 ## Raw physical Git diffs
 
@@ -984,8 +985,8 @@ Partial-file exclusions and deletion necessity remain unmeasured unless separate
 | wire-handler/lib/build.gradle.kts | 100644 | 18 | no | no | previously absent; necessity unreviewed | This Signal path is absent from the reconstructed port and was already absent at the same path in Collie RC3. | The same path is absent from Molly 8.19.2-4 and Collie RC3. | Git tree membership for Signal 8.33.2 and 8.35.1, Molly, RC3, mechanical, and target trees. | Path history does not establish that the feature is absent, equivalent, safe, or unnecessary; its disposition remains unreviewed. |
 
 Compatibility share: 121666 / 143289 physical added plus deleted text lines = 84.910%.
-Current mechanical comparison: 11202 added, 110464 deleted, 121666 total, 28 binary; current Molly comparison: 492548 added, 288596 deleted, 781144 total, 698 binary.
-Current gross physical comparison relative to original Molly patchset: 121666 / 143289 added plus deleted text lines = 84.910%.
+Current mechanical comparison: 11204 added, 110466 deleted, 121670 total, 28 binary; current Molly comparison: 492550 added, 288598 deleted, 781148 total, 698 binary.
+Current gross physical comparison relative to original Molly patchset: 121670 / 143289 added plus deleted text lines = 84.912%.
 Gross physical counts include deletions and conflict bookkeeping; they do not establish authorship or necessity.
 After minimization: unmeasured.
 
@@ -1002,11 +1003,11 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | conflict_resolution | 0 | 0 | 0 |
 | signal_api_compile_fix | 0 | 0 | 0 |
 | behavior_preservation | 0 | 0 | 0 |
-| unmeasured | 6143 | 11202 | 110464 |
+| unmeasured | 6142 | 11204 | 110466 |
 
 | Structural kind | Rows | Added | Deleted |
 |---|---:|---:|---:|
-| text | 5150 | 11202 | 110464 |
+| text | 5149 | 11204 | 110466 |
 | binary | 28 | 0 | 0 |
 | mode | 965 | 0 | 0 |
 
@@ -6860,10 +6861,9 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | 3e91d9bb404456818e69 | feature/registration/src/test/java/org/signal/registration/screens/phonenumber/PhoneNumberEntryViewModelTest.kt | text | 100644 | 100644 | 1 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 2d1e390643e45f52ce26 | gradle.properties | text | 100644 | 100644 | 2 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | d4ed62a2e78111cd24ed | gradle/libs.versions.toml | text | 100644 | 100644 | 2 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| 8b66fa0fee3694c28a06 | gradle/libs.versions.toml | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 0263407dc22f099e1b48 | gradle/libs.versions.toml | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | c4a3bfac3777dd059a40 | gradle/libs.versions.toml | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| 0877836b1587a309232a | gradle/libs.versions.toml | text | 100644 | 100644 | 1 | 14 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
-| 419f34fed4efcc82a057 | gradle/libs.versions.toml | text | 100644 | 100644 | 1 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| a3592b7ac18850776358 | gradle/libs.versions.toml | text | 100644 | 100644 | 4 | 18 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 1ad431eeabed7fe7ad50 | gradle/libs.versions.toml | text | 100644 | 100644 | 1 | 15 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 5451aac7ca568002e31f | gradle/test-libs.versions.toml | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 73c5b7540a58c71791c7 | gradle/verification-metadata.xml | text | 100644 | 100644 | 0 | 10 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |

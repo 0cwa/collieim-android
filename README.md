@@ -33,7 +33,7 @@ Welcome!  Collie is an independent Android messenger built on [Signal](https://s
  </picture>
 </a>
 
-This project keeps Molly's features available as Signal develops, while offering Collie as a separate app for people who want more control over what stays on their phone. The releases share the same source and build on one another.
+Collie continues Molly on newer Signal releases. The currently published editions and the planned next release are described below.
 
 ## Next release (planned)
 
@@ -62,11 +62,8 @@ The next release is planned to retain the `im.collie.app` package. Updates also 
 | **Collie FOSS**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/collie-foss.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of collie-foss.apk across releases"></a> | Collie without FCM - Google's notification system. (Only host Mollysocket yourself! - details below in the Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%20FOSS%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C-foss%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 | **Molly, Continued**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-continued.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-continued.apk across releases"></a> | Molly on a newer Signal version, with further registration and notification improvements. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 | **Molly FOSS, Continued**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-foss-continued.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-foss-continued.apk across releases"></a> | Molly Continued without FCM - Google's notification system.  (Only host Mollysocket yourself! - details below in Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Mollie, Minimal**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-minimal.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-minimal.apk across releases"></a> | Molly's minimalist feature set on a newer Signal version, without the Continued additions. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Molly Minimal**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-minimal.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-minimal.apk across releases"></a> | Molly's minimalist feature set on a newer Signal version, without the Continued additions. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 
-
-> [!NOTE]
-> *App names are planned to shift as features are adopted* - don't be surprised if Molly, Continued becomes Collie and Collie becomes Collie+ (or maybe Collie!) - I'm collecting community feedback to decide official variants. 🧡
 
 ### FCM? FOSS? What is that? Does Collie use Google?
 
@@ -78,7 +75,7 @@ Collie is already almost 100% FOSS compared to Signal (Signal uses Google Maps, 
 
 > For reliable notification delivery on the FOSS version, disable battery restrictions to allow it to run in the background - you will experience some *minor* battery drain from this. OR you can self-host a Mollysocket server (the UnifiedPush adaptor) and install a UnifiedPush Distributor app to replace FCM - see lower down for more details.
 
-Molly Minimal provides the updated Molly foundation. Both Molly Continued releases and both Collie releases add network settings during registration for proxy users, visible errors and retry options for failed UnifiedPush registration, and updated donation confirmation text. Collie and Collie FOSS also add the four optional retention controls described below. The two FOSS releases omit Firebase; the other three include it.
+In the currently published release, Molly Minimal provides the updated Molly foundation. Both Molly Continued releases and both Collie releases add network settings during registration for proxy users, visible errors and retry options for failed UnifiedPush registration, and updated donation confirmation text. Collie and Collie FOSS also add the four optional retention controls described below. The two FOSS releases omit Firebase; the other three include it.
 
 > [!TIP]
 > All five releases use the package `im.collie.app`, so users can switch between them and install Collie alongside upstream Molly.
@@ -111,19 +108,11 @@ The releases retain Signal's messaging and calling features and Molly's addition
 > [!CAUTION]
 > ***If you use Unifiedpush only do so with a server you entrust your entire account and all the metadata of your account.*** (I found, reported, and verified this new major security risk to the Mollysocket developer - more details will be disclosed at a later date.)
 
-Collie also offers four optional controls: keep received view-once media, keep incoming disappearing messages after they expire, ignore a sender's request to delete a message, and remove media without removing its message. All four are off by default. Content you choose to keep may appear in backups or exports. (this feature is experimental)
+The currently published Collie release also offers four optional controls: keep received view-once media, keep incoming disappearing messages after they expire, ignore a sender's request to delete a message, and remove media without removing its message. All four are off by default. Content you choose to keep may appear in backups or exports. (this feature is experimental)
 
 In the next release, we are removing these retention controls. After reviewing their design, the maintainers concluded that the current implementation is not good enough and poses security and privacy risks. We are exploring alternatives that offer a better experience while respecting disappearing-message protections. The update adds no special cleanup or restoration of previously retained content, and normal message expiration and deletion will continue. Previously retained content may be present in existing backups.
 
 The former Molly Minimal and Molly Continued download filenames will continue to receive Collie, retaining their current FCM or FOSS notification capability. Existing Collie download filenames will remain available.
-
-## Planned release names and direction
-
-These changes are planned; the current downloads and names are listed above.
-
-- **Mollie** will be the new name for Molly Minimal: Minimal Collie, or Minimal Molly Continued. Its aim is Molly, up to date, with fast bug and security fixes: Molly's minimalist feature set, patched quicker.
-- **Collie** will mean Continued Molly. Molly Continued is planned to adopt the current Collie changes before taking the Collie name.
-- **Collie+** will evolve from today's Collie into an edition for power users and community feedback, with cutting-edge features while remaining secure and stable. It is not intended as a beta.
 
 ## Free and open source
 
@@ -141,7 +130,7 @@ Signal's [Terms and Privacy Policy](https://signal.org/legal/) apply when using 
 
 ## Backups
 
-The project retains Molly's support for local Signal-format backups. Restoring a backup requires an app version that supports the version of the backup being imported. Content kept using Collie's retention controls may also be included in backups.
+The project retains Molly's support for local Signal-format backups. Restoring a backup requires an app version that supports the version of the backup being imported. Content kept using retention controls in a published release may also be included in backups.
 
 ## Feedback
 
@@ -160,4 +149,4 @@ Licensed under the GNU Affero General Public License, version 3 only ([AGPL-3.0-
 
 ## Acknowledgements
 
-Collie is independent of Signal and Molly and builds on the work of their contributors. Its retention controls are adapted from [Angus Turnbull's Signal FOSS fork](https://github.com/tw-hx/Signal-Android), including media deletion work by johanw.
+Collie is independent of Signal and Molly and builds on the work of their contributors. The retention controls in the currently published release were adapted from [Angus Turnbull's Signal FOSS fork](https://github.com/tw-hx/Signal-Android), including media deletion work by johanw.

@@ -25,7 +25,7 @@ class ProvisionalNativeBuildDriverTest(unittest.TestCase):
         (self.repo / 'tools/patches').mkdir(parents=True)
         (self.app / 'gradle').mkdir(parents=True)
         self.reports.mkdir()
-        for name in ('stage_artifacts.py', 'native_driver.py', 'build_sources.py'):
+        for name in ('stage_artifacts.py', 'native_driver.py', 'build_sources.py', 'build_ringrtc.py'):
             shutil.copyfile(HERE / name, self.repo / 'tools/native' / name)
         shutil.copytree(self.fixture.root / 'patches', self.repo / 'tools/native/patches')
         shutil.copyfile(self.fixture.lock_path, self.repo / 'tools/native/native-lock.json')
@@ -204,6 +204,58 @@ class ProvisionalNativeBuildDriverTest(unittest.TestCase):
         self.assertIn('--gradle-distribution', command)
         with self.assertRaisesRegex(build.BuildError, 'RingRTC/WebRTC source build orchestration is not implemented'):
             self.runner.native('native-build')
+
+    def test_partial_ringrtc_phase_forwards_explicit_inputs(self):
+        self.args.native_rust_bin = self.fixture.root / 'rust-bin'
+        self.args.native_webrtc_workspace = self.fixture.root / 'webrtc'
+        self.args.native_ringrtc_output = self.fixture.root / 'ringrtc-out'
+        self.args.native_gradle_zip = self.fixture.root / 'gradle.zip'
+        self.args.native_gradle_distribution = self.fixture.root / 'gradle'
+        with patch.dict(os.environ, {'ANDROID_HOME': '/test/sdk', 'JAVA_HOME': '/test/jdk'}), patch.object(self.runner, 'run') as run:
+            self.runner.native('native-build-ringrtc')
+        command, phase = run.call_args.args[:2]
+        self.assertEqual('native-build-ringrtc', phase)
+        for flag, expected in (('--workspace', self.args.native_webrtc_workspace), ('--output', self.args.native_ringrtc_output), ('--rust-bin', self.args.native_rust_bin), ('--gradle-zip', self.args.native_gradle_zip), ('--gradle-distribution', self.args.native_gradle_distribution)):
+            self.assertEqual(str(expected), command[command.index(flag) + 1])
+        with self.assertRaisesRegex(build.BuildError, 'RingRTC/WebRTC source build orchestration is not implemented'):
+            self.runner.native('native-build')
+
+    def test_partial_ringrtc_relative_paths_use_invocation_directory(self):
+        self.args.native_rust_bin = Path('rust-bin')
+        self.args.native_webrtc_workspace = Path('webrtc')
+        self.args.native_ringrtc_output = Path('ringrtc-out')
+        self.args.native_gradle_zip = Path('gradle.zip')
+        self.args.native_gradle_distribution = Path('gradle')
+        old = Path.cwd()
+        try:
+            os.chdir(self.fixture.root)
+            with patch.dict(os.environ, {'ANDROID_HOME': 'sdk', 'JAVA_HOME': 'jdk'}), patch.object(self.runner, 'run') as run:
+                self.runner.native('native-build-ringrtc')
+            command = run.call_args.args[0]
+            for flag, name in (('--workspace', 'webrtc'), ('--output', 'ringrtc-out'), ('--rust-bin', 'rust-bin'), ('--gradle-zip', 'gradle.zip'), ('--gradle-distribution', 'gradle'), ('--sdk', 'sdk'), ('--java-home', 'jdk')):
+                self.assertEqual(str(self.fixture.root / name), command[command.index(flag) + 1])
+            self.assertEqual(self.repo, run.call_args.kwargs['cwd'])
+        finally:
+            os.chdir(old)
+
+    def test_partial_ringrtc_phase_rejects_missing_inputs(self):
+        with patch.dict(os.environ, {'ANDROID_HOME': '/test/sdk', 'JAVA_HOME': '/test/jdk'}), patch.object(self.runner, 'run') as run:
+            with self.assertRaisesRegex(build.BuildError, 'partial RingRTC build requires'):
+                self.runner.native('native-build-ringrtc')
+            run.assert_not_called()
+
+    def test_partial_ringrtc_rejects_absent_native_lock(self):
+        self.runner.config.pop('native')
+        with patch.object(self.runner, 'source_proof'), patch.object(self.runner, 'run') as run:
+            with self.assertRaisesRegex(build.BuildError, 'requires the 8.35 native artifact lock'):
+                self.runner.native('native-build-ringrtc')
+            run.assert_not_called()
+
+    def test_partial_ringrtc_rejects_legacy_native_lock(self):
+        with patch.object(self.runner, 'artifact_native_lock', return_value=None), patch.object(self.runner, 'run') as run:
+            with self.assertRaisesRegex(build.BuildError, 'requires the 8.35 native artifact lock'):
+                self.runner.native('native-build-ringrtc')
+            run.assert_not_called()
 
     def test_source_build_phase_is_explicitly_unavailable(self):
         with self.assertRaisesRegex(build.BuildError, 'RingRTC/WebRTC source build orchestration is not implemented'):

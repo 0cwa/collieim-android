@@ -418,6 +418,8 @@ class Build:
         lock_value = self.config.get('native')
         if lock_value is None and self.config.get('signal', {}).get('commit') == BLOCKED_SIGNAL_PORT:
             raise BuildError('Signal 8.35.1 requires the pinned native dependency lock')
+        if lock_value is None and phase == 'native-build-ringrtc':
+            raise BuildError('partial RingRTC diagnostic requires the 8.35 native artifact lock')
         if lock_value is None:
             print('This release uses its verified published native dependencies; no native backport is configured.')
             (self.reports / (phase + '.json')).write_text(json.dumps({
@@ -453,6 +455,22 @@ class Build:
                            '--report', str(self.native_proof / 'libsignal-build.json'),
                            '--gradle-zip', str(archive), '--gradle-distribution', str(distribution)]
                 self.run(command, phase, cwd=self.repo)
+            elif phase == 'native-build-ringrtc':
+                sdk = os.environ.get('ANDROID_HOME') or os.environ.get('ANDROID_SDK_ROOT')
+                java_home = os.environ.get('JAVA_HOME')
+                rust_bin = getattr(self.args, 'native_rust_bin', None)
+                workspace = getattr(self.args, 'native_webrtc_workspace', None)
+                output = getattr(self.args, 'native_ringrtc_output', None)
+                archive = getattr(self.args, 'native_gradle_zip', None)
+                distribution = getattr(self.args, 'native_gradle_distribution', None)
+                if not sdk or not java_home or any(value is None for value in (rust_bin, workspace, output, archive, distribution)):
+                    raise BuildError('partial RingRTC build requires SDK, JDK, Rust, WebRTC workspace, output and verified Gradle paths')
+                helper = relative_file(self.repo, 'tools/native/build_ringrtc.py', 'RingRTC diagnostic builder')
+                command = [sys.executable, str(helper), '--lock', str(lock), '--sources', str(self.native_source),
+                           '--workspace', str(workspace.resolve()), '--sdk', str(Path(sdk).absolute()), '--java-home', str(Path(java_home).absolute()),
+                           '--rust-bin', str(rust_bin.resolve()), '--output', str(output.absolute()),
+                           '--gradle-zip', str(archive.absolute()), '--gradle-distribution', str(distribution.absolute())]
+                self.run(command, phase, cwd=self.repo)
             elif phase == 'native-build':
                 raise BuildError('complete RingRTC/WebRTC source build orchestration is not implemented; release remains blocked')
             elif phase == 'native-integrate':
@@ -463,6 +481,8 @@ class Build:
                     raise BuildError('native artifact integration failed: ' + str(exc)) from exc
                 self.source_proof()
             return
+        if phase == 'native-build-ringrtc':
+            raise BuildError('partial RingRTC diagnostic requires the 8.35 native artifact lock')
         helper = relative_file(self.repo, 'tools/native/ringrtc.py', 'native build helper')
         subcommand = phase.removeprefix('native-')
         command = [sys.executable, str(helper), subcommand, '--lock', str(lock),
@@ -573,7 +593,7 @@ class Build:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('phase', choices=('sdk', 'assemble', 'assemble-release', 'test', 'instrumentation', 'instrumentation-imo',
-                                         'native-prepare', 'native-build', 'native-build-libsignal', 'native-integrate'))
+                                         'native-prepare', 'native-build', 'native-build-libsignal', 'native-build-ringrtc', 'native-integrate'))
     parser.add_argument('--repo', type=Path, default=Path('.'))
     parser.add_argument('--config', default='molly-build.json')
     parser.add_argument('--profile', choices=sorted(release_profiles.NAMES))
@@ -581,6 +601,8 @@ def main():
     parser.add_argument('--report-dir', type=Path, required=True)
     parser.add_argument('--native-source-dir', type=Path)
     parser.add_argument('--native-rust-bin', type=Path)
+    parser.add_argument('--native-webrtc-workspace', type=Path)
+    parser.add_argument('--native-ringrtc-output', type=Path)
     parser.add_argument('--native-host-stage', type=Path)
     parser.add_argument('--native-host-sha256')
     parser.add_argument('--native-gradle-zip', type=Path)

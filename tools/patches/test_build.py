@@ -473,11 +473,15 @@ class NamedProfileBuildTests(BuildSourceTests):
                     self.assertIn('-PreleaseVersionName=8.33.2-1-rc3', command)
                     self.assertIn('-PreleaseVersionCode=177203', command)
 
+    @patch.object(build.release_profiles, 'layer_test_sources', new=lambda *_: [])
     def test_profile_bound_to_proof_and_forces_firebase_property(self):
         self.config['port'] = {'series': build.release_profiles.PORT_SERIES}
         self.config['android'] = {'assemble': ':app:assembleDebug', 'tests': [':app:test']}
+        self.config['fork_source'] = {'url': 'https://github.com/tw-hx/Signal-Android', 'head': 'c' * 40}
+        fork_series = [build.release_profiles.FIREBASE, build.release_profiles.COLLIE_ICON,
+                       build.release_profiles.COLLIE_BRANDING, build.release_profiles.COLLIE_VISUALS]
         entry = {'base_series': build.release_profiles.PORT_SERIES, 'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'],
-                 'fork_series': [], 'target_tree': self.config['target_tree'],
+                 'fork_series': fork_series, 'target_tree': self.config['target_tree'],
                  'firebase_free': False}
         self.config['profiles'] = {'molly-minimal': entry,
                                    'molly-continued': dict(entry)}
@@ -497,7 +501,7 @@ class NamedProfileBuildTests(BuildSourceTests):
             runner.gradle('assemble')
         self.assertIn('-PmollyFirebaseFree=false', (self.reports / 'assemble.log').read_text().splitlines())
         self.assertIn('-PbasePackageId=im.collie.app', (self.reports / 'assemble.log').read_text().splitlines())
-        self.assertIn('-PbaseAppTitle=Molly Minimal', (self.reports / 'assemble.log').read_text().splitlines())
+        self.assertIn('-PbaseAppTitle=Collie', (self.reports / 'assemble.log').read_text().splitlines())
         for name, (title, filename, package) in build.release_profiles.APP.items():
             with self.subTest(profile=name):
                 runner.profile['app'] = {'title': title, 'file_name': filename, 'package_id': package}

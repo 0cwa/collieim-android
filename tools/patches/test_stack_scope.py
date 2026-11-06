@@ -162,6 +162,10 @@ class ScopeTests(unittest.TestCase):
             self.commit('tools/native/README.md', 'native diagnostics')
             self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
             self.git('reset', '--hard', '-q', head)
+            for path in ('tools/native/host_jni_guard.py', 'tools/native/host_jni_smoke.py', 'tools/native/test_host_jni_guard.py'):
+                self.commit(path, 'reviewed host JNI diagnostic')
+                self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+                self.git('reset', '--hard', '-q', head)
             self.commit('tools/native/unreviewed.py', 'unreviewed')
             with self.assertRaisesRegex(ValueError, 'unreviewed change'):
                 scope.check_next_port(self.repo, base, 'HEAD')

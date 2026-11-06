@@ -34,10 +34,15 @@ def port_prefix(repo, config_path, selection, records):
         raise forest.ForestError('selected port boundary missing or duplicated')
     end = endpoints[0]
     boundary = 'followups/network-initialization-cycle'
+    common_fixes = []
+    if provenance.get('signal') == 'a74583b01e260944f699c4da03ba4e8ce04de32b':
+        common_fixes = ['followups/locked-startup-notification-restore', 'followups/molly-donation-label',
+                        'followups/arabic-molly-donation', 'followups/persian-molly-donation']
     additions = ['followups/registration-network-settings', 'followups/donation-completion-copy',
                  'followups/unifiedpush-registration-retry']
-    selected_boundaries = [layer['id'] for layer in layers[:end + 1] if layer['id'] in {boundary, *additions}]
-    expected_boundaries = [boundary] + ([] if selection['base_layer'] == boundary else additions)
+    minimal_boundary = common_fixes[-1] if common_fixes else boundary
+    selected_boundaries = [layer['id'] for layer in layers[:end + 1] if layer['id'] in {boundary, *common_fixes, *additions}]
+    expected_boundaries = [boundary] + common_fixes + ([] if selection['base_layer'] == minimal_boundary else additions)
     if selected_boundaries != expected_boundaries:
         raise forest.ForestError('selected port prefix has missing, repeated, or misordered additions')
     layer = layers[end]

@@ -12,7 +12,7 @@ NAMES = {'molly-minimal', 'molly-continued', 'molly-foss-continued',
          'collie', 'collie-foss'}
 FOSS = {'molly-foss-continued', 'collie-foss'}
 CONTINUED_ICON = {'molly-continued', 'molly-foss-continued'}
-PORT_SERIES = 'patches/ports/signal-8.33.2/series'
+PORT_SERIES = 'patches/ports/signal-8.35.1/series'
 FORK_ROOT = 'patches/forks/signal-foss'
 FIREBASE = FORK_ROOT + '/firebase-free-build/series'
 RETENTION = FORK_ROOT + '/retention-controls/series'
@@ -28,7 +28,7 @@ APP = {
     'collie-foss': ('Collie FOSS', 'Collie-FOSS', 'im.collie.app'),
 }
 POLICY = {
-    'molly-minimal': ('followups/network-initialization-cycle', [], False),
+    'molly-minimal': ('followups/persian-molly-donation', [], False),
     'molly-continued': ('followups/unifiedpush-registration-retry', [], False),
     'molly-foss-continued': ('followups/unifiedpush-registration-retry', [FIREBASE], True),
     'collie': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES, COLLIE_ICON, COLLIE_BRANDING], False),

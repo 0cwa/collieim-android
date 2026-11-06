@@ -1,4 +1,4 @@
-From 9e2d523246c17b5b716b8bb117dd719caf8dfd10 Mon Sep 17 00:00:00 2001
+From e67d9a6d13a007876c2b87035b04566cb3ea39ab Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Tue, 3 Nov 2026 02:58:19 +0100
 Subject: [PATCH] Keep ordinary media on view-once sync and explain retention
@@ -11,8 +11,7 @@ including media of a message that is not view-once. Delete only for view-once
 messages. The settings now say that turning an option off does not delete
 messages or media already kept, and that kept content may appear in backups
 and exports, including on another device after restore.
-
-Source-Commit: 9e2d523246c17b5b716b8bb117dd719caf8dfd10
+Source-Commit: e67d9a6d13a007876c2b87035b04566cb3ea39ab
 
 ---
  .../messages/SyncMessageProcessor.kt          |  2 +-
@@ -22,10 +21,10 @@ Source-Commit: 9e2d523246c17b5b716b8bb117dd719caf8dfd10
  4 files changed, 51 insertions(+), 5 deletions(-)
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt b/app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt
-index 30a2c96f..4e9caf9d 100644
+index 3c86b39ef2..180ce3ae42 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt
-@@ -1090,7 +1090,7 @@ object SyncMessageProcessor {
+@@ -1091,7 +1091,7 @@ object SyncMessageProcessor {
      val record: MessageRecord? = SignalDatabase.messages.getMessageFor(timestamp, author)
  
      if (record != null) {
@@ -35,13 +34,13 @@ index 30a2c96f..4e9caf9d 100644
        warn(envelopeTimestamp.toString(), "Got a view-once open message for a message we don't have!")
        if (earlyMessageCacheEntry != null) {
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionViewOnceValidationTest.kt b/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionViewOnceValidationTest.kt
-index 3c4174e7..23db6f4c 100644
+index bae98749dc..72b6535daa 100644
 --- a/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionViewOnceValidationTest.kt
 +++ b/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionViewOnceValidationTest.kt
 @@ -21,6 +21,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
  import org.thoughtcrime.securesms.recipients.Recipient
  import org.thoughtcrime.securesms.testutil.RecipientTestRule
- import org.thoughtcrime.securesms.util.RemoteConfig
+ import org.signal.remoteconfig.RemoteConfig
 +import org.thoughtcrime.securesms.util.MediaUtil
  import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
  import org.whispersystems.signalservice.internal.push.AttachmentPointer
@@ -81,7 +80,7 @@ index 3c4174e7..23db6f4c 100644
 +  }
  }
 diff --git a/feature/app-settings/src/main/res/values/strings1.xml b/feature/app-settings/src/main/res/values/strings1.xml
-index e10f7280..0da14a69 100644
+index e10f7280e3..0da14a69ba 100644
 --- a/feature/app-settings/src/main/res/values/strings1.xml
 +++ b/feature/app-settings/src/main/res/values/strings1.xml
 @@ -3,11 +3,11 @@
@@ -101,7 +100,7 @@ index e10f7280..0da14a69 100644
 +  <string name="ChatsSettingsFragment__delete_media_only_summary">Keep the message when you delete its last media attachment; that removal stays on this device. Kept message text may appear in backups and exports, including on another device after restore. Turning this off does not delete messages or media already kept.</string>
  </resources>
 diff --git a/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt b/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt
-index f8be863a..9b44541d 100644
+index 0ae5761c3a..3e6a247f2e 100644
 --- a/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt
 +++ b/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt
 @@ -67,6 +67,22 @@ class ChatsSettingsScreenTest {

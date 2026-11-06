@@ -310,7 +310,7 @@ class ForkProfilesTests(unittest.TestCase):
             release_profiles.select(config, name, self.repo)
 
     def test_port_prefix_requires_verified_order_and_exact_boundary(self):
-        directory = self.repo / 'patches/ports/signal-8.33.2'
+        directory = self.repo / release_profiles.PORT_SERIES.rsplit('/', 1)[0]
         directory.mkdir(parents=True)
         (directory / 'series').write_text('a.patch\nr.patch\nb.patch\nu.patch\n')
         layers = [{'id': 'followups/network-initialization-cycle', 'source_commit': 'a'*40,
@@ -352,6 +352,32 @@ class ForkProfilesTests(unittest.TestCase):
             (directory / 'series').write_text('b.patch\na.patch\nr.patch\nu.patch\n')
             with self.assertRaisesRegex(forest.ForestError, 'order'):
                 fork_profiles.port_prefix(self.repo, 'config.json', selection, records)
+
+    def test_new_minimal_prefix_requires_all_universal_fixes(self):
+        directory = self.repo / release_profiles.PORT_SERIES.rsplit('/', 1)[0]
+        directory.mkdir(parents=True)
+        names = ['network-initialization-cycle', 'locked-startup-notification-restore',
+                 'molly-donation-label', 'arabic-molly-donation', 'persian-molly-donation',
+                 'registration-network-settings', 'donation-completion-copy', 'unifiedpush-registration-retry']
+        layers = [{'id': 'followups/' + name, 'source_commit': 'a' * 40, 'after_tree': 'b' * 40,
+                   'patches': [name + '.patch']} for name in names]
+        hashes = {layer['patches'][0]: str(i) for i, layer in enumerate(layers)}
+        provenance = {'signal': 'a74583b01e260944f699c4da03ba4e8ce04de32b',
+                      'layers': layers, 'mailbox_sha256': hashes}
+        records = [(directory / path, {'sha256': digest}) for path, digest in hashes.items()]
+        def save(items):
+            (directory / 'provenance.json').write_text(json.dumps(dict(provenance, layers=items)))
+            (directory / 'series').write_text(''.join(x['patches'][0] + '\n' for x in items))
+        selection = {'base_layer': layers[4]['id'], 'base_checkpoint': 'a' * 40, 'base_tree': 'b' * 40}
+        with patch.object(fork_profiles.verify_source_bundles, 'verify'):
+            save(layers)
+            self.assertEqual(fork_profiles.port_prefix(self.repo, 'config.json', selection, records), records[:5])
+            with self.assertRaisesRegex(forest.ForestError, 'missing, repeated, or misordered'):
+                fork_profiles.port_prefix(self.repo, 'config.json', dict(selection, base_layer=layers[0]['id']), records)
+            missing = layers[:1] + layers[2:]
+            save(missing)
+            with self.assertRaisesRegex(forest.ForestError, 'missing, repeated, or misordered'):
+                fork_profiles.port_prefix(self.repo, 'config.json', selection, [records[0]] + records[2:])
 
 
 if __name__ == '__main__':

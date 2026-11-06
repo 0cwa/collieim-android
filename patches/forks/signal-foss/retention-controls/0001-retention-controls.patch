@@ -1,11 +1,10 @@
-From 94732df9bb0787267fd52f0aea3ae76a7cf78c47 Mon Sep 17 00:00:00 2001
+From 9a16724074c16dfe821369682d84604cba7b4f36 Mon Sep 17 00:00:00 2001
 From: Angus Turnbull <github@twinhelix.com>
 Date: Mon, 2 Nov 2026 03:28:48 +0100
 Subject: [PATCH] Add opt-in message retention controls
 
 Adapt fc0daac37774d9c20238a34ac4786d9398adc07f with AI-assisted compatibility changes. Media deletion is credited to johanw in the source. Keep privacy defaults disabled, preserve linked-device deletion and expiry configuration, and avoid overwriting user reactions.
-
-Source-Commit: 94732df9bb0787267fd52f0aea3ae76a7cf78c47
+Source-Commit: 9a16724074c16dfe821369682d84604cba7b4f36
 
 ---
  .../app/chats/ChatsSettingsRepository.kt      |  26 ++++
@@ -20,18 +19,18 @@ Source-Commit: 94732df9bb0787267fd52f0aea3ae76a7cf78c47
  .../RetentionViewOnceValidationTest.kt        |  94 +++++++++++++
  .../securesms/util/AttachmentUtilTest.kt      |  17 +++
  .../appsettings/chats/ChatsSettingsEvents.kt  |   8 ++
- .../appsettings/chats/ChatsSettingsScreen.kt  |  52 +++++++
+ .../appsettings/chats/ChatsSettingsScreen.kt  |  52 ++++++-
  .../appsettings/chats/ChatsSettingsState.kt   |   6 +
  .../src/main/res/values/strings1.xml          |  13 ++
  .../chats/ChatsSettingsScreenTest.kt          |  18 +++
- 16 files changed, 584 insertions(+), 23 deletions(-)
+ 16 files changed, 583 insertions(+), 24 deletions(-)
  create mode 100644 app/src/test/java/org/thoughtcrime/securesms/messages/RetentionMediaTest.kt
  create mode 100644 app/src/test/java/org/thoughtcrime/securesms/messages/RetentionProcessorTest.kt
  create mode 100644 app/src/test/java/org/thoughtcrime/securesms/messages/RetentionViewOnceValidationTest.kt
  create mode 100644 feature/app-settings/src/main/res/values/strings1.xml
 
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/chats/ChatsSettingsRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/chats/ChatsSettingsRepository.kt
-index 86f864db..a136affd 100644
+index 311296cfef..89a31461c2 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/chats/ChatsSettingsRepository.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/chats/ChatsSettingsRepository.kt
 @@ -83,6 +83,32 @@ object ChatsSettingsRepository {
@@ -68,10 +67,10 @@ index 86f864db..a136affd 100644
      SignalExecutors.BOUNDED.execute {
        val isLinkPreviewsEnabled = SignalStore.settings.isLinkPreviewsEnabled
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/chats/ChatsSettingsViewModel.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/chats/ChatsSettingsViewModel.kt
-index 027dba3b..d9f4651c 100644
+index 4a2a5b06da..4762fa4e14 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/chats/ChatsSettingsViewModel.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/chats/ChatsSettingsViewModel.kt
-@@ -39,6 +39,12 @@ class ChatsSettingsViewModel : EventDrivenViewModel<ChatsSettingsEvents>(TAG) {
+@@ -48,6 +48,12 @@ class ChatsSettingsViewModel(
        plaintextExportProgress = ChatsSettingsRepository.observePlaintextExportProgress().value.toBackupCreationProgress(),
        chatExportState = ChatExportState.None,
        shouldAutoplayStickersAndGifs = ChatsSettingsRepository.isAutoplayStickersAndGifsEnabled()
@@ -84,10 +83,10 @@ index 027dba3b..d9f4651c 100644
      )
    )
  
-@@ -67,6 +73,11 @@ class ChatsSettingsViewModel : EventDrivenViewModel<ChatsSettingsEvents>(TAG) {
-       ChatsSettingsEvents.ExportCompletionConfirmed -> _state.update { it.copy(chatExportState = ChatExportState.None, includeMediaInExport = false) }
+@@ -77,6 +83,11 @@ class ChatsSettingsViewModel(
        is ChatsSettingsEvents.AutoplayStickersAndGifsChanged -> setAutoplayStickersAndGifsEnabled(event.enabled)
-       ChatsSettingsEvents.ChatFoldersClicked -> error("Handled in the fragment.")
+       ChatsSettingsEvents.NavigateBackClicked -> parentEventEmitter.navigateBack()
+       ChatsSettingsEvents.ChatFoldersClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.ChatFoldersRoute.ChatFolders)
 +      // AT: added
 +      is ChatsSettingsEvents.KeepExpiringMessagesChanged -> setKeepExpiringMessages(event.enabled)
 +      is ChatsSettingsEvents.KeepViewOnceMessagesChanged -> setKeepViewOnceMessages(event.enabled)
@@ -96,7 +95,7 @@ index 027dba3b..d9f4651c 100644
      }
    }
  
-@@ -130,4 +141,27 @@ class ChatsSettingsViewModel : EventDrivenViewModel<ChatsSettingsEvents>(TAG) {
+@@ -140,4 +151,27 @@ class ChatsSettingsViewModel(
  
      _state.update { it.copy(folderCount = count, localBackupsEnabled = backupsEnabled) }
    }
@@ -125,10 +124,10 @@ index 027dba3b..d9f4651c 100644
 +
  }
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/database/MessageTable.kt b/app/src/main/java/org/thoughtcrime/securesms/database/MessageTable.kt
-index 0d3e4a7c..b145f34f 100644
+index be198f8c31..97e4777b29 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/database/MessageTable.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/database/MessageTable.kt
-@@ -7344,6 +7344,20 @@ open class MessageTable(context: Context?, databaseHelper: SignalDatabase) : Dat
+@@ -7348,6 +7348,20 @@ open class MessageTable(context: Context?, databaseHelper: SignalDatabase) : Dat
        }
      }
    }
@@ -150,10 +149,10 @@ index 0d3e4a7c..b145f34f 100644
  
  fun MessageRecord.withAttachments(): MessageRecord {
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt
-index c65f160f..56169de0 100644
+index 496e495605..f0919ef953 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt
-@@ -109,6 +109,13 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
+@@ -113,6 +113,13 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
  
      const val BACKUP_DEFAULT_HOUR = 2
      const val BACKUP_DEFAULT_MINUTE = 0
@@ -167,7 +166,7 @@ index c65f160f..56169de0 100644
    }
  
    private val configurationSettingChanged = SingleLiveEvent<String>()
-@@ -154,6 +161,10 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
+@@ -159,6 +166,10 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
      MESSAGE_FONT_SIZE,
      PREFER_SYSTEM_EMOJI,
      ENTER_KEY_SENDS,
@@ -178,7 +177,7 @@ index c65f160f..56169de0 100644
      BACKUPS_ENABLED,
      MESSAGE_NOTIFICATIONS_ENABLED,
      MESSAGE_NOTIFICATION_SOUND,
-@@ -288,6 +299,18 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
+@@ -293,6 +304,18 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
  
    var isBackupEnabled: Boolean by booleanValue(BACKUPS_ENABLED, false)
  
@@ -198,10 +197,10 @@ index c65f160f..56169de0 100644
      get() = getInteger(BACKUPS_SCHEDULE_HOUR, BACKUP_DEFAULT_HOUR)
  
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt b/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
-index f7948257..987813ec 100644
+index d8372d9c1c..ca514be08f 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/messages/DataMessageProcessor.kt
-@@ -466,7 +466,7 @@ object DataMessageProcessor {
+@@ -465,7 +465,7 @@ object DataMessageProcessor {
          receivedTimeMillis = System.currentTimeMillis(),
          parentStoryId = parentStoryId,
          isStoryReaction = true,
@@ -210,7 +209,7 @@ index f7948257..987813ec 100644
          isUnidentified = metadata.sealedSender,
          body = emoji,
          groupId = groupId,
-@@ -586,6 +586,8 @@ object DataMessageProcessor {
+@@ -585,6 +585,8 @@ object DataMessageProcessor {
      val targetMessage: MessageRecord? = SignalDatabase.messages.getMessageFor(targetSentTimestamp, senderRecipientId)
  
      return if (targetMessage != null && MessageConstraintsUtil.isValidRemoteDeleteReceive(targetMessage, senderRecipientId, envelope.serverTimestamp!!)) {
@@ -219,7 +218,7 @@ index f7948257..987813ec 100644
        SignalDatabase.messages.markAsRemoteDelete(targetMessage, senderRecipientId)
        if (targetMessage.isStory()) {
          SignalDatabase.messages.deleteRemotelyDeletedStory(targetMessage.id)
-@@ -635,7 +637,7 @@ object DataMessageProcessor {
+@@ -634,7 +636,7 @@ object DataMessageProcessor {
          sentTimeMillis = envelope.clientTimestamp!!,
          serverTimeMillis = envelope.serverTimestamp!!,
          receivedTimeMillis = receivedTime,
@@ -228,7 +227,7 @@ index f7948257..987813ec 100644
          isUnidentified = metadata.sealedSender,
          serverGuid = UuidUtil.getStringUUID(envelope.serverGuid, envelope.serverGuidBinary),
          type = if (isActivatePaymentsRequest) MessageType.ACTIVATE_PAYMENTS_REQUEST else MessageType.PAYMENTS_ACTIVATED
-@@ -754,7 +756,7 @@ object DataMessageProcessor {
+@@ -753,7 +755,7 @@ object DataMessageProcessor {
          serverTimeMillis = envelope.serverTimestamp!!,
          receivedTimeMillis = System.currentTimeMillis(),
          parentStoryId = parentStoryId,
@@ -237,7 +236,7 @@ index f7948257..987813ec 100644
          isUnidentified = metadata.sealedSender,
          body = message.body,
          groupId = groupId,
-@@ -831,6 +833,7 @@ object DataMessageProcessor {
+@@ -830,6 +832,7 @@ object DataMessageProcessor {
      notifyTypingStoppedFromIncomingMessage(senderRecipient, threadRecipient.id, metadata.sourceDeviceId)
  
      val insertResult: InsertResult?
@@ -245,7 +244,7 @@ index f7948257..987813ec 100644
  
      SignalDatabase.messages.beginTransaction()
      try {
-@@ -851,8 +854,8 @@ object DataMessageProcessor {
+@@ -850,8 +853,8 @@ object DataMessageProcessor {
          sentTimeMillis = envelope.clientTimestamp!!,
          serverTimeMillis = envelope.serverTimestamp!!,
          receivedTimeMillis = receivedTime,
@@ -256,7 +255,7 @@ index f7948257..987813ec 100644
          isUnidentified = metadata.sealedSender,
          body = message.body?.ifEmpty { null },
          groupId = groupId,
-@@ -906,7 +909,7 @@ object DataMessageProcessor {
+@@ -905,7 +908,7 @@ object DataMessageProcessor {
          AppDependencies.messageNotifier.updateNotification(context, ConversationId.forConversation(insertResult.threadId))
          TrimThreadJob.enqueueAsync(insertResult.threadId)
  
@@ -265,7 +264,7 @@ index f7948257..987813ec 100644
            AppDependencies.viewOnceMessageManager.scheduleIfNecessary()
          }
        }
-@@ -946,7 +949,7 @@ object DataMessageProcessor {
+@@ -945,7 +948,7 @@ object DataMessageProcessor {
        receivedTimeMillis = receivedTime,
        body = body,
        groupId = groupId,
@@ -302,10 +301,10 @@ index f7948257..987813ec 100644
        isUnidentified = metadata.sealedSender,
        serverGuid = UuidUtil.getStringUUID(envelope.serverGuid, envelope.serverGuidBinary),
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt b/app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt
-index 7d02a88a..30a2c96f 100644
+index 5982fff529..3c86b39ef2 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt
-@@ -94,6 +94,7 @@ import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.hasRemoteDelet
+@@ -95,6 +95,7 @@ import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.hasRemoteDelet
  import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isEmptyGroupV2Message
  import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isExpirationUpdate
  import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isGroupV2Update
@@ -313,7 +312,7 @@ index 7d02a88a..30a2c96f 100644
  import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isMediaMessage
  import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isProfileKeyUpdate
  import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isUnidentified
-@@ -260,6 +261,7 @@ object SyncMessageProcessor {
+@@ -261,6 +262,7 @@ object SyncMessageProcessor {
          }
          dataMessage.hasRemoteDelete -> DataMessageProcessor.handleRemoteDelete(context, envelope, dataMessage, senderRecipient.id, earlyMessageCacheEntry, batchCache)
          dataMessage.payment != null -> log(envelope.clientTimestamp!!, "Ignoring payment notification/activation from sync transcript; payment row arrives via SyncMessage.OutgoingPayment.")
@@ -321,7 +320,7 @@ index 7d02a88a..30a2c96f 100644
          dataMessage.isMediaMessage || dataMessage.giftBadge != null -> threadId = handleSynchronizeSentMediaMessage(context, sent, envelope.clientTimestamp!!, senderRecipient)
          dataMessage.pollCreate != null -> threadId = handleSynchronizedPollCreate(envelope, dataMessage, sent, senderRecipient)
          dataMessage.pollVote != null -> {
-@@ -849,7 +851,7 @@ object SyncMessageProcessor {
+@@ -850,7 +852,7 @@ object SyncMessageProcessor {
      val previews: List<LinkPreview> = DataMessageProcessor.getLinkPreviews(dataMessage.preview, dataMessage.body ?: "", false)
      val mentions: List<Mention> = DataMessageProcessor.getMentions(dataMessage.bodyRanges)
      val giftBadge: GiftBadge? = if (dataMessage.giftBadge?.receiptCredentialPresentation != null) GiftBadge.Builder().redemptionToken(dataMessage.giftBadge!!.receiptCredentialPresentation!!).build() else null
@@ -330,7 +329,7 @@ index 7d02a88a..30a2c96f 100644
      val bodyRanges: BodyRangeList? = dataMessage.bodyRanges.toBodyRangeList()
      val syncAttachments: List<Attachment> = listOfNotNull(sticker) + if (viewOnce) listOf<Attachment>(TombstoneAttachment.forNonQuote(MediaUtil.VIEW_ONCE)) else dataMessage.attachments.toPointersWithinLimit()
  
-@@ -1088,7 +1090,7 @@ object SyncMessageProcessor {
+@@ -1089,7 +1091,7 @@ object SyncMessageProcessor {
      val record: MessageRecord? = SignalDatabase.messages.getMessageFor(timestamp, author)
  
      if (record != null) {
@@ -340,7 +339,7 @@ index 7d02a88a..30a2c96f 100644
        warn(envelopeTimestamp.toString(), "Got a view-once open message for a message we don't have!")
        if (earlyMessageCacheEntry != null) {
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/util/AttachmentUtil.kt b/app/src/main/java/org/thoughtcrime/securesms/util/AttachmentUtil.kt
-index 8812a438..5617f1d4 100644
+index 8812a4389c..5617f1d4b1 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/util/AttachmentUtil.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/util/AttachmentUtil.kt
 @@ -95,16 +95,26 @@ object AttachmentUtil {
@@ -400,7 +399,7 @@ index 8812a438..5617f1d4 100644
            attachments.deleteAttachment(attachment.attachmentId)
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionMediaTest.kt b/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionMediaTest.kt
 new file mode 100644
-index 00000000..87abdf13
+index 0000000000..87abdf13c8
 --- /dev/null
 +++ b/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionMediaTest.kt
 @@ -0,0 +1,109 @@
@@ -515,7 +514,7 @@ index 00000000..87abdf13
 +}
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionProcessorTest.kt b/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionProcessorTest.kt
 new file mode 100644
-index 00000000..d57a1b14
+index 0000000000..a7cfe725ce
 --- /dev/null
 +++ b/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionProcessorTest.kt
 @@ -0,0 +1,127 @@
@@ -538,7 +537,7 @@ index 00000000..d57a1b14
 +import org.thoughtcrime.securesms.dependencies.AppDependencies
 +import org.thoughtcrime.securesms.util.EarlyMessageCache
 +import org.thoughtcrime.securesms.util.EarlyMessageCacheEntry
-+import org.thoughtcrime.securesms.util.RemoteConfig
++import org.signal.remoteconfig.RemoteConfig
 +import org.thoughtcrime.securesms.recipients.Recipient
 +import org.thoughtcrime.securesms.testutil.RecipientTestRule
 +import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
@@ -648,7 +647,7 @@ index 00000000..d57a1b14
 +}
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionViewOnceValidationTest.kt b/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionViewOnceValidationTest.kt
 new file mode 100644
-index 00000000..3c4174e7
+index 0000000000..bae98749dc
 --- /dev/null
 +++ b/app/src/test/java/org/thoughtcrime/securesms/messages/RetentionViewOnceValidationTest.kt
 @@ -0,0 +1,94 @@
@@ -674,7 +673,7 @@ index 00000000..3c4174e7
 +import org.thoughtcrime.securesms.keyvalue.SignalStore
 +import org.thoughtcrime.securesms.recipients.Recipient
 +import org.thoughtcrime.securesms.testutil.RecipientTestRule
-+import org.thoughtcrime.securesms.util.RemoteConfig
++import org.signal.remoteconfig.RemoteConfig
 +import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
 +import org.whispersystems.signalservice.internal.push.AttachmentPointer
 +import org.whispersystems.signalservice.internal.push.Content
@@ -747,7 +746,7 @@ index 00000000..3c4174e7
 +  }
 +}
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/util/AttachmentUtilTest.kt b/app/src/test/java/org/thoughtcrime/securesms/util/AttachmentUtilTest.kt
-index b6502cb3..c63641df 100644
+index b6502cb364..c63641dffd 100644
 --- a/app/src/test/java/org/thoughtcrime/securesms/util/AttachmentUtilTest.kt
 +++ b/app/src/test/java/org/thoughtcrime/securesms/util/AttachmentUtilTest.kt
 @@ -61,6 +61,7 @@ class AttachmentUtilTest {
@@ -789,10 +788,10 @@ index b6502cb3..c63641df 100644
    }
  
 diff --git a/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsEvents.kt b/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsEvents.kt
-index 1aa5400f..de40ad49 100644
+index 3158749d0f..e2c470f5e8 100644
 --- a/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsEvents.kt
 +++ b/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsEvents.kt
-@@ -41,6 +41,14 @@ sealed interface ChatsSettingsEvents {
+@@ -46,6 +46,14 @@ sealed interface ChatsSettingsEvents {
  
    data class EnterKeySendsChanged(val enabled: Boolean) : ChatsSettingsEvents
  
@@ -808,10 +807,10 @@ index 1aa5400f..de40ad49 100644
     * User got past their screen lock after asking to export their chat history.
     */
 diff --git a/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsScreen.kt b/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsScreen.kt
-index 0a1d5a3b..af00c130 100644
+index 662e151e55..89d10c9fa3 100644
 --- a/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsScreen.kt
 +++ b/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsScreen.kt
-@@ -220,6 +220,52 @@ fun ChatsSettingsScreen(
+@@ -217,6 +217,52 @@ fun ChatsSettingsScreen(
            onCheckChanged = { onEvent(ChatsSettingsEvents.EnterKeySendsChanged(it)) }
          )
        }
@@ -864,21 +863,19 @@ index 0a1d5a3b..af00c130 100644
      }
    }
  
-@@ -248,6 +294,12 @@ private fun ChatsSettingsScreenPreview() {
-       clientDeprecated = false,
-       isPlaintextExportEnabled = true,
-       plaintextExportProgress = BackupCreationProgress.Idle
-+      // AT/JW: added
-+      ,
-+      keepExpiringMessages = false,
-+      keepViewOnceMessages = false,
-+      ignoreRemoteDelete = false,
-+      deleteMediaOnly = false
-     ),
-     onEvent = {}
-   )
+@@ -249,5 +295,9 @@ internal val chatsSettingsPreviewState = ChatsSettingsState(
+   userUnregistered = false,
+   clientDeprecated = false,
+   isPlaintextExportEnabled = true,
+-  plaintextExportProgress = BackupCreationProgress.Idle
++  plaintextExportProgress = BackupCreationProgress.Idle,
++  keepExpiringMessages = false,
++  keepViewOnceMessages = false,
++  ignoreRemoteDelete = false,
++  deleteMediaOnly = false
+ )
 diff --git a/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsState.kt b/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsState.kt
-index 60566c3d..132b8a1c 100644
+index 60566c3de4..132b8a1ce0 100644
 --- a/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsState.kt
 +++ b/feature/app-settings/src/main/java/org/signal/appsettings/chats/ChatsSettingsState.kt
 @@ -22,6 +22,12 @@ data class ChatsSettingsState(
@@ -896,7 +893,7 @@ index 60566c3d..132b8a1c 100644
      return !userUnregistered && !clientDeprecated
 diff --git a/feature/app-settings/src/main/res/values/strings1.xml b/feature/app-settings/src/main/res/values/strings1.xml
 new file mode 100644
-index 00000000..e10f7280
+index 0000000000..e10f7280e3
 --- /dev/null
 +++ b/feature/app-settings/src/main/res/values/strings1.xml
 @@ -0,0 +1,13 @@
@@ -914,7 +911,7 @@ index 00000000..e10f7280
 +  <string name="ChatsSettingsFragment__delete_media_only_summary">Keep the message when you delete its last media attachment; that removal stays on this device</string>
 +</resources>
 diff --git a/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt b/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt
-index 46967f28..f8be863a 100644
+index 44b3cf2023..0ae5761c3a 100644
 --- a/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt
 +++ b/feature/app-settings/src/test/java/org/signal/appsettings/chats/ChatsSettingsScreenTest.kt
 @@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider

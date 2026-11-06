@@ -35,8 +35,10 @@ PINS = [
     ('7a280ac23b61cef2c09009a6dbed02773fff3dfa', 'tree of the protected patches/molly forest', 'Molly', [SCOPE]),
     ('6e9dddc01f1b26e608ac683807c51e139c141ed2', 'Signal 8.33.2 input and historical fork base', 'Signal and fork', [SCOPE, FORK]),
     ('b13bff463547475bbe1ae55335add689f52532e0', 'tw-hx fork source head', 'fork', [FORK]),
-    ('signal-8.33.2', 'port directory patches/ports/signal-8.33.2', 'Signal',
-     [SCOPE, REPORT, ORIGIN, RELEASE_WORKFLOW, PROFILES, FETCH_REVIEWED]),
+    ('signal-8.33.2', 'historical port directory', 'Signal',
+     [SCOPE, REPORT, ORIGIN, RELEASE_WORKFLOW, FETCH_REVIEWED]),
+    ('signal-8.35.1', 'current port directory', 'Signal', [PROFILES]),
+    ('a74583b01e260944f699c4da03ba4e8ce04de32b', 'Signal 8.35.1 source commit', 'Signal', [FORK]),
     ('8.33.2.0-FOSS', 'tw-hx fork release named by the upstream bundle ref', 'fork', [FORK]),
     ('github.com/tw-hx/Signal-Android', 'fork source URL', 'fork', [FORK, PROFILES]),
     ('github.com/mollyim/mollyim-android.git', 'Molly source URL', 'none', [PREFLIGHT, PREPARE, RELEASE_WORKFLOW, '.github/workflows/molly-unsigned-release.yml']),
@@ -45,7 +47,8 @@ PINS = [
 
 # Layer IDs that tools name directly. A new layer in these positions means updating them.
 LAYER_NAMES = [
-    ('followups/network-initialization-cycle', 'last PR4 layer; Molly Minimal ends here', [FORK, PROFILES]),
+    ('followups/network-initialization-cycle', 'historical Molly Minimal boundary', [FORK]),
+    ('followups/persian-molly-donation', 'last universal fix; Molly Minimal ends here', [FORK, PROFILES]),
     ('followups/unifiedpush-registration-retry', 'last PR5 layer; Continued profiles end here', [FORK, PROFILES]),
     ('firebase-free-build', 'first fork layer', [FORK, PROFILES]),
     ('retention-controls', 'second fork layer (adapted from the fork)', [FORK, PROFILES]),

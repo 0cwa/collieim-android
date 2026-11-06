@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 from unittest.mock import patch
@@ -22,6 +23,9 @@ class WebRtcSetupTest(test_prepare_sources.SourcePreparationTest):
     def runner(self, args, cwd, env):
         self.assertEqual('0', env['DEPOT_TOOLS_UPDATE'])
         self.assertEqual('1', env['GIT_CONFIG_NOSYSTEM'])
+        self.assertEqual('1', env['PYTHONNOUSERSITE'])
+        for key in ('PYTHONPATH', 'PYTHONHOME', 'PYTHONUSERBASE', 'DEPOT_TOOLS_DIR', 'DEPOT_TOOLS_UNAME_S', 'VPYTHON_BYPASS'):
+            self.assertNotIn(key, env)
         if args[1] == 'sync':
             subprocess.run(['git', 'clone', '--quiet', str(self.sources['webrtc']), str(cwd / 'src')], check=True)
             subprocess.run(['git', '-C', str(cwd / 'src'), 'checkout', '--quiet', self.lock['source_provenance']['webrtc']], check=True)
@@ -29,7 +33,8 @@ class WebRtcSetupTest(test_prepare_sources.SourcePreparationTest):
             self.assertNotIn(webrtc_deps.TEST_MEDIA_HOOK, (cwd / 'src/DEPS').read_bytes())
 
     def test_setup_produces_only_partial_receipt_and_exact_tree(self):
-        with patch.object(setup_webrtc, 'validate_depot', return_value=self.depot):
+        hostile = {key: 'unexpected' for key in ('PYTHONPATH', 'PYTHONHOME', 'PYTHONUSERBASE', 'DEPOT_TOOLS_DIR', 'DEPOT_TOOLS_UNAME_S', 'VPYTHON_BYPASS')}
+        with patch.dict(os.environ, hostile), patch.object(setup_webrtc, 'validate_depot', return_value=self.depot):
             result = setup_webrtc.setup(self.lock_file, self.prepared, self.depot, self.output, self.runner)
         self.assertEqual('PARTIAL_WEBRTC_SETUP', result['status'])
         self.assertFalse(result['release_allowed'])
@@ -46,3 +51,8 @@ class WebRtcSetupTest(test_prepare_sources.SourcePreparationTest):
                 setup_webrtc.setup(self.lock_file, self.prepared, self.depot, self.output, failed)
         self.assertIn(webrtc_deps.TEST_MEDIA_HOOK, (self.output / 'src/DEPS').read_bytes())
         self.assertFalse((self.output / 'setup-receipt.json').exists())
+
+    def test_depot_cipd_root_override_rejected(self):
+        (self.depot / '.cipd_client_root').write_text('/unexpected')
+        with self.assertRaisesRegex(setup_webrtc.Failure, 'CIPD root override'):
+            setup_webrtc.validate_depot(self.depot, {})

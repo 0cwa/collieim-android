@@ -31,6 +31,7 @@ def run(args, cwd, env):
 def validate_depot(depot, reference):
     depot = depot.resolve(strict=True)
     require(depot.is_dir(), 'depot_tools is not a directory')
+    require(not os.path.lexists(depot / '.cipd_client_root'), 'depot_tools CIPD root override is not allowed')
     require(prepare_sources.git(depot, 'rev-parse', '--show-toplevel') == str(depot), 'depot_tools is not a repository root')
     require(prepare_sources.git(depot, 'rev-parse', 'HEAD') == reference['webrtc_depot_tools_revision'], 'depot_tools revision differs from pinned DEPS')
     require(not prepare_sources.git(depot, 'diff', '--name-only') and not prepare_sources.git(depot, 'diff', '--cached', '--name-only'), 'depot_tools tracked files changed')
@@ -54,7 +55,12 @@ def setup(lock_path, sources, depot, output, runner=run):
     (output / '.gclient').write_bytes(common.read_bytes() + b'\n' + android.read_bytes())
     temp = output / '.tmp'
     temp.mkdir()
-    env = {key: value for key, value in os.environ.items() if not key.startswith('GIT_')}
+    # Do not let inherited Python or depot bootstrap overrides bypass the pinned checkout.
+    blocked = {'PYTHONPATH', 'PYTHONHOME', 'PYTHONUSERBASE', 'DEPOT_TOOLS_DIR',
+               'DEPOT_TOOLS_UNAME_S', 'VPYTHON_BYPASS'}
+    env = {key: value for key, value in os.environ.items()
+           if not key.startswith('GIT_') and key not in blocked}
+    env['PYTHONNOUSERSITE'] = '1'
     env['TMPDIR'] = str(temp)
     env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
     env.update(PATH=str(depot) + os.pathsep + env.get('PATH', ''), DEPOT_TOOLS_UPDATE='0', GIT_TERMINAL_PROMPT='0', GIT_NO_REPLACE_OBJECTS='1')

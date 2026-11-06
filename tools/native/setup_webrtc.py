@@ -31,7 +31,8 @@ def run(args, cwd, env):
 def validate_depot(depot, reference):
     depot = depot.resolve(strict=True)
     require(depot.is_dir(), 'depot_tools is not a directory')
-    require(not os.path.lexists(depot / '.cipd_client_root'), 'depot_tools CIPD root override is not allowed')
+    for override in ('.cipd_client_root', '.cipd_client_platform'):
+        require(not os.path.lexists(depot / override), 'depot_tools CIPD override is not allowed: ' + override)
     require(prepare_sources.git(depot, 'rev-parse', '--show-toplevel') == str(depot), 'depot_tools is not a repository root')
     require(prepare_sources.git(depot, 'rev-parse', 'HEAD') == reference['webrtc_depot_tools_revision'], 'depot_tools revision differs from pinned DEPS')
     require(not prepare_sources.git(depot, 'diff', '--name-only') and not prepare_sources.git(depot, 'diff', '--cached', '--name-only'), 'depot_tools tracked files changed')
@@ -57,9 +58,10 @@ def setup(lock_path, sources, depot, output, runner=run):
     temp.mkdir()
     # Do not let inherited Python or depot bootstrap overrides bypass the pinned checkout.
     blocked = {'PYTHONPATH', 'PYTHONHOME', 'PYTHONUSERBASE', 'DEPOT_TOOLS_DIR',
-               'DEPOT_TOOLS_UNAME_S', 'VPYTHON_BYPASS'}
+               'DEPOT_TOOLS_UNAME_S', 'VPYTHON_BYPASS', 'CUSTOM_CIPD_CLIENT',
+               'BASH_ENV', 'ENV'}
     env = {key: value for key, value in os.environ.items()
-           if not key.startswith('GIT_') and key not in blocked}
+           if not key.startswith(('GIT_', 'BASH_FUNC_')) and key not in blocked}
     env['PYTHONNOUSERSITE'] = '1'
     env['TMPDIR'] = str(temp)
     env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)

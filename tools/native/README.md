@@ -76,4 +76,4 @@ changes, or establish source-to-binary provenance. Release remains blocked.
 
 [NDK-PROVENANCE.md](NDK-PROVENANCE.md) describes the NDK payload tree check, its archive reference and remaining limits.
 
-WebRTC setup removes inherited Python module paths and depot_tools bypass overrides, disables user-site imports, and rejects a custom `.cipd_client_root`; use the checkout’s default CIPD root. These checks do not authenticate vpython, wheels, inherited shell startup, other executables or caches.
+WebRTC setup removes inherited Python module paths and depot_tools bypass overrides, disables user-site imports, and rejects custom `.cipd_client_root` and `.cipd_client_platform` files; use the checkout’s default CIPD root and platform. It also removes shell startup and exported-function overrides from the child environment. These checks do not authenticate vpython, wheels, other executables or caches.

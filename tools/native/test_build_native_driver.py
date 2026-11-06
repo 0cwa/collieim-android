@@ -137,6 +137,29 @@ class ProvisionalNativeBuildDriverTest(unittest.TestCase):
                 self.runner.gradle('assemble')
             run.assert_not_called()
 
+    def test_835_unit_test_requires_host_stage_before_launch(self):
+        self.runner.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.runner.android['tests'] = [':app:testProdWebsiteDebugUnitTest']
+        with patch.object(self.runner, 'source_proof'), patch.object(self.runner, 'artifact_native_lock', return_value=self.repo/'native.json'), patch.object(self.runner, 'native_verification_bytes', return_value=b'fixture'), patch.object(self.runner, 'verified_native_gradle', return_value=Path('/verified/gradle')), patch.object(self.runner, 'run') as run:
+            with self.assertRaisesRegex(build.BuildError, 'native-host-stage'):
+                self.runner.gradle('test')
+            run.assert_not_called()
+
+    def test_835_unit_test_checks_host_stage_before_and_after(self):
+        self.runner.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.runner.android['tests'] = [':app:testProdWebsiteDebugUnitTest']
+        init = self.fixture.root/'host/host-jni.init.gradle'
+        with patch.object(self.runner, 'source_proof'), patch.object(self.runner, 'artifact_native_lock', return_value=self.repo/'native.json'), patch.object(self.runner, 'native_verification_bytes', return_value=b'fixture'), patch.object(self.runner, 'verified_native_gradle', return_value=Path('/verified/gradle')), patch.object(self.runner, 'verified_host_jni_init', return_value=init) as verified, patch.object(self.runner, 'run') as run:
+            self.runner.gradle('test')
+            self.assertEqual(2, verified.call_count)
+            self.assertIn(str(init), run.call_args.args[0])
+
+    def test_host_guard_does_not_apply_to_instrumentation(self):
+        self.runner.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        with patch.object(self.runner, 'source_proof'), patch.object(self.runner, 'artifact_native_lock', return_value=self.repo/'native.json'), patch.object(self.runner, 'native_verification_bytes', return_value=b'fixture'), patch.object(self.runner, 'verified_native_gradle', return_value=Path('/verified/gradle')), patch.object(self.runner, 'verified_host_jni_init') as verified, patch.object(self.runner, 'run'):
+            self.runner.gradle('instrumentation')
+            verified.assert_not_called()
+
     def test_tampered_staged_binary_fails_source_proof(self):
         self.runner.native('native-integrate')
         artifact = self.reports / 'native/artifact-stage/maven/im/collie/native/ringrtc-android/2.74.0-collie.1/ringrtc-android-2.74.0-collie.1.aar'

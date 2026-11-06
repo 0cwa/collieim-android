@@ -200,6 +200,19 @@ class Build:
         except (module.Failure, OSError, ValueError) as exc:
             raise BuildError('native diagnostic Gradle distribution is not verified: ' + str(exc)) from exc
 
+    def verified_host_jni_init(self):
+        stage = getattr(self.args, 'native_host_stage', None)
+        digest = getattr(self.args, 'native_host_sha256', None)
+        if stage is None or not isinstance(digest, str) or not re.fullmatch(r'[0-9a-f]{64}', digest):
+            raise BuildError('native unit tests require --native-host-stage and --native-host-sha256')
+        lock = self.artifact_native_lock()
+        helper = relative_file(self.repo, 'tools/native/host_jni_guard.py', 'host JNI test guard')
+        command = [sys.executable, str(helper), '--verify', '--lock', str(lock), '--sources', str(self.native_source), '--output', str(stage), '--sha256', digest]
+        result = subprocess.run(command, cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode:
+            raise BuildError('host JNI test stage verification failed: ' + result.stderr.strip())
+        return stage.absolute() / 'host-jni.init.gradle'
+
     def native_verification_bytes(self):
         """Allow precisely the receipt-bound metadata appended by native integration."""
         artifact_lock = self.artifact_native_lock()
@@ -533,6 +546,9 @@ class Build:
             verified_gradle = self.verified_native_gradle()
             command[0:1] = [str(verified_gradle), '--project-dir', str(self.app)]
             command += ['--init-script', str(self.native_proof / 'artifact-stage' / 'native.init.gradle')]
+            if phase == 'test' and blocked_port:
+                host_jni_init = self.verified_host_jni_init()
+                command += ['--init-script', str(host_jni_init)]
         elif self.config.get('native') is not None:
             native_init = self.native_proof / 'ringrtc.init.gradle'
             integration = self.native_proof / 'integration.json'
@@ -545,6 +561,9 @@ class Build:
                 raise BuildError('native integration receipt does not match this source, worktree and init script')
             command += ['--init-script', str(native_init)]
         self.run(command + tasks, phase, cwd=self.app)
+        if artifact_lock is not None and blocked_port and phase == 'test':
+            if self.verified_host_jni_init() != host_jni_init:
+                raise BuildError('host JNI test stage changed during execution')
         if artifact_lock is not None:
             if self.verified_native_gradle() != verified_gradle:
                 raise BuildError('native diagnostic Gradle distribution changed during execution')
@@ -561,6 +580,8 @@ def main():
     parser.add_argument('--report-dir', type=Path, required=True)
     parser.add_argument('--native-source-dir', type=Path)
     parser.add_argument('--native-rust-bin', type=Path)
+    parser.add_argument('--native-host-stage', type=Path)
+    parser.add_argument('--native-host-sha256')
     parser.add_argument('--native-gradle-zip', type=Path)
     parser.add_argument('--native-gradle-distribution', type=Path)
     parser.add_argument('--libsignal-repo', type=Path)

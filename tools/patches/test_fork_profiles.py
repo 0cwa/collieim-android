@@ -35,6 +35,10 @@ class ForkProfilesTests(unittest.TestCase):
         self.git('add', 'app')
         self.git('commit', '-qm', 'original Firebase')
         upstream_head = self.git('rev-parse', 'HEAD')
+        for name, value in (('FORK_SIGNAL_BASE', base), ('FORK_SOURCE_HEAD', upstream_head)):
+            mocked = patch.object(fork_profiles, name, value)
+            mocked.start()
+            self.addCleanup(mocked.stop)
         upstream_ref = 'refs/heads/upstream-fork/signal-foss-8.33.2.0-FOSS'
         self.git('update-ref', upstream_ref, upstream_head)
         self.git('checkout', '--detach', '-q', base)
@@ -112,6 +116,26 @@ class ForkProfilesTests(unittest.TestCase):
         self.assertEqual(actual, self.selection['target_tree'])
         single = dict(self.selection, fork_series=[release_profiles.FIREBASE], target_tree=self.data['layers'][0]['after_tree'])
         self.assertEqual(len(fork_profiles.fork_layers(self.repo, single)), 1)
+
+    def test_new_signal_target_keeps_historical_fork_verification(self):
+        base = self.data['upstream_bundle_prerequisite']
+        newer = subprocess.check_output(
+            ['git', '-C', str(self.repo), 'commit-tree', self.data['base_tree'], '-p', base],
+            input='new Signal target\n', text=True).strip()
+        selection = dict(self.selection, signal_commit=newer)
+        self.assertEqual(len(fork_profiles.fork_layers(self.repo, selection)), 5)
+        self.data['upstream_bundle_prerequisite'] = newer
+        self.save()
+        with self.assertRaisesRegex(forest.ForestError, 'historical Signal source'):
+            fork_profiles.fork_layers(self.repo, selection)
+
+    def test_forged_fork_head_rejected_even_if_config_matches(self):
+        forged = self.data['layers'][1]['upstream_commit']
+        self.data['source_head'] = forged
+        self.save()
+        selection = dict(self.selection, fork_source={'url': self.data['source_url'], 'head': forged})
+        with self.assertRaisesRegex(forest.ForestError, 'pinned fork release'):
+            fork_profiles.fork_layers(self.repo, selection)
 
     def test_continued_overlay_keeps_each_existing_prefix(self):
         for count in (0, 1):

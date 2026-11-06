@@ -10,6 +10,10 @@ import release
 import release_profiles
 import verify_source_bundles
 
+# These identify the historical fork itself, not the Signal version being ported.
+FORK_SIGNAL_BASE = '6e9dddc01f1b26e608ac683807c51e139c141ed2'
+FORK_SOURCE_HEAD = 'b13bff463547475bbe1ae55335add689f52532e0'
+
 
 def port_prefix(repo, config_path, selection, records):
     """Verify the complete port chain, then select an exact layer boundary."""
@@ -51,15 +55,17 @@ def fork_layers(repo, selection, *, check_target=True):
     if data['schema'] != 1 or data['source_url'] != 'https://github.com/tw-hx/Signal-Android':
         raise forest.ForestError('fork origin or schema differs')
     release.require_sha(data['source_head'], 'fork source head')
+    if data['source_head'] != FORK_SOURCE_HEAD:
+        raise forest.ForestError('fork source head differs from pinned fork release')
     if (data['source_url'], data['source_head']) != (selection['fork_source']['url'], selection['fork_source']['head']):
         raise forest.ForestError('fork source differs from build configuration')
-    if data['upstream_bundle_prerequisite'] != selection['signal_commit']:
-        raise forest.ForestError('upstream bundle prerequisite differs from pinned Signal source')
+    if data['upstream_bundle_prerequisite'] != FORK_SIGNAL_BASE:
+        raise forest.ForestError('upstream bundle prerequisite differs from pinned historical Signal source')
     if data['upstream_bundle_ref'] != 'refs/heads/upstream-fork/signal-foss-8.33.2.0-FOSS':
         raise forest.ForestError('upstream bundle ref differs')
     verify_source_bundles.import_bundle(repo, Path(repo), root, data['upstream_bundle'],
         data['upstream_bundle_sha256'], data['upstream_bundle_bytes'], data['upstream_bundle_ref'],
-        data['source_head'], [selection['signal_commit']])
+        data['source_head'], [FORK_SIGNAL_BASE])
     if (data['base_commit'], data['base_tree']) != (selection['base_checkpoint'], selection['base_tree']):
         raise forest.ForestError('fork base checkpoint or tree differs')
     layers = data['layers']
@@ -69,7 +75,7 @@ def fork_layers(repo, selection, *, check_target=True):
     _, upstream_parents = verify_source_bundles.commit_info(repo, data['source_head'])
     if upstream_parents != [layers[1]['upstream_commit']]:
         raise forest.ForestError('fork upstream head parent differs from retention origin')
-    if git_utils.git(repo, 'merge-base', '--is-ancestor', selection['signal_commit'],
+    if git_utils.git(repo, 'merge-base', '--is-ancestor', FORK_SIGNAL_BASE,
                      layers[1]['upstream_commit'], check=False).returncode:
         raise forest.ForestError('fork retention origin does not descend from pinned Signal source')
     selected = selection['fork_series']

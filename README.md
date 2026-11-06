@@ -11,6 +11,12 @@
 </p>
 
 <p align="center">
+<a href="https://matrix.to/#/#collieim:worldethicaldataforum.org">
+  <img height="80" alt="matrix-banner" src="assets/collie-matrix-invite.svg">
+</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/gradle/libs.versions.toml"><img src="https://img.shields.io/badge/v8.33.2--1--rc3%20min%20Android-6.0%2B-2F4F3A?style=flat&amp;labelColor=5A4033" alt="Minimum Android 6.0 for the published v8.33.2-1-rc3 APKs"></a>
   <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0--only-687E59?style=flat&amp;labelColor=5A4033" alt="AGPL 3.0 only"></a>
 </p>

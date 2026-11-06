@@ -105,11 +105,11 @@ Each profile's source compared with Molly, Signal and Molly's old Signal base an
 
 | Profile | Tree | Fork layers | Release overlays | Firebase | Production written / removed | Written as % of Molly's production lines | Fork matches | Molly lines not carried | Tests |
 |---|---|---|---|---|---:|---:|---:|---:|---:|
-| collie | `a7b938ed486f` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker` | none | included | +2,711 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
-| collie-foss | `a7b938ed486f` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker` | none | removed | +2,711 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
-| molly-continued | `a7b938ed486f` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker` | none | included | +2,711 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
-| molly-foss-continued | `a7b938ed486f` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker` | none | removed | +2,711 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
-| molly-minimal | `a7b938ed486f` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker` | none | included | +2,711 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
+| collie | `da5c03ff20ae` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker`, `notification-default` | none | included | +2,710 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
+| collie-foss | `da5c03ff20ae` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker`, `notification-default` | none | removed | +2,710 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
+| molly-continued | `da5c03ff20ae` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker`, `notification-default` | none | included | +2,710 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
+| molly-foss-continued | `da5c03ff20ae` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker`, `notification-default` | none | removed | +2,710 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
+| molly-minimal | `da5c03ff20ae` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, `restore-picker`, `notification-default` | none | included | +2,710 / −508 | 10.1% | 2 | 2,282 | +3,710 / −360 |
 
 ## Raw physical Git diffs
 

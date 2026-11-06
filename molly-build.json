@@ -146,9 +146,10 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series",
         "patches/forks/signal-foss/collie-visuals/series",
-        "patches/forks/signal-foss/restore-picker/series"
+        "patches/forks/signal-foss/restore-picker/series",
+        "patches/forks/signal-foss/notification-default/series"
       ],
-      "target_tree": "a7b938ed486fb84bd37d078960c049a70fe72311"
+      "target_tree": "da5c03ff20ae2a672329eb8257bc33949845b268"
     },
     "collie-foss": {
       "base_checkpoint": "6269897101cd0c4605c1eaac62f57e5ac94dbd44",
@@ -160,9 +161,10 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series",
         "patches/forks/signal-foss/collie-visuals/series",
-        "patches/forks/signal-foss/restore-picker/series"
+        "patches/forks/signal-foss/restore-picker/series",
+        "patches/forks/signal-foss/notification-default/series"
       ],
-      "target_tree": "a7b938ed486fb84bd37d078960c049a70fe72311"
+      "target_tree": "da5c03ff20ae2a672329eb8257bc33949845b268"
     },
     "molly-continued": {
       "base_checkpoint": "6269897101cd0c4605c1eaac62f57e5ac94dbd44",
@@ -174,9 +176,10 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series",
         "patches/forks/signal-foss/collie-visuals/series",
-        "patches/forks/signal-foss/restore-picker/series"
+        "patches/forks/signal-foss/restore-picker/series",
+        "patches/forks/signal-foss/notification-default/series"
       ],
-      "target_tree": "a7b938ed486fb84bd37d078960c049a70fe72311"
+      "target_tree": "da5c03ff20ae2a672329eb8257bc33949845b268"
     },
     "molly-foss-continued": {
       "base_checkpoint": "6269897101cd0c4605c1eaac62f57e5ac94dbd44",
@@ -188,9 +191,10 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series",
         "patches/forks/signal-foss/collie-visuals/series",
-        "patches/forks/signal-foss/restore-picker/series"
+        "patches/forks/signal-foss/restore-picker/series",
+        "patches/forks/signal-foss/notification-default/series"
       ],
-      "target_tree": "a7b938ed486fb84bd37d078960c049a70fe72311"
+      "target_tree": "da5c03ff20ae2a672329eb8257bc33949845b268"
     },
     "molly-minimal": {
       "base_checkpoint": "6269897101cd0c4605c1eaac62f57e5ac94dbd44",
@@ -202,9 +206,10 @@
         "patches/forks/signal-foss/collie-icon/series",
         "patches/forks/signal-foss/collie-branding/series",
         "patches/forks/signal-foss/collie-visuals/series",
-        "patches/forks/signal-foss/restore-picker/series"
+        "patches/forks/signal-foss/restore-picker/series",
+        "patches/forks/signal-foss/notification-default/series"
       ],
-      "target_tree": "a7b938ed486fb84bd37d078960c049a70fe72311"
+      "target_tree": "da5c03ff20ae2a672329eb8257bc33949845b268"
     }
   }
 }

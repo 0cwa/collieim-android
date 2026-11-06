@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 import release_profiles
+import native_release_check
 
 
 # This port is not releasable until its native build and port report are reviewed.
@@ -378,7 +379,9 @@ class Build:
                 log.write(line)
                 print(line, end='', flush=True)
             code = process.wait()
-        result = {'status': 'PASS' if code == 0 else 'FAIL', 'phase': phase,
+        pending = (phase == 'assemble-release' and self.config.get('signal', {}).get('commit') == BLOCKED_SIGNAL_PORT
+                   and getattr(self.args, 'accept_trusted_local_native', False))
+        result = {'status': ('PENDING_NATIVE_VERIFICATION' if pending else 'PASS') if code == 0 else 'FAIL', 'phase': phase,
                   'exit_code': code, 'seconds': round(time.monotonic() - started, 3),
                   'command': command, 'log': str(log_path)}
         (self.reports / (phase + '.json')).write_text(json.dumps(result, indent=2) + '\n')
@@ -499,9 +502,13 @@ class Build:
 
     def gradle(self, phase: str):
         blocked_port = self.config.get('signal', {}).get('commit') == BLOCKED_SIGNAL_PORT
-        if blocked_port and phase == 'assemble-release':
-            raise BuildError('Signal 8.35.1 release assembly is blocked pending reviewed native integration and a complete port report')
+        if blocked_port and phase == 'assemble-release' and not getattr(self.args, 'accept_trusted_local_native', False):
+            raise BuildError('Signal 8.35.1 release assembly is blocked unless --accept-trusted-local-native is specified')
+        if blocked_port and phase == 'assemble-release' and (self.reports / 'assemble-release.json').exists():
+            raise BuildError('release report already exists; use a fresh report directory')
         self.source_proof()
+        if blocked_port and phase == 'assemble-release' and self.profile is None:
+            raise BuildError('Signal 8.35.1 release assembly requires an explicit profile')
         if not re.fullmatch(r'[1-9][0-9]*[mg]', self.args.heap):
             raise BuildError('--heap must be a JVM memory size such as 5g')
         if phase == 'assemble-release':
@@ -560,7 +567,7 @@ class Build:
                         '-PreleaseVersionCode=' + version_code]
         artifact_lock = self.artifact_native_lock()
         if artifact_lock is not None:
-            if phase == 'assemble-release':
+            if phase == 'assemble-release' and not blocked_port:
                 raise BuildError('native source build proof is not implemented; release remains blocked')
             if self.native_verification_bytes() is None:
                 raise BuildError('pinned native artifacts must be integrated before Gradle; no fallback is allowed')
@@ -586,8 +593,38 @@ class Build:
             if self.verified_host_jni_init() != host_jni_init:
                 raise BuildError('host JNI test stage changed during execution')
         if artifact_lock is not None:
-            if self.verified_native_gradle() != verified_gradle:
-                raise BuildError('native diagnostic Gradle distribution changed during execution')
+            try:
+                if self.verified_native_gradle() != verified_gradle:
+                    raise BuildError('native diagnostic Gradle distribution changed during execution')
+                if blocked_port and phase == 'assemble-release':
+                    self.source_proof()
+                    self.native_verification_bytes()
+                    directory = self.app / 'app/build/outputs/apk/prodWebsite/release'
+                    metadata = json.loads((directory / 'output-metadata.json').read_text())
+                    elements = metadata['elements']
+                    if len(elements) != 1 or elements[0].get('type') != 'SINGLE':
+                        raise BuildError('expected one universal release APK')
+                    name = elements[0]['outputFile']
+                    if Path(name).name != name or not name.endswith('.apk'):
+                        raise BuildError('unsafe release APK output filename')
+                    apk = directory / name
+                    sdk = Path(os.environ.get('ANDROID_HOME') or os.environ['ANDROID_SDK_ROOT'])
+                    result = native_release_check.verify(apk, artifact_lock, self.native_proof / 'artifact-stage', sdk,
+                                                         str(self.android['build_tools']), str(self.android['ndk']),
+                                                         version_name, int(version_code), self.profile['firebase_free'])
+                    self.native_verification_bytes()
+                    report_path = self.reports / (phase + '.json')
+                    report = json.loads(report_path.read_text())
+                    report['trusted_local_native'] = result
+                    report['status'] = 'PASS'
+                    report_path.write_text(json.dumps(report, indent=2) + '\n')
+            except Exception as exc:
+                report_path = self.reports / (phase + '.json')
+                if report_path.is_file():
+                    report = json.loads(report_path.read_text())
+                    report.update(status='FAIL', verification_error=str(exc))
+                    report_path.write_text(json.dumps(report, indent=2) + '\n')
+                raise BuildError('native release verification failed: ' + str(exc)) from exc
 
 
 def main():
@@ -617,6 +654,7 @@ def main():
     parser.add_argument('--parallel-projects', action='store_true', help='opt into parallel Gradle project execution')
     parser.add_argument('--build-cache', action='store_true', help='opt into Gradle task output cache; use only trusted cache entries')
     parser.add_argument('--release-cache-dir', type=Path, help='isolate release task outputs in this absolute directory and disable remote caches')
+    parser.add_argument('--accept-trusted-local-native', action='store_true', help='accept reviewed pinned artifacts built on the trusted local machine; no independent reproducibility is claimed')
     parser.add_argument('--release-version-name')
     parser.add_argument('--release-version-code')
     args = parser.parse_args()

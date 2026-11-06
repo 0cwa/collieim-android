@@ -1,6 +1,7 @@
 """Verify profile port prefixes and separately owned fork checkpoint layers."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 
@@ -192,10 +193,19 @@ def materialize_continued_icon(repo, selection):
 
 
 def ensure_fork_signal_base(repo):
-    """Fetch the pinned prerequisite only when the local object is missing."""
-    if git_utils.git(repo, 'cat-file', '-e', FORK_SIGNAL_BASE + '^{commit}', check=False).returncode:
-        git_utils.git(repo, 'fetch', '--no-tags', '--depth=1', SIGNAL_URL, FORK_SIGNAL_BASE)
-    git_utils.git(repo, 'cat-file', '-e', FORK_SIGNAL_BASE + '^{commit}')
+    """Ensure the pinned prerequisite and its full source tree are local for offline attribution."""
+    env = dict(os.environ, GIT_NO_LAZY_FETCH='1')
+    def complete():
+        if git_utils.git(repo, 'cat-file', '-e', FORK_SIGNAL_BASE + '^{commit}', check=False, env=env).returncode:
+            return False
+        objects = git_utils.git(repo, 'rev-list', '--objects', '--missing=print',
+                                FORK_SIGNAL_BASE + '^{tree}', check=False, env=env)
+        return not objects.returncode and not any(line.startswith('?') for line in objects.stdout.splitlines())
+    if not complete():
+        # Refetch requests missing tree/blob objects even if the commit itself is already present.
+        git_utils.git(repo, 'fetch', '--no-tags', '--depth=1', '--refetch', '--no-filter', SIGNAL_URL, FORK_SIGNAL_BASE)
+    if not complete():
+        raise forest.ForestError('fork Signal prerequisite source tree is incomplete')
 
 
 def prepare_profile_trees(repo, config, config_path=None):

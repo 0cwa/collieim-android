@@ -168,17 +168,28 @@ class ForkProfilesTests(unittest.TestCase):
         layers.assert_called_once_with(self.repo, selection, check_target=False)
         overlay.assert_called_once_with(self.repo, selection)
 
-    def test_fork_base_fetches_only_if_missing(self):
-        from types import SimpleNamespace
-        for present in (True, False):
-            results = ([SimpleNamespace(returncode=0)] if present else [SimpleNamespace(returncode=1)]) + [SimpleNamespace(returncode=0)] * 2
-            with self.subTest(present=present), patch.object(fork_profiles.git_utils, 'git', side_effect=results) as git:
-                fork_profiles.ensure_fork_signal_base(self.repo)
-                fetches = [call for call in git.call_args_list if call.args[1] == 'fetch']
-                if present:
-                    self.assertEqual(fetches, [])
-                else:
-                    self.assertEqual(fetches[0].args[1:], ('fetch', '--no-tags', '--depth=1', fork_profiles.SIGNAL_URL, fork_profiles.FORK_SIGNAL_BASE))
+    def test_fork_base_recovers_missing_partial_clone_blob(self):
+        import os
+        with tempfile.TemporaryDirectory(prefix='fork-partial-') as directory:
+            partial = Path(directory)
+            subprocess.run(['git', '-C', str(partial), 'init', '-q'], check=True)
+            self.git('config', 'uploadpack.allowFilter', 'true')
+            remote = self.repo.as_uri()
+            subprocess.run(['git', '-C', str(partial), 'fetch', '--filter=blob:none', '--depth=1',
+                            remote, fork_profiles.FORK_SIGNAL_BASE], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            def missing():
+                env = dict(os.environ, GIT_NO_LAZY_FETCH='1')
+                result = subprocess.run(['git', '-C', str(partial), 'rev-list', '--objects', '--missing=print',
+                                         fork_profiles.FORK_SIGNAL_BASE + '^{tree}'], check=True,
+                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, text=True)
+                return [line for line in result.stdout.splitlines() if line.startswith('?')]
+            self.assertTrue(missing())
+            with patch.object(fork_profiles, 'SIGNAL_URL', remote):
+                fork_profiles.ensure_fork_signal_base(partial)
+                self.assertFalse(missing())
+                with patch.object(fork_profiles.git_utils, 'git', wraps=fork_profiles.git_utils.git) as git:
+                    fork_profiles.ensure_fork_signal_base(partial)
+                    self.assertFalse(any(call.args[1] == 'fetch' for call in git.call_args_list))
 
     def test_rejects_wrong_pins_order_bytes_and_prerequisites(self):
         original = copy.deepcopy(self.data)

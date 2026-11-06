@@ -134,6 +134,41 @@ class ScopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'unexpected change to release base'):
                 scope.check_clean_projection(self.repo, 'HEAD', self.base)
 
+    def test_main_transition_pins_merged_readme_and_rejects_other_docs(self):
+        self.commit('release-base.txt', 'validated release base')
+        lower = self.git('rev-parse', 'HEAD').strip()
+        self.commit('README.md', 'merged main README with badges and no APK filenames\n')
+        readme_entry = self.git('ls-tree', 'HEAD', '--', 'README.md').strip().split('\t')[0]
+        manifest = self.repo / 'tools/patches/main-clean-entries.json'
+        manifest.write_text(json.dumps({'README.md': readme_entry}, indent=2) + '\n')
+        self.git('add', str(manifest))
+        self.git('commit', '-qm', 'pin merged main README')
+        main = self.git('rev-parse', 'HEAD').strip()
+        manifest_blob = self.git('rev-parse', main + ':tools/patches/main-clean-entries.json').strip()
+        scope_files = {
+            'tools/patches/main-clean-entries.json',
+            '.github/workflows/molly-patch-release.yml',
+            '.github/workflows/molly-unsigned-release.yml',
+        }
+        with mock.patch.object(scope, 'INITIAL_MAIN', main), \
+             mock.patch.object(scope, 'MAIN_INTEGRATION_LOWER', lower), \
+             mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES_BLOB', manifest_blob), \
+             mock.patch.object(scope, 'MAIN_CLEAN_ENTRIES', {'README.md': readme_entry}), \
+             mock.patch.object(scope, 'MAIN_SCOPE_FILES', scope_files), \
+             mock.patch.object(scope, 'MOLLY', self.base), \
+             mock.patch.object(scope, 'check_scope', return_value={}) as check_scope:
+            scope.check_main_transition(self.repo, main, main, lower)
+            check_scope.assert_called_once_with(self.repo, 'additions', lower, lower)
+
+            self.commit('README.md', 'unexpected README change\n')
+            with self.assertRaisesRegex(ValueError, 'audited integration entry differs: README.md'):
+                scope.check_main_transition(self.repo, main, 'HEAD', lower)
+
+            self.git('reset', '--hard', '-q', main)
+            self.commit('.github/README.md', 'unexpected separate README\n')
+            with self.assertRaisesRegex(ValueError, r'unexpected change to release base: \.github/README\.md'):
+                scope.check_main_transition(self.repo, main, 'HEAD', lower)
+
     def test_clean_projection_rejects_scope_tool_and_workflow_changes(self):
         paths = ('tools/patches/release.py', '.github/workflows/molly-patch-release.yml')
         for path in paths:

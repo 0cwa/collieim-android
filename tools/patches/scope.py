@@ -199,7 +199,7 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = '0952ca7768d2aa7c8e4c09d4b20efd63a836438e'
+MAIN_CLEAN_ENTRIES_BLOB = '8c5063e119a173ca7e3e157e7650911fae88c4fd'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -216,7 +216,7 @@ MAIN_CLEAN_ENTRIES = json.loads((Path(__file__).parent / 'main-clean-entries.jso
 # own blobs in that manifest would be circular. All other scope files are
 # checked. PR-controlled code makes this an accidental-change check only.
 MAIN_SCOPE_FILES = frozenset(['tools/patches/main-clean-entries.json', 'tools/patches/scope.py', 'tools/patches/pins.py'])
-INITIAL_MAIN = '3e30313e93d3590e8470030f718bf48ac5c040ed'
+INITIAL_MAIN = '0e7f69fb61387edefbb8d64f0bb791bbeffadd2b'
 
 def check_trusted_integration_lower(repo, integration_lower):
     actual = git(repo, 'rev-parse', '--verify', integration_lower + '^{commit}').decode().strip()

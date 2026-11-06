@@ -6,7 +6,7 @@
   "origin_target": "0e202dda90785771ff8c87526eaaf30c655f54f3",
   "initial_source": "49fd32c9ee0e6ba8328af2b8e26cad85e840a2eb",
   "complete_source_checkpoint": true,
-  "target_tree": "cfd28b498a56d5877c4f373e0663e925df1ac875",
+  "target_tree": "610c9293f105188809dedd0a287bc4fe8c1b7e7f",
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",
     "sha256": "14b1273e2be125fb4bf8034b50e8a4b3a8e104d6f8760bf22945bde2d97118b4",
@@ -296,225 +296,259 @@
       "mailbox_bytes": 2338
     },
     {
-      "id": "followups/reregistration-linked-devices-reminder",
-      "source_commit": "e20a7f97953750aaee42a3bbc4fe1726f875c417",
-      "description": "Restore linked-device reminder after re-registration\n\nMark existing-account registration explicitly and restore the Molly reminder after successful primary-device multi-device re-registration. Add focused coverage for the entry-point marker and reminder policy.\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
+      "id": "followups/molly-behavior-unit-tests",
+      "source_commit": "284a8b47c8a7f613551f6b8b2cadb565b70c081b",
+      "description": "Fix unit tests that did not match Molly behavior in the Signal 8.33.2 port\n\nApply remote config overrides in internal builds. Molly derives internalUser\nfrom the build type, not from the service, so loading overrides must ask\ninternalUser instead of the service's android.internalUser value, which Molly\ndoes not read. Overrides were never applied before.\n\nAdapt the Signal 8.33.2 tests to intended Molly differences:\n\n- IndividualSettingsViewModelTest stubs getLinkedDeviceCount, which Molly\n  adds to the contact details. Molly has no profile badges and no donations,\n  so badge and donate clicks produce no action.\n- RemoteConfigOverrideTest runs as an internal debug build instead of faking\n  the service's internalUser flag.\n- NotificationProfileDetailsScreenTest builds the expected schedule text with\n  formatHours, since Molly formats times with the locale's best pattern.\n- StoryContextMenuTest sets up app dependencies itself rather than relying on\n  another test having initialized PartAuthority.\n- The app-settings, registration, media-viewer and media-send tests expect\n  Molly's music-labelled waves icon, Molly name in the notification warning,\n  version row click event, always-shown link device button, a Material 3 theme\n  for the Molly video player layout, and Molly's minimum SDK (27).",
       "ai_generated": true,
       "before_tree": "2a78679e2344ddf3fc6bbaa5079d5f8a274d3dda",
-      "after_tree": "1438dc7360ca95efcc1ddea212d1b23f50ed9bf0",
+      "after_tree": "df699000cc689665e851b7da7ce1df364fbd42e5",
+      "paths": 11,
+      "patches": [
+        "followups/molly-behavior-unit-tests/0001-molly-behavior-unit-tests.patch"
+      ],
+      "mailbox_bytes": 21388,
+      "source_bundle": "followups/molly-behavior-unit-tests/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "e8a0ac3c8af37fa22d891633379392344d690e6e",
+      "source_bundle_sha256": "13e7463dace8a5e5607df30a35d07cb4626ee32525ed59bb85769d511a0e0644",
+      "source_bundle_bytes": 17796
+    },
+    {
+      "id": "followups/lint-fixes",
+      "source_commit": "cba00de06f400120eb0ab40ed8023d9c2e9d119d",
+      "description": "Fix lint errors in the Signal 8.33.2 port\n\n- RegistrationNavigation: log through the file's TAG constant (LogTagInlined).\n- values-night/dark_colors.xml: comment out five quote_view colors that the merge\n  restored from Signal. Molly reads these colors from theme attributes and keeps the\n  color entries commented out in both color files; the live night-only entries had no\n  default (MissingDefaultResource).",
+      "ai_generated": true,
+      "before_tree": "df699000cc689665e851b7da7ce1df364fbd42e5",
+      "after_tree": "b78a7fd535e96d817dbb45937570382be07816e3",
+      "paths": 2,
+      "patches": [
+        "followups/lint-fixes/0001-lint-fixes.patch"
+      ],
+      "mailbox_bytes": 3316,
+      "source_bundle": "followups/lint-fixes/source-checkpoint.bundle",
+      "source_bundle_prerequisite": "284a8b47c8a7f613551f6b8b2cadb565b70c081b",
+      "source_bundle_sha256": "38589966619d9bdb12a1b57b79f3e56fcc116194963fe28e28d0b99980d86e8a",
+      "source_bundle_bytes": 1672
+    },
+    {
+      "id": "followups/reregistration-linked-devices-reminder",
+      "source_commit": "1127028dddb1ae2ee3b37b213a9449bd4c9f5930",
+      "description": "Restore linked-device reminder after re-registration\n\nMark existing-account registration explicitly and restore the Molly reminder after successful primary-device multi-device re-registration. Add focused coverage for the entry-point marker and reminder policy.\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
+      "ai_generated": true,
+      "before_tree": "b78a7fd535e96d817dbb45937570382be07816e3",
+      "after_tree": "401accce72bc94050fb936b9da5fd5680ca9033e",
       "paths": 3,
       "patches": [
         "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch"
       ],
       "mailbox_bytes": 6865,
       "source_bundle": "followups/reregistration-linked-devices-reminder/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "e8a0ac3c8af37fa22d891633379392344d690e6e",
-      "source_bundle_sha256": "01bf929942cd7f7743456934a5dc5597ab4c3f5ef3c7dad983d54ab5a8cea6eb",
-      "source_bundle_bytes": 4297
+      "source_bundle_prerequisite": "cba00de06f400120eb0ab40ed8023d9c2e9d119d",
+      "source_bundle_sha256": "dfe94da0fc0fc2a0336e8237bb420acc33ed9e9d97167c798aa92b01fd1d7d71",
+      "source_bundle_bytes": 4292
     },
     {
       "id": "followups/legacy-backup-precedence",
-      "source_commit": "34fea6d8be8536e24c904156cfeef630b3bf9830",
-      "description": "Restore migrated settings with backup frame precedence\n\nMap Molly shared-preference frames to their migrated SignalStore keys synchronously as the importer reads them. Later KeyValue frames then replace preference-only values or duplicate older values, matching the legacy exporter order.\n\nDrain queued SignalStore writes before opening the restore transaction and remove the post-restore preference re-read that could replace newer KeyValue data. Add focused coverage for preference-only language/privacy/media settings and notification-privacy KeyValue precedence through importer storage writes.\n\nAI-Generated: true\n\nBased-On-Source-Commit: e20a7f97953750aaee42a3bbc4fe1726f875c417\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
+      "source_commit": "5aa465941ac4e4f1d8f126db9521e5043c36cb29",
+      "description": "Restore migrated settings with backup frame precedence\n\nMap Molly shared-preference frames to their migrated SignalStore keys synchronously as the importer reads them. Later KeyValue frames then replace preference-only values or duplicate older values, matching the legacy exporter order.\n\nDrain queued SignalStore writes before opening the restore transaction and remove the post-restore preference re-read that could replace newer KeyValue data. Add focused coverage for preference-only language/privacy/media settings and notification-privacy KeyValue precedence through importer storage writes.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 1127028dddb1ae2ee3b37b213a9449bd4c9f5930\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
       "ai_generated": true,
-      "before_tree": "1438dc7360ca95efcc1ddea212d1b23f50ed9bf0",
-      "after_tree": "ada1f548f84529b6da40a787315f240103398cbf",
+      "before_tree": "401accce72bc94050fb936b9da5fd5680ca9033e",
+      "after_tree": "612d312d2c24a44caec50a73a23787a7e30954e6",
       "paths": 4,
       "patches": [
         "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch"
       ],
       "mailbox_bytes": 17448,
       "source_bundle": "followups/legacy-backup-precedence/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "e20a7f97953750aaee42a3bbc4fe1726f875c417",
-      "source_bundle_sha256": "2baace6bd57b6ed36a486e3b9f824b0d982990b7fc364b7d037e5f2f06e7d256",
-      "source_bundle_bytes": 5918
+      "source_bundle_prerequisite": "1127028dddb1ae2ee3b37b213a9449bd4c9f5930",
+      "source_bundle_sha256": "ce0caea6f5ac0728a1983ee7b6c1e5772002e2c3a3e096ad5193cc0dfbe9463f",
+      "source_bundle_bytes": 5923
     },
     {
       "id": "followups/donation-completion",
-      "source_commit": "30ec0b2e3e5eec1ba30696b6006a52a914c42cc3",
-      "description": "Restore donation completion acknowledgement\n\nDisplay the earned badge after immediate donations and restore the eligible first-Boost monthly sustainer link without exposing profile-badge controls. Use existing thank-you copy that does not promise unsupported profile display.\n\nFor long-running donations, stop showing the loading indicator after the badge loads when Molly disables the profile-badge toggle. Keep loading visible while the badge is unavailable, and cover both states with focused Compose UI tests.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 34fea6d8be8536e24c904156cfeef630b3bf9830\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
+      "source_commit": "e6194d5b335b7066c80297ba0b334bd975e55e56",
+      "description": "Restore donation completion acknowledgement\n\nDisplay the earned badge after immediate donations and restore the eligible first-Boost monthly sustainer link without exposing profile-badge controls. Use existing thank-you copy that does not promise unsupported profile display.\n\nFor long-running donations, stop showing the loading indicator after the badge loads when Molly disables the profile-badge toggle. Keep loading visible while the badge is unavailable, and cover both states with focused Compose UI tests.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 5aa465941ac4e4f1d8f126db9521e5043c36cb29\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
       "ai_generated": true,
-      "before_tree": "ada1f548f84529b6da40a787315f240103398cbf",
-      "after_tree": "de8edc7da2bfc5084f663e9ee947fd417efe6be6",
+      "before_tree": "612d312d2c24a44caec50a73a23787a7e30954e6",
+      "after_tree": "19aafb043c2603862da8ae37fe2759016ac8d287",
       "paths": 4,
       "patches": [
         "followups/donation-completion/0001-donation-completion.patch"
       ],
       "mailbox_bytes": 13093,
       "source_bundle": "followups/donation-completion/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "34fea6d8be8536e24c904156cfeef630b3bf9830",
-      "source_bundle_sha256": "649810952563707e7c023f3f330cafc11717757dc3e3ebfe85dac893e2802905",
-      "source_bundle_bytes": 7211
+      "source_bundle_prerequisite": "5aa465941ac4e4f1d8f126db9521e5043c36cb29",
+      "source_bundle_sha256": "9fd42dcf36d7091ba325080ce6e935edb782c19051fc24ffb2d5eef6a62315d1",
+      "source_bundle_bytes": 7218
     },
     {
       "id": "followups/backup-notification-id-upgrade",
-      "source_commit": "ee4bd246eb235b66f29498d5f8160ad2d6b71e1f",
-      "description": "Clean up legacy backup notifications after upgrade\n\nKeep the collision-free Signal IDs for new backup alerts, and remove old Molly alerts only when the active notification matches the backup channel. This avoids deleting old conversation notifications that shared the previous numeric range.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 30ec0b2e3e5eec1ba30696b6006a52a914c42cc3\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
+      "source_commit": "27347983e6669e4c7689213e1c9447e43694f0d2",
+      "description": "Clean up legacy backup notifications after upgrade\n\nKeep the collision-free Signal IDs for new backup alerts, and remove old Molly alerts only when the active notification matches the backup channel. This avoids deleting old conversation notifications that shared the previous numeric range.\n\nAI-Generated: true\n\nBased-On-Source-Commit: e6194d5b335b7066c80297ba0b334bd975e55e56\n\nAI-assisted compatibility changes: restore imports across source checkpoints.\n\nAI-assisted compatibility changes: use a seven-day duration in the existing backup exporter test.\n\nAI-assisted compatibility changes: restore Molly logger collection.",
       "ai_generated": true,
-      "before_tree": "de8edc7da2bfc5084f663e9ee947fd417efe6be6",
-      "after_tree": "d508b6d4289831ed7b4f5302d100718cc23e49e5",
+      "before_tree": "19aafb043c2603862da8ae37fe2759016ac8d287",
+      "after_tree": "cd881fc86c37dee767ccaad04862e3271444b657",
       "paths": 5,
       "patches": [
         "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch"
       ],
       "mailbox_bytes": 9096,
       "source_bundle": "followups/backup-notification-id-upgrade/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "30ec0b2e3e5eec1ba30696b6006a52a914c42cc3",
-      "source_bundle_sha256": "a51856504c477a0974b4fb050a88efe53f697e27b391f844f5aee0ba7ef0088c",
-      "source_bundle_bytes": 5474
+      "source_bundle_prerequisite": "e6194d5b335b7066c80297ba0b334bd975e55e56",
+      "source_bundle_sha256": "7a0bc83b54f703c0a1dc7b47bb5124806b10436f20733ed3bca82b7bcbae6bd8",
+      "source_bundle_bytes": 5485
     },
     {
       "id": "followups/passphrase-timeout-fallback",
-      "source_commit": "4c79f87faa74a7f97b0e41678c0db258ce2292d4",
-      "description": "Keep the passphrase timeout when foreground promotion is refused\n\nAI-assisted compatibility changes. The port caught Android's refusal to\npromote KeyCachingService to the foreground and continued, where Molly let\nthe exception propagate. If the service was then destroyed while the process\nsurvived, a later screen-off could miss scheduling the passphrase timeout.\nSchedule the configured timeout when promotion is refused and keep it until\npromotion succeeds with the screen on and unlocked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: ee4bd246eb235b66f29498d5f8160ad2d6b71e1f",
+      "source_commit": "53bb4511abbfd5339db82305f1da8cb1f0655516",
+      "description": "Keep the passphrase timeout when foreground promotion is refused\n\nAI-assisted compatibility changes. The port caught Android's refusal to\npromote KeyCachingService to the foreground and continued, where Molly let\nthe exception propagate. If the service was then destroyed while the process\nsurvived, a later screen-off could miss scheduling the passphrase timeout.\nSchedule the configured timeout when promotion is refused and keep it until\npromotion succeeds with the screen on and unlocked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 27347983e6669e4c7689213e1c9447e43694f0d2",
       "ai_generated": true,
-      "before_tree": "d508b6d4289831ed7b4f5302d100718cc23e49e5",
-      "after_tree": "987277b822fe52c8bd4840a011989ab06e3089ce",
+      "before_tree": "cd881fc86c37dee767ccaad04862e3271444b657",
+      "after_tree": "db57911a1d1a93efbed65eab782de764ce6ec272",
       "paths": 2,
       "patches": [
         "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch"
       ],
       "mailbox_bytes": 9197,
       "source_bundle": "followups/passphrase-timeout-fallback/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "ee4bd246eb235b66f29498d5f8160ad2d6b71e1f",
-      "source_bundle_sha256": "d59f100f77e089ef794344e23746c0808c6051cce8d61772644558d584f812f6",
-      "source_bundle_bytes": 5402
+      "source_bundle_prerequisite": "27347983e6669e4c7689213e1c9447e43694f0d2",
+      "source_bundle_sha256": "f440f99bdafffeb0c9d7b0b76a705b0a7a1b4a795f25d9a3e48169d88eb97f5b",
+      "source_bundle_bytes": 5177
     },
     {
       "id": "followups/backup-revision-walk",
-      "source_commit": "164b3f3c2d8910acd04b0c2743219ae293e5cac9",
-      "description": "Apply Molly's backup timer rule to the latest message revision\n\nAI-assisted compatibility changes. The port excluded a message from backups\nwhen any earlier revision had a started disappearing timer, and dropped\nmessages whose revision chain contained a cycle. Walk revisions as Signal\ndoes, stopping at a cycle, and apply Molly's started-timer exclusion to the\nrevision the walk ends on.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 4c79f87faa74a7f97b0e41678c0db258ce2292d4",
+      "source_commit": "538be6ced48eae839052e17e30a24bae380c54f9",
+      "description": "Apply Molly's backup timer rule to the latest message revision\n\nAI-assisted compatibility changes. The port excluded a message from backups\nwhen any earlier revision had a started disappearing timer, and dropped\nmessages whose revision chain contained a cycle. Walk revisions as Signal\ndoes, stopping at a cycle, and apply Molly's started-timer exclusion to the\nrevision the walk ends on.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 53bb4511abbfd5339db82305f1da8cb1f0655516",
       "ai_generated": true,
-      "before_tree": "987277b822fe52c8bd4840a011989ab06e3089ce",
-      "after_tree": "00b38e9683f142c8ce012f69caa04ade992d6088",
+      "before_tree": "db57911a1d1a93efbed65eab782de764ce6ec272",
+      "after_tree": "f074c8050524e0e81b90732daf0981b5450b95db",
       "paths": 2,
       "patches": [
         "followups/backup-revision-walk/0001-backup-revision-walk.patch"
       ],
       "mailbox_bytes": 4678,
       "source_bundle": "followups/backup-revision-walk/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "4c79f87faa74a7f97b0e41678c0db258ce2292d4",
-      "source_bundle_sha256": "410179f9b772755606b74735fad1b80a6e5730f1fbd12681d7f4c16002265604",
-      "source_bundle_bytes": 3917
+      "source_bundle_prerequisite": "53bb4511abbfd5339db82305f1da8cb1f0655516",
+      "source_bundle_sha256": "928d1db30a765edfdc3d6cd5a08e1085859ae8e1413681f78edb4e1ecfe5bf73",
+      "source_bundle_bytes": 3692
     },
     {
       "id": "followups/restore-badges-log-theme",
-      "source_commit": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
-      "description": "Restore Molly's badges, locked debug log details and dynamic colors\n\nAI-assisted compatibility changes. The port lost three Molly 8.19.2-4\nbehaviors that a later fix on another branch restored but that never\nreached this release: contact settings show the recipient's badges again,\nwith their names for accessibility; the debug log's system information no\nlonger reads the locked SignalStore for the first installed version; and\ndynamic-color themes use Molly's light extended-color base again.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 164b3f3c2d8910acd04b0c2743219ae293e5cac9",
+      "source_commit": "e106c757dca5904f9adce9e332b9f69d11bd4223",
+      "description": "Restore Molly's badges, locked debug log details and dynamic colors\n\nAI-assisted compatibility changes. The port lost three Molly 8.19.2-4\nbehaviors that a later fix on another branch restored but that never\nreached this release: contact settings show the recipient's badges again,\nwith their names for accessibility; the debug log's system information no\nlonger reads the locked SignalStore for the first installed version; and\ndynamic-color themes use Molly's light extended-color base again.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 538be6ced48eae839052e17e30a24bae380c54f9",
       "ai_generated": true,
-      "before_tree": "00b38e9683f142c8ce012f69caa04ade992d6088",
-      "after_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
+      "before_tree": "f074c8050524e0e81b90732daf0981b5450b95db",
+      "after_tree": "7a4f044d024b67b4a6bee18050aff29057b20116",
       "paths": 4,
       "patches": [
         "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch"
       ],
       "mailbox_bytes": 10100,
       "source_bundle": "followups/restore-badges-log-theme/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "164b3f3c2d8910acd04b0c2743219ae293e5cac9",
-      "source_bundle_sha256": "3fa6307c532e03e9852559a897602415bbd6426fe77b04f77fa7c6678a1f2b15",
-      "source_bundle_bytes": 6278
+      "source_bundle_prerequisite": "538be6ced48eae839052e17e30a24bae380c54f9",
+      "source_bundle_sha256": "9d9776baac9e0a61b19a0e22eb3b3af39f999f0923fd1ad356a024c903756c00",
+      "source_bundle_bytes": 6053
     },
     {
       "id": "followups/enable-linked-history-transfer",
-      "source_commit": "8c230f133ca618ac2daaddddd356e1e5580a9659",
-      "description": "Enable linked-device history transfer on clean registration\n\nAI-assisted compatibility changes. Match Signal 8.33 so a newly linked phone advertises history transfer while retaining the existing clean-start guard.\n\nBased-On-Source-Commit: 2e69e329f52fe9d8083b631303df0aa93e252ebd",
+      "source_commit": "edf56d3b338d0126a405dd14ef89ae0accfcd003",
+      "description": "Enable linked-device history transfer on clean registration\n\nAI-assisted compatibility changes. Match Signal 8.33 so a newly linked phone advertises history transfer while retaining the existing clean-start guard.\n\nBased-On-Source-Commit: e106c757dca5904f9adce9e332b9f69d11bd4223",
       "ai_generated": true,
-      "before_tree": "febcc55e8ac8ccc7ca905c4e45e48114352bb6af",
-      "after_tree": "6070508036858197241d342690f747ef77424505",
+      "before_tree": "7a4f044d024b67b4a6bee18050aff29057b20116",
+      "after_tree": "f07ea6aab608b3882a49c4341398304ee4abd3e0",
       "paths": 2,
       "patches": [
         "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch"
       ],
       "mailbox_bytes": 3654,
       "source_bundle": "followups/enable-linked-history-transfer/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "2e69e329f52fe9d8083b631303df0aa93e252ebd",
-      "source_bundle_sha256": "0190670e76a3ccd9a6e6573057f592b5092fd61d1d6aa3e9de4bc0336e487160",
-      "source_bundle_bytes": 4021
+      "source_bundle_prerequisite": "e106c757dca5904f9adce9e332b9f69d11bd4223",
+      "source_bundle_sha256": "47052bf82f3d6d2b206ca08a0cc128bca5e0559850b3a6b9d372c057eff1a165",
+      "source_bundle_bytes": 3800
     },
     {
       "id": "followups/android-instrumentation-compatibility",
-      "source_commit": "6ec2a7ee52850ef01742911f16c2f24291e1f52c",
-      "description": "Restore shared Android instrumentation compatibility\n\nBased-On-Source-Commit: 8c230f133ca618ac2daaddddd356e1e5580a9659",
+      "source_commit": "dd1e0f78eda6ce4c9a16e0415c47eb684553cf83",
+      "description": "Restore shared Android instrumentation compatibility\n\nBased-On-Source-Commit: edf56d3b338d0126a405dd14ef89ae0accfcd003",
       "ai_generated": true,
-      "before_tree": "6070508036858197241d342690f747ef77424505",
-      "after_tree": "61b37a30f8254325a9fcae6655a7638646032619",
+      "before_tree": "f07ea6aab608b3882a49c4341398304ee4abd3e0",
+      "after_tree": "e80f6b06ea886fdd0cd8217f4f8db584c5c304e6",
       "paths": 30,
       "patches": [
         "followups/android-instrumentation-compatibility/0001-android-instrumentation-compatibility.patch"
       ],
       "mailbox_bytes": 95240,
       "source_bundle": "followups/android-instrumentation-compatibility/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "8c230f133ca618ac2daaddddd356e1e5580a9659",
-      "source_bundle_sha256": "31ab77b7fa3ce0528baf0fd8d78bc288be695586d09f534224da5519e66e89ee",
-      "source_bundle_bytes": 30929
+      "source_bundle_prerequisite": "edf56d3b338d0126a405dd14ef89ae0accfcd003",
+      "source_bundle_sha256": "0269173176d2eb929a1cb01154dbbed31efdb25bee0bda51b40ab85c49a71771",
+      "source_bundle_bytes": 30937
     },
     {
       "id": "followups/network-initialization-cycle",
-      "source_commit": "5b9e668351caa0532720e61089393a253791315d",
-      "description": "Avoid circular network initialization during first-run unlock\n\nAI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 6ec2a7ee52850ef01742911f16c2f24291e1f52c",
+      "source_commit": "b30b8f2d800f5c26307ea221653b2869a6350d74",
+      "description": "Avoid circular network initialization during first-run unlock\n\nAI-assisted compatibility changes. Defer socket creation until the network module is initialized, preventing first-run stack overflow while preserving connection behavior.\n\nAI-Generated: true\n\nBased-On-Source-Commit: dd1e0f78eda6ce4c9a16e0415c47eb684553cf83",
       "ai_generated": true,
-      "before_tree": "61b37a30f8254325a9fcae6655a7638646032619",
-      "after_tree": "3f425aada892567ce88729f583ce9ba62bf13afe",
+      "before_tree": "e80f6b06ea886fdd0cd8217f4f8db584c5c304e6",
+      "after_tree": "f35dba73953741ec3571b686c4a5709b9da2f498",
       "paths": 3,
       "patches": [
         "followups/network-initialization-cycle/0001-network-initialization-cycle.patch"
       ],
       "mailbox_bytes": 4361,
       "source_bundle": "followups/network-initialization-cycle/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "6ec2a7ee52850ef01742911f16c2f24291e1f52c",
-      "source_bundle_sha256": "1c16b7a21dfad9a56256d6fbf2a98065e88bd27c0639a8c8a274b702eb3b01ee",
-      "source_bundle_bytes": 6039
+      "source_bundle_prerequisite": "dd1e0f78eda6ce4c9a16e0415c47eb684553cf83",
+      "source_bundle_sha256": "da669dece9a417e648e3b1ac4ff9a3aa55af15094bd8732839a7c64aa07561ab",
+      "source_bundle_bytes": 6024
     },
     {
       "id": "followups/registration-network-settings",
-      "description": "Add access to Network settings during registration.\n\nBased-On-Source-Commit: 5b9e668351caa0532720e61089393a253791315d",
-      "source_commit": "0c14fe01c0a1f88e1ea76e2a9d7440fc7455aa8f",
+      "description": "Add access to Network settings during registration.\n\nBased-On-Source-Commit: b30b8f2d800f5c26307ea221653b2869a6350d74",
+      "source_commit": "802daeb0bb53ac1071005e479ae6dc5db91cae8c",
       "ai_generated": true,
-      "before_tree": "3f425aada892567ce88729f583ce9ba62bf13afe",
-      "after_tree": "d0f8b5271103db06e0f2ac035cf0f638d4dc7251",
+      "before_tree": "f35dba73953741ec3571b686c4a5709b9da2f498",
+      "after_tree": "387065ccb93e793c370029e3b430c7064413e941",
       "paths": 3,
       "patches": [
         "followups/registration-network-settings/0001-registration-network-settings.patch"
       ],
       "mailbox_bytes": 4037,
       "source_bundle": "followups/registration-network-settings/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "5b9e668351caa0532720e61089393a253791315d",
-      "source_bundle_sha256": "434fda4a20ea38f7d284818ed230aa85a42e443d3ceb86a938e62cddad26946e",
-      "source_bundle_bytes": 1909
+      "source_bundle_prerequisite": "b30b8f2d800f5c26307ea221653b2869a6350d74",
+      "source_bundle_sha256": "37403b08541ff8bd35def60458efe3fdd558a537e4f16a72a88be65179786a63",
+      "source_bundle_bytes": 1906
     },
     {
       "id": "followups/donation-completion-copy",
-      "description": "Add donation completion copy.\n\nBased-On-Source-Commit: 0c14fe01c0a1f88e1ea76e2a9d7440fc7455aa8f",
-      "source_commit": "f0664c5ede7b40819a472efdcdbf9ec4d24e7d12",
+      "description": "Add donation completion copy.\n\nBased-On-Source-Commit: 802daeb0bb53ac1071005e479ae6dc5db91cae8c",
+      "source_commit": "15f7295a60711b116e83fda111b120018412f7be",
       "ai_generated": true,
-      "before_tree": "d0f8b5271103db06e0f2ac035cf0f638d4dc7251",
-      "after_tree": "d870def02e0790b822b9a2368137baf1800251a6",
+      "before_tree": "387065ccb93e793c370029e3b430c7064413e941",
+      "after_tree": "1f76cee1e126a6878a8d15e995b6a3f56174fd95",
       "paths": 1,
       "patches": [
         "followups/donation-completion-copy/0001-donation-completion-copy.patch"
       ],
       "mailbox_bytes": 1428,
       "source_bundle": "followups/donation-completion-copy/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "0c14fe01c0a1f88e1ea76e2a9d7440fc7455aa8f",
-      "source_bundle_sha256": "4fcb48e50fa8a52b3fa55b32cf1502d89700dd43a34f47d3bdddeb792ed8a70c",
-      "source_bundle_bytes": 1289
+      "source_bundle_prerequisite": "802daeb0bb53ac1071005e479ae6dc5db91cae8c",
+      "source_bundle_sha256": "42e326fd93ced3cbfbf5b75e80123045b3bd8ac9e1422dea4a527b503c217935",
+      "source_bundle_bytes": 1290
     },
     {
       "id": "followups/unifiedpush-registration-retry",
-      "description": "Recover from a failed UnifiedPush registration visibly and boundedly\n\nAI-assisted compatibility changes. A failed distributor registration only\nshowed a notification and never retried, so UnifiedPush could stay broken\nsilently. Now the failure shows in UnifiedPush settings with a Retry\nregistration action, and one automatic UnifiedPushRefreshJob runs per failure\nepisode (network constraint, three attempts, six-hour lifespan) instead of an\nendless background retry. Choosing a distributor, or a successful endpoint\ncallback, clears the failure. Nothing touches the encrypted store while the\napp is locked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: f0664c5ede7b40819a472efdcdbf9ec4d24e7d12",
-      "source_commit": "3b8051b7199026e5e922001b46c9e307a76bc0f6",
+      "description": "Recover from a failed UnifiedPush registration visibly and boundedly\n\nAI-assisted compatibility changes. A failed distributor registration only\nshowed a notification and never retried, so UnifiedPush could stay broken\nsilently. Now the failure shows in UnifiedPush settings with a Retry\nregistration action, and one automatic UnifiedPushRefreshJob runs per failure\nepisode (network constraint, three attempts, six-hour lifespan) instead of an\nendless background retry. Choosing a distributor, or a successful endpoint\ncallback, clears the failure. Nothing touches the encrypted store while the\napp is locked.\n\nAI-Generated: true\n\nBased-On-Source-Commit: 15f7295a60711b116e83fda111b120018412f7be",
+      "source_commit": "b3c3bac2229b2e7a4a251fd4377a6e7d56868677",
       "ai_generated": true,
-      "before_tree": "d870def02e0790b822b9a2368137baf1800251a6",
-      "after_tree": "cfd28b498a56d5877c4f373e0663e925df1ac875",
+      "before_tree": "1f76cee1e126a6878a8d15e995b6a3f56174fd95",
+      "after_tree": "610c9293f105188809dedd0a287bc4fe8c1b7e7f",
       "paths": 11,
       "patches": [
         "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch"
       ],
       "mailbox_bytes": 26374,
       "source_bundle": "followups/unifiedpush-registration-retry/source-checkpoint.bundle",
-      "source_bundle_prerequisite": "f0664c5ede7b40819a472efdcdbf9ec4d24e7d12",
-      "source_bundle_sha256": "bfcea520824924bdc0db49a9dc69fd737dc504e03005d7c949a321c967019207",
-      "source_bundle_bytes": 6041
+      "source_bundle_prerequisite": "15f7295a60711b116e83fda111b120018412f7be",
+      "source_bundle_sha256": "aeabadde5fe9961fde32c3d6aad4b03115ceee09ada4de0dfe9237675a09f9e8",
+      "source_bundle_bytes": 6013
     }
   ],
   "mailbox_sha256": {
@@ -563,18 +597,20 @@
     "followups/integration-and-regression-tests/0001-integration-and-regression-tests-converted.patch": "1b2a07d9616ea14b77d990e64882aa89f45d515980c7c9cdca515ac895568ca5",
     "followups/integration-and-regression-tests/delete-files.json": "9de23a6ee0acf420d954053d9fe3bca658f81cf4ba297b6c0f49fc5a090ea392",
     "followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture-converted.patch": "297f6ab0d1ea3a548f5498264703b656324d9910c6c43772779d4fa8f9c4790e",
-    "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "a48354c2710c5fb820dc23116684381fdf8091eb881cad412d036136d6e48207",
-    "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "2aee262bf3d3d6e534584b5b708ef04a11e1c1ba9fcf527f9285a5913372d4e1",
-    "followups/donation-completion/0001-donation-completion.patch": "03c61185cedfd5b8f36b339b7a555deca85f41064e9d1fa1f0a4f846f14d983f",
-    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "c7ddc23eb1c8dc0c298027a38b663a2e9546c8db7077df862f7e44333cf5edcf",
-    "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch": "d9ae204c0d2ee2bc907a1fd804247c97dc946e4e3a0ffc93976e2e060cbf1e43",
-    "followups/backup-revision-walk/0001-backup-revision-walk.patch": "9d99ec5d48c489212eff9e20a73a9a2231080b50b24d07e0006a32e4d8021ed9",
-    "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch": "fb2bc5a1874513228744c375c72ee813a3bc6a03191e1d331e3a4782f835c534",
-    "followups/registration-network-settings/0001-registration-network-settings.patch": "5835aa877b4a133112dd98b2490aa729ec625c82bac0a1024ce22b910d535ea9",
-    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "12c88326ed8252b20ba92df1f337bcda2d204eb89a61323dd3409c6064e17fce",
-    "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "6a2c54813033f8559c3d72e5ef9b45895c90fe55c9231fac0afedaa929817012",
-    "followups/network-initialization-cycle/0001-network-initialization-cycle.patch": "b34118670cb29e589148d0ce516773175db0047c1bfad4514b9350bf360f3196",
-    "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch": "417da0cfdaa8713393073d3fe64ffddd43961ad7669088e8366526ad674082e7",
-    "followups/android-instrumentation-compatibility/0001-android-instrumentation-compatibility.patch": "c010feb36f57fb868f049442778004f2dce927f08fd7127a0abb1dd3554876ac"
+    "followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch": "8280dcbddc2a089bd9467bd60d66cd30a4869d2ca3109ecbc52f8e93cfbec83f",
+    "followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch": "f2ee883642b565b1eb1e6cad8955a878b8aa1b1289b5e453a128f77f628eb3a1",
+    "followups/donation-completion/0001-donation-completion.patch": "e2aa9e1b2df7533812dd61a6d53a5803a556ad1d02e9226beb8b226cf9d67be4",
+    "followups/backup-notification-id-upgrade/0001-backup-notification-id-upgrade.patch": "501e4bedcbca2120b249e391986357b025144dee77e79412e1998cd12af0078b",
+    "followups/passphrase-timeout-fallback/0001-passphrase-timeout-fallback.patch": "866493de0655e58bbaeb6942db9be67527cc9bcb6fcff75832e2f39e43120e64",
+    "followups/backup-revision-walk/0001-backup-revision-walk.patch": "bdaa7857b38d1d0f79f45e981899ebe61a110011c5365692331fcbab5dcda78f",
+    "followups/restore-badges-log-theme/0001-restore-badges-log-theme.patch": "79f5f2932c08a584002b9621f3fe116a7094c383c853bbbbd7eabb83d3f95062",
+    "followups/registration-network-settings/0001-registration-network-settings.patch": "e16a42a77c55234d26e95c35da8b61f6677a09cf9fbaaec07884639fedcd986f",
+    "followups/donation-completion-copy/0001-donation-completion-copy.patch": "fa43350d94051839b2bf2867f4f75339ebb6f1075dbf6b633d2f1d8e3171ddd1",
+    "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "f10657ad22cababf35d53f31ddcf8dde99b1d8375261c90c8d5d37e1854410a9",
+    "followups/network-initialization-cycle/0001-network-initialization-cycle.patch": "5b152616823ec0d2b2245dafa3985abec2d4df860430a7506d152aca8a5df3d2",
+    "followups/enable-linked-history-transfer/0001-enable-linked-history-transfer.patch": "c582c4e6f37a1f0714e74c9a01e56eca4c0b0a1b3c0cc93d0c05bcc4a0a42403",
+    "followups/android-instrumentation-compatibility/0001-android-instrumentation-compatibility.patch": "e3768890f3c1bcdd57e6045565f41e76bccbd05e06fb6a9087933ddc54d5795e",
+    "followups/molly-behavior-unit-tests/0001-molly-behavior-unit-tests.patch": "931e91624c5dbd48703e33a5ee6b9ac5667535035199d2742d4cc9760138c004",
+    "followups/lint-fixes/0001-lint-fixes.patch": "4dd3c6905abce50b7856ba8230e84840b0e89388a7a10b1f7ebf51fc5d78c935"
   }
 }

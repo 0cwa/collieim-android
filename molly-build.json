@@ -17,7 +17,7 @@
       "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge 7761e6fdb7170378374221bee386f3a9f58900e5."
     }
   },
-  "target_tree": "cfd28b498a56d5877c4f373e0663e925df1ac875",
+  "target_tree": "610c9293f105188809dedd0a287bc4fe8c1b7e7f",
   "native": null,
   "android": {
     "sdk": "37.0",
@@ -43,6 +43,8 @@
       "org.signal.registration.screens.verificationcode.VerificationCodeViewModelTest",
       "--tests",
       "org.signal.registration.screens.welcome.WelcomeScreenViewModelTest",
+      "--tests",
+      "org.signal.registration.RegistrationNavigationTest",
       ":app:testProdWebsiteDebugUnitTest",
       "--tests",
       "org.thoughtcrime.securesms.components.settings.conversation.shared.ConversationHeaderBadgeTest",
@@ -96,9 +98,29 @@
       "org.thoughtcrime.securesms.dependencies.NetworkDependenciesModuleTest",
       "--tests",
       "org.thoughtcrime.securesms.registration.LinkAndSyncAvailabilityTest",
+      "--tests",
+      "org.thoughtcrime.securesms.components.settings.app.notifications.profiles.details.NotificationProfileDetailsScreenTest",
+      "--tests",
+      "org.thoughtcrime.securesms.components.settings.conversation.individual.IndividualSettingsViewModelTest",
+      "--tests",
+      "org.thoughtcrime.securesms.stories.dialogs.StoryContextMenuTest",
+      "--tests",
+      "org.thoughtcrime.securesms.util.RemoteConfigOverrideTest",
       ":feature:app-settings:testDebugUnitTest",
       "--tests",
-      "org.signal.appsettings.updates.AppUpdatesSettingsScreenTest"
+      "org.signal.appsettings.updates.AppUpdatesSettingsScreenTest",
+      "--tests",
+      "org.signal.appsettings.appicon.AppIconSelectionScreenTest",
+      "--tests",
+      "org.signal.appsettings.appicon.AppIconTutorialScreenTest",
+      "--tests",
+      "org.signal.appsettings.help.HelpSettingsScreenTest",
+      ":feature:media-viewer:testDebugUnitTest",
+      "--tests",
+      "org.signal.mediaviewer.MediaViewerScreenTest",
+      ":feature:media-send:testDebugUnitTest",
+      "--tests",
+      "org.signal.mediasend.screens.capture.MediaCaptureViewModelTest"
     ]
   }
 }

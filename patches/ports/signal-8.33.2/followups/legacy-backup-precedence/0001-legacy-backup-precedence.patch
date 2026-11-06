@@ -1,4 +1,4 @@
-From 34fea6d8be8536e24c904156cfeef630b3bf9830 Mon Sep 17 00:00:00 2001
+From 5aa465941ac4e4f1d8f126db9521e5043c36cb29 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Mon, 2 Nov 2026 02:19:22 +0100
 Subject: [PATCH] Restore migrated settings with backup frame precedence
@@ -9,8 +9,8 @@ Drain queued SignalStore writes before opening the restore transaction and remov
 
 AI-Generated: true
 
-Based-On-Source-Commit: e20a7f97953750aaee42a3bbc4fe1726f875c417
-Source-Commit: 34fea6d8be8536e24c904156cfeef630b3bf9830
+Based-On-Source-Commit: 1127028dddb1ae2ee3b37b213a9449bd4c9f5930
+Source-Commit: 5aa465941ac4e4f1d8f126db9521e5043c36cb29
 
 AI-assisted compatibility changes: restore imports across source checkpoints.
 

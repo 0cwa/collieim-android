@@ -1,4 +1,4 @@
-From 164b3f3c2d8910acd04b0c2743219ae293e5cac9 Mon Sep 17 00:00:00 2001
+From 538be6ced48eae839052e17e30a24bae380c54f9 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Tue, 3 Nov 2026 02:57:06 +0100
 Subject: [PATCH] Apply Molly's backup timer rule to the latest message
@@ -12,8 +12,8 @@ revision the walk ends on.
 
 AI-Generated: true
 
-Based-On-Source-Commit: 4c79f87faa74a7f97b0e41678c0db258ce2292d4
-Source-Commit: 164b3f3c2d8910acd04b0c2743219ae293e5cac9
+Based-On-Source-Commit: 53bb4511abbfd5339db82305f1da8cb1f0655516
+Source-Commit: 538be6ced48eae839052e17e30a24bae380c54f9
 ---
  .../securesms/backup/FullBackupExporter.java  |  8 ++---
  .../backup/FullBackupExporterTest.kt          | 30 +++++++++++++++++--

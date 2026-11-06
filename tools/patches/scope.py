@@ -19,6 +19,12 @@ RELEASE_PATHS = frozenset(['patches/ports/signal-8.33.2/source-checkpoint.bundle
 
 # Exact AI-assisted compatibility conversion artifacts for existing release layers.
 RELEASE_PATHS = RELEASE_PATHS.union({
+    'patches/ports/signal-8.33.2/followups/molly-behavior-unit-tests/0001-molly-behavior-unit-tests.patch',
+    'patches/ports/signal-8.33.2/followups/molly-behavior-unit-tests/series',
+    'patches/ports/signal-8.33.2/followups/molly-behavior-unit-tests/source-checkpoint.bundle',
+    'patches/ports/signal-8.33.2/followups/lint-fixes/0001-lint-fixes.patch',
+    'patches/ports/signal-8.33.2/followups/lint-fixes/series',
+    'patches/ports/signal-8.33.2/followups/lint-fixes/source-checkpoint.bundle',
     'patches/ports/signal-8.33.2/followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture-converted.patch',
     'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/0001-integration-and-regression-tests-converted.patch',
     'patches/ports/signal-8.33.2/followups/integration-and-regression-tests/delete-files.json',
@@ -199,7 +205,7 @@ def check_release_profiles(reviewed, current):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
-MAIN_CLEAN_ENTRIES_BLOB = '608bdec221293b1b8b80217bb264e51163bdb101'
+MAIN_CLEAN_ENTRIES_BLOB = 'aab17b6b9ef1168300dc70057187632692c78254'
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',

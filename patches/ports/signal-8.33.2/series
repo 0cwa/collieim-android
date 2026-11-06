@@ -43,6 +43,8 @@ followups/netcipher-sdk-dsl/0001-netcipher-sdk-dsl-converted.patch
 followups/integration-and-regression-tests/0001-integration-and-regression-tests-converted.patch
 followups/integration-and-regression-tests/delete-files.json
 followups/cdn-transport-test-fixture/0001-cdn-transport-test-fixture-converted.patch
+followups/molly-behavior-unit-tests/0001-molly-behavior-unit-tests.patch
+followups/lint-fixes/0001-lint-fixes.patch
 followups/reregistration-linked-devices-reminder/0001-reregistration-linked-devices-reminder.patch
 followups/legacy-backup-precedence/0001-legacy-backup-precedence.patch
 followups/donation-completion/0001-donation-completion.patch

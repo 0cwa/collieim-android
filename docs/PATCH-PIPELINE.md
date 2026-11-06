@@ -599,6 +599,73 @@ The fork patchset and its tools exist only on the private release line.
 6. Gates: the `forks` scope proof, all five profile proofs, and `full` for Collie
    (Firebase on) and the FOSS profiles (Firebase off).
 
+## Local and optional hosted instrumentation
+
+Run instrumentation locally using the real debug app and test APKs built from
+the reconstructed source, on a disposable emulator with synthetic data. Select
+the exact release-line commit first; a test on another commit is not evidence
+for it. The selected commit must configure the `collie` and `collie-foss`
+profiles. You need JDK 21, the configured Android SDK/build tools, platform
+tools, the emulator and an API 35 `google_apis;x86_64` system image. Use a
+scratch directory outside the checkout with space for the source, build and
+emulator. The release source destination must not already exist.
+
+For each profile (`collie`, then `collie-foss`), reconstruct the exact source
+and run the same default and IMO gate used by CI. Set `SCRATCH`, `PROFILE`, and
+`ANDROID_HOME` for your environment; the base below is for the 8.33 release
+line, so use the reviewed base and scope for a later port:
+
+```sh
+(
+set -euo pipefail
+: "${SCRATCH:?Set SCRATCH to a new scratch directory}" "${ANDROID_HOME:?Set ANDROID_HOME}"
+PROFILE=${PROFILE:-collie}
+case "$PROFILE" in collie|collie-foss) ;; *) echo 'Invalid profile' >&2; exit 1 ;; esac
+mkdir -p "$SCRATCH"
+git fetch --no-tags https://github.com/0cwa/collieim-android.git refs/heads/private/release-base-5
+BASE=$(git rev-parse FETCH_HEAD)
+git fetch --no-tags https://github.com/mollyim/mollyim-android.git 0e202dda90785771ff8c87526eaaf30c655f54f3
+python3 tools/patches/fetch_reviewed_profiles.py https://github.com/0cwa/collieim-android.git
+python3 tools/patches/prepare_port_report.py
+python3 tools/patches/release.py --repo . --config molly-build.json \
+  --worktree "$SCRATCH/source-$PROFILE" --report "$SCRATCH/$PROFILE/source.json" \
+  --scope forks --base "$BASE" --profile "$PROFILE"
+for phase in native-prepare native-build native-integrate sdk; do
+  python3 tools/patches/build.py "$phase" --worktree "$SCRATCH/source-$PROFILE" \
+    --report-dir "$SCRATCH/$PROFILE" --profile "$PROFILE"
+done
+export PATH="$ANDROID_HOME/platform-tools:$PATH"
+export ANDROID_AVD_HOME="$SCRATCH/avd"
+mkdir -p "$ANDROID_AVD_HOME"
+source tools/patches/emulator_startup.sh
+check_avd_disk_space
+echo no | "$ANDROID_HOME/cmdline-tools/latest/bin/avdmanager" create avd \
+  -n "collie-$PROFILE" -k 'system-images;android-35;google_apis;x86_64'
+"$ANDROID_HOME/emulator/emulator" -avd "collie-$PROFILE" -port 5582 \
+  -no-window -no-audio -no-boot-anim -gpu swangle &
+EMULATOR_PID=$!
+trap 'kill "$EMULATOR_PID" 2>/dev/null || true; wait "$EMULATOR_PID" 2>/dev/null || true' EXIT
+export ANDROID_SERIAL=emulator-5582
+wait_for_emulator_boot "$EMULATOR_PID"
+tools/patches/instrumentation_gate.sh "$SCRATCH/source-$PROFILE" "$SCRATCH/$PROFILE" "$PROFILE"
+)
+```
+
+Choose a free emulator port. The exit trap stops the emulator on failure too.
+Repeat with `PROFILE=collie-foss` and a fresh source destination. Preserve the gate's
+logs and results, and record the commit, profile, test counts, failures and
+commands. The gate uses the debug keystore and creates test APKs; do not ship
+them. On a shared machine, run resource-intensive commands with your local
+resource limits and remove task-created emulator and build directories afterward.
+
+Hosted runs are optional: dispatch **Molly patch release** or **Build unsigned
+release**, select the reviewed branch and set `instrumentation` to `both`,
+`collie` or `collie-foss`. The default `off` does not start an emulator;
+ordinary PR runs also skip hosted instrumentation. The patch workflow's existing
+scope rules still apply to the selected branch. A requested run reports test
+failure normally and uploads its diagnostics. Local tests and optional hosted
+tests do not block unsigned APK collection; disclose failures and missing runs.
+
 ## Publishing a release
 
 This flow builds five unsigned APKs on CI and signs them offline. The additional
@@ -629,9 +696,10 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
    Dispatch **Build unsigned release** on that commit with these inputs. The
    dispatch requires the workflow revision and selected commit to match. Review
    the environment approval and wait for all five source proofs, assemblies and
-   regression tests to pass. Default and IMO instrumentation on reconstructed
-   Collie and Collie FOSS profiles runs independently and does not block the
-   release; record and disclose any failure or incomplete run. The workflow checks each APK's
+   regression tests to pass. Hosted default and IMO instrumentation is optional
+   and independent of APK collection; choose `both`, `collie` or `collie-foss`
+   in the `instrumentation` dispatch input to run it. The default is `off`.
+   Record and disclose any failure or incomplete run. The workflow checks each APK's
    package, version and unsigned state. Record the run ID and attempt.
 
    When building a release locally instead, run and inspect both instrumentation

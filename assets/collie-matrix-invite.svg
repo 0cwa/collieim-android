@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2076" height="352" viewBox="0 0 2076 352" role="img" aria-labelledby="title description">
+  <title id="title">Join the Pack — Matrix community</title>
+  <desc id="description">Editable version requiring Manrope ExtraBold (800) installed locally. For portable README use the outlined collie-matrix-invite.svg instead. Vertical positions use measured Manrope ink bounds.</desc>
+  <defs>
+    <clipPath id="banner-mask"><rect width="2076" height="352" rx="92"/></clipPath>
+    <clipPath id="copper-mask"><path d="M0 0H1355L1194 352H0Z"/></clipPath>
+    <linearGradient id="forest-gradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1F4C2C"/><stop offset="1" stop-color="#1B4524"/>
+    </linearGradient>
+    <linearGradient id="copper-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#DA5704"/><stop offset="1" stop-color="#DC5905"/>
+    </linearGradient>
+    <linearGradient id="gold-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F99F35"/><stop offset="1" stop-color="#FFA638"/>
+    </linearGradient>
+    <linearGradient id="pale-gradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E5ECD6"/><stop offset="1" stop-color="#EDF2E1"/>
+    </linearGradient>
+    <!-- Exact unmodified outlines from Manrope ExtraBold (800), rendered at native aspect ratio.
+         Shapes are reusable instead of redundant per-character path traces. -->
+    </defs>
+
+  <g clip-path="url(#banner-mask)">
+    <rect width="2076" height="352" fill="url(#forest-gradient)"/>
+    <!-- Copper left and a narrow, constant-thickness cream diagonal divider. -->
+    <path d="M0 0H1355L1194 352H0Z" fill="url(#copper-gradient)"/>
+    <!-- Upper-redwood corner: one deliberate cubic, not raster contour tracing. -->
+    <path d="M0 0H233C154 47 57 147 0 246Z" fill="#B93D16"/>
+    <!-- Golden lower rise, drawn as a single smooth cubic Bezier. -->
+    <path d="M148 352C420 282 683 224 1195 292C1280 303 1410 338 1500 350L1500 520H0Z" clip-path="url(#copper-mask)" fill="url(#gold-gradient)"/>
+    <path d="M1355 0H1372L1211 352H1194Z" fill="#FCFCF8"/>
+    <!-- Lichen inset, same geometry and corner softness as the reference. -->
+    <rect x="1369" y="67" width="659" height="219" rx="63" fill="url(#pale-gradient)"/>
+  </g>
+
+  <!-- Both visible ink bounds are centered at exactly y=176 (the banner midpoint). -->
+  <text id="join-the-pack" x="154" y="233.24" fill="#FFFCF5" stroke="#FFFCF5" stroke-width="5.565" stroke-linejoin="round" paint-order="stroke fill" font-family="Manrope" font-size="159" font-weight="800" font-kerning="none" letter-spacing="0">Join the Pack</text><text id="matrix-wordmark" x="1418" y="212.225" fill="#184629" stroke="#184629" stroke-width="3.675" stroke-linejoin="round" paint-order="stroke fill" font-family="Manrope" font-size="105" font-weight="800" font-kerning="none" letter-spacing="2.5725">[m] Matrix</text></svg>

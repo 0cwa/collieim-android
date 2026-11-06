@@ -11,6 +11,12 @@
 </p>
 
 <p align="center">
+<a href="https://matrix.to/#/#collieim:worldethicaldataforum.org">
+  <img height="80" alt="matrix-banner" src="assets/collie-matrix-invite.svg">
+</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/gradle/libs.versions.toml"><img src="https://img.shields.io/badge/v8.33.2--1--rc3%20min%20Android-6.0%2B-2F4F3A?style=flat&amp;labelColor=5A4033" alt="Minimum Android 6.0 for the published v8.33.2-1-rc3 APKs"></a>
   <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0--only-687E59?style=flat&amp;labelColor=5A4033" alt="AGPL 3.0 only"></a>
 </p>
@@ -44,8 +50,19 @@ This project keeps Molly's features available as Signal develops, while offering
 | **Molly FOSS, Continued**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-foss-continued.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-foss-continued.apk across releases"></a> | Molly Continued without FCM - Google's notification system.  (Only host Mollysocket yourself! - details below in Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 | **Mollie, Minimal**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-minimal.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-minimal.apk across releases"></a> | Molly's minimalist feature set on a newer Signal version, without the Continued additions. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 
+
 > [!NOTE]
 > *App names are planned to shift as features are adopted* - don't be surprised if Molly, Continued becomes Collie and Collie becomes Collie+ (or maybe Collie!) - I'm collecting community feedback to decide official variants. 🧡
+
+### FCM? FOSS? What is that? Does Collie use Google?
+
+Collie is already almost 100% FOSS compared to Signal (Signal uses Google Maps, GPay, etc - we strip all that out and replace it with FOSS), with the *one* exception that for user experience, we include the ***option*** to use normal android Google FCM notification delivery.
+
+- FCM - Firebase Cloud Messaging is Google's version (or predecessor) of UnifiedPush. Most/all normal Android phones have this.  It enables your phone to talk to one server for notifications.  All Google receives is "this device got a message", and then pings your phone to wake the app so your app informs you.  No message data is ever received by Google.  Our normal builds *do not* activate FCM unless it is the active notification provider.
+- FOSS - Free Open Source Software: Collie is already Free Open Source Software, but FCM is by google and it's closed source.  FCM is completely 
+**Most people should run the normal version, it saves battery.**  If your phone has google, it already connects to FCM to receive notifications. 
+
+> For reliable notification delivery on the FOSS version, disable battery restrictions to allow it to run in the background - you will experience some *minor* battery drain from this. OR you can self-host a Mollysocket server (the UnifiedPush adaptor) and install a UnifiedPush Distributor app to replace FCM - see lower down for more details.
 
 Molly Minimal provides the updated Molly foundation. Both Molly Continued releases and both Collie releases add network settings during registration for proxy users, visible errors and retry options for failed UnifiedPush registration, and updated donation confirmation text. Collie and Collie FOSS also add the four optional retention controls described below. The two FOSS releases omit Firebase; the other three include it.
 

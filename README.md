@@ -10,6 +10,11 @@
 </a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/gradle/libs.versions.toml"><img src="https://img.shields.io/badge/v8.33.2--1--rc3%20min%20Android-6.0%2B-2F4F3A?style=flat&amp;labelColor=5A4033" alt="Minimum Android 6.0 for the published v8.33.2-1-rc3 APKs"></a>
+  <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0--only-687E59?style=flat&amp;labelColor=5A4033" alt="AGPL 3.0 only"></a>
+</p>
+
 Welcome!  Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.  We use a patch-based release system for maximum code auditability, fast security updates ⚡, and interoperability.  [We contribute](https://github.com/mollyim/mollyim-android/pull/852) [back upstream](https://github.com/mollyim/mollyim-android/pull/853).
 
 <b>🌟 Stars! 🧡</b>
@@ -26,13 +31,18 @@ This project keeps Molly's features available as Signal develops, while offering
 
 ## Current releases
 
+<p align="left">
+  <a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/v/release/0cwa/collieim-android?include_prereleases&amp;sort=date&amp;display_name=tag&amp;style=flat&amp;labelColor=5A4033&amp;label=release" alt="Latest published GitHub release including prereleases"></a>
+  <a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/release-date-pre/0cwa/collieim-android?display_date=published_at&amp;style=flat&amp;labelColor=5A4033&amp;label=published" alt="Publication date of the latest release including prereleases"></a>
+</p>
+
 | Release | What it offers | Install |
 | --- | --- | --- |
-| **<ins>Collie</ins>** | **<ins>Recommended</ins>.** Molly Continued plus optional controls for keeping messages and media. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Collie FOSS** | Collie without Firebase. (be aware of the new risks with Mollysocket detailed below in the Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%20FOSS%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C-foss%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Molly, Continued** | Molly on a newer Signal version, with further registration and notification improvements. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Molly FOSS, Continued** | Molly Continued without Firebase.  (be aware of the new risks with Mollysocket detailed below in Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Mollie, Minimal** | Molly's minimalist feature set on a newer Signal version, without the Continued additions. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **<ins>Collie</ins>**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/collie.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of collie.apk across releases"></a> | **<ins>Recommended</ins>.** Molly Continued plus optional controls for keeping messages and media. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Collie FOSS**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/collie-foss.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of collie-foss.apk across releases"></a> | Collie without Firebase. (be aware of the new risks with Mollysocket detailed below in the Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%20FOSS%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C-foss%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Molly, Continued**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-continued.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-continued.apk across releases"></a> | Molly on a newer Signal version, with further registration and notification improvements. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Molly FOSS, Continued**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-foss-continued.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-foss-continued.apk across releases"></a> | Molly Continued without Firebase.  (be aware of the new risks with Mollysocket detailed below in Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
+| **Mollie, Minimal**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-minimal.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-minimal.apk across releases"></a> | Molly's minimalist feature set on a newer Signal version, without the Continued additions. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
 
 > [!NOTE]
 > *App names are planned to shift as features are adopted* - don't be surprised if Molly, Continued becomes Collie and Collie becomes Collie+ (or maybe Collie!) - I'm collecting community feedback to decide official variants. 🧡
@@ -43,6 +53,15 @@ Molly Minimal provides the updated Molly foundation. Both Molly Continued releas
 > All five releases use the package `im.collie.app`, so users can switch between them and install Collie alongside upstream Molly.
 
 Releases are published on the [Releases page](https://github.com/0cwa/collieim-android/releases) as APKs. The Obtainium links above add this repository to [Obtainium](https://obtainium.imranr.dev/) with pre-releases disabled and select that release's APK, so Obtainium can install and update it. The releases share one app identity, so Obtainium tracks only one of them at a time.
+
+The source badges below describe published release [v8.33.2-1-rc3](https://github.com/0cwa/collieim-android/tree/v8.33.2-1-rc3); the Android minimum applies to those APKs.
+
+<p align="left">
+  <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/molly-build.json"><img src="https://img.shields.io/badge/Signal%20base-8.33.2-96390C?style=flat&amp;labelColor=5A4033" alt="Signal base 8.33.2 in the published release"></a>
+  <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/molly-build.json"><img src="https://img.shields.io/badge/Molly%20base-8.19.2--4-96390C?style=flat&amp;labelColor=5A4033" alt="Molly base 8.19.2-4 in the published release"></a>
+  <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/gradle/libs.versions.toml"><img src="https://img.shields.io/badge/Kotlin-2.2.20-687E59?style=flat&amp;labelColor=5A4033" alt="Kotlin 2.2.20 in the published release"></a>
+  <a href="https://github.com/0cwa/collieim-android/releases/tag/v8.33.2-1-rc3"><img src="https://img.shields.io/badge/release%20APK%20assets-5-687E59?style=flat&amp;labelColor=5A4033" alt="Five APK assets in the published release"></a>
+</p>
 
 _[Throw the dog a bone? 🐶🦴](https://liberapay.com/Collie)_
 
@@ -90,6 +109,13 @@ Signal's [Terms and Privacy Policy](https://signal.org/legal/) apply when using 
 The project retains Molly's support for local Signal-format backups. Restoring a backup requires an app version that supports the version of the backup being imported. Content kept using Collie's retention controls may also be included in backups.
 
 ## Feedback
+
+<p align="left">
+  <a href="https://github.com/0cwa/collieim-android/commits/main/"><img src="https://img.shields.io/github/last-commit/0cwa/collieim-android?style=flat&amp;labelColor=5A4033&amp;label=last%20commit" alt="Last commit on main"></a>
+  <a href="https://github.com/0cwa/collieim-android/issues"><img src="https://img.shields.io/github/issues/0cwa/collieim-android?style=flat&amp;labelColor=5A4033&amp;label=issues" alt="Open GitHub issues"></a>
+  <a href="https://github.com/0cwa/collieim-android/pulls"><img src="https://img.shields.io/github/issues-pr/0cwa/collieim-android?style=flat&amp;labelColor=5A4033&amp;label=PRs" alt="Open pull requests"></a>
+  <a href="https://github.com/0cwa/collieim-android/security/advisories/new"><img src="https://img.shields.io/badge/security-report%20privately-687E59?style=flat&amp;labelColor=5A4033" alt="Report vulnerabilities privately"></a>
+</p>
 
 [Report bugs or suggest changes](https://github.com/0cwa/collieim-android/issues) in this repository.
 

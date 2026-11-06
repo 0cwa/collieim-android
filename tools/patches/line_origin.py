@@ -14,9 +14,9 @@ Renames are detected with Git's default similarity threshold. The synthetic comm
 written to a private object directory; the repository is never modified.
 
 Release profiles (``profiles``) are measured the same way; a profile with fork layers
-includes old Signal as an input, and adds the fork head for fork layers, loaded from
-the upstream bundle into the private object directory. This avoids counting restored
-old Signal lines as fork-created.
+includes Molly's old Signal base as an input; profiles with fork layers also include
+the fork's distinct historical Signal prerequisite and its head. This avoids counting
+restored upstream Signal lines as fork-specific textual matches.
 
 ``not_carried`` separately counts Molly's own non-blank lines (old Signal to Molly)
 that no longer appear in the file at the same path. It is a textual comparison and
@@ -34,6 +34,8 @@ import sys
 import tempfile
 
 import release_profiles
+
+FORK_SIGNAL_BASE = '6e9dddc01f1b26e608ac683807c51e139c141ed2'
 
 CLASSES = ('production', 'translations', 'tests', 'generated', 'repository')
 CLASS_NOTES = {
@@ -283,8 +285,8 @@ def port(repo, series_dir):
                      'classes': physical(repo, checkpoints[i - 1][1], tree)})
     stages = collections.OrderedDict()
     for (name, _, stage), result in zip(checkpoints, measured):
-        # Fork layers in the port series have no fork input here, so their stage also counts
-        # the fork's own lines. Release profiles measure them with the fork as a parent.
+        # Fork layers have no fork input here, so their stage may include lines also
+        # present in the fork. Profiles compare against the fork separately.
         stages[stage] = dict(result, checkpoint=name, includes_fork_lines=stage == FORK_STAGE)
     for result in measured:
         result.pop('_files')
@@ -300,19 +302,23 @@ def profiles(repo, root, config):
     provenance = json.loads((Path(root) / config['port']['series']).parent.joinpath('provenance.json').read_text())
     old, molly, signal = provenance['origin_base'], provenance['origin_target'], provenance['signal']
     index = molly_lines(repo, old, molly)
-    fork, loaded, cache, rows = None, set(), {}, []
+    fork, fork_base, loaded, cache, rows = None, None, set(), {}, []
     for name, entry in entries.items():
         layers = entry.get('fork_series') or []
         if layers:
             fork = config['fork_source']['head']
             fork_root = Path(root) / Path(layers[0]).parent.parent
             if fork_root not in loaded:
-                bundle = json.loads((fork_root / 'provenance.json').read_text())['upstream_bundle']
-                repo.load_bundle(fork_root / bundle)
+                fork_provenance = json.loads((fork_root / 'provenance.json').read_text())
+                fork_base = fork_provenance['upstream_bundle_prerequisite']
+                if fork_base != FORK_SIGNAL_BASE:
+                    raise ValueError('fork attribution prerequisite differs from pinned Signal base')
+                repo.commit(fork_base)
+                repo.load_bundle(fork_root / fork_provenance['upstream_bundle'])
                 loaded.add(fork_root)
         key = (entry['target_tree'], bool(layers))
         if key not in cache:
-            parents = [molly, signal, old]
+            parents = [molly, signal, old] + ([fork_base] if layers else [])
             ours = measure(repo, entry['target_tree'], parents + ([fork] if layers else []), index)
             ours.pop('_files')
             from_fork = None
@@ -334,12 +340,12 @@ def markdown_profiles(rows, molly_total):
     if not rows:
         return ''
     out = ['### Release profiles', '',
-           'Each profile\'s source compared with Molly, Signal and old Signal and, for profiles with fork layers, the fork head '
-           'as an additional input, so **written** excludes lines the fork wrote. **From the fork** counts production lines '
-           'the fork wrote that the profile carries. The Collie icon overlay is original work and does not by itself '
+           'Each profile\'s source compared with Molly, Signal and Molly\'s old Signal base and, for fork layers, the fork\'s '
+           'historical Signal base and fork head as additional inputs. **Fork matches** is the difference in the combined-diff written count when adding the fork '
+           'as an input: inferred textual matches to fork lines absent from the other inputs, subject to diff alignment and not proof of authorship. The Collie icon overlay does not by itself '
            'add the upstream fork as an input.', '',
            '| Profile | Tree | Fork layers | Release overlays | Firebase | Production written / removed | Written as % of Molly\'s '
-           'production lines | From the fork | Molly lines not carried | Tests |',
+           'production lines | Fork matches | Molly lines not carried | Tests |',
            '|---|---|---|---|---|---:|---:|---:|---:|---:|']
     for row in rows:
         c = row['classes']
@@ -380,14 +386,13 @@ def markdown(result, profile_rows=()):
     for stage, item in stages:
         c, mol = item['classes'], item['molly']['production']
         share = f'{c["production"]["written"] / molly_total * 100:.1f}%' if molly_total else 'n/a'
-        label = stage + (' (includes lines the fork wrote)' if item.get('includes_fork_lines') else '')
+        label = stage + (' (may include lines matching the fork)' if item.get('includes_fork_lines') else '')
         out.append(f'| {label}, tree `{item["tree"][:12]}` | {fmt(c["production"]["written"], c["production"]["removed"])} '
                    f'| {share} | {mol["not_carried"]:,} (of which {mol["in_removed_paths"]:,} in removed paths) | '
                    + ' | '.join(fmt(c[k]['written'], c[k]['removed']) for k in SHOWN[1:]) + ' |')
     if any(item.get('includes_fork_lines') for _, item in stages):
-        out += ['', f'The {FORK_STAGE} row has no fork input, so its written lines include the fork\'s own code; '
-                'it is not a measure of our changes. Release profiles that declare the fork source measure fork '
-                'layers with the fork head as a third input.']
+        out += ['', f'The {FORK_STAGE} row has no fork input, so its written lines may include textual matches to the fork; '
+                'it is not a measure of authorship. Release profiles with fork layers include the fork head as an input.']
     out += ['', 'Classes: ' + '; '.join(f'**{k}**: {v}' for k, v in result['classes'].items()) + '.', '',
             '### By layer', '',
             'Initial layers own the paths their mailboxes touch, so their rows split the initial result by path and '

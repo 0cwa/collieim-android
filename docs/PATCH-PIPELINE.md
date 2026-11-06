@@ -703,3 +703,5 @@ If a published immutable release is bad, issue a new tag with a higher version
 code. Before shipping the replacement, check that database migrations and data
 written by the bad version are compatible with the replacement. Do not rely on
 an Android downgrade as recovery.
+
+Signal 8.35.1 release assembly is deliberately blocked in `tools/patches/build.py` until the native integration and complete port report have been reviewed. Debug assembly and non-release tests remain available. The block applies to every profile and scope through that build driver; direct Gradle commands (including the inherited Docker reproducibility workflow) do not use the driver and must not be treated as approved release artifacts. Removing the block requires a reviewed change that establishes the native and report evidence.

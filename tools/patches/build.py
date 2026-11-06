@@ -20,6 +20,16 @@ import zipfile
 import release_profiles
 
 
+# This port is not releasable until its native build and port report are reviewed.
+BLOCKED_SIGNAL_PORT = 'a74583b01e260944f699c4da03ba4e8ce04de32b'
+DIAGNOSTIC_TEST_TASKS = frozenset({
+    ':core:network:test', ':lib:network:test', ':lib:libsignal-service:test',
+    ':feature:registration:testDebugUnitTest', ':feature:app-settings:testDebugUnitTest',
+    ':feature:media-viewer:testDebugUnitTest', ':feature:media-send:testDebugUnitTest',
+    ':app:testProdWebsiteDebugUnitTest',
+})
+
+
 class BuildError(RuntimeError):
     pass
 
@@ -355,6 +365,9 @@ class Build:
             raise BuildError('native integration did not produce its required Gradle init script')
 
     def gradle(self, phase: str):
+        blocked_port = self.config.get('signal', {}).get('commit') == BLOCKED_SIGNAL_PORT
+        if blocked_port and phase == 'assemble-release':
+            raise BuildError('Signal 8.35.1 release assembly is blocked pending reviewed native integration and a complete port report')
         self.source_proof()
         if not re.fullmatch(r'[1-9][0-9]*[mg]', self.args.heap):
             raise BuildError('--heap must be a JVM memory size such as 5g')
@@ -377,6 +390,12 @@ class Build:
         else:
             tasks = gradle_tasks(self.android['assemble' if phase == 'assemble' else 'tests'],
                                  'assemble' if phase == 'assemble' else 'tests', tests=phase == 'test')
+        if blocked_port and phase == 'assemble' and tasks != [':app:assembleProdWebsiteDebug']:
+            raise BuildError('Signal 8.35.1 permits only the configured diagnostic debug assembly')
+        if blocked_port and phase == 'test':
+            task_names = [entry for entry in tasks if entry.startswith(':')]
+            if any(entry not in DIAGNOSTIC_TEST_TASKS for entry in task_names):
+                raise BuildError('Signal 8.35.1 permits only diagnostic non-release test tasks')
         init = relative_file(self.repo, 'tools/patches/test-worker-heap.init.gradle', 'test-worker heap script')
         jvm_args = (f'-Xmx{self.args.heap} -Xms256m -XX:MaxMetaspaceSize=1g '
                     '-Dcom.android.tools.r8.threadCount=1 '

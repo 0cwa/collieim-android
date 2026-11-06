@@ -54,6 +54,59 @@ class BuildSourceTests(unittest.TestCase):
         (self.repo / 'molly-build.json').write_text(json.dumps(self.config))
         (self.reports / 'source.json').write_text(json.dumps(self.proof))
 
+    def test_incomplete_signal_port_fails_closed_for_all_release_profiles(self):
+        self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.save()
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof') as proof, patch.object(runner, 'run') as run:
+            for profile in (None, *sorted(build.release_profiles.NAMES)):
+                runner.profile = profile
+                with self.subTest(profile=profile), self.assertRaisesRegex(build.BuildError, 'release assembly is blocked'):
+                    runner.gradle('assemble-release')
+            proof.assert_not_called()
+            run.assert_not_called()
+
+    def test_incomplete_port_blocks_real_profile_selection(self):
+        self.args.repo = Path(__file__).resolve().parents[2]
+        for name in sorted(build.release_profiles.NAMES):
+            self.args.profile = name
+            runner = build.Build(self.args)
+            with self.subTest(profile=name), patch.object(runner, 'run') as run:
+                with self.assertRaisesRegex(build.BuildError, 'release assembly is blocked'):
+                    runner.gradle('assemble-release')
+                run.assert_not_called()
+
+    def test_incomplete_port_allows_debug_but_rejects_release_task_aliases(self):
+        self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.config['android'] = {'assemble': ':app:assembleProdWebsiteDebug', 'tests': [':core:network:test']}
+        self.save()
+        init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
+        init.parent.mkdir(parents=True)
+        init.write_text('// fixture\n')
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof'), patch.object(runner, 'run') as run:
+            runner.gradle('assemble')
+            runner.gradle('test')
+            self.assertEqual(run.call_count, 2)
+            for task in (':app:assemble', ':app:assembleRelease', ':app:bundleProdWebsiteRelease', ':app:build'):
+                runner.android['assemble'] = task
+                with self.subTest(task=task), self.assertRaisesRegex(build.BuildError, 'diagnostic debug'):
+                    runner.gradle('assemble')
+            for task in (':app:assembleRelease', ':app:testProdWebsiteReleaseUnitTest', ':app:test', ':app:testProdWebsiteR', ':app:build'):
+                runner.android['tests'] = [task]
+                with self.subTest(task=task), self.assertRaisesRegex(build.BuildError, 'non-release test'):
+                    runner.gradle('test')
+            self.assertEqual(run.call_count, 2)
+
+    def test_old_signal_release_is_not_blocked_by_port_guard(self):
+        self.config['signal']['commit'] = '6e9dddc01f1b26e608ac683807c51e139c141ed2'
+        self.save()
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof') as proof, patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(build.BuildError, 'release-version-name'):
+                runner.gradle('assemble-release')
+            proof.assert_called_once()
+
     def test_gradle_subprocess_keeps_single_worker_limit(self):
         self.config['android'] = {'assemble': [':app:assembleDebug']}
         self.save()
@@ -379,9 +432,9 @@ class NamedProfileBuildTests(BuildSourceTests):
                     self.assertIn('-PreleaseVersionCode=177203', command)
 
     def test_profile_bound_to_proof_and_forces_firebase_property(self):
-        self.config['port'] = {'series': 'patches/ports/test/series'}
+        self.config['port'] = {'series': build.release_profiles.PORT_SERIES}
         self.config['android'] = {'assemble': ':app:assembleDebug', 'tests': [':app:test']}
-        entry = {'base_series': 'patches/ports/signal-8.33.2/series', 'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'],
+        entry = {'base_series': build.release_profiles.PORT_SERIES, 'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'],
                  'fork_series': [], 'target_tree': self.config['target_tree'],
                  'firebase_free': False}
         self.config['profiles'] = {'molly-minimal': entry,

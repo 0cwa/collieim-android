@@ -95,6 +95,8 @@ def main():
             manifest = json.loads(final.read_text())
             if manifest.get('schema') != 1 or manifest.get('rehearsal') is not False or manifest.get('commit') != args.approved_commit:
                 raise ValueError('final manifest is not a real release of the approved commit')
+            if args.repo.lower() == '0cwa/collieim-android':
+                a.validate_version_code(manifest.get('version_code'), a.PACKAGE)
             entries = manifest['apks']
             if len(entries) != 5 or {x['profile'] for x in entries} != a.PROFILES:
                 raise ValueError('final manifest must contain all five profiles')

@@ -693,6 +693,9 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
 
 1. Approve the full release-line commit, version name and a version code higher
    than every previously published code, and the expected certificate digest.
+   The validator rejects Collie codes at or below the verified RC3 code
+   `177203`. This fixed floor does not check later releases: compare against
+   all published releases, including prereleases, before approving a code.
    Dispatch **Build unsigned release** on that commit with these inputs. The
    dispatch requires the workflow revision and selected commit to match. Review
    the environment approval and wait for all five source proofs, assemblies and

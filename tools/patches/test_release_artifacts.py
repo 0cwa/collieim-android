@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from pathlib import Path
 import tempfile
@@ -22,7 +23,7 @@ class ReleaseArtifactsTests(unittest.TestCase):
         self.cert = 'b' * 64
         self.entries = [{'profile': p, 'file': p + '.apk', 'sha256': 'c' * 64} for p in sorted(a.PROFILES)]
         self.manifest = {'schema': 1, 'commit': self.commit, 'workflow_revision': self.commit,
-                         'run_id': '123', 'run_attempt': '1', 'package': a.PACKAGE, 'version_code': 42,
+                         'run_id': '123', 'run_attempt': '1', 'package': a.PACKAGE, 'version_code': 177204,
                          'version_name': '1.2.3', 'certificate_sha256': self.cert, 'apks': self.entries}
 
     def test_manifest_rejects_wrong_identity_or_duplicate_profile(self):
@@ -41,6 +42,31 @@ class ReleaseArtifactsTests(unittest.TestCase):
         self.manifest['package'] = a.PACKAGE
         with self.assertRaisesRegex(ValueError, 'certificate'):
             a.validate_manifest(self.manifest, self.commit, '123', 'd' * 64)
+
+    def test_collie_release_code_must_exceed_the_published_rc3(self):
+        for value in (1, 177202, 177203):
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, 'exceed.*RC3'):
+                self.manifest['version_code'] = value
+                a.validate_manifest(self.manifest, self.commit, '123', self.cert)
+        self.manifest['version_code'] = 177204
+        a.validate_manifest(self.manifest, self.commit, '123', self.cert)
+        # The floor is specific to the published Collie package, not other apps.
+        a.validate_version_code(42, 'org.example.other')
+        with self.assertRaisesRegex(ValueError, 'invalid version code'):
+            a.validate_version_code(True, a.PACKAGE)
+
+    def test_unsigned_dispatch_passes_override_to_version_guard(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / '.github/workflows/molly-unsigned-release.yml').read_text()
+        step = workflow.split('      - name: Validate the dispatch and prepare proof\n', 1)[1].split('      - name:', 1)[0]
+        self.assertIn('VERSION_CODE: ${{ inputs.version_code }}', step)
+        commands = [line.strip() for line in step.splitlines() if 'a.validate_version_code(' in line]
+        self.assertEqual(len(commands), 1)
+        for code, expected in (('177203', False), ('177204', True), ('invalid', False)):
+            with self.subTest(code=code):
+                run = subprocess.run(['bash', '-e', '-c', commands[0]], cwd=root,
+                                     env=dict(os.environ, VERSION_CODE=code), capture_output=True, text=True)
+                self.assertEqual(run.returncode == 0, expected, run.stderr)
 
     def test_apk_metadata_rejects_wrong_package(self):
         with patch.object(a, 'apk_metadata', return_value=('im.molly.app', '42', '1.2.3')):
@@ -119,6 +145,17 @@ class ReleaseArtifactsTests(unittest.TestCase):
         final = self.root / 'final-manifest.json'
         final.write_text(json.dumps({'schema': 1, 'rehearsal': True, 'commit': self.commit}))
         args = ['release_publish', 'draft', '--repo', 'owner/repo', '--tag', 'v1.2.3',
+                '--approved-commit', self.commit, '--final-manifest', str(final),
+                '--final-manifest-sha256', a.sha256(final), '--provenance', str(final), '--notes', str(final),
+                '--scratch', str(self.root)]
+        with patch('sys.argv', args), patch.object(release_publish, 'command') as command:
+            self.assertEqual(release_publish.main(), 1)
+            command.assert_not_called()
+
+    def test_publisher_rejects_collie_rc3_or_older_before_github(self):
+        final = self.root / 'final-manifest.json'
+        final.write_text(json.dumps({'schema': 1, 'rehearsal': False, 'commit': self.commit, 'version_code': 177203}))
+        args = ['release_publish', 'draft', '--repo', '0cwa/collieim-android', '--tag', 'v1',
                 '--approved-commit', self.commit, '--final-manifest', str(final),
                 '--final-manifest-sha256', a.sha256(final), '--provenance', str(final), '--notes', str(final),
                 '--scratch', str(self.root)]

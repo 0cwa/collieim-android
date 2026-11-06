@@ -277,6 +277,7 @@ NEXT_PORT_FORK_URL = 'https://github.com/tw-hx/Signal-Android'
 NEXT_PORT_TOOLS = frozenset({
     '.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml',
     'tools/patches/build.py', 'tools/patches/test_build.py', 'tools/patches/test_prepare_port_report.py',
+    'tools/patches/release_artifacts.py', 'tools/patches/release_publish.py', 'tools/patches/test_release_artifacts.py',
     'tools/patches/test_next_port_workflow.py', 'tools/patches/test_optional_instrumentation_workflow.py',
     'tools/patches/fork_profiles.py', 'tools/patches/release_profiles.py',
     'tools/patches/pins.py', 'tools/patches/scope.py', 'tools/patches/release.py',

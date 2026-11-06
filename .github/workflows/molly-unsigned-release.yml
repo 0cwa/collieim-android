@@ -55,8 +55,10 @@ jobs:
         env:
           APPROVED: ${{ inputs.approved_commit }}
           WORKFLOW_REVISION: ${{ github.workflow_sha }}
+          VERSION_CODE: ${{ inputs.version_code }}
         run: |
           [[ "$APPROVED" =~ ^[0-9a-f]{40}$ && "$APPROVED" == "$GITHUB_SHA" && "$WORKFLOW_REVISION" == "$APPROVED" ]]
+          python3 -c 'import os,sys; sys.path.insert(0,"tools/patches"); import release_artifacts as a; a.validate_version_code(int(os.environ["VERSION_CODE"]), a.PACKAGE)'
           python3 -c 'import json,sys; sys.exit("Signal 8.35.1 release blocked: native integration and port review incomplete") if json.load(open("molly-build.json"))["signal"]["commit"] == "a74583b01e260944f699c4da03ba4e8ce04de32b" else None'
           git fetch --no-tags origin refs/heads/private/release-base-5:refs/remotes/origin/private/release-base-5
           git fetch --no-tags https://github.com/mollyim/mollyim-android.git 0e202dda90785771ff8c87526eaaf30c655f54f3

@@ -46,7 +46,7 @@ class ScopeMappingTests(unittest.TestCase):
         wrapper = root / 'bin'
         wrapper.mkdir()
         git = wrapper / 'git'
-        git.write_text('#!/bin/bash\nif [[ "$1" == fetch && "$3" == https://github.example/trusted/repo.git ]]; then\n  exec /usr/bin/git fetch "$2" "$TEST_TRUSTED_REPO" "$4"\nfi\nexec /usr/bin/git "$@"\n')
+        git.write_text('#!/bin/bash\nif [[ "$1" == fetch && "$3" == https://github.example/trusted/repo.git ]]; then\n  exec /usr/bin/git fetch "$2" "$TEST_TRUSTED_REPO" "$4"\nfi\nif [[ "$1" == merge-base && "$3" == 0e202dda90785771ff8c87526eaaf30c655f54f3 && -n "${TEST_PIPELINE_ANCHOR:-}" ]]; then\n  set -- "$1" "$2" "$TEST_PIPELINE_ANCHOR" "$4"\nfi\nexec /usr/bin/git "$@"\n')
         git.chmod(0o755)
         tools = self.repo / 'tools/patches'
         tools.mkdir(parents=True)
@@ -87,6 +87,35 @@ class ScopeMappingTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.git('checkout', '-q', '--detach', self.head)
         self.assertNotEqual(self.run_mapping('pull_request', 'private/release-variants-extra', self.variants).returncode, 0)
+
+    def test_pipeline_maintenance_pr_maps_to_pinned_anchor(self):
+        self.git('checkout', '-q', '--orphan', 'pipeline')
+        self.git('rm', '-q', '-f', 'molly-build.json')
+        self.git('commit', '--allow-empty', '-qm', 'official anchor')
+        anchor = self.git('rev-parse', 'HEAD').strip()
+        self.git('commit', '--allow-empty', '-qm', 'pipeline base')
+        base = self.git('rev-parse', 'HEAD').strip()
+        self.git('commit', '--allow-empty', '-qm', 'pipeline change')
+        self.env['TEST_PIPELINE_ANCHOR'] = anchor
+        result = self.run_mapping('pull_request', 'stack/1-patch-pipeline', base)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), 'pipeline 0e202dda90785771ff8c87526eaaf30c655f54f3')
+        head = self.git('rev-parse', 'HEAD').strip()
+        self.git('checkout', '-q', '--detach', base)
+        self.git('commit', '--allow-empty', '-qm', 'base advanced separately')
+        advanced_base = self.git('rev-parse', 'HEAD').strip()
+        self.git('checkout', '-q', '--detach', head)
+        result = self.run_mapping('pull_request', 'stack/1-patch-pipeline', advanced_base)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Pipeline PR base is not an ancestor of head', result.stderr)
+        self.assertNotEqual(self.run_mapping('pull_request', 'stack/1-patch-pipeline', self.unrelated).returncode, 0)
+        self.env['TEST_PIPELINE_ANCHOR'] = self.unrelated
+        self.assertNotEqual(self.run_mapping('pull_request', 'stack/1-patch-pipeline', base).returncode, 0)
+
+    def test_switch_pr_still_maps_to_switch(self):
+        result = self.run_mapping('pull_request', 'stack/1-patch-pipeline', self.lower)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), 'switch ' + self.lower)
 
     def test_collie_immediate_diff_rejects_unrelated_paths_and_profile_changes(self):
         branding = self.repo / 'patches/forks/signal-foss/collie-branding'

@@ -288,6 +288,7 @@ NEXT_PORT_TOOLS = frozenset({
 NEXT_PORT_NATIVE_PATHS = frozenset({
     'tools/native/ATTRIBUTION.md',
     'tools/native/CIPD-PROVENANCE.md',
+    'tools/native/NDK-PROVENANCE.md',
     'tools/native/RUST-PROVENANCE.md',
     'tools/native/README.md',
     'tools/native/build_ringrtc.py',
@@ -301,6 +302,8 @@ NEXT_PORT_NATIVE_PATHS = frozenset({
     'tools/native/native-lock.json',
     'tools/native/native_driver.py',
     'tools/native/native_fallback_smoke.py',
+    'tools/native/ndk_payloads.py',
+    'tools/native/test_ndk_payloads.py',
     'tools/native/nested_git.py',
     'tools/native/test_nested_git.py',
     'tools/native/webrtc-git-dependencies.json',

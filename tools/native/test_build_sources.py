@@ -70,8 +70,8 @@ class PartialSourceBuildTest(unittest.TestCase):
             return []
         raise AssertionError('unexpected diagnostic command')
 
-    def run_build(self, rust_effect=None):
-        with patch.object(subject.verify_gradle, 'verify', return_value=self.root / 'verified-gradle/bin/gradle'), patch.object(subject.rust_payloads, 'verify', return_value=372, side_effect=rust_effect):
+    def run_build(self, rust_effect=None, ndk_effect=None):
+        with patch.object(subject.verify_gradle, 'verify', return_value=self.root / 'verified-gradle/bin/gradle'), patch.object(subject.rust_payloads, 'verify', return_value=372, side_effect=rust_effect), patch.object(subject.ndk_payloads, 'verify', return_value=8449, side_effect=ndk_effect):
             return subject.diagnostic_build(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, self.report, self.root / 'gradle.zip', self.root / 'verified-gradle', self.runner)
 
     def test_success_is_explicitly_partial_and_never_release_proof(self):
@@ -90,6 +90,15 @@ class PartialSourceBuildTest(unittest.TestCase):
                 for path in (self.sources/'libsignal/java/android/build', self.sources/'libsignal/java/client/build'):
                     if path.exists(): shutil.rmtree(path)
 
+    def test_ndk_change_before_or_after_build_rejects_receipt(self):
+        for effect in ([subject.ndk_payloads.Failure('before')], [8449, subject.ndk_payloads.Failure('after')]):
+            with self.subTest(effect=effect):
+                with self.assertRaises(subject.ndk_payloads.Failure): self.run_build(ndk_effect=effect)
+                self.assertFalse(self.report.exists())
+                import shutil
+                for path in (self.sources/'libsignal/java/android/build', self.sources/'libsignal/java/client/build'):
+                    if path.exists(): shutil.rmtree(path)
+
     def test_mismatched_output_fails_without_receipt(self):
         self.binaries['libsignal-client'] = b'unexpected'
         with self.assertRaisesRegex(subject.Failure, 'reproducibility is unproved'):
@@ -100,7 +109,7 @@ class PartialSourceBuildTest(unittest.TestCase):
         def runner(args, cwd, env):
             if args[-1] == '-version': return ['openjdk version \"25.0.4\"']
             return self.runner(args, cwd, env)
-        with patch.object(subject.rust_payloads, 'verify', return_value=372):
+        with patch.object(subject.rust_payloads, 'verify', return_value=372), patch.object(subject.ndk_payloads, 'verify', return_value=8449):
             subject.preflight(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, runner, java_major=25)
             with self.assertRaisesRegex(subject.Failure, 'Java 21'):
                 subject.preflight(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, runner)

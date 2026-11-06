@@ -14,6 +14,7 @@ import subprocess
 import sys
 
 import native_driver
+import ndk_payloads
 import prepare_sources
 import rust_payloads
 import stage_artifacts
@@ -55,6 +56,7 @@ def preflight(lock_path, source_root, sdk_root, java_home, rust_bin, runner=run,
     java_home = java_home.resolve(strict=True)
     ndk = properties(sdk_root / 'ndk' / '28.0.13004108' / 'source.properties')
     require(ndk.get('Pkg.Revision', '').strip() == '28.0.13004108', 'Android NDK version does not match the recorded build')
+    ndk_payloads.verify(sdk_root / 'ndk/28.0.13004108', 'cc399724320a6e46fe83a068364630a9943760d7a83fd90570d660ac58786d9d', 8449)
     rust_bin = rust_bin.resolve(strict=True)
     require(rust_bin.name == 'bin', 'Pass the direct Rust toolchain bin directory, not rustup shims')
     rust_reference = Path(__file__).with_name('rust-toolchain-payloads.json')
@@ -101,6 +103,7 @@ def diagnostic_build(lock_path, source_root, sdk_root, java_home, rust_bin, repo
     require(verify_gradle.verify(gradle_zip, gradle_distribution, '87a2216cc1f9122192d4e0fe905ffdf1b4c72cff797e9f733b174e157cadd396', top='gradle-9.6.0') == gradle, 'Gradle distribution changed during diagnostic build')
     # Source contents must remain the pinned prepared trees after the build.
     rust_payloads.verify(rust_bin.resolve(strict=True).parent, Path(__file__).with_name('rust-toolchain-payloads.json'), 'e9a644fc90306fd0eaa5d7b7323c3baea2865f460179d0b98cdbb07a2ba63cd0')
+    ndk_payloads.verify(sdk_root.resolve(strict=True) / 'ndk/28.0.13004108', 'cc399724320a6e46fe83a068364630a9943760d7a83fd90570d660ac58786d9d', 8449)
     after = prepare_sources.verify_prepared(lock_path, source_root)
     require(after['sources'] == proof['sources'], 'Native source changed during diagnostic build')
     aar = sorted((libsignal / 'java/android/build/outputs/aar').glob('*.aar'))
@@ -130,7 +133,7 @@ def main():
     args = parser.parse_args()
     try:
         diagnostic_build(args.lock.resolve(), args.sources.resolve(), args.sdk, args.java_home, args.rust_bin, args.report, args.gradle_zip, args.gradle_distribution)
-    except (Failure, prepare_sources.Failure, stage_artifacts.Failure, verify_gradle.Failure, rust_payloads.Failure, OSError, ValueError) as exc:
+    except (Failure, prepare_sources.Failure, stage_artifacts.Failure, verify_gradle.Failure, rust_payloads.Failure, ndk_payloads.Failure, OSError, ValueError) as exc:
         print(f'native diagnostic build failed: {exc}', file=sys.stderr)
         return 1
     return 0

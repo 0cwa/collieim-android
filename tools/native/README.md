@@ -73,3 +73,5 @@ changes, or establish source-to-binary provenance. Release remains blocked.
 [CIPD-PROVENANCE.md](CIPD-PROVENANCE.md) records how the package reference was derived and its remaining trust boundaries.
 
 [RUST-PROVENANCE.md](RUST-PROVENANCE.md) describes the partial Rust payload check, how its reference was derived, and what remains unverified.
+
+[NDK-PROVENANCE.md](NDK-PROVENANCE.md) describes the NDK payload tree check, its archive reference and remaining limits.

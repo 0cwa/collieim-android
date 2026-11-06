@@ -10,6 +10,7 @@ import sys
 import build_sources
 import cipd_payloads
 import nested_git
+import ndk_payloads
 import prepare_sources
 import rust_payloads
 import stage_artifacts
@@ -86,6 +87,7 @@ def diagnostic_build(lock_path, sources, workspace, sdk, java_home, rust_bin, ou
         nested_git.verify(workspace, nested_manifest, nested_hash)
         cipd_payloads.verify(workspace, cipd_reference, cipd_hash)
         rust_payloads.verify(rust_bin.resolve(strict=True).parent, Path(__file__).with_name('rust-toolchain-payloads.json'), 'e9a644fc90306fd0eaa5d7b7323c3baea2865f460179d0b98cdbb07a2ba63cd0')
+        ndk_payloads.verify(sdk.resolve(strict=True) / 'ndk/28.0.13004108', 'cc399724320a6e46fe83a068364630a9943760d7a83fd90570d660ac58786d9d', 8449)
         require(prepare_sources.git(checkout, 'write-tree') == source_proof['sources']['webrtc']['prepared_tree'], 'WebRTC index changed during build')
         require(not prepare_sources.git(checkout, 'diff', '--name-only'), 'WebRTC tracked source changed during build')
         aar = list(output.glob('gradle/outputs/aar/*release.aar'))
@@ -113,7 +115,7 @@ def main():
     args = parser.parse_args()
     try:
         diagnostic_build(args.lock.resolve(), args.sources, args.workspace, args.sdk, args.java_home, args.rust_bin, args.output, args.gradle_zip, args.gradle_distribution)
-    except (Failure, build_sources.Failure, prepare_sources.Failure, stage_artifacts.Failure, verify_gradle.Failure, nested_git.Failure, cipd_payloads.Failure, rust_payloads.Failure, OSError, ValueError, KeyError) as exc:
+    except (Failure, build_sources.Failure, prepare_sources.Failure, stage_artifacts.Failure, verify_gradle.Failure, nested_git.Failure, cipd_payloads.Failure, rust_payloads.Failure, ndk_payloads.Failure, OSError, ValueError, KeyError) as exc:
         print(f'RingRTC diagnostic failed: {exc}', file=sys.stderr)
         return 1
     return 0

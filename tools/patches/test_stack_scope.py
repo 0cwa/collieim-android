@@ -96,10 +96,12 @@ class ScopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'unreviewed change'):
                 scope.check_next_port(self.repo, 'base', 'head')
             projection.remove(b'app.txt')
-            changed.add(b'README.md')
+            projection.add(b'unreviewed-file.txt')
+            changed.add(b'unreviewed-file.txt')
             with self.assertRaisesRegex(ValueError, 'unreviewed change'):
                 scope.check_next_port(self.repo, 'base', 'head')
-            changed.remove(b'README.md')
+            changed.remove(b'unreviewed-file.txt')
+            projection.remove(b'unreviewed-file.txt')
             forest = '0' * 40
             with self.assertRaisesRegex(ValueError, 'forest differs'):
                 scope.check_next_port(self.repo, 'base', 'head')
@@ -179,6 +181,10 @@ class ScopeTests(unittest.TestCase):
                 self.git('reset', '--hard', '-q', head)
             for path in ('tools/native/rust_payloads.py', 'tools/native/test_rust_payloads.py', 'tools/native/rust-toolchain-payloads.json', 'tools/native/RUST-PROVENANCE.md'):
                 self.commit(path, 'reviewed Rust payload check')
+                self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+                self.git('reset', '--hard', '-q', head)
+            for path in ('tools/native/ndk_payloads.py', 'tools/native/test_ndk_payloads.py', 'tools/native/NDK-PROVENANCE.md'):
+                self.commit(path, 'reviewed NDK payload check')
                 self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
                 self.git('reset', '--hard', '-q', head)
             self.commit('tools/patches/test_optional_instrumentation_workflow.py', 'reviewed optional instrumentation check')

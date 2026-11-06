@@ -1,5 +1,6 @@
 import pathlib
 import copy
+import hashlib
 import json
 import subprocess
 import tempfile
@@ -328,6 +329,80 @@ class ScopeTests(unittest.TestCase):
             if change == 'target': candidate['profiles']['collie']['target_tree'] = 'invalid'
             with self.subTest(change=change), self.assertRaises(ValueError):
                 scope.check_release_profiles(reviewed, candidate)
+
+    def test_release_profiles_follow_reviewed_boundary_layer_in_trusted_base(self):
+        names = ('molly-minimal', 'molly-continued', 'molly-foss-continued', 'collie', 'collie-foss')
+        reviewed = {'fork_source': {'url': 'source', 'head': 'a' * 40}, 'profiles': {}}
+        for index, name in enumerate(names):
+            base_commit, base_tree = (('1' * 40, '2' * 40) if index == 0 else ('3' * 40, '4' * 40))
+            reviewed['profiles'][name] = {'base_series': 'port', 'base_checkpoint': base_commit,
+                'base_tree': base_tree, 'fork_series': [] if index < 2 else ['fork-' + name],
+                'target_tree': base_tree, 'firebase_free': index in (2, 4)}
+        old = {'layers': [
+            {'id': 'minimal-boundary', 'source_commit': '1' * 40, 'after_tree': '2' * 40},
+            {'id': 'continued-boundary', 'source_commit': '3' * 40, 'after_tree': '4' * 40}]}
+        new = {'layers': [
+            {'id': 'minimal-boundary', 'source_commit': '5' * 40, 'after_tree': '6' * 40},
+            {'id': 'continued-boundary', 'source_commit': '7' * 40, 'after_tree': '8' * 40}]}
+        current = copy.deepcopy(reviewed)
+        for index, name in enumerate(names):
+            profile = current['profiles'][name]
+            profile['base_checkpoint'], profile['base_tree'] = (('5' * 40, '6' * 40) if index == 0 else ('7' * 40, '8' * 40))
+            profile['target_tree'] = '6' * 40 if index == 0 else '9' * 40
+            if name in ('molly-continued', 'molly-foss-continued'):
+                profile['icon_overlay'] = scope.ICON_OVERLAY
+        self.assertTrue(scope.check_release_profiles(reviewed, current, old, new))
+        for name in names:
+            for field in ('base_checkpoint', 'base_tree', 'fork_series', 'firebase_free', 'base_series'):
+                changed = copy.deepcopy(current)
+                value = changed['profiles'][name][field]
+                changed['profiles'][name][field] = (not value if isinstance(value, bool) else
+                    value + ['unexpected'] if isinstance(value, list) else value + 'unexpected')
+                with self.subTest(name=name, field=field), self.assertRaises(ValueError):
+                    scope.check_release_profiles(reviewed, changed, old, new)
+        changed = copy.deepcopy(current)
+        changed['profiles']['molly-minimal']['target_tree'] = 'a' * 40
+        with self.assertRaises(ValueError):
+            scope.check_release_profiles(reviewed, changed, old, new)
+        changed = copy.deepcopy(current)
+        changed['fork_source']['head'] = 'b' * 40
+        with self.assertRaises(ValueError):
+            scope.check_release_profiles(reviewed, changed, old, new)
+        for altered in ({'layers': []}, {'layers': new['layers'] + new['layers'][:1]}):
+            with self.assertRaisesRegex(ValueError, 'missing or ambiguous'):
+                scope.check_release_profiles(reviewed, current, old, altered)
+        with self.assertRaisesRegex(ValueError, 'both reviewed and base'):
+            scope.check_release_profiles(reviewed, current, old, None)
+
+    def test_reviewed_profile_snapshot_is_exact_and_hash_checked(self):
+        current = {'profiles': {'product': {'target_tree': 'a' * 40}}, 'fork_source': {'url': 'source'}}
+        snapshot = json.dumps(current, sort_keys=True, indent=2).encode()
+        info = {'reviewed_profiles': {'path': 'reviewed-profiles.json',
+                                      'sha256': hashlib.sha256(snapshot).hexdigest()}}
+        scope.check_reviewed_profile_snapshot(current, info, snapshot)
+        for provenance, content, expected in (
+            ({}, snapshot, current),
+            ({'reviewed_profiles': {'path': '../other', 'sha256': info['reviewed_profiles']['sha256']}}, snapshot, current),
+            (info, snapshot + b' ', current),
+            (info, snapshot, {'profiles': {}, 'fork_source': {'url': 'source'}}),
+            ({'reviewed_profiles': {'path': 'reviewed-profiles.json', 'sha256': '0' * 64}}, snapshot, current),
+        ):
+            with self.subTest(provenance=provenance, content=content), self.assertRaises(ValueError):
+                scope.check_reviewed_profile_snapshot(expected, provenance, content)
+        fork = {'profiles': {'product': {'fork_series': ['patches/forks/signal-foss/example/series'],
+                    'target_tree': 'a' * 40}}, 'fork_source': {'url': 'source'}}
+        content = json.dumps(fork, sort_keys=True).encode()
+        provenance = {'reviewed_profiles': {'path': 'reviewed-profiles.json',
+                          'sha256': hashlib.sha256(content).hexdigest()},
+                      'layers': [{'series': 'example/series', 'after_tree': 'a' * 40}]}
+        scope.check_reviewed_profile_snapshot(fork, provenance, content)
+        fork['profiles']['product']['target_tree'] = 'b' * 40
+        content = json.dumps(fork, sort_keys=True).encode()
+        provenance['reviewed_profiles']['sha256'] = hashlib.sha256(content).hexdigest()
+        with self.assertRaisesRegex(ValueError, 'fork checkpoint'):
+            scope.check_reviewed_profile_snapshot(fork, provenance, content)
+        self.assertTrue(scope.allowed('forks', 'patches/forks/signal-foss/reviewed-profiles.json'))
+        self.assertFalse(scope.allowed('forks', 'patches/forks/signal-foss/reviewed-profiles.json.extra'))
 
     def test_locale_evidence_allowlist_does_not_admit_other_files(self):
         prefix = 'patches/ports/signal-8.33.2/report-evidence/'

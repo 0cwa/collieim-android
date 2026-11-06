@@ -22,7 +22,7 @@ PROFILES = 'tools/patches/release_profiles.py'
 
 # (value, meaning, upstream whose new release changes it, files that contain it)
 PINS = [
-    ('7b661691dfe8eb988a067ae2a8180bcefa88287f', 'audited clean integration entries manifest', 'none', [SCOPE]),
+    ('2bc77f68e88525f4d3da4fb7e3c23cb2efe18801', 'audited clean integration entries manifest', 'none', [SCOPE]),
     ('7f0eb01a0ab472deeef3b528e7f508425044fa6a', 'audited historical release base for clean main', 'none', [SCOPE, RELEASE_WORKFLOW]),
     ('1861543f3ba23b0bc396cb39a0595346537b6df6', 'audited main transition boundary', 'none', [SCOPE]),
     ('89bd7d6368a509470c4612d079746f66dfac8b55', 'reviewed release profile composition', 'none', [SCOPE]),

@@ -150,6 +150,9 @@ class ScopeTests(unittest.TestCase):
         with mock.patch.object(scope, 'NEXT_PORT_BASE', base), mock.patch.object(scope, 'NEXT_PORT_SIGNAL', signal), \
              mock.patch.object(scope, 'FOREST', forest):
             self.assertEqual(scope.check_next_port(self.repo, base, head)['scope'], 'next-port')
+            self.commit('README.md', 'planned release note')
+            self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+            self.git('reset', '--hard', '-q', head)
             (self.repo / 'app.txt').write_text('unreviewed\n')
             self.git('add', 'app.txt'); self.git('commit', '-qm', 'bad source')
             with self.assertRaisesRegex(ValueError, 'unreviewed change'):

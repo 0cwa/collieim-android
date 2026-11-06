@@ -346,7 +346,7 @@ def check_next_port(repo, base, head):
     for raw in filter(None, changed):
         path = raw.decode('utf-8', 'surrogateescape')
         if path.startswith(('patches/ports/signal-8.35.1/', 'patches/forks/signal-foss/')) or path in NEXT_PORT_TOOLS or path in NEXT_PORT_NATIVE_PATHS or path in {
-                'molly-build.json', 'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'}:
+                'molly-build.json', 'README.md', 'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'}:
             continue
         if path in MAIN_PROJECTION_EXCEPTIONS or metadata(path) or path in projection:
             raise ValueError('next port contains an unreviewed change: ' + path)

@@ -225,7 +225,9 @@ def stage_of(layer_id):
     """Map a port layer to its review stage using the scope check's layer sets."""
     import scope
     name = layer_id.split('/', 1)[1]
-    if layer_id.startswith('followups/') and name in scope.BEHAVIOR:
+    universal_fixes = {'locked-startup-notification-restore', 'molly-donation-label',
+                       'arabic-molly-donation', 'persian-molly-donation'}
+    if layer_id.startswith('followups/') and (name in scope.BEHAVIOR or name in universal_fixes):
         return 'PR4 behavior fixes'
     if layer_id.startswith('followups/') and name in scope.ADDITIONS:
         return 'PR5 behavior additions'
@@ -414,7 +416,7 @@ def main():
     parser.add_argument('--repo', default='.')
     sub = parser.add_subparsers(dest='command', required=True)
     p = sub.add_parser('port', help='measure every checkpoint of a port series')
-    p.add_argument('--series-dir', default='patches/ports/signal-8.33.2')
+    p.add_argument('--series-dir', default='patches/ports/signal-8.35.1')
     p.add_argument('--markdown', action='store_true')
     p.add_argument('--config', help='also measure named release profiles; requires writable Git objects and refs')
     t = sub.add_parser('tree', help='measure one tree against explicit parents')

@@ -205,6 +205,8 @@ class LineOriginTests(unittest.TestCase):
         self.assertEqual(line_origin.stage_of('initial/maps'), 'PR3 compatibility')
         self.assertEqual(line_origin.stage_of('followups/netcipher-sdk-dsl'), 'PR3 compatibility')
         self.assertEqual(line_origin.stage_of('followups/legacy-backup-precedence'), 'PR4 behavior fixes')
+        for name in ('locked-startup-notification-restore', 'molly-donation-label', 'arabic-molly-donation', 'persian-molly-donation'):
+            self.assertEqual(line_origin.stage_of('followups/' + name), 'PR4 behavior fixes')
         self.assertEqual(line_origin.stage_of('followups/donation-completion-copy'), 'PR5 behavior additions')
         self.assertEqual(line_origin.stage_of('followups/retention-controls'), 'Feature branch fork layers')
 

@@ -14,7 +14,9 @@
     "mechanical_tree": "d1b1951155a3e600a1c9af606e440ed25fc4b11d",
     "series": "patches/ports/signal-8.35.1/series",
     "keep_mechanical": {
-      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge 7761e6fdb7170378374221bee386f3a9f58900e5."
+      "app/src/main/java/org/thoughtcrime/securesms/preferences/CorrectedPreferenceFragment.java": "Retain Molly's modified preference fragment despite Signal deleting it; this is an explicit AI-assisted compatibility decision from source merge 7761e6fdb7170378374221bee386f3a9f58900e5.",
+      "app/src/main/res/layout/value_click_preference_item.xml": "Retain the Molly version of this layout despite its upstream deletion; the canonical resolution leaves the mechanical merge unchanged.",
+      "core/database/src/main/AndroidManifest.xml": "Retain the Signal module manifest despite Molly deleting the old path; the canonical resolution leaves the mechanical merge unchanged."
     }
   },
   "target_tree": "ea8f70a544723465a11082768c2a7cea1c7f1b2b",

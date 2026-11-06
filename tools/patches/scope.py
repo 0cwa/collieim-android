@@ -273,7 +273,7 @@ NEXT_PORT_TOOLS = frozenset({
     'tools/patches/pins.py', 'tools/patches/scope.py', 'tools/patches/release.py',
     'tools/patches/test_fork_profiles.py', 'tools/patches/test_stack_scope.py', 'tools/patches/test_release.py',
     'tools/patches/prepare_port_report.py', 'tools/patches/port_report.py',
-    'tools/patches/line_origin.py', 'tools/patches/fetch_reviewed_profiles.py',
+    'tools/patches/line_origin.py', 'tools/patches/test_line_origin.py', 'tools/patches/fetch_reviewed_profiles.py',
 })
 
 def check_next_port(repo, base, head):
@@ -304,7 +304,7 @@ def check_next_port(repo, base, head):
         raise ValueError('next port profile source pins differ')
     port = config.get('port')
     expected_series = 'patches/ports/signal-8.35.1/series'
-    if not isinstance(port, dict) or port.get('series') != expected_series or not git(repo, 'show', head + ':' + expected_series).strip():
+    if not isinstance(port, dict) or port.get('series') != expected_series or not git(repo, 'show', head + ':' + expected_series, check=False).strip():
         raise ValueError('next port series is missing or differs')
     profiles = config.get('profiles')
     if not isinstance(profiles, dict) or set(profiles) != {'molly-minimal', 'molly-continued', 'molly-foss-continued', 'collie', 'collie-foss'} or any(not isinstance(p, dict) for p in profiles.values()):

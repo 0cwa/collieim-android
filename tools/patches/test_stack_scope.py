@@ -137,7 +137,7 @@ class ScopeTests(unittest.TestCase):
                 scope.check_next_port(self.repo, base, 'HEAD')
             self.git('reset', '--hard', '-q', head)
             series.unlink(); self.git('add', '-u'); self.git('commit', '-qm', 'missing series')
-            with self.assertRaises(subprocess.CalledProcessError):
+            with self.assertRaisesRegex(ValueError, 'series is missing'):
                 scope.check_next_port(self.repo, base, 'HEAD')
             self.git('reset', '--hard', '-q', head)
             del config['profiles']['collie']

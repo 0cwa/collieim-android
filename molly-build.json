@@ -101,6 +101,8 @@
       "--tests",
       "org.thoughtcrime.securesms.dependencies.NetworkDependenciesModuleTest",
       "--tests",
+      "org.thoughtcrime.securesms.net.MollyProxyFailClosedTest",
+      "--tests",
       "org.thoughtcrime.securesms.registration.LinkAndSyncAvailabilityTest",
       "--tests",
       "org.thoughtcrime.securesms.components.settings.app.notifications.profiles.details.NotificationProfileDetailsScreenTest",

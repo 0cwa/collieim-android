@@ -86,6 +86,19 @@ class BuildSourceTests(unittest.TestCase):
                 with self.assertRaisesRegex(build.BuildError, 'no fallback'):
                     runner.native_verification_bytes()
 
+    def test_835_profiles_select_proxy_fail_closed_unit_tests(self):
+        root = Path(__file__).resolve().parents[2]
+        config = json.loads((root / 'molly-build.json').read_text())
+        selector = 'org.thoughtcrime.securesms.net.MollyProxyFailClosedTest'
+        for name in sorted(build.release_profiles.NAMES):
+            selected, _ = build.release_profiles.select(config, name, root)
+            tasks = build.gradle_tasks(selected['android']['tests'], 'tests', tests=True)
+            with self.subTest(profile=name):
+                self.assertEqual(tasks.count(selector), 1)
+                i = tasks.index(selector)
+                self.assertEqual(tasks[i - 1], '--tests')
+                self.assertEqual([task for task in tasks[:i] if task.startswith(':')][-1], ':app:testProdWebsiteDebugUnitTest')
+
     def test_incomplete_port_allows_debug_but_rejects_release_task_aliases(self):
         self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
         self.config['android'] = {'assemble': ':app:assembleProdWebsiteDebug', 'tests': [':core:network:test']}

@@ -37,15 +37,17 @@ Collie continues Molly on newer Signal releases. The currently published edition
 
 ## Next release (planned)
 
-The next release is planned to provide Collie through all five existing APK filenames, so existing update links can continue to select the same file. The planned build configurations are shown below; final APK and notification testing is still outstanding.
+The next release is planned to provide one signed, FCM-capable Collie APK under all five existing filenames. The files will be byte-identical, so existing Obtainium links can continue to select their current filename:
 
-| Existing APK filename | Planned app | Planned notification configuration |
-| --- | --- | --- |
-| `collie.apk` | Collie | FCM-capable build |
-| `collie-foss.apk` | Collie FOSS | FOSS build without Firebase |
-| `molly-continued.apk` | Collie | FCM-capable build |
-| `molly-foss-continued.apk` | Collie FOSS | FOSS build without Firebase |
-| `molly-minimal.apk` | Collie | FCM-capable build |
+- `collie.apk`
+- `collie-foss.apk` (compatibility alias)
+- `molly-continued.apk` (compatibility alias)
+- `molly-foss-continued.apk` (compatibility alias)
+- `molly-minimal.apk` (compatibility alias)
+
+There will be no separate Firebase-free APK in the next release. WebSocket and UnifiedPush will remain available notification choices; the update is not intended to change a choice explicitly saved by the user. UnifiedPush remains subject to its existing device and server requirements. Final APK and notification testing is still outstanding.
+
+If you use a currently published FOSS build, a previously saved FCM preference may become active when you update to the FCM-capable APK. To avoid that, before updating open **Settings → Notifications**, find the **Push notifications** section, and choose **Delivery service → WebSocket**. You can also choose a configured UnifiedPush service where supported.
 
 The next release is planned to retain the `im.collie.app` package. Updates also require matching signatures and a higher version code. The Current releases table below describes the APKs already published.
 
@@ -112,11 +114,11 @@ The currently published Collie release also offers four optional controls: keep 
 
 In the next release, we are removing these retention controls. After reviewing their design, the maintainers concluded that the current implementation is not good enough and poses security and privacy risks. We are exploring alternatives that offer a better experience while respecting disappearing-message protections. The update adds no special cleanup or restoration of previously retained content, and normal message expiration and deletion will continue. Previously retained content may be present in existing backups.
 
-The former Molly Minimal and Molly Continued download filenames will continue to receive Collie, retaining their current FCM or FOSS notification capability. Existing Collie download filenames will remain available.
+The existing Molly Minimal, Molly Continued and Collie download filenames are planned to remain available as aliases for the same FCM-capable Collie APK, as described above.
 
 ## Free and open source
 
-The code is open source. Standard builds include Google's Firebase service for push notifications; FOSS builds omit it. They can receive messages through WebSocket or [UnifiedPush](https://unifiedpush.org/) instead.
+The code is open source. The currently published standard builds include Google's Firebase service for push notifications; the currently published FOSS builds omit it. They can receive messages through WebSocket or [UnifiedPush](https://unifiedpush.org/) instead. The planned next release has one FCM-capable build, including under the legacy FOSS filenames.
 
 UnifiedPush lets you choose a notification provider. It requires access to a [MollySocket](https://github.com/mollyim/mollysocket) server, *use your own!* **Do not use a public one!** UnifiedPush has never been available on linked devices, [this is a planned Collie feature.](https://github.com/0cwa/collieim-android/issues/21) Android battery restrictions can affect notification delivery.
 
@@ -130,7 +132,7 @@ Signal's [Terms and Privacy Policy](https://signal.org/legal/) apply when using 
 
 ## Backups
 
-The project retains Molly's support for local Signal-format backups. Restoring a backup requires an app version that supports the version of the backup being imported. Content kept using retention controls in a published release may also be included in backups.
+The project retains Molly's support for local Signal-format backups. Restoring a backup requires an app version that supports the version of the backup being imported. In the next release, the restore picker is intended to recognize timestamped `.backup` files with any nonempty filename prefix in the folder you select. It does not move or delete backup files. Content kept using retention controls in a published release may also be included in backups.
 
 ## Feedback
 

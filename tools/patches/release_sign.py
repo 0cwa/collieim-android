@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,48 @@ import release_artifacts as artifacts
 
 def run(args, **kwargs):
     return subprocess.run([str(x) for x in args], check=True, **kwargs)
+
+
+def read_instrumentation_checklist(path, approved_commit):
+    """Read the maintainer's explicit, commit-bound instrumentation assessment."""
+    if path is None:
+        raise ValueError('an instrumentation checklist is required before signing')
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_size > 16384:
+            raise ValueError('instrumentation checklist must be a regular file no larger than 16 KiB')
+        with os.fdopen(fd, 'rb', closefd=False) as source:
+            raw = source.read(16385)
+        if len(raw) > 16384:
+            raise ValueError('instrumentation checklist is too large')
+    finally:
+        os.close(fd)
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError('instrumentation checklist has duplicate fields')
+            result[key] = value
+        return result
+    checklist = json.loads(raw, object_pairs_hook=unique_object)
+    if not isinstance(checklist, dict) or set(checklist) != {'commit', 'status', 'evidence', 'reason'}:
+        raise ValueError('instrumentation checklist must contain exactly commit, status, evidence and reason')
+    if any(not isinstance(checklist[key], str) for key in checklist):
+        raise ValueError('instrumentation checklist fields must be strings')
+    if checklist['commit'] != approved_commit:
+        raise ValueError('instrumentation checklist commit differs from the approved commit')
+    if checklist['status'] not in ('passed', 'failed', 'not run'):
+        raise ValueError('instrumentation status must be passed, failed or not run')
+    for name in ('evidence', 'reason'):
+        value = checklist[name]
+        if len(value) > 2048 or any(ord(char) < 32 or ord(char) == 127 for char in value):
+            raise ValueError('instrumentation evidence and reason must be single-line text')
+    if checklist['status'] == 'passed' and not checklist['evidence'].strip():
+        raise ValueError('passed instrumentation requires evidence')
+    if checklist['status'] != 'passed' and not checklist['reason'].strip():
+        raise ValueError('failed or not-run instrumentation requires a reason for accepting the gap')
+    return checklist
 
 
 def main():
@@ -28,6 +71,8 @@ def main():
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--build-tools', type=Path, required=True)
     p.add_argument('--attestation-repo', help='verify with gh; supply a trusted GH repository')
+    p.add_argument('--instrumentation-checklist', type=Path, default=os.environ.get('COLLIE_INSTRUMENTATION_CHECKLIST'),
+                   help='commit-bound instrumentation JSON (or set COLLIE_INSTRUMENTATION_CHECKLIST)')
     p.add_argument('--rehearse', action='store_true')
     p.add_argument('--scratch', type=Path, required=True, help='existing private directory for temporary files')
     args = p.parse_args()
@@ -46,6 +91,9 @@ def main():
                 raise ValueError('manifest differs from independently authenticated SHA-256')
             m = json.loads(manifest.read_text())
             entries = artifacts.validate_manifest(m, args.approved_commit, args.approved_run, args.certificate_sha256)
+            checklist = read_instrumentation_checklist(args.instrumentation_checklist, args.approved_commit)
+            print('Instrumentation checklist (maintainer-provided; not independently verified):')
+            print(json.dumps(checklist, indent=2, ensure_ascii=True), flush=True)
             if args.build_tools.name != m.get('build_tools') or m.get('build_tools') != m.get('input_pins', {}).get('android', {}).get('build_tools'):
                 raise ValueError('build-tools directory does not match manifest pin')
             if args.attestation_repo:
@@ -99,7 +147,8 @@ def main():
                                'signed_sha256': artifacts.sha256(dest), 'certificate_sha256': digests[0].replace(':', '').lower()})
             final = {'schema': 1, 'rehearsal': args.rehearse, 'unsigned_manifest_sha256': args.manifest_sha256,
                      'commit': args.approved_commit, 'run_id': str(args.approved_run), 'version_code': m['version_code'],
-                     'version_name': m['version_name'], 'certificate_sha256': signed[0]['certificate_sha256'], 'apks': signed}
+                     'version_name': m['version_name'], 'certificate_sha256': signed[0]['certificate_sha256'], 'apks': signed,
+                     'instrumentation_checklist': checklist}
             if any(x['certificate_sha256'] != final['certificate_sha256'] for x in signed):
                 raise ValueError('signed APKs have different certificates')
             (args.output / 'final-manifest.json').write_text(json.dumps(final, indent=2) + '\n')

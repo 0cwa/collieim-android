@@ -1,5 +1,7 @@
 import json
 import os
+import io
+from contextlib import redirect_stdout
 import subprocess
 from pathlib import Path
 import tempfile
@@ -86,7 +88,7 @@ class ReleaseArtifactsTests(unittest.TestCase):
         args = ['release_sign', '--manifest', str(manifest), '--manifest-sha256', '0' * 64,
                 '--approved-commit', self.commit, '--approved-run', '123', '--certificate-sha256', self.cert,
                 '--apks', str(self.root), '--output', str(self.root / 'out'), '--build-tools', str(self.root),
-                '--scratch', str(self.root)]
+                '--scratch', str(self.root), '--instrumentation-checklist', str(self.root / 'unused.json')]
         with patch('sys.argv', args), patch.object(release_sign, 'run') as run:
             self.assertEqual(release_sign.main(), 1)
             run.assert_not_called()
@@ -100,17 +102,32 @@ class ReleaseArtifactsTests(unittest.TestCase):
         manifest = self.root / 'manifest.json'
         manifest.write_text(json.dumps(self.manifest))
         output = self.root / 'signed'
+        checklist = self.root / 'instrumentation.json'
+        record = {'commit': self.commit, 'status': 'failed', 'evidence': 'local run log',
+                  'reason': 'maintainer accepted this documented gap'}
+        checklist.write_text(json.dumps(record))
         args = ['release_sign', '--manifest', str(manifest), '--manifest-sha256', a.sha256(manifest),
                 '--approved-commit', self.commit, '--approved-run', '123', '--certificate-sha256', self.cert,
                 '--apks', str(self.root), '--output', str(output), '--build-tools', str(self.root / '36.0.0'),
-                '--scratch', str(self.root)]
+                '--scratch', str(self.root), '--instrumentation-checklist', str(checklist)]
         snapshot = a.snapshot
+        class TrackingStream(io.StringIO):
+            def __init__(self):
+                super().__init__()
+                self.flushes = 0
+
+            def flush(self):
+                self.flushes += 1
+                return super().flush()
+
+        console = TrackingStream()
 
         def replace_after_snapshot(source, destination):
             snapshot(source, destination)
             Path(source).write_bytes(b'replaced after snapshot')
 
         def fake_run(command, **kwargs):
+            self.assertIn('Instrumentation checklist (maintainer-provided; not independently verified):', console.getvalue())
             if '-f' in command and 'zipalign' in str(command[0]):
                 self.assertIn(Path(command[-2]).read_bytes(), [x['profile'].encode() for x in self.entries])
             if 'sign' in command:
@@ -118,15 +135,23 @@ class ReleaseArtifactsTests(unittest.TestCase):
             return types.SimpleNamespace(stdout=('Verified using v2 scheme (APK Signature Scheme v2): true\n'
                                                 'Verified using v3 scheme (APK Signature Scheme v3): true\n'
                                                 'Signer #1 certificate SHA-256 digest: ' + self.cert + '\n'))
+        def fake_prompt(_):
+            self.assertGreater(console.flushes, 0, 'checklist must be flushed before a credential prompt')
+            self.assertIn('"status": "failed"', console.getvalue())
+            return 'test'
         environment = {'MOLLY_KEYSTORE': '/offline/key', 'MOLLY_KEY_ALIAS': 'release',
-                       'MOLLY_KEYSTORE_PASSWORD': 'test', 'MOLLY_KEY_PASSWORD': 'test'}
-        with patch('sys.argv', args), patch.dict('os.environ', environment, clear=True), \
+                       'COLLIE_INSTRUMENTATION_CHECKLIST': str(self.root / 'missing-checklist.json')}
+        with redirect_stdout(console), patch('sys.argv', args), patch.dict('os.environ', environment, clear=True), \
              patch.object(release_sign, 'run', side_effect=fake_run), \
+             patch.object(release_sign.getpass, 'getpass', side_effect=fake_prompt) as prompt, \
              patch.object(a, 'snapshot', side_effect=replace_after_snapshot), \
              patch.object(a, 'check_unsigned'), patch.object(a, 'check_metadata'):
             self.assertEqual(release_sign.main(), 0)
+        self.assertEqual(prompt.call_count, 2)
         result = json.loads((output / 'final-manifest.json').read_text())
         self.assertEqual(len(result['apks']), 5)
+        self.assertEqual(result['instrumentation_checklist'], record)
+        self.assertIn('"status": "failed"', console.getvalue())
         self.assertEqual(result['apks'][0]['unsigned_sha256'], self.entries[0]['sha256'])
         self.assertEqual(result['apks'][0]['signed_sha256'], a.sha256(output / self.entries[0]['file']))
 

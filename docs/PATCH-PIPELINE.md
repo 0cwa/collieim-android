@@ -724,15 +724,33 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
    and any offline verification material beforehand. The current workflow does
    not itself create attestations, so the authenticated artifact digest is
    required.
-3. On the offline signing machine, use the manifest's pinned Android SDK
-   build-tools directory and run:
+3. On the offline signing machine, prepare an `instrumentation.json` checklist
+   for the exact approved commit. Set `status` to `passed`, `failed`, or
+   `not run`. For `passed`, supply evidence identifying the tested profiles,
+   suites and results. For `failed` or `not run`, supply the maintainer's reason
+   for accepting the gap; include evidence if available. The signer displays
+   this maintainer-provided record before signing and copies it into the final
+   manifest. It does not independently verify the evidence. Do not include
+   secrets or private user data in this record, which may be published.
+
+   ```json
+   {"commit":"FULL_APPROVED_COMMIT_SHA", "status":"not run", "evidence":"", "reason":"Document the accepted test gap"}
+   ```
+
+   Use the manifest's pinned Android SDK build-tools directory and run:
 
    ```sh
    python3 tools/patches/release_sign.py \
      --manifest unsigned/manifest.json --manifest-sha256 MANIFEST_SHA256 \
      --approved-commit COMMIT --approved-run RUN_ID --certificate-sha256 CERT_SHA256 \
-     --apks unsigned --output signed --build-tools "$ANDROID_HOME/build-tools/VERSION" --scratch SCRATCH
+     --apks unsigned --output signed --build-tools "$ANDROID_HOME/build-tools/VERSION" --scratch SCRATCH \
+     --instrumentation-checklist instrumentation.json
    ```
+
+   For an existing local wrapper that does not forward this flag, explicitly
+   set `COLLIE_INSTRUMENTATION_CHECKLIST` to the same JSON file before starting
+   the wrapper. The command-line flag takes precedence if both are supplied.
+   A missing record is never treated as a passed run.
 
    The output directory must not already exist. The signer verifies hashes and
    metadata, aligns and signs the APKs, checks the certificate and v2/v3

@@ -302,6 +302,13 @@ def check_next_port(repo, base, head):
     config = json.loads(git(repo, 'show', head + ':molly-build.json'))
     if config.get('signal', {}).get('commit') != NEXT_PORT_SIGNAL or config.get('molly', {}).get('target') != MOLLY:
         raise ValueError('next port profile source pins differ')
+    port = config.get('port')
+    expected_series = 'patches/ports/signal-8.35.1/series'
+    if not isinstance(port, dict) or port.get('series') != expected_series or not git(repo, 'show', head + ':' + expected_series).strip():
+        raise ValueError('next port series is missing or differs')
+    profiles = config.get('profiles')
+    if not isinstance(profiles, dict) or set(profiles) != {'molly-minimal', 'molly-continued', 'molly-foss-continued', 'collie', 'collie-foss'} or any(not isinstance(p, dict) for p in profiles.values()):
+        raise ValueError('next port release profiles are missing or differ')
     return {'scope': 'next-port', 'profile_present': True, 'port_present': True}
 
 

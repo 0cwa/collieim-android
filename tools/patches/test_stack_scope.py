@@ -60,7 +60,10 @@ class ScopeTests(unittest.TestCase):
     def test_next_port_requires_exact_base_projection_and_forest(self):
         projection = {b'README.md'}
         changed = {b'app.txt', b'patches/ports/signal-8.35.1/series'}
-        config = {'signal': {'commit': scope.NEXT_PORT_SIGNAL}, 'molly': {'target': scope.MOLLY}}
+        config = {'signal': {'commit': scope.NEXT_PORT_SIGNAL}, 'molly': {'target': scope.MOLLY},
+                  'port': {'series': 'patches/ports/signal-8.35.1/series'},
+                  'profiles': {name: {} for name in ('molly-minimal', 'molly-continued',
+                              'molly-foss-continued', 'collie', 'collie-foss')}}
         forest = scope.FOREST
         def fake_git(repo, *args, **kwargs):
             if args[:2] == ('rev-parse', '--verify'):
@@ -69,8 +72,10 @@ class ScopeTests(unittest.TestCase):
                 return b'\0'.join(projection if args[-2] == scope.NEXT_PORT_SIGNAL else changed) + b'\0'
             if args[0] == 'rev-parse':
                 return (forest + '\n').encode()
-            if args[0] == 'show':
+            if args[0] == 'show' and args[1].endswith(':molly-build.json'):
                 return json.dumps(config).encode()
+            if args[0] == 'show':
+                return b'initial/one.patch\n'
             raise AssertionError(args)
         with mock.patch.object(scope, 'git', side_effect=fake_git), \
              mock.patch.object(scope.subprocess, 'run', return_value=mock.Mock(returncode=0)):
@@ -86,6 +91,60 @@ class ScopeTests(unittest.TestCase):
             forest = '0' * 40
             with self.assertRaisesRegex(ValueError, 'forest differs'):
                 scope.check_next_port(self.repo, 'base', 'head')
+            forest = scope.FOREST
+            config['port'] = None
+            with self.assertRaisesRegex(ValueError, 'series is missing'):
+                scope.check_next_port(self.repo, 'base', 'head')
+
+    def test_next_port_validates_real_git_trees(self):
+        # A synthetic forest path tests the tree pin without reading the real Molly forest.
+        fixture = self.repo / 'patches/molly/fixture'
+        fixture.parent.mkdir(parents=True)
+        fixture.write_text('fixture\n')
+        (self.repo / 'README.md').write_text('fork readme\n')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'reviewed fork')
+        base = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        self.git('checkout', '-qb', 'signal-source')
+        (self.repo / 'app.txt').write_text('new Signal\n')
+        self.git('add', 'app.txt')
+        self.git('commit', '-qm', 'new Signal')
+        signal = self.git('rev-parse', 'HEAD').strip()
+        self.git('checkout', '-q', '--detach', base)
+        (self.repo / 'app.txt').write_text('new Signal\n')
+        series = self.repo / 'patches/ports/signal-8.35.1/series'
+        series.parent.mkdir(parents=True)
+        series.write_text('initial/change.patch\n')
+        config = {'signal': {'commit': signal}, 'molly': {'target': scope.MOLLY},
+                  'port': {'series': 'patches/ports/signal-8.35.1/series'},
+                  'profiles': {name: {} for name in ('molly-minimal', 'molly-continued',
+                              'molly-foss-continued', 'collie', 'collie-foss')}}
+        (self.repo / 'molly-build.json').write_text(json.dumps(config))
+        self.git('add', '.')
+        self.git('commit', '-qm', 'port')
+        head = self.git('rev-parse', 'HEAD').strip()
+        with mock.patch.object(scope, 'NEXT_PORT_BASE', base), mock.patch.object(scope, 'NEXT_PORT_SIGNAL', signal), \
+             mock.patch.object(scope, 'FOREST', forest):
+            self.assertEqual(scope.check_next_port(self.repo, base, head)['scope'], 'next-port')
+            (self.repo / 'app.txt').write_text('unreviewed\n')
+            self.git('add', 'app.txt'); self.git('commit', '-qm', 'bad source')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            self.commit('tools/patches/unlisted.py', 'unreviewed')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            series.unlink(); self.git('add', '-u'); self.git('commit', '-qm', 'missing series')
+            with self.assertRaises(subprocess.CalledProcessError):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            del config['profiles']['collie']
+            (self.repo / 'molly-build.json').write_text(json.dumps(config))
+            self.git('add', 'molly-build.json'); self.git('commit', '-qm', 'missing profile')
+            with self.assertRaisesRegex(ValueError, 'profiles are missing'):
+                scope.check_next_port(self.repo, base, 'HEAD')
 
     def test_main_forks_scope_cannot_admit_local_evidence_changes(self):
         for path in ('patches/ports/signal-8.33.2/report-evidence/receipts.md',

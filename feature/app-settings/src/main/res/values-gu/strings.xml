@@ -315,6 +315,10 @@
     <string name="DeleteAccountScreen__deleting_your_account_with_username_s_will">યુઝરનેમ \"%1$s\" સાથેનું તમારું એકાઉન્ટ ડિલીટ કરવાથી:</string>
     <!-- Bullet point on the delete account screen, shown in place of the plain one when the account has a username. Placeholder is the username. -->
     <string name="DeleteAccountScreen__delete_your_account_info_and_profile_photo_including_your_username_s">તમારા યુઝરનેમ \"%1$s\" સહિત તમારી એકાઉન્ટ માહિતી અને પ્રોફાઇલ ફોટો ડિલીટ કરો</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, telling the user their account ID and recovery key will be deleted -->
+    <string name="DeleteAccountScreen__delete_your_account_id_and_recovery_key">Delete your account ID and recovery key</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, warning the user that the account can\'t be registered again or restored afterwards -->
+    <string name="DeleteAccountScreen__you_wont_be_able_to_re_register_or_restore_your_account">Prevent you from re-registering or restoring your account</string>
     <!-- Bullet point on the delete account screen warning the user that the deletion is permanent -->
     <string name="DeleteAccountScreen__this_action_can_not_be_undone">આ ક્રિયાને બદલી શકાતી નથી</string>
     <!-- Message of the deletion confirmation dialog, shown when the account has a username. Placeholder is the username. -->
@@ -420,9 +424,9 @@
     <string name="preferences__language">ભાષા</string>
     <string name="preferences__theme">થીમ</string>
     <string name="preferences__system_default">ડિફોલ્ટ સિસ્ટમ</string>
-    <string name="preferences__light_theme">લાઈટ</string>
-    <string name="preferences__dark_theme">ડાર્ક</string>
-    <string name="preferences__chat_color_and_wallpaper">ચેટ કલર &amp; વૉલપેપર</string>
+    <string name="preferences__light_theme">આછો</string>
+    <string name="preferences__dark_theme">ઘાટો</string>
+    <string name="preferences__chat_color_and_wallpaper">ચેટ કલર &amp; વોલપેપર</string>
     <!-- Clickable settings text allowing the user to change the icon visible on their phone\'s home screen. -->
     <string name="preferences__app_icon">ઍપ આઇકન</string>
     <string name="preferences_chats__message_text_size">મેસેજ ફોન્ટ કદ</string>
@@ -466,19 +470,19 @@
     <string name="PhoneNumberPrivacy_nobody">કોઈ નથી</string>
     <string name="arrays__images">ફોટા</string>
     <string name="arrays__audio">ઓડિયો</string>
-    <string name="arrays__video">વિડિયો</string>
+    <string name="arrays__video">વીડિયો</string>
     <string name="arrays__documents">દસ્તાવેજો</string>
     <string name="preferences__data_and_storage">ડેટા અને સ્ટોરેજ</string>
     <string name="preferences_chats__when_using_mobile_data">મોબાઇલ ડેટાનો ઉપયોગ કરતી વખતે</string>
-    <string name="preferences_chats__when_using_wifi">Wi-Fi નો ઉપયોગ કરતી વખતે</string>
+    <string name="preferences_chats__when_using_wifi">વાઇ ફાઇનો ઉપયોગ કરતી વખતે</string>
     <string name="preferences_chats__when_roaming">રોમિંગ કરતી વખતે</string>
-    <string name="preferences_chats__media_auto_download">મીડિયા સ્વત:ડાઉનલોડ</string>
+    <string name="preferences_chats__media_auto_download">મીડિયા ઓટો-ડાઉનલોડ</string>
     <string name="preferences_data_and_storage__manage_storage">મેસેજ સ્ટોરેજ</string>
-    <string name="preferences_data_and_storage__use_less_data_for_calls">કૉલ્સ માટે ઓછો ડેટા વાપરો</string>
-    <string name="preferences_data_and_storage__never">ક્યારેય નહિ</string>
-    <string name="preferences_data_and_storage__wifi_and_mobile_data">WiFi અને મોબાઈલ ડેટા</string>
-    <string name="preferences_data_and_storage__mobile_data_only">માત્ર મોબાઈલ ડેટા</string>
-    <string name="preference_data_and_storage__using_less_data_may_improve_calls_on_bad_networks">ઓછા ડેટાનો ઉપયોગ ખરાબ નેટવર્ક પર કૉલ્સમાં સુધારો કરી શકે છે.</string>
+    <string name="preferences_data_and_storage__use_less_data_for_calls">કૉલ માટે ઓછો ડેટા વાપરો</string>
+    <string name="preferences_data_and_storage__never">ક્યારેય નહીં</string>
+    <string name="preferences_data_and_storage__wifi_and_mobile_data">વાઇ ફાઇ અને મોબાઈલ ડેટા</string>
+    <string name="preferences_data_and_storage__mobile_data_only">માત્ર મોબાઇલ ડેટા</string>
+    <string name="preference_data_and_storage__using_less_data_may_improve_calls_on_bad_networks">ઓછા ડેટાનો ઉપયોગ ખરાબ નેટવર્ક પર કૉલમાં સુધારો કરી શકે છે.</string>
     <string name="preferences_proxy">પ્રોક્સી</string>
     <string name="preferences_use_proxy">પ્રોક્સીનો ઉપયોગ કરો</string>
     <!-- DataAndStorageSettingsFragment -->
@@ -588,4 +592,585 @@
     <string name="NotificationProfileCreated__add_a_schedule_in_settings_to_automate_your_profile">તમારી પ્રોફાઇલને સ્વતઃ ચાલતી રાખવા સેટિંગ્સમાં સમયપત્રક ઉમેઓર.</string>
     <!-- Descriptor text shown to indicate your profile will follow the schedule set during create flow -->
     <string name="NotificationProfileCreated__your_profile_will_turn_on_and_off_automatically_according_to_your_schedule">તમારા સમયપત્રક અનુસાર તમારી પ્રોફાઇલ આપમેળે ચાલુ અને બંધ થશે.</string>
+
+    <!-- PrivacySettingsScreen -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">તમે પાસફ્રેઝ હજુ સુધી સેટ કર્યો નથી!</string>
+    <string name="ApplicationPreferencesActivity_disable">અક્ષમ કરો</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">પાસફ્રેઝ અક્ષમ કરવો છે?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">આ કાયમી ધોરણે Signal અને મેસેજ નોટિફિકેશનને અનલૉક કરશે.</string>
+    <string name="PrivacySettingsFragment__app_security">ઍપની સુરક્ષા</string>
+    <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
+    <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">તાજેતરના લિસ્ટમાં અને ઍપમાંના સ્ક્રીનશૉટને બ્લૉક કરો</string>
+    <string name="PrivacySettingsFragment__blocked">બ્લૉક કર્યા</string>
+    <!-- Alert dialog description to setup screen lock or fingerprint in phone settings -->
+    <string name="PrivacySettingsFragment__cant_enable_description">પેમેન્ટ લૉકનો ઉપયોગ કરવા માટે, તમારે પહેલા તમારા ફોનના સેટિંગમાં સ્ક્રીન લૉક અથવા ફિંગરપ્રિન્ટ ID ચાલુ કરો.</string>
+    <!-- Alert dialog title when payment lock cannot be enabled -->
+    <string name="PrivacySettingsFragment__cant_enable_title">પેમેન્ટ લૉક ચાલુ કરી શકતા નથી</string>
+    <!-- Settings label that shows the number blocked contacts -->
+    <plurals name="PrivacySettingsFragment__d_contacts">
+        <item quantity="one">%1$d સંપર્ક કે ગ્રૂપ</item>
+        <item quantity="other">%1$d સંપર્ક કે ગ્રૂપ</item>
+    </plurals>
+    <string name="PrivacySettingsFragment__default_timer_for_new_changes">નવી ચેટ માટે ડિફોલ્ટ ટાઇમર</string>
+    <!-- Shown in a toast when we can\'t navigate to the user\'s system fingerprint settings -->
+    <string name="PrivacySettingsFragment__failed_to_navigate_to_system_settings">સિસ્ટમ સેટિંગ પર નેવિગેટ કરવામાં નિષ્ફળ</string>
+    <string name="PrivacySettingsFragment__messaging">મેસેજ કરી રહ્યા છીએ</string>
+    <!-- Description for the payment lock toggle in privacy settings -->
+    <string name="PrivacySettingsFragment__payment_lock_require_lock">ફંડ ટ્રાન્સફર કરવા માટે Android સ્ક્રીન લૉક અથવા ફિંગરપ્રિન્ટ આવશ્યક</string>
+    <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">તમે શરૂ કરેલી બધી નવી ચેટ માટે ડિફોલ્ટ ગાયબ થતાં મેસેજ ટાઇમર સેટ કરો.</string>
+    <string name="PrivacySettingsFragment__signal_message_and_calls">Signal મેસેજ અને કૉલ, હંમેશા રિલે કૉલ અને સીલ કરેલ મોકલનાર</string>
+    <!-- Text shown when screen lock is not enabled -->
+    <string name="ScreenLockSettingsFragment__off">બંધ</string>
+    <string name="preferences__auto_lock_signal_after_a_specified_time_interval_of_inactivity">નિષ્ક્રિયતાના ચોક્કસ સમય અંતરાલ પછી ઓટો-લૉક Signal</string>
+    <string name="preferences__change_passphrase">પાસફ્રેઝ બદલો</string>
+    <string name="preferences__change_your_passphrase">તમારો પાસફ્રેઝ બદલો</string>
+    <!-- Legacy preference menu item to enable a passphrase screen lock that is only available to those who have previously had a passphrase -->
+    <string name="preferences__enable_passphrase">પાસફ્રેઝ સ્ક્રીન લૉકને સક્ષમ કરો</string>
+    <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">જો રિડ રિસિપ્ટ અક્ષમ કરવામાં આવે છે, તો તમે અન્ય લોકો પાસેથી વંચાયાની ખાતરી જોઈ શકશો નહીં.</string>
+    <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">જો ટાઇપિંગ સૂચક અક્ષમ છે, તો તમે અન્ય લોકો તરફથી ટાઇપિંગ સૂચક જોશો નહીં.</string>
+    <!-- Legacy preference menu item to choose the interval of inactivity before lockout -->
+    <string name="preferences__inactivity_timeout_interval">નિષ્ક્રિયતાનો સમયસમાપ્તિ અંતરાલ</string>
+    <!-- Legacy preference menu item to enable locking of app after inactivity -->
+    <string name="preferences__inactivity_timeout_passphrase">નિષ્ક્રિયતાનો સમયસમાપ્તિ પાસફ્રેઝ</string>
+    <string name="preferences__incognito_keyboard">ઇનકોગ્નિટો કીબોર્ડ</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__incognito_keyboard_learn_more" translatable="false">https://support.signal.org/hc/articles/360055276112</string> -->
+    <string name="preferences__lock_signal_and_message_notifications_with_a_passphrase">પાસફ્રેઝ સાથે લૉક સ્ક્રીન અને નોટિફિકેશન</string>
+    <!-- Privacy settings payments section description -->
+    <string name="preferences__payment_lock">પેમેન્ટ લૉક</string>
+    <string name="preferences__read_receipts">વંચાયાની ખાતરી</string>
+    <string name="preferences__request_keyboard_to_disable">વ્યક્તિગત કરેલ શિક્ષણને અક્ષમ કરવા માટે કીબોર્ડની વિનંતી કરો</string>
+    <string name="preferences__screen_security">સ્ક્રીન સુરક્ષા</string>
+    <string name="preferences__this_setting_is_not_a_guarantee">આ સેટિંગની ગેરંટી નથી અને તમારું કીબોર્ડ તેને અવગણી શકે છે.</string>
+    <string name="preferences__typing_indicators">ટાઇપિંગ સૂચક</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">તમારો ફોન નંબર કોણ જોઈ શકે અને Signal પર તેના વડે કોણ તમારો સંપર્ક કરી શકે તે પસંદ કરો.</string>
+    <!-- Privacy settings payments section title -->
+    <string name="preferences_app_protection__payments">પેમેન્ટ્સ</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">સ્ક્રીન લૉક વાપરવા માટે આ ડિવાઇસ પર પિન, પેટર્ન અથવા પાસવર્ડ સેટ કરો.</string>
+    <!-- Title of the privacy settings screen -->
+    <string name="PrivacySettingsScreen__privacy">પ્રાઇવસી</string>
+    <!-- Section header in privacy settings for disappearing message defaults -->
+    <string name="PrivacySettingsScreen__disappearing_messages">ગાયબ થતાં મેસેજ</string>
+    <!-- Row in privacy settings that opens advanced privacy settings -->
+    <string name="PrivacySettingsScreen__advanced">વધુ</string>
+    <!-- Confirm button on the dialog explaining payment lock needs a device screen lock; opens the system settings -->
+    <string name="PrivacySettingsScreen__turn_on">ચાલુ કરો</string>
+    <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
+    <string name="PrivacySettingsScreen__not_now">અત્યારે નહીં</string>
+    <!-- Title of the authentication prompt shown when turning off payment lock -->
+    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <!-- Link after the incognito keyboard disclaimer that opens a support article -->
+    <string name="PrivacySettingsScreen__learn_more">વધુ જાણો</string>
+
+    <!-- AppSettingsScreen -->
+    <!-- String alerting user that backup storage limit has been reached -->
+    <string name="AppSettingsFragment__backup_storage_limit_reached">બેકઅપ સ્ટોરેજની મર્યાદા સુધી પહોંચી ગયા છો</string>
+    <!-- String displayed in a snackbar when we successfully copy the backups subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_backups_subscriber_id_to_clipboard">બેકઅપના સબ્સ્ક્રાઇબર ID ક્લિપબોર્ડ પર કૉપિ કર્યા</string>
+    <!-- String displayed in a snackbar when we successfully copy the donations subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_donor_subscriber_id_to_clipboard">દાતાનું સબ્સ્ક્રાઇબર ID ક્લિપબોર્ડ પર કૉપિ કર્યું</string>
+    <!-- String alerting user that backup failed -->
+    <string name="AppSettingsFragment__couldnt_complete_backup">બેકઅપ પૂર્ણ કરી શકાયું નથી</string>
+    <!-- String displayed telling user to invite their friends to Signal -->
+    <string name="AppSettingsFragment__invite_your_friends">તમારા મિત્રોને આમંત્રણ આપો</string>
+    <!-- String alerting user that something is wrong with their backups subscription -->
+    <string name="AppSettingsFragment__renew_your_signal_backups_subscription">તમારું Signal સુરક્ષિત બેકઅપ સબ્સ્ક્રિપ્શન રિન્યૂ કરો</string>
+    <!-- App settings row that opens privacy settings -->
+    <string name="preferences__privacy">પ્રાઇવસી</string>
+    <!-- Title of the top level app settings screen -->
+    <string name="AppSettingsScreen__settings">સેટિંગ્સ</string>
+    <!-- Content description for the back button on the top level app settings screen -->
+    <string name="AppSettingsScreen__go_back">પાછા જાઓ</string>
+    <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
+    <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">તમારું બેકઅપ સબ્સ્ક્રિપ્શન રિડીમ કરી શકાયું નથી</string>
+    <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Signal માટે ફાળો આપો</string>
+    <!-- App settings row that opens internal-only preferences -->
+    <string name="AppSettingsScreen__internal_preferences">આંતરિક પસંદગીઓ</string>
+    <!-- App settings row that opens linked devices -->
+    <string name="AppSettingsScreen__linked_devices">લિંક થયેલ ડિવાઇસ</string>
+    <!-- App settings row that opens notification settings -->
+    <string name="AppSettingsScreen__notifications">નોટિફિકેશન</string>
+    <!-- App settings row that opens payments -->
+    <string name="AppSettingsScreen__payments">પેમેન્ટ્સ</string>
+    <!-- App settings row that opens story settings -->
+    <string name="AppSettingsScreen__stories">સ્ટોરી</string>
+    <!-- App settings row that opens backup settings -->
+    <string name="AppSettingsScreen__backups">બેકઅપ</string>
+
+    <!-- Navigation bar size dialog, in appearance settings -->
+    <!-- Dialog title, displayed below the header image -->
+    <string name="ChooseNavigationBarStyleFragment__navigation_bar_size">નેવિગેશન બારનું કદ</string>
+    <!-- Toggle button label for normal size -->
+    <string name="ChooseNavigationBarStyleFragment__normal">સામાન્ય</string>
+    <!-- Toggle button label for compact size -->
+    <string name="ChooseNavigationBarStyleFragment__compact">સંક્ષિપ્ત</string>
+
+    <!-- Content description for the back button on the chats settings screen -->
+    <string name="ChatsSettingsScreen__go_back">પાછા જાઓ</string>
+
+    <!-- StorageUsageOverview -->
+    <string name="preferences_storage__photos">ફોટા</string>
+    <string name="preferences_storage__videos">વિડિયો</string>
+    <string name="preferences_storage__files">ફાઈલો</string>
+    <string name="preferences_storage__audio">ઓડિયો</string>
+    <!-- Storage usage legend label for the size of the main message database -->
+    <string name="preferences_storage__messages">મેસેજ</string>
+    <!-- Storage usage legend label for the size of downloaded sticker packs -->
+    <string name="preferences_storage__stickers">સ્ટીકર</string>
+    <!-- Storage usage legend label for all remaining app storage, such as other databases, caches and temporary files -->
+    <string name="preferences_storage__other">અન્ય</string>
+    <!-- Shown in place of the total storage size while usage is still being computed -->
+    <string name="preferences_storage__calculating">ગણતરી કરી રહ્યા છે…</string>
+    <string name="preferences_storage__review_storage">સ્ટોરેજ રિવ્યુ કરો</string>
+
+    <!-- TwoFactorVerifyScreen -->
+    <!-- Title of the screens where the user verifies one of their two-factor authentication methods -->
+    <string name="TwoFactorVerifyScreen__two_factor_authentication">બે-પગલાંની ખાતરી</string>
+    <!-- Instructions shown above the list of two-factor methods the user can verify with -->
+    <string name="TwoFactorVerifyScreen__choose_a_method_below_to_verify_your_account">તમારા એકાઉન્ટને વેરિફાય કરવા માટે નીચે એક પદ્ધતિ પસંદ કરો.</string>
+    <!-- Title of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__passkey">પાસકી</string>
+    <!-- Description of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__tap_to_use_your_device_biometrics_or_fido2_passkey">તમારા ડિવાઇસના બાયોમેટ્રિક્સ કે FIDO2 પાસકીનો ઉપયોગ કરવા ટેપ કરો</string>
+    <!-- Title of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__authenticator_app">પ્રમાણીકરણ ઍપ</string>
+    <!-- Description of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__enter_a_one_time_code_generated_by_your_authenticator_app">તમારી પ્રમાણીકરણ ઍપમાંથી જનરેટ થયેલ એક-વખતનો કોડ દાખલ કરો.</string>
+    <!-- Instructions shown above the field where the user enters the code from their authenticator app -->
+    <string name="TwoFactorVerifyScreen__to_continue_enter_the_6_digit_code_from_your_authenticator_app">ચાલુ રાખવા માટે તમારી પ્રમાણીકરણ ઍપમાંથી 6-અંકનો કોડ દાખલ કરો.</string>
+    <!-- Button that leaves the verification flow without verifying anything -->
+    <string name="TwoFactorVerifyScreen__cancel">રદ કરો</string>
+    <!-- Error shown under the code field when the service rejected the code -->
+    <string name="TwoFactorVerifyScreen__incorrect_code">ખોટો કોડ. તમારી પ્રમાણીકરણ ઍપમાં બતાવતા હોય તે કોડ દાખલ કરો.</string>
+    <!-- Error shown when the service could not be reached -->
+    <string name="TwoFactorVerifyScreen__couldnt_reach_signal">Signal સુધી પહોંચી ન શક્યા. તમારું કનેક્શન તપાસો અને ફરીથી પ્રયત્ન કરો.</string>
+    <!-- Dialog shown when verifying with a passkey failed -->
+    <string name="TwoFactorVerifyScreen__something_went_wrong_with_your_passkey">તમારી પાસકી બનાવવામાં કંઈક ખોટું થયું. કૃપા કરીને ફરી પ્રયાસ કરો અથવા અન્ય પદ્ધતિ પસંદ કરો.</string>
+
+    <!-- EditProfileNameScreen -->
+    <!-- Title of the screen for editing your profile name -->
+    <string name="EditProfileNameFragment_your_name">તમારું નામ</string>
+    <!-- Hint for the first name field when editing your profile name -->
+    <string name="EditProfileNameFragment_first_name">પહેલું નામ</string>
+    <!-- Hint for the last name field when editing your profile name -->
+    <string name="EditProfileNameFragment_last_name_optional">છેલ્લું નામ (વૈકલ્પિક)</string>
+    <!-- Button that saves your edited profile name -->
+    <string name="EditProfileNameScreen__save">સેવ કરો</string>
+    <!-- Snackbar shown when your profile name couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameScreen__failed_to_save_due_to_network_issues">નેટવર્ક સમસ્યાઓના કારણે સેવ કરવામાં નિષ્ફળ. પછી ફરી પ્રયાસ કરો.</string>
+
+    <!-- KeepMessagesSettingsScreen -->
+    <string name="preferences__keep_messages">નવા મેસેજ</string>
+    <!-- Option for keeping messages forever when managing storage -->
+    <string name="preferences_storage__forever">હમેશા</string>
+    <string name="preferences_storage__one_year">1 વર્ષ</string>
+    <string name="preferences_storage__six_months">6 મહિના</string>
+    <string name="preferences_storage__thirty_days">30 દિવસો</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">પસંદ કરેલા સમય કરતાં જૂના મેસેજ કાયમ માટે ડિલીટ કરવામાં આવશે.</string>
+    <string name="preferences_storage__delete_older_messages">જૂના મેસેજ ડિલીટ કરવા છે?</string>
+    <string name="preferences_storage__this_will_permanently_delete_all_message_history_and_media">આનાથી તમારા ડિવાઇસમાંથી %1$s પહેલાંની તમામ મેસેજ હિસ્ટ્રી અને મીડિયા કાયમ માટે ડિલીટ થઈ જશે.</string>
+    <!-- Dialog action that confirms deleting older messages -->
+    <string name="preferences_storage__delete">ડિલીટ કરો</string>
+
+    <!-- ChatLengthLimitSettingsScreen -->
+    <string name="preferences__conversation_length_limit">ચેટની લંબાઈ મર્યાદા</string>
+    <plurals name="preferences_storage__s_messages_plural">
+        <item quantity="one">%1$s મેસેજ</item>
+        <item quantity="other">%1$s મેસેજ</item>
+    </plurals>
+    <!-- Option for setting no limit of the length of chat messages -->
+    <string name="preferences_storage__none">કંઈ નહીં</string>
+    <string name="preferences_storage__custom">કસ્ટમ</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">પસંદ કરેલ લંબાઈથી વધુના મેસેજ કાયમ માટે ડિલીટ કરવામાં આવશે.</string>
+    <!-- The body of an alert dialog that is shown when confirming a trim operation. Trimming will delete all but the most recent messages in a chat. The placeholder represents how many messages are kept in each chat. All older messages are deleted. -->
+    <plurals name="preferences_storage__this_will_permanently_trim_all_conversations_to_the_d_most_recent_messages">
+        <item quantity="one">આ તમામ ચેટને સૌથી તાજેતરના મેસેજ માટે કાયમી રીતે ટ્રિમ કરશે.</item>
+        <item quantity="other">આ તમામ ચેટને %1$s સૌથી તાજેતરના મેસેજ માટે કાયમી રીતે ટ્રિમ કરશે.</item>
+    </plurals>
+
+    <!-- EditAboutScreen -->
+    <!-- Title of the screen for editing the about text on your profile -->
+    <string name="EditAboutFragment_about">પરિચય</string>
+    <!-- Placeholder in the about field when it is empty -->
+    <string name="EditAboutFragment_write_a_few_words_about_yourself">તમારા વિશે થોડા શબ્દો લખો…</string>
+    <!-- How many characters of the about text are used, out of the maximum, e.g. 125/140 -->
+    <string name="EditAboutFragment_count">%1$d/%2$d</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_speak_freely">મુક્તપણે બોલો</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_encrypted">એન્ક્રિપ્ટ થયેલ</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_be_kind">દયાળુ બનો</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_coffee_lover">કોફી પ્રેમી</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_free_to_chat">ચેટ કરવા માટે મુક્ત</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_taking_a_break">વિરામ લઈ રહ્યા છે</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_working_on_something_new">કંઈક નવીન પર કામ કરી રહ્યા છીએ</string>
+    <!-- Button that saves your edited about text -->
+    <string name="EditAboutScreen__save">સેવ કરો</string>
+    <!-- Content description for the button that clears both the about text and its emoji -->
+    <string name="EditAboutScreen__clear">દૂર કરવું</string>
+    <!-- Content description for the button that opens the emoji picker for the about text -->
+    <string name="EditAboutScreen__choose_emoji">ઇમોજી પસંદ કરો</string>
+    <!-- Snackbar shown when your about text couldn\'t be saved because of a network problem -->
+    <string name="EditAboutScreen__failed_to_save_due_to_network_issues">નેટવર્ક સમસ્યાઓના કારણે સેવ કરવામાં નિષ્ફળ. પછી ફરી પ્રયાસ કરો.</string>
+
+    <!-- UsernameEditScreen -->
+    <!-- Placeholder text for custom discriminator -->
+    <string name="UsernameEditFragment__00">00</string>
+    <!-- Instructional text at the top of the username edit screen -->
+    <string name="UsernameEditFragment__choose_your_username">તમારું યુઝરનેમ પસંદ કરો</string>
+    <!-- Title of the username screen, and the label of its field -->
+    <string name="UsernameEditFragment_username">યુઝરનેમ</string>
+    <!-- Button that deletes your username -->
+    <string name="UsernameEditFragment_delete">ડિલીટ કરો</string>
+    <!-- Snackbar shown when a username change failed because of a network problem -->
+    <string name="UsernameEditFragment_encountered_a_network_error">નેટવર્ક ભૂલ મળી.</string>
+    <!-- Toast message shown if user exceeds the rate limit for reserving usernames -->
+    <string name="UsernameEditFragment_rate_limit_exceeded_error">ઘણા બધા પ્રયત્નો થઈ ગયા છે, કૃપા કરીને પછીથી ફરી પ્રયત્ન કરો.</string>
+    <!-- Shown when the username someone typed already belongs to someone else -->
+    <string name="UsernameEditFragment_this_username_is_taken">આ યુઝરનેમ લેવાઈ ગયું છે.</string>
+    <!-- Shown when a username has characters that usernames can\'t have -->
+    <string name="UsernameEditFragment_usernames_can_only_include">યુઝરનેમમાં માત્ર a–Z, 0–9 અને અન્ડરસ્કોર શામેલ હોઈ શકે છે.</string>
+    <!-- Shown when a username starts with a digit -->
+    <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">યુઝરનેમ સંખ્યા સાથે શરૂ થઈ શકતા નથી.</string>
+    <!-- Shown when the service rejects a username -->
+    <string name="UsernameEditFragment_username_is_invalid">યુઝરનેમ અમાન્ય છે.</string>
+    <!-- Shown when a username is too short or too long. %1$d is the minimum length and %2$d the maximum -->
+    <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">યુઝરનેમ %1$d અને %2$d અક્ષરોની વચ્ચે હોવા જોઈએ.</string>
+    <!-- Explanation about what usernames provide, ending in a link to learn more. %1$s is that link, UsernameEditScreen__learn_more -->
+    <string name="UsernameEditScreen__usernames_let_others_message">લોકો હવે ફોન નંબરને બદલે તમારા વૈકલ્પિક યુઝરનેમનો ઉપયોગ કરીને તમને મેસેજ કરી શકે છે. યુઝરનેમમાં હંમેશા બે સંખ્યાઓની જોડી હોય છે. %1$s</string>
+    <!-- Displayed when the chosen discriminator is not available for the given nickname -->
+    <string name="UsernameEditFragment__this_username_is_not_available_try_another_number">આ યુઝરનેમ ઉપલબ્ધ નથી, અન્ય નંબર અજમાવી જુઓ.</string>
+    <!-- Displayed when the chosen discriminator is too short -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_minimum_of_d_digits">અમાન્ય યુઝરનેમ, ઓછામાં ઓછા %1$d અંકો દાખલ કરો.</string>
+    <!-- Displayed when the chosen discriminator is too long -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_maximum_of_d_digits">અમાન્ય યુઝરનેમ, વધુમાં વધુ %1$d અંકો દાખલ કરો.</string>
+    <!-- Displayed when the chosen discriminator is 00 -->
+    <string name="UsernameEditFragment__this_number_cant_be_00">આ નંબર 00 ન હોઈ શકે. 1-9ની વચ્ચેનો અંક દાખલ કરો</string>
+    <!-- Displayed when the chosen discriminator starts with 0 and has a length > 2 -->
+    <string name="UsernameEditFragment__this_number_cant_start_with_0">2 થી વધુ અંકો ધરાવતી સંખ્યા 0 થી શરૂ થઈ શકે નહીં</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to recover their username -->
+    <string name="UsernameEditFragment_recovery_dialog_confirmation">તમારું યુઝરનેમ નામ રિકવર કરવાથી તમારો હાલનો QR કોડ અને લિંક ફરીથી સેટ થશે. તમને ખાતરી છે?</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to change their username, even if it resets their link -->
+    <string name="UsernameEditFragment_change_confirmation_message">તમારું યુઝરનેમ નામ બદલવાથી તમારો હાલનો QR કોડ અને લિંક ફરીથી સેટ થશે. તમને ખાતરી છે?</string>
+    <!-- Text for a button in a dialog asking if the user would like to continue the operation of changing their username -->
+    <string name="UsernameEditFragment_continue">ચાલુ રાખો</string>
+    <!-- Button that saves the username you typed -->
+    <string name="UsernameEditScreen__save">સેવ કરો</string>
+    <!-- Link at the end of the explanation of usernames, which opens a support article about them -->
+    <string name="UsernameEditScreen__learn_more">વધુ જાણો</string>
+  <!-- Removed by excludeNonTranslatables <string name="username_support_url" translatable="false">https://support.signal.org/hc/articles/6712070553754</string> -->
+
+    <!-- EditProfileScreen -->
+    <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
+    <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">તમારી પ્રોફાઇલ અને તેમાં કરેલા ફેરફારો તમે મેસેજ કરો છો તે લોકોને, સંપર્કો અને ગ્રૂપને દેખાશે.</string>
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">સિગ્નલ ને અપડેટ કરો</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Signalનું આ વર્ઝન સમાપ્ત થઈ ગયું છે. Signalનો ઉપયોગ ચાલુ રાખવા માટે હમણાં જ અપડેટ કરો.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">અપડેટ</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">ડિવાઇસ રજીસ્ટર થયેલું નથી</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">આ ડિવાઇસ હવે રજીસ્ટર થયેલું નથી. તમારા અકાઉન્ટમાં ફેરફાર કરવા માટે ફરીથી રજીસ્ટરી કરો.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">ફરીથી રજીસ્ટર</string>
+    <!-- Snackbar shown when your new avatar couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameFragment_failed_to_save_due_to_network_issues_try_again_later">નેટવર્ક સમસ્યાઓના કારણે સેવ કરવામાં નિષ્ફળ. પછી ફરી પ્રયાસ કરો.</string>
+    <!-- Snackbar message after network failure while trying to delete username -->
+    <string name="ManageProfileFragment__couldnt_delete_username">યુઝરનેમ ડિલીટ કરી શક્યા નહીં. પછી ફરી પ્રયાસ કરો.</string>
+    <!-- The title of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_title">યુઝરનેમ ડિલીટ કરવું છે?</string>
+    <!-- The body of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_body">"આનાથી તમારું યુઝરનેમ દૂર થઈ જશે અને તમારો QR કોડ અને લિંક અક્ષમ થઈ જશે. %1$s અન્ય લોકો દ્વારા દાવો કરવા માટે ઉપલબ્ધ હશે. તમને ખાતરી છે?"</string>
+    <!-- Button below your avatar on the profile screen that lets you change it -->
+    <string name="ManageProfileFragment__edit_photo">ફોટો સંપાદિત કરો</string>
+    <!-- Title of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_title">તમારું યુઝરનેમ શેર કરો</string>
+    <!-- Body of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_body">તમારો વિશિષ્ટ QR કોડ કે લિંક શેર કરીને અન્ય લોકોને તમારી સાથે ચેટ શરૂ કરવા દો.</string>
+    <!-- Snackbar message after creating username -->
+    <string name="ManageProfileFragment__username_created">યુઝરનેમ બનાવ્યું</string>
+    <!-- Snackbar message after successful deletion of username -->
+    <string name="ManageProfileFragment__username_deleted">યુઝરનેમ ડિલીટ કર્યું</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc, shown when you have no username -->
+    <string name="ManageProfileFragment__username_footer_no_username">લોકો હવે ફોન નંબરને બદલે એક વૈકલ્પિક યુઝરનેમનો ઉપયોગ કરીને તમને મેસેજ કરી શકે છે. યુઝરનેમમાં એક અનન્ય QR કોડ અને લિંક હોય છે જેને તમે મિત્રો સાથે શેર કરી શકો છો.</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
+    <string name="ManageProfileFragment__your_username">તમારું યુઝરનેમ, QR કોડ અને લિંક તમારી પ્રોફાઇલ પર દેખાતા નથી. તમારું યુઝરનેમ ફક્ત એવા લોકો સાથે જ શેર કરો જેમના પર તમને વિશ્વાસ હોય.</string>
+    <!-- Row on the profile screen that opens your about, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_about">વિશે</string>
+    <!-- Snackbar shown when the photo you chose for your avatar couldn\'t be read -->
+    <string name="ManageProfileFragment_failed_to_set_avatar">અવતાર સેટ કરવામાં નિષ્ફળ</string>
+    <!-- Text for a button that will take the user to the screen to manage their username link and QR code -->
+    <string name="ManageProfileFragment_link_setting_text">QR કોડ અથવા લિંક</string>
+    <!-- Row on the profile screen that opens your name, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_profile_name">પ્રોફાઇલ નામ</string>
+    <!-- Row on the profile screen that opens your username, shown when you don\'t have one -->
+    <string name="ManageProfileFragment_username">યુઝરનેમ</string>
+    <!-- Option to open username editor displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__edit_username">યુઝરનેમમાં ફેરફાર કરો</string>
+    <!-- Option to delete username displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__delete_username">યુઝરનેમ ડિલીટ કરો</string>
+    <!-- Title of the screen showing your own profile -->
+    <string name="EditProfileScreen__profile">પ્રોફાઇલ</string>
+    <!-- Content description for your avatar on the profile screen, which opens it full screen -->
+    <string name="EditProfileScreen__set_avatar">અવતાર સેટ કરો</string>
+    <!-- Row on the profile screen that opens your badges -->
+    <string name="EditProfileScreen__badges">બૅજ</string>
+    <!-- Button in the dialog confirming that you want your username deleted -->
+    <string name="EditProfileScreen__delete">ડિલીટ કરો</string>
+    <!-- Content description for the button that closes the tip about your username link -->
+    <string name="EditProfileScreen__close_tip">બંધ કરો</string>
+    <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Signalને સમર્થન આપીને તમારી પ્રોફાઇલ માટે બૅજ મેળવો.</string>
+    <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal એક બિનલાભકારી છે જેમાં કોઈ જાહેરાતકારો કે રોકાણકારો નથી, અને તે ફક્ત તમારા જેવા લોકો દ્વારા જ સમર્થિત છે.</string>
+    <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">સસ્ટેનર બનો</string>
+
+    <!-- BadgesOverviewScreen -->
+    <!-- Title of the screen listing the badges you\'ve unlocked -->
+    <string name="BadgesOverviewScreen__badges">બૅજ</string>
+    <!-- Section header above the grid of badges you\'ve unlocked -->
+    <string name="BadgesOverviewFragment__my_badges">મારા બૅજ</string>
+    <!-- Toggle for whether your badges are shown on your profile -->
+    <string name="BadgesOverviewFragment__display_badges_on_profile">પ્રોફાઇલ પર બૅજ દર્શાવો</string>
+    <!-- Row that opens the screen for choosing which badge is shown on your profile; the badge\'s name is shown beneath it -->
+    <string name="BadgesOverviewScreen__featured_badge">ફીચર્ડ બૅજ</string>
+    <!-- Snackbar shown when showing or hiding your badges on your profile couldn\'t be saved -->
+    <string name="BadgesOverviewFragment__failed_to_update_profile">પ્રોફાઇલ અપડેટ કરવામાં નિષ્ફળ</string>
+
+    <!-- SelectFeaturedBadgeScreen -->
+    <!-- Title of the screen for choosing which of your badges shows on your profile -->
+    <string name="SelectFeaturedBadgeScreen__featured_badge">ફીચર્ડ બૅજ</string>
+    <!-- Section header above the grid of badges you can choose to feature on your profile -->
+    <string name="SelectFeaturedBadgeFragment__select_a_badge">એક બૅજ પસંદ કરો</string>
+    <!-- Button that saves the badge you chose to feature on your profile -->
+    <string name="SelectFeaturedBadgeScreen__save">સેવ કરો</string>
+    <!-- Snackbar shown when the badge you chose to feature couldn\'t be saved to your profile -->
+    <string name="SelectFeaturedBadgeFragment__failed_to_update_profile">પ્રોફાઇલ અપડેટ કરવામાં નિષ્ફળ</string>
+
+    <!-- UsernameLinkShareSheet -->
+    <!-- Explanatory text at the top of a bottom sheet describing how username links work -->
+    <string name="UsernameLinkShareBottomSheet_title">આ લિંક ધરાવતી કોઈ પણ વ્યક્તિ તમારું યુઝરનેમ જોઈ શકે છે અને તમારી સાથે ચેટ શરૂ કરી શકે છે. તમને ભરોસો હોય તેવા લોકો સાથે જ તેને શેર કરો.</string>
+    <!-- A button label for a button that, when pressed, will copy your username link to the clipboard -->
+    <string name="UsernameLinkShareBottomSheet_copy_link">લિંક કૉપિ કરો</string>
+    <!-- A button label for a button that, when pressed, will open a share sheet for sharing your username link -->
+    <string name="UsernameLinkShareBottomSheet_share">શેર કરો</string>
+
+    <!-- UsernameLinkSettingsScreen -->
+    <!-- Label for a tab that shows a screen to view your username QR code -->
+    <string name="UsernameLinkSettings_code_tab_name">કોડ</string>
+    <!-- Label for a tab that shows a screen to scan a QR code -->
+    <string name="UsernameLinkSettings_scan_tab_name">સ્કેન કરો</string>
+    <!-- Content of a toast that will show after the username link is copied to the clipboard -->
+    <string name="UsernameLinkSettings_link_copied_toast">લિંક કૉપિ કરી</string>
+    <!-- Content of a toast that will show after the username is copied to the clipboard -->
+    <string name="UsernameLinkSettings_username_copied_toast">યુઝરનેમ કૉપી કર્યું</string>
+    <!-- Title of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_title">QR કોડ ફરીથી સેટ કરવો છે?</string>
+    <!-- Body of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_body">જો તમે તમારો QR કોડ ફરીથી સેટ કરો છો, તો તમારો હાલનો QR કોડ અને લિંક હવે કામ કરશે નહીં.</string>
+    <!-- Label for the confirmation button on a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_confirm_button">ફરીથી સેટ કરો</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because you had no internet. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_unavailable">તમારી પાસે નેટવર્ક એક્સેસ નથી. તમારી લિંક ફરીથી સેટ કરવામાં આવી ન હતી. પછી ફરી પ્રયાસ કરો.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of a transient network issue. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_error">તમારી લિંકને ફરીથી સેટ કરવાનો પ્રયાસ કરતી વખતે નેટવર્ક ભૂલ આવી. પછી ફરી પ્રયાસ કરો.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of an unknown error. -->
+    <string name="UsernameLinkSettings_reset_link_result_unknown_error">તમારી લિંકને ફરીથી સેટ કરવાનો પ્રયાસ કરતી વખતે અનપેક્ષિત ભૂલ આવી. પછી ફરી પ્રયાસ કરો.</string>
+    <!-- Body of a dialog that is displayed when we successfully reset you username link. -->
+    <string name="UsernameLinkSettings_reset_link_result_success">તમારો QR કોડ અને લિંક ફરીથી સેટ કરવામાં આવી છે અને એક નવો QR કોડ અને લિંક બનાવવામાં આવી છે.</string>
+    <!-- Description text for QR code and links in the username link settings -->
+    <string name="UsernameLinkSettings_qr_description">તમારો QR કોડ અને લિંક ફક્ત એવા લોકો સાથે જ શેર કરો જેમના પર તમને વિશ્વાસ હોય. જ્યારે શેર કરવામાં આવે ત્યારે અન્ય લોકો તમારું યુઝરનેમ જોઈ શકશે અને તમારી સાથે ચેટ શરૂ કરી શકશે.</string>
+    <!-- Button label for a button that will reset your username and give you a new link -->
+    <string name="UsernameLinkSettings_reset_button_label">ફરીથી સેટ કરો</string>
+    <!-- Button label for the link button in the username link settings -->
+    <string name="UsernameLinkSettings_link_button_label">લિંક</string>
+    <!-- Button label for the share button in the username link settings -->
+    <string name="UsernameLinkSettings_share_button_label">શેર કરો</string>
+    <!-- Button label for the color selector button in the username link settings -->
+    <string name="UsernameLinkSettings_color_button_label">રંગ</string>
+    <!-- Body of a dialog that is displayed when we failed to read a username QR code. -->
+    <string name="UsernameLinkSettings_qr_result_invalid">QR કોડ અમાન્ય હતો.</string>
+    <!-- Body of a dialog that is displayed when we experienced a network error when looking up a username. -->
+    <string name="UsernameLinkSettings_qr_result_network_error">નેટવર્ક ભૂલ આવી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</string>
+    <!-- Dialog title shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_qr_code_not_found">QR કોડ મળ્યો નથી</string>
+    <!-- Dialog message shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_try_scanning_another_image_containing_a_signal_qr_code">Signal QR કોડ ધરાવતી બીજી ઇમેજને સ્કેન કરવાનો પ્રયાસ કરો.</string>
+    <!-- Body of a dialog that is displayed when the username we looked up could not be found. -->
+    <string name="UsernameLinkSettings_qr_result_not_found">યુઝરનેમ %1$s ધરાવતા વપરાશકર્તા શોધી શકાયા નથી.</string>
+    <!-- Description text shown underneath the username QR code scanner -->
+    <string name="UsernameLinkSettings_qr_scan_description">તમારા સંપર્કના ડિવાઇસ પર QR કોડ સ્કેન કરો.</string>
+    <!-- Shown when the QR code you scanned leads to a username link that no one has -->
+    <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">આ ઉપયોગકર્તા મળી શક્યા નહીં.</string>
+    <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">QR કોડ સ્કેન કરવા માટે, કૅમેરા પર Signal ઍક્સેસની મંજૂરી આપો.</string>
+    <!-- Button on the scan tab that asks for the camera permission -->
+    <string name="UsernameLinkSettingsScreen__allow_access">ઍક્સેસ આપો</string>
+    <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
+    <string name="UsernameLinkSettingsScreen__camera_needed">QR કોડ સ્કેન કરવા માટે Signalને કૅમેરા ઍક્સેસની જરૂર છે</string>
+
+    <!-- ManageStorageSettingsScreen -->
+    <string name="preferences__storage">સ્ટોરેજ</string>
+    <string name="preferences_storage__storage_usage">સ્ટોરેજ વપરાશ</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Signal સ્ટોરેજ</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Signal સ્ટોરેજ ઑપ્ટિમાઇઝ કરો</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">ન વપરાયેલ મીડિયાને ઓફલોડ કરવામાં આવશે, પરંતુ તમારા બેકઅપમાંથી ગમે ત્યારે ડાઉનલોડ કરી શકાય છે.</string>
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">ચેટની મર્યાદા</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">લિંક કરેલા ડિવાઇસ પર મર્યાદા લાગુ કરવું</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">જ્યારે ચાલુ કરેલ હોય, ત્યારે ચેટ મર્યાદા તમારા લિંક કરેલા ડિવાઇસમાંથી પણ મેસેજ ડિલીટ કરશે.</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">મેસેજની હિસ્ટ્રી ડિલીટ કરો</string>
+    <!-- Dialog title shown when selecting delete message history from manage storage -->
+    <string name="preferences_storage__delete_message_history">મેસેજની હિસ્ટ્રી ડિલીટ કરવી છે?</string>
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device">આનાથી તમારા ડિવાઇસમાંથી તમામ મેસેજ હિસ્ટ્રી અને મીડિયા કાયમ માટે ડિલીટ થઈ જશે.</string>
+    <!-- Dialog message warning about delete chat message history will delete everything everywhere including linked devices -->
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device_linked_device">આમ કરવાથી આ ડિવાઇસ અને કોઈ પણ લિંક કરેલા ડિવાઇસમાંથી તમામ મેસેજ હિસ્ટ્રી અને મીડિયા કાયમ માટે ડિલીટ થઈ જશે.</string>
+    <string name="preferences_storage__are_you_sure_you_want_to_delete_all_message_history">તમે ખરેખર આ બધી મેસેજ હિસ્ટ્રી ડિલીટ કરવા માંગો છો?</string>
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone">તમામ મેસેજ હિસ્ટ્રી કાયમ માટે દૂર કરવામાં આવશે. આ ક્રિયાને પૂર્વવત્ કરી શકાશે નહીં.</string>
+    <!-- Secondary warning dialog message about deleting all chat message history from everything everywhere including linked devices -->
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone_linked_device">બધી મેસેજ હિસ્ટ્રી આ ડિવાઇસ પરથી કાયમ માટે ડિલીટ કરવામાં આવશે. આ ક્રિયાને પૂર્વવત કરી શકાશે નહીં.</string>
+    <string name="preferences_storage__delete_all_now">બધુ હમણાં ડિલીટ કરો</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">સ્ટોરેજ ઑપ્ટિમાઇઝેશનનો ઉપયોગ માત્ર Signal સુરક્ષિત બેકઅપના પેઇડ ટીયર સાથે જ થઈ શકે છે. તમારું બેકઅપ સબ્સ્ક્રિપ્શન હજી પ્રક્રિયામાં છે અને હજી સક્રિય નથી. કૃપા કરીને પછી ફરી પ્રયાસ કરો.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">તમારા ડિવાઇસ પરના બેકઅપ પરથી મીડિયા દૂર થઈ જશે</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal સ્ટોરેજ ઑપ્ટિમાઇઝ કરો\" ચાલુ કરવાથી તમારા ડિવાઇસ પરથી જૂના મીડિયા ઓફલોડ થઈ જશે. તમે તેને કોઈ પણ સમયે ફરીથી ડાઉનલોડ કરી શકો છો. તે તમારા ડિવાઇસ પરના બેકઅપ પરથી જૂના મીડિયા પણ દૂર કરશે.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">ચાલુ કરો</string>
+
+    <!-- MutedNotificationsScreen -->
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body">આ ચેટ મ્યૂટ કરેલ હોય ત્યારે કૉલ શરૂ કરવામાં આવે ત્યારે રિંગ વગાડો અથવા સૂચિત કરો.</string>
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body_global">મ્યૂટ કરેલી ચેટમાં કૉલ શરૂ કરવામાં આવે ત્યારે રિંગ વગાડો અથવા સૂચિત કરો.</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body">આ ચેટ મ્યૂટ હોય ત્યારે તમારો ઉલ્લેખ થાય ત્યારે સૂચના આપો.</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body_global">તમને મ્યૂટ કરેલી ચેટમાં ઉલ્લેખ કરવામાં આવે ત્યારે સૂચિત કરો.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body">આ ચેટ મ્યૂટ હોય ત્યારે કોઈ તમારા મેસેજનો જવાબ આપે ત્યારે સૂચિત કરો.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body_global">મ્યૂટ કરેલી ચેટમાં કોઈ તમારા મેસેજનો જવાબ આપે ત્યારે સૂચિત કરો.</string>
+    <!-- Header to describe screen that shows while muted settings -->
+    <string name="MutedNotificationsFragment__while">જ્યારે મ્યૂટ હોય</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsScreen__calls">કૉલ્સ</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsScreen__mentions">ઉલ્લેખો</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsScreen__replies">જવાબો</string>
+
+    <!-- NotificationsSettingsScreen -->
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">પીકર ખોલવામાં નિષ્ફળ.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">નોટિફિકેશનને સક્ષમ કરવા માટે, Signalને તેમને પ્રદર્શિત કરવાની પરવાનગીની જરૂર છે.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">ચાલુ કરો</string>
+    <string name="NotificationsSettingsFragment__calls">કૉલ્સ</string>
+    <string name="NotificationsSettingsFragment__contact_joins_signal">સંપર્ક Signal સાથે જોડાય છે</string>
+    <!-- Notification preference summary text -->
+    <string name="NotificationsSettingsFragment__create_a_profile_to_receive_notifications_only_from_people_and_groups_you_choose">એવી પ્રોફાઇલ બનાવો જેમાં તમે નક્કી કરો તે જ લોકો અને ગ્રુપમાંથી સૂચનાઓ મેળવશો.</string>
+    <!-- Notification body to get notified when someone joins Signal -->
+    <string name="NotificationsSettingsFragment__notify_contact">જ્યારે કોઈ ફોન સંપર્ક Signalમાં જોડાય ત્યારે નોટિફિકેશન બતાવો</string>
+    <!-- Option to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset">નોટિફિકેશન સેટિંગ્સ ફરીથી સેટ કરો</string>
+    <!-- Dialog to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_body">બધી ચેટ માટે બધી નોટિફિકેશન સેટિંગ્સને ડિફોલ્ટ પર રીસેટ કરીએ?</string>
+    <!-- Confirmation button to reset dialog -->
+    <string name="NotificationsSettingsFragment__reset_confirm">ફરીથી સેટ કરો</string>
+    <!-- Option body to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_notifications">તમારી ચેટ માટે કસ્ટમ સેટિંગ સહિત નોટિફિકેશન સેટિંગ્સને ફરીથી સેટ કરો</string>
+    <!-- Notification header for sounds -->
+    <string name="NotificationsSettingsFragment__sounds">અવાજો</string>
+    <string name="NotificationsSettingsFragment__unknown_ringtone">અજાણી રીંગટોન</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="NotificationsSettingsScreen__calls">કૉલ્સ</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="NotificationsSettingsScreen__mentions">ઉલ્લેખો</string>
+    <!-- Notification preference header -->
+    <string name="NotificationsSettingsScreen__notification_profiles">નોટિફિકેશન પ્રોફાઇલ</string>
+    <string name="NotificationsSettingsScreen__notifications">નોટિફિકેશન</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="NotificationsSettingsScreen__replies">જવાબો</string>
+    <string name="NotificationsSettingsScreen__silent">મૌન</string>
+    <!-- Option in settings to turn on unread reminders -->
+    <string name="NotificationsSettingsScreen__unread_reminders">ન વાંચેલ રિમાઇન્ડર</string>
+    <string name="arrays__default">ડિફોલ્ટ</string>
+    <string name="arrays__high">ઉચ્ચ</string>
+    <!-- Setting title that represent an abstract priority to assign to notifications as the max/highest priority a notification can be within the system. -->
+    <string name="arrays__max">મહત્તમ</string>
+    <string name="arrays__name_and_message">નામ અને મેસેજ</string>
+    <string name="arrays__name_only">માત્ર નામ</string>
+    <string name="arrays__no_name_or_message">નામ અથવા મેસેજ નથી</string>
+    <string name="preferences__blue">વાદળી</string>
+    <!-- Preference header for call notifications -->
+    <string name="preferences__call_notifications">કૉલ નોટિફિકેશન</string>
+    <string name="preferences__change_sound_and_vibration">અવાજ અને કંપન બદલો</string>
+    <string name="preferences__customize">કસ્ટમાઇઝ કરો</string>
+    <string name="preferences__cyan">સ્યાન</string>
+    <!-- Preference menu item to use the default sound for notifications -->
+    <string name="preferences__default">ડિફોલ્ટ</string>
+    <!-- Preference item menu to enable notifications -->
+    <string name="preferences__enable_notifications">નોટિફિકેશન સક્ષમ કરો</string>
+    <string name="preferences__fast">ઝડપી</string>
+    <string name="preferences__five_times">પાંચ વાર</string>
+    <string name="preferences__green">લીલું</string>
+    <string name="preferences__led_color">LED રંગ</string>
+    <string name="preferences__magenta">મેજેન્ટા</string>
+    <string name="preferences__never">ક્યારેય નહિ</string>
+    <string name="preferences__normal">સામાન્ય</string>
+    <string name="preferences__one_time">એક વાર</string>
+    <string name="preferences__orange">નારંગી</string>
+    <string name="preferences__pref_led_blink_title">LED બ્લિંક પેટર્ન</string>
+    <string name="preferences__red">લાલ</string>
+    <string name="preferences__repeat_alerts">ચેતવણીઓનું પુનરાવર્તન કરો</string>
+    <string name="preferences__slow">ધીમું</string>
+    <!-- Preference menu item to control the sound of notifications -->
+    <string name="preferences__sound">અવાજ</string>
+    <string name="preferences__ten_times">દસ વાર</string>
+    <string name="preferences__three_times">ત્રણ વાર</string>
+    <string name="preferences__two_times">બે વાર</string>
+    <string name="preferences__vibrate">વાઈબ્રેટ</string>
+    <string name="preferences__white">સફેદ</string>
+    <string name="preferences_notifications__in_chat_sounds">ઇન-ચેટ અવાજો</string>
+    <!-- Body option in settings to turn on reaction notifications    -->
+    <string name="preferences_notifications__notify_reaction">તમે મોકલો તે મેસેજની પ્રતિક્રિયાઓ માટે નોટિફિકેશન બતાવો</string>
+    <!-- Body option to turn on unread reminders -->
+    <string name="preferences_notifications__notify_unread">મ્યૂટ કરેલી ચેટમાં વાંચ્યા વગરના મેસેજ હોય ત્યારે ક્યારેક ક્યારેક સૂચિત કરો</string>
+    <!-- Option in settings that will provide a shortcut to notification system settings to control the priority of Signal notifications -->
+    <string name="preferences_notifications__priority">પ્રાથમિકતા</string>
+    <!-- Option in settings to turn on reaction notifications -->
+    <string name="preferences_notifications__reaction">પ્રતિક્રિયા નોટિફિકેશન</string>
+    <string name="preferences_notifications__ringtone">રીંગટોન</string>
+    <string name="preferences_notifications__show">બતાવો</string>
+    <!-- Option in settings to trouble shoot delayed notifications -->
+    <string name="preferences_notifications__troubleshoot">નોટિફિકેશનનું મુશ્કેલીનિવારણ કરો</string>
+    <!-- Preference item to set notification settings when chats are muted -->
+    <string name="preferences_notifications__while_muted">જ્યારે મ્યૂટ હોય</string>
+
+    <!-- SelectRecipientsScreen -->
+    <!-- Call to action button on contact picker for adding to profile -->
+    <string name="SelectRecipientsFragment__add">ઉમેરો</string>
+    <!-- Title for add recipients to notification profile screen in create flow -->
+    <string name="SelectRecipientsScreen__allowed_notifications">મંજૂર સૂચનાઓ</string>
 </resources>

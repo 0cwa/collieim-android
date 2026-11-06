@@ -18,6 +18,14 @@ import org.signal.libsignal.protocol.IdentityKey
 import org.signal.libsignal.protocol.IdentityKeyPair
 import org.signal.libsignal.protocol.ecc.ECPrivateKey
 import org.signal.libsignal.protocol.util.Medium
+import org.signal.storage.keyvalue.KeyValueStore
+import org.signal.storage.keyvalue.LegacySharedPrefs
+import org.signal.storage.keyvalue.SignalStoreValues
+import org.signal.storage.keyvalue.booleanValue
+import org.signal.storage.keyvalue.integerValue
+import org.signal.storage.keyvalue.longValue
+import org.signal.storage.keyvalue.nullableBlobValue
+import org.signal.storage.keyvalue.stringValue
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.crypto.MasterCipher
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil
@@ -89,6 +97,7 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
 
     private const val KEY_HAS_LINKED_DEVICES = "account.has_linked_devices"
     private const val KEY_HAS_INACTIVE_PRIMARY_DEVICE_ALERT = "account.has_inactive_primary_device_alert"
+    private const val KEY_HAS_TWO_FACTOR_METHODS = "account.has_two_factor_methods"
     private const val KEY_NOT_SYNCED_ROTATED_SELF_PROFILE_KEY = "account.not_synced_rotated_self_profile_key"
 
     private const val KEY_VERIFICATION_CODE_REQUESTED_AT = "account.verification_code_requested_at"
@@ -127,18 +136,19 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
 
   public override fun onFirstEverAppLaunch() = Unit
 
-  public override fun getKeysToIncludeInBackup(): List<String> {
-    return listOf(
-      KEY_ACI_IDENTITY_PUBLIC_KEY,
-      KEY_ACI_IDENTITY_PRIVATE_KEY,
-      KEY_PNI_IDENTITY_PUBLIC_KEY,
-      KEY_PNI_IDENTITY_PRIVATE_KEY,
-      KEY_USERNAME,
-      KEY_USERNAME_LINK_ENTROPY,
-      KEY_USERNAME_LINK_SERVER_ID,
-      KEY_ACCOUNT_ENTROPY_POOL
-    )
-  }
+  override val keysToIncludeInBackup: List<String>
+    get() {
+      return listOf(
+        KEY_ACI_IDENTITY_PUBLIC_KEY,
+        KEY_ACI_IDENTITY_PRIVATE_KEY,
+        KEY_PNI_IDENTITY_PUBLIC_KEY,
+        KEY_PNI_IDENTITY_PRIVATE_KEY,
+        KEY_USERNAME,
+        KEY_USERNAME_LINK_ENTROPY,
+        KEY_USERNAME_LINK_SERVER_ID,
+        KEY_ACCOUNT_ENTROPY_POOL
+      )
+    }
 
   val accountEntropyPool: AccountEntropyPool
     get() {
@@ -304,8 +314,8 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
     get() {
       require(store.containsKey(KEY_ACI_IDENTITY_PUBLIC_KEY)) { "Not yet set!" }
       return IdentityKeyPair(
-        IdentityKey(getBlob(KEY_ACI_IDENTITY_PUBLIC_KEY, null)),
-        ECPrivateKey(getBlob(KEY_ACI_IDENTITY_PRIVATE_KEY, null))
+        IdentityKey(getNonNullBlob(KEY_ACI_IDENTITY_PUBLIC_KEY)),
+        ECPrivateKey(getNonNullBlob(KEY_ACI_IDENTITY_PRIVATE_KEY))
       )
     }
 
@@ -314,8 +324,8 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
     get() {
       require(store.containsKey(KEY_PNI_IDENTITY_PUBLIC_KEY)) { "Not yet set!" }
       return IdentityKeyPair(
-        IdentityKey(getBlob(KEY_PNI_IDENTITY_PUBLIC_KEY, null)),
-        ECPrivateKey(getBlob(KEY_PNI_IDENTITY_PRIVATE_KEY, null))
+        IdentityKey(getNonNullBlob(KEY_PNI_IDENTITY_PUBLIC_KEY)),
+        ECPrivateKey(getNonNullBlob(KEY_PNI_IDENTITY_PRIVATE_KEY))
       )
     }
 
@@ -577,6 +587,9 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
 
   @get:JvmName("hasInactivePrimaryDeviceAlert")
   var hasInactivePrimaryDeviceAlert: Boolean by booleanValue(KEY_HAS_INACTIVE_PRIMARY_DEVICE_ALERT, false)
+
+  /** Whether the account had at least one two-factor method the last time anything checked with the service. Only phone-numberless accounts have them. */
+  var hasTwoFactorMethods: Boolean by booleanValue(KEY_HAS_TWO_FACTOR_METHODS, false)
 
   /** The local user's full username (nickname.discriminator), if set. */
   var username: String?

@@ -30,10 +30,12 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import org.signal.appsettings.R
+import org.signal.appsettings.appSettingsScreen
 import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dialogs
@@ -74,6 +76,7 @@ fun PasskeySetupScreen(
         modifier = Modifier
           .weight(1f)
           .verticalScroll(rememberScrollState())
+          .appSettingsScreen()
           .testTag(PasskeySetupTestTags.SCROLLER)
       ) {
         Image(
@@ -117,7 +120,7 @@ fun PasskeySetupScreen(
           contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         modifier = Modifier
-          .fillMaxWidth()
+          .appSettingsScreen()
           .padding(horizontal = 40.dp, vertical = 16.dp)
           .testTag(PasskeySetupTestTags.BUTTON_SET_UP)
       ) {
@@ -156,7 +159,7 @@ private fun Description(
         append(stringResource(R.string.PasskeySetupScreen__learn_more))
       }
     },
-    style = MaterialTheme.typography.bodyLarge,
+    style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto),
     color = MaterialTheme.colorScheme.onSurfaceVariant,
     textAlign = TextAlign.Center,
     modifier = modifier.testTag(PasskeySetupTestTags.LINK_LEARN_MORE)

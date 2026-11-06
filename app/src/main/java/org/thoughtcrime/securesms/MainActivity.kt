@@ -22,6 +22,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -75,6 +80,7 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.signal.appsettings.twofactorverify.TwoFactorVerifyMethod
 import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.ui.NavigationType
 import org.signal.core.ui.compose.Snackbars
@@ -115,6 +121,9 @@ import org.thoughtcrime.securesms.components.compose.ConnectivityWarningBottomSh
 import org.thoughtcrime.securesms.components.compose.DeviceSpecificNotificationBottomSheet
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity.Companion.manageSubscriptions
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
+import org.thoughtcrime.securesms.components.settings.app.account.signallogin.verify.SignalLoginVerifyActivity
+import org.thoughtcrime.securesms.components.settings.app.account.twofactor.verify.TwoFactorVerifyActivity
 import org.thoughtcrime.securesms.components.settings.app.notifications.manual.NotificationProfileSelectionFragment
 import org.thoughtcrime.securesms.components.settings.app.subscription.GooglePayComponent
 import org.thoughtcrime.securesms.components.settings.app.subscription.GooglePayRepository
@@ -165,7 +174,7 @@ import org.thoughtcrime.securesms.net.DeviceTransferBlockingInterceptor
 import org.thoughtcrime.securesms.notifications.VitalsViewModel
 import org.thoughtcrime.securesms.notifications.profiles.NotificationProfile
 import org.thoughtcrime.securesms.notifications.profiles.NotificationProfiles
-import org.thoughtcrime.securesms.profiles.manage.UsernameEditFragment
+import org.thoughtcrime.securesms.profiles.manage.username.UsernameEditFragment
 import org.thoughtcrime.securesms.service.BackupMediaRestoreService
 import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.starred.StarredMessagesActivity
@@ -576,12 +585,18 @@ class MainActivity :
     }
 
     Row(modifier = modifier.fillMaxSize()) {
-      if (navigationType == NavigationType.RAIL && mainToolbarState.mode != MainToolbarMode.SEARCH) {
-        MainNavigationRail(
-          state = mainNavigationState,
-          mainFloatingActionButtonsCallback = mainBottomChromeCallback,
-          onDestinationSelected = mainNavigationCallback
-        )
+      if (navigationType == NavigationType.RAIL) {
+        AnimatedVisibility(
+          visible = mainToolbarState.mode != MainToolbarMode.SEARCH,
+          enter = expandHorizontally(expandFrom = Alignment.Start) + fadeIn(),
+          exit = shrinkHorizontally(shrinkTowards = Alignment.Start) + fadeOut()
+        ) {
+          MainNavigationRail(
+            state = mainNavigationState,
+            mainFloatingActionButtonsCallback = mainBottomChromeCallback,
+            onDestinationSelected = mainNavigationCallback
+          )
+        }
       }
 
       Column(
@@ -774,6 +789,38 @@ class MainActivity :
 
     if (requestCode == AppSettingsActivity.REQUEST_CODE_UPGRADE_LOCAL_BACKUPS) {
       mainNavigationViewModel.onEvent(MainNavigationEvents.MegaphoneSnoozed(Megaphones.Event.USE_NEW_ON_DEVICE_BACKUPS))
+    }
+
+    if (resultCode == RESULT_OK && requestCode == TwoFactorVerifyActivity.REQUEST_CODE) {
+      val message = when (TwoFactorVerifyActivity.getVerifiedMethod(data)) {
+        TwoFactorVerifyMethod.AUTHENTICATOR_APP -> getString(R.string.TwoFactorReminderMegaphone__thanks_for_confirming_your_authenticator_app)
+        TwoFactorVerifyMethod.PASSKEY -> getString(R.string.TwoFactorReminderMegaphone__thanks_for_confirming_your_passkey)
+        null -> null
+      }
+
+      if (message != null) {
+        mainNavigationViewModel.snackbarRegistry.emit(
+          SnackbarState(
+            message = message,
+            duration = Snackbars.Duration.SHORT,
+            hostKey = MainSnackbarHostKey.MainChrome
+          )
+        )
+      }
+
+      mainNavigationViewModel.onEvent(MainNavigationEvents.MegaphoneSnoozed(Megaphones.Event.TWO_FACTOR_REMINDER))
+    }
+
+    if (resultCode == RESULT_OK && requestCode == SignalLoginVerifyActivity.REQUEST_CODE) {
+      mainNavigationViewModel.snackbarRegistry.emit(
+        SnackbarState(
+          message = getString(R.string.SignalLoginReminderMegaphone__thanks_for_confirming_your_signal_login),
+          duration = Snackbars.Duration.SHORT,
+          hostKey = MainSnackbarHostKey.MainChrome
+        )
+      )
+
+      mainNavigationViewModel.onEvent(MainNavigationEvents.MegaphoneSnoozed(Megaphones.Event.SIGNAL_LOGIN_REMINDER))
     }
   }
 
@@ -1018,6 +1065,14 @@ class MainActivity :
 
     override fun onSettingsClick() {
       openSettings.launch(AppSettingsActivity.home(this@MainActivity))
+    }
+
+    override fun onDonateClick() {
+      if (AppSettingsRepository.likelyCanManageDonations()) {
+        openSettings.launch(AppSettingsActivity.manageSubscriptions(this@MainActivity))
+      } else {
+        CommunicationActions.openBrowserLink(this@MainActivity, getString(R.string.donate_url))
+      }
     }
 
     override fun onNotificationProfileClick() {

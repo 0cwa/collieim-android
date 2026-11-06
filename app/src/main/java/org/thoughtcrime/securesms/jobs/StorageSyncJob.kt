@@ -11,6 +11,7 @@ import org.signal.core.util.logging.Log
 import org.signal.libsignal.protocol.InvalidKeyException
 import org.signal.network.service.StorageServiceService
 import org.signal.network.service.StorageServiceService.ManifestIfDifferentVersionResult
+import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.database.ChatFolderTables.ChatFolderTable
 import org.thoughtcrime.securesms.database.IssueReporter
 import org.thoughtcrime.securesms.database.NotificationProfileTables
@@ -23,6 +24,7 @@ import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.jobs.protos.StorageSyncJobData
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.manifest
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.storage.AccountRecordProcessor
@@ -41,10 +43,7 @@ import org.thoughtcrime.securesms.storage.StorageSyncModels
 import org.thoughtcrime.securesms.storage.StorageSyncValidations
 import org.thoughtcrime.securesms.storage.StoryDistributionListRecordProcessor
 import org.thoughtcrime.securesms.transport.RetryLaterException
-import org.thoughtcrime.securesms.util.RemoteConfig
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException
-import org.whispersystems.signalservice.api.messages.multidevice.RequestMessage
-import org.whispersystems.signalservice.api.messages.multidevice.SignalServiceSyncMessage
 import org.whispersystems.signalservice.api.storage.SignalAccountRecord
 import org.whispersystems.signalservice.api.storage.SignalCallLinkRecord
 import org.whispersystems.signalservice.api.storage.SignalChatFolderRecord
@@ -262,7 +261,7 @@ class StorageSyncJob private constructor(parameters: Parameters, private var loc
           .enqueue()
       } else {
         Log.w(TAG, "Failed to decrypt remote storage! Requesting new keys from primary.", e)
-        AppDependencies.signalServiceMessageSender.sendSyncMessage(SignalServiceSyncMessage.forRequest(RequestMessage.forType(SyncMessage.Request.Type.KEYS)))
+        AppDependencies.jobManager.add(MultiDeviceSyncRequestJob(SyncMessage.Request.Type.KEYS))
       }
     }
   }

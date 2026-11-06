@@ -82,6 +82,8 @@ import org.signal.registration.NetworkController.SetRegistrationLockError
 import org.signal.registration.NetworkController.VerifyBackupKeyError
 import org.signal.registration.ReceiptCredentialResult
 import org.signal.registration.proto.RegistrationProvisionMessage
+import org.signal.remoteconfig.RemoteConfig
+import org.signal.storage.keyvalue.PhoneNumberPrivacyValues
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.RestoreTimestampResult
@@ -90,6 +92,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.gcm.FcmUtil
 import org.thoughtcrime.securesms.jobs.MultiDeviceProfileContentUpdateJob
 import org.thoughtcrime.securesms.jobs.MultiDeviceProfileKeyUpdateJob
+import org.thoughtcrime.securesms.jobs.MultiDeviceSyncRequestJob
 import org.thoughtcrime.securesms.jobs.ProfileUploadJob
 import org.thoughtcrime.securesms.jobs.RefreshAttributesJob
 import org.thoughtcrime.securesms.jobs.ResetSvrGuessCountJob
@@ -108,11 +111,8 @@ import org.thoughtcrime.securesms.registration.ui.restore.pniIdentityKeyPair
 import org.thoughtcrime.securesms.registration.util.RegistrationUtil
 import org.thoughtcrime.securesms.registration.viewmodel.SvrAuthCredentialSet
 import org.thoughtcrime.securesms.util.Environment
-import org.thoughtcrime.securesms.util.RemoteConfig
 import org.whispersystems.signalservice.api.SvrNoDataException
 import org.whispersystems.signalservice.api.link.TransferArchiveResponse
-import org.whispersystems.signalservice.api.messages.multidevice.RequestMessage
-import org.whispersystems.signalservice.api.messages.multidevice.SignalServiceSyncMessage
 import org.whispersystems.signalservice.api.provisioning.ProvisioningSocket
 import org.whispersystems.signalservice.api.svr.SecureValueRecovery.BackupResponse
 import org.whispersystems.signalservice.internal.crypto.SecondaryProvisioningCipher
@@ -479,9 +479,9 @@ class AppRegistrationNetworkController(
     }
 
     SignalStore.phoneNumberPrivacy.phoneNumberDiscoverabilityMode = if (discoverableByPhoneNumber) {
-      org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues.PhoneNumberDiscoverabilityMode.DISCOVERABLE
+      PhoneNumberPrivacyValues.PhoneNumberDiscoverabilityMode.DISCOVERABLE
     } else {
-      org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues.PhoneNumberDiscoverabilityMode.NOT_DISCOVERABLE
+      PhoneNumberPrivacyValues.PhoneNumberDiscoverabilityMode.NOT_DISCOVERABLE
     }
 
     AppDependencies.jobManager
@@ -782,10 +782,9 @@ class AppRegistrationNetworkController(
   }
 
   override suspend fun onLinkedDeviceRegistered() = withContext(Dispatchers.IO) {
-    try {
-      RemoteConfig.refreshSync()
-    } catch (e: IOException) {
-      Log.w(TAG, "[onLinkedDeviceRegistered] Failed to refresh remote config.", e)
+    val remoteConfigResult = RemoteConfig.refresh()
+    if (remoteConfigResult !is RequestResult.Success) {
+      Log.w(TAG, "[onLinkedDeviceRegistered] Failed to refresh remote config. Result: $remoteConfigResult")
     }
 
     for (type in SyncMessage.Request.Type.entries) {
@@ -793,35 +792,8 @@ class AppRegistrationNetworkController(
         continue
       }
 
-      Log.i(TAG, "[onLinkedDeviceRegistered] Sending sync request for $type")
-      try {
-        retryWithBackoff {
-          AppDependencies.signalServiceMessageSender.sendSyncMessage(
-            SignalServiceSyncMessage.forRequest(RequestMessage(SyncMessage.Request(type = type)))
-          )
-        }
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        Log.w(TAG, "[onLinkedDeviceRegistered] Failed to send sync request for $type after retries; continuing.", e)
-      }
-    }
-  }
-
-  private suspend fun <T> retryWithBackoff(maxAttempts: Int = 3, initialDelay: Duration = 1.seconds, block: suspend () -> T): T {
-    var attempt = 0
-    while (true) {
-      try {
-        return block()
-      } catch (e: IOException) {
-        attempt++
-        if (attempt >= maxAttempts) {
-          throw e
-        }
-        val backoff = initialDelay * attempt
-        Log.w(TAG, "[retryWithBackoff] Attempt $attempt failed; retrying in $backoff.", e)
-        delay(backoff)
-      }
+      Log.i(TAG, "[onLinkedDeviceRegistered] Enqueuing sync request for $type")
+      AppDependencies.jobManager.add(MultiDeviceSyncRequestJob(type))
     }
   }
 

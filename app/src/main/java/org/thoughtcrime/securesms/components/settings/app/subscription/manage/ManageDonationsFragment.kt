@@ -353,7 +353,7 @@ class ManageDonationsFragment :
   private fun DSLConfiguration.presentBadges() {
     clickPref(
       title = DSLSettingsText.from(R.string.ManageDonationsFragment__badges),
-      icon = DSLSettingsIcon.from(R.drawable.symbol_badge_multi_24),
+      icon = DSLSettingsIcon.from(CoreUiR.drawable.symbol_badge_multi_24),
       onClick = {
         findNavController().safeNavigate(ManageDonationsFragmentDirections.actionManageDonationsFragmentToManageBadges())
       }
@@ -379,7 +379,7 @@ class ManageDonationsFragment :
 
     externalLinkPref(
       title = DSLSettingsText.from(R.string.ManageDonationsFragment__subscription_faq),
-      icon = DSLSettingsIcon.from(R.drawable.symbol_help_24),
+      icon = DSLSettingsIcon.from(CoreUiR.drawable.symbol_help_24),
       linkId = R.string.donate_faq_url
     )
   }

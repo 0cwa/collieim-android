@@ -5,10 +5,7 @@
 
 package org.signal.appsettings.chats
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -20,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import kotlinx.coroutines.launch
+import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
 import org.signal.appsettings.backups.BackupCreationProgress
 import org.signal.appsettings.backups.BackupCreationProgressRow
@@ -71,20 +69,19 @@ fun ChatsSettingsScreen(
     }
   )
 
-  val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-
   Scaffolds.Settings(
     title = stringResource(R.string.preferences_chats__chats),
-    onNavigationClick = { backPressedDispatcher?.onBackPressed() },
+    onNavigationClick = { onEvent(ChatsSettingsEvents.NavigateBackClicked) },
     navigationIcon = SignalIcons.ArrowStart.imageVector,
+    navigationContentDescription = stringResource(R.string.ChatsSettingsScreen__go_back),
     snackbarHost = {
       Snackbars.Host(snackbarHostState)
-    }
+    },
+    expandableTitle = true
   ) { paddingValues ->
-    LazyColumn(
-      modifier = Modifier
-        .padding(paddingValues)
-        .testTag(ChatsSettingsTestTags.SCROLLER)
+    AppSettingsLazyColumn(
+      scaffoldPadding = paddingValues,
+      modifier = Modifier.testTag(ChatsSettingsTestTags.SCROLLER)
     ) {
       item {
         Rows.ToggleRow(
@@ -236,19 +233,21 @@ fun ChatsSettingsScreen(
 @Composable
 private fun ChatsSettingsScreenPreview() {
   ChatsSettingsScreen(
-    state = ChatsSettingsState(
-      generateLinkPreviews = true,
-      useAddressBook = true,
-      keepMutedChatsArchived = true,
-      useSystemEmoji = false,
-      enterKeySends = false,
-      localBackupsEnabled = true,
-      folderCount = 1,
-      userUnregistered = false,
-      clientDeprecated = false,
-      isPlaintextExportEnabled = true,
-      plaintextExportProgress = BackupCreationProgress.Idle
-    ),
+    state = chatsSettingsPreviewState,
     onEvent = {}
   )
 }
+
+internal val chatsSettingsPreviewState = ChatsSettingsState(
+  generateLinkPreviews = true,
+  useAddressBook = true,
+  keepMutedChatsArchived = true,
+  useSystemEmoji = false,
+  enterKeySends = false,
+  localBackupsEnabled = true,
+  folderCount = 1,
+  userUnregistered = false,
+  clientDeprecated = false,
+  isPlaintextExportEnabled = true,
+  plaintextExportProgress = BackupCreationProgress.Idle
+)

@@ -315,6 +315,10 @@
     <string name="DeleteAccountScreen__deleting_your_account_with_username_s_will">Vymazanie účtu s používateľským menom „%1$s“ spôsobí:</string>
     <!-- Bullet point on the delete account screen, shown in place of the plain one when the account has a username. Placeholder is the username. -->
     <string name="DeleteAccountScreen__delete_your_account_info_and_profile_photo_including_your_username_s">Vymazanie informácií o vašom účte a profilovej fotky vrátane používateľského mena „%1$s“</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, telling the user their account ID and recovery key will be deleted -->
+    <string name="DeleteAccountScreen__delete_your_account_id_and_recovery_key">Delete your account ID and recovery key</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, warning the user that the account can\'t be registered again or restored afterwards -->
+    <string name="DeleteAccountScreen__you_wont_be_able_to_re_register_or_restore_your_account">Prevent you from re-registering or restoring your account</string>
     <!-- Bullet point on the delete account screen warning the user that the deletion is permanent -->
     <string name="DeleteAccountScreen__this_action_can_not_be_undone">Tento krok sa nedá vrátiť späť</string>
     <!-- Message of the deletion confirmation dialog, shown when the account has a username. Placeholder is the username. -->
@@ -590,4 +594,591 @@
     <string name="NotificationProfileCreated__add_a_schedule_in_settings_to_automate_your_profile">Pridajte plán v nastaveniach na automatizáciu svojho profilu.</string>
     <!-- Descriptor text shown to indicate your profile will follow the schedule set during create flow -->
     <string name="NotificationProfileCreated__your_profile_will_turn_on_and_off_automatically_according_to_your_schedule">Váš profil sa automaticky zapne a vypne podľa vášho plánu.</string>
+
+    <!-- PrivacySettingsScreen -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Ešte ste si nenastavili prístupovú frázu!</string>
+    <string name="ApplicationPreferencesActivity_disable">Vypnúť</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">Vypnúť prístupovú frázu?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Toto natrvalo odomkne Signal a upozornenia na správy.</string>
+    <string name="PrivacySettingsFragment__app_security">Zabezpečenie aplikácie</string>
+    <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
+    <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Zakázať vytváranie snímok obrazovky v aplikácii a zozname nedávnych konverzácií</string>
+    <string name="PrivacySettingsFragment__blocked">Blokované</string>
+    <!-- Alert dialog description to setup screen lock or fingerprint in phone settings -->
+    <string name="PrivacySettingsFragment__cant_enable_description">Ak chcete použiť platobný zámok, musíte najskôr povoliť zámok obrazovky alebo ID odtlačku prsta v nastaveniach telefónu.</string>
+    <!-- Alert dialog title when payment lock cannot be enabled -->
+    <string name="PrivacySettingsFragment__cant_enable_title">Nie je možné aktivovať platobný zámok</string>
+    <!-- Settings label that shows the number blocked contacts -->
+    <plurals name="PrivacySettingsFragment__d_contacts">
+        <item quantity="one">%1$d kontakt alebo skupina</item>
+        <item quantity="few">%1$d kontakty alebo skupiny</item>
+        <item quantity="many">%1$d kontaktu alebo skupiny</item>
+        <item quantity="other">%1$d kontaktov alebo skupín</item>
+    </plurals>
+    <string name="PrivacySettingsFragment__default_timer_for_new_changes">Predvolený časovač pre nové čety</string>
+    <!-- Shown in a toast when we can\'t navigate to the user\'s system fingerprint settings -->
+    <string name="PrivacySettingsFragment__failed_to_navigate_to_system_settings">Nepodarilo sa prejsť na systémové nastavenia</string>
+    <string name="PrivacySettingsFragment__messaging">Odosielanie správ</string>
+    <!-- Description for the payment lock toggle in privacy settings -->
+    <string name="PrivacySettingsFragment__payment_lock_require_lock">Na prevod prostriedkov vyžadovať zámok obrazovky Android alebo odtlačok prsta</string>
+    <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">Nastavte predvolený časovač miznutia správ pre všetky nové čety, ktoré začnete.</string>
+    <string name="PrivacySettingsFragment__signal_message_and_calls">Správy a hovory Signal, vždy presmerovať hovory a šifrovaný odosielateľ</string>
+    <!-- Text shown when screen lock is not enabled -->
+    <string name="ScreenLockSettingsFragment__off">Vypnuté</string>
+    <string name="preferences__auto_lock_signal_after_a_specified_time_interval_of_inactivity">Automaticky zamknúť Signal po určenej dobe bez aktivity</string>
+    <string name="preferences__change_passphrase">Zmeniť prístupovú frázu</string>
+    <string name="preferences__change_your_passphrase">Zmeňte si prístupovú frázu</string>
+    <!-- Legacy preference menu item to enable a passphrase screen lock that is only available to those who have previously had a passphrase -->
+    <string name="preferences__enable_passphrase">Zamknúť obrazovku prístupovou frázou</string>
+    <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">Keď máte vypnuté potvrdenia o prečítaní, nebudete dostávať potvrdenia ani od ostatných.</string>
+    <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">Keď sú indikátory písania vypnuté, nezobrazia sa Vám ani indikátory iných.</string>
+    <!-- Legacy preference menu item to choose the interval of inactivity before lockout -->
+    <string name="preferences__inactivity_timeout_interval">Interval doby bez aktivity</string>
+    <!-- Legacy preference menu item to enable locking of app after inactivity -->
+    <string name="preferences__inactivity_timeout_passphrase">Prístupová fráza po neaktivite</string>
+    <string name="preferences__incognito_keyboard">Inkognito klávesnica</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__incognito_keyboard_learn_more" translatable="false">https://support.signal.org/hc/articles/360055276112</string> -->
+    <string name="preferences__lock_signal_and_message_notifications_with_a_passphrase">Uzamknúť obrazovku a upozornenia pomocou prístupovej frázy</string>
+    <!-- Privacy settings payments section description -->
+    <string name="preferences__payment_lock">Platobný zámok</string>
+    <string name="preferences__read_receipts">Potvrdenia o prečítaní</string>
+    <string name="preferences__request_keyboard_to_disable">Požiadať klávesnicu aby sa neprispôsobovala učením.</string>
+    <string name="preferences__screen_security">Zabezpečenie obrazovky</string>
+    <string name="preferences__this_setting_is_not_a_guarantee">Toto nastavenie nie je zárukou a vaša klávesnica ho môže ignorovať.</string>
+    <string name="preferences__typing_indicators">Indikátory písania</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">Vyberte si, kto môže vidieť vaše telefónne číslo a kto vás môže pomocou neho kontaktovať v službe Signal.</string>
+    <!-- Privacy settings payments section title -->
+    <string name="preferences_app_protection__payments">Platby</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">Ak chcete použiť zámok obrazovky, nastavte na tomto zariadení PIN kód, vzor alebo heslo.</string>
+    <!-- Title of the privacy settings screen -->
+    <string name="PrivacySettingsScreen__privacy">Súkromie</string>
+    <!-- Section header in privacy settings for disappearing message defaults -->
+    <string name="PrivacySettingsScreen__disappearing_messages">Miznúce správy</string>
+    <!-- Row in privacy settings that opens advanced privacy settings -->
+    <string name="PrivacySettingsScreen__advanced">Rozšírené</string>
+    <!-- Confirm button on the dialog explaining payment lock needs a device screen lock; opens the system settings -->
+    <string name="PrivacySettingsScreen__turn_on">Zapnúť</string>
+    <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
+    <string name="PrivacySettingsScreen__not_now">Teraz nie</string>
+    <!-- Title of the authentication prompt shown when turning off payment lock -->
+    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <!-- Link after the incognito keyboard disclaimer that opens a support article -->
+    <string name="PrivacySettingsScreen__learn_more">Zistiť viac</string>
+
+    <!-- AppSettingsScreen -->
+    <!-- String alerting user that backup storage limit has been reached -->
+    <string name="AppSettingsFragment__backup_storage_limit_reached">Limit úložného priestoru bol dosiahnutý</string>
+    <!-- String displayed in a snackbar when we successfully copy the backups subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_backups_subscriber_id_to_clipboard">ID predplatiteľa záloh bolo skopírované do schránky</string>
+    <!-- String displayed in a snackbar when we successfully copy the donations subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_donor_subscriber_id_to_clipboard">ID predplatiteľa daru bolo skopírované do schránky</string>
+    <!-- String alerting user that backup failed -->
+    <string name="AppSettingsFragment__couldnt_complete_backup">Zálohovanie sa nepodarilo dokončiť</string>
+    <!-- String displayed telling user to invite their friends to Signal -->
+    <string name="AppSettingsFragment__invite_your_friends">Pozvite vašich priateľov</string>
+    <!-- String alerting user that something is wrong with their backups subscription -->
+    <string name="AppSettingsFragment__renew_your_signal_backups_subscription">Obnovte si predplatné bezpečných Záloh Signal</string>
+    <!-- App settings row that opens privacy settings -->
+    <string name="preferences__privacy">Súkromie</string>
+    <!-- Title of the top level app settings screen -->
+    <string name="AppSettingsScreen__settings">Nastavenia</string>
+    <!-- Content description for the back button on the top level app settings screen -->
+    <string name="AppSettingsScreen__go_back">Ísť naspäť</string>
+    <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
+    <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Vaše predplatné záloh sa nepodarilo uplatniť</string>
+    <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Prispieť na Signal</string>
+    <!-- App settings row that opens internal-only preferences -->
+    <string name="AppSettingsScreen__internal_preferences">Interné nastavenia</string>
+    <!-- App settings row that opens linked devices -->
+    <string name="AppSettingsScreen__linked_devices">Prepojené zariadenia</string>
+    <!-- App settings row that opens notification settings -->
+    <string name="AppSettingsScreen__notifications">Upozornenia</string>
+    <!-- App settings row that opens payments -->
+    <string name="AppSettingsScreen__payments">Platby</string>
+    <!-- App settings row that opens story settings -->
+    <string name="AppSettingsScreen__stories">Príbehy</string>
+    <!-- App settings row that opens backup settings -->
+    <string name="AppSettingsScreen__backups">Zálohy</string>
+
+    <!-- Navigation bar size dialog, in appearance settings -->
+    <!-- Dialog title, displayed below the header image -->
+    <string name="ChooseNavigationBarStyleFragment__navigation_bar_size">Veľkosť navigačnej lišty</string>
+    <!-- Toggle button label for normal size -->
+    <string name="ChooseNavigationBarStyleFragment__normal">Normálna</string>
+    <!-- Toggle button label for compact size -->
+    <string name="ChooseNavigationBarStyleFragment__compact">Kompaktná</string>
+
+    <!-- Content description for the back button on the chats settings screen -->
+    <string name="ChatsSettingsScreen__go_back">Ísť naspäť</string>
+
+    <!-- StorageUsageOverview -->
+    <string name="preferences_storage__photos">Fotografie</string>
+    <string name="preferences_storage__videos">Videá</string>
+    <string name="preferences_storage__files">Súbory</string>
+    <string name="preferences_storage__audio">Zvuk</string>
+    <!-- Storage usage legend label for the size of the main message database -->
+    <string name="preferences_storage__messages">Správy</string>
+    <!-- Storage usage legend label for the size of downloaded sticker packs -->
+    <string name="preferences_storage__stickers">Nálepky</string>
+    <!-- Storage usage legend label for all remaining app storage, such as other databases, caches and temporary files -->
+    <string name="preferences_storage__other">Iné</string>
+    <!-- Shown in place of the total storage size while usage is still being computed -->
+    <string name="preferences_storage__calculating">Výpočet…</string>
+    <string name="preferences_storage__review_storage">Skontrolovať úložisko</string>
+
+    <!-- TwoFactorVerifyScreen -->
+    <!-- Title of the screens where the user verifies one of their two-factor authentication methods -->
+    <string name="TwoFactorVerifyScreen__two_factor_authentication">Dvojfaktorová autentifikácia</string>
+    <!-- Instructions shown above the list of two-factor methods the user can verify with -->
+    <string name="TwoFactorVerifyScreen__choose_a_method_below_to_verify_your_account">Nižšie vyberte spôsob overenia účtu.</string>
+    <!-- Title of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__passkey">Prístupový kľúč</string>
+    <!-- Description of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__tap_to_use_your_device_biometrics_or_fido2_passkey">Ťuknutím použijete biometrické údaje zariadenia alebo prístupový kľúč FIDO2</string>
+    <!-- Title of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__authenticator_app">Aplikácia na autentifikáciu</string>
+    <!-- Description of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__enter_a_one_time_code_generated_by_your_authenticator_app">Zadajte jednorazový kód vygenerovaný vašou aplikáciou na autentifikáciu</string>
+    <!-- Instructions shown above the field where the user enters the code from their authenticator app -->
+    <string name="TwoFactorVerifyScreen__to_continue_enter_the_6_digit_code_from_your_authenticator_app">Ak chcete pokračovať, zadajte 6-miestny kód z aplikácie na autentifikáciu.</string>
+    <!-- Button that leaves the verification flow without verifying anything -->
+    <string name="TwoFactorVerifyScreen__cancel">Zrušiť</string>
+    <!-- Error shown under the code field when the service rejected the code -->
+    <string name="TwoFactorVerifyScreen__incorrect_code">Nesprávny kód. Zadajte kód zobrazený vo vašej aplikácii na autentifikáciu.</string>
+    <!-- Error shown when the service could not be reached -->
+    <string name="TwoFactorVerifyScreen__couldnt_reach_signal">Nepodarilo sa spojiť so Signalom. Skontrolujte svoje pripojenie a skúste to znova.</string>
+    <!-- Dialog shown when verifying with a passkey failed -->
+    <string name="TwoFactorVerifyScreen__something_went_wrong_with_your_passkey">Vyskytol sa problém s vaším prístupovým kľúčom. Skúste to znova alebo vyberte iný spôsob.</string>
+
+    <!-- EditProfileNameScreen -->
+    <!-- Title of the screen for editing your profile name -->
+    <string name="EditProfileNameFragment_your_name">Vaše meno</string>
+    <!-- Hint for the first name field when editing your profile name -->
+    <string name="EditProfileNameFragment_first_name">Krstné meno</string>
+    <!-- Hint for the last name field when editing your profile name -->
+    <string name="EditProfileNameFragment_last_name_optional">Priezvisko (nepovinné)</string>
+    <!-- Button that saves your edited profile name -->
+    <string name="EditProfileNameScreen__save">Uložiť</string>
+    <!-- Snackbar shown when your profile name couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameScreen__failed_to_save_due_to_network_issues">Kvôli chybe v sieti uloženie zlyhalo. Skúste znovu neskôr.</string>
+
+    <!-- KeepMessagesSettingsScreen -->
+    <string name="preferences__keep_messages">Ponechať správy</string>
+    <!-- Option for keeping messages forever when managing storage -->
+    <string name="preferences_storage__forever">Navždy</string>
+    <string name="preferences_storage__one_year">1 rok</string>
+    <string name="preferences_storage__six_months">6 mesiacov</string>
+    <string name="preferences_storage__thirty_days">30 dní</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Správy staršie ako zvolený čas budú natrvalo vymazané.</string>
+    <string name="preferences_storage__delete_older_messages">Vymazať staršie správy?</string>
+    <string name="preferences_storage__this_will_permanently_delete_all_message_history_and_media">Týmto sa z vášho zariadenia natrvalo vymažú všetky správy a médiá staršie ako %1$s.</string>
+    <!-- Dialog action that confirms deleting older messages -->
+    <string name="preferences_storage__delete">Vymazať</string>
+
+    <!-- ChatLengthLimitSettingsScreen -->
+    <string name="preferences__conversation_length_limit">Obmedzenie dĺžky četu</string>
+    <plurals name="preferences_storage__s_messages_plural">
+        <item quantity="one">%1$s správa</item>
+        <item quantity="few">%1$s správy</item>
+        <item quantity="many">%1$s správy</item>
+        <item quantity="other">%1$s správ</item>
+    </plurals>
+    <!-- Option for setting no limit of the length of chat messages -->
+    <string name="preferences_storage__none">Žiadny</string>
+    <string name="preferences_storage__custom">Vlastné</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Správy presahujúce zvolenú dĺžku budú natrvalo vymazané.</string>
+    <!-- The body of an alert dialog that is shown when confirming a trim operation. Trimming will delete all but the most recent messages in a chat. The placeholder represents how many messages are kept in each chat. All older messages are deleted. -->
+    <plurals name="preferences_storage__this_will_permanently_trim_all_conversations_to_the_d_most_recent_messages">
+        <item quantity="one">Týmto sa natrvalo skrátia všetky čety na poslednú správu.</item>
+        <item quantity="few">Týmto sa natrvalo skrátia všetky čety na %1$s posledné správy.</item>
+        <item quantity="many">Týmto sa natrvalo skrátia všetky čety na %1$s poslednej správy.</item>
+        <item quantity="other">Týmto sa natrvalo skrátia všetky čety na %1$s posledných správ.</item>
+    </plurals>
+
+    <!-- EditAboutScreen -->
+    <!-- Title of the screen for editing the about text on your profile -->
+    <string name="EditAboutFragment_about">Detaily</string>
+    <!-- Placeholder in the about field when it is empty -->
+    <string name="EditAboutFragment_write_a_few_words_about_yourself">Napíšte pár slov o sebe…</string>
+    <!-- How many characters of the about text are used, out of the maximum, e.g. 125/140 -->
+    <string name="EditAboutFragment_count">%1$d/%2$d</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_speak_freely">Hovorte slobodne</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_encrypted">Šifrované</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_be_kind">Buďte milí</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_coffee_lover">Milovník kávy</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_free_to_chat">Môžeme početovať</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_taking_a_break">Dávam si prestávku</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_working_on_something_new">Pracujem na niečom novom</string>
+    <!-- Button that saves your edited about text -->
+    <string name="EditAboutScreen__save">Uložiť</string>
+    <!-- Content description for the button that clears both the about text and its emoji -->
+    <string name="EditAboutScreen__clear">Zmazať</string>
+    <!-- Content description for the button that opens the emoji picker for the about text -->
+    <string name="EditAboutScreen__choose_emoji">Vybrať emoji</string>
+    <!-- Snackbar shown when your about text couldn\'t be saved because of a network problem -->
+    <string name="EditAboutScreen__failed_to_save_due_to_network_issues">Kvôli chybe v sieti uloženie zlyhalo. Skúste znovu neskôr.</string>
+
+    <!-- UsernameEditScreen -->
+    <!-- Placeholder text for custom discriminator -->
+    <string name="UsernameEditFragment__00">00</string>
+    <!-- Instructional text at the top of the username edit screen -->
+    <string name="UsernameEditFragment__choose_your_username">Vyberte si používateľské meno</string>
+    <!-- Title of the username screen, and the label of its field -->
+    <string name="UsernameEditFragment_username">Používateľské meno</string>
+    <!-- Button that deletes your username -->
+    <string name="UsernameEditFragment_delete">Vymazať</string>
+    <!-- Snackbar shown when a username change failed because of a network problem -->
+    <string name="UsernameEditFragment_encountered_a_network_error">Vyskytla sa chyba siete.</string>
+    <!-- Toast message shown if user exceeds the rate limit for reserving usernames -->
+    <string name="UsernameEditFragment_rate_limit_exceeded_error">Urobili ste príliš veľa pokusov, skúste to znova neskôr</string>
+    <!-- Shown when the username someone typed already belongs to someone else -->
+    <string name="UsernameEditFragment_this_username_is_taken">Toto používateľské meno je obsadené.</string>
+    <!-- Shown when a username has characters that usernames can\'t have -->
+    <string name="UsernameEditFragment_usernames_can_only_include">Používateľské mená môžu obsahovať iba znaky a-Z, 0-9 a podčiarkovníky.</string>
+    <!-- Shown when a username starts with a digit -->
+    <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">Používateľské mená nemôžu začínať číslicou.</string>
+    <!-- Shown when the service rejects a username -->
+    <string name="UsernameEditFragment_username_is_invalid">Používateľské meno je neplatné.</string>
+    <!-- Shown when a username is too short or too long. %1$d is the minimum length and %2$d the maximum -->
+    <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">Používateľské mená musia obsahovať %1$d až %2$d znakov.</string>
+    <!-- Explanation about what usernames provide, ending in a link to learn more. %1$s is that link, UsernameEditScreen__learn_more -->
+    <string name="UsernameEditScreen__usernames_let_others_message">Ľudia vám môžu namiesto telefónneho čísla posielať správy na vaše voliteľné používateľské meno. Používateľské mená sú vždy spárované so sadou čísel. %1$s</string>
+    <!-- Displayed when the chosen discriminator is not available for the given nickname -->
+    <string name="UsernameEditFragment__this_username_is_not_available_try_another_number">Toto používateľské meno nie je dostupné, skúste iné číslo.</string>
+    <!-- Displayed when the chosen discriminator is too short -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_minimum_of_d_digits">Neplatné používateľské meno, zadajte minimálne %1$d číslice.</string>
+    <!-- Displayed when the chosen discriminator is too long -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_maximum_of_d_digits">Neplatné používateľské meno, zadajte maximálne %1$d číslic.</string>
+    <!-- Displayed when the chosen discriminator is 00 -->
+    <string name="UsernameEditFragment__this_number_cant_be_00">Toto číslo nemôže byť 00. Zadajte číslicu medzi 1–9</string>
+    <!-- Displayed when the chosen discriminator starts with 0 and has a length > 2 -->
+    <string name="UsernameEditFragment__this_number_cant_start_with_0">Čísla s viac ako 2 číslicami nemôžu začínať nulou</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to recover their username -->
+    <string name="UsernameEditFragment_recovery_dialog_confirmation">Obnovením používateľského mena sa resetuje váš existujúci QR kód a odkaz. Naozaj chcete pokračovať?</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to change their username, even if it resets their link -->
+    <string name="UsernameEditFragment_change_confirmation_message">Zmenou používateľského mena sa resetuje váš existujúci QR kód a odkaz. Naozaj chcete pokračovať?</string>
+    <!-- Text for a button in a dialog asking if the user would like to continue the operation of changing their username -->
+    <string name="UsernameEditFragment_continue">Pokračovať</string>
+    <!-- Button that saves the username you typed -->
+    <string name="UsernameEditScreen__save">Uložiť</string>
+    <!-- Link at the end of the explanation of usernames, which opens a support article about them -->
+    <string name="UsernameEditScreen__learn_more">Zistiť viac</string>
+  <!-- Removed by excludeNonTranslatables <string name="username_support_url" translatable="false">https://support.signal.org/hc/articles/6712070553754</string> -->
+
+    <!-- EditProfileScreen -->
+    <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
+    <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Váš profil a zmeny v ňom sa zobrazia ľuďom, ktorým posielate správy, kontaktom a skupinám.</string>
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Aktualizujte Signal</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Táto verzia Signalu vypršala. Aktualizujte ju, aby ste mohli Signal používať naďalej.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">Aktualizovať</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">Zariadenie nie je registrované</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">Toto zariadenie už nie je registrované. Ak chcete vykonať zmeny vo svojom účte, znova ho zaregistrujte.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Znovu zaregistrovať</string>
+    <!-- Snackbar shown when your new avatar couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameFragment_failed_to_save_due_to_network_issues_try_again_later">Kvôli chybe v sieti uloženie zlyhalo. Skúste znovu neskôr.</string>
+    <!-- Snackbar message after network failure while trying to delete username -->
+    <string name="ManageProfileFragment__couldnt_delete_username">Používateľské meno sa nepodarilo odstrániť. Skúste to znova neskôr.</string>
+    <!-- The title of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_title">Odstrániť používateľské meno?</string>
+    <!-- The body of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_body">"Týmto sa odstráni vaše používateľské meno a zruší sa váš QR kód a odkaz. Používateľské meno %1$s bude k dispozícii pre ďalších používateľov. Naozaj chcete pokračovať?"</string>
+    <!-- Button below your avatar on the profile screen that lets you change it -->
+    <string name="ManageProfileFragment__edit_photo">Upraviť fotografiu</string>
+    <!-- Title of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_title">Zdieľajte svoje používateľské meno</string>
+    <!-- Body of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_body">Dajte druhým možnosť začať s vami četovať zdieľaním vášho jedinečného QR kódu alebo odkazu.</string>
+    <!-- Snackbar message after creating username -->
+    <string name="ManageProfileFragment__username_created">Používateľské meno bolo vytvorené</string>
+    <!-- Snackbar message after successful deletion of username -->
+    <string name="ManageProfileFragment__username_deleted">Používateľské meno bolo odstránené</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc, shown when you have no username -->
+    <string name="ManageProfileFragment__username_footer_no_username">Ľudia vám môžu posielať správy pomocou voliteľného používateľského mena namiesto telefónneho čísla. Používateľské mená majú jedinečný QR kód a odkaz, ktorý môžete zdieľať s priateľmi.</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
+    <string name="ManageProfileFragment__your_username">Vaše používateľské meno, QR kód a odkaz sa nezobrazujú vo vašom profile. Svoje používateľské meno zdieľajte iba s ľuďmi, ktorým dôverujete.</string>
+    <!-- Row on the profile screen that opens your about, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_about">Detaily</string>
+    <!-- Snackbar shown when the photo you chose for your avatar couldn\'t be read -->
+    <string name="ManageProfileFragment_failed_to_set_avatar">Nepodarilo sa nastaviť profilový obrázok</string>
+    <!-- Text for a button that will take the user to the screen to manage their username link and QR code -->
+    <string name="ManageProfileFragment_link_setting_text">QR kód alebo odkaz</string>
+    <!-- Row on the profile screen that opens your name, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_profile_name">Názov profilu</string>
+    <!-- Row on the profile screen that opens your username, shown when you don\'t have one -->
+    <string name="ManageProfileFragment_username">Používateľské meno</string>
+    <!-- Option to open username editor displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__edit_username">Upraviť používateľské meno</string>
+    <!-- Option to delete username displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__delete_username">Vymazať používateľské meno</string>
+    <!-- Title of the screen showing your own profile -->
+    <string name="EditProfileScreen__profile">Profil</string>
+    <!-- Content description for your avatar on the profile screen, which opens it full screen -->
+    <string name="EditProfileScreen__set_avatar">Nastaviť profilový obrázok</string>
+    <!-- Row on the profile screen that opens your badges -->
+    <string name="EditProfileScreen__badges">Odznaky</string>
+    <!-- Button in the dialog confirming that you want your username deleted -->
+    <string name="EditProfileScreen__delete">Vymazať</string>
+    <!-- Content description for the button that closes the tip about your username link -->
+    <string name="EditProfileScreen__close_tip">Zatvoriť</string>
+    <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Prispievaním na Signal získate odznaky pre svoj profil.</string>
+    <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal je nezisková organizácia bez inzerentov a investorov, ktorú podporujú iba ľudia ako vy.</string>
+    <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Staňte sa podporovateľom</string>
+
+    <!-- BadgesOverviewScreen -->
+    <!-- Title of the screen listing the badges you\'ve unlocked -->
+    <string name="BadgesOverviewScreen__badges">Odznaky</string>
+    <!-- Section header above the grid of badges you\'ve unlocked -->
+    <string name="BadgesOverviewFragment__my_badges">Moje odznaky</string>
+    <!-- Toggle for whether your badges are shown on your profile -->
+    <string name="BadgesOverviewFragment__display_badges_on_profile">Zobraziť odznaky v profile</string>
+    <!-- Row that opens the screen for choosing which badge is shown on your profile; the badge\'s name is shown beneath it -->
+    <string name="BadgesOverviewScreen__featured_badge">Zobrazený odznak</string>
+    <!-- Snackbar shown when showing or hiding your badges on your profile couldn\'t be saved -->
+    <string name="BadgesOverviewFragment__failed_to_update_profile">Aktualizácia profilu zlyhala</string>
+
+    <!-- SelectFeaturedBadgeScreen -->
+    <!-- Title of the screen for choosing which of your badges shows on your profile -->
+    <string name="SelectFeaturedBadgeScreen__featured_badge">Zobrazený odznak</string>
+    <!-- Section header above the grid of badges you can choose to feature on your profile -->
+    <string name="SelectFeaturedBadgeFragment__select_a_badge">Vyberte odznak</string>
+    <!-- Button that saves the badge you chose to feature on your profile -->
+    <string name="SelectFeaturedBadgeScreen__save">Uložiť</string>
+    <!-- Snackbar shown when the badge you chose to feature couldn\'t be saved to your profile -->
+    <string name="SelectFeaturedBadgeFragment__failed_to_update_profile">Aktualizácia profilu zlyhala</string>
+
+    <!-- UsernameLinkShareSheet -->
+    <!-- Explanatory text at the top of a bottom sheet describing how username links work -->
+    <string name="UsernameLinkShareBottomSheet_title">Ktokoľvek s týmto odkazom si môže pozrieť vaše používateľské meno a začať s vami četovať. Zdieľajte ho iba s ľuďmi, ktorým dôverujete.</string>
+    <!-- A button label for a button that, when pressed, will copy your username link to the clipboard -->
+    <string name="UsernameLinkShareBottomSheet_copy_link">Skopírovať odkaz</string>
+    <!-- A button label for a button that, when pressed, will open a share sheet for sharing your username link -->
+    <string name="UsernameLinkShareBottomSheet_share">Zdieľať</string>
+
+    <!-- UsernameLinkSettingsScreen -->
+    <!-- Label for a tab that shows a screen to view your username QR code -->
+    <string name="UsernameLinkSettings_code_tab_name">Kód</string>
+    <!-- Label for a tab that shows a screen to scan a QR code -->
+    <string name="UsernameLinkSettings_scan_tab_name">Naskenovať</string>
+    <!-- Content of a toast that will show after the username link is copied to the clipboard -->
+    <string name="UsernameLinkSettings_link_copied_toast">Odkaz skopírovaný</string>
+    <!-- Content of a toast that will show after the username is copied to the clipboard -->
+    <string name="UsernameLinkSettings_username_copied_toast">Používateľské meno bolo skopírované</string>
+    <!-- Title of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_title">Resetovať QR kód?</string>
+    <!-- Body of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_body">Ak resetujete svoj QR kód, váš existujúci QR kód a odkaz už nebudú fungovať.</string>
+    <!-- Label for the confirmation button on a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_confirm_button">Resetovať</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because you had no internet. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_unavailable">Nemáte prístup k sieti. Váš odkaz nebol zresetovaný. Skúste to znova neskôr.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of a transient network issue. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_error">Pri pokuse o resetovanie vášho odkazu sa vyskytla chyba siete. Skúste to znova neskôr.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of an unknown error. -->
+    <string name="UsernameLinkSettings_reset_link_result_unknown_error">Pri pokuse o resetovanie vášho odkazu sa vyskytla neočakávaná chyba. Skúste to znova neskôr.</string>
+    <!-- Body of a dialog that is displayed when we successfully reset you username link. -->
+    <string name="UsernameLinkSettings_reset_link_result_success">Váš QR kód a odkaz boli resetované a bol vytvorený nový QR kód a odkaz.</string>
+    <!-- Description text for QR code and links in the username link settings -->
+    <string name="UsernameLinkSettings_qr_description">Svoj QR kód a odkaz zdieľajte iba s ľuďmi, ktorým dôverujete. Pri zdieľaní budú môcť ostatní vidieť vaše používateľské meno a začať s vami četovať.</string>
+    <!-- Button label for a button that will reset your username and give you a new link -->
+    <string name="UsernameLinkSettings_reset_button_label">Resetovať</string>
+    <!-- Button label for the link button in the username link settings -->
+    <string name="UsernameLinkSettings_link_button_label">Odkaz</string>
+    <!-- Button label for the share button in the username link settings -->
+    <string name="UsernameLinkSettings_share_button_label">Zdieľať</string>
+    <!-- Button label for the color selector button in the username link settings -->
+    <string name="UsernameLinkSettings_color_button_label">Farba</string>
+    <!-- Body of a dialog that is displayed when we failed to read a username QR code. -->
+    <string name="UsernameLinkSettings_qr_result_invalid">QR kód je neplatný.</string>
+    <!-- Body of a dialog that is displayed when we experienced a network error when looking up a username. -->
+    <string name="UsernameLinkSettings_qr_result_network_error">Vyskytla sa chyba siete. Skúste to znova.</string>
+    <!-- Dialog title shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_qr_code_not_found">QR kód sa nenašiel</string>
+    <!-- Dialog message shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_try_scanning_another_image_containing_a_signal_qr_code">Skúste naskenovať iný obrázok so Signal QR kódom.</string>
+    <!-- Body of a dialog that is displayed when the username we looked up could not be found. -->
+    <string name="UsernameLinkSettings_qr_result_not_found">Používateľa s používateľským menom %1$s sa nepodarilo nájsť.</string>
+    <!-- Description text shown underneath the username QR code scanner -->
+    <string name="UsernameLinkSettings_qr_scan_description">Naskenujte QR kód na zariadení vášho kontaktu.</string>
+    <!-- Shown when the QR code you scanned leads to a username link that no one has -->
+    <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Tohto používateľa sa nepodarilo nájsť.</string>
+    <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Ak chcete naskenovať QR kód, povoľte Signalu prístup k fotoaparátu.</string>
+    <!-- Button on the scan tab that asks for the camera permission -->
+    <string name="UsernameLinkSettingsScreen__allow_access">Povoliť prístup</string>
+    <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
+    <string name="UsernameLinkSettingsScreen__camera_needed">Signal potrebuje na skenovanie QR kódov prístup k fotoaparátu</string>
+
+    <!-- ManageStorageSettingsScreen -->
+    <string name="preferences__storage">Úložisko</string>
+    <string name="preferences_storage__storage_usage">Využitie úložiska</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Úložisko Signal</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalizovať úložisko Signal</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Nepoužívané médiá budú dočasne vymazané, môžete si ich však kedykoľvek stiahnuť zo zálohy.</string>
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">Obmedzenie počtu správ v čete</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">Použiť obmedzenie aj na prepojených zariadeniach</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">Keď je táto možnosť povolená, obmedzenie dĺžky četu vymaže správy aj z vašich prepojených zariadení.</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">Vymazať históriu správ</string>
+    <!-- Dialog title shown when selecting delete message history from manage storage -->
+    <string name="preferences_storage__delete_message_history">Vymazať históriu správ?</string>
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device">Týmto sa natrvalo vymaže celá história správ a médiá z vášho zariadenia.</string>
+    <!-- Dialog message warning about delete chat message history will delete everything everywhere including linked devices -->
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device_linked_device">Týmto sa natrvalo vymaže celá história správ a médiá z tohto aj všetkých prepojených zariadení.</string>
+    <string name="preferences_storage__are_you_sure_you_want_to_delete_all_message_history">Naozaj chcete vymazať celú históriu správ?</string>
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone">Celá história správ bude natrvalo vymazaná. Tento krok sa nedá vrátiť späť.</string>
+    <!-- Secondary warning dialog message about deleting all chat message history from everything everywhere including linked devices -->
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone_linked_device">Celá história správ bude natrvalo odstránená zo všetkých zariadení. Túto akciu nie je možné vrátiť späť.</string>
+    <string name="preferences_storage__delete_all_now">Zmazať všetky teraz</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Optimalizáciu úložiska je možné využiť iba v prípade, ak používate platenú verziu bezpečných Záloh Signal. Vaše predplatné záloh sa stále spracováva a ešte nie je aktívne. Skúste to znova neskôr.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Médiá budú odstránené zo zálohy na zariadení</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Zapnutím možnosti „Optimalizovať úložisko Signal“ sa z vášho zariadenia presunú staré médiá. Môžete si ich kedykoľvek znova stiahnuť. Taktiež sa odstránia staré médiá zo zálohy na zariadení.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">Zapnúť</string>
+
+    <!-- MutedNotificationsScreen -->
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body">Zvoniť alebo upozorniť, keď počas stlmenia tohto četu začne hovor.</string>
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body_global">Zvoniť alebo upozorniť, keď sa v stlmených četoch začne hovor.</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body">Upozorniť na zmienky, keď je tento čet stlmený</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body_global">Upozorniť, keď vás niekto spomenie v stlmených četoch.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body">Upozorniť, keď niekto odpovie na vašu správu, keď je tento čet stlmený.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body_global">Upozorniť, keď niekto odpovie na vašu správu v stlmených četoch.</string>
+    <!-- Header to describe screen that shows while muted settings -->
+    <string name="MutedNotificationsFragment__while">Počas stlmenia</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsScreen__calls">Volania</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsScreen__mentions">Spomenutia</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsScreen__replies">Odpovede</string>
+
+    <!-- NotificationsSettingsScreen -->
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">Výber sa nepodarilo otvoriť.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">Ak chcete povoliť upozornenia, Signal potrebuje povolenie na ich zobrazenie.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">Zapnúť</string>
+    <string name="NotificationsSettingsFragment__calls">Volania</string>
+    <string name="NotificationsSettingsFragment__contact_joins_signal">Kontakt začne používať Signal</string>
+    <!-- Notification preference summary text -->
+    <string name="NotificationsSettingsFragment__create_a_profile_to_receive_notifications_only_from_people_and_groups_you_choose">Vytvorte si profil, aby ste dostávali upozornenia iba od ľudí a skupín, ktoré si vyberiete.</string>
+    <!-- Notification body to get notified when someone joins Signal -->
+    <string name="NotificationsSettingsFragment__notify_contact">Zobraziť upozornenie, keď sa kontakt v telefóne pridá na Signal</string>
+    <!-- Option to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset">Resetovať nastavenia upozornení</string>
+    <!-- Dialog to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_body">Resetovať všetky nastavenia upozornení pre všetky čety na predvolené?</string>
+    <!-- Confirmation button to reset dialog -->
+    <string name="NotificationsSettingsFragment__reset_confirm">Resetovať</string>
+    <!-- Option body to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_notifications">Resetovať nastavenia upozornení na predvolené, vrátane vlastných nastavení pre vaše čety</string>
+    <!-- Notification header for sounds -->
+    <string name="NotificationsSettingsFragment__sounds">Zvuky</string>
+    <string name="NotificationsSettingsFragment__unknown_ringtone">Neznámy vyzváňací tón</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="NotificationsSettingsScreen__calls">Volania</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="NotificationsSettingsScreen__mentions">Spomenutia</string>
+    <!-- Notification preference header -->
+    <string name="NotificationsSettingsScreen__notification_profiles">Profily pre upozornenia</string>
+    <string name="NotificationsSettingsScreen__notifications">Upozornenia</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="NotificationsSettingsScreen__replies">Odpovede</string>
+    <string name="NotificationsSettingsScreen__silent">Ticho</string>
+    <!-- Option in settings to turn on unread reminders -->
+    <string name="NotificationsSettingsScreen__unread_reminders">Neprečítané pripomienky</string>
+    <string name="arrays__default">Predvolená</string>
+    <string name="arrays__high">Vysoká</string>
+    <!-- Setting title that represent an abstract priority to assign to notifications as the max/highest priority a notification can be within the system. -->
+    <string name="arrays__max">Maximálna</string>
+    <string name="arrays__name_and_message">Meno a správu</string>
+    <string name="arrays__name_only">Iba meno</string>
+    <string name="arrays__no_name_or_message">Bez mena a správy</string>
+    <string name="preferences__blue">Modrá</string>
+    <!-- Preference header for call notifications -->
+    <string name="preferences__call_notifications">Upozornenia na hovory</string>
+    <string name="preferences__change_sound_and_vibration">Zmeniť zvuk a vibrovanie</string>
+    <string name="preferences__customize">Prispôsobiť</string>
+    <string name="preferences__cyan">Azúrová</string>
+    <!-- Preference menu item to use the default sound for notifications -->
+    <string name="preferences__default">Predvolená</string>
+    <!-- Preference item menu to enable notifications -->
+    <string name="preferences__enable_notifications">Povoliť upozornenia</string>
+    <string name="preferences__fast">Rýchlo</string>
+    <string name="preferences__five_times">Päťkrát</string>
+    <string name="preferences__green">Zelená</string>
+    <string name="preferences__led_color">LED farba</string>
+    <string name="preferences__magenta">Purpurová</string>
+    <string name="preferences__never">Nikdy</string>
+    <string name="preferences__normal">Normálne</string>
+    <string name="preferences__one_time">Raz</string>
+    <string name="preferences__orange">Oranžová</string>
+    <string name="preferences__pref_led_blink_title">Sekvencia blikania LED</string>
+    <string name="preferences__red">Červená</string>
+    <string name="preferences__repeat_alerts">Opakovať oznámenia</string>
+    <string name="preferences__slow">Pomaly</string>
+    <!-- Preference menu item to control the sound of notifications -->
+    <string name="preferences__sound">Zvuk</string>
+    <string name="preferences__ten_times">Desaťkrát</string>
+    <string name="preferences__three_times">Trikrát</string>
+    <string name="preferences__two_times">Dvakrát</string>
+    <string name="preferences__vibrate">Vibrácie</string>
+    <string name="preferences__white">Biela</string>
+    <string name="preferences_notifications__in_chat_sounds">Zvuky v čete</string>
+    <!-- Body option in settings to turn on reaction notifications    -->
+    <string name="preferences_notifications__notify_reaction">Zobraziť upozornenia na reakcie pri správach, ktoré odošlete</string>
+    <!-- Body option to turn on unread reminders -->
+    <string name="preferences_notifications__notify_unread">Občas upozorniť, keď sú v stlmených četoch neprečítané správy</string>
+    <!-- Option in settings that will provide a shortcut to notification system settings to control the priority of Signal notifications -->
+    <string name="preferences_notifications__priority">Priorita</string>
+    <!-- Option in settings to turn on reaction notifications -->
+    <string name="preferences_notifications__reaction">Upozornenia na reakcie</string>
+    <string name="preferences_notifications__ringtone">Zvonenie</string>
+    <string name="preferences_notifications__show">Zobraziť</string>
+    <!-- Option in settings to trouble shoot delayed notifications -->
+    <string name="preferences_notifications__troubleshoot">Riešiť problémy s upozorneniami</string>
+    <!-- Preference item to set notification settings when chats are muted -->
+    <string name="preferences_notifications__while_muted">Počas stlmenia</string>
+
+    <!-- SelectRecipientsScreen -->
+    <!-- Call to action button on contact picker for adding to profile -->
+    <string name="SelectRecipientsFragment__add">Pridať</string>
+    <!-- Title for add recipients to notification profile screen in create flow -->
+    <string name="SelectRecipientsScreen__allowed_notifications">Povolené upozornenia</string>
 </resources>

@@ -37,7 +37,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.ui.permissions.Permissions;
 import org.signal.core.ui.view.Stub;
 import org.signal.core.util.ExpiringProfileCredentialUtil;
@@ -50,6 +49,7 @@ import org.signal.core.util.concurrent.SimpleTask;
 import org.signal.core.util.logging.Log;
 import org.signal.core.util.permissions.PermissionCompat;
 import org.signal.mediasend.MediaConstraints;
+import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.AudioView;
 import org.thoughtcrime.securesms.components.DocumentView;
@@ -60,7 +60,6 @@ import org.thoughtcrime.securesms.components.location.SignalPlace;
 import org.thoughtcrime.securesms.conversation.MessageSendType;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
-import org.thoughtcrime.securesms.giph.ui.GiphyActivity;
 import org.thoughtcrime.securesms.maps.PlacePickerActivity;
 import org.thoughtcrime.securesms.mediasend.MediaSendLauncher;
 import org.thoughtcrime.securesms.payments.CanNotSendPaymentDialog;
@@ -73,7 +72,6 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.util.MediaUtil;
 import org.thoughtcrime.securesms.util.ProfileUtil;
-import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.signal.core.ui.util.ViewUtil;
 import org.thoughtcrime.securesms.util.concurrent.AssertedSuccessListener;
 
@@ -287,15 +285,6 @@ public class AttachmentManager {
                  .onSomeGranted((permissions) -> PlacePickerActivity.startActivityForResultAtCurrentLocation(fragment, requestCode, chatColor))
                  .execute();
     }
-  }
-
-  public static void selectGif(Fragment fragment, int requestCode, RecipientId id, MessageSendType sendType, boolean isForMms, CharSequence textTrimmed) {
-    Intent intent = new Intent(fragment.requireContext(), GiphyActivity.class);
-    intent.putExtra(GiphyActivity.EXTRA_IS_MMS, isForMms);
-    intent.putExtra(GiphyActivity.EXTRA_RECIPIENT_ID, id);
-    intent.putExtra(GiphyActivity.EXTRA_TRANSPORT, sendType);
-    intent.putExtra(GiphyActivity.EXTRA_TEXT, textTrimmed);
-    fragment.startActivityForResult(intent, requestCode);
   }
 
   public static void selectPayment(@NonNull Fragment fragment, @NonNull Recipient recipient) {

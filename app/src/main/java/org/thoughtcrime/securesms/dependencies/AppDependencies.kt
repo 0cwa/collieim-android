@@ -391,6 +391,10 @@ object AppDependencies {
     get() = networkModule.keysApi
 
   @JvmStatic
+  val keysApiV2: KeysApiV2
+    get() = networkModule.keysApiV2
+
+  @JvmStatic
   val attachmentApi: AttachmentApi
     get() = networkModule.attachmentApi
 
@@ -559,6 +563,7 @@ object AppDependencies {
     fun provideLibsignalNetwork(config: SignalServiceConfiguration, proxyState: NetworkProxyState): Network
     fun provideBillingApi(): BillingApi
     fun provideKeysApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket, unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket): KeysApi
+    fun provideKeysApiV2(authWebSocket: SignalWebSocket.AuthenticatedWebSocket, unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket): KeysApiV2
     fun provideAttachmentApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket): AttachmentApi
     fun provideCdnApi(signalRestClient: SignalRestClient): CdnApi
     fun provideLinkDeviceApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket): LinkDeviceApi
@@ -583,7 +588,7 @@ object AppDependencies {
     fun provideProvisioningApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket, unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket): ProvisioningApi
     fun provideCertificateApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket): CertificateApi
     fun provideProfileApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket, unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket, pushServiceSocket: PushServiceSocket, clientZkProfileOperations: ClientZkProfileOperations): ProfileApi
-    fun provideRemoteConfigApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket, pushServiceSocket: PushServiceSocket): RemoteConfigApi
+    fun provideRemoteConfigApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket): RemoteConfigApi
     fun provideDonationsApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket, unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket): DonationsApi
     fun provideSvrBApi(libSignalNetwork: Network): SvrBApi
     fun provideKeyTransparencyApi(unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket): KeyTransparencyApi

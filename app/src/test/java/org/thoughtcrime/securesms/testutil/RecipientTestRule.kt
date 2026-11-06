@@ -19,6 +19,9 @@ import org.signal.core.models.ServiceId.ACI
 import org.signal.core.models.recipients.RecipientId
 import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.libsignal.zkgroup.profiles.ProfileKey
+import org.signal.remoteconfig.RemoteConfig
+import org.signal.storage.keyvalue.NotificationProfileValues
+import org.signal.storage.keyvalue.ReleaseChannelValues
 import org.signal.storageservice.storage.protos.groups.Member
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import org.signal.storageservice.storage.protos.groups.local.DecryptedMember
@@ -27,15 +30,12 @@ import org.thoughtcrime.securesms.database.MessageType
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.groups.GroupId
-import org.thoughtcrime.securesms.keyvalue.NotificationProfileValues
-import org.thoughtcrime.securesms.keyvalue.ReleaseChannelValues
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.mms.IncomingMessage
 import org.thoughtcrime.securesms.mms.OutgoingMessage
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.recipients.LiveRecipientCache
 import org.thoughtcrime.securesms.recipients.Recipient
-import org.thoughtcrime.securesms.util.RemoteConfig
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile
 import java.util.UUID
 import kotlin.random.Random

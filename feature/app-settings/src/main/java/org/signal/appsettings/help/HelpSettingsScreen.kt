@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +17,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dividers
@@ -55,10 +57,9 @@ fun HelpSettingsScreen(
     navigationContentDescription = stringResource(CoreUiR.string.CloseButton__content_description),
     modifier = modifier
   ) { contentPadding ->
-    LazyColumn(
-      modifier = Modifier
-        .padding(contentPadding)
-        .testTag(HelpSettingsTestTags.SCROLLER)
+    AppSettingsLazyColumn(
+      scaffoldPadding = contentPadding,
+      modifier = Modifier.testTag(HelpSettingsTestTags.SCROLLER)
     ) {
       item {
         Rows.LinkRow(
@@ -109,6 +110,7 @@ fun HelpSettingsScreen(
       item {
         Rows.LinkRow(
           text = stringResource(R.string.HelpSettingsFragment__terms_amp_privacy_policy),
+          textStyle = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto),
           icon = ImageVector.vectorResource(CoreUiR.drawable.symbol_open_20),
           onClick = { onEvent(HelpSettingsEvent.TermsAndPrivacyPolicyClicked) },
           modifier = Modifier.testTag(HelpSettingsTestTags.ROW_TERMS_AND_PRIVACY_POLICY)

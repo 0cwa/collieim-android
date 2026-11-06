@@ -7,6 +7,7 @@ package org.thoughtcrime.securesms.contactshare.screens.selectcontact
 
 import android.app.Application
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import io.mockk.every
@@ -26,6 +27,7 @@ import org.robolectric.annotation.Config
 import org.signal.contacts.SystemContactsRepository
 import org.signal.core.models.recipients.RecipientId
 import org.thoughtcrime.securesms.contacts.index.ContactIndexRecord
+import org.thoughtcrime.securesms.contacts.index.ContactIndexRepository
 import org.thoughtcrime.securesms.contacts.index.ContactIndexType
 import org.thoughtcrime.securesms.contactshare.SharedContactSource
 import org.thoughtcrime.securesms.testing.CoroutineDispatcherRule
@@ -56,27 +58,66 @@ class ContactIndexSourceTest {
    */
   @Test
   fun `losing contacts permission degrades an address book row to its signal profile`() = runTest(testDispatcher) {
-    val resolved = sourceThatLostPermission().resolve(addressBookRecord(recipientId = RecipientId.from(7)))
+    val resolved = sourceThatThrows(SecurityException("denied")).resolve(addressBookRecord(recipientId = RecipientId.from(7)))
 
     assertThat(resolved).isEqualTo(SharedContactSource.SignalContact(RecipientId.from(7)))
   }
 
   @Test
   fun `losing contacts permission on a row with no signal profile resolves to nothing`() = runTest(testDispatcher) {
-    val resolved = sourceThatLostPermission().resolve(addressBookRecord(recipientId = null))
+    val resolved = sourceThatThrows(SecurityException("denied")).resolve(addressBookRecord(recipientId = null))
 
     assertThat(resolved).isNull()
   }
 
-  /**
-   * Stubbed with a concrete context rather than `any()`, because mockk runs the real call once while it
-   * records, and the dummy it fabricates for `any()` cannot answer `getContentResolver()`.
-   */
-  private fun sourceThatLostPermission(): ContactIndexSource {
+  @Test
+  fun `a lookup key the provider rejects degrades an address book row to its signal profile`() = runTest(testDispatcher) {
+    val resolved = sourceThatThrows(IllegalArgumentException("Invalid lookup id: $LOOKUP_KEY")).resolve(addressBookRecord(recipientId = RecipientId.from(7)))
+
+    assertThat(resolved).isEqualTo(SharedContactSource.SignalContact(RecipientId.from(7)))
+  }
+
+  @Test
+  fun `a lookup key the provider rejects on a row with no signal profile resolves to nothing`() = runTest(testDispatcher) {
+    val resolved = sourceThatThrows(IllegalArgumentException("Invalid lookup id: $LOOKUP_KEY")).resolve(addressBookRecord(recipientId = null))
+
+    assertThat(resolved).isNull()
+  }
+
+  @Test
+  fun `a page marks rows whose recipient has a profile photo when system photos are not preferred`() = runTest(testDispatcher) {
+    val withPhoto = addressBookRecord(recipientId = RecipientId.from(7))
+    val withoutPhoto = addressBookRecord(recipientId = RecipientId.from(8)).copy(position = 2)
+    val addressBookOnly = addressBookRecord(recipientId = null).copy(position = 3)
+
+    val page = pagingSource(rows = listOf(withPhoto, withoutPhoto, addressBookOnly), preferSystemContactPhotos = false).page("", 1, 10)
+
+    assertThat(page.map { it.hasProfilePhoto }).containsExactly(true, false, false)
+  }
+
+  @Test
+  fun `a page leaves profile photos unmarked when system photos are preferred`() = runTest(testDispatcher) {
+    val page = pagingSource(rows = listOf(addressBookRecord(recipientId = RecipientId.from(7))), preferSystemContactPhotos = true).page("", 1, 10)
+
+    assertThat(page.map { it.hasProfilePhoto }).containsExactly(false)
+  }
+
+  private fun pagingSource(rows: List<ContactIndexRecord>, preferSystemContactPhotos: Boolean): ContactIndexSource {
+    val repository: ContactIndexRepository = mockk { every { search(any(), any(), any()) } returns rows }
+
+    return ContactIndexSource(
+      repository = repository,
+      context = RuntimeEnvironment.getApplication(),
+      hasProfilePhoto = { it == RecipientId.from(7) },
+      preferSystemContactPhotosSetting = { preferSystemContactPhotos }
+    )
+  }
+
+  private fun sourceThatThrows(error: Exception): ContactIndexSource {
     val context = RuntimeEnvironment.getApplication()
 
     mockkStatic(SystemContactsRepository::class)
-    every { SystemContactsRepository.currentContactUri(context, LOOKUP_KEY, CONTACT_ID) } throws SecurityException("denied")
+    every { SystemContactsRepository.currentContactUri(context, LOOKUP_KEY, CONTACT_ID) } throws error
 
     return ContactIndexSource(mockk(relaxed = true), context)
   }

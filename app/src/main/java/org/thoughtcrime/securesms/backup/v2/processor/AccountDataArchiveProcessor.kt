@@ -19,6 +19,8 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.UuidUtil
 import org.signal.core.util.logging.Log
 import org.signal.core.util.toByteArray
+import org.signal.storage.keyvalue.PhoneNumberPrivacyValues
+import org.signal.storage.keyvalue.PhoneNumberPrivacyValues.PhoneNumberDiscoverabilityMode
 import org.thoughtcrime.securesms.backup.v2.ExportState
 import org.thoughtcrime.securesms.backup.v2.ImportState
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
@@ -37,8 +39,6 @@ import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.RetrieveProfileAvatarJob
-import org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues
-import org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues.PhoneNumberDiscoverabilityMode
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -131,7 +131,7 @@ object AccountDataArchiveProcessor {
               documents = getRemoteAutoDownloadOption("documents", mobileAutoDownload, wifiAutoDownload)
             ),
             screenLockTimeoutMinutes = screenLockTimeoutMinutes,
-            pinReminders = signalStore.pinValues.arePinRemindersEnabled(),
+            pinReminders = signalStore.pinValues.pinRemindersEnabled,
             appTheme = signalStore.settingsValues.theme.toRemoteAppTheme(),
             callsUseLessDataSetting = signalStore.settingsValues.callDataMode.toRemoteCallsUseLessDataSetting(),
             defaultChatStyle = ChatStyleConverter.constructRemoteChatStyle(
@@ -270,7 +270,7 @@ object AccountDataArchiveProcessor {
     SignalStore.phoneNumberPrivacy.phoneNumberSharingMode = settings.phoneNumberSharingMode.toLocalPhoneNumberMode()
     SignalStore.settings.isPreferSystemContactPhotos = settings.preferContactAvatars
     SignalStore.settings.universalExpireTimer = settings.universalExpireTimerSeconds
-    SignalStore.emoji.reactions = settings.preferredReactionEmoji
+    SignalStore.emoji.rawReactions = settings.preferredReactionEmoji
     SignalStore.inAppPayments.setDisplayBadgesOnProfile(settings.displayBadgesOnProfile)
     SignalStore.settings.keepMutedChatsArchived = settings.keepMutedChatsArchived
     SignalStore.story.userHasBeenNotifiedAboutStories = settings.hasSetMyStoriesPrivacy
@@ -309,7 +309,7 @@ object AccountDataArchiveProcessor {
 
     val pinReminders = settings.pinReminders
     if (pinReminders != null) {
-      SignalStore.pin.setPinRemindersEnabled(pinReminders)
+      SignalStore.pin.pinRemindersEnabled = pinReminders
     }
 
     settings.customChatColors
@@ -358,7 +358,7 @@ object AccountDataArchiveProcessor {
     }
 
     if (settings.preferredReactionEmoji.isNotEmpty()) {
-      SignalStore.emoji.reactions = settings.preferredReactionEmoji
+      SignalStore.emoji.rawReactions = settings.preferredReactionEmoji
     }
 
     if (settings.hasCompletedUsernameOnboarding) {

@@ -19,8 +19,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
+import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.thoughtcrime.securesms.util.RemoteConfig
 
 /** Lets internal users override any [RemoteConfig] value. */
 class InternalRemoteConfigViewModel : EventDrivenViewModel<InternalRemoteConfigEvent>(TAG) {
@@ -150,7 +150,7 @@ class InternalRemoteConfigViewModel : EventDrivenViewModel<InternalRemoteConfigE
   private suspend fun applyOverrides(updated: Map<String, String>) {
     withContext(Dispatchers.Default) {
       RemoteConfig.overrides = updated
-      SignalStore.internal.remoteConfigOverrides = RemoteConfig.overrides
+      SignalStore.remoteConfig.overrides = RemoteConfig.overrides
     }
   }
 

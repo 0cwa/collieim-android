@@ -24,6 +24,7 @@ import org.signal.core.models.ServiceId.PNI
 import org.signal.core.models.backup.MediaRootBackupKey
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.Base64
+import org.signal.core.util.PinHashUtil
 import org.signal.core.util.crypto.DeviceNameCipher
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.logging.Log
@@ -31,6 +32,9 @@ import org.signal.libsignal.protocol.IdentityKeyPair
 import org.signal.libsignal.protocol.util.KeyHelper
 import org.signal.libsignal.zkgroup.profiles.ProfileKey
 import org.signal.network.NetworkResult
+import org.signal.network.crypto.UnidentifiedAccess
+import org.signal.storage.keyvalue.PhoneNumberPrivacyValues
+import org.signal.storage.protos.LocalRegistrationMetadata
 import org.thoughtcrime.securesms.AppCapabilities
 import org.thoughtcrime.securesms.crypto.PreKeyUtil
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil
@@ -39,7 +43,6 @@ import org.thoughtcrime.securesms.crypto.storage.PreKeyMetadataStore
 import org.thoughtcrime.securesms.crypto.storage.SignalServiceAccountDataStoreImpl
 import org.thoughtcrime.securesms.database.IdentityTable
 import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.database.model.databaseprotos.LocalRegistrationMetadata
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.gcm.FcmUtil
 import org.thoughtcrime.securesms.jobmanager.runJobBlocking
@@ -48,7 +51,6 @@ import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob
 import org.thoughtcrime.securesms.jobs.PreKeysSyncJob
 import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob
 import org.thoughtcrime.securesms.jobs.RotateCertificateJob
-import org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.thoughtcrime.securesms.pin.Svr3Migration
@@ -75,8 +77,6 @@ import org.whispersystems.signalservice.api.SvrNoDataException
 import org.whispersystems.signalservice.api.account.AccountAttributes
 import org.whispersystems.signalservice.api.account.DeviceAttributes
 import org.whispersystems.signalservice.api.account.PreKeyCollection
-import org.whispersystems.signalservice.api.crypto.UnidentifiedAccess
-import org.whispersystems.signalservice.api.kbs.PinHashUtil
 import org.whispersystems.signalservice.api.link.TransferArchiveResponse
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import org.whispersystems.signalservice.api.registration.RegistrationApi
@@ -167,9 +167,10 @@ object RegistrationRepository {
   @JvmStatic
   suspend fun registerAccountLocally(context: Context, data: LocalRegistrationMetadata) = withContext(Dispatchers.IO) {
     Log.v(TAG, "registerAccountLocally()")
-    if (data.linkedDeviceInfo != null) {
-      SignalStore.account.deviceId = data.linkedDeviceInfo.deviceId
-      SignalStore.account.deviceName = data.linkedDeviceInfo.deviceName
+    val linkedDeviceInfo = data.linkedDeviceInfo
+    if (linkedDeviceInfo != null) {
+      SignalStore.account.deviceId = linkedDeviceInfo.deviceId
+      SignalStore.account.deviceName = linkedDeviceInfo.deviceName
     }
 
     val aciIdentityKeyPair = data.getAciIdentityKeyPair()
@@ -221,13 +222,13 @@ object RegistrationRepository {
     saveOwnIdentityKey(selfId, aci, aciProtocolStore, now)
     saveOwnIdentityKey(selfId, pni, pniProtocolStore, now)
 
-    if (data.linkedDeviceInfo != null) {
-      if (data.linkedDeviceInfo.accountEntropyPool != null) {
-        SignalStore.account.setAccountEntropyPoolFromPrimaryDevice(AccountEntropyPool(data.linkedDeviceInfo.accountEntropyPool))
+    if (linkedDeviceInfo != null) {
+      linkedDeviceInfo.accountEntropyPool?.let {
+        SignalStore.account.setAccountEntropyPoolFromPrimaryDevice(AccountEntropyPool(it))
       }
 
-      if (data.linkedDeviceInfo.mediaRootBackupKey != null) {
-        SignalStore.backup.mediaRootBackupKey = MediaRootBackupKey(data.linkedDeviceInfo.mediaRootBackupKey.toByteArray())
+      linkedDeviceInfo.mediaRootBackupKey?.let {
+        SignalStore.backup.mediaRootBackupKey = MediaRootBackupKey(it.toByteArray())
       }
     }
 
@@ -236,7 +237,7 @@ object RegistrationRepository {
     SignalStore.registration.hasPromptedPushRegistration = true
     SignalStore.account.isUnauthorizedReceived = false
 
-    val masterKey = if (data.masterKey != null) MasterKey(data.masterKey.toByteArray()) else null
+    val masterKey = data.masterKey?.let { MasterKey(it.toByteArray()) }
     SvrRepository.onRegistrationComplete(masterKey, data.pin, hasPin, data.reglockEnabled, SignalStore.account.restoredAccountEntropyPool)
 
     AppDependencies.resetNetwork()

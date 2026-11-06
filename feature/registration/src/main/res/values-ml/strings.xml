@@ -736,6 +736,8 @@
     <string name="SignalLoginCredentialEntryScreen__show_login_info_again">ലോഗിൻ വിവരങ്ങൾ വീണ്ടും കാണിക്കുക</string>
     <!-- Error shown when what the user typed back doesn\'t match the Signal Login they were given. -->
     <string name="SignalLoginCredentialEntryScreen__that_doesnt_match_the_signal_login_you_were_shown">അത് നിങ്ങൾ കാണിച്ചുതന്ന Signal Login-മായി പൊരുത്തപ്പെടുന്നില്ല</string>
+    <!-- Subtitle on the Signal Login entry screen when the user opened it from a reminder to check they still know their login -->
+    <string name="SignalLoginCredentialEntryScreen__enter_your_signal_login_to_verify_you_still_know_it">നിങ്ങളുടെ Signal Login വിവരങ്ങൾ ഇപ്പോഴും ഓർമ്മയുണ്ടെന്ന് ഉറപ്പാക്കാൻ അവ എന്റർ ചെയ്യുക.</string>
 
     <!-- Add username screen -->
     <!-- Title of the screen offering the user an optional username. -->
@@ -820,4 +822,16 @@
     <string name="TwoFactorSelectionScreen__cancel">റദ്ദാക്കുക</string>
     <!-- Dialog message shown when a passkey verification attempt fails for a reason the user can\'t act on -->
     <string name="TwoFactorSelectionScreen__something_went_wrong_with_your_passkey">നിങ്ങളുടെ പാസ്‌കീയുമായി ബന്ധപ്പെട്ട് എന്തോ പ്രശ്നമുണ്ടായി. ദയവായി വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ മറ്റൊരു രീതി തിരഞ്ഞെടുക്കുക.</string>
+
+    <!-- PasskeyVerificationScreen -->
+    <!-- Title of the screen asking the user to verify their account with their passkey -->
+    <string name="PasskeyVerificationScreen__two_factor_authentication">ടൂ-ഫാക്ടർ ഓതന്റിക്കേഷൻ</string>
+    <!-- Subtitle telling the user to verify their account with their passkey -->
+    <string name="PasskeyVerificationScreen__to_continue_verify_your_account">തുടരുന്നതിന്, നിങ്ങളുടെ പാസ്‌കീ ഉപയോഗിച്ച് അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കുക.</string>
+    <!-- Button text to start verifying with a passkey -->
+    <string name="PasskeyVerificationScreen__continue">തുടരുക</string>
+    <!-- Button text to cancel two-factor authentication -->
+    <string name="PasskeyVerificationScreen__cancel">റദ്ദാക്കുക</string>
+    <!-- Dialog message shown when a passkey verification attempt fails for a reason the user can\'t act on -->
+    <string name="PasskeyVerificationScreen__something_went_wrong_with_your_passkey">നിങ്ങളുടെ പാസ്‌കീയുമായി ബന്ധപ്പെട്ട് എന്തോ പ്രശ്നമുണ്ടായി. ദയവായി വീണ്ടും ശ്രമിക്കുക.</string>
 </resources>

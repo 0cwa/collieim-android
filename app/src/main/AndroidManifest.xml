@@ -503,6 +503,14 @@
             android:theme="@style/Signal.DayNight.NoActionBar" />
 
         <activity
+            android:name=".components.settings.app.AppSettingsNavigationActivity"
+            android:configChanges="touchscreen|keyboard|keyboardHidden"
+            android:enableOnBackInvokedCallback="true"
+            android:exported="false"
+            android:theme="@style/Signal.DayNight.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".components.settings.app.AppSettingsActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
             android:exported="true"
@@ -650,7 +658,7 @@
             android:exported="false"
             android:label="@string/AndroidManifest__media_preview"
             android:launchMode="singleTask"
-            android:theme="@style/Signal.DayNight.NoActionBar"
+            android:theme="@style/Signal.DayNight.NoActionBar.MediaViewer"
             android:windowSoftInputMode="stateHidden" />
 
         <activity
@@ -925,6 +933,18 @@
 
         <activity
             android:name=".backup.v2.ui.verify.VerifyBackupKeyActivity"
+            android:exported="false"
+            android:theme="@style/Signal.DayNight.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".components.settings.app.account.twofactor.verify.TwoFactorVerifyActivity"
+            android:exported="false"
+            android:theme="@style/Signal.DayNight.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".components.settings.app.account.signallogin.verify.SignalLoginVerifyActivity"
             android:exported="false"
             android:theme="@style/Signal.DayNight.NoActionBar"
             android:windowSoftInputMode="adjustResize" />

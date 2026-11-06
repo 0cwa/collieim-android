@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Rows
 import org.signal.core.ui.compose.Scaffolds
@@ -39,7 +39,6 @@ object LabsSettingsTestTags {
   const val ROW_INCOGNITO = "row-incognito"
   const val ROW_BETTER_SEARCH = "row-better-search"
   const val ROW_STARRED_MESSAGES = "row-starred-messages"
-  const val ROW_STICKER_REPLIES = "row-sticker-replies"
   const val ROW_IMPROVED_MESSAGE_DELETION = "row-improved-message-deletion"
 }
 
@@ -57,9 +56,10 @@ fun LabsSettingsScreen(
     navigationContentDescription = "Go back",
     navigationIcon = SignalIcons.ArrowStart.imageVector,
     onNavigationClick = { onEvent(LabsSettingsEvent.NavigateBackClicked) },
-    modifier = modifier
+    modifier = modifier,
+    expandableTitle = true
   ) { contentPadding ->
-    LazyColumn(
+    AppSettingsLazyColumn(
       contentPadding = contentPadding,
       modifier = Modifier.testTag(LabsSettingsTestTags.SCROLLER)
     ) {
@@ -114,16 +114,6 @@ fun LabsSettingsScreen(
           label = "Enables starring messages for later reference. Adds star/unstar to the long-press menu and a starred messages screen accessible from conversation settings and the main menu.",
           onCheckChanged = { onEvent(LabsSettingsEvent.StarredMessagesToggled(it)) },
           modifier = Modifier.testTag(LabsSettingsTestTags.ROW_STARRED_MESSAGES)
-        )
-      }
-
-      item {
-        Rows.ToggleRow(
-          checked = state.stickerReplies,
-          text = "Sticker Replies",
-          label = "Keep a pending quote when sending a sticker so the sticker is sent as a reply. Normally the quote is dropped when you send a sticker.",
-          onCheckChanged = { onEvent(LabsSettingsEvent.StickerRepliesToggled(it)) },
-          modifier = Modifier.testTag(LabsSettingsTestTags.ROW_STICKER_REPLIES)
         )
       }
 

@@ -7,7 +7,9 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.protocol.InvalidSessionException
 import org.signal.libsignal.protocol.NoSessionException
+import org.signal.network.crypto.SealedSenderAccess
 import org.signal.network.service.MessageService
+import org.signal.network.service.SendRequest
 import org.thoughtcrime.securesms.crypto.SealedSenderAccessUtil
 import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -23,7 +25,6 @@ import org.thoughtcrime.securesms.net.SignalNetwork
 import org.thoughtcrime.securesms.util.OutgoingContent
 import org.whispersystems.signalservice.api.crypto.ContentHint
 import org.whispersystems.signalservice.api.crypto.EnvelopeContent
-import org.whispersystems.signalservice.api.crypto.SealedSenderAccess
 import org.whispersystems.signalservice.api.push.DistributionId
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import org.whispersystems.signalservice.internal.push.Content
@@ -155,19 +156,15 @@ class ResendMessageJob private constructor(
       contentToSend = contentToSend.newBuilder().senderKeyDistributionMessage(senderKeyDistributionMessage.serialize().toByteString()).build()
     }
 
-    val envelopeContent = EnvelopeContent.encrypted(contentToSend, contentHint, Optional.ofNullable(groupId?.decodedId))
+    val request = SendRequest(EnvelopeContent.encrypted(contentToSend, contentHint, Optional.ofNullable(groupId?.decodedId)), timestamp = sentTimestamp, urgent = urgent)
 
     val result = if (serviceId == SignalStore.account.aci) {
-      SignalNetwork.messageService.sendSyncMessage(sentTimestamp, envelopeContent, urgent, null)
+      SignalNetwork.messageService.sendSyncMessage(request)
     } else {
       SignalNetwork.messageService.sendMessage(
         serviceId = serviceId,
-        envelopeContent = envelopeContent,
-        timestamp = sentTimestamp,
         sealedSenderAccess = SealedSenderAccessUtil.getSealedSenderAccessFor(recipient, createGroupSendToken),
-        story = false,
-        isOnline = false,
-        urgent = urgent
+        request = request
       )
     }
 

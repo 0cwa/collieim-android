@@ -24,8 +24,11 @@ import org.signal.core.util.requireInt
 import org.signal.core.util.requireLong
 import org.signal.core.util.requireNonNullString
 import org.signal.core.util.requireString
-import org.thoughtcrime.securesms.crypto.DatabaseSecret
-import org.thoughtcrime.securesms.crypto.DatabaseSecretProvider
+import org.signal.storage.database.DatabaseSecret
+import org.signal.storage.database.DatabaseSecretProvider
+import org.signal.storage.database.SignalDatabaseOpenHelper
+import org.signal.storage.database.SqlCipherDatabaseHook
+import org.signal.storage.database.SqlCipherLibraryLoader
 import org.thoughtcrime.securesms.jobmanager.persistence.ConstraintSpec
 import org.thoughtcrime.securesms.jobmanager.persistence.DependencySpec
 import org.thoughtcrime.securesms.jobmanager.persistence.FullSpec
@@ -39,7 +42,7 @@ class JobDatabase(
 ) : SQLiteOpenHelper(
   application,
   DATABASE_NAME,
-  databaseSecret.asString(),
+  databaseSecret.asHex(),
   null,
   DATABASE_VERSION,
   0,
@@ -479,9 +482,8 @@ class JobDatabase(
     )
   }
 
-  override fun getSqlCipherDatabase(): SQLiteDatabase {
-    return writableDatabase
-  }
+  override val sqlCipherDatabase: SQLiteDatabase
+    get() = writableDatabase
 
   /** Should only be used for debugging! */
   fun debugResetBackoffInterval() {

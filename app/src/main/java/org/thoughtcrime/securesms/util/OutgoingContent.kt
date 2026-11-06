@@ -1,6 +1,9 @@
 package org.thoughtcrime.securesms.util
 
 import okio.ByteString.Companion.toByteString
+import org.signal.core.models.AccountEntropyPool
+import org.signal.core.models.ServiceId
+import org.signal.core.models.backup.MediaRootBackupKey
 import org.signal.core.util.Base64
 import org.signal.core.util.UuidUtil
 import org.signal.core.util.logging.Log
@@ -8,6 +11,7 @@ import org.signal.libsignal.protocol.groups.GroupSessionBuilder
 import org.signal.libsignal.protocol.message.SenderKeyDistributionMessage
 import org.thoughtcrime.securesms.crypto.ReentrantSessionLock
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.groups.GroupId
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.whispersystems.signalservice.api.crypto.ContentHint
 import org.whispersystems.signalservice.api.crypto.EnvelopeContent
@@ -18,6 +22,9 @@ import org.whispersystems.signalservice.internal.push.DataMessage
 import org.whispersystems.signalservice.internal.push.NullMessage
 import org.whispersystems.signalservice.internal.push.PniSignatureMessage
 import org.whispersystems.signalservice.internal.push.ReceiptMessage
+import org.whispersystems.signalservice.internal.push.SyncMessage
+import org.whispersystems.signalservice.internal.push.TypingMessage
+import org.whispersystems.signalservice.internal.push.Verified
 import org.whispersystems.signalservice.internal.util.Util
 import java.util.Optional
 
@@ -26,6 +33,7 @@ object OutgoingContent {
   private val TAG = Log.tag(OutgoingContent::class.java)
 
   private const val MAX_NULL_MESSAGE_PADDING_BYTES = 140
+  private const val MAX_SYNC_MESSAGE_PADDING_BYTES = 512
 
   fun nullMessage(): EnvelopeContent {
     val padding = DataMessage(body = Base64.encodeWithPadding(Util.getRandomLengthSecretBytes(MAX_NULL_MESSAGE_PADDING_BYTES))).encode()
@@ -39,6 +47,11 @@ object OutgoingContent {
       pniSignatureMessage = if (includePniSignature) pniSignature() else null
     )
     return EnvelopeContent.encrypted(content, ContentHint.IMPLICIT, Optional.empty())
+  }
+
+  fun typing(action: TypingMessage.Action, timestamp: Long, groupId: GroupId.V2?): EnvelopeContent.Encrypted {
+    val content = Content(typingMessage = TypingMessage(timestamp = timestamp, action = action, groupId = groupId?.decodedId?.toByteString()))
+    return EnvelopeContent.encrypted(content, ContentHint.IMPLICIT)
   }
 
   fun pniSignature(): PniSignatureMessage? {
@@ -64,5 +77,111 @@ object OutgoingContent {
   fun senderKeyDistributionMessage(distributionId: DistributionId): SenderKeyDistributionMessage {
     val self = SignalStore.account.requireAci().toProtocolAddress(SignalStore.account.deviceId)
     return SignalGroupSessionBuilder(ReentrantSessionLock.INSTANCE, GroupSessionBuilder(AppDependencies.protocolStore.aci())).create(self, distributionId.asUuid())
+  }
+
+  fun syncKeys(accountEntropyPool: AccountEntropyPool?, mediaRootBackupKey: MediaRootBackupKey?): EnvelopeContent {
+    return syncMessage(
+      SyncMessage(
+        keys = SyncMessage.Keys(
+          accountEntropyPool = accountEntropyPool?.value,
+          mediaRootBackupKey = mediaRootBackupKey?.value?.toByteString()
+        )
+      )
+    )
+  }
+
+  fun syncCallEvent(callEvent: SyncMessage.CallEvent): EnvelopeContent {
+    return syncMessage(SyncMessage(callEvent = callEvent))
+  }
+
+  fun syncCallLinkUpdate(callLinkUpdate: SyncMessage.CallLinkUpdate): EnvelopeContent {
+    return syncMessage(SyncMessage(callLinkUpdate = callLinkUpdate))
+  }
+
+  fun syncCallLogEvent(callLogEvent: SyncMessage.CallLogEvent): EnvelopeContent {
+    return syncMessage(SyncMessage(callLogEvent = callLogEvent))
+  }
+
+  fun syncAttachmentBackfillRequest(request: SyncMessage.AttachmentBackfillRequest): EnvelopeContent {
+    return syncMessage(SyncMessage(attachmentBackfillRequest = request))
+  }
+
+  fun syncAttachmentBackfillResponse(response: SyncMessage.AttachmentBackfillResponse): EnvelopeContent {
+    return syncMessage(SyncMessage(attachmentBackfillResponse = response))
+  }
+
+  fun syncDeviceNameChange(deviceNameChange: SyncMessage.DeviceNameChange): EnvelopeContent {
+    return syncMessage(SyncMessage(deviceNameChange = deviceNameChange))
+  }
+
+  fun syncUsernameChange(): EnvelopeContent {
+    return syncMessage(SyncMessage(usernameChange = SyncMessage.UsernameChange()))
+  }
+
+  fun syncFetchLatest(type: SyncMessage.FetchLatest.Type): EnvelopeContent {
+    return syncMessage(SyncMessage(fetchLatest = SyncMessage.FetchLatest(type = type)))
+  }
+
+  fun syncDeleteForMe(deleteForMe: SyncMessage.DeleteForMe): EnvelopeContent {
+    return syncMessage(SyncMessage(deleteForMe = deleteForMe))
+  }
+
+  fun syncBlocked(blocked: SyncMessage.Blocked): EnvelopeContent {
+    return syncMessage(SyncMessage(blocked = blocked))
+  }
+
+  fun syncSent(sent: SyncMessage.Sent): EnvelopeContent {
+    return syncMessage(SyncMessage(sent = sent))
+  }
+
+  fun syncRequest(type: SyncMessage.Request.Type): EnvelopeContent {
+    return syncMessage(SyncMessage(request = SyncMessage.Request(type = type)))
+  }
+
+  fun syncRead(read: List<SyncMessage.Read>): EnvelopeContent {
+    return syncMessage(SyncMessage(read = read))
+  }
+
+  fun syncViewed(viewed: List<SyncMessage.Viewed>): EnvelopeContent {
+    return syncMessage(SyncMessage(viewed = viewed))
+  }
+
+  fun syncViewOnceOpen(viewOnceOpen: SyncMessage.ViewOnceOpen): EnvelopeContent {
+    return syncMessage(SyncMessage(viewOnceOpen = viewOnceOpen))
+  }
+
+  fun syncConfiguration(configuration: SyncMessage.Configuration): EnvelopeContent {
+    return syncMessage(SyncMessage(configuration = configuration))
+  }
+
+  fun syncStickerPackOperations(operations: List<SyncMessage.StickerPackOperation>): EnvelopeContent {
+    return syncMessage(SyncMessage(stickerPackOperation = operations))
+  }
+
+  fun syncContacts(contacts: SyncMessage.Contacts): EnvelopeContent {
+    return syncMessage(SyncMessage(contacts = contacts))
+  }
+
+  fun syncMessageRequestResponse(response: SyncMessage.MessageRequestResponse): EnvelopeContent {
+    return syncMessage(SyncMessage(messageRequestResponse = response))
+  }
+
+  fun syncOutgoingPayment(outgoingPayment: SyncMessage.OutgoingPayment): EnvelopeContent {
+    return syncMessage(SyncMessage(outgoingPayment = outgoingPayment))
+  }
+
+  fun syncVerified(destinationAci: ServiceId.ACI, identityKey: ByteArray, state: Verified.State): EnvelopeContent {
+    val verified = Verified(
+      destinationAciBinary = destinationAci.toByteString(),
+      identityKey = identityKey.toByteString(),
+      state = state,
+      nullMessage = Util.getRandomLengthSecretBytes(MAX_SYNC_MESSAGE_PADDING_BYTES).toByteString()
+    )
+    return syncMessage(SyncMessage(verified = verified))
+  }
+
+  private fun syncMessage(syncMessage: SyncMessage): EnvelopeContent {
+    val padded = syncMessage.copy(padding = Util.getRandomLengthSecretBytes(MAX_SYNC_MESSAGE_PADDING_BYTES).toByteString())
+    return EnvelopeContent.encrypted(Content(syncMessage = padded), ContentHint.IMPLICIT, Optional.empty())
   }
 }

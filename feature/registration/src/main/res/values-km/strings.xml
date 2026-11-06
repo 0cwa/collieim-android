@@ -734,6 +734,8 @@
     <string name="SignalLoginCredentialEntryScreen__show_login_info_again">បង្ហាញព័ត៌មានចូលគណនីម្តងទៀត</string>
     <!-- Error shown when what the user typed back doesn\'t match the Signal Login they were given. -->
     <string name="SignalLoginCredentialEntryScreen__that_doesnt_match_the_signal_login_you_were_shown">វាមិនត្រូវគ្នានឹង Signal Login ដែលបានបង្ហាញទៅអ្នកទេ</string>
+    <!-- Subtitle on the Signal Login entry screen when the user opened it from a reminder to check they still know their login -->
+    <string name="SignalLoginCredentialEntryScreen__enter_your_signal_login_to_verify_you_still_know_it">បញ្ចូល Signal Login ដើម្បីផ្ទៀងផ្ទាត់ថាអ្នកនៅតែចងចាំវា។</string>
 
     <!-- Add username screen -->
     <!-- Title of the screen offering the user an optional username. -->
@@ -818,4 +820,16 @@
     <string name="TwoFactorSelectionScreen__cancel">បោះបង់</string>
     <!-- Dialog message shown when a passkey verification attempt fails for a reason the user can\'t act on -->
     <string name="TwoFactorSelectionScreen__something_went_wrong_with_your_passkey">មានអ្វីមួយមិនប្រក្រតីជាមួយសោសម្ងាត់របស់អ្នក។ សូមព្យាយាមម្តងទៀត ឬជ្រើសរើសវិធីផ្សេងទៀត។</string>
+
+    <!-- PasskeyVerificationScreen -->
+    <!-- Title of the screen asking the user to verify their account with their passkey -->
+    <string name="PasskeyVerificationScreen__two_factor_authentication">ការផ្ទៀងផ្ទាត់ពីរជំហាន</string>
+    <!-- Subtitle telling the user to verify their account with their passkey -->
+    <string name="PasskeyVerificationScreen__to_continue_verify_your_account">ដើម្បីបន្ត សូមផ្ទៀងផ្ទាត់គណនីរបស់អ្នកជាមួយសោសម្ងាត់របស់អ្នក។</string>
+    <!-- Button text to start verifying with a passkey -->
+    <string name="PasskeyVerificationScreen__continue">បន្ត</string>
+    <!-- Button text to cancel two-factor authentication -->
+    <string name="PasskeyVerificationScreen__cancel">បោះបង់</string>
+    <!-- Dialog message shown when a passkey verification attempt fails for a reason the user can\'t act on -->
+    <string name="PasskeyVerificationScreen__something_went_wrong_with_your_passkey">មានអ្វីមួយមិនប្រក្រតីជាមួយសោសម្ងាត់របស់អ្នក។ សូមព្យាយាមម្តងទៀត។</string>
 </resources>

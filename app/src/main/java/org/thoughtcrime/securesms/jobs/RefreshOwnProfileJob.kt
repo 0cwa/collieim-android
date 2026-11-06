@@ -5,6 +5,7 @@ import org.signal.core.models.badges.Badge
 import org.signal.core.util.Base64
 import org.signal.core.util.ExpiringProfileCredentialUtil
 import org.signal.core.util.Util
+import org.signal.core.util.crypto.InvalidCiphertextException
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.net.RequestResult
 import org.signal.libsignal.usernames.BaseUsernameException
@@ -12,6 +13,7 @@ import org.signal.libsignal.usernames.Username
 import org.signal.libsignal.zkgroup.profiles.ExpiringProfileKeyCredential
 import org.signal.libsignal.zkgroup.profiles.ProfileKey
 import org.signal.network.exceptions.PushNetworkException
+import org.signal.storage.keyvalue.isTerminal
 import org.thoughtcrime.securesms.badges.BadgeRepository
 import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
@@ -23,13 +25,11 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.thoughtcrime.securesms.keyvalue.isTerminal
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.profiles.manage.UsernameRepository
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.ProfileUtil
-import org.whispersystems.signalservice.api.crypto.InvalidCiphertextException
 import org.whispersystems.signalservice.api.crypto.ProfileCipher
 import org.whispersystems.signalservice.api.profiles.ProfileAndCredential
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile
@@ -253,7 +253,7 @@ class RefreshOwnProfileJob private constructor(parameters: Parameters) : BaseJob
         .map { value -> if (value) PhoneNumberSharingState.ENABLED else PhoneNumberSharingState.DISABLED }
         .orElse(PhoneNumberSharingState.UNKNOWN)
 
-      if (remotePhoneNumberSharing == PhoneNumberSharingState.UNKNOWN || remotePhoneNumberSharing.enabled != SignalStore.phoneNumberPrivacy.isPhoneNumberSharingEnabled()) {
+      if (remotePhoneNumberSharing == PhoneNumberSharingState.UNKNOWN || remotePhoneNumberSharing.enabled != SignalStore.phoneNumberPrivacy.isPhoneNumberSharingEnabled) {
         Log.w(TAG, "Phone number sharing setting did not match! Syncing with storage service, then uploading our profile.")
         syncWithStorageServiceThenUploadProfile()
       }

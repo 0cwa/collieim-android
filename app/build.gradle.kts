@@ -25,13 +25,14 @@ plugins {
   id("com.squareup.wire")
   id("translations")
   id("licenses")
+  id("pseudo-locales")
 }
 
 val staticIps = Properties().apply { file("static-ips.properties").reader().use { load(it) } }
 staticIps.stringPropertyNames().forEach { rootProject.extra[it] = staticIps.getProperty(it) }
 
-val canonicalVersionCode = 1772
-val canonicalVersionName = "8.33.2"
+val canonicalVersionCode = 1777
+val canonicalVersionName = "8.35.1"
 val currentHotfixVersion = 0
 val maxHotfixVersions = 100
 
@@ -688,8 +689,6 @@ dependencies {
   coreLibraryDesugaring(libs.android.tools.desugar)
 
   implementation(project(":core:database"))
-  implementation(project(":core:models"))
-  implementation(project(":core:models-jvm"))
   implementation(project(":core:serialization"))
   implementation(project(":core:ui"))
   implementation(project(":core:util"))
@@ -710,8 +709,10 @@ dependencies {
   implementation(project(":lib:password-manager"))
   implementation(project(":lib:photoview"))
   implementation(project(":lib:qr"))
+  implementation(project(":lib:remote-config"))
   implementation(project(":lib:signal-login"))
   implementation(project(":lib:sticky-header-grid"))
+  implementation(project(":lib:storage"))
   implementation(project(":lib:ui-components"))
   implementation(project(":lib:video"))
 
@@ -853,6 +854,7 @@ dependencies {
   testImplementation(testFixtures(project(":core:ui")))
   testImplementation(testFixtures(project(":lib:emoji")))
   testImplementation(testFixtures(project(":lib:libsignal-service")))
+  testImplementation(testFixtures(project(":lib:storage")))
   testImplementation(testLibs.espresso.core)
   testImplementation(testLibs.kotlinx.coroutines.test)
   testImplementation(testLibs.sqlite.jdbc)

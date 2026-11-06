@@ -52,6 +52,7 @@ import org.signal.libsignal.protocol.InvalidKeyException
 import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.libsignal.zkgroup.profiles.ExpiringProfileKeyCredential
 import org.signal.libsignal.zkgroup.profiles.ProfileKey
+import org.signal.remoteconfig.RemoteConfig
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import org.thoughtcrime.securesms.badges.Badges.toDatabaseBadge
 import org.thoughtcrime.securesms.color.MaterialColor
@@ -87,6 +88,7 @@ import org.thoughtcrime.securesms.groups.GroupId.V1
 import org.thoughtcrime.securesms.groups.GroupId.V2
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor
+import org.thoughtcrime.securesms.jobs.GroupV2UpdateSelfProfileKeyJob
 import org.thoughtcrime.securesms.jobs.RequestGroupV2InfoJob
 import org.thoughtcrime.securesms.jobs.RetrieveProfileJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -104,7 +106,6 @@ import org.thoughtcrime.securesms.storage.StorageSyncHelper.toOptionalBool
 import org.thoughtcrime.securesms.storage.StorageSyncModels
 import org.thoughtcrime.securesms.util.IdentityUtil
 import org.thoughtcrime.securesms.util.ProfileUtil
-import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.SignalE164Util
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaperFactory
@@ -1118,6 +1119,11 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
     if (update.old.proto.blocked && !update.new.proto.blocked) {
       groups.clearGroupIfLeftAndDeleted(recipient.id)
     }
+
+    if (!update.old.proto.whitelisted && update.new.proto.whitelisted) {
+      Log.i(TAG, "Profile sharing was enabled for $groupId via storage sync. Ensuring our profile key is up to date in the group.")
+      AppDependencies.jobManager.add(GroupV2UpdateSelfProfileKeyJob.withQueueLimits(groupId))
+    }
   }
 
   fun applyStorageSyncAccountUpdate(update: StorageRecordUpdate<SignalAccountRecord>) {
@@ -1668,14 +1674,21 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
     }
   }
 
-  fun setLastSessionResetTime(id: RecipientId, lastResetTime: DeviceLastResetTime) {
-    val values = ContentValues(1).apply {
-      put(LAST_SESSION_RESET, lastResetTime.encode())
-    }
-    update(id, values)
+  fun getLastSessionResetTime(id: RecipientId, deviceId: Int): Long {
+    return getLastSessionResetTimes(id).resetTime.firstOrNull { it.deviceId == deviceId }?.lastResetTime ?: 0
   }
 
-  fun getLastSessionResetTimes(id: RecipientId): DeviceLastResetTime {
+  fun setLastSessionResetTime(id: RecipientId, deviceId: Int, time: Long) {
+    writableDatabase.withinTransaction {
+      val resetTimes = getLastSessionResetTimes(id).resetTime.filter { it.deviceId != deviceId } + DeviceLastResetTime.Pair(deviceId = deviceId, lastResetTime = time)
+      val values = ContentValues(1).apply {
+        put(LAST_SESSION_RESET, DeviceLastResetTime(resetTime = resetTimes).encode())
+      }
+      update(id, values)
+    }
+  }
+
+  private fun getLastSessionResetTimes(id: RecipientId): DeviceLastResetTime {
     readableDatabase.query(TABLE_NAME, arrayOf(LAST_SESSION_RESET), ID_WHERE, SqlUtil.buildArgs(id), null, null, null).use { cursor ->
       if (cursor.moveToFirst()) {
         return try {
@@ -3736,15 +3749,15 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
   }
 
   /**
-   * Every registered recipient linked to a system contact, keyed by that contact's lookup key.
+   * Every registered recipient linked to a system contact, with that contact's lookup key.
    *
    * The key comes from the uri path, not its last segment, which may be a legacy Data row id or a stale
    * contact id. Two numbers on one contact share a lookup key and are separate Signal accounts, so all of
    * them are kept.
    */
-  fun getSystemContactLinksByLookupKey(): Map<String, List<SystemContactLink>> {
+  fun getSystemContactLinks(): List<SystemContactLink> {
     return readableDatabase
-      .select(ID, SYSTEM_CONTACT_URI, NICKNAME_JOINED_NAME, NICKNAME_GIVEN_NAME)
+      .select(ID, E164, SYSTEM_CONTACT_URI, NICKNAME_JOINED_NAME, NICKNAME_GIVEN_NAME)
       .from(TABLE_NAME)
       .where(
         "$REGISTERED = ? AND $SYSTEM_CONTACT_URI NOT NULL AND $BLOCKED = 0 AND $HIDDEN = 0 AND $ID != ?",
@@ -3762,12 +3775,12 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
           SystemContactLink(
             lookupKey = lookupKey,
             recipientId = RecipientId.from(cursor.requireLong(ID)),
+            e164 = cursor.requireString(E164),
             nickname = Util.getFirstNonEmpty(cursor.requireString(NICKNAME_JOINED_NAME), cursor.requireString(NICKNAME_GIVEN_NAME)).nullIfBlank()
           )
         }
       }
       .filterNotNull()
-      .groupBy { it.lookupKey }
   }
 
   /**
@@ -3804,8 +3817,11 @@ open class RecipientTable(context: Context, databaseHelper: SignalDatabase) : Da
   data class SystemContactLink(
     val lookupKey: String,
     val recipientId: RecipientId,
+    val e164: String?,
     val nickname: String?
-  )
+  ) {
+    override fun toString(): String = "SystemContactLink(recipientId=$recipientId)"
+  }
 
   data class SignalOnlyContact(
     val recipientId: RecipientId,

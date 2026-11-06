@@ -101,9 +101,9 @@
     <!-- Toast shown when creating a passkey didn\'t work -->
     <string name="AccountSettingsFragment__couldnt_create_passkey">Neizdevās izveidot piekļuves atslēgu. Mēģiniet vēlreiz.</string>
     <!-- Title of the device screen lock prompt shown before a two-factor authentication method can be added -->
-    <string name="AccountSettingsFragment__unlock_to_add_two_factor_method">Unlock to add two-factor method</string>
+    <string name="AccountSettingsFragment__unlock_to_add_two_factor_method">Atbloķēt, lai pievienotu divpakāpju verifikācijas metodi</string>
     <!-- Title of the sheet explaining that the device screen lock is needed before a two-factor authentication method can be added -->
-    <string name="AccountSettingsFragment__to_add_this_method_confirm_its_you">To add this method, confirm it\'s you</string>
+    <string name="AccountSettingsFragment__to_add_this_method_confirm_its_you">Lai pievienotu šo metodi, apstipriniet identitāti</string>
     <!-- Title of the device screen lock prompt shown before a two-factor authentication method can be removed -->
     <string name="AccountSettingsFragment__unlock_to_remove_two_factor_method">Atbloķēt, lai noņemtu divpakāpju verifikācijas metodi</string>
     <!-- Title of the sheet explaining that the device screen lock is needed before a two-factor authentication method can be removed -->
@@ -229,7 +229,7 @@
     <!-- Button that starts creating a passkey -->
     <string name="PasskeySetupScreen__set_up_a_passkey">Iestatīt piekļuves atslēgu</string>
     <!-- Title of the dialog shown when the account already has as many two-factor methods as it\'s allowed -->
-    <string name="PasskeySetupScreen__cant_add_passkey">Can\'t add passkey</string>
+    <string name="PasskeySetupScreen__cant_add_passkey">Nevar pievienot pieteikšanās atslēgu</string>
     <!-- Body of the dialog shown when the account already has as many two-factor methods as it\'s allowed. %1$d is the limit. -->
     <string name="PasskeySetupScreen__you_cant_add_more_than_d_two_factor_methods">Jūs nevarat pievienot vairāk kā %1$d divpakāpju autentifikācijas lietotnes. Vispirms pamēģiniet kādu noņemt.</string>
 
@@ -315,6 +315,10 @@
     <string name="DeleteAccountScreen__deleting_your_account_with_username_s_will">Ja dzēsīsiet kontu ar lietotājvārdu “%1$s”, tad:</string>
     <!-- Bullet point on the delete account screen, shown in place of the plain one when the account has a username. Placeholder is the username. -->
     <string name="DeleteAccountScreen__delete_your_account_info_and_profile_photo_including_your_username_s">Dzēst konta informāciju un profila attēlu, tostarp jūsu lietotājvārdu \"%1$s\"</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, telling the user their account ID and recovery key will be deleted -->
+    <string name="DeleteAccountScreen__delete_your_account_id_and_recovery_key">Delete your account ID and recovery key</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, warning the user that the account can\'t be registered again or restored afterwards -->
+    <string name="DeleteAccountScreen__you_wont_be_able_to_re_register_or_restore_your_account">Prevent you from re-registering or restoring your account</string>
     <!-- Bullet point on the delete account screen warning the user that the deletion is permanent -->
     <string name="DeleteAccountScreen__this_action_can_not_be_undone">Šo darbību nevar atsaukt</string>
     <!-- Message of the deletion confirmation dialog, shown when the account has a username. Placeholder is the username. -->
@@ -589,4 +593,588 @@
     <string name="NotificationProfileCreated__add_a_schedule_in_settings_to_automate_your_profile">Pievienojiet grafiku iestatījumos, lai automatizētu jūsu profilu.</string>
     <!-- Descriptor text shown to indicate your profile will follow the schedule set during create flow -->
     <string name="NotificationProfileCreated__your_profile_will_turn_on_and_off_automatically_according_to_your_schedule">Jūsu profils ieslēgsies un izslēgsies automātiski, saskaņā ar grafiku.</string>
+
+    <!-- PrivacySettingsScreen -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Jūs vēl neesat iestatījuši paroles frāzi!</string>
+    <string name="ApplicationPreferencesActivity_disable">Atspējot</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">Atspējot paroles frāzi?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Šī opcija pastāvīgi atbloķēs Signal un jaunu ziņojumu paziņojumus.</string>
+    <string name="PrivacySettingsFragment__app_security">Lietotnes aizsardzība</string>
+    <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
+    <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Bloķēt ekrānuzņēmumus pēdējo sarunu sarakstā un pašā lietotnē</string>
+    <string name="PrivacySettingsFragment__blocked">Bloķēti</string>
+    <!-- Alert dialog description to setup screen lock or fingerprint in phone settings -->
+    <string name="PrivacySettingsFragment__cant_enable_description">Lai izmantotu maksājumu bloķēšanu, jums tālruņa iestatījumos vispirms ir jāieslēdz ekrāna bloķēšana vai pirkstu nospiedumu ID.</string>
+    <!-- Alert dialog title when payment lock cannot be enabled -->
+    <string name="PrivacySettingsFragment__cant_enable_title">Nevar iespējot maksājumu bloķēšanu</string>
+    <!-- Settings label that shows the number blocked contacts -->
+    <plurals name="PrivacySettingsFragment__d_contacts">
+        <item quantity="zero">%1$d kontaktpersonas vai grupas</item>
+        <item quantity="one">%1$d kontaktpersona vai grupa</item>
+        <item quantity="other">%1$d kontaktpersonas vai grupas</item>
+    </plurals>
+    <string name="PrivacySettingsFragment__default_timer_for_new_changes">Noklusējuma taimeris jaunām sarunām</string>
+    <!-- Shown in a toast when we can\'t navigate to the user\'s system fingerprint settings -->
+    <string name="PrivacySettingsFragment__failed_to_navigate_to_system_settings">Neizdevās atvērt sistēmas iestatījumus</string>
+    <string name="PrivacySettingsFragment__messaging">Ziņapmaiņa</string>
+    <!-- Description for the payment lock toggle in privacy settings -->
+    <string name="PrivacySettingsFragment__payment_lock_require_lock">Pieprasīt Android ekrāna atbloķēšanas figūru vai pirkstu nospiedumu, lai nosūtītu naudas līdzekļus.</string>
+    <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">Iestatiet noklusējuma ziņu dzēšanas taimeri visām jaunajām jūsu sāktajām sarunām.</string>
+    <string name="PrivacySettingsFragment__signal_message_and_calls">Signal ziņas un zvani, pastāvīga zvanu pārsūtīšana un šifrēts sūtītājs</string>
+    <!-- Text shown when screen lock is not enabled -->
+    <string name="ScreenLockSettingsFragment__off">Izslēgta</string>
+    <string name="preferences__auto_lock_signal_after_a_specified_time_interval_of_inactivity">Automātiski slēgt Signal pēc noteikta bezdarbības intervāla</string>
+    <string name="preferences__change_passphrase">Nomainīt paroli</string>
+    <string name="preferences__change_your_passphrase">Mainīt savu paroli</string>
+    <!-- Legacy preference menu item to enable a passphrase screen lock that is only available to those who have previously had a passphrase -->
+    <string name="preferences__enable_passphrase">Iespējot ekrāna bloķēšanu ar paroli</string>
+    <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">Ja lasīšanas apliecinājumi ir atspējoti, jūs nevarēsiet redzēt lasīšanas apliecinājumus no citiem.</string>
+    <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">Ja rakstīšanas indikatori ir atspējoti, jūs nevarēsiet redzēt rakstīšanas indikatorus no citiem.</string>
+    <!-- Legacy preference menu item to choose the interval of inactivity before lockout -->
+    <string name="preferences__inactivity_timeout_interval">Bezdarbības noildzes intervāls</string>
+    <!-- Legacy preference menu item to enable locking of app after inactivity -->
+    <string name="preferences__inactivity_timeout_passphrase">Bezdarbības noildzes parole</string>
+    <string name="preferences__incognito_keyboard">Privātais režīms tastatūrai</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__incognito_keyboard_learn_more" translatable="false">https://support.signal.org/hc/articles/360055276112</string> -->
+    <string name="preferences__lock_signal_and_message_notifications_with_a_passphrase">Aizslēgt ekrānu un paziņojumus ar ieejas frāzi</string>
+    <!-- Privacy settings payments section description -->
+    <string name="preferences__payment_lock">Maksājumu bloķēšana</string>
+    <string name="preferences__read_receipts">Lasīšanas apliecinājumi</string>
+    <string name="preferences__request_keyboard_to_disable">Pieprasīt tastatūrai atspējot personalizētu mācīšanos.</string>
+    <string name="preferences__screen_security">Ekrāna aizsardzība</string>
+    <string name="preferences__this_setting_is_not_a_guarantee">Šis iestatījums nesniedz nekādas garantijas, un tastatūra to var ignorēt.</string>
+    <string name="preferences__typing_indicators">Rakstīšanas indikatori</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">Izvēlieties, kas var redzēt jūsu tālruņa numuru un kas var ar jums sazināties lietotnē Signal, izmantojot to.</string>
+    <!-- Privacy settings payments section title -->
+    <string name="preferences_app_protection__payments">Maksājumi</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">Lai izmantotu ekrāna bloķēšanu, iestatiet PIN kodu, kombināciju vai paroli šajā ierīcē.</string>
+    <!-- Title of the privacy settings screen -->
+    <string name="PrivacySettingsScreen__privacy">Privātums</string>
+    <!-- Section header in privacy settings for disappearing message defaults -->
+    <string name="PrivacySettingsScreen__disappearing_messages">Gaistošās ziņas</string>
+    <!-- Row in privacy settings that opens advanced privacy settings -->
+    <string name="PrivacySettingsScreen__advanced">Papildu</string>
+    <!-- Confirm button on the dialog explaining payment lock needs a device screen lock; opens the system settings -->
+    <string name="PrivacySettingsScreen__turn_on">Ieslēgt</string>
+    <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
+    <string name="PrivacySettingsScreen__not_now">Ne tagad</string>
+    <!-- Title of the authentication prompt shown when turning off payment lock -->
+    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <!-- Link after the incognito keyboard disclaimer that opens a support article -->
+    <string name="PrivacySettingsScreen__learn_more">Uzzināt vairāk</string>
+
+    <!-- AppSettingsScreen -->
+    <!-- String alerting user that backup storage limit has been reached -->
+    <string name="AppSettingsFragment__backup_storage_limit_reached">Sasniegts rezerves kopiju krātuves ierobežojums</string>
+    <!-- String displayed in a snackbar when we successfully copy the backups subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_backups_subscriber_id_to_clipboard">Rezerves kopiju abonenta ID nokopēts starpliktuvē</string>
+    <!-- String displayed in a snackbar when we successfully copy the donations subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_donor_subscriber_id_to_clipboard">Ziedojumu abonenta ID nokopēts starpliktuvē</string>
+    <!-- String alerting user that backup failed -->
+    <string name="AppSettingsFragment__couldnt_complete_backup">Neizdevās izveidot rezerves kopiju</string>
+    <!-- String displayed telling user to invite their friends to Signal -->
+    <string name="AppSettingsFragment__invite_your_friends">Uzaiciniet draugus</string>
+    <!-- String alerting user that something is wrong with their backups subscription -->
+    <string name="AppSettingsFragment__renew_your_signal_backups_subscription">Atjaunojiet Signal drošo rezerves kopiju abonementu</string>
+    <!-- App settings row that opens privacy settings -->
+    <string name="preferences__privacy">Privātums</string>
+    <!-- Title of the top level app settings screen -->
+    <string name="AppSettingsScreen__settings">Iestatījumi</string>
+    <!-- Content description for the back button on the top level app settings screen -->
+    <string name="AppSettingsScreen__go_back">Atgriezties</string>
+    <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
+    <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Neizdevās izmantot jūsu rezerves kopiju abonementu</string>
+    <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Ziedot Signal</string>
+    <!-- App settings row that opens internal-only preferences -->
+    <string name="AppSettingsScreen__internal_preferences">Iekšējās preferences</string>
+    <!-- App settings row that opens linked devices -->
+    <string name="AppSettingsScreen__linked_devices">Piesaistās ierīces</string>
+    <!-- App settings row that opens notification settings -->
+    <string name="AppSettingsScreen__notifications">Paziņojumi</string>
+    <!-- App settings row that opens payments -->
+    <string name="AppSettingsScreen__payments">Maksājumi</string>
+    <!-- App settings row that opens story settings -->
+    <string name="AppSettingsScreen__stories">Stāsti</string>
+    <!-- App settings row that opens backup settings -->
+    <string name="AppSettingsScreen__backups">Rezerves kopijas</string>
+
+    <!-- Navigation bar size dialog, in appearance settings -->
+    <!-- Dialog title, displayed below the header image -->
+    <string name="ChooseNavigationBarStyleFragment__navigation_bar_size">Navigācijas joslas izmērs</string>
+    <!-- Toggle button label for normal size -->
+    <string name="ChooseNavigationBarStyleFragment__normal">Normāls</string>
+    <!-- Toggle button label for compact size -->
+    <string name="ChooseNavigationBarStyleFragment__compact">Kompakts</string>
+
+    <!-- Content description for the back button on the chats settings screen -->
+    <string name="ChatsSettingsScreen__go_back">Atgriezties</string>
+
+    <!-- StorageUsageOverview -->
+    <string name="preferences_storage__photos">Attēli</string>
+    <string name="preferences_storage__videos">Video</string>
+    <string name="preferences_storage__files">Faili</string>
+    <string name="preferences_storage__audio">Audio</string>
+    <!-- Storage usage legend label for the size of the main message database -->
+    <string name="preferences_storage__messages">Ziņas</string>
+    <!-- Storage usage legend label for the size of downloaded sticker packs -->
+    <string name="preferences_storage__stickers">Uzlīmes</string>
+    <!-- Storage usage legend label for all remaining app storage, such as other databases, caches and temporary files -->
+    <string name="preferences_storage__other">Cits</string>
+    <!-- Shown in place of the total storage size while usage is still being computed -->
+    <string name="preferences_storage__calculating">Aprēķina…</string>
+    <string name="preferences_storage__review_storage">Apskatīt krātuvi</string>
+
+    <!-- TwoFactorVerifyScreen -->
+    <!-- Title of the screens where the user verifies one of their two-factor authentication methods -->
+    <string name="TwoFactorVerifyScreen__two_factor_authentication">Divpakāpju autentifikācija</string>
+    <!-- Instructions shown above the list of two-factor methods the user can verify with -->
+    <string name="TwoFactorVerifyScreen__choose_a_method_below_to_verify_your_account">Izvēlieties kādu no tālāk norādītajiem veidiem, lai verificētu savu kontu.</string>
+    <!-- Title of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__passkey">Piekļuves atslēga</string>
+    <!-- Description of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__tap_to_use_your_device_biometrics_or_fido2_passkey">Pieskarieties, lai izmantotu ierīces biometriskos datus vai FIDO2 piekļuves atslēgu</string>
+    <!-- Title of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__authenticator_app">Autentifikācijas lietotne</string>
+    <!-- Description of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__enter_a_one_time_code_generated_by_your_authenticator_app">Ievadiet vienreizēju kodu, ko ģenerējusi autentifikācijas lietotne.</string>
+    <!-- Instructions shown above the field where the user enters the code from their authenticator app -->
+    <string name="TwoFactorVerifyScreen__to_continue_enter_the_6_digit_code_from_your_authenticator_app">Lai turpinātu, ievadiet autentifikācijas lietotnē redzamo sešciparu kodu.</string>
+    <!-- Button that leaves the verification flow without verifying anything -->
+    <string name="TwoFactorVerifyScreen__cancel">Atcelt</string>
+    <!-- Error shown under the code field when the service rejected the code -->
+    <string name="TwoFactorVerifyScreen__incorrect_code">Nepareizs kods. Ievadiet autentifikācijas lietotnē redzamo kodu.</string>
+    <!-- Error shown when the service could not be reached -->
+    <string name="TwoFactorVerifyScreen__couldnt_reach_signal">Neizdevās izveidot savienojumu ar Signal. Pārbaudiet savienojumu un mēģiniet vēlreiz.</string>
+    <!-- Dialog shown when verifying with a passkey failed -->
+    <string name="TwoFactorVerifyScreen__something_went_wrong_with_your_passkey">Ar jūsu piekļuves atslēgu radās problēma. Lūdzu, mēģiniet vēlreiz vai izvēlieties citu metodi.</string>
+
+    <!-- EditProfileNameScreen -->
+    <!-- Title of the screen for editing your profile name -->
+    <string name="EditProfileNameFragment_your_name">Jūsu vārds</string>
+    <!-- Hint for the first name field when editing your profile name -->
+    <string name="EditProfileNameFragment_first_name">Vārds</string>
+    <!-- Hint for the last name field when editing your profile name -->
+    <string name="EditProfileNameFragment_last_name_optional">Uzvārds (nav obligāts)</string>
+    <!-- Button that saves your edited profile name -->
+    <string name="EditProfileNameScreen__save">Saglabāt</string>
+    <!-- Snackbar shown when your profile name couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameScreen__failed_to_save_due_to_network_issues">Neizdevās saglabāt, jo radās tīkla kļūda. Vēlāk mēģiniet vēlreiz.</string>
+
+    <!-- KeepMessagesSettingsScreen -->
+    <string name="preferences__keep_messages">Paturēt ziņas</string>
+    <!-- Option for keeping messages forever when managing storage -->
+    <string name="preferences_storage__forever">Uz visiem laikiem</string>
+    <string name="preferences_storage__one_year">1 gadu</string>
+    <string name="preferences_storage__six_months">6 mēnešiem</string>
+    <string name="preferences_storage__thirty_days">30 dienām</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Ziņas, kas ir vecākas par iestatīto laika periodu, tiks neatgriezeniski dzēstas.</string>
+    <string name="preferences_storage__delete_older_messages">Dzēst vecākas ziņas?</string>
+    <string name="preferences_storage__this_will_permanently_delete_all_message_history_and_media">Tādējādi no jūsu ierīces tiks neatgriezeniski dzēsta visa ziņu vēsture un multivides saturs, kas ir vecāks par %1$s.</string>
+    <!-- Dialog action that confirms deleting older messages -->
+    <string name="preferences_storage__delete">Dzēst</string>
+
+    <!-- ChatLengthLimitSettingsScreen -->
+    <string name="preferences__conversation_length_limit">Maksimālais sarunas ziņu skaits</string>
+    <plurals name="preferences_storage__s_messages_plural">
+        <item quantity="zero">%1$s ziņas</item>
+        <item quantity="one">%1$s ziņa</item>
+        <item quantity="other">%1$s ziņas</item>
+    </plurals>
+    <!-- Option for setting no limit of the length of chat messages -->
+    <string name="preferences_storage__none">Nav</string>
+    <string name="preferences_storage__custom">Pielāgots</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Ziņas, kuru garums pārsniedz iestatīto rakstzīmju skaitu, tiks neatgriezeniski dzēstas.</string>
+    <!-- The body of an alert dialog that is shown when confirming a trim operation. Trimming will delete all but the most recent messages in a chat. The placeholder represents how many messages are kept in each chat. All older messages are deleted. -->
+    <plurals name="preferences_storage__this_will_permanently_trim_all_conversations_to_the_d_most_recent_messages">
+        <item quantity="zero">Tiks saīsināta visu sarunu vēsture un tiks paturētas tikai %1$s jaunākās ziņas.</item>
+        <item quantity="one">Tiks saīsināta visu sarunu vēsture un tiks paturētas tikai jaunākā ziņa.</item>
+        <item quantity="other">Tiks saīsināta visu sarunu vēsture un tiks paturētas tikai %1$s jaunākās ziņas.</item>
+    </plurals>
+
+    <!-- EditAboutScreen -->
+    <!-- Title of the screen for editing the about text on your profile -->
+    <string name="EditAboutFragment_about">Par</string>
+    <!-- Placeholder in the about field when it is empty -->
+    <string name="EditAboutFragment_write_a_few_words_about_yourself">Uzraksti par sevi dažus vārdus…</string>
+    <!-- How many characters of the about text are used, out of the maximum, e.g. 125/140 -->
+    <string name="EditAboutFragment_count">%1$d/%2$d</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_speak_freely">Runā brīvi</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_encrypted">Šifrēts</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_be_kind">Esi pieklājīgs</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_coffee_lover">Kafijas mīļotājs</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_free_to_chat">Atvērts sarunai</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_taking_a_break">Paņēmis pārtraukumu</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_working_on_something_new">Strādāju pie kaut kā jauna</string>
+    <!-- Button that saves your edited about text -->
+    <string name="EditAboutScreen__save">Saglabāt</string>
+    <!-- Content description for the button that clears both the about text and its emoji -->
+    <string name="EditAboutScreen__clear">Notīrīt</string>
+    <!-- Content description for the button that opens the emoji picker for the about text -->
+    <string name="EditAboutScreen__choose_emoji">Izvēlēties emocijzīmi</string>
+    <!-- Snackbar shown when your about text couldn\'t be saved because of a network problem -->
+    <string name="EditAboutScreen__failed_to_save_due_to_network_issues">Neizdevās saglabāt, jo radās tīkla kļūda. Vēlāk mēģiniet vēlreiz.</string>
+
+    <!-- UsernameEditScreen -->
+    <!-- Placeholder text for custom discriminator -->
+    <string name="UsernameEditFragment__00">00</string>
+    <!-- Instructional text at the top of the username edit screen -->
+    <string name="UsernameEditFragment__choose_your_username">Izvēlieties lietotājvārdu</string>
+    <!-- Title of the username screen, and the label of its field -->
+    <string name="UsernameEditFragment_username">Lietotājvārds</string>
+    <!-- Button that deletes your username -->
+    <string name="UsernameEditFragment_delete">Dzēst</string>
+    <!-- Snackbar shown when a username change failed because of a network problem -->
+    <string name="UsernameEditFragment_encountered_a_network_error">Tīkla kļūda.</string>
+    <!-- Toast message shown if user exceeds the rate limit for reserving usernames -->
+    <string name="UsernameEditFragment_rate_limit_exceeded_error">Pārāk daudz mēģinājumu. Lūdzu, pēc brīža mēģiniet vēlreiz.</string>
+    <!-- Shown when the username someone typed already belongs to someone else -->
+    <string name="UsernameEditFragment_this_username_is_taken">Šis lietotājvārds ir aizņemts.</string>
+    <!-- Shown when a username has characters that usernames can\'t have -->
+    <string name="UsernameEditFragment_usernames_can_only_include">Lietotājvārdi var ietvert tikai a–Z, 0–9 un pasvītrojuma zīmes.</string>
+    <!-- Shown when a username starts with a digit -->
+    <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">Lietotājvārdi nevar sākties ar skaitli.</string>
+    <!-- Shown when the service rejects a username -->
+    <string name="UsernameEditFragment_username_is_invalid">Lietotājvārds nav derīgs.</string>
+    <!-- Shown when a username is too short or too long. %1$d is the minimum length and %2$d the maximum -->
+    <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">Lietotājvārdiem jābūt starp %1$d un %2$d rakstzīmēm.</string>
+    <!-- Explanation about what usernames provide, ending in a link to learn more. %1$s is that link, UsernameEditScreen__learn_more -->
+    <string name="UsernameEditScreen__usernames_let_others_message">Tagad lietotāji var nosūtīt jums ziņas, izmantojot jūsu izvēles lietotājvārdu, nevis tālruņa numuru. Lietotājvārdiem vienmēr ir piesaistīta ciparu kombinācija. %1$s</string>
+    <!-- Displayed when the chosen discriminator is not available for the given nickname -->
+    <string name="UsernameEditFragment__this_username_is_not_available_try_another_number">Šis lietotājvārds nav pieejams. Mēģiniet izmantot citu skaitli.</string>
+    <!-- Displayed when the chosen discriminator is too short -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_minimum_of_d_digits">Nederīgs lietotājvārds. Ievadiet vismaz %1$d skaitļus.</string>
+    <!-- Displayed when the chosen discriminator is too long -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_maximum_of_d_digits">Nederīgs lietotājvārds. Ievadiet ne vairāk kā %1$d skaitļus.</string>
+    <!-- Displayed when the chosen discriminator is 00 -->
+    <string name="UsernameEditFragment__this_number_cant_be_00">Šis numurs nedrīkst būt 00. Ievadiet ciparu no 1 līdz 9.</string>
+    <!-- Displayed when the chosen discriminator starts with 0 and has a length > 2 -->
+    <string name="UsernameEditFragment__this_number_cant_start_with_0">Numuri, kuros ir vairāk nekā divi cipari, nedrīkst sākties ar \"0\"</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to recover their username -->
+    <string name="UsernameEditFragment_recovery_dialog_confirmation">Mainot lietotājvārdu, tiks atiestatīts esošais QR kods un saite. Vai tiešām turpināt?</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to change their username, even if it resets their link -->
+    <string name="UsernameEditFragment_change_confirmation_message">Mainot lietotājvārdu, tiks atiestatīts esošais QR kods un saite. Vai tiešām turpināt?</string>
+    <!-- Text for a button in a dialog asking if the user would like to continue the operation of changing their username -->
+    <string name="UsernameEditFragment_continue">Turpināt</string>
+    <!-- Button that saves the username you typed -->
+    <string name="UsernameEditScreen__save">Saglabāt</string>
+    <!-- Link at the end of the explanation of usernames, which opens a support article about them -->
+    <string name="UsernameEditScreen__learn_more">Uzzināt vairāk</string>
+  <!-- Removed by excludeNonTranslatables <string name="username_support_url" translatable="false">https://support.signal.org/hc/articles/6712070553754</string> -->
+
+    <!-- EditProfileScreen -->
+    <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
+    <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Jūsu profilu un tā izmaiņas redzēs lietotāji, kuriem nosūtīsiet ziņas, kā arī jūsu kontakti un grupas.</string>
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Atjaunināt Signal</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Šī Signal versija ir novecojusi. Atjauniniet to, lai turpinātu izmantot Signal.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">Aktualizēt</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">Ierīce nav reģistrēta</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">Šī ierīce vairs nav reģistrēta. Lai veiktu izmaiņas kontā, reģistrējiet to atkārtoti.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Atkārtoti reģistrēties</string>
+    <!-- Snackbar shown when your new avatar couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameFragment_failed_to_save_due_to_network_issues_try_again_later">Neizdevās saglabāt, jo radās tīkla kļūda. Vēlāk mēģiniet vēlreiz.</string>
+    <!-- Snackbar message after network failure while trying to delete username -->
+    <string name="ManageProfileFragment__couldnt_delete_username">Nevarēja izdzēst lietotājvārdu. Lūdzu, mēģiniet vēlāk.</string>
+    <!-- The title of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_title">Vai dzēst lietotājvārdu?</string>
+    <!-- The body of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_body">"Tādējādi tiks dzēsts jūsu lietotājvārds, un jūsu QR kods un saite vairs nedarbosies. Lietotājvārds \"%1$s\" būs pieejams citiem lietotājiem. Vai tiešām vēlaties dzēst?"</string>
+    <!-- Button below your avatar on the profile screen that lets you change it -->
+    <string name="ManageProfileFragment__edit_photo">Rediģēt fotogrāfiju</string>
+    <!-- Title of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_title">Kopīgojiet savu lietotājvārdu</string>
+    <!-- Body of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_body">Ļaujiet citiem sākt ar jums sarunu, kopīgojot savu unikālo QR kodu vai saiti.</string>
+    <!-- Snackbar message after creating username -->
+    <string name="ManageProfileFragment__username_created">Lietotājvārds izveidots</string>
+    <!-- Snackbar message after successful deletion of username -->
+    <string name="ManageProfileFragment__username_deleted">Lietotājvārds izdzēsts</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc, shown when you have no username -->
+    <string name="ManageProfileFragment__username_footer_no_username">Tagad lietotāji var nosūtīt jums ziņas, izmantojot izvēles lietotājvārdu, nevis tālruņa numuru. Katram lietotājvārdam ir unikāls QR kods un saite, ko varat kopīgot ar draugiem.</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
+    <string name="ManageProfileFragment__your_username">Jūsu lietotājvārds, QR kods un saite jūsu profilā nav redzami. Kopīgojiet savu lietotājvārdu tikai ar uzticamiem cilvēkiem.</string>
+    <!-- Row on the profile screen that opens your about, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_about">Par</string>
+    <!-- Snackbar shown when the photo you chose for your avatar couldn\'t be read -->
+    <string name="ManageProfileFragment_failed_to_set_avatar">Neizdevās iestatīt avatāru</string>
+    <!-- Text for a button that will take the user to the screen to manage their username link and QR code -->
+    <string name="ManageProfileFragment_link_setting_text">QR kods vai saite</string>
+    <!-- Row on the profile screen that opens your name, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_profile_name">Profila nosaukums</string>
+    <!-- Row on the profile screen that opens your username, shown when you don\'t have one -->
+    <string name="ManageProfileFragment_username">Lietotājvārds</string>
+    <!-- Option to open username editor displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__edit_username">Rediģēt lietotājvārdu</string>
+    <!-- Option to delete username displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__delete_username">Dzēst lietotājvārdu</string>
+    <!-- Title of the screen showing your own profile -->
+    <string name="EditProfileScreen__profile">Profils</string>
+    <!-- Content description for your avatar on the profile screen, which opens it full screen -->
+    <string name="EditProfileScreen__set_avatar">Iestatīt avataru</string>
+    <!-- Row on the profile screen that opens your badges -->
+    <string name="EditProfileScreen__badges">Nozīmītes</string>
+    <!-- Button in the dialog confirming that you want your username deleted -->
+    <string name="EditProfileScreen__delete">Dzēst</string>
+    <!-- Content description for the button that closes the tip about your username link -->
+    <string name="EditProfileScreen__close_tip">Aizvērt</string>
+    <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Iegūstiet nozīmītessavam profilam, atbalstot Signal.</string>
+    <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal irr bezpeļņas organizācija bez reklāmdevējiem vai investoriem, kuru uztur tikai cilvēki kā jūs.</string>
+    <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Kļūstiet par Uzturētāju</string>
+
+    <!-- BadgesOverviewScreen -->
+    <!-- Title of the screen listing the badges you\'ve unlocked -->
+    <string name="BadgesOverviewScreen__badges">Nozīmītes</string>
+    <!-- Section header above the grid of badges you\'ve unlocked -->
+    <string name="BadgesOverviewFragment__my_badges">Manas nozīmītes</string>
+    <!-- Toggle for whether your badges are shown on your profile -->
+    <string name="BadgesOverviewFragment__display_badges_on_profile">Rādīt nozīmītes profilā</string>
+    <!-- Row that opens the screen for choosing which badge is shown on your profile; the badge\'s name is shown beneath it -->
+    <string name="BadgesOverviewScreen__featured_badge">Izceltā nozīmīte</string>
+    <!-- Snackbar shown when showing or hiding your badges on your profile couldn\'t be saved -->
+    <string name="BadgesOverviewFragment__failed_to_update_profile">Neizdevās atjaunināt profilu</string>
+
+    <!-- SelectFeaturedBadgeScreen -->
+    <!-- Title of the screen for choosing which of your badges shows on your profile -->
+    <string name="SelectFeaturedBadgeScreen__featured_badge">Izceltā nozīmīte</string>
+    <!-- Section header above the grid of badges you can choose to feature on your profile -->
+    <string name="SelectFeaturedBadgeFragment__select_a_badge">Izvēlēties nozīmīti</string>
+    <!-- Button that saves the badge you chose to feature on your profile -->
+    <string name="SelectFeaturedBadgeScreen__save">Saglabāt</string>
+    <!-- Snackbar shown when the badge you chose to feature couldn\'t be saved to your profile -->
+    <string name="SelectFeaturedBadgeFragment__failed_to_update_profile">Neizdevās atjaunināt profilu</string>
+
+    <!-- UsernameLinkShareSheet -->
+    <!-- Explanatory text at the top of a bottom sheet describing how username links work -->
+    <string name="UsernameLinkShareBottomSheet_title">Ikviens, kuram ir pieejama šī saite, var skatīt jūsu lietotājvārdu un uzsākt sarunu ar jums. Kopīgojiet šo saiti tikai ar uzticamiem cilvēkiem.</string>
+    <!-- A button label for a button that, when pressed, will copy your username link to the clipboard -->
+    <string name="UsernameLinkShareBottomSheet_copy_link">Kopēt saiti</string>
+    <!-- A button label for a button that, when pressed, will open a share sheet for sharing your username link -->
+    <string name="UsernameLinkShareBottomSheet_share">Kopīgot</string>
+
+    <!-- UsernameLinkSettingsScreen -->
+    <!-- Label for a tab that shows a screen to view your username QR code -->
+    <string name="UsernameLinkSettings_code_tab_name">Kods</string>
+    <!-- Label for a tab that shows a screen to scan a QR code -->
+    <string name="UsernameLinkSettings_scan_tab_name">Skenēt</string>
+    <!-- Content of a toast that will show after the username link is copied to the clipboard -->
+    <string name="UsernameLinkSettings_link_copied_toast">Saite nokopēta</string>
+    <!-- Content of a toast that will show after the username is copied to the clipboard -->
+    <string name="UsernameLinkSettings_username_copied_toast">Lietotājvārds nokopēts</string>
+    <!-- Title of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_title">Vai atiestatīt QR kodu?</string>
+    <!-- Body of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_body">Ja atiestatīsiet savu QR kodu, esošais QR kods un saite vairs nedarbosies.</string>
+    <!-- Label for the confirmation button on a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_confirm_button">Atiestatīt</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because you had no internet. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_unavailable">Jums nav piekļuves tīklam. Jūsu saite netika atiestatīta. Lūdzu, mēģiniet vēlāk.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of a transient network issue. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_error">Mēģinot atiestatīt jūsu saiti, radās tīkla kļūda. Lūdzu, mēģiniet vēlāk.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of an unknown error. -->
+    <string name="UsernameLinkSettings_reset_link_result_unknown_error">Radās neparedzēta kļūda, kad mēģinājāt atiestatīt savu saiti. Vēlāk mēģiniet vēlreiz.</string>
+    <!-- Body of a dialog that is displayed when we successfully reset you username link. -->
+    <string name="UsernameLinkSettings_reset_link_result_success">Jūsu QR kods un saite tika atiestatīti, un tika izveidots jauns QR kods un saite.</string>
+    <!-- Description text for QR code and links in the username link settings -->
+    <string name="UsernameLinkSettings_qr_description">Kopīgojiet savus Signal konta datus tikai ar personām vai lietotnēm, kurām uzticaties. To kopīgojot, citi varēs redzēt jūsu lietotājvārdu un sākt ar jums sarunu.</string>
+    <!-- Button label for a button that will reset your username and give you a new link -->
+    <string name="UsernameLinkSettings_reset_button_label">Atstatīt</string>
+    <!-- Button label for the link button in the username link settings -->
+    <string name="UsernameLinkSettings_link_button_label">Saite</string>
+    <!-- Button label for the share button in the username link settings -->
+    <string name="UsernameLinkSettings_share_button_label">Kopīgot</string>
+    <!-- Button label for the color selector button in the username link settings -->
+    <string name="UsernameLinkSettings_color_button_label">Krāsa</string>
+    <!-- Body of a dialog that is displayed when we failed to read a username QR code. -->
+    <string name="UsernameLinkSettings_qr_result_invalid">QR kods nebija derīgs.</string>
+    <!-- Body of a dialog that is displayed when we experienced a network error when looking up a username. -->
+    <string name="UsernameLinkSettings_qr_result_network_error">Radās tīkla kļūda. Lūdzu, mēģiniet vēlreiz.</string>
+    <!-- Dialog title shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_qr_code_not_found">QR kods netika atrasts.</string>
+    <!-- Dialog message shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_try_scanning_another_image_containing_a_signal_qr_code">Mēģiniet skenēt citu attēlu, kas satur Signal QR kodu.</string>
+    <!-- Body of a dialog that is displayed when the username we looked up could not be found. -->
+    <string name="UsernameLinkSettings_qr_result_not_found">Nevarēja atrast lietotāju ar lietotājvārdu %1$s.</string>
+    <!-- Description text shown underneath the username QR code scanner -->
+    <string name="UsernameLinkSettings_qr_scan_description">Skenējiet QR kodu ar sava kontakta ierīci.</string>
+    <!-- Shown when the QR code you scanned leads to a username link that no one has -->
+    <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Nevarēja atrast šo lietotāju.</string>
+    <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Lai skenētu QR kodu, atļaujiet Signal piekļuvi kamerai.</string>
+    <!-- Button on the scan tab that asks for the camera permission -->
+    <string name="UsernameLinkSettingsScreen__allow_access">Atļaut piekļuvi</string>
+    <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
+    <string name="UsernameLinkSettingsScreen__camera_needed">Lai varētu skenēt QR kodus, Signal ir nepieciešama piekļuve kamerai</string>
+
+    <!-- ManageStorageSettingsScreen -->
+    <string name="preferences__storage">Krātuve</string>
+    <string name="preferences_storage__storage_usage">Krātuves lietojums</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Signal krātuve</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizēt Signal krātuvi</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Neizmantotās multivides lejupielāde tiks atcelta, taču to jebkurā brīdī var lejupielādēt no rezerves kopijas.</string>
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">Ziņu ierobežojumi sarunās</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">Piemērot ierobežojumus saistītajām ierīcēm</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">Iespējojot ziņu ierobežojumus sarunās, ziņas tiks dzēstas arī no jūsu saistītajām ierīcēm.</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">Dzēst ziņu vēsturi</string>
+    <!-- Dialog title shown when selecting delete message history from manage storage -->
+    <string name="preferences_storage__delete_message_history">Vai dzēst ziņu vēsturi?</string>
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device">Tādējādi no jūsu ierīces tiks neatgriezeniski dzēsta visa ziņu vēsture un multivides saturs.</string>
+    <!-- Dialog message warning about delete chat message history will delete everything everywhere including linked devices -->
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device_linked_device">Pabeidzot šo darbību, no jūsu ierīces un visām saistītajām ierīcēm tiks neatgriezeniski dzēsta visa ziņu vēsture un multivides saturs.</string>
+    <string name="preferences_storage__are_you_sure_you_want_to_delete_all_message_history">Vai tiešām vēlaties dzēst visu ziņu vēsturi?</string>
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone">Visu ziņu vēsture tiks neatgriezeniski dzēsta. Šo darbību nevar atsaukt.</string>
+    <!-- Secondary warning dialog message about deleting all chat message history from everything everywhere including linked devices -->
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone_linked_device">No visām ierīcēm tiks neatgriezeniski dzēsta visa ziņu vēsture. Šo darbību nevar atsaukt.</string>
+    <string name="preferences_storage__delete_all_now">Izdzēst visas tagad</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Krātuves optimizāciju var izmantot tikai Signal rezerves kopiju maksas plāna īpašnieki. Jūsu rezerves kopiju abonements joprojām tiek apstrādāts un vēl nav aktīvs. Lūdzu, vēlāk mēģiniet vēlreiz.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Multivide tiks dzēsta no jūsu ierīces rezerves kopijas</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Ieslēdzot funkciju \"Optimizēt Signal krātuvi\", vecā multivide no jūsu ierīces tiks pārlikta. Varat to lejupielādēt vēlreiz jebkurā laikā. Tāpat tiks dzēsta arī vecā multivide no jūsu ierīces rezerves kopijas.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">Ieslēgt</string>
+
+    <!-- MutedNotificationsScreen -->
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body">Atskaņot zvana signālu vai rādīt paziņojumu, ja zvans tiek sākts, kamēr šai sarunai ir izslēgta skaņa.</string>
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body_global">Atskaņot signālu vai rādīt paziņojumu, ja zvans tiek sākts sarunā, kurai ir izslēgta skaņa.</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body">Rādīt paziņojumu, ja tiekat pieminēts, kamēr šai sarunai ir izslēgta skaņa.</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body_global">Rādīt paziņojumu, ja tiekat pieminēts sarunā, kurai ir izslēgta skaņa.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body">Rādīt paziņojumu, ja kāds atbild uz jūsu ziņu, kamēr šai sarunai ir izslēgta skaņa.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body_global">Rādīt paziņojumu, ja kāds atbild uz jūsu ziņu sarunā, kurai ir izslēgta skaņa.</string>
+    <!-- Header to describe screen that shows while muted settings -->
+    <string name="MutedNotificationsFragment__while">Kad ir izslēgta skaņa</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsScreen__calls">Zvani</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsScreen__mentions">Pieminējumi</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsScreen__replies">Atbildes</string>
+
+    <!-- NotificationsSettingsScreen -->
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">Neizdevās atvērt atlasītāju.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">Lai iespējotu paziņojumus, Signal ir nepieciešama atļauja tos rādīt.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">Ieslēgt</string>
+    <string name="NotificationsSettingsFragment__calls">Zvani</string>
+    <string name="NotificationsSettingsFragment__contact_joins_signal">Kontaktpersona pievienojas Signal</string>
+    <!-- Notification preference summary text -->
+    <string name="NotificationsSettingsFragment__create_a_profile_to_receive_notifications_only_from_people_and_groups_you_choose">Izveidojiet profilu, lai saņemtu paziņojumus un zvanus tikai no cilvēkiem un grupām, no kuriem to vēlaties.</string>
+    <!-- Notification body to get notified when someone joins Signal -->
+    <string name="NotificationsSettingsFragment__notify_contact">Rādīt paziņojumu, kad kāda tālrunī saglabāta kontaktpersona pievienojas Signal</string>
+    <!-- Option to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset">Atiestatīt paziņojumu iestatījumus</string>
+    <!-- Dialog to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_body">Vai atiestatīt visu sarunu paziņojumu iestatījumus uz noklusējuma vērtībām?</string>
+    <!-- Confirmation button to reset dialog -->
+    <string name="NotificationsSettingsFragment__reset_confirm">Atiestatīt</string>
+    <!-- Option body to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_notifications">Atiestatiet paziņojumu iestatījumus uz noklusējuma vērtībām, tostarp atsevišķu sarunu pielāgotos iestatījumus</string>
+    <!-- Notification header for sounds -->
+    <string name="NotificationsSettingsFragment__sounds">Skaņas</string>
+    <string name="NotificationsSettingsFragment__unknown_ringtone">Nezināms zvana signāls</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="NotificationsSettingsScreen__calls">Zvani</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="NotificationsSettingsScreen__mentions">Pieminējumi</string>
+    <!-- Notification preference header -->
+    <string name="NotificationsSettingsScreen__notification_profiles">Paziņojumu profili</string>
+    <string name="NotificationsSettingsScreen__notifications">Paziņojumi</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="NotificationsSettingsScreen__replies">Atbildes</string>
+    <string name="NotificationsSettingsScreen__silent">Klusums</string>
+    <!-- Option in settings to turn on unread reminders -->
+    <string name="NotificationsSettingsScreen__unread_reminders">Neizlasīti atgādinājumi</string>
+    <string name="arrays__default">Noklusējuma</string>
+    <string name="arrays__high">Augsta</string>
+    <!-- Setting title that represent an abstract priority to assign to notifications as the max/highest priority a notification can be within the system. -->
+    <string name="arrays__max">Maksimāla</string>
+    <string name="arrays__name_and_message">Vārds un ziņa</string>
+    <string name="arrays__name_only">Tikai vārds</string>
+    <string name="arrays__no_name_or_message">Bez vārda vai ziņas</string>
+    <string name="preferences__blue">Zils</string>
+    <!-- Preference header for call notifications -->
+    <string name="preferences__call_notifications">Paziņojumi zvanu laikā</string>
+    <string name="preferences__change_sound_and_vibration">Mainīt skaņu un vibrāciju</string>
+    <string name="preferences__customize">Pielāgot</string>
+    <string name="preferences__cyan">Ciāns</string>
+    <!-- Preference menu item to use the default sound for notifications -->
+    <string name="preferences__default">Noklusējuma</string>
+    <!-- Preference item menu to enable notifications -->
+    <string name="preferences__enable_notifications">Ieslēgt paziņojumus</string>
+    <string name="preferences__fast">Ātrs</string>
+    <string name="preferences__five_times">Piecreiz</string>
+    <string name="preferences__green">Zaļš</string>
+    <string name="preferences__led_color">LED krāsa</string>
+    <string name="preferences__magenta">Fuksīns</string>
+    <string name="preferences__never">Nekad</string>
+    <string name="preferences__normal">Normāls</string>
+    <string name="preferences__one_time">Vienreiz</string>
+    <string name="preferences__orange">Oranžs</string>
+    <string name="preferences__pref_led_blink_title">LED mirgošanas biežums</string>
+    <string name="preferences__red">Sarkans</string>
+    <string name="preferences__repeat_alerts">Atkārtoti brīdinājumi</string>
+    <string name="preferences__slow">Lēns</string>
+    <!-- Preference menu item to control the sound of notifications -->
+    <string name="preferences__sound">Skaņa</string>
+    <string name="preferences__ten_times">Desmit reizes</string>
+    <string name="preferences__three_times">Trīsreiz</string>
+    <string name="preferences__two_times">Divreiz</string>
+    <string name="preferences__vibrate">Vibrācija</string>
+    <string name="preferences__white">Balts</string>
+    <string name="preferences_notifications__in_chat_sounds">Skaņas sarunā</string>
+    <!-- Body option in settings to turn on reaction notifications    -->
+    <string name="preferences_notifications__notify_reaction">Rādīt paziņojumus par reakcijām uz jūsu sūtītajām ziņām</string>
+    <!-- Body option to turn on unread reminders -->
+    <string name="preferences_notifications__notify_unread">Laiku pa laikam paziņot par neizlasītām ziņām sarunās, kurās ir izslēgta skaņa</string>
+    <!-- Option in settings that will provide a shortcut to notification system settings to control the priority of Signal notifications -->
+    <string name="preferences_notifications__priority">Prioritāte</string>
+    <!-- Option in settings to turn on reaction notifications -->
+    <string name="preferences_notifications__reaction">Reakciju paziņojumi</string>
+    <string name="preferences_notifications__ringtone">Zvana signāls</string>
+    <string name="preferences_notifications__show">Rādīt</string>
+    <!-- Option in settings to trouble shoot delayed notifications -->
+    <string name="preferences_notifications__troubleshoot">Paziņojumu problēmu novēršana</string>
+    <!-- Preference item to set notification settings when chats are muted -->
+    <string name="preferences_notifications__while_muted">Kad ir izslēgta skaņa</string>
+
+    <!-- SelectRecipientsScreen -->
+    <!-- Call to action button on contact picker for adding to profile -->
+    <string name="SelectRecipientsFragment__add">Pievienot</string>
+    <!-- Title for add recipients to notification profile screen in create flow -->
+    <string name="SelectRecipientsScreen__allowed_notifications">Atļautie paziņojumi</string>
 </resources>

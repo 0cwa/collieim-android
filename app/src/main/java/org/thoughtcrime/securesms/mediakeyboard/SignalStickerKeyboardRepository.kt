@@ -22,6 +22,7 @@ import org.signal.glide.decryptableuri.DecryptableUri
 import org.signal.mediakeyboard.data.KeyboardSticker
 import org.signal.mediakeyboard.data.KeyboardStickerPack
 import org.signal.mediakeyboard.data.StickerKeyboardRepository
+import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.database.DatabaseObserver
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -30,7 +31,6 @@ import org.thoughtcrime.securesms.database.StickerTables.StickerRecordReader
 import org.thoughtcrime.securesms.database.model.StickerPackRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyboard.sticker.StickerSearchRepository
-import org.thoughtcrime.securesms.util.RemoteConfig
 
 /**
  * [StickerKeyboardRepository] backed by the app's sticker database.
@@ -47,9 +47,6 @@ class SignalStickerKeyboardRepository(
   }
 
   override val allowStickerAnimation: Boolean = true
-
-  override val favoritesEnabled: Boolean
-    get() = RemoteConfig.internalUser
 
   override fun observeStickerPacks(): Flow<List<KeyboardStickerPack>> {
     return callbackFlow {
@@ -99,7 +96,7 @@ class SignalStickerKeyboardRepository(
 
     val packs = loadInstalledPackRecords().map { it.toKeyboardStickerPack() }
 
-    val favoritesPack = if (favoritesEnabled) {
+    val favoritesPack = if (RemoteConfig.internalUser) {
       val favoriteStickers = StickerRecordReader(stickerTable.getFavoriteStickers()).use { reader -> reader.asSequence().toList() }
 
       KeyboardStickerPack(

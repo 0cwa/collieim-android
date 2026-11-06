@@ -287,6 +287,7 @@ NEXT_PORT_TOOLS = frozenset({
 
 NEXT_PORT_NATIVE_PATHS = frozenset({
     'tools/native/ATTRIBUTION.md',
+    'tools/native/CIPD-PROVENANCE.md',
     'tools/native/README.md',
     'tools/native/build_ringrtc.py',
     'tools/native/build_sources.py',

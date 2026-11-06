@@ -69,3 +69,5 @@ well. The check rejects undeclared files and directories under those package
 roots and writable package files. It does not authenticate its reference by
 itself, attest symlink target contents, other build inputs or concurrent
 changes, or establish source-to-binary provenance. Release remains blocked.
+
+[CIPD-PROVENANCE.md](CIPD-PROVENANCE.md) records how the package reference was derived and its remaining trust boundaries.

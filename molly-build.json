@@ -36,6 +36,8 @@
       ":lib:libsignal-service:test",
       "--tests",
       "org.whispersystems.signalservice.api.SignalServiceAccountManagerLinkedRegistrationTest",
+      "--tests",
+      "org.whispersystems.signalservice.api.messages.multidevice.DeviceContactsReaderTest",
       ":feature:registration:testDebugUnitTest",
       "--tests",
       "org.signal.registration.RegistrationRepositoryTest",

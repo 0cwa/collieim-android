@@ -521,11 +521,9 @@ Instrumented sources are recorded separately for the device test gate. The deriv
 are part of the source proof fingerprint.
 
 All five profiles select the verified port prefix ending at
-`followups/view-once-open-guard`, followed by the same five fork layers:
-`firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, and
-`restore-picker`. The identity layers provide Collie launcher artwork, app
-identity and visual styling; the restore picker layer recognizes timestamped
-backups in the folder the user selected.
+`followups/view-once-open-guard`, followed by the same four fork layers:
+`firebase-free-build`, `collie-icon`, `collie-branding`, and `collie-visuals`.
+The last three provide Collie launcher artwork, app identity and visual styling.
 The two FOSS profiles set the Firebase-free build flag; the other three retain
 FCM-capable build configuration. All use the `im.collie.app` package and keep
 their existing profile-specific backup file names (`release_profiles.APP`).
@@ -665,6 +663,24 @@ failure normally and uploads its diagnostics. Local tests and optional hosted
 tests do not block unsigned APK collection; disclose failures and missing runs.
 
 ## Publishing a release
+
+For the Signal 8.35.1 single-Collie release, use the reviewed local build path:
+reconstruct and prove the `collie` profile, stage the pinned native artifacts,
+and build one unsigned release APK with the explicit trusted-local native option.
+This uses the local builder and caches; it is not an independent reproducibility
+claim. Run `release_collect.py --single-collie` with that file named
+`unsigned/collie.apk`. The resulting manifest identifies `collie` as the sole
+source profile and records the five compatibility filenames as aliases. The
+signer checks and signs the one input once, copies the signed bytes to all five
+names, and verifies each copy. The publisher verifies identical hashes and the
+signed-to-unsigned provenance before creating a draft. The commit-bound
+instrumentation assessment described below remains required for signing.
+
+All five aliases contain the same FCM-capable Collie APK, including filenames
+that formerly denoted FOSS variants. This path does not migrate notification
+preferences or legacy backup names; users must be told about those differences.
+The hosted five-profile workflow below is retained for historical releases and
+remains blocked for the 8.35.1 port.
 
 This flow builds five unsigned APKs on CI and signs them offline. The additional
 `.github/workflows/molly-unsigned-release.yml` is a new Signal-tree workflow

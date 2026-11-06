@@ -90,4 +90,32 @@ def validate_manifest(m, commit, run, cert):
     for item in entries:
         if item.get('file') != item['profile'] + '.apk' or not re.fullmatch(r'[0-9a-f]{64}', item.get('sha256', '')):
             raise ValueError('invalid APK file or digest')
+    mode = m.get('artifact_mode', 'five-profiles')
+    if mode not in ('five-profiles', 'single-collie'):
+        raise ValueError('unknown release artifact mode')
+    if mode == 'single-collie':
+        if m.get('source_profile') != 'collie':
+            raise ValueError('single-collie source profile must be collie')
+        if len({item['sha256'] for item in entries}) != 1:
+            raise ValueError('single-collie unsigned aliases must have identical hashes')
     return entries
+
+
+def validate_alias_provenance(final, unsigned, commit):
+    """Bind single-build signed aliases to the authenticated unsigned manifest."""
+    entries = validate_manifest(unsigned, commit, final['run_id'], final['certificate_sha256'])
+    if unsigned.get('artifact_mode') != 'single-collie' or final.get('artifact_mode') != 'single-collie':
+        raise ValueError('signed and unsigned artifact modes differ')
+    if final.get('source_profile') != 'collie':
+        raise ValueError('signed source profile must be collie')
+    if final.get('package') != PACKAGE or final.get('version_code') != unsigned.get('version_code') or final.get('version_name') != unsigned.get('version_name'):
+        raise ValueError('signed aliases have inconsistent package or version')
+    signed = final['apks']
+    if len(signed) != 5 or {item['profile'] for item in signed} != PROFILES:
+        raise ValueError('final manifest must contain all five profiles')
+    if len({item['signed_sha256'] for item in signed}) != 1:
+        raise ValueError('signed compatibility aliases differ')
+    unsigned_hash = entries[0]['sha256']
+    if any(item['unsigned_sha256'] != unsigned_hash or
+           item['certificate_sha256'] != final['certificate_sha256'] for item in signed):
+        raise ValueError('compatibility aliases do not match unsigned provenance and certificate')

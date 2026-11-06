@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check and record the five unsigned APKs from an approved release build."""
+"""Check and record unsigned APK inputs from an approved release build."""
 import argparse
 import json
 import os
@@ -23,6 +23,7 @@ def main():
     p.add_argument('--version-name', required=True)
     p.add_argument('--version-code', type=int, required=True)
     p.add_argument('--certificate-sha256', required=True)
+    p.add_argument('--single-collie', action='store_true', help='one Collie APK supplies all five compatibility filenames')
     args = p.parse_args()
     try:
         config = json.loads(args.config.read_text())
@@ -35,12 +36,22 @@ def main():
                     'input_pins': config, 'build_tools': args.build_tools.name,
                     'java': subprocess.run(['java', '-version'], check=True, capture_output=True, text=True).stderr.strip(),
                     'apks': []}
-        for profile in sorted(a.PROFILES):
-            file = profile + '.apk'
-            path = args.directory / file
+        if args.single_collie:
+            manifest['artifact_mode'] = 'single-collie'
+            manifest['source_profile'] = 'collie'
+            path = args.directory / 'collie.apk'
             a.check_unsigned(path)
             a.check_metadata(args.build_tools / 'aapt2', path, args.version_code, args.version_name)
-            manifest['apks'].append({'profile': profile, 'file': file, 'sha256': a.sha256(path)})
+            digest = a.sha256(path)
+            manifest['apks'] = [{'profile': profile, 'file': profile + '.apk', 'sha256': digest}
+                                for profile in sorted(a.PROFILES)]
+        else:
+            for profile in sorted(a.PROFILES):
+                file = profile + '.apk'
+                path = args.directory / file
+                a.check_unsigned(path)
+                a.check_metadata(args.build_tools / 'aapt2', path, args.version_code, args.version_name)
+                manifest['apks'].append({'profile': profile, 'file': file, 'sha256': a.sha256(path)})
         a.validate_manifest(manifest, args.commit, args.run_id, args.certificate_sha256)
         if not re.fullmatch(r'[0-9a-f]{40}', args.workflow_revision):
             raise ValueError('invalid workflow revision')

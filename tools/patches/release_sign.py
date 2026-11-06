@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import stat
 import subprocess
 import sys
@@ -103,7 +104,9 @@ def main():
             if args.attestation_repo:
                 run(['gh', 'attestation', 'verify', manifest, '--repo', args.attestation_repo,
                      '--source-digest', 'sha1:' + args.approved_commit])
-            for e in entries:
+            single = m.get('artifact_mode') == 'single-collie'
+            inputs = [next(e for e in entries if e['profile'] == 'collie')] if single else entries
+            for e in inputs:
                 apk = snapshot_dir / e['file']
                 artifacts.snapshot(args.apks / e['file'], apk)
                 if artifacts.sha256(apk) != e['sha256']:
@@ -127,16 +130,24 @@ def main():
                 env['MOLLY_KEY_PASSWORD'] = os.environ.get('MOLLY_KEY_PASSWORD') or getpass.getpass('Key password: ')
             args.output.mkdir(parents=True)
             signed = []
-            for e in entries:
-                apk = snapshot_dir / e['file']
-                aligned = temp / e['file']
-                # Always align a fresh copy so the signed bytes are exactly those checked.
-                run([args.build_tools / 'zipalign', '-f', '-p', '4', apk, aligned])
-                run([args.build_tools / 'zipalign', '-c', '-p', '4', aligned])
+            ordered = sorted(entries, key=lambda e: e['profile'] != 'collie') if single else entries
+            canonical = None
+            for e in ordered:
+                apk = snapshot_dir / ('collie.apk' if single else e['file'])
                 dest = args.output / e['file']
-                run([args.build_tools / 'apksigner', 'sign', '--ks', keystore, '--ks-key-alias', alias,
-                     '--ks-pass', 'env:MOLLY_KEYSTORE_PASSWORD', '--key-pass', 'env:MOLLY_KEY_PASSWORD',
-                     '--v2-signing-enabled', 'true', '--v3-signing-enabled', 'true', '--out', dest, aligned], env=env)
+                if single and canonical is not None:
+                    shutil.copyfile(canonical, dest)
+                else:
+                    aligned = temp / e['file']
+                    # Sign a fresh aligned copy of the checked input.
+                    run([args.build_tools / 'zipalign', '-f', '-p', '4', apk, aligned])
+                    run([args.build_tools / 'zipalign', '-c', '-p', '4', aligned])
+                    run([args.build_tools / 'apksigner', 'sign', '--ks', keystore, '--ks-key-alias', alias,
+                         '--ks-pass', 'env:MOLLY_KEYSTORE_PASSWORD', '--key-pass', 'env:MOLLY_KEY_PASSWORD',
+                         '--v2-signing-enabled', 'true', '--v3-signing-enabled', 'true',
+                         *(['--v4-signing-enabled', 'false'] if single else []), '--out', dest, aligned], env=env)
+                    if single:
+                        canonical = dest
                 run([args.build_tools / 'zipalign', '-c', '-p', '4', dest])
                 result = run([args.build_tools / 'apksigner', 'verify', '--verbose', '--print-certs', dest],
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True).stdout
@@ -153,6 +164,12 @@ def main():
                      'commit': args.approved_commit, 'run_id': str(args.approved_run), 'version_code': m['version_code'],
                      'version_name': m['version_name'], 'certificate_sha256': signed[0]['certificate_sha256'], 'apks': signed,
                      'instrumentation_checklist': checklist}
+            if single:
+                if len({x['signed_sha256'] for x in signed}) != 1:
+                    raise ValueError('signed compatibility aliases differ')
+                final['artifact_mode'] = 'single-collie'
+                final['source_profile'] = 'collie'
+                final['package'] = artifacts.PACKAGE
             if any(x['certificate_sha256'] != final['certificate_sha256'] for x in signed):
                 raise ValueError('signed APKs have different certificates')
             (args.output / 'final-manifest.json').write_text(json.dumps(final, indent=2) + '\n')

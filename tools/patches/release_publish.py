@@ -119,6 +119,20 @@ def main():
             a.snapshot(args.notes, notes)
             if a.sha256(provenance) != manifest.get('unsigned_manifest_sha256'):
                 raise ValueError('provenance does not match the unsigned manifest used for signing')
+            final_mode = manifest.get('artifact_mode', 'five-profiles')
+            if final_mode not in ('five-profiles', 'single-collie'):
+                raise ValueError('unknown release artifact mode')
+            try:
+                unsigned = json.loads(provenance.read_text())
+            except json.JSONDecodeError:
+                if final_mode == 'single-collie':
+                    raise ValueError('single-collie provenance must be a JSON manifest')
+                unsigned = None
+            unsigned_mode = unsigned.get('artifact_mode', 'five-profiles') if isinstance(unsigned, dict) else 'five-profiles'
+            if final_mode != unsigned_mode:
+                raise ValueError('signed and unsigned artifact modes differ')
+            if final_mode == 'single-collie':
+                a.validate_alias_provenance(manifest, unsigned, args.approved_commit)
             assets += [final, provenance, notes]
             expected.update({final.name: args.final_manifest_sha256,
                              provenance.name: manifest['unsigned_manifest_sha256'],

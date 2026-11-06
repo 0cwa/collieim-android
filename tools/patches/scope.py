@@ -280,6 +280,7 @@ NEXT_PORT_TOOLS = frozenset({
     'tools/patches/native_release_check.py', 'tools/patches/test_native_release_check.py',
     'tools/patches/test_native_release_route.py',
     'tools/patches/release_artifacts.py', 'tools/patches/release_publish.py', 'tools/patches/release_sign.py',
+    'tools/patches/release_collect.py', 'tools/patches/test_single_collie.py',
     'tools/patches/test_release_artifacts.py', 'tools/patches/test_instrumentation_checklist.py',
     'tools/patches/test_next_port_workflow.py', 'tools/patches/test_optional_instrumentation_workflow.py',
     'tools/patches/fork_profiles.py', 'tools/patches/release_profiles.py',

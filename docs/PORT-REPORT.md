@@ -99,15 +99,15 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 
 ### Release profiles
 
-Each profile's source compared with Molly and Signal and, for profiles with fork layers, the fork head as a third input, so **written** excludes lines the fork wrote. **From the fork** counts production lines the fork wrote that the profile carries. The Collie icon overlay is original work and does not by itself add the upstream fork as an input.
+Each profile's source compared with Molly, Signal and old Signal and, for profiles with fork layers, the fork head as an additional input, so **written** excludes lines the fork wrote. **From the fork** counts production lines the fork wrote that the profile carries. The Collie icon overlay is original work and does not by itself add the upstream fork as an input.
 
 | Profile | Tree | Fork layers | Release overlays | Firebase | Production written / removed | Written as % of Molly's production lines | From the fork | Molly lines not carried | Tests |
 |---|---|---|---|---|---:|---:|---:|---:|---:|
-| collie | `3f31cdb17063` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | included | +2,731 / −510 | 10.1% | 443 | 2,271 | +3,922 / −360 |
-| collie-foss | `3f31cdb17063` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | removed | +2,731 / −510 | 10.1% | 443 | 2,271 | +3,922 / −360 |
-| molly-continued | `db77a4b7cd1b` | none | `collie-icon` | included | +2,248 / −309 | 8.4% | — | 1,850 | +3,021 / −357 |
-| molly-foss-continued | `0fe649fd16df` | `firebase-free-build` | `collie-icon` | removed | +2,162 / −379 | 8.0% | 270 | 1,908 | +3,196 / −357 |
-| molly-minimal | `f43551918053` | none | none | included | +2,121 / −301 | 7.9% | — | 1,759 | +2,854 / −357 |
+| collie | `3f31cdb17063` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | included | +2,727 / −510 | 10.1% | 432 | 2,271 | +3,922 / −360 |
+| collie-foss | `3f31cdb17063` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | removed | +2,727 / −510 | 10.1% | 432 | 2,271 | +3,922 / −360 |
+| molly-continued | `db77a4b7cd1b` | none | `collie-icon` | included | +2,237 / −308 | 8.3% | — | 1,850 | +3,021 / −357 |
+| molly-foss-continued | `0fe649fd16df` | `firebase-free-build` | `collie-icon` | removed | +2,158 / −379 | 8.0% | 259 | 1,908 | +3,196 / −357 |
+| molly-minimal | `f43551918053` | none | none | included | +2,108 / −300 | 7.8% | — | 1,759 | +2,854 / −357 |
 
 ## Raw physical Git diffs
 

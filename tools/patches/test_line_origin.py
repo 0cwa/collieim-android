@@ -146,15 +146,15 @@ class LineOriginTests(unittest.TestCase):
         self.assertEqual([r['name'] for r in rows], ['plain', 'forked', 'molly-continued', 'molly-foss-continued'])
         self.assertIsNone(rows[0]['from_fork'])
         self.assertEqual(rows[0]['classes']['production']['written'], 1)
-        self.assertEqual(rows[1]['parents'][2], fork)
+        self.assertEqual(rows[1]['parents'][2:], [self.old, fork])
         self.assertEqual(rows[1]['classes']['production']['written'], 1)
         self.assertEqual(rows[1]['from_fork']['production'], 1)
         self.assertEqual(rows[0]['release_overlays'], [])
         self.assertEqual(rows[2]['release_overlays'], [line_origin.release_profiles.COLLIE_ICON])
         self.assertEqual(rows[3]['release_overlays'], [line_origin.release_profiles.COLLIE_ICON])
-        self.assertEqual(len(rows[2]['parents']), 2)
+        self.assertEqual(len(rows[2]['parents']), 3)
         self.assertIsNone(rows[2]['from_fork'])
-        self.assertEqual(rows[3]['parents'][2], fork)
+        self.assertEqual(rows[3]['parents'][2:], [self.old, fork])
         self.assertEqual(rows[3]['from_fork']['production'], 1)
         text = line_origin.markdown_profiles(rows, 10)
         self.assertIn('| forked | `', text)
@@ -162,6 +162,28 @@ class LineOriginTests(unittest.TestCase):
         self.assertIn('| none | `collie-icon` | included |', text)
         self.assertIn('| `layer` | `collie-icon` | removed |', text)
         self.assertEqual(line_origin.profiles(self.repo, root, {'port': None}), [])
+
+    def test_profiles_do_not_attribute_restored_old_signal_lines_to_fork(self):
+        f = self.fixture
+        path = 'app/src/main/Restored.kt'
+        old = f.commit({path: 'OLD\n'})
+        molly = f.commit({path: 'MOLLY\n'}, old)
+        signal = f.commit({path: 'SIGNAL\n'}, old)
+        fork = f.commit({path: 'OLD\n'}, signal)
+        target = f.commit({path: 'OLD\n'})
+        root = Path(self.tmp.name)
+        (root / 'patches/ports/p').mkdir(parents=True)
+        (root / 'patches/ports/p/provenance.json').write_text(json.dumps(
+            {'origin_base': old, 'origin_target': molly, 'signal': signal}))
+        (root / 'patches/forks/f/layer').mkdir(parents=True)
+        f.run('update-ref', 'refs/heads/fork-test', fork)
+        f.run('bundle', 'create', str(root / 'patches/forks/f/upstream.bundle'), 'refs/heads/fork-test')
+        (root / 'patches/forks/f/provenance.json').write_text(json.dumps({'upstream_bundle': 'upstream.bundle'}))
+        config = {'port': {'series': 'patches/ports/p/series'}, 'fork_source': {'head': fork},
+                  'profiles': {'forked': {'target_tree': target, 'fork_series': ['patches/forks/f/layer/series']}}}
+        row = line_origin.profiles(self.repo, root, config)[0]
+        self.assertEqual(row['from_fork']['production'], 0)
+        self.assertEqual(row['classes']['production']['written'], 0)
 
     def test_configured_cli_prepares_profile_trees_before_measurement(self):
         import fork_profiles

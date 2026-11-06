@@ -14,8 +14,9 @@ Renames are detected with Git's default similarity threshold. The synthetic comm
 written to a private object directory; the repository is never modified.
 
 Release profiles (``profiles``) are measured the same way; a profile with fork layers
-adds the fork head as a third parent, loaded from the fork's upstream bundle into the
-private object directory, so lines the fork wrote are reported separately.
+includes old Signal as an input, and adds the fork head for fork layers, loaded from
+the upstream bundle into the private object directory. This avoids counting restored
+old Signal lines as fork-created.
 
 ``not_carried`` separately counts Molly's own non-blank lines (old Signal to Molly)
 that no longer appear in the file at the same path. It is a textual comparison and
@@ -297,8 +298,8 @@ def profiles(repo, root, config):
     if not entries:
         return []
     provenance = json.loads((Path(root) / config['port']['series']).parent.joinpath('provenance.json').read_text())
-    molly, signal = provenance['origin_target'], provenance['signal']
-    index = molly_lines(repo, provenance['origin_base'], molly)
+    old, molly, signal = provenance['origin_base'], provenance['origin_target'], provenance['signal']
+    index = molly_lines(repo, old, molly)
     fork, loaded, cache, rows = None, set(), {}, []
     for name, entry in entries.items():
         layers = entry.get('fork_series') or []
@@ -311,11 +312,12 @@ def profiles(repo, root, config):
                 loaded.add(fork_root)
         key = (entry['target_tree'], bool(layers))
         if key not in cache:
-            ours = measure(repo, entry['target_tree'], [molly, signal] + ([fork] if layers else []), index)
+            parents = [molly, signal, old]
+            ours = measure(repo, entry['target_tree'], parents + ([fork] if layers else []), index)
             ours.pop('_files')
             from_fork = None
             if layers:
-                two = summarize(combined(repo, entry['target_tree'], [molly, signal]))
+                two = summarize(combined(repo, entry['target_tree'], parents))
                 from_fork = {k: two[k]['written'] - ours['classes'][k]['written'] for k in CLASSES}
             cache[key] = (ours, from_fork)
         ours, from_fork = cache[key]
@@ -332,8 +334,8 @@ def markdown_profiles(rows, molly_total):
     if not rows:
         return ''
     out = ['### Release profiles', '',
-           'Each profile\'s source compared with Molly and Signal and, for profiles with fork layers, the fork head '
-           'as a third input, so **written** excludes lines the fork wrote. **From the fork** counts production lines '
+           'Each profile\'s source compared with Molly, Signal and old Signal and, for profiles with fork layers, the fork head '
+           'as an additional input, so **written** excludes lines the fork wrote. **From the fork** counts production lines '
            'the fork wrote that the profile carries. The Collie icon overlay is original work and does not by itself '
            'add the upstream fork as an input.', '',
            '| Profile | Tree | Fork layers | Release overlays | Firebase | Production written / removed | Written as % of Molly\'s '

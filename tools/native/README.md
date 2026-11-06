@@ -59,3 +59,13 @@ conversion, and checks Signal's exact upstream Java-release hook output. The
 independent authentication of the snapshot against DEPS; ignored and untracked
 files, CIPD package contents, compiler provenance and concurrent mutations are
 not attested. It cannot authorize a release.
+
+The partial RingRTC diagnostic verifies the recorded 59 Linux/Android CIPD
+package manifests and their installed payloads before and after execution. The
+reference hashes were derived by checking the packages' content-addressed CIPD
+archive IDs against the upstream DEPS selections; generated version files and
+four separately pinned upstream Git files sharing a package root are checked as
+well. The check rejects undeclared files and directories under those package
+roots and writable package files. It does not authenticate its reference by
+itself, attest symlink target contents, other build inputs or concurrent
+changes, or establish source-to-binary provenance. Release remains blocked.

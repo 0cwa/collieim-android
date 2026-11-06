@@ -170,6 +170,10 @@ class ScopeTests(unittest.TestCase):
                 self.commit(path, 'reviewed nested Git check')
                 self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
                 self.git('reset', '--hard', '-q', head)
+            for path in ('tools/native/cipd_payloads.py', 'tools/native/test_cipd_payloads.py', 'tools/native/webrtc-cipd-payloads.json'):
+                self.commit(path, 'reviewed CIPD payload check')
+                self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+                self.git('reset', '--hard', '-q', head)
             self.commit('tools/patches/test_optional_instrumentation_workflow.py', 'reviewed optional instrumentation check')
             self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
             self.git('reset', '--hard', '-q', head)

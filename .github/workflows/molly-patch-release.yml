@@ -3,12 +3,23 @@ name: Molly patch release
 on:
   pull_request:
   workflow_dispatch:
+    inputs:
+      instrumentation:
+        description: Optional hosted instrumentation profiles
+        type: choice
+        required: true
+        default: 'off'
+        options:
+          - 'off'
+          - both
+          - collie
+          - collie-foss
 
 permissions:
   contents: read
 
 concurrency:
-  group: molly-patch-release-${{ github.event.pull_request.number || github.ref }}
+  group: molly-patch-release-${{ github.event_name }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || github.event.pull_request.number }}
   cancel-in-progress: true
 
 env:
@@ -390,13 +401,14 @@ jobs:
   instrumentation:
     name: Instrumentation on reconstructed ${{ matrix.profile }}
     needs: [scope, source-proof]
-    if: needs.scope.outputs.stack_scope == 'forks' || needs.scope.outputs.stack_scope == 'main-snapshot' || (needs.scope.outputs.stack_scope == 'main-maintenance' && needs.scope.outputs.profiles != '[""]')
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      (inputs.instrumentation == 'both' || inputs.instrumentation == 'collie' || inputs.instrumentation == 'collie-foss') &&
+      (needs.scope.outputs.stack_scope == 'forks' || needs.scope.outputs.stack_scope == 'main-snapshot' || (needs.scope.outputs.stack_scope == 'main-maintenance' && needs.scope.outputs.profiles != '[""]'))
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - profile: collie
-          - profile: collie-foss
+        profile: ${{ fromJSON(inputs.instrumentation == 'both' && '["collie","collie-foss"]' || inputs.instrumentation == 'collie-foss' && '["collie-foss"]' || '["collie"]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -414,6 +426,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           lfs: false
+      - name: Record instrumentation inputs
+        run: |
+          mkdir -p "$RUNNER_TEMP/instrumentation"
+          printf 'commit=%s\nprofile=%s\napi=%s\nsuites=%s\n' "$(git rev-parse HEAD)" '${{ matrix.profile }}' '35' 'default,imo' | tee "$RUNNER_TEMP/instrumentation/run-context.txt"
       - name: Reconstruct the selected actual fork source
         env:
           INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}

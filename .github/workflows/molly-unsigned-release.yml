@@ -19,6 +19,16 @@ on:
         description: Expected signing certificate SHA-256 (lowercase hex)
         required: true
         type: string
+      instrumentation:
+        description: Optional hosted instrumentation profiles
+        type: choice
+        required: true
+        default: 'off'
+        options:
+          - 'off'
+          - both
+          - collie
+          - collie-foss
 
 permissions:
   contents: read
@@ -111,12 +121,11 @@ jobs:
 
   instrumentation:
     name: Instrumentation on reconstructed ${{ matrix.profile }}
+    if: inputs.instrumentation == 'both' || inputs.instrumentation == 'collie' || inputs.instrumentation == 'collie-foss'
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - profile: collie
-          - profile: collie-foss
+        profile: ${{ fromJSON(inputs.instrumentation == 'both' && '["collie","collie-foss"]' || inputs.instrumentation == 'collie-foss' && '["collie-foss"]' || '["collie"]') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
@@ -133,6 +142,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           lfs: false
+      - name: Record instrumentation inputs
+        run: |
+          mkdir -p "$RUNNER_TEMP/instrumentation"
+          printf 'commit=%s\nprofile=%s\napi=%s\nsuites=%s\n' "$(git rev-parse HEAD)" '${{ matrix.profile }}' '35' 'default,imo' | tee "$RUNNER_TEMP/instrumentation/run-context.txt"
       - name: Reconstruct the selected actual fork source
         env:
           APPROVED: ${{ inputs.approved_commit }}

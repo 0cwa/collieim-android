@@ -13,6 +13,7 @@ import verify_source_bundles
 # These identify the historical fork itself, not the Signal version being ported.
 FORK_SIGNAL_BASE = '6e9dddc01f1b26e608ac683807c51e139c141ed2'
 FORK_SOURCE_HEAD = 'b13bff463547475bbe1ae55335add689f52532e0'
+SIGNAL_URL = 'https://github.com/signalapp/Signal-Android.git'
 
 
 def port_prefix(repo, config_path, selection, records):
@@ -190,6 +191,13 @@ def materialize_continued_icon(repo, selection):
     return tree
 
 
+def ensure_fork_signal_base(repo):
+    """Fetch the pinned prerequisite only when the local object is missing."""
+    if git_utils.git(repo, 'cat-file', '-e', FORK_SIGNAL_BASE + '^{commit}', check=False).returncode:
+        git_utils.git(repo, 'fetch', '--no-tags', '--depth=1', SIGNAL_URL, FORK_SIGNAL_BASE)
+    git_utils.git(repo, 'cat-file', '-e', FORK_SIGNAL_BASE + '^{commit}')
+
+
 def prepare_profile_trees(repo, config, config_path=None):
     """Verify and materialize profile trees in a writable repository for reports."""
     profiles = config.get('profiles') or {}
@@ -200,6 +208,7 @@ def prepare_profile_trees(repo, config, config_path=None):
     root = Path(repo).resolve()
     verify_source_bundles.verify(root, config_path)
     if forked:
+        ensure_fork_signal_base(root)
         # The longest profile contains every preceding fork checkpoint.
         name = max(forked, key=lambda item: len(profiles[item]['fork_series']))
         _, selection = release_profiles.select(config, name, root)

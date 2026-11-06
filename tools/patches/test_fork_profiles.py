@@ -158,13 +158,27 @@ class ForkProfilesTests(unittest.TestCase):
                          icon_overlay=release_profiles.COLLIE_ICON)
         config = {'profiles': {'molly-foss-continued': {'fork_series': [release_profiles.FIREBASE], 'icon_overlay': release_profiles.COLLIE_ICON}}}
         with patch.object(fork_profiles.verify_source_bundles, 'verify') as verify, \
+             patch.object(fork_profiles, 'ensure_fork_signal_base') as ensure, \
              patch.object(release_profiles, 'select', return_value=(config, selection)), \
              patch.object(fork_profiles, 'fork_layers') as layers, \
              patch.object(fork_profiles, 'materialize_continued_icon') as overlay:
             fork_profiles.prepare_profile_trees(self.repo, config)
         verify.assert_called_once_with(self.repo, None)
+        ensure.assert_called_once_with(self.repo)
         layers.assert_called_once_with(self.repo, selection, check_target=False)
         overlay.assert_called_once_with(self.repo, selection)
+
+    def test_fork_base_fetches_only_if_missing(self):
+        from types import SimpleNamespace
+        for present in (True, False):
+            results = ([SimpleNamespace(returncode=0)] if present else [SimpleNamespace(returncode=1)]) + [SimpleNamespace(returncode=0)] * 2
+            with self.subTest(present=present), patch.object(fork_profiles.git_utils, 'git', side_effect=results) as git:
+                fork_profiles.ensure_fork_signal_base(self.repo)
+                fetches = [call for call in git.call_args_list if call.args[1] == 'fetch']
+                if present:
+                    self.assertEqual(fetches, [])
+                else:
+                    self.assertEqual(fetches[0].args[1:], ('fetch', '--no-tags', '--depth=1', fork_profiles.SIGNAL_URL, fork_profiles.FORK_SIGNAL_BASE))
 
     def test_rejects_wrong_pins_order_bytes_and_prerequisites(self):
         original = copy.deepcopy(self.data)

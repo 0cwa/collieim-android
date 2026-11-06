@@ -288,6 +288,7 @@ NEXT_PORT_TOOLS = frozenset({
 NEXT_PORT_NATIVE_PATHS = frozenset({
     'tools/native/ATTRIBUTION.md',
     'tools/native/CIPD-PROVENANCE.md',
+    'tools/native/RUST-PROVENANCE.md',
     'tools/native/README.md',
     'tools/native/build_ringrtc.py',
     'tools/native/build_sources.py',
@@ -311,6 +312,9 @@ NEXT_PORT_NATIVE_PATHS = frozenset({
     'tools/native/patches/webrtc-socks-ipv6-fix.patch',
     'tools/native/patches/webrtc-unknown-proxy-fix.patch',
     'tools/native/prepare_sources.py',
+    'tools/native/rust_payloads.py',
+    'tools/native/test_rust_payloads.py',
+    'tools/native/rust-toolchain-payloads.json',
     'tools/native/setup_webrtc.py',
     'tools/native/stage_artifacts.py',
     'tools/native/test_build_native_driver.py',

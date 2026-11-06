@@ -31,8 +31,8 @@ class PartialSourceBuildTest(unittest.TestCase):
         self.java = self.root / 'jdk'
         (self.java / 'bin').mkdir(parents=True)
         (self.java / 'bin/java').write_text('fixture')
-        self.rust_bin = self.root / 'rust-bin'
-        self.rust_bin.mkdir()
+        self.rust_bin = self.root / 'toolchain/bin'
+        self.rust_bin.mkdir(parents=True)
         for name in ('cargo', 'rustc', 'rustup'):
             tool = self.rust_bin / name
             tool.write_text('fixture')
@@ -70,8 +70,8 @@ class PartialSourceBuildTest(unittest.TestCase):
             return []
         raise AssertionError('unexpected diagnostic command')
 
-    def run_build(self):
-        with patch.object(subject.verify_gradle, 'verify', return_value=self.root / 'verified-gradle/bin/gradle'):
+    def run_build(self, rust_effect=None):
+        with patch.object(subject.verify_gradle, 'verify', return_value=self.root / 'verified-gradle/bin/gradle'), patch.object(subject.rust_payloads, 'verify', return_value=372, side_effect=rust_effect):
             return subject.diagnostic_build(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, self.report, self.root / 'gradle.zip', self.root / 'verified-gradle', self.runner)
 
     def test_success_is_explicitly_partial_and_never_release_proof(self):
@@ -80,6 +80,15 @@ class PartialSourceBuildTest(unittest.TestCase):
         self.assertFalse(receipt['release_allowed'])
         self.assertTrue(any('configured_proxy_never_falls_back_to_direct' in command for command in self.calls))
         self.assertTrue(self.report.is_file())
+
+    def test_rust_payload_change_before_or_after_build_rejects_receipt(self):
+        for effect in ([subject.rust_payloads.Failure('before')], [372, subject.rust_payloads.Failure('after')]):
+            with self.subTest(effect=effect):
+                with self.assertRaises(subject.rust_payloads.Failure): self.run_build(rust_effect=effect)
+                self.assertFalse(self.report.exists())
+                import shutil
+                for path in (self.sources/'libsignal/java/android/build', self.sources/'libsignal/java/client/build'):
+                    if path.exists(): shutil.rmtree(path)
 
     def test_mismatched_output_fails_without_receipt(self):
         self.binaries['libsignal-client'] = b'unexpected'
@@ -91,9 +100,10 @@ class PartialSourceBuildTest(unittest.TestCase):
         def runner(args, cwd, env):
             if args[-1] == '-version': return ['openjdk version \"25.0.4\"']
             return self.runner(args, cwd, env)
-        subject.preflight(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, runner, java_major=25)
-        with self.assertRaisesRegex(subject.Failure, 'Java 21'):
-            subject.preflight(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, runner)
+        with patch.object(subject.rust_payloads, 'verify', return_value=372):
+            subject.preflight(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, runner, java_major=25)
+            with self.assertRaisesRegex(subject.Failure, 'Java 21'):
+                subject.preflight(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, runner)
 
     def test_direct_toolchain_accepts_installed_android_targets(self):
         (self.rust_bin / 'rustup').unlink()

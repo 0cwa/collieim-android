@@ -60,10 +60,12 @@ class ScopeTests(unittest.TestCase):
     def test_next_port_requires_exact_base_projection_and_forest(self):
         projection = {b'README.md'}
         changed = {b'app.txt', b'patches/ports/signal-8.35.1/series'}
+        fork_root = pathlib.Path(__file__).resolve().parents[2] / 'patches/forks/signal-foss'
+        snapshot = (fork_root / 'reviewed-profiles.json').read_bytes()
+        fork_provenance = (fork_root / 'provenance.json').read_bytes()
+        fork_bundle = (fork_root / 'upstream-source.bundle').read_bytes()
         config = {'signal': {'commit': scope.NEXT_PORT_SIGNAL}, 'molly': {'target': scope.MOLLY},
-                  'port': {'series': 'patches/ports/signal-8.35.1/series'},
-                  'profiles': {name: {} for name in ('molly-minimal', 'molly-continued',
-                              'molly-foss-continued', 'collie', 'collie-foss')}}
+                  'port': {'series': 'patches/ports/signal-8.35.1/series'}, **json.loads(snapshot)}
         forest = scope.FOREST
         def fake_git(repo, *args, **kwargs):
             if args[:2] == ('rev-parse', '--verify'):
@@ -74,6 +76,12 @@ class ScopeTests(unittest.TestCase):
                 return (forest + '\n').encode()
             if args[0] == 'show' and args[1].endswith(':molly-build.json'):
                 return json.dumps(config).encode()
+            if args[0] == 'show' and args[1].endswith(':patches/forks/signal-foss/reviewed-profiles.json'):
+                return snapshot
+            if args[0] == 'show' and args[1].endswith(':patches/forks/signal-foss/provenance.json'):
+                return fork_provenance
+            if args[0] == 'show' and args[1].endswith(':patches/forks/signal-foss/upstream-source.bundle'):
+                return fork_bundle
             if args[0] == 'show':
                 return b'initial/one.patch\n'
             raise AssertionError(args)
@@ -116,10 +124,17 @@ class ScopeTests(unittest.TestCase):
         series = self.repo / 'patches/ports/signal-8.35.1/series'
         series.parent.mkdir(parents=True)
         series.write_text('initial/change.patch\n')
+        fork_root = pathlib.Path(__file__).resolve().parents[2] / 'patches/forks/signal-foss'
+        snapshot = (fork_root / 'reviewed-profiles.json').read_bytes()
+        fork_provenance = (fork_root / 'provenance.json').read_bytes()
+        fork_bundle = (fork_root / 'upstream-source.bundle').read_bytes()
+        fixture_fork = self.repo / 'patches/forks/signal-foss'
+        fixture_fork.mkdir(parents=True)
+        (fixture_fork / 'reviewed-profiles.json').write_bytes(snapshot)
+        (fixture_fork / 'provenance.json').write_bytes(fork_provenance)
+        (fixture_fork / 'upstream-source.bundle').write_bytes(fork_bundle)
         config = {'signal': {'commit': signal}, 'molly': {'target': scope.MOLLY},
-                  'port': {'series': 'patches/ports/signal-8.35.1/series'},
-                  'profiles': {name: {} for name in ('molly-minimal', 'molly-continued',
-                              'molly-foss-continued', 'collie', 'collie-foss')}}
+                  'port': {'series': 'patches/ports/signal-8.35.1/series'}, **json.loads(snapshot)}
         (self.repo / 'molly-build.json').write_text(json.dumps(config))
         self.git('add', '.')
         self.git('commit', '-qm', 'port')
@@ -138,6 +153,45 @@ class ScopeTests(unittest.TestCase):
             self.git('reset', '--hard', '-q', head)
             series.unlink(); self.git('add', '-u'); self.git('commit', '-qm', 'missing series')
             with self.assertRaisesRegex(ValueError, 'series is missing'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            config['profiles']['collie']['fork_series'].reverse()
+            (self.repo / 'molly-build.json').write_text(json.dumps(config))
+            self.git('add', 'molly-build.json'); self.git('commit', '-qm', 'reordered layers')
+            with self.assertRaisesRegex(ValueError, 'pinned composition'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            config['profiles']['collie']['fork_series'].reverse()
+            self.git('reset', '--hard', '-q', head)
+            changed_fork = json.loads(fork_provenance)
+            changed_fork['upstream_bundle_prerequisite'] = '0' * 40
+            (fixture_fork / 'provenance.json').write_text(json.dumps(changed_fork))
+            self.git('add', 'patches/forks/signal-foss/provenance.json'); self.git('commit', '-qm', 'wrong historical source')
+            with self.assertRaisesRegex(ValueError, 'historical pin'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            (fixture_fork / 'reviewed-profiles.json').write_bytes(snapshot + b' ')
+            self.git('add', 'patches/forks/signal-foss/reviewed-profiles.json'); self.git('commit', '-qm', 'unreviewed snapshot')
+            with self.assertRaisesRegex(ValueError, 'pinned composition'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            for field in ('upstream_author', 'upstream_credit', 'upstream_commit'):
+                changed_fork = json.loads(fork_provenance)
+                changed_fork['layers'][0][field] = 'changed'
+                (fixture_fork / 'provenance.json').write_text(json.dumps(changed_fork))
+                self.git('add', 'patches/forks/signal-foss/provenance.json'); self.git('commit', '-qm', 'changed attribution')
+                with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'historical credits'):
+                    scope.check_next_port(self.repo, base, 'HEAD')
+                self.git('reset', '--hard', '-q', head)
+            changed_fork = json.loads(fork_provenance)
+            changed_fork['layers'][2]['fixes'] = 'changed'
+            (fixture_fork / 'provenance.json').write_text(json.dumps(changed_fork))
+            self.git('add', 'patches/forks/signal-foss/provenance.json'); self.git('commit', '-qm', 'changed fixes relation')
+            with self.assertRaisesRegex(ValueError, 'historical credits'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            (fixture_fork / 'upstream-source.bundle').write_bytes(fork_bundle + b'bad')
+            self.git('add', 'patches/forks/signal-foss/upstream-source.bundle'); self.git('commit', '-qm', 'altered fork bundle')
+            with self.assertRaisesRegex(ValueError, 'fork bundle differs'):
                 scope.check_next_port(self.repo, base, 'HEAD')
             self.git('reset', '--hard', '-q', head)
             del config['profiles']['collie']

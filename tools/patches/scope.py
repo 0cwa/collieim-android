@@ -268,7 +268,13 @@ MAIN_PROJECTION_EXCEPTIONS = frozenset({
 # This scope is deliberately separate from the historical stack validators.
 NEXT_PORT_BASE = '7d486880ddc991af0d36f1e4709030255ef4dbad'
 NEXT_PORT_SIGNAL = 'a74583b01e260944f699c4da03ba4e8ce04de32b'
+NEXT_PORT_REVIEWED_PROFILES_SHA256 = '156c318765138122a2bb428d8ce772d30d4f7ea62e1194359e42af57234bb5bd'
+NEXT_PORT_FORK_CREDITS_SHA256 = 'ca2faaf368c8695861ec9b8ab656b1c0c76329ac71bf61e6b175149daf7cd1e5'
+NEXT_PORT_FORK_BUNDLE_SHA256 = 'e0e3b786f89d042fa4e3430fd1f09718c12ef4e6316e24976bfc665be931fb57'
+NEXT_PORT_FORK_HEAD = 'b13bff463547475bbe1ae55335add689f52532e0'
+NEXT_PORT_FORK_URL = 'https://github.com/tw-hx/Signal-Android'
 NEXT_PORT_TOOLS = frozenset({
+    'tools/patches/build.py', 'tools/patches/test_build.py',
     'tools/patches/fork_profiles.py', 'tools/patches/release_profiles.py',
     'tools/patches/pins.py', 'tools/patches/scope.py', 'tools/patches/release.py',
     'tools/patches/test_fork_profiles.py', 'tools/patches/test_stack_scope.py', 'tools/patches/test_release.py',
@@ -309,6 +315,38 @@ def check_next_port(repo, base, head):
     profiles = config.get('profiles')
     if not isinstance(profiles, dict) or set(profiles) != {'molly-minimal', 'molly-continued', 'molly-foss-continued', 'collie', 'collie-foss'} or any(not isinstance(p, dict) for p in profiles.values()):
         raise ValueError('next port release profiles are missing or differ')
+    root = 'patches/forks/signal-foss/'
+    snapshot = git(repo, 'show', head + ':' + root + 'reviewed-profiles.json')
+    if hashlib.sha256(snapshot).hexdigest() != NEXT_PORT_REVIEWED_PROFILES_SHA256:
+        raise ValueError('next port reviewed profile snapshot differs from pinned composition')
+    try:
+        reviewed = json.loads(snapshot)
+        fork = json.loads(git(repo, 'show', head + ':' + root + 'provenance.json'))
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise ValueError('next port fork provenance is invalid') from exc
+    if {'profiles': profiles, 'fork_source': config.get('fork_source')} != reviewed:
+        raise ValueError('next port profiles differ from pinned composition')
+    if config.get('fork_source') != {'head': NEXT_PORT_FORK_HEAD, 'url': NEXT_PORT_FORK_URL}:
+        raise ValueError('next port fork source differs from historical pin')
+    if (fork.get('source_head'), fork.get('source_url'), fork.get('upstream_bundle_prerequisite'),
+        fork.get('upstream_bundle_ref'), fork.get('reviewed_profiles'),
+        fork.get('upstream_bundle'), fork.get('upstream_bundle_sha256')) != (
+            NEXT_PORT_FORK_HEAD, NEXT_PORT_FORK_URL, NEW,
+            'refs/heads/upstream-fork/signal-foss-8.33.2.0-FOSS',
+            {'path': 'reviewed-profiles.json', 'sha256': NEXT_PORT_REVIEWED_PROFILES_SHA256},
+            'upstream-source.bundle', NEXT_PORT_FORK_BUNDLE_SHA256):
+        raise ValueError('next port fork provenance differs from historical pin')
+    layers = fork.get('layers')
+    if not isinstance(layers, list) or any(not isinstance(layer, dict) for layer in layers):
+        raise ValueError('next port fork layer credits are invalid')
+    credits = [{key: value for key, value in layer.items() if key in
+                ('id', 'upstream_author', 'upstream_commit', 'upstream_credit', 'fixes')} for layer in layers]
+    encoded = json.dumps(credits, sort_keys=True, separators=(',', ':')).encode()
+    if hashlib.sha256(encoded).hexdigest() != NEXT_PORT_FORK_CREDITS_SHA256:
+        raise ValueError('next port fork historical credits differ from pin')
+    bundle = git(repo, 'show', head + ':' + root + 'upstream-source.bundle')
+    if hashlib.sha256(bundle).hexdigest() != NEXT_PORT_FORK_BUNDLE_SHA256:
+        raise ValueError('next port historical fork bundle differs from pin')
     return {'scope': 'next-port', 'profile_present': True, 'port_present': True}
 
 

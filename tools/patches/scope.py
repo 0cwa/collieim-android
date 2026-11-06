@@ -274,7 +274,9 @@ NEXT_PORT_FORK_BUNDLE_SHA256 = 'e0e3b786f89d042fa4e3430fd1f09718c12ef4e6316e2497
 NEXT_PORT_FORK_HEAD = 'b13bff463547475bbe1ae55335add689f52532e0'
 NEXT_PORT_FORK_URL = 'https://github.com/tw-hx/Signal-Android'
 NEXT_PORT_TOOLS = frozenset({
-    'tools/patches/build.py', 'tools/patches/test_build.py',
+    '.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml',
+    'tools/patches/build.py', 'tools/patches/test_build.py', 'tools/patches/test_prepare_port_report.py',
+    'tools/patches/test_next_port_workflow.py',
     'tools/patches/fork_profiles.py', 'tools/patches/release_profiles.py',
     'tools/patches/pins.py', 'tools/patches/scope.py', 'tools/patches/release.py',
     'tools/patches/test_fork_profiles.py', 'tools/patches/test_stack_scope.py', 'tools/patches/test_release.py',

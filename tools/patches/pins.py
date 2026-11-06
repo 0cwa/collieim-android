@@ -22,9 +22,9 @@ PROFILES = 'tools/patches/release_profiles.py'
 
 # (value, meaning, upstream whose new release changes it, files that contain it)
 PINS = [
-    ('8c5063e119a173ca7e3e157e7650911fae88c4fd', 'audited clean integration entries manifest', 'none', [SCOPE]),
+    ('608bdec221293b1b8b80217bb264e51163bdb101', 'audited clean integration entries manifest', 'none', [SCOPE]),
     ('7f0eb01a0ab472deeef3b528e7f508425044fa6a', 'audited historical release base for clean main', 'none', [SCOPE, RELEASE_WORKFLOW]),
-    ('0e7f69fb61387edefbb8d64f0bb791bbeffadd2b', 'audited main transition boundary', 'none', [SCOPE]),
+    ('e15fa401eaab25e9256042c05f4166142d74d2aa', 'audited main transition boundary', 'none', [SCOPE]),
     ('89bd7d6368a509470c4612d079746f66dfac8b55', 'reviewed release profile composition', 'none', [SCOPE]),
     ('0e202dda90785771ff8c87526eaaf30c655f54f3', 'Molly 8.19.2-4 release commit, the Molly input', 'Molly',
      [SCOPE, REPORT, RELEASE_WORKFLOW, '.github/workflows/molly-unsigned-release.yml']),

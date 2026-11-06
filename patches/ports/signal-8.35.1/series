@@ -60,3 +60,4 @@ followups/native-catalog/0001-native-catalog.patch
 followups/registration-network-settings/0001-registration-network-settings.patch
 followups/donation-completion-copy/0001-donation-completion-copy.patch
 followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch
+followups/view-once-open-guard/0001-view-once-open-guard.patch

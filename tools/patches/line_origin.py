@@ -232,7 +232,7 @@ def stage_of(layer_id):
                        'arabic-molly-donation', 'persian-molly-donation', 'native-catalog'}
     if layer_id.startswith('followups/') and (name in scope.BEHAVIOR or name in universal_fixes):
         return 'PR4 behavior fixes'
-    if layer_id.startswith('followups/') and name in scope.ADDITIONS:
+    if layer_id.startswith('followups/') and (name in scope.ADDITIONS or name == 'view-once-open-guard'):
         return 'PR5 behavior additions'
     if layer_id.startswith('followups/') and name in scope.FEATURES:
         return FORK_STAGE

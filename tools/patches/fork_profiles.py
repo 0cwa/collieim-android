@@ -13,6 +13,7 @@ import verify_source_bundles
 
 # These identify the historical fork itself, not the Signal version being ported.
 FORK_SIGNAL_BASE = '6e9dddc01f1b26e608ac683807c51e139c141ed2'
+FORK_RETENTION_ANCESTOR = 'fc0daac37774d9c20238a34ac4786d9398adc07f'
 FORK_SOURCE_HEAD = 'b13bff463547475bbe1ae55335add689f52532e0'
 SIGNAL_URL = 'https://github.com/signalapp/Signal-Android.git'
 
@@ -42,6 +43,8 @@ def port_prefix(repo, config_path, selection, records):
                         'followups/arabic-molly-donation', 'followups/persian-molly-donation', 'followups/native-catalog']
     additions = ['followups/registration-network-settings', 'followups/donation-completion-copy',
                  'followups/unifiedpush-registration-retry']
+    if selection['base_layer'] == 'followups/view-once-open-guard':
+        additions.append('followups/view-once-open-guard')
     minimal_boundary = common_fixes[-1] if common_fixes else boundary
     selected_boundaries = [layer['id'] for layer in layers[:end + 1] if layer['id'] in {boundary, *common_fixes, *additions}]
     expected_boundaries = [boundary] + common_fixes + ([] if selection['base_layer'] == minimal_boundary else additions)
@@ -76,14 +79,13 @@ def fork_layers(repo, selection, *, check_target=True):
     if (data['base_commit'], data['base_tree']) != (selection['base_checkpoint'], selection['base_tree']):
         raise forest.ForestError('fork base checkpoint or tree differs')
     layers = data['layers']
-    if not isinstance(layers, list) or [x['id'] for x in layers] != ['firebase-free-build', 'retention-controls',
-                                                                      'retention-controls-fixes', 'collie-icon', 'collie-branding']:
+    if not isinstance(layers, list) or [x['id'] for x in layers] != ['firebase-free-build', 'collie-icon', 'collie-branding']:
         raise forest.ForestError('fork layer order differs')
     _, upstream_parents = verify_source_bundles.commit_info(repo, data['source_head'])
-    if upstream_parents != [layers[1]['upstream_commit']]:
+    if upstream_parents != [FORK_RETENTION_ANCESTOR]:
         raise forest.ForestError('fork upstream head parent differs from retention origin')
     if git_utils.git(repo, 'merge-base', '--is-ancestor', FORK_SIGNAL_BASE,
-                     layers[1]['upstream_commit'], check=False).returncode:
+                     FORK_RETENTION_ANCESTOR, check=False).returncode:
         raise forest.ForestError('fork retention origin does not descend from pinned Signal source')
     selected = selection['fork_series']
     if [release_profiles.FORK_ROOT + '/' + x['series'] for x in layers[:len(selected)]] != selected:
@@ -167,8 +169,7 @@ def continued_icon(repo, selection):
     """
     if selection.get('icon_overlay') != release_profiles.COLLIE_ICON:
         raise forest.ForestError('invalid Continued icon overlay')
-    original = dict(selection, fork_series=[release_profiles.FIREBASE, release_profiles.RETENTION,
-                    release_profiles.RETENTION_FIXES, release_profiles.COLLIE_ICON])
+    original = dict(selection, fork_series=[release_profiles.FIREBASE, release_profiles.COLLIE_ICON])
     return fork_layers(repo, original, check_target=False)[-1]
 
 

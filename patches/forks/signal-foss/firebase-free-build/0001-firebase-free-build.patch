@@ -1,4 +1,4 @@
-From 364a529eb38802dfbd749d4b56653dfae4827836 Mon Sep 17 00:00:00 2001
+From 49bda76d57e78957dfc7bed00cd11f4b17584b08 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Mon, 2 Nov 2026 04:05:28 +0100
 Subject: [PATCH] Add a Firebase-free build while preserving push choices
@@ -14,7 +14,7 @@ This layer uses Molly's own open-source services instead of that commit's
 stub library.
 
 Inspired-by: Angus Turnbull <github@twinhelix.com>
-Source-Commit: 364a529eb38802dfbd749d4b56653dfae4827836
+Source-Commit: 49bda76d57e78957dfc7bed00cd11f4b17584b08
 
 ---
  app/build.gradle.kts                          | 17 ++++-

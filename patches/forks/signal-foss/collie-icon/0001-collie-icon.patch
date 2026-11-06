@@ -1,9 +1,9 @@
-From f39ff54e7bdfc34e0ec1766b4337721b2740ca82 Mon Sep 17 00:00:00 2001
+From 562028d1579005bb16d653f4e2ac97f5fe9fe1ce Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Wed, 4 Nov 2026 03:07:03 +0100
 Subject: [PATCH] Add Collie launcher icon assets
 
-Source-Commit: f39ff54e7bdfc34e0ec1766b4337721b2740ca82
+Source-Commit: 562028d1579005bb16d653f4e2ac97f5fe9fe1ce
 
 ---
  app/src/main/AndroidManifest.xml              |   1 +

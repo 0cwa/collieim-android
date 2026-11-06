@@ -47,8 +47,8 @@
   "mechanical_changes_retained_without_resolution": 2023,
   "initial_target": "f2a6b716b37cf8816223f392dc127dde319be968",
   "initial_target_tree": "48b4508257e5637779cf7dab802657ecdd63050a",
-  "target": "ecfe29cfdfdcc265fd2b2e99c410bb2f3dcc343e",
-  "target_tree": "f851dcd6ce9f4a22e0e0f4efa75bc8e8e8ef4aa1",
+  "target": "6269897101cd0c4605c1eaac62f57e5ac94dbd44",
+  "target_tree": "706f9f75285b19373f60220995a6981ff329b180",
   "layers": [
     {
       "id": "initial/app-updates",
@@ -701,11 +701,29 @@
       "source_bundle_bytes": 6071,
       "source_bundle_prerequisite": "8a988a4260f8949c327fbee4e283852f13ad6f13",
       "source_bundle_ref": "refs/heads/source-checkpoint/unifiedpush-registration-retry"
+    },
+    {
+      "id": "followups/view-once-open-guard",
+      "source_commit": "6269897101cd0c4605c1eaac62f57e5ac94dbd44",
+      "description": "Guard linked-device view-once attachment deletion. AI-assisted compatibility fix.",
+      "ai_generated": true,
+      "before_tree": "f851dcd6ce9f4a22e0e0f4efa75bc8e8e8ef4aa1",
+      "after_tree": "706f9f75285b19373f60220995a6981ff329b180",
+      "paths": 2,
+      "patches": [
+        "followups/view-once-open-guard/0001-view-once-open-guard.patch"
+      ],
+      "mailbox_bytes": 5232,
+      "source_bundle": "followups/view-once-open-guard/source-checkpoint.bundle",
+      "source_bundle_sha256": "e4710b393542a3ce79ee581e23d77d28bae0a568cf6f17cb0c138f4c7eb1de8d",
+      "source_bundle_bytes": 4505,
+      "source_bundle_prerequisite": "ecfe29cfdfdcc265fd2b2e99c410bb2f3dcc343e",
+      "source_bundle_ref": "refs/heads/source-checkpoint/view-once-open-guard"
     }
   ],
-  "patch_count": 62,
-  "total_mailbox_bytes": 13046939,
-  "final_export_commit": "ecfe29cfdfdcc265fd2b2e99c410bb2f3dcc343e",
+  "patch_count": 63,
+  "total_mailbox_bytes": 13052171,
+  "final_export_commit": "6269897101cd0c4605c1eaac62f57e5ac94dbd44",
   "patch_sha256": {
     "initial/app-updates/0001-resolve-app-updates.patch": "335837b0fe40d8b2ff5380a0f659f3083b1f40e7565b1cf452ff6c2905120663",
     "initial/appearance/0001-resolve-appearance.patch": "414a3ebbfb741a7b8c8631976cc5e9f63d011db140727e71fc7597bac649f59a",
@@ -768,7 +786,8 @@
     "followups/registration-network-settings/0001-registration-network-settings.patch": "0a2dcd54d3593fb011ffca96e6eba33eaa658bab28cf9953e407dd19d11e41b9",
     "followups/donation-completion-copy/0001-donation-completion-copy.patch": "6abfcf77427a5ac1f5bdf7e528e02ad4277d6b96a7dd82aedb45d2d57c64f100",
     "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "e59c4995e89a92a1615e3765a6733b55085718975a867112fb7d759b3e310b9e",
-    "followups/native-catalog/0001-native-catalog.patch": "226e651dd3b3de2c25f87189ad04a48290573830c6194b3a1a7cc858db456dd4"
+    "followups/native-catalog/0001-native-catalog.patch": "226e651dd3b3de2c25f87189ad04a48290573830c6194b3a1a7cc858db456dd4",
+    "followups/view-once-open-guard/0001-view-once-open-guard.patch": "fcb58c5190261ccdbe16d799e89f456019371eefa349c4f32e883773132b9c44"
   },
   "schema": 1,
   "origin_base": "c47a74ba0961903eeaeda6d22347a990056c3e83",
@@ -837,7 +856,8 @@
     "followups/registration-network-settings/0001-registration-network-settings.patch": "0a2dcd54d3593fb011ffca96e6eba33eaa658bab28cf9953e407dd19d11e41b9",
     "followups/donation-completion-copy/0001-donation-completion-copy.patch": "6abfcf77427a5ac1f5bdf7e528e02ad4277d6b96a7dd82aedb45d2d57c64f100",
     "followups/unifiedpush-registration-retry/0001-unifiedpush-registration-retry.patch": "e59c4995e89a92a1615e3765a6733b55085718975a867112fb7d759b3e310b9e",
-    "followups/native-catalog/0001-native-catalog.patch": "226e651dd3b3de2c25f87189ad04a48290573830c6194b3a1a7cc858db456dd4"
+    "followups/native-catalog/0001-native-catalog.patch": "226e651dd3b3de2c25f87189ad04a48290573830c6194b3a1a7cc858db456dd4",
+    "followups/view-once-open-guard/0001-view-once-open-guard.patch": "fcb58c5190261ccdbe16d799e89f456019371eefa349c4f32e883773132b9c44"
   },
   "source_bundle_base": {
     "path": "source-checkpoint.bundle",

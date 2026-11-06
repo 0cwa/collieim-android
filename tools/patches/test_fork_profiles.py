@@ -35,7 +35,7 @@ class ForkProfilesTests(unittest.TestCase):
         self.git('add', 'app')
         self.git('commit', '-qm', 'original Firebase')
         upstream_head = self.git('rev-parse', 'HEAD')
-        for name, value in (('FORK_SIGNAL_BASE', base), ('FORK_SOURCE_HEAD', upstream_head)):
+        for name, value in (('FORK_SIGNAL_BASE', base), ('FORK_RETENTION_ANCESTOR', upstream_retention), ('FORK_SOURCE_HEAD', upstream_head)):
             mocked = patch.object(fork_profiles, name, value)
             mocked.start()
             self.addCleanup(mocked.stop)
@@ -48,7 +48,7 @@ class ForkProfilesTests(unittest.TestCase):
         self.git('bundle', 'create', str(upstream_bundle), upstream_ref, '^' + base)
         previous, before = base, base_tree
         layers = []
-        for label in ('firebase-free-build', 'retention-controls', 'retention-controls-fixes', 'collie-icon', 'collie-branding'):
+        for label in ('firebase-free-build', 'collie-icon', 'collie-branding'):
             directory = self.root / label
             directory.mkdir()
             path = 'icon' if label == 'collie-icon' else 'app'
@@ -94,8 +94,7 @@ class ForkProfilesTests(unittest.TestCase):
         self.selection = {'base_checkpoint': base, 'base_tree': base_tree,
                           'target_tree': layers[-1]['after_tree'],
                           'signal_commit': base, 'fork_source': {'url': self.data['source_url'], 'head': upstream_head},
-                          'fork_series': [release_profiles.FIREBASE, release_profiles.RETENTION,
-                                          release_profiles.RETENTION_FIXES, release_profiles.COLLIE_ICON, release_profiles.COLLIE_BRANDING]}
+                          'fork_series': [release_profiles.FIREBASE, release_profiles.COLLIE_ICON, release_profiles.COLLIE_BRANDING]}
         self.save()
 
     def git(self, *args):
@@ -123,14 +122,14 @@ class ForkProfilesTests(unittest.TestCase):
             ['git', '-C', str(self.repo), 'commit-tree', self.data['base_tree'], '-p', base],
             input='new Signal target\n', text=True).strip()
         selection = dict(self.selection, signal_commit=newer)
-        self.assertEqual(len(fork_profiles.fork_layers(self.repo, selection)), 5)
+        self.assertEqual(len(fork_profiles.fork_layers(self.repo, selection)), 3)
         self.data['upstream_bundle_prerequisite'] = newer
         self.save()
         with self.assertRaisesRegex(forest.ForestError, 'historical Signal source'):
             fork_profiles.fork_layers(self.repo, selection)
 
     def test_forged_fork_head_rejected_even_if_config_matches(self):
-        forged = self.data['layers'][1]['upstream_commit']
+        forged = fork_profiles.FORK_RETENTION_ANCESTOR
         self.data['source_head'] = forged
         self.save()
         selection = dict(self.selection, fork_source={'url': self.data['source_url'], 'head': forged})
@@ -197,7 +196,6 @@ class ForkProfilesTests(unittest.TestCase):
             lambda d: d['layers'].reverse(),
             lambda d: d.__setitem__('upstream_bundle_sha256', '0' * 64),
             lambda d: d.__setitem__('upstream_bundle_prerequisite', '0' * 40),
-            lambda d: d['layers'][1].__setitem__('upstream_commit', '0' * 40),
             lambda d: d['layers'][0].__setitem__('before_tree', '0' * 40),
             lambda d: d['layers'][0].__setitem__('source_bundle_prerequisite', '0' * 40),
             lambda d: d['layers'][0].__setitem__('mailbox_sha256', '0' * 64),
@@ -210,7 +208,7 @@ class ForkProfilesTests(unittest.TestCase):
             lambda d: d['layers'][1].pop('upstream_credit'),
             lambda d: d['layers'][2].__setitem__('fixes', 'firebase-free-build'),
             lambda d: d['layers'][2].__setitem__('author', 'Fork Author <author@example.invalid>'),
-            lambda d: d['layers'][2].__setitem__('upstream_commit', d['layers'][1]['upstream_commit']),
+            lambda d: d['layers'][2].__setitem__('upstream_commit', fork_profiles.FORK_RETENTION_ANCESTOR),
             lambda d: d['layers'][2].__setitem__('upstream_credit', 'adapted'),
             lambda d: d['layers'][0].__setitem__('mailbox', '../escape.patch'),
         ]
@@ -313,7 +311,7 @@ class ForkProfilesTests(unittest.TestCase):
         mailbox = self.root / 'collie-branding/change.patch'
         mailbox.write_text(f'diff --git a/{path} b/{path}\nnew file mode 100644\n')
         base_tests = [':app:testDebugUnitTest', '--tests', 'org.x.UnitTest']
-        for name in ('collie', 'collie-foss'):
+        for name in sorted(release_profiles.NAMES):
             boundary, fork, free = release_profiles.POLICY[name]
             config = {'profiles': {name: {'base_series': release_profiles.PORT_SERIES,
                 'base_checkpoint': 'a'*40, 'base_tree': 'b'*40, 'fork_series': list(fork),
@@ -324,15 +322,6 @@ class ForkProfilesTests(unittest.TestCase):
             selected, profile = release_profiles.select(config, name, self.repo)
             self.assertEqual(selected['android']['tests'], base_tests)
             self.assertEqual(profile['instrumentation_sources'], [path])
-
-        name = 'molly-foss-continued'
-        _, fork, free = release_profiles.POLICY[name]
-        (self.root / 'firebase-free-build/change.patch').write_text(mailbox.read_text())
-        config['profiles'][name] = {'base_series': release_profiles.PORT_SERIES,
-            'base_checkpoint': 'a'*40, 'base_tree': 'b'*40, 'fork_series': list(fork),
-            'target_tree': 'c'*40, 'firebase_free': free}
-        with self.assertRaisesRegex(ValueError, 'profile with a device test gate'):
-            release_profiles.select(config, name, self.repo)
 
     def test_port_prefix_requires_verified_order_and_exact_boundary(self):
         directory = self.repo / release_profiles.PORT_SERIES.rsplit('/', 1)[0]

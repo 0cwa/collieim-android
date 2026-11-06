@@ -269,8 +269,8 @@ MAIN_PROJECTION_EXCEPTIONS = frozenset({
 NEXT_PORT_BASE = '7d486880ddc991af0d36f1e4709030255ef4dbad'
 NEXT_PORT_SIGNAL = 'a74583b01e260944f699c4da03ba4e8ce04de32b'
 NEXT_PORT_NATIVE_LOCK_SHA256 = '9866196dec36f096d2757bbf9e9d774c7147548542dd2a041e6438f79dbd73e4'
-NEXT_PORT_REVIEWED_PROFILES_SHA256 = '43e99297e78622462c93b26c01c8c9469d635dd807cb67688f4894bb89c05dc7'
-NEXT_PORT_FORK_CREDITS_SHA256 = 'ca2faaf368c8695861ec9b8ab656b1c0c76329ac71bf61e6b175149daf7cd1e5'
+NEXT_PORT_REVIEWED_PROFILES_SHA256 = '605cb5083ff6839221b6572c948a6a581bb7dc42c6ae118f5a3aa5ac1860d18e'
+NEXT_PORT_FORK_CREDITS_SHA256 = '24b095ba29405aa106e698d741b8cc4a07e922c55ad239b1e843746a86d4b962'
 NEXT_PORT_FORK_BUNDLE_SHA256 = 'e0e3b786f89d042fa4e3430fd1f09718c12ef4e6316e24976bfc665be931fb57'
 NEXT_PORT_FORK_HEAD = 'b13bff463547475bbe1ae55335add689f52532e0'
 NEXT_PORT_FORK_URL = 'https://github.com/tw-hx/Signal-Android'
@@ -280,7 +280,7 @@ NEXT_PORT_TOOLS = frozenset({
     'tools/patches/test_next_port_workflow.py', 'tools/patches/test_optional_instrumentation_workflow.py',
     'tools/patches/fork_profiles.py', 'tools/patches/release_profiles.py',
     'tools/patches/pins.py', 'tools/patches/scope.py', 'tools/patches/release.py',
-    'tools/patches/test_fork_profiles.py', 'tools/patches/test_stack_scope.py', 'tools/patches/test_release.py',
+    'tools/patches/test_fork_profiles.py', 'tools/patches/test_retention_profiles.py', 'tools/patches/test_stack_scope.py', 'tools/patches/test_release.py',
     'tools/patches/prepare_port_report.py', 'tools/patches/port_report.py',
     'tools/patches/line_origin.py', 'tools/patches/test_line_origin.py', 'tools/patches/fetch_reviewed_profiles.py',
 })

@@ -1,9 +1,9 @@
-From caf67d71612103663ac41717ead34475e44e4c2e Mon Sep 17 00:00:00 2001
+From 75de5d3336f3f4ff1b4dab6caaf10fabe5758d88 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Thu, 5 Nov 2026 09:46:28 +0100
 Subject: [PATCH] Apply Collie branding, expressive theme and donation links
 
-Source-Commit: caf67d71612103663ac41717ead34475e44e4c2e
+Source-Commit: 75de5d3336f3f4ff1b4dab6caaf10fabe5758d88
 
 ---
  app/build.gradle.kts                          |   3 +-

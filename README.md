@@ -99,6 +99,10 @@ The releases retain Signal's messaging and calling features and Molly's addition
 
 Collie also offers four optional controls: keep received view-once media, keep incoming disappearing messages after they expire, ignore a sender's request to delete a message, and remove media without removing its message. All four are off by default. Content you choose to keep may appear in backups or exports. (this feature is experimental)
 
+In the next release, we are removing these retention controls. After reviewing their design, the maintainers concluded that the current implementation is not good enough and poses security and privacy risks. We are exploring alternatives that offer a better experience while respecting disappearing-message protections. The update adds no special cleanup or restoration of previously retained content, and normal message expiration and deletion will continue. Previously retained content may be present in existing backups.
+
+The former Molly Minimal and Molly Continued download filenames will continue to receive Collie, retaining their current FCM or FOSS notification capability. Existing Collie download filenames will remain available.
+
 ## Planned release names and direction
 
 These changes are planned; the current downloads and names are listed above.

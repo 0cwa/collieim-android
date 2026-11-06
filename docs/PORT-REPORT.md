@@ -10,7 +10,7 @@ Molly itself adds 26,922 non-blank production lines to Signal `c47a74ba0961`. **
 |---|---:|---:|---:|---:|---:|---:|
 | PR3 compatibility, tree `12366bc6cc50` | +1,903 / −321 | 7.1% | 1,758 (of which 758 in removed paths) | +2,000 / −192 | +2,045 / −326 | +55 / −10 |
 | PR4 behavior fixes, tree `525617a7f0b0` | +2,123 / −301 | 7.9% | 1,761 (of which 758 in removed paths) | +2,002 / −194 | +2,854 / −357 | +55 / −10 |
-| PR5 behavior additions, tree `f851dcd6ce9f` | +2,243 / −302 | 8.3% | 1,774 (of which 758 in removed paths) | +2,002 / −194 | +3,021 / −357 | +55 / −10 |
+| PR5 behavior additions, tree `706f9f75285b` | +2,246 / −303 | 8.3% | 1,774 (of which 758 in removed paths) | +2,002 / −194 | +3,078 / −357 | +55 / −10 |
 
 Classes: **production**: app and library source, default-locale resources and build scripts that ship in the APK; **translations**: localized strings (res/values-<locale>/strings*.xml), generated or relocated; **tests**: test, screenshot-test and benchmark source sets and benchmark modules; **generated**: gradle/verification-metadata.xml dependency hashes; **repository**: patch series, pipeline tools, documentation and CI.
 
@@ -57,6 +57,7 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `followups/registration-network-settings` | PR5 behavior additions | +53 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 | `followups/donation-completion-copy` | PR5 behavior additions | +1 / −1 | +0 / −0 | +0 / −0 | +0 / −0 |
 | `followups/unifiedpush-registration-retry` | PR5 behavior additions | +71 / −13 | +0 / −0 | +167 / −0 | +0 / −0 |
+| `followups/view-once-open-guard` | PR5 behavior additions | +3 / −1 | +0 / −0 | +57 / −0 | +0 / −0 |
 
 ### Largest production files at PR5 behavior additions
 
@@ -104,11 +105,11 @@ Each profile's source compared with Molly, Signal and Molly's old Signal base an
 
 | Profile | Tree | Fork layers | Release overlays | Firebase | Production written / removed | Written as % of Molly's production lines | Fork matches | Molly lines not carried | Tests |
 |---|---|---|---|---|---:|---:|---:|---:|---:|
-| collie | `8212fd078902` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | included | +2,729 / −510 | 10.1% | 175 | 2,273 | +3,922 / −360 |
-| collie-foss | `8212fd078902` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | removed | +2,729 / −510 | 10.1% | 175 | 2,273 | +3,922 / −360 |
-| molly-continued | `5ef3f203274a` | none | `collie-icon` | included | +2,239 / −308 | 8.3% | — | 1,852 | +3,021 / −357 |
-| molly-foss-continued | `1f6a2d78fd4d` | `firebase-free-build` | `collie-icon` | removed | +2,160 / −379 | 8.0% | 2 | 1,910 | +3,196 / −357 |
-| molly-minimal | `525617a7f0b0` | none | none | included | +2,110 / −300 | 7.8% | — | 1,761 | +2,854 / −357 |
+| collie | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | included | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
+| collie-foss | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | removed | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
+| molly-continued | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | included | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
+| molly-foss-continued | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | removed | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
+| molly-minimal | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | included | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
 
 ## Raw physical Git diffs
 
@@ -985,8 +986,8 @@ Partial-file exclusions and deletion necessity remain unmeasured unless separate
 | wire-handler/lib/build.gradle.kts | 100644 | 18 | no | no | previously absent; necessity unreviewed | This Signal path is absent from the reconstructed port and was already absent at the same path in Collie RC3. | The same path is absent from Molly 8.19.2-4 and Collie RC3. | Git tree membership for Signal 8.33.2 and 8.35.1, Molly, RC3, mechanical, and target trees. | Path history does not establish that the feature is absent, equivalent, safe, or unnecessary; its disposition remains unreviewed. |
 
 Compatibility share: 121666 / 143289 physical added plus deleted text lines = 84.910%.
-Current mechanical comparison: 11204 added, 110466 deleted, 121670 total, 28 binary; current Molly comparison: 492550 added, 288598 deleted, 781148 total, 698 binary.
-Current gross physical comparison relative to original Molly patchset: 121670 / 143289 added plus deleted text lines = 84.912%.
+Current mechanical comparison: 11264 added, 110467 deleted, 121731 total, 28 binary; current Molly comparison: 492610 added, 288599 deleted, 781209 total, 698 binary.
+Current gross physical comparison relative to original Molly patchset: 121731 / 143289 added plus deleted text lines = 84.955%.
 Gross physical counts include deletions and conflict bookkeeping; they do not establish authorship or necessity.
 After minimization: unmeasured.
 
@@ -1003,13 +1004,13 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | conflict_resolution | 0 | 0 | 0 |
 | signal_api_compile_fix | 0 | 0 | 0 |
 | behavior_preservation | 0 | 0 | 0 |
-| unmeasured | 6142 | 11204 | 110466 |
+| unmeasured | 6145 | 11264 | 110467 |
 
 | Structural kind | Rows | Added | Deleted |
 |---|---:|---:|---:|
-| text | 5149 | 11204 | 110466 |
+| text | 5151 | 11264 | 110467 |
 | binary | 28 | 0 | 0 |
-| mode | 965 | 0 | 0 |
+| mode | 966 | 0 | 0 |
 
 | Hunk ID | Path | Kind | Old mode | New mode | Added | Deleted | Type | Reason | Molly equivalent | Revert gate and result |
 |---|---|---|---|---|---:|---:|---|---|---|---|
@@ -1961,6 +1962,7 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | c7d8d20918706111cba0 | app/src/main/java/org/thoughtcrime/securesms/messages/IncomingMessageObserver.kt | text | 100644 | 100644 | 1 | 6 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | bb3956a2e25111341b7b | app/src/main/java/org/thoughtcrime/securesms/messages/MessageContentProcessor.kt | text | 100644 | 100644 | 1 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 4134348f20393e15d7d5 | app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt | text | 100644 | 100644 | 0 | 4 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| fc322912ea7727c26246 | app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt | text | 100644 | 100644 | 3 | 1 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 4653781dc1f3e6fe519f | app/src/main/java/org/thoughtcrime/securesms/messages/SyncMessageProcessor.kt | text | 100644 | 100644 | 0 | 51 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | b8a12d68ee894e33f3f1 | app/src/main/java/org/thoughtcrime/securesms/migrations/ApplicationMigrationActivity.java | text | 100644 | 100644 | 1 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | a7c1755aebbd772fe52f | app/src/main/java/org/thoughtcrime/securesms/migrations/ApplicationMigrations.java | text | 100644 | 100644 | 0 | 5 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
@@ -4793,6 +4795,8 @@ Semantic type and structural kind are alternative breakdowns of the same rows; d
 | 0ff6c19b9c9763885f73 | app/src/test/java/org/thoughtcrime/securesms/logsubmit/LogSectionSystemInfoTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | d3c16a21f4df7d7bc89d | app/src/test/java/org/thoughtcrime/securesms/messages/IncomingMessageObserverConnectivityTest.kt | text | 000000 | 100644 | 94 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | af2dd0473b4256b7d363 | app/src/test/java/org/thoughtcrime/securesms/messages/IncomingMessageObserverConnectivityTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 4a27c5bc0c776b727aff | app/src/test/java/org/thoughtcrime/securesms/messages/ViewOnceOpenGuardTest.kt | text | 000000 | 100644 | 57 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
+| 2cb65b8df12dbd661322 | app/src/test/java/org/thoughtcrime/securesms/messages/ViewOnceOpenGuardTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 37274d96ad2a24d5f319 | app/src/test/java/org/thoughtcrime/securesms/net/ConnectivityStateCalculatorTest.kt | text | 100644 | 100644 | 3 | 2 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 94909227c7976712511e | app/src/test/java/org/thoughtcrime/securesms/net/MollyProxyFailClosedTest.kt | text | 000000 | 100644 | 54 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |
 | 3abe7e2482cd1f0429e5 | app/src/test/java/org/thoughtcrime/securesms/net/MollyProxyFailClosedTest.kt | mode | 000000 | 100644 | 0 | 0 | unmeasured | unmeasured | unmeasured (searched: unmeasured) | unmeasured (input: unmeasured): unmeasured (evidence: unmeasured) |

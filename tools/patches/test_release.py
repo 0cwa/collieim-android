@@ -92,6 +92,10 @@ class ReleaseTests(unittest.TestCase):
         with self.assertRaisesRegex(forest.ForestError, 'valid stack scope'):
             release.check_source_boundary(self.repo, self.source.base, integration_lower=pinned)
 
+    def test_next_port_scope_rejects_a_different_configured_signal(self):
+        with self.assertRaisesRegex(forest.ForestError, 'pinned projection'):
+            release.check_source_boundary(self.repo, self.source.base, 'next-port', 'base')
+
     def test_historical_assembly_is_exact_and_complete(self):
         result = self.assemble()
         self.assertEqual(result['tree'], self.source.target_tree)

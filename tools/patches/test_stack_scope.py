@@ -57,6 +57,36 @@ class ScopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'unexpected trusted release-base'):
                 scope.check_trusted_integration_lower(self.repo, 'HEAD')
 
+    def test_next_port_requires_exact_base_projection_and_forest(self):
+        projection = {b'README.md'}
+        changed = {b'app.txt', b'patches/ports/signal-8.35.1/series'}
+        config = {'signal': {'commit': scope.NEXT_PORT_SIGNAL}, 'molly': {'target': scope.MOLLY}}
+        forest = scope.FOREST
+        def fake_git(repo, *args, **kwargs):
+            if args[:2] == ('rev-parse', '--verify'):
+                return (scope.NEXT_PORT_BASE + '\n').encode()
+            if args[0] == 'diff':
+                return b'\0'.join(projection if args[-2] == scope.NEXT_PORT_SIGNAL else changed) + b'\0'
+            if args[0] == 'rev-parse':
+                return (forest + '\n').encode()
+            if args[0] == 'show':
+                return json.dumps(config).encode()
+            raise AssertionError(args)
+        with mock.patch.object(scope, 'git', side_effect=fake_git), \
+             mock.patch.object(scope.subprocess, 'run', return_value=mock.Mock(returncode=0)):
+            self.assertEqual(scope.check_next_port(self.repo, 'base', 'head')['scope'], 'next-port')
+            projection.add(b'app.txt')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, 'base', 'head')
+            projection.remove(b'app.txt')
+            changed.add(b'README.md')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, 'base', 'head')
+            changed.remove(b'README.md')
+            forest = '0' * 40
+            with self.assertRaisesRegex(ValueError, 'forest differs'):
+                scope.check_next_port(self.repo, 'base', 'head')
+
     def test_main_forks_scope_cannot_admit_local_evidence_changes(self):
         for path in ('patches/ports/signal-8.33.2/report-evidence/receipts.md',
                      'patches/ports/signal-8.33.2/report-metadata.json',

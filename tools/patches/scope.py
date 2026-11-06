@@ -265,6 +265,45 @@ MAIN_PROJECTION_EXCEPTIONS = frozenset({
     'assets/collie-icon.svg', 'assets/collie-matrix-invite.svg', 'pkcs11.config',
 })
 
+# This scope is deliberately separate from the historical stack validators.
+NEXT_PORT_BASE = '7d486880ddc991af0d36f1e4709030255ef4dbad'
+NEXT_PORT_SIGNAL = 'a74583b01e260944f699c4da03ba4e8ce04de32b'
+NEXT_PORT_TOOLS = frozenset({
+    'tools/patches/fork_profiles.py', 'tools/patches/release_profiles.py',
+    'tools/patches/pins.py', 'tools/patches/scope.py', 'tools/patches/release.py',
+    'tools/patches/test_fork_profiles.py', 'tools/patches/test_stack_scope.py', 'tools/patches/test_release.py',
+    'tools/patches/prepare_port_report.py', 'tools/patches/port_report.py',
+    'tools/patches/line_origin.py', 'tools/patches/fetch_reviewed_profiles.py',
+})
+
+def check_next_port(repo, base, head):
+    """Verify an 8.35.1 projection against the exact reviewed fork base."""
+    actual_base = git(repo, 'rev-parse', '--verify', base + '^{commit}').decode().strip()
+    if actual_base != NEXT_PORT_BASE:
+        raise ValueError('next port base is not the pinned reviewed fork')
+    if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        raise ValueError('next port base is not an ancestor of head')
+    projection = {raw.decode('utf-8', 'surrogateescape') for raw in
+                  filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', NEXT_PORT_SIGNAL, head).split(b'\0'))}
+    changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')
+    for raw in filter(None, changed):
+        path = raw.decode('utf-8', 'surrogateescape')
+        if path.startswith(('patches/ports/signal-8.35.1/', 'patches/forks/signal-foss/')) or path in NEXT_PORT_TOOLS or path in {
+                'molly-build.json', 'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'}:
+            continue
+        if path in MAIN_PROJECTION_EXCEPTIONS or metadata(path) or path in projection:
+            raise ValueError('next port contains an unreviewed change: ' + path)
+    for path in projection:
+        if not metadata(path) and path not in MAIN_PROJECTION_EXCEPTIONS and path != '.github/FUNDING.yml':
+            raise ValueError('next port source projection differs: ' + path)
+    if git(repo, 'rev-parse', head + ':patches/molly').decode().strip() != FOREST:
+        raise ValueError('next port Molly forest differs')
+    config = json.loads(git(repo, 'show', head + ':molly-build.json'))
+    if config.get('signal', {}).get('commit') != NEXT_PORT_SIGNAL or config.get('molly', {}).get('target') != MOLLY:
+        raise ValueError('next port profile source pins differ')
+    return {'scope': 'next-port', 'profile_present': True, 'port_present': True}
+
 
 
 # Exact audited main-preservation and portability entries; includes absence and mode.
@@ -416,6 +455,10 @@ def check_main_integration(repo, base, head, integration_lower, allow_main_docs=
 
 
 def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
+    if scope == 'next-port':
+        if integration_lower is not None:
+            raise ValueError('next port does not accept an integration lower base')
+        return check_next_port(repo, base, head)
     main_snapshot = scope == 'main-snapshot'
     if scope == 'main-snapshot-transition':
         if integration_lower is None:
@@ -602,7 +645,7 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-docs', 'main-maintenance', 'main-snapshot', 'main-snapshot-transition'))
+    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-docs', 'main-maintenance', 'main-snapshot', 'main-snapshot-transition', 'next-port'))
     parser.add_argument('--base', required=True)
     parser.add_argument('--head', default='HEAD')
     parser.add_argument('--repo', default='.')

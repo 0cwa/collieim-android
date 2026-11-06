@@ -35,6 +35,20 @@ Welcome!  Collie is an independent Android messenger built on [Signal](https://s
 
 This project keeps Molly's features available as Signal develops, while offering Collie as a separate app for people who want more control over what stays on their phone. The releases share the same source and build on one another.
 
+## Next release (planned)
+
+The next release is planned to provide Collie through all five existing APK filenames, so existing update links can continue to select the same file. The planned build configurations are shown below; final APK and notification testing is still outstanding.
+
+| Existing APK filename | Planned app | Planned notification configuration |
+| --- | --- | --- |
+| `collie.apk` | Collie | FCM-capable build |
+| `collie-foss.apk` | Collie FOSS | FOSS build without Firebase |
+| `molly-continued.apk` | Collie | FCM-capable build |
+| `molly-foss-continued.apk` | Collie FOSS | FOSS build without Firebase |
+| `molly-minimal.apk` | Collie | FCM-capable build |
+
+The next release is planned to retain the `im.collie.app` package. Updates also require matching signatures and a higher version code. The Current releases table below describes the APKs already published.
+
 ## Current releases
 
 <p align="left">

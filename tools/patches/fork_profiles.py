@@ -2,6 +2,7 @@
 import hashlib
 import json
 import os
+import subprocess
 from pathlib import Path
 import tempfile
 
@@ -202,9 +203,29 @@ def ensure_fork_signal_base(repo):
         objects = git_utils.git(repo, 'rev-list', '--objects', '--missing=print',
                                 FORK_SIGNAL_BASE + '^{tree}', check=False, env=env)
         return not objects.returncode and not any(line.startswith('?') for line in objects.stdout.splitlines())
+    present = not git_utils.git(repo, 'cat-file', '-e', FORK_SIGNAL_BASE + '^{commit}', check=False, env=env).returncode
+    if not present:
+        # Fetch full ancestry for a missing commit; never add a shallow boundary to the caller.
+        git_utils.git(repo, 'fetch', '--no-tags', '--no-write-fetch-head', '--no-filter', SIGNAL_URL, FORK_SIGNAL_BASE)
     if not complete():
-        # Refetch requests missing tree/blob objects even if the commit itself is already present.
-        git_utils.git(repo, 'fetch', '--no-tags', '--depth=1', '--refetch', '--no-filter', SIGNAL_URL, FORK_SIGNAL_BASE)
+        # A partial clone may have the commit but lack blobs. Fetch the snapshot in a
+        # disposable shallow repository, then import only its tree objects as a pack.
+        # The disposable repository's shallow metadata never enters the caller.
+        with tempfile.TemporaryDirectory(prefix='fork-source-repair-') as directory:
+            git_utils.git(directory, 'init', '--bare', '--quiet')
+            git_utils.git(directory, 'fetch', '--no-tags', '--no-write-fetch-head', '--depth=1', '--no-filter', SIGNAL_URL, FORK_SIGNAL_BASE)
+            tree = git_utils.git(directory, 'rev-parse', FORK_SIGNAL_BASE + '^{tree}').stdout.strip()
+            clean_env = forest.clean_git_env(env)
+            producer = subprocess.Popen(['git', '-C', directory, 'pack-objects', '--stdout', '--revs'],
+                                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, env=clean_env)
+            assert producer.stdin is not None and producer.stdout is not None
+            producer.stdin.write((tree + '\n').encode())
+            producer.stdin.close()
+            consumer = subprocess.run(['git', '-C', str(repo), 'index-pack', '--stdin'],
+                                      stdin=producer.stdout, stdout=subprocess.PIPE, env=clean_env)
+            producer.stdout.close()
+            if producer.wait() or consumer.returncode:
+                raise forest.ForestError('fork Signal prerequisite object import failed')
     if not complete():
         raise forest.ForestError('fork Signal prerequisite source tree is incomplete')
 

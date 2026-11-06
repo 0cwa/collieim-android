@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -189,6 +190,48 @@ class ForkProfilesTests(unittest.TestCase):
                 with patch.object(fork_profiles.git_utils, 'git', wraps=fork_profiles.git_utils.git) as git:
                     fork_profiles.ensure_fork_signal_base(partial)
                     self.assertFalse(any(call.args[1] == 'fetch' for call in git.call_args_list))
+
+    def test_fork_base_repairs_preserve_full_history(self):
+        with tempfile.TemporaryDirectory(prefix='fork-history-repair-') as directory:
+            root = Path(directory)
+            origin = root / 'origin'
+            origin.mkdir()
+            def git(repo, *args, check=True, env=None):
+                return subprocess.run(['git', '-C', str(repo), *args], check=check, env=env,
+                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            git(origin, 'init', '-q')
+            git(origin, 'config', 'user.name', 'Fixture')
+            git(origin, 'config', 'user.email', 'fixture@example.invalid')
+            git(origin, 'config', 'uploadpack.allowFilter', 'true')
+            commits = []
+            for number in range(3):
+                (origin / 'content').write_text('fixture ' + str(number))
+                git(origin, 'add', 'content')
+                git(origin, 'commit', '-qm', 'fixture')
+                commits.append(git(origin, 'rev-parse', 'HEAD').stdout.strip())
+            remote = origin.as_uri()
+            env = dict(os.environ, GIT_NO_LAZY_FETCH='1')
+            for present in (True, False):
+                with self.subTest(commit_present=present):
+                    target = root / ('partial' if present else 'missing')
+                    target.mkdir()
+                    git(target, 'init', '--bare', '-q')
+                    args = ['fetch', '--no-tags']
+                    if present:
+                        args += ['--filter=blob:none']
+                    args += [remote, commits[2] if present else commits[1]]
+                    git(target, *args)
+                    self.assertEqual('false', git(target, 'rev-parse', '--is-shallow-repository').stdout.strip())
+                    self.assertEqual(0, git(target, 'merge-base', '--is-ancestor', commits[0], commits[1], check=False).returncode)
+                    if present:
+                        missing = git(target, 'rev-list', '--objects', '--missing=print', commits[2] + '^{tree}', env=env).stdout
+                        self.assertIn('?', missing)
+                    with patch.object(fork_profiles, 'SIGNAL_URL', remote), patch.object(fork_profiles, 'FORK_SIGNAL_BASE', commits[2]):
+                        fork_profiles.ensure_fork_signal_base(target)
+                    self.assertEqual('false', git(target, 'rev-parse', '--is-shallow-repository').stdout.strip())
+                    self.assertEqual(0, git(target, 'merge-base', '--is-ancestor', commits[0], commits[2], check=False).returncode)
+                    missing = git(target, 'rev-list', '--objects', '--missing=print', commits[2] + '^{tree}', env=env).stdout
+                    self.assertNotIn('?', missing)
 
     def test_rejects_wrong_pins_order_bytes_and_prerequisites(self):
         original = copy.deepcopy(self.data)

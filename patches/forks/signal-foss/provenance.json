@@ -71,11 +71,28 @@
       "source_bundle_prerequisite": "75de5d3336f3f4ff1b4dab6caaf10fabe5758d88",
       "source_bundle_ref": "refs/heads/source-checkpoint/fork-signal-foss/collie-visuals",
       "source_bundle_sha256": "83c7b151f9b30855ca3b07bbfcb4f7ab1cc1faafa566bca830708234fa5d08a4"
+    },
+    {
+      "id": "restore-picker",
+      "author": "0cwa <0@none.org>",
+      "upstream_credit": "ours",
+      "source_commit": "e4a00a4cd9a45cf5406e85a022565dadaf1ebf65",
+      "before_tree": "70de6cd0d5614f4fe931fe229594dc1549ddbefa",
+      "after_tree": "a7b938ed486fb84bd37d078960c049a70fe72311",
+      "series": "restore-picker/series",
+      "mailbox": "restore-picker/0001-restore-picker.patch",
+      "mailbox_sha256": "ee2efdf261a7a68575c583d0a583bcd054a510e4549818093e0cfffbc53f0d3c",
+      "mailbox_bytes": 5136,
+      "source_bundle": "restore-picker/source-checkpoint.bundle",
+      "source_bundle_bytes": 4543,
+      "source_bundle_prerequisite": "945944c54f3a1ce24f20c1cd9854f841cc11a98a",
+      "source_bundle_ref": "refs/heads/source-checkpoint/fork-signal-foss/restore-picker",
+      "source_bundle_sha256": "24eff0c5bf6d1eb18bd53a78393af0d2130de91a0199be3e616a66376ff30bf3"
     }
   ],
   "reviewed_profiles": {
     "path": "reviewed-profiles.json",
-    "sha256": "871a45b6328c2083dd5bc73ca089b7af5240625943487a172e071162fd3d9485"
+    "sha256": "6accf9b7a65928c3ccca961fbda1e9d3d636773ab77bb9102a6e1c34cea1d996"
   },
   "schema": 1,
   "source_head": "b13bff463547475bbe1ae55335add689f52532e0",

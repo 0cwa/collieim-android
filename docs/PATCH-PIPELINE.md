@@ -521,9 +521,11 @@ Instrumented sources are recorded separately for the device test gate. The deriv
 are part of the source proof fingerprint.
 
 All five profiles select the verified port prefix ending at
-`followups/view-once-open-guard`, followed by the same four fork layers:
-`firebase-free-build`, `collie-icon`, `collie-branding`, and `collie-visuals`.
-The last three provide Collie launcher artwork, app identity and visual styling.
+`followups/view-once-open-guard`, followed by the same five fork layers:
+`firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`, and
+`restore-picker`. The identity layers provide Collie launcher artwork, app
+identity and visual styling; the restore picker layer recognizes timestamped
+backups in the folder the user selected.
 The two FOSS profiles set the Firebase-free build flag; the other three retain
 FCM-capable build configuration. All use the `im.collie.app` package and keep
 their existing profile-specific backup file names (`release_profiles.APP`).

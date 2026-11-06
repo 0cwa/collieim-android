@@ -1,7 +1,15 @@
 import tempfile
 import unittest
+import os
 from pathlib import Path
+from unittest.mock import patch
 import native_driver
+
+def isolated_gradle_environment(home):
+    blocked = {'GRADLE_OPTS', 'JAVA_OPTS', 'JAVA_TOOL_OPTIONS', '_JAVA_OPTIONS', 'JDK_JAVA_OPTIONS', 'GRADLE_HOME'}
+    env = {key: value for key, value in os.environ.items() if key not in blocked}
+    env['GRADLE_USER_HOME'] = str(home)
+    return patch.dict(os.environ, env, clear=True)
 
 class GradleEnvironmentTest(unittest.TestCase):
     def setUp(self):
@@ -20,6 +28,14 @@ class GradleEnvironmentTest(unittest.TestCase):
             with self.subTest(key=key):
                 with self.assertRaisesRegex(ValueError, key):
                     native_driver.audit_gradle_environment({**self.env, key:'malicious-option'})
+
+    def test_test_fixture_isolates_hosted_gradle_home(self):
+        with patch.dict(os.environ, {'GRADLE_HOME': '/opt/hostedtoolcache/gradle', 'JAVA_TOOL_OPTIONS': '-Dhostile=true'}):
+            with isolated_gradle_environment(self.home):
+                self.assertNotIn('GRADLE_HOME', os.environ)
+                self.assertNotIn('JAVA_TOOL_OPTIONS', os.environ)
+                native_driver.audit_gradle_environment()
+            self.assertEqual('/opt/hostedtoolcache/gradle', os.environ['GRADLE_HOME'])
 
     def test_user_init_scripts_are_rejected(self):
         for name in ('init.gradle', 'init.gradle.kts', 'gradle.properties', 'init.d/evil.gradle', 'init.d/evil.gradle.kts'):

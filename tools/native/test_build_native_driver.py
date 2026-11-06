@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 import build
 import test_stage_artifacts as artifact_fixtures
+from test_gradle_environment import isolated_gradle_environment
 
 HERE = Path(__file__).parent
 
@@ -18,6 +19,9 @@ class ProvisionalNativeBuildDriverTest(unittest.TestCase):
         self.fixture.setUp()
         self.addCleanup(self.fixture.tearDown)
         root = self.fixture.root
+        environment = isolated_gradle_environment(root / 'gradle-user-home')
+        environment.start()
+        self.addCleanup(environment.stop)
         self.repo = root / 'pipeline'
         self.app = root / 'app'
         self.reports = root / 'reports'
@@ -109,10 +113,11 @@ class ProvisionalNativeBuildDriverTest(unittest.TestCase):
 
     def test_gradle_rejects_inherited_options_before_launch(self):
         self.runner.native('native-integrate')
-        with patch.dict(os.environ, {'GRADLE_OPTS': '-Dmalicious=true'}), patch.object(self.runner, 'run') as run:
-            with self.assertRaisesRegex(build.BuildError, 'GRADLE_OPTS'):
-                self.runner.gradle('assemble')
-            run.assert_not_called()
+        for key, value in (('GRADLE_OPTS', '-Dmalicious=true'), ('GRADLE_HOME', '/opt/hostedtoolcache/gradle')):
+            with self.subTest(key=key), patch.dict(os.environ, {key: value}), patch.object(self.runner, 'run') as run:
+                with self.assertRaisesRegex(build.BuildError, key):
+                    self.runner.gradle('assemble')
+                run.assert_not_called()
 
     def test_gradle_rejects_user_init_script_before_launch(self):
         self.runner.native('native-integrate')

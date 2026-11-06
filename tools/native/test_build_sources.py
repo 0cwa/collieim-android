@@ -9,6 +9,7 @@ import unittest
 from unittest.mock import patch
 
 import test_prepare_sources as source_fixtures
+from test_gradle_environment import isolated_gradle_environment
 
 HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE))
@@ -22,6 +23,9 @@ class PartialSourceBuildTest(unittest.TestCase):
         self.fixture.setUp()
         self.addCleanup(self.fixture.tearDown)
         self.root = self.fixture.root
+        environment = isolated_gradle_environment(self.root / 'gradle-user-home')
+        environment.start()
+        self.addCleanup(environment.stop)
         self.sources = self.root / 'prepared'
         subject.prepare_sources.prepare(self.fixture.lock_file, self.fixture.sources, self.sources)
         (self.sources / 'libsignal/.git/info').mkdir(exist_ok=True)

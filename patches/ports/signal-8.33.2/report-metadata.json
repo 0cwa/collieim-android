@@ -12476,6 +12476,15 @@
       "outcome": "Flag false: clean-device capability assertion failed (provisioning received false); existing-registration guard passed. Flag true: both tests passed. No end-to-end cross-version archive transfer was performed.",
       "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#linked-device-history-transfer",
       "reason": "Add the linked-device capability regression test as a regular source file."
+    },
+    "c6e8cd07e0c503cf9fcc": {
+      "reason": "Registration resolution changes are not behaviorally established by this compile check.",
+      "molly_equivalent": "No same-path registration implementation in searched Molly 8.20.4 or SOCKS branch; absence is not proof of no equivalent elsewhere.",
+      "searched_branches": "Molly 0e202dda, origin/signal-8.20.4, origin/upstream-stable, origin/upstream-main, origin/fix/socks-proxy-dns-leak (same-path searches; not all history)",
+      "revert_gate": "registration Kotlin compile",
+      "gate_input": "Measured partial resolved-reference inverse mapped to this raw hunk by target interval; not a complete raw-hunk inverse. PR3 and PR4 independently tested; see receipts for source trees, commands and limits.",
+      "outcome": "Both baselines passed; each partial inverse failed compilation on unresolved makeGooglePlayServicesAvailable. Behavior remains unmeasured.",
+      "evidence": "patches/ports/signal-8.33.2/report-evidence/receipts.md#residual-partial-inverses"
     }
   },
   "exclusions_complete": false,

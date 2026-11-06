@@ -1,7 +1,8 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2076" height="352" viewBox="0 0 2076 352" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="2076" height="352" viewBox="0 0 2076 352" role="img"
+     aria-labelledby="title description">
   <title id="title">Join the Pack — Matrix community</title>
-  <desc id="description">Editable version requiring Manrope ExtraBold (800) installed locally. For portable README use the outlined collie-matrix-invite.svg instead. Vertical positions use measured Manrope ink bounds.</desc>
+  <desc id="description">Collie community invitation. Manrope ExtraBold lettering, warm copper-to-orange left field, forest green right field, slender cream diagonal separator, pale lichen Matrix capsule. Text is optically centered.</desc>
   <defs>
     <clipPath id="banner-mask"><rect width="2076" height="352" rx="92"/></clipPath>
     <clipPath id="copper-mask"><path d="M0 0H1355L1194 352H0Z"/></clipPath>
@@ -19,7 +20,24 @@
     </linearGradient>
     <!-- Exact unmodified outlines from Manrope ExtraBold (800), rendered at native aspect ratio.
          Shapes are reusable instead of redundant per-character path traces. -->
-    </defs>
+    <path id="g-u74" d="M442 -30 Q273 -30 160.5 56 Q48 142 0 296 L268 360 Q274 324 298.5 292.5 Q323 261 358.5 242.5 Q394 224 430 224 Q472 224 514 246.5 Q556 269 574 312 Q585 338 587.5 374.5 Q590 411 590 480 L590 1440 L866 1440 L866 480 L866 397 Q866 321 857 272.5 Q848 224 818 172 Q758 69 661.5 19.5 Q565 -30 442 -30 Z"/>
+    <path id="g-u111" d="M626 -30 Q465 -30 341 42.5 Q217 115 148.5 244.5 Q80 374 80 540 Q80 707 149.5 836.5 Q219 966 343.5 1038 Q468 1110 626 1110 Q787 1110 911.5 1037.5 Q1036 965 1105 835 Q1174 705 1174 540 Q1174 374 1104.5 244.5 Q1035 115 910.5 42.5 Q786 -30 626 -30 Z M368 540 Q368 392 434.5 308 Q501 224 626 224 Q753 224 819.5 310 Q886 396 886 540 Q886 687 819 771.5 Q752 856 626 856 Q497 856 432.5 771.5 Q368 687 368 540 Z"/>
+    <path id="g-u105" d="M160 1470 L432 1470 L432 1230 L160 1230 Z M160 1080 L432 1080 L432 0 L160 0 Z"/>
+    <path id="g-u110" d="M876 510 Q876 592 864 664 Q852 736 800.5 796 Q749 856 644 856 Q550 856 482 791.5 Q414 727 414 548 L414 0 L138 0 L138 1080 L380 1080 L380 969 Q441 1037 529 1074.5 Q617 1112 730 1112 Q920 1112 1013.5 1015 Q1107 918 1129.5 810 Q1152 702 1152 606 L1152 0 L876 0 Z"/>
+    <path id="g-u116" d="M788 0 Q684 -19 594 -19 Q472 -19 382 17.5 Q292 54 248 134 Q221 184 212 236 Q203 288 203 359 L204 458 L204 870 L20 870 L20 1080 L204 1080 L204 1380 L476 1380 L476 1080 L788 1080 L788 870 L476 870 L476 474 L476 417 Q476 365 480 333 Q484 301 498 280 Q539 215 660 215 Q706 215 788 226 Z"/>
+    <path id="g-u104" d="M876 510 Q876 592 864 664 Q852 736 800.5 796 Q749 856 644 856 Q550 856 482 791.5 Q414 727 414 548 L414 0 L138 0 L138 1440 L380 1440 L380 969 Q441 1037 529 1074.5 Q617 1112 730 1112 Q920 1112 1013.5 1015 Q1107 918 1129.5 810 Q1152 702 1152 606 L1152 0 L876 0 Z"/>
+    <path id="g-u101" d="M642 -30 Q478 -30 350.5 41 Q223 112 151.5 239 Q80 366 80 526 Q80 700 149.5 832.5 Q219 965 343 1037.5 Q467 1110 626 1110 Q782 1110 897 1041 Q1012 972 1073.5 845 Q1135 718 1135 547 Q1135 520 1131 464 L373 464 Q388 348 452.5 286 Q517 224 626 224 Q705 224 762.5 259 Q820 294 850 360 L1122 282 Q1082 185 1009 114.5 Q936 44 841 7 Q746 -30 642 -30 Z M856 666 Q842 775 789.5 824.5 Q737 874 638 874 Q423 874 380 666 Z"/>
+    <path id="g-u80" d="M140 1440 L748 1440 Q817 1440 868 1432 Q1055 1403 1147.5 1278.5 Q1240 1154 1240 964 Q1240 775 1147 650 Q1054 525 868 496 Q817 488 748 488 L412 488 L412 0 L140 0 Z M736 742 Q793 742 828 752 Q903 772 934.5 832.5 Q966 893 966 964 Q966 1035 934.5 1095.5 Q903 1156 828 1176 Q793 1186 736 1186 L412 1186 L412 742 Z"/>
+    <path id="g-u97" d="M440 -30 Q328 -30 246.5 13.5 Q165 57 122.5 132 Q80 207 80 298 Q80 416 135 497 Q190 578 316 624 Q386 650 487 668.5 Q588 687 778 715 Q770 791 722.5 826.5 Q675 862 580 862 Q511 862 449 830 Q387 798 364 730 L118 808 Q160 948 276 1029 Q392 1110 580 1110 Q899 1110 1002 914 Q1031 860 1038.5 804.5 Q1046 749 1046 660 L1046 0 L808 0 L808 132 Q736 46 650 8 Q564 -30 440 -30 Z M346 302 Q346 247 386.5 215.5 Q427 184 498 184 Q567 184 619 208.5 Q671 233 702.5 266 Q734 299 748 328 Q774 381 776 495 Q635 471 569 457 Q503 443 458 426 Q399 402 372.5 372.5 Q346 343 346 302 Z"/>
+    <path id="g-u99" d="M616 -30 Q452 -30 330.5 44 Q209 118 144.5 247.5 Q80 377 80 540 Q80 704 146.5 833.5 Q213 963 335.5 1036.5 Q458 1110 620 1110 Q746 1110 847.5 1066.5 Q949 1023 1015.5 941.5 Q1082 860 1106 750 L834 678 Q810 761 751 808.5 Q692 856 616 856 Q492 856 430 769 Q368 682 368 540 Q368 395 432 309.5 Q496 224 616 224 Q704 224 753.5 264 Q803 304 828 386 L1106 328 Q1060 156 932 63 Q804 -30 616 -30 Z"/>
+    <path id="g-u107" d="M140 1440 L416 1440 L416 560 L782 1080 L1118 1080 L728 540 L1144 0 L790 0 L416 520 L416 0 L138 0 Z"/>
+    <path id="g-open-bracket" d="M280 1800 L738 1800 L738 1560 L520 1560 L520 -180 L738 -180 L738 -420 L280 -420 Z"/>
+    <path id="g-u109" d="M1440 638 Q1440 744 1389.5 804 Q1339 864 1250 864 Q1194 864 1151.5 837.5 Q1109 811 1085.5 763.5 Q1062 716 1062 654 L1062 0 L790 0 L790 638 Q790 744 739.5 804 Q689 864 600 864 Q544 864 501.5 837.5 Q459 811 435.5 763.5 Q412 716 412 654 L412 0 L138 0 L138 1080 L378 1080 L378 962 Q433 1030 515.5 1068 Q598 1106 694 1106 Q806 1106 885 1061.5 Q964 1017 1008 938 Q1061 1017 1148 1061.5 Q1235 1106 1338 1106 Q1459 1106 1543 1057 Q1627 1008 1669.5 918.5 Q1712 829 1712 710 L1712 0 L1440 0 Z"/>
+    <path id="g-close-bracket" d="M120 -420 L120 -180 L338 -180 L338 1560 L120 1560 L120 1800 L578 1800 L578 -420 Z"/>
+    <path id="g-u77" d="M140 1440 L384 1440 L860 484 L1336 1440 L1580 1440 L1580 0 L1326 0 L1326 860 L908 0 L812 0 L394 860 L394 0 L140 0 Z"/>
+    <path id="g-u114" d="M140 1080 L380 1080 L380 906 Q425 987 496 1028 Q587 1084 712 1084 Q746 1084 774 1080 L774 826 Q743 836 697 836 Q621 836 562 808 Q490 775 452 710 Q414 645 414 552 L414 0 L140 0 Z"/>
+    <path id="g-u120" d="M406 546 L28 1080 L348 1080 L564 760 L776 1080 L1096 1080 L718 546 L1106 0 L786 0 L564 332 L340 0 L20 0 Z"/>
+  </defs>
 
   <g clip-path="url(#banner-mask)">
     <rect width="2076" height="352" fill="url(#forest-gradient)"/>
@@ -35,4 +53,28 @@
   </g>
 
   <!-- Both visible ink bounds are centered at exactly y=176 (the banner midpoint). -->
-  <text id="join-the-pack" x="154" y="233.24" fill="#FFFCF5" stroke="#FFFCF5" stroke-width="5.565" stroke-linejoin="round" paint-order="stroke fill" font-family="Manrope" font-size="159" font-weight="800" font-kerning="none" letter-spacing="0">Join the Pack</text><text id="matrix-wordmark" x="1418" y="212.225" fill="#184629" stroke="#184629" stroke-width="3.675" stroke-linejoin="round" paint-order="stroke fill" font-family="Manrope" font-size="105" font-weight="800" font-kerning="none" letter-spacing="2.5725">[m] Matrix</text></svg>
+  <g id="join-the-pack" fill="#FFFCF5" stroke="#FFFCF5" stroke-width="70" stroke-linejoin="round" paint-order="stroke fill" transform="translate(154 233.24) scale(0.0795 -0.0795)" aria-label="Join the Pack">
+      <use href="#g-u74" x="0"/>
+      <use href="#g-u111" x="1026"/>
+      <use href="#g-u105" x="2280"/>
+      <use href="#g-u110" x="2872"/>
+      <use href="#g-u116" x="4544"/>
+      <use href="#g-u104" x="5432"/>
+      <use href="#g-u101" x="6704"/>
+      <use href="#g-u80" x="8320"/>
+      <use href="#g-u97" x="9620"/>
+      <use href="#g-u99" x="10786"/>
+      <use href="#g-u107" x="11952"/>
+  </g>
+  <g id="matrix-wordmark" fill="#184629" stroke="#184629" stroke-width="70" stroke-linejoin="round" paint-order="stroke fill" transform="translate(1418 212.225) scale(0.0525 -0.0525)" aria-label="[m] Matrix">
+      <use href="#g-open-bracket" x="0"/>
+      <use href="#g-u109" x="907"/>
+      <use href="#g-close-bracket" x="2788"/>
+      <use href="#g-u77" x="4144"/>
+      <use href="#g-u97" x="5913"/>
+      <use href="#g-u116" x="7128"/>
+      <use href="#g-u114" x="8065"/>
+      <use href="#g-u105" x="8938"/>
+      <use href="#g-u120" x="9579"/>
+  </g>
+</svg>

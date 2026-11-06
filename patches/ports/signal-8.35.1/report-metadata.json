@@ -5901,5 +5901,9 @@
   "exclusions_complete": false,
   "groups": {},
   "hunks": {},
-  "minimization_complete": false
+  "minimization_complete": false,
+  "baseline_snapshot": {
+    "path": "patches/ports/signal-8.35.1/baseline.zip",
+    "sha256": "c3fd036b0a77a48baa9de281270622d30ec7857e48b49b3cc8c9b5b247feaa4b"
+  }
 }

@@ -13,7 +13,7 @@
       "input_version": "0.106.1",
       "output_version": "0.106.1-collie.1",
       "extension": "aar",
-      "binary_sha256": "88158c5e5bb5c9044f7f0f1b321fc4b30f5db16608cb262a3c63efd0173b55bd",
+      "binary_sha256": "4247031a753f73f12753d04f14d9316436bbf07af2097c1b897feedd360dbd9a",
       "pom_sha256": "1f126e627c035d8fa2e3c2caca29a5af87f4013b8b9c430bfea9ab5d2aa7347d",
       "native_libraries": [
         "libsignal_jni.so"
@@ -24,7 +24,7 @@
       "input_version": "0.106.1",
       "output_version": "0.106.1-collie.1",
       "extension": "jar",
-      "binary_sha256": "ff59cd1ed93b0833623c30ebb6966fcf56531ab1b46701d65856f7de92dee1fb",
+      "binary_sha256": "c361b8e905c770b838535fdac5a0bdf0f995f8ed6ce0a6837cb4c7360e8c5a79",
       "pom_sha256": "0d3570391d1594c4a91d67e899cded9bdcee7cc95468cf511cbb0619ee0368f4",
       "native_libraries": []
     },
@@ -33,7 +33,7 @@
       "input_version": "2.74.0",
       "output_version": "2.74.0-collie.1",
       "extension": "aar",
-      "binary_sha256": "9f8ad2ebc999e47ab465182780b0569633aca3694c000abca841372a71c3205a",
+      "binary_sha256": "51f1f9b1f2335ba1b6557b5f0810227ac66a54ec8cbf0f2c789091b0ab5d245b",
       "pom_sha256": "81b7212da6206aa0159c19befe3cd8732d788df11a99edc9a2e03eb4286f5b92",
       "native_libraries": [
         "libringrtc.so",

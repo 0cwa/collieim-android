@@ -22,7 +22,7 @@ import release_profiles
 
 # This port is not releasable until its native build and port report are reviewed.
 BLOCKED_SIGNAL_PORT = 'a74583b01e260944f699c4da03ba4e8ce04de32b'
-PINNED_NATIVE_LOCK_SHA256 = '9866196dec36f096d2757bbf9e9d774c7147548542dd2a041e6438f79dbd73e4'
+PINNED_NATIVE_LOCK_SHA256 = '557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856'
 DIAGNOSTIC_TEST_TASKS = frozenset({
     ':core:network:test', ':lib:network:test', ':lib:libsignal-service:test',
     ':feature:registration:testDebugUnitTest', ':feature:app-settings:testDebugUnitTest',

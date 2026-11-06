@@ -57,7 +57,7 @@ def preflight(lock_path, source_root, sdk_root, java_home, rust_bin, runner=run,
     rust_bin = rust_bin.resolve(strict=True)
     cargo, rustc, rustup = (rust_bin / name for name in ('cargo', 'rustc', 'rustup'))
     java = java_home / 'bin/java'
-    require(all(path.is_file() and os.access(path, os.X_OK) for path in (cargo, rustc, rustup, java)), 'Required Rust or Java toolchain missing')
+    require(all(path.is_file() and os.access(path, os.X_OK) for path in (cargo, rustc, java)), 'Required Rust or Java toolchain missing')
     env = os.environ.copy()
     temp = source_root.parent / '.native-tmp'
     temp.mkdir(exist_ok=True)
@@ -74,9 +74,16 @@ def preflight(lock_path, source_root, sdk_root, java_home, rust_bin, runner=run,
     require(any(re.match(r'^(?:openjdk|java) version "' + str(java_major) + r'(?:[."+]|$)', line) for line in java_versions), f'Java {java_major} is required for this diagnostic build')
     versions = runner([str(rustc), '--version'], libsignal, env)
     require(any(re.match(r'^rustc 1[.]98[.]1(?:\s|$)', line) for line in versions), 'Rust toolchain version differs')
-    targets = set(runner([str(rustup), 'target', 'list', '--installed'], libsignal, env))
     required_targets = {'aarch64-linux-android', 'armv7-linux-androideabi', 'i686-linux-android', 'x86_64-linux-android'}
-    require(required_targets.issubset(targets), 'One or more Android Rust targets are missing')
+    if rustup.is_file() and os.access(rustup, os.X_OK):
+        targets = set(runner([str(rustup), 'target', 'list', '--installed'], libsignal, env))
+        require(required_targets.issubset(targets), 'One or more Android Rust targets are missing')
+    else:
+        # A direct installed toolchain has no rustup shim; validate its standard-library
+        # files locally. This is a preflight check, not toolchain authentication.
+        rustlib = rust_bin.parent / 'lib/rustlib'
+        require(all(any(p.is_file() and p.stat().st_size > 0 for p in (rustlib / target / 'lib').glob('libstd-*.rlib')) for target in required_targets),
+                'One or more Android Rust target libraries are missing')
     return lock, proof, env, str(cargo)
 
 def diagnostic_build(lock_path, source_root, sdk_root, java_home, rust_bin, report, gradle_zip, gradle_distribution, runner=run):

@@ -95,6 +95,21 @@ class PartialSourceBuildTest(unittest.TestCase):
         with self.assertRaisesRegex(subject.Failure, 'Java 21'):
             subject.preflight(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, runner)
 
+    def test_direct_toolchain_accepts_installed_android_targets(self):
+        (self.rust_bin / 'rustup').unlink()
+        for target in ('aarch64-linux-android', 'armv7-linux-androideabi', 'i686-linux-android', 'x86_64-linux-android'):
+            libs = self.rust_bin.parent / 'lib/rustlib' / target / 'lib'
+            libs.mkdir(parents=True)
+            (libs / 'libstd-fixture.rlib').write_bytes(b'fixture')
+        self.assertFalse(self.run_build()['release_allowed'])
+        self.assertFalse(any('rustup' in command[0] for command in self.calls))
+
+    def test_direct_toolchain_rejects_missing_android_target(self):
+        (self.rust_bin / 'rustup').unlink()
+        with self.assertRaisesRegex(subject.Failure, 'target libraries are missing'):
+            self.run_build()
+        self.assertFalse(self.report.exists())
+
     def test_incorrect_ndk_fails_before_commands(self):
         (self.sdk / 'ndk/28.0.13004108/source.properties').write_text('Pkg.Revision = 29.0.0\n')
         with self.assertRaisesRegex(subject.Failure, 'NDK version'):

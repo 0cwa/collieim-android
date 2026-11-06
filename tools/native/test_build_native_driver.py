@@ -137,6 +137,25 @@ class ProvisionalNativeBuildDriverTest(unittest.TestCase):
                 self.runner.gradle('assemble')
             run.assert_not_called()
 
+    def test_relative_host_stage_has_same_path_for_verification_and_execution(self):
+        helper = self.repo/'tools/native/host_jni_guard.py'
+        helper.write_text('# fixture')
+        self.args.native_host_stage = Path('relative-host-stage')
+        self.args.native_host_sha256 = 'a' * 64
+        original_cwd = Path.cwd()
+        try:
+            os.chdir(self.fixture.root)
+            with patch.object(self.runner, 'artifact_native_lock', return_value=self.repo/'native.json'), patch('build.subprocess.run') as run:
+                run.return_value.returncode = 0
+                init = self.runner.verified_host_jni_init()
+            command = run.call_args.args[0]
+            expected = self.fixture.root/'relative-host-stage'
+            self.assertEqual(str(expected), command[command.index('--output')+1])
+            self.assertEqual(expected/'host-jni.init.gradle', init)
+            self.assertEqual(self.repo, run.call_args.kwargs['cwd'])
+        finally:
+            os.chdir(original_cwd)
+
     def test_835_unit_test_requires_host_stage_before_launch(self):
         self.runner.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
         self.runner.android['tests'] = [':app:testProdWebsiteDebugUnitTest']

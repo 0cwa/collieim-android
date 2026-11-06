@@ -24,14 +24,16 @@ def init_text(resource, empty, sha):
     return f'''import java.security.MessageDigest
 import java.util.zip.ZipFile
 
-gradle.beforeProject {{ project ->
- project.afterEvaluate {{
+gradle.projectsEvaluated {{
+ allprojects {{ project ->
   project.tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {{ task ->
     def nativeDir = new File(new URI({resource_uri}))
     def fallbackDir = new File(new URI({empty_path}))
     if (task.systemProperties.containsKey('java.library.path') || task.jvmArgs.any {{ it.startsWith('-Djava.library.path') }}) throw new GradleException('Conflicting host JNI library path')
     task.classpath = project.files(nativeDir) + task.classpath
     task.systemProperty('java.library.path', fallbackDir.absolutePath)
+    task.systemProperty('collie.host.jni.path', new File(nativeDir, 'libsignal_jni_testing_amd64.so').absolutePath)
+    task.systemProperty('collie.host.jni.sha256', '{sha}')
     task.outputs.upToDateWhen {{ false }}
     task.outputs.cacheIf {{ false }}
     doFirst {{
@@ -48,10 +50,10 @@ gradle.beforeProject {{ project ->
         while ((n = stream.read(buffer)) != -1) hash.update(buffer, 0, n)
       }}
       if (hash.digest().encodeHex().toString() != '{sha}') throw new GradleException('Host JNI resource hash mismatch')
-      if (task.classpath.files.toList().count {{ it == nativeDir }} != 1 || task.classpath.files.toList().first() != nativeDir) throw new GradleException('Host JNI resource directory is not first')
-      def guardedProperties = ['java.library.path', 'os.arch', 'os.name']
+      if (task.classpath.files.toList().count {{ it == nativeDir }} != 1) throw new GradleException('Host JNI resource directory is not present exactly once')
+      def guardedProperties = ['java.library.path', 'os.arch', 'os.name', 'collie.host.jni.path', 'collie.host.jni.sha256']
       def conflictingArg = {{ arg -> guardedProperties.any {{ key -> arg.toString() == '-D' + key || arg.toString().startsWith('-D' + key + '=') }} }}
-      if (task.systemProperties.get('java.library.path') != empty.absolutePath || task.systemProperties.containsKey('os.arch') || task.systemProperties.containsKey('os.name') || task.jvmArgs.any(conflictingArg)) throw new GradleException('Conflicting host JNI JVM property')
+      if (task.systemProperties.get('collie.host.jni.path') != nativeFile.absolutePath || task.systemProperties.get('collie.host.jni.sha256') != '{sha}' || task.systemProperties.get('java.library.path') != empty.absolutePath || task.systemProperties.containsKey('os.arch') || task.systemProperties.containsKey('os.name') || task.jvmArgs.any(conflictingArg)) throw new GradleException('Conflicting host JNI JVM property')
       task.jvmArgumentProviders.each {{ provider ->
         if (provider.asArguments().any(conflictingArg)) throw new GradleException('Conflicting host JNI JVM argument provider')
       }}

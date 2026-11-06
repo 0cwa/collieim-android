@@ -205,13 +205,14 @@ class Build:
         digest = getattr(self.args, 'native_host_sha256', None)
         if stage is None or not isinstance(digest, str) or not re.fullmatch(r'[0-9a-f]{64}', digest):
             raise BuildError('native unit tests require --native-host-stage and --native-host-sha256')
+        stage = stage.absolute()
         lock = self.artifact_native_lock()
         helper = relative_file(self.repo, 'tools/native/host_jni_guard.py', 'host JNI test guard')
         command = [sys.executable, str(helper), '--verify', '--lock', str(lock), '--sources', str(self.native_source), '--output', str(stage), '--sha256', digest]
         result = subprocess.run(command, cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if result.returncode:
             raise BuildError('host JNI test stage verification failed: ' + result.stderr.strip())
-        return stage.absolute() / 'host-jni.init.gradle'
+        return stage / 'host-jni.init.gradle'
 
     def native_verification_bytes(self):
         """Allow precisely the receipt-bound metadata appended by native integration."""

@@ -19,6 +19,7 @@ RETENTION = FORK_ROOT + '/retention-controls/series'
 RETENTION_FIXES = FORK_ROOT + '/retention-controls-fixes/series'
 COLLIE_ICON = FORK_ROOT + '/collie-icon/series'
 COLLIE_BRANDING = FORK_ROOT + '/collie-branding/series'
+COLLIE_VISUALS = FORK_ROOT + '/collie-visuals/series'
 # User-visible app title, backup file base name and shared package ID per profile.
 APP = {
     'molly-minimal': ('Collie', 'Molly-Minimal', 'im.collie.app'),
@@ -28,7 +29,7 @@ APP = {
     'collie-foss': ('Collie FOSS', 'Collie-FOSS', 'im.collie.app'),
 }
 POLICY = {
-    name: ('followups/view-once-open-guard', [FIREBASE, COLLIE_ICON, COLLIE_BRANDING], name in FOSS)
+    name: ('followups/view-once-open-guard', [FIREBASE, COLLIE_ICON, COLLIE_BRANDING, COLLIE_VISUALS], name in FOSS)
     for name in NAMES
 }
 

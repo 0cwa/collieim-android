@@ -516,22 +516,18 @@ the tools. A profile's tests are derived, not listed: they are `android.tests`
 plus every unit test class that a selected fork layer's mailbox adds or
 changes (`<module>/src/test/{java,kotlin}/...`), added to the filters of that
 module's existing test task. A task that already runs unfiltered is left as
-is; a fork test in a module without a test task, or an instrumented or
-screenshot test source, is an error. The derived tests and Firebase selection
+is; a fork test in a module without a test task, or an unsupported test source, is an error.
+Instrumented sources are recorded separately for the device test gate. The derived tests and Firebase selection
 are part of the source proof fingerprint.
 
-Minimal selects the verified port prefix ending at
-`followups/network-initialization-cycle`; the other products select the
-prefix ending at `followups/unifiedpush-registration-retry`. Continued products
-without fork features have an empty `fork_series`. Molly FOSS Continued adds
-`patches/forks/signal-foss/firebase-free-build/series`; Collie and Collie FOSS
-append `patches/forks/signal-foss/retention-controls/series` and
-`patches/forks/signal-foss/retention-controls-fixes/series` and
-`patches/forks/signal-foss/collie-icon/series` and
-`patches/forks/signal-foss/collie-branding/series`. These layers supply Collie launcher artwork and the Collie theme and app identity. Firebase is
-selected only for Molly FOSS Continued and Collie FOSS. Each profile also sets its
-app title, backup file name and package ID (`release_profiles.APP`): all five
-use `im.collie.app` and retain their individual profile titles and backup names.
+All five profiles select the verified port prefix ending at
+`followups/view-once-open-guard`, followed by the same four fork layers:
+`firebase-free-build`, `collie-icon`, `collie-branding`, and `collie-visuals`.
+The last three provide Collie launcher artwork, app identity and visual styling.
+The two FOSS profiles set the Firebase-free build flag; the other three retain
+FCM-capable build configuration. All use the `im.collie.app` package and keep
+their existing profile-specific backup file names (`release_profiles.APP`).
+The former retention-control layers are not selected.
 
 Fork profiles also require `fork_source` in `molly-build.json` with the original
 fork `url` and `head` pins. The independent `patches/forks/signal-foss/provenance.json` records schema 1,

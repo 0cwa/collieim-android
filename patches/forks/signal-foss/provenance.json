@@ -54,11 +54,28 @@
       "source_bundle_sha256": "57da3645d542c766c4f2db93d761f7d3b576168e6b8ee07ab12796f97b21a8e0",
       "source_commit": "75de5d3336f3f4ff1b4dab6caaf10fabe5758d88",
       "upstream_credit": "ours"
+    },
+    {
+      "id": "collie-visuals",
+      "author": "0cwa <0@none.org>",
+      "upstream_credit": "ours",
+      "source_commit": "945944c54f3a1ce24f20c1cd9854f841cc11a98a",
+      "before_tree": "edaa397dd2ebf3fcc0dc129b76ad9f5cd2e04f35",
+      "after_tree": "70de6cd0d5614f4fe931fe229594dc1549ddbefa",
+      "series": "collie-visuals/series",
+      "mailbox": "collie-visuals/0001-collie-visuals.patch",
+      "mailbox_sha256": "e05b523729f8eb02775bd4c911bd68d5e86d351fc2741b6fdfdb02810c53416a",
+      "mailbox_bytes": 13686,
+      "source_bundle": "collie-visuals/source-checkpoint.bundle",
+      "source_bundle_bytes": 6958,
+      "source_bundle_prerequisite": "75de5d3336f3f4ff1b4dab6caaf10fabe5758d88",
+      "source_bundle_ref": "refs/heads/source-checkpoint/fork-signal-foss/collie-visuals",
+      "source_bundle_sha256": "83c7b151f9b30855ca3b07bbfcb4f7ab1cc1faafa566bca830708234fa5d08a4"
     }
   ],
   "reviewed_profiles": {
     "path": "reviewed-profiles.json",
-    "sha256": "605cb5083ff6839221b6572c948a6a581bb7dc42c6ae118f5a3aa5ac1860d18e"
+    "sha256": "871a45b6328c2083dd5bc73ca089b7af5240625943487a172e071162fd3d9485"
   },
   "schema": 1,
   "source_head": "b13bff463547475bbe1ae55335add689f52532e0",

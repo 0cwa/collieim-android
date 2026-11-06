@@ -105,11 +105,11 @@ Each profile's source compared with Molly, Signal and Molly's old Signal base an
 
 | Profile | Tree | Fork layers | Release overlays | Firebase | Production written / removed | Written as % of Molly's production lines | Fork matches | Molly lines not carried | Tests |
 |---|---|---|---|---|---:|---:|---:|---:|---:|
-| collie | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | included | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
-| collie-foss | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | removed | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
-| molly-continued | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | included | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
-| molly-foss-continued | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | removed | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
-| molly-minimal | `edaa397dd2eb` | `firebase-free-build`, `collie-icon`, `collie-branding` | none | included | +2,694 / −502 | 10.0% | 2 | 2,273 | +3,568 / −360 |
+| collie | `70de6cd0d561` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals` | none | included | +2,709 / −506 | 10.1% | 2 | 2,282 | +3,638 / −360 |
+| collie-foss | `70de6cd0d561` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals` | none | removed | +2,709 / −506 | 10.1% | 2 | 2,282 | +3,638 / −360 |
+| molly-continued | `70de6cd0d561` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals` | none | included | +2,709 / −506 | 10.1% | 2 | 2,282 | +3,638 / −360 |
+| molly-foss-continued | `70de6cd0d561` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals` | none | removed | +2,709 / −506 | 10.1% | 2 | 2,282 | +3,638 / −360 |
+| molly-minimal | `70de6cd0d561` | `firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals` | none | included | +2,709 / −506 | 10.1% | 2 | 2,282 | +3,638 / −360 |
 
 ## Raw physical Git diffs
 

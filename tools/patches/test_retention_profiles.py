@@ -22,7 +22,11 @@ class ProfilesTest(unittest.TestCase):
         }
         trees = set()
         for name, (free, filename, title) in expected.items():
-            _, profile = release_profiles.select(CONFIG, name, ROOT)
+            selected, profile = release_profiles.select(CONFIG, name, ROOT)
+            for test in ('org.thoughtcrime.securesms.backup.v2.util.ChatStyleColorTest',
+                         'org.thoughtcrime.securesms.recipients.Recipient_getChatColorsTest',
+                         'org.thoughtcrime.securesms.conversation.colors.CollieChatColorsTest'):
+                self.assertIn(test, selected['android']['tests'])
             self.assertEqual((profile['firebase_free'], profile['app']['file_name'], profile['app']['title']), (free, filename, title))
             self.assertEqual(profile['app']['package_id'], 'im.collie.app')
             self.assertEqual(profile['base_layer'], 'followups/view-once-open-guard')

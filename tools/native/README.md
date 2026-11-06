@@ -77,3 +77,5 @@ changes, or establish source-to-binary provenance. Release remains blocked.
 [NDK-PROVENANCE.md](NDK-PROVENANCE.md) describes the NDK payload tree check, its archive reference and remaining limits.
 
 WebRTC setup removes inherited Python module paths and depot_tools bypass overrides, disables user-site imports, and rejects custom `.cipd_client_root` and `.cipd_client_platform` files; use the checkout’s default CIPD root and platform. It also removes shell startup and exported-function overrides from the child environment. These checks do not authenticate vpython, wheels, other executables or caches.
+
+The libsignal helper accepts `--fresh` for an offline diagnostic that requires its named Cargo, Gradle and generated JNI outputs to be absent, fixes the Rust compiler and target directory, disables Gradle build and configuration caches, and reruns tasks. The helper never deletes existing outputs. Its local failure record binds output hashes to selected inputs and commands, but cannot authorize staging or release; host compiler/runtime, Cargo cache and other unchecked inputs remain part of the builder trust assumption.

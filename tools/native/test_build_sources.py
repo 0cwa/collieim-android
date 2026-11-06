@@ -1,6 +1,8 @@
 import hashlib
 import importlib.util
 import json
+import os
+import shutil
 from pathlib import Path
 import sys
 import unittest
@@ -39,6 +41,7 @@ class PartialSourceBuildTest(unittest.TestCase):
             tool.chmod(0o755)
         (self.java / 'bin/java').chmod(0o755)
         self.report = self.root / 'partial.json'
+        (self.root / 'gradle.zip').write_bytes(b'fixture gradle')
         self.calls = []
         self.lock = json.loads(self.fixture.lock_file.read_text())
         self.binaries = {'libsignal-android': b'fixture-aar', 'libsignal-client': b'fixture-jar'}
@@ -70,9 +73,9 @@ class PartialSourceBuildTest(unittest.TestCase):
             return []
         raise AssertionError('unexpected diagnostic command')
 
-    def run_build(self, rust_effect=None, ndk_effect=None):
+    def run_build(self, rust_effect=None, ndk_effect=None, fresh=False):
         with patch.object(subject.verify_gradle, 'verify', return_value=self.root / 'verified-gradle/bin/gradle'), patch.object(subject.rust_payloads, 'verify', return_value=372, side_effect=rust_effect), patch.object(subject.ndk_payloads, 'verify', return_value=8449, side_effect=ndk_effect):
-            return subject.diagnostic_build(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, self.report, self.root / 'gradle.zip', self.root / 'verified-gradle', self.runner)
+            return subject.diagnostic_build(self.fixture.lock_file, self.sources, self.sdk, self.java, self.rust_bin, self.report, self.root / 'gradle.zip', self.root / 'verified-gradle', self.runner, fresh=fresh)
 
     def test_success_is_explicitly_partial_and_never_release_proof(self):
         receipt = self.run_build()
@@ -80,6 +83,50 @@ class PartialSourceBuildTest(unittest.TestCase):
         self.assertFalse(receipt['release_allowed'])
         self.assertTrue(any('configured_proxy_never_falls_back_to_direct' in command for command in self.calls))
         self.assertTrue(self.report.is_file())
+
+    def test_fresh_mode_runs_offline_without_gradle_caches(self):
+        receipt = self.run_build(fresh=True)
+        self.assertTrue(receipt['fresh_output_check'])
+        self.assertEqual('', receipt['selected_environment']['RUSTC_WRAPPER'])
+        self.assertEqual('', receipt['selected_environment']['RUSTC_WORKSPACE_WRAPPER'])
+        self.assertEqual(str(self.rust_bin / 'rustc'), receipt['selected_environment']['RUSTC'])
+        command = next(c for c in self.calls if c[0] == str(self.root / 'verified-gradle/bin/gradle'))
+        for flag in ('--offline', '--no-build-cache', '--no-configuration-cache', '--rerun-tasks'):
+            self.assertIn(flag, command)
+
+    def test_fresh_mode_rejects_existing_output(self):
+        for relative in ('target', 'java/.gradle', 'java/build', 'java/android/build', 'java/client/build', 'java/server/build', 'java/android/src/main/jniLibs', 'java/android/src/main/assets'):
+            path = self.sources / 'libsignal' / relative
+            path.mkdir(parents=True, exist_ok=True)
+            with self.subTest(relative=relative), self.assertRaisesRegex(subject.Failure, 'Fresh diagnostic output already exists'):
+                self.run_build(fresh=True)
+            shutil.rmtree(path)
+        self.assertFalse(self.report.exists())
+
+    def test_fresh_mode_rejects_redirected_cargo_target(self):
+        with patch.dict(os.environ, {'CARGO_TARGET_DIR': str(self.root / 'old-target')}):
+            with self.assertRaisesRegex(subject.Failure, 'default Cargo target'):
+                self.run_build(fresh=True)
+        self.assertFalse(self.report.exists())
+
+    def test_fresh_mode_rejects_inherited_compiler_wrappers(self):
+        for name in ('RUSTC_WRAPPER', 'RUSTC_WORKSPACE_WRAPPER'):
+            with self.subTest(name=name), patch.dict(os.environ, {name: '/unexpected/cache'}):
+                with self.assertRaisesRegex(subject.Failure, 'compiler wrappers'):
+                    self.run_build(fresh=True)
+        self.assertFalse(self.report.exists())
+
+    def test_existing_report_created_during_build_is_not_overwritten(self):
+        original_runner = self.runner
+        def racing_runner(args, cwd, env):
+            result = original_runner(args, cwd, env)
+            if args[0] == str(self.root / 'verified-gradle/bin/gradle'):
+                self.report.write_text('existing data')
+            return result
+        self.runner = racing_runner
+        with self.assertRaises(FileExistsError):
+            self.run_build(fresh=True)
+        self.assertEqual('existing data', self.report.read_text())
 
     def test_rust_payload_change_before_or_after_build_rejects_receipt(self):
         for effect in ([subject.rust_payloads.Failure('before')], [372, subject.rust_payloads.Failure('after')]):

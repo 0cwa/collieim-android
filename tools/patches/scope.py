@@ -324,7 +324,8 @@ def check_next_port(repo, base, head):
         fork = json.loads(git(repo, 'show', head + ':' + root + 'provenance.json'))
     except (ValueError, UnicodeDecodeError) as exc:
         raise ValueError('next port fork provenance is invalid') from exc
-    if {'profiles': profiles, 'fork_source': config.get('fork_source')} != reviewed:
+    selected = {'profiles': profiles, 'fork_source': config.get('fork_source')}
+    if json.dumps(selected, sort_keys=True, separators=(',', ':')) != json.dumps(reviewed, sort_keys=True, separators=(',', ':')):
         raise ValueError('next port profiles differ from pinned composition')
     if config.get('fork_source') != {'head': NEXT_PORT_FORK_HEAD, 'url': NEXT_PORT_FORK_URL}:
         raise ValueError('next port fork source differs from historical pin')

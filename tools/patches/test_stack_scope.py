@@ -162,6 +162,13 @@ class ScopeTests(unittest.TestCase):
                 scope.check_next_port(self.repo, base, 'HEAD')
             config['profiles']['collie']['fork_series'].reverse()
             self.git('reset', '--hard', '-q', head)
+            config['profiles']['collie']['firebase_free'] = 0
+            (self.repo / 'molly-build.json').write_text(json.dumps(config))
+            self.git('add', 'molly-build.json'); self.git('commit', '-qm', 'invalid boolean type')
+            with self.assertRaisesRegex(ValueError, 'pinned composition'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            config['profiles']['collie']['firebase_free'] = False
+            self.git('reset', '--hard', '-q', head)
             changed_fork = json.loads(fork_provenance)
             changed_fork['upstream_bundle_prerequisite'] = '0' * 40
             (fixture_fork / 'provenance.json').write_text(json.dumps(changed_fork))

@@ -197,3 +197,20 @@ not be interpreted as evidence that default setup is disabled.
 - [Android NDK r28 and its revision](https://github.com/android/ndk/releases/tag/r28)
 - [Android NDK target configuration](https://developer.android.com/ndk/guides/other_build_systems)
 - [EDG include search and `USR_INCLUDE`](https://edgcpp.org/doc/ext_intf/)
+
+## Consolidated security changes and source cutover
+
+CODEQL-CONSOLIDATION.md records the42/44 unique-change disposition and current
+coverage boundaries. Keep CODEQL_ADVANCED_UPLOAD as the single opt-in control;
+this work does not enable it. Screenshot generation and publication now use
+separate workflows: generate on a reviewed feature branch, inspect its data
+artifact, then dispatch publish-screenshots.yml on main with exact run/attempt/
+artifact/branch/head identities. No candidate Gradle code receives the publisher's
+write token or private build-cache values. The trusted publisher permits only
+bounded PNG/LFS changes and refuses a moved branch.
+
+After source cutover, engineering owns the same audit/parser tools. The new
+application source workflow must pin that reviewed engineering revision as an
+explicit publication layer; it must not copy old baseline Spinner/JNI assumptions.
+Java/Kotlin application analysis is still NOT RUN until the exact public native
+inputs and a traced direct-source Android build are actually verified.

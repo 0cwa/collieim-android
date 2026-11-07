@@ -186,3 +186,5 @@ jobs:
         run: python3 -m unittest discover -s tools/codeql -p 'test_*.py' -v
       - name: Test Spinner rendering and script integrity
         run: node --test tools/codeql/test_spinner.mjs
+      - name: Test the screenshot data publication boundary
+        run: python3 -m unittest discover -s .github/scripts -p test_screenshot_artifacts.py -v

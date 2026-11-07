@@ -423,6 +423,136 @@ MAIN_CLEAN_ENTRIES = json.loads((Path(__file__).parent / 'main-clean-entries.jso
 MAIN_SCOPE_FILES = frozenset(['tools/patches/main-clean-entries.json', 'tools/patches/scope.py', 'tools/patches/pins.py'])
 INITIAL_MAIN = '1861543f3ba23b0bc396cb39a0595346537b6df6'
 
+# Current-main security maintenance is a separate, deliberately narrow boundary.
+# Historical stack checks below retain their original source and release pins.
+SECURITY_MAINTENANCE_BASE = 'f6f68cdee08fb8d9acb6a866b1673deb10525f20'
+SECURITY_SOURCE_OVERLAY = 'tools/patches/security-source-overlay.json'
+SECURITY_SOURCE_OVERLAY_SHA256 = '7bd457720f3c345e364fc089b51e45e9663a9ac77f2a57b9189c17fbf99b52bb'
+SECURITY_SOURCE_PATHS = frozenset({
+    'lib/spinner/src/main/assets/js/main.js',
+    'lib/spinner/src/main/assets/query.hbs',
+})
+SECURITY_MAINTENANCE_FILES = frozenset({
+    '.github/codeql/codeql-config.yml',
+    '.github/codeql/reviewed-findings.json',
+    '.github/dependabot.yml',
+    '.github/scripts/screenshot_artifacts.py',
+    '.github/scripts/test_screenshot_artifacts.py',
+    '.github/workflows/build-artifacts.yml',
+    '.github/workflows/codeql.yml',
+    '.github/workflows/docker.yml',
+    '.github/workflows/molly-patch-release.yml',
+    '.github/workflows/stale.yml',
+    '.github/workflows/sync.yml',
+    '.github/workflows/update-screenshots.yml',
+    'docs/PATCH-PIPELINE.md',
+    'docs/security/CODEQL.md',
+    'tools/codeql/alert_inventory.py',
+    'tools/codeql/check_sarif.py',
+    'tools/codeql/test_alert_inventory.py',
+    'tools/codeql/test_check_sarif.py',
+    'tools/codeql/test_spinner.cjs',
+    'tools/patches/pins.py',
+    'tools/patches/scope.py',
+    'tools/patches/test_build.py',
+    'tools/patches/test_generated_stages.py',
+    'tools/patches/test_security_scope.py',
+    SECURITY_SOURCE_OVERLAY,
+})
+
+
+def security_tree_entry(repo, ref, path):
+    return git(repo, 'ls-tree', '-z', ref, '--', path).split(b'\t', 1)[0].decode('ascii')
+
+
+def security_overlay_paths(repo, base, head):
+    """Authenticate the exact tracked debug-viewer replacement, not a release layer."""
+    entry = security_tree_entry(repo, head, SECURITY_SOURCE_OVERLAY)
+    if not entry:
+        if security_tree_entry(repo, base, SECURITY_SOURCE_OVERLAY):
+            raise ValueError('security source overlay cannot be removed')
+        return frozenset()
+    if not entry.startswith('100644 blob '):
+        raise ValueError('security source overlay must be a regular 100644 file')
+    raw = git(repo, 'show', head + ':' + SECURITY_SOURCE_OVERLAY)
+    if hashlib.sha256(raw).hexdigest() != SECURITY_SOURCE_OVERLAY_SHA256:
+        raise ValueError('security source overlay manifest differs from pin')
+
+    def unique_keys(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError('security source overlay has duplicate JSON keys')
+            result[key] = value
+        return result
+
+    try:
+        data = json.loads(raw, object_pairs_hook=unique_keys)
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise ValueError('security source overlay is not valid JSON') from exc
+    if (not isinstance(data, dict) or
+            set(data) != {'schema', 'base_commit', 'scope', 'release_reconstruction', 'files'} or
+            type(data['schema']) is not int or data['schema'] != 1 or
+            data['base_commit'] != SECURITY_MAINTENANCE_BASE or
+            data['scope'] != 'tracked-spinner-debug-viewer' or
+            data['release_reconstruction'] != 'unchanged' or
+            not isinstance(data['files'], list)):
+        raise ValueError('security source overlay schema or boundary differs')
+    paths = set()
+    for record in data['files']:
+        if (not isinstance(record, dict) or
+                set(record) != {'path', 'mode', 'before_blob', 'after_blob'} or
+                not isinstance(record['path'], str) or record['path'] not in SECURITY_SOURCE_PATHS or
+                record['path'] in paths or record['mode'] != '100644' or
+                any(not isinstance(record[key], str) or not re.fullmatch(r'[0-9a-f]{40}', record[key])
+                    for key in ('before_blob', 'after_blob'))):
+            raise ValueError('security source overlay contains an invalid or duplicate file')
+        path = record['path']
+        if security_tree_entry(repo, SECURITY_MAINTENANCE_BASE, path) != '100644 blob ' + record['before_blob']:
+            raise ValueError('security source overlay preimage differs: ' + path)
+        if security_tree_entry(repo, head, path) != '100644 blob ' + record['after_blob']:
+            raise ValueError('security source overlay replacement differs: ' + path)
+        paths.add(path)
+    if paths != SECURITY_SOURCE_PATHS:
+        raise ValueError('security source overlay must replace exactly the reviewed files')
+    return paths
+
+
+def check_main_security_maintenance(repo, base, head):
+    """Preserve the reviewed main tree except exact security maintenance entries."""
+    for candidate in (base, head):
+        if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor',
+                           SECURITY_MAINTENANCE_BASE, candidate],
+                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+            raise ValueError('security maintenance must descend from the pinned main base')
+    if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        raise ValueError('main base is not an ancestor of head')
+    # Freeze the complete configuration and historical inputs, including profile
+    # target trees and all native payload/patch provenance, not just source SHAs.
+    for path in ('molly-build.json', 'patches', 'tools/native'):
+        if security_tree_entry(repo, head, path) != security_tree_entry(repo, SECURITY_MAINTENANCE_BASE, path):
+            raise ValueError('security maintenance cannot change pinned release entry: ' + path)
+    overlay = security_overlay_paths(repo, base, head)
+    # Check the entire projection even for a snapshot (base == head). Comparing
+    # only the latest PR diff would let an earlier unauthorized edit disappear.
+    projected = git(repo, 'diff', '--no-renames', '--name-only', '-z', SECURITY_MAINTENANCE_BASE, head)
+    # Include the immediate diff too: a newly introduced security tool must not
+    # disappear merely because that path did not exist in the original anchor.
+    changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head)
+    for raw in sorted(set(filter(None, projected.split(b'\0') + changed.split(b'\0')))):
+        path = raw.decode('utf-8', 'surrogateescape')
+        if path not in SECURITY_MAINTENANCE_FILES and path not in overlay:
+            raise ValueError('security maintenance excludes unreviewed change: ' + path)
+        expected = security_tree_entry(repo, SECURITY_MAINTENANCE_BASE, path).split()[:2] or ['100644', 'blob']
+        if expected not in (['100644', 'blob'], ['100755', 'blob']):
+            raise ValueError('reviewed security maintenance entry is not a regular file: ' + path)
+        if security_tree_entry(repo, head, path).split()[:2] != expected:
+            raise ValueError('security maintenance entry must preserve regular file mode ' + expected[0] + ': ' + path)
+    return {'scope': 'main-maintenance', 'profile_present': True, 'port_present': True,
+            'source_only': True}
+
+
 def check_trusted_integration_lower(repo, integration_lower):
     actual = git(repo, 'rev-parse', '--verify', integration_lower + '^{commit}').decode().strip()
     if actual != MAIN_INTEGRATION_LOWER:
@@ -511,6 +641,10 @@ def check_main_maintenance(repo, base, head, integration_lower):
     for path in ('.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml'):
         if not git(repo, 'ls-tree', head, '--', path).decode().startswith('100644 blob '):
             raise ValueError('Molly workflow must be a regular 100644 file: ' + path)
+    if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor',
+                       SECURITY_MAINTENANCE_BASE, base],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0:
+        return check_main_security_maintenance(repo, base, head)
     changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')
     for raw in filter(None, changed):
         path = raw.decode('utf-8', 'surrogateescape')

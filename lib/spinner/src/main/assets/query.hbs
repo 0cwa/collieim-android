@@ -51,11 +51,11 @@
 
     {{> partials/tooltips}}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql-formatter/4.0.2/sql-formatter.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/ace.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/mode-sql.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/theme-github.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/theme-github_dark.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql-formatter/4.0.2/sql-formatter.min.js" integrity="sha384-GD998plx93LzHc3D4PRPCbZBhxtp/4PoAR+udrptPX6I+hvQYF4CmyfhyA1EROOi" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/ace.min.js" integrity="sha384-Ipfz0vJkj0Xi5gxCa/iUaL5azcOAcrzVmV+TP5sAv6HqeLsOA0Ar/yFQEnp88/ht" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/mode-sql.min.js" integrity="sha384-QaN+y2rdyOeB4nX9uWTNHPPMBpk9mt0qGVtOqgxZEzd/3KUQypaFgkj0Ofa1iy9M" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/theme-github.min.js" integrity="sha384-VKMHznUZox6bnTzWoUM6BKawabXXIQZ13pSMdtRbM9kInX2FbL7x0FXzuK6oTcfY" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/theme-github_dark.min.js" integrity="sha384-XCSvSqM2RSDX7pH4Ih/J+4ZK5D3SyrJlvmv5pJknVce5PAnxg46az/dOGXQ7Y+RA" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="text/javascript">
       let editor;
 
@@ -136,22 +136,29 @@
 
       function renderQueryHistory() {
         const container = document.getElementById('history-container');
+        container.replaceChildren();
 
-        let history = getQueryHistory();
+        const history = getQueryHistory();
 
         if (history.length > 0) {
-          let i = 0;
-          for (let item of history) {
-            container.innerHTML += `
-              <tr>
-                <td><button onclick="onHistoryItemClicked(${i})">^</button></td>
-                <td id="history-item-${i}">${item}</td>
-              </tr>
-            `;
-            i++;
-          }
+          history.forEach((item, i) => {
+            const row = document.createElement('tr');
+            const actionCell = document.createElement('td');
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = '^';
+            button.onclick = () => onHistoryItemClicked(i);
+            actionCell.appendChild(button);
+            const queryCell = document.createElement('td');
+            queryCell.id = `history-item-${i}`;
+            queryCell.textContent = item;
+            row.append(actionCell, queryCell);
+            container.appendChild(row);
+          });
         } else {
-          container.innerHTML = '<em>None</em>';
+          const empty = document.createElement('em');
+          empty.textContent = 'None';
+          container.appendChild(empty);
         }
       }
 

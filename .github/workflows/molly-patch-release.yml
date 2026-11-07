@@ -37,6 +37,7 @@ jobs:
       base: ${{ steps.scope.outputs.base }}
       integration_lower: ${{ steps.scope.outputs.integration_lower }}
       profiles: ${{ steps.scope.outputs.profiles }}
+      source_only: ${{ steps.scope.outputs.source_only }}
     steps:
       - name: Check out immutable head
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -163,7 +164,13 @@ jobs:
           if [[ -n ${integration_lower:-} ]]; then
             scope_extra+=(--integration-lower "$integration_lower")
           fi
-          python3 tools/patches/scope.py --scope "$scope" --base "$base" "${scope_extra[@]}"
+          scope_report=$(python3 tools/patches/scope.py --scope "$scope" --base "$base" "${scope_extra[@]}")
+          printf '%s\n' "$scope_report"
+          source_only=$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin).get("source_only", False) else "false")' <<< "$scope_report")
+          echo "source_only=$source_only" >> "$GITHUB_OUTPUT"
+          if [[ "$source_only" == true ]]; then
+            echo '::notice::Source proof remains required. Android/native builds are not run: the pinned release inputs are unchanged and verified public native artifacts are unavailable.'
+          fi
           echo "integration_lower=${integration_lower:-}" >> "$GITHUB_OUTPUT"
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
@@ -242,7 +249,7 @@ jobs:
             --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" "${scope_extra[@]}" $PROFILE_ARGS
 
       - name: Prove the upstream native cherry-pick when configured
-        if: needs.scope.outputs.stack_scope != 'next-port'
+        if: needs.scope.outputs.stack_scope != 'next-port' && needs.scope.outputs.source_only != 'true'
         run: |
           python3 tools/patches/build.py native-prepare \
             --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
@@ -256,7 +263,7 @@ jobs:
           if-no-files-found: warn
 
   android:
-    if: needs.scope.outputs.stack_scope != 'next-port'
+    if: needs.scope.outputs.stack_scope != 'next-port' && needs.scope.outputs.source_only != 'true'
     name: Build the proved source and run its regression tests${{ matrix.profile && format(' ({0})', matrix.profile) || '' }}
     strategy:
       fail-fast: false

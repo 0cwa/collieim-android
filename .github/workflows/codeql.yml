@@ -1,0 +1,153 @@
+name: CodeQL security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '24 5 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+            required_source: .github/workflows/codeql.yml
+          - language: python
+            required_source: tools/patches/release.py
+          - language: javascript-typescript
+            required_source: lib/debuglogs-viewer/src/main/assets/debuglogs-viewer.js
+          - language: c-cpp
+            required_source: app/jni/utils/org_thoughtcrime_securesms_util_FileUtils.cpp
+    env:
+      # The local result gate checks the entire selected source, including on PRs.
+      # These controls are supported by the pinned CodeQL Action revision below.
+      CODEQL_ACTION_DIFF_INFORMED_QUERIES: 'false'
+      CODEQL_OVERLAY_DATABASE_MODE: none
+      CODEQL_ACTION_SKIP_FILE_COVERAGE_ON_PRS: 'false'
+      CODEQL_ACTION_EXPORT_DIAGNOSTICS: 'true'
+      # A sibling of the checkout stays outside CodeQL's source root. Unlike the
+      # runner context, github.workspace is valid in job-level environment values.
+      CODEQL_RESULTS: ${{ github.workspace }}-codeql-results/${{ matrix.language }}
+    steps:
+      - name: Check out the analyzed revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Select publication mode
+        id: publication
+        env:
+          CODEQL_UPLOAD_MODE: ${{ vars.CODEQL_UPLOAD_MODE || 'artifacts' }}
+        run: |
+          case "$CODEQL_UPLOAD_MODE" in
+            artifacts)
+              echo 'upload=never' >> "$GITHUB_OUTPUT"
+              echo 'CodeQL: SARIF artifacts and the local findings gate are active; code-scanning upload is not enabled.' >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            advanced)
+              echo 'upload=always' >> "$GITHUB_OUTPUT"
+              echo 'CodeQL: advanced code-scanning uploads are enabled by the repository setting.' >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            *)
+              echo '::error::CODEQL_UPLOAD_MODE must be unset, artifacts, or advanced. See docs/security/CODEQL.md.'
+              exit 1
+              ;;
+          esac
+
+      - name: Test the SARIF gate
+        if: matrix.language == 'actions'
+        run: |
+          python3 -m unittest discover -s tools/codeql -p 'test_*.py' -v
+          python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
+          node --test tools/codeql/test_spinner.cjs
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Analyze the complete source
+        id: analysis
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          category: /language:${{ matrix.language }}
+          output: ${{ env.CODEQL_RESULTS }}
+          # Default setup rejects advanced CodeQL uploads. The owner enables this
+          # only after the reviewed transition described in docs/security/CODEQL.md.
+          upload: ${{ steps.publication.outputs.upload }}
+          upload-database: false
+
+      - name: Validate findings and successful extraction
+        if: ${{ !cancelled() && steps.analysis.outcome != 'skipped' }}
+        env:
+          CODEQL_LANGUAGE: ${{ matrix.language }}
+          CODEQL_REQUIRED_SOURCE: ${{ matrix.required_source }}
+        run: |
+          required_sources=(--require-source "$CODEQL_REQUIRED_SOURCE")
+          if [[ "$CODEQL_LANGUAGE" == javascript-typescript ]]; then
+            required_sources+=(
+              --require-source lib/spinner/src/main/assets/js/main.js
+              --require-source lib/spinner/src/main/assets/query.hbs
+            )
+          fi
+          python3 tools/codeql/check_sarif.py \
+            --sarif-dir "$CODEQL_RESULTS" \
+            --language "$CODEQL_LANGUAGE" \
+            "${required_sources[@]}" \
+            --source-root "$GITHUB_WORKSPACE" \
+            --reviewed-findings .github/codeql/reviewed-findings.json \
+            --report "$CODEQL_RESULTS/check.json"
+
+      - name: Inventory open CodeQL alerts on the default branch
+        if: ${{ !cancelled() && matrix.language == 'actions' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CODEQL_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          gh api --method GET --paginate --slurp \
+            "repos/$GITHUB_REPOSITORY/code-scanning/alerts" \
+            -f "ref=refs/heads/$CODEQL_DEFAULT_BRANCH" \
+            -f state=open -f tool_name=CodeQL -F per_page=100 \
+            | python3 tools/codeql/alert_inventory.py \
+                --repository "$GITHUB_REPOSITORY" \
+                --ref "refs/heads/$CODEQL_DEFAULT_BRANCH" \
+                --output "$CODEQL_RESULTS/default-branch-alerts.json"
+
+      - name: Record unavailable fork alert inventory
+        if: ${{ !cancelled() && matrix.language == 'actions' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+        env:
+          CODEQL_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          python3 tools/codeql/alert_inventory.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --ref "refs/heads/$CODEQL_DEFAULT_BRANCH" \
+            --unavailable 'Fork pull-request tokens cannot read repository security alerts.' \
+            --output "$CODEQL_RESULTS/default-branch-alerts.json"
+
+      - name: Preserve results and extraction diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: codeql-${{ matrix.language }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CODEQL_RESULTS }}/
+          if-no-files-found: error
+          retention-days: 30

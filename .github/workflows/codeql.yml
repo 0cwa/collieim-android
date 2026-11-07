@@ -1,0 +1,44 @@
+name: CodeQL
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '37 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  baseline:
+    name: Record current CodeQL alerts
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: read
+    steps:
+      - name: Check out audit tool
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          sparse-checkout: tools/codeql
+      - name: Snapshot main alerts and scan coverage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/codeql/snapshot.py --output "$RUNNER_TEMP/codeql-baseline.json"
+      - name: Retain alert inventory
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: codeql-baseline
+          path: ${{ runner.temp }}/codeql-baseline.json
+          if-no-files-found: error
+          retention-days: 14

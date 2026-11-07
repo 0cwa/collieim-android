@@ -17,9 +17,9 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/0cwa/collieim-android/releases/latest"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/total?style=flat&amp;label=release%20downloads&amp;color=687E59&amp;labelColor=5A4033" alt="Total release asset downloads"></a>
   <a href="https://github.com/0cwa/collieim-android/releases/tag/v8.35.1-1-rc1"><img src="https://img.shields.io/badge/Android-8.1%2B-2F4F3A?style=flat&amp;labelColor=5A4033" alt="Android 8.1 or newer"></a>
   <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0--only-687E59?style=flat&amp;labelColor=5A4033" alt="AGPL 3.0 only"></a>
-  <a href="https://github.com/0cwa/collieim-android/releases/latest"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/total?style=flat&amp;label=release%20downloads&amp;color=687E59&amp;labelColor=5A4033" alt="Total release asset downloads"></a>
 </p>
 
 Welcome!  Collie is an independent Android messenger built on [Signal](https://signal.org/) and [Molly](https://molly.im/). It uses the Signal network for private messages and calls, with Molly's protections for data stored on your device.  We use a patch-based release system for maximum code auditability, fast security updates ⚡, and interoperability.  [We contribute](https://github.com/mollyim/mollyim-android/pull/852) [back upstream](https://github.com/mollyim/mollyim-android/pull/853).

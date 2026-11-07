@@ -6,11 +6,11 @@
 package org.signal.storage.keyvalue
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
-import androidx.preference.PreferenceManager
 
 /**
- * Read-only access to the app's default [android.content.SharedPreferences] for the purpose of easing migration to [KeyValueStore].
+ * Read-only access to Molly's injected preferences for migration to [KeyValueStore].
  */
 object LegacySharedPrefs {
 
@@ -68,5 +68,6 @@ object LegacySharedPrefs {
     }
   }
 
-  private fun prefs(context: Context) = PreferenceManager.getDefaultSharedPreferences(context)
+  @Suppress("UNUSED_PARAMETER")
+  private fun prefs(context: Context): SharedPreferences = PlainTextKeyValueStore.legacyPreferences
 }

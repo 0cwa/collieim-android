@@ -97,11 +97,6 @@ class InternalValues internal constructor(store: KeyValueStore) : SignalStoreVal
   var delayResends by booleanValue(DELAY_RESENDS, false).defaultForExternalUsers()
 
   /**
-   * Whether or not "shake to report" is enabled.
-   */
-  var shakeToReport: Boolean by booleanValue(SHAKE_TO_REPORT, true).falseForExternalUsers()
-
-  /**
    * Whether or not storage service is manually disabled.
    */
   var storageServiceDisabled by booleanValue(DISABLE_STORAGE_SERVICE, false).defaultForExternalUsers()

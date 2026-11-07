@@ -5,22 +5,12 @@
 
 package org.signal.registration.screens.verificationcode
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import androidx.annotation.VisibleForTesting
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.google.android.gms.common.api.CommonStatusCodes
-import com.google.android.gms.common.api.Status
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -65,39 +55,6 @@ class VerificationCodeViewModel(
      * restart the flow. Checked whenever the screen is foregrounded.
      */
     private val IN_PROGRESS_DATA_TIMEOUT = 15.minutes
-
-    /**
-     * Cold [Flow] of verification codes automatically retrieved from incoming SMS messages via the Play Services SMS
-     * retriever. Registers a [BroadcastReceiver] for [SmsRetriever.SMS_RETRIEVED_ACTION] while collected, and
-     * unregisters it when collection stops.
-     */
-    fun smsCodeFlow(context: Context): Flow<String> = callbackFlow {
-      val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-          if (intent.action != SmsRetriever.SMS_RETRIEVED_ACTION) {
-            return
-          }
-
-          val status = intent.extras?.get(SmsRetriever.EXTRA_STATUS) as? Status
-          when (status?.statusCode) {
-            CommonStatusCodes.SUCCESS -> {
-              val code = VerificationCodeParser.parse(intent.extras?.getString(SmsRetriever.EXTRA_SMS_MESSAGE))
-              if (code != null) {
-                Log.i(TAG, "Received verification code via SMS retriever.")
-                trySend(code)
-              } else {
-                Log.w(TAG, "Could not parse verification code from retrieved SMS.")
-              }
-            }
-            CommonStatusCodes.TIMEOUT -> Log.w(TAG, "Timed out waiting for the verification SMS to arrive.")
-            else -> Log.w(TAG, "SMS retriever broadcast had an unexpected status code: ${status?.statusCode}")
-          }
-        }
-      }
-
-      ContextCompat.registerReceiver(context, receiver, IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION), SmsRetriever.SEND_PERMISSION, null, ContextCompat.RECEIVER_EXPORTED)
-      awaitClose { context.unregisterReceiver(receiver) }
-    }
   }
 
   private val _state = MutableStateFlow(VerificationCodeState())

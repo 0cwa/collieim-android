@@ -17,6 +17,7 @@ data class DataAndStorageSettingsState(
   val alwaysAutoDownloadedBytes: Long = 0,
   val sentMediaQuality: SentMediaQuality = SentMediaQuality.STANDARD,
   val callDataMode: CallDataMode = CallDataMode.HIGH_ALWAYS,
+  val showNetworkSettings: Boolean = true,
   val forceWebsocketMode: Boolean = false,
   val playServicesAvailable: Boolean = true,
   val isProxyEnabled: Boolean = false,

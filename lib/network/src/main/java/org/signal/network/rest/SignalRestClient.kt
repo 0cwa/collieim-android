@@ -28,13 +28,11 @@ import okio.buffer
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.net.BadRequestError
 import org.signal.libsignal.net.RequestResult
-import org.signal.network.config.SignalProxy
 import org.signal.network.config.SignalServiceConfiguration
 import org.signal.network.config.SignalUrl
 import org.signal.network.rest.RequestSpec.Host
 import org.signal.network.util.JsonUtil
 import org.signal.network.util.Tls12SocketFactory
-import org.signal.network.util.TlsProxySocketFactory
 import org.whispersystems.signalservice.api.messages.AttachmentTransferProgress
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachment.ProgressListener
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
@@ -42,12 +40,14 @@ import org.whispersystems.signalservice.api.util.CredentialsProvider
 import org.whispersystems.signalservice.internal.util.BlacklistingTrustManager
 import java.io.IOException
 import java.io.OutputStream
+import java.net.ProxySelector
 import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 import java.util.Optional
 import java.util.Random
 import java.util.concurrent.TimeUnit
+import javax.net.SocketFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.X509TrustManager
 import kotlin.jvm.Throws
@@ -91,13 +91,14 @@ class SignalRestClient @JvmOverloads constructor(
     private fun createConnectionHolders(
       urls: Array<out SignalUrl>,
       interceptors: List<Interceptor>,
-      dns: Optional<Dns>,
-      proxy: Optional<SignalProxy>,
+      dns: Dns,
+      socketFactory: SocketFactory,
+      proxySelector: ProxySelector,
       clientOverride: OkHttpClient?
     ): Array<ConnectionHolder> {
       return urls.map { url ->
         ConnectionHolder(
-          client = clientOverride ?: buildClient(url, interceptors, dns, proxy),
+          client = clientOverride ?: buildClient(url, interceptors, dns, socketFactory, proxySelector),
           url = url.url,
           hostHeader = url.hostHeader
         )
@@ -107,23 +108,22 @@ class SignalRestClient @JvmOverloads constructor(
     private fun buildClient(
       url: SignalUrl,
       interceptors: List<Interceptor>,
-      dns: Optional<Dns>,
-      proxy: Optional<SignalProxy>
+      dns: Dns,
+      socketFactory: SocketFactory,
+      proxySelector: ProxySelector,
     ): OkHttpClient {
       try {
         val trustManagers = BlacklistingTrustManager.createFor(url.trustStore)
         val sslContext = SSLContext.getInstance("TLS").apply { init(null, trustManagers, null) }
 
         val builder = OkHttpClient.Builder()
+          .socketFactory(socketFactory)
+          .proxySelector(proxySelector)
           .sslSocketFactory(Tls12SocketFactory(sslContext.socketFactory), trustManagers[0] as X509TrustManager)
           .connectionSpecs(url.connectionSpecs.orElse(listOf(ConnectionSpec.RESTRICTED_TLS))!!)
-          .dns(dns.orElse(Dns.SYSTEM)!!)
+          .dns(dns)
           .connectionPool(ConnectionPool(5, 45, TimeUnit.SECONDS))
           .dispatcher(Dispatcher().apply { maxRequestsPerHost = 32 })
-
-        if (proxy.isPresent) {
-          builder.socketFactory(TlsProxySocketFactory(proxy.get().host, proxy.get().port, dns))
-        }
 
         for (interceptor in interceptors) {
           builder.addInterceptor(interceptor)
@@ -142,7 +142,8 @@ class SignalRestClient @JvmOverloads constructor(
     configuration.signalServiceUrls,
     configuration.networkInterceptors,
     configuration.dns,
-    configuration.signalProxy,
+    socketFactory = configuration.socketFactory,
+    proxySelector = configuration.proxySelector,
     clientOverride
   )
 
@@ -152,7 +153,8 @@ class SignalRestClient @JvmOverloads constructor(
         urls = urls,
         interceptors = configuration.networkInterceptors,
         dns = configuration.dns,
-        proxy = configuration.signalProxy,
+        socketFactory = configuration.socketFactory,
+        proxySelector = configuration.proxySelector,
         clientOverride = clientOverride
       )
     }
@@ -161,7 +163,8 @@ class SignalRestClient @JvmOverloads constructor(
     configuration.signalStorageUrls,
     configuration.networkInterceptors,
     configuration.dns,
-    configuration.signalProxy,
+    socketFactory = configuration.socketFactory,
+    proxySelector = configuration.proxySelector,
     clientOverride
   )
 
@@ -169,7 +172,14 @@ class SignalRestClient @JvmOverloads constructor(
   private val directCdnClientsMap: Map<Int, Array<ConnectionHolder>> by lazy {
     if (uncensoredConfiguration !== configuration) {
       uncensoredConfiguration.signalCdnUrlMap.mapValues { (_, urls) ->
-        createConnectionHolders(urls, uncensoredConfiguration.networkInterceptors, uncensoredConfiguration.dns, uncensoredConfiguration.signalProxy, clientOverride)
+        createConnectionHolders(
+          urls = urls,
+          interceptors = uncensoredConfiguration.networkInterceptors,
+          dns = uncensoredConfiguration.dns,
+          socketFactory = uncensoredConfiguration.socketFactory,
+          proxySelector = uncensoredConfiguration.proxySelector,
+          clientOverride = clientOverride
+        )
       }
     } else {
       cdnClientsMap
@@ -178,7 +188,14 @@ class SignalRestClient @JvmOverloads constructor(
 
   private val directStorageClients: Array<ConnectionHolder> by lazy {
     if (uncensoredConfiguration !== configuration) {
-      createConnectionHolders(uncensoredConfiguration.signalStorageUrls, uncensoredConfiguration.networkInterceptors, uncensoredConfiguration.dns, uncensoredConfiguration.signalProxy, clientOverride)
+      createConnectionHolders(
+        urls = uncensoredConfiguration.signalStorageUrls,
+        interceptors = uncensoredConfiguration.networkInterceptors,
+        dns = uncensoredConfiguration.dns,
+        socketFactory = uncensoredConfiguration.socketFactory,
+        proxySelector = uncensoredConfiguration.proxySelector,
+        clientOverride = clientOverride
+      )
     } else {
       storageClients
     }

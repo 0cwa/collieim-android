@@ -72,6 +72,11 @@ class AccountApi(private val authWebSocket: SignalWebSocket.AuthenticatedWebSock
     }
   }
 
+  /** Blocking variant of [clearFcmToken] for Java callers running on a worker thread. */
+  fun clearFcmTokenSync(): RequestResult<Unit, Nothing> {
+    return runBlocking { clearFcmToken() }
+  }
+
   /**
    * Set account attributes.
    *

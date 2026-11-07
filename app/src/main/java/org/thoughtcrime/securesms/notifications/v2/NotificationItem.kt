@@ -14,6 +14,7 @@ import org.signal.core.util.Util
 import org.signal.core.util.logging.Log
 import org.signal.emoji.EmojiStrings
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.ScreenLockController
 import org.thoughtcrime.securesms.contactshare.Contact
 import org.thoughtcrime.securesms.contactshare.ContactUtil
 import org.thoughtcrime.securesms.database.MentionUtil
@@ -242,7 +243,7 @@ class MessageNotification(threadRecipient: Recipient, record: MessageRecord, val
   private var thumbnailInfo: ThumbnailInfo = NotificationThumbnails.getWithoutModifying(this)
 
   override fun getPrimaryTextActual(context: Context): CharSequence {
-    return if (KeyCachingService.isLocked(context)) {
+    return if (KeyCachingService.isLocked()) {
       SpanUtil.italic(context.getString(R.string.MessageNotifier_locked_message))
     } else if (record.isMms && (record as MmsMessageRecord).sharedContacts.isNotEmpty()) {
       val contact = record.sharedContacts[0]
@@ -299,7 +300,7 @@ class MessageNotification(threadRecipient: Recipient, record: MessageRecord, val
   }
 
   override fun getThumbnailInfo(context: Context): ThumbnailInfo {
-    return if (SignalStore.settings.messageNotificationsPrivacy.isDisplayMessage && !KeyCachingService.isLocked(context)) {
+    return if (SignalStore.settings.messageNotificationsPrivacy.isDisplayMessage && !KeyCachingService.isLocked()) {
       if (thumbnailInfo.needsShrinking) {
         thumbnailInfo = NotificationThumbnails.get(context, this)
       }
@@ -311,7 +312,7 @@ class MessageNotification(threadRecipient: Recipient, record: MessageRecord, val
   }
 
   override fun canReply(context: Context): Boolean {
-    if (KeyCachingService.isLocked(context) ||
+    if (ScreenLockController.lockScreenAtStart ||
       record.isRemoteDelete ||
       record.isGroupCall ||
       record.isViewOnce ||
@@ -345,7 +346,7 @@ class ReactionNotification(threadRecipient: Recipient, record: MessageRecord, va
   override val isNewNotification: Boolean = timestamp > notifiedTimestamp
 
   override fun getPrimaryTextActual(context: Context): CharSequence {
-    return if (KeyCachingService.isLocked(context)) {
+    return if (KeyCachingService.isLocked()) {
       SpanUtil.italic(context.getString(R.string.MessageNotifier_locked_message))
     } else {
       val text: String = SpanUtil.italic(getReactionMessageBody(context)).toString()
@@ -417,7 +418,7 @@ class VoteNotification(threadRecipient: Recipient, record: MessageRecord, val vo
   override val isNewNotification: Boolean = timestamp > notifiedTimestamp
 
   override fun getPrimaryTextActual(context: Context): CharSequence {
-    return if (KeyCachingService.isLocked(context)) {
+    return if (KeyCachingService.isLocked()) {
       SpanUtil.italic(context.getString(R.string.MessageNotifier_locked_message))
     } else {
       context.getString(R.string.MessageNotifier_s_voted_in_poll, EmojiStrings.POLL, authorRecipient.getDisplayName(context), vote.question)

@@ -94,6 +94,7 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.registration.util.RegistrationUtil
 import org.thoughtcrime.securesms.service.BackupProgressService
 import org.thoughtcrime.securesms.service.DirectoryRefreshListener
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.service.LocalBackupListener
 import org.thoughtcrime.securesms.service.RotateSignedPreKeyListener
 import org.thoughtcrime.securesms.util.BackupUtil
@@ -125,15 +126,20 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
    */
   @VisibleForTesting
   internal var restartNetwork: () -> Unit = {
-    AppDependencies.resetNetwork()
-    AppDependencies.startNetwork()
+    AppDependencies.resetNetwork(restartMessageObserver = true)
   }
 
   companion object {
     private val TAG = Log.tag(AppRegistrationStorageController::class)
     private const val TEMP_PROTO_FILENAME = "registration-in-progress.proto"
     private val MODERN_BACKUP_PATTERN = Regex("^signal-backup-(\\d{4})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})$")
-    private val LEGACY_BACKUP_PATTERN = Regex("^signal-(\\d{4})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})\\.backup$")
+    private val LEGACY_BACKUP_PATTERN = Regex("^.+-(\\d{4})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})\\.backup$")
+  }
+
+  override fun onRegistrationPermissionsResult() {
+    context.startService(Intent(context, KeyCachingService::class.java).apply {
+      action = KeyCachingService.LOCALE_CHANGE_EVENT
+    })
   }
 
   override suspend fun getPreExistingRegistrationData(): PreExistingRegistrationData? = withContext(Dispatchers.Default) {
@@ -550,7 +556,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
       }
     }
 
-    // Check for legacy backups: signal-yyyy-MM-dd-HH-mm-ss.backup files
+    // Check for timestamped legacy backups, regardless of the app-specific filename prefix.
     for (child in effectiveChildren) {
       if (!child.isFile) continue
       val name = child.name ?: continue

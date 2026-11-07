@@ -10,7 +10,6 @@ plugins {
   id("java-library")
   id("org.jetbrains.kotlin.jvm")
   id("idea")
-  id("org.jlleitschuh.gradle.ktlint")
   alias(libs.plugins.kotlinx.serialization)
 }
 
@@ -26,16 +25,6 @@ tasks.withType<KotlinCompile>().configureEach {
       freeCompilerArgs = listOf("-Xjvm-default=all")
       suppressWarnings = true
     }
-  }
-}
-
-ktlint {
-  version.set("1.5.0")
-}
-
-tasks.whenTaskAdded {
-  if (name == "lint") {
-    enabled = false
   }
 }
 

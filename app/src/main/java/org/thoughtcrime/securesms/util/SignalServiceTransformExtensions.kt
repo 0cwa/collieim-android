@@ -5,7 +5,6 @@
 package org.thoughtcrime.securesms.util
 
 import arrow.core.Either
-import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
@@ -180,29 +179,7 @@ private fun Attachment.toQuoteAttachmentProto(): Either<DataMessageError, DataMe
 }
 
 private fun OutgoingMessage.toPaymentProtoIfPresent(): Either<DataMessageError, DataMessage.Payment?> = either {
-  when {
-    isPaymentsNotification -> {
-      val paymentUuid = UuidUtil.parseOrThrow(body)
-      val payment = ensureNotNull(SignalDatabase.payments.getPayment(paymentUuid)) { DataMessageError.MissingPayment }
-      val receipt = ensureNotNull(payment.receipt) { DataMessageError.MissingPaymentReceipt }
-
-      DataMessage.Payment(
-        notification = DataMessage.Payment.Notification(
-          note = payment.note,
-          mobileCoin = DataMessage.Payment.Notification.MobileCoin(receipt = receipt.toByteString())
-        )
-      )
-    }
-    isRequestToActivatePayments -> {
-      DataMessage.Payment(activation = DataMessage.Payment.Activation(type = DataMessage.Payment.Activation.Type.REQUEST))
-    }
-    isPaymentsActivated -> {
-      DataMessage.Payment(activation = DataMessage.Payment.Activation(type = DataMessage.Payment.Activation.Type.ACTIVATED))
-    }
-    else -> {
-      null
-    }
-  }
+  null
 }
 
 private fun Recipient.selfProfileKeyForOutgoing(): ByteString? {

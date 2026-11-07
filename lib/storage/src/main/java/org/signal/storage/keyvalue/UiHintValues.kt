@@ -17,11 +17,8 @@ class UiHintValues(store: KeyValueStore, context: Context) : SignalStoreValues(s
     private const val NEVER_DISPLAY_PULL_TO_FILTER_TIP = "uihints.never_display_pull_to_filter_tip"
     private const val HAS_SEEN_SCHEDULED_MESSAGES_INFO_ONCE = "uihints.has_seen_scheduled_messages_info_once"
     private const val HAS_SEEN_SAFETY_NUMBER_NUX = "uihints.has_seen_safety_number_nux"
-    private const val DECLINED_NOTIFICATION_LOGS_PROMPT = "uihints.declined_notification_logs"
-    private const val LAST_NOTIFICATION_LOGS_PROMPT_TIME = "uihints.last_notification_logs_prompt"
     private const val DISMISSED_BATTERY_SAVER_PROMPT = "uihints.declined_battery_saver_prompt"
     private const val LAST_BATTERY_SAVER_PROMPT = "uihints.last_battery_saver_prompt"
-    private const val LAST_CRASH_PROMPT = "uihints.last_crash_prompt"
     private const val HAS_COMPLETED_USERNAME_ONBOARDING = "uihints.has_completed_username_onboarding"
     private const val HAS_SEEN_DOUBLE_TAP_EDIT_EDUCATION_SHEET = "uihints.has_seen_double_tap_edit_education_sheet"
     private const val DISMISSED_CONTACTS_PERMISSION_BANNER = "uihints.dismissed_contacts_permission_banner"
@@ -143,16 +140,6 @@ class UiHintValues(store: KeyValueStore, context: Context) : SignalStoreValues(s
     putBoolean(HAS_SEEN_SAFETY_NUMBER_NUX, true)
   }
 
-  var lastNotificationLogsPrompt: Long by longValue(LAST_NOTIFICATION_LOGS_PROMPT_TIME, 0)
-
-  fun markDeclinedShareNotificationLogs() {
-    putBoolean(DECLINED_NOTIFICATION_LOGS_PROMPT, true)
-  }
-
-  fun hasDeclinedToShareNotificationLogs(): Boolean {
-    return getBoolean(DECLINED_NOTIFICATION_LOGS_PROMPT, false)
-  }
-
   fun markDismissedBatterySaverPrompt() {
     putBoolean(DISMISSED_BATTERY_SAVER_PROMPT, true)
   }
@@ -163,7 +150,6 @@ class UiHintValues(store: KeyValueStore, context: Context) : SignalStoreValues(s
 
   var lastBatterySaverPrompt: Long by longValue(LAST_BATTERY_SAVER_PROMPT, 0)
 
-  var lastCrashPrompt: Long by longValue(LAST_CRASH_PROMPT, 0)
 
   var hasSeenDoubleTapEditEducationSheet: Boolean by booleanValue(HAS_SEEN_DOUBLE_TAP_EDIT_EDUCATION_SHEET, false)
 

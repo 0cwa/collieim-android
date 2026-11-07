@@ -39,6 +39,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.google.android.material.R as MaterialR
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicatorSpec
@@ -52,6 +53,7 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.ui.permissions.Permissions
 import org.signal.core.ui.util.ViewUtil
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.Debouncer
 import org.signal.core.util.DimensionUnit
 import org.signal.core.util.ServiceUtil
@@ -1112,7 +1114,7 @@ class StoryViewerPageFragment :
 
     sendingBar.visible = false
     viewsAndReplies.isEnabled = true
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_colorOnSurface))
+    viewsAndReplies.iconTint = ColorStateList.valueOf(ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorOnSurface))
 
     when (replyState) {
       StoryViewerPageState.ReplyState.SENDING -> presentSendingBottomBar()
@@ -1151,14 +1153,14 @@ class StoryViewerPageFragment :
 
   private fun presentPartialSendBottomBar() {
     viewsAndReplies.setIconResource(CoreUiR.drawable.symbol_error_circle_24)
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_light_colorError))
+    viewsAndReplies.iconTint = ColorStateList.valueOf(ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorError))
     viewsAndReplies.iconSize = 20.dp
     viewsAndReplies.setText(R.string.StoryViewerPageFragment__partially_sent)
   }
 
   private fun presentSendFailureBottomBar() {
     viewsAndReplies.setIconResource(CoreUiR.drawable.symbol_error_circle_24)
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_light_colorError))
+    viewsAndReplies.iconTint = ColorStateList.valueOf(ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorError))
     viewsAndReplies.iconSize = 20.dp
     viewsAndReplies.setText(R.string.StoryViewerPageFragment__send_failed)
   }

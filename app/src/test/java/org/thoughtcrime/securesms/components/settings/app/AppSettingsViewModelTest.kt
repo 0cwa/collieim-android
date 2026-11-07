@@ -96,37 +96,10 @@ class AppSettingsViewModelTest {
     val state = createViewModel().state.value
 
     assertThat(state.profile).isEqualTo(profile.value)
-    assertThat(state.unreadPaymentsCount).isEqualTo(3)
+    assertThat(state.unreadPaymentsCount).isEqualTo(0)
     assertThat(state.isPrimaryDevice).isTrue()
-    assertThat(state.showPayments).isTrue()
+    assertThat(state.showPayments).isFalse()
     assertThat(state.allowUserToGoToDonationManagementScreen).isFalse()
-  }
-
-  @Test
-  fun `the fetched subscription decides whether donations can be managed`() = runTest(testDispatcher) {
-    coEvery { AppSettingsRepository.canManageDonations() } returns true
-
-    val state = createViewModel().state.value
-
-    assertThat(state.allowUserToGoToDonationManagementScreen).isTrue()
-  }
-
-  @Test
-  fun `a failed subscription fetch keeps the initial guess`() = runTest(testDispatcher) {
-    every { AppSettingsRepository.likelyCanManageDonations() } returns true
-
-    val state = createViewModel().state.value
-
-    assertThat(state.allowUserToGoToDonationManagementScreen).isTrue()
-  }
-
-  @Test
-  fun `unread payments update as they arrive`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    unreadPaymentsCount.value = 7
-
-    assertThat(viewModel.state.value.unreadPaymentsCount).isEqualTo(7)
   }
 
   @Test
@@ -165,6 +138,7 @@ class AppSettingsViewModelTest {
     viewModel.onEvent(AppSettingsEvent.NotificationsClicked)
     viewModel.onEvent(AppSettingsEvent.PrivacyClicked)
     viewModel.onEvent(AppSettingsEvent.BackupsClicked)
+    viewModel.onEvent(AppSettingsEvent.NetworkClicked)
     viewModel.onEvent(AppSettingsEvent.DataAndStorageClicked)
     viewModel.onEvent(AppSettingsEvent.AppUpdatesClicked)
     viewModel.onEvent(AppSettingsEvent.PaymentsClicked)
@@ -184,9 +158,9 @@ class AppSettingsViewModelTest {
       AppSettingsRoute.NotificationsRoute.Notifications,
       AppSettingsRoute.PrivacyRoute.Privacy,
       AppSettingsRoute.BackupsRoute.Backups(),
+      AppSettingsRoute.DataAndStorageRoute.Proxy,
       AppSettingsRoute.DataAndStorageRoute.DataAndStorage,
       AppSettingsRoute.AppUpdates,
-      AppSettingsRoute.Payments,
       AppSettingsRoute.HelpRoute.Settings(),
       AppSettingsRoute.Invite,
       AppSettingsRoute.LabsRoute.Labs,
@@ -195,19 +169,7 @@ class AppSettingsViewModelTest {
   }
 
   @Test
-  fun `DonateClicked opens donation management when the user can manage donations`() = runTest(testDispatcher) {
-    every { AppSettingsRepository.likelyCanManageDonations() } returns true
-    val viewModel = createViewModel()
-    val actions = collectActions(viewModel.actions)
-
-    viewModel.onEvent(AppSettingsEvent.DonateClicked)
-
-    assertThat(navigationEvents).containsExactly(AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.DonationsRoute.Donations(), replacesDetail = true))
-    assertThat(actions).isEmpty()
-  }
-
-  @Test
-  fun `DonateClicked opens the donate page when the user can't manage donations`() = runTest(testDispatcher) {
+  fun `DonateClicked opens the external donate page`() = runTest(testDispatcher) {
     val viewModel = createViewModel()
     val actions = collectActions(viewModel.actions)
 
@@ -218,33 +180,16 @@ class AppSettingsViewModelTest {
   }
 
   @Test
-  fun `DonateLongClicked copies the donor subscriber id`() = runTest(testDispatcher) {
+  fun `donation long press and payment action do not open checkout`() = runTest(testDispatcher) {
     val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
 
     viewModel.onEvent(AppSettingsEvent.DonateLongClicked)
+    viewModel.onEvent(AppSettingsEvent.PaymentsClicked)
 
-    coVerify { AppSettingsRepository.copySubscriberIdToClipboard(InAppPaymentSubscriberRecord.Type.DONATION) }
-    assertThat(viewModel.state.value.snackbar).isEqualTo(Snackbar.CopiedDonorSubscriberId)
-  }
-
-  @Test
-  fun `DonateLongClicked says nothing when there is no subscriber`() = runTest(testDispatcher) {
-    coEvery { AppSettingsRepository.copySubscriberIdToClipboard(any()) } returns false
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AppSettingsEvent.DonateLongClicked)
-
-    assertThat(viewModel.state.value.snackbar).isEqualTo(Snackbar.None)
-  }
-
-  @Test
-  fun `BackupsLongClicked copies the backups subscriber id on a primary device`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AppSettingsEvent.BackupsLongClicked)
-
-    coVerify { AppSettingsRepository.copySubscriberIdToClipboard(InAppPaymentSubscriberRecord.Type.BACKUP) }
-    assertThat(viewModel.state.value.snackbar).isEqualTo(Snackbar.CopiedBackupsSubscriberId)
+    coVerify(exactly = 0) { AppSettingsRepository.copySubscriberIdToClipboard(any()) }
+    assertThat(navigationEvents).isEmpty()
+    assertThat(actions).isEmpty()
   }
 
   @Test
@@ -255,16 +200,6 @@ class AppSettingsViewModelTest {
     viewModel.onEvent(AppSettingsEvent.BackupsLongClicked)
 
     coVerify(exactly = 0) { AppSettingsRepository.copySubscriberIdToClipboard(any()) }
-  }
-
-  @Test
-  fun `SnackbarDismissed clears the snackbar`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AppSettingsEvent.DonateLongClicked)
-    viewModel.onEvent(AppSettingsEvent.SnackbarDismissed)
-
-    assertThat(viewModel.state.value.snackbar).isEqualTo(Snackbar.None)
   }
 
   @Test

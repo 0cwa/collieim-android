@@ -19,6 +19,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -526,6 +527,15 @@ class PhoneNumberEntryViewModelTest {
   // ==================== Trunk Prefix Normalization Tests ====================
 
   @Test
+  fun `entering a number and opening confirmation leave networking disabled`() = runTest {
+    val initialState = PhoneNumberEntryState(countryCode = "1", nationalNumber = "2025550123")
+
+    viewModel.applyEvent(initialState, PhoneNumberEntryScreenEvents.NextClicked, parentEventEmitter, stateEmitter)
+
+    verify(exactly = 0) { mockRepository.enableNetworkForRegistration() }
+  }
+
+  @Test
   fun `NextClicked strips a redundant leading trunk prefix before showing the confirmation dialog`() = runTest {
     // Dutch users habitually type their number with the leading national '0' (e.g. 0612345678), which must not end
     // up in the E164 (+31612345678, not +310612345678).
@@ -584,6 +594,7 @@ class PhoneNumberEntryViewModelTest {
 
     viewModel.applyEvent(initialState, PhoneNumberEntryScreenEvents.PhoneNumberConfirmed, parentEventEmitter, stateEmitter)
 
+    verify(exactly = 1) { mockRepository.enableNetworkForRegistration() }
     coVerify(exactly = 1) { mockRepository.createSession("+31612345678") }
     assertThat(emittedStates.last().nationalNumber).isEqualTo("612345678")
     assertThat(emittedEvents.filterIsInstance<RegistrationFlowEvent.E164Chosen>())

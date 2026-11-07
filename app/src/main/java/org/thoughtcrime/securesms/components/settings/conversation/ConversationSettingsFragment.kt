@@ -31,17 +31,14 @@ import org.signal.core.ui.permissions.Permissions
 import org.signal.core.util.getParcelableArrayListExtraCompat
 import org.signal.core.util.logging.Log
 import org.signal.core.util.requireParcelableCompat
-import org.signal.donations.InAppPaymentType
 import org.signal.uicomponents.recentmediarail.RecentMediaRailEvents
 import org.thoughtcrime.securesms.AvatarPreviewActivity
 import org.thoughtcrime.securesms.BlockUnblockDialog
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.PushContactSelectionActivity
 import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.badges.view.ViewBadgeBottomSheetDialogFragment
 import org.thoughtcrime.securesms.calls.YouAreAlreadyInACallSnackbar
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.CheckoutFlowActivity
 import org.thoughtcrime.securesms.components.settings.conversation.group.GroupSettingsEvent
 import org.thoughtcrime.securesms.components.settings.conversation.group.GroupSettingsScreen
 import org.thoughtcrime.securesms.components.settings.conversation.group.GroupSettingsViewModel
@@ -331,9 +328,7 @@ class ConversationSettingsFragment : ComposeFragment() {
           onViewAvatar = { startActivity(viewAvatarIntent, transitionBundle) }
         )
       }
-      is ConversationSettingsAction.ShowBadgeSheet -> {
-        ViewBadgeBottomSheetDialogFragment.show(parentFragmentManager, action.recipientId, action.badge)
-      }
+      is ConversationSettingsAction.ShowBadgeSheet -> Unit
       is ConversationSettingsAction.ShowAboutSheet -> {
         AboutSheet.create(action.recipient).show(parentFragmentManager, null)
       }
@@ -446,9 +441,7 @@ class ConversationSettingsFragment : ComposeFragment() {
       ConversationSettingsAction.OpenContactUs -> {
         startActivity(AppSettingsActivity.help(requireContext()))
       }
-      ConversationSettingsAction.OpenDonate -> {
-        startActivity(CheckoutFlowActivity.createIntent(requireContext(), InAppPaymentType.ONE_TIME_DONATION))
-      }
+      ConversationSettingsAction.OpenDonate -> Unit
       is ConversationSettingsAction.AddToAGroup -> {
         startActivity(AddToGroupsActivity.createIntent(requireContext(), action.recipientId, action.groupMembership))
       }

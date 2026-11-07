@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="core_ultramarine">#2c6bed</color>
-    <color name="core_ultramarine_light">#6191f3</color>
-    <color name="core_ultramarine_dark">#1851b4</color>
-    <color name="core_ultramarine_icon">#3a76f0</color>
-    <color name="core_ultramarine_33">#552c6bed</color>
-    <color name="core_ultramarine_50">#802c6bed</color>
+    <!-- Collie accents used for filled controls with legible dark foregrounds. -->
+    <color name="collie_red">#D85B09</color>
+    <color name="collie_bark_black">#24130D</color>
+    <color name="core_ultramarine">#96390C</color>
+    <color name="core_ultramarine_light">#F2982B</color>
+    <color name="core_ultramarine_dark">#6F270F</color>
+    <color name="core_ultramarine_icon">#D85B09</color>
+    <color name="core_ultramarine_icon_dark">#6F270F</color>
+    <color name="core_ultramarine_33">#5596390C</color>
+    <color name="core_ultramarine_50">#8096390C</color>
 
-    <color name="core_green">#4caf50</color>
+    <color name="core_green">#4caf50</color>            <!-- green_500 -->
     <color name="core_yellow">#ffd624</color>
-    <color name="core_red">#f44336</color>
+    <color name="core_red">#f44336</color>              <!-- red_500 -->
     <color name="core_red_50">#80f44336</color>
-    <color name="core_red_highlight">#ef5350</color>
+    <color name="core_red_highlight">#ef5350</color>    <!-- red_400 -->
     <color name="core_red_highlight_50">#80ef5350</color>
     <color name="core_red_shade">#e51d0e</color>
 

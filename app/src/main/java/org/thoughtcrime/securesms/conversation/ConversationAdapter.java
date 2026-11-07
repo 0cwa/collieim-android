@@ -375,7 +375,7 @@ public class ConversationAdapter
     if (hasWallpaper && ThemeUtil.isDarkTheme(context)) {
       viewHolder.setTextColor(ContextCompat.getColor(context, org.signal.core.ui.R.color.signal_colorNeutralInverse));
     } else {
-      viewHolder.setTextColor(ContextCompat.getColor(context, org.signal.core.ui.R.color.signal_colorOnSurfaceVariant));
+      viewHolder.setTextColor(ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorOnSurfaceVariant));
     }
   }
 

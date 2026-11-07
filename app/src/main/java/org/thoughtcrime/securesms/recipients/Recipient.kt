@@ -15,6 +15,7 @@ import org.signal.core.models.badges.Badge
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.fonts.SignalSymbols
 import org.signal.core.ui.util.SpanUtil
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.ui.util.ViewUtil
 import org.signal.core.util.BidiUtil
 import org.signal.core.util.UsernameUtil.isValidUsernameForSearch
@@ -441,7 +442,7 @@ class Recipient(
 
   /** The chat color to use when the "automatic" chat color setting is active, which derives a color from the wallpaper. */
   private val autoChatColor: ChatColors
-    get() = wallpaper?.autoChatColors ?: ChatColorsPalette.Bubbles.default.withId(Auto)
+    get() = wallpaper?.autoChatColors ?: ChatColorsPalette.Bubbles.autoDefault
 
   /** A fully resolved copy of this recipient, if needed. */
   private val resolved: Recipient
@@ -739,7 +740,7 @@ class Recipient(
 
       if (isIndividual && !isSelf) {
         val isLtr = ViewUtil.isLtr(context)
-        val chevronGlyph = SignalSymbols.getSpannedString(context, SignalSymbols.Weight.BOLD, if (isLtr) SignalSymbols.Glyph.CHEVRON_RIGHT else SignalSymbols.Glyph.CHEVRON_LEFT, CoreUiR.color.signal_colorOutline)
+        val chevronGlyph = SignalSymbols.getSpannedString(context, SignalSymbols.Weight.BOLD, if (isLtr) SignalSymbols.Glyph.CHEVRON_RIGHT else SignalSymbols.Glyph.CHEVRON_LEFT, ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorOutline))
           .let { SpanUtil.ofSize(it, 24) }
 
         if (isLtr) {

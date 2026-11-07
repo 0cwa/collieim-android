@@ -162,12 +162,21 @@ class MediaCaptureViewModelTest {
       .containsExactly(MediaCaptureMode.VIDEO, MediaCaptureMode.PHOTO, MediaCaptureMode.TEXT_STORY)
   }
 
+  /**
+   * Molly's minSdk (27) is above the first release that can transcode video (26), so no device the app installs on is
+   * unable to record. The withheld-video state is therefore checked on [MediaCaptureState] rather than by running the view
+   * model on a pre-26 Robolectric SDK, which the manifest's minSdk rules out.
+   */
   @Test
-  @Config(sdk = [25])
-  fun `Given a device that cannot record, when created, then video is withheld`() = runTest {
-    val viewModel = createViewModel(cameraFirstStoryCapableState())
+  fun `Given a state that cannot record, then video is withheld`() {
+    val state = MediaCaptureState(
+      isCameraFirst = true,
+      storiesEnabled = true,
+      mode = MediaSendFlowActivityContract.Mode.ChooseAfterMediaSelection,
+      isVideoCaptureSupported = false
+    )
 
-    assertThat(viewModel.state.value.availableCaptureModes)
+    assertThat(state.availableCaptureModes)
       .containsExactly(MediaCaptureMode.PHOTO, MediaCaptureMode.TEXT_STORY)
   }
 

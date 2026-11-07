@@ -12,7 +12,7 @@ object ChatColorsPalette {
     // region Default
 
     @JvmField
-    val ULTRAMARINE = ChatColors.forColor(
+    val INDIGO = ChatColors.forColor(
       ChatColors.Id.BuiltIn,
       0xFF315FF4.toInt()
     )
@@ -43,7 +43,7 @@ object ChatColorsPalette {
     val BLUE = ChatColors.forColor(ChatColors.Id.BuiltIn, 0xFF336BA3.toInt())
 
     @JvmField
-    val INDIGO = ChatColors.forColor(ChatColors.Id.BuiltIn, 0xFF6058CA.toInt())
+    val ULTRAMARINE = ChatColors.forColor(ChatColors.Id.BuiltIn, 0xFF6448E5.toInt())
 
     @JvmField
     val VIOLET = ChatColors.forColor(ChatColors.Id.BuiltIn, 0xFF9932CB.toInt())
@@ -68,11 +68,12 @@ object ChatColorsPalette {
     // region Gradients
 
     @JvmField
+    // Keep Molly's ultramarine appearance while retaining Ember's backup identity.
     val EMBER = ChatColors.forGradient(
       ChatColors.Id.BuiltIn,
       ChatColors.LinearGradient(
         168f,
-        intArrayOf(0xFFE57C00.toInt(), 0xFF5E0000.toInt()),
+        intArrayOf(0xFF6448E5.toInt(), 0xFF6448E5.toInt()),
         floatArrayOf(0f, 1f)
       )
     )
@@ -164,6 +165,10 @@ object ChatColorsPalette {
 
     @JvmStatic
     val default = ULTRAMARINE
+
+    // Automatic chats without wallpaper use Collie Redwood; explicit presets stay unchanged.
+    @JvmStatic
+    val autoDefault = ChatColors.forColor(ChatColors.Id.Auto, 0xFF6F270F.toInt())
 
     /*
      * If updating this list of colors, make sure to update the backup import/export colors as well.

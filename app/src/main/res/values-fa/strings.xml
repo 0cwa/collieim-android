@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -3722,7 +3719,7 @@
     <string name="preferences__led_color_unknown">ناشناخته</string>
     <string name="preferences__silent">بی‌صدا</string>
     <string name="preferences__advanced">پیشرفته</string>
-    <string name="preferences__donate_to_signal">اهدای کمک مالی به سیگنال</string>
+    <string name="preferences__donate_to_signal">اهدای کمک مالی به مولی</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">استوری‌ها</string>
     <string name="preferences__payments">پرداخت‌ها</string>
@@ -4310,7 +4307,7 @@
     <string name="BackupDialog_passphrase_was_not_correct">گذرواژه نادرست بود</string>
     <string name="LocalBackupJob_creating_signal_backup">در حال ایجاد پشتیبان سیگنال…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">در حال تایید پشتیبان Signal…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">در حال تایید پشتیبان Collie…</string>
     <string name="LocalBackupJobApi29_backup_failed">پشتیبان‌گیری ناموفق بود</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">آدرس ذخیره‌سازی پشتیبان شما پاک شده یا به جای دیگری انتقال یافته است.</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">حجم فایل پشتیبان شما برای نگهداری در این محل زیاد است.</string>

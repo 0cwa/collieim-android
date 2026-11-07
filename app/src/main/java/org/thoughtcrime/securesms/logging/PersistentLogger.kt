@@ -2,9 +2,9 @@ package org.thoughtcrime.securesms.logging
 
 import android.app.Application
 import android.os.Looper
+import im.molly.app.base.ApkInfo
 import org.signal.core.util.logging.Log
 import org.signal.core.util.logging.Scrubber
-import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.database.LogDatabase
 import org.thoughtcrime.securesms.database.model.LogEntry
 import org.thoughtcrime.securesms.logging.PersistentLogger.LogRequest
@@ -83,6 +83,12 @@ class PersistentLogger private constructor(application: Application) : Log.Logge
 
   override fun flush() {
     logEntries.blockForFlushed()
+  }
+
+  override fun clear() {
+    logDatabase.logs.clearAll()
+    logDatabase.crashes.clear()
+    logDatabase.anrs.clear()
   }
 
   private fun write(level: String, tag: String?, message: String?, t: Throwable?, keepLonger: Boolean) {
@@ -167,7 +173,8 @@ class PersistentLogger private constructor(application: Application) : Log.Logge
     }
 
     fun formatBody(threadString: String, date: Date, level: String, tag: String, message: String?): String {
-      return "[${BuildConfig.VERSION_NAME}] [$threadString] ${dateFormat.format(date)} $level $tag: ${Scrubber.scrub(message ?: "")}"
+      val redacted = if (Log.alwaysRedact) message ?: "" else Scrubber.scrub(message ?: "")
+      return "[${ApkInfo.versionName}] [$threadString] ${dateFormat.format(date)} $level $tag: $redacted"
     }
   }
 

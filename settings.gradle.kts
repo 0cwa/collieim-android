@@ -1,76 +1,66 @@
-val localProps = java.util.Properties().also { props ->
-  val localPropsFile = file("local.properties")
-  if (localPropsFile.exists()) {
-    localPropsFile.inputStream().use { props.load(it) }
-  }
-}
-
-fun optionalBuildCacheValue(envKey: String, localKey: String): String? {
-  return System.getenv(envKey)?.takeIf { it.isNotBlank() }
-    ?: localProps.getProperty(localKey)?.takeIf { it.isNotBlank() }
-}
-
-val remoteBuildCacheUrl: String? = optionalBuildCacheValue("SIGNAL_BUILD_CACHE_URL", "signal.build.cache.url")
-val remoteBuildCacheUser: String? = optionalBuildCacheValue("SIGNAL_BUILD_CACHE_USER", "signal.build.cache.user")
-val remoteBuildCachePassword: String? = optionalBuildCacheValue("SIGNAL_BUILD_CACHE_PASSWORD", "signal.build.cache.password")
-
-buildCache {
-  if (remoteBuildCacheUrl != null) {
-    remote<HttpBuildCache> {
-      url = uri(remoteBuildCacheUrl)
-      isPush = System.getenv("SIGNAL_BUILD_CACHE_PUSH") == "true"
-      if (remoteBuildCacheUser != null && remoteBuildCachePassword != null) {
-        credentials {
-          username = remoteBuildCacheUser
-          password = remoteBuildCachePassword
-        }
-      }
-    }
-  }
-}
-
 pluginManagement {
   repositories {
-    google()
+    google {
+      content {
+        includeGroupByRegex("(com\\.(android|google)|androidx?)(\\..*)?")
+      }
+    }
     mavenCentral()
-    gradlePluginPortal()
   }
   includeBuild("build-logic")
 }
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
-    google()
-    mavenCentral()
-    mavenLocal()
+    // Collie native repository: reviewed source input, NOT PUBLISHED.
+    exclusiveContent {
+      forRepository {
+        maven {
+          name = "CollieNativeInputs"
+          url = uri("https://repo.collie.im/native-inputs/v1/maven/")
+          metadataSources { mavenPom(); ignoreGradleMetadataRedirection() }
+        }
+      }
+      filter {
+        includeModule("im.collie.native", "libsignal-android")
+        includeModule("im.collie.native", "libsignal-client")
+        includeModule("im.collie.native", "ringrtc-android")
+      }
+    }
+    google {
+      content {
+        includeGroupByRegex("(com\\.(android|google)|androidx?)(\\..*)?")
+      }
+    }
+    maven {
+      url = uri("https://dl.cloudsmith.io/public/mollyim/ringrtc/maven/")
+      content {
+        includeModule("im.molly", "ringrtc-android")
+      }
+    }
+    maven {
+      url = uri("https://dl.cloudsmith.io/public/mollyim/libsignal/maven/")
+      content {
+        includeModule("im.molly", "libsignal-client")
+        includeModule("im.molly", "libsignal-android")
+      }
+    }
     maven {
       url = uri("https://raw.githubusercontent.com/signalapp/maven/master/sqlcipher/release/")
       content {
-        includeGroupByRegex("org\\.signal.*")
+        includeModule("org.signal", "sqlcipher-android")
       }
     }
     maven {
       url = uri("https://raw.githubusercontent.com/signalapp/maven/master/aesgcmprovider/release/")
       content {
-        includeGroupByRegex("org\\.signal.*")
+        includeModule("org.signal", "aesgcmprovider")
       }
     }
-    maven {
-      url = uri("https://dl.cloudsmith.io/qxAgwaeEE1vN8aLU/mobilecoin/mobilecoin/maven/")
-    }
-    maven {
-      name = "SignalBuildArtifacts"
-      url = uri("https://build-artifacts.signal.org/libraries/maven/")
-      content {
-        includeGroupByRegex("org\\.signal.*")
-      }
-    }
+    mavenCentral()
   }
   versionCatalogs {
     // libs.versions.toml is automatically registered.
-    create("benchmarkLibs") {
-      from(files("gradle/benchmark-libs.versions.toml"))
-    }
     create("testLibs") {
       from(files("gradle/test-libs.versions.toml"))
     }
@@ -80,17 +70,7 @@ dependencyResolutionManagement {
   }
 }
 
-// To build libsignal from source, set the libsignalClientPath property in gradle.properties.
-val libsignalClientPath = if (extra.has("libsignalClientPath")) extra.get("libsignalClientPath") else null
-if (libsignalClientPath is String) {
-  includeBuild(rootDir.resolve(libsignalClientPath + "/java")) {
-    name = "libsignal-client"
-    dependencySubstitution {
-      substitute(module("org.signal:libsignal-client")).using(project(":client"))
-      substitute(module("org.signal:libsignal-android")).using(project(":android"))
-    }
-  }
-}
+// Native inputs use the pinned public repository; no external source includeBuild.
 
 // Main app
 include(":app")
@@ -103,19 +83,25 @@ include(":core:ui")
 include(":core:serialization")
 include(":core:database")
 
+// FOSS GMS modules
+include(":core-gms:base")
+include(":core-gms:cloud-messaging")
+include(":core-gms:safeparcel")
+include(":core-gms:safeparcel-processor")
+include(":core-gms:tasks")
+
 // Lib modules
 include(":lib:libsignal-service")
+include(":lib:netcipher")
 include(":lib:network")
 include(":lib:glide")
 include(":lib:photoview")
 include(":lib:sticky-header-grid")
-include(":lib:billing")
 include(":lib:paging")
 include(":lib:device-transfer")
 include(":lib:donations")
 include(":lib:contacts")
 include(":lib:qr")
-include(":lib:spinner")
 include(":lib:video")
 include(":lib:image-editor")
 include(":lib:debuglogs-viewer")
@@ -138,30 +124,9 @@ include(":feature:chat-settings")
 include(":feature:media-keyboard")
 include(":feature:media-viewer")
 
-// Demo apps
-include(":demo:paging")
-include(":demo:device-transfer")
-include(":demo:donations")
-include(":demo:contacts")
-include(":demo:qr")
-include(":demo:spinner")
-include(":demo:video")
-include(":demo:image-editor")
-include(":demo:debuglogs-viewer")
-include(":demo:registration")
-include(":demo:camera")
-include(":demo:media-keyboard")
-include(":demo:apng")
-include(":demo:list-detail")
-
 // Testing/Lint modules
+include(":screener")
 include(":lintchecks")
 include(":fast-lint")
-include(":screener")
-include(":benchmark")
-include(":baseline-profile")
-include(":microbenchmark")
-// App project name
-project(":app").name = "Signal-Android"
 
-rootProject.name = "Signal"
+rootProject.name = "Molly"

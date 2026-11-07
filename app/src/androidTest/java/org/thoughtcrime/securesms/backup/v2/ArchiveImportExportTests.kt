@@ -14,7 +14,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.archive.proto.Frame
+import org.signal.archive.proto.SimpleChatUpdate
 import org.signal.archive.stream.PlainTextBackupReader
+import org.signal.archive.stream.PlainTextBackupWriter
 import org.signal.core.models.ServiceId
 import org.signal.core.util.Base64
 import org.signal.core.util.logging.Log
@@ -26,6 +28,7 @@ import org.signal.storage.keyvalue.KeyValueDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.util.UUID
 
 @RunWith(AndroidJUnit4::class)
@@ -43,12 +46,18 @@ class ArchiveImportExportTests {
 
   @Before
   fun setup() {
-    AppDependencies.jobManager.shutdown()
+    AppDependencies.jobManager.shutdown(10_000)
   }
 
-  @Test
-  fun all() {
-    runTests()
+  // Each fixture maps to exactly one shard. Separate instrumentation processes keep
+  // the complete corpus below the runner's per-test connection timeout.
+  @Test fun shard0() = runShard(0)
+  @Test fun shard1() = runShard(1)
+  @Test fun shard2() = runShard(2)
+  @Test fun shard3() = runShard(3)
+
+  private fun runShard(shard: Int) {
+    runTests { Math.floorMod(it.hashCode(), 4) == shard }
   }
 
 //  @Test
@@ -273,6 +282,7 @@ class ArchiveImportExportTests {
 
   private fun runTests(predicate: (String) -> Boolean = { true }) {
     val testFiles = InstrumentationRegistry.getInstrumentation().context.resources.assets.list(TESTS_FOLDER)!!.filter(predicate)
+    check(testFiles.isNotEmpty()) { "No backup fixtures found for this test" }
     val results: MutableList<TestResult> = mutableListOf()
 
     Log.d(TAG, "About to run ${testFiles.size} tests.")
@@ -299,6 +309,10 @@ class ArchiveImportExportTests {
         Log.e(TAG, "----------------------------------")
       }
 
+    val expectedPaymentLosses = results.filterIsInstance<TestResult.Success>().filter { it.unsupportedPaymentRecords > 0 }
+    Log.i(TAG, "Expected unsupported payment history: ${expectedPaymentLosses.size} fixtures, ${expectedPaymentLosses.sumOf { it.unsupportedPaymentRecords }} records")
+    expectedPaymentLosses.forEach { Log.i(TAG, "Expected unsupported payment history: ${it.name} (${it.unsupportedPaymentRecords} records)") }
+
     if (results.any { it is TestResult.Failure }) {
       val successCount = results.count { it is TestResult.Success }
       val failingTestNames = results.filterIsInstance<TestResult.Failure>().joinToString(separator = "\n") { "  \uD83D\uDD34 ${it.name}" }
@@ -323,7 +337,7 @@ class ArchiveImportExportTests {
     val generatedBackupData = BackupRepository.exportInMemoryForTests(plaintext = true, currentTime = success.backupTime)
     checkEquivalent(filename, inputFileBytes, generatedBackupData)?.let { return it }
 
-    return TestResult.Success(filename)
+    return TestResult.Success(filename, inputFileBytes.toFrames().count { it.isUnsupportedPaymentRecord() })
   }
 
   private fun resetAllData() {
@@ -331,6 +345,8 @@ class ArchiveImportExportTests {
 
     KeyValueDatabase.getInstance(AppDependencies.application).clear()
     SignalStore.resetCache()
+    // Fixture comparisons do not need to upload debug logs.
+    SignalStore.internal.includeDebuglogInBackup = false
 
     SignalStore.account.resetAccountEntropyPool()
     SignalStore.account.setE164(SELF_E164)
@@ -371,7 +387,43 @@ class ArchiveImportExportTests {
 //      return TestResult.Failure(testName, "Imported backup contains unknown fields: ${importComparable.unknownFieldMessages.contentToString()}")
 //    }
 
-    val canonicalImport = importComparable.comparableString
+    // Molly's passphrase lock is device-local and does not restore Signal's screen-lock timeout.
+    // Check that the exported backup omits it, then remove only that field from the expected backup.
+    val importFrames = import.toFrames()
+    val hasScreenLockTimeout = importFrames.any { it.account?.accountSettings?.screenLockTimeoutMinutes != null }
+    val hasUnsupportedPaymentRecords = importFrames.any { it.isUnsupportedPaymentRecord() }
+    val canonicalImport = if (hasScreenLockTimeout || hasUnsupportedPaymentRecords) {
+      val exportFrames = export.toFrames()
+      if (hasScreenLockTimeout && exportFrames.any { it.account?.accountSettings?.screenLockTimeoutMinutes != null }) {
+        return TestResult.Failure(testName, "Export unexpectedly retained the device-local screen-lock timeout")
+      }
+      if (hasUnsupportedPaymentRecords && exportFrames.any { it.isUnsupportedPaymentRecord() }) {
+        return TestResult.Failure(testName, "Export unexpectedly retained unsupported payment history")
+      }
+      val normalized = ByteArrayOutputStream()
+      PlainTextBackupReader(import.inputStream(), import.size.toLong()).use { reader ->
+        PlainTextBackupWriter(normalized).use { writer ->
+          writer.write(requireNotNull(reader.backupInfo))
+          for (frame in reader) {
+            // Molly does not support Signal payments: these exact history records are omitted.
+            if (frame.isUnsupportedPaymentRecord()) continue
+            val account = frame.account
+            val settings = account?.accountSettings
+            writer.write(
+              if (account != null && settings?.screenLockTimeoutMinutes != null) {
+                frame.copy(account = account.copy(accountSettings = settings.copy(screenLockTimeoutMinutes = null)))
+              } else {
+                frame
+              }
+            )
+          }
+        }
+      }
+      val expected = normalized.toByteArray()
+      ComparableBackup.readUnencrypted(MessageBackup.Purpose.REMOTE_BACKUP, expected.inputStream(), expected.size.toLong()).comparableString
+    } else {
+      importComparable.comparableString
+    }
     val canonicalExport = exportComparable.comparableString
 
     if (canonicalImport != canonicalExport) {
@@ -405,8 +457,16 @@ class ArchiveImportExportTests {
     return PlainTextBackupReader(this.inputStream(), this.size.toLong()).use { it.asSequence().toList() }
   }
 
+  private fun Frame.isUnsupportedPaymentRecord(): Boolean {
+    val item = chatItem ?: return false
+    return item.paymentNotification != null || item.updateMessage?.simpleUpdate?.type in setOf(
+      SimpleChatUpdate.Type.PAYMENTS_ACTIVATED,
+      SimpleChatUpdate.Type.PAYMENT_ACTIVATION_REQUEST
+    )
+  }
+
   private sealed class TestResult(val name: String) {
-    class Success(name: String) : TestResult(name)
+    class Success(name: String, val unsupportedPaymentRecords: Int) : TestResult(name)
     class Failure(name: String, val message: String) : TestResult(name)
   }
 }

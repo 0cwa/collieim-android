@@ -745,8 +745,7 @@ class AppRegistrationStorageControllerTest {
 
   /** Puts onboarding into the state a fresh install leaves it in, where the get-started megaphone would show. */
   private fun seedOnboardingState() {
-    SignalStore.onboarding.setShowNewGroup(true)
-    SignalStore.onboarding.setShowInviteFriends(true)
+    SignalStore.onboarding.setShowStories(true)
     SignalStore.onboarding.setShowAppearance(true)
     SignalStore.onboarding.setShowAddPhoto(true)
   }

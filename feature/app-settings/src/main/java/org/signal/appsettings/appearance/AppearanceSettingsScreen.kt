@@ -43,6 +43,7 @@ import org.signal.core.ui.compose.Rows
 import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.compose.SignalPreviewWrapper
+import org.signal.core.ui.compose.Texts
 import org.signal.core.ui.compose.horizontalGutters
 import org.signal.core.ui.compose.theme.SignalTheme
 
@@ -104,6 +105,17 @@ fun AppearanceSettingsScreen(
         )
       }
 
+      if (state.isDynamicColorsAvailable) {
+        item {
+          Rows.ToggleRow(
+            text = stringResource(R.string.preferences_appearance__dynamic_colors),
+            label = stringResource(R.string.preferences_appearance__use_system_colors_for_the_app_theme),
+            checked = state.dynamicColors,
+            onCheckChanged = { onEvent(AppearanceSettingsEvent.DynamicColorsChanged(it)) }
+          )
+        }
+      }
+
       item {
         Rows.TextRow(
           text = stringResource(R.string.preferences__chat_color_and_wallpaper),
@@ -131,6 +143,10 @@ fun AppearanceSettingsScreen(
           onSelected = { onEvent(AppearanceSettingsEvent.MessageFontSizeSelected(it.toInt())) },
           modifier = Modifier.testTag(AppearanceSettingsTestTags.ROW_MESSAGE_FONT_SIZE)
         )
+      }
+
+      item {
+        Texts.SectionHeader(stringResource(R.string.preferences_appearance__navigation_bar))
       }
 
       item {

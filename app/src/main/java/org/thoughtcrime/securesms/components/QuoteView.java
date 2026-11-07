@@ -346,7 +346,7 @@ public class QuoteView extends ConstraintLayout implements RecipientForeverObser
           bodyView.setText("");
         }
       } else if (quoteType == QuoteModel.Type.POLL) {
-        CharSequence glyph = SignalSymbols.getSpannedString(getContext(), SignalSymbols.Weight.REGULAR, SignalSymbols.Glyph.POLL, -1);
+        CharSequence glyph = SignalSymbols.getSpannedString(getContext(), SignalSymbols.Weight.REGULAR, SignalSymbols.Glyph.POLL, null);
         // TODO(michelle): Update with RTL poll icon
         SpannableStringBuilder builder = new SpannableStringBuilder()
             .append(glyph)

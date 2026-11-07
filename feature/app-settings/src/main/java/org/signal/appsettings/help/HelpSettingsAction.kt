@@ -13,6 +13,10 @@ package org.signal.appsettings.help
  */
 sealed interface HelpSettingsAction {
 
+  data object OpenWebsite : HelpSettingsAction
+  data object NavigateToAppUpdates : HelpSettingsAction
+  data class SetLogEnabled(val enabled: Boolean) : HelpSettingsAction
+
   /** Leave the screen. */
   data object NavigateBack : HelpSettingsAction
 

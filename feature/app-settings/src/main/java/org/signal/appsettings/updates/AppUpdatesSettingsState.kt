@@ -15,8 +15,10 @@ import kotlin.time.Duration
 data class AppUpdatesSettingsState(
   /** When we last successfully checked for an update, or [Duration.ZERO] if we never have. */
   val lastCheckedTime: Duration = Duration.ZERO,
-  /** Whether updates are downloaded and installed without asking. */
+  /** Whether Molly periodically checks for updates and asks before installing. */
   val autoUpdateEnabled: Boolean = false,
-  /** Whether this device can install updates without user interaction, which is what makes automatic updates possible. */
-  val isAutoUpdateSupported: Boolean = false
+  /** Whether this build manages its own updates instead of relying on an app store. */
+  val isAutoUpdateSupported: Boolean = false,
+  val includeBetaEnabled: Boolean = false,
+  val versionName: String = ""
 )

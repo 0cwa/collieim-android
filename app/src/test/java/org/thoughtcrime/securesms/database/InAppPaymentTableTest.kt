@@ -73,6 +73,28 @@ class InAppPaymentTableTest {
     assertThat(paymentAfterUpdate?.state).isEqualTo(InAppPaymentTable.State.PENDING)
   }
 
+  @Test
+  fun `donation management detects every in-flight one-time donation`() {
+    val states = listOf(
+      InAppPaymentTable.State.PENDING,
+      InAppPaymentTable.State.TRANSACTING,
+      InAppPaymentTable.State.REQUIRES_ACTION,
+      InAppPaymentTable.State.REQUIRED_ACTION_COMPLETED,
+      InAppPaymentTable.State.WAITING_FOR_AUTHORIZATION
+    )
+    states.forEach { state ->
+      SignalDatabase.inAppPayments.writableDatabase.deleteAll(InAppPaymentTable.TABLE_NAME)
+      insertPayment(InAppPaymentType.ONE_TIME_DONATION, false, state, InAppPaymentData())
+      assertThat(SignalDatabase.inAppPayments.hasDonationInProgress()).isTrue()
+    }
+  }
+
+  @Test
+  fun `backup payments alone do not expose donation management`() {
+    insertBackup(notified = false, state = InAppPaymentTable.State.WAITING_FOR_AUTHORIZATION)
+    assertThat(SignalDatabase.inAppPayments.hasDonationInProgress()).isFalse()
+  }
+
   // region getLatestInAppPaymentByType
 
   @Test

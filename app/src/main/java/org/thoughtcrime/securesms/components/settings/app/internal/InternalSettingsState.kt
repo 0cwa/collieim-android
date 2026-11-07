@@ -5,7 +5,6 @@ import org.signal.ringrtc.CallManager
 
 data class InternalSettingsState(
   val seeMoreUserDetails: Boolean,
-  val shakeToReport: Boolean,
   val showArchiveStateHint: Boolean,
   val gv2forceInvites: Boolean,
   val gv2ignoreP2PChanges: Boolean,
@@ -33,7 +32,6 @@ data class InternalSettingsState(
   val delayResends: Boolean,
   val disableStorageService: Boolean,
   val canClearOnboardingState: Boolean,
-  val pnpInitialized: Boolean,
   val useConversationItemV2ForMedia: Boolean,
   val hasPendingOneTimeDonation: Boolean,
   val disableInternalUser: Boolean,

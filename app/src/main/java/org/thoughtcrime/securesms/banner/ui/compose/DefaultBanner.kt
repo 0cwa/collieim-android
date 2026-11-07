@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.SignalIcons
+import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.util.isNotNullOrBlank
 import org.thoughtcrime.securesms.R
 import org.signal.core.ui.R as CoreUiR
@@ -64,7 +65,7 @@ fun DefaultBanner(
       .clip(RoundedCornerShape(24.dp))
       .background(
         color = when (importance) {
-          Importance.NORMAL -> colorResource(CoreUiR.color.signal_colorSurface2)
+          Importance.NORMAL -> SignalTheme.colors.colorSurface2
           Importance.ERROR -> colorResource(id = R.color.reminder_background)
         }
       )
@@ -149,7 +150,7 @@ fun DefaultBanner(
                   contentDescription = stringResource(id = R.string.DefaultBanner__cancel),
                   tint = when (importance) {
                     Importance.NORMAL -> MaterialTheme.colorScheme.onSurfaceVariant
-                    Importance.ERROR -> colorResource(id = CoreUiR.color.signal_colorOnSurface)
+                    Importance.ERROR -> MaterialTheme.colorScheme.onSurface
                   }
                 )
               }
@@ -167,7 +168,7 @@ fun DefaultBanner(
               onClick = action.onClick,
               colors = when (importance) {
                 Importance.NORMAL -> ButtonDefaults.textButtonColors(
-                  containerColor = colorResource(CoreUiR.color.signal_colorSurface5),
+                  containerColor = SignalTheme.colors.colorSurface5,
                   contentColor = MaterialTheme.colorScheme.onSurface
                 )
                 Importance.ERROR -> ButtonDefaults.textButtonColors(

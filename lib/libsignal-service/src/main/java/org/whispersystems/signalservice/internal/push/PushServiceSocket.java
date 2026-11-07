@@ -64,12 +64,9 @@ import org.whispersystems.signalservice.api.push.exceptions.SubmitVerificationCo
 import org.whispersystems.signalservice.api.push.exceptions.TokenNotAcceptedException;
 import org.whispersystems.signalservice.api.push.exceptions.UnregisteredUserException;
 import org.whispersystems.signalservice.api.registration.RestoreMethodBody;
-import org.whispersystems.signalservice.api.svr.Svr3Credentials;
 import org.whispersystems.signalservice.api.util.CredentialsProvider;
 import org.signal.network.util.Tls12SocketFactory;
-import org.signal.network.util.TlsProxySocketFactory;
 import org.signal.network.config.SignalCdnUrl;
-import org.signal.network.config.SignalProxy;
 import org.signal.network.config.SignalServiceConfiguration;
 import org.signal.network.config.SignalUrl;
 import org.signal.network.crypto.SealedSenderAccess;
@@ -80,6 +77,7 @@ import org.whispersystems.signalservice.internal.push.exceptions.GroupNotFoundEx
 import org.whispersystems.signalservice.internal.push.exceptions.GroupPatchNotAcceptedException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupTerminatedException;
 import org.whispersystems.signalservice.internal.push.exceptions.MismatchedDevicesException;
+import org.whispersystems.signalservice.internal.push.exceptions.MissingCapabilitiesException;
 import org.whispersystems.signalservice.internal.push.exceptions.NotInGroupException;
 import org.whispersystems.signalservice.internal.push.exceptions.StaleDevicesException;
 import org.whispersystems.signalservice.internal.push.http.CancelationSignal;
@@ -102,6 +100,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.ProxySelector;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -125,6 +124,7 @@ import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -182,6 +182,8 @@ public class PushServiceSocket {
 
   private static final String ARCHIVE_MEDIA_DOWNLOAD_PATH = "backups/%s/%s";
 
+  private static final String DEVICE_LINK_PATH = "/v1/devices/link";
+
   private static final Map<String, String> NO_HEADERS                         = Collections.emptyMap();
   private static final ResponseCodeHandler NO_HANDLER                         = new EmptyResponseCodeHandler();
   private static final ResponseCodeHandler UNOPINIONATED_HANDLER              = new UnopinionatedResponseCodeHandler();
@@ -229,12 +231,12 @@ public class PushServiceSocket {
     this.credentialsProvider       = credentialsProvider;
     this.signalAgent               = signalAgent;
     this.automaticNetworkRetry     = automaticNetworkRetry;
-    this.serviceClients            = createServiceConnectionHolders(configuration.getSignalServiceUrls(), configuration.getNetworkInterceptors(), configuration.getDns(), configuration.getSignalProxy());
-    this.cdnClientsMap             = createCdnClientsMap(configuration.getSignalCdnUrlMap(), configuration.getNetworkInterceptors(), configuration.getDns(), configuration.getSignalProxy());
-    this.storageClients            = createConnectionHolders(configuration.getSignalStorageUrls(), configuration.getNetworkInterceptors(), configuration.getDns(), configuration.getSignalProxy());
-    // Share the existing holders when there is no separate uncensored configuration, rather than building a second set.
-    this.directCdnClientsMap       = uncensoredConfiguration != configuration ? createCdnClientsMap(uncensoredConfiguration.getSignalCdnUrlMap(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getDns(), uncensoredConfiguration.getSignalProxy()) : this.cdnClientsMap;
-    this.directStorageClients      = uncensoredConfiguration != configuration ? createConnectionHolders(uncensoredConfiguration.getSignalStorageUrls(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getDns(), uncensoredConfiguration.getSignalProxy()) : this.storageClients;
+    this.serviceClients            = createServiceConnectionHolders(configuration.getSignalServiceUrls(), configuration.getNetworkInterceptors(), configuration.getSocketFactory(), configuration.getProxySelector(), configuration.getDns());
+    this.cdnClientsMap             = createCdnClientsMap(configuration.getSignalCdnUrlMap(), configuration.getNetworkInterceptors(), configuration.getSocketFactory(), configuration.getProxySelector(), configuration.getDns());
+    this.storageClients            = createConnectionHolders(configuration.getSignalStorageUrls(), configuration.getNetworkInterceptors(), configuration.getSocketFactory(), configuration.getProxySelector(), configuration.getDns());
+    // Both route sets still honor the user's explicit socket/proxy/DNS configuration.
+    this.directCdnClientsMap       = uncensoredConfiguration != configuration ? createCdnClientsMap(uncensoredConfiguration.getSignalCdnUrlMap(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getSocketFactory(), uncensoredConfiguration.getProxySelector(), uncensoredConfiguration.getDns()) : this.cdnClientsMap;
+    this.directStorageClients      = uncensoredConfiguration != configuration ? createConnectionHolders(uncensoredConfiguration.getSignalStorageUrls(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getSocketFactory(), uncensoredConfiguration.getProxySelector(), uncensoredConfiguration.getDns()) : this.storageClients;
     this.preferDirectRoute         = preferDirectRoute;
     this.random                    = new SecureRandom();
   }
@@ -371,7 +373,11 @@ public class PushServiceSocket {
   }
 
   public RegisterAsSecondaryDeviceResponse registerAsSecondaryDevice(RegisterAsSecondaryDeviceRequest request) throws IOException {
-    String responseText = makeServiceRequest("/v1/devices/link", "PUT", JsonUtil.toJson(request));
+    String responseText = makeServiceRequest(DEVICE_LINK_PATH, "PUT", JsonUtil.toJson(request), NO_HEADERS,
+                                            (responseCode, body, getHeader) -> {
+                                              // This endpoint uses 409 for a missing account capability.
+                                              if (responseCode == 409) throw new MissingCapabilitiesException();
+                                            }, SealedSenderAccess.NONE);
     return JsonUtil.fromJson(responseText, RegisterAsSecondaryDeviceResponse.class);
   }
 
@@ -1043,14 +1049,15 @@ public class PushServiceSocket {
 
   private ServiceConnectionHolder[] createServiceConnectionHolders(SignalUrl[] urls,
                                                                    List<Interceptor> interceptors,
-                                                                   Optional<Dns> dns,
-                                                                   Optional<SignalProxy> proxy)
+                                                                   SocketFactory socketFactory,
+                                                                   ProxySelector proxySelector,
+                                                                   Dns dns)
   {
     List<ServiceConnectionHolder> serviceConnectionHolders = new LinkedList<>();
 
     for (SignalUrl url : urls) {
-      serviceConnectionHolders.add(new ServiceConnectionHolder(createConnectionClient(url, interceptors, dns, proxy),
-                                                               createConnectionClient(url, interceptors, dns, proxy),
+      serviceConnectionHolders.add(new ServiceConnectionHolder(createConnectionClient(url, interceptors, socketFactory, proxySelector, dns),
+                                                               createConnectionClient(url, interceptors, socketFactory, proxySelector, dns),
                                                                url.getUrl(), url.getHostHeader()));
     }
 
@@ -1059,13 +1066,14 @@ public class PushServiceSocket {
 
   private static Map<Integer, ConnectionHolder[]> createCdnClientsMap(final Map<Integer, SignalCdnUrl[]> signalCdnUrlMap,
                                                                       final List<Interceptor> interceptors,
-                                                                      final Optional<Dns> dns,
-                                                                      final Optional<SignalProxy> proxy) {
+                                                                      final SocketFactory socketFactory,
+                                                                      final ProxySelector proxySelector,
+                                                                      final Dns dns) {
     validateConfiguration(signalCdnUrlMap);
     final Map<Integer, ConnectionHolder[]> result = new HashMap<>();
     for (Map.Entry<Integer, SignalCdnUrl[]> entry : signalCdnUrlMap.entrySet()) {
       result.put(entry.getKey(),
-                 createConnectionHolders(entry.getValue(), interceptors, dns, proxy));
+                 createConnectionHolders(entry.getValue(), interceptors, socketFactory, proxySelector, dns));
     }
     return Collections.unmodifiableMap(result);
   }
@@ -1076,17 +1084,17 @@ public class PushServiceSocket {
     }
   }
 
-  private static ConnectionHolder[] createConnectionHolders(SignalUrl[] urls, List<Interceptor> interceptors, Optional<Dns> dns, Optional<SignalProxy> proxy) {
+  private static ConnectionHolder[] createConnectionHolders(SignalUrl[] urls, List<Interceptor> interceptors, SocketFactory socketFactory, ProxySelector proxySelector, Dns dns) {
     List<ConnectionHolder> connectionHolders = new LinkedList<>();
 
     for (SignalUrl url : urls) {
-      connectionHolders.add(new ConnectionHolder(createConnectionClient(url, interceptors, dns, proxy), url.getUrl(), url.getHostHeader()));
+      connectionHolders.add(new ConnectionHolder(createConnectionClient(url, interceptors, socketFactory, proxySelector, dns), url.getUrl(), url.getHostHeader()));
     }
 
     return connectionHolders.toArray(new ConnectionHolder[0]);
   }
 
-  private static OkHttpClient createConnectionClient(SignalUrl url, List<Interceptor> interceptors, Optional<Dns> dns, Optional<SignalProxy> proxy) {
+  private static OkHttpClient createConnectionClient(SignalUrl url, List<Interceptor> interceptors, SocketFactory socketFactory, ProxySelector proxySelector, Dns dns) {
     try {
       TrustManager[] trustManagers = BlacklistingTrustManager.createFor(url.getTrustStore());
 
@@ -1094,13 +1102,11 @@ public class PushServiceSocket {
       context.init(null, trustManagers, null);
 
       OkHttpClient.Builder builder = new OkHttpClient.Builder()
+                                                     .socketFactory(socketFactory)
+                                                     .proxySelector(proxySelector)
                                                      .sslSocketFactory(new Tls12SocketFactory(context.getSocketFactory()), (X509TrustManager)trustManagers[0])
                                                      .connectionSpecs(url.getConnectionSpecs().orElse(Util.immutableList(ConnectionSpec.RESTRICTED_TLS)))
-                                                     .dns(dns.orElse(Dns.SYSTEM));
-
-      if (proxy.isPresent()) {
-        builder.socketFactory(new TlsProxySocketFactory(proxy.get().getHost(), proxy.get().getPort(), dns));
-      }
+                                                     .dns(dns);
 
       builder.sslSocketFactory(new Tls12SocketFactory(context.getSocketFactory()), (X509TrustManager)trustManagers[0])
              .connectionSpecs(url.getConnectionSpecs().orElse(Util.immutableList(ConnectionSpec.RESTRICTED_TLS)))

@@ -37,17 +37,20 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import org.signal.core.util.bitmaps.BitmapUtil;
 import org.signal.core.util.concurrent.ListenableFuture;
 import org.signal.core.util.logging.Log;
+import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.location.SignalMapView;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.MediaUtil;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.thoughtcrime.securesms.util.views.SimpleProgressDialog;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -99,10 +102,19 @@ public final class PlacePickerActivity extends AppCompatActivity {
     View markerImage = findViewById(R.id.marker_image_view);
     View fab         = findViewById(R.id.place_chosen_button);
 
+    findViewById(R.id.map_type_overlay).setVisibility(View.GONE);
+
     ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (view, insets) -> {
       systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
       bottomSheet.setPadding(systemBarInsets.left, 0, systemBarInsets.right, systemBarInsets.bottom);
       applyMapPadding();
+      float markerOffsetX = (systemBarInsets.left - systemBarInsets.right) / 2f;
+      float markerOffsetY = getMapMarkerOffsetY();
+      markerImage.setTranslationX(markerOffsetX);
+      markerImage.setTranslationY(markerOffsetY);
+      View markerShadow = findViewById(R.id.marker_shadow_image_view);
+      markerShadow.setTranslationX(markerOffsetX);
+      markerShadow.setTranslationY(markerOffsetY);
       return insets;
     });
 
@@ -144,7 +156,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
 
       googleMap.setOnCameraMoveStartedListener(i -> {
         markerImage.animate()
-                   .translationY(-75f)
+                   .translationY(getMapMarkerOffsetY() - 75f)
                    .setInterpolator(OVERSHOOT_INTERPOLATOR)
                    .setDuration(ANIMATION_DURATION)
                    .start();
@@ -154,7 +166,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
 
       googleMap.setOnCameraIdleListener(() -> {
         markerImage.animate()
-                   .translationY(0f)
+                   .translationY(getMapMarkerOffsetY())
                    .setInterpolator(OVERSHOOT_INTERPOLATOR)
                    .setDuration(ANIMATION_DURATION)
                    .start();
@@ -187,6 +199,10 @@ public final class PlacePickerActivity extends AppCompatActivity {
     if (googleMap != null && systemBarInsets != null) {
       googleMap.setPadding(systemBarInsets.left, systemBarInsets.top, systemBarInsets.right, systemBarInsets.bottom);
     }
+  }
+
+  private float getMapMarkerOffsetY() {
+    return systemBarInsets == null ? 0f : (systemBarInsets.top - systemBarInsets.bottom) / 2f;
   }
 
   private void moveMapToInitialIfPossible() {
@@ -301,7 +317,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
   private static @NonNull String addressToShortString(@Nullable Address address) {
     if (address == null) return "";
 
-    String   addressLine = address.getAddressLine(0);
+    String   addressLine = Objects.requireNonNullElse(address.getAddressLine(0), "");
     String[] split       = addressLine.split(",");
 
     if (split.length >= 3) {

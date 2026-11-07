@@ -10,6 +10,11 @@ package org.signal.appsettings.help
  */
 sealed interface HelpSettingsEvent {
 
+  data object WebsiteClicked : HelpSettingsEvent
+  data object VersionClicked : HelpSettingsEvent
+  data class LogEnabledChanged(val enabled: Boolean) : HelpSettingsEvent
+  data class LogEnabledSaved(val enabled: Boolean) : HelpSettingsEvent
+
   /** The user tapped the navigation (back) icon. */
   data object NavigateBackClicked : HelpSettingsEvent
 

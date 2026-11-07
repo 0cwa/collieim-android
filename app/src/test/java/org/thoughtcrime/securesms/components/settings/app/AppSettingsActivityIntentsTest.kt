@@ -61,12 +61,46 @@ class AppSettingsActivityIntentsTest {
   }
 
   @Test
-  fun `boost opens one-time checkout`() {
-    every { RemoteConfig.useAppSettingsNavigation } returns false
+  fun `privacy always uses authenticated legacy screen in both navigation modes`() {
+    listOf(false, true).forEach { navigationEnabled ->
+      every { RemoteConfig.useAppSettingsNavigation } returns navigationEnabled
+      val intent = AppSettingsActivity.privacy(context)
+      assertThat(intent.component?.className).isEqualTo(AppSettingsActivity::class.java.name)
+      assertThat(intent.startRoute()).isEqualTo(AppSettingsRoute.PrivacyRoute.Privacy)
+    }
+  }
 
-    val intent = AppSettingsActivity.boost(context)
+  @Test
+  fun `network always uses Molly network settings in both navigation modes`() {
+    listOf(false, true).forEach { navigationEnabled ->
+      every { RemoteConfig.useAppSettingsNavigation } returns navigationEnabled
+      val intent = AppSettingsActivity.proxy(context)
+      assertThat(intent.component?.className).isEqualTo(AppSettingsActivity::class.java.name)
+      assertThat(intent.startRoute()).isEqualTo(AppSettingsRoute.DataAndStorageRoute.Proxy)
+    }
+  }
 
-    assertThat(intent.startRoute()).isEqualTo(AppSettingsRoute.DonationsRoute.Donations(directToCheckoutType = InAppPaymentType.ONE_TIME_DONATION))
+  @Test
+  fun `data and storage always uses the legacy host in both navigation modes`() {
+    listOf(false, true).forEach { navigationEnabled ->
+      every { RemoteConfig.useAppSettingsNavigation } returns navigationEnabled
+      val intent = AppSettingsActivity.manageStorage(context)
+      assertThat(intent.component?.className).isEqualTo(AppSettingsActivity::class.java.name)
+      assertThat(intent.startRoute()).isEqualTo(AppSettingsRoute.DataAndStorageRoute.DataAndStorage)
+    }
+  }
+
+  @Test
+  fun `notifications and play services errors use Molly notification settings in both modes`() {
+    listOf(false, true).forEach { navigationEnabled ->
+      every { RemoteConfig.useAppSettingsNavigation } returns navigationEnabled
+      val notifications = AppSettingsActivity.notifications(context)
+      assertThat(notifications.component?.className).isEqualTo(AppSettingsActivity::class.java.name)
+      assertThat(notifications.startRoute()).isEqualTo(AppSettingsRoute.NotificationsRoute.Notifications)
+      val error = AppSettingsActivity.playServicesProblem(context, 42)
+      assertThat(error.component?.className).isEqualTo(AppSettingsActivity::class.java.name)
+      assertThat(error.startRoute()).isEqualTo(AppSettingsRoute.NotificationsRoute.PlayServicesProblem(42))
+    }
   }
 
   /** The start route rides under a host-specific extra key, so find it by type rather than by name. */

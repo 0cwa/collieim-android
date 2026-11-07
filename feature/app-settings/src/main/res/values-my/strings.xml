@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">မှတ်ပုံတင်ခြင်း လော့ခ်ကို ဖွင့်မည်လား။</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">မှတ်ပုံတင်ခြင်း လော့ခ်ကို ပိတ်မည်လား။</string>
@@ -520,9 +519,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">စိတ်ကြိုက် အချိန်</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Signal စခရင် လော့ခ်ကို သုံးပါ</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie စခရင် လော့ခ်ကို သုံးပါ</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Signal စခရင် လော့ခ်ကို ပိတ်ပါ</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collie စခရင် လော့ခ်ကို ပိတ်ပါ</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">အကူအညီ</string>
@@ -535,7 +534,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">လိုင်စင်များ</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">လိုက်နာဆောင်ရွက်ရမည့် အချက်များ</string>
-    <string name="HelpFragment__copyright_signal_messenger">မူပိုင်ခွင့် Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">မူပိုင်ခွင့် Molly Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 အရ ခွင့်ပြုထားသည်</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal သည် အကျိုးအမြတ်မယူပါ</string>
@@ -544,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">အက်ပ်အိုင်ကွန်များနှင့် အမည်များကို ပင်မမျက်နှာပြင်နှင့် အက်ပ်စုစည်းမှုတွင် မြင်တွေ့နိုင်ပါသည်။</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">အသိပေးချက်များတွင် ပုံသေ Signal အိုင်ကွန်နှင့် အမည်ကိုသာ အမြဲတမ်းပြသပါမည်။</string>
+    <string name="preferences__app_icon_notification_warning">အသိပေးချက်များတွင် ပုံသေ Collie အိုင်ကွန်နှင့် အမည်ကိုသာ အမြဲတမ်းပြသပါမည်။</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">အစားထိုး အက်ပ်အိုင်ကွန်အား မြင်တွေ့နိုင်မည့် နေရာကို သရုပ်ဖော်ပြသသည့် ဂရပ်ဖစ်ပုံ။</string>
 
@@ -564,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">အက်ပ်အိုင်ကွန်နှင့် အမည်ကို \"%1$s\" ဟု ပြောင်းရန်</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">အက်ပ်အိုင်ကွန်နှင့် အမည်ကို ပြောင်းရန်အတွက် Signal ကို ပိတ်ရန် လိုအပ်ပါသည်။ အသိပေးချက်များတွင် ပုံသေ Signal အိုင်ကွန်နှင့် အမည်ကိုသာ အမြဲတမ်းပြသပါမည်။</string>
+    <string name="preferences__app_icon_dialog_description">အက်ပ်အိုင်ကွန်နှင့် အမည်ကို ပြောင်းရန်အတွက် Collie ကို ပိတ်ရန် လိုအပ်ပါသည်။ အသိပေးချက်များတွင် ပုံသေ Collie အိုင်ကွန်နှင့် အမည်ကိုသာ အမြဲတမ်းပြသပါမည်။</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">သင့်ဖုန်း၏ ပင်မမျက်နှာပြင်နှင့် အက်ပ်အံဆွဲတွင် မြင်တွေ့နိုင်မည့် အက်ပ်အိုင်ကွန်နှင့် အမည်တစ်ခုကို ရွေးချယ်ပါ။ အသိပေးချက်များတွင် ပုံသေ Signal အိုင်ကွန်နှင့် အမည်ကိုသာ အမြဲတမ်းပြသပါမည်။ ပိုမို လေ့လာရန်</string>
+    <string name="preferences__app_icon_warning_learn_more">သင့်ဖုန်း၏ ပင်မမျက်နှာပြင်နှင့် အက်ပ်အံဆွဲတွင် မြင်တွေ့နိုင်မည့် အက်ပ်အိုင်ကွန်နှင့် အမည်တစ်ခုကို ရွေးချယ်ပါ။ အသိပေးချက်များတွင် ပုံသေ Collie အိုင်ကွန်နှင့် အမည်ကိုသာ အမြဲတမ်းပြသပါမည်။ ပိုမို လေ့လာရန်</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">ပိုမို လေ့လာရန်</string>
 

@@ -57,6 +57,10 @@ import kotlin.time.Duration
 
 interface NetworkController {
 
+  /** Enables networking after the user proceeds past the pre-connection proxy settings. */
+  fun enableNetworkForRegistration() = Unit
+
+
   /**
    * Request that the service initialize a new registration session.
    *

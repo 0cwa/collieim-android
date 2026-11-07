@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -36,9 +35,9 @@ import kotlinx.coroutines.flow.flowOf
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.SignalIcons
+import org.signal.core.ui.compose.theme.SignalTheme
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.banner.Banner
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * Shows the number of pending requests to join the group.
@@ -74,7 +73,7 @@ private fun Banner(contentPadding: PaddingValues, suggestionsSize: Int, onViewCl
     modifier = Modifier
       .padding(horizontal = 12.dp, vertical = 8.dp)
       .clip(RoundedCornerShape(24.dp))
-      .background(color = colorResource(CoreUiR.color.signal_colorSurface2))
+      .background(color = SignalTheme.colors.colorSurface2)
       .padding(horizontal = 16.dp)
   ) {
     Icon(
@@ -100,7 +99,7 @@ private fun Banner(contentPadding: PaddingValues, suggestionsSize: Int, onViewCl
     TextButton(
       onClick = onViewClicked,
       colors = ButtonDefaults.textButtonColors(
-        containerColor = colorResource(CoreUiR.color.signal_colorSurface5),
+        containerColor = SignalTheme.colors.colorSurface5,
         contentColor = MaterialTheme.colorScheme.onSurface
       ),
       modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)

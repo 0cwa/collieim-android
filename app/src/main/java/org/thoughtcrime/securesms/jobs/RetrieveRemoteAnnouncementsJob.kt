@@ -152,12 +152,12 @@ class RetrieveRemoteAnnouncementsJob private constructor(private val force: Bool
     when {
       values.highestVersionNoteReceived == 0 -> {
         Log.i(TAG, "First check, saving code and skipping download")
-        values.highestVersionNoteReceived = BuildConfig.CANONICAL_VERSION_CODE
+        values.highestVersionNoteReceived = BuildConfig.SIGNAL_CANONICAL_VERSION_CODE
       }
       !force && MessageDigest.isEqual(manifestMd5, values.previousManifestMd5) -> {
         Log.i(TAG, "Manifest has not changed since last fetch.")
       }
-      else -> fetchManifest(manifestMd5)
+      else -> Unit // fetchManifest(manifestMd5)
     }
 
     values.previousManifestMd5 = manifestMd5
@@ -202,7 +202,7 @@ class RetrieveRemoteAnnouncementsJob private constructor(private val force: Bool
       .filter {
         val minVersion = it.androidMinVersion?.toIntOrNull()
         if (minVersion != null) {
-          minVersion > values.highestVersionNoteReceived && minVersion <= BuildConfig.CANONICAL_VERSION_CODE
+          minVersion > values.highestVersionNoteReceived && minVersion <= BuildConfig.SIGNAL_CANONICAL_VERSION_CODE
         } else {
           false
         }

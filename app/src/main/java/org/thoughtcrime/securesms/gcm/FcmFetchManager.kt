@@ -58,7 +58,7 @@ object FcmFetchManager {
     }
 
   @Volatile
-  private var activeCount = 0
+  private var last = 0L
 
   @Volatile
   private var highPriority = false
@@ -80,9 +80,12 @@ object FcmFetchManager {
     }
   }
 
-  private fun postMayHaveMessagesNotification(context: Context) {
-    if (RemoteConfig.fcmMayHaveMessagesNotificationKillSwitch) {
-      Log.w(TAG, "May have messages notification kill switch")
+  @JvmStatic
+  fun postMayHaveMessagesNotification(context: Context) {
+    val notificationManager = NotificationManagerCompat.from(context)
+
+    if (notificationManager.getNotificationChannel(NotificationChannels.ADDITIONAL_MESSAGE_NOTIFICATIONS) == null) {
+      Log.e(TAG, "Notification channel for MAY_HAVE_MESSAGES_NOTIFICATION does not exist.")
       return
     }
 
@@ -91,10 +94,9 @@ object FcmFetchManager {
       return
     }
 
-    Log.w(TAG, "Notifying the user that they may have new messages.")
-
-    val mayHaveMessagesNotification: Notification = NotificationCompat.Builder(context, NotificationChannels.getInstance().ADDITIONAL_MESSAGE_NOTIFICATIONS)
+    val mayHaveMessagesNotification: Notification = NotificationCompat.Builder(context, NotificationChannels.ADDITIONAL_MESSAGE_NOTIFICATIONS)
       .setSmallIcon(R.drawable.ic_notification)
+      .setColor(ContextCompat.getColor(context, org.signal.core.ui.R.color.core_ultramarine))
       .setContentTitle(context.getString(R.string.FcmFetchManager__you_may_have_messages))
       .setCategory(NotificationCompat.CATEGORY_MESSAGE)
       .setContentIntent(PendingIntent.getActivity(context, 0, MainActivity.clearTop(context), mutable()))
@@ -102,7 +104,7 @@ object FcmFetchManager {
       .setOnlyAlertOnce(true)
       .build()
 
-    NotificationManagerCompat.from(context)
+    notificationManager
       .notify(NotificationIds.MAY_HAVE_MESSAGES_NOTIFICATION_ID, mayHaveMessagesNotification)
   }
 
@@ -111,7 +113,7 @@ object FcmFetchManager {
     NotificationManagerCompat.from(context).cancel(NotificationIds.MAY_HAVE_MESSAGES_NOTIFICATION_ID)
   }
 
-  private fun fetch(context: Context) {
+  private fun fetch(context: Context, now: Long) {
     val hasHighPriorityContext = highPriority
 
     val metricId = SignalLocalMetrics.PushWebsocketFetch.startFetch()
@@ -127,9 +129,8 @@ object FcmFetchManager {
     }
 
     synchronized(this) {
-      activeCount--
 
-      if (activeCount <= 0) {
+      if (last <= now) {
         Log.i(TAG, "No more active. Stopping.")
         context.stopService(Intent(context, FcmFetchBackgroundService::class.java))
         FcmFetchForegroundService.stopServiceIfNecessary(context)
@@ -150,13 +151,9 @@ object FcmFetchManager {
       if (highPriority) {
         this.highPriority = true
       }
-      val performedReplace = EXECUTOR.enqueue { fetch(context) }
-      if (performedReplace) {
-        Log.i(TAG, "Already have one running and one enqueued. Ignoring.")
-      } else {
-        activeCount++
-        Log.i(TAG, "Incrementing active count to $activeCount")
-      }
+      last = System.nanoTime()
+      Log.i(TAG, "Updating last event to $last")
+      EXECUTOR.enqueue { fetch(context, last) }
     }
   }
 

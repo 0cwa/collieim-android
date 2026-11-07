@@ -71,14 +71,14 @@ public class NotificationChannels {
   public final String FAILURES                         = "failures";
   public final String APP_UPDATES                      = "app_updates";
   public final String BACKUPS                          = "backups_v2";
-  public final String LOCKED_STATUS                    = "locked_status_v2";
+  public static final String LOCKED_STATUS             = "locked_status_v2";
   public final String OTHER                            = "other_v3";
   public final String VOICE_NOTES                      = "voice_notes";
   public final String JOIN_EVENTS                      = "join_events";
-  public final String BACKGROUND                       = "background_connection";
+  public static final String BACKGROUND                = "background_connection";
   public final String CALL_STATUS                      = "call_status";
   public final String APP_ALERTS                       = "app_alerts";
-  public final String ADDITIONAL_MESSAGE_NOTIFICATIONS = "additional_message_notifications";
+  public static final String ADDITIONAL_MESSAGE_NOTIFICATIONS = "additional_message_notifications";
   public final String NEW_LINKED_DEVICE                = "new_linked_device";
   public final String INTERNAL_ISSUES                  = "internal_issues";
   public final String UNREAD_REMINDERS                 = "unread_reminders";
@@ -661,7 +661,7 @@ public class NotificationChannels {
 
     notificationManager.createNotificationChannels(Arrays.asList(messages, calls, failures, backups, lockedStatus, other, voiceNotes, joinEvents, background, callStatus, appAlerts, additionalMessageNotifications, newLinkedDevice, unreadReminders));
 
-    if (BuildConfig.MANAGES_APP_UPDATES) {
+    if (BuildConfig.MANAGE_MOLLY_UPDATES) {
       NotificationChannel appUpdates = new NotificationChannel(APP_UPDATES, context.getString(R.string.NotificationChannel_app_updates), NotificationManager.IMPORTANCE_DEFAULT);
       notificationManager.createNotificationChannel(appUpdates);
     } else {

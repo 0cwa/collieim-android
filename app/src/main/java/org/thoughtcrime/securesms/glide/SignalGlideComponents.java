@@ -27,7 +27,6 @@ import org.signal.glide.blurhash.BlurHashResourceDecoder;
 import org.signal.glide.common.io.InputStreamFactory;
 import org.signal.glide.decryptableuri.DecryptableUri;
 import org.signal.glide.decryptableuri.DecryptableUriStreamLoader;
-import org.thoughtcrime.securesms.badges.load.GiftBadgeModel;
 import org.thoughtcrime.securesms.contacts.avatars.ContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.ContactPhotoLoader;
 import org.thoughtcrime.securesms.crypto.AppAttachmentSecretStore;
@@ -114,7 +113,6 @@ public class SignalGlideComponents implements RegisterGlideComponents {
     registry.append(StickerRemoteUri.class, InputStream.class, new StickerRemoteUriLoader.Factory());
     registry.append(BlurHash.class, BlurHash.class, new BlurHashModelLoader.Factory());
     registry.append(Badge.class, InputStream.class, new BadgeLoader.Factory(AppDependencies.getSignalOkHttpClient()));
-    registry.append(GiftBadgeModel.class, InputStream.class, GiftBadgeModel.createFactory());
     registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory());
   }
 }

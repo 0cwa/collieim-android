@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/gradle/libs.versions.toml"><img src="https://img.shields.io/badge/v8.33.2--1--rc3%20min%20Android-6.0%2B-2F4F3A?style=flat&amp;labelColor=5A4033" alt="Minimum Android 6.0 for the published v8.33.2-1-rc3 APKs"></a>
+  <a href="https://github.com/0cwa/collieim-android/releases/tag/v8.35.1-1-rc1"><img src="https://img.shields.io/badge/Android-8.1%2B-2F4F3A?style=flat&amp;labelColor=5A4033" alt="Android 8.1 or newer"></a>
   <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0--only-687E59?style=flat&amp;labelColor=5A4033" alt="AGPL 3.0 only"></a>
 </p>
 
@@ -33,65 +33,13 @@ Welcome!  Collie is an independent Android messenger built on [Signal](https://s
  </picture>
 </a>
 
-Collie continues Molly on newer Signal releases. The currently published editions and the planned next release are described below.
+Collie continues Molly on newer Signal releases.
 
-## Next release (planned)
+## Download
 
-The next release is planned to provide one signed, FCM-capable Collie APK under all five existing filenames. The files will be byte-identical, so existing Obtainium links can continue to select their current filename:
+Download `collie.apk` from the [Releases page](https://github.com/0cwa/collieim-android/releases) or use the Obtainium link above for updates. All five APK filenames in the latest release contain the same Collie app; the older names remain available for existing Obtainium filters. All use the package `im.collie.app` and can be installed alongside Signal or Molly.
 
-- `collie.apk`
-- `collie-foss.apk` (compatibility alias)
-- `molly-continued.apk` (compatibility alias)
-- `molly-foss-continued.apk` (compatibility alias)
-- `molly-minimal.apk` (compatibility alias)
-
-There will be no separate Firebase-free APK in the next release. WebSocket and UnifiedPush will remain available notification choices; the update is not intended to change a choice explicitly saved by the user. UnifiedPush remains subject to its existing device and server requirements. Final APK and notification testing is still outstanding.
-
-If you use a currently published FOSS build, a previously saved FCM preference may become active when you update to the FCM-capable APK. To avoid that, before updating open **Settings → Notifications**, find the **Push notifications** section, and choose **Delivery service → WebSocket**. You can also choose a configured UnifiedPush service where supported.
-
-The next release is planned to retain the `im.collie.app` package. Updates also require matching signatures and a higher version code. The Current releases table below describes the APKs already published.
-
-## Current releases
-
-<p align="left">
-  <a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/v/release/0cwa/collieim-android?include_prereleases&amp;sort=date&amp;display_name=tag&amp;style=flat&amp;labelColor=5A4033&amp;label=release" alt="Latest published GitHub release including prereleases"></a>
-  <a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/release-date-pre/0cwa/collieim-android?display_date=published_at&amp;style=flat&amp;labelColor=5A4033&amp;label=published" alt="Publication date of the latest release including prereleases"></a>
-</p>
-
-| Release | What it offers | Install |
-| --- | --- | --- |
-| **<ins>Collie</ins>**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/collie.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of collie.apk across releases"></a> | **<ins>Recommended</ins>.** Molly Continued plus optional controls for keeping messages and media. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Collie FOSS**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/collie-foss.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of collie-foss.apk across releases"></a> | Collie without FCM - Google's notification system. (Only host Mollysocket yourself! - details below in the Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%20FOSS%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C-foss%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Molly, Continued**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-continued.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-continued.apk across releases"></a> | Molly on a newer Signal version, with further registration and notification improvements. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Molly FOSS, Continued**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-foss-continued.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-foss-continued.apk across releases"></a> | Molly Continued without FCM - Google's notification system.  (Only host Mollysocket yourself! - details below in Features section) | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20FOSS%20Continued%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-foss%5C%5C%5C%5C-continued%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-| **Molly Minimal**<br><a href="https://github.com/0cwa/collieim-android/releases"><img src="https://img.shields.io/github/downloads/0cwa/collieim-android/molly-minimal.apk?displayAssetName=false&amp;style=flat&amp;labelColor=5A4033&amp;label=downloads" alt="Downloads of molly-minimal.apk across releases"></a> | Molly's minimalist feature set on a newer Signal version, without the Continued additions. | [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Molly%20Minimal%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Emolly%5C%5C%5C%5C-minimal%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D) |
-
-
-### FCM? FOSS? What is that? Does Collie use Google?
-
-Collie is already almost 100% FOSS compared to Signal (Signal uses Google Maps, GPay, etc - we strip all that out and replace it with FOSS), with the *one* exception that for user experience, we include the ***option*** to use normal android Google FCM notification delivery.
-
-- FCM - Firebase Cloud Messaging is Google's version (or predecessor) of UnifiedPush. Most/all normal Android phones have this.  It enables your phone to talk to one server for notifications.  All Google receives is "this device got a message", and then pings your phone to wake the app so your app informs you.  No message data is ever received by Google.  Our normal builds *do not* activate FCM unless it is the active notification provider.
-- FOSS - Free Open Source Software: Collie is already Free Open Source Software, but FCM is by google and it's closed source.  FCM is completely 
-**Most people should run the normal version, it saves battery.**  If your phone has google, it already connects to FCM to receive notifications. 
-
-> For reliable notification delivery on the FOSS version, disable battery restrictions to allow it to run in the background - you will experience some *minor* battery drain from this. OR you can self-host a Mollysocket server (the UnifiedPush adaptor) and install a UnifiedPush Distributor app to replace FCM - see lower down for more details.
-
-In the currently published release, Molly Minimal provides the updated Molly foundation. Both Molly Continued releases and both Collie releases add network settings during registration for proxy users, visible errors and retry options for failed UnifiedPush registration, and updated donation confirmation text. Collie and Collie FOSS also add the four optional retention controls described below. The two FOSS releases omit Firebase; the other three include it.
-
-> [!TIP]
-> All five releases use the package `im.collie.app`, so users can switch between them and install Collie alongside upstream Molly.
-
-Releases are published on the [Releases page](https://github.com/0cwa/collieim-android/releases) as APKs. The Obtainium links above add this repository to [Obtainium](https://obtainium.imranr.dev/) with pre-releases disabled and select that release's APK, so Obtainium can install and update it. The releases share one app identity, so Obtainium tracks only one of them at a time.
-
-The source badges below describe published release [v8.33.2-1-rc3](https://github.com/0cwa/collieim-android/tree/v8.33.2-1-rc3); the Android minimum applies to those APKs.
-
-<p align="left">
-  <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/molly-build.json"><img src="https://img.shields.io/badge/Signal%20base-8.33.2-96390C?style=flat&amp;labelColor=5A4033" alt="Signal base 8.33.2 in the published release"></a>
-  <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/molly-build.json"><img src="https://img.shields.io/badge/Molly%20base-8.19.2--4-96390C?style=flat&amp;labelColor=5A4033" alt="Molly base 8.19.2-4 in the published release"></a>
-  <a href="https://github.com/0cwa/collieim-android/blob/v8.33.2-1-rc3/gradle/libs.versions.toml"><img src="https://img.shields.io/badge/Kotlin-2.2.20-687E59?style=flat&amp;labelColor=5A4033" alt="Kotlin 2.2.20 in the published release"></a>
-  <a href="https://github.com/0cwa/collieim-android/releases/tag/v8.33.2-1-rc3"><img src="https://img.shields.io/badge/release%20APK%20assets-5-687E59?style=flat&amp;labelColor=5A4033" alt="Five APK assets in the published release"></a>
-</p>
+Collie supports WebSocket, UnifiedPush, and optional Firebase Cloud Messaging (FCM). The FCM client uses Molly’s open-source compatibility implementation; FCM delivery uses Google’s service. If you are updating from an older FOSS build, a previously saved FCM preference may become active. To keep WebSocket delivery, select **Settings → Notifications → Push notifications → Delivery service → WebSocket** before updating.
 
 _[Throw the dog a bone? 🐶🦴](https://liberapay.com/Collie)_
 
@@ -110,15 +58,9 @@ The releases retain Signal's messaging and calling features and Molly's addition
 > [!CAUTION]
 > ***If you use Unifiedpush only do so with a server you entrust your entire account and all the metadata of your account.*** (I found, reported, and verified this new major security risk to the Mollysocket developer - more details will be disclosed at a later date.)
 
-The currently published Collie release also offers four optional controls: keep received view-once media, keep incoming disappearing messages after they expire, ignore a sender's request to delete a message, and remove media without removing its message. All four are off by default. Content you choose to keep may appear in backups or exports. (this feature is experimental)
-
-In the next release, we are removing these retention controls. After reviewing their design, the maintainers concluded that the current implementation is not good enough and poses security and privacy risks. We are exploring alternatives that offer a better experience while respecting disappearing-message protections. The update adds no special cleanup or restoration of previously retained content, and normal message expiration and deletion will continue. Previously retained content may be present in existing backups.
-
-The existing Molly Minimal, Molly Continued and Collie download filenames are planned to remain available as aliases for the same FCM-capable Collie APK, as described above.
-
 ## Free and open source
 
-The code is open source. The currently published standard builds include Google's Firebase service for push notifications; the currently published FOSS builds omit it. They can receive messages through WebSocket or [UnifiedPush](https://unifiedpush.org/) instead. The planned next release has one FCM-capable build, including under the legacy FOSS filenames.
+Collie is free and open-source software. Optional FCM notifications use an open-source client and Google's FCM service; WebSocket and [UnifiedPush](https://unifiedpush.org/) are alternatives.
 
 UnifiedPush lets you choose a notification provider. It requires access to a [MollySocket](https://github.com/mollyim/mollysocket) server, *use your own!* **Do not use a public one!** UnifiedPush has never been available on linked devices, [this is a planned Collie feature.](https://github.com/0cwa/collieim-android/issues/21) Android battery restrictions can affect notification delivery.
 
@@ -132,7 +74,7 @@ Signal's [Terms and Privacy Policy](https://signal.org/legal/) apply when using 
 
 ## Backups
 
-The project retains Molly's support for local Signal-format backups. Restoring a backup requires an app version that supports the version of the backup being imported. In the next release, the restore picker is intended to recognize timestamped `.backup` files with any nonempty filename prefix in the folder you select. It does not move or delete backup files. Content kept using retention controls in a published release may also be included in backups.
+Collie supports local Signal-format backups. Restoring a backup requires an app version that supports the version of the backup being imported.
 
 ## Feedback
 
@@ -151,4 +93,4 @@ Licensed under the GNU Affero General Public License, version 3 only ([AGPL-3.0-
 
 ## Acknowledgements
 
-Collie is independent of Signal and Molly and builds on the work of their contributors. The retention controls in the currently published release were adapted from [Angus Turnbull's Signal FOSS fork](https://github.com/tw-hx/Signal-Android), including media deletion work by johanw.
+Collie is independent of Signal and Molly and builds on the work of their contributors.

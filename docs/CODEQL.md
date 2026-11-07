@@ -219,6 +219,8 @@ inputs and a traced direct-source Android build are actually verified.
 Pull request analysis reads the finding review manifest and report tool from the
 base commit; push and manual runs use the commit being analyzed. This prevents a
 pull request from approving its own findings by editing the manifest or audit
-tool. Workflow YAML can still be changed by a pull request, so repository owners
+tool. During first-time adoption, when the base commit has no manifest yet, the
+workflow supplies an empty review list, so findings remain unreviewed and fail
+the report gate. Workflow YAML can still be changed by a pull request, so repository owners
 must protect workflow changes with external review and branch protection rules.
 This workflow does not make its own definition tamperproof.

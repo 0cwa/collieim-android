@@ -14,13 +14,14 @@ def job(text, name):
     return re.split(r'(?m)^  [a-z][\w-]*:\s*$', jobs.split(f'  {name}:\n', 1)[1], maxsplit=1)[0]
 
 
-def expression(value, *, event, choice, scope='forks', profiles='["collie","collie-foss"]'):
+def expression(value, *, event, choice, scope='forks', profiles='["collie","collie-foss"]', hosted='true'):
     """Evaluate the limited Actions expression subset used by the choice gate."""
     replacements = {
         'github.event_name': repr(event),
         'inputs.instrumentation': repr(choice),
         'needs.scope.outputs.stack_scope': repr(scope),
         'needs.scope.outputs.profiles': repr(profiles),
+        'needs.scope.outputs.hosted_android': repr(hosted),
     }
     for name, replacement in replacements.items():
         value = value.replace(name, replacement)
@@ -50,6 +51,8 @@ class OptionalInstrumentationWorkflowTests(unittest.TestCase):
                     self.assertEqual(selected, expected, (filename, choice))
                 if filename == 'molly-patch-release.yml':
                     self.assertFalse(expression(condition, event='pull_request', choice='both'))
+                    self.assertFalse(expression(condition, event='workflow_dispatch', choice='both', scope='main-maintenance', hosted='false'))
+                    self.assertFalse(expression(condition, event='workflow_dispatch', choice='both', scope='forks', hosted='false'))
                     self.assertFalse(expression(condition, event='workflow_dispatch', choice='both', scope='main-maintenance', profiles='[""]'))
                     self.assertFalse(expression(condition, event='workflow_dispatch', choice='both', scope='next-port'))
 

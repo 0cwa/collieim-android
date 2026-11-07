@@ -214,3 +214,11 @@ application source workflow must pin that reviewed engineering revision as an
 explicit publication layer; it must not copy old baseline Spinner/JNI assumptions.
 Java/Kotlin application analysis is still NOT RUN until the exact public native
 inputs and a traced direct-source Android build are actually verified.
+
+
+Pull request analysis reads the finding review manifest and report tool from the
+base commit; push and manual runs use the commit being analyzed. This prevents a
+pull request from approving its own findings by editing the manifest or audit
+tool. Workflow YAML can still be changed by a pull request, so repository owners
+must protect workflow changes with external review and branch protection rules.
+This workflow does not make its own definition tamperproof.

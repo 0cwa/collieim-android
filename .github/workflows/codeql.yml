@@ -65,6 +65,16 @@ jobs:
         with:
           persist-credentials: false
           lfs: false
+      - name: Check out trusted review policy at the base revision
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: trusted-policy
+          sparse-checkout: |
+            .github/codeql/reviewed-findings.json
+            tools/codeql
+          persist-credentials: false
+          lfs: false
       - name: Record source identity and application coverage boundary
         env:
           ANALYSIS_LANGUAGE: ${{ matrix.language }}
@@ -150,9 +160,9 @@ jobs:
         env:
           ANALYSIS_LANGUAGE: ${{ matrix.language }}
         run: |
-          python3 tools/codeql/report.py "$RUNNER_TEMP/codeql-sarif" \
+          python3 trusted-policy/tools/codeql/report.py "$RUNNER_TEMP/codeql-sarif" \
             --language "$ANALYSIS_LANGUAGE" \
-            --reviews .github/codeql/reviewed-findings.json --source-root . \
+            --reviews trusted-policy/.github/codeql/reviewed-findings.json --source-root . \
             --output "$RUNNER_TEMP/codeql-evidence/audit.json" \
             --summary "$RUNNER_TEMP/codeql-evidence/audit.md"
       - name: Publish the audit summary

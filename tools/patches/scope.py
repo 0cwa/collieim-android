@@ -256,6 +256,9 @@ def check_reviewed_profile_snapshot(current, provenance, snapshot):
 # Exact legacy-main files deliberately retained when the release-base is integrated.
 # No other source projection difference is accepted for the main-based fork PR.
 MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
+# PR38's merged raw baseline is a separate trusted maintenance projection.
+# Older release reconstruction/transition scopes keep their original oracle.
+MAIN_MAINTENANCE_BASE = 'f6f68cdee08fb8d9acb6a866b1673deb10525f20'
 MAIN_CLEAN_ENTRIES_BLOB = 'b06a83f6e4584f27811c3f406579b7db296f4b59'
 
 # PR38 changed the retained Signal projection to 8.35.1. CodeQL maintenance
@@ -263,7 +266,7 @@ MAIN_CLEAN_ENTRIES_BLOB = 'b06a83f6e4584f27811c3f406579b7db296f4b59'
 # This deliberately does not grant a general source-edit exception: the entire
 # release configuration, patch forest, port/fork layers and native inputs must
 # remain byte-for-byte identical to the merged release.
-CODEQL_MAIN_BASE = 'f6f68cdee08fb8d9acb6a866b1673deb10525f20'
+CODEQL_MAIN_BASE = '96fe0bdf78474dca9b06fb59adbb618b21e5ede0'
 CODEQL_APPLICATION_TREE = 'da5c03ff20ae2a672329eb8257bc33949845b268'
 CODEQL_MAINTENANCE_FILES = frozenset({
     '.github/workflows/codeql.yml', '.github/codeql/codeql-config.yml',
@@ -274,14 +277,43 @@ CODEQL_MAINTENANCE_FILES = frozenset({
     'tools/patches/scope.py', 'tools/patches/test_codeql_scope.py',
     'tools/patches/test_generated_stages.py',
 })
+CODEQL_ADDITIONAL_FILES = frozenset({
+    '.github/scripts/screenshot_artifacts.py',
+    '.github/scripts/test_screenshot_artifacts.py',
+    '.github/workflows/publish-screenshots.yml',
+    '.github/workflows/update-screenshots.yml',
+    '.github/workflows/sync.yml',
+    'docs/CODEQL-CONSOLIDATION.md',
+})
+CODEQL_TOOL_FILES = frozenset({
+    'tools/codeql/build_jni.py', 'tools/codeql/render_publication.py',
+    'tools/codeql/report.py', 'tools/codeql/snapshot.py',
+    'tools/codeql/test_build_jni.py', 'tools/codeql/test_render_publication.py',
+    'tools/codeql/test_report.py', 'tools/codeql/test_reviews.py',
+    'tools/codeql/test_snapshot.py', 'tools/codeql/test_spinner.mjs',
+})
+CODEQL_TEMPLATE_FILES = frozenset({
+    'tools/codeql/publication/codeql-config.yml',
+    'tools/codeql/publication/codeql.yml.in',
+    'tools/codeql/publication/publish-screenshots.yml.in',
+    'tools/codeql/publication/reviewed-findings.json',
+    'tools/codeql/publication/update-screenshots.yml.in',
+})
 # Spinner is retained as upstream development tooling in the repository, but
 # absent from the pinned Collie application tree above. These are the two
 # reviewed repository-only security corrections; no directory-wide source
 # exception is granted and release reconstruction still uses the pinned inputs.
-CODEQL_REPOSITORY_OVERLAYS = frozenset({
-    'lib/spinner/src/main/assets/js/main.js',
-    'lib/spinner/src/main/assets/query.hbs',
-})
+CODEQL_SPINNER_BLOB_MANIFEST = {
+    'lib/spinner/src/main/assets/js/main.js': (
+        '2195ce7ae7ac4c75f09e582696d328a9bc3e40d4',
+        'dcaad668a6f9c04f01b573fc08531a1a19befba3',
+    ),
+    'lib/spinner/src/main/assets/query.hbs': (
+        'e24d3c9fefa9ef75cab3bc1407214cdda7cf5017',
+        '64b60582740ab7aafa7fc29f9f483b0d732aabc8',
+    ),
+}
+CODEQL_REPOSITORY_OVERLAYS = frozenset(CODEQL_SPINNER_BLOB_MANIFEST)
 
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
@@ -524,8 +556,9 @@ def main_docs_only(repo, base, head):
 
 def codeql_maintenance_path(path):
     """A bounded security-tooling path, not an application-source prefix."""
-    return (path in CODEQL_MAINTENANCE_FILES or path in CODEQL_REPOSITORY_OVERLAYS or
-            re.fullmatch(r'tools/codeql/[a-z][a-z0-9_]*\.(?:py|mjs)', path) is not None)
+    return (path in CODEQL_MAINTENANCE_FILES or path in CODEQL_ADDITIONAL_FILES or
+            path in CODEQL_TOOL_FILES or path in CODEQL_TEMPLATE_FILES or
+            path in CODEQL_REPOSITORY_OVERLAYS)
 
 
 def main_codeql_only(repo, base, head):
@@ -572,6 +605,13 @@ def check_codeql_maintenance(repo, base, head):
                  '.github/workflows/codeql.yml', *sorted(CODEQL_REPOSITORY_OVERLAYS)):
         if not git(repo, 'ls-tree', head, '--', path).decode().startswith('100644 blob '):
             raise ValueError('CodeQL maintenance requires a regular 100644 file: ' + path)
+    for path, (before_blob, after_blob) in CODEQL_SPINNER_BLOB_MANIFEST.items():
+        before_entry = git(repo, 'ls-tree', CODEQL_MAIN_BASE, '--', path).decode().strip()
+        if before_entry != f'100644 blob {before_blob}\t{path}':
+            raise ValueError('CodeQL Spinner baseline blob differs: ' + path)
+        after_entry = git(repo, 'ls-tree', head, '--', path).decode().strip()
+        if after_entry != f'100644 blob {after_blob}\t{path}':
+            raise ValueError('CodeQL Spinner reviewed blob differs: ' + path)
     if git(repo, 'rev-parse', head + ':patches/molly').decode().strip() != FOREST:
         raise ValueError('Molly forest does not match the official snapshot')
     config_bytes = git(repo, 'show', head + ':molly-build.json')
@@ -624,10 +664,14 @@ def check_main_maintenance(repo, base, head, integration_lower):
             raise ValueError('main maintenance excludes direct source change: ' + path)
     if git(repo, 'rev-parse', head + ':patches/molly').decode().strip() != FOREST:
         raise ValueError('Molly forest does not match the official snapshot')
+    projection_lower = integration_lower
+    present = subprocess.run(['git','-C',str(repo),'cat-file','-e',MAIN_MAINTENANCE_BASE+'^{commit}'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode == 0
+    if present and subprocess.run(['git','-C',str(repo),'merge-base','--is-ancestor',MAIN_MAINTENANCE_BASE,base],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode == 0:
+        projection_lower = MAIN_MAINTENANCE_BASE
     # Compare the maintained tree to the trusted upstream source projection as
     # well as checking the PR diff. This also makes a trusted main snapshot
     # verifiable after earlier maintenance commits have landed.
-    projected = git(repo, 'diff', '--no-renames', '--name-only', '-z', integration_lower, head).split(b'\0')
+    projected = git(repo, 'diff', '--no-renames', '--name-only', '-z', projection_lower, head).split(b'\0')
     for raw in filter(None, projected):
         path = raw.decode('utf-8', 'surrogateescape')
         if not (metadata(path) or path in MAIN_PROJECTION_EXCEPTIONS or
@@ -638,7 +682,7 @@ def check_main_maintenance(repo, base, head, integration_lower):
     try:
         prior = json.loads(git(repo, 'show', base + ':molly-build.json'))
         current = json.loads(git(repo, 'show', head + ':molly-build.json'))
-        trusted = json.loads(git(repo, 'show', integration_lower + ':molly-build.json'))
+        trusted = json.loads(git(repo, 'show', projection_lower + ':molly-build.json'))
         for key in ('signal', 'molly', 'native'):
             if prior[key] != current[key] or current[key] != trusted[key]:
                 raise ValueError('main maintenance cannot change upstream source pin: ' + key)

@@ -37,6 +37,7 @@ jobs:
       base: ${{ steps.codeql_scope.outputs.base || steps.scope.outputs.base }}
       integration_lower: ${{ steps.scope.outputs.integration_lower }}
       profiles: ${{ steps.codeql_scope.outputs.profiles || steps.scope.outputs.profiles }}
+      hosted_android: ${{ steps.hosted.outputs.android }}
     steps:
       - name: Check out immutable head
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -269,6 +270,10 @@ jobs:
             echo 'profiles=[""]' >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Select supported hosted native and Android phases
+        id: hosted
+        run: python3 tools/patches/hosted_eligibility.py --repo . --github-output "$GITHUB_OUTPUT"
+
   source-proof:
     needs: scope
     if: needs.scope.outputs.profile == 'true'
@@ -330,8 +335,11 @@ jobs:
             --report "$RUNNER_TEMP/reports/source.json" \
             --scope "$STACK_SCOPE" --base "$SCOPE_BASE" "${scope_extra[@]}" $PROFILE_ARGS
 
+      - name: Record hosted eligibility without claiming native execution
+        run: python3 tools/patches/hosted_eligibility.py --repo . --report "$RUNNER_TEMP/reports/hosted-eligibility.json"
+
       - name: Prove the upstream native cherry-pick when configured
-        if: needs.scope.outputs.stack_scope != 'next-port'
+        if: needs.scope.outputs.hosted_android == 'true' && needs.scope.outputs.stack_scope != 'next-port'
         run: |
           python3 tools/patches/build.py native-prepare \
             --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
@@ -345,7 +353,7 @@ jobs:
           if-no-files-found: warn
 
   android:
-    if: needs.scope.outputs.stack_scope != 'next-port' && needs.scope.outputs.profile == 'true'
+    if: needs.scope.outputs.hosted_android == 'true' && needs.scope.outputs.stack_scope != 'next-port'
     name: Build the proved source and run its regression tests${{ matrix.profile && format(' ({0})', matrix.profile) || '' }}
     strategy:
       fail-fast: false
@@ -505,6 +513,7 @@ jobs:
     name: Instrumentation on reconstructed ${{ matrix.profile }}
     needs: [scope, source-proof]
     if: >-
+      needs.scope.outputs.hosted_android == 'true' &&
       github.event_name == 'workflow_dispatch' &&
       needs.scope.outputs.profiles != '[]' &&
       (inputs.instrumentation == 'both' || inputs.instrumentation == 'collie' || inputs.instrumentation == 'collie-foss') &&

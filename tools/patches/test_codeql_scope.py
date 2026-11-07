@@ -15,6 +15,8 @@ import scope
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / '.github/workflows/molly-patch-release.yml'
+REVIEWED_CODEQL_MAIN_BASE = scope.CODEQL_MAIN_BASE
+REVIEWED_SPINNER_BLOB_MANIFEST = dict(scope.CODEQL_SPINNER_BLOB_MANIFEST)
 
 
 class CodeQLFixture(unittest.TestCase):
@@ -48,6 +50,10 @@ class CodeQLFixture(unittest.TestCase):
         self.commit('reviewed main release')
         self.base = self.git('rev-parse', 'HEAD')
         forest = self.git('rev-parse', 'HEAD:patches/molly')
+        before_blobs = {
+            path: self.git('rev-parse', self.base + ':' + path)
+            for path in scope.CODEQL_REPOSITORY_OVERLAYS
+        }
         for name, value in (
                 ('CODEQL_MAIN_BASE', self.base), ('CODEQL_APPLICATION_TREE', self.application_tree),
                 ('MAIN_INTEGRATION_LOWER', self.legacy), ('FOREST', forest)):
@@ -56,8 +62,17 @@ class CodeQLFixture(unittest.TestCase):
             self.addCleanup(patcher.stop)
         self.write('.github/workflows/codeql.yml', 'name: CodeQL\n')
         self.write('.github/codeql/codeql-config.yml', 'queries: []\n')
+        for path in scope.CODEQL_REPOSITORY_OVERLAYS:
+            self.write(path, 'reviewed security change\n')
         self.commit('CodeQL workflow')
         self.candidate = self.git('rev-parse', 'HEAD')
+        fixture_manifest = {
+            path: (before_blobs[path], self.git('rev-parse', self.candidate + ':' + path))
+            for path in scope.CODEQL_REPOSITORY_OVERLAYS
+        }
+        self.spinner_manifest_patch = mock.patch.object(scope, 'CODEQL_SPINNER_BLOB_MANIFEST', fixture_manifest)
+        self.spinner_manifest_patch.start()
+        self.addCleanup(self.spinner_manifest_patch.stop)
 
     def git(self, *args):
         return subprocess.check_output(['git', '-C', str(self.repo), *args],
@@ -95,6 +110,14 @@ class CodeQLScopeTests(CodeQLFixture):
                                   'patches', 'tools/native', 'app', 'lib/network'), '')
         self.assertEqual(scope.check_codeql_source_tree(self.repo, self.application_tree),
                          self.application_tree)
+
+    def test_exact_additional_and_template_allowlists(self):
+        self.assertEqual(len(scope.CODEQL_ADDITIONAL_FILES), 6)
+        self.assertEqual(len(scope.CODEQL_TEMPLATE_FILES), 5)
+        self.assertEqual(len(scope.CODEQL_TOOL_FILES), 10)
+        for path in (*scope.CODEQL_ADDITIONAL_FILES, *scope.CODEQL_TEMPLATE_FILES,
+                     *scope.CODEQL_TOOL_FILES):
+            self.assertTrue(scope.codeql_maintenance_path(path), path)
 
     def test_no_other_application_or_release_inputs_are_permitted(self):
         for path in ('app/source.kt', 'lib/network/source.kt',
@@ -168,6 +191,18 @@ class CodeQLScopeTests(CodeQLFixture):
         with self.assertRaisesRegex(ValueError, 'main base is not an ancestor'):
             scope.check_codeql_maintenance(self.repo, sibling, 'HEAD')
 
+    def test_checked_out_spinner_manifest_matches_exact_reviewed_blobs(self):
+        self.assertEqual(REVIEWED_CODEQL_MAIN_BASE, '96fe0bdf78474dca9b06fb59adbb618b21e5ede0')
+        for path, (before_blob, after_blob) in REVIEWED_SPINNER_BLOB_MANIFEST.items():
+            before = subprocess.check_output(
+                ['git', '-C', str(ROOT), 'ls-tree', REVIEWED_CODEQL_MAIN_BASE, '--', path], text=True
+            ).strip()
+            after = subprocess.check_output(
+                ['git', '-C', str(ROOT), 'ls-tree', 'HEAD', '--', path], text=True
+            ).strip()
+            self.assertEqual(before, f'100644 blob {before_blob}\t{path}')
+            self.assertEqual(after, f'100644 blob {after_blob}\t{path}')
+
     def test_exact_release_target_and_forest_pins_are_still_required(self):
         with mock.patch.object(scope, 'CODEQL_APPLICATION_TREE', '0' * 40):
             with self.assertRaisesRegex(ValueError, 'release pins differ'):
@@ -186,6 +221,7 @@ class CodeQLScopeTests(CodeQLFixture):
 
     def test_security_path_allowlist_does_not_admit_siblings_or_traversals(self):
         for path in ('tools/codeql/../patches/release.py', 'tools/codeql/nested/test.py',
+                     'tools/codeql/unreviewed.py', 'tools/codeql/publication/unreviewed.yml.in',
                      'tools/codeql/report.py.extra', '.github/codeql/codeql-config.yml.extra',
                      'lib/spinner/src/main/assets/query.hbs.extra',
                      'lib/spinner/src/main/assets/js/other.js', 'docs/OTHER.md'):
@@ -202,6 +238,12 @@ class CodeQLWorkflowTests(CodeQLFixture):
             validator, count = re.subn(r"(?m)^" + name + r" = '[^']+'$",
                                       name + ' = ' + repr(getattr(scope, name)), validator)
             self.assertEqual(count, 1)
+        validator, count = re.subn(
+            r'(?ms)^CODEQL_SPINNER_BLOB_MANIFEST = \{.*?^\}',
+            'CODEQL_SPINNER_BLOB_MANIFEST = ' + repr(scope.CODEQL_SPINNER_BLOB_MANIFEST),
+            validator,
+        )
+        self.assertEqual(count, 1)
         self.write('tools/patches/scope.py', validator)
         self.commit('security scope validator')
         temporary = tempfile.TemporaryDirectory()
@@ -342,8 +384,11 @@ class CodeQLWorkflowTests(CodeQLFixture):
         self.assertNotIn('continue-on-error', early + ordinary)
         for name in ('profile', 'port', 'stack_scope', 'base', 'profiles'):
             self.assertIn('steps.codeql_scope.outputs.' + name + ' || steps.scope.outputs.' + name, workflow)
+        self.assertIn('hosted_android: ${{ steps.hosted.outputs.android }}', workflow)
         self.assertIn("source-proof:\n    needs: scope\n    if: needs.scope.outputs.profile == 'true'", workflow)
-        self.assertIn("android:\n    if: needs.scope.outputs.stack_scope != 'next-port' && needs.scope.outputs.profile == 'true'", workflow)
+        self.assertIn("android:\n    if: needs.scope.outputs.hosted_android == 'true' && needs.scope.outputs.stack_scope != 'next-port'", workflow)
+        self.assertIn('needs: [scope, source-proof]', workflow.split('  android:', 1)[1].split('  instrumentation:', 1)[0])
+        self.assertIn("needs.scope.outputs.hosted_android == 'true' &&", workflow.split('  instrumentation:', 1)[1])
         self.assertIn("needs.scope.outputs.profiles != '[]' &&", workflow.split('  instrumentation:', 1)[1])
 
 

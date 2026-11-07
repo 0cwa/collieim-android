@@ -68,8 +68,42 @@ Application workflow coverage and any future Java/Kotlin traced build are labele
 separately. Actual native/public dependency and Android build proof must precede
 Java/Kotlin activation; artifacts/metrics from another source tree are not proof.
 The engineering tooling scan does not claim application JVM/native coverage.
-Scope.py's narrow main/Matrix/temporary bridge transition is owned by app40 and
-must be combined/reviewed before this preparation becomes merge-ready.
+The narrow CodeQL route is integrated with app40's reviewed M40 baseline. It keeps
+the hosted eligibility output and gates Android/instrumentation on that output,
+while the CodeQL-only path skips reconstruction only after the complete source,
+release configuration, patch forest and pin checks succeed.
+
+## M40 integration boundary
+
+`CODEQL_MAIN_BASE` is the reviewed application main commit
+`96fe0bdf78474dca9b06fb59adbb618b21e5ede0`. The reconstructed application tree
+remains `da5c03ff20ae2a672329eb8257bc33949845b268`. The CodeQL path allowlist is
+file-exact: the existing maintenance files, ten named `tools/codeql` helpers and
+tests, these six publication/support paths, and five future publication templates:
+
+| Six additional paths | Five publication templates |
+| --- | --- |
+| `.github/scripts/screenshot_artifacts.py` | `tools/codeql/publication/codeql-config.yml` |
+| `.github/scripts/test_screenshot_artifacts.py` | `tools/codeql/publication/codeql.yml.in` |
+| `.github/workflows/publish-screenshots.yml` | `tools/codeql/publication/publish-screenshots.yml.in` |
+| `.github/workflows/update-screenshots.yml` | `tools/codeql/publication/reviewed-findings.json` |
+| `.github/workflows/sync.yml` | `tools/codeql/publication/update-screenshots.yml.in` |
+| `docs/CODEQL-CONSOLIDATION.md` | |
+
+The only Spinner overlay paths retain their exact M40 and reviewed CodeQL blobs:
+
+| Path | M40 blob | Security branch blob |
+| --- | --- | --- |
+| `lib/spinner/src/main/assets/js/main.js` | `2195ce7ae7ac4c75f09e582696d328a9bc3e40d4` | `dcaad668a6f9c04f01b573fc08531a1a19befba3` |
+| `lib/spinner/src/main/assets/query.hbs` | `e24d3c9fefa9ef75cab3bc1407214cdda7cf5017` | `64b60582740ab7aafa7fc29f9f483b0d732aabc8` |
+
+Both paths are repository-only and remain absent from the reconstructed
+application tree. The unchanged `molly-build.json` bytes, official Molly patch
+forest, native lock, Gradle pins and complete reconstructed tree remain required;
+no whitelist entry admits those release inputs. M40's hosted eligibility report
+continues to say `NOT RUN` for unsupported native/Android phases, and its hosted
+output gates both Android and instrumentation jobs. Java/Kotlin and packaged
+native dependency analysis remain `NOT RUN`.
 
 Official behavior references inspected:
 https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax

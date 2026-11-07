@@ -391,6 +391,9 @@ class Build:
                    '-Dorg.gradle.jvmargs=' + jvm_args]
         if self.profile is not None:
             command.append('-PmollyFirebaseFree=' + str(self.profile['firebase_free']).lower())
+            app = self.profile['app']
+            command += ['-PbaseAppTitle=' + app['title'], '-PbaseAppFileName=' + app['file_name'],
+                        '-PbasePackageId=' + app['package_id']]
         if getattr(self.args, 'build_cache', False):
             command.append('--build-cache')
         cache_dir = getattr(self.args, 'release_cache_dir', None)

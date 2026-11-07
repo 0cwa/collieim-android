@@ -93,6 +93,18 @@ Initial layers own the paths their mailboxes touch, so their rows split the init
 | `app/src/main/res/layout/fragment_registration_welcome_v3.xml` | 23 | no |
 | `app/src/main/java/org/thoughtcrime/securesms/dependencies/NetworkProxyState.kt` | 21 | no |
 
+### Release profiles
+
+Each profile's source compared with Molly and Signal and, for profiles with fork layers, the fork head as a third input, so **written** excludes lines the fork wrote. **From the fork** counts production lines the fork wrote that the profile carries. The Collie icon overlay is original work and does not by itself add the upstream fork as an input.
+
+| Profile | Tree | Fork layers | Release overlays | Firebase | Production written / removed | Written as % of Molly's production lines | From the fork | Molly lines not carried | Tests |
+|---|---|---|---|---|---:|---:|---:|---:|---:|
+| molly-minimal | `f35dba739537` | none | none | included | +1,507 / −307 | 5.6% | — | 1,492 | +2,093 / −358 |
+| molly-continued | `a493dcb4df66` | none | `collie-icon` | included | +1,634 / −315 | 6.1% | — | 1,583 | +2,260 / −358 |
+| molly-foss-continued | `2d7bb493e28d` | `firebase-free-build` | `collie-icon` | removed | +1,816 / −387 | 6.7% | 2 | 1,641 | +2,437 / −358 |
+| collie | `807ad4b20431` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | included | +2,374 / −518 | 8.8% | 181 | 2,006 | +3,163 / −361 |
+| collie-foss | `807ad4b20431` | `firebase-free-build`, `retention-controls`, `retention-controls-fixes`, `collie-icon`, `collie-branding` | none | removed | +2,374 / −518 | 8.8% | 181 | 2,006 | +3,163 / −361 |
+
 ## Raw physical Git diffs
 
 Physical Git diff lines; counts do not establish authorship or necessity. Comparisons with the mechanical tree include its conflict markers and both sides of every conflict, so they are bookkeeping for reviewers, not a measure of the AI-assisted compatibility changes.

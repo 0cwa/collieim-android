@@ -19,6 +19,14 @@ RETENTION = FORK_ROOT + '/retention-controls/series'
 RETENTION_FIXES = FORK_ROOT + '/retention-controls-fixes/series'
 COLLIE_ICON = FORK_ROOT + '/collie-icon/series'
 COLLIE_BRANDING = FORK_ROOT + '/collie-branding/series'
+# User-visible app title, backup file base name and shared package ID per profile.
+APP = {
+    'molly-minimal': ('Molly Minimal', 'Molly-Minimal', 'im.collie.app'),
+    'molly-continued': ('Molly Continued', 'Molly-Continued', 'im.collie.app'),
+    'molly-foss-continued': ('Molly FOSS Continued', 'Molly-FOSS-Continued', 'im.collie.app'),
+    'collie': ('Collie', 'Collie', 'im.collie.app'),
+    'collie-foss': ('Collie FOSS', 'Collie-FOSS', 'im.collie.app'),
+}
 POLICY = {
     'molly-minimal': ('followups/network-initialization-cycle', [], False),
     'molly-continued': ('followups/unifiedpush-registration-retry', [], False),
@@ -145,7 +153,8 @@ def select(config, name, repo='.'):
         raise ProfileError('fork instrumentation sources require a profile with a device test gate')
     selected['_profile'] = {'name': name, 'base_checkpoint': entry['base_checkpoint'],
                             'base_layer': boundary, 'base_tree': entry['base_tree'], 'target_tree': entry['target_tree'],
-                            'fork_series': fork, 'firebase_free': entry['firebase_free']}
+                            'fork_series': fork, 'firebase_free': entry['firebase_free'],
+                            'app': dict(zip(('title', 'file_name', 'package_id'), APP[name]))}
     if device_sources:
         selected['_profile']['instrumentation_sources'] = device_sources
     if overlay:

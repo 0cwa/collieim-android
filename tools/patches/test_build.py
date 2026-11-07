@@ -362,11 +362,16 @@ class NamedProfileBuildTests(BuildSourceTests):
         with patch.object(runner, 'source_proof'), patch.object(runner, 'run') as run, patch.dict(os.environ, {}, clear=True):
             for profile in sorted(build.release_profiles.NAMES):
                 with self.subTest(profile=profile):
-                    runner.profile = {'firebase_free': profile in build.release_profiles.FOSS}
+                    runner.profile = {'firebase_free': profile in build.release_profiles.FOSS,
+                                      'app': dict(zip(('title', 'file_name', 'package_id'),
+                                                      build.release_profiles.APP[profile]))}
                     runner.gradle('assemble-release')
                     command = run.call_args.args[0]
                     self.assertIn('-PmollyFirebaseFree=' + str(profile in build.release_profiles.FOSS).lower(), command)
                     self.assertIn('--build-cache', command)
+                    self.assertIn('-PbasePackageId=im.collie.app', command)
+                    self.assertIn('-PbaseAppTitle=' + build.release_profiles.APP[profile][0], command)
+                    self.assertIn('-PbaseAppFileName=' + build.release_profiles.APP[profile][1], command)
                     self.assertIn('-Dcollie.releaseTaskCache=/runner/release-task-cache', command)
                     self.assertIn('--max-workers=2', command)
                     self.assertIn('--dependency-verification=strict', command)
@@ -396,7 +401,17 @@ class NamedProfileBuildTests(BuildSourceTests):
         with patch.object(runner, 'source_proof', return_value=self.proof):
             runner.gradle('assemble')
         self.assertIn('-PmollyFirebaseFree=false', (self.reports / 'assemble.log').read_text().splitlines())
-        self.assertFalse(any(arg.startswith('-PbasePackageId=') for arg in (self.reports / 'assemble.log').read_text().splitlines()))
+        self.assertIn('-PbasePackageId=im.collie.app', (self.reports / 'assemble.log').read_text().splitlines())
+        self.assertIn('-PbaseAppTitle=Molly Minimal', (self.reports / 'assemble.log').read_text().splitlines())
+        for name, (title, filename, package) in build.release_profiles.APP.items():
+            with self.subTest(profile=name):
+                runner.profile['app'] = {'title': title, 'file_name': filename, 'package_id': package}
+                with patch.object(runner, 'source_proof', return_value=self.proof):
+                    runner.gradle('assemble')
+                args = (self.reports / 'assemble.log').read_text().splitlines()
+                self.assertIn('-PbasePackageId=im.collie.app', args)
+                self.assertIn('-PbaseAppTitle=' + title, args)
+                self.assertIn('-PbaseAppFileName=' + filename, args)
         self.args.profile = 'molly-continued'
         with self.assertRaisesRegex(build.BuildError, 'different release profile'):
             build.Build(self.args).source_proof()

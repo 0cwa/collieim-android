@@ -10,7 +10,7 @@ import zipfile
 from pathlib import Path
 
 PROFILES = {'molly-minimal', 'molly-continued', 'molly-foss-continued', 'collie', 'collie-foss'}
-PACKAGE = 'im.molly.app'
+PACKAGE = 'im.collie.app'
 
 
 def snapshot(source, destination):

@@ -454,7 +454,10 @@ measure of our changes. When `molly-build.json` declares named release
 profiles, the report adds one row per profile: profiles with fork layers load
 the fork's upstream bundle into the private object directory and use its head
 as the third parent, and **from the fork** counts the production lines the fork
-wrote that the profile carries.
+wrote that the profile carries. With `--config`, the command verifies source bundles
+and prepares profile trees first; this requires writable Git objects and checkpoint
+refs in the target repository. The measurements themselves use a private object
+directory.
 
 ```sh
 python3 tools/patches/line_origin.py port --markdown [--config molly-build.json]
@@ -526,8 +529,9 @@ append `patches/forks/signal-foss/retention-controls/series` and
 `patches/forks/signal-foss/retention-controls-fixes/series` and
 `patches/forks/signal-foss/collie-icon/series` and
 `patches/forks/signal-foss/collie-branding/series`. These layers supply Collie launcher artwork and the Collie theme and app identity. Firebase is
-selected only for Molly FOSS Continued and Collie FOSS. Named profiles retain the
-source build's default application identity.
+selected only for Molly FOSS Continued and Collie FOSS. Each profile also sets its
+app title, backup file name and package ID (`release_profiles.APP`): all five
+use `im.collie.app` and retain their individual profile titles and backup names.
 
 Fork profiles also require `fork_source` in `molly-build.json` with the original
 fork `url` and `head` pins. The independent `patches/forks/signal-foss/provenance.json` records schema 1,
@@ -666,7 +670,8 @@ tests do not block unsigned APK collection; disclose failures and missing runs.
 
 This flow builds five unsigned APKs on CI and signs them offline. The additional
 `.github/workflows/molly-unsigned-release.yml` is a new Signal-tree workflow
-exception and requires contributor approval before propagation. The flow
+exception and requires contributor approval before propagation. The release
+line must already contain the shared `im.collie.app` profile change. The flow
 must be rehearsed and a real release build checked before production use.
 
 Create the `unsigned-release` GitHub environment and protect it with required

@@ -199,6 +199,7 @@ class ForkProfilesTests(unittest.TestCase):
                 _, selected = release_profiles.select(config, name, self.repo)
             derived.assert_called_once_with(self.repo, [':app:test'], expected)
             self.assertEqual(selected['fork_series'], expected)
+            self.assertEqual(selected['app']['package_id'], 'im.collie.app')
             entry['icon_overlay'] = release_profiles.COLLIE_ICON
             if name in release_profiles.CONTINUED_ICON:
                 with patch.object(release_profiles, 'derived_tests', return_value=[':app:test']):

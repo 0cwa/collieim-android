@@ -31,12 +31,12 @@ jobs:
     name: Check stack scope and patch tools
     runs-on: ubuntu-24.04
     outputs:
-      profile: ${{ steps.scope.outputs.profile }}
-      port: ${{ steps.scope.outputs.port }}
-      stack_scope: ${{ steps.scope.outputs.stack_scope }}
-      base: ${{ steps.scope.outputs.base }}
+      profile: ${{ steps.codeql_scope.outputs.profile || steps.scope.outputs.profile }}
+      port: ${{ steps.codeql_scope.outputs.port || steps.scope.outputs.port }}
+      stack_scope: ${{ steps.codeql_scope.outputs.stack_scope || steps.scope.outputs.stack_scope }}
+      base: ${{ steps.codeql_scope.outputs.base || steps.scope.outputs.base }}
       integration_lower: ${{ steps.scope.outputs.integration_lower }}
-      profiles: ${{ steps.scope.outputs.profiles }}
+      profiles: ${{ steps.codeql_scope.outputs.profiles || steps.scope.outputs.profiles }}
     steps:
       - name: Check out immutable head
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -46,8 +46,94 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           lfs: false
+      - name: Validate CodeQL-only maintenance
+        id: codeql_scope
+        if: >-
+          (github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main') ||
+          (github.event_name == 'workflow_dispatch' && github.ref_name == 'main' && inputs.instrumentation == 'off')
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import sys
+          sys.path.insert(0, 'tools/patches')
+          import scope
+
+          proof = Path(os.environ['RUNNER_TEMP']) / 'codeql-maintenance-scope.json'
+          proof.unlink(missing_ok=True)
+          head = scope.git('.', 'rev-parse', '--verify', 'HEAD^{commit}').decode().strip()
+          base = os.environ['BASE_SHA'] if os.environ['EVENT_NAME'] == 'pull_request' else head
+          if not re.fullmatch(r'[0-9a-f]{40}', base):
+              raise ValueError('Invalid main base SHA')
+          if not scope.main_codeql_only('.', base, head):
+              sys.exit(0)
+          # Older main transitions retain their existing release checks.
+          try:
+              prior = json.loads(scope.git('.', 'show', base + ':molly-build.json'))
+          except subprocess.CalledProcessError:
+              sys.exit(0)
+          if prior.get('signal', {}).get('commit') != scope.NEXT_PORT_SIGNAL:
+              sys.exit(0)
+          if os.environ['EVENT_NAME'] == 'workflow_dispatch':
+              # A snapshot has no immediate diff. Only select this route when
+              # the complete release state is still CodeQL-only maintenance.
+              if subprocess.run(['git', 'merge-base', '--is-ancestor', scope.CODEQL_MAIN_BASE, head],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+                  sys.exit(0)
+              if not scope.main_codeql_only('.', scope.CODEQL_MAIN_BASE, head):
+                  sys.exit(0)
+          # Classification alone never authorizes skipping application checks.
+          # This validates ancestry, the cumulative PR38 projection, every
+          # release input, required workflows and the exact application pin.
+          result = scope.check_codeql_maintenance('.', base, head)
+          if result.get('codeql_maintenance') is not True:
+              raise ValueError('CodeQL maintenance was not fully validated')
+          result.update(base=base, head=head)
+          proof.write_text(json.dumps(result, indent=2) + '\n')
+          PY
+          if [[ ! -f "$RUNNER_TEMP/codeql-maintenance-scope.json" ]]; then
+            echo 'validated=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          python3 -m unittest discover -s tools/codeql -p 'test_*.py' -v
+          node --test tools/codeql/test_spinner.mjs
+          PYTHONPATH=tools/patches python3 -m unittest \
+            tools/patches/test_codeql_scope.py \
+            tools.patches.test_stack_scope.ScopeTests.test_main_maintenance_allows_patch_and_tool_work_but_rejects_source_edits \
+            tools.patches.test_stack_scope.ScopeTests.test_main_maintenance_rejects_upstream_pin_and_forest_changes \
+            tools.patches.test_stack_scope.ScopeTests.test_main_maintenance_and_snapshot_enforce_workflow_invariants \
+            tools.patches.test_stack_scope.ScopeTests.test_main_maintenance_snapshot_detects_prior_direct_source_edit \
+            tools/patches/test_ci_scope_mapping.py \
+            tools/patches/test_main_snapshot.py \
+            tools/patches/test_generated_stages.py \
+            tools/patches/test_next_port_workflow.py \
+            tools/patches/test_optional_instrumentation_workflow.py -v
+          # Publish skip outputs only after full validation AND all tests pass.
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          result = json.loads((Path(os.environ['RUNNER_TEMP']) / 'codeql-maintenance-scope.json').read_text())
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('validated=true\nprofile=false\nport=false\n')
+              output.write('stack_scope=main-maintenance\nprofiles=[]\n')
+              output.write('base=' + result['base'] + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('### Validated CodeQL maintenance\n\n')
+              summary.write('Base: `' + result['base'] + '`\n\nHead: `' + result['head'] + '`\n\n')
+              summary.write('Unchanged application tree: `' + result['application_tree'] + '`\n\n')
+              summary.write('Release configuration, patch layers, native inputs and application sources match the reviewed PR38 boundary. ')
+              summary.write('Security-tool and scope regressions passed. Application reconstruction and builds are unchanged and were not rerun.\n')
+          PY
       - name: Validate scope and tests
         id: scope
+        if: steps.codeql_scope.outputs.validated != 'true'
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
@@ -222,6 +308,9 @@ jobs:
       - name: Reconstruct the selected release and prove its complete tree
         env:
           INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}
+          STACK_SCOPE: ${{ needs.scope.outputs.stack_scope }}
+          SCOPE_BASE: ${{ needs.scope.outputs.base }}
+          HAS_PORT: ${{ needs.scope.outputs.port }}
         run: |
           scope_extra=()
           if [[ -n "$INTEGRATION_LOWER" ]]; then
@@ -230,16 +319,16 @@ jobs:
             [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$INTEGRATION_LOWER" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
             scope_extra+=(--integration-lower "$INTEGRATION_LOWER")
           fi
-          if [[ "${{ needs.scope.outputs.stack_scope }}" == forks || "${{ needs.scope.outputs.stack_scope }}" == main-snapshot ]]; then
+          if [[ "$STACK_SCOPE" == forks || "$STACK_SCOPE" == main-snapshot ]]; then
             python3 tools/patches/fetch_reviewed_profiles.py "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
           fi
-          if [[ "${{ needs.scope.outputs.port }}" == true ]]; then
+          if [[ "$HAS_PORT" == true ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
             --report "$RUNNER_TEMP/reports/source.json" \
-            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" "${scope_extra[@]}" $PROFILE_ARGS
+            --scope "$STACK_SCOPE" --base "$SCOPE_BASE" "${scope_extra[@]}" $PROFILE_ARGS
 
       - name: Prove the upstream native cherry-pick when configured
         if: needs.scope.outputs.stack_scope != 'next-port'
@@ -256,7 +345,7 @@ jobs:
           if-no-files-found: warn
 
   android:
-    if: needs.scope.outputs.stack_scope != 'next-port'
+    if: needs.scope.outputs.stack_scope != 'next-port' && needs.scope.outputs.profile == 'true'
     name: Build the proved source and run its regression tests${{ matrix.profile && format(' ({0})', matrix.profile) || '' }}
     strategy:
       fail-fast: false
@@ -287,6 +376,9 @@ jobs:
       - name: Materialize and verify the source on the build runner
         env:
           INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}
+          STACK_SCOPE: ${{ needs.scope.outputs.stack_scope }}
+          SCOPE_BASE: ${{ needs.scope.outputs.base }}
+          HAS_PORT: ${{ needs.scope.outputs.port }}
         run: |
           scope_extra=()
           if [[ -n "$INTEGRATION_LOWER" ]]; then
@@ -295,16 +387,16 @@ jobs:
             [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$INTEGRATION_LOWER" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
             scope_extra+=(--integration-lower "$INTEGRATION_LOWER")
           fi
-          if [[ "${{ needs.scope.outputs.stack_scope }}" == forks || "${{ needs.scope.outputs.stack_scope }}" == main-snapshot ]]; then
+          if [[ "$STACK_SCOPE" == forks || "$STACK_SCOPE" == main-snapshot ]]; then
             python3 tools/patches/fetch_reviewed_profiles.py "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
           fi
-          if [[ "${{ needs.scope.outputs.port }}" == true ]]; then
+          if [[ "$HAS_PORT" == true ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-release" \
             --report "$RUNNER_TEMP/reports/source.json" \
-            --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" "${scope_extra[@]}" $PROFILE_ARGS
+            --scope "$STACK_SCOPE" --base "$SCOPE_BASE" "${scope_extra[@]}" $PROFILE_ARGS
 
       - name: Prepare the optional native backport from its immutable sources
         run: |
@@ -414,6 +506,7 @@ jobs:
     needs: [scope, source-proof]
     if: >-
       github.event_name == 'workflow_dispatch' &&
+      needs.scope.outputs.profiles != '[]' &&
       (inputs.instrumentation == 'both' || inputs.instrumentation == 'collie' || inputs.instrumentation == 'collie-foss') &&
       (needs.scope.outputs.stack_scope == 'forks' || needs.scope.outputs.stack_scope == 'main-snapshot' || (needs.scope.outputs.stack_scope == 'main-maintenance' && needs.scope.outputs.profiles != '[""]'))
     strategy:
@@ -444,6 +537,9 @@ jobs:
       - name: Reconstruct the selected actual fork source
         env:
           INTEGRATION_LOWER: ${{ needs.scope.outputs.integration_lower }}
+          STACK_SCOPE: ${{ needs.scope.outputs.stack_scope }}
+          SCOPE_BASE: ${{ needs.scope.outputs.base }}
+          HAS_PORT: ${{ needs.scope.outputs.port }}
         run: |
           git fetch --no-tags https://github.com/mollyim/mollyim-android.git 0e202dda90785771ff8c87526eaaf30c655f54f3
           scope_extra=()
@@ -457,7 +553,7 @@ jobs:
           python3 tools/patches/prepare_port_report.py
           python3 tools/patches/release.py --repo . --config molly-build.json \
             --worktree "$RUNNER_TEMP/molly-instrumentation" --report "$RUNNER_TEMP/instrumentation/source.json" \
-            --scope '${{ needs.scope.outputs.stack_scope }}' --base '${{ needs.scope.outputs.base }}' "${scope_extra[@]}" --profile '${{ matrix.profile }}'
+            --scope "$STACK_SCOPE" --base "$SCOPE_BASE" "${scope_extra[@]}" --profile '${{ matrix.profile }}'
           python3 tools/patches/build.py native-prepare --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
           python3 tools/patches/build.py native-build --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'
           python3 tools/patches/build.py native-integrate --worktree "$RUNNER_TEMP/molly-instrumentation" --report-dir "$RUNNER_TEMP/instrumentation" --profile '${{ matrix.profile }}'

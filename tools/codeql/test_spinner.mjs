@@ -6,7 +6,14 @@ import vm from 'node:vm';
 const assets = new URL('../../lib/spinner/src/main/assets/', import.meta.url);
 const mainScript = readFileSync(new URL('js/main.js', assets), 'utf8');
 const queryTemplate = readFileSync(new URL('query.hbs', assets), 'utf8');
-const queryScript = queryTemplate.match(/<script type="text\/javascript">([\s\S]*?)<\/script>/)[1];
+const queryScript = queryTemplate.match(/<script type="text\/javascript">([\s\S]*?)<\/script>/i)[1];
+
+function scriptSources(template) {
+  return [...template.matchAll(/<script\b([^>]*)>/gi)]
+    .map(match => Object.fromEntries([...match[1].matchAll(/([\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>]+))/g)]
+      .map(attribute => [attribute[1].toLowerCase(), attribute[2] ?? attribute[3] ?? attribute[4]])))
+    .filter(attributes => Object.hasOwn(attributes, 'src'));
+}
 
 class Element {
   constructor(tagName = 'div') {
@@ -146,11 +153,15 @@ test('history accepts only strings and keeps its existing 25-query bound', () =>
   assert.equal(rows[24].children[1].textContent, 'SELECT 24;');
 });
 
+test('the script audit includes uppercase HTML tags and attribute names', () => {
+  const template = `<SCRIPT SRC='https://example.test/editor.js' CROSSORIGIN=anonymous INTEGRITY="sha384-value"></SCRIPT>`;
+  assert.deepEqual(scriptSources(template), [{
+    src: 'https://example.test/editor.js', crossorigin: 'anonymous', integrity: 'sha384-value',
+  }]);
+});
+
 test('every CDN script is version-pinned and requires a SHA-384 integrity check', () => {
-  const scripts = [...queryTemplate.matchAll(/<script\b([^>]*)>/g)]
-    .map(match => Object.fromEntries([...match[1].matchAll(/([\w-]+)="([^"]*)"/g)]
-      .map(attribute => [attribute[1], attribute[2]])))
-    .filter(attributes => attributes.src && /^(?:https?:)?\/\//.test(attributes.src));
+  const scripts = scriptSources(queryTemplate);
   assert.equal(scripts.length, 5);
   for (const script of scripts) {
     const url = new URL(script.src);

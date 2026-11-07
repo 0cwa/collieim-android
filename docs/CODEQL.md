@@ -65,7 +65,7 @@ The workflow installs the pinned NDK before CodeQL initialization, selects
 `build-mode: manual` for `c-cpp`, and invokes the helper after initialization:
 
 ```sh
-sdkmanager --install "ndk;28.0.13004108"
+"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;28.0.13004108"
 # Initialize CodeQL with language c-cpp and build-mode manual here.
 python3 tools/codeql/build_jni.py \
   --ndk "$ANDROID_HOME/ndk/28.0.13004108" \

@@ -113,7 +113,7 @@ jobs:
           print(configuration(Path.cwd())[0])
           PY
           )"
-          sdkmanager --install "ndk;$revision"
+          "${ANDROID_HOME:?}/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$revision"
           printf 'path=%s/ndk/%s\n' "$ANDROID_HOME" "$revision" >> "$GITHUB_OUTPUT"
       - name: Initialize CodeQL
         id: init

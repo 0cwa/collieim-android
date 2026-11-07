@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import re
+from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -77,12 +78,20 @@ def main():
                 "id", "ref", "commit_sha", "category", "created_at", "error",
                 "warning", "results_count", "rules_count", "tool", "analysis_key")
         })
+    try:
+        default_setup = request(args.repository, "default-setup", token)
+    except HTTPError as error:
+        if error.code not in (403, 404):
+            raise
+        # GITHUB_TOKEN can read alerts but not repository administration settings.
+        # Unknown configuration must never be interpreted as disabled scanning.
+        default_setup = {"state": "unknown", "http_status": error.code}
     snapshot = {
         "schema": 1,
         "captured_at": datetime.now(timezone.utc).isoformat(),
         "repository": args.repository,
         "ref": args.ref,
-        "default_setup": request(args.repository, "default-setup", token),
+        "default_setup": default_setup,
         "open_alerts": alerts,
         "latest_analyses": list(latest.values()),
     }

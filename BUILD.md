@@ -1,5 +1,9 @@
 # Building Collie
 
+Development is patch-first. Do not manually edit application code in this checkout.
+Author changes in the canonical engineering patch layers, then reconstruct and
+verify the published source. Read [AGENTS.md](AGENTS.md) before application work.
+
 This checkout contains the reconstructed application source; Gradle does not run
 an assembler or inject source from another worktree. JDK/Gradle/SDK/NDK and strict
 dependency inputs are declared in this tree. Canonical identity is im.collie.app,

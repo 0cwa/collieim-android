@@ -16,7 +16,10 @@ not contain its own hash. Source inspection is not signed provenance or proof
 that native binaries were independently rebuilt. Historical RC1's tag is retained
 unchanged; this source checkpoint is not retroactively its build input.
 
-Contribute normal application changes here. Maintainers export a full binary
-Git delta, commit it as an engineering layer, regenerate and compare the whole
-reviewed tree before release (source/PUBLICATION.md in engineering). The two
-representations may not silently diverge.
+Application changes must originate as reviewed patch layers in
+[collie-release-engineering](https://github.com/0cwa/collie-release-engineering).
+Do not manually edit application code in this published checkout, or merge a
+source PR first and export its patch later. Reconstruct from the canonical
+layers, verify the complete generated tree and publication receipt, and publish
+only that generated update. See [AGENTS.md](AGENTS.md) and engineering's
+`source/PUBLICATION.md`. Source inspection does not waive patch-first authoring.

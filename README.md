@@ -86,6 +86,10 @@ Collie supports local Signal-format backups. Restoring a backup requires an app 
 
 [Report bugs or suggest changes](https://github.com/0cwa/collieim-android/issues) in this repository.
 
+## Source and development
+
+Collie is developed through a layered, patch-based release system in [collie-release-engineering](https://github.com/0cwa/collie-release-engineering). For source and build details, see [BUILD.md](BUILD.md) and [VERIFY.md](VERIFY.md).
+
 ## License
 
 Licensed under the GNU Affero General Public License, version 3 only ([AGPL-3.0-only](LICENSE)). See [LEGAL.md](LEGAL.md) for legal and copyright information.

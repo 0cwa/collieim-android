@@ -40,8 +40,8 @@ class NextPortWorkflowTests(unittest.TestCase):
                                                  env={**os.environ, 'BASE_SHA': base}, text=True)
                 self.assertEqual(result.splitlines()[-1], expected)
         self.assertEqual(workflow.count('"$scope" == next-port'), 3)
-        self.assertIn("android:\n    if: needs.scope.outputs.stack_scope != 'next-port'", workflow)
-        self.assertIn("Prove the upstream native cherry-pick when configured\n        if: needs.scope.outputs.stack_scope != 'next-port'", workflow)
+        self.assertIn("android:\n    if: needs.scope.outputs.hosted_android == 'true' && needs.scope.outputs.stack_scope != 'next-port'", workflow)
+        self.assertIn("Prove the upstream native cherry-pick when configured\n        if: needs.scope.outputs.hosted_android == 'true' && needs.scope.outputs.stack_scope != 'next-port'", workflow)
         unsigned = (Path(__file__).resolve().parents[2] / '.github/workflows/molly-unsigned-release.yml').read_text()
         self.assertEqual(unsigned.count('Signal 8.35.1 release blocked: native integration and port review incomplete'), 2)
         instrumentation = workflow.split('  instrumentation:', 1)[1]

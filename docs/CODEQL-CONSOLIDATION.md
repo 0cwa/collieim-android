@@ -91,3 +91,13 @@ native-dependency source analysis. Local CodeQL CLI was not installed; no bundle
 was downloaded. The existing scope unit tests passing does not establish that a
 new cumulative PR/file set is authorized: app40's owned main/base/path integration
 still needs the final combined-candidate check before merge eligibility.
+
+The future published application workflow is supplied as an explicit publication
+layer by `tools/codeql/render_publication.py`. Render with the immutable reviewed
+engineering tools commit after that commit is durable; apply the resulting five
+files before generating G. The layer carries Actions coverage, the same report
+gate/upload toggle and pinned engineering screenshot parser/publisher. Java/Kotlin
+and native dependency coverage remain NOT RUN until a reviewed traced Android
+build proves extraction. The old baseline JNI builder/Spinner are not part of the
+engineering canonical tool export or the future application workflow. Normal
+application builds never invoke this renderer or inject source.

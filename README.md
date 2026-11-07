@@ -33,15 +33,13 @@ Welcome!  Collie is an independent Android messenger built on [Signal](https://s
  </picture>
 </a>
 
-Collie continues Molly on newer Signal releases.
+Collie builds on the work of [Molly](https://github.com/mollyim-android), supporting newer Signal releases, and develops new functionality independently.
 
 ## Download
 
-Download `collie.apk` from the [Releases page](https://github.com/0cwa/collieim-android/releases) or use the Obtainium link above for updates. All five APK filenames in the latest release contain the same Collie app; the older names remain available for existing Obtainium filters. All use the package `im.collie.app` and can be installed alongside Signal or Molly.
+Use the Obtainium link above to stay updated.  Our apk `collie.apk` is on the [Releases page](https://github.com/0cwa/collieim-android/releases)  All APK files in the latest release contain the same Collie app; the older names are available for existing Obtainium filters. All are FOSS and all use the package `im.collie.app` and can be installed alongside Signal or Molly.  *F-droid-compatible repo coming soon.*
 
-Collie supports WebSocket, UnifiedPush, and optional Firebase Cloud Messaging (FCM). The FCM client uses Molly’s open-source compatibility implementation; FCM delivery uses Google’s service. If you are updating from an older FOSS build, a previously saved FCM preference may become active. To keep WebSocket delivery, select **Settings → Notifications → Push notifications → Delivery service → WebSocket** before updating.
-
-_[Throw the dog a bone? 🐶🦴](https://liberapay.com/Collie)_
+_[Throw the dog a bone? 🐶🦴](https://liberapay.com/Collie)_ - It helps me speed up development - I want to work on a desktop client too.
 
 ## Features
 

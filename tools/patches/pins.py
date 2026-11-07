@@ -28,7 +28,7 @@ PINS = [
     ('f6f68cdee08fb8d9acb6a866b1673deb10525f20', 'accepted PR38 raw main maintenance projection', 'none', [SCOPE]),
     ('b06a83f6e4584f27811c3f406579b7db296f4b59', 'audited clean integration entries manifest', 'none', [SCOPE]),
     ('7f0eb01a0ab472deeef3b528e7f508425044fa6a', 'audited historical release base for clean main', 'none', [SCOPE, RELEASE_WORKFLOW]),
-    ('7d486880ddc991af0d36f1e4709030255ef4dbad', 'reviewed fork base for Signal 8.35.1', 'none', [SCOPE]),
+    ('7d486880ddc991af0d36f1e4709030255ef4dbad', 'reviewed fork base for Signal 8.35.1', 'none', [SCOPE, RELEASE_WORKFLOW]),
     ('1861543f3ba23b0bc396cb39a0595346537b6df6', 'audited main transition boundary', 'none', [SCOPE]),
     ('89bd7d6368a509470c4612d079746f66dfac8b55', 'reviewed release profile composition', 'none', [SCOPE]),
     ('0e202dda90785771ff8c87526eaaf30c655f54f3', 'Molly 8.19.2-4 release commit, the Molly input', 'Molly',

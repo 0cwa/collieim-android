@@ -18,8 +18,10 @@ targetSDK36, one RSA4096 signer with v2/v3 signatures and certificate SHA256
 No application-debuggable badging entry. Physical-device upgrade NOT RUN.
 
 Historical release inventory has four published releases. Previous manifests
-report 177201 (8.33.2 RC1), 177202 (RC2), 177203 (RC3). These are manifest
-claims until actual archived APK inspection is recorded. Current verified
+report 177201 (8.33.2 RC1), 177202 (RC2), 177203 (RC3). All three actual archived Collie APKs were downloaded, hashed against their
+respective manifests, and independently inspected with aapt2/apksigner: all
+three have package im.collie.app and the same production certificate. See the
+verified published-inventory fixture for hashes. Current verified
 production floor is 177702; production reservations can raise it further.
 
 Fixtures preserve the actual RC1 final manifest and provenance, including the

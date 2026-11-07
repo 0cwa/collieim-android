@@ -50,3 +50,27 @@ Operator rollback: retain old main, tag, APK and signer; revert preparatory code
 if necessary, retaining ledger/evidence and never reusing allocated codes. Do not
 merge cutover until reviewed engineering refs are durable and G/I/base are pinned.
 Production index key provisioning, DNS and publication require separate approval.
+
+## Executable graph verification
+
+Use `python3 tools/patches/migration_receipts.py --source source.json --build
+build.json --release release.json --repository repository.json --approvals
+approved-digests.json` to compare all four canonical document digests with
+independently authenticated approvals and check every cross-document link.
+The approval document has exactly source, build, release, repository SHA256s;
+never calculate approval from a candidate and present that as authorization.
+Source commit/tree, engineering revision, APK digest and APK signer must agree
+throughout the graph. Shape-valid replacement documents fail these checks.
+
+Add `--promotion` for a promotion decision: every receipt must have nonempty
+PASS evidence with digests. UNKNOWN/NOT RUN/BLOCKED/FAIL cannot promote. This
+verifies document consistency, not truth of evidence or signer attestations;
+operators still inspect/authenticate linked evidence and approve immutable
+inputs. Synthetic graph fixtures deliberately contain UNKNOWN evidence and
+therefore fail promotion. Historical RC1 remains importable, not upgraded into
+a complete new evidence chain.
+
+Current non-rehearsal signing requires explicit single-collie mode before any
+key access. Own-repository publishing requires the same mode before any GitHub
+mutation, including dry-run validation. Historical five-profile parsing and
+rehearsal remain available for verification; production cannot select them.

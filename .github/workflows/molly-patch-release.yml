@@ -90,7 +90,9 @@ jobs:
               main)
                 [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid main base SHA' >&2; exit 1; }
                 git merge-base --is-ancestor "$BASE_SHA" HEAD || { echo 'Main base is not an ancestor of head' >&2; exit 1; }
-                if ! git cat-file -e "$BASE_SHA:molly-build.json" 2>/dev/null; then
+                if python3 -c 'import json,subprocess,sys; b=json.loads(subprocess.check_output(["git", "show", sys.argv[1] + ":molly-build.json"])); h=json.load(open("molly-build.json")); target="a74583b01e260944f699c4da03ba4e8ce04de32b"; sys.exit(0 if h["signal"]["commit"] == target and b["signal"]["commit"] != target else 1)' "$BASE_SHA" 2>/dev/null; then
+                  scope=next-port; base=7d486880ddc991af0d36f1e4709030255ef4dbad
+                elif ! git cat-file -e "$BASE_SHA:molly-build.json" 2>/dev/null; then
                   scope=main-transition
                 elif python3 -c 'import json, subprocess, sys; b=json.loads(subprocess.check_output(["git", "show", sys.argv[1] + ":molly-build.json"])); h=json.load(open("molly-build.json")); sys.exit(0 if "profiles" not in b and "profiles" in h else 1)' "$BASE_SHA"; then
                   scope=forks
@@ -99,7 +101,7 @@ jobs:
                 else
                   scope=main-maintenance
                 fi
-                if [[ "$scope" != main-docs ]]; then
+                if [[ "$scope" != main-docs && "$scope" != next-port ]]; then
                   integration_lower=7f0eb01a0ab472deeef3b528e7f508425044fa6a
                   git fetch --no-tags "$trusted_url" "$integration_lower"
                   [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$integration_lower" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }

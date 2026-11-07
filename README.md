@@ -12,7 +12,7 @@
 
 <p align="center">
 <a href="https://matrix.to/#/#collieim:worldethicaldataforum.org">
-  <img height="60" alt="matrix-banner" src="assets/collie-matrix-invite.svg">
+  <img height="50" alt="matrix-banner" src="assets/collie-matrix-invite.svg">
 </a>
 </p>
 

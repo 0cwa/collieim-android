@@ -421,10 +421,16 @@ class ScopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'unexpected trusted release-base'):
                 scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=self.base)
             for path in ('tools/patches/example.py', 'patches/ports/example', 'patches/forks/example',
-                         '.github/workflows/molly-patch-release.yml', 'docs/PORT-REPORT.md'):
+                         '.github/workflows/molly-patch-release.yml', 'docs/PORT-REPORT.md',
+                         '.github/codeql/reviewed-findings.json'):
                 self.commit(path, 'maintenance')
                 self.assertEqual(scope.check_scope(self.repo, 'main-maintenance', base,
                                                    integration_lower=base)['scope'], 'main-maintenance')
+            accepted = self.git('rev-parse', 'HEAD').strip()
+            self.commit('.github/codeql/other-policy.json', 'unlisted CodeQL policy')
+            with self.assertRaisesRegex(ValueError, 'main maintenance excludes direct source change'):
+                scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)
+            self.git('reset', '--hard', '-q', accepted)
             self.commit('app.txt', 'direct source edit')
             with self.assertRaisesRegex(ValueError, 'excludes direct source change'):
                 scope.check_scope(self.repo, 'main-maintenance', base, integration_lower=base)

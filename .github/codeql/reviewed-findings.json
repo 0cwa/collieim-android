@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "reviews": [
+    {
+      "id": "maintainer-dispatched-build-source",
+      "disposition": "false-positive",
+      "language": "actions",
+      "category": "/language:actions/",
+      "tool_version": "2.27.4",
+      "location": {
+        "uri": ".github/workflows/build-artifacts.yml",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 87,
+        "start_column": 9,
+        "end_line": 95,
+        "end_column": 7
+      },
+      "source_sha256": "dbb4a0c186d23bc567f6afb67daea163642c960d3b9abddf47be9c801b8f6745",
+      "rule": "actions/untrusted-checkout/medium",
+      "level": "warning",
+      "security_severity": "5.0",
+      "query_kind": "problem",
+      "query_precision": "medium",
+      "message": "Potential unsafe checkout of untrusted pull request on non-privileged workflow.",
+      "reason": "This checkout is reached only through workflow_dispatch. A maintainer with repository write access explicitly selects the ref and either this repository or signalapp/Signal-Android; no pull_request or pull_request_target event supplies the ref. The medium-precision query classifies the input name ref as a pull-request head even for this dispatch-only workflow. The job runs on a fresh GitHub-hosted runner with contents: read, persist-credentials: false and server-enforced cache-mode: read; BuildKit cache export is disabled. The selected source is still trusted code: nightly builds receive NIGHTLY_URL. Dispatchers must review the selected source before running it. This review concerns the reported untrusted-pull-request checkout and does not assert that arbitrary selected code is safe."
+    }
+  ]
+}

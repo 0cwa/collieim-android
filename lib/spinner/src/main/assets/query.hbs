@@ -51,15 +51,26 @@
 
     {{> partials/tooltips}}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql-formatter/4.0.2/sql-formatter.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/ace.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/mode-sql.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/theme-github.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/theme-github_dark.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql-formatter/4.0.2/sql-formatter.min.js" integrity="sha384-GD998plx93LzHc3D4PRPCbZBhxtp/4PoAR+udrptPX6I+hvQYF4CmyfhyA1EROOi" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/ace.min.js" integrity="sha384-Ipfz0vJkj0Xi5gxCa/iUaL5azcOAcrzVmV+TP5sAv6HqeLsOA0Ar/yFQEnp88/ht" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/mode-sql.min.js" integrity="sha384-QaN+y2rdyOeB4nX9uWTNHPPMBpk9mt0qGVtOqgxZEzd/3KUQypaFgkj0Ofa1iy9M" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/theme-github.min.js" integrity="sha384-VKMHznUZox6bnTzWoUM6BKawabXXIQZ13pSMdtRbM9kInX2FbL7x0FXzuK6oTcfY" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.5/theme-github_dark.min.js" integrity="sha384-XCSvSqM2RSDX7pH4Ih/J+4ZK5D3SyrJlvmv5pJknVce5PAnxg46az/dOGXQ7Y+RA" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="text/javascript">
       let editor;
 
       function main() {
+        // Ace otherwise fetches missing modes/themes dynamically without SRI.
+        // Initialize only after every dependency loaded through its pinned tag.
+        if (typeof sqlFormatter === 'undefined' || typeof ace === 'undefined' ||
+            !['ace/mode/sql', 'ace/theme/github', 'ace/theme/github_dark'].every(name => ace.require(name))) {
+          document.querySelector('.query-input').textContent = 'The query editor could not load. Reload the page to retry.';
+          document.querySelectorAll('#query-form input[type="submit"], #query-form button').forEach(control => {
+            control.disabled = true;
+          });
+          return;
+        }
+
         //document.querySelector('.query-input').addEventListener('keypress', submitOnEnter);
         document.getElementById('query-form').addEventListener('submit', onQuerySubmitted, false);
         renderQueryHistory();
@@ -139,30 +150,40 @@
 
         let history = getQueryHistory();
 
+        container.replaceChildren();
         if (history.length > 0) {
-          let i = 0;
-          for (let item of history) {
-            container.innerHTML += `
-              <tr>
-                <td><button onclick="onHistoryItemClicked(${i})">^</button></td>
-                <td id="history-item-${i}">${item}</td>
-              </tr>
-            `;
-            i++;
+          for (const item of history) {
+            const row = document.createElement('tr');
+            const buttonCell = document.createElement('td');
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = '^';
+            button.addEventListener('click', () => editor.setValue(item, item.length));
+            buttonCell.appendChild(button);
+            const queryCell = document.createElement('td');
+            // SQL can contain HTML. Display its exact text without creating markup.
+            queryCell.textContent = item;
+            row.append(buttonCell, queryCell);
+            container.appendChild(row);
           }
         } else {
-          container.innerHTML = '<em>None</em>';
+          const row = document.createElement('tr');
+          const cell = document.createElement('td');
+          const message = document.createElement('em');
+          message.textContent = 'None';
+          cell.appendChild(message);
+          row.appendChild(cell);
+          container.appendChild(row);
         }
       }
 
-      function onHistoryItemClicked(i) {
-        let item = document.getElementById(`history-item-${i}`).innerText;
-        editor.setValue(item, item.length);
-      }
-
       function getQueryHistory() {
-        const historyRaw = localStorage.getItem('query-history') || "[]";
-        return JSON.parse(historyRaw);
+        try {
+          const history = JSON.parse(localStorage.getItem('query-history') || "[]");
+          return Array.isArray(history) ? history.filter(item => typeof item === 'string').slice(0, 25) : [];
+        } catch {
+          return [];
+        }
       }
 
       function isDarkTheme() {

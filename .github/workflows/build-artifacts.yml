@@ -1,10 +1,11 @@
 name: Build artifacts
 
 # Builds unsigned APKs / bundles of various types inside the reproducible-builds
-# Docker image and uploads them as a workflow artifact. No credentials are
-# available here; the only secrets are the two nightly update-check URLs, and
-# they are only handed to nightly builds. It only ever runs when dispatched;
-# never on push or pull_request.
+# Docker image and uploads them as a workflow artifact. The dispatcher is
+# responsible for choosing trusted source: that code runs the build and receives
+# the nightly update-check URL when a nightly type is selected. No signing
+# credentials are provided. It only ever runs when dispatched; never on push or
+# pull_request.
 #
 # Whoever dispatches it can pass an opaque `correlation` id and find the run by
 # this name, since the dispatch API doesn't return a run id.
@@ -47,6 +48,9 @@ jobs:
   build:
     name: "Build #${{ matrix.index }}"
     runs-on: ubuntu-latest-8-cores
+    # This manually selected source must not populate caches read by other jobs.
+    # GitHub enforces this limit with scoped cache tokens, independently of contents permissions.
+    cache-mode: read
     timeout-minutes: 50
     strategy:
       fail-fast: false
@@ -78,19 +82,22 @@ jobs:
       # predate this workflow.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         # gh api repos/actions/checkout/commits/v6 --jq '.sha'
+        with:
+          persist-credentials: false
       - name: Check out the source to build
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ inputs.repo == 'public' && 'signalapp/Signal-Android' || github.repository }}
           ref: ${{ inputs.ref }}
           path: src
+          persist-credentials: false
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
       # Same image a verifier would build from reproducible-builds/ at this
-      # commit. Layers are cached in the Actions cache, so unless the Dockerfile
-      # or its context changed this is a cache hit.
+      # commit. Import layers produced by trusted workflows, but never export
+      # this manually selected source's layers into the shared Actions cache.
       - name: Build the reproducible-builds image
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
@@ -98,7 +105,6 @@ jobs:
           tags: signal-android
           load: true
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Build
         env:

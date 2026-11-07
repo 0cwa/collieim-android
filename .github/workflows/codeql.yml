@@ -44,7 +44,7 @@ jobs:
       CODEQL_ACTION_EXPORT_DIAGNOSTICS: 'true'
       # A sibling of the checkout stays outside CodeQL's source root. Unlike the
       # runner context, github.workspace is valid in job-level environment values.
-      CODEQL_RESULTS: ${{ github.workspace }}/../codeql-results/${{ matrix.language }}
+      CODEQL_RESULTS: ${{ github.workspace }}-codeql-results/${{ matrix.language }}
     steps:
       - name: Check out the analyzed revision
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6

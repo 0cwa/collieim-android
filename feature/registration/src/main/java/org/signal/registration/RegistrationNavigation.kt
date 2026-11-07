@@ -107,6 +107,10 @@ import org.signal.registration.screens.localbackuprestore.LocalBackupRestoreView
 import org.signal.registration.screens.messagesync.MessageSyncScreen
 import org.signal.registration.screens.messagesync.MessageSyncScreenAction
 import org.signal.registration.screens.messagesync.MessageSyncViewModel
+import org.signal.registration.screens.passkeyverification.PasskeyVerificationAction
+import org.signal.registration.screens.passkeyverification.PasskeyVerificationScreen
+import org.signal.registration.screens.passkeyverification.PasskeyVerificationScreenEvents
+import org.signal.registration.screens.passkeyverification.PasskeyVerificationViewModel
 import org.signal.registration.screens.permissions.PermissionsScreen
 import org.signal.registration.screens.phonenumber.PhoneNumberEntryScreenEvents
 import org.signal.registration.screens.phonenumber.PhoneNumberEntryViewModel
@@ -229,6 +233,10 @@ sealed interface RegistrationRoute : NavKey, Parcelable {
   /** Choosing which second factor to authenticate with when logging in requires two-factor authentication. */
   @Serializable
   data class TwoFactorSelection(val methods: List<TwoFactorMethod>) : RegistrationRoute
+
+  /** Authenticating with a passkey when that's the only second factor the account has. */
+  @Serializable
+  data class PasskeyVerification(val parameters: WebAuthnParameters) : RegistrationRoute
 
   /** Entering the six-digit code from the user's authenticator app. */
   @Serializable
@@ -724,7 +732,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     val purchaseScope = rememberCoroutineScope()
     CollectActions(viewModel.actions) { action ->
       when (action) {
-        SignalLoginPaymentScreenActions.OpenLearnMoreArticle -> openUrl(context, "https://support.signal.org/hc/articles/11197884108826")
+        SignalLoginPaymentScreenActions.OpenLearnMoreArticle -> openUrl(context, SignalLoginCredentialEntryScreenActions.NEED_HELP_ARTICLE_URL)
 
         SignalLoginPaymentScreenActions.OpenPaymentUnavailableArticle -> openUrl(context, "https://support.signal.org/hc/articles/11228705649690")
 
@@ -912,7 +920,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     val state by viewModel.state.collectAsStateWithLifecycle()
     CollectActions(viewModel.actions) { action ->
       when (action) {
-        SignalLoginCredentialEntryScreenActions.OpenNeedHelpArticle -> openUrl(context, "https://support.signal.org/hc/articles/11197884108826")
+        SignalLoginCredentialEntryScreenActions.OpenNeedHelpArticle -> openUrl(context, SignalLoginCredentialEntryScreenActions.NEED_HELP_ARTICLE_URL)
       }
     }
 
@@ -965,6 +973,46 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     }
 
     TwoFactorSelectionScreen(
+      state = state,
+      onEvent = { viewModel.onEvent(it) }
+    )
+  }
+
+  // -- Passkey Verification Screen
+  entry<RegistrationRoute.PasskeyVerification> { key ->
+    val viewModel: PasskeyVerificationViewModel = viewModel {
+      PasskeyVerificationViewModel(
+        parameters = key.parameters,
+        parentEventEmitter = parentEventEmitter
+      )
+    }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current
+    val scope = rememberCoroutineScope()
+
+    CollectActions(viewModel.actions) { action ->
+      when (action) {
+        is PasskeyVerificationAction.AuthenticateWithPasskey -> {
+          if (activity == null) {
+            Log.w(TAG, "[PasskeyVerification] No activity to show the passkey provider's sheet on. Leaving the user on the verification screen.")
+            viewModel.onEvent(PasskeyVerificationScreenEvents.PasskeyCeremonyFailed)
+          } else {
+            scope.launch {
+              runPasskeyAssertion(
+                activityContext = activity,
+                relyingPartyId = RegistrationDependencies.get().webAuthnRelyingPartyId,
+                parameters = action.parameters,
+                resultBus = registrationViewModel.resultBus,
+                parentEventEmitter = parentEventEmitter,
+                onCeremonyFailed = { viewModel.onEvent(PasskeyVerificationScreenEvents.PasskeyCeremonyFailed) }
+              )
+            }
+          }
+        }
+      }
+    }
+
+    PasskeyVerificationScreen(
       state = state,
       onEvent = { viewModel.onEvent(it) }
     )

@@ -20,6 +20,7 @@ import org.signal.core.models.media.Media
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.permissions.Permissions
 import org.signal.core.util.logging.Log
+import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.location.SignalPlace
 import org.thoughtcrime.securesms.contactshare.Contact
@@ -31,7 +32,6 @@ import org.thoughtcrime.securesms.giph.ui.GiphyActivity
 import org.thoughtcrime.securesms.maps.PlacePickerActivity
 import org.thoughtcrime.securesms.mediasend.MediaSendActivityResult
 import org.thoughtcrime.securesms.mediasend.MediaSendLauncher
-import org.thoughtcrime.securesms.util.RemoteConfig
 
 /**
  * This encapsulates the logic for interacting with other activities used throughout a conversation. The gist
@@ -212,7 +212,6 @@ class ConversationActivityResultContracts(private val fragment: Fragment, privat
   private object GifSearch : ActivityResultContract<GifSearchInput, MediaSendActivityResult?>() {
     override fun createIntent(context: Context, input: GifSearchInput): Intent {
       return Intent(context, GiphyActivity::class.java).apply {
-        putExtra(GiphyActivity.EXTRA_IS_MMS, false)
         putExtra(GiphyActivity.EXTRA_RECIPIENT_ID, input.recipientId)
         putExtra(GiphyActivity.EXTRA_TRANSPORT, MessageSendType.SignalMessageSendType)
         putExtra(GiphyActivity.EXTRA_TEXT, input.text)

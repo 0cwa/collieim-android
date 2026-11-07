@@ -46,6 +46,7 @@ import org.signal.core.util.concurrent.ListenableFuture;
 import org.signal.core.util.concurrent.SettableFuture;
 import org.signal.core.util.logging.Log;
 import org.signal.glide.decryptableuri.DecryptableUri;
+import org.signal.mediakeyboard.MediaKeyboardTab;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.animation.AnimationCompleteListener;
 import org.thoughtcrime.securesms.animation.AnimationStartListener;
@@ -62,7 +63,6 @@ import org.thoughtcrime.securesms.database.model.MessageId;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.Quote;
-import org.thoughtcrime.securesms.keyboard.KeyboardPage;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewRepository;
 import org.thoughtcrime.securesms.mms.QuoteModel;
@@ -118,6 +118,7 @@ public class InputPanel extends ConstraintLayout
   private @Nullable Listener listener;
   private           boolean  emojiVisible;
   private           boolean  wallpaperEnabled;
+  private           int      reservedTopSpace;
 
   private boolean hideForMessageRequestState;
   private boolean hideForGroupState;
@@ -188,6 +189,36 @@ public class InputPanel extends ConstraintLayout
     editMessageCancel.setOnClickListener(v -> exitEditMessageMode());
 
     quickCameraToggle.setVisibility(View.GONE);
+  }
+
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    if (!linkPreviewStub.resolved() || linkPreviewStub.getVisibility() != VISIBLE || MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.UNSPECIFIED) {
+      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+      return;
+    }
+
+    LinkPreviewView linkPreview = linkPreviewStub.get();
+    linkPreview.setMaxDescriptionHeight(LinkPreviewView.NO_MAX_DESCRIPTION_HEIGHT);
+    super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+
+    int overflow          = getMeasuredHeight() - (MeasureSpec.getSize(heightMeasureSpec) - reservedTopSpace);
+    int descriptionHeight = linkPreview.getDescriptionHeight();
+    if (overflow > 0 && descriptionHeight > 0) {
+      linkPreview.setMaxDescriptionHeight(descriptionHeight - overflow);
+    }
+
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+  }
+
+  /**
+   * Space at the top of the parent this panel shouldn't grow into, such as a toolbar it is laid out beneath.
+   */
+  public void setReservedTopSpace(int reservedTopSpace) {
+    if (this.reservedTopSpace != reservedTopSpace) {
+      this.reservedTopSpace = reservedTopSpace;
+      requestLayout();
+    }
   }
 
   public void setListener(final @NonNull Listener listener) {
@@ -389,8 +420,8 @@ public class InputPanel extends ConstraintLayout
     mediaKeyboard.setVisibility(show ? View.VISIBLE : GONE);
   }
 
-  public void setMediaKeyboardToggleMode(@NonNull KeyboardPage page) {
-    mediaKeyboard.setStickerMode(page);
+  public void setMediaKeyboardToggleMode(@NonNull MediaKeyboardTab tab) {
+    mediaKeyboard.setStickerMode(tab);
   }
 
   public boolean isStickerMode() {

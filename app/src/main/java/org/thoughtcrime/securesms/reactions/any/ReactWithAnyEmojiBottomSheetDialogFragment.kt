@@ -23,10 +23,11 @@ import org.signal.core.ui.compose.navigationBarsCompat
 import org.signal.mediakeyboard.screens.emojisheet.EmojiSheet
 import org.signal.mediakeyboard.screens.emojisheet.EmojiSheetAction
 import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.components.emoji.RecentEmojiPageModel
+import org.thoughtcrime.securesms.components.emoji.RecentEmojiStore
 import org.thoughtcrime.securesms.database.model.MessageId
 import org.thoughtcrime.securesms.database.model.MessageRecord
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.setPreferredVariation
 import org.thoughtcrime.securesms.mediakeyboard.SignalEmojiSheetRepository
 import org.thoughtcrime.securesms.reactions.edit.EditReactionsActivity
 import org.thoughtcrime.securesms.util.fragments.findListener
@@ -38,7 +39,7 @@ class ReactWithAnyEmojiBottomSheetDialogFragment : ComposeBottomSheetDialogFragm
 
   companion object {
     const val REACTION_STORAGE_KEY = "reactions_recent_emoji"
-    private const val ABOUT_STORAGE_KEY = RecentEmojiPageModel.RECENT_STORAGE_KEY
+    private const val ABOUT_STORAGE_KEY = RecentEmojiStore.RECENT_STORAGE_KEY
 
     private const val ARG_MESSAGE_ID = "arg_message_id"
     private const val ARG_SHADOWS = "arg_shadows"

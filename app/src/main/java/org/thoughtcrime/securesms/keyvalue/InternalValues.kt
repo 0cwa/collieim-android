@@ -1,13 +1,20 @@
 package org.thoughtcrime.securesms.keyvalue
 
 import org.signal.archive.proto.BackupDebugInfo
+import org.signal.remoteconfig.RemoteConfig
 import org.signal.ringrtc.CallManager.DataMode
+import org.signal.storage.keyvalue.KeyValueStore
+import org.signal.storage.keyvalue.SignalStoreValueDelegate
+import org.signal.storage.keyvalue.SignalStoreValues
+import org.signal.storage.keyvalue.booleanValue
+import org.signal.storage.keyvalue.integerValue
+import org.signal.storage.keyvalue.map
+import org.signal.storage.keyvalue.protoValue
+import org.signal.storage.keyvalue.withPrecondition
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.database.model.IssuePriority
 import org.thoughtcrime.securesms.keyvalue.protos.IssueNotifyTimes
-import org.thoughtcrime.securesms.keyvalue.protos.RemoteConfigOverrides
 import org.thoughtcrime.securesms.util.Environment.Calling.defaultSfuUrl
-import org.thoughtcrime.securesms.util.RemoteConfig
 
 class InternalValues internal constructor(store: KeyValueStore) : SignalStoreValues(store) {
   companion object {
@@ -46,12 +53,12 @@ class InternalValues internal constructor(store: KeyValueStore) : SignalStoreVal
     const val ANR_DETECTION_CRASH: String = "internal.anr_detection_crash"
     const val ISSUE_NOTIFICATION_PRIORITY: String = "internal.issue_notification_priority"
     const val ISSUE_NOTIFY_TIMES: String = "internal.issue_notify_times"
-    const val REMOTE_CONFIG_OVERRIDES: String = "internal.remote_config_overrides"
   }
 
   public override fun onFirstEverAppLaunch() = Unit
 
-  public override fun getKeysToIncludeInBackup(): List<String> = emptyList()
+  override val keysToIncludeInBackup: List<String>
+    get() = emptyList()
 
   /**
    * Members will not be added directly to a GV2 even if they could be.
@@ -231,18 +238,6 @@ class InternalValues internal constructor(store: KeyValueStore) : SignalStoreVal
 
   /** Enable ANR detector forcing a crash. */
   var anrDetectionCrashes by booleanValue(ANR_DETECTION_CRASH, true).falseForExternalUsers()
-
-  private var remoteConfigOverridesProto: RemoteConfigOverrides by protoValue(REMOTE_CONFIG_OVERRIDES, RemoteConfigOverrides(), RemoteConfigOverrides.ADAPTER)
-
-  /**
-   * Locally-overridden [RemoteConfig] values, keyed by config key. This isn't gated on the
-   * internal user flag, because it's read while remote config is initializing.
-   */
-  var remoteConfigOverrides: Map<String, String>
-    get() = remoteConfigOverridesProto.valueByKey
-    set(value) {
-      remoteConfigOverridesProto = RemoteConfigOverrides(valueByKey = value)
-    }
 
   private fun <T> SignalStoreValueDelegate<T>.defaultForExternalUsers(): SignalStoreValueDelegate<T> {
     return this.withPrecondition { RemoteConfig.internalUser }

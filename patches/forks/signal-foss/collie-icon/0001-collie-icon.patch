@@ -1,10 +1,9 @@
-From 555c7d3fcc08d7ec1ac3fb598669051b24cb501f Mon Sep 17 00:00:00 2001
+From 562028d1579005bb16d653f4e2ac97f5fe9fe1ce Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Wed, 4 Nov 2026 03:07:03 +0100
 Subject: [PATCH] Add Collie launcher icon assets
 
-
-Source-Commit: 555c7d3fcc08d7ec1ac3fb598669051b24cb501f
+Source-Commit: 562028d1579005bb16d653f4e2ac97f5fe9fe1ce
 
 ---
  app/src/main/AndroidManifest.xml              |   1 +
@@ -72,10 +71,10 @@ Source-Commit: 555c7d3fcc08d7ec1ac3fb598669051b24cb501f
  create mode 100644 app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
-index 8ce63bce..acacf069 100644
+index 58c8a1a40e..a2f9fd2e0d 100644
 --- a/app/src/main/AndroidManifest.xml
 +++ b/app/src/main/AndroidManifest.xml
-@@ -926,6 +926,7 @@
+@@ -946,6 +946,7 @@
          <!-- ======================================= -->
          <activity-alias
              android:name=".RoutingActivity"
@@ -3824,7 +3823,7 @@ HcmV?d00001
 
 diff --git a/app/src/main/res/drawable/ic_launcher_background.xml b/app/src/main/res/drawable/ic_launcher_background.xml
 deleted file mode 100644
-index 702a030f..00000000
+index 702a030fb5..0000000000
 --- a/app/src/main/res/drawable/ic_launcher_background.xml
 +++ /dev/null
 @@ -1,21 +0,0 @@
@@ -3858,7 +3857,7 @@ similarity index 100%
 rename from app/src/main/res/drawable/ic_launcher_monochrome.xml
 rename to app/src/main/res/drawable/ic_original_launcher_monochrome.xml
 diff --git a/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml b/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
-index 04091bd1..8fde4563 100644
+index 04091bd102..8fde45638a 100644
 --- a/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
 +++ b/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
 @@ -1,6 +1,6 @@
@@ -3874,7 +3873,7 @@ index 04091bd1..8fde4563 100644
 +    <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
 +</adaptive-icon>
 diff --git a/app/src/main/res/mipmap-anydpi-v26/ic_launcher_alt_colorful.xml b/app/src/main/res/mipmap-anydpi-v26/ic_launcher_alt_colorful.xml
-index 67149750..46677d26 100644
+index 671497504a..46677d2645 100644
 --- a/app/src/main/res/mipmap-anydpi-v26/ic_launcher_alt_colorful.xml
 +++ b/app/src/main/res/mipmap-anydpi-v26/ic_launcher_alt_colorful.xml
 @@ -2,5 +2,5 @@
@@ -3887,7 +3886,7 @@ index 67149750..46677d26 100644
 \ No newline at end of file
 diff --git a/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml b/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
 new file mode 100644
-index 00000000..8fde4563
+index 0000000000..8fde45638a
 --- /dev/null
 +++ b/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
 @@ -0,0 +1,6 @@
@@ -6679,10 +6678,10 @@ literal 0
 HcmV?d00001
 
 diff --git a/app/src/main/res/values/themes.xml b/app/src/main/res/values/themes.xml
-index a1619af7..e57b5d4b 100644
+index cfe986bcae..462e795fae 100644
 --- a/app/src/main/res/values/themes.xml
 +++ b/app/src/main/res/values/themes.xml
-@@ -713,12 +713,12 @@
+@@ -719,12 +719,12 @@
      </style>
  <style name="Theme.Molly.Starting.Light" parent="Theme.SplashScreen">
          <item name="windowSplashScreenBackground">@color/core_ultramarine_icon</item>

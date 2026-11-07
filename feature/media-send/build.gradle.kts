@@ -44,11 +44,10 @@ dependencies {
   // Project dependencies
   implementation(project(":core:ui"))
   implementation(project(":core:util"))
-  implementation(project(":core:models"))
-  implementation(project(":core:models-jvm"))
   implementation(project(":lib:image-editor"))
   implementation(project(":lib:glide"))
   implementation(project(":lib:video"))
+  implementation(project(":lib:remote-config"))
   implementation(project(":feature:camera"))
 
   // Compose BOM
@@ -89,6 +88,7 @@ dependencies {
 
   // Testing
   testImplementation(testFixtures(project(":core:ui")))
+  testImplementation(testFixtures(project(":lib:remote-config")))
   testImplementation(testLibs.junit.junit)
   testImplementation(testLibs.mockk)
   testImplementation(testLibs.assertk)

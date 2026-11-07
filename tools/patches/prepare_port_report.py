@@ -2,12 +2,14 @@
 """Materialize pinned report trees from committed profiles and resolution mailboxes."""
 import argparse
 import hashlib
+import io
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import subprocess
 import sys
 import tempfile
+import zipfile
 
 import forest
 import git_utils
@@ -21,6 +23,62 @@ MOLLY_URL = 'https://github.com/mollyim/mollyim-android.git'
 
 def blob(repo, commit, path):
     return git_utils.git(repo, 'show', f'{commit}:{path}', binary=True).stdout
+
+
+def snapshot(repo, metadata, root):
+    """Read a hash-pinned, history-independent copy of the original report inputs."""
+    pin = metadata['baseline_snapshot']
+    if not isinstance(pin, dict) or set(pin) != {'path', 'sha256'}:
+        raise ValueError('invalid report baseline snapshot pin')
+    archive = release.inside(repo, pin['path'], 'baseline snapshot')
+    with archive.open('rb') as source:
+        raw = source.read(20_000_001)
+    if len(raw) > 20_000_000:
+        raise ValueError('report baseline snapshot exceeds compressed size limit')
+    if hashlib.sha256(raw).hexdigest() != pin['sha256']:
+        raise ValueError('report baseline snapshot hash mismatch')
+    with zipfile.ZipFile(io.BytesIO(raw)) as contents:
+        names = contents.namelist()
+        if len(names) != len(set(names)) or sum(info.file_size for info in contents.infolist()) > 50_000_000:
+            raise ValueError('invalid report baseline snapshot entries')
+        manifest = json.loads(contents.read('manifest.json'))
+        if manifest != {'baseline_profile_commit': metadata['baseline_profile_commit']}:
+            raise ValueError('report baseline snapshot origin differs')
+        config = json.loads(contents.read('molly-build.json'))
+        series = canonical_snapshot_path(config['port']['series'])
+        parent = Path(series).parent
+        series_path = release.inside(root, series, 'historical series')
+        provenance_path = str(parent / 'provenance.json')
+        provenance = json.loads(contents.read(provenance_path))
+        series_path.parent.mkdir(parents=True, exist_ok=True)
+        series_path.write_bytes(contents.read(series))
+        expected = {'manifest.json', 'molly-build.json', provenance_path, series}
+        destinations = {series_path.resolve()}
+        for entry in forest.lines(series_path):
+            canonical_snapshot_path(entry)
+            destination = release.inside(series_path.parent, entry, 'historical mailbox')
+            if destination.resolve() in destinations:
+                raise ValueError('duplicate report baseline snapshot destination')
+            destinations.add(destination.resolve())
+            name = str(parent / entry)
+            if name in expected:
+                raise ValueError('duplicate report baseline snapshot path')
+            expected.add(name)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(contents.read(name))
+        if set(names) != expected:
+            raise ValueError('unexpected report baseline snapshot entries')
+    return config, provenance
+
+
+def canonical_snapshot_path(path):
+    """Reject traversal and alternate spellings before forming archive paths."""
+    if not isinstance(path, str) or not path or '\\' in path:
+        raise ValueError('invalid report baseline snapshot path')
+    parts = path.split('/')
+    if any(part in ('', '.', '..') for part in parts) or PurePosixPath(path).is_absolute():
+        raise ValueError('invalid report baseline snapshot path')
+    return path
 
 
 def materialize(repo, config, provenance, root, index):
@@ -87,24 +145,27 @@ def prepare(repo):
     series = release.inside(repo, config['port']['series'], 'resolution series')
     metadata = json.loads((series.parent / 'report-metadata.json').read_text())
     historical = release.require_sha(metadata['baseline_profile_commit'], 'baseline profile commit')
-    git_utils.git(repo, 'cat-file', '-e', historical + '^{commit}')
     provenance_path = (series.parent / 'provenance.json').relative_to(repo).as_posix()
     current_provenance = json.loads((repo / provenance_path).read_text())
-    historical_config = json.loads(blob(repo, historical, 'molly-build.json'))
-    historical_series = historical_config['port']['series']
-    historical_provenance_path = str(Path(historical_series).parent / 'provenance.json')
-    historical_provenance = json.loads(blob(repo, historical, historical_provenance_path))
-    if historical_config['target_tree'] != metadata['baseline_target_tree'] or historical_config['port']['mechanical_tree'] != metadata['baseline_mechanical_tree']:
-        raise ValueError('historical profile does not match immutable report baseline')
     with tempfile.TemporaryDirectory(prefix='molly-report-') as tmp:
         root = Path(tmp)
-        series_path = release.inside(root, historical_series, 'historical series')
-        series_path.parent.mkdir(parents=True, exist_ok=True)
-        series_path.write_bytes(blob(repo, historical, historical_series))
-        for entry in forest.lines(series_path):
-            path = release.inside(series_path.parent, entry, 'historical mailbox')
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(blob(repo, historical, str(Path(historical_series).parent / entry)))
+        if 'baseline_snapshot' in metadata:
+            historical_config, historical_provenance = snapshot(repo, metadata, root)
+        else:
+            git_utils.git(repo, 'cat-file', '-e', historical + '^{commit}')
+            historical_config = json.loads(blob(repo, historical, 'molly-build.json'))
+            historical_series = historical_config['port']['series']
+            historical_provenance_path = str(Path(historical_series).parent / 'provenance.json')
+            historical_provenance = json.loads(blob(repo, historical, historical_provenance_path))
+            series_path = release.inside(root, historical_series, 'historical series')
+            series_path.parent.mkdir(parents=True, exist_ok=True)
+            series_path.write_bytes(blob(repo, historical, historical_series))
+            for entry in forest.lines(series_path):
+                path = release.inside(series_path.parent, entry, 'historical mailbox')
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(blob(repo, historical, str(Path(historical_series).parent / entry)))
+        if historical_config['target_tree'] != metadata['baseline_target_tree'] or historical_config['port']['mechanical_tree'] != metadata['baseline_mechanical_tree']:
+            raise ValueError('historical profile does not match immutable report baseline')
         index = root / 'index'
         materialize(repo, historical_config, historical_provenance, root, index)
         index.unlink(missing_ok=True)
@@ -118,7 +179,7 @@ def main():
     args = parser.parse_args()
     try:
         prepare(args.repo)
-    except (forest.ForestError, git_utils.GitError, OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
+    except (forest.ForestError, git_utils.GitError, OSError, ValueError, KeyError, subprocess.SubprocessError, zipfile.BadZipFile) as exc:
         print('port report preparation failed: ' + str(exc), file=sys.stderr)
         return 1
     return 0

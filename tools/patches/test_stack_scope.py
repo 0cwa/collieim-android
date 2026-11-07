@@ -57,6 +57,211 @@ class ScopeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'unexpected trusted release-base'):
                 scope.check_trusted_integration_lower(self.repo, 'HEAD')
 
+    def test_next_port_requires_exact_base_projection_and_forest(self):
+        projection = {b'README.md'}
+        changed = {b'app.txt', b'patches/ports/signal-8.35.1/series'}
+        fork_root = pathlib.Path(__file__).resolve().parents[2] / 'patches/forks/signal-foss'
+        snapshot = (fork_root / 'reviewed-profiles.json').read_bytes()
+        fork_provenance = (fork_root / 'provenance.json').read_bytes()
+        fork_bundle = (fork_root / 'upstream-source.bundle').read_bytes()
+        native_lock = (pathlib.Path(__file__).resolve().parents[2] / 'tools/native/native-lock.json').read_bytes()
+        config = {'signal': {'commit': scope.NEXT_PORT_SIGNAL}, 'molly': {'target': scope.MOLLY},
+                  'port': {'series': 'patches/ports/signal-8.35.1/series'},
+                  'native': 'tools/native/native-lock.json', **json.loads(snapshot)}
+        forest = scope.FOREST
+        def fake_git(repo, *args, **kwargs):
+            if args[:2] == ('rev-parse', '--verify'):
+                return (scope.NEXT_PORT_BASE + '\n').encode()
+            if args[0] == 'diff':
+                return b'\0'.join(projection if args[-2] == scope.NEXT_PORT_SIGNAL else changed) + b'\0'
+            if args[0] == 'rev-parse':
+                return (forest + '\n').encode()
+            if args[0] == 'show' and args[1].endswith(':molly-build.json'):
+                return json.dumps(config).encode()
+            if args[0] == 'show' and args[1].endswith(':patches/forks/signal-foss/reviewed-profiles.json'):
+                return snapshot
+            if args[0] == 'show' and args[1].endswith(':patches/forks/signal-foss/provenance.json'):
+                return fork_provenance
+            if args[0] == 'show' and args[1].endswith(':patches/forks/signal-foss/upstream-source.bundle'):
+                return fork_bundle
+            if args[0] == 'show' and args[1].endswith(':tools/native/native-lock.json'):
+                return native_lock
+            if args[0] == 'show':
+                return b'initial/one.patch\n'
+            raise AssertionError(args)
+        with mock.patch.object(scope, 'git', side_effect=fake_git), \
+             mock.patch.object(scope.subprocess, 'run', return_value=mock.Mock(returncode=0)):
+            self.assertEqual(scope.check_next_port(self.repo, 'base', 'head')['scope'], 'next-port')
+            projection.add(b'app.txt')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, 'base', 'head')
+            projection.remove(b'app.txt')
+            projection.add(b'unreviewed-file.txt')
+            changed.add(b'unreviewed-file.txt')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, 'base', 'head')
+            changed.remove(b'unreviewed-file.txt')
+            projection.remove(b'unreviewed-file.txt')
+            forest = '0' * 40
+            with self.assertRaisesRegex(ValueError, 'forest differs'):
+                scope.check_next_port(self.repo, 'base', 'head')
+            forest = scope.FOREST
+            config['port'] = None
+            with self.assertRaisesRegex(ValueError, 'series is missing'):
+                scope.check_next_port(self.repo, 'base', 'head')
+
+    def test_next_port_validates_real_git_trees(self):
+        # A synthetic forest path tests the tree pin without reading the real Molly forest.
+        fixture = self.repo / 'patches/molly/fixture'
+        fixture.parent.mkdir(parents=True)
+        fixture.write_text('fixture\n')
+        (self.repo / 'README.md').write_text('fork readme\n')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'reviewed fork')
+        base = self.git('rev-parse', 'HEAD').strip()
+        forest = self.git('rev-parse', 'HEAD:patches/molly').strip()
+        self.git('checkout', '-qb', 'signal-source')
+        (self.repo / 'app.txt').write_text('new Signal\n')
+        self.git('add', 'app.txt')
+        self.git('commit', '-qm', 'new Signal')
+        signal = self.git('rev-parse', 'HEAD').strip()
+        self.git('checkout', '-q', '--detach', base)
+        (self.repo / 'app.txt').write_text('new Signal\n')
+        series = self.repo / 'patches/ports/signal-8.35.1/series'
+        series.parent.mkdir(parents=True)
+        series.write_text('initial/change.patch\n')
+        fork_root = pathlib.Path(__file__).resolve().parents[2] / 'patches/forks/signal-foss'
+        snapshot = (fork_root / 'reviewed-profiles.json').read_bytes()
+        fork_provenance = (fork_root / 'provenance.json').read_bytes()
+        fork_bundle = (fork_root / 'upstream-source.bundle').read_bytes()
+        native_lock = (pathlib.Path(__file__).resolve().parents[2] / 'tools/native/native-lock.json').read_bytes()
+        fixture_fork = self.repo / 'patches/forks/signal-foss'
+        fixture_fork.mkdir(parents=True)
+        (fixture_fork / 'reviewed-profiles.json').write_bytes(snapshot)
+        (fixture_fork / 'provenance.json').write_bytes(fork_provenance)
+        (fixture_fork / 'upstream-source.bundle').write_bytes(fork_bundle)
+        (self.repo / 'tools/native').mkdir(parents=True)
+        (self.repo / 'tools/native/native-lock.json').write_bytes(native_lock)
+        config = {'signal': {'commit': signal}, 'molly': {'target': scope.MOLLY},
+                  'port': {'series': 'patches/ports/signal-8.35.1/series'},
+                  'native': 'tools/native/native-lock.json', **json.loads(snapshot)}
+        (self.repo / 'molly-build.json').write_text(json.dumps(config))
+        self.git('add', '.')
+        self.git('commit', '-qm', 'port')
+        head = self.git('rev-parse', 'HEAD').strip()
+        with mock.patch.object(scope, 'NEXT_PORT_BASE', base), mock.patch.object(scope, 'NEXT_PORT_SIGNAL', signal), \
+             mock.patch.object(scope, 'FOREST', forest):
+            self.assertEqual(scope.check_next_port(self.repo, base, head)['scope'], 'next-port')
+            self.commit('README.md', 'planned release note')
+            self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+            self.git('reset', '--hard', '-q', head)
+            (self.repo / 'app.txt').write_text('unreviewed\n')
+            self.git('add', 'app.txt'); self.git('commit', '-qm', 'bad source')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            self.commit('tools/patches/unlisted.py', 'unreviewed')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            self.commit('tools/native/README.md', 'native diagnostics')
+            self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+            self.git('reset', '--hard', '-q', head)
+            for path in ('tools/native/host_jni_guard.py', 'tools/native/host_jni_smoke.py', 'tools/native/test_host_jni_guard.py'):
+                self.commit(path, 'reviewed host JNI diagnostic')
+                self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+                self.git('reset', '--hard', '-q', head)
+            for path in ('tools/native/nested_git.py', 'tools/native/test_nested_git.py', 'tools/native/webrtc-git-dependencies.json'):
+                self.commit(path, 'reviewed nested Git check')
+                self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+                self.git('reset', '--hard', '-q', head)
+            for path in ('tools/native/cipd_payloads.py', 'tools/native/test_cipd_payloads.py', 'tools/native/webrtc-cipd-payloads.json'):
+                self.commit(path, 'reviewed CIPD payload check')
+                self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+                self.git('reset', '--hard', '-q', head)
+            for path in ('tools/native/rust_payloads.py', 'tools/native/test_rust_payloads.py', 'tools/native/rust-toolchain-payloads.json', 'tools/native/RUST-PROVENANCE.md'):
+                self.commit(path, 'reviewed Rust payload check')
+                self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+                self.git('reset', '--hard', '-q', head)
+            for path in ('tools/native/ndk_payloads.py', 'tools/native/test_ndk_payloads.py', 'tools/native/NDK-PROVENANCE.md'):
+                self.commit(path, 'reviewed NDK payload check')
+                self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+                self.git('reset', '--hard', '-q', head)
+            self.commit('tools/patches/test_optional_instrumentation_workflow.py', 'reviewed optional instrumentation check')
+            self.assertEqual(scope.check_next_port(self.repo, base, 'HEAD')['scope'], 'next-port')
+            self.git('reset', '--hard', '-q', head)
+            self.commit('tools/native/unreviewed.py', 'unreviewed')
+            with self.assertRaisesRegex(ValueError, 'unreviewed change'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            series.unlink(); self.git('add', '-u'); self.git('commit', '-qm', 'missing series')
+            with self.assertRaisesRegex(ValueError, 'series is missing'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            config['profiles']['collie']['fork_series'].reverse()
+            (self.repo / 'molly-build.json').write_text(json.dumps(config))
+            self.git('add', 'molly-build.json'); self.git('commit', '-qm', 'reordered layers')
+            with self.assertRaisesRegex(ValueError, 'pinned composition'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            config['profiles']['collie']['fork_series'].reverse()
+            self.git('reset', '--hard', '-q', head)
+            config['profiles']['collie']['firebase_free'] = 0
+            (self.repo / 'molly-build.json').write_text(json.dumps(config))
+            self.git('add', 'molly-build.json'); self.git('commit', '-qm', 'invalid boolean type')
+            with self.assertRaisesRegex(ValueError, 'pinned composition'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            config['profiles']['collie']['firebase_free'] = False
+            self.git('reset', '--hard', '-q', head)
+            changed_fork = json.loads(fork_provenance)
+            changed_fork['upstream_bundle_prerequisite'] = '0' * 40
+            (fixture_fork / 'provenance.json').write_text(json.dumps(changed_fork))
+            self.git('add', 'patches/forks/signal-foss/provenance.json'); self.git('commit', '-qm', 'wrong historical source')
+            with self.assertRaisesRegex(ValueError, 'historical pin'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            (fixture_fork / 'reviewed-profiles.json').write_bytes(snapshot + b' ')
+            self.git('add', 'patches/forks/signal-foss/reviewed-profiles.json'); self.git('commit', '-qm', 'unreviewed snapshot')
+            with self.assertRaisesRegex(ValueError, 'pinned composition'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            for field in ('upstream_author', 'upstream_credit', 'upstream_commit'):
+                changed_fork = json.loads(fork_provenance)
+                changed_fork['layers'][0][field] = 'changed'
+                (fixture_fork / 'provenance.json').write_text(json.dumps(changed_fork))
+                self.git('add', 'patches/forks/signal-foss/provenance.json'); self.git('commit', '-qm', 'changed attribution')
+                with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'historical credits'):
+                    scope.check_next_port(self.repo, base, 'HEAD')
+                self.git('reset', '--hard', '-q', head)
+            changed_fork = json.loads(fork_provenance)
+            changed_fork['layers'][2]['fixes'] = 'changed'
+            (fixture_fork / 'provenance.json').write_text(json.dumps(changed_fork))
+            self.git('add', 'patches/forks/signal-foss/provenance.json'); self.git('commit', '-qm', 'changed fixes relation')
+            with self.assertRaisesRegex(ValueError, 'historical credits'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            (fixture_fork / 'upstream-source.bundle').write_bytes(fork_bundle + b'bad')
+            self.git('add', 'patches/forks/signal-foss/upstream-source.bundle'); self.git('commit', '-qm', 'altered fork bundle')
+            with self.assertRaisesRegex(ValueError, 'fork bundle differs'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            config['native'] = None
+            (self.repo / 'molly-build.json').write_text(json.dumps(config))
+            self.git('add', 'molly-build.json'); self.git('commit', '-qm', 'missing native lock')
+            with self.assertRaisesRegex(ValueError, 'native lock is missing'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            config['native'] = 'tools/native/native-lock.json'
+            self.git('reset', '--hard', '-q', head)
+            (self.repo / 'tools/native/native-lock.json').write_bytes(native_lock + b' ')
+            self.git('add', 'tools/native/native-lock.json'); self.git('commit', '-qm', 'altered native lock')
+            with self.assertRaisesRegex(ValueError, 'native lock bytes differ'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+            self.git('reset', '--hard', '-q', head)
+            del config['profiles']['collie']
+            (self.repo / 'molly-build.json').write_text(json.dumps(config))
+            self.git('add', 'molly-build.json'); self.git('commit', '-qm', 'missing profile')
+            with self.assertRaisesRegex(ValueError, 'profiles are missing'):
+                scope.check_next_port(self.repo, base, 'HEAD')
+
     def test_main_forks_scope_cannot_admit_local_evidence_changes(self):
         for path in ('patches/ports/signal-8.33.2/report-evidence/receipts.md',
                      'patches/ports/signal-8.33.2/report-metadata.json',

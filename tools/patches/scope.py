@@ -265,6 +265,154 @@ MAIN_PROJECTION_EXCEPTIONS = frozenset({
     'assets/collie-icon.svg', 'assets/collie-matrix-invite.svg', 'pkcs11.config',
 })
 
+# This scope is deliberately separate from the historical stack validators.
+NEXT_PORT_BASE = '7d486880ddc991af0d36f1e4709030255ef4dbad'
+NEXT_PORT_SIGNAL = 'a74583b01e260944f699c4da03ba4e8ce04de32b'
+NEXT_PORT_NATIVE_LOCK_SHA256 = '557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856'
+NEXT_PORT_REVIEWED_PROFILES_SHA256 = '6a83007ed81ea5311ad1abcc96af4724567a2c91aed2befa503030ba2cb4d864'
+NEXT_PORT_FORK_CREDITS_SHA256 = '9223d8969f6d07e111e8720c3102168ecc153536d7df361b0638183f10b70146'
+NEXT_PORT_FORK_BUNDLE_SHA256 = 'e0e3b786f89d042fa4e3430fd1f09718c12ef4e6316e24976bfc665be931fb57'
+NEXT_PORT_FORK_HEAD = 'b13bff463547475bbe1ae55335add689f52532e0'
+NEXT_PORT_FORK_URL = 'https://github.com/tw-hx/Signal-Android'
+NEXT_PORT_TOOLS = frozenset({
+    '.github/workflows/molly-patch-release.yml', '.github/workflows/molly-unsigned-release.yml',
+    'tools/patches/build.py', 'tools/patches/test_build.py', 'tools/patches/test_prepare_port_report.py',
+    'tools/patches/native_release_check.py', 'tools/patches/test_native_release_check.py',
+    'tools/patches/test_native_release_route.py',
+    'tools/patches/release_artifacts.py', 'tools/patches/release_publish.py', 'tools/patches/release_sign.py',
+    'tools/patches/release_collect.py', 'tools/patches/test_single_collie.py',
+    'tools/patches/test_release_artifacts.py', 'tools/patches/test_instrumentation_checklist.py',
+    'tools/patches/test_next_port_workflow.py', 'tools/patches/test_optional_instrumentation_workflow.py',
+    'tools/patches/fork_profiles.py', 'tools/patches/release_profiles.py',
+    'tools/patches/pins.py', 'tools/patches/scope.py', 'tools/patches/release.py',
+    'tools/patches/test_fork_profiles.py', 'tools/patches/test_retention_profiles.py', 'tools/patches/test_stack_scope.py', 'tools/patches/test_release.py',
+    'tools/patches/prepare_port_report.py', 'tools/patches/port_report.py',
+    'tools/patches/line_origin.py', 'tools/patches/test_line_origin.py', 'tools/patches/fetch_reviewed_profiles.py',
+})
+
+NEXT_PORT_NATIVE_PATHS = frozenset({
+    'tools/native/ATTRIBUTION.md',
+    'tools/native/CIPD-PROVENANCE.md',
+    'tools/native/NDK-PROVENANCE.md',
+    'tools/native/RUST-PROVENANCE.md',
+    'tools/native/README.md',
+    'tools/native/build_ringrtc.py',
+    'tools/native/build_sources.py',
+    'tools/native/cipd_payloads.py',
+    'tools/native/test_cipd_payloads.py',
+    'tools/native/webrtc-cipd-payloads.json',
+    'tools/native/efficient_ringrtc.py',
+    'tools/native/host_jni_guard.py',
+    'tools/native/host_jni_smoke.py',
+    'tools/native/native-lock.json',
+    'tools/native/native_driver.py',
+    'tools/native/native_fallback_smoke.py',
+    'tools/native/ndk_payloads.py',
+    'tools/native/test_ndk_payloads.py',
+    'tools/native/nested_git.py',
+    'tools/native/test_nested_git.py',
+    'tools/native/webrtc-git-dependencies.json',
+    'tools/native/patches/libsignal-0.106.1-attributed.mbox',
+    'tools/native/patches/ringrtc-2.74-attributed.mbox',
+    'tools/native/patches/test_webrtc_socks_ipv6.py',
+    'tools/native/patches/test_webrtc_unknown_proxy.py',
+    'tools/native/patches/webrtc-8037b-molly-proxy-UNTESTED.patch',
+    'tools/native/patches/webrtc-socks-ipv6-fix.patch',
+    'tools/native/patches/webrtc-unknown-proxy-fix.patch',
+    'tools/native/prepare_sources.py',
+    'tools/native/rust_payloads.py',
+    'tools/native/test_rust_payloads.py',
+    'tools/native/rust-toolchain-payloads.json',
+    'tools/native/setup_webrtc.py',
+    'tools/native/stage_artifacts.py',
+    'tools/native/test_build_native_driver.py',
+    'tools/native/test_build_ringrtc.py',
+    'tools/native/test_build_sources.py',
+    'tools/native/test_efficient_ringrtc.py',
+    'tools/native/test_gradle_environment.py',
+    'tools/native/test_host_jni_guard.py',
+    'tools/native/test_prepare_sources.py',
+    'tools/native/test_setup_webrtc.py',
+    'tools/native/test_stage_artifacts.py',
+    'tools/native/test_verify_gradle.py',
+    'tools/native/test_webrtc_deps.py',
+    'tools/native/verify_gradle.py',
+    'tools/native/webrtc_deps.py',
+})
+
+def check_next_port(repo, base, head):
+    """Verify an 8.35.1 projection against the exact reviewed fork base."""
+    actual_base = git(repo, 'rev-parse', '--verify', base + '^{commit}').decode().strip()
+    if actual_base != NEXT_PORT_BASE:
+        raise ValueError('next port base is not the pinned reviewed fork')
+    if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        raise ValueError('next port base is not an ancestor of head')
+    projection = {raw.decode('utf-8', 'surrogateescape') for raw in
+                  filter(None, git(repo, 'diff', '--no-renames', '--name-only', '-z', NEXT_PORT_SIGNAL, head).split(b'\0'))}
+    changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')
+    for raw in filter(None, changed):
+        path = raw.decode('utf-8', 'surrogateescape')
+        if path.startswith(('patches/ports/signal-8.35.1/', 'patches/forks/signal-foss/')) or path in NEXT_PORT_TOOLS or path in NEXT_PORT_NATIVE_PATHS or path in {
+                'molly-build.json', 'README.md', 'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'}:
+            continue
+        if path in MAIN_PROJECTION_EXCEPTIONS or metadata(path) or path in projection:
+            raise ValueError('next port contains an unreviewed change: ' + path)
+    for path in projection:
+        if not metadata(path) and path not in NEXT_PORT_NATIVE_PATHS and path not in MAIN_PROJECTION_EXCEPTIONS and path != '.github/FUNDING.yml':
+            raise ValueError('next port source projection differs: ' + path)
+    if git(repo, 'rev-parse', head + ':patches/molly').decode().strip() != FOREST:
+        raise ValueError('next port Molly forest differs')
+    config = json.loads(git(repo, 'show', head + ':molly-build.json'))
+    if config.get('signal', {}).get('commit') != NEXT_PORT_SIGNAL or config.get('molly', {}).get('target') != MOLLY:
+        raise ValueError('next port profile source pins differ')
+    if config.get('native') != 'tools/native/native-lock.json':
+        raise ValueError('next port native lock is missing or differs')
+    native_lock = git(repo, 'show', head + ':tools/native/native-lock.json', check=False)
+    if hashlib.sha256(native_lock).hexdigest() != NEXT_PORT_NATIVE_LOCK_SHA256:
+        raise ValueError('next port native lock bytes differ from pin')
+    port = config.get('port')
+    expected_series = 'patches/ports/signal-8.35.1/series'
+    if not isinstance(port, dict) or port.get('series') != expected_series or not git(repo, 'show', head + ':' + expected_series, check=False).strip():
+        raise ValueError('next port series is missing or differs')
+    profiles = config.get('profiles')
+    if not isinstance(profiles, dict) or set(profiles) != {'molly-minimal', 'molly-continued', 'molly-foss-continued', 'collie', 'collie-foss'} or any(not isinstance(p, dict) for p in profiles.values()):
+        raise ValueError('next port release profiles are missing or differ')
+    root = 'patches/forks/signal-foss/'
+    snapshot = git(repo, 'show', head + ':' + root + 'reviewed-profiles.json')
+    if hashlib.sha256(snapshot).hexdigest() != NEXT_PORT_REVIEWED_PROFILES_SHA256:
+        raise ValueError('next port reviewed profile snapshot differs from pinned composition')
+    try:
+        reviewed = json.loads(snapshot)
+        fork = json.loads(git(repo, 'show', head + ':' + root + 'provenance.json'))
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise ValueError('next port fork provenance is invalid') from exc
+    selected = {'profiles': profiles, 'fork_source': config.get('fork_source')}
+    if json.dumps(selected, sort_keys=True, separators=(',', ':')) != json.dumps(reviewed, sort_keys=True, separators=(',', ':')):
+        raise ValueError('next port profiles differ from pinned composition')
+    if config.get('fork_source') != {'head': NEXT_PORT_FORK_HEAD, 'url': NEXT_PORT_FORK_URL}:
+        raise ValueError('next port fork source differs from historical pin')
+    if (fork.get('source_head'), fork.get('source_url'), fork.get('upstream_bundle_prerequisite'),
+        fork.get('upstream_bundle_ref'), fork.get('reviewed_profiles'),
+        fork.get('upstream_bundle'), fork.get('upstream_bundle_sha256')) != (
+            NEXT_PORT_FORK_HEAD, NEXT_PORT_FORK_URL, NEW,
+            'refs/heads/upstream-fork/signal-foss-8.33.2.0-FOSS',
+            {'path': 'reviewed-profiles.json', 'sha256': NEXT_PORT_REVIEWED_PROFILES_SHA256},
+            'upstream-source.bundle', NEXT_PORT_FORK_BUNDLE_SHA256):
+        raise ValueError('next port fork provenance differs from historical pin')
+    layers = fork.get('layers')
+    if not isinstance(layers, list) or any(not isinstance(layer, dict) for layer in layers):
+        raise ValueError('next port fork layer credits are invalid')
+    credits = [{key: value for key, value in layer.items() if key in
+                ('id', 'upstream_author', 'upstream_commit', 'upstream_credit', 'fixes')} for layer in layers]
+    encoded = json.dumps(credits, sort_keys=True, separators=(',', ':')).encode()
+    if hashlib.sha256(encoded).hexdigest() != NEXT_PORT_FORK_CREDITS_SHA256:
+        raise ValueError('next port fork historical credits differ from pin')
+    bundle = git(repo, 'show', head + ':' + root + 'upstream-source.bundle')
+    if hashlib.sha256(bundle).hexdigest() != NEXT_PORT_FORK_BUNDLE_SHA256:
+        raise ValueError('next port historical fork bundle differs from pin')
+    return {'scope': 'next-port', 'profile_present': True, 'port_present': True}
+
 
 
 # Exact audited main-preservation and portability entries; includes absence and mode.
@@ -416,6 +564,10 @@ def check_main_integration(repo, base, head, integration_lower, allow_main_docs=
 
 
 def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
+    if scope == 'next-port':
+        if integration_lower is not None:
+            raise ValueError('next port does not accept an integration lower base')
+        return check_next_port(repo, base, head)
     main_snapshot = scope == 'main-snapshot'
     if scope == 'main-snapshot-transition':
         if integration_lower is None:
@@ -602,7 +754,7 @@ def check_scope(repo, scope, base, head='HEAD', integration_lower=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-docs', 'main-maintenance', 'main-snapshot', 'main-snapshot-transition'))
+    parser.add_argument('--scope', required=True, choices=('pipeline', 'switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-docs', 'main-maintenance', 'main-snapshot', 'main-snapshot-transition', 'next-port'))
     parser.add_argument('--base', required=True)
     parser.add_argument('--head', default='HEAD')
     parser.add_argument('--repo', default='.')

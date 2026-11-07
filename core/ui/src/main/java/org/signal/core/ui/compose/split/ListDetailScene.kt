@@ -5,6 +5,7 @@
 
 package org.signal.core.ui.compose.split
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -24,7 +25,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +50,8 @@ import org.signal.core.ui.R
 import kotlin.math.max
 
 /**
- * Renders a list entry and, when there is one, the detail entry above it side by side.
+ * Renders a list entry and, beside it, the detail stack above it, which [DetailPaneNavDisplay] navigates within its
+ * own pane. The scene keeps one key throughout, so the list is never moved to another scene.
  *
  * There is some custom equality code in here to make sure animations are correct.
  */
@@ -56,10 +60,10 @@ internal class ListDetailScene(
   override val key: Any,
   override val previousEntries: List<NavEntry<NavKey>>,
   private val listEntry: NavEntry<NavKey>,
-  private val detailEntry: NavEntry<NavKey>?
+  private val detailEntries: List<NavEntry<NavKey>>
 ) : Scene<NavKey> {
 
-  override val entries: List<NavEntry<NavKey>> = listOfNotNull(listEntry, detailEntry)
+  override val entries: List<NavEntry<NavKey>> = listOf(listEntry) + detailEntries
 
   override val content: @Composable () -> Unit = {
     val layout = LocalListDetailPaneLayout.current
@@ -67,17 +71,20 @@ internal class ListDetailScene(
     if (layout == null) {
       listEntry.Content()
     } else {
+      val listPaddingStart by animateDpAsState(targetValue = layout.listPaddingStart, label = "list-padding-start")
+
       Box(modifier = Modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxSize()) {
           Box(
             modifier = Modifier
               .width(layout.expansion.listWidth)
               .fillMaxHeight()
-              .padding(start = layout.listPaddingStart)
+              .padding(start = listPaddingStart)
               .clip(layout.shape)
-              .minContentWidth(layout.minPaneContentWidth)
+              // Follows the inset as it animates, so the list reflows with it instead of clipping.
+              .minContentWidth(layout.minListContentWidth + layout.listPaddingStart - listPaddingStart)
           ) {
-            ListPaneContent { listEntry.Content() }
+            listEntry.Content()
           }
 
           Spacer(modifier = Modifier.width(layout.partitionWidth))
@@ -89,12 +96,17 @@ internal class ListDetailScene(
               .padding(end = layout.detailPaddingEnd)
               .clip(layout.shape)
               .background(color = MaterialTheme.colorScheme.surface)
-              .minContentWidth(layout.minPaneContentWidth)
+              .minContentWidth(layout.minDetailContentWidth)
           ) {
-            if (detailEntry != null) {
-              detailEntry.Content()
-            } else {
-              LocalEmptyDetailContent.current()
+            CompositionLocalProvider(
+              LocalIsInDetailPane provides true,
+              LocalDetailPaneRootContentKey provides detailEntries.firstOrNull()?.contentKey
+            ) {
+              if (detailEntries.isNotEmpty()) {
+                DetailPaneNavDisplay(detailEntries)
+              } else {
+                LocalEmptyDetailContent.current()
+              }
             }
           }
         }
@@ -112,14 +124,14 @@ internal class ListDetailScene(
 
     return key == other.key &&
       listEntry == other.listEntry &&
-      detailEntry == other.detailEntry &&
+      detailEntries == other.detailEntries &&
       previousEntries == other.previousEntries
   }
 
   override fun hashCode(): Int {
     var result = key.hashCode()
     result = 31 * result + listEntry.hashCode()
-    result = 31 * result + (detailEntry?.hashCode() ?: 0)
+    result = 31 * result + detailEntries.hashCode()
     result = 31 * result + previousEntries.hashCode()
     return result
   }
@@ -219,18 +231,13 @@ internal fun ListPaneContent(content: @Composable () -> Unit) {
 internal class SinglePaneScene(
   override val key: Any,
   override val previousEntries: List<NavEntry<NavKey>>,
-  private val entry: NavEntry<NavKey>,
-  private val isList: Boolean
+  private val entry: NavEntry<NavKey>
 ) : Scene<NavKey> {
 
   override val entries: List<NavEntry<NavKey>> = listOf(entry)
 
   override val content: @Composable () -> Unit = {
-    if (isList) {
-      ListPaneContent { entry.Content() }
-    } else {
-      entry.Content()
-    }
+    entry.Content()
   }
 
   override fun equals(other: Any?): Boolean {
@@ -239,14 +246,12 @@ internal class SinglePaneScene(
 
     return key == other.key &&
       entry == other.entry &&
-      isList == other.isList &&
       previousEntries == other.previousEntries
   }
 
   override fun hashCode(): Int {
     var result = key.hashCode()
     result = 31 * result + entry.hashCode()
-    result = 31 * result + isList.hashCode()
     result = 31 * result + previousEntries.hashCode()
     return result
   }
@@ -265,8 +270,7 @@ internal class ListDetailSceneStrategy(private val isSplitPane: Boolean) : Scene
       return SinglePaneScene(
         key = top.contentKey,
         previousEntries = entries.dropLast(1),
-        entry = top,
-        isList = false
+        entry = top
       )
     }
 
@@ -285,8 +289,7 @@ internal class ListDetailSceneStrategy(private val isSplitPane: Boolean) : Scene
       return SinglePaneScene(
         key = if (isList) LIST_SCENE_KEY else top.contentKey,
         previousEntries = entries.dropLast(1),
-        entry = top,
-        isList = isList
+        entry = top
       )
     }
 
@@ -295,13 +298,18 @@ internal class ListDetailSceneStrategy(private val isSplitPane: Boolean) : Scene
       return null
     }
 
-    val detailEntries = entries.subList(listIndex + 1, entries.size)
+    val detailEntries = entries.subList(listIndex + 1, entries.size).toList()
 
     return ListDetailScene(
       key = DETAIL_SCENE_KEY,
-      previousEntries = if (detailEntries.size > 1) entries.dropLast(1) else entries.take(listIndex),
+      previousEntries = when {
+        detailEntries.size > 1 -> entries.dropLast(1)
+        // A detail stack never empties itself on back, so back from its last screen is left to the rest of the app.
+        detailEntries.size == 1 -> emptyList()
+        else -> entries.take(listIndex)
+      },
       listEntry = entries[listIndex],
-      detailEntry = detailEntries.lastOrNull()
+      detailEntries = detailEntries
     )
   }
 }

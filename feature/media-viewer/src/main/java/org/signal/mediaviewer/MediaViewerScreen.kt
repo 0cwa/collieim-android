@@ -5,6 +5,7 @@
 
 package org.signal.mediaviewer
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.Spring
@@ -40,10 +41,11 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
@@ -56,13 +58,21 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.signal.core.ui.compose.AllDevicePreviews
 import org.signal.core.ui.compose.Dialogs
+import org.signal.core.ui.compose.DragToDismissState
 import org.signal.core.ui.compose.Previews
+import org.signal.core.ui.compose.dragToDismiss
+import org.signal.core.ui.compose.rememberDragToDismissState
 import org.signal.mediaviewer.components.ExpandingCaption
 import org.signal.mediaviewer.components.MediaViewerBottomBar
 import org.signal.mediaviewer.components.MediaViewerTopBar
 import org.signal.mediaviewer.pages.MediaViewerPage
 import org.signal.mediaviewer.playback.MediaViewerPlaybackController
 import org.signal.mediaviewer.playback.PlaybackUiState
+
+private const val CHROME_BACKGROUND_ALPHA = 0.87f
+
+/** How much faster than the backdrop the chrome fades out during a drag-to-dismiss. */
+private const val CHROME_DISMISS_FADE_RATE = 4f
 
 /**
  * Full-screen media viewer: a pager over a thread's media with zooming images, video playback,
@@ -73,10 +83,15 @@ fun MediaViewerScreen(
   state: MediaViewerState,
   onEvent: (MediaViewerEvent) -> Unit,
   modifier: Modifier = Modifier,
-  playbackController: MediaViewerPlaybackController = remember { MediaViewerPlaybackController() }
+  playbackController: MediaViewerPlaybackController = remember { MediaViewerPlaybackController() },
+  dismissState: DragToDismissState = rememberDragToDismissState()
 ) {
   LaunchedEffect(playbackController) {
     playbackController.runPositionTicker()
+  }
+
+  BackHandler {
+    onEvent(MediaViewerEvent.BackClicked)
   }
 
   val lifecycleOwner = LocalLifecycleOwner.current
@@ -103,17 +118,20 @@ fun MediaViewerScreen(
     MediaPager(
       state = state,
       playbackController = playbackController,
+      dismissState = dismissState,
       onEvent = onEvent,
       modifier = Modifier.fillMaxSize()
     )
 
     // The chrome fades rather than leaving composition, so the rail keeps its scroll position,
     // thumbnails, and selection across a hide and show.
-    val chromeAlpha by animateFloatAsState(
+    val chromeVisibilityAlpha by animateFloatAsState(
       targetValue = if (state.chromeVisible) 1f else 0f,
       animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
       label = "chromeAlpha"
     )
+    // Dragging to dismiss fades the chrome out well before the backdrop, leaving just the media.
+    val chromeAlpha = { chromeVisibilityAlpha * (1f - dismissState.progress * CHROME_DISMISS_FADE_RATE).coerceAtLeast(0f) }
 
     MediaViewerTopBar(
       item = state.currentItem,
@@ -123,7 +141,7 @@ fun MediaViewerScreen(
       onEvent = onEvent,
       modifier = Modifier
         .align(Alignment.TopCenter)
-        .fadingChrome { chromeAlpha }
+        .fadingChrome(chromeAlpha)
         .background(MaterialTheme.colorScheme.surface.copy(alpha = CHROME_BACKGROUND_ALPHA))
         .windowInsetsPadding(WindowInsets.statusBars.union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)))
     )
@@ -131,7 +149,7 @@ fun MediaViewerScreen(
     Column(
       modifier = Modifier
         .align(Alignment.BottomCenter)
-        .fadingChrome { chromeAlpha }
+        .fadingChrome(chromeAlpha)
         .background(MaterialTheme.colorScheme.surface.copy(alpha = CHROME_BACKGROUND_ALPHA))
         .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)))
         .fillMaxWidth()
@@ -165,6 +183,7 @@ fun MediaViewerScreen(
 private fun MediaPager(
   state: MediaViewerState,
   playbackController: MediaViewerPlaybackController,
+  dismissState: DragToDismissState,
   onEvent: (MediaViewerEvent) -> Unit,
   modifier: Modifier = Modifier
 ) {
@@ -218,6 +237,9 @@ private fun MediaPager(
     }
   }
 
+  val currentState by rememberUpdatedState(state)
+  val currentOnEvent by rememberUpdatedState(onEvent)
+
   // The item list is already in display order (the data layer applies leftIsRecent), so the pager
   // itself always lays out left-to-right.
   CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -227,12 +249,25 @@ private fun MediaPager(
       beyondViewportPageCount = 1,
       key = { index -> state.items.getOrNull(index)?.attachmentId?.id ?: -(index + 1L) },
       modifier = modifier
-        .alpha(if (state.isInSharedAnimation) 0f else 1f)
+        .dragToDismiss(
+          state = dismissState,
+          canStart = { !currentState.isInSharedAnimation && !currentState.isReturningToSharedElement && !pagerState.isScrollInProgress && !currentState.isCurrentMediaZoomedIn },
+          canDismissToSharedElement = { currentState.canDismissToSharedElement },
+          onDismissed = { toSharedElement -> currentOnEvent(MediaViewerEvent.DragDismissed(toSharedElement)) }
+        )
+        .graphicsLayer {
+          alpha = if (state.isInSharedAnimation) 0f else 1f
+          translationX = dismissState.offsetX
+          translationY = dismissState.offsetY
+          scaleX = dismissState.scale
+          scaleY = dismissState.scale
+        }
         .testTag(MediaViewerScreenTestTags.PAGER)
     ) { page ->
       MediaViewerPage(
         item = state.items.getOrNull(page),
         isActive = pagerState.settledPage == page,
+        isReturningToSharedElement = state.isReturningToSharedElement,
         playbackController = playbackController,
         onEvent = onEvent
       )
@@ -427,8 +462,6 @@ private fun MediaViewerScreenDraftPreview() {
     )
   }
 }
-
-private const val CHROME_BACKGROUND_ALPHA = 0.87f
 
 /**
  * Applies [alpha] in the layout phase so a fade never recomposes the content. Fully hidden

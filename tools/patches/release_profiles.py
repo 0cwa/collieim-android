@@ -12,27 +12,27 @@ NAMES = {'molly-minimal', 'molly-continued', 'molly-foss-continued',
          'collie', 'collie-foss'}
 FOSS = {'molly-foss-continued', 'collie-foss'}
 CONTINUED_ICON = {'molly-continued', 'molly-foss-continued'}
-PORT_SERIES = 'patches/ports/signal-8.33.2/series'
+PORT_SERIES = 'patches/ports/signal-8.35.1/series'
 FORK_ROOT = 'patches/forks/signal-foss'
 FIREBASE = FORK_ROOT + '/firebase-free-build/series'
 RETENTION = FORK_ROOT + '/retention-controls/series'
 RETENTION_FIXES = FORK_ROOT + '/retention-controls-fixes/series'
 COLLIE_ICON = FORK_ROOT + '/collie-icon/series'
 COLLIE_BRANDING = FORK_ROOT + '/collie-branding/series'
+COLLIE_VISUALS = FORK_ROOT + '/collie-visuals/series'
+RESTORE_PICKER = FORK_ROOT + '/restore-picker/series'
+NOTIFICATION_DEFAULT = FORK_ROOT + '/notification-default/series'
 # User-visible app title, backup file base name and shared package ID per profile.
 APP = {
-    'molly-minimal': ('Molly Minimal', 'Molly-Minimal', 'im.collie.app'),
-    'molly-continued': ('Molly Continued', 'Molly-Continued', 'im.collie.app'),
-    'molly-foss-continued': ('Molly FOSS Continued', 'Molly-FOSS-Continued', 'im.collie.app'),
+    'molly-minimal': ('Collie', 'Molly-Minimal', 'im.collie.app'),
+    'molly-continued': ('Collie', 'Molly-Continued', 'im.collie.app'),
+    'molly-foss-continued': ('Collie FOSS', 'Molly-FOSS-Continued', 'im.collie.app'),
     'collie': ('Collie', 'Collie', 'im.collie.app'),
     'collie-foss': ('Collie FOSS', 'Collie-FOSS', 'im.collie.app'),
 }
 POLICY = {
-    'molly-minimal': ('followups/network-initialization-cycle', [], False),
-    'molly-continued': ('followups/unifiedpush-registration-retry', [], False),
-    'molly-foss-continued': ('followups/unifiedpush-registration-retry', [FIREBASE], True),
-    'collie': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES, COLLIE_ICON, COLLIE_BRANDING], False),
-    'collie-foss': ('followups/unifiedpush-registration-retry', [FIREBASE, RETENTION, RETENTION_FIXES, COLLIE_ICON, COLLIE_BRANDING], True),
+    name: ('followups/view-once-open-guard', [FIREBASE, COLLIE_ICON, COLLIE_BRANDING, COLLIE_VISUALS, RESTORE_PICKER, NOTIFICATION_DEFAULT], name in FOSS)
+    for name in NAMES
 }
 
 
@@ -149,8 +149,6 @@ def select(config, name, repo='.'):
     test_layers = fork + ([COLLIE_ICON] if overlay else [])
     selected['android']['tests'] = derived_tests(repo, base_tests, test_layers)
     device_sources = instrumentation_sources(repo, test_layers)
-    if device_sources and name not in ('collie', 'collie-foss'):
-        raise ProfileError('fork instrumentation sources require a profile with a device test gate')
     selected['_profile'] = {'name': name, 'base_checkpoint': entry['base_checkpoint'],
                             'base_layer': boundary, 'base_tree': entry['base_tree'], 'target_tree': entry['target_tree'],
                             'fork_series': fork, 'firebase_free': entry['firebase_free'],

@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.signal.appsettings.appSettingsScreen
 import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.CircularProgressWrapper
 import org.signal.core.ui.compose.DayNightPreviews
@@ -67,16 +68,6 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
-
-private val DAY_TO_STARTING_LETTER: Map<DayOfWeek, Int> = mapOf(
-  DayOfWeek.SUNDAY to R.string.EditNotificationProfileSchedule__sunday_first_letter,
-  DayOfWeek.MONDAY to R.string.EditNotificationProfileSchedule__monday_first_letter,
-  DayOfWeek.TUESDAY to R.string.EditNotificationProfileSchedule__tuesday_first_letter,
-  DayOfWeek.WEDNESDAY to R.string.EditNotificationProfileSchedule__wednesday_first_letter,
-  DayOfWeek.THURSDAY to R.string.EditNotificationProfileSchedule__thursday_first_letter,
-  DayOfWeek.FRIDAY to R.string.EditNotificationProfileSchedule__friday_first_letter,
-  DayOfWeek.SATURDAY to R.string.EditNotificationProfileSchedule__saturday_first_letter
-)
 
 @VisibleForTesting
 object EditNotificationProfileScheduleTestTags {
@@ -117,6 +108,7 @@ fun EditNotificationProfileScheduleScreen(
         modifier = Modifier
           .weight(1f)
           .verticalScroll(rememberScrollState())
+          .appSettingsScreen()
           .testTag(EditNotificationProfileScheduleTestTags.SCROLLER)
       ) {
         if (state.createMode) {
@@ -148,19 +140,23 @@ fun EditNotificationProfileScheduleScreen(
         }
       }
 
-      CircularProgressWrapper(
-        isLoading = state.isSaving,
-        modifier = Modifier
-          .align(Alignment.End)
-          .horizontalGutters()
-          .padding(bottom = 16.dp)
+      Box(
+        contentAlignment = Alignment.CenterEnd,
+        modifier = Modifier.appSettingsScreen()
       ) {
-        Buttons.LargeTonal(
-          onClick = { onEvent(EditNotificationProfileScheduleEvent.NextClicked) },
-          enabled = state.canSave,
-          modifier = Modifier.testTag(EditNotificationProfileScheduleTestTags.BUTTON_NEXT)
+        CircularProgressWrapper(
+          isLoading = state.isSaving,
+          modifier = Modifier
+            .horizontalGutters()
+            .padding(bottom = 16.dp)
         ) {
-          Text(text = stringResource(nextLabel(state)))
+          Buttons.LargeTonal(
+            onClick = { onEvent(EditNotificationProfileScheduleEvent.NextClicked) },
+            enabled = state.canSave,
+            modifier = Modifier.testTag(EditNotificationProfileScheduleTestTags.BUTTON_NEXT)
+          ) {
+            Text(text = stringResource(nextLabel(state)))
+          }
         }
       }
     }
@@ -312,6 +308,7 @@ private fun DayToggle(
   }
   val textColor = if (checked && enabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
   val dayName = remember(day, locale) { day.getDisplayName(TextStyle.FULL, locale) }
+  val dayLetter = remember(day, locale) { day.getDisplayName(TextStyle.NARROW, locale) }
 
   val textStyle = MaterialTheme.typography.bodyLarge
   val circleSize = with(LocalDensity.current) { maxOf(32.dp, textStyle.lineHeight.toDp() + 8.dp) }
@@ -336,7 +333,7 @@ private fun DayToggle(
         .background(color = background, shape = CircleShape)
     ) {
       Text(
-        text = stringResource(DAY_TO_STARTING_LETTER.getValue(day)),
+        text = dayLetter,
         style = textStyle,
         color = textColor
       )

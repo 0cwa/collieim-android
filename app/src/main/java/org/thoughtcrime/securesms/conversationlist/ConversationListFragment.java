@@ -76,6 +76,8 @@ import org.signal.core.util.concurrent.SimpleTask;
 import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.eventbus.ThreadMode;
 import org.signal.core.util.logging.Log;
+import org.signal.remoteconfig.RemoteConfig;
+import org.signal.remoteconfig.SelectionLimits;
 import org.thoughtcrime.securesms.MainFragment;
 import org.thoughtcrime.securesms.MainNavigator;
 import org.thoughtcrime.securesms.MuteDialog;
@@ -139,7 +141,6 @@ import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.database.ThreadTable;
 import org.thoughtcrime.securesms.database.model.ThreadWithRecipient;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
-import org.thoughtcrime.securesms.groups.SelectionLimits;
 import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob;
 import org.thoughtcrime.securesms.keyvalue.AccountValues;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
@@ -152,7 +153,7 @@ import org.thoughtcrime.securesms.main.MainToolbarViewModel;
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder;
 import org.thoughtcrime.securesms.megaphone.Megaphones;
 import org.thoughtcrime.securesms.notifications.MarkReadReceiver;
-import org.thoughtcrime.securesms.profiles.manage.UsernameEditFragment;
+import org.thoughtcrime.securesms.profiles.manage.username.UsernameEditFragment;
 import org.thoughtcrime.securesms.ratelimit.RecaptchaProofBottomSheetFragment;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.search.MessageResult;
@@ -163,7 +164,6 @@ import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.util.AppStartup;
 import org.thoughtcrime.securesms.util.CachedInflater;
 import org.thoughtcrime.securesms.util.ConversationUtil;
-import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.SignalProxyUtil;
 import org.thoughtcrime.securesms.util.SnapToTopDataObserver;
@@ -590,12 +590,7 @@ public class ConversationListFragment extends MainFragment implements Conversati
       SignalStore.inAppPayments().setExpiredBadge(null);
 
       Log.w(TAG, "Displaying bottom sheet for an expired badge", true);
-      ExpiredOneTimeBadgeBottomSheetDialogFragment.show(
-          expiredBadge,
-          unexpectedSubscriptionCancellation,
-          SignalStore.inAppPayments().getUnexpectedSubscriptionCancelationChargeFailure(),
-          getParentFragmentManager()
-      );
+      ExpiredOneTimeBadgeBottomSheetDialogFragment.show(expiredBadge, getParentFragmentManager());
     }
 
     if (this.bannerManager != null) {
@@ -1404,7 +1399,7 @@ public class ConversationListFragment extends MainFragment implements Conversati
       if (conversation.getThreadRecord().isRead()) {
         items.add(new ActionItem(R.drawable.symbol_chat_badge_24, getResources().getQuantityString(R.plurals.ConversationListFragment_unread_plural, 1), () -> handleMarkAsUnread(id)));
       } else {
-        items.add(new ActionItem(R.drawable.symbol_chat_24, getResources().getQuantityString(R.plurals.ConversationListFragment_read_plural, 1), () -> handleMarkAsRead(id)));
+        items.add(new ActionItem(org.signal.core.ui.R.drawable.symbol_chat_24, getResources().getQuantityString(R.plurals.ConversationListFragment_read_plural, 1), () -> handleMarkAsRead(id)));
       }
 
       if (conversation.getThreadRecord().isPinned()) {
@@ -1539,7 +1534,7 @@ public class ConversationListFragment extends MainFragment implements Conversati
                                       .collect(Collectors.toSet());
 
     if (hasUnread) {
-      items.add(new ActionItem(R.drawable.symbol_chat_24, getResources().getQuantityString(R.plurals.ConversationListFragment_read_plural, count), () -> handleMarkAsRead(selectionIds)));
+      items.add(new ActionItem(org.signal.core.ui.R.drawable.symbol_chat_24, getResources().getQuantityString(R.plurals.ConversationListFragment_read_plural, count), () -> handleMarkAsRead(selectionIds)));
     } else {
       items.add(new ActionItem(R.drawable.symbol_chat_badge_24, getResources().getQuantityString(R.plurals.ConversationListFragment_unread_plural, count), () -> handleMarkAsUnread(selectionIds)));
     }

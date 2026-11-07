@@ -16,12 +16,12 @@ import org.signal.core.util.Util
 import org.signal.network.NetworkResult
 import org.signal.network.exceptions.NonSuccessfulResponseCodeException
 import org.signal.network.service.StorageServiceService
-import org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues.PhoneNumberDiscoverabilityMode
-import org.thoughtcrime.securesms.keyvalue.PhoneNumberPrivacyValues.PhoneNumberSharingMode
+import org.signal.remoteconfig.RemoteConfig
+import org.signal.storage.keyvalue.PhoneNumberPrivacyValues.PhoneNumberDiscoverabilityMode
+import org.signal.storage.keyvalue.PhoneNumberPrivacyValues.PhoneNumberSharingMode
+import org.signal.storage.protos.StorageSyncLoopState
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.thoughtcrime.securesms.keyvalue.protos.StorageSyncLoopState
 import org.thoughtcrime.securesms.net.SignalNetwork
-import org.thoughtcrime.securesms.util.RemoteConfig
 import org.whispersystems.signalservice.api.storage.RecordIkm
 import org.whispersystems.signalservice.api.storage.SignalStorageManifest
 import org.whispersystems.signalservice.api.storage.SignalStorageRecord
@@ -111,14 +111,14 @@ class FakeStorageServiceRule(val storageKey: StorageKey = StorageKey(Util.getSec
    * Must be called after [MockSignalStoreRule] has been applied, i.e. from your test's setup.
    */
   fun stubDefaults(store: MockSignalStoreRule) {
-    var localManifest = SignalStorageManifest.EMPTY
+    var localManifestBytes: ByteArray? = null
     var syncLoopState = StorageSyncLoopState()
     var lastBackgroundSyncTime = 0L
     var needsSyncOnForeground = false
     var notSyncedRotatedSelfProfileKey: ByteArray? = null
 
-    every { store.storageService.manifest } answers { localManifest }
-    every { store.storageService.manifest = any() } answers { localManifest = firstArg() }
+    every { store.storageService.manifestBytes } answers { localManifestBytes }
+    every { store.storageService.manifestBytes = any() } answers { localManifestBytes = firstArg() }
     every { store.storageService.storageKey } returns storageKey
     every { store.storageService.storageKeyForInitialDataRestore } returns null
 
@@ -159,7 +159,7 @@ class FakeStorageServiceRule(val storageKey: StorageKey = StorageKey(Util.getSec
     every { store.uiHints.hasSeenAdminDeleteEducationDialog() } returns false
     every { store.payments.mobileCoinPaymentsEnabled() } returns false
     every { store.payments.paymentsEntropy } returns null
-    every { store.emoji.reactions } returns emptyList()
+    every { store.emoji.rawReactions } returns emptyList()
     every { store.inAppPayments.getDisplayBadgesOnProfile() } returns false
     every { store.inAppPayments.isDonationSubscriptionManuallyCancelled() } returns false
     every { store.inAppPayments.isBackupSubscriptionManuallyCancelled() } returns false

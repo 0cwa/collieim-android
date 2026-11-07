@@ -54,6 +54,101 @@ class BuildSourceTests(unittest.TestCase):
         (self.repo / 'molly-build.json').write_text(json.dumps(self.config))
         (self.reports / 'source.json').write_text(json.dumps(self.proof))
 
+    def test_incomplete_signal_port_fails_closed_for_all_release_profiles(self):
+        self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.save()
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof') as proof, patch.object(runner, 'run') as run:
+            for profile in (None, *sorted(build.release_profiles.NAMES)):
+                runner.profile = profile
+                with self.subTest(profile=profile), self.assertRaisesRegex(build.BuildError, 'release assembly is blocked'):
+                    runner.gradle('assemble-release')
+            proof.assert_not_called()
+            run.assert_not_called()
+
+    def test_incomplete_port_blocks_real_profile_selection(self):
+        self.args.repo = Path(__file__).resolve().parents[2]
+        for name in sorted(build.release_profiles.NAMES):
+            self.args.profile = name
+            runner = build.Build(self.args)
+            with self.subTest(profile=name), patch.object(runner, 'run') as run:
+                with self.assertRaisesRegex(build.BuildError, 'release assembly is blocked'):
+                    runner.gradle('assemble-release')
+                run.assert_not_called()
+
+    def test_835_profiles_require_the_same_staged_native_lock(self):
+        self.args.repo = Path(__file__).resolve().parents[2]
+        for name in sorted(build.release_profiles.NAMES):
+            self.args.profile = name
+            runner = build.Build(self.args)
+            with self.subTest(profile=name):
+                self.assertEqual(runner.artifact_native_lock(), self.args.repo / 'tools/native/native-lock.json')
+                with self.assertRaisesRegex(build.BuildError, 'no fallback'):
+                    runner.native_verification_bytes()
+
+    def test_835_profiles_select_proxy_fail_closed_unit_tests(self):
+        root = Path(__file__).resolve().parents[2]
+        config = json.loads((root / 'molly-build.json').read_text())
+        selector = 'org.thoughtcrime.securesms.net.MollyProxyFailClosedTest'
+        for name in sorted(build.release_profiles.NAMES):
+            selected, _ = build.release_profiles.select(config, name, root)
+            tasks = build.gradle_tasks(selected['android']['tests'], 'tests', tests=True)
+            with self.subTest(profile=name):
+                self.assertEqual(tasks.count(selector), 1)
+                i = tasks.index(selector)
+                self.assertEqual(tasks[i - 1], '--tests')
+                self.assertEqual([task for task in tasks[:i] if task.startswith(':')][-1], ':app:testProdWebsiteDebugUnitTest')
+
+    def test_incomplete_port_allows_debug_but_rejects_release_task_aliases(self):
+        self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.config['android'] = {'assemble': ':app:assembleProdWebsiteDebug', 'tests': [':core:network:test']}
+        self.save()
+        init = self.repo / 'tools/patches/test-worker-heap.init.gradle'
+        init.parent.mkdir(parents=True)
+        init.write_text('// fixture\n')
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof'), patch.object(runner, 'artifact_native_lock', return_value=None), patch.object(runner, 'run') as run:
+            runner.gradle('assemble')
+            runner.gradle('test')
+            self.assertEqual(run.call_count, 2)
+            for task in (':app:assemble', ':app:assembleRelease', ':app:bundleProdWebsiteRelease', ':app:build'):
+                runner.android['assemble'] = task
+                with self.subTest(task=task), self.assertRaisesRegex(build.BuildError, 'diagnostic debug'):
+                    runner.gradle('assemble')
+            for task in (':app:assembleRelease', ':app:testProdWebsiteReleaseUnitTest', ':app:test', ':app:testProdWebsiteR', ':app:build'):
+                runner.android['tests'] = [task]
+                with self.subTest(task=task), self.assertRaisesRegex(build.BuildError, 'non-release test'):
+                    runner.gradle('test')
+            self.assertEqual(run.call_count, 2)
+
+    def test_incomplete_signal_port_does_not_allow_missing_native_lock(self):
+        self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.proof['signal'] = build.BLOCKED_SIGNAL_PORT
+        self.save()
+        runner = build.Build(self.args)
+        with patch.object(runner, 'run') as run:
+            with self.assertRaisesRegex(build.BuildError, 'requires the pinned native dependency lock'):
+                runner.source_proof()
+            run.assert_not_called()
+
+    def test_incomplete_signal_port_rejects_altered_valid_native_lock(self):
+        self.config['signal']['commit'] = build.BLOCKED_SIGNAL_PORT
+        self.config['native'] = 'candidate-lock.json'
+        (self.repo / 'candidate-lock.json').write_text(json.dumps({'source_provenance': {'libsignal': 'x'}, 'modules': ['x']}))
+        self.save()
+        runner = build.Build(self.args)
+        with self.assertRaisesRegex(build.BuildError, 'native dependency lock differs from its pin'):
+            runner.artifact_native_lock()
+
+    def test_old_signal_release_is_not_blocked_by_port_guard(self):
+        self.config['signal']['commit'] = '6e9dddc01f1b26e608ac683807c51e139c141ed2'
+        self.save()
+        runner = build.Build(self.args)
+        with patch.object(runner, 'source_proof') as proof, patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(build.BuildError, 'release-version-name'):
+                runner.gradle('assemble-release')
+            proof.assert_called_once()
+
     def test_gradle_subprocess_keeps_single_worker_limit(self):
         self.config['android'] = {'assemble': [':app:assembleDebug']}
         self.save()
@@ -378,11 +473,16 @@ class NamedProfileBuildTests(BuildSourceTests):
                     self.assertIn('-PreleaseVersionName=8.33.2-1-rc3', command)
                     self.assertIn('-PreleaseVersionCode=177203', command)
 
+    @patch.object(build.release_profiles, 'layer_test_sources', new=lambda *_: [])
     def test_profile_bound_to_proof_and_forces_firebase_property(self):
-        self.config['port'] = {'series': 'patches/ports/test/series'}
+        self.config['port'] = {'series': build.release_profiles.PORT_SERIES}
         self.config['android'] = {'assemble': ':app:assembleDebug', 'tests': [':app:test']}
-        entry = {'base_series': 'patches/ports/signal-8.33.2/series', 'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'],
-                 'fork_series': [], 'target_tree': self.config['target_tree'],
+        self.config['fork_source'] = {'url': 'https://github.com/tw-hx/Signal-Android', 'head': 'c' * 40}
+        fork_series = [build.release_profiles.FIREBASE, build.release_profiles.COLLIE_ICON,
+                       build.release_profiles.COLLIE_BRANDING, build.release_profiles.COLLIE_VISUALS,
+                       build.release_profiles.RESTORE_PICKER]
+        entry = {'base_series': build.release_profiles.PORT_SERIES, 'base_checkpoint': 'b' * 40, 'base_tree': self.config['target_tree'],
+                 'fork_series': fork_series, 'target_tree': self.config['target_tree'],
                  'firebase_free': False}
         self.config['profiles'] = {'molly-minimal': entry,
                                    'molly-continued': dict(entry)}
@@ -402,7 +502,7 @@ class NamedProfileBuildTests(BuildSourceTests):
             runner.gradle('assemble')
         self.assertIn('-PmollyFirebaseFree=false', (self.reports / 'assemble.log').read_text().splitlines())
         self.assertIn('-PbasePackageId=im.collie.app', (self.reports / 'assemble.log').read_text().splitlines())
-        self.assertIn('-PbaseAppTitle=Molly Minimal', (self.reports / 'assemble.log').read_text().splitlines())
+        self.assertIn('-PbaseAppTitle=Collie', (self.reports / 'assemble.log').read_text().splitlines())
         for name, (title, filename, package) in build.release_profiles.APP.items():
             with self.subTest(profile=name):
                 runner.profile['app'] = {'title': title, 'file_name': filename, 'package_id': package}

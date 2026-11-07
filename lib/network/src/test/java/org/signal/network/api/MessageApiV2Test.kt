@@ -22,8 +22,8 @@ import org.signal.libsignal.net.SealedSendFailure
 import org.signal.libsignal.net.UserBasedAuthorization
 import org.signal.libsignal.net.UserBasedSendAuthorization
 import org.signal.libsignal.zkgroup.groupsend.GroupSendFullToken
-import org.whispersystems.signalservice.api.crypto.SealedSenderAccess
-import org.whispersystems.signalservice.api.crypto.UnidentifiedAccess
+import org.signal.network.crypto.SealedSenderAccess
+import org.signal.network.crypto.UnidentifiedAccess
 import java.util.UUID
 
 class MessageApiV2Test {
@@ -103,6 +103,16 @@ class MessageApiV2Test {
 
     assertThat(result).isEqualTo(mismatched)
     assertThat(sentWith).containsExactly(UserBasedAuthorization.AccessKey(accessKey))
+  }
+
+  @Test
+  fun `story access uses Story auth and is not retried when rejected`() = runTest {
+    val api = apiReturning(unauthorized)
+
+    val result = api.sendSealedSenderMessage(recipient, 1L, emptyList(), SealedSenderAccess.Story(mockk()), onlineOnly = false, urgent = true)
+
+    assertThat(result).isEqualTo(unauthorized)
+    assertThat(sentWith).containsExactly(UserBasedSendAuthorization.Story)
   }
 
   private fun apiReturning(vararg results: RequestResult<Unit, SealedSendFailure>): MessageApiV2 {

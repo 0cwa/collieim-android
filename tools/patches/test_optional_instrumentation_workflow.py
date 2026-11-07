@@ -51,6 +51,7 @@ class OptionalInstrumentationWorkflowTests(unittest.TestCase):
                 if filename == 'molly-patch-release.yml':
                     self.assertFalse(expression(condition, event='pull_request', choice='both'))
                     self.assertFalse(expression(condition, event='workflow_dispatch', choice='both', scope='main-maintenance', profiles='[""]'))
+                    self.assertFalse(expression(condition, event='workflow_dispatch', choice='both', scope='next-port'))
 
     def test_failure_and_diagnostics_remain_independent(self):
         for filename in ('molly-patch-release.yml', 'molly-unsigned-release.yml'):

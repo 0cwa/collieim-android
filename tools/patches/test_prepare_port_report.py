@@ -1,15 +1,43 @@
 import hashlib
 import json
+import shutil
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+import zipfile
 from unittest.mock import patch
 
 import prepare_port_report as prepare
 
 
 class PrepareReportTests(unittest.TestCase):
+    def test_snapshot_rejects_noncanonical_paths_and_oversized_archive(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            archive_path = root / 'snapshot.zip'
+            commit = '1' * 40
+            metadata = {'baseline_profile_commit': commit,
+                        'baseline_snapshot': {'path': 'snapshot.zip', 'sha256': ''}}
+            for entry in ('../test/series', 'sub/../series', './series', 'a//b', '/absolute', 'a\\b', 'series'):
+                with self.subTest(entry=entry):
+                    with zipfile.ZipFile(archive_path, 'w') as archive:
+                        archive.writestr('manifest.json', json.dumps({'baseline_profile_commit': commit}))
+                        archive.writestr('molly-build.json', json.dumps({'port': {'series': 'patches/test/series'}}))
+                        archive.writestr('patches/test/provenance.json', '{}')
+                        archive.writestr('patches/test/series', entry + '\n')
+                    metadata['baseline_snapshot']['sha256'] = hashlib.sha256(archive_path.read_bytes()).hexdigest()
+                    with tempfile.TemporaryDirectory(dir=root) as destination:
+                        expected = 'duplicate report baseline snapshot destination' if entry == 'series' else 'invalid report baseline snapshot path'
+                        with self.assertRaisesRegex(ValueError, expected):
+                            prepare.snapshot(root, metadata, Path(destination))
+            with archive_path.open('wb') as output:
+                output.seek(20_000_000)
+                output.write(b'x')
+            with tempfile.TemporaryDirectory(dir=root) as destination:
+                with self.assertRaisesRegex(ValueError, 'compressed size limit'):
+                    prepare.snapshot(root, metadata, Path(destination))
+
     def test_fresh_repo_reconstructs_historical_binary_and_mode_and_rejects_bad_pins(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -71,6 +99,36 @@ class PrepareReportTests(unittest.TestCase):
             metadata_path.write_text(json.dumps(metadata))
             with self.assertRaisesRegex(ValueError, 'immutable report baseline'):
                 prepare.prepare(repo)
+
+            # Reproduce a squash: the original baseline commit does not exist in this
+            # object database, while its exact inputs are available as a pinned snapshot.
+            squashed = root / 'squashed'
+            shutil.copytree(repo, squashed, ignore=shutil.ignore_patterns('.git'))
+            git(squashed, 'init', '-q')
+            git(squashed, 'config', 'user.name', 'Test')
+            git(squashed, 'config', 'user.email', 'test@example.invalid')
+            git(squashed, 'fetch', '-q', str(source), base)
+            snapshot_path = squashed / 'patches/ports/test/baseline.zip'
+            with zipfile.ZipFile(snapshot_path, 'w') as archive:
+                archive.writestr('manifest.json', json.dumps({'baseline_profile_commit': historical}))
+                for path in ('molly-build.json', 'patches/ports/test/provenance.json',
+                             'patches/ports/test/series', 'patches/ports/test/0001-change.patch'):
+                    archive.writestr(path, subprocess.check_output(['git', '-C', str(source), 'show', historical + ':' + path]))
+            snapshot_metadata = {'baseline_profile_commit': historical, 'baseline_target_tree': target,
+                                 'baseline_mechanical_tree': mechanical,
+                                 'baseline_snapshot': {'path': 'patches/ports/test/baseline.zip',
+                                     'sha256': hashlib.sha256(snapshot_path.read_bytes()).hexdigest()}}
+            (squashed / 'patches/ports/test/report-metadata.json').write_text(json.dumps(snapshot_metadata))
+            # Restore the current, empty series after the earlier negative test.
+            (squashed / 'patches/ports/test/series').write_text('')
+            self.assertNotEqual(subprocess.run(['git', '-C', str(squashed), 'cat-file', '-e', historical],
+                                              stderr=subprocess.DEVNULL).returncode, 0)
+            with patch.object(prepare.release, 'mechanical_merge', return_value=(mechanical, set(), '')):
+                prepare.prepare(squashed)
+            self.assertEqual(git(squashed, 'cat-file', '-t', target), 'tree')
+            snapshot_path.write_bytes(snapshot_path.read_bytes() + b'tamper')
+            with self.assertRaisesRegex(ValueError, 'snapshot hash mismatch'):
+                prepare.prepare(squashed)
 
     def test_preparation_precedes_each_scope_projection(self):
         root = Path(__file__).resolve().parents[2]

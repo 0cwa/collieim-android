@@ -11,6 +11,7 @@ import sys
 import tempfile
 
 import release_artifacts as a
+from release_sign import validate_instrumentation_checklist
 
 
 def command(args, dry=False, **kwargs):
@@ -95,6 +96,9 @@ def main():
             manifest = json.loads(final.read_text())
             if manifest.get('schema') != 1 or manifest.get('rehearsal') is not False or manifest.get('commit') != args.approved_commit:
                 raise ValueError('final manifest is not a real release of the approved commit')
+            if args.repo.lower() == '0cwa/collieim-android':
+                a.validate_version_code(manifest.get('version_code'), a.PACKAGE)
+            validate_instrumentation_checklist(manifest.get('instrumentation_checklist'), args.approved_commit)
             entries = manifest['apks']
             if len(entries) != 5 or {x['profile'] for x in entries} != a.PROFILES:
                 raise ValueError('final manifest must contain all five profiles')
@@ -115,6 +119,20 @@ def main():
             a.snapshot(args.notes, notes)
             if a.sha256(provenance) != manifest.get('unsigned_manifest_sha256'):
                 raise ValueError('provenance does not match the unsigned manifest used for signing')
+            final_mode = manifest.get('artifact_mode', 'five-profiles')
+            if final_mode not in ('five-profiles', 'single-collie'):
+                raise ValueError('unknown release artifact mode')
+            try:
+                unsigned = json.loads(provenance.read_text())
+            except json.JSONDecodeError:
+                if final_mode == 'single-collie':
+                    raise ValueError('single-collie provenance must be a JSON manifest')
+                unsigned = None
+            unsigned_mode = unsigned.get('artifact_mode', 'five-profiles') if isinstance(unsigned, dict) else 'five-profiles'
+            if final_mode != unsigned_mode:
+                raise ValueError('signed and unsigned artifact modes differ')
+            if final_mode == 'single-collie':
+                a.validate_alias_provenance(manifest, unsigned, args.approved_commit)
             assets += [final, provenance, notes]
             expected.update({final.name: args.final_manifest_sha256,
                              provenance.name: manifest['unsigned_manifest_sha256'],

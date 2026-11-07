@@ -315,6 +315,10 @@
     <string name="DeleteAccountScreen__deleting_your_account_with_username_s_will">\"%1$s\" എന്ന ഉപയോക്തൃനാമത്തിലുള്ള നിങ്ങളുടെ അക്കൗണ്ട് ഇല്ലാതാക്കുന്നത്:</string>
     <!-- Bullet point on the delete account screen, shown in place of the plain one when the account has a username. Placeholder is the username. -->
     <string name="DeleteAccountScreen__delete_your_account_info_and_profile_photo_including_your_username_s">നിങ്ങളുടെ \"%1$s\" എന്ന ഉപയോക്തൃനാമം ഉൾപ്പെടെയുള്ള അക്കൗണ്ട് വിവരങ്ങളും പ്രൊഫൈൽ ഫോട്ടോയും ഇല്ലാതാക്കുക</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, telling the user their account ID and recovery key will be deleted -->
+    <string name="DeleteAccountScreen__delete_your_account_id_and_recovery_key">Delete your account ID and recovery key</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, warning the user that the account can\'t be registered again or restored afterwards -->
+    <string name="DeleteAccountScreen__you_wont_be_able_to_re_register_or_restore_your_account">Prevent you from re-registering or restoring your account</string>
     <!-- Bullet point on the delete account screen warning the user that the deletion is permanent -->
     <string name="DeleteAccountScreen__this_action_can_not_be_undone">ഈ പ്രവൃത്തി പഴയപടിയാക്കാനാകില്ല</string>
     <!-- Message of the deletion confirmation dialog, shown when the account has a username. Placeholder is the username. -->
@@ -588,4 +592,585 @@
     <string name="NotificationProfileCreated__add_a_schedule_in_settings_to_automate_your_profile">നിങ്ങളുടെ രൂപരേഖ യാന്ത്രികമാക്കാൻ ക്രമീകരണങ്ങളിൽ ഒരു സമയക്രമം ചേർക്കുക.</string>
     <!-- Descriptor text shown to indicate your profile will follow the schedule set during create flow -->
     <string name="NotificationProfileCreated__your_profile_will_turn_on_and_off_automatically_according_to_your_schedule">നിങ്ങളുടെ സമയക്രമം അനുസരിച്ച് നിങ്ങളുടെ രൂപരേഖ ഓട്ടോമാറ്റിക്കായി ഓണും ഓഫും ആകും.</string>
+
+    <!-- PrivacySettingsScreen -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">നിങ്ങൾ ഒരു പാസ്‌ഫ്രെയ്‌സ് ഇതു വരെ ക്രമീകരിച്ചിട്ടില്ല!</string>
+    <string name="ApplicationPreferencesActivity_disable">പ്രവർത്തനരഹിതമാക്കുക</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">പാസ്‌ഫ്രെയ്‌സ് പ്രവർത്തനരഹിതമാക്കണോ?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">ഇത് Signal, സന്ദേശ അറിയിപ്പുകളെ ശാശ്വതമായി അൺലോക്ക് ചെയ്യും.</string>
+    <string name="PrivacySettingsFragment__app_security">ആപ്പ് സുരക്ഷ</string>
+    <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
+    <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">റീസന്റ് ലിസ്റ്റിലും ആപ്പിനുള്ളിലും സ്‌ക്രീൻഷോട്ടുകൾ ബ്ലോക്ക് ചെയ്യുക</string>
+    <string name="PrivacySettingsFragment__blocked">ബ്ലോക്ക് ചെയ്തു</string>
+    <!-- Alert dialog description to setup screen lock or fingerprint in phone settings -->
+    <string name="PrivacySettingsFragment__cant_enable_description">പേയ്‌മെന്റ് ലോക്ക് ഉപയോഗിക്കുന്നതിന്, ആദ്യം നിങ്ങളുടെ ഫോണിന്റെ ക്രമീകരണങ്ങളിൽ സ്‌ക്രീൻ ലോക്കോ വിരലടയാള ID-യോ പ്രവർത്തനക്ഷമമാക്കണം.</string>
+    <!-- Alert dialog title when payment lock cannot be enabled -->
+    <string name="PrivacySettingsFragment__cant_enable_title">പേയ്‌മെന്റ് ലോക്ക് പ്രവർത്തനക്ഷമമാക്കാൻ കഴിയില്ല</string>
+    <!-- Settings label that shows the number blocked contacts -->
+    <plurals name="PrivacySettingsFragment__d_contacts">
+        <item quantity="one">%1$d കോൺടാക്റ്റ് അല്ലെങ്കിൽ ഗ്രൂപ്പ്</item>
+        <item quantity="other">%1$d കോൺടാക്റ്റുകൾ അല്ലെങ്കിൽ ഗ്രൂപ്പുകൾ</item>
+    </plurals>
+    <string name="PrivacySettingsFragment__default_timer_for_new_changes">പുതിയ ചാറ്റുകൾക്കായുള്ള ഡിഫോൾട്ട് ടൈമർ</string>
+    <!-- Shown in a toast when we can\'t navigate to the user\'s system fingerprint settings -->
+    <string name="PrivacySettingsFragment__failed_to_navigate_to_system_settings">സിസ്റ്റം ക്രമീകരണങ്ങളിലേക്ക് നാവിഗേറ്റ് ചെയ്യാനായില്ല</string>
+    <string name="PrivacySettingsFragment__messaging">സന്ദേശ വിനിമയം</string>
+    <!-- Description for the payment lock toggle in privacy settings -->
+    <string name="PrivacySettingsFragment__payment_lock_require_lock">പണം കൈമാറുന്നതിന് Android സ്‌ക്രീൻ ലോക്കോ വിരലടയാളമോ ആവശ്യമാണ്</string>
+    <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">നിങ്ങൾ തുടങ്ങുന്ന എല്ലാ പുതിയ ചാറ്റുകൾക്കുമായി, സന്ദേശങ്ങൾ അപ്രത്യക്ഷമാകുന്നതിനുള്ള ഒരു ഡിഫോൾട്ട് ടൈമർ സജ്ജീകരിക്കുക.</string>
+    <string name="PrivacySettingsFragment__signal_message_and_calls">Signal സന്ദേശങ്ങളും കോളുകളും, കോളുകൾ എപ്പോഴും റിലേ ചെയ്യൽ, വിവരങ്ങൾ മറച്ച അയച്ചയാൾ</string>
+    <!-- Text shown when screen lock is not enabled -->
+    <string name="ScreenLockSettingsFragment__off">ഓഫ്</string>
+    <string name="preferences__auto_lock_signal_after_a_specified_time_interval_of_inactivity">പ്രവർത്തനരഹിതമായ ഒരു നിശ്ചിത സമയപരിധിക്ക് ശേഷം Signal ഓട്ടോ-ലോക്ക് ചെയ്യുക</string>
+    <string name="preferences__change_passphrase">പാസ്‌ഫ്രെയ്‌സ് മാറ്റുക</string>
+    <string name="preferences__change_your_passphrase">നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് മാറ്റുക</string>
+    <!-- Legacy preference menu item to enable a passphrase screen lock that is only available to those who have previously had a passphrase -->
+    <string name="preferences__enable_passphrase">പാസ്‌ഫ്രെയ്‌സ് സ്‌ക്രീൻ ലോക്ക് പ്രവർത്തനക്ഷമമാക്കുക</string>
+    <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">\'വായിച്ചതിനുള്ള സ്ഥിരീകരണം\' പ്രവർത്തനരഹിതമാക്കിയിട്ടുണ്ടെങ്കിൽ, മറ്റുള്ളവരിൽ നിന്നുള്ള \'വായിച്ചതിനുള്ള സ്ഥിരീകരണം\' നിങ്ങൾക്ക് കാണാൻ സാധിക്കില്ല.</string>
+    <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">\'ടൈപ്പ് ചെയ്യുന്നു എന്ന അറിയിപ്പ്\' പ്രവർത്തനരഹിതമാക്കിയിട്ടുണ്ടെങ്കിൽ, മറ്റുള്ളവരിൽ നിന്ന് \'ടൈപ്പ് ചെയ്യുന്നു എന്ന അറിയിപ്പ്\' നിങ്ങൾക്ക് കാണാൻ കഴിയില്ല.</string>
+    <!-- Legacy preference menu item to choose the interval of inactivity before lockout -->
+    <string name="preferences__inactivity_timeout_interval">പ്രവര്‍ത്തനരഹിതമായാല്‍ ടൈംഔട്ട് ആകുന്ന ഇടവേള</string>
+    <!-- Legacy preference menu item to enable locking of app after inactivity -->
+    <string name="preferences__inactivity_timeout_passphrase">പ്രവര്‍ത്തനരഹിതമായാല്‍ ടൈംഔട്ട് ആകുന്ന പാസ്‌ഫ്രെയ്‌സ്</string>
+    <string name="preferences__incognito_keyboard">ഇൻകോഗ്നിറ്റോ കീബോർഡ്</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__incognito_keyboard_learn_more" translatable="false">https://support.signal.org/hc/articles/360055276112</string> -->
+    <string name="preferences__lock_signal_and_message_notifications_with_a_passphrase">ഒരു പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് സ്‌ക്രീനും അറിയിപ്പുകളും ലോക്കുചെയ്യുക</string>
+    <!-- Privacy settings payments section description -->
+    <string name="preferences__payment_lock">പേയ്‌മെന്റ് ലോക്ക്</string>
+    <string name="preferences__read_receipts">വായിച്ചതിനുള്ള സ്ഥിരീകരണം</string>
+    <string name="preferences__request_keyboard_to_disable">\"ചെയ്ത വസ്തുതകള്‍ ഓർത്തിരിക്കല്‍ (പെഴ്സണലൈസ്ഡ് ലേണിംഗ്)\" പ്രവർത്തനരഹിതമാക്കുന്നതിന് കീബോർഡിനോട് അഭ്യർത്ഥിക്കുക.</string>
+    <string name="preferences__screen_security">സ്‌ക്രീൻ സുരക്ഷ</string>
+    <string name="preferences__this_setting_is_not_a_guarantee">ഈ ക്രമീകരണം ഒരു ഗ്യാരണ്ടി അല്ല, നിങ്ങളുടെ കീബോർഡ് അത് അവഗണിച്ചേക്കാം.</string>
+    <string name="preferences__typing_indicators">ടൈപ്പിംഗ് സൂചകങ്ങൾ</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">നിങ്ങളുടെ ഫോൺ നമ്പർ ആർക്കൊക്കെ കാണാനാകുമെന്നും ആർക്കൊക്കെ നിങ്ങളെ Signal-ൽ ബന്ധപ്പെടാനാകുമെന്നും തിരഞ്ഞെടുക്കൂ.</string>
+    <!-- Privacy settings payments section title -->
+    <string name="preferences_app_protection__payments">പേയ്മെന്റുകൾ</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">സ്‌ക്രീൻ ലോക്ക് ഉപയോഗിക്കുന്നതിന് ഈ ഉപകരണത്തിൽ ഒരു PIN, പാറ്റേൺ അല്ലെങ്കിൽ പാസ്‌വേഡ് സജ്ജീകരിക്കുക.</string>
+    <!-- Title of the privacy settings screen -->
+    <string name="PrivacySettingsScreen__privacy">സ്വകാര്യത</string>
+    <!-- Section header in privacy settings for disappearing message defaults -->
+    <string name="PrivacySettingsScreen__disappearing_messages">അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങൾ</string>
+    <!-- Row in privacy settings that opens advanced privacy settings -->
+    <string name="PrivacySettingsScreen__advanced">വിപുലമായ</string>
+    <!-- Confirm button on the dialog explaining payment lock needs a device screen lock; opens the system settings -->
+    <string name="PrivacySettingsScreen__turn_on">ഓണാക്കുക</string>
+    <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
+    <string name="PrivacySettingsScreen__not_now">ഇപ്പോൾ വേണ്ട</string>
+    <!-- Title of the authentication prompt shown when turning off payment lock -->
+    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <!-- Link after the incognito keyboard disclaimer that opens a support article -->
+    <string name="PrivacySettingsScreen__learn_more">കൂടുതലറിയുക</string>
+
+    <!-- AppSettingsScreen -->
+    <!-- String alerting user that backup storage limit has been reached -->
+    <string name="AppSettingsFragment__backup_storage_limit_reached">ബാക്കപ്പ് സംഭരണ പരിധിയിൽ എത്തി</string>
+    <!-- String displayed in a snackbar when we successfully copy the backups subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_backups_subscriber_id_to_clipboard">ബാക്കപ്പ് സബ്‌സ്‌ക്രൈബർ id ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>
+    <!-- String displayed in a snackbar when we successfully copy the donations subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_donor_subscriber_id_to_clipboard">ഡോണർ സബ്സ്ക്രൈബർ id ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</string>
+    <!-- String alerting user that backup failed -->
+    <string name="AppSettingsFragment__couldnt_complete_backup">ബാക്കപ്പ് പൂർത്തിയാക്കാൻ കഴിഞ്ഞില്ല</string>
+    <!-- String displayed telling user to invite their friends to Signal -->
+    <string name="AppSettingsFragment__invite_your_friends">സുഹൃത്തുക്കളെ ക്ഷണിക്കുക</string>
+    <!-- String alerting user that something is wrong with their backups subscription -->
+    <string name="AppSettingsFragment__renew_your_signal_backups_subscription">നിങ്ങളുടെ Signal സുരക്ഷിത ബാക്കപ്പ് സബ്സ്ക്രിപ്ഷൻ പുതുക്കുക</string>
+    <!-- App settings row that opens privacy settings -->
+    <string name="preferences__privacy">സ്വകാര്യത</string>
+    <!-- Title of the top level app settings screen -->
+    <string name="AppSettingsScreen__settings">ക്രമീകരണങ്ങൾ</string>
+    <!-- Content description for the back button on the top level app settings screen -->
+    <string name="AppSettingsScreen__go_back">മടങ്ങിപ്പോവുക</string>
+    <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
+    <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">നിങ്ങളുടെ ബാക്കപ്പ് സബ്സ്ക്രിപ്ഷൻ റിഡീം ചെയ്യാനായില്ല</string>
+    <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Signal-ന് സംഭാവന നൽകുക</string>
+    <!-- App settings row that opens internal-only preferences -->
+    <string name="AppSettingsScreen__internal_preferences">ഇന്റേണൽ മുൻഗണനകൾ</string>
+    <!-- App settings row that opens linked devices -->
+    <string name="AppSettingsScreen__linked_devices">ബന്ധിപ്പിച്ച ഉപകരണങ്ങൾ</string>
+    <!-- App settings row that opens notification settings -->
+    <string name="AppSettingsScreen__notifications">അറിയിപ്പുകൾ</string>
+    <!-- App settings row that opens payments -->
+    <string name="AppSettingsScreen__payments">പേയ്മെന്റുകൾ</string>
+    <!-- App settings row that opens story settings -->
+    <string name="AppSettingsScreen__stories">സ്റ്റോറികൾ</string>
+    <!-- App settings row that opens backup settings -->
+    <string name="AppSettingsScreen__backups">ബാക്കപ്പുകൾ</string>
+
+    <!-- Navigation bar size dialog, in appearance settings -->
+    <!-- Dialog title, displayed below the header image -->
+    <string name="ChooseNavigationBarStyleFragment__navigation_bar_size">നാവിഗേഷൻ ബാർ വലുപ്പം</string>
+    <!-- Toggle button label for normal size -->
+    <string name="ChooseNavigationBarStyleFragment__normal">സാധാരണം</string>
+    <!-- Toggle button label for compact size -->
+    <string name="ChooseNavigationBarStyleFragment__compact">കോമ്പാക്റ്റ്</string>
+
+    <!-- Content description for the back button on the chats settings screen -->
+    <string name="ChatsSettingsScreen__go_back">മടങ്ങിപ്പോവുക</string>
+
+    <!-- StorageUsageOverview -->
+    <string name="preferences_storage__photos">ചിത്രങ്ങൾ</string>
+    <string name="preferences_storage__videos">വീഡിയോ</string>
+    <string name="preferences_storage__files">ഫയലുകൾ</string>
+    <string name="preferences_storage__audio">ഓഡിയോ</string>
+    <!-- Storage usage legend label for the size of the main message database -->
+    <string name="preferences_storage__messages">സന്ദേശങ്ങൾ</string>
+    <!-- Storage usage legend label for the size of downloaded sticker packs -->
+    <string name="preferences_storage__stickers">സ്റ്റിക്കറുകൾ</string>
+    <!-- Storage usage legend label for all remaining app storage, such as other databases, caches and temporary files -->
+    <string name="preferences_storage__other">മറ്റുള്ളവ</string>
+    <!-- Shown in place of the total storage size while usage is still being computed -->
+    <string name="preferences_storage__calculating">കണക്കാക്കുന്നു…</string>
+    <string name="preferences_storage__review_storage">സ്റ്റോറജ് അവലോകനം ചെയ്യുക</string>
+
+    <!-- TwoFactorVerifyScreen -->
+    <!-- Title of the screens where the user verifies one of their two-factor authentication methods -->
+    <string name="TwoFactorVerifyScreen__two_factor_authentication">ടൂ-ഫാക്ടർ ഓതന്റിക്കേഷൻ</string>
+    <!-- Instructions shown above the list of two-factor methods the user can verify with -->
+    <string name="TwoFactorVerifyScreen__choose_a_method_below_to_verify_your_account">നിങ്ങളുടെ അക്കൗണ്ട് സ്ഥിരീകരിക്കാൻ താഴെ പറയുന്നവയിൽ നിന്ന് ഒരു രീതി തിരഞ്ഞെടുക്കുക.</string>
+    <!-- Title of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__passkey">പാസ്‌കീ</string>
+    <!-- Description of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__tap_to_use_your_device_biometrics_or_fido2_passkey">നിങ്ങളുടെ ഉപകരണത്തിലെ ബയോമെട്രിക്സ് അല്ലെങ്കിൽ FIDO2 പാസ്‌കീ ഉപയോഗിക്കാൻ ടാപ്പ് ചെയ്യുക</string>
+    <!-- Title of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__authenticator_app">ഓതന്റിക്കേറ്റർ ആപ്പ്</string>
+    <!-- Description of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__enter_a_one_time_code_generated_by_your_authenticator_app">നിങ്ങളുടെ ഓതൻ്റിക്കേറ്റർ ആപ്പ് ജനറേറ്റ് ചെയ്ത ഒറ്റത്തവണ കോഡ് നൽകുക.</string>
+    <!-- Instructions shown above the field where the user enters the code from their authenticator app -->
+    <string name="TwoFactorVerifyScreen__to_continue_enter_the_6_digit_code_from_your_authenticator_app">തുടരുന്നതിന് നിങ്ങളുടെ ഓതൻ്റിക്കേറ്റർ ആപ്പിൽ നിന്നുള്ള 6 അക്ക കോഡ് നൽകുക.</string>
+    <!-- Button that leaves the verification flow without verifying anything -->
+    <string name="TwoFactorVerifyScreen__cancel">റദ്ദാക്കുക</string>
+    <!-- Error shown under the code field when the service rejected the code -->
+    <string name="TwoFactorVerifyScreen__incorrect_code">കോഡ് തെറ്റാണ്. നിങ്ങളുടെ ഓതൻ്റിക്കേറ്റർ ആപ്പിൽ ഇപ്പോൾ കാണിക്കുന്ന കോഡ് നൽകുക.</string>
+    <!-- Error shown when the service could not be reached -->
+    <string name="TwoFactorVerifyScreen__couldnt_reach_signal">Signal-മായി ബന്ധപ്പെടാൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Dialog shown when verifying with a passkey failed -->
+    <string name="TwoFactorVerifyScreen__something_went_wrong_with_your_passkey">നിങ്ങളുടെ പാസ്‌കീയുമായി ബന്ധപ്പെട്ട് എന്തോ പ്രശ്നമുണ്ടായി. ദയവായി വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ മറ്റൊരു രീതി തിരഞ്ഞെടുക്കുക.</string>
+
+    <!-- EditProfileNameScreen -->
+    <!-- Title of the screen for editing your profile name -->
+    <string name="EditProfileNameFragment_your_name">നിങ്ങളുടെ പേര്</string>
+    <!-- Hint for the first name field when editing your profile name -->
+    <string name="EditProfileNameFragment_first_name">പേരിന്റെ ആദ്യഭാഗം</string>
+    <!-- Hint for the last name field when editing your profile name -->
+    <string name="EditProfileNameFragment_last_name_optional">പേരിൻ്റെ അവസാന ഭാഗം (നിർബന്ധമല്ല)</string>
+    <!-- Button that saves your edited profile name -->
+    <string name="EditProfileNameScreen__save">സംരക്ഷിക്കൂ</string>
+    <!-- Snackbar shown when your profile name couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameScreen__failed_to_save_due_to_network_issues">നെറ്റ്‌വർക്ക് പ്രശ്‌നങ്ങൾ കാരണം സംരക്ഷിക്കുന്നതിൽ പരാജയം. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+
+    <!-- KeepMessagesSettingsScreen -->
+    <string name="preferences__keep_messages">സന്ദേശങ്ങൾ സൂക്ഷിക്കുക</string>
+    <!-- Option for keeping messages forever when managing storage -->
+    <string name="preferences_storage__forever">എന്നേക്കും</string>
+    <string name="preferences_storage__one_year">1 വർഷം</string>
+    <string name="preferences_storage__six_months">6 മാസം</string>
+    <string name="preferences_storage__thirty_days">30 ദിവസം</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">തിരഞ്ഞെടുത്ത സമയത്തിലും പഴയ സന്ദേശങ്ങൾ ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും.</string>
+    <string name="preferences_storage__delete_older_messages">പഴയ സന്ദേശങ്ങൾ ഇല്ലാതാക്കണോ?</string>
+    <string name="preferences_storage__this_will_permanently_delete_all_message_history_and_media">നിങ്ങളുടെ ഉപകരണത്തിലെ %1$s-ൽ കൂടുതൽ പഴക്കമുള്ള എല്ലാ സന്ദേശ ചരിത്രവും മീഡിയയും ഇത് ശാശ്വതമായി ഇല്ലാതാക്കും.</string>
+    <!-- Dialog action that confirms deleting older messages -->
+    <string name="preferences_storage__delete">ഇല്ലാതാക്കൂ</string>
+
+    <!-- ChatLengthLimitSettingsScreen -->
+    <string name="preferences__conversation_length_limit">ചാറ്റിന്‍റെ നീള പരിധി</string>
+    <plurals name="preferences_storage__s_messages_plural">
+        <item quantity="one">%1$s സന്ദേശം</item>
+        <item quantity="other">%1$s സന്ദേശങ്ങൾ</item>
+    </plurals>
+    <!-- Option for setting no limit of the length of chat messages -->
+    <string name="preferences_storage__none">ഒന്നുമില്ല</string>
+    <string name="preferences_storage__custom">ഇഷ്‌ടാനുസൃതം</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">തിരഞ്ഞെടുത്ത ദൈർഘ്യത്തിൽ കൂടുതലുള്ള സന്ദേശങ്ങൾ ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും.</string>
+    <!-- The body of an alert dialog that is shown when confirming a trim operation. Trimming will delete all but the most recent messages in a chat. The placeholder represents how many messages are kept in each chat. All older messages are deleted. -->
+    <plurals name="preferences_storage__this_will_permanently_trim_all_conversations_to_the_d_most_recent_messages">
+        <item quantity="one">ഇത് എല്ലാ ചാറ്റുകളും ഏറ്റവും പുതിയ സന്ദേശങ്ങളിലേക്ക് ശാശ്വതമായി ട്രിം ചെയ്യും.</item>
+        <item quantity="other">ഇത് എല്ലാ ചാറ്റുകളും ഏറ്റവും പുതിയ %1$s സന്ദേശങ്ങളിലേക്ക് ശാശ്വതമായി ട്രിം ചെയ്യും.</item>
+    </plurals>
+
+    <!-- EditAboutScreen -->
+    <!-- Title of the screen for editing the about text on your profile -->
+    <string name="EditAboutFragment_about">ആമുഖം</string>
+    <!-- Placeholder in the about field when it is empty -->
+    <string name="EditAboutFragment_write_a_few_words_about_yourself">നിങ്ങളെ പറ്റി രണ്ടുവാക്ക് എഴുതൂ…</string>
+    <!-- How many characters of the about text are used, out of the maximum, e.g. 125/140 -->
+    <string name="EditAboutFragment_count">%1$d/%2$d</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_speak_freely">സ്വതന്ത്രമായി സംസാരിക്കുക</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_encrypted">എന്‍ക്രിപ്റ്റ് ചെയ്തത്</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_be_kind">ദയ കാട്ടുക</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_coffee_lover">കാപ്പി പ്രേമി</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_free_to_chat">ചാറ്റ് ചെയ്യാൻ ലഭ്യമാണ്</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_taking_a_break">ഒരു ഇടവേളയിലാണ്</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_working_on_something_new">പുതിയ ഒരു കാര്യം ചെയ്യുന്നു</string>
+    <!-- Button that saves your edited about text -->
+    <string name="EditAboutScreen__save">സംരക്ഷിക്കൂ</string>
+    <!-- Content description for the button that clears both the about text and its emoji -->
+    <string name="EditAboutScreen__clear">മായ്‌ക്കുക</string>
+    <!-- Content description for the button that opens the emoji picker for the about text -->
+    <string name="EditAboutScreen__choose_emoji">ഇമോജി തിരഞ്ഞെടുക്കുക</string>
+    <!-- Snackbar shown when your about text couldn\'t be saved because of a network problem -->
+    <string name="EditAboutScreen__failed_to_save_due_to_network_issues">നെറ്റ്‌വർക്ക് പ്രശ്‌നങ്ങൾ കാരണം സംരക്ഷിക്കുന്നതിൽ പരാജയം. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+
+    <!-- UsernameEditScreen -->
+    <!-- Placeholder text for custom discriminator -->
+    <string name="UsernameEditFragment__00">00</string>
+    <!-- Instructional text at the top of the username edit screen -->
+    <string name="UsernameEditFragment__choose_your_username">നിങ്ങളുടെ ഉപയോക്തൃനാമം തിരഞ്ഞെടുക്കുക</string>
+    <!-- Title of the username screen, and the label of its field -->
+    <string name="UsernameEditFragment_username">ഉപയോക്തൃനാമം</string>
+    <!-- Button that deletes your username -->
+    <string name="UsernameEditFragment_delete">ഇല്ലാതാക്കൂ</string>
+    <!-- Snackbar shown when a username change failed because of a network problem -->
+    <string name="UsernameEditFragment_encountered_a_network_error">ഒരു നെറ്റ്‌വർക്ക് പിശക് നേരിട്ടു.</string>
+    <!-- Toast message shown if user exceeds the rate limit for reserving usernames -->
+    <string name="UsernameEditFragment_rate_limit_exceeded_error">വളരെയധികം ശ്രമങ്ങൾ നടത്തി, പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Shown when the username someone typed already belongs to someone else -->
+    <string name="UsernameEditFragment_this_username_is_taken">ഈ ഉപയോക്തൃനാമം എടുത്തിട്ടുണ്ട്.</string>
+    <!-- Shown when a username has characters that usernames can\'t have -->
+    <string name="UsernameEditFragment_usernames_can_only_include">ഉപയോക്തൃനാമങ്ങളിൽ a–Z, 0–9, അണ്ടർ സ്കോറുകൾ എന്നിവ മാത്രമേ ഉൾപ്പെടുത്താനാകൂ.</string>
+    <!-- Shown when a username starts with a digit -->
+    <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">ഉപയോക്തൃനാമം ഒരു നമ്പറിൽ ആരംഭിക്കാൻ കഴിയില്ല.</string>
+    <!-- Shown when the service rejects a username -->
+    <string name="UsernameEditFragment_username_is_invalid">ഉപയോക്തൃനാമം അസാധുവാണ്.</string>
+    <!-- Shown when a username is too short or too long. %1$d is the minimum length and %2$d the maximum -->
+    <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">ഉപയോക്തൃനാമങ്ങൾ %1$d മുതൽ %2$d വരെ പ്രതീകങ്ങൾ ആയിരിക്കണം.</string>
+    <!-- Explanation about what usernames provide, ending in a link to learn more. %1$s is that link, UsernameEditScreen__learn_more -->
+    <string name="UsernameEditScreen__usernames_let_others_message">ഫോൺ നമ്പറിന് പകരമായി ആളുകൾക്ക് നിങ്ങളുടെ ഉപയോക്തൃനാമം ഉപയോഗിച്ച് സന്ദേശമയയ്‌ക്കാൻ കഴിയും. ഉപയോക്തൃനാമങ്ങൾക്കൊപ്പം ഒരു കൂട്ടം സംഖ്യകളും ഉണ്ടാകും. %1$s</string>
+    <!-- Displayed when the chosen discriminator is not available for the given nickname -->
+    <string name="UsernameEditFragment__this_username_is_not_available_try_another_number">ഈ ഉപയോക്തൃനാമം ലഭ്യമല്ല, മറ്റൊരു നമ്പർ നൽകി നോക്കുക.</string>
+    <!-- Displayed when the chosen discriminator is too short -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_minimum_of_d_digits">ഉപയോക്തൃനാമം അസാധുവാണ്, കുറഞ്ഞത് %1$d അക്കങ്ങൾ നൽകുക.</string>
+    <!-- Displayed when the chosen discriminator is too long -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_maximum_of_d_digits">ഉപയോക്തൃനാമം അസാധുവാണ്, പരമാവധി %1$d അക്കങ്ങൾ നൽകുക.</string>
+    <!-- Displayed when the chosen discriminator is 00 -->
+    <string name="UsernameEditFragment__this_number_cant_be_00">ഈ സംഖ്യ 00 ആകാൻ പാടില്ല. 1-നും 9-നും ഇടയിലുള്ള ഒരു അക്കം നൽകുക</string>
+    <!-- Displayed when the chosen discriminator starts with 0 and has a length > 2 -->
+    <string name="UsernameEditFragment__this_number_cant_start_with_0">2 അക്കങ്ങളിൽ കൂടുതലുള്ള സംഖ്യകൾ 0-ൽ ആരംഭിക്കാനാകില്ല</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to recover their username -->
+    <string name="UsernameEditFragment_recovery_dialog_confirmation">നിങ്ങളുടെ ഉപയോക്തൃനാമം വീണ്ടെടുക്കുന്നതിലൂടെ നിങ്ങളുടെ നിലവിലുള്ള QR കോഡും ലിങ്കും പുനഃക്രമീകരിക്കും. ഉറപ്പാണോ?</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to change their username, even if it resets their link -->
+    <string name="UsernameEditFragment_change_confirmation_message">നിങ്ങളുടെ ഉപയോക്തൃനാമം മാറ്റുന്നത് നിങ്ങളുടെ നിലവിലുള്ള QR കോഡും ലിങ്കും പുനഃക്രമീകരിക്കും. ഉറപ്പാണോ?</string>
+    <!-- Text for a button in a dialog asking if the user would like to continue the operation of changing their username -->
+    <string name="UsernameEditFragment_continue">തുടരുക</string>
+    <!-- Button that saves the username you typed -->
+    <string name="UsernameEditScreen__save">സംരക്ഷിക്കൂ</string>
+    <!-- Link at the end of the explanation of usernames, which opens a support article about them -->
+    <string name="UsernameEditScreen__learn_more">കൂടുതലറിയുക</string>
+  <!-- Removed by excludeNonTranslatables <string name="username_support_url" translatable="false">https://support.signal.org/hc/articles/6712070553754</string> -->
+
+    <!-- EditProfileScreen -->
+    <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
+    <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">നിങ്ങളുടെ പ്രൊഫൈലും അതിലെ മാറ്റങ്ങളും നിങ്ങൾ സന്ദേശമയയ്ക്കുന്ന ആളുകൾക്കും കോൺടാക്റ്റുകൾക്കും ഗ്രൂപ്പുകൾക്കും ദൃശ്യമാകും.</string>
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Signal അപ്ഡേറ്റ് ചെയ്യുക</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Signal-ന്റെ ഈ പതിപ്പ് കാലഹരണപ്പെട്ടു. Signal ഉപയോഗിക്കുന്നത് തുടരാൻ ഇപ്പോൾ തന്നെ അപ്ഡേറ്റ് ചെയ്യുക.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">അപ്‌ഡേറ്റ്</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">ഉപകരണം രജിസ്റ്റർ ചെയ്‌തിട്ടില്ല</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">ഈ ഉപകരണം ഇപ്പോൾ രജിസ്റ്റർ ചെയ്തിട്ടില്ല. നിങ്ങളുടെ അക്കൗണ്ടിൽ മാറ്റങ്ങൾ വരുത്താൻ വീണ്ടും രജിസ്റ്റർ ചെയ്യുക.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">റീ-രജിസ്റ്റർ ചെയ്യുക</string>
+    <!-- Snackbar shown when your new avatar couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameFragment_failed_to_save_due_to_network_issues_try_again_later">നെറ്റ്‌വർക്ക് പ്രശ്‌നങ്ങൾ കാരണം സംരക്ഷിക്കുന്നതിൽ പരാജയം. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Snackbar message after network failure while trying to delete username -->
+    <string name="ManageProfileFragment__couldnt_delete_username">ഉപയോക്തൃനാമം ഇല്ലാതാക്കാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- The title of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_title">ഉപയോക്തൃനാമം ഇല്ലാതാക്കണോ?</string>
+    <!-- The body of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_body">"ഇത് നിങ്ങളുടെ ഉപയോക്തൃനാമം ഇല്ലാതാക്കുകയും നിങ്ങളുടെ QR കോഡും ലിങ്കും പ്രവർത്തനരഹിതമാക്കുകയും ചെയ്യും. മറ്റുള്ളവർക്ക് ക്ലെയിം ചെയ്യാനായി %1$s ലഭ്യമാകും. ഉറപ്പാണോ?"</string>
+    <!-- Button below your avatar on the profile screen that lets you change it -->
+    <string name="ManageProfileFragment__edit_photo">ഫോട്ടോ എഡിറ്റ് ചെയ്യുക</string>
+    <!-- Title of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_title">നിങ്ങളുടെ ഉപയോക്തൃനാമം പങ്കിടുക</string>
+    <!-- Body of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_body">നിങ്ങളുടെ തനതായ QR കോഡ് അല്ലെങ്കിൽ ലിങ്ക് പങ്കിട്ട് നിങ്ങളുമായി ചാറ്റ് തുടങ്ങാൻ മറ്റുള്ളവരെ അനുവദിക്കുക.</string>
+    <!-- Snackbar message after creating username -->
+    <string name="ManageProfileFragment__username_created">ഉപയോക്തൃനാമം സൃഷ്‌ടിച്ചു</string>
+    <!-- Snackbar message after successful deletion of username -->
+    <string name="ManageProfileFragment__username_deleted">ഉപയോക്തൃനാമം ഇല്ലാതാക്കി</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc, shown when you have no username -->
+    <string name="ManageProfileFragment__username_footer_no_username">ഫോൺ നമ്പറിന് പകരമായി ആളുകൾക്ക് ഒരു ഉപയോക്തൃനാമം ഉപയോഗിച്ച് സന്ദേശമയയ്‌ക്കാൻ കഴിയും. ഉപയോക്തൃനാമങ്ങൾക്ക് സുഹൃത്തുക്കളുമായി പങ്കിടാൻ കഴിയുന്ന ഒരു പ്രത്യേക QR കോഡും ലിങ്കും ഉണ്ട്.</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
+    <string name="ManageProfileFragment__your_username">നിങ്ങളുടെ ഉപയോക്തൃനാമവും QR കോഡും ലിങ്കും നിങ്ങളുടെ പ്രൊഫൈലിൽ ദൃശ്യമല്ല. നിങ്ങൾക്ക് വിശ്വാസമുള്ള ആളുകളുമായി മാത്രം നിങ്ങളുടെ ഉപയോക്തൃനാമം പങ്കിടുക.</string>
+    <!-- Row on the profile screen that opens your about, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_about">ആമുഖം</string>
+    <!-- Snackbar shown when the photo you chose for your avatar couldn\'t be read -->
+    <string name="ManageProfileFragment_failed_to_set_avatar">അവതാർ സജ്ജമാക്കാന്‍ കഴിഞ്ഞില്ല</string>
+    <!-- Text for a button that will take the user to the screen to manage their username link and QR code -->
+    <string name="ManageProfileFragment_link_setting_text">QR കോഡ് അല്ലെങ്കിൽ ലിങ്ക്</string>
+    <!-- Row on the profile screen that opens your name, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_profile_name">പ്രൊഫൈൽ നാമം</string>
+    <!-- Row on the profile screen that opens your username, shown when you don\'t have one -->
+    <string name="ManageProfileFragment_username">ഉപയോക്തൃനാമം</string>
+    <!-- Option to open username editor displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__edit_username">ഉപയോക്തൃനാമം എഡിറ്റ് ചെയ്യൂ</string>
+    <!-- Option to delete username displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__delete_username">ഉപയോക്തൃനാമം ഇല്ലാതാക്കുക</string>
+    <!-- Title of the screen showing your own profile -->
+    <string name="EditProfileScreen__profile">പ്രൊഫൈൽ</string>
+    <!-- Content description for your avatar on the profile screen, which opens it full screen -->
+    <string name="EditProfileScreen__set_avatar">അവതാർ സജ്ജമാക്കുക</string>
+    <!-- Row on the profile screen that opens your badges -->
+    <string name="EditProfileScreen__badges">ബാഡ്‌ജുകള്‍</string>
+    <!-- Button in the dialog confirming that you want your username deleted -->
+    <string name="EditProfileScreen__delete">ഇല്ലാതാക്കൂ</string>
+    <!-- Content description for the button that closes the tip about your username link -->
+    <string name="EditProfileScreen__close_tip">അടയ്ക്കുക</string>
+    <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Signal-നെ പിന്തുണച്ച് നിങ്ങളുടെ പ്രൊഫൈലിനായി ബാഡ്‌ജുകൾ നേടൂ.</string>
+    <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">നിങ്ങളെപ്പോലുള്ള ആളുകൾ മാത്രം പിന്തുണയ്ക്കുന്ന, പരസ്യദാതാക്കളോ നിക്ഷേപകരോ ഇല്ലാത്ത ലാഭേച്ഛയില്ലാതെ പ്രവർത്തിക്കുന്ന ഒന്നാണ് Signal.</string>
+    <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">പരിപാലകര്‍ ആകുക</string>
+
+    <!-- BadgesOverviewScreen -->
+    <!-- Title of the screen listing the badges you\'ve unlocked -->
+    <string name="BadgesOverviewScreen__badges">ബാഡ്‌ജുകള്‍</string>
+    <!-- Section header above the grid of badges you\'ve unlocked -->
+    <string name="BadgesOverviewFragment__my_badges">എന്റെ ബാഡ്‌ജുകൾ</string>
+    <!-- Toggle for whether your badges are shown on your profile -->
+    <string name="BadgesOverviewFragment__display_badges_on_profile">പ്രൊഫൈലിൽ ബാഡ്‌ജുകൾ പ്രദർശിപ്പിക്കുക</string>
+    <!-- Row that opens the screen for choosing which badge is shown on your profile; the badge\'s name is shown beneath it -->
+    <string name="BadgesOverviewScreen__featured_badge">ഫീച്ചർ ചെയ്യുന്ന ബാഡ്‌ജ്</string>
+    <!-- Snackbar shown when showing or hiding your badges on your profile couldn\'t be saved -->
+    <string name="BadgesOverviewFragment__failed_to_update_profile">പ്രൊഫൈൽ അപ്‌ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു</string>
+
+    <!-- SelectFeaturedBadgeScreen -->
+    <!-- Title of the screen for choosing which of your badges shows on your profile -->
+    <string name="SelectFeaturedBadgeScreen__featured_badge">ഫീച്ചർ ചെയ്യുന്ന ബാഡ്‌ജ്</string>
+    <!-- Section header above the grid of badges you can choose to feature on your profile -->
+    <string name="SelectFeaturedBadgeFragment__select_a_badge">ഒരു ബാഡ്‌ജ് തിരഞ്ഞെടുക്കുക</string>
+    <!-- Button that saves the badge you chose to feature on your profile -->
+    <string name="SelectFeaturedBadgeScreen__save">സംരക്ഷിക്കൂ</string>
+    <!-- Snackbar shown when the badge you chose to feature couldn\'t be saved to your profile -->
+    <string name="SelectFeaturedBadgeFragment__failed_to_update_profile">പ്രൊഫൈൽ അപ്‌ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു</string>
+
+    <!-- UsernameLinkShareSheet -->
+    <!-- Explanatory text at the top of a bottom sheet describing how username links work -->
+    <string name="UsernameLinkShareBottomSheet_title">ഈ ലിങ്കുള്ള ആർക്കും നിങ്ങളുടെ ഉപയോക്തൃനാമം കാണാനും നിങ്ങളുമായി ചാറ്റ് ചെയ്യാനും കഴിയും. നിങ്ങൾ വിശ്വസിക്കുന്ന ആളുകളുമായി മാത്രം ഇത് പങ്കിടുക.</string>
+    <!-- A button label for a button that, when pressed, will copy your username link to the clipboard -->
+    <string name="UsernameLinkShareBottomSheet_copy_link">ലിങ്ക് പകർത്തുക</string>
+    <!-- A button label for a button that, when pressed, will open a share sheet for sharing your username link -->
+    <string name="UsernameLinkShareBottomSheet_share">പങ്കിടുക</string>
+
+    <!-- UsernameLinkSettingsScreen -->
+    <!-- Label for a tab that shows a screen to view your username QR code -->
+    <string name="UsernameLinkSettings_code_tab_name">കോഡ്</string>
+    <!-- Label for a tab that shows a screen to scan a QR code -->
+    <string name="UsernameLinkSettings_scan_tab_name">സ്‌കാൻ ചെയ്യുക</string>
+    <!-- Content of a toast that will show after the username link is copied to the clipboard -->
+    <string name="UsernameLinkSettings_link_copied_toast">ലിങ്ക് പകർത്തി</string>
+    <!-- Content of a toast that will show after the username is copied to the clipboard -->
+    <string name="UsernameLinkSettings_username_copied_toast">ഉപയോക്തൃനാമം പകർത്തി</string>
+    <!-- Title of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_title">QR കോഡ് പുനഃക്രമീകരിക്കണോ?</string>
+    <!-- Body of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_body">നിങ്ങൾ QR കോഡ് പുനഃക്രമീകരിക്കുക ആണെങ്കിൽ, നിങ്ങളുടെ നിലവിലുള്ള QR കോഡും ലിങ്കും പിന്നീട് പ്രവർത്തിക്കില്ല.</string>
+    <!-- Label for the confirmation button on a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_confirm_button">പുനഃക്രമീകരിക്കുക</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because you had no internet. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_unavailable">നിങ്ങൾക്ക് നെറ്റ്‌വർക്ക് ആക്‌സസ് ഇല്ല. നിങ്ങളുടെ ലിങ്ക് പുനഃക്രമീകരിച്ചിട്ടില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of a transient network issue. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_error">നിങ്ങളുടെ ലിങ്ക് പുനഃക്രമീകരിക്കാൻ ശ്രമിക്കുമ്പോൾ നെറ്റ്‌വർക്ക് പിശകുണ്ടായി. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of an unknown error. -->
+    <string name="UsernameLinkSettings_reset_link_result_unknown_error">നിങ്ങളുടെ ലിങ്ക് പുനഃക്രമീകരിക്കാൻ ശ്രമിക്കുന്നതിനിടയിൽ ഒരു അപ്രതീക്ഷിത പിശക് സംഭവിച്ചു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Body of a dialog that is displayed when we successfully reset you username link. -->
+    <string name="UsernameLinkSettings_reset_link_result_success">നിങ്ങളുടെ QR കോഡും ലിങ്കും പുനഃക്രമീകരിച്ചു, പുതിയൊരു QR കോഡും ലിങ്കും സൃഷ്‌ടിച്ചു.</string>
+    <!-- Description text for QR code and links in the username link settings -->
+    <string name="UsernameLinkSettings_qr_description">നിങ്ങൾ വിശ്വസിക്കുന്ന ആളുകൾക്ക് മാത്രമെ നിങ്ങളുടെ QR കോഡും ലിങ്കും പങ്കിടാവൂ. പങ്കിടുമ്പോൾ മറ്റുള്ളവർക്ക് നിങ്ങളുടെ ഉപയോക്തൃനാമം കാണാനും നിങ്ങളുമായി ചാറ്റ് തുടങ്ങാനുമാകും.</string>
+    <!-- Button label for a button that will reset your username and give you a new link -->
+    <string name="UsernameLinkSettings_reset_button_label">പുനഃക്രമീകരിക്കുക</string>
+    <!-- Button label for the link button in the username link settings -->
+    <string name="UsernameLinkSettings_link_button_label">ലിങ്ക്</string>
+    <!-- Button label for the share button in the username link settings -->
+    <string name="UsernameLinkSettings_share_button_label">പങ്കിടുക</string>
+    <!-- Button label for the color selector button in the username link settings -->
+    <string name="UsernameLinkSettings_color_button_label">നിറം</string>
+    <!-- Body of a dialog that is displayed when we failed to read a username QR code. -->
+    <string name="UsernameLinkSettings_qr_result_invalid">QR കോഡ് അസാധുവാണ്.</string>
+    <!-- Body of a dialog that is displayed when we experienced a network error when looking up a username. -->
+    <string name="UsernameLinkSettings_qr_result_network_error">നെറ്റ്‌വർക്ക് പിശക് ഉണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</string>
+    <!-- Dialog title shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_qr_code_not_found">QR കോഡ് കണ്ടെത്തിയില്ല</string>
+    <!-- Dialog message shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_try_scanning_another_image_containing_a_signal_qr_code">ഒരു Signal QR കോഡ് അടങ്ങിയ മറ്റൊരു ചിത്രം സ്കാൻ ചെയ്യാൻ ശ്രമിക്കുക.</string>
+    <!-- Body of a dialog that is displayed when the username we looked up could not be found. -->
+    <string name="UsernameLinkSettings_qr_result_not_found">%1$s എന്ന ഉപയോക്തൃനാമമുള്ള ഉപയോക്താവിനെ കണ്ടെത്താനായില്ല.</string>
+    <!-- Description text shown underneath the username QR code scanner -->
+    <string name="UsernameLinkSettings_qr_scan_description">നിങ്ങളുടെ കോൺടാക്റ്റിന്‍റെ ഉപകരണത്തിലുള്ള QR കോഡ് സ്കാൻ ചെയ്യുക.</string>
+    <!-- Shown when the QR code you scanned leads to a username link that no one has -->
+    <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">ഈ ഉപയോക്താവിനെ കണ്ടെത്താനായില്ല.</string>
+    <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">ഒരു QR കോഡ് സ്കാൻ ചെയ്യാൻ, ക്യാമറയിലേക്ക് Signal-ന് ആക്സസ് അനുവദിക്കുക.</string>
+    <!-- Button on the scan tab that asks for the camera permission -->
+    <string name="UsernameLinkSettingsScreen__allow_access">ആക്സസ് അനുവദിക്കുക</string>
+    <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
+    <string name="UsernameLinkSettingsScreen__camera_needed">QR കോഡുകൾ സ്കാൻ ചെയ്യാൻ Signal-ന് ക്യാമറ ആക്സസ് ആവശ്യമാണ്</string>
+
+    <!-- ManageStorageSettingsScreen -->
+    <string name="preferences__storage">സ്റ്റോറേജ്</string>
+    <string name="preferences_storage__storage_usage">സ്റ്റോറേജ് ഉപയോഗം</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Signal സംഭരണം</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Signal സംഭരണം ഒപ്റ്റിമൈസ് ചെയ്യുക</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">ഉപയോഗിക്കാത്ത മീഡിയ ഓഫ്‌ലോഡ് ചെയ്യപ്പെടും, എന്നാൽ നിങ്ങളുടെ ബാക്കപ്പിൽ നിന്ന് എപ്പോൾ വേണമെങ്കിലും ഡൗൺലോഡ് ചെയ്യാം.</string>
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">ചാറ്റ് പരിധികൾ</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">ലിങ്ക് ചെയ്‌ത ഉപകരണങ്ങൾക്ക് പരിധികൾ ബാധകമാക്കുക</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">പ്രവർത്തനക്ഷമമാക്കുമ്പോൾ, നിങ്ങളുടെ ലിങ്ക് ചെയ്‌ത ഉപകരണങ്ങളിൽ നിന്നുള്ള സന്ദേശങ്ങളും ചാറ്റ് പരിധികൾ ഇല്ലാതാക്കും.</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">സന്ദേശ ചരിത്രം ഇല്ലാതാക്കുക</string>
+    <!-- Dialog title shown when selecting delete message history from manage storage -->
+    <string name="preferences_storage__delete_message_history">സന്ദേശ ചരിത്രം ഇല്ലാതാക്കണോ?</string>
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device">ഇത് നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് എല്ലാ സന്ദേശ ചരിത്രവും മീഡിയയും ശാശ്വതമായി ഇല്ലാതാക്കും</string>
+    <!-- Dialog message warning about delete chat message history will delete everything everywhere including linked devices -->
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device_linked_device">ഇത് ഈ ഉപകരണത്തിൽ നിന്നും ലിങ്ക് ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും എല്ലാ സന്ദേശ ചരിത്രവും മീഡിയയും ശാശ്വതമായി ഇല്ലാതാക്കും.</string>
+    <string name="preferences_storage__are_you_sure_you_want_to_delete_all_message_history">എല്ലാ സന്ദേശ ചരിത്രവും നീക്കം ചെയ്യണം എന്ന് ഉറപ്പാണോ?</string>
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone">എല്ലാ സന്ദേശ ചരിത്രവും ശാശ്വതമായി നീക്കം ചെയ്യും. പിന്നീടിത് പഴയപടിയാക്കാൻ കഴിയില്ല.</string>
+    <!-- Secondary warning dialog message about deleting all chat message history from everything everywhere including linked devices -->
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone_linked_device">എല്ലാ സന്ദേശ ചരിത്രവും എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ശാശ്വതമായി നീക്കം ചെയ്യപ്പെടും. ഈ പ്രവൃത്തി പഴയപടിയാക്കാനാകില്ല.</string>
+    <string name="preferences_storage__delete_all_now">എല്ലാം ഇപ്പോൾ ഇല്ലാതാക്കുക</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">പണമടച്ചുള്ള Signal സുരക്ഷിത ബാക്കപ്പുകളുടെ ശ്രേണിയിൽ മാത്രമേ സ്റ്റോറേജ് ഒപ്റ്റിമൈസേഷൻ ഉപയോഗിക്കാൻ കഴിയൂ. നിങ്ങളുടെ ബാക്കപ്പ് സബ്സ്ക്രിപ്ഷൻ ഇപ്പോഴും പ്രോസസ്സ് ചെയ്യുകയാണ്, ഇതുവരെ സജീവമായിട്ടില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കൂ.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">നിങ്ങളുടെ ഉപകരണത്തിലെ ബാക്കപ്പിൽ നിന്ന് മീഡിയ നീക്കം ചെയ്യപ്പെടും</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal സംഭരണം ഒപ്റ്റിമൈസ് ചെയ്യുക\" ഓൺ ചെയ്യുന്നത് നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്നുള്ള പഴയ മീഡിയ ഓഫ് ലോഡ് ചെയ്യാൻ ഇടയാക്കും. നിങ്ങൾക്ക് ഇത് എപ്പോൾ വേണമെങ്കിലും വീണ്ടും ഡൗൺലോഡ് ചെയ്യാം. ഇത് നിങ്ങളുടെ ഉപകരണത്തിലെ ബാക്കപ്പിൽ നിന്നും പഴയ മീഡിയയും നീക്കം ചെയ്യും.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">ഓൺ ചെയ്യുക</string>
+
+    <!-- MutedNotificationsScreen -->
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body">ഈ ചാറ്റ് മ്യൂട്ട് ചെയ്‌തിരിക്കുമ്പോൾ ഒരു കോൾ ആരംഭിച്ചാൽ റിംഗ് ചെയ്യുക അല്ലെങ്കിൽ അറിയിക്കുക.</string>
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body_global">മ്യൂട്ട് ചെയ്ത ചാറ്റുകളിൽ ഒരു കോൾ ആരംഭിച്ചാൽ റിംഗ് ചെയ്യുക അല്ലെങ്കിൽ അറിയിക്കുക.</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body">ഈ ചാറ്റ് മ്യൂട്ട് ചെയ്തിരിക്കുമ്പോൾ നിങ്ങളെ പരാമർശിച്ചാൽ അറിയിക്കുക.</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body_global">മ്യൂട്ട് ചെയ്ത ചാറ്റുകളിൽ നിങ്ങളെ പരാമർശിക്കുമ്പോൾ അറിയിക്കുക.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body">ഈ ചാറ്റ് മ്യൂട്ട് ചെയ്തിരിക്കുമ്പോൾ ആരെങ്കിലും നിങ്ങളുടെ സന്ദേശത്തിന് മറുപടി നൽകിയാൽ അറിയിക്കുക.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body_global">മ്യൂട്ട് ചെയ്ത ചാറ്റുകളിൽ ആരെങ്കിലും നിങ്ങളുടെ സന്ദേശത്തിന് മറുപടി നൽകുമ്പോൾ അറിയിക്കുക.</string>
+    <!-- Header to describe screen that shows while muted settings -->
+    <string name="MutedNotificationsFragment__while">മ്യൂട്ട് ചെയ്‌തിരിക്കുമ്പോൾ</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsScreen__calls">കോളുകൾ</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsScreen__mentions">സൂചനകൾ</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsScreen__replies">മറുപടികൾ</string>
+
+    <!-- NotificationsSettingsScreen -->
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">പിക്കർ തുറക്കുന്നത് പരാജയപ്പെട്ടു.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">അറിയിപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കാൻ, Signal-ന് അവ പ്രദർശിപ്പിക്കാനുള്ള അനുമതി വേണം.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">ഓൺ ചെയ്യുക</string>
+    <string name="NotificationsSettingsFragment__calls">കോളുകൾ</string>
+    <string name="NotificationsSettingsFragment__contact_joins_signal">കോൺടാക്റ്റ് Signal-ലിൽ ചേരുന്നു</string>
+    <!-- Notification preference summary text -->
+    <string name="NotificationsSettingsFragment__create_a_profile_to_receive_notifications_only_from_people_and_groups_you_choose">നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന ആളുകളിൽ നിന്നും ഗ്രൂപ്പുകളിൽ നിന്നും മാത്രം അറിയിപ്പുകൾ ലഭിക്കുന്നതിന് ഒരു രൂപരേഖ സൃഷ്‌ടിക്കുക.</string>
+    <!-- Notification body to get notified when someone joins Signal -->
+    <string name="NotificationsSettingsFragment__notify_contact">ഒരു ഫോൺ കോൺടാക്റ്റ് Signal-ൽ ചേരുമ്പോൾ അറിയിപ്പ് കാണിക്കുക</string>
+    <!-- Option to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset">അറിയിപ്പ് ക്രമീകരണങ്ങൾ പുനഃക്രമീകരിക്കുക</string>
+    <!-- Dialog to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_body">എല്ലാ ചാറ്റുകൾക്കുമുള്ള അറിയിപ്പ് ക്രമീകരണങ്ങൾ ഡിഫോൾട്ടിലേക്ക് പുനഃക്രമീകരിക്കണോ?</string>
+    <!-- Confirmation button to reset dialog -->
+    <string name="NotificationsSettingsFragment__reset_confirm">പുനഃക്രമീകരിക്കുക</string>
+    <!-- Option body to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_notifications">നിങ്ങളുടെ ചാറ്റുകൾക്കായുള്ള ഇഷ്‌ടാനുസൃത ക്രമീകരണങ്ങൾ ഉൾപ്പെടെയുള്ള അറിയിപ്പ് ക്രമീകരണങ്ങൾ ഡിഫോൾട്ടിലേക്ക് പുനഃക്രമീകരിക്കുക</string>
+    <!-- Notification header for sounds -->
+    <string name="NotificationsSettingsFragment__sounds">ശബ്ദങ്ങൾ</string>
+    <string name="NotificationsSettingsFragment__unknown_ringtone">അജ്ഞാത റിംഗ്ടോൺ</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="NotificationsSettingsScreen__calls">കോളുകൾ</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="NotificationsSettingsScreen__mentions">സൂചനകൾ</string>
+    <!-- Notification preference header -->
+    <string name="NotificationsSettingsScreen__notification_profiles">അറിയിപ്പ് രൂപരേഖകള്‍</string>
+    <string name="NotificationsSettingsScreen__notifications">അറിയിപ്പുകൾ</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="NotificationsSettingsScreen__replies">മറുപടികൾ</string>
+    <string name="NotificationsSettingsScreen__silent">നിശബ്ദത</string>
+    <!-- Option in settings to turn on unread reminders -->
+    <string name="NotificationsSettingsScreen__unread_reminders">വായിക്കാത്ത ഓർമ്മപ്പെടുത്തലുകൾ</string>
+    <string name="arrays__default">സ്ഥിരസ്ഥിതി</string>
+    <string name="arrays__high">ഉയർന്നത്</string>
+    <!-- Setting title that represent an abstract priority to assign to notifications as the max/highest priority a notification can be within the system. -->
+    <string name="arrays__max">പരമാവധി</string>
+    <string name="arrays__name_and_message">പേരും സന്ദേശവും</string>
+    <string name="arrays__name_only">പേര് മാത്രം</string>
+    <string name="arrays__no_name_or_message">പേരോ സന്ദേശമോ വേണ്ട</string>
+    <string name="preferences__blue">നീല</string>
+    <!-- Preference header for call notifications -->
+    <string name="preferences__call_notifications">കോൾ അറിയിപ്പുകൾ</string>
+    <string name="preferences__change_sound_and_vibration">ശബ്ദവും വൈബ്രേഷനും മാറ്റുക</string>
+    <string name="preferences__customize">ഇഷ്ടാനുസൃതമാക്കുക</string>
+    <string name="preferences__cyan">സിയാൻ</string>
+    <!-- Preference menu item to use the default sound for notifications -->
+    <string name="preferences__default">സ്ഥിരസ്ഥിതി</string>
+    <!-- Preference item menu to enable notifications -->
+    <string name="preferences__enable_notifications">നോട്ടിഫിക്കേഷനുകൾ പ്രവർത്തനക്ഷമമാക്കുക</string>
+    <string name="preferences__fast">വേഗത്തിൽ</string>
+    <string name="preferences__five_times">അഞ്ച് തവണ</string>
+    <string name="preferences__green">പച്ച</string>
+    <string name="preferences__led_color">LED നിറം</string>
+    <string name="preferences__magenta">മജന്ത</string>
+    <string name="preferences__never">ഒരിക്കലും വേണ്ട</string>
+    <string name="preferences__normal">സാധാരണ</string>
+    <string name="preferences__one_time">ഒരിക്കൽ</string>
+    <string name="preferences__orange">ഓറഞ്ച്</string>
+    <string name="preferences__pref_led_blink_title">LED ബ്ലിങ്ക് പാറ്റേൺ</string>
+    <string name="preferences__red">ചുവപ്പ്</string>
+    <string name="preferences__repeat_alerts">അലേർട്ടുകൾ ആവർത്തിക്കുക</string>
+    <string name="preferences__slow">പതുക്കെ</string>
+    <!-- Preference menu item to control the sound of notifications -->
+    <string name="preferences__sound">ശബ്ദം</string>
+    <string name="preferences__ten_times">പത്ത് തവണ</string>
+    <string name="preferences__three_times">മൂന്ന് തവണ</string>
+    <string name="preferences__two_times">രണ്ടു തവണ</string>
+    <string name="preferences__vibrate">വൈബ്രേറ്റ്</string>
+    <string name="preferences__white">വെള്ള</string>
+    <string name="preferences_notifications__in_chat_sounds">ഇൻ-ചാറ്റ് ശബ്‌ദങ്ങള്‍</string>
+    <!-- Body option in settings to turn on reaction notifications    -->
+    <string name="preferences_notifications__notify_reaction">നിങ്ങൾ അയയ്ക്കുന്ന സന്ദേശങ്ങൾക്കുള്ള പ്രതികരണങ്ങളുടെ അറിയിപ്പുകൾ കാണിക്കുക</string>
+    <!-- Body option to turn on unread reminders -->
+    <string name="preferences_notifications__notify_unread">മ്യൂട്ട് ചെയ്ത ചാറ്റുകളിൽ വായിക്കാത്ത സന്ദേശങ്ങൾ ഉള്ളപ്പോൾ ഇടയ്ക്കിടെ അറിയിക്കുക</string>
+    <!-- Option in settings that will provide a shortcut to notification system settings to control the priority of Signal notifications -->
+    <string name="preferences_notifications__priority">മുൻഗണന</string>
+    <!-- Option in settings to turn on reaction notifications -->
+    <string name="preferences_notifications__reaction">പ്രതികരണ അറിയിപ്പുകൾ</string>
+    <string name="preferences_notifications__ringtone">റിംഗ്‌ടോൺ</string>
+    <string name="preferences_notifications__show">കാണിക്കുക</string>
+    <!-- Option in settings to trouble shoot delayed notifications -->
+    <string name="preferences_notifications__troubleshoot">അറിയിപ്പുകൾ ട്രബിൾഷൂട്ട് ചെയ്യുക</string>
+    <!-- Preference item to set notification settings when chats are muted -->
+    <string name="preferences_notifications__while_muted">മ്യൂട്ട് ചെയ്‌തിരിക്കുമ്പോൾ</string>
+
+    <!-- SelectRecipientsScreen -->
+    <!-- Call to action button on contact picker for adding to profile -->
+    <string name="SelectRecipientsFragment__add">ചേർക്കുക</string>
+    <!-- Title for add recipients to notification profile screen in create flow -->
+    <string name="SelectRecipientsScreen__allowed_notifications">അനുവദിച്ചിരിക്കുന്ന അറിയിപ്പുകൾ</string>
 </resources>

@@ -51,7 +51,7 @@ object ReactionMenu {
     }
 
     if (menuState.shouldShowReplyAction()) {
-      add(R.drawable.symbol_reply_24, R.string.conversation_selection__menu_reply, ReactionAction.REPLY)
+      add(CoreUiR.drawable.symbol_reply_24, R.string.conversation_selection__menu_reply, ReactionAction.REPLY)
     }
 
     if (menuState.shouldShowEditAction()) {
@@ -79,7 +79,7 @@ object ReactionMenu {
     }
 
     if (menuState.shouldShowPaymentDetails()) {
-      add(R.drawable.symbol_payment_24, R.string.conversation_selection__menu_payment_details, ReactionAction.PAYMENT_DETAILS)
+      add(CoreUiR.drawable.symbol_payment_24, R.string.conversation_selection__menu_payment_details, ReactionAction.PAYMENT_DETAILS)
     }
 
     add(CoreUiR.drawable.symbol_check_circle_24, R.string.conversation_selection__menu_multi_select, ReactionAction.MULTISELECT)

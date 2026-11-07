@@ -1,4 +1,7 @@
 import json
+import os
+import io
+from contextlib import redirect_stdout
 import subprocess
 from pathlib import Path
 import tempfile
@@ -22,7 +25,7 @@ class ReleaseArtifactsTests(unittest.TestCase):
         self.cert = 'b' * 64
         self.entries = [{'profile': p, 'file': p + '.apk', 'sha256': 'c' * 64} for p in sorted(a.PROFILES)]
         self.manifest = {'schema': 1, 'commit': self.commit, 'workflow_revision': self.commit,
-                         'run_id': '123', 'run_attempt': '1', 'package': a.PACKAGE, 'version_code': 42,
+                         'run_id': '123', 'run_attempt': '1', 'package': a.PACKAGE, 'version_code': 177204,
                          'version_name': '1.2.3', 'certificate_sha256': self.cert, 'apks': self.entries}
 
     def test_manifest_rejects_wrong_identity_or_duplicate_profile(self):
@@ -42,6 +45,31 @@ class ReleaseArtifactsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'certificate'):
             a.validate_manifest(self.manifest, self.commit, '123', 'd' * 64)
 
+    def test_collie_release_code_must_exceed_the_published_rc3(self):
+        for value in (1, 177202, 177203):
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, 'exceed.*RC3'):
+                self.manifest['version_code'] = value
+                a.validate_manifest(self.manifest, self.commit, '123', self.cert)
+        self.manifest['version_code'] = 177204
+        a.validate_manifest(self.manifest, self.commit, '123', self.cert)
+        # The floor is specific to the published Collie package, not other apps.
+        a.validate_version_code(42, 'org.example.other')
+        with self.assertRaisesRegex(ValueError, 'invalid version code'):
+            a.validate_version_code(True, a.PACKAGE)
+
+    def test_unsigned_dispatch_passes_override_to_version_guard(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / '.github/workflows/molly-unsigned-release.yml').read_text()
+        step = workflow.split('      - name: Validate the dispatch and prepare proof\n', 1)[1].split('      - name:', 1)[0]
+        self.assertIn('VERSION_CODE: ${{ inputs.version_code }}', step)
+        commands = [line.strip() for line in step.splitlines() if 'a.validate_version_code(' in line]
+        self.assertEqual(len(commands), 1)
+        for code, expected in (('177203', False), ('177204', True), ('invalid', False)):
+            with self.subTest(code=code):
+                run = subprocess.run(['bash', '-e', '-c', commands[0]], cwd=root,
+                                     env=dict(os.environ, VERSION_CODE=code), capture_output=True, text=True)
+                self.assertEqual(run.returncode == 0, expected, run.stderr)
+
     def test_apk_metadata_rejects_wrong_package(self):
         with patch.object(a, 'apk_metadata', return_value=('im.molly.app', '42', '1.2.3')):
             with self.assertRaisesRegex(ValueError, 'package or version'):
@@ -60,7 +88,7 @@ class ReleaseArtifactsTests(unittest.TestCase):
         args = ['release_sign', '--manifest', str(manifest), '--manifest-sha256', '0' * 64,
                 '--approved-commit', self.commit, '--approved-run', '123', '--certificate-sha256', self.cert,
                 '--apks', str(self.root), '--output', str(self.root / 'out'), '--build-tools', str(self.root),
-                '--scratch', str(self.root)]
+                '--scratch', str(self.root), '--instrumentation-checklist', str(self.root / 'unused.json')]
         with patch('sys.argv', args), patch.object(release_sign, 'run') as run:
             self.assertEqual(release_sign.main(), 1)
             run.assert_not_called()
@@ -74,17 +102,32 @@ class ReleaseArtifactsTests(unittest.TestCase):
         manifest = self.root / 'manifest.json'
         manifest.write_text(json.dumps(self.manifest))
         output = self.root / 'signed'
+        checklist = self.root / 'instrumentation.json'
+        record = {'commit': self.commit, 'status': 'failed', 'evidence': 'local run log',
+                  'reason': 'maintainer accepted this documented gap'}
+        checklist.write_text(json.dumps(record))
         args = ['release_sign', '--manifest', str(manifest), '--manifest-sha256', a.sha256(manifest),
                 '--approved-commit', self.commit, '--approved-run', '123', '--certificate-sha256', self.cert,
                 '--apks', str(self.root), '--output', str(output), '--build-tools', str(self.root / '36.0.0'),
-                '--scratch', str(self.root)]
+                '--scratch', str(self.root), '--instrumentation-checklist', str(checklist)]
         snapshot = a.snapshot
+        class TrackingStream(io.StringIO):
+            def __init__(self):
+                super().__init__()
+                self.flushes = 0
+
+            def flush(self):
+                self.flushes += 1
+                return super().flush()
+
+        console = TrackingStream()
 
         def replace_after_snapshot(source, destination):
             snapshot(source, destination)
             Path(source).write_bytes(b'replaced after snapshot')
 
         def fake_run(command, **kwargs):
+            self.assertIn('Instrumentation checklist (maintainer-provided; not independently verified):', console.getvalue())
             if '-f' in command and 'zipalign' in str(command[0]):
                 self.assertIn(Path(command[-2]).read_bytes(), [x['profile'].encode() for x in self.entries])
             if 'sign' in command:
@@ -92,15 +135,23 @@ class ReleaseArtifactsTests(unittest.TestCase):
             return types.SimpleNamespace(stdout=('Verified using v2 scheme (APK Signature Scheme v2): true\n'
                                                 'Verified using v3 scheme (APK Signature Scheme v3): true\n'
                                                 'Signer #1 certificate SHA-256 digest: ' + self.cert + '\n'))
+        def fake_prompt(_):
+            self.assertGreater(console.flushes, 0, 'checklist must be flushed before a credential prompt')
+            self.assertIn('"status": "failed"', console.getvalue())
+            return 'test'
         environment = {'MOLLY_KEYSTORE': '/offline/key', 'MOLLY_KEY_ALIAS': 'release',
-                       'MOLLY_KEYSTORE_PASSWORD': 'test', 'MOLLY_KEY_PASSWORD': 'test'}
-        with patch('sys.argv', args), patch.dict('os.environ', environment, clear=True), \
+                       'COLLIE_INSTRUMENTATION_CHECKLIST': str(self.root / 'missing-checklist.json')}
+        with redirect_stdout(console), patch('sys.argv', args), patch.dict('os.environ', environment, clear=True), \
              patch.object(release_sign, 'run', side_effect=fake_run), \
+             patch.object(release_sign.getpass, 'getpass', side_effect=fake_prompt) as prompt, \
              patch.object(a, 'snapshot', side_effect=replace_after_snapshot), \
              patch.object(a, 'check_unsigned'), patch.object(a, 'check_metadata'):
             self.assertEqual(release_sign.main(), 0)
+        self.assertEqual(prompt.call_count, 2)
         result = json.loads((output / 'final-manifest.json').read_text())
         self.assertEqual(len(result['apks']), 5)
+        self.assertEqual(result['instrumentation_checklist'], record)
+        self.assertIn('"status": "failed"', console.getvalue())
         self.assertEqual(result['apks'][0]['unsigned_sha256'], self.entries[0]['sha256'])
         self.assertEqual(result['apks'][0]['signed_sha256'], a.sha256(output / self.entries[0]['file']))
 
@@ -126,6 +177,53 @@ class ReleaseArtifactsTests(unittest.TestCase):
             self.assertEqual(release_publish.main(), 1)
             command.assert_not_called()
 
+    def test_publisher_rejects_collie_rc3_or_older_before_github(self):
+        final = self.root / 'final-manifest.json'
+        final.write_text(json.dumps({'schema': 1, 'rehearsal': False, 'commit': self.commit, 'version_code': 177203}))
+        args = ['release_publish', 'draft', '--repo', '0cwa/collieim-android', '--tag', 'v1',
+                '--approved-commit', self.commit, '--final-manifest', str(final),
+                '--final-manifest-sha256', a.sha256(final), '--provenance', str(final), '--notes', str(final),
+                '--scratch', str(self.root)]
+        with patch('sys.argv', args), patch.object(release_publish, 'command') as command:
+            self.assertEqual(release_publish.main(), 1)
+            command.assert_not_called()
+
+    def test_publisher_requires_commit_bound_assessment_for_both_actions(self):
+        apks = []
+        for profile in sorted(a.PROFILES):
+            path = self.root / (profile + '.apk')
+            path.write_bytes(profile.encode())
+            apks.append({'profile': profile, 'file': path.name, 'signed_sha256': a.sha256(path)})
+        final = self.root / 'final-manifest.json'
+        provenance = self.root / 'provenance.json'
+        provenance.write_text('provenance')
+        cases = [
+            (None, False),
+            ({'commit': 'c' * 40, 'status': 'passed', 'evidence': 'test', 'reason': ''}, False),
+            ({'commit': self.commit, 'status': 'passed', 'evidence': '', 'reason': ''}, False),
+            ({'commit': self.commit, 'status': 'failed', 'evidence': '', 'reason': ''}, False),
+            ({'commit': self.commit, 'status': 'passed', 'evidence': 'test', 'reason': ''}, True),
+            ({'commit': self.commit, 'status': 'failed', 'evidence': '', 'reason': 'accepted'}, True),
+            ({'commit': self.commit, 'status': 'not run', 'evidence': '', 'reason': 'accepted'}, True),
+        ]
+        for action in ('draft', 'publish'):
+            for record, accepted in cases:
+                with self.subTest(action=action, record=record):
+                    manifest = {'schema': 1, 'rehearsal': False, 'commit': self.commit, 'apks': apks,
+                                'unsigned_manifest_sha256': a.sha256(provenance)}
+                    if record is not None:
+                        manifest['instrumentation_checklist'] = record
+                    final.write_text(json.dumps(manifest))
+                    args = ['release_publish', action, '--repo', 'owner/repo', '--tag', 'v1.2.3',
+                            '--approved-commit', self.commit, '--final-manifest', str(final),
+                            '--final-manifest-sha256', a.sha256(final), '--provenance', str(provenance),
+                            '--notes', str(final), '--scratch', str(self.root), '--dry-run', '--signing-key', '/key',
+                            '--tagger-name', 'Signer', '--tagger-email', 'signer@example.invalid']
+                    with patch('sys.argv', args), patch.object(release_publish, 'command') as command:
+                        self.assertEqual(release_publish.main(), 0 if accepted else 1)
+                        if not accepted:
+                            command.assert_not_called()
+
     def test_publish_dry_run_never_calls_subprocess(self):
         apks = []
         for profile in sorted(a.PROFILES):
@@ -136,7 +234,8 @@ class ReleaseArtifactsTests(unittest.TestCase):
         provenance = self.root / 'provenance.json'
         provenance.write_text('provenance')
         final.write_text(json.dumps({'schema': 1, 'rehearsal': False, 'commit': self.commit, 'apks': apks,
-                                     'unsigned_manifest_sha256': a.sha256(provenance)}))
+                                     'unsigned_manifest_sha256': a.sha256(provenance),
+                                     'instrumentation_checklist': {'commit': self.commit, 'status': 'not run', 'evidence': '', 'reason': 'fixture'}}))
         args = ['release_publish', 'draft', '--repo', 'owner/repo', '--tag', 'v1.2.3',
                 '--approved-commit', self.commit, '--final-manifest', str(final),
                 '--final-manifest-sha256', a.sha256(final), '--provenance', str(provenance), '--notes', str(final),
@@ -167,7 +266,8 @@ class ReleaseArtifactsTests(unittest.TestCase):
                 notes.write_bytes(b'notes')
                 final = root / 'final-manifest.json'
                 final.write_text(json.dumps({'schema': 1, 'rehearsal': False, 'commit': self.commit,
-                                             'apks': entries, 'unsigned_manifest_sha256': a.sha256(provenance)}))
+                                             'apks': entries, 'unsigned_manifest_sha256': a.sha256(provenance),
+                                     'instrumentation_checklist': {'commit': self.commit, 'status': 'not run', 'evidence': '', 'reason': 'fixture'}}))
                 args = ['release_publish', action, '--repo', 'owner/repo', '--tag', 'v1',
                         '--approved-commit', self.commit, '--final-manifest', str(final),
                         '--final-manifest-sha256', a.sha256(final), '--provenance', str(provenance),

@@ -315,6 +315,10 @@
     <string name="DeleteAccountScreen__deleting_your_account_with_username_s_will">Fshirja e llogarisë me emrin e përdoruesit \"%1$s\" do të:</string>
     <!-- Bullet point on the delete account screen, shown in place of the plain one when the account has a username. Placeholder is the username. -->
     <string name="DeleteAccountScreen__delete_your_account_info_and_profile_photo_including_your_username_s">Fshi informacionin e llogarisë dhe foton e profilit, përfshirë emrin e përdoruesit \"%1$s\"</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, telling the user their account ID and recovery key will be deleted -->
+    <string name="DeleteAccountScreen__delete_your_account_id_and_recovery_key">Delete your account ID and recovery key</string>
+    <!-- Bullet point on the delete account screen for an account with no phone number, warning the user that the account can\'t be registered again or restored afterwards -->
+    <string name="DeleteAccountScreen__you_wont_be_able_to_re_register_or_restore_your_account">Prevent you from re-registering or restoring your account</string>
     <!-- Bullet point on the delete account screen warning the user that the deletion is permanent -->
     <string name="DeleteAccountScreen__this_action_can_not_be_undone">Ky veprim nuk mund të zhbëhet</string>
     <!-- Message of the deletion confirmation dialog, shown when the account has a username. Placeholder is the username. -->
@@ -588,4 +592,585 @@
     <string name="NotificationProfileCreated__add_a_schedule_in_settings_to_automate_your_profile">Shtoni te parametrat një orar, që të automatizohet profili juaj.</string>
     <!-- Descriptor text shown to indicate your profile will follow the schedule set during create flow -->
     <string name="NotificationProfileCreated__your_profile_will_turn_on_and_off_automatically_according_to_your_schedule">Profili juaj do të aktivizohet dhe çaktivizohet automatikisht sipas orarit tuaj.</string>
+
+    <!-- PrivacySettingsScreen -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Nuk ke vendosur ende frazëkalimin!</string>
+    <string name="ApplicationPreferencesActivity_disable">Çaktivizo</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">Të çaktivizohet frazëkalimi?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Kjo do të zhbllokojë përgjithmonë njoftimet e Signal dhe të mesazheve.</string>
+    <string name="PrivacySettingsFragment__app_security">Siguri aplikacioni</string>
+    <!-- This refers to the multi-tasking overview (recent apps) from the Android operating system.-->
+    <string name="PrivacySettingsFragment__block_screenshots_in_the_recents_list_and_inside_the_app">Blloko foto të ekranit te lista e të rejave dhe brenda aplikacionit</string>
+    <string name="PrivacySettingsFragment__blocked">E bllokuar</string>
+    <!-- Alert dialog description to setup screen lock or fingerprint in phone settings -->
+    <string name="PrivacySettingsFragment__cant_enable_description">Për të përdorur kyçjen e pagesës, fillimisht duhet të aktivizosh një kyçje ekrani ose ID të gjurmës së gishtit te parametrat e telefonit.</string>
+    <!-- Alert dialog title when payment lock cannot be enabled -->
+    <string name="PrivacySettingsFragment__cant_enable_title">Çelësi i pagesës nuk mund të aktivizohet</string>
+    <!-- Settings label that shows the number blocked contacts -->
+    <plurals name="PrivacySettingsFragment__d_contacts">
+        <item quantity="one">%1$d kontakt ose grup</item>
+        <item quantity="other">%1$d kontakte ose grupe</item>
+    </plurals>
+    <string name="PrivacySettingsFragment__default_timer_for_new_changes">Kohëmatës i parazgjedhur për bisedat e reja</string>
+    <!-- Shown in a toast when we can\'t navigate to the user\'s system fingerprint settings -->
+    <string name="PrivacySettingsFragment__failed_to_navigate_to_system_settings">Nuk shkoi te parametrat e sistemit</string>
+    <string name="PrivacySettingsFragment__messaging">Shkëmbim Mesazhesh</string>
+    <!-- Description for the payment lock toggle in privacy settings -->
+    <string name="PrivacySettingsFragment__payment_lock_require_lock">Kërko kyçje të ekranit nga Android ose gjurmën e gishtit për të transferuar fondet</string>
+    <string name="PrivacySettingsFragment__set_a_default_disappearing_message_timer_for_all_new_chats_started_by_you">Vendos një kohëmatës të parazgjedhur të mesazheve që zhduken për të gjitha bisedat e reja të nisura nga ti.</string>
+    <string name="PrivacySettingsFragment__signal_message_and_calls">Mesazhe dhe thirrje Signal, thirrjet kaloji përherë përmes relesh, dhe dërgues të vulosur</string>
+    <!-- Text shown when screen lock is not enabled -->
+    <string name="ScreenLockSettingsFragment__off">Joaktiv</string>
+    <string name="preferences__auto_lock_signal_after_a_specified_time_interval_of_inactivity">Kyçe vetvetiu Signal-in pas një itervali kohor të caktuar plogështie</string>
+    <string name="preferences__change_passphrase">Ndryshoje frazëkalimin</string>
+    <string name="preferences__change_your_passphrase">Ndryshoni frazëkalimin tuaj</string>
+    <!-- Legacy preference menu item to enable a passphrase screen lock that is only available to those who have previously had a passphrase -->
+    <string name="preferences__enable_passphrase">Aktivizoni kyçje ekrani me frazëkalim</string>
+    <string name="preferences__if_read_receipts_are_disabled_you_wont_be_able_to_see_read_receipts">Nëse dëftesat e leximit janë të çaktivizuara, s\\’do të jeni në gjendje të shihni dëftesa leximi nga të tjerët.</string>
+    <string name="preferences__if_typing_indicators_are_disabled_you_wont_be_able_to_see_typing_indicators">Nëse treguesit e shtypjeve janë të çaktivizuar, s\\’do të jeni në gjendje të shihni tregues shtypjesh nga të tjerët.</string>
+    <!-- Legacy preference menu item to choose the interval of inactivity before lockout -->
+    <string name="preferences__inactivity_timeout_interval">Interval mbarimi kohe plogështie</string>
+    <!-- Legacy preference menu item to enable locking of app after inactivity -->
+    <string name="preferences__inactivity_timeout_passphrase">Frazëkalim mbarimi kohe plogështie</string>
+    <string name="preferences__incognito_keyboard">Tastiera inkonjito</string>
+  <!-- Removed by excludeNonTranslatables <string name="preferences__incognito_keyboard_learn_more" translatable="false">https://support.signal.org/hc/articles/360055276112</string> -->
+    <string name="preferences__lock_signal_and_message_notifications_with_a_passphrase">Kyçje ekrani dhe njoftime me frazëkalim</string>
+    <!-- Privacy settings payments section description -->
+    <string name="preferences__payment_lock">Kyçja e pagesës</string>
+    <string name="preferences__read_receipts">Dëftesa leximi</string>
+    <string name="preferences__request_keyboard_to_disable">Kërkoji tastierës të çaktivizojë nxënie të personalizuar.</string>
+    <string name="preferences__screen_security">Siguri ekrani</string>
+    <string name="preferences__this_setting_is_not_a_guarantee">Ky rregullim s\\’është garanci dhe tastiera juaj mund ta shpërfillë.</string>
+    <string name="preferences__typing_indicators">Tregues shtypjeje</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">Zgjidh se kush mund ta shohë numrin tënd të telefonit dhe kush mund të të kontaktojë nëpërmjet tij në Signal.</string>
+    <!-- Privacy settings payments section title -->
+    <string name="preferences_app_protection__payments">Pagesa</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">Për të përdorur kyçjen e ekranit, vendos PIN, vijëzim ose fjalëkalim në pajisje.</string>
+    <!-- Title of the privacy settings screen -->
+    <string name="PrivacySettingsScreen__privacy">Privatësi</string>
+    <!-- Section header in privacy settings for disappearing message defaults -->
+    <string name="PrivacySettingsScreen__disappearing_messages">Zhdukje mesazhesh</string>
+    <!-- Row in privacy settings that opens advanced privacy settings -->
+    <string name="PrivacySettingsScreen__advanced">Të mëtejshme</string>
+    <!-- Confirm button on the dialog explaining payment lock needs a device screen lock; opens the system settings -->
+    <string name="PrivacySettingsScreen__turn_on">Aktivizo</string>
+    <!-- Dismiss button on the dialog explaining payment lock needs a device screen lock -->
+    <string name="PrivacySettingsScreen__not_now">Jo tani</string>
+    <!-- Title of the authentication prompt shown when turning off payment lock -->
+    <string name="PrivacySettingsScreen__signal">Signal</string>
+    <!-- Link after the incognito keyboard disclaimer that opens a support article -->
+    <string name="PrivacySettingsScreen__learn_more">Mëso më shumë</string>
+
+    <!-- AppSettingsScreen -->
+    <!-- String alerting user that backup storage limit has been reached -->
+    <string name="AppSettingsFragment__backup_storage_limit_reached">U arrit limiti i hapësirës së kopjeruajtjeve</string>
+    <!-- String displayed in a snackbar when we successfully copy the backups subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_backups_subscriber_id_to_clipboard">ID-ja e abonuesit të kopjeruajtjeve u kopjua në kujtesën e fragmenteve</string>
+    <!-- String displayed in a snackbar when we successfully copy the donations subscriber id to the clipboard -->
+    <string name="AppSettingsFragment__copied_donor_subscriber_id_to_clipboard">ID-ja e abonuesit dhurures u kopjua në kujtesën e fragmenteve</string>
+    <!-- String alerting user that backup failed -->
+    <string name="AppSettingsFragment__couldnt_complete_backup">Kopjeruajtja nuk përfundoi</string>
+    <!-- String displayed telling user to invite their friends to Signal -->
+    <string name="AppSettingsFragment__invite_your_friends">Ftoni shokët tuaj</string>
+    <!-- String alerting user that something is wrong with their backups subscription -->
+    <string name="AppSettingsFragment__renew_your_signal_backups_subscription">Rinovo abonimin te \"Kopjeruajtjet e sigurta\" të Signal</string>
+    <!-- App settings row that opens privacy settings -->
+    <string name="preferences__privacy">Privatësi</string>
+    <!-- Title of the top level app settings screen -->
+    <string name="AppSettingsScreen__settings">Parametrat</string>
+    <!-- Content description for the back button on the top level app settings screen -->
+    <string name="AppSettingsScreen__go_back">Shko mbrapsht</string>
+    <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
+    <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Abonimi i kopjeruajtjeve nuk mund të përdorej</string>
+    <!-- App settings row that opens donations -->
+    <string name="AppSettingsScreen__donate_to_signal">Dhuro për Signal</string>
+    <!-- App settings row that opens internal-only preferences -->
+    <string name="AppSettingsScreen__internal_preferences">Parapëlqimet e brendshme</string>
+    <!-- App settings row that opens linked devices -->
+    <string name="AppSettingsScreen__linked_devices">Pajisje të lidhura</string>
+    <!-- App settings row that opens notification settings -->
+    <string name="AppSettingsScreen__notifications">Njoftime</string>
+    <!-- App settings row that opens payments -->
+    <string name="AppSettingsScreen__payments">Pagesa</string>
+    <!-- App settings row that opens story settings -->
+    <string name="AppSettingsScreen__stories">Postime të përkohshme</string>
+    <!-- App settings row that opens backup settings -->
+    <string name="AppSettingsScreen__backups">Kopjeruajtje</string>
+
+    <!-- Navigation bar size dialog, in appearance settings -->
+    <!-- Dialog title, displayed below the header image -->
+    <string name="ChooseNavigationBarStyleFragment__navigation_bar_size">Madhësia e shiritit të navigimit</string>
+    <!-- Toggle button label for normal size -->
+    <string name="ChooseNavigationBarStyleFragment__normal">Normale</string>
+    <!-- Toggle button label for compact size -->
+    <string name="ChooseNavigationBarStyleFragment__compact">Kompakt</string>
+
+    <!-- Content description for the back button on the chats settings screen -->
+    <string name="ChatsSettingsScreen__go_back">Shko mbrapsht</string>
+
+    <!-- StorageUsageOverview -->
+    <string name="preferences_storage__photos">Foto</string>
+    <string name="preferences_storage__videos">Video</string>
+    <string name="preferences_storage__files">Kartela</string>
+    <string name="preferences_storage__audio">Audio</string>
+    <!-- Storage usage legend label for the size of the main message database -->
+    <string name="preferences_storage__messages">Mesazhe</string>
+    <!-- Storage usage legend label for the size of downloaded sticker packs -->
+    <string name="preferences_storage__stickers">Ngjitëse</string>
+    <!-- Storage usage legend label for all remaining app storage, such as other databases, caches and temporary files -->
+    <string name="preferences_storage__other">Tjetër</string>
+    <!-- Shown in place of the total storage size while usage is still being computed -->
+    <string name="preferences_storage__calculating">Llogaritja…</string>
+    <string name="preferences_storage__review_storage">Shqyrtoni hapësirën</string>
+
+    <!-- TwoFactorVerifyScreen -->
+    <!-- Title of the screens where the user verifies one of their two-factor authentication methods -->
+    <string name="TwoFactorVerifyScreen__two_factor_authentication">Autentifikimi me dy faktorë</string>
+    <!-- Instructions shown above the list of two-factor methods the user can verify with -->
+    <string name="TwoFactorVerifyScreen__choose_a_method_below_to_verify_your_account">Zgjidh një nga metodat më poshtë për të verifikuar llogarinë.</string>
+    <!-- Title of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__passkey">Çelës kalimi</string>
+    <!-- Description of the option to verify with a passkey -->
+    <string name="TwoFactorVerifyScreen__tap_to_use_your_device_biometrics_or_fido2_passkey">Prek për të përdorur biometrinë e pajisjes ose çelësin e sigurisë FIDO2</string>
+    <!-- Title of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__authenticator_app">Aplikacioni i autentifikimit</string>
+    <!-- Description of the option to verify with an authenticator app -->
+    <string name="TwoFactorVerifyScreen__enter_a_one_time_code_generated_by_your_authenticator_app">Vendos kodin njëpërdorimësh të gjeneruar nga aplikacioni i autentifikimit.</string>
+    <!-- Instructions shown above the field where the user enters the code from their authenticator app -->
+    <string name="TwoFactorVerifyScreen__to_continue_enter_the_6_digit_code_from_your_authenticator_app">Për të vazhduar, vendos kodin 6-shifror nga aplikacioni i autentifikimit.</string>
+    <!-- Button that leaves the verification flow without verifying anything -->
+    <string name="TwoFactorVerifyScreen__cancel">Anulo</string>
+    <!-- Error shown under the code field when the service rejected the code -->
+    <string name="TwoFactorVerifyScreen__incorrect_code">Kod i gabuar. Vendos kodin që shfaqet tani në aplikacionin e autentifikimit.</string>
+    <!-- Error shown when the service could not be reached -->
+    <string name="TwoFactorVerifyScreen__couldnt_reach_signal">Nuk arrite të lidhesh me Signal. Kontrollo lidhjen e internetit dhe riprovo.</string>
+    <!-- Dialog shown when verifying with a passkey failed -->
+    <string name="TwoFactorVerifyScreen__something_went_wrong_with_your_passkey">Diçka shkoi keq me çelësin e hyrjes. Të lutem, provo përsëri ose zgjidh një metodë tjetër.</string>
+
+    <!-- EditProfileNameScreen -->
+    <!-- Title of the screen for editing your profile name -->
+    <string name="EditProfileNameFragment_your_name">Emri juaj</string>
+    <!-- Hint for the first name field when editing your profile name -->
+    <string name="EditProfileNameFragment_first_name">Emër</string>
+    <!-- Hint for the last name field when editing your profile name -->
+    <string name="EditProfileNameFragment_last_name_optional">Mbiemër (i domosdoshëm)</string>
+    <!-- Button that saves your edited profile name -->
+    <string name="EditProfileNameScreen__save">Ruaj</string>
+    <!-- Snackbar shown when your profile name couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameScreen__failed_to_save_due_to_network_issues">S\\’u bë dot ruajtja, për shkak problemesh rrjeti. Riprovoni më vonë.</string>
+
+    <!-- KeepMessagesSettingsScreen -->
+    <string name="preferences__keep_messages">Mbaji mesazhet</string>
+    <!-- Option for keeping messages forever when managing storage -->
+    <string name="preferences_storage__forever">Përgjithmonë</string>
+    <string name="preferences_storage__one_year">1 vit</string>
+    <string name="preferences_storage__six_months">6 muaj</string>
+    <string name="preferences_storage__thirty_days">30 ditë</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Mesazhet më të vjetra se koha e zgjedhur do të fshihen përgjithmonë.</string>
+    <string name="preferences_storage__delete_older_messages">Të fshihen mesazhet e vjetra?</string>
+    <string name="preferences_storage__this_will_permanently_delete_all_message_history_and_media">Kjo do të fshijë përgjithmonë të gjithë historikun e mesazheve dhe mediat nga pajisja jote, që janë më të vjetra se %1$s.</string>
+    <!-- Dialog action that confirms deleting older messages -->
+    <string name="preferences_storage__delete">Fshije</string>
+
+    <!-- ChatLengthLimitSettingsScreen -->
+    <string name="preferences__conversation_length_limit">Kufiri i gjatësisë së bisedës</string>
+    <plurals name="preferences_storage__s_messages_plural">
+        <item quantity="one">%1$s mesazh</item>
+        <item quantity="other">%1$s mesazhe</item>
+    </plurals>
+    <!-- Option for setting no limit of the length of chat messages -->
+    <string name="preferences_storage__none">Asnjë</string>
+    <string name="preferences_storage__custom">Rregullo</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Mesazhet që tejkalojnë gjatësinë e zgjedhur do të fshihen përgjithmonë.</string>
+    <!-- The body of an alert dialog that is shown when confirming a trim operation. Trimming will delete all but the most recent messages in a chat. The placeholder represents how many messages are kept in each chat. All older messages are deleted. -->
+    <plurals name="preferences_storage__this_will_permanently_trim_all_conversations_to_the_d_most_recent_messages">
+        <item quantity="one">Kjo do t\'i shkurtojë përgjithmonë të gjitha bisedat te mesazhet më të fundit.</item>
+        <item quantity="other">Kjo do t\'i shkurtojë përgjithmonë të gjitha bisedat te %1$s mesazhet më të fundit.</item>
+    </plurals>
+
+    <!-- EditAboutScreen -->
+    <!-- Title of the screen for editing the about text on your profile -->
+    <string name="EditAboutFragment_about">Mbi</string>
+    <!-- Placeholder in the about field when it is empty -->
+    <string name="EditAboutFragment_write_a_few_words_about_yourself">Shkruani dy rreshta rreth vetes…</string>
+    <!-- How many characters of the about text are used, out of the maximum, e.g. 125/140 -->
+    <string name="EditAboutFragment_count">%1$d/%2$d</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_speak_freely">Flisni lirisht</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_encrypted">I fshehtëzuar</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_be_kind">Jini i sjellshëm</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_coffee_lover">Dashnor i kafesë</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_free_to_chat">Bisedo falas</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_taking_a_break">Pushoni ca</string>
+    <!-- Preset about text -->
+    <string name="EditAboutFragment_working_on_something_new">Po merrem me diçka të re</string>
+    <!-- Button that saves your edited about text -->
+    <string name="EditAboutScreen__save">Ruaj</string>
+    <!-- Content description for the button that clears both the about text and its emoji -->
+    <string name="EditAboutScreen__clear">Spastroje</string>
+    <!-- Content description for the button that opens the emoji picker for the about text -->
+    <string name="EditAboutScreen__choose_emoji">Zgjidh figurën emoxhi</string>
+    <!-- Snackbar shown when your about text couldn\'t be saved because of a network problem -->
+    <string name="EditAboutScreen__failed_to_save_due_to_network_issues">S\\’u bë dot ruajtja, për shkak problemesh rrjeti. Riprovoni më vonë.</string>
+
+    <!-- UsernameEditScreen -->
+    <!-- Placeholder text for custom discriminator -->
+    <string name="UsernameEditFragment__00">00</string>
+    <!-- Instructional text at the top of the username edit screen -->
+    <string name="UsernameEditFragment__choose_your_username">Zgjidh emrin e përdoruesit</string>
+    <!-- Title of the username screen, and the label of its field -->
+    <string name="UsernameEditFragment_username">Emri i përdoruesit</string>
+    <!-- Button that deletes your username -->
+    <string name="UsernameEditFragment_delete">Fshije</string>
+    <!-- Snackbar shown when a username change failed because of a network problem -->
+    <string name="UsernameEditFragment_encountered_a_network_error">U has një gabim rrjeti.</string>
+    <!-- Toast message shown if user exceeds the rate limit for reserving usernames -->
+    <string name="UsernameEditFragment_rate_limit_exceeded_error">Provo më vonë pasi ke bërë shumë tentativa.</string>
+    <!-- Shown when the username someone typed already belongs to someone else -->
+    <string name="UsernameEditFragment_this_username_is_taken">Ky emër përdoruesi është i zënë.</string>
+    <!-- Shown when a username has characters that usernames can\'t have -->
+    <string name="UsernameEditFragment_usernames_can_only_include">Emrat e përdoruesve mund të përmbajnë vetëm a-Z, 0-9 dhe nënvija.</string>
+    <!-- Shown when a username starts with a digit -->
+    <string name="UsernameEditFragment_usernames_cannot_begin_with_a_number">Emrat e përdoruesve nuk mund të fillojnë me numër.</string>
+    <!-- Shown when the service rejects a username -->
+    <string name="UsernameEditFragment_username_is_invalid">Emri i pavlefshëm përdoruesi.</string>
+    <!-- Shown when a username is too short or too long. %1$d is the minimum length and %2$d the maximum -->
+    <string name="UsernameEditFragment_usernames_must_be_between_a_and_b_characters">Emrat e përdoruesit duhet të jenë mes %1$d dhe %2$d shenjash.</string>
+    <!-- Explanation about what usernames provide, ending in a link to learn more. %1$s is that link, UsernameEditScreen__learn_more -->
+    <string name="UsernameEditScreen__usernames_let_others_message">Njerëzit mund të të dërgojnë mesazhe duke përdorur emrin e përdoruesit që ke zgjedhur, në vend të numrit të telefonit. Emrat e përdoruesve bashkohen gjithmonë me një grup numrash. %1$s</string>
+    <!-- Displayed when the chosen discriminator is not available for the given nickname -->
+    <string name="UsernameEditFragment__this_username_is_not_available_try_another_number">Ky emër përdoruesi nuk është i disponueshëm, provo një numër tjetër.</string>
+    <!-- Displayed when the chosen discriminator is too short -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_minimum_of_d_digits">Emri i pavlefshëm përdoruesi, vendos minimumi %1$d shifra.</string>
+    <!-- Displayed when the chosen discriminator is too long -->
+    <string name="UsernameEditFragment__invalid_username_enter_a_maximum_of_d_digits">Emri i pavlefshëm përdoruesi, vendos miksimumi %1$d shifra.</string>
+    <!-- Displayed when the chosen discriminator is 00 -->
+    <string name="UsernameEditFragment__this_number_cant_be_00">Numri nuk mund të jetë 00. Vendos një shifër nga 1-9</string>
+    <!-- Displayed when the chosen discriminator starts with 0 and has a length > 2 -->
+    <string name="UsernameEditFragment__this_number_cant_start_with_0">Numrat me më shumë se 2 shifra nuk mund të fillojnë me 0</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to recover their username -->
+    <string name="UsernameEditFragment_recovery_dialog_confirmation">Rivendosja e emrit të përdoruesit do të rivendosë edhe kodin QR me lidhjen ekzistuese. Je i sigurt?</string>
+    <!-- The body of an alert dialog asking the user to confirm that they want to change their username, even if it resets their link -->
+    <string name="UsernameEditFragment_change_confirmation_message">Ndryshimi i emrit të përdoruesit do të rivendosë kodin QR dhe lidhjen ekzistuese. Je i sigurt?</string>
+    <!-- Text for a button in a dialog asking if the user would like to continue the operation of changing their username -->
+    <string name="UsernameEditFragment_continue">Vazhdo</string>
+    <!-- Button that saves the username you typed -->
+    <string name="UsernameEditScreen__save">Ruaj</string>
+    <!-- Link at the end of the explanation of usernames, which opens a support article about them -->
+    <string name="UsernameEditScreen__learn_more">Mëso më shumë</string>
+  <!-- Removed by excludeNonTranslatables <string name="username_support_url" translatable="false">https://support.signal.org/hc/articles/6712070553754</string> -->
+
+    <!-- EditProfileScreen -->
+    <!-- Explanation below the name, about and badges rows on the profile screen, saying who can see your profile -->
+    <string name="CreateProfileActivity_signal_profiles_are_end_to_end_encrypted">Profili yt dhe ndryshimet e tij do të shihen nga personat, të cilëve u shkruan, nga kontaktet dhe grupet.</string>
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Përditësoni Signal-in</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Ky version i Signal ka skaduar. Përditëso tani për të vazhduar përdorimin e Signal.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">Përditësoje</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">Pajisja nuk është regjistruar</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">Pajisja nuk është më e regjistruar. Regjistroje sërish për të bërë ndryshime në llogarinë tënde.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Riregjistroje</string>
+    <!-- Snackbar shown when your new avatar couldn\'t be saved because of a network problem -->
+    <string name="EditProfileNameFragment_failed_to_save_due_to_network_issues_try_again_later">S\\’u bë dot ruajtja, për shkak problemesh rrjeti. Riprovoni më vonë.</string>
+    <!-- Snackbar message after network failure while trying to delete username -->
+    <string name="ManageProfileFragment__couldnt_delete_username">Emri i përdoruesit nuk mund të fshihet. Provo sërish më vonë.</string>
+    <!-- The title of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_title">Të fshihet emri i përdoruesit?</string>
+    <!-- The body of a pop-up dialog asking the user to confirm deleting their username -->
+    <string name="ManageProfileFragment__delete_username_dialog_body">"Kjo do të heqë emrin e përdoruesit e do të çaktivizojë kodin QR dhe lidhjen. %1$s do të jetë i disponueshëm për t\'u përdorur nga të tjerët. Je i sigurt?"</string>
+    <!-- Button below your avatar on the profile screen that lets you change it -->
+    <string name="ManageProfileFragment__edit_photo">Përpunoni foton</string>
+    <!-- Title of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_title">Shpërndaj emrin tënd të përdoruesit</string>
+    <!-- Body of a tooltip educating the user about a button on the screen that will take them to the username share screen -->
+    <string name="ManageProfileFragment__link_tooltip_body">Lejo të tjerët të fillojnë një bisedë me ty duke ndarë kodin QR ose lidhjen tënde unike.</string>
+    <!-- Snackbar message after creating username -->
+    <string name="ManageProfileFragment__username_created">Emri i përdoruesit u krijua</string>
+    <!-- Snackbar message after successful deletion of username -->
+    <string name="ManageProfileFragment__username_deleted">Emri i përdoruesit u fshi</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc, shown when you have no username -->
+    <string name="ManageProfileFragment__username_footer_no_username">Njerëzit mund të të dërgojnë mesazhe duke përdorur, sipas dëshirës, një emër përdoruesi në vend të numrit të telefonit. Emrat e përdoruesit kanë kod QR dhe një lidhje unike që mund t’ua ndash miqve.</string>
+    <!-- Explanation text about usernames etc displayed underneath buttons to view and edit username etc -->
+    <string name="ManageProfileFragment__your_username">Emri i përdoruesit, kodi QR dhe lidhja nuk shfaqen në profil. Ndaje emrin e përdoruesit vetëm me njerëzit e besueshëm.</string>
+    <!-- Row on the profile screen that opens your about, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_about">Rreth</string>
+    <!-- Snackbar shown when the photo you chose for your avatar couldn\'t be read -->
+    <string name="ManageProfileFragment_failed_to_set_avatar">S\\’u arrit të caktohej avatar</string>
+    <!-- Text for a button that will take the user to the screen to manage their username link and QR code -->
+    <string name="ManageProfileFragment_link_setting_text">Kodi QR ose lidhja</string>
+    <!-- Row on the profile screen that opens your name, shown when you haven\'t set one -->
+    <string name="ManageProfileFragment_profile_name">Emri i profilit</string>
+    <!-- Row on the profile screen that opens your username, shown when you don\'t have one -->
+    <string name="ManageProfileFragment_username">Emri i përdoruesit</string>
+    <!-- Option to open username editor displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__edit_username">Ndrysho emrin e përdoruesit</string>
+    <!-- Option to delete username displayed as a list item in a dialog -->
+    <string name="UsernameEditDialog__delete_username">Fshi emrin e përdoruesit</string>
+    <!-- Title of the screen showing your own profile -->
+    <string name="EditProfileScreen__profile">Profil</string>
+    <!-- Content description for your avatar on the profile screen, which opens it full screen -->
+    <string name="EditProfileScreen__set_avatar">Caktoni avatar</string>
+    <!-- Row on the profile screen that opens your badges -->
+    <string name="EditProfileScreen__badges">Distinktivët</string>
+    <!-- Button in the dialog confirming that you want your username deleted -->
+    <string name="EditProfileScreen__delete">Fshij</string>
+    <!-- Content description for the button that closes the tip about your username link -->
+    <string name="EditProfileScreen__close_tip">Mbyll</string>
+    <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__get_badges">Merr distinktivë për profilin, duke përkrahur Signal.</string>
+    <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
+    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal-i është një ent jofitimprurës pa rrjete reklamash dhe investues, i përkrahur vetëm nga njerëz si ju.</string>
+    <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
+    <string name="EditProfileScreen__become_a_sustainer">Bëhuni një Mbështetës</string>
+
+    <!-- BadgesOverviewScreen -->
+    <!-- Title of the screen listing the badges you\'ve unlocked -->
+    <string name="BadgesOverviewScreen__badges">Distinktivët</string>
+    <!-- Section header above the grid of badges you\'ve unlocked -->
+    <string name="BadgesOverviewFragment__my_badges">Distinktivët e mi</string>
+    <!-- Toggle for whether your badges are shown on your profile -->
+    <string name="BadgesOverviewFragment__display_badges_on_profile">Shfaq distinktivët në profil</string>
+    <!-- Row that opens the screen for choosing which badge is shown on your profile; the badge\'s name is shown beneath it -->
+    <string name="BadgesOverviewScreen__featured_badge">Distinktiv i zgjedhur</string>
+    <!-- Snackbar shown when showing or hiding your badges on your profile couldn\'t be saved -->
+    <string name="BadgesOverviewFragment__failed_to_update_profile">S\\’u arrit të përditësohej profili</string>
+
+    <!-- SelectFeaturedBadgeScreen -->
+    <!-- Title of the screen for choosing which of your badges shows on your profile -->
+    <string name="SelectFeaturedBadgeScreen__featured_badge">Distinktiv i zgjedhur</string>
+    <!-- Section header above the grid of badges you can choose to feature on your profile -->
+    <string name="SelectFeaturedBadgeFragment__select_a_badge">Përzgjidh një distinktiv</string>
+    <!-- Button that saves the badge you chose to feature on your profile -->
+    <string name="SelectFeaturedBadgeScreen__save">Ruaj</string>
+    <!-- Snackbar shown when the badge you chose to feature couldn\'t be saved to your profile -->
+    <string name="SelectFeaturedBadgeFragment__failed_to_update_profile">S\\’u arrit të përditësohej profili</string>
+
+    <!-- UsernameLinkShareSheet -->
+    <!-- Explanatory text at the top of a bottom sheet describing how username links work -->
+    <string name="UsernameLinkShareBottomSheet_title">Kushdo që e ka këtë lidhje mund të shikojë emrin tënd të përdoruesit dhe të fillojë një bisedë me ty. Ndaje vetëm me njerëzit e besueshëm.</string>
+    <!-- A button label for a button that, when pressed, will copy your username link to the clipboard -->
+    <string name="UsernameLinkShareBottomSheet_copy_link">Kopjo linkun</string>
+    <!-- A button label for a button that, when pressed, will open a share sheet for sharing your username link -->
+    <string name="UsernameLinkShareBottomSheet_share">Ndajeni Me të Tjerë</string>
+
+    <!-- UsernameLinkSettingsScreen -->
+    <!-- Label for a tab that shows a screen to view your username QR code -->
+    <string name="UsernameLinkSettings_code_tab_name">Kodi</string>
+    <!-- Label for a tab that shows a screen to scan a QR code -->
+    <string name="UsernameLinkSettings_scan_tab_name">Skano</string>
+    <!-- Content of a toast that will show after the username link is copied to the clipboard -->
+    <string name="UsernameLinkSettings_link_copied_toast">Lidhja u kopjua</string>
+    <!-- Content of a toast that will show after the username is copied to the clipboard -->
+    <string name="UsernameLinkSettings_username_copied_toast">Emri i përdoruesit u kopjua</string>
+    <!-- Title of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_title">Të rikthehet kodi QR?</string>
+    <!-- Body of a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_body">Nëse rikthen kodin QR, atëherë kodi QR dhe lidhja ekzistuese nuk do të funksionojnë më.</string>
+    <!-- Label for the confirmation button on a dialog prompting the user to confirm whether they would like to reset their username link and QR code -->
+    <string name="UsernameLinkSettings_reset_link_dialog_confirm_button">Riktheje</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because you had no internet. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_unavailable">Nuk ke akses në rrjet. Lidhja jote nuk u rikthye. Provo sërish më vonë.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of a transient network issue. -->
+    <string name="UsernameLinkSettings_reset_link_result_network_error">Ndodhi një gabim në rrjet gjatë përpjekjes për të rivendosur lidhjen tënde. Provo sërish më vonë.</string>
+    <!-- Body of a dialog that is displayed when we failed to reset your username link because of an unknown error. -->
+    <string name="UsernameLinkSettings_reset_link_result_unknown_error">Ndodhi një gabim i papritur gjatë përpjekjes për të rivendosur lidhjen. Provo sërish më vonë.</string>
+    <!-- Body of a dialog that is displayed when we successfully reset you username link. -->
+    <string name="UsernameLinkSettings_reset_link_result_success">Lidhja dhe kodi QR janë rivendosur dhe është krijuar lidhje dhe kod QR i ri.</string>
+    <!-- Description text for QR code and links in the username link settings -->
+    <string name="UsernameLinkSettings_qr_description">Ndaj kodin QR dhe lidhjen vetëm me njerëzit të cilëve u beson. Kur të shpërndahet, të tjerët do të mund të shohin emrin tënd të përdoruesit dhe të fillojnë një bisedë me ty.</string>
+    <!-- Button label for a button that will reset your username and give you a new link -->
+    <string name="UsernameLinkSettings_reset_button_label">Riktheje</string>
+    <!-- Button label for the link button in the username link settings -->
+    <string name="UsernameLinkSettings_link_button_label">Lidhja</string>
+    <!-- Button label for the share button in the username link settings -->
+    <string name="UsernameLinkSettings_share_button_label">Ndajeni Me të Tjerë</string>
+    <!-- Button label for the color selector button in the username link settings -->
+    <string name="UsernameLinkSettings_color_button_label">Ngjyrë</string>
+    <!-- Body of a dialog that is displayed when we failed to read a username QR code. -->
+    <string name="UsernameLinkSettings_qr_result_invalid">Kodi QR ishte i pavlefshëm.</string>
+    <!-- Body of a dialog that is displayed when we experienced a network error when looking up a username. -->
+    <string name="UsernameLinkSettings_qr_result_network_error">Ndodhi një gabim në rrjet. Të lutem, provoje sërish.</string>
+    <!-- Dialog title shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_qr_code_not_found">Kodi QR nuk u gjet</string>
+    <!-- Dialog message shown when scanning an image from the gallery for a username QR code and there is no qr code in the image. -->
+    <string name="UsernameLinkSettings_try_scanning_another_image_containing_a_signal_qr_code">Provo të skanosh një imazh tjetër që përmban kodin QR të Signal.</string>
+    <!-- Body of a dialog that is displayed when the username we looked up could not be found. -->
+    <string name="UsernameLinkSettings_qr_result_not_found">Një përdorues me emrin e përdoruesit %1$s nuk mund të gjendej.</string>
+    <!-- Description text shown underneath the username QR code scanner -->
+    <string name="UsernameLinkSettings_qr_scan_description">Skano kodin QR te pajisja e kontaktit tënd.</string>
+    <!-- Shown when the QR code you scanned leads to a username link that no one has -->
+    <string name="UsernameLinkSettingsScreen__qr_result_not_found_no_username">Ky përdorues nuk mund të gjendej.</string>
+    <!-- Shown in place of the camera on the scan tab when the camera permission hasn\'t been granted -->
+    <string name="UsernameLinkSettingsScreen__allow_camera_to_scan">Për të skanuar kod QR, lejo përdorimin e kamerës nga Signal.</string>
+    <!-- Button on the scan tab that asks for the camera permission -->
+    <string name="UsernameLinkSettingsScreen__allow_access">Lejoje Përdorimin</string>
+    <!-- Shown when the camera permission was denied, or permanently denied, and a QR code can\'t be scanned -->
+    <string name="UsernameLinkSettingsScreen__camera_needed">Signal duhet të aksesojë kamerën që të skanojë kode QR</string>
+
+    <!-- ManageStorageSettingsScreen -->
+    <string name="preferences__storage">Hapësirë</string>
+    <string name="preferences_storage__storage_usage">Përdorim hapësire</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Hapësira ruajtëse e Signal</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimizo hapësirën ruajtëse të Signal</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Media e papërdorur do të shkarkohet, por mund të shkarkohet nga kopjeruajtja në çdo kohë.</string>
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">Kufijtë e bisedës</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">Vendos kufizime për pajisjet e lidhura</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">Kur aktivizohen, kufijtë e bisedës do të fshijnë edhe mesazhet e pajisjeve të lidhura.</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">Fshi historikun e mesazheve</string>
+    <!-- Dialog title shown when selecting delete message history from manage storage -->
+    <string name="preferences_storage__delete_message_history">Të fshihet historiku i mesazheve?</string>
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device">Kjo do të fshijë përgjithmonë të gjithë historikun e mesazheve dhe mediat nga pajisja jote.</string>
+    <!-- Dialog message warning about delete chat message history will delete everything everywhere including linked devices -->
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device_linked_device">Kjo do të fshijë përgjithmonë të gjithë historikun e mesazheve dhe median e kësaj pajisjeje dhe çdo pajisjeje tjetër të lidhur.</string>
+    <string name="preferences_storage__are_you_sure_you_want_to_delete_all_message_history">Je i sigurt se dëshiron të fshish krejt historikun e mesazheve?</string>
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone">I gjithë historiku i mesazheve do të hiqet përgjithmonë. Ky veprim nuk mund të zhbëhet.</string>
+    <!-- Secondary warning dialog message about deleting all chat message history from everything everywhere including linked devices -->
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone_linked_device">I gjithë historiku i mesazheve do të fshihet përgjithmonë nga të gjitha pajisjet. Ky veprim nuk mund të zhbëhet.</string>
+    <string name="preferences_storage__delete_all_now">Fshije krejt tani</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Optimizimi i hapësirës ruajtëse mund të përdoret vetëm me nivelin e paguar të kopjeruajtjeve të Signal. Abonimi i kopjeruajtjeve është ende në përpunim dhe nuk është ende aktiv. Të lutem, provo sërish më vonë.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media do të hiqet nga kopjeruajtja e ruajtur në pajisjen tënde</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Kur aktivizon \"Optimizo hapësirën e Signal\", media e vjetër do të shkarkohet nga pajisja. Mund ta shkarkosh përsëri në çdo kohë. Gjithashtu, do ta heqë median e vjetër nga kopjeruajtja në pajisjen tënde.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">Aktivizo</string>
+
+    <!-- MutedNotificationsScreen -->
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body">Bëj që të bjerë zilja ose shfaq një njoftim kur nis një thirrje ndërkohë që kjo bisedë është pa zë.</string>
+    <!-- Description for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsFragment__calls_body_global">Bëj që të bjerë zilja ose shfaq një njoftim kur nis një thirrje në bisedat që i ke bërë pa zë.</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body">Njoftohu kur të përmendin ndërkohë që kjo bisedë është pa zë.</string>
+    <!-- Description for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsFragment__mentions_body_global">Njoftohu kur të përmendin në bisedat që i ke bërë pa zë.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body">Njoftohu kur dikush i përgjigjet mesazhit ndërkohë që kjo bisedë është bërë pa zë.</string>
+    <!-- Description for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsFragment__replies_body_global">Njoftohu kur dikush i përgjigjet mesazhit tënd në bisedat që i ke bërë pa zë.</string>
+    <!-- Header to describe screen that shows while muted settings -->
+    <string name="MutedNotificationsFragment__while">Ndërkohë që është pa zë</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="MutedNotificationsScreen__calls">Thirrje</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="MutedNotificationsScreen__mentions">Përmendje</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="MutedNotificationsScreen__replies">Përgjigje</string>
+
+    <!-- NotificationsSettingsScreen -->
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">S\\’u arrit të hapet zgjedhësi.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">Për të aktivizuar njoftimet, Signal ka nevojë për leje për t\'i shfaqur ato.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">Aktivizo</string>
+    <string name="NotificationsSettingsFragment__calls">Thirrje</string>
+    <string name="NotificationsSettingsFragment__contact_joins_signal">Kontakti vjen në Signal</string>
+    <!-- Notification preference summary text -->
+    <string name="NotificationsSettingsFragment__create_a_profile_to_receive_notifications_only_from_people_and_groups_you_choose">Krijoni një profil që të merrni njoftime vetëm nga persona dhe grupe që zgjidhni ju.</string>
+    <!-- Notification body to get notified when someone joins Signal -->
+    <string name="NotificationsSettingsFragment__notify_contact">Shfaq njoftim kur një kontakt i telefonit bashkohet me Signal</string>
+    <!-- Option to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset">Rikthe parametrat e njoftimeve</string>
+    <!-- Dialog to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_body">Të rikthehen të gjitha parametrat e njoftimeve në parazgjedhje për të gjitha bisedat?</string>
+    <!-- Confirmation button to reset dialog -->
+    <string name="NotificationsSettingsFragment__reset_confirm">Riktheje</string>
+    <!-- Option body to reset their notification settings -->
+    <string name="NotificationsSettingsFragment__reset_notifications">Rikthe parametrat e njoftimeve me parazgjedhje, duke përfshirë parametrat e personalizuara për bisedat</string>
+    <!-- Notification header for sounds -->
+    <string name="NotificationsSettingsFragment__sounds">Tingujt</string>
+    <string name="NotificationsSettingsFragment__unknown_ringtone">Zile e panjohur</string>
+    <!-- Title for toggle row to control call settings while muted -->
+    <string name="NotificationsSettingsScreen__calls">Thirrje</string>
+    <!-- Title for toggle row to control mentions settings while muted -->
+    <string name="NotificationsSettingsScreen__mentions">Përmendje</string>
+    <!-- Notification preference header -->
+    <string name="NotificationsSettingsScreen__notification_profiles">Profile njoftimesh</string>
+    <string name="NotificationsSettingsScreen__notifications">Njoftime</string>
+    <!-- Title for toggle row to control replies settings while muted -->
+    <string name="NotificationsSettingsScreen__replies">Përgjigje</string>
+    <string name="NotificationsSettingsScreen__silent">Heshtazi</string>
+    <!-- Option in settings to turn on unread reminders -->
+    <string name="NotificationsSettingsScreen__unread_reminders">Përkujtues për mesazhet e palexuara</string>
+    <string name="arrays__default">Parazgjedhje</string>
+    <string name="arrays__high">Lartësi</string>
+    <!-- Setting title that represent an abstract priority to assign to notifications as the max/highest priority a notification can be within the system. -->
+    <string name="arrays__max">Maks.</string>
+    <string name="arrays__name_and_message">Emër dhe mesazh</string>
+    <string name="arrays__name_only">Vetëm emrin</string>
+    <string name="arrays__no_name_or_message">Pa emër ose mesazh</string>
+    <string name="preferences__blue">E kaltër</string>
+    <!-- Preference header for call notifications -->
+    <string name="preferences__call_notifications">Njoftimet e thirrjes</string>
+    <string name="preferences__change_sound_and_vibration">Ndryshoni tingull dhe dridhje</string>
+    <string name="preferences__customize">Përshtateni</string>
+    <string name="preferences__cyan">Gurkali</string>
+    <!-- Preference menu item to use the default sound for notifications -->
+    <string name="preferences__default">Parazgjedhje</string>
+    <!-- Preference item menu to enable notifications -->
+    <string name="preferences__enable_notifications">Aktivizo njoftime</string>
+    <string name="preferences__fast">I shpejtë</string>
+    <string name="preferences__five_times">Pesë herë</string>
+    <string name="preferences__green">E gjelbër</string>
+    <string name="preferences__led_color">Ngjyrë LED-i</string>
+    <string name="preferences__magenta">E purpurt</string>
+    <string name="preferences__never">Kurrë</string>
+    <string name="preferences__normal">Normal</string>
+    <string name="preferences__one_time">Një herë</string>
+    <string name="preferences__orange">Portokalli</string>
+    <string name="preferences__pref_led_blink_title">Rregullsi xixëllimi LED-i</string>
+    <string name="preferences__red">E kuqe</string>
+    <string name="preferences__repeat_alerts">Alarme të përsëritur</string>
+    <string name="preferences__slow">I ngadaltë</string>
+    <!-- Preference menu item to control the sound of notifications -->
+    <string name="preferences__sound">Tingull</string>
+    <string name="preferences__ten_times">Dhjetë herë</string>
+    <string name="preferences__three_times">Tri herë</string>
+    <string name="preferences__two_times">Dy herë</string>
+    <string name="preferences__vibrate">Dridhu</string>
+    <string name="preferences__white">E bardhë</string>
+    <string name="preferences_notifications__in_chat_sounds">Tingujt në bisedë</string>
+    <!-- Body option in settings to turn on reaction notifications    -->
+    <string name="preferences_notifications__notify_reaction">Shfaq njoftime për reagimet ndaj mesazheve që dërgon</string>
+    <!-- Body option to turn on unread reminders -->
+    <string name="preferences_notifications__notify_unread">Herë pas here shfaq një njoftim kur ka mesazhe të palexuara në bisedat që i ke bërë pa zë</string>
+    <!-- Option in settings that will provide a shortcut to notification system settings to control the priority of Signal notifications -->
+    <string name="preferences_notifications__priority">Përparësi</string>
+    <!-- Option in settings to turn on reaction notifications -->
+    <string name="preferences_notifications__reaction">Njoftimet për reagimet</string>
+    <string name="preferences_notifications__ringtone">Zile</string>
+    <string name="preferences_notifications__show">Shfaq</string>
+    <!-- Option in settings to trouble shoot delayed notifications -->
+    <string name="preferences_notifications__troubleshoot">Diagnostikim i njoftimeve</string>
+    <!-- Preference item to set notification settings when chats are muted -->
+    <string name="preferences_notifications__while_muted">Ndërkohë që është pa zë</string>
+
+    <!-- SelectRecipientsScreen -->
+    <!-- Call to action button on contact picker for adding to profile -->
+    <string name="SelectRecipientsFragment__add">Shtoje</string>
+    <!-- Title for add recipients to notification profile screen in create flow -->
+    <string name="SelectRecipientsScreen__allowed_notifications">Njoftime të lejuara</string>
 </resources>

@@ -54,10 +54,13 @@ import org.signal.network.rest.SignalRestClient;
 import org.signal.network.util.Tls12SocketFactory;
 import org.signal.network.service.ArchiveService;
 import org.signal.network.service.CdnService;
+import org.signal.network.service.GroupMessageService;
+import org.signal.network.service.IndividualMessageService;
 import org.signal.network.service.MessageService;
 import org.signal.network.service.StorageServiceService;
 import org.signal.network.service.TwoFactorMethodService;
 import org.signal.network.service.UsernameService;
+import org.signal.remoteconfig.RemoteConfig;
 import org.signal.video.exo.ExoPlayerPool;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.backup.v2.SignalStoreArchiveCacheStore;
@@ -96,6 +99,7 @@ import org.thoughtcrime.securesms.jobs.SendDeliveryReceiptJob;
 import org.thoughtcrime.securesms.jobs.TypingSendJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.megaphone.MegaphoneRepository;
+import org.thoughtcrime.securesms.messages.AppMessageSendDependencies;
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver;
 import org.thoughtcrime.securesms.net.DeviceTransferBlockingInterceptor;
 import org.thoughtcrime.securesms.net.SignalWebSocketHealthMonitor;
@@ -125,7 +129,6 @@ import org.thoughtcrime.securesms.util.EarlyMessageCache;
 import org.thoughtcrime.securesms.util.Environment;
 import org.thoughtcrime.securesms.util.FrameRateTracker;
 import org.thoughtcrime.securesms.util.PreKeyBatcher;
-import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.video.exo.GiphyMp4Cache;
 import org.thoughtcrime.securesms.video.exo.SimpleExoPlayerPool;
 import org.thoughtcrime.securesms.webrtc.audio.AudioManagerCompat;
@@ -252,12 +255,13 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
   public @NonNull MessageService provideMessageService(@NonNull SignalServiceDataStore protocolStore,
                                                        @NonNull MessageApiV2 messageApiV2,
                                                        @NonNull KeysApiV2 keysApiV2) {
-    SignalServiceAddress          localAddress  = new SignalServiceAddress(SignalStore.account().requireAci(), SignalStore.account().getE164());
-    int                           localDeviceId = SignalStore.account().getDeviceId();
-    SignalServiceAccountDataStore aciStore      = protocolStore.aci();
-    SignalServiceCipher           cipher        = new SignalServiceCipher(localAddress, localDeviceId, aciStore, ReentrantSessionLock.INSTANCE, null);
+    SignalServiceAccountDataStore store        = protocolStore.aci();
+    AppMessageSendDependencies    dependencies = new AppMessageSendDependencies(context);
+    SignalServiceCipher           cipher       = new SignalServiceCipher(new SignalServiceAddress(dependencies.getLocalAci()), dependencies.getLocalDeviceId(), store, ReentrantSessionLock.INSTANCE, null);
+    IndividualMessageService      individual   = new IndividualMessageService(messageApiV2, keysApiV2, store, ReentrantSessionLock.INSTANCE, cipher, dependencies);
+    GroupMessageService           group        = new GroupMessageService(individual, messageApiV2, store, ReentrantSessionLock.INSTANCE, cipher, dependencies);
 
-    return new MessageService(localAddress, localDeviceId, messageApiV2, keysApiV2, aciStore, ReentrantSessionLock.INSTANCE, cipher, RemoteConfig.maxEnvelopeSizeBytes());
+    return new MessageService(individual, group, dependencies);
   }
 
   @Override
@@ -632,6 +636,11 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
   }
 
   @Override
+  public @NonNull KeysApiV2 provideKeysApiV2(@NonNull SignalWebSocket.AuthenticatedWebSocket authWebSocket, @NonNull SignalWebSocket.UnauthenticatedWebSocket unauthWebSocket) {
+    return new KeysApiV2(authWebSocket, unauthWebSocket);
+  }
+
+  @Override
   public @NonNull AttachmentApi provideAttachmentApi(@NonNull SignalWebSocket.AuthenticatedWebSocket authWebSocket) {
     return new AttachmentApi(authWebSocket);
   }
@@ -732,8 +741,8 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
   }
 
   @Override
-  public @NonNull RemoteConfigApi provideRemoteConfigApi(@NonNull SignalWebSocket.AuthenticatedWebSocket authWebSocket, @NonNull PushServiceSocket pushServiceSocket) {
-    return new RemoteConfigApi(authWebSocket, pushServiceSocket);
+  public @NonNull RemoteConfigApi provideRemoteConfigApi(@NonNull SignalWebSocket.AuthenticatedWebSocket authWebSocket) {
+    return new RemoteConfigApi(authWebSocket);
   }
 
   @Override

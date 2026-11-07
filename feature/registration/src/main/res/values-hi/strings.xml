@@ -736,6 +736,8 @@
     <string name="SignalLoginCredentialEntryScreen__show_login_info_again">लॉगिन जानकारी फिर से दिखाएं</string>
     <!-- Error shown when what the user typed back doesn\'t match the Signal Login they were given. -->
     <string name="SignalLoginCredentialEntryScreen__that_doesnt_match_the_signal_login_you_were_shown">यह उस Signal Login से मेल नहीं खाता जो आपको दिखाया गया</string>
+    <!-- Subtitle on the Signal Login entry screen when the user opened it from a reminder to check they still know their login -->
+    <string name="SignalLoginCredentialEntryScreen__enter_your_signal_login_to_verify_you_still_know_it">अपना Signal Login डालें ताकि यह वेरिफ़ाई हो सके कि आपको यह अभी भी याद है।</string>
 
     <!-- Add username screen -->
     <!-- Title of the screen offering the user an optional username. -->
@@ -820,4 +822,16 @@
     <string name="TwoFactorSelectionScreen__cancel">कैंसिल करें</string>
     <!-- Dialog message shown when a passkey verification attempt fails for a reason the user can\'t act on -->
     <string name="TwoFactorSelectionScreen__something_went_wrong_with_your_passkey">आपकी पासकी बनाने में कोई गड़बड़ी हुई। कृपया फिर से कोशिश करें या कोई दूसरा तरीका चुनें।</string>
+
+    <!-- PasskeyVerificationScreen -->
+    <!-- Title of the screen asking the user to verify their account with their passkey -->
+    <string name="PasskeyVerificationScreen__two_factor_authentication">टू-फ़ैक्टर ऑथेंटिकेशन</string>
+    <!-- Subtitle telling the user to verify their account with their passkey -->
+    <string name="PasskeyVerificationScreen__to_continue_verify_your_account">जारी रखने के लिए, अपनी पासकी से अपना अकाउंट वेरिफ़ाई करें।</string>
+    <!-- Button text to start verifying with a passkey -->
+    <string name="PasskeyVerificationScreen__continue">जारी रखें</string>
+    <!-- Button text to cancel two-factor authentication -->
+    <string name="PasskeyVerificationScreen__cancel">कैंसिल करें</string>
+    <!-- Dialog message shown when a passkey verification attempt fails for a reason the user can\'t act on -->
+    <string name="PasskeyVerificationScreen__something_went_wrong_with_your_passkey">आपकी पासकी बनाने में कोई गड़बड़ी हुई। कृपया फिर से कोशिश करें।</string>
 </resources>

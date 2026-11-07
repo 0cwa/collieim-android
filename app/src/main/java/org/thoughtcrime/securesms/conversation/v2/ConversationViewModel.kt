@@ -32,10 +32,16 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 import io.reactivex.rxjava3.subjects.Subject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -43,6 +49,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx3.asFlow
+import kotlinx.coroutines.withContext
 import org.signal.core.models.ServiceId
 import org.signal.core.models.database.StickerRecord
 import org.signal.core.models.recipients.RecipientId
@@ -191,6 +198,11 @@ class ConversationViewModel(
 
   val groupRecordFlow: Flow<GroupRecord>
 
+  private val internalGroupTerminatedEvents = MutableSharedFlow<String?>()
+
+  /** Emits the display name of who ended the group (null if unknown) when someone other than self ends it while this conversation is open. */
+  val groupTerminatedEvents: SharedFlow<String?> = internalGroupTerminatedEvents.asSharedFlow()
+
   private val refreshIdentityRecords: Subject<Unit> = PublishSubject.create()
   private val identityRecordsStore: RxStore<IdentityRecordsState> = RxStore(IdentityRecordsState())
   val identityRecordsObservable: Observable<IdentityRecordsState> = identityRecordsStore.stateFlowable.toObservable()
@@ -207,10 +219,6 @@ class ConversationViewModel(
     .observeOn(AndroidSchedulers.mainThread())
 
   private val startExpiration = BehaviorSubject.create<MessageTable.ExpirationInfo>()
-
-  private val _jumpToDateValidator: JumpToDateValidator by lazy { JumpToDateValidator.create(threadId) }
-  val jumpToDateValidator: JumpToDateValidator
-    get() = _jumpToDateValidator
 
   private val internalBackPressedState = MutableStateFlow(BackPressedState())
   val backPressedState: StateFlow<BackPressedState> = internalBackPressedState
@@ -353,6 +361,15 @@ class ConversationViewModel(
       .observeOn(AndroidSchedulers.mainThread())
       .asFlow()
       .mapNotNull { it.orNull() }
+
+    viewModelScope.launch {
+      groupRecordFlow
+        .distinctUntilChangedBy { it.isTerminated }
+        .drop(1)
+        .filter { it.isTerminated && it.terminatedByRecipientId != Recipient.self().id }
+        .map { record -> record.terminatedByRecipientId?.let { withContext(Dispatchers.Default) { Recipient.resolved(it).getDisplayName(AppDependencies.application) } } }
+        .collect { internalGroupTerminatedEvents.emit(it) }
+    }
 
     Observable.combineLatest(
       refreshIdentityRecords.startWithItem(Unit).observeOn(Schedulers.io()),
@@ -745,14 +762,9 @@ class ConversationViewModel(
       .observeOn(AndroidSchedulers.mainThread())
   }
 
-  fun onChatSearchOpened() {
-    // Trigger the lazy load, so we can race initialization of the validator
-    _jumpToDateValidator
-  }
-
-  fun getEarliestMessageSentDate(): Single<Long> {
+  fun getDaysWithMessages(): Single<Set<Long>> {
     return repository
-      .getEarliestMessageSentDate(threadId)
+      .getDaysWithMessages(threadId)
       .observeOn(AndroidSchedulers.mainThread())
   }
 

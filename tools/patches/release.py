@@ -81,6 +81,8 @@ def check_source_boundary(repo, signal, scope=None, base=None, integration_lower
     if scope or base or integration_lower:
         if not scope or not base or scope == 'pipeline':
             raise forest.ForestError('a release requires a valid stack scope and lower base')
+        if scope == 'next-port' and signal != stack_scope.NEXT_PORT_SIGNAL:
+            raise forest.ForestError('next port Signal source differs from the pinned projection')
         try:
             stack_scope.check_scope(repo, scope, base, integration_lower=integration_lower)
         except ValueError as exc:
@@ -411,7 +413,7 @@ def main():
     parser.add_argument('--profile', choices=sorted(release_profiles.NAMES))
     parser.add_argument('--worktree', type=Path, required=True)
     parser.add_argument('--report', type=Path)
-    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-maintenance', 'main-snapshot', 'main-snapshot-transition'))
+    parser.add_argument('--scope', choices=('switch', 'release', 'followups', 'additions', 'features', 'forks', 'main-transition', 'main-maintenance', 'main-snapshot', 'main-snapshot-transition', 'next-port'))
     parser.add_argument('--base')
     parser.add_argument('--integration-lower')
     args = parser.parse_args()

@@ -85,6 +85,7 @@ def deletion_report(inventory):
     output = ['', '## Whole-file deletions from the mechanical merge', '',
               f'{len(inventory)} paths: {len(text)} text files, {len(inventory)-len(text)} binary files, {sum(row[2] for row in text)} deleted text lines.',
               f'Scenario excluding paths absent at the same path in Molly: {len(inventory)-len(absent)} of {len(inventory)} deleted paths and {sum(row[2] for row in text)-sum(row[2] for row in absent_text)} of {sum(row[2] for row in text)} deleted text lines remain; {len(absent)-len(absent_text)} of {len(inventory)-len(text)} binary paths are excluded. This is a tree-membership scenario, not authorship, justification, or proof of behavior preservation.',
+              'Git LFS pointer files are counted as text when Git reports them as text; these counts do not measure the referenced image or other payload.',
               'Partial-file exclusions and deletion necessity remain unmeasured unless separately evidenced.', '',
               '| Classification | Paths | Text | Binary | Deleted text lines |', '|---|---:|---:|---:|---:|']
     for name, counts in sorted(classes.items()):
@@ -367,12 +368,13 @@ def import_profile_trees(config):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--config', default='molly-build.json'); p.add_argument('--metadata', default='patches/ports/signal-8.33.2/report-metadata.json')
+    p.add_argument('--config', default='molly-build.json'); p.add_argument('--metadata')
     p.add_argument('--output', default='docs/PORT-REPORT.md'); p.add_argument('--check', action='store_true'); p.add_argument('--ready', action='store_true')
     args = p.parse_args()
     try:
         config = json.loads(Path(args.config).read_text())
-        evidence = json.loads(Path(args.metadata).read_text())
+        metadata = Path(args.metadata) if args.metadata else Path(config['port']['series']).parent / 'report-metadata.json'
+        evidence = json.loads(metadata.read_text())
         import_start_trees(config, evidence)
         import_profile_trees(config)
         with tempfile.TemporaryDirectory(prefix='molly-report-origin-') as objects:

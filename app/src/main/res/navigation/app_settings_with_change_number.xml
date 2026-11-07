@@ -690,7 +690,32 @@
     <fragment
         android:id="@+id/storagePreferenceFragment"
         android:name="org.thoughtcrime.securesms.components.settings.app.storage.ManageStorageSettingsFragment"
-        android:label="storage_preference_fragment" />
+        android:label="storage_preference_fragment">
+        <action
+            android:id="@+id/action_storagePreferenceFragment_to_keepMessagesSettingsFragment"
+            app:destination="@id/keepMessagesSettingsFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+        <action
+            android:id="@+id/action_storagePreferenceFragment_to_chatLengthLimitSettingsFragment"
+            app:destination="@id/chatLengthLimitSettingsFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/keepMessagesSettingsFragment"
+        android:name="org.thoughtcrime.securesms.components.settings.app.storage.KeepMessagesSettingsFragment"
+        android:label="keep_messages_settings_fragment" />
+
+    <fragment
+        android:id="@+id/chatLengthLimitSettingsFragment"
+        android:name="org.thoughtcrime.securesms.components.settings.app.storage.ChatLengthLimitSettingsFragment"
+        android:label="chat_length_limit_settings_fragment" />
 
     <include app:graph="@navigation/edit_proxy" />
 
@@ -910,7 +935,7 @@
         <argument
             android:name="mode"
             android:defaultValue="RECOVERY"
-            app:argType="org.thoughtcrime.securesms.profiles.manage.UsernameEditMode" />
+            app:argType="org.signal.appsettings.routes.UsernameEditMode" />
     </action>
 
     <action
@@ -1177,8 +1202,7 @@
     <fragment
         android:id="@+id/donationReceiptListFragment"
         android:name="org.thoughtcrime.securesms.components.settings.app.subscription.receipts.list.DonationReceiptListFragment"
-        android:label="donation_receipt_list_fragment"
-        tools:layout="@layout/donation_receipt_list_fragment">
+        android:label="donation_receipt_list_fragment">
         <action
             android:id="@+id/action_donationReceiptListFragment_to_donationReceiptDetailFragment"
             app:destination="@id/donationReceiptDetailFragment"
@@ -1210,7 +1234,7 @@
 
     <fragment
         android:id="@+id/mutedNotificationsFragment"
-        android:name="org.thoughtcrime.securesms.components.settings.app.notifications.GlobalMutedNotificationsFragment" />
+        android:name="org.thoughtcrime.securesms.components.settings.app.notifications.muted.GlobalMutedNotificationsFragment" />
 
     <!-- Notification Profiles -->
     <fragment
@@ -1284,8 +1308,7 @@
 
     <fragment
         android:id="@+id/selectRecipientsFragment"
-        android:name="org.thoughtcrime.securesms.components.settings.app.notifications.profiles.SelectRecipientsFragment"
-        tools:layout="@layout/fragment_select_recipients_fragment">
+        android:name="org.thoughtcrime.securesms.components.settings.app.notifications.profiles.selectrecipients.SelectRecipientsFragment">
 
         <argument
             android:name="profileId"
@@ -1379,13 +1402,12 @@
 
     <fragment
         android:id="@+id/createUsernameFragment"
-        android:name="org.thoughtcrime.securesms.profiles.manage.UsernameEditFragment"
-        tools:layout="@layout/username_edit_fragment">
+        android:name="org.thoughtcrime.securesms.profiles.manage.username.UsernameEditFragment">
 
         <argument
             android:name="mode"
             android:defaultValue="NORMAL"
-            app:argType="org.thoughtcrime.securesms.profiles.manage.UsernameEditMode" />
+            app:argType="org.signal.appsettings.routes.UsernameEditMode" />
     </fragment>
 
     <fragment

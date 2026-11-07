@@ -11,8 +11,8 @@ import org.signal.core.util.Util;
 import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.eventbus.ThreadMode;
 import org.signal.core.util.logging.Log;
+import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.jobmanager.JobManager;
-import org.thoughtcrime.securesms.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.stickers.BlessedPacks;
 import org.thoughtcrime.securesms.util.VersionTracker;
@@ -218,9 +218,11 @@ public class ApplicationMigrations {
     static final int SVR2_ENCLAVE_UPDATE_7         = 173;
     static final int DISABLE_UNREAD_REMINDER       = 174;
     static final int MENTIONS_STORAGE_SERVICE      = 175;
+    static final int TWO_FACTOR_METHODS            = 176;
+    static final int SIGNAL_LOGIN_REMINDER         = 177;
   }
 
-  public static final int CURRENT_VERSION = 175;
+  public static final int CURRENT_VERSION = 177;
 
   /**
    * This *must* be called after the {@link JobManager} has been instantiated, but *before* the call
@@ -1017,6 +1019,14 @@ public class ApplicationMigrations {
 
     if (lastSeenVersion < Version.MENTIONS_STORAGE_SERVICE) {
       jobs.put(Version.MENTIONS_STORAGE_SERVICE, new MentionsStorageServiceMigrationJob());
+    }
+
+    if (lastSeenVersion < Version.TWO_FACTOR_METHODS) {
+      jobs.put(Version.TWO_FACTOR_METHODS, new TwoFactorMethodsMigrationJob());
+    }
+
+    if (lastSeenVersion < Version.SIGNAL_LOGIN_REMINDER) {
+      jobs.put(Version.SIGNAL_LOGIN_REMINDER, new SignalLoginReminderMigrationJob());
     }
 
     return jobs;

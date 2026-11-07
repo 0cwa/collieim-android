@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,11 +33,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
 import org.signal.core.ui.biometrics.rememberBiometricsAuthentication
 import org.signal.core.ui.compose.DayNightPreviews
@@ -95,10 +96,9 @@ fun ScreenLockSettingsScreen(
     navigationContentDescription = stringResource(CoreUiR.string.CloseButton__content_description),
     modifier = modifier
   ) { paddingValues ->
-    LazyColumn(
-      modifier = Modifier
-        .padding(paddingValues)
-        .testTag(ScreenLockSettingsTestTags.SCROLLER)
+    AppSettingsLazyColumn(
+      scaffoldPadding = paddingValues,
+      modifier = Modifier.testTag(ScreenLockSettingsTestTags.SCROLLER)
     ) {
       item {
         Icon(
@@ -134,6 +134,7 @@ fun ScreenLockSettingsScreen(
         ) {
           Text(
             text = stringResource(R.string.ScreenLockSettingsFragment__use_screen_lock),
+            style = MaterialTheme.typography.bodyLarge.copy(hyphens = Hyphens.Auto),
             modifier = Modifier.weight(1f)
           )
           Spacer(Modifier.width(16.dp))

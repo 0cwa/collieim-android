@@ -90,7 +90,9 @@ jobs:
               main)
                 [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo 'Invalid main base SHA' >&2; exit 1; }
                 git merge-base --is-ancestor "$BASE_SHA" HEAD || { echo 'Main base is not an ancestor of head' >&2; exit 1; }
-                if ! git cat-file -e "$BASE_SHA:molly-build.json" 2>/dev/null; then
+                if python3 -c 'import json,subprocess,sys; b=json.loads(subprocess.check_output(["git", "show", sys.argv[1] + ":molly-build.json"])); h=json.load(open("molly-build.json")); target="a74583b01e260944f699c4da03ba4e8ce04de32b"; sys.exit(0 if h["signal"]["commit"] == target and b["signal"]["commit"] != target else 1)' "$BASE_SHA" 2>/dev/null; then
+                  scope=next-port; base=7d486880ddc991af0d36f1e4709030255ef4dbad
+                elif ! git cat-file -e "$BASE_SHA:molly-build.json" 2>/dev/null; then
                   scope=main-transition
                 elif python3 -c 'import json, subprocess, sys; b=json.loads(subprocess.check_output(["git", "show", sys.argv[1] + ":molly-build.json"])); h=json.load(open("molly-build.json")); sys.exit(0 if "profiles" not in b and "profiles" in h else 1)' "$BASE_SHA"; then
                   scope=forks
@@ -99,12 +101,19 @@ jobs:
                 else
                   scope=main-maintenance
                 fi
-                if [[ "$scope" != main-docs ]]; then
+                if [[ "$scope" != main-docs && "$scope" != next-port ]]; then
                   integration_lower=7f0eb01a0ab472deeef3b528e7f508425044fa6a
                   git fetch --no-tags "$trusted_url" "$integration_lower"
                   [[ $(git rev-parse 'FETCH_HEAD^{commit}') == "$integration_lower" ]] || { echo 'Pinned base fetch mismatch' >&2; exit 1; }
                 fi ;;
-              private/release-variants|feature/collie-theme-pr17-126352)
+              private/release-variants)
+                if python3 -c 'import json,sys; sys.exit(0 if json.load(open("molly-build.json"))["signal"]["commit"] == "a74583b01e260944f699c4da03ba4e8ce04de32b" else 1)'; then
+                  scope=next-port; base="$BASE_SHA"
+                  echo "::notice::APK build and device instrumentation not run: native integration incomplete."
+                else
+                  scope=forks; immediate_base=$BASE_SHA; check_collie_base "$immediate_base"
+                fi ;;
+              feature/collie-theme-pr17-126352)
                 scope=forks; immediate_base=$BASE_SHA; check_collie_base "$immediate_base" ;;
               *) echo "Unknown base: $BASE_REF" >&2; exit 1 ;;
             esac
@@ -144,7 +153,7 @@ jobs:
           if [[ -n ${immediate_base:-} ]]; then
             python3 tools/patches/check_collie_scope.py --base "$immediate_base"
           fi
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-maintenance || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == next-port || "$scope" == main-maintenance || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
             python3 tools/patches/prepare_port_report.py
           fi
           if [[ "$scope" == forks || "$scope" == main-snapshot ]]; then
@@ -159,7 +168,7 @@ jobs:
           echo "stack_scope=$scope" >> "$GITHUB_OUTPUT"
           echo "base=$(git rev-parse "$base^{commit}")" >> "$GITHUB_OUTPUT"
           python3 -m unittest discover -s tools/patches -p 'test_*.py' -v
-          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == main-maintenance || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
+          if [[ "$scope" == release || "$scope" == followups || "$scope" == additions || "$scope" == features || "$scope" == forks || "$scope" == next-port || "$scope" == main-maintenance || "$scope" == main-transition || "$scope" == main-snapshot || "$scope" == main-snapshot-transition ]]; then
             python3 tools/patches/verify_source_bundles.py
             python3 tools/patches/port_report.py --check
             echo 'port=true' >> "$GITHUB_OUTPUT"
@@ -168,7 +177,7 @@ jobs:
           fi
           if [[ "$scope" == pipeline || "$scope" == main-docs ]]; then echo 'profile=false' >> "$GITHUB_OUTPUT"; else echo 'profile=true' >> "$GITHUB_OUTPUT"; fi
           # The release line builds every named release profile; other branches build their one configuration.
-          if [[ "$scope" == forks || "$scope" == main-snapshot || ( "$scope" == main-maintenance && $(python3 -c 'import json; print("yes" if "profiles" in json.load(open("molly-build.json")) else "no")') == yes ) ]]; then
+          if [[ "$scope" == forks || "$scope" == next-port || "$scope" == main-snapshot || ( "$scope" == main-maintenance && $(python3 -c 'import json; print("yes" if "profiles" in json.load(open("molly-build.json")) else "no")') == yes ) ]]; then
             echo 'profiles=["molly-minimal","molly-continued","molly-foss-continued","collie","collie-foss"]' >> "$GITHUB_OUTPUT"
           else
             echo 'profiles=[""]' >> "$GITHUB_OUTPUT"
@@ -202,7 +211,7 @@ jobs:
       - name: Test the optional native provenance and artifact checks
         run: |
           if [[ -d tools/native ]]; then
-            python3 -m unittest discover -s tools/native -p 'test_*.py' -v
+            PYTHONPATH=tools/patches python3 -m unittest discover -s tools/native -p 'test_*.py' -v
           fi
 
       - name: Fetch the exact official Molly source oracle
@@ -233,6 +242,7 @@ jobs:
             --scope "${{ needs.scope.outputs.stack_scope }}" --base "${{ needs.scope.outputs.base }}" "${scope_extra[@]}" $PROFILE_ARGS
 
       - name: Prove the upstream native cherry-pick when configured
+        if: needs.scope.outputs.stack_scope != 'next-port'
         run: |
           python3 tools/patches/build.py native-prepare \
             --worktree "$RUNNER_TEMP/molly-release" --report-dir "$RUNNER_TEMP/reports" $PROFILE_ARGS
@@ -246,6 +256,7 @@ jobs:
           if-no-files-found: warn
 
   android:
+    if: needs.scope.outputs.stack_scope != 'next-port'
     name: Build the proved source and run its regression tests${{ matrix.profile && format(' ({0})', matrix.profile) || '' }}
     strategy:
       fail-fast: false

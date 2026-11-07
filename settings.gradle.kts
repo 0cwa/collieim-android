@@ -98,8 +98,6 @@ include(":app")
 // Core modules
 include(":core:util")
 include(":core:util-jvm")
-include(":core:models")
-include(":core:models-jvm")
 include(":core:network")
 include(":core:ui")
 include(":core:serialization")
@@ -128,6 +126,8 @@ include(":lib:archive")
 include(":lib:ui-components")
 include(":lib:signal-login")
 include(":lib:password-manager")
+include(":lib:storage")
+include(":lib:remote-config")
 
 // Feature modules
 include(":feature:app-settings")

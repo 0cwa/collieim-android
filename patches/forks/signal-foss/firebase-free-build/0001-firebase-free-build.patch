@@ -1,4 +1,4 @@
-From 924a6d02c4926257a1c124a5c9bb789318cc2616 Mon Sep 17 00:00:00 2001
+From 49bda76d57e78957dfc7bed00cd11f4b17584b08 Mon Sep 17 00:00:00 2001
 From: 0cwa <0@none.org>
 Date: Mon, 2 Nov 2026 04:05:28 +0100
 Subject: [PATCH] Add a Firebase-free build while preserving push choices
@@ -14,8 +14,7 @@ This layer uses Molly's own open-source services instead of that commit's
 stub library.
 
 Inspired-by: Angus Turnbull <github@twinhelix.com>
-
-Source-Commit: 924a6d02c4926257a1c124a5c9bb789318cc2616
+Source-Commit: 49bda76d57e78957dfc7bed00cd11f4b17584b08
 
 ---
  app/build.gradle.kts                          | 17 ++++-
@@ -47,10 +46,10 @@ Source-Commit: 924a6d02c4926257a1c124a5c9bb789318cc2616
  create mode 100644 app/src/test/java/org/thoughtcrime/securesms/gcm/PushFetchHandlerTest.kt
 
 diff --git a/app/build.gradle.kts b/app/build.gradle.kts
-index ae94bb43..63af7536 100644
+index cc5e6d122c..585461af8d 100644
 --- a/app/build.gradle.kts
 +++ b/app/build.gradle.kts
-@@ -45,6 +45,7 @@ val selectableVariants = listOf(
+@@ -46,6 +46,7 @@ val selectableVariants = listOf(
  
  // Override build config via env vars when project property 'CI' is set
  val ciEnabled = project.hasProperty("CI")
@@ -58,7 +57,7 @@ index ae94bb43..63af7536 100644
  
  val baseAppTitle = getCiEnv("CI_APP_TITLE") ?: properties["baseAppTitle"] as String
  val baseAppFileName = getCiEnv("CI_APP_FILENAME") ?: properties["baseAppFileName"] as String
-@@ -111,6 +112,7 @@ android {
+@@ -112,6 +113,7 @@ android {
    }
  
    sourceSets {
@@ -66,7 +65,7 @@ index ae94bb43..63af7536 100644
      getByName("test") {
        kotlin.directories += "src/testShared"
        java.directories += "src/testShared"
-@@ -340,6 +342,11 @@ android {
+@@ -341,6 +343,11 @@ android {
      }
    }
  
@@ -78,7 +77,7 @@ index ae94bb43..63af7536 100644
    lint {
      abortOnError = true
      baseline = file("lint-baseline.xml")
-@@ -470,7 +477,7 @@ dependencies {
+@@ -471,7 +478,7 @@ dependencies {
    implementation(libs.androidx.webkit)
    implementation(libs.androidx.paging.runtime)
    implementation(libs.androidx.paging.compose)
@@ -87,7 +86,7 @@ index ae94bb43..63af7536 100644
      exclude(group = "com.google.firebase", module = "firebase-core")
      exclude(group = "com.google.firebase", module = "firebase-analytics")
      exclude(group = "com.google.firebase", module = "firebase-measurement-connector")
-@@ -481,7 +488,13 @@ dependencies {
+@@ -482,7 +489,13 @@ dependencies {
      exclude(group = "com.google.android.gms", module = "play-services-stats")
      exclude(group = "com.google.android.gms", module = "play-services-tasks")
    }
@@ -104,7 +103,7 @@ index ae94bb43..63af7536 100644
    implementation(libs.conscrypt.android)
 diff --git a/app/src/firebase/AndroidManifest.xml b/app/src/firebase/AndroidManifest.xml
 new file mode 100644
-index 00000000..f942d443
+index 0000000000..f942d4433f
 --- /dev/null
 +++ b/app/src/firebase/AndroidManifest.xml
 @@ -0,0 +1,12 @@
@@ -124,7 +123,7 @@ diff --git a/app/src/main/java/org/thoughtcrime/securesms/gcm/FcmReceiveService.
 similarity index 79%
 rename from app/src/main/java/org/thoughtcrime/securesms/gcm/FcmReceiveService.java
 rename to app/src/firebase/java/org/thoughtcrime/securesms/gcm/FcmReceiveService.java
-index 601b9c6e..4f3038f6 100644
+index 601b9c6eba..4f3038f6fa 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/gcm/FcmReceiveService.java
 +++ b/app/src/firebase/java/org/thoughtcrime/securesms/gcm/FcmReceiveService.java
 @@ -1,10 +1,8 @@
@@ -194,7 +193,7 @@ diff --git a/app/src/main/java/org/thoughtcrime/securesms/gcm/FcmUtil.java b/app
 similarity index 90%
 rename from app/src/main/java/org/thoughtcrime/securesms/gcm/FcmUtil.java
 rename to app/src/firebase/java/org/thoughtcrime/securesms/gcm/FcmUtil.java
-index 445c56d9..2e3d1636 100644
+index 445c56d9fc..2e3d16366a 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/gcm/FcmUtil.java
 +++ b/app/src/firebase/java/org/thoughtcrime/securesms/gcm/FcmUtil.java
 @@ -23,6 +23,12 @@ public final class FcmUtil {
@@ -212,7 +211,7 @@ index 445c56d9..2e3d1636 100644
     */
 diff --git a/app/src/firebaseFree/java/org/thoughtcrime/securesms/gcm/FcmUtil.java b/app/src/firebaseFree/java/org/thoughtcrime/securesms/gcm/FcmUtil.java
 new file mode 100644
-index 00000000..293ea785
+index 0000000000..293ea785a7
 --- /dev/null
 +++ b/app/src/firebaseFree/java/org/thoughtcrime/securesms/gcm/FcmUtil.java
 @@ -0,0 +1,16 @@
@@ -233,10 +232,10 @@ index 00000000..293ea785
 +  public static void deleteInstallationForPrivacySettings() throws InterruptedException, ExecutionException {}
 +}
 diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
-index 11209f3c..8ce63bce 100644
+index f7218514a3..58c8a1a40e 100644
 --- a/app/src/main/AndroidManifest.xml
 +++ b/app/src/main/AndroidManifest.xml
-@@ -1338,14 +1338,6 @@
+@@ -1358,14 +1358,6 @@
              android:exported="false"
              android:foregroundServiceType="remoteMessaging" />
  
@@ -252,7 +251,7 @@ index 11209f3c..8ce63bce 100644
              android:name=".gcm.FcmJobService"
              android:exported="false"
 diff --git a/app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt b/app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt
-index f382303f..a0a22f6b 100644
+index f382303f15..a0a22f6bc3 100644
 --- a/app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt
 +++ b/app/src/main/java/im/molly/unifiedpush/receiver/UnifiedPushReceiver.kt
 @@ -1,8 +1,6 @@
@@ -283,10 +282,10 @@ index f382303f..a0a22f6b 100644
          }
        }
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
-index 1ab1dd02..6ec10db6 100644
+index a2d200020a..be255a9d63 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
 +++ b/app/src/main/java/org/thoughtcrime/securesms/ApplicationContext.java
-@@ -308,6 +308,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
+@@ -312,6 +312,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
      AppDependencies.getMegaphoneRepository().onAppForegrounded();
      AppDependencies.getDeadlockDetector().start();
      FcmFetchManager.onForeground(this);
@@ -294,7 +293,7 @@ index 1ab1dd02..6ec10db6 100644
  
      SignalExecutors.BOUNDED.execute(() -> {
        SealedSenderConstraint.refreshAndRotateIfNeeded();
-@@ -593,6 +594,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
+@@ -609,6 +610,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
          updateFcmStatus(false);
        } else {
          Log.d(TAG, "FCM is already disabled.");
@@ -303,10 +302,10 @@ index 1ab1dd02..6ec10db6 100644
        if (method == NotificationDeliveryMethod.UNIFIEDPUSH) {
          if (SignalStore.account().isLinkedDevice()) {
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettingsFragment.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettingsFragment.kt
-index 4e0b6134..0fa08f27 100644
+index 08e46edba4..63adf09383 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettingsFragment.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationsSettingsFragment.kt
-@@ -71,6 +71,7 @@ import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRout
+@@ -72,6 +72,7 @@ import org.signal.appsettings.routes.AppSettingsRoute
  import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRouter
  import org.thoughtcrime.securesms.components.settings.models.Banner
  import org.thoughtcrime.securesms.events.PushServiceEvent
@@ -314,7 +313,7 @@ index 4e0b6134..0fa08f27 100644
  import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
  import org.thoughtcrime.securesms.notifications.NotificationChannels
  import org.thoughtcrime.securesms.notifications.TurnOnNotificationsBottomSheet
-@@ -779,13 +780,7 @@ fun NotificationsSettingsScreen(
+@@ -780,13 +781,7 @@ fun NotificationsSettingsScreen(
          )
        }
  
@@ -329,7 +328,7 @@ index 4e0b6134..0fa08f27 100644
  
        val showAlertIcon = when (state.preferredNotificationMethod) {
          NotificationDeliveryMethod.FCM -> !state.canReceiveFcm
-@@ -831,6 +826,15 @@ fun NotificationsSettingsScreen(
+@@ -832,6 +827,15 @@ fun NotificationsSettingsScreen(
    }
  }
  
@@ -346,7 +345,7 @@ index 4e0b6134..0fa08f27 100644
  private fun getWhileMutedString(state: NotificationsSettingsState): String {
    val body = mutableListOf<String>()
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/privacy/advanced/AdvancedPrivacySettingsRepository.kt b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/privacy/advanced/AdvancedPrivacySettingsRepository.kt
-index e7e2f5b9..034f613b 100644
+index e7e2f5b9ef..034f613b1a 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/privacy/advanced/AdvancedPrivacySettingsRepository.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/components/settings/app/privacy/advanced/AdvancedPrivacySettingsRepository.kt
 @@ -1,7 +1,5 @@
@@ -376,7 +375,7 @@ index e7e2f5b9..034f613b 100644
      } catch (ioe: IOException) {
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/gcm/PushFetchHandler.java b/app/src/main/java/org/thoughtcrime/securesms/gcm/PushFetchHandler.java
 new file mode 100644
-index 00000000..7ba9a7cf
+index 0000000000..7ba9a7cfa0
 --- /dev/null
 +++ b/app/src/main/java/org/thoughtcrime/securesms/gcm/PushFetchHandler.java
 @@ -0,0 +1,26 @@
@@ -407,7 +406,7 @@ index 00000000..7ba9a7cf
 +  }
 +}
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/jobs/FcmRefreshJob.java b/app/src/main/java/org/thoughtcrime/securesms/jobs/FcmRefreshJob.java
-index 97923510..83642d81 100644
+index 9792351049..83642d8171 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/jobs/FcmRefreshJob.java
 +++ b/app/src/main/java/org/thoughtcrime/securesms/jobs/FcmRefreshJob.java
 @@ -73,6 +73,13 @@ public class FcmRefreshJob extends BaseJob {
@@ -436,10 +435,10 @@ index 97923510..83642d81 100644
        boolean wasFcmTokenSet = SignalStore.account().getFcmTokenLastSetTime() > 0;
        if (wasFcmTokenSet) {
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/AccountValues.kt b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/AccountValues.kt
-index 91942f27..36fc81f5 100644
+index 39cb488446..89955b92c2 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/AccountValues.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/AccountValues.kt
-@@ -460,7 +460,7 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
+@@ -470,7 +470,7 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
    var fcmEnabled: Boolean by booleanValue(KEY_FCM_ENABLED, false)
  
    val canReceiveFcm: Boolean
@@ -449,13 +448,13 @@ index 91942f27..36fc81f5 100644
    @get:JvmName("isPushAvailable")
    val pushAvailable: Boolean
 diff --git a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt
-index 097ace05..c65f160f 100644
+index f2dc186b36..496e495605 100644
 --- a/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt
 +++ b/app/src/main/java/org/thoughtcrime/securesms/keyvalue/SettingsValues.kt
-@@ -14,6 +14,7 @@ import org.signal.core.util.logging.Log
+@@ -23,6 +23,7 @@ import org.signal.storage.keyvalue.stringValue
+ import org.signal.storage.protos.SignalStoreList
  import org.thoughtcrime.securesms.R
  import org.thoughtcrime.securesms.backup.proto.SharedPreference
- import org.thoughtcrime.securesms.database.model.databaseprotos.SignalStoreList
 +import org.thoughtcrime.securesms.gcm.FcmUtil
  import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference
  import org.thoughtcrime.securesms.util.DynamicTheme
@@ -466,7 +465,7 @@ index 097ace05..c65f160f 100644
      get() {
 -      return if (store.containsKey(MOLLY_NOTIFICATION_METHOD)) {
 +      val method = if (store.containsKey(MOLLY_NOTIFICATION_METHOD)) {
-         NotificationDeliveryMethod.deserialize(getString(MOLLY_NOTIFICATION_METHOD, NotificationDeliveryMethod.FCM.serialize()))
+         NotificationDeliveryMethod.deserialize(getString(MOLLY_NOTIFICATION_METHOD, NotificationDeliveryMethod.FCM.serialize()) ?: NotificationDeliveryMethod.FCM.serialize())
        } else if (SignalStore.account.fcmEnabled) {
          NotificationDeliveryMethod.FCM
        } else {
@@ -483,7 +482,7 @@ index 097ace05..c65f160f 100644
        putString(MOLLY_NOTIFICATION_METHOD, value.serialize())
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationMethodsTest.kt b/app/src/test/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationMethodsTest.kt
 new file mode 100644
-index 00000000..d22c92b3
+index 0000000000..4176acf26c
 --- /dev/null
 +++ b/app/src/test/java/org/thoughtcrime/securesms/components/settings/app/notifications/NotificationMethodsTest.kt
 @@ -0,0 +1,74 @@
@@ -501,9 +500,9 @@ index 00000000..d22c92b3
 +import org.junit.Test
 +import org.signal.core.util.logging.Log
 +import org.thoughtcrime.securesms.gcm.FcmUtil
-+import org.thoughtcrime.securesms.keyvalue.KeyValueDataSet
-+import org.thoughtcrime.securesms.keyvalue.KeyValueStore
-+import org.thoughtcrime.securesms.keyvalue.MockKeyValuePersistentStorage
++import org.signal.storage.keyvalue.KeyValueDataSet
++import org.signal.storage.keyvalue.KeyValueStore
++import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
 +import org.thoughtcrime.securesms.keyvalue.SettingsValues
 +import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 +import org.thoughtcrime.securesms.testutil.DirectExecutor
@@ -563,7 +562,7 @@ index 00000000..d22c92b3
 +}
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/gcm/FirebaseClasspathTest.kt b/app/src/test/java/org/thoughtcrime/securesms/gcm/FirebaseClasspathTest.kt
 new file mode 100644
-index 00000000..9fc11598
+index 0000000000..9fc1159812
 --- /dev/null
 +++ b/app/src/test/java/org/thoughtcrime/securesms/gcm/FirebaseClasspathTest.kt
 @@ -0,0 +1,32 @@
@@ -601,7 +600,7 @@ index 00000000..9fc11598
 +}
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/gcm/PushFetchHandlerTest.kt b/app/src/test/java/org/thoughtcrime/securesms/gcm/PushFetchHandlerTest.kt
 new file mode 100644
-index 00000000..9d03eabf
+index 0000000000..9d03eabf3b
 --- /dev/null
 +++ b/app/src/test/java/org/thoughtcrime/securesms/gcm/PushFetchHandlerTest.kt
 @@ -0,0 +1,31 @@
@@ -637,7 +636,7 @@ index 00000000..9d03eabf
 +  }
 +}
 diff --git a/app/src/test/java/org/thoughtcrime/securesms/jobs/FcmRefreshJobTest.kt b/app/src/test/java/org/thoughtcrime/securesms/jobs/FcmRefreshJobTest.kt
-index 922fc601..072d1677 100644
+index 922fc601e7..072d1677c3 100644
 --- a/app/src/test/java/org/thoughtcrime/securesms/jobs/FcmRefreshJobTest.kt
 +++ b/app/src/test/java/org/thoughtcrime/securesms/jobs/FcmRefreshJobTest.kt
 @@ -13,6 +13,8 @@ import io.mockk.every

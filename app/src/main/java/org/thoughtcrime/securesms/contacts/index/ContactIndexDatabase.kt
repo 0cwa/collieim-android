@@ -25,10 +25,10 @@ import org.signal.core.util.requireLongOrNull
 import org.signal.core.util.requireNonNullString
 import org.signal.core.util.requireString
 import org.signal.core.util.toInt
-import org.thoughtcrime.securesms.crypto.DatabaseSecret
-import org.thoughtcrime.securesms.database.SqlCipherDatabaseHook
+import org.signal.storage.database.DatabaseSecret
+import org.signal.storage.database.SqlCipherDatabaseHook
+import org.signal.storage.database.SqlCipherLibraryLoader
 import org.thoughtcrime.securesms.database.SqlCipherDeletingErrorHandler
-import org.thoughtcrime.securesms.database.SqlCipherLibraryLoader
 import java.util.concurrent.atomic.AtomicLong
 
 /**
@@ -61,7 +61,7 @@ class ContactIndexDatabase private constructor(
 ) : SQLiteOpenHelper(
   application,
   indexFileName,
-  databaseSecret.asString(),
+  databaseSecret.asHex(),
   null,
   DATABASE_VERSION,
   0,
@@ -158,7 +158,7 @@ class ContactIndexDatabase private constructor(
 
       val name = "$FILE_PREFIX$RUN_ID-${instanceCounter.incrementAndGet()}$FILE_SUFFIX"
 
-      return ContactIndexDatabase(application, name, DatabaseSecret(Util.getSecretBytes(KEY_SIZE)))
+      return ContactIndexDatabase(application, name, DatabaseSecret.fromBytes(Util.getSecretBytes(KEY_SIZE)))
     }
 
     private fun deleteDatabaseFile(application: Application, databaseName: String) {

@@ -516,22 +516,22 @@ the tools. A profile's tests are derived, not listed: they are `android.tests`
 plus every unit test class that a selected fork layer's mailbox adds or
 changes (`<module>/src/test/{java,kotlin}/...`), added to the filters of that
 module's existing test task. A task that already runs unfiltered is left as
-is; a fork test in a module without a test task, or an instrumented or
-screenshot test source, is an error. The derived tests and Firebase selection
+is; a fork test in a module without a test task, or an unsupported test source, is an error.
+Instrumented sources are recorded separately for the device test gate. The derived tests and Firebase selection
 are part of the source proof fingerprint.
 
-Minimal selects the verified port prefix ending at
-`followups/network-initialization-cycle`; the other products select the
-prefix ending at `followups/unifiedpush-registration-retry`. Continued products
-without fork features have an empty `fork_series`. Molly FOSS Continued adds
-`patches/forks/signal-foss/firebase-free-build/series`; Collie and Collie FOSS
-append `patches/forks/signal-foss/retention-controls/series` and
-`patches/forks/signal-foss/retention-controls-fixes/series` and
-`patches/forks/signal-foss/collie-icon/series` and
-`patches/forks/signal-foss/collie-branding/series`. These layers supply Collie launcher artwork and the Collie theme and app identity. Firebase is
-selected only for Molly FOSS Continued and Collie FOSS. Each profile also sets its
-app title, backup file name and package ID (`release_profiles.APP`): all five
-use `im.collie.app` and retain their individual profile titles and backup names.
+All five profiles select the verified port prefix ending at
+`followups/view-once-open-guard`, followed by the same six fork layers:
+`firebase-free-build`, `collie-icon`, `collie-branding`, `collie-visuals`,
+`restore-picker`, and `notification-default`. The identity layers provide
+Collie launcher artwork, app identity and visual styling. The restore picker
+recognizes timestamped backups in a selected folder, and the final layer changes
+the fallback for an unset notification-content preference.
+For profile-specific source proofs, the two FOSS profiles set the Firebase-free
+build flag; the other three retain FCM-capable build configuration. The
+single-APK release mode described below uses one FCM-capable profile. All use the `im.collie.app` package and keep
+their existing profile-specific backup file names (`release_profiles.APP`).
+The former retention-control layers are not selected.
 
 Fork profiles also require `fork_source` in `molly-build.json` with the original
 fork `url` and `head` pins. The independent `patches/forks/signal-foss/provenance.json` records schema 1,
@@ -668,6 +668,24 @@ tests do not block unsigned APK collection; disclose failures and missing runs.
 
 ## Publishing a release
 
+For the Signal 8.35.1 single-Collie release, use the reviewed local build path:
+reconstruct and prove the `collie` profile, stage the pinned native artifacts,
+and build one unsigned release APK with the explicit trusted-local native option.
+This uses the local builder and caches; it is not an independent reproducibility
+claim. Run `release_collect.py --single-collie` with that file named
+`unsigned/collie.apk`. The resulting manifest identifies `collie` as the sole
+source profile and records the five compatibility filenames as aliases. The
+signer checks and signs the one input once, copies the signed bytes to all five
+names, and verifies each copy. The publisher verifies identical hashes and the
+signed-to-unsigned provenance before creating a draft. The commit-bound
+instrumentation assessment described below remains required for signing.
+
+All five aliases contain the same FCM-capable Collie APK, including filenames
+that formerly denoted FOSS variants. This path does not migrate notification
+preferences or legacy backup names; users must be told about those differences.
+The hosted five-profile workflow below is retained for historical releases and
+remains blocked for the 8.35.1 port.
+
 This flow builds five unsigned APKs on CI and signs them offline. The additional
 `.github/workflows/molly-unsigned-release.yml` is a new Signal-tree workflow
 exception and requires contributor approval before propagation. The release
@@ -693,6 +711,9 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
 
 1. Approve the full release-line commit, version name and a version code higher
    than every previously published code, and the expected certificate digest.
+   The validator rejects Collie codes at or below the verified RC3 code
+   `177203`. This fixed floor does not check later releases: compare against
+   all published releases, including prereleases, before approving a code.
    Dispatch **Build unsigned release** on that commit with these inputs. The
    dispatch requires the workflow revision and selected commit to match. Review
    the environment approval and wait for all five source proofs, assemblies and
@@ -721,15 +742,38 @@ as `MOLLY_KEYSTORE`, `MOLLY_KEY_ALIAS`, and, optionally,
    and any offline verification material beforehand. The current workflow does
    not itself create attestations, so the authenticated artifact digest is
    required.
-3. On the offline signing machine, use the manifest's pinned Android SDK
-   build-tools directory and run:
+3. On the offline signing machine, prepare an `instrumentation.json` checklist
+   for the exact approved commit. Set `status` to `passed`, `failed`, or
+   `not run`. For `passed`, supply evidence identifying the tested profiles,
+   suites and results. For `failed` or `not run`, supply the maintainer's reason
+   for accepting the gap; include evidence if available. The signer displays
+   this maintainer-provided record before signing and copies it into the final
+   manifest. It does not independently verify the evidence. Do not include
+   secrets or private user data in this record, which may be published.
+   The publisher also checks this record against the approved commit before
+   creating or publishing a draft. Already-published historical releases are
+   unaffected. An older draft whose final manifest lacks the record must be
+   replaced with newly generated, signed artifacts and manifest; do not alter
+   existing immutable release assets.
+
+   ```json
+   {"commit":"FULL_APPROVED_COMMIT_SHA", "status":"not run", "evidence":"", "reason":"Document the accepted test gap"}
+   ```
+
+   Use the manifest's pinned Android SDK build-tools directory and run:
 
    ```sh
    python3 tools/patches/release_sign.py \
      --manifest unsigned/manifest.json --manifest-sha256 MANIFEST_SHA256 \
      --approved-commit COMMIT --approved-run RUN_ID --certificate-sha256 CERT_SHA256 \
-     --apks unsigned --output signed --build-tools "$ANDROID_HOME/build-tools/VERSION" --scratch SCRATCH
+     --apks unsigned --output signed --build-tools "$ANDROID_HOME/build-tools/VERSION" --scratch SCRATCH \
+     --instrumentation-checklist instrumentation.json
    ```
+
+   For an existing local wrapper that does not forward this flag, explicitly
+   set `COLLIE_INSTRUMENTATION_CHECKLIST` to the same JSON file before starting
+   the wrapper. The command-line flag takes precedence if both are supplied.
+   A missing record is never treated as a passed run.
 
    The output directory must not already exist. The signer verifies hashes and
    metadata, aligns and signs the APKs, checks the certificate and v2/v3
@@ -771,3 +815,7 @@ If a published immutable release is bad, issue a new tag with a higher version
 code. Before shipping the replacement, check that database migrations and data
 written by the bad version are compatible with the replacement. Do not rely on
 an Android downgrade as recovery.
+
+Signal 8.35.1 release assembly is deliberately blocked in `tools/patches/build.py` until the native integration and complete port report have been reviewed. Debug assembly and non-release tests remain available. The block applies to every profile and scope through that build driver; direct Gradle commands (including the inherited Docker reproducibility workflow) do not use the driver and must not be treated as approved release artifacts. Removing the block requires a reviewed change that establishes the native and report evidence.
+
+A Signal 8.35.1 candidate PR targets `private/release-variants` at the pinned `7d486880ddc991af0d36f1e4709030255ef4dbad` base. Its patch workflow selects `next-port`, checks the pinned profile composition and reconstructs all five products. Android build, native preparation and instrumentation jobs remain skipped until native integration is ready. Other PRs keep their existing scope routes. This route does not authorize release assembly; the 8.35.1 release stop above still applies. Moving the candidate to `main` requires a separately reviewed ancestry and projection plan.

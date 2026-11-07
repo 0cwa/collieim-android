@@ -1,8 +1,10 @@
 name: Update Screenshots
 
 # Regenerates Compose screenshot reference images on Linux (matching the renderer used by Android CI)
-# and commits them to the branch. Trigger it by commenting `!screenshots` on a pull request, or with
-# `gh workflow run update-screenshots.yml --ref <branch>`.
+# and commits them to the branch. Dispatch it on the candidate branch with
+# `gh workflow run update-screenshots.yml --ref <branch>` after reviewing that
+# branch's workflow and source. A `!screenshots` PR comment provides dispatch
+# instructions; comment-triggered runs never execute candidate code.
 
 on:
   workflow_dispatch:
@@ -23,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      contents: read # to resolve the candidate without executing it
       pull-requests: write # to react to the comment
 
     outputs:
@@ -30,12 +33,6 @@ jobs:
       sha: ${{ steps.branch.outputs.sha }}
 
     steps:
-    - name: Acknowledge comment
-      if: ${{ github.event_name == 'issue_comment' }}
-      env:
-        GH_TOKEN: ${{ github.token }}
-      run: gh api "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=rocket
-
     - name: Resolve branch
       id: branch
       env:
@@ -45,7 +42,15 @@ jobs:
         REF_TYPE: ${{ github.ref_type }}
         SHA: ${{ github.sha }}
         PR_NUMBER: ${{ github.event.issue.number }}
+        REQUESTER: ${{ github.event.comment.user.login || github.actor }}
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
       run: |
+        set -euo pipefail
+        permission="$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$REQUESTER/permission" --jq '.permission')"
+        case "$permission" in
+          admin|maintain|write) ;;
+          *) echo 'Screenshot updates require repository write permission.' >&2; exit 1 ;;
+        esac
         case "$EVENT_NAME" in
           workflow_dispatch)
             if [ "$REF_TYPE" != "branch" ]; then
@@ -55,45 +60,101 @@ jobs:
             BRANCH="$REF_NAME"
             ;;
           issue_comment)
-            PR="$(gh pr view "$PR_NUMBER" --repo "${{ github.repository }}" --json isCrossRepository,headRefName,headRefOid,state)"
-            if [ "$(jq -r .isCrossRepository <<< "$PR")" = "true" ]; then
+            PR="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")"
+            if [ "$(jq -r .head.repo.full_name <<< "$PR")" != "$GITHUB_REPOSITORY" ]; then
               echo "Refusing to update screenshots for a pull request from a fork."
               exit 1
             fi
-            if [ "$(jq -r .state <<< "$PR")" != "OPEN" ]; then
+            if [ "$(jq -r .state <<< "$PR")" != "open" ]; then
               echo "Refusing to update screenshots for a pull request that is not open."
               exit 1
             fi
-            BRANCH="$(jq -r .headRefName <<< "$PR")"
-            SHA="$(jq -r .headRefOid <<< "$PR")"
+            BRANCH="$(jq -r .head.ref <<< "$PR")"
+            SHA="$(jq -r .head.sha <<< "$PR")"
             ;;
+          *) exit 1 ;;
         esac
 
-        if [ "$BRANCH" = "main" ] || [[ "$BRANCH" == 8.* ]]; then
+        git check-ref-format "refs/heads/$BRANCH"
+        [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]
+        if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "$DEFAULT_BRANCH" ] || [[ "$BRANCH" == 8.* ]]; then
           echo "Refusing to push screenshots directly to $BRANCH."
           exit 1
         fi
 
-        echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
-        echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+        printf 'name=%s\nsha=%s\n' "$BRANCH" "$SHA" >> "$GITHUB_OUTPUT"
 
-  update:
+    - name: Acknowledge comment
+      if: ${{ github.event_name == 'issue_comment' }}
+      env:
+        GH_TOKEN: ${{ github.token }}
+        COMMENT_ID: ${{ github.event.comment.id }}
+      run: gh api "repos/$GITHUB_REPOSITORY/issues/comments/$COMMENT_ID/reactions" -f content=rocket
+
+    - name: Explain branch-scoped screenshot dispatch
+      if: ${{ github.event_name == 'issue_comment' }}
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ github.event.issue.number }}
+        BRANCH: ${{ steps.branch.outputs.name }}
+      run: |
+        python3 - <<'PY' > "$RUNNER_TEMP/screenshot-dispatch.md"
+        import os
+        import shlex
+
+        command = shlex.join([
+            "gh", "workflow", "run", "update-screenshots.yml",
+            "--repo", os.environ["GITHUB_REPOSITORY"],
+            "--ref", os.environ["BRANCH"],
+        ])
+        print("Screenshot generation requires a workflow dispatch on the candidate branch.")
+        print("After reviewing that branch's workflow and source, run:")
+        print("\n```sh\n" + command + "\n```")
+        print("\nThe dispatch builds the branch's then-current commit and rejects publication if the branch subsequently moves.")
+        print("Comment-triggered runs only provide these instructions, so candidate code cannot access default-branch runner credentials.")
+        PY
+        gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/screenshot-dispatch.md"
+
+  generate:
     needs: resolve
+    # A workflow_dispatch uses the selected branch's runtime/cache scope.
+    # issue_comment always uses the default branch's scope, even if a different
+    # commit is checked out, and must never execute candidate build scripts.
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref_type == 'branch' &&
+      github.ref_name != github.event.repository.default_branch &&
+      github.ref_name != 'main' &&
+      !startsWith(github.ref_name, '8.')
 
     runs-on: ubuntu-latest-8-cores
 
     permissions:
-      contents: write # to push the updated reference images
+      contents: read
+
+    timeout-minutes: 60
+
+    outputs:
+      artifact_id: ${{ steps.screenshots.outputs.artifact-id }}
 
     concurrency:
-      group: update-screenshots-${{ needs.resolve.outputs.branch }}
+      group: generate-screenshots-${{ needs.resolve.outputs.branch }}
       cancel-in-progress: true
 
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      # gh api repos/actions/checkout/commits/v7.0.1 --jq '.sha'
+    - name: Check out the workflow helper
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
-        ref: ${{ needs.resolve.outputs.sha }}
+        ref: ${{ github.workflow_sha }}
+        path: workflow
+        sparse-checkout: .github/scripts
+        persist-credentials: false
+
+    - name: Check out the immutable dispatched candidate
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        ref: ${{ github.sha }}
+        path: source
         submodules: true
         lfs: true
         persist-credentials: false
@@ -113,34 +174,32 @@ jobs:
       uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
       # gh api repos/gradle/actions/commits/v6 --jq '.sha'
       with:
-        cache-read-only: true
-        cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+        # This runner executes candidate code. Do not expose private cache keys
+        # or save candidate-controlled cache entries for privileged workflows.
+        cache-disabled: true
 
     - name: Update screenshots
+      working-directory: source
       env:
-        SIGNAL_BUILD_CACHE_URL: ${{ secrets.SIGNAL_BUILD_CACHE_URL }}
-        SIGNAL_BUILD_CACHE_USER: ${{ secrets.SIGNAL_BUILD_CACHE_USER }}
-        SIGNAL_BUILD_CACHE_PASSWORD: ${{ secrets.SIGNAL_BUILD_CACHE_PASSWORD }}
         SIGNAL_BUILD_CACHE_PUSH: false
       run: ./gradlew updateScreenshots
 
-    - name: Commit and push
+    - name: Collect screenshot data
       env:
-        BRANCH: ${{ needs.resolve.outputs.branch }}
-        GH_TOKEN: ${{ github.token }}
+        BASE_SHA: ${{ needs.resolve.outputs.sha }}
       run: |
-        git add -A -- ':(glob)**/src/screenshotTest*/reference/**'
-        if git diff --cached --quiet; then
-          echo "Screenshots are already up to date."
-          exit 0
-        fi
-        git diff --cached --stat
-        git config user.name "github-actions[bot]"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git commit -m "Update screenshot reference images."
+        python3 workflow/.github/scripts/screenshot_artifacts.py collect \
+          --repository source --base-sha "$BASE_SHA" \
+          --output "$RUNNER_TEMP/screenshots/screenshot-changes.json"
 
-        AUTH_HEADER="http.${{ github.server_url }}/.extraheader=AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-        git -c "$AUTH_HEADER" push origin "HEAD:refs/heads/$BRANCH"
+    - name: Upload screenshot data
+      id: screenshots
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+      with:
+        name: screenshot-changes-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/screenshots/screenshot-changes.json
+        if-no-files-found: error
+        retention-days: 7
 
     - name: Archive reports for failed build
       if: ${{ failure() }}
@@ -149,12 +208,49 @@ jobs:
       with:
         name: reports
         path: |
-          **/build/reports
-          **/build/test-results
+          source/**/build/reports
+          source/**/build/test-results
         if-no-files-found: ignore
 
+  publish:
+    needs: [resolve, generate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      actions: read # to read only this run's immutable artifact
+      contents: write # to upload LFS objects and append the screenshot commit
+      pull-requests: read # to recheck that the requested PR is still open
+
+    concurrency:
+      group: publish-screenshots-${{ needs.resolve.outputs.branch }}
+      cancel-in-progress: false
+
+    steps:
+    - name: Check out only the workflow's trusted publication helper
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        ref: ${{ github.workflow_sha }}
+        sparse-checkout: .github/scripts
+        persist-credentials: false
+
+    - name: Validate data and publish with an exact branch lease
+      env:
+        GH_TOKEN: ${{ github.token }}
+        BRANCH: ${{ needs.resolve.outputs.branch }}
+        BASE_SHA: ${{ needs.resolve.outputs.sha }}
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        ARTIFACT_ID: ${{ needs.generate.outputs.artifact_id }}
+        PR_NUMBER: ${{ github.event.issue.number }}
+      run: |
+        python3 .github/scripts/screenshot_artifacts.py publish \
+          --repository "$GITHUB_REPOSITORY" --branch "$BRANCH" \
+          --base-sha "$BASE_SHA" --protected-branch "$DEFAULT_BRANCH" \
+          --artifact-id "$ARTIFACT_ID" --run-id "$GITHUB_RUN_ID" \
+          --attempt "$GITHUB_RUN_ATTEMPT" --pr-number "$PR_NUMBER"
+
   report-failure:
-    needs: [resolve, update]
+    needs: [resolve, generate, publish]
     if: ${{ failure() && github.event_name == 'issue_comment' }}
 
     runs-on: ubuntu-latest

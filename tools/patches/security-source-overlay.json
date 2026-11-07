@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "base_commit": "f6f68cdee08fb8d9acb6a866b1673deb10525f20",
+  "scope": "tracked-spinner-debug-viewer",
+  "release_reconstruction": "unchanged",
+  "files": [
+    {
+      "path": "lib/spinner/src/main/assets/js/main.js",
+      "mode": "100644",
+      "before_blob": "2195ce7ae7ac4c75f09e582696d328a9bc3e40d4",
+      "after_blob": "38016f4aa68b4bf68ab417843654ae337c720623"
+    },
+    {
+      "path": "lib/spinner/src/main/assets/query.hbs",
+      "mode": "100644",
+      "before_blob": "e24d3c9fefa9ef75cab3bc1407214cdda7cf5017",
+      "after_blob": "6a23a7ebbe6fe3913ffaa0214c619bde5a3beac7"
+    }
+  ]
+}

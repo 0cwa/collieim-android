@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "findings": [
+    {
+      "id": "manual-unsigned-source-build",
+      "language": "actions",
+      "rule": "actions/untrusted-checkout/medium",
+      "path": ".github/workflows/build-artifacts.yml",
+      "primary_location_line_hash": "c64ec7352e0ee3e3:1",
+      "source_sha256": "ce9965e2a1d4374b477b3b2fe32de9072645f8a1a67fb223247607e996a6208f",
+      "rationale": "This legacy workflow runs only on workflow_dispatch: a repository writer explicitly selects the source for an unsigned build on an ephemeral hosted runner. It has contents:read, does not persist checkout credentials, has no signing or repository-write credentials, and does not write to the shared Docker cache. Nightly builds still intentionally receive NIGHTLY_URL_PROD or NIGHTLY_URL_STAGING from repository secrets, so the dispatching maintainer must trust the selected source with those values. CodeQL flags the intentional inputs.ref checkout without modeling this manual boundary. Keep the raw finding visible; re-review any source, fingerprint, or location change."
+    }
+  ]
+}

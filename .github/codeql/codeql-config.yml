@@ -1,0 +1,6 @@
+name: Collie security analysis
+
+# This suite contains the default security queries and additional security checks.
+# Keep source paths and rule coverage intact; triage findings at their source.
+queries:
+  - uses: security-extended

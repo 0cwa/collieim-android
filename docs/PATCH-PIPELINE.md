@@ -1,6 +1,7 @@
 # Molly releases as patches on a Signal base
 
-The tracked application source on these branches is the exact Signal release.
+The tracked application source starts from the exact Signal release. Current
+main's explicit Spinner maintenance overlay is described below.
 The build reconstructs Molly in a separate worktree. Review the pipeline,
 the original Molly snapshot, and any compatibility changes as separate commits.
 
@@ -18,6 +19,26 @@ the original Molly snapshot, and any compatibility changes as separate commits.
 of the branch. The assembler rejects changes to the tracked Signal source
 outside the explicitly named pipeline, documentation, patch, and CI paths.
 An application edit cannot disappear behind a broad source projection.
+
+Current-main security maintenance is anchored to reviewed commit
+`f6f68cdee08fb8d9acb6a866b1673deb10525f20`. Its `main-maintenance` gate checks
+the entire head against that anchor, permits an exact list of security-tool,
+workflow and documentation files, and preserves the complete release
+configuration, patch trees and native inputs. The manifest
+`tools/patches/security-source-overlay.json` permits only two regular Spinner
+debug-viewer assets, with pinned original and replacement Git blobs and a
+manifest hash in `scope.py`. Other source edits, mode changes and missing
+replacements fail the gate. As with the historical validators, changes to
+PR-controlled validator code and its pins still require independent review.
+This deliberately narrow gate covers the reviewed security maintenance;
+broader future maintenance requires its own reviewed source boundary.
+
+This overlay repairs the tracked developer viewer; it is not a reconstructed
+release layer. Historical Signal/Molly inputs, profile target trees and source
+reconstruction remain unchanged. The gate reports `source_only: true` so CI
+retains the patch and source proofs without claiming a new Android or native
+build. Applying these fixes to a reconstructed Spinner build would require a
+separate reviewed layer and its resulting tree pin.
 
 `patches/molly` contains the original 65 mailbox patches in 16 review groups,
 covering 3,178 changed paths. Their bytes, source pins, ordering, binary

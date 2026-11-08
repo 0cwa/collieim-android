@@ -5,13 +5,16 @@ on:
     - cron: '0 2 * * *'  # daily at 02:00 UTC
   workflow_dispatch:
 
+# Grant each maintenance job only the permissions it uses.
+permissions: {}
+
 jobs:
   stale:
     runs-on: ubuntu-latest
     permissions:
       issues: write
       pull-requests: write
-      actions: write
+      actions: write # actions/stale uses the Actions cache to resume its saved state
 
     steps:
       - uses: actions/stale@1e223db275d687790206a7acac4d1a11bd6fe629 # v10

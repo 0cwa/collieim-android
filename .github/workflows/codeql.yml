@@ -1,0 +1,212 @@
+name: CodeQL
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '37 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  baseline:
+    name: Record current CodeQL alerts
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      security-events: read
+    steps:
+      - name: Check out audit tool
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          sparse-checkout: tools/codeql
+      - name: Snapshot main alerts and scan coverage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/codeql/snapshot.py --output "$RUNNER_TEMP/codeql-baseline.json"
+      - name: Retain alert inventory
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: codeql-baseline
+          path: ${{ runner.temp }}/codeql-baseline.json
+          if-no-files-found: error
+          retention-days: 14
+
+  analyze:
+    name: Analyze repository (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      # v4.39.3 supports this flag. Audit all source, including unchanged files;
+      # the report also rejects incrementalMode if an action upgrade changes it.
+      CODEQL_ACTION_DIFF_INFORMED_QUERIES: 'false'
+      CODEQL_OVERLAY_DATABASE_MODE: 'none'
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [actions, python, javascript-typescript, c-cpp]
+    steps:
+      - name: Check out the source under analysis
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          lfs: false
+      - name: Check out the immutable engineering audit tool
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: 0cwa/collie-release-engineering
+          ref: 3a20b1bda98afbc427e5dab126c1acb90d6742a4
+          path: policy
+          sparse-checkout: tools/codeql
+          persist-credentials: false
+      - name: Check out trusted review policy at the base revision
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: trusted-policy
+          sparse-checkout: .github/codeql
+          persist-credentials: false
+          lfs: false
+      - name: Record source identity and application coverage boundary
+        env:
+          ANALYSIS_LANGUAGE: ${{ matrix.language }}
+          UPLOAD_ENABLED: ${{ vars.CODEQL_ADVANCED_UPLOAD == 'true' }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          config = json.loads(Path('molly-build.json').read_text())
+          target = config['profiles']['collie']['target_tree']
+          evidence = {
+              'repository_commit': commit,
+              'repository_tree': tree,
+              'language': os.environ['ANALYSIS_LANGUAGE'],
+              'collie_application_tree': target,
+              'java_kotlin_analyzed': False,
+              'native_dependency_sources_analyzed': False,
+              'code_scanning_upload_enabled': os.environ['UPLOAD_ENABLED'] == 'true',
+          }
+          output = Path(os.environ['RUNNER_TEMP']) / 'codeql-evidence'
+          output.mkdir()
+          (output / 'source.json').write_text(json.dumps(evidence, indent=2) + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write(f"## Source coverage\n\nRepository commit: `{commit}`; tree: `{tree}`.\n\n")
+              summary.write(f"Collie application target: `{target}`.\n\n")
+              summary.write('**Java/Kotlin application coverage is blocked:** it requires reconstruction and a traced build with verified native artifacts. ')
+              summary.write('These jobs analyze repository tooling/assets and the checked-in C/C++ files; they do not analyze the reconstructed Android app or its native dependency sources.\n\n')
+              summary.write('SARIF upload: ' + ('enabled' if evidence['code_scanning_upload_enabled'] else 'staged; existing default setup remains responsible for GitHub alerts') + '.\n')
+          PY
+      - name: Install the pinned Android NDK
+        if: matrix.language == 'c-cpp'
+        id: ndk
+        run: |
+          revision="$(python3 - <<'PY'
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, 'tools/codeql')
+          from build_jni import configuration
+
+          print(configuration(Path.cwd())[0])
+          PY
+          )"
+          "${ANDROID_HOME:?}/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$revision"
+          printf 'path=%s/ndk/%s\n' "$ANDROID_HOME" "$revision" >> "$GITHUB_OUTPUT"
+      - name: Initialize CodeQL
+        id: init
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          # Keep query/tool upgrades reviewable with the action pin and Dependabot.
+          tools: linked
+          trap-caching: false
+          dependency-caching: false
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.language == 'c-cpp' && 'manual' || 'none' }}
+          config-file: ./.github/codeql/codeql-config.yml
+      - name: Compile JNI with real Android headers under CodeQL
+        if: matrix.language == 'c-cpp'
+        env:
+          NDK_PATH: ${{ steps.ndk.outputs.path }}
+        run: |
+          python3 tools/codeql/build_jni.py \
+            --ndk "$NDK_PATH" \
+            --output "$RUNNER_TEMP/codeql-jni"
+          cp "$RUNNER_TEMP/codeql-jni/build.json" "$RUNNER_TEMP/codeql-evidence/jni-build.json"
+      - name: Analyze and retain SARIF
+        id: analyze
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          category: /language:${{ matrix.language }}
+          output: ${{ runner.temp }}/codeql-sarif
+          # GitHub rejects advanced CodeQL uploads while default setup is active.
+          # Enable only after the migration steps in docs/CODEQL.md are complete.
+          upload: ${{ vars.CODEQL_ADVANCED_UPLOAD == 'true' && 'always' || 'never' }}
+          upload-database: false
+      - name: Check findings and extraction coverage
+        if: always() && !cancelled()
+        env:
+          ANALYSIS_LANGUAGE: ${{ matrix.language }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/codeql-evidence"
+          review_file=trusted-policy/.github/codeql/reviewed-findings.json
+          if [[ ! -f "$review_file" ]]; then
+            review_file="$RUNNER_TEMP/codeql-evidence/empty-reviews.json"
+            printf '%s\n' '{"schema":1,"reviews":[]}' > "$review_file"
+          fi
+          python3 policy/tools/codeql/report.py "$RUNNER_TEMP/codeql-sarif" \
+            --language "$ANALYSIS_LANGUAGE" \
+            --reviews "$review_file" --source-root . \
+            --output "$RUNNER_TEMP/codeql-evidence/audit.json" \
+            --summary "$RUNNER_TEMP/codeql-evidence/audit.md"
+      - name: Publish the audit summary
+        if: always() && !cancelled()
+        run: |
+          if [[ -f "$RUNNER_TEMP/codeql-evidence/audit.md" ]]; then
+            cat "$RUNNER_TEMP/codeql-evidence/audit.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Retain unmodified scan evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: codeql-${{ matrix.language }}
+          path: |
+            ${{ runner.temp }}/codeql-sarif
+            ${{ runner.temp }}/codeql-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+  tooling-tests:
+    name: Test CodeQL audit and security regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out test sources
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          lfs: false
+      - name: Run audit tests
+        run: python3 -m unittest discover -s tools/codeql -p 'test_*.py' -v
+      - name: Test Spinner rendering and script integrity
+        run: node --test tools/codeql/test_spinner.mjs
+      - name: Test the screenshot data publication boundary
+        run: python3 -m unittest discover -s .github/scripts -p test_screenshot_artifacts.py -v

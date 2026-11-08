@@ -262,6 +262,62 @@ MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
 MAIN_MAINTENANCE_BASE = 'f6f68cdee08fb8d9acb6a866b1673deb10525f20'
 MAIN_CLEAN_ENTRIES_BLOB = 'b06a83f6e4584f27811c3f406579b7db296f4b59'
 
+# Conditional prospective base: the local PR49 merge proposal adds only the
+# reviewed CodeQL policy bootstrap to app main. This pin is usable only after
+# that exact commit is the actual main; until then, CI must keep using current
+# main and this candidate must not be published as an updated PR48 head.
+# It does not grant a general source-edit exception: the release configuration,
+# patch forest, port/fork layers, native inputs, and reconstructed app tree stay
+# pinned to the reviewed release.
+CODEQL_MAIN_BASE = '9694af939eb3671f71eb53a277bea9608c8a2b32'
+CODEQL_APPLICATION_TREE = 'da5c03ff20ae2a672329eb8257bc33949845b268'
+CODEQL_MAINTENANCE_FILES = frozenset({
+    '.github/workflows/codeql.yml', '.github/codeql/codeql-config.yml',
+    '.github/codeql/reviewed-findings.json',
+    '.github/dependabot.yml', 'docs/CODEQL.md',
+    '.github/workflows/build-artifacts.yml', '.github/workflows/docker.yml',
+    '.github/workflows/stale.yml', '.github/workflows/molly-patch-release.yml',
+    'tools/patches/scope.py', 'tools/patches/test_codeql_scope.py',
+    'tools/patches/test_generated_stages.py',
+})
+CODEQL_ADDITIONAL_FILES = frozenset({
+    '.github/scripts/screenshot_artifacts.py',
+    '.github/scripts/test_screenshot_artifacts.py',
+    '.github/workflows/publish-screenshots.yml',
+    '.github/workflows/update-screenshots.yml',
+    '.github/workflows/sync.yml',
+    'docs/CODEQL-CONSOLIDATION.md',
+})
+CODEQL_TOOL_FILES = frozenset({
+    'tools/codeql/build_jni.py', 'tools/codeql/render_publication.py',
+    'tools/codeql/report.py', 'tools/codeql/snapshot.py',
+    'tools/codeql/test_build_jni.py', 'tools/codeql/test_render_publication.py',
+    'tools/codeql/test_report.py', 'tools/codeql/test_reviews.py',
+    'tools/codeql/test_snapshot.py', 'tools/codeql/test_spinner.mjs',
+})
+CODEQL_TEMPLATE_FILES = frozenset({
+    'tools/codeql/publication/codeql-config.yml',
+    'tools/codeql/publication/codeql.yml.in',
+    'tools/codeql/publication/publish-screenshots.yml.in',
+    'tools/codeql/publication/reviewed-findings.json',
+    'tools/codeql/publication/update-screenshots.yml.in',
+})
+# Spinner is retained as upstream development tooling in the repository, but
+# absent from the pinned Collie application tree above. These are the two
+# reviewed repository-only security corrections; no directory-wide source
+# exception is granted and release reconstruction still uses the pinned inputs.
+CODEQL_SPINNER_BLOB_MANIFEST = {
+    'lib/spinner/src/main/assets/js/main.js': (
+        '2195ce7ae7ac4c75f09e582696d328a9bc3e40d4',
+        'dcaad668a6f9c04f01b573fc08531a1a19befba3',
+    ),
+    'lib/spinner/src/main/assets/query.hbs': (
+        'e24d3c9fefa9ef75cab3bc1407214cdda7cf5017',
+        '64b60582740ab7aafa7fc29f9f483b0d732aabc8',
+    ),
+}
+CODEQL_REPOSITORY_OVERLAYS = frozenset(CODEQL_SPINNER_BLOB_MANIFEST)
+
 MAIN_PROJECTION_EXCEPTIONS = frozenset({
     '.github/FUNDING.yml', '.github/workflows/sync.yml',
     '.github/workflows/tagrelease.yml', '.github/workflows/retarget-main-prs.yml', 'README.md', 'SECURITY.md',
@@ -501,12 +557,96 @@ def main_docs_only(repo, base, head):
                for p in filter(None, changed))
 
 
+def codeql_maintenance_path(path):
+    """A bounded security-tooling path, not an application-source prefix."""
+    return (path in CODEQL_MAINTENANCE_FILES or path in CODEQL_ADDITIONAL_FILES or
+            path in CODEQL_TOOL_FILES or path in CODEQL_TEMPLATE_FILES or
+            path in CODEQL_REPOSITORY_OVERLAYS)
+
+
+def main_codeql_only(repo, base, head):
+    """Recognize the narrow CodeQL maintenance diff; validation is separate."""
+    changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', base, head).split(b'\0')
+    return all(codeql_maintenance_path(p.decode('utf-8', 'surrogateescape'))
+               for p in filter(None, changed))
+
+
+def check_codeql_source_tree(repo, tree):
+    """Verify the actual reconstructed tree and absence of repository overlays."""
+    actual = git(repo, 'rev-parse', '--verify', tree + '^{tree}').decode().strip()
+    if actual != CODEQL_APPLICATION_TREE:
+        raise ValueError('CodeQL reconstructed application tree differs from PR38')
+    for path in sorted(CODEQL_REPOSITORY_OVERLAYS):
+        if git(repo, 'ls-tree', actual, '--', path):
+            raise ValueError('repository-only security overlay is present in application: ' + path)
+    return actual
+
+
+def check_codeql_maintenance(repo, base, head):
+    """Allow reviewed repository fixes while freezing PR38's release inputs."""
+    for lower, upper, label in ((CODEQL_MAIN_BASE, base, 'reviewed CodeQL base'),
+                                 (base, head, 'main base')):
+        if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', lower, upper],
+                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+            raise ValueError(label + ' is not an ancestor')
+    # Checking both the immediate diff and the complete projection catches
+    # source changes that landed before this PR, even for a no-diff snapshot.
+    for lower in (base, CODEQL_MAIN_BASE):
+        changed = git(repo, 'diff', '--no-renames', '--name-only', '-z', lower, head).split(b'\0')
+        for raw in filter(None, changed):
+            path = raw.decode('utf-8', 'surrogateescape')
+            if not codeql_maintenance_path(path):
+                raise ValueError('CodeQL maintenance changes release/application input: ' + path)
+            entry = git(repo, 'ls-tree', head, '--', path).decode().strip()
+            if entry and not entry.startswith(('100644 blob ', '100755 blob ')):
+                raise ValueError('CodeQL maintenance path must be a regular file: ' + path)
+    for path in ('.github/workflows/android.yml', '.github/workflows/diffuse.yml'):
+        if git(repo, 'ls-tree', head, '--', path):
+            raise ValueError('Signal workflow must be absent: ' + path)
+    for path in ('.github/workflows/molly-patch-release.yml',
+                 '.github/workflows/molly-unsigned-release.yml',
+                 '.github/workflows/codeql.yml', *sorted(CODEQL_REPOSITORY_OVERLAYS)):
+        if not git(repo, 'ls-tree', head, '--', path).decode().startswith('100644 blob '):
+            raise ValueError('CodeQL maintenance requires a regular 100644 file: ' + path)
+    for path, (before_blob, after_blob) in CODEQL_SPINNER_BLOB_MANIFEST.items():
+        before_entry = git(repo, 'ls-tree', CODEQL_MAIN_BASE, '--', path).decode().strip()
+        if before_entry != f'100644 blob {before_blob}\t{path}':
+            raise ValueError('CodeQL Spinner baseline blob differs: ' + path)
+        after_entry = git(repo, 'ls-tree', head, '--', path).decode().strip()
+        if after_entry != f'100644 blob {after_blob}\t{path}':
+            raise ValueError('CodeQL Spinner reviewed blob differs: ' + path)
+    if git(repo, 'rev-parse', head + ':patches/molly').decode().strip() != FOREST:
+        raise ValueError('Molly forest does not match the official snapshot')
+    config_bytes = git(repo, 'show', head + ':molly-build.json')
+    if config_bytes != git(repo, 'show', CODEQL_MAIN_BASE + ':molly-build.json'):
+        raise ValueError('CodeQL maintenance must not change release configuration')
+    try:
+        config = json.loads(config_bytes)
+        if (config['signal']['commit'] != NEXT_PORT_SIGNAL or
+                config['profiles']['collie']['target_tree'] != CODEQL_APPLICATION_TREE):
+            raise ValueError('CodeQL maintenance release pins differ from PR38')
+    except (KeyError, TypeError, json.JSONDecodeError) as exc:
+        raise ValueError('invalid CodeQL maintenance profile') from exc
+    # The two repository-only assets are not replayed: the upstream commit,
+    # all patch/native inputs and the complete target-tree pin are unchanged.
+    return {'scope': 'main-maintenance', 'profile_present': True, 'port_present': True,
+            'codeql_maintenance': True, 'application_tree': CODEQL_APPLICATION_TREE}
+
+
 def check_main_maintenance(repo, base, head, integration_lower):
     """Check patch/tool maintenance on main without admitting direct source edits."""
     check_trusted_integration_lower(repo, integration_lower)
     if subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', base, head],
                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
         raise ValueError('main base is not an ancestor of head')
+    try:
+        prior_config = json.loads(git(repo, 'show', base + ':molly-build.json'))
+        prior_signal = prior_config['signal']['commit']
+    except (KeyError, TypeError, json.JSONDecodeError, subprocess.CalledProcessError) as exc:
+        raise ValueError('invalid main maintenance profile') from exc
+    if (prior_signal == NEXT_PORT_SIGNAL and
+            main_codeql_only(repo, base, head)):
+        return check_codeql_maintenance(repo, base, head)
     # Maintenance may edit the fork's workflows, but must not restore Signal's
     # disabled workflows or replace the required workflows with symlinks.
     for path in ('.github/workflows/android.yml', '.github/workflows/diffuse.yml'):

@@ -92,7 +92,8 @@ def git(repo, *args, check=True):
 
 def metadata(path):
     return (path.startswith('tools/patches/') or path.startswith('patches/') or
-            path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md'} or
+            path in {'molly-build.json', 'docs/PATCH-PIPELINE.md', 'docs/PORT-REPORT.md',
+                     '.github/codeql/reviewed-findings.json'} or
             path in WORKFLOWS)
 
 
@@ -659,7 +660,8 @@ def check_main_maintenance(repo, base, head, integration_lower):
             raise ValueError('official Molly forest must remain unchanged: ' + path)
         if not (mutable_main_documentation(path) or
                 path.startswith(('tools/patches/', 'patches/ports/', 'patches/forks/')) or
-                path in {'molly-build.json', 'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md'} or
+                path in {'molly-build.json', 'docs/PORT-REPORT.md', 'docs/PATCH-PIPELINE.md',
+                         '.github/codeql/reviewed-findings.json'} or
                 path in WORKFLOWS or path == '.github/workflows/retarget-main-prs.yml'):
             raise ValueError('main maintenance excludes direct source change: ' + path)
     if git(repo, 'rev-parse', head + ':patches/molly').decode().strip() != FOREST:

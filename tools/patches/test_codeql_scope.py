@@ -192,7 +192,7 @@ class CodeQLScopeTests(CodeQLFixture):
             scope.check_codeql_maintenance(self.repo, sibling, 'HEAD')
 
     def test_checked_out_spinner_manifest_matches_exact_reviewed_blobs(self):
-        self.assertEqual(REVIEWED_CODEQL_MAIN_BASE, '96fe0bdf78474dca9b06fb59adbb618b21e5ede0')
+        self.assertEqual(REVIEWED_CODEQL_MAIN_BASE, '9694af939eb3671f71eb53a277bea9608c8a2b32')
         for path, (before_blob, after_blob) in REVIEWED_SPINNER_BLOB_MANIFEST.items():
             before = subprocess.check_output(
                 ['git', '-C', str(ROOT), 'ls-tree', REVIEWED_CODEQL_MAIN_BASE, '--', path], text=True

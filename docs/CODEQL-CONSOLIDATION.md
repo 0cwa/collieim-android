@@ -75,9 +75,13 @@ release configuration, patch forest and pin checks succeed.
 
 ## M40 integration boundary
 
-`CODEQL_MAIN_BASE` is the reviewed application main commit
-`96fe0bdf78474dca9b06fb59adbb618b21e5ede0`. The reconstructed application tree
-remains `da5c03ff20ae2a672329eb8257bc33949845b268`. The CodeQL path allowlist is
+`CODEQL_MAIN_BASE` is conditionally pinned to the local merge proposal
+`9694af939eb3671f71eb53a277bea9608c8a2b32`, whose parents are current main
+`96fe0bdf78474dca9b06fb59adbb618b21e5ede0` and the independently reviewed
+policy bootstrap `c3ffa5824708cdf9595c103a5358875401eba3d8`. It is not the current
+default branch: do not publish this candidate until main reaches that exact
+commit. The reconstructed application tree remains
+`da5c03ff20ae2a672329eb8257bc33949845b268`. The CodeQL path allowlist is
 file-exact: the existing maintenance files, ten named `tools/codeql` helpers and
 tests, these six publication/support paths, and five future publication templates:
 

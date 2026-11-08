@@ -262,12 +262,14 @@ MAIN_INTEGRATION_LOWER = '7f0eb01a0ab472deeef3b528e7f508425044fa6a'
 MAIN_MAINTENANCE_BASE = 'f6f68cdee08fb8d9acb6a866b1673deb10525f20'
 MAIN_CLEAN_ENTRIES_BLOB = 'b06a83f6e4584f27811c3f406579b7db296f4b59'
 
-# PR38 changed the retained Signal projection to 8.35.1. CodeQL maintenance
-# must use that reviewed snapshot, not the older 8.33.2 integration tree.
-# This deliberately does not grant a general source-edit exception: the entire
-# release configuration, patch forest, port/fork layers and native inputs must
-# remain byte-for-byte identical to the merged release.
-CODEQL_MAIN_BASE = '96fe0bdf78474dca9b06fb59adbb618b21e5ede0'
+# Conditional prospective base: the local PR49 merge proposal adds only the
+# reviewed CodeQL policy bootstrap to app main. This pin is usable only after
+# that exact commit is the actual main; until then, CI must keep using current
+# main and this candidate must not be published as an updated PR48 head.
+# It does not grant a general source-edit exception: the release configuration,
+# patch forest, port/fork layers, native inputs, and reconstructed app tree stay
+# pinned to the reviewed release.
+CODEQL_MAIN_BASE = '9694af939eb3671f71eb53a277bea9608c8a2b32'
 CODEQL_APPLICATION_TREE = 'da5c03ff20ae2a672329eb8257bc33949845b268'
 CODEQL_MAINTENANCE_FILES = frozenset({
     '.github/workflows/codeql.yml', '.github/codeql/codeql-config.yml',

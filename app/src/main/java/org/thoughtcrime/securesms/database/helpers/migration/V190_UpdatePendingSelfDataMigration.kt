@@ -10,7 +10,6 @@ import org.signal.core.util.requireLong
 import org.signal.core.util.requireString
 import org.signal.core.database.update
 import org.signal.storage.keyvalue.KeyValueDatabase
-
 import org.thoughtcrime.securesms.database.SQLiteDatabase
 import org.thoughtcrime.securesms.database.ThreadTable
 import org.thoughtcrime.securesms.dependencies.AppDependencies

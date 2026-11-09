@@ -8,7 +8,7 @@ import android.net.Uri
 import com.fasterxml.jackson.annotation.JsonProperty
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.greenrobot.eventbus.EventBus
+import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.Hex
 import org.signal.core.util.JsonUtils
 import org.signal.core.util.forEach
@@ -125,7 +125,7 @@ class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(paramet
     }
 
     SignalStore.apkUpdate.lastSuccessfulCheck = System.currentTimeMillis()
-    EventBus.getDefault().post(ApkUpdateEvent)
+    EventBus.default.post(ApkUpdateEvent)
   }
 
   public override fun onShouldRetry(e: Exception): Boolean {

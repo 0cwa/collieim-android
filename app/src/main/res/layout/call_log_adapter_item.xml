@@ -78,7 +78,7 @@
         app:layout_constraintEnd_toStartOf="@id/call_status_barrier"
         app:layout_constraintStart_toEndOf="@id/call_recipient_name"
         app:layout_constraintTop_toTopOf="@id/call_recipient_name"
-        app:tint="@color/signal_colorOnSurfaceVariant" />
+        app:tint="?attr/colorOnSurfaceVariant" />
 
     <org.thoughtcrime.securesms.components.emoji.EmojiTextView
         android:id="@+id/call_info"

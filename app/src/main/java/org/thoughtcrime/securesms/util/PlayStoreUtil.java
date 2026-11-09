@@ -6,7 +6,7 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
-import org.thoughtcrime.securesms.R;
+import org.signal.core.util.R;
 
 public final class PlayStoreUtil {
 

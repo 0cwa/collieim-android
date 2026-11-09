@@ -112,7 +112,7 @@ public class SignalGlideComponents implements RegisterGlideComponents {
     registry.append(ChunkedImageUrl.class, InputStream.class, new ChunkedImageUrlLoader.Factory());
     registry.append(StickerRemoteUri.class, InputStream.class, new StickerRemoteUriLoader.Factory());
     registry.append(BlurHash.class, BlurHash.class, new BlurHashModelLoader.Factory());
-    registry.append(Badge.class, InputStream.class, BadgeLoader.createFactory());
+    registry.append(Badge.class, InputStream.class, new BadgeLoader.Factory(AppDependencies.getSignalOkHttpClient()));
     registry.replace(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory());
   }
 }

@@ -31,7 +31,7 @@ import android.os.SystemClock;
 
 import androidx.core.app.NotificationCompat;
 
-import org.greenrobot.eventbus.EventBus;
+import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.ServiceUtil;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;

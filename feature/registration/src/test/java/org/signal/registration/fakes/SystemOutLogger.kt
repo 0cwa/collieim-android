@@ -17,6 +17,7 @@ class SystemOutLogger : Log.Logger() {
   override fun w(tag: String, message: String?, t: Throwable?, keepLonger: Boolean) = print("W", tag, message, t)
   override fun e(tag: String, message: String?, t: Throwable?, keepLonger: Boolean) = print("E", tag, message, t)
   override fun flush() = Unit
+  override fun clear() = Unit
 
   private fun print(level: String, tag: String, message: String?, t: Throwable?) {
     println("[$level][$tag] $message")

@@ -83,7 +83,7 @@ class UnifiedPushRefreshJob private constructor(
       }
 
       when (newStatus) {
-        RegistrationStatus.REGISTERED -> UnifiedPushNotificationBuilder(context).clearAlerts()
+        RegistrationStatus.REGISTERED -> UnifiedPushNotificationBuilder(context).clearAlerts(clearRegistrationFailure = !SignalStore.unifiedpush.registrationFailed)
         RegistrationStatus.FORBIDDEN_ENDPOINT -> UnifiedPushNotificationBuilder(context).setNotificationMollySocketForbiddenEndpoint()
         RegistrationStatus.FORBIDDEN_UUID -> UnifiedPushNotificationBuilder(context).setNotificationMollySocketForbiddenUuid()
         RegistrationStatus.FORBIDDEN_PASSWORD -> UnifiedPushNotificationBuilder(context).setNotificationMollySocketForbiddenPassword()

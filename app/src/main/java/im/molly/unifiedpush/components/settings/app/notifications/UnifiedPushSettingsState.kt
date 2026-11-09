@@ -13,6 +13,7 @@ data class UnifiedPushSettingsState(
   val device: MollySocketDevice?,
   val aci: String?,
   val registrationStatus: RegistrationStatus,
+  val registrationFailed: Boolean,
   val distributors: List<Distributor>,
   val selected: Int,
   val selectedNotAck: Boolean,

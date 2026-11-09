@@ -23,6 +23,8 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val MOLLYSOCKET_VAPID_SYNCED = "mollysocket.vapid.synced"
     private const val UNIFIEDPUSH_ENABLED = "up.enabled"
     private const val UNIFIEDPUSH_ENDPOINT = "up.endpoint"
+    private const val UNIFIEDPUSH_REGISTRATION_FAILED = "up.registrationFailed"
+    private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
   }
 
@@ -57,6 +59,10 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     }
 
   var endpoint: String? by stringValue(UNIFIEDPUSH_ENDPOINT, null)
+
+  var registrationFailed: Boolean by booleanValue(UNIFIEDPUSH_REGISTRATION_FAILED, false)
+
+  var registrationRetryScheduled: Boolean by booleanValue(UNIFIEDPUSH_RETRY_SCHEDULED, false)
 
   var airGapped: Boolean by booleanValue(MOLLYSOCKET_AIR_GAPPED, false)
 

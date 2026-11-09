@@ -10,7 +10,7 @@ final class SignalPinReminderSchedule implements MegaphoneSchedule {
       return false;
     }
 
-    if (!SignalStore.svr().hasPin()) {
+    if (!SignalStore.svr().hasPin() || SignalStore.account().isLinkedDevice()) {
       return false;
     }
 

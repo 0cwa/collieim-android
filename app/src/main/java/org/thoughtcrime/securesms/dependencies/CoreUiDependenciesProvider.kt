@@ -6,12 +6,18 @@
 package org.thoughtcrime.securesms.dependencies
 
 import org.signal.core.ui.CoreUiDependencies
-import org.thoughtcrime.securesms.BuildConfig
+import org.thoughtcrime.securesms.ScreenLockController
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.service.KeyCachingService
+import org.thoughtcrime.securesms.util.BackupUtil
+import org.thoughtcrime.securesms.util.TextSecurePreferences
+=======
+>>>>>>> SIGNAL
 
 object CoreUiDependenciesProvider : CoreUiDependencies.Provider {
-  override fun providePackageId(): String {
-    return BuildConfig.APPLICATION_ID
+  override fun provideBackupBaseDirName(): String {
+    return BackupUtil.getBackupBaseDirName();
   }
 
   override fun provideIsIncognitoKeyboardEnabled(): Boolean {
@@ -19,6 +25,17 @@ object CoreUiDependenciesProvider : CoreUiDependencies.Provider {
   }
 
   override fun provideIsScreenSecurityEnabled(): Boolean {
+<<<<<<< MOLLY
+    if (ScreenLockController.alwaysSetSecureFlagOnResume || KeyCachingService.isLocked()) {
+      return true
+    }
+    return TextSecurePreferences.isScreenSecurityEnabled(AppDependencies.application)
+  }
+
+  override fun provideForceSplitPane(): Boolean {
+    return SignalStore.internal.forceSplitPane
+=======
     return SignalStore.settings.isScreenSecurityEnabled
+>>>>>>> SIGNAL
   }
 }

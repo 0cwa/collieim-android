@@ -4,9 +4,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import org.signal.core.util.logging.AndroidLogger;
 
 public class LogSectionLogcat implements LogSection {
 
@@ -20,20 +18,20 @@ public class LogSectionLogcat implements LogSection {
 
   @Override
   public @NonNull CharSequence getContent(@NonNull Context context) {
+<<<<<<< MOLLY
+    CharSequence logs = AndroidLogger.getLogcatDump();
+    return logs != null ? logs : "Failed to get logcat dump";
+  }
+=======
     try {
       final Process        process        = Runtime.getRuntime().exec("logcat -d " + FILTER_SPEC);
       final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
       final StringBuilder  log            = new StringBuilder();
       final String         separator      = System.lineSeparator();
+>>>>>>> SIGNAL
 
-      String line;
-      while ((line = bufferedReader.readLine()) != null) {
-        log.append(line);
-        log.append(separator);
-      }
-      return log.toString();
-    } catch (IOException ioe) {
-      return "Failed to retrieve.";
-    }
+  @Override
+  @NonNull public CharSequence getContentLocked(@NonNull Context context) {
+    return getContent(context);
   }
 }

@@ -18,7 +18,6 @@
 package org.thoughtcrime.securesms.notifications;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,6 +36,11 @@ import org.thoughtcrime.securesms.mms.SlideDeck;
 import org.thoughtcrime.securesms.notifications.v2.ConversationId;
 import org.thoughtcrime.securesms.notifications.v2.DefaultMessageNotifier;
 import org.thoughtcrime.securesms.recipients.Recipient;
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.recipients.RecipientId;
+import org.thoughtcrime.securesms.service.ExportedBroadcastReceiver;
+=======
+>>>>>>> SIGNAL
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.util.MessageUtil;
 
@@ -45,7 +49,7 @@ import java.util.List;
 /**
  * Get the response text from the Wearable Device and sends an message as a reply
  */
-public class RemoteReplyReceiver extends BroadcastReceiver {
+public class RemoteReplyReceiver extends ExportedBroadcastReceiver {
 
   private static final String TAG = Log.tag(RemoteReplyReceiver.class);
 
@@ -57,7 +61,7 @@ public class RemoteReplyReceiver extends BroadcastReceiver {
 
   @SuppressLint("StaticFieldLeak")
   @Override
-  public void onReceive(final Context context, Intent intent) {
+  public void onReceiveUnlock(final Context context, Intent intent) {
     if (!REPLY_ACTION.equals(intent.getAction())) return;
 
     Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);

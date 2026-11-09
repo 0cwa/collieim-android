@@ -23,6 +23,8 @@ android {
       isIncludeAndroidResources = true
     }
   }
+<<<<<<< MOLLY
+=======
 }
 
 screenshotTests {
@@ -36,6 +38,7 @@ tasks.withType<Test>().configureEach {
   if (name.contains("ScreenshotTest")) {
     maxHeapSize = "4g"
   }
+>>>>>>> SIGNAL
 }
 
 wire {
@@ -94,9 +97,19 @@ dependencies {
   implementation(libs.google.libphonenumber)
 
   // Phone number hint + SMS verification code retriever
-  implementation(libs.google.play.services.auth)
-  implementation(libs.kotlinx.coroutines.play.services)
+  // implementation(libs.google.play.services.auth) // MOLLY: TODO
+  implementation(libs.kotlinx.coroutines.play.services) {
+    exclude(group = "com.google.android.gms", module = "play-services-basement")
+    exclude(group = "com.google.android.gms", module = "play-services-tasks")
+  }
+  implementation(project(":core-gms:tasks"))
 
+<<<<<<< MOLLY
+  // Credential Manager (password manager retrieval)
+  implementation(libs.androidx.credentials)
+
+=======
+>>>>>>> SIGNAL
   // Testing
   testImplementation(testFixtures(project(":core:ui")))
   testImplementation(testLibs.junit.junit)

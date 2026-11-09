@@ -3,7 +3,6 @@ package org.thoughtcrime.securesms.messageprocessingalarm;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -12,6 +11,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 
+import org.signal.core.util.AppForegroundObserver;
 import org.signal.core.util.PendingIntentFlags;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
@@ -19,7 +19,7 @@ import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.JobTracker;
 import org.thoughtcrime.securesms.jobs.MessageFetchJob;
-import org.signal.core.util.AppForegroundObserver;
+import org.thoughtcrime.securesms.service.ExportedBroadcastReceiver;
 import org.thoughtcrime.securesms.util.BatterySnapshotTracker;
 
 import java.util.Locale;
@@ -29,7 +29,7 @@ import java.util.Optional;
  * A receiver that is scheduled via alarm to run at a remotely-configurable interval to fetch messages from the service.
  * Basically an extra reliability thing that helps poke the system to fetch messages more often.
  */
-public final class RoutineMessageFetchReceiver extends BroadcastReceiver {
+public final class RoutineMessageFetchReceiver extends ExportedBroadcastReceiver {
 
   private static final String TAG = Log.tag(RoutineMessageFetchReceiver.class);
 
@@ -37,7 +37,7 @@ public final class RoutineMessageFetchReceiver extends BroadcastReceiver {
 
   @Override
   @SuppressLint("StaticFieldLeak")
-  public void onReceive(@NonNull Context context, @NonNull Intent intent) {
+  public void onReceiveUnlock(@NonNull Context context, @NonNull Intent intent) {
     Log.i(TAG, String.format("onReceive(%s)", intent.getAction()));
 
     if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {

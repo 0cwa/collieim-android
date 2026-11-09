@@ -12,11 +12,19 @@
         android:layout_gravity="center"
         android:layout_marginHorizontal="12dp"
         android:layout_marginVertical="11dp"
-        android:background="@color/signal_background_primary"
+        android:background="?attr/signal_background_primary"
         android:minHeight="66dp"
+<<<<<<< MOLLY
+        app:cardCornerRadius="12dp"
+        app:cardBackgroundColor="?attr/colorSurfaceContainer"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/signal_colorOutline_38"
+        app:strokeWidth="1dp">
+=======
         app:cardCornerRadius="24dp"
         app:cardBackgroundColor="@color/signal_colorSurface2"
         app:cardElevation="0dp">
+>>>>>>> SIGNAL
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -109,8 +117,13 @@
                 android:layout_marginHorizontal="8dp"
                 android:minWidth="0dp"
                 android:text="@string/ReviewBannerView__view"
+<<<<<<< MOLLY
+                android:textColor="?attr/colorOnSecondaryContainer"
+                app:backgroundTint="?attr/colorSurfaceContainer"
+=======
                 android:textColor="@color/signal_colorOnSurface"
                 app:backgroundTint="@color/signal_colorSurface5"
+>>>>>>> SIGNAL
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/banner_close"
                 app:layout_constraintStart_toEndOf="@id/banner_message"

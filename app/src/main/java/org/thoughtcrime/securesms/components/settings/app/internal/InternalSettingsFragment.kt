@@ -1,9 +1,5 @@
 package org.thoughtcrime.securesms.components.settings.app.internal
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
@@ -14,7 +10,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -23,30 +18,24 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.ui.permissions.PermissionDeniedBottomSheet
 import org.signal.core.ui.permissions.RationaleDialog
 import org.signal.core.util.AppUtil
 import org.signal.core.util.Util
-import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.concurrent.SimpleTask
 import org.signal.core.util.logging.Log
 import org.signal.core.util.readToList
 import org.signal.core.util.requireLong
 import org.signal.core.util.requireString
 import org.signal.ringrtc.CallManager
-import org.signal.storageservice.protos.calls.quality.SubmitCallQualitySurveyRequest
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.calls.quality.CallQualityBottomSheetFragment
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
 import org.thoughtcrime.securesms.components.settings.DSLSettingsFragment
 import org.thoughtcrime.securesms.components.settings.DSLSettingsText
 import org.thoughtcrime.securesms.components.settings.app.privacy.advanced.AdvancedPrivacySettingsRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.components.settings.configure
-import org.thoughtcrime.securesms.components.snackbars.SnackbarState
-import org.thoughtcrime.securesms.components.snackbars.makeSnackbar
 import org.thoughtcrime.securesms.conversation.ConversationIntents
 import org.thoughtcrime.securesms.database.JobDatabase
 import org.thoughtcrime.securesms.database.LocalMetricsDatabase
@@ -74,10 +63,13 @@ import org.thoughtcrime.securesms.jobs.UnreadReminderJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.megaphone.MegaphoneRepository
 import org.thoughtcrime.securesms.megaphone.Megaphones
-import org.thoughtcrime.securesms.payments.DataExportUtil
 import org.thoughtcrime.securesms.recipients.Recipient
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.recipients.RecipientId
+=======
 import org.thoughtcrime.securesms.registration.data.QuickstartCredentialExporter
 import org.thoughtcrime.securesms.ringrtc.CameraFpsRanges
+>>>>>>> SIGNAL
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
 import org.thoughtcrime.securesms.util.ConversationUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
@@ -118,16 +110,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
     super.onViewCreated(view, savedInstanceState)
     scrollToPosition = SignalStore.internal.lastScrollPosition
     initializeSearch(view)
-
-    setFragmentResultListener(CallQualityBottomSheetFragment.REQUEST_KEY) { _, bundle ->
-      if (bundle.getBoolean(CallQualityBottomSheetFragment.REQUEST_KEY, false)) {
-        makeSnackbar(
-          SnackbarState(
-            message = getString(R.string.CallQualitySheet__thanks_for_your_feedback)
-          )
-        )
-      }
-    }
   }
 
   override fun bindAdapter(adapter: MappingAdapter) {
@@ -241,16 +223,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
           refreshRemoteValues()
         }
       )
-
-      if (BuildConfig.DEBUG) {
-        clickPref(
-          title = DSLSettingsText.from("Export quickstart credentials"),
-          summary = DSLSettingsText.from("Export registration credentials to a JSON file for quickstart builds."),
-          onClick = {
-            exportQuickstartCredentials()
-          }
-        )
-      }
 
       clickPref(
         title = DSLSettingsText.from("Copy service password"),
@@ -399,15 +371,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
       )
 
       switchPref(
-        title = DSLSettingsText.from("Shake to Report"),
-        summary = DSLSettingsText.from("Shake your phone to easily submit and share a debug log."),
-        isChecked = state.shakeToReport,
-        onClick = {
-          viewModel.setShakeToReport(!state.shakeToReport)
-        }
-      )
-
-      switchPref(
         title = DSLSettingsText.from("Show archive status hint"),
         summary = DSLSettingsText.from("Shows a color square based on archive status, green good, red bad."),
         isChecked = state.showArchiveStateHint,
@@ -458,6 +421,22 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
               SignalDatabase.kyberPreKeys.debugDeleteAll()
 
               Toast.makeText(requireContext(), "All prekeys deleted!", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+        }
+      )
+
+      clickPref(
+        title = DSLSettingsText.from("Delete UnifiedPush ping"),
+        summary = DSLSettingsText.from("Make as Molly never received the ping from MollySocket. Will cause UnifiedPush to stop and Websocket to restart."),
+        onClick = {
+          MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Delete UnifiedPush ping?")
+            .setMessage("Are you sure?")
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+              SignalStore.unifiedpush.lastReceivedTime = 0
+              Toast.makeText(requireContext(), "UnifiedPush ping deleted!", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
@@ -537,18 +516,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
         summary = DSLSettingsText.from("Click to clear all local metrics state."),
         onClick = {
           clearAllLocalMetricsState()
-        }
-      )
-
-      dividerPref()
-
-      sectionHeaderPref(DSLSettingsText.from("Payments"))
-
-      clickPref(
-        title = DSLSettingsText.from("Copy payments data"),
-        summary = DSLSettingsText.from("Copy all payment records to clipboard."),
-        onClick = {
-          copyPaymentsDataToClipboard()
         }
       )
 
@@ -727,15 +694,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
         }
 
       sectionHeaderPref(DSLSettingsText.from("Calling options"))
-
-      clickPref(
-        title = DSLSettingsText.from("Display call quality survey"),
-        onClick = {
-          CallQualityBottomSheetFragment
-            .create(SubmitCallQualitySurveyRequest())
-            .show(parentFragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG)
-        }
-      )
 
       radioListPref(
         title = DSLSettingsText.from("Bandwidth mode"),
@@ -969,7 +927,7 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
           SignalDatabase.remoteMegaphones.debugRemoveAll()
           MegaphoneDatabase.getInstance(AppDependencies.application).let {
             it.delete(Megaphones.Event.REMOTE_MEGAPHONE)
-            it.markFirstVisible(Megaphones.Event.DONATE_Q2_2022, System.currentTimeMillis() - TimeUnit.DAYS.toMillis(31))
+            it.markFirstVisible(Megaphones.Event.DONATE_MOLLY, System.currentTimeMillis() - TimeUnit.DAYS.toMillis(31))
           }
           // Force repository database cache refresh
           MegaphoneRepository(AppDependencies.application).onFirstEverAppLaunch()
@@ -1002,13 +960,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
         title = DSLSettingsText.from("Add remote donate megaphone"),
         onClick = {
           viewModel.addRemoteDonateMegaphone()
-        }
-      )
-
-      clickPref(
-        title = DSLSettingsText.from("Add donate_friend remote megaphone"),
-        onClick = {
-          viewModel.addRemoteDonateFriendMegaphone()
         }
       )
 
@@ -1079,15 +1030,6 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
       dividerPref()
 
       sectionHeaderPref(DSLSettingsText.from("PNP"))
-
-      clickPref(
-        title = DSLSettingsText.from("Reset 'PNP initialized' state"),
-        summary = DSLSettingsText.from("Current initialized state: ${state.pnpInitialized}"),
-        isEnabled = state.pnpInitialized,
-        onClick = {
-          viewModel.resetPnpInitializedState()
-        }
-      )
 
       clickPref(
         title = DSLSettingsText.from("Corrupt username"),
@@ -1181,6 +1123,8 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
       .show()
   }
 
+<<<<<<< MOLLY
+=======
   private fun onCopyServicePasswordClicked() {
     val servicePassword = SignalStore.account.servicePassword
     if (servicePassword == null) {
@@ -1235,6 +1179,7 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
       .show()
   }
 
+>>>>>>> SIGNAL
   private fun refreshAttributes() {
     AppDependencies.jobManager
       .startChain(RefreshAttributesJob())
@@ -1374,6 +1319,9 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
     }
   }
 
+<<<<<<< MOLLY
+  private fun promptUserForSentTimestamp() {
+=======
   private fun exportQuickstartCredentials() {
     MaterialAlertDialogBuilder(requireContext())
       .setTitle("Export quickstart credentials?")
@@ -1399,6 +1347,7 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
     numeric: Boolean = false,
     onConfirmed: (String) -> Unit
   ) {
+>>>>>>> SIGNAL
     val input = EditText(requireContext()).apply {
       inputType = if (numeric) InputType.TYPE_CLASS_NUMBER else InputType.TYPE_CLASS_TEXT
       gravity = Gravity.CENTER

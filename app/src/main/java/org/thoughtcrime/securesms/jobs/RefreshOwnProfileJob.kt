@@ -13,14 +13,16 @@ import org.signal.libsignal.usernames.Username
 import org.signal.libsignal.zkgroup.profiles.ExpiringProfileKeyCredential
 import org.signal.libsignal.zkgroup.profiles.ProfileKey
 import org.signal.network.exceptions.PushNetworkException
+<<<<<<< MOLLY
+=======
 import org.signal.storage.keyvalue.isTerminal
 import org.thoughtcrime.securesms.badges.BadgeRepository
 import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
+>>>>>>> SIGNAL
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil
 import org.thoughtcrime.securesms.database.RecipientTable.PhoneNumberSharingState
 import org.thoughtcrime.securesms.database.SignalDatabase
-import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
@@ -46,17 +48,6 @@ class RefreshOwnProfileJob private constructor(parameters: Parameters) : BaseJob
     const val KEY: String = "RefreshOwnProfileJob"
 
     private val TAG = Log.tag(RefreshOwnProfileJob::class.java)
-
-    private val SUBSCRIPTION_QUEUE = ProfileUploadJob.QUEUE + "_Subscription"
-    private val BOOST_QUEUE = ProfileUploadJob.QUEUE + "_Boost"
-
-    fun forSubscription(): RefreshOwnProfileJob {
-      return RefreshOwnProfileJob(SUBSCRIPTION_QUEUE)
-    }
-
-    fun forBoost(): RefreshOwnProfileJob {
-      return RefreshOwnProfileJob(BOOST_QUEUE)
-    }
   }
 
   constructor() : this(ProfileUploadJob.QUEUE)
@@ -275,6 +266,9 @@ class RefreshOwnProfileJob private constructor(parameters: Parameters) : BaseJob
 
   @Throws(IOException::class)
   private fun setProfileBadges(badges: List<SignalServiceProfile.Badge>?) {
+<<<<<<< MOLLY
+    // MOLLY: No badges
+=======
     if (badges == null) {
       return
     }
@@ -394,6 +388,7 @@ class RefreshOwnProfileJob private constructor(parameters: Parameters) : BaseJob
     } else {
       SignalDatabase.recipients.setBadges(Recipient.self().id, appBadges)
     }
+>>>>>>> SIGNAL
   }
 
   private fun checkUsernameIsInSync() {
@@ -475,18 +470,6 @@ class RefreshOwnProfileJob private constructor(parameters: Parameters) : BaseJob
       SignalServiceProfile.RequestType.PROFILE
     else
       SignalServiceProfile.RequestType.PROFILE_AND_CREDENTIAL
-  }
-
-  private fun isSubscription(badgeId: String?): Boolean {
-    return !isBoost(badgeId) && !isGift(badgeId)
-  }
-
-  private fun isBoost(badgeId: String?): Boolean {
-    return badgeId == Badge.BOOST_BADGE_ID
-  }
-
-  private fun isGift(badgeId: String?): Boolean {
-    return badgeId == Badge.GIFT_BADGE_ID
   }
 
   class Factory : Job.Factory<RefreshOwnProfileJob> {

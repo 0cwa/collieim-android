@@ -686,6 +686,8 @@ private fun CallDropdownItems(callFilter: CallLogFilter, callback: MainToolbarCa
 
 @Composable
 private fun ChatDropdownItems(state: MainToolbarState, callback: MainToolbarCallback, onOptionSelected: () -> Unit) {
+<<<<<<< MOLLY
+=======
   DropdownMenus.Item(
     leadingIconResId = R.drawable.symbol_group_24,
     text = {
@@ -699,6 +701,7 @@ private fun ChatDropdownItems(state: MainToolbarState, callback: MainToolbarCall
     }
   )
 
+>>>>>>> SIGNAL
   if (state.hasPassphrase) {
     DropdownMenus.Item(
       leadingIconResId = CoreUiR.drawable.symbol_lock_24,
@@ -718,6 +721,19 @@ private fun ChatDropdownItems(state: MainToolbarState, callback: MainToolbarCall
     leadingIconResId = R.drawable.symbol_chat_check,
     text = {
       Text(
+        text = stringResource(R.string.text_secure_normal__menu_new_group)
+      )
+    },
+    onClick = {
+      callback.onNewGroupClick()
+      onOptionSelected()
+    }
+  )
+
+<<<<<<< MOLLY
+  DropdownMenus.Item(
+    text = {
+      Text(
         text = stringResource(R.string.text_secure_normal__mark_all_as_read)
       )
     },
@@ -727,6 +743,8 @@ private fun ChatDropdownItems(state: MainToolbarState, callback: MainToolbarCall
     }
   )
 
+=======
+>>>>>>> SIGNAL
   if (state.chatFilter == ConversationFilter.OFF) {
     DropdownMenus.Item(
       leadingIconResId = R.drawable.symbol_filter_24,

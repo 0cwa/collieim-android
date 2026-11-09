@@ -50,7 +50,6 @@ import org.thoughtcrime.securesms.groups.ui.invitesandrequests.joining.GroupJoin
 import org.thoughtcrime.securesms.groups.v2.GroupInviteLinkUrl;
 import org.thoughtcrime.securesms.profiles.manage.UsernameRepository;
 import org.thoughtcrime.securesms.profiles.manage.UsernameRepository.UsernameLinkConversionResult;
-import org.thoughtcrime.securesms.proxy.ProxyBottomSheetFragment;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.service.webrtc.ActiveCallData;
 import org.thoughtcrime.securesms.service.webrtc.links.CallLinkRoomId;
@@ -292,21 +291,6 @@ public class CommunicationActions {
         GroupJoinBottomSheetDialogFragment.show(activity.getSupportFragmentManager(), groupInviteLinkUrl);
       }
     });
-  }
-
-  /**
-   * If the url is a proxy link it will handle it.
-   * Otherwise returns false, indicating was not a proxy link.
-   */
-  public static boolean handlePotentialProxyLinkUrl(@NonNull FragmentActivity activity, @NonNull String potentialProxyLinkUrl) {
-    String proxy = SignalProxyUtil.parseHostFromProxyDeepLink(potentialProxyLinkUrl);
-
-    if (proxy != null) {
-      ProxyBottomSheetFragment.showForProxy(activity.getSupportFragmentManager(), proxy);
-      return true;
-    } else {
-      return false;
-    }
   }
 
   /**

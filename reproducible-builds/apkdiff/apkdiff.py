@@ -1,8 +1,27 @@
 #! /usr/bin/env python3
 
-import difflib
-import subprocess
 import sys
+<<<<<<< MOLLY
+import fnmatch
+from zipfile import ZipFile
+
+
+class ApkDiff:
+    IGNORE_FILES = [
+        # Related to app signing. Not expected to be present in unsigned builds. Doesn't affect app code.
+        "META-INF/MANIFEST.MF",
+        "META-INF/*.RSA",
+        "META-INF/*.SF",
+        "META-INF/code_transparency_signed.jwt",
+        "stamp-cert-sha256"
+    ]
+
+    # MOLLY: Allow to exclude files with glob patterns
+    def isIncluded(self, filepath):
+        for ignoreFile in self.IGNORE_FILES:
+            if fnmatch.fnmatchcase(filepath, ignoreFile):
+                return False
+=======
 import logging
 from zipfile import ZipFile
 
@@ -166,11 +185,29 @@ def handle_special_cases(filename: str, bytes1: bytes, bytes2: bytes):
         return axml_diff(filename, bytes1, bytes2)
     elif filename == "resources.arsc":
         # we will compare resources.arsc separately with aapt2, so we can ignore any differences here
+>>>>>>> SIGNAL
         return True
 
-    return False
+    def compare(self, firstApk, secondApk):
+        firstZip = ZipFile(firstApk, 'r')
+        secondZip = ZipFile(secondApk, 'r')
 
+        return self.compareEntryNames(firstZip, secondZip) and self.compareEntryContents(firstZip, secondZip) == True
 
+<<<<<<< MOLLY
+    def compareEntryNames(self, firstZip, secondZip):
+        firstNameListSorted = sorted(n for n in firstZip.namelist() if self.isIncluded(n))
+        secondNameListSorted = sorted(n for n in secondZip.namelist() if self.isIncluded(n))
+
+        if len(firstNameListSorted) != len(secondNameListSorted):
+            print("Manifest lengths differ!")
+
+        for (firstEntryName, secondEntryName) in zip(firstNameListSorted, secondNameListSorted):
+            if firstEntryName != secondEntryName:
+                print("Sorted manifests don't match, %s vs %s" % (firstEntryName, secondEntryName))
+                return False
+
+=======
 def compare_resources_arsc(apk1: str, apk2: str) -> bool:
     print("Comparing resources.arsc...")
 
@@ -178,20 +215,14 @@ def compare_resources_arsc(apk1: str, apk2: str) -> bool:
     resources2 = dump_resources(apk2)
 
     if resources1 == resources2:
+>>>>>>> SIGNAL
         return True
-    else:
-        print("resources.arsc files differ!")
-        diff = difflib.unified_diff(
-            resources1,
-            resources2,
-            fromfile=apk1,
-            tofile=apk2,
-            lineterm="",
-        )
-        for line in diff:
-            print(line)
-        return False
 
+<<<<<<< MOLLY
+    def compareEntryContents(self, firstZip, secondZip):
+        firstInfoList = list(filter(lambda info: self.isIncluded(info.filename), firstZip.infolist()))
+        secondInfoList = list(filter(lambda info: self.isIncluded(info.filename), secondZip.infolist()))
+=======
 
 def dump_resources(apk):
     try:
@@ -206,9 +237,34 @@ def dump_resources(apk):
                 raise RuntimeError(f"aapt2 failed with error: {stderr.strip()}")
     except FileNotFoundError:
         raise RuntimeError("aapt2 is not installed or not in the PATH.")
+>>>>>>> SIGNAL
 
-    return stdout.strip().splitlines()
+        if len(firstInfoList) != len(secondInfoList):
+            print("APK info lists of different length!")
+            return False
 
+<<<<<<< MOLLY
+        success = True
+        for firstEntryInfo in firstInfoList:
+            for secondEntryInfo in list(secondInfoList):
+                if firstEntryInfo.filename == secondEntryInfo.filename:
+                    firstEntryBytes = firstZip.read(firstEntryInfo.filename)
+                    secondEntryBytes = secondZip.read(secondEntryInfo.filename)
+
+                    if firstEntryBytes != secondEntryBytes:
+                        firstZip.extract(firstEntryInfo, "mismatches/first")
+                        secondZip.extract(secondEntryInfo, "mismatches/second")
+                        print("APKs differ on file %s! Files extracted to the mismatches/ directory." % (firstEntryInfo.filename))
+                        success = False
+
+                    secondInfoList.remove(secondEntryInfo)
+                    break
+
+        return success
+
+
+if __name__ == '__main__':
+=======
 
 def filter_tree(root: etree._Element) -> etree._Element:
     for element in root.findall(".//meta-data"):
@@ -248,11 +304,12 @@ def axml_diff(filename: str, bytes1: bytes, bytes2: bytes) -> bool:
 
 
 if __name__ == "__main__":
+>>>>>>> SIGNAL
     if len(sys.argv) != 3:
         print("Usage: apkdiff <pathToFirstApk> <pathToSecondApk>")
         sys.exit(1)
 
-    if compare(sys.argv[1], sys.argv[2]):
+    if ApkDiff().compare(sys.argv[1], sys.argv[2]):
         print("APKs match!")
         sys.exit(0)
     else:

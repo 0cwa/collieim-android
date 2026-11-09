@@ -5,6 +5,7 @@ import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.AndroidLogger
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.protocol.logging.SignalProtocolLoggerProvider
+import org.thoughtcrime.securesms.crypto.MasterSecretUtil
 import org.thoughtcrime.securesms.database.LogDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider
@@ -20,6 +21,10 @@ import org.thoughtcrime.securesms.util.Environment
  * Application context for running instrumentation tests (aka androidTests).
  */
 class SignalInstrumentationApplicationContext : ApplicationContext() {
+  override fun onCreate() {
+    MasterSecretUtil.generateMasterSecret(this, MasterSecretUtil.getUnencryptedPassphrase())
+    super.onCreate()
+  }
 
   val inMemoryLogger: InMemoryLogger = InMemoryLogger()
 
@@ -41,7 +46,7 @@ class SignalInstrumentationApplicationContext : ApplicationContext() {
     }
   }
 
-  override fun initializeLogging() {
+  override fun initializeLogging(locked: Boolean) {
     Log.initialize({ true }, AndroidLogger, PersistentLogger.getInstance(this), inMemoryLogger)
 
     SignalProtocolLoggerProvider.setProvider(CustomSignalProtocolLogger())

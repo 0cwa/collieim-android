@@ -25,7 +25,7 @@ public final class WindowUtil {
     final boolean isLightNavigationBar = ThemeUtil.getThemedBoolean(activity, android.R.attr.windowLightNavigationBar);
 
     if (isLightNavigationBar) setLightNavigationBar(activity.getWindow());
-    else                      clearLightNavigationBar(activity.getWindow());
+    else clearLightNavigationBar(activity.getWindow());
   }
 
   public static void clearLightNavigationBar(@NonNull Window window) {
@@ -44,7 +44,7 @@ public final class WindowUtil {
     final boolean isLightStatusBar = ThemeUtil.getThemedBoolean(activity, android.R.attr.windowLightStatusBar);
 
     if (isLightStatusBar) setLightStatusBar(activity.getWindow());
-    else                  clearLightStatusBar(activity.getWindow());
+    else clearLightStatusBar(activity.getWindow());
   }
 
   public static void clearLightStatusBar(@NonNull Window window) {

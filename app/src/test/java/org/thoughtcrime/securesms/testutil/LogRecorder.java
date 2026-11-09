@@ -43,6 +43,10 @@ public final class LogRecorder extends Log.Logger {
   public void flush() {
   }
 
+  @Override
+  public void clear() {
+  }
+
   public List<Entry> getVerbose() {
     return verbose;
   }

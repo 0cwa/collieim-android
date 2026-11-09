@@ -31,10 +31,10 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.theme.SignalTheme
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.DimensionUnit
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.AvatarImageView
@@ -44,7 +44,6 @@ import org.thoughtcrime.securesms.conversation.v2.items.SenderNameWithLabelView
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.visible
-import org.signal.core.ui.R as CoreUiR
 
 @Composable
 fun MessageBubblePreview(
@@ -114,7 +113,7 @@ private class MessageBubblePreviewView(context: Context) : FrameLayout(context) 
     bodyBubble.background = GradientDrawable().apply {
       shape = GradientDrawable.RECTANGLE
       cornerRadius = DimensionUnit.DP.toPixels(18f)
-      setColor(ContextCompat.getColor(context, CoreUiR.color.signal_colorSurface))
+      setColor(ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorSurface))
     }
 
     bodyBubble.minimumWidth = DimensionUnit.DP.toPixels(180f).toInt()
@@ -148,7 +147,7 @@ private class MessageBubblePreviewView(context: Context) : FrameLayout(context) 
     groupSenderView.bind(sender.getDisplayName(context), senderNameColor, memberLabel)
 
     bodyText.text = messageText
-    bodyText.setTextColor(ContextCompat.getColor(context, CoreUiR.color.signal_colorOnSurface))
+    bodyText.setTextColor(ThemeUtil.getThemedColor(context, com.google.android.material.R.attr.colorOnSurface))
     bodyText.visible = true
   }
 }

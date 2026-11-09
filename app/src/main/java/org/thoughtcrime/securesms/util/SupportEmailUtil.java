@@ -11,12 +11,16 @@ import org.signal.core.util.ResourceUtil;
 import org.signal.core.util.Util;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.R;
+<<<<<<< MOLLY
+=======
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier;
+>>>>>>> SIGNAL
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.recipients.Recipient;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import im.molly.app.base.ApkInfo;
 
 public final class SupportEmailUtil {
 
@@ -78,6 +82,9 @@ public final class SupportEmailUtil {
            "\n" +
            context.getString(R.string.SupportEmailUtil_signal_package) + " " + getSignalPackage(context) +
            "\n" +
+<<<<<<< MOLLY
+           context.getString(R.string.SupportEmailUtil_locale) + " " + Locale.getDefault();
+=======
            context.getString(R.string.SupportEmailUtil_registration_lock) + " " + getRegistrationLockEnabled() +
            "\n" +
            context.getString(R.string.SupportEmailUtil_locale) + " " + Locale.getDefault().toString() +
@@ -87,6 +94,7 @@ public final class SupportEmailUtil {
            context.getString(R.string.SupportEmailUtil_registered) + " " + getRegistered() +
            "\n" +
            context.getString(R.string.SupportEmailUtil_backups) + " " + getBackupTier();
+>>>>>>> SIGNAL
   }
 
   private static CharSequence getDeviceInfo() {
@@ -98,7 +106,7 @@ public final class SupportEmailUtil {
   }
 
   private static CharSequence getSignalVersion() {
-    return BuildConfig.VERSION_NAME;
+    return ApkInfo.versionName;
   }
 
   private static CharSequence getSignalPackage(@NonNull Context context) {
@@ -115,6 +123,8 @@ public final class SupportEmailUtil {
 
     return receivedRecently ? "yes" : "no";
   }
+<<<<<<< MOLLY
+=======
 
   private static String getRegistered() {
     boolean registered = SignalStore.account().isRegistered() && !SignalStore.account().isUnauthorizedReceived();
@@ -134,4 +144,5 @@ public final class SupportEmailUtil {
       default:   return "D1";
     }
   }
+>>>>>>> SIGNAL
 }

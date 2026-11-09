@@ -17,8 +17,12 @@
         android:layout_marginTop="96px"
         android:importantForAccessibility="no"
         app:layout_constraintStart_toStartOf="parent"
+<<<<<<< MOLLY
+        app:layout_constraintTop_toTopOf="parent" />
+=======
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/image_signal_logo_wordmark_light" />
+>>>>>>> SIGNAL
 
     <TextView
         android:id="@+id/date"

@@ -29,9 +29,13 @@ import org.thoughtcrime.securesms.groups.memberlabel.MemberLabelRepository
 import org.thoughtcrime.securesms.payments.Payment
 import org.thoughtcrime.securesms.polls.PollRecord
 import org.thoughtcrime.securesms.recipients.Recipient
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.recipients.RecipientId
+=======
 import org.thoughtcrime.securesms.recipients.RecipientIds
 import org.thoughtcrime.securesms.recipients.RecipientUtil
 import java.util.UUID
+>>>>>>> SIGNAL
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -80,19 +84,6 @@ object MessageDataFetcher {
 
     val attachmentsFuture = executor.submitTimed {
       SignalDatabase.attachments.getAttachmentsForMessages(messageIds)
-    }
-
-    val paymentsFuture = executor.submitTimed {
-      val paymentUuidToMessageId: Map<UUID, Long> = messageRecords
-        .filter { it.isMms && it.isPaymentNotification }
-        .map { UuidUtil.parseOrNull(it.body) to it.id }
-        .filter { it.first != null }
-        .associate { it.first!! to it.second }
-
-      SignalDatabase
-        .payments
-        .getPayments(paymentUuidToMessageId.keys)
-        .associateBy { paymentUuidToMessageId[it.uuid]!! }
     }
 
     val callsFuture = executor.submitTimed {
@@ -149,7 +140,6 @@ object MessageDataFetcher {
     val hasBeenQuotedResult = hasBeenQuotedFuture.get()
     val reactionsResult = reactionsFuture.get()
     val attachmentsResult = attachmentsFuture.get()
-    val paymentsResult = paymentsFuture.get()
     val callsResult = callsFuture.get()
     val recipientsResult = recipientsFuture.get()
     val pollsResult = pollsFuture.get()
@@ -158,7 +148,7 @@ object MessageDataFetcher {
 
     val wallTimeMs = (System.nanoTime() - startTimeNanos).nanoseconds.toDouble(DurationUnit.MILLISECONDS)
 
-    val cpuTimeNanos = arrayOf(mentionsResult, hasBeenQuotedResult, reactionsResult, attachmentsResult, paymentsResult, callsResult, recipientsResult).sumOf { it.durationNanos } + (memberLabelsResult?.durationNanos ?: 0)
+    val cpuTimeNanos = arrayOf(mentionsResult, hasBeenQuotedResult, reactionsResult, attachmentsResult, callsResult, recipientsResult).sumOf { it.durationNanos } + (memberLabelsResult?.durationNanos ?: 0)
     val cpuTimeMs = cpuTimeNanos.nanoseconds.toDouble(DurationUnit.MILLISECONDS)
 
     return ExtraMessageData(
@@ -166,12 +156,16 @@ object MessageDataFetcher {
       hasBeenQuoted = hasBeenQuotedResult.result,
       reactions = reactionsResult.result,
       attachments = attachmentsResult.result,
-      payments = paymentsResult.result,
+      payments = emptyMap(),
       calls = callsResult.result,
       polls = pollsResult.result,
       sharedContacts = sharedContactsResult.result,
       memberLabels = memberLabelsResult?.result,
+<<<<<<< MOLLY
+      timeLog = "mentions: ${mentionsResult.duration}, is-quoted: ${hasBeenQuotedResult.duration}, reactions: ${reactionsResult.duration}, attachments: ${attachmentsResult.duration}, calls: ${callsResult.duration}, member-labels: ${memberLabelsResult?.duration ?: "n/a"} >> cpuTime: ${cpuTimeMs.roundedString(2)}, wallTime: ${wallTimeMs.roundedString(2)}"
+=======
       timeLog = "mentions: ${mentionsResult.duration}, is-quoted: ${hasBeenQuotedResult.duration}, reactions: ${reactionsResult.duration}, attachments: ${attachmentsResult.duration}, payments: ${paymentsResult.duration}, calls: ${callsResult.duration}, shared-contacts: ${sharedContactsResult.duration}, member-labels: ${memberLabelsResult?.duration ?: "n/a"} >> cpuTime: ${cpuTimeMs.roundedString(2)}, wallTime: ${wallTimeMs.roundedString(2)}"
+>>>>>>> SIGNAL
     )
   }
 

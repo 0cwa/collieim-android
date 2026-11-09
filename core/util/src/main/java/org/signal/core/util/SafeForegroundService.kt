@@ -14,11 +14,11 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import androidx.annotation.CheckResult
 import androidx.annotation.RequiresApi
 import androidx.core.app.ServiceCompat
 import org.signal.core.util.logging.Log
 import java.util.concurrent.locks.ReentrantLock
-import javax.annotation.CheckReturnValue
 import kotlin.concurrent.withLock
 
 /**
@@ -44,7 +44,7 @@ abstract class SafeForegroundService : Service() {
      * Safely starts the target foreground service.
      * @return False if we tried to start the service but failed, otherwise true.
      */
-    @CheckReturnValue
+    @CheckResult
     fun start(context: Context, serviceClass: Class<out SafeForegroundService>, extras: Bundle = Bundle.EMPTY): Boolean {
       stateLock.withLock {
         val state = currentState(serviceClass)
@@ -137,7 +137,7 @@ abstract class SafeForegroundService : Service() {
      *
      * @return True if we updated a started service, otherwise false.
      */
-    @CheckReturnValue
+    @CheckResult
     fun update(context: Context, serviceClass: Class<out SafeForegroundService>, extras: Bundle = Bundle.EMPTY): Boolean {
       stateLock.withLock {
         val state = currentState(serviceClass)

@@ -108,10 +108,15 @@ class BackupsSettingsFragment : ComposeFragment() {
         when (state.backupState) {
           is BackupState.Error -> Unit
 
+<<<<<<< MOLLY
+          is BackupState.None -> {
+            checkoutLauncher.launch(null)
+=======
           BackupState.None -> {
             if (!state.isLinkedDevice) {
               checkoutLauncher.launch(null)
             }
+>>>>>>> SIGNAL
           }
 
           else -> {
@@ -209,6 +214,13 @@ private fun BackupsSettingsContent(
             OtherWaysToBackUpHeading()
           }
 
+<<<<<<< MOLLY
+          is BackupState.None -> {
+            if (backupsSettingsState.backupState.featureSupported) {
+              NeverEnabledBackupsRow(
+                onBackupsRowClick = onBackupsRowClick
+              )
+=======
           BackupState.None -> {
             if (backupsSettingsState.isLinkedDevice) {
               BackupsOffLinkedDeviceRow(onLearnMoreClick = onLearnMoreClick)
@@ -217,8 +229,10 @@ private fun BackupsSettingsContent(
                 onBackupsRowClick = onBackupsRowClick
               )
             }
+>>>>>>> SIGNAL
 
-            OtherWaysToBackUpHeading()
+              OtherWaysToBackUpHeading()
+            }
           }
 
           is BackupState.Error -> {
@@ -720,6 +734,12 @@ private fun BackupsSettingsContentLinkedDevicePreview() {
   Previews.Preview {
     BackupsSettingsContent(
       backupsSettingsState = BackupsSettingsState(
+<<<<<<< MOLLY
+        backupState = BackupState.None(featureSupported = true),
+        showBackupTierInternalOverride = true,
+        backupTierInternalOverride = null,
+        lastBackupAt = 0.seconds
+=======
         backupState = BackupState.ActivePaid(
           messageBackupsType = MessageBackupsType.Paid(
             pricePerMonth = FiatMoney(BigDecimal.valueOf(2.99), Currency.getInstance("USD")),
@@ -731,6 +751,7 @@ private fun BackupsSettingsContentLinkedDevicePreview() {
         ),
         lastBackupAt = 0.seconds,
         isLinkedDevice = true
+>>>>>>> SIGNAL
       )
     )
   }

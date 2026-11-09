@@ -1,5 +1,8 @@
 package org.thoughtcrime.securesms.database;
 
+<<<<<<< MOLLY
+public final class PaymentTable {
+=======
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -48,6 +51,7 @@ import java.util.UUID;
 public final class PaymentTable extends DatabaseTable implements RecipientIdDatabaseReference {
 
   private static final String TAG = Log.tag(PaymentTable.class);
+>>>>>>> SIGNAL
 
   public static final String TABLE_NAME = "payments";
 
@@ -97,6 +101,8 @@ public final class PaymentTable extends DatabaseTable implements RecipientIdData
     "CREATE UNIQUE INDEX IF NOT EXISTS receipt_public_key_index ON " + TABLE_NAME + " (" + PUBLIC_KEY + ");"
   };
 
+<<<<<<< MOLLY
+=======
   private final MutableLiveData<Object> changeSignal;
 
   PaymentTable(@NonNull Context context, @NonNull SignalDatabase databaseHelper) {
@@ -887,4 +893,5 @@ public final class PaymentTable extends DatabaseTable implements RecipientIdData
   public final class PublicKeyConflictException extends Exception {
     private PublicKeyConflictException() {}
   }
+>>>>>>> SIGNAL
 }

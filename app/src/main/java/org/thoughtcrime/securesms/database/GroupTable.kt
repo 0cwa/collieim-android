@@ -4,7 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.text.TextUtils
+<<<<<<< MOLLY
+import androidx.annotation.CheckResult
+=======
 import androidx.annotation.VisibleForTesting
+>>>>>>> SIGNAL
 import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
 import okio.ByteString
@@ -82,7 +86,6 @@ import java.security.SecureRandom
 import java.time.Instant
 import java.util.Optional
 import java.util.stream.Collectors
-import javax.annotation.CheckReturnValue
 import kotlin.math.abs
 
 class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
@@ -650,7 +653,7 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
     return null
   }
 
-  @CheckReturnValue
+  @CheckResult
   fun create(groupId: GroupId.V1, title: String?, members: Collection<RecipientId>, avatar: SignalServiceAttachmentPointer?): Boolean {
     if (groupExists(groupId.deriveV2MigrationGroupId())) {
       throw LegacyGroupInsertException(groupId)
@@ -659,12 +662,12 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
     return create(groupId, title, members, avatar, null, null, null, null)
   }
 
-  @CheckReturnValue
+  @CheckResult
   fun create(groupId: GroupId.Mms, title: String?, members: Collection<RecipientId>): Boolean {
     return create(groupId, if (title.isNullOrEmpty()) null else title, members, null, null, null, null, null)
   }
 
-  @CheckReturnValue
+  @CheckResult
   @JvmOverloads
   fun create(
     groupMasterKey: GroupMasterKey,
@@ -714,7 +717,7 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
   /**
    * @param groupMasterKey null for V1, must be non-null for V2 (presence dictates group version).
    */
-  @CheckReturnValue
+  @CheckResult
   private fun create(
     groupId: GroupId,
     title: String?,

@@ -25,9 +25,7 @@ import org.thoughtcrime.securesms.conversation.AttachmentKeyboard
 import org.thoughtcrime.securesms.conversation.AttachmentKeyboardButton
 import org.thoughtcrime.securesms.conversation.ManageContextMenu
 import org.thoughtcrime.securesms.conversation.v2.ConversationViewModel
-import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
-import java.util.function.Predicate
 
 /**
  * Fragment wrapped version of [AttachmentKeyboard] to help encapsulate logic the view
@@ -47,7 +45,6 @@ class AttachmentKeyboardFragment : LoggingFragment(R.layout.attachment_keyboard_
   private lateinit var attachmentKeyboardView: AttachmentKeyboard
 
   private val lifecycleDisposable = LifecycleDisposable()
-  private val removePaymentFilter: Predicate<AttachmentKeyboardButton> = Predicate { button -> button != AttachmentKeyboardButton.PAYMENT }
 
   @Suppress("ReplaceGetOrSet")
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,9 +54,6 @@ class AttachmentKeyboardFragment : LoggingFragment(R.layout.attachment_keyboard_
     attachmentKeyboardView = view.findViewById(R.id.attachment_keyboard)
     attachmentKeyboardView.apply {
       setCallback(this@AttachmentKeyboardFragment)
-      if (!SignalStore.payments.paymentsAvailability.isSendAllowed) {
-        filterAttachmentKeyboardButtons(removePaymentFilter)
-      }
     }
 
     viewModel.getRecentMedia()
@@ -127,6 +121,9 @@ class AttachmentKeyboardFragment : LoggingFragment(R.layout.attachment_keyboard_
   }
 
   private fun updateButtonsAvailable(recipient: Recipient) {
+<<<<<<< MOLLY
+    // MOLLY: No-op
+=======
     val paymentsValues = SignalStore.payments
     val isPaymentsAvailable = paymentsValues.paymentsAvailability.isSendAllowed && !recipient.isSelf && !recipient.isGroup && recipient.isRegistered && SignalStore.account.isPrimaryDevice
 
@@ -135,5 +132,6 @@ class AttachmentKeyboardFragment : LoggingFragment(R.layout.attachment_keyboard_
     } else {
       attachmentKeyboardView.filterAttachmentKeyboardButtons(null)
     }
+>>>>>>> SIGNAL
   }
 }

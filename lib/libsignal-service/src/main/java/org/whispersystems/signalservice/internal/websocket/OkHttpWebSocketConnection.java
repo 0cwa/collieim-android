@@ -10,6 +10,13 @@ import org.signal.core.util.logging.Log;
 import org.signal.network.config.TrustStore;
 import org.signal.network.exceptions.NonSuccessfulResponseCodeException;
 import org.whispersystems.signalservice.api.util.CredentialsProvider;
+<<<<<<< MOLLY
+import org.whispersystems.signalservice.api.util.Tls12SocketFactory;
+import org.whispersystems.signalservice.api.websocket.HealthMonitor;
+import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState;
+import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration;
+import org.whispersystems.signalservice.internal.configuration.SignalServiceUrl;
+=======
 import org.signal.network.util.Tls12SocketFactory;
 import org.signal.network.util.TlsProxySocketFactory;
 import org.whispersystems.signalservice.api.websocket.HealthMonitor;
@@ -17,10 +24,12 @@ import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState;
 import org.signal.network.config.SignalProxy;
 import org.signal.network.config.SignalServiceConfiguration;
 import org.signal.network.config.SignalServiceUrl;
+>>>>>>> SIGNAL
 import org.whispersystems.signalservice.internal.util.BlacklistingTrustManager;
 import org.whispersystems.signalservice.internal.util.Util;
 
 import java.io.IOException;
+import java.net.ProxySelector;
 import java.net.SocketException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -36,6 +45,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -74,8 +84,9 @@ public class OkHttpWebSocketConnection extends WebSocketListener implements WebS
   private final String                                    signalAgent;
   private final HealthMonitor                             healthMonitor;
   private final List<Interceptor>                         interceptors;
-  private final Optional<Dns>                             dns;
-  private final Optional<SignalProxy>                     signalProxy;
+  private final Dns                                       dns;
+  private final SocketFactory                             socketFactory;
+  private final ProxySelector                             proxySelector;
   private final BehaviorSubject<WebSocketConnectionState> webSocketState;
   private final boolean                                   allowStories;
   private final SignalServiceUrl[]                        serviceUrls;
@@ -107,7 +118,8 @@ public class OkHttpWebSocketConnection extends WebSocketListener implements WebS
     this.signalAgent         = signalAgent;
     this.interceptors        = serviceConfiguration.getNetworkInterceptors();
     this.dns                 = serviceConfiguration.getDns();
-    this.signalProxy         = serviceConfiguration.getSignalProxy();
+    this.socketFactory       = serviceConfiguration.getSocketFactory();
+    this.proxySelector       = serviceConfiguration.getProxySelector();
     this.healthMonitor       = healthMonitor;
     this.webSocketState      = BehaviorSubject.createDefault(WebSocketConnectionState.DISCONNECTED);
     this.allowStories        = allowStories;
@@ -137,21 +149,19 @@ public class OkHttpWebSocketConnection extends WebSocketListener implements WebS
       SignalServiceUrl               serviceUrl     = connectionInfo.getFirst();
       String                         wsUri          = connectionInfo.getSecond();
 
-      Pair<SSLSocketFactory, X509TrustManager> socketFactory = createTlsSocketFactory(trustStore);
+      Pair<SSLSocketFactory, X509TrustManager> sslSocketFactory = createTlsSocketFactory(trustStore);
 
-      OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().sslSocketFactory(new Tls12SocketFactory(socketFactory.getFirst()),
-                                                                                       socketFactory.getSecond())
+      OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().socketFactory(socketFactory)
+                                                                     .proxySelector(proxySelector)
+                                                                     .dns(dns)
+                                                                     .sslSocketFactory(new Tls12SocketFactory(sslSocketFactory.getFirst()),
+                                                                                       sslSocketFactory.getSecond())
                                                                      .connectionSpecs(serviceUrl.getConnectionSpecs().orElse(Util.immutableList(ConnectionSpec.RESTRICTED_TLS)))
                                                                      .readTimeout(KEEPALIVE_FREQUENCY_SECONDS + 10, TimeUnit.SECONDS)
-                                                                     .dns(dns.orElse(Dns.SYSTEM))
                                                                      .connectTimeout(KEEPALIVE_FREQUENCY_SECONDS + 10, TimeUnit.SECONDS);
 
       for (Interceptor interceptor : interceptors) {
         clientBuilder.addInterceptor(interceptor);
-      }
-
-      if (signalProxy.isPresent()) {
-        clientBuilder.socketFactory(new TlsProxySocketFactory(signalProxy.get().getHost(), signalProxy.get().getPort(), dns));
       }
 
       OkHttpClient okHttpClient = clientBuilder.build();

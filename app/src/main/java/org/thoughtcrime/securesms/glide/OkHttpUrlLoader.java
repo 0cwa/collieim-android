@@ -12,6 +12,11 @@ import com.bumptech.glide.load.model.MultiModelLoaderFactory;
 import org.signal.glide.load.OkHttpStreamFetcher;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.net.ContentProxySelector;
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.net.Networking;
+import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
+=======
+>>>>>>> SIGNAL
 
 import java.io.InputStream;
 
@@ -46,8 +51,16 @@ public class OkHttpUrlLoader implements ModelLoader<GlideUrl, InputStream> {
       if (internalClient == null) {
         synchronized (Factory.class) {
           if (internalClient == null) {
+<<<<<<< MOLLY
+            internalClient = new OkHttpClient.Builder()
+                                             .socketFactory(Networking.getSocketFactory())
+                                             .dns(Networking.getDns())
+                                             .proxySelector(new ContentProxySelector())
+                                             .addInterceptor(new StandardUserAgentInterceptor())
+=======
             internalClient = AppDependencies.getOkHttpClient().newBuilder()
                                              .proxySelector(new ContentProxySelector())
+>>>>>>> SIGNAL
                                              .build();
           }
         }

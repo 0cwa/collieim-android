@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
+<<<<<<< MOLLY
+import org.signal.core.ui.util.ThemeUtil
+=======
 import org.signal.core.ui.enableEdgeToEdge
+>>>>>>> SIGNAL
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.stories.Stories
 import org.thoughtcrime.securesms.util.fragments.findListener
@@ -46,7 +49,7 @@ class MultiselectForwardFullScreenDialogFragment : DialogFragment(), Multiselect
   }
 
   override fun getDialogBackgroundColor(): Int {
-    return ContextCompat.getColor(requireContext(), R.color.signal_background_primary)
+    return ThemeUtil.getThemedColor(requireContext(), R.attr.signal_background_primary)
   }
 
   override fun getStorySendRequirements(): Stories.MediaTransform.SendRequirements? {

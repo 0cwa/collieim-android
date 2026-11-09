@@ -52,9 +52,12 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
     private const val LEAST_ACTIVE_LINKED_DEVICE = "misc.linked_device.least_active"
     private const val NEXT_DATABASE_ANALYSIS_TIME = "misc.next_database_analysis_time"
     private const val LAST_NETWORK_RESET_TIME = "misc.last_network_reset_time"
+<<<<<<< MOLLY
+=======
     private const val LAST_WEBSOCKET_CONNECT_TIME = "misc.last_websocket_connect_time"
     private const val LAST_PROCESS_EXIT_TIMESTAMP_SEEN = "misc.last_process_exit_timestamp_seen"
     private const val LAST_CONNECTIVITY_WARNING_TIME = "misc.last_connectivity_warning_time"
+>>>>>>> SIGNAL
     private const val NEW_LINKED_DEVICE_ID = "misc.new_linked_device_id"
     private const val NEW_LINKED_DEVICE_CREATED_TIME = "misc.new_linked_device_created_time"
     private const val STARTED_QUOTE_THUMBNAIL_MIGRATION = "misc.started_quote_thumbnail_migration"
@@ -287,11 +290,6 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
   var lastForegroundTime by longValue(LAST_FOREGROUND_TIME, 0)
 
   /**
-   * Whether or not we've done the initial "PNP Hello World" dance.
-   */
-  var hasPniInitializedDevices by booleanValue(PNI_INITIALIZED_DEVICES, true)
-
-  /**
    * Whether or not we should show a reminder for the user to relink their devices after re-registering.
    */
   var shouldShowLinkedDevicesReminder by booleanValue(LINKED_DEVICES_REMINDER, false)
@@ -387,6 +385,8 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
   var lastNetworkResetDueToStreamResets: Long by longValue(LAST_NETWORK_RESET_TIME, 0L)
 
   /**
+<<<<<<< MOLLY
+=======
    * The last time you successfully connected to the websocket.
    */
   var lastWebSocketConnectTime: Long by longValue(LAST_WEBSOCKET_CONNECT_TIME, System.currentTimeMillis())
@@ -400,6 +400,7 @@ class MiscellaneousValues internal constructor(store: KeyValueStore, context: Co
   var lastConnectivityWarningTime: Long by longValue(LAST_CONNECTIVITY_WARNING_TIME, 0)
 
   /**
+>>>>>>> SIGNAL
    * The device id of the device that was recently linked
    */
   var newLinkedDeviceId: Int by integerValue(NEW_LINKED_DEVICE_ID, 0)

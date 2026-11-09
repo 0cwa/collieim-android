@@ -964,7 +964,74 @@ private fun FlashToggleButtonIcon(
   )
 }
 
+<<<<<<< MOLLY
+/** Signal ultramarine blue color for the count badge */
+private val UltramarineBlue = Color(0xFF7152FF)
+
+/**
+ * Media count indicator that shows the number of selected media items.
+ * Displays a pill-shaped button with the count in a blue badge and a chevron icon.
+ */
+@Composable
+private fun MediaCountIndicator(
+  count: Int,
+  onClick: () -> Unit,
+  stringResources: StringResources,
+  modifier: Modifier = Modifier
+) {
+  val contentDescription = if (stringResources.send != 0) {
+    stringResource(stringResources.send)
+  } else {
+    null
+  }
+
+  Row(
+    modifier = modifier
+      .height(44.dp)
+      .background(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(32.dp)
+      )
+      .clip(RoundedCornerShape(32.dp))
+      .clickable(onClick = onClick)
+      .padding(horizontal = 12.dp),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    val size = with(LocalDensity.current) {
+      22.sp.toDp()
+    }
+    Box(
+      modifier = Modifier
+        .background(
+          color = UltramarineBlue,
+          shape = CircleShape
+        )
+        .size(size),
+      contentAlignment = Alignment.Center
+    ) {
+      Text(
+        text = if (count > 99) "99+" else count.toString(),
+        color = Color.White,
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Medium
+      )
+    }
+
+    Icon(
+      painter = SignalIcons.ChevronRight.painter,
+      contentDescription = contentDescription,
+      tint = MaterialTheme.colorScheme.onSurface,
+      modifier = Modifier
+        .padding(start = 3.dp)
+        .size(24.dp)
+    )
+  }
+}
+
+@Preview(name = "Default", showBackground = true, backgroundColor = 0xFF444444, widthDp = 360, heightDp = 640)
+=======
 @AllNightPreviews
+>>>>>>> SIGNAL
 @Composable
 private fun StandardCameraHudPreview() {
   Box(modifier = Modifier.fillMaxSize()) {

@@ -6,6 +6,7 @@
 package org.thoughtcrime.securesms.testutil
 
 import androidx.test.core.app.ApplicationProvider
+import im.molly.app.base.ApplicationInstance
 import io.mockk.clearMocks
 import org.junit.rules.ExternalResource
 import org.signal.core.util.PartAuthorityUris
@@ -39,10 +40,14 @@ class MockAppDependenciesRule : ExternalResource() {
     .filterNot { skipList.contains(it.name) }
 
   override fun before() {
+<<<<<<< MOLLY
+    ApplicationInstance.setForTests(ApplicationProvider.getApplicationContext())
+=======
     PartAuthorityUris.init(BuildConfig.APPLICATION_ID)
 
+>>>>>>> SIGNAL
     if (!AppDependencies.isInitialized) {
-      AppDependencies.init(ApplicationProvider.getApplicationContext(), MockApplicationDependencyProvider())
+      AppDependencies.init(MockApplicationDependencyProvider())
     }
   }
 
@@ -51,5 +56,6 @@ class MockAppDependenciesRule : ExternalResource() {
       .forEach { property ->
         property.get(AppDependencies)?.let { clearMocks(it) }
       }
+    ApplicationInstance.clearForTests()
   }
 }

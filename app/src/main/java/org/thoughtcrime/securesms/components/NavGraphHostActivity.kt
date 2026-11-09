@@ -27,6 +27,11 @@ open class NavGraphHostActivity : PassphraseRequiredActivity() {
   protected lateinit var navController: NavController
     private set
 
+  override fun onPreCreate() {
+    super.onPreCreate()
+    dynamicTheme.onCreate(this)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
     enableSettingsEdgeToEdge()
 
@@ -50,8 +55,6 @@ open class NavGraphHostActivity : PassphraseRequiredActivity() {
       navController = fragment.navController
     }
 
-    dynamicTheme.onCreate(this)
-
     onBackPressedDispatcher.addCallback(this, OnBackPressed())
   }
 
@@ -61,8 +64,8 @@ open class NavGraphHostActivity : PassphraseRequiredActivity() {
   }
 
   override fun onNavigateUp(): Boolean {
+    onWillFinish()
     return if (!Navigation.findNavController(this, R.id.nav_host_fragment).popBackStack()) {
-      onWillFinish()
       finish()
       true
     } else {

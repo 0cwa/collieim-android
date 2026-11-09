@@ -7,21 +7,21 @@ package org.thoughtcrime.securesms.notifications
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import im.molly.unifiedpush.UnifiedPushDistributor
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import org.thoughtcrime.securesms.crash.CrashConfig
-import org.thoughtcrime.securesms.database.LogDatabase
-import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.DeviceSpecificNotificationConfig.ShowCondition
+<<<<<<< MOLLY
+=======
 import org.thoughtcrime.securesms.util.ConnectivityWarning
 import org.thoughtcrime.securesms.util.NetworkUtil
 import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
+>>>>>>> SIGNAL
 import java.util.concurrent.TimeUnit
-import kotlin.time.Duration.Companion.days
 
 /**
  * View model for checking for various app vitals, like slow notifications and crashes.
@@ -36,7 +36,7 @@ class VitalsViewModel(private val context: Application) : AndroidViewModel(conte
     vitalsState = checkSubject
       .subscribeOn(Schedulers.io())
       .observeOn(Schedulers.io())
-      .throttleFirst(1, TimeUnit.MINUTES)
+      .throttleFirst(5, TimeUnit.MINUTES)
       .switchMapSingle {
         checkHeuristics()
       }
@@ -50,6 +50,10 @@ class VitalsViewModel(private val context: Application) : AndroidViewModel(conte
 
   private fun checkHeuristics(): Single<State> {
     return Single.fromCallable {
+      if (SignalStore.unifiedpush.enabled && !UnifiedPushDistributor.checkIfActive()) {
+        return@fromCallable State.PROMPT_UNIFIEDPUSH_SELECT_DISTRIBUTOR_DIALOG
+      }
+
       val deviceSpecificCondition = SlowNotificationHeuristics.getDeviceSpecificShowCondition()
 
       val shouldShowDeviceSpecificDialog = SlowNotificationHeuristics.shouldShowDeviceSpecificDialog()
@@ -71,6 +75,8 @@ class VitalsViewModel(private val context: Application) : AndroidViewModel(conte
         return@fromCallable State.PROMPT_GENERAL_BATTERY_SAVER_DIALOG
       }
 
+<<<<<<< MOLLY
+=======
       if (havingDelayedNotifications && SlowNotificationHeuristics.shouldPromptUserForDelayedNotificationLogs()) {
         return@fromCallable State.PROMPT_DEBUGLOGS_FOR_NOTIFICATIONS
       }
@@ -96,17 +102,15 @@ class VitalsViewModel(private val context: Application) : AndroidViewModel(conte
         }
       }
 
+>>>>>>> SIGNAL
       return@fromCallable State.NONE
     }.subscribeOn(Schedulers.io())
   }
 
   enum class State {
     NONE,
+    PROMPT_UNIFIEDPUSH_SELECT_DISTRIBUTOR_DIALOG,
     PROMPT_SPECIFIC_BATTERY_SAVER_DIALOG,
     PROMPT_GENERAL_BATTERY_SAVER_DIALOG,
-    PROMPT_DEBUGLOGS_FOR_NOTIFICATIONS,
-    PROMPT_DEBUGLOGS_FOR_CRASH,
-    PROMPT_CONNECTIVITY_WARNING,
-    PROMPT_DEBUGLOGS_FOR_CONNECTIVITY_WARNING
   }
 }

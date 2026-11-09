@@ -1,28 +1,28 @@
 package org.thoughtcrime.securesms.util
 
-import com.google.android.gms.wallet.WalletConstants
-import org.signal.donations.GooglePayApi
 import org.signal.donations.StripeApi
 import org.thoughtcrime.securesms.BuildConfig
 
 object Environment {
   private const val GOOGLE_PLAY_BILLING_APPLICATION_ID = "org.thoughtcrime.securesms"
 
-  const val IS_STAGING: Boolean = BuildConfig.BUILD_ENVIRONMENT_TYPE == "Staging" || BuildConfig.BUILD_ENVIRONMENT_TYPE == "Pnp" || BuildConfig.BUILD_ENVIRONMENT_TYPE == "Backup"
-  const val IS_NIGHTLY: Boolean = BuildConfig.BUILD_DISTRIBUTION_TYPE == "nightly"
-  const val IS_WEBSITE: Boolean = BuildConfig.BUILD_DISTRIBUTION_TYPE == "website"
-  const val IS_BENCHMARK: Boolean = BuildConfig.BUILD_VARIANT_TYPE == "Benchmark"
-  const val IS_PERF: Boolean = BuildConfig.BUILD_VARIANT_TYPE == "Perf"
+  const val IS_STAGING: Boolean = BuildConfig.FLAVOR_environment == "staging"
+  const val IS_DEV: Boolean = BuildConfig.FLAVOR_environment == "dev"
 
   @JvmField
-  var IS_INSTRUMENTATION: Boolean = IS_BENCHMARK
+  var IS_INSTRUMENTATION: Boolean = false
 
-  @JvmStatic
   fun isInternal(): Boolean {
-    return !IS_INSTRUMENTATION && (BuildConfig.DEBUG || IS_NIGHTLY || IS_PERF || IS_STAGING)
+    return IS_STAGING || BuildConfig.DEBUG || BuildConfig.FORCE_INTERNAL_USER_FLAG
   }
 
   @JvmField
+<<<<<<< MOLLY
+  val USE_NEW_REGISTRATION: Boolean = false // MOLLY: Test before enable
+
+  @JvmField
+  val IS_LINK_AND_SYNC_AVAILABLE: Boolean = false // MOLLY: Test before enable
+=======
   val IS_LINK_AND_SYNC_AVAILABLE: Boolean = true
 
   @JvmField
@@ -33,6 +33,7 @@ object Environment {
   fun supportsGooglePlayBilling(): Boolean {
     return BuildConfig.APPLICATION_ID == GOOGLE_PLAY_BILLING_APPLICATION_ID
   }
+>>>>>>> SIGNAL
 
   object Backups {
     @JvmStatic
@@ -45,12 +46,6 @@ object Environment {
   }
 
   object Donations {
-    @JvmStatic
-    @get:JvmName("getGooglePayConfiguration")
-    val GOOGLE_PAY_CONFIGURATION = GooglePayApi.Configuration(
-      walletEnvironment = if (IS_STAGING) WalletConstants.ENVIRONMENT_TEST else WalletConstants.ENVIRONMENT_PRODUCTION
-    )
-
     @JvmStatic
     @get:JvmName("getStripeConfiguration")
     val STRIPE_CONFIGURATION = StripeApi.Configuration(

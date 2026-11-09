@@ -8,6 +8,9 @@ package org.thoughtcrime.securesms.mediasend.v3
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+<<<<<<< MOLLY
+import android.view.ViewGroup
+=======
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,14 +21,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+>>>>>>> SIGNAL
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+<<<<<<< MOLLY
+import org.signal.core.ui.util.ThemeUtil
+=======
 import kotlinx.coroutines.withContext
 import org.signal.core.util.ContentTypeUtil
+>>>>>>> SIGNAL
 import org.signal.core.util.getParcelableArrayListCompat
 import org.signal.core.util.logging.Log
 import org.signal.mediasend.EditorState
@@ -46,10 +54,13 @@ import org.thoughtcrime.securesms.conversation.mutiselect.forward.SearchConfigur
 import org.thoughtcrime.securesms.mediasend.v2.stories.StoryMediaPreviews
 import org.thoughtcrime.securesms.scribbles.ImageEditorFragment
 import org.thoughtcrime.securesms.stories.Stories
+<<<<<<< MOLLY
+=======
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingModel
 import org.thoughtcrime.securesms.util.adapter.mapping.compose.MappingEntryProvider
 import org.thoughtcrime.securesms.util.adapter.mapping.compose.rememberMappingEntryProvider
 import org.signal.core.ui.R as CoreUiR
+>>>>>>> SIGNAL
 
 /**
  * Hosts [MultiselectForwardFragment], implementing its callback interface and using the shared
@@ -132,7 +143,7 @@ class MediaSendV3ForwardFragment : Fragment(R.layout.multiselect_forward_activit
   }
 
   override fun getDialogBackgroundColor(): Int {
-    return ContextCompat.getColor(requireContext(), CoreUiR.color.signal_colorBackground)
+    return ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorSurface)
   }
 
   override fun getStorySendRequirements(): Stories.MediaTransform.SendRequirements? {

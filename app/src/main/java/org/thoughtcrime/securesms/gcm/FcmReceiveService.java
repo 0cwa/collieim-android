@@ -15,8 +15,10 @@ import org.thoughtcrime.securesms.jobs.FcmRefreshJob;
 import org.thoughtcrime.securesms.jobs.SubmitRateLimitPushChallengeJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.registration.fcm.PushChallengeRequest;
+import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.NetworkUtil;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.util.Locale;
 
@@ -25,7 +27,16 @@ public class FcmReceiveService extends FirebaseMessagingService {
   private static final String TAG = Log.tag(FcmReceiveService.class);
 
   @Override
-  public void onMessageReceived(RemoteMessage remoteMessage) {
+  public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+    if (KeyCachingService.isLocked()) {
+      if (remoteMessage.getPriority() == RemoteMessage.PRIORITY_HIGH &&
+          TextSecurePreferences.isPassphraseLockNotificationsEnabled(this)) {
+        Log.d(TAG, "New urgent message received while app is locked.");
+        FcmFetchManager.postMayHaveMessagesNotification(this);
+      }
+      return;
+    }
+
     Log.i(TAG, String.format(Locale.US,
                              "onMessageReceived() ID: %s, Delay: %d (Server offset: %d), Priority: %d, Original Priority: %d, Network: %s",
                              remoteMessage.getMessageId(),
@@ -52,13 +63,22 @@ public class FcmReceiveService extends FirebaseMessagingService {
 
   @Override
   public void onDeletedMessages() {
+    if (KeyCachingService.isLocked()) {
+      return;
+    }
+
     Log.w(TAG, "onDeleteMessages() -- Messages may have been dropped. Doing a normal message fetch.");
     handleReceivedNotification(AppDependencies.getApplication(), null);
   }
 
   @Override
-  public void onNewToken(String token) {
+  public void onNewToken(@NonNull String token) {
     Log.i(TAG, "onNewToken()");
+
+    if (KeyCachingService.isLocked()) {
+      TextSecurePreferences.setShouldRefreshFcmToken(AppDependencies.getApplication(), true);
+      return;
+    }
 
     if (!SignalStore.account().isRegistered()) {
       Log.i(TAG, "Got a new FCM token, but the user isn't registered.");
@@ -78,7 +98,8 @@ public class FcmReceiveService extends FirebaseMessagingService {
     Log.w(TAG, "onSendError()", e);
   }
 
-  private static void handleReceivedNotification(Context context, @Nullable RemoteMessage remoteMessage) {
+  // MOLLY: Make this function public to use it from UnifiedPushReceiver
+  public static void handleReceivedNotification(Context context, @Nullable RemoteMessage remoteMessage) {
     boolean highPriority = remoteMessage != null && remoteMessage.getPriority() == RemoteMessage.PRIORITY_HIGH;
     try {
       Log.d(TAG, String.format(Locale.US, "[handleReceivedNotification] API: %s, RemoteMessagePriority: %s", Build.VERSION.SDK_INT, remoteMessage != null ? remoteMessage.getPriority() : "n/a"));

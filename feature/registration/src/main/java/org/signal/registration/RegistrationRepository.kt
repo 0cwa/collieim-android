@@ -11,9 +11,12 @@ import android.app.backup.BackupManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+<<<<<<< MOLLY
+=======
 import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.GoogleApiAvailability
+>>>>>>> SIGNAL
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -202,23 +205,7 @@ class RegistrationRepository(
    * @return whether the Play Services SMS retriever was successfully started.
    */
   suspend fun registerSmsListener(): Boolean {
-    Log.d(TAG, "Attempting to start verification code SMS retriever.")
-    val started = withTimeoutOrNull(5.seconds.inWholeMilliseconds) {
-      try {
-        SmsRetriever.getClient(context).startSmsRetriever().await()
-        Log.d(TAG, "Successfully started verification code SMS retriever.")
-        true
-      } catch (ex: Exception) {
-        Log.w(TAG, "Could not start verification code SMS retriever due to exception.", ex)
-        false
-      }
-    }
-
-    if (started == null) {
-      Log.w(TAG, "Could not start verification code SMS retriever due to timeout.")
-    }
-
-    return started == true
+    return false  // MOLLY: TODO
   }
 
   fun getCaptchaUrl(): String = networkController.getCaptchaUrl()

@@ -44,13 +44,17 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.ProfileUtil
+<<<<<<< MOLLY
+import org.thoughtcrime.securesms.util.SecurePreferenceManager
+import org.thoughtcrime.securesms.util.TextSecurePreferences
+import org.thoughtcrime.securesms.webrtc.CallDataMode
+=======
+>>>>>>> SIGNAL
 import org.whispersystems.signalservice.api.push.UsernameLinkComponents
 import org.whispersystems.signalservice.api.storage.IAPSubscriptionId.AppleIAPOriginalTransactionId
 import org.whispersystems.signalservice.api.storage.IAPSubscriptionId.GooglePlayBillingPurchaseToken
 import org.whispersystems.signalservice.api.subscriptions.SubscriberId
 import java.util.Currency
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 /**
  * Handles importing/exporting [AccountData] frames for an archive.
@@ -71,12 +75,7 @@ object AccountDataArchiveProcessor {
 
     val backupSubscriberRecord = db.inAppPaymentSubscriberTable.getBackupsSubscriber()
 
-    val screenLockTimeoutSeconds = signalStore.settingsValues.screenLockTimeout
-    val screenLockTimeoutMinutes = if (screenLockTimeoutSeconds > 0) {
-      screenLockTimeoutSeconds.seconds.inWholeMinutes.toInt()
-    } else {
-      null
-    }
+    val screenLockTimeoutMinutes = null // MOLLY: FIXME
 
     val mobileAutoDownload = SignalStore.settings.mobileMediaDownloadAllowed
     val wifiAutoDownload = SignalStore.settings.wifiMediaDownloadAllowed
@@ -278,11 +277,19 @@ object AccountDataArchiveProcessor {
     SignalStore.story.isFeatureDisabled = settings.storiesDisabled
     SignalStore.story.userHasSeenGroupStoryEducationSheet = settings.hasSeenGroupStoryEducationSheet
     SignalStore.story.viewedReceiptsEnabled = settings.storyViewReceiptsEnabled ?: settings.readReceipts
+<<<<<<< MOLLY
+    SignalStore.backup.optimizeStorage = settings.optimizeOnDeviceStorage
+    SignalStore.backup.backupTier = if (SignalStore.account.isPrimaryDevice) settings.backupTier?.toLocalBackupTier() else null
+    SignalStore.settings.sentMediaQuality = settings.defaultSentMediaQuality.toLocalSentMediaQuality()
+    SignalStore.settings.setTheme(settings.appTheme.toLocalTheme(), false)  // MOLLY: FIXME
+    SignalStore.settings.setCallDataMode(settings.callsUseLessDataSetting.toLocalCallDataMode())
+=======
     SignalStore.backup.optimizeStorage = !importState.backupMode.isLinkAndSync && settings.optimizeOnDeviceStorage
     SignalStore.backup.backupTier = MessageBackupTier.fromBackupLevel(settings.backupTier)
     SignalStore.settings.sentMediaQuality = settings.defaultSentMediaQuality.toLocalSentMediaQuality()
     SignalStore.settings.theme = settings.appTheme.toLocalTheme()
     SignalStore.settings.callDataMode = settings.callsUseLessDataSetting.toLocalCallDataMode()
+>>>>>>> SIGNAL
     SignalStore.settings.automaticVerificationEnabled = settings.allowAutomaticKeyVerification
     SignalStore.settings.setUnreadBadgeType(settings.unreadBadgeType.value)
     SignalStore.settings.setIncludeMutedInBadgeCount(settings.includeMutedChatsInBadge ?: false)
@@ -298,13 +305,21 @@ object AccountDataArchiveProcessor {
       val mobileAndWifiDownloadSet = autoDownloadSettings.toLocalAutoDownloadSet(AccountData.AutoDownloadSettings.AutoDownloadOption.WIFI_AND_CELLULAR)
       val wifiDownloadSet = mobileAndWifiDownloadSet + autoDownloadSettings.toLocalAutoDownloadSet(AccountData.AutoDownloadSettings.AutoDownloadOption.WIFI)
 
+<<<<<<< MOLLY
+      SecurePreferenceManager.getSecurePreferences(context).edit().apply {
+        putStringSet(TextSecurePreferences.MEDIA_DOWNLOAD_MOBILE_PREF, mobileAndWifiDownloadSet)
+        putStringSet(TextSecurePreferences.MEDIA_DOWNLOAD_WIFI_PREF, wifiDownloadSet)
+        apply()
+      }
+=======
       SignalStore.settings.mobileMediaDownloadAllowed = mobileAndWifiDownloadSet
       SignalStore.settings.wifiMediaDownloadAllowed = wifiDownloadSet
+>>>>>>> SIGNAL
     }
 
     val screenLockTimeoutMinutes = settings.screenLockTimeoutMinutes
     if (screenLockTimeoutMinutes != null) {
-      SignalStore.settings.screenLockTimeout = screenLockTimeoutMinutes.minutes.inWholeSeconds
+      // MOLLY: FIXME
     }
 
     val pinReminders = settings.pinReminders

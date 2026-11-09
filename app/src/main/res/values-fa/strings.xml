@@ -3719,7 +3719,7 @@
     <string name="preferences__led_color_unknown">ناشناخته</string>
     <string name="preferences__silent">بی‌صدا</string>
     <string name="preferences__advanced">پیشرفته</string>
-    <string name="preferences__donate_to_signal">اهدای کمک مالی به سیگنال</string>
+    <string name="preferences__donate_to_signal">اهدای کمک مالی به مولی</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">استوری‌ها</string>
     <string name="preferences__payments">پرداخت‌ها</string>

@@ -59,6 +59,8 @@ class AppSettingsViewModelTest {
 
   private var isPrimaryDevice = true
   private var userUnregistered = false
+  private var accountRegistered = true
+  private var unauthorizedReceived = false
   private var backupFailureState = BackupFailureState.NONE
 
   @Before
@@ -69,7 +71,7 @@ class AppSettingsViewModelTest {
     every { AppSettingsRepository.observeProfile() } returns profile
     every { AppSettingsRepository.observeUnreadPaymentsCount() } returns unreadPaymentsCount
     every { AppSettingsRepository.isPrimaryDevice() } answers { isPrimaryDevice }
-    every { AppSettingsRepository.isUserUnregistered() } answers { userUnregistered }
+    every { AppSettingsRepository.isUserUnregistered() } answers { userUnregistered || unauthorizedReceived || !accountRegistered }
     every { AppSettingsRepository.isClientDeprecated() } returns false
     every { AppSettingsRepository.hasExpiredGiftBadge() } returns false
     every { AppSettingsRepository.showInternalPreferences() } returns false
@@ -166,6 +168,19 @@ class AppSettingsViewModelTest {
       AppSettingsRoute.LabsRoute.Labs,
       AppSettingsRoute.InternalRoute.Internal
     )
+  }
+
+  @Test
+  fun `LinkedDevicesClicked is ignored when the primary device is unregistered`() = runTest(testDispatcher) {
+    isPrimaryDevice = true
+    accountRegistered = false
+    unauthorizedReceived = false
+
+    val viewModel = createViewModel()
+    viewModel.onEvent(AppSettingsEvent.LinkedDevicesClicked)
+
+    assertThat(viewModel.state.value.isRegisteredAndUpToDate).isFalse()
+    assertThat(navigationEvents).isEmpty()
   }
 
   @Test

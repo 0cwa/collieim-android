@@ -60,7 +60,11 @@ class AppSettingsViewModel(
       AppSettingsEvent.UsernameLinkClicked -> parentEventEmitter.openSection(AppSettingsRoute.UsernameLinkRoute.UsernameLink)
       AppSettingsEvent.BackupWarningClicked -> onBackupWarningClicked()
       AppSettingsEvent.AccountClicked -> parentEventEmitter.openSection(AppSettingsRoute.AccountRoute.Account)
-      AppSettingsEvent.LinkedDevicesClicked -> parentEventEmitter.openSection(AppSettingsRoute.LinkDeviceRoute.LinkDevice)
+      AppSettingsEvent.LinkedDevicesClicked -> {
+        if (_state.value.isPrimaryDevice && _state.value.isRegisteredAndUpToDate) {
+          parentEventEmitter.openSection(AppSettingsRoute.LinkDeviceRoute.LinkDevice)
+        }
+      }
       AppSettingsEvent.DonateClicked -> _actions.send(AppSettingsAction.OpenDonateUrl)
       AppSettingsEvent.DonateLongClicked -> Unit
       AppSettingsEvent.AppearanceClicked -> parentEventEmitter.openSection(AppSettingsRoute.AppearanceRoute.Appearance)

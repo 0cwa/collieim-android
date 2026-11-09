@@ -64,7 +64,7 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
   private var settingsAdapter: MappingAdapter? = null
   private var latestPrivacyState: PrivacySettingsState? = null
   private var networkConnectionStatus: NetworkConnectionStatus = NetworkConnectionStatus.NotChecked
-  private val networkSettingsController by lazy { NetworkSettingsController() }
+  internal var networkSettingsController = NetworkSettingsController()
 
   private val incognitoSummary: CharSequence by lazy {
     SpannableStringBuilder(getString(AppSettingsR.string.preferences__this_setting_is_not_a_guarantee))
@@ -74,6 +74,14 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
           CommunicationActions.openBrowserLink(requireContext(), getString(AppSettingsR.string.preferences__incognito_keyboard_learn_more))
         }
       )
+  }
+
+  override fun onDestroyView() {
+    networkSettingsController.invalidateConnectionCheck()
+    networkConnectionStatus = NetworkConnectionStatus.NotChecked
+    settingsAdapter = null
+    latestPrivacyState = null
+    super.onDestroyView()
   }
 
   override fun onResume() {

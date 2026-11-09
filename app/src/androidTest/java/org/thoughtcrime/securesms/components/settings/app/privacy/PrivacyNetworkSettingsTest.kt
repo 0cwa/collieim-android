@@ -10,12 +10,14 @@ import android.os.SystemClock
 import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.recyclerview.widget.RecyclerView
+import androidx.navigation.fragment.NavHostFragment
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -39,10 +41,13 @@ import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import java.io.File
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 import androidx.test.espresso.NoMatchingViewException
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertSame
 
 @RunWith(androidx.test.ext.junit.runners.AndroidJUnit4::class)
 class PrivacyNetworkSettingsTest {
@@ -107,11 +112,49 @@ class PrivacyNetworkSettingsTest {
   }
 
   @Test
+  fun pendingNetworkCheckIsClearedAndStaleResultIgnoredWhenPrivacyViewIsDestroyed() {
+    val completion = AtomicReference<((Boolean) -> Unit)?>(null)
+
+    ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.privacy(context)).use { scenario ->
+      val privacyFragment = currentPrivacyFragment(scenario)
+      privacyFragment.networkSettingsController = NetworkSettingsController(
+        resetNetwork = {},
+        runTask = { _, _, onComplete -> completion.set(onComplete) }
+      )
+
+      onView(withText(R.string.preferences_network__check_connection)).perform(click())
+      assertNotNull("The pending check should be captured", completion.get())
+      onView(withText(R.string.preferences_network__check_connection)).check(matches(not(isEnabled())))
+
+      onView(withText(AppSettingsR.string.preferences_use_proxy)).perform(click())
+      onView(withText(R.string.preferences_network__connection)).check(matches(isDisplayed()))
+
+      // Deliver the old completion while the Privacy view is destroyed.
+      completion.get()!!.invoke(false)
+      onView(withText(R.string.preferences_network__connection)).check(matches(isDisplayed()))
+
+      pressBack()
+      assertSame(privacyFragment, currentPrivacyFragment(scenario))
+      onView(withText(R.string.network_privacy_inline__not_checked)).check(matches(isDisplayed()))
+      onView(withText(R.string.preferences_network__check_connection)).check(matches(isEnabled()))
+    }
+  }
+
+  @Test
   fun registrationNetworkSettingsActivityStillShowsTheStandaloneProxyControls() {
     ActivityScenario.launch<RegistrationNetworkSettingsActivity>(RegistrationNetworkSettingsActivity.createIntent(context)).use {
       onView(withText(R.string.preferences_network__check_connection)).check(matches(isDisplayed()))
       onView(withText(AppSettingsR.string.preferences_use_proxy)).check(matches(isDisplayed()))
     }
+  }
+
+  private fun currentPrivacyFragment(scenario: ActivityScenario<AppSettingsActivity>): PrivacySettingsFragment {
+    var fragment: PrivacySettingsFragment? = null
+    scenario.onActivity { activity ->
+      val navHost = activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+      fragment = navHost.childFragmentManager.primaryNavigationFragment as? PrivacySettingsFragment
+    }
+    return requireNotNull(fragment)
   }
 
   private fun awaitConnectionResult() {
@@ -162,20 +205,27 @@ class PrivacyNetworkSettingsTest {
       }
       bitmap.recycle()
     } finally {
-      if (hadSecureFlag) {
-        scenario.onActivity { activity -> activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE) }
+      scenario.onActivity { activity ->
+        if (hadSecureFlag) {
+          activity.window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        } else {
+          activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+        assertEquals(hadSecureFlag, activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE != 0)
       }
     }
   }
 
   private fun <T> withScreenSecurityTemporarilyDisabled(block: () -> T): T {
     val wasScreenSecurityEnabled = SignalStore.settings.isScreenSecurityEnabled
+    assertTrue("Screen security should be enabled before the test temporarily disables it", wasScreenSecurityEnabled)
     SignalStore.settings.isScreenSecurityEnabled = false
 
     try {
       return block()
     } finally {
       SignalStore.settings.isScreenSecurityEnabled = wasScreenSecurityEnabled
+      assertEquals(wasScreenSecurityEnabled, SignalStore.settings.isScreenSecurityEnabled)
     }
   }
 }

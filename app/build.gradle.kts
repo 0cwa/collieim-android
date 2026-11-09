@@ -48,9 +48,9 @@ val selectableVariants = listOf(
 val ciEnabled = project.hasProperty("CI")
 val firebaseFree = providers.gradleProperty("mollyFirebaseFree").map(String::toBoolean).getOrElse(false)
 
-val baseAppTitle = getCiEnv("CI_APP_TITLE") ?: properties["baseAppTitle"] as String
-val baseAppFileName = getCiEnv("CI_APP_FILENAME") ?: properties["baseAppFileName"] as String
-val basePackageId = getCiEnv("CI_PACKAGE_ID") ?: properties["basePackageId"] as String
+val baseAppTitle = "Collie"
+val baseAppFileName = "Collie"
+val basePackageId = "im.collie.app"
 val buildVariants = getCiEnv("CI_BUILD_VARIANTS") ?: properties["buildVariants"] as String
 val forceInternalUserFlag = getCiEnv("CI_FORCE_INTERNAL_USER_FLAG") ?: properties["forceInternalUserFlag"] as String
 
@@ -176,8 +176,8 @@ android {
   defaultConfig {
     val sourceVersionNameWithRevision = "${canonicalVersionName}-${mollyRevision}-port-unvalidated"
 
-    versionCode = (canonicalVersionCode * maxHotfixVersions) + mollyRevision + currentHotfixVersion
-    versionName = if (ciEnabled) requireCommitTag() else sourceVersionNameWithRevision
+    versionCode = providers.gradleProperty("releaseVersionCode").orNull?.toInt()?.also { require(it > 177702) { "Release versionCode must exceed published RC1 and all later reservations" } } ?: ((canonicalVersionCode * maxHotfixVersions) + mollyRevision + currentHotfixVersion)
+    versionName = providers.gradleProperty("releaseVersionName").orNull ?: (if (ciEnabled) requireCommitTag() else sourceVersionNameWithRevision)
 
     minSdk = libs.versions.minSdk.get().toInt()
     targetSdk = libs.versions.targetSdk.get().toInt()
@@ -634,30 +634,12 @@ licensee {
   }
 }
 
-fun getLastCommitTimestamp(): String {
-  return try {
-    git("log", "-1", "--pretty=format:%ct000")
-  } catch (e: Exception) {
-    logger.warn("Failed to get Git commit timestamp: ${e.message}. Using mtime of current build script.")
-    buildFile.lastModified().toString()
-  }
-}
+fun getLastCommitTimestamp(): String = providers.gradleProperty("collieBuildTimestamp").get() + "000"
 
-fun getGitHash(): String {
-  return try {
-    git("rev-parse", "--short=12", "HEAD")
-  } catch (e: Exception) {
-    logger.warn("Failed to get Git commit hash: ${e.message}. Using default value.")
-    "abc123def456"
-  }
-}
+fun getGitHash(): String = providers.gradleProperty("collieBuildRevision").get()
 
-fun requireCommitTag(): String {
-  val tag = git("describe", "--tags", "--exact-match")
-  return tag.takeIf { it.isNotEmpty() } ?: "untagged"
-}
+fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").getOrElse("8.35.1-1-port-unvalidated")
 
-private fun git(vararg args: String): String =
-  providers.exec {
-    commandLine("git", *args)
-  }.standardOutput.asText.get().trim()
+// Publication migration gate: remove only with reviewed public native inputs and
+// direct-source acceptance. The legacy operator route is retained in engineering.
+throw GradleException("Direct Android builds BLOCKED: publish and verify locked native inputs first; see BUILD.md")

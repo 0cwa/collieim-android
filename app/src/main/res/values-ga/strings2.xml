@@ -72,7 +72,7 @@
     <string name="arrays__daily">Laethúil</string>
     <string name="arrays__weekly">Seachtainiúil</string>
     <string name="BackupsPreferenceFragment__number_of_backups_to_retain">Líon na gcúltacaí le coinneáil</string>
-    <string name="HelpSettingsFragment__molly_im_website">láithreán gréasáin Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">láithreán gréasáin Collie.im</string>
     <string name="BackupsPreferenceFragment__schedule">Sceideal</string>
     <string name="ConversationSettingsFragment__add_to_your_phones_contacts">Cuir le do theagmhálaithe gléis</string>
     <string name="BlockUnblockDialog_your_chat_history_with_s_will_be_deleted_and_s_will_be_removed_from_your_phone_contacts">Scriosfar do chomhrá le %1$s agus bainfear %1$s de theagmhálaithe do ghléis.</string>

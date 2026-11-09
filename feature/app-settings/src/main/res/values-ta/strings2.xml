@@ -6,7 +6,7 @@
     <string name="app_icon_label_music">இசை</string>
     <string name="preferences_appearance__dynamic_colors">மாறும் வண்ணங்கள்</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">பயன்பாட்டின் கருப்பொருளுக்கு கணினி வண்ணங்களைப் பயன்படுத்தவும்</string>
-<string name="HelpSettingsFragment__molly_im_website">Molly.im வலைத்தளம்</string>
+<string name="HelpSettingsFragment__molly_im_website">Collie.im வலைத்தளம்</string>
     <string name="preferences__enable_debug_log">பிழைத்திருத்த பதிவை இயக்கவும்</string>
     <string name="preferences__include_beta_updates">பீட்டா புதுப்பிப்புகளைச் சேர்க்கவும்</string>
     <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">புதிய வெளியீடுகளை அவ்வப்போது சரிபார்த்து அவற்றை நிறுவச் சொல்லுங்கள்</string>

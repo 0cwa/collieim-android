@@ -18,6 +18,7 @@ import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppDonations
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.RecurringInAppPaymentRepository
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -63,6 +64,12 @@ object AppSettingsRepository {
 
   /** A quick guess at whether the user can manage donations in the app, before [canManageDonations] has an answer. */
   fun likelyCanManageDonations(): Boolean = SignalStore.inAppPayments.isLikelyASustainer() || InAppDonations.hasAtLeastOnePaymentMethodAvailable()
+
+  fun shouldShowManageDonations(): Boolean =
+    InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION) != null ||
+      SignalDatabase.inAppPayments.hasDonationInProgress() ||
+      SignalDatabase.donationReceipts.hasReceipts() ||
+      SignalStore.inAppPayments.isLikelyASustainer()
 
   /** Whether the user can manage donations in the app, or null if their subscription couldn't be fetched. */
   suspend fun canManageDonations(): Boolean? {

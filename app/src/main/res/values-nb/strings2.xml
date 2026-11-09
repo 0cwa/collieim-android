@@ -62,7 +62,7 @@
     <string name="arrays__daily">Daglig</string>
     <string name="BackupsPreferenceFragment__schedule">Tidsplan</string>
     <string name="WipeMemoryService_clearing_unencrypted_data_from_ram">Tømmer ukryptert data fra minne</string>
-    <string name="HelpSettingsFragment__molly_im_website">Molly-im-nettsiden</string>
+    Molly-im-nettsiden
     <string name="preferences__include_beta_updates">Inkluder beta-oppgraderinger</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Betaversjoner tilbys i testøyemed, og kan inneholde feil</string>
     <string name="RegistrationActivity_molly_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">Collie trenger kontaktene og media-tilgangene for å hjelpe deg å finne venner og sende meldinger. Kontaktene dine lastes opp med Signals private kontaktoppdagelse, som betyr at de er ende-til-ende -kryptert og aldri synlige for Signal-tjenesten.</string>

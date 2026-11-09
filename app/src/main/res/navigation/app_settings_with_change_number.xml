@@ -183,6 +183,27 @@
         android:label="account_settings_fragment"
         tools:layout="@layout/dsl_settings_fragment">
         <action
+            android:id="@+id/action_accountSettingsFragment_to_linkDeviceFragment"
+            app:destination="@id/linkDeviceFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+        <action
+            android:id="@+id/action_accountSettingsFragment_to_paymentsActivity"
+            app:destination="@id/paymentsActivity"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+        <action
+            android:id="@+id/action_accountSettingsFragment_to_manageDonationsFragment"
+            app:destination="@id/manageDonationsFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
+        <action
             android:id="@+id/action_accountSettingsFragment_to_changePhoneNumberFragment"
             app:destination="@id/app_settings_change_number"
             app:enterAnim="@anim/fragment_open_enter"
@@ -1478,6 +1499,14 @@
     <include app:graph="@navigation/story_privacy_settings"/>
 
 <fragment android:id="@+id/networkPreferenceFragment" android:name="org.thoughtcrime.securesms.preferences.NetworkPreferenceFragment" android:label="network_preference_fragment"/>
+
+    <action
+        android:id="@+id/action_privacy_to_networkPreferenceFragment"
+        app:destination="@id/networkPreferenceFragment"
+        app:enterAnim="@anim/fragment_open_enter"
+        app:exitAnim="@anim/fragment_open_exit"
+        app:popEnterAnim="@anim/fragment_close_enter"
+        app:popExitAnim="@anim/fragment_close_exit" />
 
     <action android:id="@+id/action_direct_to_networkPreferenceFragment" app:destination="@id/networkPreferenceFragment" app:popUpTo="@id/appSettingsFragment" app:popUpToInclusive="true" app:enterAnim="@anim/fragment_open_enter" app:exitAnim="@anim/fragment_open_exit" app:popEnterAnim="@anim/fragment_close_enter" app:popExitAnim="@anim/fragment_close_exit"/>
 

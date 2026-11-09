@@ -13,5 +13,6 @@ package org.signal.appsettings.help
 data class HelpSettingsState(
   /** The installed app version, shown on the version row and copied when it is long-pressed. */
   val versionName: String = "",
-  val logEnabled: Boolean = true
+  val logEnabled: Boolean = true,
+  val showAppUpdates: Boolean = false
 )

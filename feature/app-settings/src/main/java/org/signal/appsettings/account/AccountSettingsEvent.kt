@@ -16,6 +16,15 @@ sealed interface AccountSettingsEvent {
   /** The user tapped the navigation (back) icon. */
   data object NavigateBackClicked : AccountSettingsEvent
 
+  /** User opened the linked-device list from Account settings. */
+  data object LinkedDevicesClicked : AccountSettingsEvent
+
+  /** User opened Payments from Account settings. */
+  data object PaymentsClicked : AccountSettingsEvent
+
+  /** User opened the donation management screen. */
+  data object ManageDonationsClicked : AccountSettingsEvent
+
   /** The user tapped the Signal Login card, which asks for the screen lock before showing the account and recovery keys. */
   data object AccountAndRecoveryClicked : AccountSettingsEvent
 

@@ -29,6 +29,9 @@ sealed interface ChatsSettingsEvents {
    */
   data object ChatFoldersClicked : ChatsSettingsEvents
 
+  /** User opened Story privacy from the Chats settings section. */
+  data object StoriesClicked : ChatsSettingsEvents
+
   /**
    * The in-flight plaintext export reported new progress.
    */

@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,10 +27,8 @@ import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -101,8 +97,6 @@ fun AppSettingsScreen(
   selectedRoute: AppSettingsRoute? = null,
   donationLabel: String? = null,
   donationContent: (@Composable () -> Unit)? = null,
-  networkLabel: String? = null,
-  networkIcon: Painter? = null,
   avatar: @Composable () -> Unit = {},
   banner: @Composable () -> Unit = {}
 ) {
@@ -172,59 +166,6 @@ fun AppSettingsScreen(
           )
         }
 
-        if (state.isPrimaryDevice) {
-          item {
-            Rows.TextRow(
-              text = stringResource(R.string.AppSettingsScreen__linked_devices),
-              icon = SignalIcons.Devices.painter,
-              onClick = { onEvent(AppSettingsEvent.LinkedDevicesClicked) },
-              enabled = state.isRegisteredAndUpToDate,
-              modifier = Modifier
-                .selectionHighlight(selectedRoute is AppSettingsRoute.LinkDeviceRoute)
-                .testTag(AppSettingsTestTags.ROW_LINKED_DEVICES)
-            )
-          }
-        }
-
-        item {
-          if (donationContent != null) {
-            donationContent()
-          } else {
-          Rows.TextRow(
-            text = {
-              Text(
-                text = donationLabel ?: stringResource(R.string.AppSettingsScreen__donate_to_signal),
-                modifier = Modifier.weight(1f)
-              )
-
-              if (state.hasExpiredGiftBadge) {
-                Icon(
-                  painter = painterResource(CoreUiR.drawable.symbol_info_fill_24),
-                  tint = colorResource(CoreUiR.color.signal_accent_primary),
-                  contentDescription = null
-                )
-              }
-            },
-            icon = {
-              Icon(
-                painter = SignalIcons.Heart.painter,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface
-              )
-            },
-            onClick = { onEvent(AppSettingsEvent.DonateClicked) },
-            onLongClick = { onEvent(AppSettingsEvent.DonateLongClicked) },
-            modifier = Modifier
-              .selectionHighlight(selectedRoute is AppSettingsRoute.DonationsRoute)
-              .testTag(AppSettingsTestTags.ROW_DONATE)
-          )
-          }
-        }
-
-        item {
-          Dividers.Default()
-        }
-
         item {
           Rows.TextRow(
             text = stringResource(R.string.preferences__appearance),
@@ -248,17 +189,7 @@ fun AppSettingsScreen(
           )
         }
 
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.AppSettingsScreen__stories),
-            icon = SignalIcons.Stories.painter,
-            onClick = { onEvent(AppSettingsEvent.StoriesClicked) },
-            enabled = state.isRegisteredAndUpToDate,
-            modifier = Modifier
-              .selectionHighlight(selectedRoute is AppSettingsRoute.StoriesRoute)
-              .testTag(AppSettingsTestTags.ROW_STORIES)
-          )
-        }
+        item { Dividers.Default() }
 
         item {
           Rows.TextRow(
@@ -284,6 +215,8 @@ fun AppSettingsScreen(
           )
         }
 
+        item { Dividers.Default() }
+
         item {
           Rows.TextRow(
             icon = SignalIcons.Backup.imageVector,
@@ -297,19 +230,6 @@ fun AppSettingsScreen(
           )
         }
 
-        if (networkLabel != null) {
-          item {
-            Rows.TextRow(
-              text = networkLabel,
-              icon = networkIcon,
-              onClick = { onEvent(AppSettingsEvent.NetworkClicked) },
-              modifier = Modifier
-                .selectionHighlight(selectedRoute == AppSettingsRoute.DataAndStorageRoute.Proxy)
-                .testTag(AppSettingsTestTags.ROW_NETWORK)
-            )
-          }
-        }
-
         item {
           Rows.TextRow(
             text = stringResource(R.string.preferences__data_and_storage),
@@ -321,35 +241,43 @@ fun AppSettingsScreen(
           )
         }
 
-        if (state.showAppUpdates) {
-          item {
-            Rows.TextRow(
-              text = "App updates",
-              icon = SignalIcons.Calendar.painter,
-              onClick = { onEvent(AppSettingsEvent.AppUpdatesClicked) },
-              modifier = Modifier
-                .selectionHighlight(selectedRoute == AppSettingsRoute.AppUpdates)
-                .testTag(AppSettingsTestTags.ROW_APP_UPDATES)
-            )
-          }
-        }
-
-        if (state.isPrimaryDevice && state.showPayments) {
-          item {
-            Dividers.Default()
-          }
-
-          item {
-            PaymentsRow(
-              unreadPaymentsCount = state.unreadPaymentsCount,
-              onClick = { onEvent(AppSettingsEvent.PaymentsClicked) },
-              modifier = Modifier.selectionHighlight(selectedRoute == AppSettingsRoute.Payments)
-            )
-          }
+        item {
+          Dividers.Default()
         }
 
         item {
-          Dividers.Default()
+          if (donationContent != null) {
+            donationContent()
+          } else {
+            Rows.TextRow(
+              text = {
+                Text(
+                  text = donationLabel ?: stringResource(R.string.AppSettingsScreen__donate_to_signal),
+                  modifier = Modifier.weight(1f)
+                )
+
+                if (state.hasExpiredGiftBadge) {
+                  Icon(
+                    painter = painterResource(CoreUiR.drawable.symbol_info_fill_24),
+                    tint = colorResource(CoreUiR.color.signal_accent_primary),
+                    contentDescription = null
+                  )
+                }
+              },
+              icon = {
+                Icon(
+                  painter = SignalIcons.Heart.painter,
+                  contentDescription = null,
+                  tint = MaterialTheme.colorScheme.onSurface
+                )
+              },
+              onClick = { onEvent(AppSettingsEvent.DonateClicked) },
+              onLongClick = { onEvent(AppSettingsEvent.DonateLongClicked) },
+              modifier = Modifier
+                .selectionHighlight(selectedRoute is AppSettingsRoute.DonationsRoute)
+                .testTag(AppSettingsTestTags.ROW_DONATE)
+            )
+          }
         }
 
         item {
@@ -451,47 +379,6 @@ private fun BackupWarningRow(
     },
     onClick = onClick,
     modifier = modifier
-  )
-}
-
-@Composable
-private fun PaymentsRow(
-  unreadPaymentsCount: Int,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier
-) {
-  Rows.TextRow(
-    text = {
-      Text(
-        text = stringResource(R.string.AppSettingsScreen__payments),
-        modifier = Modifier.weight(1f)
-      )
-
-      if (unreadPaymentsCount > 0) {
-        Text(
-          text = unreadPaymentsCount.toString(),
-          color = MaterialTheme.colorScheme.inverseOnSurface,
-          style = MaterialTheme.typography.bodyMedium,
-          textAlign = TextAlign.Center,
-          modifier = Modifier
-            .background(
-              color = MaterialTheme.colorScheme.primary,
-              shape = RoundedCornerShape(50)
-            )
-            .defaultMinSize(minWidth = 30.dp)
-            .padding(4.dp)
-        )
-      }
-    },
-    icon = {
-      Icon(
-        painter = SignalIcons.Payment.painter,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurface
-      )
-    },
-    onClick = onClick,
-    modifier = modifier.testTag(AppSettingsTestTags.ROW_PAYMENTS)
   )
 }
 

@@ -37,7 +37,7 @@
     <string name="arrays__daily">Καθημερινά</string>
     <string name="arrays__weekly">Εβδομαδιαία</string>
     <string name="HelpSettingsFragment_disable_and_delete_debug_log">Διαγραφή και απενεργοποίηση των καταγραφών σφαλμάτων;</string>
-    <string name="HelpSettingsFragment__molly_im_website">Ιστοσελίδα Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Ιστοσελίδα Collie.im</string>
     <string name="arrays__tor_via_orbot">Tor μέσω Orbot</string>
     <string name="preferences__map_satellite">Δορυφορικό</string>
     <string name="preferences__map_normal">Κανονικό</string>

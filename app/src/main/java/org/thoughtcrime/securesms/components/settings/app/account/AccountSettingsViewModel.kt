@@ -6,6 +6,7 @@
 package org.thoughtcrime.securesms.components.settings.app.account
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.signal.appsettings.account.AccountSettingsAction
 import org.signal.appsettings.account.AccountSettingsEvent
 import org.signal.appsettings.account.AccountSettingsState
@@ -30,6 +32,7 @@ import org.thoughtcrime.securesms.lock.v2.PinKeyboardType
 import org.thoughtcrime.securesms.lock.v2.SvrConstants
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.signal.network.service.TwoFactorMethodService.TwoFactorMethod as ServiceTwoFactorMethod
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
 
 /**
  * Drives the account settings screen shown on a primary device, which is where PIN, registration lock, and account
@@ -45,7 +48,14 @@ class AccountSettingsViewModel(
     private val TAG = Log.tag(AccountSettingsViewModel::class)
   }
 
-  private val _state = MutableStateFlow(AccountSettingsState(arePasskeysSupported = arePasskeysSupported))
+  private val _state = MutableStateFlow(
+    AccountSettingsState(
+      arePasskeysSupported = arePasskeysSupported,
+      isPrimaryDevice = accountRepository.isPrimaryDevice(),
+      canOpenLinkedDevices = accountRepository.canOpenLinkedDevices(),
+      showPayments = AppSettingsRepository.showPayments()
+    )
+  )
   private val _actions = Channel<AccountSettingsAction>(Channel.BUFFERED)
 
   val state: StateFlow<AccountSettingsState> = _state.asStateFlow()
@@ -62,6 +72,21 @@ class AccountSettingsViewModel(
       }
       AccountSettingsEvent.NavigateBackClicked -> {
         _actions.send(AccountSettingsAction.NavigateBack)
+      }
+      AccountSettingsEvent.LinkedDevicesClicked -> {
+        if (_state.value.canOpenLinkedDevices) {
+          _actions.send(AccountSettingsAction.NavigateToLinkedDevices)
+        }
+      }
+      AccountSettingsEvent.PaymentsClicked -> {
+        if (_state.value.isPrimaryDevice && _state.value.showPayments) {
+          _actions.send(AccountSettingsAction.NavigateToPayments)
+        }
+      }
+      AccountSettingsEvent.ManageDonationsClicked -> {
+        if (_state.value.showDonationManagement) {
+          _actions.send(AccountSettingsAction.NavigateToManageDonations)
+        }
       }
       AccountSettingsEvent.ModifyPinClicked -> {
         _actions.send(if (_state.value.hasPin) AccountSettingsAction.LaunchChangePinFlow else AccountSettingsAction.LaunchCreatePinFlow)
@@ -240,6 +265,7 @@ class AccountSettingsViewModel(
 
   private suspend fun refresh() {
     val isPhoneNumberless = accountRepository.isPhoneNumberless()
+    val showDonationManagement = withContext(Dispatchers.IO) { AppSettingsRepository.shouldShowManageDonations() }
 
     _state.update {
       it.copy(
@@ -249,6 +275,8 @@ class AccountSettingsViewModel(
         registrationLockEnabled = accountRepository.isRegistrationLockEnabled(),
         userUnregistered = accountRepository.isUserUnregistered(),
         clientDeprecated = accountRepository.isClientDeprecated(),
+        canOpenLinkedDevices = accountRepository.canOpenLinkedDevices(),
+        showDonationManagement = showDonationManagement,
         isPhoneNumberless = isPhoneNumberless,
         // Held onto across refreshes so a resume doesn't drop the list back to its loading state.
         signalLogin = if (isPhoneNumberless) it.signalLogin ?: SignalLogin(maxTotpApps = accountRepository.getMaxTotpApps(), maxTwoFactorMethods = accountRepository.getMaxTwoFactorMethods()) else null

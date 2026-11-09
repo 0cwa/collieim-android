@@ -64,7 +64,7 @@
     <string name="BackupsPreferenceFragment__change_schedule">Andra schemaläggning</string>
     <string name="BackupsPreferenceFragment__number_of_backups_to_retain">Antal säkerhetskopior som sparas</string>
     <string name="MessageRetrievalService_ready_to_receive_messages">Redo att ta emot meddelanden</string>
-    <string name="HelpSettingsFragment__molly_im_website">Vår hemsida: Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Vår hemsida: Collie.im</string>
     <string name="HelpSettingsFragment_disable_and_delete_debug_log">Radera och inaktivera felsökningsloggar?</string>
     <string name="DozeReminder_allow_molly_to_deliver_timely_notifications">Till Collie att visa notiser även när enheten inte används.</string>
     <string name="DozeReminder_disable_battery_restrictions">Inaktivera batteribegränsningar</string>

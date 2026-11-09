@@ -7,7 +7,7 @@
     <string name="preferences_appearance__dynamic_colors">Dynamiska färger</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Använd systemets temafärger även för denna app</string>
 <string name="preferences__enable_debug_log">Slå på felsökningslogg</string>
-    <string name="HelpSettingsFragment__molly_im_website">Vår hemsida: Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Vår hemsida: Collie.im</string>
     <string name="preferences__autoupdate_molly">Uppdatera Collie automatiskt</string>
     <string name="preferences__include_beta_updates">Inkludera betauppdateringar</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Betaversioner är till för testning och kan innehålla buggar</string>

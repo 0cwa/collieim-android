@@ -6,7 +6,7 @@
     <string name="arrays__daily">Zilnic</string>
     <string name="arrays__weekly">Săptămânal</string>
     <string name="BackupsPreferenceFragment__change_schedule">Schimbă planificarea</string>
-    <string name="HelpSettingsFragment__molly_im_website">Situl web Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Situl web Collie.im</string>
     <string name="preferences__autoupdate_molly">Actualizează automat Collie</string>
     <string name="preferences__map_hybrid">Hibrid</string>
     <string name="preferences__block_unknown">Blochează necunoscuți</string>

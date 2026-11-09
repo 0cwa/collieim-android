@@ -15,6 +15,11 @@ data class AccountSettingsState(
   val canTransferWhileUnregistered: Boolean = true,
   val isPhoneNumberless: Boolean = false,
   val arePasskeysSupported: Boolean = false,
+  val isPrimaryDevice: Boolean = false,
+  val canOpenLinkedDevices: Boolean = false,
+  val showPayments: Boolean = false,
+  val unreadPaymentsCount: Int = 0,
+  val showDonationManagement: Boolean = false,
   val signalLogin: SignalLogin? = null,
   val dialog: Dialog = Dialog.None
 ) {

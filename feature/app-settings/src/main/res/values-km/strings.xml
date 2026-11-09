@@ -534,7 +534,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">អាជ្ញាបណ្ណ</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">លក្ខខណ្ឌ និងគោលការណ៍ឯកជនភាព</string>
-    <string name="HelpFragment__copyright_signal_messenger">Molly Messenger ក្រោមការរក្សាសិទ្ធិ</string>
+    <string name="HelpFragment__copyright_signal_messenger">Collie Messenger ក្រោមការរក្សាសិទ្ធិ</string>
     <string name="HelpFragment__licenced_under_the_agplv3">មានអាជ្ញាបណ្ណក្រោម GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal គឺជាអង្គការមិនស្វែងរកប្រាក់ចំណេញ 501c3</string>

@@ -47,7 +47,7 @@
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">As versões beta destinam-se a testes e podem conter erros</string>
     <string name="BlockUnblockDialog_your_chat_history_with_s_will_be_deleted">A sua conversa com %1$s será apagada.</string>
     <string name="arrays__daily">Diário</string>
-    <string name="HelpSettingsFragment__molly_im_website">Site do Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Site do Collie.im</string>
     <string name="ApplicationPreferencesActivity_network_summary">Proxy %1$s</string>
     <string name="preferences_network__tunnels_network_traffic">Passa o tráfego de rede por um túnel</string>
     <string name="MessageRetrievalService_ready_to_receive_messages">Preparado para receber mensagens</string>

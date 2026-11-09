@@ -537,7 +537,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Лицензии</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Условия и Политика конфиденциальности</string>
-    <string name="HelpFragment__copyright_signal_messenger">Авторские права Molly Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Авторские права Collie Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Лицензировано под GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal — некоммерческая организация</string>

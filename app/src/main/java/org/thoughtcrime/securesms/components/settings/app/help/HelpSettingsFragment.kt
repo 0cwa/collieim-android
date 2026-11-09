@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import org.signal.appsettings.help.HelpSettingsAction
 import org.signal.appsettings.help.HelpSettingsScreen
 import org.signal.appsettings.help.HelpSettingsViewModel
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
 import org.signal.core.ui.compose.CollectActions
 import org.signal.core.ui.compose.ComposeFragment
 import org.signal.core.ui.viewModel
@@ -29,7 +30,13 @@ import org.signal.appsettings.R as AppSettingsR
 
 class HelpSettingsFragment : ComposeFragment() {
 
-  private val viewModel: HelpSettingsViewModel by viewModel { HelpSettingsViewModel(versionName = ApkInfo.versionName, logEnabled = TextSecurePreferences.isLogEnabled(requireContext())) }
+  private val viewModel: HelpSettingsViewModel by viewModel {
+    HelpSettingsViewModel(
+      versionName = ApkInfo.versionName,
+      logEnabled = TextSecurePreferences.isLogEnabled(requireContext()),
+      showAppUpdates = AppSettingsRepository.showAppUpdates()
+    )
+  }
 
   @Composable
   override fun FragmentContent() {

@@ -320,7 +320,7 @@ object AppDependencies {
   }
 
   private val _networkModule = resettableLazy {
-    NetworkDependenciesModule(application, provider, authWebSocket, unauthWebSocket, Supplier { libsignalNetwork })
+    NetworkDependenciesModule(application, provider, { authWebSocket }, { unauthWebSocket }, Supplier { libsignalNetwork })
   }
   private val networkModule by _networkModule
 

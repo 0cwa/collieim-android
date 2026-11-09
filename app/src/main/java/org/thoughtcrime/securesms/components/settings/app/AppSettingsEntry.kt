@@ -68,6 +68,7 @@ fun AppSettingsEntry(
     state = state,
     onEvent = viewModel::onEvent,
     selectedRoute = selectedRoute,
+    donationLabel = stringResource(R.string.preferences__donate_to_signal),
     networkLabel = stringResource(R.string.preferences__network),
     networkIcon = painterResource(R.drawable.ic_network_24),
     avatar = { self?.let { SelfAvatar(it) } },

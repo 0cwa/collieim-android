@@ -35,11 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/util/SpanUtil.java
-import org.signal.core.ui.util.ThemeUtil;
-=======
 import org.signal.core.ui.R;
->>>>>>> SIGNAL:core/ui/src/main/java/org/signal/core/ui/util/SpanUtil.java
 import org.signal.core.util.DimensionUnit;
 
 public final class SpanUtil {

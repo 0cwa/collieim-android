@@ -149,20 +149,12 @@ private val lightExtendedColors = ExtendedColors(
   neutralFill = Color(0x1A000000),
   colorOnCustom = Color(0xFFFFFFFF),
   colorOnCustomVariant = Color(0xB3FFFFFF),
-<<<<<<< MOLLY
   colorSurface1 = Color(0xFFF3F0FF),
   colorSurface2 = Color(0xFFEEEAFF),
   colorSurface3 = Color(0xFFEAE5FF),
   colorSurface4 = Color(0xFFE5DFFF),
   colorSurface5 = Color(0xFFDED6FF),
-=======
-  colorSurface1 = Color(0xFFF1F3F8),
-  colorSurface2 = Color(0xFFEDF0F6),
-  colorSurface3 = Color(0xFFE8ECF4),
-  colorSurface4 = Color(0xFFE6EAF3),
-  colorSurface5 = Color(0xFFE3E7F1),
   colorSurfaceVariantFill = Color(0xCCFFFFFF),
->>>>>>> SIGNAL
   colorTransparent1 = Color(0x14FFFFFF),
   colorTransparent2 = Color(0x29FFFFFF),
   colorTransparent3 = Color(0x8FFFFFFF),
@@ -187,22 +179,13 @@ private val darkExtendedColors = ExtendedColors(
   neutralSurface = Color(0x14FFFFFF),
   neutralFill = Color(0x33FFFFFF),
   colorOnCustom = Color(0xFFFFFFFF),
-<<<<<<< MOLLY
-  colorOnCustomVariant = Color(0xB3FFFFFF),
+  colorOnCustomVariant = Color(0x18FFFFFF),
   colorSurface1 = Color(0xFF181137),
   colorSurface2 = Color(0xFF1E1645),
   colorSurface3 = Color(0xFF231A4E),
   colorSurface4 = Color(0xFF281E57),
   colorSurface5 = Color(0xFF33276A),
-=======
-  colorOnCustomVariant = Color(0x18FFFFFF),
-  colorSurface1 = Color(0xFF23242A),
-  colorSurface2 = Color(0xFF272A31),
-  colorSurface3 = Color(0xFF2C2F37),
-  colorSurface4 = Color(0xFF2E3039),
-  colorSurface5 = Color(0xFF31343E),
   colorSurfaceVariantFill = Color(0x33FFFFFF),
->>>>>>> SIGNAL
   colorTransparent1 = Color(0x0AFFFFFF),
   colorTransparent2 = Color(0x1FFFFFFF),
   colorTransparent3 = Color(0x29FFFFFF),
@@ -305,7 +288,6 @@ fun SignalTheme(
   }
 }
 
-<<<<<<< MOLLY
 @Composable
 private fun systemAlignedLightColorScheme() = lightColorScheme(
   primary = colorResource(R.color.dynamic_primary_light),
@@ -391,7 +373,7 @@ private fun isThemeUsingDynamicColors(context: Context): Boolean {
 
 private fun extendedColors(colorScheme: ColorScheme, isDarkMode: Boolean, isDynamic: Boolean): ExtendedColors {
   return when {
-    isDynamic -> lightExtendedColors.copy(
+    isDynamic -> (if (isDarkMode) darkExtendedColors else lightExtendedColors).copy(
       colorSurface1 = colorScheme.surfaceContainerLow,
       colorSurface2 = colorScheme.surfaceContainer,
       colorSurface3 = colorScheme.surfaceContainerHigh,
@@ -425,7 +407,9 @@ fun colorAttribute(@AttrRes id: Int): Color {
     colorResource(typedValue.resourceId)
   } else {
     Color.Unspecified
-=======
+  }
+}
+
 /**
  * Applies the light color scheme to [content] regardless of the ambient theme, leaving typography and shapes untouched.
  */
@@ -436,7 +420,6 @@ fun ForceLightColors(content: @Composable () -> Unit) {
       colorScheme = lightColorScheme,
       content = content
     )
->>>>>>> SIGNAL
   }
 }
 

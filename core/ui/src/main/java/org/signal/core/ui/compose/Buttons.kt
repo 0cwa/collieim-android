@@ -47,11 +47,8 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-<<<<<<< MOLLY
 import org.signal.core.ui.R
-=======
 import androidx.compose.ui.unit.max
->>>>>>> SIGNAL
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.ui.compose.theme.colorAttribute
 

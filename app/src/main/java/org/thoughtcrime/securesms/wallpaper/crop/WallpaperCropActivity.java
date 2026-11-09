@@ -23,26 +23,23 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.window.layout.WindowMetricsCalculator;
 
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil;
-=======
 import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.ui.WindowBreakpoint;
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil;
+import org.signal.core.ui.util.ViewUtil;
 import org.signal.core.util.logging.Log;
 import org.signal.imageeditor.core.ImageEditorView;
 import org.signal.imageeditor.core.model.EditorElement;
 import org.signal.imageeditor.core.model.EditorModel;
 import org.signal.imageeditor.core.renderers.FaceBlurRenderer;
+import org.signal.imageeditor.core.renderers.UriGlideRenderer;
 import org.thoughtcrime.securesms.PassphraseRequiredActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.ProgressCard;
 import org.thoughtcrime.securesms.conversation.colors.ColorizerView;
-import org.signal.imageeditor.core.renderers.UriGlideRenderer;
 import org.thoughtcrime.securesms.util.AsynchronousCallback;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.Projection;
-import org.signal.core.ui.util.ViewUtil;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaperPreviewActivity;
 
@@ -50,13 +47,9 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
 
-<<<<<<< MOLLY
-public final class WallpaperCropActivity extends PassphraseRequiredActivity {
-=======
 import static org.signal.core.ui.WindowSizeClassExtensionsKt.getWindowBreakpoint;
 
-public final class WallpaperCropActivity extends BaseActivity {
->>>>>>> SIGNAL
+public final class WallpaperCropActivity extends PassphraseRequiredActivity {
 
   private static final String TAG = Log.tag(WallpaperCropActivity.class);
 
@@ -86,24 +79,19 @@ public final class WallpaperCropActivity extends BaseActivity {
   }
 
   @Override
-<<<<<<< MOLLY
   protected void onPreCreate() {
     super.onPreCreate();
-=======
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    if (!(getWindowBreakpoint(getResources()) instanceof WindowBreakpoint.Small)) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    }
-
->>>>>>> SIGNAL
     dynamicTheme.onCreate(this);
   }
 
   @Override
   protected void onCreate(Bundle savedInstanceState, boolean ready) {
     super.onCreate(savedInstanceState, ready);
+
+    if (!(getWindowBreakpoint(getResources()) instanceof WindowBreakpoint.Small)) {
+      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+
     setContentView(R.layout.chat_wallpaper_crop_activity);
 
     RecipientId recipientId = getIntent().getParcelableExtra(EXTRA_RECIPIENT_ID);

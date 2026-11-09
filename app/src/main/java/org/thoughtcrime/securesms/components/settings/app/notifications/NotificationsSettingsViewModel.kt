@@ -1,27 +1,22 @@
-/*
- * Copyright 2026 Signal Messenger, LLC
- * SPDX-License-Identifier: AGPL-3.0-only
- */
-
 package org.thoughtcrime.securesms.components.settings.app.notifications
 
+import android.net.Uri
+import android.os.Build
+import android.provider.Settings
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-<<<<<<< MOLLY
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 import im.molly.unifiedpush.model.MollySocket
 import kotlinx.coroutines.Dispatchers
-=======
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
->>>>>>> SIGNAL
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-<<<<<<< MOLLY
+import org.signal.core.util.concurrent.SignalDispatchers
+import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.ApplicationContext
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
@@ -30,54 +25,46 @@ import org.thoughtcrime.securesms.notifications.DeviceSpecificNotificationConfig
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.SlowNotificationHeuristics
 import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference
+import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.recipients.RecipientForeverObserver
+import org.thoughtcrime.securesms.storage.StorageSyncHelper
 import org.thoughtcrime.securesms.util.TextSecurePreferences
-=======
-import org.signal.appsettings.notifications.NotificationsSettingsAction
-import org.signal.appsettings.notifications.NotificationsSettingsEvent
-import org.signal.appsettings.notifications.NotificationsSettingsScreen
-import org.signal.appsettings.notifications.NotificationsSettingsState
-import org.signal.appsettings.routes.AppSettingsNavigationEvent
-import org.signal.appsettings.routes.AppSettingsRoute
-import org.signal.appsettings.routes.navigateBack
-import org.signal.appsettings.routes.navigateTo
-import org.signal.core.ui.compose.EventDrivenViewModel
-import org.signal.core.util.logging.Log
->>>>>>> SIGNAL
 
-/**
- * Drives [NotificationsSettingsScreen].
- */
-class NotificationsSettingsViewModel(
-  private val parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
-) : EventDrivenViewModel<NotificationsSettingsEvent>(TAG) {
+class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
 
   companion object {
     private val TAG = Log.tag(NotificationsSettingsViewModel::class)
   }
 
-  private val _state = MutableStateFlow(
-    NotificationsSettingsRepository.run {
-      syncFromNotificationChannel()
-      getState(NotificationsSettingsState())
-    }
-  )
-  private val _actions = Channel<NotificationsSettingsAction>(Channel.BUFFERED)
+  private val store = MutableStateFlow(getState())
 
-  val state: StateFlow<NotificationsSettingsState> = _state.asStateFlow()
-  val actions: Flow<NotificationsSettingsAction> = _actions.receiveAsFlow()
+  val state: StateFlow<NotificationsSettingsState> = store
+
+  private val self = Recipient.self().live()
 
   init {
-    viewModelScope.launch {
-      val troubleshoot = NotificationsSettingsRepository.isTroubleshootingRecommended()
-      _state.update { it.copy(messageNotificationsState = it.messageNotificationsState.copy(troubleshootNotifications = troubleshoot)) }
+    if (NotificationChannels.supported()) {
+      SignalStore.settings.messageNotificationSound = NotificationChannels.getInstance().messageRingtone
+      SignalStore.settings.isMessageVibrateEnabled = NotificationChannels.getInstance().messageVibrate
     }
 
-    viewModelScope.launch {
-      NotificationsSettingsRepository.observeSelfChanges().collect { refresh() }
+    // Calculating slow notification stuff isn't thread-safe, so we do it without to start off so we have most state populated, then fetch it in the background.
+    store.update { getState(calculateSlowNotifications = false) }
+    viewModelScope.launch(Dispatchers.Default) {
+      store.update { getState(currentState = it, calculateSlowNotifications = true) }
     }
+
+    self.observeForever(this)
   }
 
-<<<<<<< MOLLY
+  override fun onRecipientChanged(recipient: Recipient) {
+    refresh()
+  }
+
+  override fun onCleared() {
+    self.removeForeverObserver(this)
+  }
+
   fun refresh() {
     store.update { getState(currentState = it) }
   }
@@ -127,7 +114,7 @@ class NotificationsSettingsViewModel(
   }
 
   fun setMessageNotificationPriority(priority: Int) {
-    sharedPreferences.edit().putString(TextSecurePreferences.NOTIFICATION_PRIORITY_PREF, priority.toString()).apply()
+    SignalStore.settings.messageNotificationPriority = priority
     refresh()
   }
 
@@ -148,6 +135,7 @@ class NotificationsSettingsViewModel(
 
   fun setNotifyWhenContactJoinsSignal(enabled: Boolean) {
     SignalStore.settings.isNotifyWhenContactJoinsSignal = enabled
+    markSelfNeedsSync()
     refresh()
   }
 
@@ -176,6 +164,48 @@ class NotificationsSettingsViewModel(
     store.update { it.copy(playServicesErrorCode = errorCode) }
   }
 
+  fun setReactionNotificationEnabled(enabled: Boolean) {
+    SignalStore.settings.reactionNotifications = enabled
+    markSelfNeedsSync()
+    refresh()
+  }
+
+  fun setUnreadReminderEnabled(enabled: Boolean) {
+    SignalStore.settings.unreadReminderEnabled = enabled
+    markSelfNeedsSync()
+    refresh()
+  }
+
+  fun resetSettings() {
+    Log.i(TAG, "Resetting all notifications.")
+    // Global
+    setMessageNotificationsSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+    SignalStore.settings.isMessageNotificationsInChatSoundsEnabled = true
+    SignalStore.settings.messageNotificationsPrivacy = NotificationPrivacyPreference("all")
+    SignalStore.settings.allowCallsWhileMuted = false
+    SignalStore.settings.allowMentionsWhileMuted = true
+    SignalStore.settings.allowRepliesWhileMuted = true
+    SignalStore.settings.reactionNotifications = true
+    SignalStore.settings.unreadReminderEnabled = true
+    SignalStore.settings.isNotifyWhenContactJoinsSignal = false
+    SignalStore.settings.messageNotificationsRepeatAlerts = 0
+
+    // Per-chat
+    viewModelScope.launch(SignalDispatchers.Default) {
+      SignalDatabase.recipients.resetAllChatNotificationSettings()
+    }
+
+    markSelfNeedsSync()
+    refresh()
+  }
+
+  private fun markSelfNeedsSync() {
+    viewModelScope.launch(SignalDispatchers.Default) {
+      SignalDatabase.recipients.markNeedsSync(Recipient.self().id)
+      StorageSyncHelper.scheduleSyncForDataChange()
+    }
+  }
+
   /**
    * @param currentState If provided and [calculateSlowNotifications] = false, then we will copy the slow notification state from it
    * @param calculateSlowNotifications If true, calculate the true slow notification state (this is not main-thread safe). Otherwise, it will copy from
@@ -192,7 +222,7 @@ class NotificationsSettingsViewModel(
       inChatSoundsEnabled = SignalStore.settings.isMessageNotificationsInChatSoundsEnabled,
       repeatAlerts = SignalStore.settings.messageNotificationsRepeatAlerts,
       messagePrivacy = SignalStore.settings.messageNotificationsPrivacy.toString(),
-      priority = TextSecurePreferences.getNotificationPriority(AppDependencies.application),
+      priority = SignalStore.settings.messageNotificationPriority,
       troubleshootNotifications = if (calculateSlowNotifications) {
         (SlowNotificationHeuristics.isBatteryOptimizationsOn() && SlowNotificationHeuristics.isHavingDelayedNotifications()) ||
           SlowNotificationHeuristics.getDeviceSpecificShowCondition() == DeviceSpecificNotificationConfig.ShowCondition.ALWAYS
@@ -200,7 +230,12 @@ class NotificationsSettingsViewModel(
         currentState.messageNotificationsState.troubleshootNotifications
       } else {
         false
-      }
+      },
+      reactionNotificationEnabled = SignalStore.settings.reactionNotifications,
+      unreadReminderEnabled = SignalStore.settings.unreadReminderEnabled,
+      allowCallsWhileMuted = SignalStore.settings.allowCallsWhileMuted,
+      allowMentionsWhileMuted = SignalStore.settings.allowMentionsWhileMuted,
+      allowRepliesWhileMuted = SignalStore.settings.allowRepliesWhileMuted
     ),
     callNotificationsState = CallNotificationsState(
       notificationsEnabled = SignalStore.settings.isCallNotificationsEnabled && canEnableNotifications(),
@@ -227,53 +262,11 @@ class NotificationsSettingsViewModel(
         )
 
     return !areNotificationsDisabledBySystem
-=======
-  override suspend fun processEvent(event: NotificationsSettingsEvent) {
-    when (event) {
-      NotificationsSettingsEvent.ScreenResumed -> refresh()
-      NotificationsSettingsEvent.NavigateBackClicked -> parentEventEmitter.navigateBack()
-      NotificationsSettingsEvent.TurnOnNotificationsClicked -> _actions.send(NotificationsSettingsAction.ShowTurnOnNotificationsSheet)
-      is NotificationsSettingsEvent.MessageNotificationsToggled -> changeSetting { setMessageNotificationsEnabled(event.enabled) }
-      is NotificationsSettingsEvent.MessagePrivacySelected -> changeSetting { setMessageNotificationPrivacy(event.value) }
-      NotificationsSettingsEvent.WhileMutedClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.NotificationsRoute.MutedNotifications)
-      is NotificationsSettingsEvent.ReactionNotificationsToggled -> changeSetting { setReactionNotificationsEnabled(event.enabled) }
-      is NotificationsSettingsEvent.UnreadRemindersToggled -> changeSetting { setUnreadReminderEnabled(event.enabled) }
-      is NotificationsSettingsEvent.ContactJoinsSignalToggled -> changeSetting { setNotifyWhenContactJoinsSignal(event.enabled) }
-      is NotificationsSettingsEvent.RepeatAlertsSelected -> changeSetting { setMessageRepeatAlerts(event.value.toInt()) }
-      NotificationsSettingsEvent.CustomizeClicked -> _actions.send(NotificationsSettingsAction.OpenMessageChannelSettings)
-      NotificationsSettingsEvent.MessageSoundClicked -> _actions.send(NotificationsSettingsAction.LaunchMessageSoundPicker)
-      is NotificationsSettingsEvent.MessageSoundPicked -> changeSetting { setMessageNotificationsSound(event.sound) }
-      is NotificationsSettingsEvent.MessageVibrateToggled -> changeSetting { setMessageNotificationVibration(event.enabled) }
-      is NotificationsSettingsEvent.LedColorSelected -> changeSetting { setMessageNotificationLedColor(event.value) }
-      is NotificationsSettingsEvent.LedBlinkSelected -> changeSetting { setMessageNotificationLedBlink(event.value) }
-      is NotificationsSettingsEvent.InChatSoundsToggled -> changeSetting { setMessageNotificationInChatSoundsEnabled(event.enabled) }
-      NotificationsSettingsEvent.TroubleshootClicked -> _actions.send(NotificationsSettingsAction.ShowTroubleshootNotificationsDialog)
-      NotificationsSettingsEvent.PriorityClicked -> _actions.send(NotificationsSettingsAction.LaunchNotificationPrioritySettings)
-      is NotificationsSettingsEvent.PrioritySelected -> changeSetting { setMessageNotificationPriority(event.value.toInt()) }
-      is NotificationsSettingsEvent.CallNotificationsToggled -> changeSetting { setCallNotificationsEnabled(event.enabled) }
-      NotificationsSettingsEvent.CallRingtoneClicked -> _actions.send(NotificationsSettingsAction.LaunchCallRingtonePicker)
-      is NotificationsSettingsEvent.CallRingtonePicked -> changeSetting { setCallRingtone(event.ringtone) }
-      is NotificationsSettingsEvent.CallVibrateToggled -> changeSetting { setCallVibrateEnabled(event.enabled) }
-      NotificationsSettingsEvent.SoundPickerUnavailable -> _state.update { it.copy(snackbar = NotificationsSettingsState.Snackbar.SoundPickerUnavailable) }
-      NotificationsSettingsEvent.NotificationProfilesClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.NotificationsRoute.NotificationProfiles)
-      NotificationsSettingsEvent.ResetClicked -> _state.update { it.copy(dialog = NotificationsSettingsState.Dialog.ConfirmReset) }
-      NotificationsSettingsEvent.ResetConfirmed -> {
-        _state.update { it.copy(dialog = NotificationsSettingsState.Dialog.None) }
-        changeSetting { resetSettings() }
-      }
-      NotificationsSettingsEvent.DialogDismissed -> _state.update { it.copy(dialog = NotificationsSettingsState.Dialog.None) }
-      NotificationsSettingsEvent.SnackbarDismissed -> _state.update { it.copy(snackbar = NotificationsSettingsState.Snackbar.None) }
+  }
+
+  class Factory : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      return requireNotNull(modelClass.cast(NotificationsSettingsViewModel()))
     }
->>>>>>> SIGNAL
-  }
-
-  /** Applies [change] to the stored settings, then reads them back. */
-  private inline fun changeSetting(change: NotificationsSettingsRepository.() -> Unit) {
-    NotificationsSettingsRepository.change()
-    refresh()
-  }
-
-  private fun refresh() {
-    _state.update { NotificationsSettingsRepository.getState(it) }
   }
 }

@@ -1,6 +1,5 @@
 package org.thoughtcrime.securesms.components.settings.app.notifications
 
-<<<<<<< MOLLY
 import android.content.ActivityNotFoundException
 import android.media.Ringtone
 import android.net.Uri
@@ -26,7 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -53,16 +54,21 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.signal.core.ui.BottomSheetUtil
-=======
-import androidx.compose.runtime.Composable
-import androidx.navigation.fragment.findNavController
-import org.signal.appsettings.routes.AppSettingsRoute
->>>>>>> SIGNAL
 import org.signal.core.ui.compose.ComposeFragment
+import org.signal.core.ui.compose.DayNightPreviews
+import org.signal.core.ui.compose.Dialogs
+import org.signal.core.ui.compose.Dividers
+import org.signal.core.ui.compose.Previews
+import org.signal.core.ui.compose.Rows
+import org.signal.core.ui.compose.Scaffolds
+import org.signal.core.ui.compose.SignalIcons
+import org.signal.core.ui.compose.Texts
+import org.signal.core.ui.viewModel
+import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
-<<<<<<< MOLLY
+import org.signal.appsettings.R as AppSettingsR
 import org.thoughtcrime.securesms.components.PromptBatterySaverDialogFragment
-import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRoute
+import org.signal.appsettings.routes.AppSettingsRoute
 import org.thoughtcrime.securesms.components.settings.app.routes.AppSettingsRouter
 import org.thoughtcrime.securesms.components.settings.models.Banner
 import org.thoughtcrime.securesms.conversation.v2.registerForLifecycle
@@ -72,19 +78,13 @@ import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.TurnOnNotificationsBottomSheet
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.RingtoneUtil
-import org.thoughtcrime.securesms.util.SecurePreferenceManager
-=======
-import org.thoughtcrime.securesms.components.settings.app.appSettingsRouter
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
+import org.signal.core.ui.R as CoreUiR
 
 class NotificationsSettingsFragment : ComposeFragment() {
 
-<<<<<<< MOLLY
   private val viewModel: NotificationsSettingsViewModel by viewModel {
-    val sharedPreferences = SecurePreferenceManager.getSecurePreferences(requireContext())
-
-    NotificationsSettingsViewModel.Factory(sharedPreferences).create(NotificationsSettingsViewModel::class.java)
+    NotificationsSettingsViewModel.Factory().create(NotificationsSettingsViewModel::class.java)
   }
 
   private val appSettingsRouter: AppSettingsRouter by viewModel {
@@ -112,6 +112,10 @@ class NotificationsSettingsFragment : ComposeFragment() {
               findNavController().safeNavigate(R.id.action_notificationsSettingsFragment_to_unifiedPushFragment)
             }
 
+            AppSettingsRoute.NotificationsRoute.MutedNotifications -> {
+              findNavController().safeNavigate(R.id.action_notificationsSettingsFragment_to_mutedNotificationsFragment)
+            }
+
             else -> error("Unexpected route: ${it.javaClass.name}")
           }
         }
@@ -129,9 +133,6 @@ class NotificationsSettingsFragment : ComposeFragment() {
     super.onResume()
     viewModel.refresh()
   }
-=======
-  private val appSettingsRouter by appSettingsRouter(onNavigateToScreen = ::navigateToScreen)
->>>>>>> SIGNAL
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   fun onPushServiceEvent(event: PushServiceEvent) {
@@ -140,10 +141,27 @@ class NotificationsSettingsFragment : ComposeFragment() {
 
   @Composable
   override fun FragmentContent() {
-    NotificationsSettingsEntry(parentEventEmitter = appSettingsRouter::onEvent)
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    NotificationsSettingsScreen(state = state, callbacks = callbacks)
+  }
+}
+
+/**
+ * Default callbacks that package up launcher handling and other logic that was in the original fragment.
+ * This must be called during the creation cycle of the component it is attached to.
+ */
+open class DefaultNotificationsSettingsCallbacks(
+  val activity: FragmentActivity,
+  val viewModel: NotificationsSettingsViewModel,
+  val appSettingsRouter: AppSettingsRouter,
+  activityResultRegisterer: ActivityResultRegisterer = ActivityResultRegisterer.ForActivity(activity)
+) : NotificationsSettingsCallbacks {
+
+  companion object {
+    private val TAG = Log.tag(DefaultNotificationsSettingsCallbacks::class)
   }
 
-<<<<<<< MOLLY
   interface ActivityResultRegisterer {
     fun <I, O> registerForActivityResult(
       contract: ActivityResultContract<I, O>,
@@ -238,13 +256,13 @@ class NotificationsSettingsFragment : ComposeFragment() {
       val tone: Ringtone? = RingtoneUtil.getRingtone(activity, uri)
       if (tone != null) {
         try {
-          tone.getTitle(activity) ?: activity.getString(R.string.NotificationsSettingsFragment__unknown_ringtone)
+          tone.getTitle(activity) ?: activity.getString(AppSettingsR.string.NotificationsSettingsFragment__unknown_ringtone)
         } catch (e: SecurityException) {
           Log.w(TAG, "Unable to get title for ringtone", e)
-          return activity.getString(R.string.NotificationsSettingsFragment__unknown_ringtone)
+          return activity.getString(AppSettingsR.string.NotificationsSettingsFragment__unknown_ringtone)
         }
       } else {
-        activity.getString(R.string.preferences__default)
+        activity.getString(AppSettingsR.string.preferences__default)
       }
     }
   }
@@ -266,7 +284,7 @@ class NotificationsSettingsFragment : ComposeFragment() {
   }
 
   override fun setMessageNotificationVibration(enabled: Boolean) {
-    viewModel.setMessageNotificationsEnabled(enabled)
+    viewModel.setMessageNotificationVibration(enabled)
   }
 
   override fun setMessasgeNotificationLedColor(selection: String) {
@@ -341,8 +359,8 @@ class NotificationsSettingsFragment : ComposeFragment() {
             .setPositiveButton(R.string.AddLinkDeviceFragment__scan_qr_code) { _, _ ->
               qrScanLauncher.launch()
             }
-            .setNegativeButton(R.string.RegistrationActivity_cancel, null)
-            .setNeutralButton(R.string.LearnMoreTextView_learn_more) { _, _ ->
+            .setNegativeButton(android.R.string.cancel, null)
+            .setNeutralButton(CoreUiR.string.LearnMoreTextView_learn_more) { _, _ ->
               CommunicationActions.openBrowserLink(activity, activity.getString(R.string.mollysocket_setup_url))
             }
             .show()
@@ -380,6 +398,22 @@ class NotificationsSettingsFragment : ComposeFragment() {
 
     viewModel.setPlayServicesErrorCode(null)
   }
+
+  override fun onMutedClicked() {
+    appSettingsRouter.navigateTo(AppSettingsRoute.NotificationsRoute.MutedNotifications)
+  }
+
+  override fun setReactionNotificationEnabled(enabled: Boolean) {
+    viewModel.setReactionNotificationEnabled(enabled)
+  }
+
+  override fun setUnreadReminderEnabled(enabled: Boolean) {
+    viewModel.setUnreadReminderEnabled(enabled)
+  }
+
+  override fun onReset() {
+    viewModel.resetSettings()
+  }
 }
 
 interface NotificationsSettingsCallbacks {
@@ -407,6 +441,10 @@ interface NotificationsSettingsCallbacks {
   fun onNotificationMethodChanged(fromToMethods: Pair<NotificationDeliveryMethod, NotificationDeliveryMethod>) = Unit
   fun onNavigationUnifiedPushSettings() = Unit
   fun onPlayServicesError(errorCode: Int) = Unit
+  fun onMutedClicked() = Unit
+  fun setReactionNotificationEnabled(enabled: Boolean) = Unit
+  fun setUnreadReminderEnabled(enabled: Boolean) = Unit
+  fun onReset() = Unit
 
   object Empty : NotificationsSettingsCallbacks
 }
@@ -417,6 +455,20 @@ fun NotificationsSettingsScreen(
   callbacks: NotificationsSettingsCallbacks,
   deviceState: DeviceState = remember { DeviceState() }
 ) {
+  var showDialog by remember { mutableStateOf(false) }
+
+  if (showDialog) {
+    Dialogs.SimpleAlertDialog(
+      title = "",
+      body = stringResource(AppSettingsR.string.NotificationsSettingsFragment__reset_body),
+      dismiss = stringResource(android.R.string.cancel),
+      onDismiss = { showDialog = false },
+      confirm = stringResource(AppSettingsR.string.NotificationsSettingsFragment__reset_confirm),
+      onConfirm = callbacks::onReset,
+      confirmColor = MaterialTheme.colorScheme.error
+    )
+  }
+
   Scaffolds.Settings(
     title = stringResource(R.string.preferences__notifications),
     onNavigationClick = callbacks::onNavigationClick,
@@ -446,23 +498,88 @@ fun NotificationsSettingsScreen(
       }
 
       item {
-        Texts.SectionHeader(stringResource(R.string.NotificationsSettingsFragment__messages))
-      }
-
-      item {
         Rows.ToggleRow(
-          text = stringResource(R.string.preferences__notifications),
+          text = stringResource(AppSettingsR.string.preferences__enable_notifications),
           enabled = state.messageNotificationsState.canEnableNotifications,
           checked = state.messageNotificationsState.notificationsEnabled,
           onCheckChanged = callbacks::setMessageNotificationsEnabled
         )
       }
 
+      item {
+        Rows.RadioListRow(
+          text = stringResource(AppSettingsR.string.preferences_notifications__show),
+          labels = stringArrayResource(AppSettingsR.array.pref_notification_privacy_entries),
+          values = stringArrayResource(AppSettingsR.array.pref_notification_privacy_values),
+          selectedValue = state.messageNotificationsState.messagePrivacy,
+          enabled = state.messageNotificationsState.notificationsEnabled,
+          onSelected = callbacks::setMessageNotificationPrivacy
+        )
+      }
+
+      item {
+        Rows.TextRow(
+          text = stringResource(AppSettingsR.string.preferences_notifications__while_muted),
+          label = getWhileMutedString(state),
+          enabled = state.messageNotificationsState.notificationsEnabled,
+          onClick = callbacks::onMutedClicked
+        )
+      }
+
+      item {
+        Rows.ToggleRow(
+          text = stringResource(AppSettingsR.string.preferences_notifications__reaction),
+          label = stringResource(AppSettingsR.string.preferences_notifications__notify_reaction),
+          enabled = state.messageNotificationsState.canEnableNotifications,
+          checked = state.messageNotificationsState.reactionNotificationEnabled,
+          onCheckChanged = callbacks::setReactionNotificationEnabled
+        )
+      }
+
+      item {
+        Rows.ToggleRow(
+          text = stringResource(R.string.preferences_notifications__unread),
+          label = stringResource(AppSettingsR.string.preferences_notifications__notify_unread),
+          enabled = state.messageNotificationsState.canEnableNotifications,
+          checked = state.messageNotificationsState.unreadReminderEnabled,
+          onCheckChanged = callbacks::setUnreadReminderEnabled
+        )
+      }
+
+      item {
+        Rows.ToggleRow(
+          text = stringResource(AppSettingsR.string.NotificationsSettingsFragment__contact_joins_signal),
+          label = stringResource(AppSettingsR.string.NotificationsSettingsFragment__notify_contact),
+          enabled = state.messageNotificationsState.canEnableNotifications,
+          checked = state.notifyWhenContactJoinsSignal,
+          onCheckChanged = callbacks::setNotifyWhenContactJoinsSignal
+        )
+      }
+
+      item {
+        Rows.RadioListRow(
+          text = stringResource(AppSettingsR.string.preferences__repeat_alerts),
+          labels = stringArrayResource(AppSettingsR.array.pref_repeat_alerts_entries),
+          values = stringArrayResource(AppSettingsR.array.pref_repeat_alerts_values),
+          selectedValue = state.messageNotificationsState.repeatAlerts.toString(),
+          enabled = state.messageNotificationsState.notificationsEnabled,
+          onSelected = callbacks::setMessageRepeatAlerts
+        )
+      }
+
+      item {
+        Dividers.Default()
+      }
+
+      item {
+        Texts.SectionHeader(stringResource(AppSettingsR.string.NotificationsSettingsFragment__sounds))
+      }
+
       if (deviceState.apiLevel >= 30) {
         item {
           Rows.TextRow(
-            text = stringResource(R.string.preferences__customize),
-            label = stringResource(R.string.preferences__change_sound_and_vibration),
+            text = stringResource(AppSettingsR.string.preferences__customize),
+            label = stringResource(AppSettingsR.string.preferences__change_sound_and_vibration),
             enabled = state.messageNotificationsState.notificationsEnabled,
             onClick = callbacks::onCustomizeClick
           )
@@ -470,7 +587,7 @@ fun NotificationsSettingsScreen(
       } else {
         item {
           Rows.TextRow(
-            text = stringResource(R.string.preferences__sound),
+            text = stringResource(AppSettingsR.string.preferences__sound),
             label = remember(state.messageNotificationsState.sound) {
               callbacks.getRingtoneSummary(state.messageNotificationsState.sound)
             },
@@ -481,10 +598,10 @@ fun NotificationsSettingsScreen(
 
         item {
           Rows.ToggleRow(
-            text = stringResource(R.string.preferences__vibrate),
+            text = stringResource(AppSettingsR.string.preferences__vibrate),
             checked = state.messageNotificationsState.vibrateEnabled,
             enabled = state.messageNotificationsState.notificationsEnabled,
-            onCheckChanged = callbacks::setMessageNotificationsEnabled
+            onCheckChanged = callbacks::setMessageNotificationVibration
           )
         }
 
@@ -500,11 +617,11 @@ fun NotificationsSettingsScreen(
 
               Spacer(modifier = Modifier.size(10.dp))
 
-              Text(text = stringResource(R.string.preferences__led_color))
+              Text(text = stringResource(AppSettingsR.string.preferences__led_color))
             },
-            dialogTitle = stringResource(R.string.preferences__led_color),
-            labels = stringArrayResource(R.array.pref_led_color_entries),
-            values = stringArrayResource(R.array.pref_led_color_values),
+            dialogTitle = stringResource(AppSettingsR.string.preferences__led_color),
+            labels = stringArrayResource(AppSettingsR.array.pref_led_color_entries),
+            values = stringArrayResource(AppSettingsR.array.pref_led_color_values),
             selectedValue = state.messageNotificationsState.ledColor,
             enabled = state.messageNotificationsState.notificationsEnabled,
             onSelected = callbacks::setMessasgeNotificationLedColor
@@ -514,9 +631,9 @@ fun NotificationsSettingsScreen(
         if (!deviceState.supportsNotificationChannels) {
           item {
             Rows.RadioListRow(
-              text = stringResource(R.string.preferences__pref_led_blink_title),
-              labels = stringArrayResource(R.array.pref_led_blink_pattern_entries),
-              values = stringArrayResource(R.array.pref_led_blink_pattern_values),
+              text = stringResource(AppSettingsR.string.preferences__pref_led_blink_title),
+              labels = stringArrayResource(AppSettingsR.array.pref_led_blink_pattern_entries),
+              values = stringArrayResource(AppSettingsR.array.pref_led_blink_pattern_values),
               selectedValue = state.messageNotificationsState.ledBlink,
               enabled = state.messageNotificationsState.notificationsEnabled,
               onSelected = callbacks::setMessasgeNotificationLedBlink
@@ -527,39 +644,17 @@ fun NotificationsSettingsScreen(
 
       item {
         Rows.ToggleRow(
-          text = stringResource(R.string.preferences_notifications__in_chat_sounds),
+          text = stringResource(AppSettingsR.string.preferences_notifications__in_chat_sounds),
           checked = state.messageNotificationsState.inChatSoundsEnabled,
           enabled = state.messageNotificationsState.notificationsEnabled,
           onCheckChanged = callbacks::setMessageNotificationInChatSoundsEnabled
         )
       }
 
-      item {
-        Rows.RadioListRow(
-          text = stringResource(R.string.preferences__repeat_alerts),
-          labels = stringArrayResource(R.array.pref_repeat_alerts_entries),
-          values = stringArrayResource(R.array.pref_repeat_alerts_values),
-          selectedValue = state.messageNotificationsState.repeatAlerts.toString(),
-          enabled = state.messageNotificationsState.notificationsEnabled,
-          onSelected = callbacks::setMessageRepeatAlerts
-        )
-      }
-
-      item {
-        Rows.RadioListRow(
-          text = stringResource(R.string.preferences_notifications__show),
-          labels = stringArrayResource(R.array.pref_notification_privacy_entries),
-          values = stringArrayResource(R.array.pref_notification_privacy_values),
-          selectedValue = state.messageNotificationsState.messagePrivacy,
-          enabled = state.messageNotificationsState.notificationsEnabled,
-          onSelected = callbacks::setMessageNotificationPrivacy
-        )
-      }
-
       if (deviceState.apiLevel >= 23 && state.messageNotificationsState.troubleshootNotifications) {
         item {
           Rows.TextRow(
-            text = stringResource(R.string.preferences_notifications__troubleshoot),
+            text = stringResource(AppSettingsR.string.preferences_notifications__troubleshoot),
             onClick = callbacks::onTroubleshootNotificationsClick
           )
         }
@@ -569,7 +664,7 @@ fun NotificationsSettingsScreen(
         if (deviceState.supportsNotificationChannels) {
           item {
             Rows.TextRow(
-              text = stringResource(R.string.preferences_notifications__priority),
+              text = stringResource(AppSettingsR.string.preferences_notifications__priority),
               enabled = state.messageNotificationsState.notificationsEnabled,
               onClick = callbacks::launchNotificationPriorityIntent
             )
@@ -577,9 +672,9 @@ fun NotificationsSettingsScreen(
         } else {
           item {
             Rows.RadioListRow(
-              text = stringResource(R.string.preferences_notifications__priority),
-              labels = stringArrayResource(R.array.pref_notification_priority_entries),
-              values = stringArrayResource(R.array.pref_notification_priority_values),
+              text = stringResource(AppSettingsR.string.preferences_notifications__priority),
+              labels = stringArrayResource(AppSettingsR.array.pref_notification_priority_entries),
+              values = stringArrayResource(AppSettingsR.array.pref_notification_priority_values),
               selectedValue = state.messageNotificationsState.priority.toString(),
               enabled = state.messageNotificationsState.notificationsEnabled,
               onSelected = callbacks::setMessageNotificationPriority
@@ -593,12 +688,12 @@ fun NotificationsSettingsScreen(
       }
 
       item {
-        Texts.SectionHeader(stringResource(R.string.NotificationsSettingsFragment__calls))
+        Texts.SectionHeader(stringResource(AppSettingsR.string.NotificationsSettingsFragment__calls))
       }
 
       item {
         Rows.ToggleRow(
-          text = stringResource(R.string.preferences__notifications),
+          text = stringResource(AppSettingsR.string.preferences__call_notifications),
           enabled = state.callNotificationsState.canEnableNotifications,
           checked = state.callNotificationsState.notificationsEnabled,
           onCheckChanged = callbacks::setCallNotificationsEnabled
@@ -611,7 +706,7 @@ fun NotificationsSettingsScreen(
         }
 
         Rows.TextRow(
-          text = stringResource(R.string.preferences_notifications__ringtone),
+          text = stringResource(AppSettingsR.string.preferences_notifications__ringtone),
           label = ringtoneSummary,
           enabled = state.callNotificationsState.notificationsEnabled,
           onClick = callbacks::launchCallsSoundSelectionIntent
@@ -620,7 +715,7 @@ fun NotificationsSettingsScreen(
 
       item {
         Rows.ToggleRow(
-          text = stringResource(R.string.preferences__vibrate),
+          text = stringResource(AppSettingsR.string.preferences__vibrate),
           checked = state.callNotificationsState.vibrateEnabled,
           enabled = state.callNotificationsState.notificationsEnabled,
           onCheckChanged = callbacks::setCallVibrateEnabled
@@ -632,13 +727,9 @@ fun NotificationsSettingsScreen(
       }
 
       item {
-        Texts.SectionHeader(stringResource(R.string.NotificationsSettingsFragment__notification_profiles))
-      }
-
-      item {
         Rows.TextRow(
-          text = stringResource(R.string.NotificationsSettingsFragment__profiles),
-          label = stringResource(R.string.NotificationsSettingsFragment__create_a_profile_to_receive_notifications_only_from_people_and_groups_you_choose),
+          text = stringResource(R.string.NotificationsSettingsFragment__notification_profiles),
+          label = stringResource(AppSettingsR.string.NotificationsSettingsFragment__create_a_profile_to_receive_notifications_only_from_people_and_groups_you_choose),
           onClick = callbacks::onNavigationProfilesClick
         )
       }
@@ -663,10 +754,10 @@ fun NotificationsSettingsScreen(
       }
 
       item {
-        Rows.ToggleRow(
-          text = stringResource(R.string.NotificationsSettingsFragment__contact_joins_signal),
-          checked = state.notifyWhenContactJoinsSignal,
-          onCheckChanged = callbacks::setNotifyWhenContactJoinsSignal
+        Rows.TextRow(
+          text = stringResource(AppSettingsR.string.NotificationsSettingsFragment__reset),
+          label = stringResource(AppSettingsR.string.NotificationsSettingsFragment__reset_notifications),
+          onClick = { showDialog = true }
         )
       }
 
@@ -714,7 +805,7 @@ fun NotificationsSettingsScreen(
             {
               Icon(
                 painter = painterResource(android.R.drawable.ic_dialog_alert),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.notification_delivery_service_unavailable),
                 tint = colorResource(R.color.signal_alert_primary)
               )
             }
@@ -743,14 +834,33 @@ fun NotificationsSettingsScreen(
 }
 
 @Composable
+private fun getWhileMutedString(state: NotificationsSettingsState): String {
+  val body = mutableListOf<String>()
+  if (state.messageNotificationsState.allowCallsWhileMuted) {
+    body.add(stringResource(R.string.MutedNotificationsFragment__calls))
+  }
+  if (state.messageNotificationsState.allowMentionsWhileMuted) {
+    body.add(stringResource(R.string.MutedNotificationsFragment__mentions))
+  }
+  if (state.messageNotificationsState.allowRepliesWhileMuted) {
+    body.add(stringResource(R.string.MutedNotificationsFragment__replies))
+  }
+  return if (body.isNotEmpty()) {
+    body.joinToString(", ")
+  } else {
+    stringResource(CoreUiR.string.preferences__none)
+  }
+}
+
+@Composable
 private fun getLedColor(ledColorString: String): Color {
   return when (ledColorString) {
-    "green" -> colorResource(R.color.green_500)
+    "green" -> colorResource(CoreUiR.color.green_500)
     "red" -> colorResource(R.color.red_500)
-    "blue" -> colorResource(R.color.blue_500)
-    "yellow" -> colorResource(R.color.yellow_500)
-    "cyan" -> colorResource(R.color.cyan_500)
-    "magenta" -> colorResource(R.color.pink_500)
+    "blue" -> colorResource(CoreUiR.color.blue_500)
+    "yellow" -> colorResource(CoreUiR.color.yellow_500)
+    "cyan" -> colorResource(CoreUiR.color.cyan_500)
+    "magenta" -> colorResource(CoreUiR.color.pink_500)
     "white" -> colorResource(R.color.white)
     else -> colorResource(R.color.transparent)
   }
@@ -805,7 +915,12 @@ private fun rememberTestState(): NotificationsSettingsState = remember {
       repeatAlerts = 1,
       messagePrivacy = "",
       priority = 1,
-      troubleshootNotifications = true
+      troubleshootNotifications = true,
+      reactionNotificationEnabled = true,
+      unreadReminderEnabled = true,
+      allowCallsWhileMuted = false,
+      allowMentionsWhileMuted = true,
+      allowRepliesWhileMuted = true
     ),
     callNotificationsState = CallNotificationsState(
       notificationsEnabled = true,
@@ -828,13 +943,3 @@ data class DeviceState(
   val apiLevel: Int = Build.VERSION.SDK_INT,
   val supportsNotificationChannels: Boolean = NotificationChannels.supported()
 )
-=======
-  private fun navigateToScreen(route: AppSettingsRoute) {
-    when (route) {
-      AppSettingsRoute.NotificationsRoute.NotificationProfiles -> findNavController().safeNavigate(R.id.action_notificationsSettingsFragment_to_notificationProfilesFragment)
-      AppSettingsRoute.NotificationsRoute.MutedNotifications -> findNavController().safeNavigate(R.id.action_notificationsSettingsFragment_to_mutedNotificationsFragment)
-      else -> error("Unexpected route: ${route.javaClass.name}")
-    }
-  }
-}
->>>>>>> SIGNAL

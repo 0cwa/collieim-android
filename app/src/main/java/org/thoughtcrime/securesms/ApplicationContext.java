@@ -370,6 +370,8 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
     if (!isAppInitialized) {
       onCreateUnlock();
+      // A boot or package-replaced broadcast may have arrived while the database was locked.
+      org.thoughtcrime.securesms.jobs.RestoreNotificationsJob.Companion.enqueue();
       registerKeyEventReceiver();
       onStartUnlock();
       isAppInitialized = true;

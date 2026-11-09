@@ -63,6 +63,12 @@ public class VoiceNotePlaybackService extends MediaSessionService {
   @Override
   public void onCreate() {
     super.onCreate();
+    if (KeyCachingService.isLocked()) {
+      Log.i(TAG, "Refuse to initialize voice note playback when app is locked.");
+      stopSelf();
+      return;
+    }
+
     player = new VoiceNotePlayer(this);
     player.addListener(new VoiceNotePlayerEventListener());
 

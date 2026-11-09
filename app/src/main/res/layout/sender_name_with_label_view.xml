@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="@color/signal_text_primary"
+        android:textColor="?attr/signal_text_primary"
         android:textStyle="bold"
         tools:text="Peter Parker" />
 

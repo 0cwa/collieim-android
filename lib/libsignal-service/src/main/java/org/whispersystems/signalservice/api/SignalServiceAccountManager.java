@@ -7,10 +7,15 @@
 package org.whispersystems.signalservice.api;
 
 import org.signal.libsignal.net.Network;
+import org.signal.libsignal.protocol.InvalidKeyException;
 import org.whispersystems.signalservice.api.account.AccountApi;
+import org.whispersystems.signalservice.api.account.AccountAttributes;
+import org.whispersystems.signalservice.api.account.DeviceAttributes;
+import org.whispersystems.signalservice.api.account.PreKeyCollection;
 import org.whispersystems.signalservice.api.groupsv2.ClientZkOperations;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2Api;
 import org.whispersystems.signalservice.api.groupsv2.GroupsV2Operations;
+import org.whispersystems.signalservice.api.messages.multidevice.RegisterAsSecondaryDeviceResponse;
 import org.signal.core.models.ServiceId.ACI;
 import org.signal.core.models.ServiceId.PNI;
 import org.whispersystems.signalservice.api.registration.RegistrationApi;
@@ -106,6 +111,36 @@ public class SignalServiceAccountManager {
    */
   public void requestRegistrationPushChallenge(String sessionId, String gcmRegistrationId) throws IOException {
     pushServiceSocket.requestPushChallenge(sessionId, gcmRegistrationId);
+  }
+
+  /**
+   * Finishes a registration as a new device. Called by the new device.<br>
+   * This method blocks until the already verified device has verified this device.
+   * @param provisioningCode The provisioning code from the getNewDeviceRegistration method
+   * @return The deviceId given by the server.
+   */
+  public int finishNewDeviceRegistration(String provisioningCode,
+                                         AccountAttributes attributes,
+                                         PreKeyCollection aciPreKeys, PreKeyCollection pniPreKeys,
+                                         @Nullable String fcmToken)
+      throws IOException, InvalidKeyException
+  {
+    DeviceAttributes deviceAttributes = new DeviceAttributes(attributes.getFetchesMessages(),
+                                                             attributes.getRegistrationId(),
+                                                             attributes.getPniRegistrationId(),
+                                                             attributes.getName(),
+                                                             attributes.getCapabilities());
+    RegisterAsSecondaryDeviceResponse response = NetworkResultUtil.successOrThrow(
+        getRegistrationApi().registerAsSecondaryDevice(provisioningCode,
+                                                      deviceAttributes,
+                                                      aciPreKeys,
+                                                      pniPreKeys,
+                                                      attributes.getFetchesMessages() ? null : fcmToken));
+    try {
+      return Integer.parseInt(response.getDeviceId());
+    } catch (NumberFormatException e) {
+      throw new IOException("Invalid linked device ID in registration response", e);
+    }
   }
 
   public void checkNetworkConnection() throws IOException {

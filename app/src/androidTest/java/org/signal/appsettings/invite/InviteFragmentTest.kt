@@ -13,13 +13,13 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
-import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import assertk.assertThat
-import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
+import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -61,19 +61,14 @@ class InviteFragmentTest {
   }
 
   @Test
-  fun givenLaunchFromAppSettings_whenNavigationIconClicked_thenAppSettingsIsDisplayed() {
-    ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use { scenario ->
+  fun givenAppSettings_thenInviteShortcutIsAbsent() {
+    ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use {
       val inviteRowText = context.getString(AppSettingsR.string.AppSettingsFragment__invite_your_friends)
-
-      composeRule.onNode(hasScrollAction()).performScrollToNode(hasText(inviteRowText))
-      composeRule.onNodeWithText(inviteRowText).performClick()
-      awaitInviteScreen()
-
-      clickNavigationIcon()
-
+      val error = assertThrows(AssertionError::class.java) {
+        composeRule.onNode(hasScrollAction()).performScrollToNode(hasText(inviteRowText))
+      }
+      assertTrue(error.message.orEmpty().contains("No node found that matches"))
       composeRule.onNodeWithText(context.getString(AppSettingsR.string.AppSettingsScreen__settings)).assertIsDisplayed()
-      composeRule.onNodeWithText(context.getString(AppSettingsR.string.InviteScreen__invite_friends)).assertDoesNotExist()
-      assertThat(scenario.state).isEqualTo(Lifecycle.State.RESUMED)
     }
   }
 

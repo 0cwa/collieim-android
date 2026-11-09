@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 import org.signal.core.util.JsonUtils;
 import org.signal.core.util.SemanticVersion;
 
+import im.molly.app.base.ApkInfo;
+
 public final class RemoteDeprecation {
 
   private static final String TAG = Log.tag(RemoteDeprecation.class);
@@ -29,7 +31,7 @@ public final class RemoteDeprecation {
    *         there's no pending expiration.
    */
   public static long getTimeUntilDeprecation(long currentTime) {
-    return getTimeUntilDeprecation(RemoteConfig.clientExpiration(), currentTime, BuildConfig.VERSION_NAME);
+    return getTimeUntilDeprecation(RemoteConfig.clientExpiration(), currentTime, ApkInfo.signalCanonicalVersionName);
   }
 
   /**

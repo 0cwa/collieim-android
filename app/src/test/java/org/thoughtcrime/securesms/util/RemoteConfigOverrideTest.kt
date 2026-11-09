@@ -6,6 +6,11 @@
 package org.thoughtcrime.securesms.util
 
 import android.app.Application
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import io.mockk.every
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
@@ -15,12 +20,16 @@ import org.json.JSONObject
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
+import org.junit.rules.ExternalResource
+import org.junit.rules.RuleChain
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.core.util.logging.Log
 import org.signal.remoteconfig.RemoteConfig
+import org.signal.storage.keyvalue.PlainTextKeyValueStore
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testutil.LogRecorder
 import org.thoughtcrime.securesms.testutil.SignalStoreRule
@@ -35,20 +44,36 @@ class RemoteConfigOverrideTest {
     private const val INT_FLAG = "global.pinnedChatLimit"
   }
 
+  private val preferences = object : ExternalResource() {
+    override fun before() {
+      val context = ApplicationProvider.getApplicationContext<Application>()
+      val sharedPreferences = context.getSharedPreferences("remote-config-test", Context.MODE_PRIVATE)
+      sharedPreferences.edit().clear().commit()
+      mockkStatic(SecurePreferenceManager::class)
+      every { SecurePreferenceManager.getSecurePreferences(any()) } returns sharedPreferences
+      PlainTextKeyValueStore.init(sharedPreferences, BuildConfig.VERSION_CODE)
+    }
+
+    override fun after() {
+      unmockkStatic(SecurePreferenceManager::class)
+    }
+  }
+
   @get:Rule
-  val signalStore = SignalStoreRule()
+  val rules: RuleChain = RuleChain.outerRule(preferences).around(SignalStoreRule())
 
   @Before
   fun setup() {
     Log.initialize(LogRecorder())
-    RemoteConfig.underTest = true
+    // MOLLY: internalUser comes from the build type (debug builds are internal), not from the service value.
+    RemoteConfig.underTest = false
     reset()
   }
 
   @After
   fun tearDown() {
     reset()
-    RemoteConfig.underTest = false
+    RemoteConfig.internalUserDisabled = false
   }
 
   @Test
@@ -73,7 +98,8 @@ class RemoteConfigOverrideTest {
 
   @Test
   fun `overrides are ignored for non-internal users`() {
-    setServiceValues(INTERNAL_USER to false, BOOLEAN_FLAG to false)
+    RemoteConfig.internalUserDisabled = true
+    setServiceValues(BOOLEAN_FLAG to false)
     SignalStore.remoteConfig.overrides = mapOf(BOOLEAN_FLAG to "true")
 
     RemoteConfig.init()

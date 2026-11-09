@@ -38,10 +38,10 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.compose.NightPreview
 import org.signal.core.ui.compose.Previews
 import org.thoughtcrime.securesms.R
+import org.signal.core.ui.R as CoreUiR
 import org.thoughtcrime.securesms.events.CallParticipant
 import org.thoughtcrime.securesms.events.CallParticipantId
 import org.thoughtcrime.securesms.recipients.Recipient
-import org.signal.core.ui.R as CoreUiR
 
 private val PIP_METRICS_SELF_PORTRAIT_WIDTH = 48.dp
 private val PIP_METRICS_SELF_PORTRAIT_HEIGHT = 86.dp
@@ -160,7 +160,7 @@ private fun InfoPill(
     horizontalArrangement = spacedBy(4.dp),
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
-      .background(color = colorResource(CoreUiR.color.signal_dark_colorSurface3), shape = RoundedCornerShape(percent = 50))
+      .background(color = colorResource(org.signal.core.ui.R.color.molly_surface_container_high_dark), shape = RoundedCornerShape(percent = 50))
       .padding(horizontal = 12.dp, vertical = 6.dp)
   ) {
     Icon(

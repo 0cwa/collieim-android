@@ -31,7 +31,7 @@ class DataAndStorageSettingsViewModel : EventDrivenViewModel<DataAndStorageSetti
     private val TAG = Log.tag(DataAndStorageSettingsViewModel::class)
   }
 
-  private val _state = MutableStateFlow(DataAndStorageSettingsState())
+  private val _state = MutableStateFlow(DataAndStorageSettingsState(showNetworkSettings = false))
   private val _actions = Channel<DataAndStorageSettingsAction>(Channel.BUFFERED)
 
   val state: StateFlow<DataAndStorageSettingsState> = _state.asStateFlow()

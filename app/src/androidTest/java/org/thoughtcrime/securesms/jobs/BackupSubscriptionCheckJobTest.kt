@@ -46,10 +46,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
-import org.thoughtcrime.securesms.testing.Flag
-import org.thoughtcrime.securesms.testing.RemoteConfigForTest
 import org.thoughtcrime.securesms.testing.SignalActivityRule
-import org.thoughtcrime.securesms.testing.TestRemoteConfigFlag
 import org.whispersystems.signalservice.api.storage.IAPSubscriptionId
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription.ChargeFailure
@@ -61,7 +58,6 @@ import java.util.Currency
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 
-@RemoteConfigForTest(flags = [Flag(TestRemoteConfigFlag.INTERNAL_USER, "true") ])
 @RunWith(AndroidJUnit4::class)
 class BackupSubscriptionCheckJobTest {
 

@@ -99,6 +99,7 @@ import org.thoughtcrime.securesms.jobs.ResetSvrGuessCountJob
 import org.thoughtcrime.securesms.jobs.StorageAccountRestoreJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
+import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.pin.SvrRepository
 import org.thoughtcrime.securesms.pin.SvrWrongPinException
 import org.thoughtcrime.securesms.profiles.AvatarHelper
@@ -144,6 +145,11 @@ class AppRegistrationNetworkController(
     private val TAG = Log.tag(AppRegistrationNetworkController::class)
     private val PUSH_REQUEST_TIMEOUT = 5.seconds.inWholeMilliseconds
     private val RETRY_BACKOFF = 5.seconds
+  }
+
+  override fun enableNetworkForRegistration() {
+    TextSecurePreferences.setHasSeenNetworkConfig(context, true)
+    AppDependencies.networkManager.setNetworkEnabled(true)
   }
 
   override suspend fun createSession(
@@ -582,7 +588,7 @@ class AppRegistrationNetworkController(
     val notificationData = org.signal.devicetransfer.DeviceToDeviceTransferService.TransferNotificationData(
       org.thoughtcrime.securesms.notifications.NotificationIds.DEVICE_TRANSFER,
       org.thoughtcrime.securesms.notifications.NotificationChannels.getInstance().BACKUPS,
-      org.signal.core.ui.R.drawable.ic_signal_backup
+      org.thoughtcrime.securesms.R.drawable.ic_notification_backup
     )
     org.signal.devicetransfer.DeviceToDeviceTransferService.startServer(
       context,

@@ -19,6 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.signal.appsettings.R
 
@@ -39,7 +40,7 @@ class AppIconSelectionScreenTest {
     setContent(AppIconSelectionState())
 
     scrollTo(AppIconSelectionTestTags.icon(AppIconPreset.WAVES))
-    composeTestRule.onNodeWithContentDescription("Waves").performClick()
+    composeTestRule.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(AppIconPreset.WAVES.labelResId!!)).performClick()
 
     assertThat(events).containsExactly(AppIconSelectionEvent.IconClicked(AppIconPreset.WAVES))
   }

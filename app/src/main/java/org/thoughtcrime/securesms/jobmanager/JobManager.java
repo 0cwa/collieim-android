@@ -1,8 +1,6 @@
 package org.thoughtcrime.securesms.jobmanager;
 
 import android.app.Application;
-import android.content.Intent;
-import android.os.Build;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
@@ -32,7 +30,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
@@ -49,15 +48,15 @@ public class JobManager implements ConstraintObserver.Notifier {
 
   private final Application   application;
   private final Configuration configuration;
-  private final Executor      executor;
   private final JobController jobController;
   private final JobTracker    jobTracker;
+
+  private final ExecutorService executor;
 
   @GuardedBy("emptyQueueListeners")
   private final Set<EmptyQueueListener> emptyQueueListeners = new CopyOnWriteArraySet<>();
 
   private volatile boolean initialized = false;
-  private volatile boolean shutdown    = false;
 
   public JobManager(@NonNull Application application, @NonNull Configuration configuration) {
     this.application   = application;
@@ -71,8 +70,7 @@ public class JobManager implements ConstraintObserver.Notifier {
                                            configuration.getJobInstantiator(),
                                            configuration.getConstraintFactories(),
                                            configuration.getJobTracker(),
-                                           Build.VERSION.SDK_INT < 26 ? new AlarmManagerScheduler(application)
-                                                                      : new CompositeScheduler(new InAppScheduler(this), new JobSchedulerScheduler(application)),
+                                           new CompositeScheduler(new InAppScheduler(this), new JobSchedulerScheduler(application)),
                                            new Debouncer(500),
                                            this::onEmptyQueue,
                                            configuration.getMinGeneralRunners(),
@@ -95,10 +93,6 @@ public class JobManager implements ConstraintObserver.Notifier {
           constraintObserver.register(this);
         }
 
-        if (Build.VERSION.SDK_INT < 26) {
-          application.startService(new Intent(application, KeepAliveService.class));
-        }
-
         initialized = true;
         notifyAll();
 
@@ -119,11 +113,15 @@ public class JobManager implements ConstraintObserver.Notifier {
     });
   }
 
-  /**
-   * Shuts down the job manager entirely. Should only be used for testing!
-   */
-  public void shutdown() {
-    shutdown = true;
+  public void shutdown(long timeoutMillis) {
+    executor.shutdown();
+    try {
+      if (!executor.awaitTermination(timeoutMillis, TimeUnit.MILLISECONDS)) {
+        Log.w(TAG, "Gave up waiting for executor to shut down.");
+      }
+    } catch (InterruptedException ie) {
+      Log.w(TAG, ie);
+    }
   }
 
   /**
@@ -368,7 +366,7 @@ public class JobManager implements ConstraintObserver.Notifier {
       } else {
         return "Timed out waiting for Job info.";
       }
-    } catch (InterruptedException e) {
+    } catch (InterruptedException | RejectedExecutionException e) {
       Log.w(TAG, "Failed to retrieve Job info.", e);
       return "Failed to retrieve Job info.";
     }
@@ -466,7 +464,9 @@ public class JobManager implements ConstraintObserver.Notifier {
    * Pokes the system to take another pass at the job queue.
    */
   void wakeUp() {
-    runOnExecutor(jobController::wakeUp);
+    if (initialized) {
+      runOnExecutor(jobController::wakeUp);
+    }
   }
 
   private void enqueueChain(@NonNull Chain chain) {
@@ -497,14 +497,25 @@ public class JobManager implements ConstraintObserver.Notifier {
    * it through here.
    */
   private void runOnExecutor(@NonNull Runnable runnable) {
-    if (shutdown) {
-      return;
+    try {
+      runOnNonMainThread(() -> {
+        waitUntilInitialized();
+        runnable.run();
+      });
+    } catch (RejectedExecutionException e) {
+      Log.w(TAG, "Task " + runnable.toString() + " rejected for execution.");
     }
+  }
 
-    executor.execute(() -> {
-      waitUntilInitialized();
+  private void runOnNonMainThread(@NonNull Runnable runnable) {
+    if (ThreadUtil.isMainThread()) {
+      executor.execute(runnable);
+    } else {
+      if (executor.isShutdown()) {
+        throw new RejectedExecutionException();
+      }
       runnable.run();
-    });
+    }
   }
 
   private void waitUntilInitialized() {

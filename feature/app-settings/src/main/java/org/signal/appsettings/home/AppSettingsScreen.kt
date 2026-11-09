@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -73,6 +74,7 @@ object AppSettingsTestTags {
   const val ROW_NOTIFICATIONS = "row-notifications"
   const val ROW_PRIVACY = "row-privacy"
   const val ROW_BACKUPS = "row-backups"
+  const val ROW_NETWORK = "row-network"
   const val ROW_DATA_AND_STORAGE = "row-data-and-storage"
   const val ROW_APP_UPDATES = "row-app-updates"
   const val ROW_PAYMENTS = "row-payments"
@@ -97,6 +99,10 @@ fun AppSettingsScreen(
   containerColor: Color = if (rememberIsSplitPaneSettings()) SignalTheme.colors.colorSurface4 else MaterialTheme.colorScheme.background,
   contentColor: Color = MaterialTheme.colorScheme.contentColorFor(containerColor).takeOrElse { MaterialTheme.colorScheme.onSurface },
   selectedRoute: AppSettingsRoute? = null,
+  donationLabel: String? = null,
+  donationContent: (@Composable () -> Unit)? = null,
+  networkLabel: String? = null,
+  networkIcon: Painter? = null,
   avatar: @Composable () -> Unit = {},
   banner: @Composable () -> Unit = {}
 ) {
@@ -181,10 +187,13 @@ fun AppSettingsScreen(
         }
 
         item {
+          if (donationContent != null) {
+            donationContent()
+          } else {
           Rows.TextRow(
             text = {
               Text(
-                text = stringResource(R.string.AppSettingsScreen__donate_to_signal),
+                text = donationLabel ?: stringResource(R.string.AppSettingsScreen__donate_to_signal),
                 modifier = Modifier.weight(1f)
               )
 
@@ -209,6 +218,7 @@ fun AppSettingsScreen(
               .selectionHighlight(selectedRoute is AppSettingsRoute.DonationsRoute)
               .testTag(AppSettingsTestTags.ROW_DONATE)
           )
+          }
         }
 
         item {
@@ -287,13 +297,26 @@ fun AppSettingsScreen(
           )
         }
 
+        if (networkLabel != null) {
+          item {
+            Rows.TextRow(
+              text = networkLabel,
+              icon = networkIcon,
+              onClick = { onEvent(AppSettingsEvent.NetworkClicked) },
+              modifier = Modifier
+                .selectionHighlight(selectedRoute == AppSettingsRoute.DataAndStorageRoute.Proxy)
+                .testTag(AppSettingsTestTags.ROW_NETWORK)
+            )
+          }
+        }
+
         item {
           Rows.TextRow(
             text = stringResource(R.string.preferences__data_and_storage),
             icon = SignalIcons.Data.painter,
             onClick = { onEvent(AppSettingsEvent.DataAndStorageClicked) },
             modifier = Modifier
-              .selectionHighlight(selectedRoute is AppSettingsRoute.DataAndStorageRoute)
+              .selectionHighlight(selectedRoute == AppSettingsRoute.DataAndStorageRoute.DataAndStorage)
               .testTag(AppSettingsTestTags.ROW_DATA_AND_STORAGE)
           )
         }
@@ -337,17 +360,6 @@ fun AppSettingsScreen(
             modifier = Modifier
               .selectionHighlight(selectedRoute is AppSettingsRoute.HelpRoute)
               .testTag(AppSettingsTestTags.ROW_HELP)
-          )
-        }
-
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.AppSettingsFragment__invite_your_friends),
-            icon = SignalIcons.Invite.painter,
-            onClick = { onEvent(AppSettingsEvent.InviteClicked) },
-            modifier = Modifier
-              .selectionHighlight(selectedRoute == AppSettingsRoute.Invite)
-              .testTag(AppSettingsTestTags.ROW_INVITE)
           )
         }
 

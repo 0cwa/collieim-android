@@ -109,3 +109,11 @@ private class PendingValues<T> {
     finished = true
   }
 }
+
+fun <T, R> Flow<T>.zipWithPrevious(transform: suspend (T?, T) -> R): Flow<R> = flow {
+  var prev: T? = null
+  collect { cur ->
+    emit(transform(prev, cur))
+    prev = cur
+  }
+}

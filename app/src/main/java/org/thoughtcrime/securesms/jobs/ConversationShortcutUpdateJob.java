@@ -13,6 +13,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 import org.thoughtcrime.securesms.util.ConversationUtil;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +59,8 @@ public class ConversationShortcutUpdateJob extends BaseJob {
 
   @Override
   protected void onRun() throws Exception {
-    if (SignalStore.settings().getScreenLockEnabled()) {
-      Log.i(TAG, "Screen lock enabled. Clearing shortcuts.");
+    if (TextSecurePreferences.isPassphraseLockEnabled(context)) {
+      Log.i(TAG, "Passphrase lock enabled. Clearing shortcuts.");
       ConversationUtil.clearAllShortcuts(context);
       return;
     }

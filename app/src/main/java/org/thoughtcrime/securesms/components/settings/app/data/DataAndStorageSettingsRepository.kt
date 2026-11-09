@@ -13,7 +13,8 @@ import org.signal.appsettings.dataandstorage.AutoDownloadMediaType
 import org.signal.appsettings.dataandstorage.AutoDownloadNetwork
 import org.signal.core.models.calls.CallDataMode
 import org.signal.core.models.media.SentMediaQuality
-import org.signal.core.util.PlayServicesUtil
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import org.thoughtcrime.securesms.components.settings.app.storage.StorageUsageRepository
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode
@@ -81,10 +82,10 @@ object DataAndStorageSettingsRepository {
   }
 
   fun isPlayServicesAvailable(): Boolean {
-    return PlayServicesUtil.getPlayServicesStatus(AppDependencies.application) == PlayServicesUtil.PlayServicesStatus.SUCCESS
+    return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(AppDependencies.application) == ConnectionResult.SUCCESS
   }
 
-  fun isProxyEnabled(): Boolean = SignalStore.proxy.isProxyEnabled
+  fun isProxyEnabled(): Boolean = AppDependencies.networkManager.isProxyEnabled
 
   /** The discrete MIME type (the part before the "/") stored in [SignalStore.settings] for each media type. */
   private val AutoDownloadMediaType.storageValue: String

@@ -10,10 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import org.signal.core.models.media.Media;
 import org.signal.core.models.recipients.RecipientId;
 import org.thoughtcrime.securesms.R;
-import org.signal.core.models.media.Media;
 import org.thoughtcrime.securesms.mediasend.v2.gallery.MediaGalleryFragment;
+import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
+import org.thoughtcrime.securesms.util.DynamicTheme;
 
 public final class WallpaperImageSelectionActivity extends AppCompatActivity
         implements MediaGalleryFragment.Callbacks
@@ -21,12 +23,20 @@ public final class WallpaperImageSelectionActivity extends AppCompatActivity
   private static final String EXTRA_RECIPIENT_ID = "RECIPIENT_ID";
   private static final int    CROP               = 901;
 
+  private final DynamicTheme dynamicTheme = new DynamicNoActionBarTheme();
+
   public static Intent getIntent(@NonNull Context context,
                                  @Nullable RecipientId recipientId)
   {
     Intent intent = new Intent(context, WallpaperImageSelectionActivity.class);
     intent.putExtra(EXTRA_RECIPIENT_ID, recipientId);
     return intent;
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    dynamicTheme.onResume(this);
   }
 
   @Override
@@ -39,6 +49,7 @@ public final class WallpaperImageSelectionActivity extends AppCompatActivity
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     EdgeToEdge.enable(this);
     super.onCreate(savedInstanceState);
+    dynamicTheme.onCreate(this);
 
     setContentView(R.layout.wallpaper_image_selection_activity);
 

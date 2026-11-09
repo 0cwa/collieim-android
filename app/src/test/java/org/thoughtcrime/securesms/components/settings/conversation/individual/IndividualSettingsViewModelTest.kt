@@ -77,6 +77,7 @@ class IndividualSettingsViewModelTest {
     every { repository.observeStoryViewState(RECIPIENT_ID) } returns flowOf(StoryViewState.NONE)
     every { repository.observeGroupsInCommon(RECIPIENT_ID) } returns flowOf(emptyList())
     every { repository.observeCalls(any<Flow<Long>>(), any()) } returns flowOf(emptyList())
+    coEvery { repository.getLinkedDeviceCount(any()) } returns null
     coEvery { repository.getThreadId(RECIPIENT_ID) } returns THREAD_ID
     coEvery { repository.hasGroups() } returns true
     coEvery { repository.getIdentity(RECIPIENT_ID) } returns null
@@ -265,14 +266,14 @@ class IndividualSettingsViewModelTest {
   }
 
   @Test
-  fun `badge click opens the badge sheet`() = runTest(testDispatcher) {
+  fun `badge click does nothing because Molly has no badges`() = runTest(testDispatcher) {
     val badge = mockk<Badge>()
     val viewModel = createViewModel()
     val actions = collectActions(viewModel)
 
     viewModel.onEvent(IndividualSettingsEvent.BadgeClicked(badge))
 
-    assertEquals(ConversationSettingsAction.ShowBadgeSheet(RECIPIENT_ID, badge), actions.single())
+    assertTrue(actions.isEmpty())
   }
 
   @Test
@@ -733,7 +734,7 @@ class IndividualSettingsViewModelTest {
   }
 
   @Test
-  fun `release notes help rows open their destinations`() = runTest(testDispatcher) {
+  fun `release notes help rows open their destinations, except donate which Molly does not have`() = runTest(testDispatcher) {
     recipientFlow.value = individual(isReleaseNotes = true)
     val viewModel = createViewModel(kind = ConversationSettingsKind.RELEASE_NOTES)
     val actions = collectActions(viewModel)
@@ -745,8 +746,7 @@ class IndividualSettingsViewModelTest {
     assertEquals(
       listOf(
         ConversationSettingsAction.OpenSupportCenter,
-        ConversationSettingsAction.OpenContactUs,
-        ConversationSettingsAction.OpenDonate
+        ConversationSettingsAction.OpenContactUs
       ),
       actions
     )

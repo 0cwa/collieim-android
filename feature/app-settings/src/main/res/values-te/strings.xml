@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">రిజిస్ట్రేషన్ లాక్ ఆన్ చేయాలా?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">రిజిస్ట్రేషన్ లాక్ ఆఫ్ చేయాలా?</string>
@@ -509,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">స్క్రీన్ లాక్ ఉపయోగించండి</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">మీరు యాప్‌లను విడిచిపెట్టినప్పుడు లేదా యాప్‌ల మధ్య మారినప్పుడు Signal ను అన్‌లాక్ చేయడానికి మీ ఆండ్రాయిడ్ పరికరం లాక్ సెట్టింగ్‌లు అవసరం. లాక్ చేయబడినప్పుడు, నోటిఫికేషన్ ప్రివ్యూలు సందేశ కంటెంట్‌ను చూపవు.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">మీరు యాప్‌లను విడిచిపెట్టినప్పుడు లేదా యాప్‌ల మధ్య మారినప్పుడు Collie ను అన్‌లాక్ చేయడానికి మీ ఆండ్రాయిడ్ పరికరం లాక్ సెట్టింగ్‌లు అవసరం. లాక్ చేయబడినప్పుడు, నోటిఫికేషన్ ప్రివ్యూలు సందేశ కంటెంట్‌ను చూపవు.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">స్క్రీన్ లాక్‌ను ప్రారంభించండి</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -521,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">అనుకూల సమయం</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Signal స్క్రీన్ లాక్ ఉపయోగించండి</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie స్క్రీన్ లాక్ ఉపయోగించండి</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Signal స్క్రీన్ లాక్ ఆఫ్ చేయండి</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collie స్క్రీన్ లాక్ ఆఫ్ చేయండి</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">సహాయం</string>
@@ -536,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">లైసెన్స్‌లు</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">నిబంధనలు &amp; గోప్యతా విధానం</string>
-    <string name="HelpFragment__copyright_signal_messenger">కాపీరైట్ Signal మెసెంజర్</string>
+    <string name="HelpFragment__copyright_signal_messenger">కాపీరైట్ Molly మెసెంజర్</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 కింద లైసెన్స్ పొందింది</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal ఒక 501c3 లాభాపేక్ష లేని సంస్థ</string>
@@ -545,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">యాప్ ఐకాన్స్ మరియు పేర్లు హోమ్ స్క్రీన్ మరియు యాప్ డ్రాయర్‌పై కనిపిస్తాయి.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">నోటిఫికేషన్లు ఎల్లప్పుడూ డిఫాల్ట్ Signal ఐకాన్ మరియు పేరును ప్రదర్శిస్తాయి.</string>
+    <string name="preferences__app_icon_notification_warning">నోటిఫికేషన్లు ఎల్లప్పుడూ డిఫాల్ట్ Collie ఐకాన్ మరియు పేరును ప్రదర్శిస్తాయి.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">రీప్లేస్‌మెంట్ యాప్ ఐకాన్ ఎక్కడ కనిపిస్తుందో వివరించే గ్రాఫిక్.</string>
 
@@ -565,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">యాప్ ఐకాన్ మరియు పేరును \"%1$s\"కు మార్చండి</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">యాప్ ఐకాన్ మరియు పేరును మార్చడానికి Signal ను మూసివేయాల్సి ఉంటుంది. నోటిఫికేషన్లు ఎల్లప్పుడూ డిఫాల్ట్ Signal ఐకాన్ మరియు పేరును ప్రదర్శిస్తాయి.</string>
+    <string name="preferences__app_icon_dialog_description">యాప్ ఐకాన్ మరియు పేరును మార్చడానికి Collie ను మూసివేయాల్సి ఉంటుంది. నోటిఫికేషన్లు ఎల్లప్పుడూ డిఫాల్ట్ Collie ఐకాన్ మరియు పేరును ప్రదర్శిస్తాయి.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">యాప్ ఐకాన్ మరియు పేరును ఎంచుకోండి, ఇది మీ ఫోన్ యొక్క హోమ్ స్క్రీన్ మరియు యాప్ డ్రాయర్‌పై కనిపిస్తుంది. నోటిఫికేషన్లు ఎల్లప్పుడూ డిఫాల్ట్ Signal ఐకాన్ మరియు పేరును ప్రదర్శిస్తాయి. మరింత తెలుసుకోండి</string>
+    <string name="preferences__app_icon_warning_learn_more">యాప్ ఐకాన్ మరియు పేరును ఎంచుకోండి, ఇది మీ ఫోన్ యొక్క హోమ్ స్క్రీన్ మరియు యాప్ డ్రాయర్‌పై కనిపిస్తుంది. నోటిఫికేషన్లు ఎల్లప్పుడూ డిఫాల్ట్ Collie ఐకాన్ మరియు పేరును ప్రదర్శిస్తాయి. మరింత తెలుసుకోండి</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">మరింత తెలుసుకోండి</string>
 

@@ -15,7 +15,7 @@ import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.MetricAffectingSpan
 import android.view.View
-import androidx.annotation.ColorRes
+import androidx.annotation.ColorInt
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -26,7 +26,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
-import androidx.core.content.ContextCompat
 import androidx.core.text.buildSpannedString
 import org.signal.core.util.BidiUtil
 
@@ -219,7 +218,7 @@ object SignalSymbols {
     context: Context,
     weight: Weight,
     glyph: Glyph,
-    @ColorRes colorRes: Int = -1
+    @ColorInt color: Int? = null,
   ): CharSequence {
     val typeface = getTypeface(context, weight)
     val span = CustomTypefaceSpan(typeface)
@@ -227,8 +226,8 @@ object SignalSymbols {
     val text = SpannableStringBuilder(glyph.unicode.toString())
     text.setSpan(span, 0, text.length, 0)
 
-    return if (colorRes != -1) {
-      colorSpan(ContextCompat.getColor(context, colorRes), text)
+    return if (color != null) {
+      colorSpan(color, text)
     } else {
       text
     }

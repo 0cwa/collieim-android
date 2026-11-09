@@ -63,6 +63,14 @@ fun HelpSettingsScreen(
     ) {
       item {
         Rows.LinkRow(
+          text = stringResource(R.string.HelpSettingsFragment__molly_im_website),
+          icon = ImageVector.vectorResource(CoreUiR.drawable.symbol_open_20),
+          onClick = { onEvent(HelpSettingsEvent.WebsiteClicked) }
+        )
+      }
+
+      item {
+        Rows.LinkRow(
           text = stringResource(R.string.HelpSettingsFragment__support_center),
           icon = ImageVector.vectorResource(CoreUiR.drawable.symbol_open_20),
           onClick = { onEvent(HelpSettingsEvent.SupportCenterClicked) },
@@ -86,13 +94,23 @@ fun HelpSettingsScreen(
         Rows.TextRow(
           text = stringResource(R.string.HelpSettingsFragment__version),
           label = state.versionName,
+          onClick = { onEvent(HelpSettingsEvent.VersionClicked) },
           onLongClick = { onEvent(HelpSettingsEvent.VersionLongClicked) },
           modifier = Modifier.testTag(HelpSettingsTestTags.ROW_VERSION)
         )
       }
 
       item {
+        Rows.ToggleRow(
+          checked = state.logEnabled,
+          text = stringResource(R.string.preferences__enable_debug_log),
+          onCheckChanged = { onEvent(HelpSettingsEvent.LogEnabledChanged(it)) }
+        )
+      }
+
+      item {
         Rows.TextRow(
+          enabled = state.logEnabled,
           text = stringResource(R.string.HelpSettingsFragment__debug_log),
           onClick = { onEvent(HelpSettingsEvent.DebugLogClicked) },
           modifier = Modifier.testTag(HelpSettingsTestTags.ROW_DEBUG_LOG)

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">开启注册锁定？</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">关闭注册锁定？</string>
@@ -508,7 +507,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">使用屏幕锁定</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">当您离开 Signal 或切换应用时，您需要 Android 设备锁设置来解锁 Signal。在锁定时，通知预览将不会显示消息内容。</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">当您离开 Collie 或切换应用时，您需要 Android 设备锁设置来解锁 Collie。在锁定时，通知预览将不会显示消息内容。</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">开始屏幕锁定</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +519,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">自定义时间</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">使用 Signal 屏幕锁定</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">使用 Collie 屏幕锁定</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">关闭 Signal 屏幕锁定</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">关闭 Collie 屏幕锁定</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">帮助</string>
@@ -535,7 +534,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">许可证</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">条款和隐私政策</string>
-    <string name="HelpFragment__copyright_signal_messenger">版权所有 Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">版权所有 Molly Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">根据 GNU AGPLv3 授权许可</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal 是一个非营利组织</string>
@@ -544,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">应用图标和名称将显示在主屏幕和应用程序抽屉中。</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">通知将始终显示默认的 Signal 图标和名称。</string>
+    <string name="preferences__app_icon_notification_warning">通知将始终显示默认的 Collie 图标和名称。</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">图片说明了替代的应用图标将在哪里可见。</string>
 
@@ -564,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">更改应用图标并将其命名为“%1$s”</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Signal 需要关闭以更改应用图标和名称。通知将始终显示默认的 Signal 图标和名称。</string>
+    <string name="preferences__app_icon_dialog_description">Collie 需要关闭以更改应用图标和名称。通知将始终显示默认的 Collie 图标和名称。</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">请选择一个应用图标和名称，这将显示在您手机的主屏幕和应用程序抽屉中。通知将始终显示默认的 Signal 图标和名称。了解详情</string>
+    <string name="preferences__app_icon_warning_learn_more">请选择一个应用图标和名称，这将显示在您手机的主屏幕和应用程序抽屉中。通知将始终显示默认的 Collie 图标和名称。了解详情</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">了解详情</string>
 

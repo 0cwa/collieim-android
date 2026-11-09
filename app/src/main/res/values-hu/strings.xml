@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -34,9 +31,13 @@
   <!-- Removed by excludeNonTranslatables <string name="AlbumThumbnailView_plus" translatable="false">\+%d</string> -->
 
     <!-- ApplicationMigrationActivity -->
-    <string name="ApplicationMigrationActivity__signal_is_updating">A Signal frissít…</string>
+    <string name="ApplicationMigrationActivity__signal_is_updating">A Collie frissít…</string>
 
     <!-- ApplicationPreferencesActivity -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Még nem állítottál be jelmondatot!</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">Jelmondat letiltása?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Ez véglegesen fel fogja oldani a Colliet és az üzenet értesítéseket.</string>
+    <string name="ApplicationPreferencesActivity_disable">Letiltás</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Hiba történt a kiszolgálóhoz történő kapcsolódás során!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">A regisztrációs zárhoz PIN-kódra van szükség. A PIN-kód letiltásához előbb ki kell kapcsolni a regisztrációs zárat.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN-kód létrehozva.</string>
@@ -80,7 +81,7 @@
     <string name="AttachmentKeyboard_location">Hely</string>
     <!-- Text for a button that will allow users to create a poll -->
     <string name="AttachmentKeyboard_poll">Szavazás</string>
-    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">A Signalnak engedélyre van szüksége a fotók és videók megjelenítéséhez.</string>
+    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">A Collienak engedélyre van szüksége a fotók és videók megjelenítéséhez.</string>
     <!-- Text for a button prompting users to allow Signal access to their gallery storage -->
     <string name="AttachmentKeyboard_allow_access">Hozzáférés engedélyezése</string>
     <string name="AttachmentKeyboard_payment">Fizetés</string>
@@ -91,34 +92,34 @@
     <!-- Option in menu to go to settings -->
     <string name="AttachmentKeyboard_go_to_settings">Ugrás a Beállításokhoz</string>
     <!-- Text explaining that Signal has limited access to photos -->
-    <string name="AttachmentKeyboard_signal_has_limited_access">A Signal korlátozott hozzáféréssel rendelkezik a fotókhoz és videókhoz</string>
+    <string name="AttachmentKeyboard_signal_has_limited_access">A Collie korlátozott hozzáféréssel rendelkezik a fotókhoz és videókhoz</string>
     <!-- Text shown when user has given no photos for Signal to access and an explanation on how to change those permissions -->
     <string name="AttachmentKeyboard_no_photos_found">Nem találhatók fotók. Válaszd ki az itt megjelenő fotókat és videókat, vagy módosítsd az engedélyeket.</string>
 
     <!-- MediaGalleryFragment -->
     <!-- Text describing that no photos or videos are currently found in the gallery and that Signal can only access media that the user allows -->
-    <string name="MediaGalleryFragment__no_photos_found">Nincsenek fotók vagy videók. A Signal csak az általad kiválasztott fotókhoz és videókhoz fér hozzá.</string>
+    <string name="MediaGalleryFragment__no_photos_found">Nincsenek fotók vagy videók. A Collie csak az általad kiválasztott fotókhoz és videókhoz fér hozzá.</string>
 
     <!-- AttachmentManager -->
     <string name="AttachmentManager_cant_open_media_selection">Nem található alkalmazás médiafájl kiválasztásához.</string>
-    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">A Signalnak szüksége van a Tárhely engedélyre, hogy fotókat, videókat vagy hangokat csatolhasson, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Tárhely\"-et.</string>
-    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">A Signalnak szüksége van a Névjegyek engedélyre, hogy névjegy információt csatolhasson, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Névjegyek\"-et.</string>
-    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">A Signalnak szüksége van a Helyadatok engedélyre, hogy helyzetet csatolhasson, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Helyadatok\"-at.</string>
+    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">A Collienak szüksége van a Tárhely engedélyre, hogy fotókat, videókat vagy hangokat csatolhasson, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Tárhely\"-et.</string>
+    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">A Collienak szüksége van a Névjegyek engedélyre, hogy névjegy információt csatolhasson, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Névjegyek\"-et.</string>
+    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">A Collienak szüksége van a Helyadatok engedélyre, hogy helyzetet csatolhasson, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Helyadatok\"-at.</string>
 
     <!-- Dialog title asking users for location permission -->
     <string name="AttachmentManager_signal_allow_access_location">Engedélyezd a helyzetedhez való hozzáférést</string>
     <!-- Dialog description that will explain the steps needed to give location permission -->
     <string name="AttachmentManager_signal_to_send_location">Helyzet elküldéséhez:</string>
     <!-- Alert dialog description asking for location permission -->
-    <string name="AttachmentManager_signal_allow_signal_access_location">Adj hozzáférést a Signalnak a helyzeted elküldéséhez.</string>
+    <string name="AttachmentManager_signal_allow_signal_access_location">Adj hozzáférést a Collienak a helyzeted elküldéséhez.</string>
     <!-- Toast text explaining Signal\'s need for location access -->
-    <string name="AttachmentManager_signal_needs_location_access">A helyzeted elküldéséhez a Signalnak hozzá kell férnie a helyadatokhoz.</string>
+    <string name="AttachmentManager_signal_needs_location_access">A helyzeted elküldéséhez a Collienak hozzá kell férnie a helyadatokhoz.</string>
     <!-- Dialog title asking users for gallery storage permission -->
     <string name="AttachmentManager_signal_allow_storage">Hozzáférés engedélyezése a tárhelyhez</string>
     <!-- Dialog description that will explain the steps needed to give gallery storage permission -->
     <string name="AttachmentManager_signal_to_show_photos">Fotók és videók megjelenítése:</string>
     <!-- Toast text explaining Signal\'s need for storage access -->
-    <string name="AttachmentManager_signal_needs_storage_access">A Signalnak hozzáférési engedélyre van szüksége a fotók és videók megjelenítéséhez.</string>
+    <string name="AttachmentManager_signal_needs_storage_access">A Collienak hozzáférési engedélyre van szüksége a fotók és videók megjelenítéséhez.</string>
 
     <!-- Alert dialog title to show the recipient has not activated payments -->
     <string name="AttachmentManager__not_activated_payments">%1$s nem aktiválta a Kifizetéseket </string>
@@ -271,12 +272,12 @@
     <string name="CensorshipCircumventionMegaphone_no_thanks">Nem, köszönöm</string>
 
     <!-- ClientDeprecatedActivity -->
-    <string name="ClientDeprecatedActivity_update_signal">Signal frissítése</string>
+    <string name="ClientDeprecatedActivity_update_signal">Collie frissítése</string>
     <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">Az app jelenlegi verziója elavult. Üzenetek küldése és fogadása előtt frissítened újabb verzióra.</string>
     <string name="ClientDeprecatedActivity_update">Frissítés</string>
     <string name="ClientDeprecatedActivity_dont_update">Nincs frissítés</string>
     <string name="ClientDeprecatedActivity_warning">Figyelmeztetés</string>
-    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">A Signal általad használt verziója elavult. Megtekintheted a beszélgetés-előzményeket, de a frissítésig nem fogsz tudni üzeneteket küldeni és fogadni.</string>
+    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">A Collie általad használt verziója elavult. Megtekintheted a beszélgetés-előzményeket, de a frissítésig nem fogsz tudni üzeneteket küldeni és fogadni.</string>
 
     <!-- ClockSkewActivity -->
     <!-- Title of the full-screen dialog shown when the device clock is too far off from the real time -->
@@ -308,7 +309,7 @@
     <!-- Title on dialog when quick restore qr code is scanned in system camera -->
     <string name="CommunicationActions__transfer_dialog_title">Fiók átvitele új eszközre?</string>
     <!-- Message on dialog when quick restore qr code is scanned in system camera -->
-    <string name="CommunicationActions__transfer_dialog_message">A fiók új eszközre való átviteléhez koppints a „Folytatás” gombra, és olvasd be újra a QR-kódot a Signal kamerával. Ügyelj rá, hogy csak közvetlenül a Signaltól származó QR-kódokat olvass be.</string>
+    <string name="CommunicationActions__transfer_dialog_message">A fiók új eszközre való átviteléhez koppints a „Folytatás” gombra, és olvasd be újra a QR-kódot a Collie kamerával. Ügyelj rá, hogy csak közvetlenül a Collietól származó QR-kódokat olvass be.</string>
     <string name="CommunicationActions__dont_transfer">Nem kerül áthelyezésre</string>
 
     <!-- ConfirmIdentityDialog -->
@@ -332,8 +333,8 @@
 
     <!-- ContactsDatabase -->
     <string name="ContactsDatabase_message_s">Üzenet %1$s</string>
-    <string name="ContactsDatabase_signal_call_s">Signal hanghívás %1$s</string>
-    <string name="ContactsDatabase_signal_video_call_s">Signal videohívás %1$s</string>
+    <string name="ContactsDatabase_signal_call_s">Collie hanghívás %1$s</string>
+    <string name="ContactsDatabase_signal_video_call_s">Collie videohívás %1$s</string>
 
     <!-- ContactNameEditActivity -->
     <!-- Toolbar title for contact name edit activity -->
@@ -444,10 +445,10 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="ConversationActivity_signal_to_send_audio_messages">Hangüzenetek küldése:</string>
     <!-- Alert dialog description asking for microphone permission in order to send voice messages -->
-    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Hangüzenetek küldéséhez adj hozzáférést a Signalnak a mikrofonodhoz.</string>
+    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Hangüzenetek küldéséhez adj hozzáférést a Collienak a mikrofonodhoz.</string>
     <!-- Toast text explaining Signal\'s need for microphone access -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Hangüzenet rögzítéséhez a Signalnak hozzá kell férnie a mikrofonhoz.</string>
-    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">A Signalnak szüksége van a Mikrofon engedélyre, hogy hangüzeneteket küldhessen, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd az \"Mikrofon\"-t.</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Hangüzenet rögzítéséhez a Collienak hozzá kell férnie a mikrofonhoz.</string>
+    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">A Collienak szüksége van a Mikrofon engedélyre, hogy hangüzeneteket küldhessen, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd az \"Mikrofon\"-t.</string>
 
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d / %2$d</string>
@@ -467,9 +468,9 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions for a voice call -->
     <string name="ConversationActivity__to_start_call">Hívás indításához:</string>
     <!-- Alert dialog description asking for microphone permission in order to start a voice call -->
-    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Hívás indításához adj hozzáférést a Signalnak a mikrofonodhoz.</string>
+    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Hívás indításához adj hozzáférést a Collienak a mikrofonodhoz.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Hívás indításához a Signalnak hozzá kell férnie a mikrofonhoz.</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Hívás indításához a Collienak hozzá kell férnie a mikrofonhoz.</string>
 
 
     <string name="ConversationActivity_join">Csatlakozás</string>
@@ -483,11 +484,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">A Signal már nem támogatja az SMS-ek küldését. Hívd meg %1$s ismerősöd a Signal-szolgáltatásba, és beszélgessetek itt.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Ez a személy már nem használja a Signalt. Hívd meg őket a Signalba, és beszélgessetek itt.</string>
+    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Ez a személy már nem használja a Colliet. Hívd meg őket a Collieba, és beszélgessetek itt.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Ez a személy nem használ Signalt. Hívd meg, és beszélgessetek itt.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Meghívás a Signalra</string>
+    <string name="ConversationActivity__invite_to_signal">Meghívás a Colliera</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Hívás közben nem lehet hangüzenetet rögzíteni.</string>
 
@@ -580,15 +581,15 @@
     <!-- Message shown after successfully blocking join requests for a user -->
     <string name="ConversationFragment__blocked">Letiltva</string>
     <!-- Action shown to allow a user to update their application because it has expired -->
-    <string name="ConversationFragment__update_build">Signal frissítése</string>
+    <string name="ConversationFragment__update_build">Collie frissítése</string>
     <!-- Action shown to allow a user to re-register as they are no longer registered -->
-    <string name="ConversationFragment__reregister_signal">Újraregisztrálás a Signalra</string>
+    <string name="ConversationFragment__reregister_signal">Újraregisztrálás a Colliera</string>
     <!-- Action shown in the conversation input area to allow a user to re-link this device as it is no longer linked -->
     <string name="ConversationFragment__relink_signal">Újratársítás</string>
     <!-- Label for a button displayed in the conversation toolbar to return to the previous screen. -->
     <string name="ConversationFragment__content_description_back_button">Visszalépés.</string>
     <!-- Label for a button displayed in the conversation toolbar to open the main screen of the app. -->
-    <string name="ConversationFragment__content_description_launch_signal_button">Signal megnyitása</string>
+    <string name="ConversationFragment__content_description_launch_signal_button">Collie megnyitása</string>
     <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
     <string name="ConversationFragment__no_longer_verified">Már nem ellenőrzött</string>
     <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
@@ -635,7 +636,7 @@
     <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
     <string name="ConversationFragment_attachment_backfill_failed_title">A médiafájl nem tölthető le</string>
     <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
-    <string name="ConversationFragment_attachment_backfill_timeout">Ellenőrizd az eszközt és a telefonod internetkapcsolatát. Nyisd meg a Signal alkalmazást a telefonodon, majd próbáld meg újra a letöltést.</string>
+    <string name="ConversationFragment_attachment_backfill_timeout">Ellenőrizd az eszközt és a telefonod internetkapcsolatát. Nyisd meg a Collie alkalmazást a telefonodon, majd próbáld meg újra a letöltést.</string>
     <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
     <string name="ConversationFragment_attachment_backfill_not_found">Ez a média már nem érhető el a telefonodon, és nem tölthető le.</string>
     <!-- Dialog for how to long to keep a messaged pinned for -->
@@ -705,7 +706,7 @@
     <!-- Bottom sheet text explaining that profile names are chosen by the account holder. Placeholder will be \'Profile names\' -->
     <string name="ProfileNameBottomSheet__profile_names_on_signal">A %1$s a Signalon a fióktulajdonos által kerülnek kiválasztásra.</string>
     <!-- Bottom sheet text explaining that Signal can\'t verify names and photos -->
-    <string name="ProfileNameBottomSheet__signal_cant_verify">A Signal nem tudja ellenőrizni a neveket és a fotókat</string>
+    <string name="ProfileNameBottomSheet__signal_cant_verify">A Collie nem tudja ellenőrizni a neveket és a fotókat</string>
     <!-- Bottom sheet text explaining that Signal will never contact you for registration code, PIN, or recovery key -->
     <string name="ProfileNameBottomSheet__signal_will_never_contact">A Signal soha nem veszi fel veled a kapcsolatot a regisztrációs kódoddal, a PIN-kódoddal vagy a helyreállítási kulcsoddal kapcsolatban</string>
     <!-- Bottom sheet text explaining that accounts can impersonate other people and to be cautious -->
@@ -847,9 +848,9 @@
     <!-- Toolbar title for this screen -->
     <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">Ki találhat meg a telefonszámom alapján?</string>
     <!-- Description for radio item stating anyone can see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Bárki, aki tudja a telefonszámodat, látni fogja, hogy használod a Signalt, és csevegést kezdeményezhet veled.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Bárki, aki tudja a telefonszámodat, látni fogja, hogy használod a Colliet, és csevegést kezdeményezhet veled.</string>
     <!-- Description for radio item stating no one will be able to see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Senki sem láthatja, hogy használod a Signalt, hacsak nem küldesz valakinek üzenetet, vagy nem folytatsz csevegést valakivel.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Senki sem láthatja, hogy használod a Colliet, hacsak nem küldesz valakinek üzenetet, vagy nem folytatsz csevegést valakivel.</string>
 
     <!-- ChooseBackupFragment -->
 
@@ -875,7 +876,7 @@
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">Ellenőrzi, hogy a biztonsági mentés jelmondata megfelelő-e</string>
     <string name="BackupsPreferenceFragment__turn_on">Biztonsági mentések bekapcsolása</string>
     <string name="BackupsPreferenceFragment__turn_off">Kikapcsolás</string>
-    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Egy biztonsági mentés visszaállításához először is telepítsd a Signalt! Nyisd meg az alkalmazást, koppints a \"Biztonsági mentés visszaállítása\" feliratra, majd keresd ki a biztonsági mentést tartalmazó fájlt! %1$s"</string>
+    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Egy biztonsági mentés visszaállításához először is telepítsd a Colliet! Nyisd meg az alkalmazást, koppints a \"Biztonsági mentés visszaállítása\" feliratra, majd keresd ki a biztonsági mentést tartalmazó fájlt! %1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">Tudj meg többet!</string>
     <string name="BackupsPreferenceFragment__in_progress">Folyamatban…</string>
     <!-- Status text shown in backup preferences when verifying a backup -->
@@ -884,7 +885,7 @@
     <string name="BackupsPreferenceFragment__d_so_far">%1$d eddig…</string>
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">%1$s%% eddig…</string>
-    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">A Signalnak külső tárhely engedélyre van szüksége ahhoz, hogy biztonsági mentést hozzon létre, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazás-beállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Tárhely\"-t.</string>
+    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">A Collienak külső tárhely engedélyre van szüksége ahhoz, hogy biztonsági mentést hozzon létre, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazás-beállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Tárhely\"-t.</string>
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">Állítsd be a biztonsági mentés idejét</string>
 
@@ -962,7 +963,7 @@
 
     <!-- DecryptionFailedDialog -->
     <string name="DecryptionFailedDialog_chat_session_refreshed">A munkamenet alaphelyzetbe állt</string>
-    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">A Signal végpontok közti titkosítást használ, és nagy ritkán újra be kell állítania a két végpont közti adatkapcsolatot. Ennek nincs hatása a biztonságra, de előfordulhat, hogy pont ezalatt nem kaptál meg egy üzenetet ettől a névjegytől. Ilyen esetben azt javasoljuk, hogy kérd meg partneredet az elveszett üzenetek újraküldésére.</string>
+    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">A Collie végpontok közti titkosítást használ, és nagy ritkán újra be kell állítania a két végpont közti adatkapcsolatot. Ennek nincs hatása a biztonságra, de előfordulhat, hogy pont ezalatt nem kaptál meg egy üzenetet ettől a névjegytől. Ilyen esetben azt javasoljuk, hogy kérd meg partneredet az elveszett üzenetek újraküldésére.</string>
 
     <!-- LinkDeviceFragment -->
     <!-- Description for how Signal will work with a linked device (eg desktop, iPad) -->
@@ -1071,7 +1072,7 @@
     <!-- Bottom sheet title telling users to complete the linking process on the other device  -->
     <string name="AddLinkDeviceFragment__finish_linking_on_other_device">Fejezd be az összekapcsolást a másik eszközödön</string>
     <!-- Bottom sheet description telling users to complete the linking process -->
-    <string name="AddLinkDeviceFragment__finish_linking_signal">Fejezd be a Signal összekapcsolását a másik eszközödön.</string>
+    <string name="AddLinkDeviceFragment__finish_linking_signal">Fejezd be a Collie összekapcsolását a másik eszközödön.</string>
     <!-- Title of dialog when the QR code being scanned is invalid -->
     <string name="AddLinkDeviceFragment__linking_device_failed">Készülék társítása sikertelen</string>
     <!-- Text shown in a dialog when the QR code being scanned is invalid -->
@@ -1116,19 +1117,19 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Optimalizálás hiányzó Play Szolgáltatásokra</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Ez a készülék nem támogatja a Play Szolgáltatásokat. Koppints a rendszer akkumulátor-optimalizációinak letiltásához, ami megakadályozza a Signalt abban, hogy inaktív állapotban is letöltse az üzeneteket.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Ez a készülék nem támogatja a Play Szolgáltatásokat. Koppints a rendszer akkumulátor-optimalizációinak letiltásához, ami megakadályozza a Mollyt abban, hogy inaktív állapotban is letöltse az üzeneteket.</string>
 
     <!-- ExpiredBuildReminder -->
-    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Az általad használt Signal verziója elavult. Üzenetek küldéséhez és fogadásához frissíts most!</string>
+    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Az általad használt Collie verziója elavult. Üzenetek küldéséhez és fogadásához frissíts most!</string>
     <string name="ExpiredBuildReminder_update_now">Frissítés most</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
     <string name="DeprecatedSdkBanner_body">A Signal már nem működik ezen az eszközön. A Signal ismételt használatához frissítsd az eszközöd az Android újabb verziójára, vagy válts egy újabb eszközre.</string>
 
     <!-- Title of notification telling users to update Signal -->
-    <string name="DeprecatedNotificationJob_update_signal">Signal frissítése</string>
+    <string name="DeprecatedNotificationJob_update_signal">Collie frissítése</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
-    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">A Signal jelenlegi verziója lejárt. Koppints a frissítéshez, hogy üzeneteket küldhess és fogadhass.</string>
+    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">A Collie jelenlegi verziója lejárt. Koppints a frissítéshez, hogy üzeneteket küldhess és fogadhass.</string>
 
     <!-- PendingGroupJoinRequestsReminder -->
     <plurals name="PendingGroupJoinRequestsReminder_d_pending_member_requests">
@@ -1262,7 +1263,7 @@
     <!-- Message for dialog asking user to submit logs for debugging a crash -->
     <string name="PromptLogsSlowNotificationsDialog__message">A hibakeresési naplók segítenek diagnosztizálni és kijavítani a problémát, és nem tartalmaznak azonosító információkat.</string>
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
-    <string name="PromptLogsSlowNotificationsDialog__title_crash">A Signal problémába ütközött. Hibakeresési napló küldése?</string>
+    <string name="PromptLogsSlowNotificationsDialog__title_crash">A Collie problémába ütközött. Hibakeresési napló küldése?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">Lehet, hogy nem kapsz üzeneteket. Hibanapló küldése?</string>
 
@@ -1270,12 +1271,12 @@
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">Az akkumulátor optimalizálása miatt az értesítések késhetnek</string>
     <!-- Message explaining that battery saver may delay notifications -->
-    <string name="PromptBatterySaverBottomSheet__message">Letilthatod a Signalban az akkumulátoroptimalizálást, hogy az üzenetértesítések ne késsenek.</string>
+    <string name="PromptBatterySaverBottomSheet__message">Letilthatod a Collieban az akkumulátoroptimalizálást, hogy az üzenetértesítések ne késsenek.</string>
 
     <!-- Title in bottom sheet that states that notifications for this device could be delayed -->
     <string name="DeviceSpecificNotificationBottomSheet__notifications_may_be_delayed">Az akkumulátor optimalizálása miatt az értesítések késhetnek</string>
     <!-- Message in bottom sheet prompting users to fix potential issues by disabling battery optimizations -->
-    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Kapcsold ki a Signalban az akkumulátoroptimalizálást, hogy az üzenetértesítések ne késsenek. Az eszközspecifikus utasítások megtekintéséhez koppints a „Folytatás” gombra.</string>
+    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Kapcsold ki a Collieban az akkumulátoroptimalizálást, hogy az üzenetértesítések ne késsenek. Az eszközspecifikus utasítások megtekintéséhez koppints a „Folytatás” gombra.</string>
     <!-- Button to dismiss notification help prompt -->
     <string name="DeviceSpecificNotificationBottomSheet__no_thanks">Nem, köszönöm</string>
     <!-- Button to continue and go to Signal support website -->
@@ -1284,7 +1285,7 @@
     <!-- Title of a bottom sheet that is shown when the user is having connectivity issues -->
     <string name="ConnectivityWarningBottomSheet_title">Lehet, hogy nem kapsz üzeneteket</string>
     <!-- Body of a bottom sheet that is shown when the user is having connectivity issues -->
-    <string name="ConnectivityWarningBottomSheet_body">Az eszköz újraindítása segíthet megoldani az üzenetkézbesítési problémát. Ha a probléma továbbra is fennáll, fordulj a Signal ügyfélszolgálatához.</string>
+    <string name="ConnectivityWarningBottomSheet_body">Az eszköz újraindítása segíthet megoldani az üzenetkézbesítési problémát. Ha a probléma továbbra is fennáll, fordulj a Collie ügyfélszolgálatához.</string>
     <!-- Text for a button in a bottom sheet that is shown when the user is having connectivity issues. Clicking it will dismiss the bottom sheet. -->
     <string name="ConnectivityWarningBottomSheet_dismiss_button">Rendben</string>
 
@@ -1519,7 +1520,7 @@
     <string name="LongMessageActivity_your_message">Saját üzenet</string>
 
     <!-- MessageRetrievalService -->
-    <string name="MessageRetrievalService_signal">Signal</string>
+    <string name="MessageRetrievalService_signal">Collie</string>
     <string name="MessageRetrievalService_background_connection_enabled">Háttérkapcsolat engedélyezve</string>
 
     <!-- MediaOverviewActivity -->
@@ -1611,10 +1612,10 @@
   <!-- Removed by excludeNonTranslatables <string name="StarredMessages__s_chevron_s" translatable="false">%1$s \u203A %2$s</string> -->
 
     <!-- NotificationBarManager -->
-    <string name="NotificationBarManager__establishing_signal_call">Signal hívás létesítése</string>
+    <string name="NotificationBarManager__establishing_signal_call">Collie hívás létesítése</string>
     <!-- Temporary notification shown when starting the calling service -->
-    <string name="NotificationBarManager__starting_signal_call_service">Signal hívó szolgáltatás indítása</string>
-    <string name="NotificationBarManager__stopping_signal_call_service">A Signal hívás szolgáltatás leállítása</string>
+    <string name="NotificationBarManager__starting_signal_call_service">Collie hívó szolgáltatás indítása</string>
+    <string name="NotificationBarManager__stopping_signal_call_service">A Collie hívás szolgáltatás leállítása</string>
     <string name="NotificationBarManager__cancel_call">Hívás megszakítása</string>
 
     <!-- NotificationsMegaphone -->
@@ -1945,7 +1946,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">A továbbiakban nem küldhetsz SMS-eket a Signal-alkalmazásban. Hívd meg %1$s ismerősöd a Signal-szolgáltatásba, és beszélgessetek itt.</string>
+    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">A továbbiakban nem küldhetsz SMS-eket a Collie-alkalmazásban. Hívd meg %1$s ismerősöd a Collie-szolgáltatásba, és beszélgessetek itt.</string>
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Fizetés: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2060,20 +2061,20 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Signal eszköz társítása?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Ha asztali számítógépet vagy iPadet szeretnél kapcsolni ehhez a Signal-fiókhoz, lépj a Kapcsolt eszközök oldalra, koppints az „Új eszköz összekapcsolása” lehetőségre, és olvasd be újra a QR-kódot. Ügyelj rá, hogy csak közvetlenül a Signaltól származó QR-kódokat olvass be.</string>
 
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">A Signal jelenleg telepített verziója ma lejár. Frissíts a legújabb verzióra!</string>
+    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">A Collie jelenleg telepített verziója ma lejár. Frissíts a legújabb verzióra!</string>
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
-        <item quantity="one">A Signal jelenleg telepített verziója holnap lejár. Frissíts a legújabb verzióra!</item>
-        <item quantity="other">A Signal jelenleg telepített verziója %1$d napon belül lejár. Frissíts a legújabb verzióra!</item>
+        <item quantity="one">A Collie jelenleg telepített verziója holnap lejár. Frissíts a legújabb verzióra!</item>
+        <item quantity="other">A Collie jelenleg telepített verziója %1$d napon belül lejár. Frissíts a legújabb verzióra!</item>
     </plurals>
 
     <!-- PassphrasePromptActivity -->
     <string name="PassphrasePromptActivity_enter_passphrase">Add meg a jelmondatot</string>
-    <string name="PassphrasePromptActivity_watermark_content_description">Signal ikon</string>
+    <string name="PassphrasePromptActivity_watermark_content_description">Collie ikon</string>
     <string name="PassphrasePromptActivity_ok_button_content_description">Jelmondat küldése</string>
     <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Érvénytelen jelmondat!</string>
-    <string name="PassphrasePromptActivity_unlock_signal">Signal feloldása</string>
+    <string name="PassphrasePromptActivity_unlock_signal">Collie feloldása</string>
     <!-- This is the subject line for the email that is sent to support -->
-    <string name="PassphrasePromptActivity_signal_android_lock_screen">Signal Android - Képernyőzár</string>
+    <string name="PassphrasePromptActivity_signal_android_lock_screen">Collie Android - Képernyőzár</string>
 
     <!-- PlacePickerActivity -->
     <string name="PlacePickerActivity_title">Térkép</string>
@@ -2131,7 +2132,7 @@
 
     <!-- RecaptchaRequiredBottomSheetFragment -->
     <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">Az üzenetküldés folytatásához ellenőrzés szükséges</string>
-    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">A Signal hálózatán küldött kéretlen üzenetek megelőzése érdekében kérlek végezd el az alábbi ellenőrzést!</string>
+    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">A Collie hálózatán küldött kéretlen üzenetek megelőzése érdekében kérlek végezd el az alábbi ellenőrzést!</string>
     <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">Az ellenőrzést követően folytathatod az üzenetküldést. Az összes felfüggesztett üzenetet automatikusan elküldjük.</string>
 
     <!-- Recipient -->
@@ -2139,7 +2140,7 @@
     <!-- Name of recipient representing user\'s \'My Story\' -->
     <string name="Recipient_my_story">Történetem</string>
     <!-- Name of recipient for a call link without a name -->
-    <string name="Recipient_signal_call">Signal-hívás</string>
+    <string name="Recipient_signal_call">Collie-hívás</string>
 
     <!-- RecipientPreferencesActivity -->
     <string name="RecipientPreferenceActivity_block">Letiltás</string>
@@ -2176,7 +2177,7 @@
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Koppintsd ide a videókép bekapcsolásához</string>
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
-    <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
+    <string name="WebRtcCallActivity__signal_s">Collie %1$s</string>
     <string name="WebRtcCallActivity__calling">Hívás…</string>
     <!-- Title for dialog warning about lacking bluetooth permissions during a call -->
     <string name="WebRtcCallActivity__bluetooth_permission_denied">Bluetooth engedély megtagadva</string>
@@ -2241,15 +2242,15 @@
     <!-- Dialog title asking users for camera permission -->
     <string name="WebRtcCallActivity__allow_access_camera">Engedélyezd a kamerához való hozzáférést</string>
     <!-- Dialog description explaining why camera and microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Hívás indításához vagy híváshoz való csatlakozáshoz adj hozzáférést a Signalnak a kamerádhoz és a mikrofonodhoz.</string>
+    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Hívás indításához vagy híváshoz való csatlakozáshoz adj hozzáférést a Collienak a kamerádhoz és a mikrofonodhoz.</string>
     <!-- Dialog description explaining why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_microphone">Hívás indításához vagy híváshoz való csatlakozáshoz adj hozzáférést a Signalnak a mikrofonodhoz.</string>
+    <string name="WebRtcCallActivity__to_start_call_microphone">Hívás indításához vagy híváshoz való csatlakozáshoz adj hozzáférést a Collienak a mikrofonodhoz.</string>
     <!-- Dialog description explaining why camera permissions are needed to enable a user\'s video in a call -->
-    <string name="WebRtcCallActivity__to_enable_video_allow_camera">A videó engedélyezéséhez adj a Signalnak hozzáférést a kamerádhoz.</string>
+    <string name="WebRtcCallActivity__to_enable_video_allow_camera">A videó engedélyezéséhez adj a Collienak hozzáférést a kamerádhoz.</string>
     <!-- Toast describing why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">A Signalnak mikrofonengedélyekre van szüksége ahhoz, hogy hívást kezdeményezzen vagy híváshoz csatlakozzon.</string>
+    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">A Collienak mikrofonengedélyekre van szüksége ahhoz, hogy hívást kezdeményezzen vagy híváshoz csatlakozzon.</string>
     <!-- Toast describing why camera permissions are needed to enable a video in a call -->
-    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">A videó készítéséhez a Signalnak hozzá kell férnie a kamerádhoz</string>
+    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">A videó készítéséhez a Collienak hozzá kell férnie a kamerádhoz</string>
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="WebRtcCallActivity__to_start_call">Hívás indításához vagy csatlakozáshoz:</string>
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
@@ -2262,8 +2263,8 @@
     <string name="MoveableLocalVideoRenderer__expand_local_video">Helyi videó nagyítása</string>
 
     <!-- WebRtcCallView -->
-    <string name="WebRtcCallView__signal_call">Signal hívás</string>
-    <string name="WebRtcCallView__signal_video_call">Signal videóhívás</string>
+    <string name="WebRtcCallView__signal_call">Collie hívás</string>
+    <string name="WebRtcCallView__signal_video_call">Collie videóhívás</string>
     <string name="WebRtcCallView__start_call">Hívás indítása</string>
     <string name="WebRtcCallView__join_call">Belépés a hívásba</string>
     <string name="WebRtcCallView__call_is_full">A hívás betelt</string>
@@ -2572,7 +2573,7 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Hozzáadás a névjegyzékhez</string>
-    <string name="SharedContactView_invite_to_signal">Meghívás a Signalra</string>
+    <string name="SharedContactView_invite_to_signal">Meghívás a Colliera</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Üzenetek</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
@@ -2865,11 +2866,11 @@
     <string name="ThreadRecord_blocked_group">Letiltva</string>
 
     <!-- ApkUpdateNotifications -->
-    <string name="ApkUpdateNotifications_prompt_install_title">Signal frissítés</string>
-    <string name="ApkUpdateNotifications_prompt_install_body">Megjelent a Signal új verziója. A frissítéshez koppints.</string>
-    <string name="ApkUpdateNotifications_failed_general_title">A Signal frissítése sikertelen</string>
+    <string name="ApkUpdateNotifications_prompt_install_title">Collie frissítés</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">Megjelent a Collie új verziója. A frissítéshez koppints.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">A Collie frissítése sikertelen</string>
     <string name="ApkUpdateNotifications_failed_general_body">Később újra megpróbáljuk.</string>
-    <string name="ApkUpdateNotifications_auto_update_success_title">Signal sikeresen frissítve</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Collie sikeresen frissítve</string>
     <string name="ApkUpdateNotifications_auto_update_success_body">Automatikusan frissítettél a(z) %1$s verzióra.</string>
     <string name="ApkUpdateNotifications_manual_update_success_body">Frissítettél a(z) %1$s verzióra.</string>
 
@@ -2896,7 +2897,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">Signal biztonsági számunk:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">Úgy néz ki, egy alkalmazásod sem alkalmas a megosztás kezeléséhez.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">A vágólapon nem található biztonsági szám, amellyel össze lehetne hasonlítani</string>
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">A Signalnak szüksége van a Kamera engedélyre, hogy QR kódot szkennelhessen, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Kamera\"-t.</string>
+    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">A Collienak szüksége van a Kamera engedélyre, hogy QR kódot szkennelhessen, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Kamera\"-t.</string>
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">Ahhoz, hogy megtekinthesd %1$s biztonsági számát, előbb üzenetet kell váltanotok.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">A rendszer létrehoz egy biztonsági számot ezzel a személlyel, miután üzenetet vált veled.</string>
@@ -2933,8 +2934,8 @@
 
     <!-- KeyCachingService -->
     <string name="KeyCachingService_signal_passphrase_cached">Koppints a megnyitáshoz!</string>
-    <string name="KeyCachingService_passphrase_cached">Signal feloldva</string>
-    <string name="KeyCachingService_lock">Signal zárolása</string>
+    <string name="KeyCachingService_passphrase_cached">Collie feloldva</string>
+    <string name="KeyCachingService_lock">Collie zárolása</string>
 
     <!-- MediaPreviewActivity -->
     <string name="MediaPreviewActivity_you">Te</string>
@@ -2987,7 +2988,7 @@
     <string name="MessageNotifier_failed_to_deliver_message">Nem sikerült az üzenet kézbesítése.</string>
     <string name="MessageNotifier_error_delivering_message">Hiba történt az üzenet kézbesítése során.</string>
     <string name="MessageNotifier_message_delivery_paused">Üzenetek kézbesítése felfüggesztve</string>
-    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">A Signal hálózatán történő üzenetküldéshez ellenőrzés szükséges.</string>
+    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">A Collie hálózatán történő üzenetküldéshez ellenőrzés szükséges.</string>
     <string name="MessageNotifier_mark_all_as_read">Összes megjelölése olvasottként</string>
     <string name="MessageNotifier_mark_read">Olvasottnak jelöl</string>
     <string name="MessageNotifier_turn_off_these_notifications">Értesítések kikapcsolása</string>
@@ -3011,7 +3012,7 @@
     <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
     <string name="MessageNotifier_s_voted_in_poll">%1$s %2$s szavazott a(z) „%3$s” szavazáson</string>
 
-    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Kikapcsolod az új kontakt érhető el Signalon értesítést? Újra engedélyezheted a Signal &gt; Beállítások &gt; Értesítések menüpontban.</string>
+    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Kikapcsolod az új kontakt érhető el Collieon értesítést? Újra engedélyezheted a Collie &gt; Beállítások &gt; Értesítések menüpontban.</string>
 
     <!-- TurnOnNotificationsBottomSheet -->
     <!-- Title for sheet explaining how to turn on app notifications -->
@@ -3087,7 +3088,7 @@
     </plurals>
 
     <!-- Message shown when the app requests permission to save media to the device storage, but that permission has been permanently denied by the user. -->
-    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">A Signalnak szüksége van a Tárhely engedélyre ahhoz, hogy külső tárolóra menthessen, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Tárhely\"-t.</string>
+    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">A Collienak szüksége van a Tárhely engedélyre ahhoz, hogy külső tárolóra menthessen, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Tárhely\"-t.</string>
 
     <!-- Message explaining that it is not possible to save media to the device storage after the user denied the system save to storage permission. -->
     <string name="AttachmentSaver__unable_to_write_to_external_storage_without_permission">Nem lehet engedély nélkül menteni a külső tárolóra</string>
@@ -3097,11 +3098,11 @@
     <!-- Dialog title shown when attempting to save media that has been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_media">A médiafájl nem menthető</string>
     <!-- Dialog message explaining that media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__media_offloaded_message">Ez a médiafájl áthelyezésre került az eszközödről, mert be van kapcsolva a „Signal-tárhely optimalizálása” lehetőség. Az elemeket letöltheted egyenként, vagy kikapcsolhatod a „Signal-tárhely optimalizálása” funkciót, hogy az összes médiatartalmat letöltsd az eszközödre.</string>
+    <string name="AttachmentSaver__media_offloaded_message">Ez a médiafájl áthelyezésre került az eszközödről, mert be van kapcsolva a „Collie-tárhely optimalizálása” lehetőség. Az elemeket letöltheted egyenként, vagy kikapcsolhatod a „Collie-tárhely optimalizálása” funkciót, hogy az összes médiatartalmat letöltsd az eszközödre.</string>
     <!-- Dialog title shown when attempting to save multiple media items, some of which have been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_all_items">Nem menthető az összes elem</string>
     <!-- Dialog message explaining that some selected media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__some_media_offloaded_message">Néhány kiválasztott médiafájl áthelyezésre kerül az eszközödről, mert be van kapcsolva a „Signal-tárhely optimalizálása” lehetőség. Az elemeket egyesével mentheted el, vagy kikapcsolhatod a „Signal-tárhely optimalizálása” funkciót, hogy az összes médiafájlt letöltsd az eszközödre.</string>
+    <string name="AttachmentSaver__some_media_offloaded_message">Néhány kiválasztott médiafájl áthelyezésre kerül az eszközödről, mert be van kapcsolva a „Collie-tárhely optimalizálása” lehetőség. Az elemeket egyesével mentheted el, vagy kikapcsolhatod a „Collie-tárhely optimalizálása” funkciót, hogy az összes médiafájlt letöltsd az eszközödre.</string>
     <!-- Button label in the offloaded media dialog that navigates to the storage settings screen. -->
     <string name="AttachmentSaver__view_storage_settings">Tárhelybeállítások megtekintése</string>
 
@@ -3114,7 +3115,7 @@
     <string name="ShortcutLauncherActivity_invalid_shortcut">Érvénytelen parancsikon</string>
 
     <!-- SingleRecipientNotificationBuilder -->
-    <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
+    <string name="SingleRecipientNotificationBuilder_signal">Collie</string>
     <string name="SingleRecipientNotificationBuilder_new_message">Új üzenet</string>
     <string name="SingleRecipientNotificationBuilder_message_request">Felkérés csevegésre</string>
     <string name="SingleRecipientNotificationBuilder_you">Te</string>
@@ -3190,7 +3191,7 @@
 
     <!-- UnauthorizedReminder -->
     <!-- Message shown in a reminder banner when the user\'s device is no longer registered -->
-    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Ez az eszköz már nincs regisztrálva. Ennek valószínűleg az az oka, hogy egy másik eszközön regisztráltad a telefonszámod a Signalon.</string>
+    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Ez az eszköz már nincs regisztrálva. Ennek valószínűleg az az oka, hogy egy másik eszközön regisztráltad a telefonszámod a Collieon.</string>
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Regisztráld újra az eszközt</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
@@ -3199,7 +3200,7 @@
     <string name="UnauthorizedReminder_relink_action">Eszköz újbóli társítása</string>
 
     <!-- Push notification when the app is forcibly logged out by the server. -->
-    <string name="LoggedOutNotification_you_have_been_logged_out">Kijelentkeztél a Signalból ezen a készüléken.</string>
+    <string name="LoggedOutNotification_you_have_been_logged_out">Kijelentkeztél a Collieból ezen a készüléken.</string>
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
@@ -3245,14 +3246,14 @@
     <string name="change_passphrase_activity__repeat_new_passphrase">Új jelmondat megismétlése</string>
 
     <!-- contact_selection_activity -->
-    <string name="contact_selection_activity__invite_to_signal">Meghívás a Signalra</string>
+    <string name="contact_selection_activity__invite_to_signal">Meghívás a Colliera</string>
     <string name="contact_selection_activity__new_group">Új csoport</string>
     <!-- Row item title for refreshing contacts -->
     <string name="contact_selection_activity__refresh_contacts">Névjegyek frissítése</string>
     <!-- Row item description for refreshing contacts -->
     <string name="contact_selection_activity__missing_someone">Hiányzik valaki? Próbáld meg frissíteni</string>
     <!-- Row item title for finding people on Signal via your contacts -->
-    <string name="contact_selection_activity__find_people_you_know">Keress ismerősöket a Signalban</string>
+    <string name="contact_selection_activity__find_people_you_know">Keress ismerősöket a Collieban</string>
     <!-- Row item description asking users for access to their contacts to find people they know -->
     <string name="contact_selection_activity__allow_access_to_contacts">Engedélyezd a névjegyeidhez való hozzáférést</string>
     <!-- Row header title for more section -->
@@ -3271,7 +3272,7 @@
     <string name="SingleContactSelectionActivity_contact_photo">Kontakt fotó</string>
 
     <!-- ContactSelectionListFragment-->
-    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">A Signalnak szüksége van a Névjegyek engedélyre annak érdekében, hogy megjelenítse a névjegyeid, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Névjegyek\"-et.</string>
+    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">A Collienak szüksége van a Névjegyek engedélyre annak érdekében, hogy megjelenítse a névjegyeid, de ez jelenleg nincs megadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Névjegyek\"-et.</string>
     <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">Hiba történt a névjegyek betöltése során, ellenőrizd a hálózati kapcsolatod</string>
     <string name="ContactSelectionListFragment_username_not_found">A felhasználónév nem található</string>
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"%1$s nem Signal-felhasználó. Kérjük, ellenőrizd a felhasználónevet, majd próbáld újra."</string>
@@ -3291,7 +3292,7 @@
     <!-- Dialog title asking users for contact permission -->
     <string name="ContactSelectionListFragment_allow_access_contacts">Hozzáférés engedélyezése a névjegyekhez</string>
     <!-- Dialog description that will explain the steps needed to give contact permissions -->
-    <string name="ContactSelectionListFragment_to_find_people">Ismerősök keresése a Signalban:</string>
+    <string name="ContactSelectionListFragment_to_find_people">Ismerősök keresése a Collieban:</string>
     <!-- Text on button prompting users to give Signal contact permissions -->
     <string name="ContactSelectionListFragment__allow_access">Hozzáférés engedélyezése</string>
     <!-- Text on button to dismiss Signal\'s request for contact permissions -->
@@ -3421,7 +3422,7 @@
 
     <!-- BubbleOptOutTooltip -->
     <!-- Message to inform the user of what Android chat bubbles are -->
-    <string name="BubbleOptOutTooltip__description">A Buborék egy Android funkció, amit letilthatsz a Signal-csevegések esetén.</string>
+    <string name="BubbleOptOutTooltip__description">A Buborék egy Android funkció, amit letilthatsz a Collie-csevegések esetén.</string>
     <!-- Button to dismiss the tooltip for opting out of using Android bubbles -->
     <string name="BubbleOptOutTooltip__not_now">Később</string>
     <!-- Button to move to the system settings to control the use of Android bubbles -->
@@ -3527,6 +3528,18 @@
     <string name="EditProfileFragment__group_name">Csoport neve</string>
     <string name="EditProfileFragment__group_description">Csoportleírás</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Collie frissítése</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">A Collie jelenlegi verziója lejárt. A Collie használatának folytatásához frissítsd most.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">Frissítés</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">Az eszköz nincs regisztrálva</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">Ez az eszköz már nincs regisztrálva. Regisztráld újra, ha módosítani szeretnéd a fiókod.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Újraregisztrálás</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Mentés</string>
@@ -3562,20 +3575,20 @@
     <!-- Bottom sheet title when encryption is auto-verified -->
     <string name="EncryptionVerifiedSheet__title_success">A titkosítás ellenőrzése automatikus ennél a csevegésnél.</string>
     <!-- Bottom sheet body when encryption is auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_success">Azoknál a személyeknél, akikhez telefonszámon keresztül kapcsolódsz, a Signal egy kulcsátláthatóságnak nevezett folyamat segítségével automatikusan megerősítheti, hogy a kapcsolat biztonságos-e. A fokozott biztonság érdekében ellenőrizd manuálisan a végpontok közötti titkosítást az előző képernyőn látható számok összehasonlításával vagy az eszközön található kód beolvasásával.</string>
+    <string name="EncryptionVerifiedSheet__body_success">Azoknál a személyeknél, akikhez telefonszámon keresztül kapcsolódsz, a Collie egy kulcsátláthatóságnak nevezett folyamat segítségével automatikusan megerősítheti, hogy a kapcsolat biztonságos-e. A fokozott biztonság érdekében ellenőrizd manuálisan a végpontok közötti titkosítást az előző képernyőn látható számok összehasonlításával vagy az eszközön található kód beolvasásával.</string>
     <!-- Bottom sheet title when encryption is no longer auto-verified -->
     <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">Az automatikus ellenőrzés nem érhető el ehhez a csevegéshez</string>
     <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
-    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">A Signal nem tudja automatikusan ellenőrizni a titkosítást ennél a csevegésnél. Ennek az lehet az oka, hogy %1$s megváltoztatta a telefonszámát vagy a telefonszám adatvédelmi beállításait. Ellenőrizd manuálisan a végpontok közötti titkosítást az előző képernyőn látható számok összehasonlításával vagy az eszközön található kód beolvasásával.</string>
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">A Collie nem tudja automatikusan ellenőrizni a titkosítást ennél a csevegésnél. Ennek az lehet az oka, hogy %1$s megváltoztatta a telefonszámát vagy a telefonszám adatvédelmi beállításait. Ellenőrizd manuálisan a végpontok közötti titkosítást az előző képernyőn látható számok összehasonlításával vagy az eszközön található kód beolvasásával.</string>
     <!-- Bottom sheet title when encryption cannot be auto-verified -->
     <string name="EncryptionVerifiedSheet__title_unavailable">Az automatikus ellenőrzés nem érhető el ehhez a csevegéshez</string>
     <!-- Bottom sheet body when encryption cannot be auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_unavailable">A Signal csak azokban a csevegésekben tudja automatikusan ellenőrizni a titkosítást, ahol telefonszámon keresztül vagy kapcsolatban valakivel. Ha a csevegést közös felhasználónévvel vagy csoporttal indították, ellenőrizd a végpontok közötti titkosítást az előző képernyőn látható számok összehasonlításával vagy az eszközön található kód beolvasásával.</string>
+    <string name="EncryptionVerifiedSheet__body_unavailable">A Collie csak azokban a csevegésekben tudja automatikusan ellenőrizni a titkosítást, ahol telefonszámon keresztül vagy kapcsolatban valakivel. Ha a csevegést közös felhasználónévvel vagy csoporttal indították, ellenőrizd a végpontok közötti titkosítást az előző képernyőn látható számok összehasonlításával vagy az eszközön található kód beolvasásával.</string>
 
     <!-- Title for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__title">A Signal mostantól automatikusan ellenőrizheti a titkosítást.</string>
+    <string name="VerifyAutomaticallyEducationSheet__title">A Collie mostantól automatikusan ellenőrizheti a titkosítást.</string>
     <!-- Body for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__body">Azoknál a névjegyeknél, amelyekhez telefonszámon keresztül kapcsolódsz, a Signal egy kulcsátláthatóságnak nevezett folyamat segítségével automatikusan megerősítheti, hogy a kapcsolat biztonságos-e. A fokozott biztonság érdekében továbbra is ellenőrizheted manuálisan a névjegyeket QR-kód vagy biztonsági szám használatával.</string>
+    <string name="VerifyAutomaticallyEducationSheet__body">Azoknál a névjegyeknél, amelyekhez telefonszámon keresztül kapcsolódsz, a Collie egy kulcsátláthatóságnak nevezett folyamat segítségével automatikusan megerősítheti, hogy a kapcsolat biztonságos-e. A fokozott biztonság érdekében továbbra is ellenőrizheted manuálisan a névjegyeket QR-kód vagy biztonsági szám használatával.</string>
     <!-- Button to learn more about automatic verification -->
     <string name="VerifyAutomaticallyEducationSheet__learn_more">Tudj meg többet</string>
     <!-- Button to go to verification page -->
@@ -3722,7 +3735,9 @@
     <string name="preferences__led_color_unknown">Ismeretlen</string>
     <string name="preferences__silent">Csendes</string>
     <string name="preferences__advanced">Haladó</string>
-    <string name="preferences__donate_to_signal">Adomány a Signal számára</string>
+    <string name="preferences__donate_to_signal">Adomány a Molly számára</string>
+    <!-- Preference label for making one-time donations to Signal -->
+    <string name="preferences__privacy">Adatvédelem</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Történetek</string>
     <string name="preferences__payments">Fizetések</string>
@@ -3743,7 +3758,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Cenzúramegkerülés</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Cenzúramegkerülés</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ha engedélyezed, a Signal megpróbálja megkerülni a cenzúrát. Ne engedélyezd ezt a funkciót, ha tartózkodási helyeden nem cenzúrázzák a Signalt!</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Ha engedélyezed, a Collie megpróbálja megkerülni a cenzúrát. Ne engedélyezd ezt a funkciót, ha tartózkodási helyeden nem cenzúrázzák a Colliet!</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Telefonszámod alapján bekapcsoltuk számodra a cenzúramegkerülés-funkciót.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -3771,7 +3786,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automatikus kulcsellenőrzés</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Ha engedélyezve van, a Signal megpróbálja automatikusan ellenőrizni az egyéni csevegések titkosítását.</string>
+    <string name="preferences_automatic_key_verification_body">Ha engedélyezve van, a Collie megpróbálja automatikusan ellenőrizni az egyéni csevegések titkosítását.</string>
 
 
     <!-- Internal only preferences -->
@@ -3788,7 +3803,7 @@
 
     <!-- Displayed on a welcome screen for payments -->
     <string name="PaymentsHomeFragment_introducing_payments">Bemutatjuk a Fizetések szolgáltatást</string>
-    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Küldj és fogadj MobileCoint a Signallal. A MobileCoin egy új, adatvédelemre fókuszáló digitális pénznem. Aktiváld, hogy kipróbálhasd!</string>
+    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Küldj és fogadj MobileCoint a Collielal. A MobileCoin egy új, adatvédelemre fókuszáló digitális pénznem. Aktiváld, hogy kipróbálhasd!</string>
     <string name="PaymentsHomeFragment__activate_payments">Fizetések aktiválása</string>
     <string name="PaymentsHomeFragment__activating_payments">Fizetések aktiválása…</string>
     <string name="PaymentsHomeFragment__restore_payments_account">Fizetési fiók helyreállítása</string>
@@ -3823,10 +3838,10 @@
     <string name="PaymentsHomeFragment__details">Részletek</string>
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__learn_more__activate_payments" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_activate</string> -->
     <!-- Displayed as a description in a dialog when the user tries to activate payments -->
-    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">A Signal segítségével küldhetsz és fogadhatsz MobileCoint. Minden fizetésre a MobileCoins és a MobileCoin Wallet felhasználási feltételei vonatkoznak. Előfordulhat, hogy hibákba futsz bele, és az elveszett fizetéseket és egyenlegeket nem lehet helyreállítani. </string>
+    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">A Collie segítségével küldhetsz és fogadhatsz MobileCoint. Minden fizetésre a MobileCoins és a MobileCoin Wallet felhasználási feltételei vonatkoznak. Előfordulhat, hogy hibákba futsz bele, és az elveszett fizetéseket és egyenlegeket nem lehet helyreállítani. </string>
     <string name="PaymentsHomeFragment__activate">Bekapcsolás</string>
     <string name="PaymentsHomeFragment__view_mobile_coin_terms">MobileCoin feltételek megtekintése</string>
-    <string name="PaymentsHomeFragment__payments_not_available">A továbbiakban nem érhető el a Fizetések a Signalban. Az egyenlegedet továbbra is átutalhatod egy tőzsdére, de a továbbiakban már nem fogsz tudni pénzt küldeni vagy fogadni, sem pedig feltölteni az egyenlegedet.</string>
+    <string name="PaymentsHomeFragment__payments_not_available">A továbbiakban nem érhető el a Fizetések a Collieban. Az egyenlegedet továbbra is átutalhatod egy tőzsdére, de a továbbiakban már nem fogsz tudni pénzt küldeni vagy fogadni, sem pedig feltölteni az egyenlegedet.</string>
 
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__mobile_coin_terms_url" translatable="false">https://www.mobilecoin.com/terms-of-use.html</string> -->
     <!-- Alert dialog title which shows up after a payment to turn on payment lock -->
@@ -3909,9 +3924,9 @@
     <string name="PaymentsTransferFragment__next">Tovább</string>
     <string name="PaymentsTransferFragment__invalid_address">Érvénytelen cím</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">Ellenőrizd a címzett tárcájának címét, majd próbáld újra!</string>
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Nem utalhatsz a saját Signal tárcád címére. Add meg egy támogatott tőzsdéhez tartozó tárca címét!</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR kód beolvasásához a Signalnak szüksége van kamera-hozzáférésre.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR kód beolvasásához engedélyezned kell, hogy a Signal hozzáférhessen kamerádhoz.</string>
+    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Nem utalhatsz a saját Collie tárcád címére. Add meg egy támogatott tőzsdéhez tartozó tárca címét!</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR kód beolvasásához a Collienak szüksége van kamera-hozzáférésre.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR kód beolvasásához engedélyezned kell, hogy a Collie hozzáférhessen kamerádhoz.</string>
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Címet tartalmazó QR kód beolvasása</string>
@@ -4272,17 +4287,17 @@
 
     <!-- CallNotificationBuilder -->
     <!-- Displayed in a notification when a Signal voice call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_voice_call">Bejövő Signal-hanghívás</string>
+    <string name="CallNotificationBuilder__incoming_signal_voice_call">Bejövő Collie-hanghívás</string>
     <!-- Displayed in a notification when a Signal video call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_video_call">Bejövő Signal-videóhívás</string>
+    <string name="CallNotificationBuilder__incoming_signal_video_call">Bejövő Collie-videóhívás</string>
     <!-- Displayed in a notification when a Signal group call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_group_call">Bejövő Signal csoporthívás</string>
+    <string name="CallNotificationBuilder__incoming_signal_group_call">Bejövő Collie csoporthívás</string>
     <!-- Displayed in a notification when a Signal voice call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Folyamatban lévő Signal-hanghívás</string>
+    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Folyamatban lévő Collie-hanghívás</string>
     <!-- Displayed in a notification when a Signal video call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_video_call">Folyamatban lévő Signal-videohívás</string>
+    <string name="CallNotificationBuilder__ongoing_signal_video_call">Folyamatban lévő Collie-videohívás</string>
     <!-- Displayed in a notification when a Signal group call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_group_call">Folyamatban lévő Signal-csoporthívás</string>
+    <string name="CallNotificationBuilder__ongoing_signal_group_call">Folyamatban lévő Collie-csoporthívás</string>
 
     <string name="CallNotificationBuilder_connecting">Csatlakozás…</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">Biztonsági mentés jelmondat</string>
@@ -4308,9 +4323,9 @@
     <string name="BackupDialog_verify">Hitelesítés</string>
     <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">A biztonsági mentés jelmondat megadása sikeres volt</string>
     <string name="BackupDialog_passphrase_was_not_correct">A jelmondat nem megfelelő</string>
-    <string name="LocalBackupJob_creating_signal_backup">Signal biztonsági mentés létrehozása…</string>
+    <string name="LocalBackupJob_creating_signal_backup">Collie biztonsági mentés létrehozása…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">Signal biztonsági mentés ellenőrzése…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">Collie biztonsági mentés ellenőrzése…</string>
     <string name="LocalBackupJobApi29_backup_failed">Sikertelen biztonsági mentés</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">A biztonsági mentéseket tartalmazó könyvtár törölve lett, vagy át lett helyezve.</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">A biztonsági mentés mérete túl nagy ahhoz, hogy itt legyen létrehozva.</string>
@@ -4325,11 +4340,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Hívjon (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Kód újraküldése (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Signal regisztráció - megerősítő kód Androidhoz</string>
+    <string name="RegistrationActivity_code_support_subject">Molly regisztráció - megerősítő kód Androidhoz</string>
     <string name="RegistrationActivity_incorrect_code">Helytelen kód</string>
     <string name="BackupUtil_never">Soha</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Ismeretlen</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">Válaszd ki, hogy ki láthatja a telefonszámod, és ki léphet kapcsolatba veled a Collieon keresztül.</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">A képernyőzár használatához állíts be egy PIN-kódot, mintát vagy jelszót ezen az eszközön.</string>
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Nem sikerült engedélyezni a regisztrációs zárat.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Nem sikerült kikapcsolni a regisztrációs zárat.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Meg kell adnod a regisztrációs zár PIN kódodat</string>
@@ -4341,11 +4360,11 @@
     <string name="preferences_chats__backups">Biztonsági mentések</string>
 
     <!-- Title text shown when Signal is locked and needs to be unlocked -->
-    <string name="prompt_passphrase_activity__unlock_signal">Signal feloldása</string>
+    <string name="prompt_passphrase_activity__unlock_signal">Collie feloldása</string>
     <!-- Description text explaining how to unlock Signal -->
-    <string name="prompt_passphrase_activity__use_your_android_device">A Signal feloldásához használd Android-eszközöd zárolási beállításait.</string>
+    <string name="prompt_passphrase_activity__use_your_android_device">A Collie feloldásához használd Android-eszközöd zárolási beállításait.</string>
     <!-- Text shown in a dialog that further explains how to unlock Signal by using the same unlocking methods that are used to unlock their own device -->
-    <string name="prompt_passphrase_activity__screen_lock_is_on">A képernyőzár be van kapcsolva, és a Signal biztonságosan védve van az eszköz zárolási beállításaival. A Signal feloldása ugyanúgy történik, mint a telefon normál feloldásakor, ez történhet arcfeloldással, ujjlenyomatos feloldással, PIN-kóddal, jelszóval vagy mintával.</string>
+    <string name="prompt_passphrase_activity__screen_lock_is_on">A képernyőzár be van kapcsolva, és a Collie biztonságosan védve van az eszköz zárolási beállításaival. A Collie feloldása ugyanúgy történik, mint a telefon normál feloldásakor, ez történhet arcfeloldással, ujjlenyomatos feloldással, PIN-kóddal, jelszóval vagy mintával.</string>
     <!-- Button in a dialog that will contact Signal support if pressed -->
     <string name="prompt_passphrase_activity__contact_support">Segítségkérés</string>
     <!-- Button text to try again after unlocking has previously failed -->
@@ -4400,10 +4419,10 @@
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">Az új Android eszköz keresése…</string>
-    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">A Signalnak helymeghatározás engedélyre van szüksége ahhoz, hogy felderíthesse új Android eszközödet, és csatlakozhasson hozzá.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">A Signalnak a helymeghatározás szolgáltatásra van szüksége ahhoz, hogy felderíthesse új Android eszközödet, és csatlakozhasson hozzá.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">A Signalnak Wi-Fi-re van szüksége, hogy felderíthesse új Android eszközödet és csatlakozhasson hozzá. A Wi-Finek bekapcsolt állapotban kell lennie, de nem muszáj hálózathoz csatlakoznia.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Sajnáljuk, de úgy tűnik, hogy ez az eszköz nem támogatja a Wi-Fi Directet. A Signal Wi-Fi Directet használ, hogy felderítse és csatlakozzon új Android eszközödhöz. Továbbra is használhatod a biztonsági mentés által létrehozott fájlokat, hogy a fiókodat áthozd új Android eszközödre.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">A Collienak helymeghatározás engedélyre van szüksége ahhoz, hogy felderíthesse új Android eszközödet, és csatlakozhasson hozzá.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">A Collienak a helymeghatározás szolgáltatásra van szüksége ahhoz, hogy felderíthesse új Android eszközödet, és csatlakozhasson hozzá.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">A Collienak Wi-Fi-re van szüksége, hogy felderíthesse új Android eszközödet és csatlakozhasson hozzá. A Wi-Finek bekapcsolt állapotban kell lennie, de nem muszáj hálózathoz csatlakoznia.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Sajnáljuk, de úgy tűnik, hogy ez az eszköz nem támogatja a Wi-Fi Directet. A Molly Wi-Fi Directet használ, hogy felderítse és csatlakozzon új Android eszközödhöz. Továbbra is használhatod a biztonsági mentés által létrehozott fájlokat, hogy a fiókodat áthozd új Android eszközödre.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">Biztonsági mentés létrehozása</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Váratlan hiba történt az új Android eszközödhöz történő csatlakozás során.</string>
 
@@ -4443,7 +4462,7 @@
 
     <!-- DeviceTransferFragment -->
     <string name="DeviceTransfer__transferring_data">Adat áttöltése</string>
-    <string name="DeviceTransfer__keep_both_devices_near_each_other">Tartsd a két eszközt egymás közelében. Ne kapcsold ki egyik eszközt sem, és tartsd a Signalt nyitva. Az adatvitel végpontok közti titkosítással védett.</string>
+    <string name="DeviceTransfer__keep_both_devices_near_each_other">Tartsd a két eszközt egymás közelében. Ne kapcsold ki egyik eszközt sem, és tartsd a Colliet nyitva. Az adatvitel végpontok közti titkosítással védett.</string>
     <string name="DeviceTransfer__d_messages_so_far">Eddig %1$d db üzenet…</string>
     <!-- Filled in with total percentage of messages transferred -->
     <string name="DeviceTransfer__s_of_messages_so_far">Eddig %1$s%% üzenet…</string>
@@ -4457,7 +4476,7 @@
     <!-- OldDeviceTransferInstructionsFragment -->
     <string name="OldDeviceTransferInstructions__transfer_account">Fiók átvitele</string>
     <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
-    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Töltsd le a Signalt új Android eszközödre</string>
+    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Töltsd le a Colliet új Android eszközödre</string>
     <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
     <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">"Koppints a \"Fiók átvitele vagy helyreállítása\" opcióra!"</string>
     <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
@@ -4538,7 +4557,7 @@
     <!-- GroupLinkBottomSheetDialogFragment -->
     <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Ezzel a hivatkozással bárki megtekintheti a csoport nevét, a tagok listáját, valamint csatlakozási kérelmet nyújthat be. Csak olyan személyekkel oszd meg, akikben megbízol.</string>
     <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Ezzel a hivatkozással bárki megtekintheti a csoport nevét, a tagok listáját, valamint csatlakozhat a csoporthoz. Csak olyan személyekkel oszd meg, akikben megbízol.</string>
-    <string name="GroupLinkBottomSheet_share_via_signal">Megosztás Signallal</string>
+    <string name="GroupLinkBottomSheet_share_via_signal">Megosztás Collielal</string>
     <string name="GroupLinkBottomSheet_copy">Másolás</string>
     <string name="GroupLinkBottomSheet_qr_code">QR kód</string>
     <string name="GroupLinkBottomSheet_share">Megosztás</string>
@@ -4696,7 +4715,7 @@
     <string name="payment_info_card_about_mobilecoin">A MobileCoin-ról</string>
     <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">A MobileCoin egy új, adatvédelemre fókuszáló digitális pénznem.</string>
     <string name="payment_info_card_adding_funds">Feltöltés</string>
-    <string name="payment_info_card_you_can_add_funds_for_use_in">A Signalban történő költekezéshez küldj MobileCoin-t a pénztárcád címére!</string>
+    <string name="payment_info_card_you_can_add_funds_for_use_in">A Collieban történő költekezéshez küldj MobileCoin-t a pénztárcád címére!</string>
     <string name="payment_info_card_cashing_out">Pénzkivét</string>
     <string name="payment_info_card_you_can_cash_out_mobilecoin">Bármikor hozzájuthatsz MobileCoin egyenlegedhez egy olyan tőzsde használatával, amely támogatja a MobileCoint. Egyszerűen indíts egy utalást a tőzsdéhez tartozó tárcád címére.</string>
     <string name="payment_info_card_hide_this_card">Elrejtsük ezt a kártyát?</string>
@@ -4717,12 +4736,12 @@
     <!-- DeactivateWalletFragment -->
     <string name="DeactivateWalletFragment__deactivate_wallet">Tárca kikapcsolása</string>
     <string name="DeactivateWalletFragment__your_balance">Egyenleged</string>
-    <string name="DeactivateWalletFragment__its_recommended_that_you">A fizetések kikapcsolása előtt javasolt a pénzösszegeidet egy másik tárca címére átutalni. Ha mégis úgy döntesz, hogy most nem utalod át az egyenleged, az továbbra is a Signalhoz kapcsolt tárcádban lesz. A fizetések újraaktiválásakor az egyenleg újra elérhető lesz.</string>
+    <string name="DeactivateWalletFragment__its_recommended_that_you">A fizetések kikapcsolása előtt javasolt a pénzösszegeidet egy másik tárca címére átutalni. Ha mégis úgy döntesz, hogy most nem utalod át az egyenleged, az továbbra is a Colliehoz kapcsolt tárcádban lesz. A fizetések újraaktiválásakor az egyenleg újra elérhető lesz.</string>
     <string name="DeactivateWalletFragment__transfer_remaining_balance">Maradék egyenleg átutalása</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring">Kikapcsolás átutalás nélkül</string>
     <string name="DeactivateWalletFragment__deactivate">Kikapcsolás</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring_question">Kikapcsolás átutalás nélkül?</string>
-    <string name="DeactivateWalletFragment__your_balance_will_remain">Az egyenleg a Signalhoz kapcsolt tárcádban marad. A fizetések újraaktiválásakor az egyenleged újra elérhető lesz.</string>
+    <string name="DeactivateWalletFragment__your_balance_will_remain">Az egyenleg a Colliehoz kapcsolt tárcádban marad. A fizetések újraaktiválásakor az egyenleged újra elérhető lesz.</string>
     <string name="DeactivateWalletFragment__error_deactivating_wallet">Hiba a tárca kikapcsolásakor.</string>
   <!-- Removed by excludeNonTranslatables <string name="DeactivateWalletFragment__learn_more__we_recommend_transferring_your_funds" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_deactivate</string> -->
 
@@ -5439,9 +5458,9 @@
     <string name="MySupportPreference__checking_subscription">Előfizetés ellenőrzése…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__title">Signal frissítése</string>
+    <string name="UpdateSignalExpiredDialog__title">Collie frissítése</string>
     <!-- Message of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__message">A Signal jelenlegi verziója lejárt. A Signal használatának folytatásához frissítsd most.</string>
+    <string name="UpdateSignalExpiredDialog__message">A Collie jelenlegi verziója lejárt. A Collie használatának folytatásához frissítsd most.</string>
     <!-- Button text of expiration dialog, will take user to update the app -->
     <string name="UpdateSignalExpiredDialog__update_action">Frissítés</string>
     <!-- Button text of expiration dialog to cancel the dialog.  -->
@@ -5450,7 +5469,7 @@
     <!-- Title of dialog telling user they need to re-register signal -->
     <string name="ReregisterSignalDialog__title">Az eszköz nincs regisztrálva</string>
     <!-- Message of dialog telling user they need to re-register signal as it is no longer registered -->
-    <string name="ReregisterSignalDialog__message">Ez az eszköz már nincs regisztrálva. Regisztráld újra, hogy továbbra is használhasd a Signalt ezen az eszközön.</string>
+    <string name="ReregisterSignalDialog__message">Ez az eszköz már nincs regisztrálva. Regisztráld újra, hogy továbbra is használhasd a Colliet ezen az eszközön.</string>
     <!-- Button text of re-registration dialog to re-register the device.  -->
     <string name="ReregisterSignalDialog__reregister_action">Újraregisztrálás</string>
     <!-- Button text of re-registration dialog to cancel the dialog.  -->
@@ -5726,6 +5745,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Bekapcsolva eddig: %1$s</string>
 
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">Sikertelen tallózás.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">Az értesítések engedélyezéséhez a Collienak engedélyre van szüksége azok megjelenítéséhez.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">Bekapcsolás</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Ez a hivatalos és egyetlen Signal chat</string>
@@ -6909,7 +6934,7 @@
     <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__title">A Signal Biztonságos Biztonsági mentéseinek bekapcsolása</string>
     <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
-    <string name="TurnOnSignalBackups__body">Soha ne veszíts el egy üzenetet sem új telefon vásárlásakor vagy a Signal újratelepítésekor.</string>
+    <string name="TurnOnSignalBackups__body">Soha ne veszíts el egy üzenetet sem új telefon vásárlásakor vagy a Collie újratelepítésekor.</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
     <string name="TurnOnSignalBackups__turn_on">Bekapcsolás</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
@@ -6979,16 +7004,16 @@
     <string name="BackupSetupCompleteBottomSheet__back_up_now">Biztonsági mentés készítése</string>
 
     <!-- Title of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__title">Nyisd meg a Signalt a telefonodon!</string>
+    <string name="InactivePrimary__title">Nyisd meg a Colliet a telefonodon!</string>
     <!-- Body of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__body">Fiókod aktív állapotban tartásához nyisd meg a Signal alkalmazást az elsődleges eszközödön.</string>
+    <string name="InactivePrimary__body">Fiókod aktív állapotban tartásához nyisd meg a Collie alkalmazást az elsődleges eszközödön.</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will navigate to a support page -->
     <string name="InactivePrimary__learn_more">Tudj meg többet</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will snooze the megaphone -->
     <string name="InactivePrimary__got_it">Rendben</string>
 
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
-    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Egy biztonsági mentés visszaállításához először is telepítsd a Signalt! Nyisd meg az alkalmazást, koppints a Biztonsági mentés visszaállítása opcióra, majd keresd ki a biztonsági mentést tartalmazó mappát!"</string>
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Egy biztonsági mentés visszaállításához először is telepítsd a Colliet! Nyisd meg az alkalmazást, koppints a Biztonsági mentés visszaállítása opcióra, majd keresd ki a biztonsági mentést tartalmazó mappát!"</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
     <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Be van kapcsolva a „Signal tárhely-optimalizálás” beállítás. Ha az összes médiafájlt bele szeretnéd foglalni az eszközön lévő biztonsági mentésbe, kapcsold ki a beállítást.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
@@ -7353,6 +7378,34 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Nem tudsz feliratkozni a Signal biztonsági mentéseire, mert a telefonod nem támogatja a Google Play-szolgáltatásokat. Segítségért fordulj a telefon gyártójához.</string>
 
+    <!-- ManageStorageSettingsFragment -->
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">A csevegés hosszának korlátja</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">Üzenetelőzmények törlése</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">A kiválasztott időpontnál régebbi üzenetek véglegesen törlődnek.</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">A megadott hosszúságot meghaladó üzenetek véglegesen törlődnek.</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">Korlátozások alkalmazása a kapcsolt eszközökre</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">Ha engedélyezve van, a csevegési korlátok a kapcsolt eszközökről is törlik az üzeneteket.</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie tárhely</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalizáld a Collie-tárhelyedet</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">A fel nem használt médiafájlokat a rendszer eltávolítja, de bármikor letöltheted őket a biztonsági másolatból.</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">A tárhely-optimalizálás csak a díj ellenében igénybe vehető Signal biztonsági mentésekkel használható. Biztonsági mentésre vonatkozó előfizetésed még feldolgozás alatt áll, és még nem aktív. Kérjük, próbáld újra később.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">A médiafájlok eltávolításra kerülnek az eszközön lévő biztonsági mentésből.</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">A „Signal tárhely-optimalizálás” funkció bekapcsolásával a régi médiafájlok áthelyezésre kerülnek az eszközről. Bármikor újra letöltheted. A régi médiafájlokat is eltávolítod az eszközön lévő biztonsági mentésből.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">Bekapcsolás</string>
+
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Végezz frissítést a funkció engedélyezéséhez</string>
@@ -7507,7 +7560,7 @@
     <!-- Displays the date the subscription expired. Placeholder is the date. -->
     <string name="RemoteBackupsSettingsFragment__expired_on_s">%1$s dátummal lejárt</string>
     <!-- Displayed at the top of the screen when no backup is currently enabled -->
-    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Készíts biztonsági másolatot az üzenetelőzményeidről, hogy soha ne veszíts el adatot új telefon vásárlásakor vagy a Signal újratelepítésekor.</string>
+    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Készíts biztonsági másolatot az üzenetelőzményeidről, hogy soha ne veszíts el adatot új telefon vásárlásakor vagy a Collie újratelepítésekor.</string>
     <!-- Section header for other ways to back up -->
     <string name="RemoteBackupsSettingsFragment__other_ways_to_backup">A biztonsági mentés egyéb módjai</string>
     <!-- Row title for performing on-device backup -->
@@ -7785,7 +7838,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Tartsd biztonságban a kulcsod</string>
     <!-- Bottom sheet subtitle -->
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Ha elveszíted a kulcsod, a Signal nem tud segíteni a biztonsági másolat helyreállításában. Tárold biztonságos helyen, és ne oszd meg másokkal.</string>
+    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Ha elveszíted a kulcsod, a Collie nem tud segíteni a biztonsági másolat helyreállításában. Tárold biztonságos helyen, és ne oszd meg másokkal.</string>
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Tovább</string>
     <!-- Sheet secondary action button label -->
@@ -7795,13 +7848,13 @@
     <!-- Dialog title for confirming you need to disable optimized storage and download media to rotate AEP key -->
     <string name="MessageBackupsKeyRecordScreen__download_media">Médiafájl letöltése</string>
     <!-- Dialog body for confirming you need to disable optimized storage and download media to rotate AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Új helyreállítási kulcs létrehozásához ki kell kapcsolnod a „Signal-tárhely optimalizálása” beállítást, és meg kell várnod, amíg a médiafájl letöltése befejeződik. Amikor a letöltés befejeződött, létrehozhatsz egy új kulcsot.</string>
+    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Új helyreállítási kulcs létrehozásához ki kell kapcsolnod a „Collie-tárhely optimalizálása” beállítást, és meg kell várnod, amíg a médiafájl letöltése befejeződik. Amikor a letöltés befejeződött, létrehozhatsz egy új kulcsot.</string>
     <!-- Action label to turn off optimized storage and download media -->
     <string name="MessageBackupsKeyRecordScreen__turn_off_and_download">Kikapcsolás és letöltés</string>
     <!-- Bottom Sheet title for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">Új helyreállítási kulcs létrehozása</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">Új kulcs létrehozására csak akkor van szükség, ha valaki más is ismeri a kulcsodat. Újra fel kell töltened a biztonsági mentést, beleértve a médiafájlokat is. Ha a „Signal-tárhely optimalizálása” funkciót használod, először le kell töltened az áthelyezett médiatartalmakat.</string>
+    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">Új kulcs létrehozására csak akkor van szükség, ha valaki más is ismeri a kulcsodat. Újra fel kell töltened a biztonsági mentést, beleértve a médiafájlokat is. Ha a „Collie-tárhely optimalizálása” funkciót használod, először le kell töltened az áthelyezett médiatartalmakat.</string>
     <!-- Dialog title shown when user attempts to exit backup setup before completion -->
     <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">Kilépsz a biztonsági mentés beállításából?</string>
     <!-- Dialog body warning user that backup setup is incomplete -->
@@ -8318,7 +8371,7 @@
     <string name="CouldNotCompleteBackupRestoreSheet__body_error">Hiba történt, és a biztonsági mentés nem állítható vissza. Ennek az oka az lehet, hogy a biztonsági mentések mappáját áthelyezték az eszközön a biztonsági mentés visszaállítása közben.</string>
 
     <!-- Body of the sheet shown when a local backup restore could not be completed, explaining how to try again -->
-    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Az újbóli próbálkozáshoz távolítsd el, majd telepítsd újra a Signal alkalmazást ezen az eszközön, és válaszd a „Visszaállítás vagy átvitel” lehetőséget.</string>
+    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Az újbóli próbálkozáshoz távolítsd el, majd telepítsd újra a Collie alkalmazást ezen az eszközön, és válaszd a „Visszaállítás vagy átvitel” lehetőséget.</string>
 
     <!-- Button on the sheet shown when a local backup restore could not be completed, opening a support article about it -->
     <string name="CouldNotCompleteBackupRestoreSheet__learn_more">Tudj meg többet</string>

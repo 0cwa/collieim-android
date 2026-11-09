@@ -9,7 +9,6 @@ import android.app.Application
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import org.signal.core.util.logging.Log
-import org.signal.core.util.orNull
 import org.signal.core.util.resettableLazy
 import org.signal.libsignal.net.Network
 import org.signal.libsignal.zkgroup.receipts.ClientZkReceiptOperations
@@ -40,13 +39,11 @@ import org.signal.network.service.StorageServiceService
 import org.signal.network.service.TwoFactorMethodService
 import org.signal.network.service.UsernameService
 import org.signal.network.util.Tls12SocketFactory
-import org.signal.network.util.TlsProxySocketFactory
 import org.thoughtcrime.securesms.crypto.storage.SignalServiceDataStoreImpl
 import org.thoughtcrime.securesms.groups.GroupsV2Authorization
 import org.thoughtcrime.securesms.groups.GroupsV2AuthorizationMemoryValueCache
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver
-import org.thoughtcrime.securesms.payments.Payments
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess
 import org.thoughtcrime.securesms.push.SignalServiceTrustStore
 import org.whispersystems.signalservice.api.SignalServiceAccountManager
@@ -80,14 +77,17 @@ import javax.net.ssl.X509TrustManager
 class NetworkDependenciesModule(
   private val application: Application,
   private val provider: AppDependencies.Provider,
-  private val authWebSocket: SignalWebSocket.AuthenticatedWebSocket,
-  private val unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket,
+  private val authWebSocketSupplier: () -> SignalWebSocket.AuthenticatedWebSocket,
+  private val unauthWebSocketSupplier: () -> SignalWebSocket.UnauthenticatedWebSocket,
   private val libsignalNetworkSupplier: Supplier<Network>
 ) {
 
   companion object {
     private val TAG = "NetworkDependencies"
   }
+
+  private val authWebSocket by lazy(authWebSocketSupplier)
+  private val unauthWebSocket by lazy(unauthWebSocketSupplier)
 
   val signalServiceNetworkAccess: SignalServiceNetworkAccess by lazy {
     provider.provideSignalServiceNetworkAccess()
@@ -152,10 +152,6 @@ class NetworkDependenciesModule(
 
   val signalServiceMessageReceiver: SignalServiceMessageReceiver by lazy {
     provider.provideSignalServiceMessageReceiver(pushServiceSocket)
-  }
-
-  val payments: Payments by lazy {
-    provider.providePayments(paymentsApi)
   }
 
   val profileService: ProfileService by lazy {
@@ -278,11 +274,6 @@ class NetworkDependenciesModule(
       val builder = baseClient.newBuilder()
         .sslSocketFactory(Tls12SocketFactory(sslContext.socketFactory), trustManagers[0] as X509TrustManager)
         .connectionSpecs(Util.immutableList(ConnectionSpec.RESTRICTED_TLS))
-
-      val proxy = signalServiceNetworkAccess.getConfiguration().signalProxy.orNull()
-      if (proxy != null) {
-        builder.socketFactory(TlsProxySocketFactory(proxy.host, proxy.port, signalServiceNetworkAccess.getConfiguration().dns))
-      }
 
       builder.build()
     } catch (e: NoSuchAlgorithmException) {

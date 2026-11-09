@@ -49,8 +49,6 @@ import org.whispersystems.signalservice.api.storage.IAPSubscriptionId.AppleIAPOr
 import org.whispersystems.signalservice.api.storage.IAPSubscriptionId.GooglePlayBillingPurchaseToken
 import org.whispersystems.signalservice.api.subscriptions.SubscriberId
 import java.util.Currency
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 /**
  * Handles importing/exporting [AccountData] frames for an archive.
@@ -71,12 +69,8 @@ object AccountDataArchiveProcessor {
 
     val backupSubscriberRecord = db.inAppPaymentSubscriberTable.getBackupsSubscriber()
 
-    val screenLockTimeoutSeconds = signalStore.settingsValues.screenLockTimeout
-    val screenLockTimeoutMinutes = if (screenLockTimeoutSeconds > 0) {
-      screenLockTimeoutSeconds.seconds.inWholeMinutes.toInt()
-    } else {
-      null
-    }
+    // Molly passphrase locking is a device-local policy, distinct from Signal's screen-lock timer.
+    val screenLockTimeoutMinutes = null
 
     val mobileAutoDownload = SignalStore.settings.mobileMediaDownloadAllowed
     val wifiAutoDownload = SignalStore.settings.wifiMediaDownloadAllowed
@@ -279,7 +273,7 @@ object AccountDataArchiveProcessor {
     SignalStore.story.userHasSeenGroupStoryEducationSheet = settings.hasSeenGroupStoryEducationSheet
     SignalStore.story.viewedReceiptsEnabled = settings.storyViewReceiptsEnabled ?: settings.readReceipts
     SignalStore.backup.optimizeStorage = !importState.backupMode.isLinkAndSync && settings.optimizeOnDeviceStorage
-    SignalStore.backup.backupTier = MessageBackupTier.fromBackupLevel(settings.backupTier)
+    SignalStore.backup.backupTier = if (SignalStore.account.isPrimaryDevice) MessageBackupTier.fromBackupLevel(settings.backupTier) else null
     SignalStore.settings.sentMediaQuality = settings.defaultSentMediaQuality.toLocalSentMediaQuality()
     SignalStore.settings.theme = settings.appTheme.toLocalTheme()
     SignalStore.settings.callDataMode = settings.callsUseLessDataSetting.toLocalCallDataMode()
@@ -300,11 +294,6 @@ object AccountDataArchiveProcessor {
 
       SignalStore.settings.mobileMediaDownloadAllowed = mobileAndWifiDownloadSet
       SignalStore.settings.wifiMediaDownloadAllowed = wifiDownloadSet
-    }
-
-    val screenLockTimeoutMinutes = settings.screenLockTimeoutMinutes
-    if (screenLockTimeoutMinutes != null) {
-      SignalStore.settings.screenLockTimeout = screenLockTimeoutMinutes.minutes.inWholeSeconds
     }
 
     val pinReminders = settings.pinReminders

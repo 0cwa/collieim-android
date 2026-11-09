@@ -25,20 +25,21 @@ import androidx.window.layout.WindowMetricsCalculator;
 
 import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.ui.WindowBreakpoint;
+import org.signal.core.ui.util.ThemeUtil;
+import org.signal.core.ui.util.ViewUtil;
 import org.signal.core.util.logging.Log;
 import org.signal.imageeditor.core.ImageEditorView;
 import org.signal.imageeditor.core.model.EditorElement;
 import org.signal.imageeditor.core.model.EditorModel;
 import org.signal.imageeditor.core.renderers.FaceBlurRenderer;
-import org.thoughtcrime.securesms.BaseActivity;
+import org.signal.imageeditor.core.renderers.UriGlideRenderer;
+import org.thoughtcrime.securesms.PassphraseRequiredActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.ProgressCard;
 import org.thoughtcrime.securesms.conversation.colors.ColorizerView;
-import org.signal.imageeditor.core.renderers.UriGlideRenderer;
 import org.thoughtcrime.securesms.util.AsynchronousCallback;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.Projection;
-import org.signal.core.ui.util.ViewUtil;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaper;
 import org.thoughtcrime.securesms.wallpaper.ChatWallpaperPreviewActivity;
 
@@ -48,7 +49,7 @@ import java.util.Objects;
 
 import static org.signal.core.ui.WindowSizeClassExtensionsKt.getWindowBreakpoint;
 
-public final class WallpaperCropActivity extends BaseActivity {
+public final class WallpaperCropActivity extends PassphraseRequiredActivity {
 
   private static final String TAG = Log.tag(WallpaperCropActivity.class);
 
@@ -78,14 +79,19 @@ public final class WallpaperCropActivity extends BaseActivity {
   }
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+  protected void onPreCreate() {
+    super.onPreCreate();
+    dynamicTheme.onCreate(this);
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState, boolean ready) {
+    super.onCreate(savedInstanceState, ready);
 
     if (!(getWindowBreakpoint(getResources()) instanceof WindowBreakpoint.Small)) {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
-    dynamicTheme.onCreate(this);
     setContentView(R.layout.chat_wallpaper_crop_activity);
 
     RecipientId recipientId = getIntent().getParcelableExtra(EXTRA_RECIPIENT_ID);
@@ -197,7 +203,7 @@ public final class WallpaperCropActivity extends BaseActivity {
     int   width  = bounds.width();
     float ratio  = width / (float) height;
 
-    EditorModel editorModel = EditorModel.createForWallpaperEditing(ratio, ContextCompat.getColor(this, org.signal.core.ui.R.color.signal_colorBackground));
+    EditorModel editorModel = EditorModel.createForWallpaperEditing(ratio, ThemeUtil.getThemedColor(this, com.google.android.material.R.attr.colorSurface));
 
     EditorElement image = new EditorElement(new UriGlideRenderer(imageUri, true, width, height, UriGlideRenderer.WEAK_BLUR));
     image.getFlags()
@@ -237,8 +243,12 @@ public final class WallpaperCropActivity extends BaseActivity {
   }
 
   private static final class DynamicWallpaperTheme extends DynamicTheme {
-    protected @StyleRes int getTheme() {
+    protected @StyleRes int getRegularTheme() {
       return R.style.Signal_DayNight_WallpaperCropper;
+    }
+
+    protected @StyleRes int getDynamicTheme() {
+      return getRegularTheme();
     }
   }
 }

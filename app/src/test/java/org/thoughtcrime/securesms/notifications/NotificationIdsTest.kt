@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.notifications
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.thoughtcrime.securesms.notifications.v2.ConversationId
@@ -33,6 +34,12 @@ class NotificationIdsTest {
     val duplicates = fixedIds.entries.groupBy({ it.value }, { it.key }).filterValues { it.size > 1 }
 
     assertTrue("Duplicate notification ids: $duplicates", duplicates.isEmpty())
+  }
+
+  @Test
+  fun `legacy backup notification ids retain Molly values`() {
+    assertEquals(120500, NotificationIds.LEGACY_OUT_OF_REMOTE_STORAGE)
+    assertEquals(120501, NotificationIds.LEGACY_INITIAL_BACKUP_FAILED)
   }
 
   @Test

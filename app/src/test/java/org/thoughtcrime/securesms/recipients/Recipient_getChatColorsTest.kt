@@ -29,7 +29,7 @@ import org.thoughtcrime.securesms.wallpaper.ChatWallpaper
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
 class Recipient_getChatColorsTest {
-  private val defaultChatColors = ChatColorsPalette.Bubbles.default.withId(ChatColors.Id.Auto)
+  private val defaultChatColors = ChatColors.forColor(ChatColors.Id.Auto, 0xFF6F270F.toInt())
   private val globalWallpaperChatColor = ChatColors.forColor(ChatColors.Id.BuiltIn, Color.RED)
   private val globalChatColor = ChatColors.forColor(ChatColors.Id.BuiltIn, Color.GREEN)
 
@@ -210,7 +210,7 @@ class Recipient_getChatColorsTest {
   }
 
   @Test
-  fun `Given no recipient colors and auto global colors and no wallpaper set, when I getChatColors, then I expect default blue`() {
+  fun `Given no recipient colors and auto global colors and no wallpaper set, when I getChatColors, then I expect default copper`() {
     // GIVEN
     every { wallpaperValues.wallpaper } answers { null }
     every { chatColorsValues.chatColors } answers { globalChatColor.withId(ChatColors.Id.Auto) }
@@ -224,7 +224,7 @@ class Recipient_getChatColorsTest {
   }
 
   @Test
-  fun `Given no colors or wallpaper set, when I getChatColors, then I expect default blue`() {
+  fun `Given no colors or wallpaper set, when I getChatColors, then I expect default copper`() {
     // GIVEN
     every { wallpaperValues.wallpaper } answers { null }
     every { chatColorsValues.chatColors } answers { null }

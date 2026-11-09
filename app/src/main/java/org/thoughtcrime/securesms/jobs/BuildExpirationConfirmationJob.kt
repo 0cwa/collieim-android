@@ -62,10 +62,10 @@ class BuildExpirationConfirmationJob private constructor(params: Parameters) : C
         SignalStore.misc.setLastKnownServerTime(serverTimeMs, System.currentTimeMillis())
 
         if (Util.getTimeUntilBuildExpiry(serverTimeMs) <= 0) {
-          Log.w(TAG, "Build confirmed expired! Server time: $serverTimeMs, Local time: ${System.currentTimeMillis()}, Build time: ${BuildConfig.BUILD_TIMESTAMP}, Time since expiry: ${serverTimeMs - BuildConfig.BUILD_TIMESTAMP}", true)
+          Log.w(TAG, "Build confirmed expired! Server time: $serverTimeMs, Local time: ${System.currentTimeMillis()}, Build time: ${BuildConfig.BUILD_TIMESTAMP_OR_ZERO}, Time since expiry: ${serverTimeMs - BuildConfig.BUILD_TIMESTAMP_OR_ZERO}", true)
           SignalStore.misc.isClientDeprecated = true
         } else {
-          Log.w(TAG, "Build not actually expired! Likely bad local clock. Server time: $serverTimeMs, Local time: ${System.currentTimeMillis()}, Build time: ${BuildConfig.BUILD_TIMESTAMP}")
+          Log.w(TAG, "Build not actually expired! Likely bad local clock. Server time: $serverTimeMs, Local time: ${System.currentTimeMillis()}, Build time: ${BuildConfig.BUILD_TIMESTAMP_OR_ZERO}")
         }
         Result.success()
       }

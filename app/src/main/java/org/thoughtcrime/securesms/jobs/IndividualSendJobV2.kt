@@ -150,7 +150,7 @@ class IndividualSendJobV2 private constructor(parameters: Parameters, private va
     syncPreKeysIfNecessary().getOrElse { return it }
 
     if (SignalStore.misc.isClientDeprecated) {
-      Log.w(TAG, "${logPrefix()} Client is deprecated (build ${BuildConfig.BUILD_TIMESTAMP}); failing message.")
+      Log.w(TAG, "${logPrefix()} Client is deprecated (build ${BuildConfig.BUILD_TIMESTAMP_OR_ZERO}); failing message.")
       return Result.failure()
     }
 

@@ -129,9 +129,7 @@ class IndividualSettingsViewModel(
       IndividualSettingsEvent.AvatarClicked -> {
         BlockAndSpamHandler.avatarClickAction(state.recipient, state.storyViewState, repository.isStoriesFeatureEnabled())?.let { _actions.send(it) }
       }
-      is IndividualSettingsEvent.BadgeClicked -> {
-        _actions.send(ConversationSettingsAction.ShowBadgeSheet(recipientId, event.badge))
-      }
+      is IndividualSettingsEvent.BadgeClicked -> Unit
       IndividualSettingsEvent.HeadlineClicked -> {
         _actions.send(ConversationSettingsAction.ShowAboutSheet(state.recipient))
       }
@@ -197,9 +195,7 @@ class IndividualSettingsViewModel(
       IndividualSettingsEvent.ContactUsClicked -> {
         _actions.send(ConversationSettingsAction.OpenContactUs)
       }
-      IndividualSettingsEvent.DonateClicked -> {
-        _actions.send(ConversationSettingsAction.OpenDonate)
-      }
+      IndividualSettingsEvent.DonateClicked -> Unit
       IndividualSettingsEvent.AddToAGroupClicked -> {
         val groupMembership = repository.getGroupMembership(recipientId)
         _actions.send(ConversationSettingsAction.AddToAGroup(recipientId, groupMembership))
@@ -241,7 +237,8 @@ class IndividualSettingsViewModel(
         repository.refreshRecipient(recipientId)
       }
       is IndividualSettingsEvent.RecipientChanged -> {
-        _state.update { it.applyRecipient(event.recipient) }
+        val linkedDeviceCount = repository.getLinkedDeviceCount(event.recipient)
+        _state.update { it.applyRecipient(event.recipient).copy(linkedDeviceCount = linkedDeviceCount) }
       }
       is IndividualSettingsEvent.StoryViewStateChanged -> {
         _state.update { it.copy(storyViewState = event.storyViewState) }

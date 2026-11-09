@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "status": "ACCEPTED",
+  "repository": "https://repo.collie.im/native-inputs/v1/maven/",
+  "reason": "Exact pinned native inputs were published and independently read back under the recorded reviewed Pages policy.",
+  "lock": "native-lock.json",
+  "production_version_floor": 177702,
+  "publication_status": "PUBLISHED_AND_READ_BACK",
+  "acceptance": {
+    "artifact_id": 13652144656,
+    "evidence_sha256": "c250fabb3deaf9b1266b23bba60f9a094636b5359c1efd3a4520114eb5a11948",
+    "journal_sha256": "885837f8e9b2cb20d294900ac53f13743b63a89b943f84913b877ce80e9be85f",
+    "native_manifest_sha256": "637e69803bdec6aa117c9f3b85d966ef055041a2c066e4cb28447ecd29296838",
+    "operation_inventory_sha256": "ef67342328752e4ec8079c92ff74f998d0f761f278f025a5ab9af9db00797dd4",
+    "input_approval_sha256": "1f80d2444021ba4f3dfcb289a76e2797370e85aebd621c1d9184efb9aad233b8",
+    "input_asset_id": 726354765,
+    "input_bundle_sha256": "4f1c9f05e57c2efe5d5e9669ec0f75a1ba2ce2d02a3c50a990f99d7b799f41ba",
+    "dispatch_binding_sha256": "f884f82a77d281290c1dcbb6cf62716de7a114adb2dfb3401cfd99c3da9f1703",
+    "plan_sha256": "17f1a27c1ed4084a22d13cc734a0d309a0c1ac6129535584b084c33d905858d3",
+    "policy_revision": "5cc4bbefc19c1dfdb38952465d5a3cfc245c33a6",
+    "run_attempt": 1,
+    "run_id": 42569065555,
+    "workflow_metadata_sha256": "50020a1dfd4a96841e6125fe23b3fc419b620c6355e034d2e58fea72c61e2ff9"
+  }
+}

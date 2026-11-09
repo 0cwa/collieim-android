@@ -50,8 +50,7 @@ data class RemoteMegaphoneRecord(
   enum class ActionId(val id: String, val isDonateAction: Boolean = false) {
     SNOOZE("snooze"),
     FINISH("finish"),
-    DONATE("donate", true),
-    DONATE_FOR_FRIEND("donate_friend", true);
+    DONATE("donate", true);
 
     companion object {
       fun from(id: String?): ActionId? {

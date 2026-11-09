@@ -364,6 +364,23 @@ class InAppPaymentTable(context: Context, databaseHelper: SignalDatabase) : Data
       .run()
   }
 
+  /** Donations still in progress, including those awaiting external authorization. */
+  fun hasDonationInProgress(): Boolean {
+    return readableDatabase.exists(TABLE_NAME)
+      .where(
+        "$STATE IN (?, ?, ?, ?, ?) AND $TYPE IN (?, ?, ?)",
+        State.serialize(State.PENDING),
+        State.serialize(State.TRANSACTING),
+        State.serialize(State.REQUIRES_ACTION),
+        State.serialize(State.REQUIRED_ACTION_COMPLETED),
+        State.serialize(State.WAITING_FOR_AUTHORIZATION),
+        InAppPaymentType.serialize(InAppPaymentType.ONE_TIME_DONATION),
+        InAppPaymentType.serialize(InAppPaymentType.RECURRING_DONATION),
+        InAppPaymentType.serialize(InAppPaymentType.ONE_TIME_GIFT)
+      )
+      .run()
+  }
+
   fun hasPendingBackupRedemption(): Boolean {
     return readableDatabase.exists(TABLE_NAME)
       .where("$STATE = ? AND $TYPE = ?", State.serialize(State.PENDING), InAppPaymentType.serialize(InAppPaymentType.RECURRING_BACKUP))

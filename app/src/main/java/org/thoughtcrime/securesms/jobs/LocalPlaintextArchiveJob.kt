@@ -76,7 +76,7 @@ class LocalPlaintextArchiveJob internal constructor(
         context,
         context.getString(R.string.LocalBackupJob_creating_signal_backup),
         NotificationChannels.getInstance().BACKUPS,
-        CoreUiR.drawable.ic_signal_backup,
+        R.drawable.ic_notification_backup,
         contentIntent
       )
     } catch (e: UnableToStartException) {

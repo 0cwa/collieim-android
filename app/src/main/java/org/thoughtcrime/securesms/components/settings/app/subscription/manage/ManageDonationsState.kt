@@ -8,6 +8,7 @@ import org.thoughtcrime.securesms.subscription.Subscription
 data class ManageDonationsState(
   val hasOneTimeBadge: Boolean = false,
   val hasReceipts: Boolean = false,
+  val hasDonationSubscriber: Boolean = false,
   val featuredBadge: Badge? = null,
   val isLoaded: Boolean = false,
   val networkError: Boolean = false,

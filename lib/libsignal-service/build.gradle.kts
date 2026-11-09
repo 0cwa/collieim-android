@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import org.gradle.api.tasks.SourceSetContainer
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -11,10 +10,7 @@ plugins {
   id("java-library")
   id("org.jetbrains.kotlin.jvm")
   id("java-test-fixtures")
-  id("maven-publish")
-  id("signing")
   id("idea")
-  id("org.jlleitschuh.gradle.ktlint")
   id("com.squareup.wire")
   alias(libs.plugins.kotlinx.serialization)
 }
@@ -36,42 +32,10 @@ tasks.withType<KotlinCompile>().configureEach {
   }
 }
 
-tasks.named<Jar>("sourcesJar") {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-val sourceSets = extensions.getByName("sourceSets") as SourceSetContainer
-sourceSets.named("main") {
-  output.dir(
-    mapOf("builtBy" to tasks.named("compileKotlin")),
-    "$buildDir/classes/kotlin/main"
-  )
-}
-sourceSets.named("test") {
-  output.dir(
-    mapOf("builtBy" to tasks.named("compileTestKotlin")),
-    "$buildDir/classes/kotlin/test"
-  )
-}
-
 afterEvaluate {
-  listOf(
-    "runKtlintCheckOverMainSourceSet",
-    "runKtlintFormatOverMainSourceSet",
-    "sourcesJar"
-  ).forEach { taskName ->
-    tasks.named(taskName) {
-      mustRunAfter(tasks.named("generateMainProtos"))
-    }
-  }
-}
-
-ktlint {
-  version.set("1.5.0")
-
-  filter {
-    exclude { entry ->
-      entry.file.toString().contains("build/generated/source/wire")
-    }
+  tasks.named("sourcesJar", Jar::class.java) {
+    dependsOn("generateMainProtos")
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
   }
 }
 
@@ -92,12 +56,6 @@ wire {
   }
 }
 
-tasks.whenTaskAdded {
-  if (name == "lint") {
-    enabled = false
-  }
-}
-
 dependencies {
   api(libs.google.libphonenumber)
   api(libs.jackson.core)
@@ -105,6 +63,7 @@ dependencies {
 
   implementation(libs.libsignal.client)
   api(libs.square.okhttp3)
+  api(libs.square.okhttp3.dnsoverhttps)
   api(libs.square.okio)
   implementation(libs.google.jsr305)
 

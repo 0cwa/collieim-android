@@ -13,13 +13,12 @@ import org.thoughtcrime.securesms.jobmanager.JobManager;
 import org.thoughtcrime.securesms.jobs.DeleteAbandonedAttachmentsJob;
 import org.thoughtcrime.securesms.jobs.EmojiSearchIndexDownloadJob;
 import org.thoughtcrime.securesms.jobs.QuoteThumbnailBackfillJob;
-import org.thoughtcrime.securesms.jobs.StickerPackDownloadJob;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.migrations.ApplicationMigrations;
 import org.thoughtcrime.securesms.migrations.QuoteThumbnailBackfillMigrationJob;
-import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.recipients.RecipientIds;
 import org.thoughtcrime.securesms.stickers.BlessedPacks;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 /**
  * Rule of thumb: if there's something you want to do on the first app launch that involves
@@ -39,7 +38,6 @@ public final class AppInitialization {
     SignalStore.misc().setJobManagerVersion(JobManager.CURRENT_VERSION);
     PlainTextKeyValueStore.setLastVersionCode(BuildConfig.VERSION_CODE);
     SignalStore.tooltips().markStickerIntroTooltipSeen();
-    SignalStore.settings().setPassphraseDisabled(true);
     SignalStore.settings().setReadReceiptsEnabled(true);
     SignalStore.settings().setTypingIndicatorsEnabled(true);
     AppDependencies.getMegaphoneRepository().onFirstEverAppLaunch();
@@ -54,12 +52,8 @@ public final class AppInitialization {
     SignalStore.onPostBackupRestore();
     SignalStore.onFirstEverAppLaunch();
     SignalStore.onboarding().clearAll();
-    SignalStore.settings().setPassphraseDisabled(true);
     SignalStore.notificationProfile().setHasSeenTooltip(true);
-    if (NotificationChannels.supported()) {
-      NotificationChannels.getInstance().updateMessageVibrate(SignalStore.settings().isMessageVibrateEnabled());
-    }
-    SignalStore.settings().setPassphraseDisabled(true);
+    TextSecurePreferences.onPostBackupRestore(context);
     AppDependencies.getJobManager().addAll(BlessedPacks.getFirstInstallJobs());
     EmojiSearchIndexDownloadJob.scheduleImmediately();
     DeleteAbandonedAttachmentsJob.enqueue();
@@ -87,7 +81,6 @@ public final class AppInitialization {
     SignalStore.misc().setJobManagerVersion(JobManager.CURRENT_VERSION);
     PlainTextKeyValueStore.setLastVersionCode(BuildConfig.VERSION_CODE);
     SignalStore.tooltips().markStickerIntroTooltipSeen();
-    SignalStore.settings().setPassphraseDisabled(true);
     AppDependencies.getMegaphoneRepository().onFirstEverAppLaunch();
     SignalStore.onFirstEverAppLaunch();
     AppDependencies.getJobManager().addAll(BlessedPacks.getFirstInstallJobs());

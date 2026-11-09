@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.signal.donations.PaymentSourceType
 import org.thoughtcrime.securesms.components.settings.app.subscription.DonationSerializationHelper.toFiatMoney
-import org.thoughtcrime.securesms.components.settings.app.subscription.GooglePayRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppDonations
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.database.InAppPaymentTable
@@ -22,7 +21,6 @@ import java.util.Currency
 
 class GatewaySelectorViewModel(
   args: GatewaySelectorBottomSheetArgs,
-  repository: GooglePayRepository
 ) : ViewModel() {
 
   private val store = MutableStateFlow<GatewaySelectorState>(GatewaySelectorState.Loading)
@@ -32,7 +30,7 @@ class GatewaySelectorViewModel(
 
   init {
     val inAppPayment = InAppPaymentsRepository.requireInAppPayment(args.inAppPaymentId)
-    val isGooglePayAvailable = repository.isGooglePayAvailable().toSingleDefault(true).onErrorReturnItem(false)
+    val isGooglePayAvailable = Single.just(false)
     val gatewayConfiguration = inAppPayment.flatMap { GatewaySelectorRepository.getAvailableGatewayConfiguration(currencyCode = it.data.amount!!.currencyCode) }
 
     disposables += Single.zip(inAppPayment, isGooglePayAvailable, gatewayConfiguration, ::Triple).subscribeBy { (inAppPayment, googlePayAvailable, gatewayConfiguration) ->

@@ -98,11 +98,12 @@ class ConnectivityStateCalculatorTest {
   }
 
   @Test
-  fun `a usable unvalidated network outranks a blocked one`() {
+  fun `blocked network outranks unvalidated network in either order`() {
     val states = listOf(
       NetworkState(validated = true, blocked = true, onVpn = false),
       NetworkState(validated = false, blocked = false, onVpn = false)
     )
-    assertThat(ConnectivityStateCalculator.calculate(states)).isEqualTo(ConnectivityState.CONNECTED_UNVALIDATED)
+    assertThat(ConnectivityStateCalculator.calculate(states)).isEqualTo(ConnectivityState.BLOCKED)
+    assertThat(ConnectivityStateCalculator.calculate(states.reversed())).isEqualTo(ConnectivityState.BLOCKED)
   }
 }

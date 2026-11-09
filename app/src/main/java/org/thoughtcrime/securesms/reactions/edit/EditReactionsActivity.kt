@@ -10,12 +10,16 @@ class EditReactionsActivity : PassphraseRequiredActivity() {
 
   private val theme: DynamicTheme = DynamicNoActionBarTheme()
 
+  override fun onPreCreate() {
+    super.onPreCreate()
+    theme.onCreate(this)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
     super.onCreate(savedInstanceState, ready)
     if (intent.extras?.getBoolean(ARG_FORCE_DARK_MODE) == true) {
       delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_YES
     }
-    theme.onCreate(this)
 
     if (savedInstanceState == null) {
       supportFragmentManager.beginTransaction()

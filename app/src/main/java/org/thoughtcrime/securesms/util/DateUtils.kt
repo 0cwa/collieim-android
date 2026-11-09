@@ -29,6 +29,8 @@ import org.thoughtcrime.securesms.util.DateUtils.getBriefRelativeTimeSpanString
 import java.text.DateFormatSymbols
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Calendar
 import java.util.Date
@@ -40,7 +42,6 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
 /**
@@ -57,7 +58,12 @@ object DateUtils : android.text.format.DateUtils() {
   private val dateFormatCache: MutableMap<TemplateLocale, SimpleDateFormat> = mutableMapOf()
   private val dateFormatSymbolsCache: MutableMap<Locale, DateFormatSymbols> = mutableMapOf()
 
-  private var is24HourDateCache: Is24HourDateEntry? = null
+  private var is24HourFormatCache: Boolean? = null
+
+  @JvmStatic
+  fun updateFormat() {
+    is24HourFormatCache = null
+  }
 
   /**
    * A relative timestamp to use in space-constrained areas, like the conversation list.
@@ -159,7 +165,16 @@ object DateUtils : android.text.format.DateUtils() {
    */
   @JvmStatic
   fun getOnlyTimeString(context: Context, timestamp: Long): String {
-    return timestamp.toLocalTime().formatHours(context)
+    return getOnlyTimeString(context, timestamp.toLocalTime())
+  }
+
+  @JvmStatic
+  fun getOnlyTimeString(context: Context, localTime: LocalTime): String {
+    val locale = Locale.getDefault()
+    val skeleton = if (context.is24HourFormat()) "HHmm" else "hhmma"
+    val pattern = skeleton.localizeTemplate(locale)
+    val formatter = DateTimeFormatter.ofPattern(pattern, locale)
+    return formatter.format(localTime)
   }
 
   /**
@@ -405,16 +420,10 @@ object DateUtils : android.text.format.DateUtils() {
     }
   }
 
-  private fun Context.is24HourFormat(): Boolean {
-    is24HourDateCache?.let {
-      if (it.lastUpdated.isWithin(10.seconds)) {
-        return it.value
-      }
+  fun Context.is24HourFormat(): Boolean {
+    return is24HourFormatCache ?: DateFormat.is24HourFormat(this).also {
+      is24HourFormatCache = it
     }
-
-    val result = DateFormat.is24HourFormat(this)
-    is24HourDateCache = Is24HourDateEntry(result, System.currentTimeMillis())
-    return result
   }
 
   private fun Long.convertDeltaTo(unit: DurationUnit): Int {
@@ -470,6 +479,4 @@ object DateUtils : android.text.format.DateUtils() {
   }
 
   private data class TemplateLocale(val template: String, val locale: Locale)
-
-  private data class Is24HourDateEntry(val value: Boolean, val lastUpdated: Long)
 }

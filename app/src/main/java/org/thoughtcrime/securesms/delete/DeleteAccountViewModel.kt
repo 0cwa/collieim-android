@@ -43,7 +43,7 @@ class DeleteAccountViewModel(
     DeleteAccountState(
       hasPhoneNumber = !repository.isPhoneNumberless(),
       username = repository.getUsername(),
-      walletBalance = repository.getFormattedWalletBalance()
+      walletBalance = null
     )
   )
   private val _actions = Channel<DeleteAccountAction>(Channel.BUFFERED)

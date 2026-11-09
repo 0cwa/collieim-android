@@ -3,16 +3,14 @@ package org.signal.storage.keyvalue
 class OnboardingValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   companion object {
-    private const val SHOW_NEW_GROUP = "onboarding.new_group"
-    private const val SHOW_INVITE_FRIENDS = "onboarding.invite_friends"
+    private const val SHOW_STORIES = "onboarding.stories_molly"
     private const val SHOW_APPEARANCE = "onboarding.appearance"
     private const val SHOW_ADD_PHOTO = "onboarding.add_photo"
     private const val SHOW_SET_UP_USERNAME = "onboarding.set_up_username"
   }
 
   public override fun onFirstEverAppLaunch() {
-    putBoolean(SHOW_NEW_GROUP, true)
-    putBoolean(SHOW_INVITE_FRIENDS, true)
+    putBoolean(SHOW_STORIES, true)
     putBoolean(SHOW_APPEARANCE, true)
     putBoolean(SHOW_ADD_PHOTO, true)
     putBoolean(SHOW_SET_UP_USERNAME, true)
@@ -22,35 +20,25 @@ class OnboardingValues(store: KeyValueStore) : SignalStoreValues(store) {
     get() = emptyList()
 
   fun clearAll() {
-    setShowNewGroup(false)
-    setShowInviteFriends(false)
+    setShowStories(false)
     setShowAppearance(false)
     setShowAddPhoto(false)
     setShowSetUpUsername(false)
   }
 
   fun hasOnboarding(): Boolean {
-    return shouldShowNewGroup() ||
-      shouldShowInviteFriends() ||
+    return shouldShowStories() ||
       shouldShowAppearance() ||
       shouldShowAddPhoto() ||
       shouldShowSetUpUsername()
   }
 
-  fun setShowNewGroup(value: Boolean) {
-    putBoolean(SHOW_NEW_GROUP, value)
+  fun setShowStories(value: Boolean) {
+    putBoolean(SHOW_STORIES, value)
   }
 
-  fun shouldShowNewGroup(): Boolean {
-    return getBoolean(SHOW_NEW_GROUP, false)
-  }
-
-  fun setShowInviteFriends(value: Boolean) {
-    putBoolean(SHOW_INVITE_FRIENDS, value)
-  }
-
-  fun shouldShowInviteFriends(): Boolean {
-    return getBoolean(SHOW_INVITE_FRIENDS, false)
+  fun shouldShowStories(): Boolean {
+    return getBoolean(SHOW_STORIES, false)
   }
 
   fun setShowAppearance(value: Boolean) {

@@ -19,8 +19,10 @@ import org.signal.core.util.crypto.AttachmentSecret;
 import org.signal.core.util.crypto.ModernEncryptingPartOutputStream;
 import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
+import org.thoughtcrime.securesms.BuildConfig;
 import org.signal.storage.keyvalue.KeyValueDataSet;
 import org.signal.storage.keyvalue.KeyValueDatabase;
+import org.signal.storage.keyvalue.KeyValuePersistentStorage;
 import org.thoughtcrime.securesms.backup.proto.Attachment;
 import org.thoughtcrime.securesms.backup.proto.Avatar;
 import org.thoughtcrime.securesms.backup.proto.BackupFrame;
@@ -29,6 +31,7 @@ import org.thoughtcrime.securesms.backup.proto.KeyValue;
 import org.thoughtcrime.securesms.backup.proto.SharedPreference;
 import org.thoughtcrime.securesms.backup.proto.SqlStatement;
 import org.thoughtcrime.securesms.backup.proto.Sticker;
+import org.thoughtcrime.securesms.crypto.EncryptedPreferences;
 import org.thoughtcrime.securesms.database.AttachmentTable;
 import org.thoughtcrime.securesms.database.CallTable;
 import org.thoughtcrime.securesms.database.EmojiSearchTable;
@@ -43,6 +46,8 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.thoughtcrime.securesms.util.BackupUtil;
+import org.thoughtcrime.securesms.util.SecurePreferenceManager;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -53,6 +58,7 @@ import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -114,6 +120,9 @@ public class FullBackupImporter extends FullBackupBase {
       throws IOException
   {
     int count = 0;
+
+    // The restore writes key-values directly through KeyValueDatabase, so finish any queued SignalStore writes first.
+    SignalStore.blockUntilAllWritesFinished();
 
     SQLiteDatabase keyValueDatabase = KeyValueDatabase.getInstance(AppDependencies.getApplication()).getSqlCipherDatabase();
 
@@ -300,6 +309,11 @@ public class FullBackupImporter extends FullBackupBase {
   }
 
   private static void processKeyValue(KeyValue keyValue) {
+    processKeyValue(keyValue, KeyValueDatabase.getInstance(AppDependencies.getApplication()));
+  }
+
+  @VisibleForTesting
+  static void processKeyValue(KeyValue keyValue, KeyValuePersistentStorage storage) {
     KeyValueDataSet dataSet = new KeyValueDataSet();
 
     if (keyValue.key == null) {
@@ -324,12 +338,28 @@ public class FullBackupImporter extends FullBackupBase {
       return;
     }
 
-    KeyValueDatabase.getInstance(AppDependencies.getApplication()).writeDataSet(dataSet, Collections.emptyList());
+    storage.writeDataSet(dataSet, Collections.emptyList());
+  }
+
+  private static final List<String> defaultSharedPreferencesFileNames = Arrays.asList(
+      BuildConfig.SIGNAL_PACKAGE_NAME + "_preferences",
+      BuildConfig.APPLICATION_ID + "_preferences",
+      SecurePreferenceManager.getSecurePreferencesName()
+  );
+
+  @SuppressLint("ApplySharedPref")
+  @VisibleForTesting
+  static void processPreference(@NonNull Context context, SharedPreference preference) {
+    processPreference(context, preference, KeyValueDatabase.getInstance(AppDependencies.getApplication()));
   }
 
   @SuppressLint("ApplySharedPref")
-  private static void processPreference(@NonNull Context context, SharedPreference preference) {
-    SharedPreferences preferences = context.getSharedPreferences(preference.file_, 0);
+  @VisibleForTesting
+  static void processPreference(@NonNull Context context,
+                                SharedPreference preference,
+                                KeyValuePersistentStorage storage)
+  {
+    SharedPreferences preferences;
 
     // Identity keys were moved from shared prefs into SignalStore. Need to handle importing backups made before the migration.
     if ("SecureSMS-Preferences".equals(preference.file_)) {
@@ -342,12 +372,34 @@ public class FullBackupImporter extends FullBackupBase {
       return;
     }
 
+    if (defaultSharedPreferencesFileNames.contains(preference.file_)) {
+      preferences = SecurePreferenceManager.getSecurePreferences(context);
+    } else {
+      preferences = EncryptedPreferences.create(context, preference.file_);
+    }
+
     if (preference.value_ != null) {
       preferences.edit().putString(preference.key, preference.value_).commit();
     } else if (preference.booleanValue != null) {
       preferences.edit().putBoolean(preference.key, preference.booleanValue).commit();
     } else if (preference.isStringSetValue == Boolean.TRUE) {
       preferences.edit().putStringSet(preference.key, new HashSet<>(preference.stringSetValue)).commit();
+    } else if (preference.longValue != null) {
+      preferences.edit().putLong(preference.key, preference.longValue).commit();
+    } else if (preference.integerValue != null) {
+      if (TextSecurePreferences.PASSPHRASE_LOCK_TIMEOUT.equals(preference.key)) {
+        // Older Molly backups represented this long preference as a uint32.
+        preferences.edit().putLong(preference.key, Integer.toUnsignedLong(preference.integerValue)).commit();
+      } else {
+        preferences.edit().putInt(preference.key, preference.integerValue).commit();
+      }
+    }
+
+    if (defaultSharedPreferencesFileNames.contains(preference.file_)) {
+      KeyValueDataSet legacySetting = SignalStore.settings().legacySharedPreferenceToKeyValue(preference);
+      if (legacySetting != null) {
+        storage.writeDataSet(legacySetting, Collections.emptyList());
+      }
     }
   }
 

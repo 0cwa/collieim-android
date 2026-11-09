@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Zapnúť registračný zámok?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Vypnúť registračný zámok?</string>
@@ -511,7 +510,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Použiť zámok obrazovky</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Keď opustíte aplikáciu alebo prepnete medzi aplikáciami, bude sa na odomknutie Signalu vyžadovať spôsob odomknutia, ktorý používa vaše zariadenie Android. Pri uzamknutej aplikácii sa pri náhľade upozornení nezobrazí obsah správy.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Keď opustíte aplikáciu alebo prepnete medzi aplikáciami, bude sa na odomknutie Collieu vyžadovať spôsob odomknutia, ktorý používa vaše zariadenie Android. Pri uzamknutej aplikácii sa pri náhľade upozornení nezobrazí obsah správy.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Spustiť uzamknutie obrazovky</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -523,9 +522,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Vlastný čas</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Použiť zámok obrazovky Signal?</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Použiť zámok obrazovky Collie?</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Vypnúť zámok obrazovky Signal?</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Vypnúť zámok obrazovky Collie?</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Pomocník</string>
@@ -538,7 +537,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Licencie</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Podmienky a Zásady ochrany osobných údajov</string>
-    <string name="HelpFragment__copyright_signal_messenger">Copyright Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Copyright Molly Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Pod licenciou GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal je nezisková organizácia</string>
@@ -547,7 +546,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Ikony a názvy aplikácie budú zobrazené na domovskej obrazovke a v zozname aplikácií.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Upozornenia budú vždy zobrazovať predvolenú ikonu a názov Signalu.</string>
+    <string name="preferences__app_icon_notification_warning">Upozornenia budú vždy zobrazovať predvolenú ikonu a názov Collieu.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafika znázorňujúca miesto, kde bude zobrazená náhradná ikona aplikácie.</string>
 
@@ -567,9 +566,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Zmeniť ikonu a názov aplikácie na „%1$s“</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Ak chcete zmeniť ikonu a názov aplikácie, je potrebné zatvoriť Signal. Upozornenia budú vždy zobrazovať predvolenú ikonu a názov Signalu.</string>
+    <string name="preferences__app_icon_dialog_description">Ak chcete zmeniť ikonu a názov aplikácie, je potrebné zatvoriť Collie. Upozornenia budú vždy zobrazovať predvolenú ikonu a názov Collieu.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Vyberte ikonu a názov aplikácie, ktoré sa budú zobrazovať na domovskej obrazovke telefónu a v zozname aplikácií. Upozornenia budú vždy zobrazovať predvolenú ikonu a názov Signalu. Zistiť viac</string>
+    <string name="preferences__app_icon_warning_learn_more">Vyberte ikonu a názov aplikácie, ktoré sa budú zobrazovať na domovskej obrazovke telefónu a v zozname aplikácií. Upozornenia budú vždy zobrazovať predvolenú ikonu a názov Collieu. Zistiť viac</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Zistiť viac</string>
 

@@ -7,8 +7,8 @@ import android.util.AttributeSet;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
+import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.util.ContextUtil;
 import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.R;
@@ -86,17 +86,17 @@ public class FromTextView extends SimpleEmojiTextView {
   }
 
   private Drawable getMuted() {
-    return getDrawable(R.drawable.ic_bell_disabled_16, R.color.signal_icon_tint_secondary);
+    return getDrawable(R.drawable.ic_bell_disabled_16, R.attr.signal_icon_tint_secondary);
   }
 
   private Drawable getPinned() {
-    return getDrawable(R.drawable.symbol_pin_16, org.signal.core.ui.R.color.signal_colorOnSurface);
+    return getDrawable(R.drawable.symbol_pin_16, com.google.android.material.R.attr.colorOnSurface);
   }
 
   private Drawable getDrawable(@DrawableRes int drawable, int colorRes) {
     Drawable mutedDrawable = ContextUtil.requireDrawable(getContext(), drawable);
     mutedDrawable.setBounds(0, 0, ViewUtil.dpToPx(16), ViewUtil.dpToPx(16));
-    DrawableUtil.tint(mutedDrawable, ContextCompat.getColor(getContext(), colorRes));
+    DrawableUtil.tint(mutedDrawable, ThemeUtil.getThemedColor(getContext(), colorRes));
     return mutedDrawable;
   }
 }

@@ -165,13 +165,8 @@ class AccountSettingsViewModel(
   }
 
   private suspend fun applyPinRemindersToggled(enabled: Boolean) {
-    if (enabled) {
-      accountRepository.setPinRemindersEnabled(true)
-      refresh()
-    } else {
-      val keyboardType = accountRepository.getPinKeyboardType()
-      _state.update { it.copy(dialog = Dialog.ConfirmPinToDisableReminders(isAlphanumericKeyboard = keyboardType == PinKeyboardType.ALPHA_NUMERIC)) }
-    }
+    accountRepository.setPinRemindersEnabled(enabled)
+    refresh()
   }
 
   private suspend fun applyDisablePinRemindersConfirmed() {

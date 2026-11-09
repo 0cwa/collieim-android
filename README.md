@@ -57,6 +57,14 @@ The releases retain Signal's messaging and calling features and Molly's addition
 > [!CAUTION]
 > ***If you use Unifiedpush only do so with a server you entrust your entire account and all the metadata of your account.*** (I found, reported, and verified this new major security risk to the Mollysocket developer - more details will be disclosed at a later date.)
 
+## Calling libraries and proxy safety
+
+For the **8.35.1-2-rc1 reconstructed source**, Collie uses its own builds of Signal's **libsignal 0.106.1**, **RingRTC 2.74.0**, and the WebRTC code used for calls—not unmodified Signal binaries or unchanged Molly forks. They carry **Molly's proxy protections**, with **Collie adaptations** for newer Signal versions and fixes for call proxy credentials, unknown proxy types, and SOCKS IPv6. The [dependency catalog](gradle/libs.versions.toml) and [native lock](build-inputs/native-lock.json) identify the exact versions, source revisions, patches, and binary hashes; [native attribution](https://github.com/0cwa/collie-release-engineering/blob/main/tools/native/ATTRIBUTION.md) explains who contributed each change.
+
+**Why this matters:** When you choose a SOCKS proxy, Collie's networking and libsignal code are designed to **refuse connections rather than silently bypass a failed proxy**, with proxy-aware DNS. When call proxy settings reach RingRTC, the Molly-derived WebRTC code routes TCP through HTTPS or SOCKS5 proxies and disables direct UDP/STUN call candidates. **Android system proxies are different:** a failed optional system proxy may fall back to a direct connection.
+
+These safeguards have [application proxy regression tests](app/src/test/java/org/thoughtcrime/securesms/net/MollyProxyFailClosedTest.kt) and [libsignal policy tests](core/network/src/test/java/org/signal/network/config/LibSignalProxyPolicyTest.kt), plus bounded native tests detailed in the attribution record. However, the exact-source **local unsigned APK build** in [PR #45](https://github.com/0cwa/collieim-android/pull/45) and [native input acceptance](build-inputs/native-publication.json) **do not prove** that all live call traffic stays in the proxy. End-to-end proxy/call testing, runtime and MollySocket acceptance, and independently reproducible native builds remain unverified for this candidate.
+
 ## Free and open source
 
 Collie is free and open-source software. Optional FCM notifications use an open-source client and Google's FCM service; WebSocket and [UnifiedPush](https://unifiedpush.org/) are alternatives.

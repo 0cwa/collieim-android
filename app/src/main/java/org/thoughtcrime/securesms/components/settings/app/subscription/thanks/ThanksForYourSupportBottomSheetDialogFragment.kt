@@ -2,15 +2,23 @@ package org.thoughtcrime.securesms.components.settings.app.subscription.thanks
 
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.text.method.LinkMovementMethodCompat
 import com.google.android.material.button.MaterialButton
 import org.signal.core.models.badges.Badge
 import org.signal.core.ui.FixedRoundedCornerBottomSheetDialogFragment
+import org.signal.core.ui.util.SpanUtil
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.badges.BadgeImageView
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
+import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.fragments.findListener
+import org.signal.core.ui.R as CoreUiR
 
 class ThanksForYourSupportBottomSheetDialogFragment : FixedRoundedCornerBottomSheetDialogFragment() {
 
@@ -33,6 +41,30 @@ class ThanksForYourSupportBottomSheetDialogFragment : FixedRoundedCornerBottomSh
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    val args = ThanksForYourSupportBottomSheetDialogFragmentArgs.fromBundle(requireArguments())
+    val badge: BadgeImageView = view.findViewById(R.id.thanks_bottom_sheet_badge)
+    val subhead: TextView = view.findViewById(R.id.thanks_bottom_sheet_subhead)
+    val hasNonBoostBadge = Recipient.self().badges.any { !it.isBoost() }
+    badge.setBadge(args.badge)
+
+    if (args.badge.isBoost() && !hasNonBoostBadge) {
+      subhead.visibility = View.VISIBLE
+      subhead.movementMethod = LinkMovementMethodCompat.getInstance()
+      subhead.text = SpannableStringBuilder(getString(R.string.SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also))
+        .append(" ")
+        .append(
+          SpanUtil.clickable(
+            getString(R.string.SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer),
+            ThemeUtil.getThemedColor(requireContext(), CoreUiR.attr.signal_accent_primary)
+          ) {
+            requireActivity().finish()
+            requireActivity().startActivity(AppSettingsActivity.subscriptions(requireContext()))
+          }
+        )
+    } else {
+      subhead.visibility = View.GONE
+    }
+
     val done: MaterialButton = view.findViewById(R.id.thanks_bottom_sheet_done)
     done.setOnClickListener { dismissAllowingStateLoss() }
   }

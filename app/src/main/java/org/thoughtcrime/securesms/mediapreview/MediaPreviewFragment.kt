@@ -45,12 +45,9 @@ import kotlinx.coroutines.launch
 import org.signal.core.models.media.Media
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.logging.LoggingFragment
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewV2Fragment.kt
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.util.SpanUtil
 import org.signal.core.ui.util.ViewUtil
->>>>>>> SIGNAL:app/src/main/java/org/thoughtcrime/securesms/mediapreview/MediaPreviewFragment.kt
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.Debouncer
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.logging.Log

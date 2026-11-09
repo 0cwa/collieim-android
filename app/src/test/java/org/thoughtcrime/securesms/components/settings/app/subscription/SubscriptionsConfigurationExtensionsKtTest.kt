@@ -8,11 +8,8 @@ import io.mockk.mockkStatic
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-<<<<<<< MOLLY
-import org.junit.Ignore
-=======
 import org.junit.Before
->>>>>>> SIGNAL
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

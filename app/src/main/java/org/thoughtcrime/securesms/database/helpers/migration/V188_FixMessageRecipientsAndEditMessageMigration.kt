@@ -16,11 +16,7 @@ import org.signal.core.util.requireString
 import org.signal.storage.keyvalue.KeyValueDatabase
 import org.thoughtcrime.securesms.database.SQLiteDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
-=======
->>>>>>> SIGNAL
 
 /**
  * This is a fix for a bad situation that could happen during [V185_MessageRecipientsAndEditMessageMigration].

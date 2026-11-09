@@ -5,7 +5,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.preference.PreferenceDataStore
 import org.signal.remoteconfig.RemoteConfig
 import org.signal.storage.keyvalue.ApkUpdateValues
-import org.signal.storage.keyvalue.CallQualityValues
 import org.signal.storage.keyvalue.CertificateValues
 import org.signal.storage.keyvalue.EmojiValues
 import org.signal.storage.keyvalue.ImageEditorValues
@@ -61,19 +60,10 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
   val notificationProfileValues = NotificationProfileValues(store)
   val releaseChannelValues = ReleaseChannelValues(store)
   val storyValues = StoryValues(store)
-<<<<<<< MOLLY
-  val apkUpdateValues = ApkUpdateValues(store)
-  val backupValues = BackupValues(store)
-  val unifiedPushValues = UnifiedPushValues(store)
-  val labsValues = LabsValues(store)
-
-  val plainTextValues = PlainTextSharedPrefsDataStore(context)
-=======
   val apkUpdateValues = ApkUpdateValues(store, context)
   val backupValues = BackupValues(store, context)
-  val callQualityValues = CallQualityValues(store)
+  val unifiedPushValues = UnifiedPushValues(store)
   val labsValues = LabsValues(store) { RemoteConfig.internalUser }
->>>>>>> SIGNAL
 
   companion object {
 

@@ -31,12 +31,8 @@ import org.thoughtcrime.securesms.components.voice.VoiceNoteMediaControllerOwner
 import org.thoughtcrime.securesms.stories.StoryViewerArgs
 import org.thoughtcrime.securesms.stories.viewer.page.StoryViewStateCache
 import org.thoughtcrime.securesms.stories.viewer.page.StoryViewStateViewModel
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.util.DynamicMediaPreviewTheme
 import org.thoughtcrime.securesms.util.DynamicTheme
-import org.thoughtcrime.securesms.util.ViewUtil
-=======
->>>>>>> SIGNAL
 import kotlin.math.max
 import kotlin.math.min
 
@@ -80,17 +76,7 @@ class StoryViewerActivity : PassphraseRequiredActivity(), VoiceNoteMediaControll
       insets
     }
 
-<<<<<<< MOLLY
-    root.setPadding(
-      0,
-      padTop.toInt(),
-      0,
-      padBottom.toInt()
-    )
-
     theme.onCreate(this)
-=======
->>>>>>> SIGNAL
     super.onCreate(savedInstanceState, ready)
     setContentView(R.layout.fragment_container)
 

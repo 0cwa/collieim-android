@@ -23,11 +23,8 @@ import org.signal.core.util.SleepTimer
 import org.signal.core.util.UptimeSleepTimer
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
-import org.signal.network.config.ProxyConfig
-import org.signal.network.config.SignalServiceConfiguration
 import org.signal.storage.keyvalue.isDecisionPending
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
-import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.clockskew.ClockSkewDetector
 import org.thoughtcrime.securesms.crypto.ReentrantSessionLock
@@ -45,17 +42,11 @@ import org.thoughtcrime.securesms.messages.MessageDecryptor.FollowUpOperation
 import org.thoughtcrime.securesms.messages.protocol.BufferedProtocolStore
 import org.thoughtcrime.securesms.net.ConnectivityState
 import org.thoughtcrime.securesms.net.InternetConnectivityMonitor
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.net.configureProxy
 import org.thoughtcrime.securesms.net.resolveProxyConfig
 import org.thoughtcrime.securesms.notifications.NotificationChannels
-import org.thoughtcrime.securesms.recipients.RecipientId
-import org.thoughtcrime.securesms.service.SafeForegroundService
-=======
-import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.NotificationIds
 import org.thoughtcrime.securesms.recipients.RecipientIds
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.util.AlarmSleepTimer
 import org.thoughtcrime.securesms.util.SignalLocalMetrics
 import org.thoughtcrime.securesms.util.SignalTrace
@@ -68,14 +59,10 @@ import org.whispersystems.signalservice.internal.push.Envelope
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-<<<<<<< MOLLY
 import java.util.concurrent.atomic.AtomicBoolean
-=======
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
->>>>>>> SIGNAL
 import kotlin.math.round
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -107,63 +94,37 @@ class IncomingMessageObserver(
     private val maxBackgroundTime: Long
       get() = if (censored) 10.seconds.inWholeMilliseconds else 2.minutes.inWholeMilliseconds
 
-<<<<<<< MOLLY
     const val FOREGROUND_ID = 313399
 
     private val censored: Boolean
       get() = AppDependencies.signalServiceNetworkAccess.isCensored()
-=======
-    private val INSTANCE_COUNT = AtomicInteger(0)
 
-    private val censored: Boolean
-      get() = AppDependencies.signalServiceNetworkAccess.isCensored()
-
-    private val networkConfiguration: SignalServiceConfiguration
-      get() = AppDependencies.signalServiceNetworkAccess.getConfiguration()
-
-    /**
-     * Stops the foreground service for websocket users.
-     */
     @JvmStatic
     fun stopForegroundService(context: Context) {
-      SafeForegroundService.stop(context, ForegroundService::class.java)
+      ForegroundService.stopIfRunning(context)
     }
->>>>>>> SIGNAL
   }
 
   private val decryptionDrainedListeners: MutableList<Runnable> = CopyOnWriteArrayList()
 
-<<<<<<< MOLLY
-  private val connectionNecessarySemaphore = Semaphore(0)
-
-  /** Tracks Internet connection as reported by [InternetConnectivityMonitor]. */
-  @Volatile
-  private var internetConnection: ConnectivityState = ConnectivityState.OFFLINE
-=======
   private val connectionLock = ReentrantLock()
   private val connectionConditionsChanged = connectionLock.newCondition()
 
   @Volatile
   private var connectionConditionsVersion: Long = 0
 
-  /** Tracks Internet connection as reported by [InternetConnectivityMonitor]. Starts fail-open (assume online) until the first report. */
+  /** Tracks Internet connection as reported by [InternetConnectivityMonitor]. Starts offline until the first report. */
   @Volatile
-  private var internetConnection: ConnectivityState = ConnectivityState.MONITORING_UNAVAILABLE
->>>>>>> SIGNAL
+  private var internetConnection: ConnectivityState = ConnectivityState.OFFLINE
 
   private val internetConnectivityMonitor = InternetConnectivityMonitor(
     context = context,
     onConnectivityUpdated = { state ->
       internetConnection = state
-<<<<<<< MOLLY
       if (state.isOnline) {
-        AppDependencies.libsignalNetwork.onNetworkChange()
-=======
-      if (state.isAssumedOnline) {
         // Staying online through a transport swap only resets backoff; we rely on the OS to tear down sockets on the interface that went away.
         AppDependencies.libsignalNetwork.onNetworkChange()
         AppDependencies.signalServiceNetworkAccess.onNetworkChange()
->>>>>>> SIGNAL
       } else {
         Log.w(TAG, "Lost network connection. Resetting the drained state.")
         decryptionDrained = false
@@ -174,7 +135,8 @@ class IncomingMessageObserver(
       notifyConnectionConditionsChanged()
     },
     onProxyChanged = {
-<<<<<<< MOLLY
+      // Initializing the network seeds proxy state before comparing it.
+      AppDependencies.libsignalNetwork
       val proxyConfig = resolveProxyConfig()
       val proxyChanged = AppDependencies.networkProxyState.update(proxyConfig)
       if (proxyChanged) {
@@ -183,32 +145,13 @@ class IncomingMessageObserver(
         decryptionDrained = false
         authWebSocket.disconnect()
         unauthWebSocket.disconnect()
-=======
-      // Building the network seeds networkProxyState, so its placeholder can't read as a change.
-      AppDependencies.libsignalNetwork
-      val proxyConfig = ProxyConfig.resolve(networkConfiguration, BuildConfig.SIGNAL_URL)
-      if (AppDependencies.networkProxyState.currentConfig != proxyConfig) {
-        Log.i(TAG, "Proxy config changed, resetting network...")
-        AppDependencies.resetNetwork()
-        AppDependencies.startNetwork()
->>>>>>> SIGNAL
       }
     }
   )
 
   private val messageContentProcessor = MessageContentProcessor.create(context)
 
-<<<<<<< MOLLY
-  private data class AppState(
-    val isForeground: Boolean,
-    val lastInteractionTime: Long
-  )
-
-  @Volatile
-  private var appState = AppState(false, System.currentTimeMillis())
-=======
   private val appState = AtomicReference(AppState(false, System.currentTimeMillis()))
->>>>>>> SIGNAL
 
   private var webSocketStateDisposable = Disposable.disposed()
   private val clockSkewScope = CoroutineScope(Dispatchers.Default)
@@ -237,35 +180,13 @@ class IncomingMessageObserver(
   init {
     MessageRetrievalThread().start()
 
-<<<<<<< MOLLY
-    val registered = SignalStore.account.isRegistered && !TextSecurePreferences.isUnauthorizedReceived(context)
+    val registered = SignalStore.account.isRegistered && !SignalStore.account.isUnauthorizedReceived
     if (registered && (!SignalStore.account.pushAvailable || SignalStore.settings.forceWebsocketMode.isEnabled)) {
       ForegroundService.startIfNotRunning(context)
     }
 
-    AppForegroundObserver.addListener(object : AppForegroundObserver.Listener {
-      override fun onForeground() {
-        onAppForegrounded()
-      }
-
-      override fun onBackground() {
-        onAppBackgrounded()
-      }
-    })
-
-=======
-    val registered = SignalStore.account.isRegistered && !SignalStore.account.isUnauthorizedReceived
-    if (registered && (!SignalStore.account.fcmEnabled || SignalStore.settings.forceWebsocketMode.isEnabled)) {
-      SignalExecutors.UNBOUNDED.execute {
-        if (!SafeForegroundService.start(context, ForegroundService::class.java)) {
-          Log.w(TAG, "Unable to start foreground service for websocket!")
-        }
-      }
-    }
-
     AppForegroundObserver.addListener(appForegroundListener)
 
->>>>>>> SIGNAL
     internetConnectivityMonitor.register()
 
     webSocketStateDisposable = authWebSocket
@@ -277,10 +198,6 @@ class IncomingMessageObserver(
         }
       }
 
-<<<<<<< MOLLY
-    authWebSocket.addKeepAliveChangeListener {
-      notifyConnectionConditionsChanged()
-=======
     authWebSocket.addKeepAliveChangeListener(keepAliveChangeListener)
 
     clockSkewScope.launch {
@@ -291,7 +208,6 @@ class IncomingMessageObserver(
         }
         notifyConnectionConditionsChanged()
       }
->>>>>>> SIGNAL
     }
   }
 
@@ -316,49 +232,29 @@ class IncomingMessageObserver(
   }
 
   private fun onAppForegrounded() {
-<<<<<<< MOLLY
-    appState = appState.copy(isForeground = true)
-    ProcessLifetimeHintService.start(context)
-=======
     appState.updateAndGet { it.copy(isForeground = true) }
     ClockSkewDetector.recheck()
-    BackgroundService.start(context)
->>>>>>> SIGNAL
+    ProcessLifetimeHintService.start(context)
     notifyConnectionConditionsChanged()
   }
 
   private fun onAppBackgrounded() {
-<<<<<<< MOLLY
-    appState = appState.copy(isForeground = false, lastInteractionTime = System.currentTimeMillis())
-=======
     appState.updateAndGet { it.copy(isForeground = false, lastInteractionTime = System.currentTimeMillis()) }
     ClockSkewDetector.recheck()
->>>>>>> SIGNAL
     notifyConnectionConditionsChanged()
   }
 
   private fun isConnectionNecessary(): Boolean {
-<<<<<<< MOLLY
-    val appStateSnapshot = appState
-=======
     val appStateSnapshot = appState.get()
->>>>>>> SIGNAL
     val isForeground = appStateSnapshot.isForeground
     val lastInteractionTime = appStateSnapshot.lastInteractionTime
     val timeIdle = if (isForeground) 0 else System.currentTimeMillis() - lastInteractionTime
 
     val registered = SignalStore.account.isRegistered
-<<<<<<< MOLLY
-    val unauthorizedReceived = TextSecurePreferences.isUnauthorizedReceived(context)
+    val unauthorizedReceived = SignalStore.account.isUnauthorizedReceived
     val pushAvailable = SignalStore.account.pushAvailable
     val hasNetwork = internetConnection.isOnline
     val hasProxy = AppDependencies.networkManager.isProxyEnabled
-=======
-    val unauthorizedReceived = SignalStore.account.isUnauthorizedReceived
-    val fcmEnabled = SignalStore.account.fcmEnabled
-    val hasNetwork = internetConnection.isAssumedOnline
-    val hasProxy = SignalStore.proxy.isProxyEnabled
->>>>>>> SIGNAL
     val forceWebsocket = SignalStore.settings.forceWebsocketMode.isEnabled
     val websocketAlreadyOpen = isConnectionAvailable()
     val clockSkewDetected = ClockSkewDetector.isDetected
@@ -367,45 +263,26 @@ class IncomingMessageObserver(
     val lastInteractionString = if (isForeground) "N/A" else timeIdle.toString() + " ms (" + (if (timeIdle < maxBackgroundTime) "within limit" else "over limit") + ")"
     val conclusion = registered &&
       !unauthorizedReceived &&
-<<<<<<< MOLLY
-      (isForeground || timeIdle < maxBackgroundTime || !pushAvailable || forceWebsocket) &&
-=======
       !clockSkewDetected &&
-      (isForeground || timeIdle < maxBackgroundTime || !fcmEnabled || forceWebsocket) &&
->>>>>>> SIGNAL
+      (isForeground || timeIdle < maxBackgroundTime || !pushAvailable || forceWebsocket) &&
       hasNetwork
 
     val needsConnectionString = if (conclusion) "Needs Connection" else "Does Not Need Connection"
 
     Log.d(
       TAG,
-<<<<<<< MOLLY
-      "[$needsConnectionString] Network: $hasNetwork, Foreground: $isForeground, Time Since Last Interaction: $lastInteractionString, PushAvailable: $pushAvailable, WS Open or Keep-alives: $websocketAlreadyOpen, Registered: $registered, Unauthorized: $unauthorizedReceived, Proxy: $hasProxy, Force websocket: $forceWebsocket"
-=======
-      "[$needsConnectionString] Network: $hasNetwork, Foreground: $isForeground, Time Since Last Interaction: $lastInteractionString, FCM: $fcmEnabled, WS Open or Keep-alives: $websocketAlreadyOpen, Registered: $registered, Unauthorized: $unauthorizedReceived, Proxy: $hasProxy, Force websocket: $forceWebsocket, Clock skew: $clockSkewDetected ($clockSkew)"
->>>>>>> SIGNAL
+      "[$needsConnectionString] Network: $hasNetwork, Foreground: $isForeground, Time Since Last Interaction: $lastInteractionString, PushAvailable: $pushAvailable, WS Open or Keep-alives: $websocketAlreadyOpen, Registered: $registered, Unauthorized: $unauthorizedReceived, Proxy: $hasProxy, Force websocket: $forceWebsocket, Clock skew: $clockSkewDetected ($clockSkew)"
     )
     return conclusion
   }
 
   private fun isConnectionAvailable(): Boolean {
-<<<<<<< MOLLY
     val hasNetwork = internetConnection.isOnline
-    return !TextSecurePreferences.isUnauthorizedReceived(context) && SignalStore.account.isRegistered && (authWebSocket.stateSnapshot == WebSocketConnectionState.CONNECTED || (authWebSocket.shouldSendKeepAlives() && hasNetwork))
-=======
-    val hasNetwork = internetConnection.isAssumedOnline
     return !SignalStore.account.isUnauthorizedReceived && SignalStore.account.isRegistered && (authWebSocket.stateSnapshot == WebSocketConnectionState.CONNECTED || (authWebSocket.shouldSendKeepAlives() && hasNetwork))
->>>>>>> SIGNAL
   }
 
   /** Conditions are evaluated outside of [connectionLock] so notifiers never block on them. We only park if nothing signaled since the version we evaluated against. */
   private fun waitForConnectionNecessary() {
-<<<<<<< MOLLY
-    while (!isConnectionNecessary() && !isConnectionAvailable()) {
-      val numberDrained = connectionNecessarySemaphore.drainPermits()
-      if (numberDrained == 0) {
-        connectionNecessarySemaphore.acquireUninterruptibly()
-=======
     try {
       var observedVersion = connectionConditionsVersion
 
@@ -420,46 +297,31 @@ class IncomingMessageObserver(
           }
           observedVersion = connectionConditionsVersion
         }
->>>>>>> SIGNAL
       }
+    } catch (e: InterruptedException) {
+      throw AssertionError(e)
     }
   }
 
-<<<<<<< MOLLY
-  /**
-   * Signals that a condition affecting the connection decision may have changed.
-   */
-  private fun notifyConnectionConditionsChanged() {
-    connectionNecessarySemaphore.drainPermits()
-    connectionNecessarySemaphore.release()
-=======
   private fun notifyConnectionConditionsChanged() {
     connectionLock.withLock {
       connectionConditionsVersion++
       connectionConditionsChanged.signalAll()
     }
->>>>>>> SIGNAL
   }
 
   fun terminate() {
     Log.w(TAG, "Termination! ${this.hashCode()}", Throwable())
-<<<<<<< MOLLY
-=======
-    INSTANCE_COUNT.decrementAndGet()
     AppForegroundObserver.removeListener(appForegroundListener)
     authWebSocket.removeKeepAliveChangeListener(keepAliveChangeListener)
->>>>>>> SIGNAL
     internetConnectivityMonitor.unregister()
     webSocketStateDisposable.dispose()
     clockSkewScope.cancel()
     terminated = true
     authWebSocket.removeKeepAliveToken(WEB_SOCKET_KEEP_ALIVE_TOKEN)
     authWebSocket.disconnect()
-<<<<<<< MOLLY
     ForegroundService.stopIfRunning(context)
-=======
     notifyConnectionConditionsChanged()
->>>>>>> SIGNAL
   }
 
   @VisibleForTesting
@@ -701,13 +563,8 @@ class IncomingMessageObserver(
             }
           }
 
-<<<<<<< MOLLY
-          if (!appState.isForeground) {
-            ProcessLifetimeHintService.stop(context)
-=======
           if (!appState.get().isForeground) {
-            BackgroundService.stop(context)
->>>>>>> SIGNAL
+            ProcessLifetimeHintService.stop(context)
           }
         } catch (e: Throwable) {
           if (ClockSkewDetector.isDetected) {

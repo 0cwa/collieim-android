@@ -151,16 +151,6 @@ fun EditProfileScreen(
         )
       }
 
-      item(key = "badges") {
-        ProfileRow(
-          text = stringResource(R.string.EditProfileScreen__badges),
-          icon = { RowIcon { Icon(imageVector = SignalIcons.BadgeMulti.imageVector, contentDescription = null) } },
-          canEdit = state.canEdit,
-          onClick = { onEvent(EditProfileEvent.BadgesClicked) },
-          modifier = Modifier.testTag(EditProfileTestTags.ROW_BADGES)
-        )
-      }
-
       item(key = "profile-footer") {
         Footer(text = stringResource(R.string.CreateProfileActivity_signal_profiles_are_end_to_end_encrypted))
       }

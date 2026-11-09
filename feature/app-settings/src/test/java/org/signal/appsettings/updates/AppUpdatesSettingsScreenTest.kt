@@ -7,6 +7,7 @@ package org.signal.appsettings.updates
 
 import android.app.Application
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -32,18 +33,18 @@ class AppUpdatesSettingsScreenTest {
   private val events = mutableListOf<AppUpdatesSettingsEvent>()
 
   @Test
-  fun `auto update row is shown when the device supports it`() {
+  fun `periodic update row is shown for a managed build`() {
     setContent(createState(isAutoUpdateSupported = true))
 
     composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_AUTO_UPDATE).assertIsDisplayed()
   }
 
   @Test
-  fun `auto update row is hidden when the device does not support it`() {
+  fun `update actions are hidden for an externally managed build`() {
     setContent(createState(isAutoUpdateSupported = false))
 
     composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_AUTO_UPDATE).assertDoesNotExist()
-    composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES).assertDoesNotExist()
   }
 
   @Test
@@ -66,7 +67,7 @@ class AppUpdatesSettingsScreenTest {
 
   @Test
   fun `clicking check for updates emits CheckForUpdatesClicked`() {
-    setContent(createState())
+    setContent(createState(autoUpdateEnabled = true))
 
     composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES).performClick()
 
@@ -77,15 +78,31 @@ class AppUpdatesSettingsScreenTest {
   fun `check for updates says never when no check has succeeded`() {
     setContent(createState(lastCheckedTime = Duration.ZERO))
 
-    composeTestRule.onNodeWithText("Last checked on: Never").assertIsDisplayed()
+    composeTestRule.onNodeWithText("Last checked: Never").assertIsDisplayed()
   }
 
   @Test
   fun `check for updates shows when the last check succeeded`() {
     setContent(createState(lastCheckedTime = 1_700_000_000_000L.milliseconds))
 
-    composeTestRule.onNodeWithText("Last checked on: Never").assertDoesNotExist()
-    composeTestRule.onNodeWithText("Last checked on: November", substring = true).assertIsDisplayed()
+    composeTestRule.onNodeWithText("Last checked: Never").assertDoesNotExist()
+    composeTestRule.onNodeWithText("2023", substring = true).assertIsDisplayed()
+  }
+
+  @Test
+  fun `manual check is disabled when periodic update checks are off`() {
+    setContent(createState(autoUpdateEnabled = false))
+
+    composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES).assertIsNotEnabled()
+  }
+
+  @Test
+  fun `clicking beta updates emits the selected channel`() {
+    setContent(createState())
+
+    composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_INCLUDE_BETA).performClick()
+
+    assertThat(events).contains(AppUpdatesSettingsEvent.IncludeBetaToggled(true))
   }
 
   @Test

@@ -5,11 +5,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.util.SpanUtil
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.requireDrawable
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.badges.BadgeImageView

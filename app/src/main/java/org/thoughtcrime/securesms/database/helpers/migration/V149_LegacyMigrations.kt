@@ -24,11 +24,6 @@ import org.thoughtcrime.securesms.contacts.avatars.ContactColorsLegacy
 import org.thoughtcrime.securesms.conversation.colors.AvatarColor
 import org.thoughtcrime.securesms.conversation.colors.ChatColors
 import org.thoughtcrime.securesms.conversation.colors.ChatColorsMapper
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.database.KeyValueDatabase
-=======
-import org.thoughtcrime.securesms.database.RecipientTable
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.database.SQLiteDatabase
 import org.thoughtcrime.securesms.database.helpers.SignalDatabaseMigrations
 import org.thoughtcrime.securesms.database.model.databaseprotos.ReactionList

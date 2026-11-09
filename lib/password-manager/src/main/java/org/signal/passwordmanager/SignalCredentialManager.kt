@@ -5,17 +5,13 @@
 
 package org.signal.passwordmanager
 
-import android.Manifest
-import android.accounts.AccountManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.autofill.AutofillManager
 import androidx.annotation.UiContext
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.credentials.CreatePasswordRequest
 import androidx.credentials.CredentialManager
@@ -28,7 +24,6 @@ import androidx.credentials.exceptions.CreateCredentialNoCreateOptionException
 import androidx.credentials.exceptions.CreateCredentialProviderConfigurationException
 import androidx.credentials.exceptions.CreateCredentialUnknownException
 import androidx.credentials.exceptions.GetCredentialException
-import org.signal.core.util.PlayServicesUtil
 import org.signal.core.util.censor
 import org.signal.core.util.logging.Log
 
@@ -46,50 +41,15 @@ object SignalCredentialManager {
 
   private const val GOOGLE_PLAY_SERVICES_PACKAGE = "com.google.android.gms"
   private const val GOOGLE_PASSWORD_MANAGER_PACKAGE = "com.google.android.apps.credentialmanager"
-  private const val GOOGLE_ACCOUNT_TYPE = "com.google"
 
-  /**
-   * Whether a password manager / credential provider may be available.
-   *
-   * On API 34+ Credential Manager can route to any provider, and there's no API to tell if one is set, so we assume
-   * true. Before that it can only save through Play Services into a Google account, regardless of the autofill service.
-   */
+  /** Platform credential providers and the selected autofill service do not require Google Play Services. */
   fun isSupported(context: Context): Boolean {
-    if (Build.VERSION.SDK_INT >= 34) {
-      return true
-    }
-
-    if (PlayServicesUtil.getPlayServicesStatus(context) != PlayServicesUtil.PlayServicesStatus.SUCCESS) {
-      return false
-    }
-
-    return !hasNoGoogleAccount(context)
+    return Build.VERSION.SDK_INT >= 34 || context.getSystemService<AutofillManager>()?.isEnabled == true
   }
 
-  /**
-   * Whether credentials we save are likely to end up in Google Password Manager. Before API 34 that is the only place
-   * they can go. On API 34+, choosing a preferred credential provider also sets the autofill service, so that is what
-   * we check.
-   */
+  /** Identifies the selected provider without assuming every device uses Google Password Manager. */
   fun isGooglePasswordManagerDefault(context: Context): Boolean {
-    if (Build.VERSION.SDK_INT < 34) {
-      return true
-    }
-
-    return context.getSystemService<AutofillManager>()?.autofillServiceComponentName?.packageName == GOOGLE_PLAY_SERVICES_PACKAGE
-  }
-
-  /**
-   * True only when we can see the device's accounts and none of them are Google accounts. Google accounts are only
-   * visible to us with the contacts permission (or GET_ACCOUNTS before API 26), so without it we can't rule one out.
-   */
-  private fun hasNoGoogleAccount(context: Context): Boolean {
-    val accountsPermission = if (Build.VERSION.SDK_INT >= 26) Manifest.permission.READ_CONTACTS else Manifest.permission.GET_ACCOUNTS
-    if (ContextCompat.checkSelfPermission(context, accountsPermission) != PackageManager.PERMISSION_GRANTED) {
-      return false
-    }
-
-    return AccountManager.get(context).getAccountsByType(GOOGLE_ACCOUNT_TYPE).isEmpty()
+    return Build.VERSION.SDK_INT >= 28 && context.getSystemService<AutofillManager>()?.autofillServiceComponentName?.packageName == GOOGLE_PLAY_SERVICES_PACKAGE
   }
 
   /**

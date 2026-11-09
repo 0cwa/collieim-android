@@ -17,13 +17,7 @@
 package org.thoughtcrime.securesms.components;
 
 import android.content.Context;
-<<<<<<< MOLLY
-import android.graphics.Rect;
-import android.os.Build;
-=======
 import android.content.res.Configuration;
-import android.preference.PreferenceManager;
->>>>>>> SIGNAL
 import android.util.AttributeSet;
 
 import androidx.annotation.NonNull;
@@ -34,11 +28,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.util.SecurePreferenceManager;
-import org.signal.core.util.ServiceUtil;
-=======
->>>>>>> SIGNAL
 import org.signal.core.util.Util;
 
 import java.util.HashSet;

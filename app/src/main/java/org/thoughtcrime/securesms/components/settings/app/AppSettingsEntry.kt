@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,6 +68,8 @@ fun AppSettingsEntry(
     state = state,
     onEvent = viewModel::onEvent,
     selectedRoute = selectedRoute,
+    networkLabel = stringResource(R.string.preferences__network),
+    networkIcon = painterResource(R.drawable.ic_network_24),
     avatar = { self?.let { SelfAvatar(it) } },
     banner = { bannerManager.Banner() }
   )

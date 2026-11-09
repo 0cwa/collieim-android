@@ -102,24 +102,21 @@ public final class PlacePickerActivity extends AppCompatActivity {
     View markerImage = findViewById(R.id.marker_image_view);
     View fab         = findViewById(R.id.place_chosen_button);
 
-<<<<<<< MOLLY
-    // MOLLY: TODO
-    // if (BuildConfig.USE_OSM) {
-    //   findViewById(R.id.map_type_overlay).setVisibility(View.GONE);
-    // } else {
-    //   findViewById(R.id.btnMapTypeNormal).setOnClickListener(v -> handleMapType("normal"));
-    //   findViewById(R.id.btnMapTypeSatellite).setOnClickListener(v -> handleMapType("satellite"));
-    //   findViewById(R.id.btnMapTypeTerrain).setOnClickListener(v -> handleMapType("terrain"));
-    // }
     findViewById(R.id.map_type_overlay).setVisibility(View.GONE);
-=======
+
     ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (view, insets) -> {
       systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
       bottomSheet.setPadding(systemBarInsets.left, 0, systemBarInsets.right, systemBarInsets.bottom);
       applyMapPadding();
+      float markerOffsetX = (systemBarInsets.left - systemBarInsets.right) / 2f;
+      float markerOffsetY = getMapMarkerOffsetY();
+      markerImage.setTranslationX(markerOffsetX);
+      markerImage.setTranslationY(markerOffsetY);
+      View markerShadow = findViewById(R.id.marker_shadow_image_view);
+      markerShadow.setTranslationX(markerOffsetX);
+      markerShadow.setTranslationY(markerOffsetY);
       return insets;
     });
->>>>>>> SIGNAL
 
     ViewCompat.setBackgroundTintList(fab, ColorStateList.valueOf(getIntent().getIntExtra(KEY_CHAT_COLOR, Color.RED)));
     fab.setOnClickListener(v -> finishWithAddress());
@@ -159,7 +156,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
 
       googleMap.setOnCameraMoveStartedListener(i -> {
         markerImage.animate()
-                   .translationY(-75f)
+                   .translationY(getMapMarkerOffsetY() - 75f)
                    .setInterpolator(OVERSHOOT_INTERPOLATOR)
                    .setDuration(ANIMATION_DURATION)
                    .start();
@@ -169,7 +166,7 @@ public final class PlacePickerActivity extends AppCompatActivity {
 
       googleMap.setOnCameraIdleListener(() -> {
         markerImage.animate()
-                   .translationY(0f)
+                   .translationY(getMapMarkerOffsetY())
                    .setInterpolator(OVERSHOOT_INTERPOLATOR)
                    .setDuration(ANIMATION_DURATION)
                    .start();
@@ -194,27 +191,6 @@ public final class PlacePickerActivity extends AppCompatActivity {
   private void setMap(GoogleMap googleMap) {
     this.googleMap = googleMap;
 
-<<<<<<< MOLLY
-    setMapType(TextSecurePreferences.getGoogleMapType(this));
-    moveMapToInitialIfPossible();
-  }
-
-  private void handleMapType(final String mapType) {
-    setMapType(mapType);
-    TextSecurePreferences.setGoogleMapType(this, mapType);
-  }
-
-  private void setMapType(final String mapType) {
-    if (googleMap == null) {
-      return;
-    }
-    switch (mapType) {
-      case "hybrid":    googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);    break;
-      case "satellite": googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE); break;
-      case "terrain":   googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);   break;
-      case "none":      googleMap.setMapType(GoogleMap.MAP_TYPE_NONE);      break;
-      default:          googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);    break;
-=======
     applyMapPadding();
     moveMapToInitialIfPossible();
   }
@@ -222,8 +198,11 @@ public final class PlacePickerActivity extends AppCompatActivity {
   private void applyMapPadding() {
     if (googleMap != null && systemBarInsets != null) {
       googleMap.setPadding(systemBarInsets.left, systemBarInsets.top, systemBarInsets.right, systemBarInsets.bottom);
->>>>>>> SIGNAL
     }
+  }
+
+  private float getMapMarkerOffsetY() {
+    return systemBarInsets == null ? 0f : (systemBarInsets.top - systemBarInsets.bottom) / 2f;
   }
 
   private void moveMapToInitialIfPossible() {

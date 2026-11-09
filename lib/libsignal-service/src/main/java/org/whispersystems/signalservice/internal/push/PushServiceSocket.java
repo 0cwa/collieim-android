@@ -64,22 +64,12 @@ import org.whispersystems.signalservice.api.push.exceptions.SubmitVerificationCo
 import org.whispersystems.signalservice.api.push.exceptions.TokenNotAcceptedException;
 import org.whispersystems.signalservice.api.push.exceptions.UnregisteredUserException;
 import org.whispersystems.signalservice.api.registration.RestoreMethodBody;
-import org.whispersystems.signalservice.api.svr.Svr3Credentials;
 import org.whispersystems.signalservice.api.util.CredentialsProvider;
-<<<<<<< MOLLY
-import org.whispersystems.signalservice.api.util.Tls12SocketFactory;
-import org.whispersystems.signalservice.internal.configuration.SignalCdnUrl;
-import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration;
-import org.whispersystems.signalservice.internal.configuration.SignalUrl;
-=======
 import org.signal.network.util.Tls12SocketFactory;
-import org.signal.network.util.TlsProxySocketFactory;
 import org.signal.network.config.SignalCdnUrl;
-import org.signal.network.config.SignalProxy;
 import org.signal.network.config.SignalServiceConfiguration;
 import org.signal.network.config.SignalUrl;
 import org.signal.network.crypto.SealedSenderAccess;
->>>>>>> SIGNAL
 import org.whispersystems.signalservice.internal.crypto.AttachmentDigest;
 import org.whispersystems.signalservice.internal.push.exceptions.ForbiddenException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupExistsException;
@@ -87,7 +77,6 @@ import org.whispersystems.signalservice.internal.push.exceptions.GroupNotFoundEx
 import org.whispersystems.signalservice.internal.push.exceptions.GroupPatchNotAcceptedException;
 import org.whispersystems.signalservice.internal.push.exceptions.GroupTerminatedException;
 import org.whispersystems.signalservice.internal.push.exceptions.MismatchedDevicesException;
-import org.whispersystems.signalservice.internal.push.exceptions.MissingCapabilitiesException;
 import org.whispersystems.signalservice.internal.push.exceptions.NotInGroupException;
 import org.whispersystems.signalservice.internal.push.exceptions.StaleDevicesException;
 import org.whispersystems.signalservice.internal.push.http.CancelationSignal;
@@ -241,19 +230,13 @@ public class PushServiceSocket {
     this.credentialsProvider       = credentialsProvider;
     this.signalAgent               = signalAgent;
     this.automaticNetworkRetry     = automaticNetworkRetry;
-<<<<<<< MOLLY
     this.serviceClients            = createServiceConnectionHolders(configuration.getSignalServiceUrls(), configuration.getNetworkInterceptors(), configuration.getSocketFactory(), configuration.getProxySelector(), configuration.getDns());
     this.cdnClientsMap             = createCdnClientsMap(configuration.getSignalCdnUrlMap(), configuration.getNetworkInterceptors(), configuration.getSocketFactory(), configuration.getProxySelector(), configuration.getDns());
     this.storageClients            = createConnectionHolders(configuration.getSignalStorageUrls(), configuration.getNetworkInterceptors(), configuration.getSocketFactory(), configuration.getProxySelector(), configuration.getDns());
-=======
-    this.serviceClients            = createServiceConnectionHolders(configuration.getSignalServiceUrls(), configuration.getNetworkInterceptors(), configuration.getDns(), configuration.getSignalProxy());
-    this.cdnClientsMap             = createCdnClientsMap(configuration.getSignalCdnUrlMap(), configuration.getNetworkInterceptors(), configuration.getDns(), configuration.getSignalProxy());
-    this.storageClients            = createConnectionHolders(configuration.getSignalStorageUrls(), configuration.getNetworkInterceptors(), configuration.getDns(), configuration.getSignalProxy());
-    // Share the existing holders when there is no separate uncensored configuration, rather than building a second set.
-    this.directCdnClientsMap       = uncensoredConfiguration != configuration ? createCdnClientsMap(uncensoredConfiguration.getSignalCdnUrlMap(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getDns(), uncensoredConfiguration.getSignalProxy()) : this.cdnClientsMap;
-    this.directStorageClients      = uncensoredConfiguration != configuration ? createConnectionHolders(uncensoredConfiguration.getSignalStorageUrls(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getDns(), uncensoredConfiguration.getSignalProxy()) : this.storageClients;
+    // Both route sets still honor the user's explicit socket/proxy/DNS configuration.
+    this.directCdnClientsMap       = uncensoredConfiguration != configuration ? createCdnClientsMap(uncensoredConfiguration.getSignalCdnUrlMap(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getSocketFactory(), uncensoredConfiguration.getProxySelector(), uncensoredConfiguration.getDns()) : this.cdnClientsMap;
+    this.directStorageClients      = uncensoredConfiguration != configuration ? createConnectionHolders(uncensoredConfiguration.getSignalStorageUrls(), uncensoredConfiguration.getNetworkInterceptors(), uncensoredConfiguration.getSocketFactory(), uncensoredConfiguration.getProxySelector(), uncensoredConfiguration.getDns()) : this.storageClients;
     this.preferDirectRoute         = preferDirectRoute;
->>>>>>> SIGNAL
     this.random                    = new SecureRandom();
   }
 
@@ -379,182 +362,6 @@ public class PushServiceSocket {
     return JsonUtil.fromJson(response, VerifyAccountResponse.class);
   }
 
-<<<<<<< MOLLY
-  public int finishNewDeviceRegistration(String provisioningCode,
-                                         AccountAttributes attributes,
-                                         PreKeyCollection aciPreKeys, PreKeyCollection pniPreKeys,
-                                         @Nullable String fcmToken)
-      throws IOException, InvalidKeyException
-  {
-    GcmRegistrationId gcmRegistrationId;
-    if (attributes.getFetchesMessages()) {
-      gcmRegistrationId = null;
-    } else {
-      gcmRegistrationId = new GcmRegistrationId(fcmToken, true);
-    }
-
-    final SignedPreKeyEntity aciSignedPreKey = new SignedPreKeyEntity(Objects.requireNonNull(aciPreKeys.getSignedPreKey()).getId(),
-                                                                      aciPreKeys.getSignedPreKey().getKeyPair().getPublicKey(),
-                                                                      aciPreKeys.getSignedPreKey().getSignature());
-    final SignedPreKeyEntity pniSignedPreKey = new SignedPreKeyEntity(Objects.requireNonNull(pniPreKeys.getSignedPreKey()).getId(),
-                                                                      pniPreKeys.getSignedPreKey().getKeyPair().getPublicKey(),
-                                                                      pniPreKeys.getSignedPreKey().getSignature());
-    final KyberPreKeyEntity aciLastResortKyberPreKey = new KyberPreKeyEntity(Objects.requireNonNull(aciPreKeys.getLastResortKyberPreKey()).getId(),
-                                                                             aciPreKeys.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
-                                                                             aciPreKeys.getLastResortKyberPreKey().getSignature());
-    final KyberPreKeyEntity pniLastResortKyberPreKey = new KyberPreKeyEntity(Objects.requireNonNull(pniPreKeys.getLastResortKyberPreKey()).getId(),
-                                                                             pniPreKeys.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
-                                                                             pniPreKeys.getLastResortKyberPreKey().getSignature());
-
-    LinkDeviceRequest linkDeviceRequest = new LinkDeviceRequest(
-        provisioningCode, attributes,
-        aciSignedPreKey, pniSignedPreKey, aciLastResortKyberPreKey, pniLastResortKyberPreKey,
-        gcmRegistrationId
-    );
-    String   json         = JsonUtil.toJson(linkDeviceRequest);
-    String   responseText = makeServiceRequest(DEVICE_LINK_PATH, "PUT", json, NO_HEADERS, NEW_DEVICE_PUT_RESPONSE_HANDLER, SealedSenderAccess.NONE);
-    DeviceId response     = JsonUtil.fromJson(responseText, DeviceId.class);
-    return response.getDeviceId();
-  }
-
-  private static final ResponseCodeHandler NEW_DEVICE_PUT_RESPONSE_HANDLER = (responseCode, body, getHeader) -> {
-    if (responseCode == 409) throw new MissingCapabilitiesException();
-  };
-
-  /**
-   * V2 API: Creates a verification session and returns the raw Response for manual handling.
-   * Caller is responsible for closing the response.
-   */
-  public Response createVerificationSessionV2(@Nonnull String e164, @Nullable String pushToken, @Nullable String mcc, @Nullable String mnc) throws IOException {
-    final String jsonBody = JsonUtil.toJson(new VerificationSessionMetadataRequestBody(e164, pushToken, mcc, mnc));
-    return makeServiceRequestWithoutValidation(VERIFICATION_SESSION_PATH, "POST", jsonRequestBody(jsonBody), NO_HEADERS, SealedSenderAccess.NONE, false);
-  }
-
-  /**
-   * V2 API: Gets session status and returns the raw Response for manual handling.
-   * Caller is responsible for closing the response.
-   */
-  public Response getSessionStatusV2(String sessionId) throws IOException {
-    String path = VERIFICATION_SESSION_PATH + "/" + sessionId;
-    return makeServiceRequestWithoutValidation(path, "GET", jsonRequestBody(null), NO_HEADERS, SealedSenderAccess.NONE, false);
-  }
-
-  /**
-   * V2 API: Patches verification session and returns the raw Response for manual handling.
-   * Caller is responsible for closing the response.
-   */
-  public Response patchVerificationSessionV2(String sessionId, @Nullable String pushToken, @Nullable String mcc, @Nullable String mnc, @Nullable String captchaToken, @Nullable String pushChallengeToken) throws IOException {
-    String path = VERIFICATION_SESSION_PATH + "/" + sessionId;
-    final UpdateVerificationSessionRequestBody requestBody = new UpdateVerificationSessionRequestBody(captchaToken, pushToken, pushChallengeToken, mcc, mnc);
-    return makeServiceRequestWithoutValidation(path, "PATCH", jsonRequestBody(JsonUtil.toJson(requestBody)), NO_HEADERS, SealedSenderAccess.NONE, false);
-  }
-
-  /**
-   * V2 API: Requests verification code and returns the raw Response for manual handling.
-   * Caller is responsible for closing the response.
-   */
-  public Response requestVerificationCodeV2(String sessionId, Locale locale, boolean androidSmsRetriever, VerificationCodeTransport transport) throws IOException {
-    String path = String.format(VERIFICATION_CODE_PATH, sessionId);
-    Map<String, String> headers = locale != null ? Collections.singletonMap("Accept-Language", locale.getLanguage() + "-" + locale.getCountry()) : NO_HEADERS;
-    Map<String, String> body    = new HashMap<>();
-
-    switch (transport) {
-      case SMS:
-        body.put("transport", "sms");
-        break;
-      case VOICE:
-        body.put("transport", "voice");
-        break;
-    }
-
-    body.put("client", androidSmsRetriever ? "android-2021-03" : "android");
-
-    return makeServiceRequestWithoutValidation(path, "POST", jsonRequestBody(JsonUtil.toJson(body)), headers, SealedSenderAccess.NONE, false);
-  }
-
-  /**
-   * V2 API: Submits verification code and returns the raw Response for manual handling.
-   * Caller is responsible for closing the response.
-   */
-  public Response submitVerificationCodeV2(String sessionId, String verificationCode) throws IOException {
-    String path = String.format(VERIFICATION_CODE_PATH, sessionId);
-    Map<String, String> body = new HashMap<>();
-    body.put("code", verificationCode);
-    return makeServiceRequestWithoutValidation(path, "PUT", jsonRequestBody(JsonUtil.toJson(body)), NO_HEADERS, SealedSenderAccess.NONE, false);
-  }
-
-  /**
-   * V2 API: Checks SVR2 auth credentials and returns the raw Response for manual handling.
-   * Caller is responsible for closing the response.
-   */
-  public Response checkSvr2AuthCredentialsV2(@Nullable String number, @Nonnull List<String> passwords) throws IOException {
-    String jsonBody = JsonUtil.toJson(new BackupAuthCheckRequest(number, passwords));
-    return makeServiceRequestWithoutValidation(BACKUP_AUTH_CHECK_V2, "POST", jsonRequestBody(jsonBody), NO_HEADERS, SealedSenderAccess.NONE, false);
-  }
-
-  /**
-   * V2 API: Submits registration request with explicit credentials and returns the raw Response for manual handling.
-   * Caller is responsible for closing the response.
-   *
-   * @param e164 The phone number in E.164 format (used as username for basic auth)
-   * @param password The password for basic auth
-   */
-  public Response submitRegistrationRequestV2(@Nonnull String e164, @Nonnull String password, @Nullable String sessionId, @Nullable String recoveryPassword, AccountAttributes attributes, PreKeyCollection aciPreKeys, PreKeyCollection pniPreKeys, @Nullable String fcmToken, boolean skipDeviceTransfer) throws IOException {
-    String path = REGISTRATION_PATH;
-    if (sessionId == null && recoveryPassword == null) {
-      throw new IllegalArgumentException("Neither Session ID nor Recovery Password provided.");
-    }
-
-    if (sessionId != null && recoveryPassword != null) {
-      throw new IllegalArgumentException("You must supply one and only one of either: Session ID, or Recovery Password.");
-    }
-
-    GcmRegistrationId gcmRegistrationId;
-    if (attributes.getFetchesMessages()) {
-      gcmRegistrationId = null;
-    } else {
-      gcmRegistrationId = new GcmRegistrationId(fcmToken, true);
-    }
-
-    RegistrationSessionRequestBody body;
-    try {
-      final SignedPreKeyEntity aciSignedPreKey = new SignedPreKeyEntity(Objects.requireNonNull(aciPreKeys.getSignedPreKey()).getId(),
-                                                                        aciPreKeys.getSignedPreKey().getKeyPair().getPublicKey(),
-                                                                        aciPreKeys.getSignedPreKey().getSignature());
-      final SignedPreKeyEntity pniSignedPreKey = new SignedPreKeyEntity(Objects.requireNonNull(pniPreKeys.getSignedPreKey()).getId(),
-                                                                        pniPreKeys.getSignedPreKey().getKeyPair().getPublicKey(),
-                                                                        pniPreKeys.getSignedPreKey().getSignature());
-      final KyberPreKeyEntity aciLastResortKyberPreKey = new KyberPreKeyEntity(Objects.requireNonNull(aciPreKeys.getLastResortKyberPreKey()).getId(),
-                                                                               aciPreKeys.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
-                                                                               aciPreKeys.getLastResortKyberPreKey().getSignature());
-      final KyberPreKeyEntity pniLastResortKyberPreKey = new KyberPreKeyEntity(Objects.requireNonNull(pniPreKeys.getLastResortKyberPreKey()).getId(),
-                                                                               pniPreKeys.getLastResortKyberPreKey().getKeyPair().getPublicKey(),
-                                                                               pniPreKeys.getLastResortKyberPreKey().getSignature());
-
-      body = new RegistrationSessionRequestBody(sessionId,
-                                                recoveryPassword,
-                                                attributes,
-                                                Base64.encodeWithoutPadding(aciPreKeys.getIdentityKey().serialize()),
-                                                Base64.encodeWithoutPadding(pniPreKeys.getIdentityKey().serialize()),
-                                                aciSignedPreKey,
-                                                pniSignedPreKey,
-                                                aciLastResortKyberPreKey,
-                                                pniLastResortKyberPreKey,
-                                                gcmRegistrationId,
-                                                skipDeviceTransfer,
-                                                true);
-    } catch (InvalidKeyException e) {
-      throw new AssertionError("unexpected invalid key", e);
-    }
-
-    String authHeader = "Basic " + Base64.encodeWithPadding((e164 + ":" + password).getBytes("UTF-8"));
-    Map<String, String> headers = Collections.singletonMap("Authorization", authHeader);
-
-    return makeServiceRequestWithoutValidation(path, "POST", jsonRequestBody(JsonUtil.toJson(body)), headers, SealedSenderAccess.NONE, false);
-  }
-
-=======
->>>>>>> SIGNAL
   public void setRestoreMethodChosen(@Nonnull String token, @Nonnull RestoreMethodBody request) throws IOException {
     String body = JsonUtil.toJson(request);
     makeServiceRequest(String.format(Locale.US, SET_RESTORE_METHOD_PATH, urlEncode(token)), "PUT", body, NO_HEADERS, UNOPINIONATED_HANDLER, SealedSenderAccess.NONE);

@@ -5,38 +5,20 @@
 
 package org.thoughtcrime.securesms.components.settings.app.account
 
-<<<<<<< MOLLY
-import android.content.Intent
-=======
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
->>>>>>> SIGNAL
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.StringRes
-<<<<<<< MOLLY
-import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-=======
->>>>>>> SIGNAL
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-<<<<<<< MOLLY
-import androidx.compose.ui.res.vectorResource
-=======
->>>>>>> SIGNAL
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-<<<<<<< MOLLY
-=======
 import org.signal.appsettings.account.AccountSettingsAction
 import org.signal.appsettings.account.AccountSettingsEvent
 import org.signal.appsettings.account.AccountSettingsScreen
@@ -45,31 +27,18 @@ import org.signal.core.ui.ViewModelFactory
 import org.signal.core.ui.biometrics.BiometricsAuthentication
 import org.signal.core.ui.biometrics.rememberBiometricsAuthentication
 import org.signal.core.ui.compose.CollectActions
->>>>>>> SIGNAL
 import org.signal.core.ui.compose.ComposeFragment
 import org.signal.core.util.ServiceUtil
 import org.signal.passwordmanager.SignalPasskeyManager
 import org.thoughtcrime.securesms.R
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.compose.rememberStatusBarColorNestedScrollModifier
-=======
 import org.thoughtcrime.securesms.components.settings.app.account.twofactor.TwoFactorNavArgs
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.lock.v2.CreateSvrPinActivity
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.lock.v2.PinKeyboardType
-import org.thoughtcrime.securesms.pin.RegistrationLockV2Dialog
-import org.thoughtcrime.securesms.registration.ui.RegistrationActivity
-import org.thoughtcrime.securesms.util.PlayStoreUtil
-import org.thoughtcrime.securesms.util.navigation.safeNavigate
-=======
 import org.thoughtcrime.securesms.registration.ui.RegistrationIntents
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.PlayStoreUtil
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import org.signal.appsettings.R as AppSettingsR
->>>>>>> SIGNAL
 
 /**
  * Account settings shown on a primary device. Carries out the [AccountSettingsAction]s that need an Activity or the
@@ -151,221 +120,6 @@ class AccountSettingsFragment : ComposeFragment() {
         requireActivity().onBackPressedDispatcher.onBackPressed()
       }
 
-<<<<<<< MOLLY
-  private fun setPinRemindersEnabled(enabled: Boolean) {
-    SignalStore.pin.setPinRemindersEnabled(enabled)
-    viewModel.refreshState()
-  }
-
-  private inner class Callbacks : AccountSettingsScreenCallbacks {
-    override fun onNavigationClick() {
-      activity?.onBackPressedDispatcher?.onBackPressed()
-    }
-
-    @Suppress("DEPRECATION")
-    override fun onChangePinClick() {
-      startActivityForResult(CreateSvrPinActivity.getIntentForPinChangeFromSettings(requireContext()), CreateSvrPinActivity.REQUEST_NEW_PIN)
-    }
-
-    @Suppress("DEPRECATION")
-    override fun onCreatePinClick() {
-      startActivityForResult(CreateSvrPinActivity.getIntentForPinCreate(requireContext()), CreateSvrPinActivity.REQUEST_NEW_PIN)
-    }
-
-    override fun setPinRemindersEnabled(enabled: Boolean) {
-      this@AccountSettingsFragment.setPinRemindersEnabled(enabled)
-    }
-
-    override fun setRegistrationLockEnabled(enabled: Boolean) {
-      this@AccountSettingsFragment.setRegistrationLockEnabled(enabled)
-    }
-
-    override fun openAdvancedPinSettings() {
-      findNavController().safeNavigate(R.id.action_accountSettingsFragment_to_advancedPinSettingsActivity)
-    }
-
-    override fun openChangeNumberFlow() {
-      findNavController().safeNavigate(R.id.action_accountSettingsFragment_to_changePhoneNumberFragment)
-    }
-
-    override fun openDeviceTransferFlow() {
-      findNavController().safeNavigate(R.id.action_accountSettingsFragment_to_oldDeviceTransferActivity)
-    }
-
-    override fun openExportAccountDataFlow() {
-      findNavController().safeNavigate(R.id.action_accountSettingsFragment_to_exportAccountFragment)
-    }
-
-    override fun openUpdateAppFlow() {
-      PlayStoreUtil.openPlayStoreOrOurApkDownloadPage(requireContext())
-    }
-
-    override fun openReRegistrationFlow() {
-      startActivity(RegistrationActivity.newIntentForReRegistration(requireContext()))
-    }
-
-    override fun openDeleteAccountFlow() {
-      findNavController().safeNavigate(R.id.action_accountSettingsFragment_to_deleteAccountFragment)
-    }
-
-    override fun deleteAllData() {
-      if (!ServiceUtil.getActivityManager(AppDependencies.application).clearApplicationUserData()) {
-        Toast.makeText(requireContext(), R.string.preferences_account_delete_all_data_failed, Toast.LENGTH_LONG).show()
-      }
-    }
-  }
-}
-
-@Stable
-@VisibleForTesting
-interface AccountSettingsScreenCallbacks {
-
-  fun onNavigationClick() = Unit
-  fun onChangePinClick() = Unit
-  fun onCreatePinClick() = Unit
-  fun setPinRemindersEnabled(enabled: Boolean) = Unit
-  fun setRegistrationLockEnabled(enabled: Boolean) = Unit
-  fun openAdvancedPinSettings() = Unit
-  fun openChangeNumberFlow() = Unit
-  fun openDeviceTransferFlow() = Unit
-  fun openExportAccountDataFlow() = Unit
-  fun openUpdateAppFlow() = Unit
-  fun openReRegistrationFlow() = Unit
-  fun openDeleteAccountFlow() = Unit
-  fun deleteAllData() = Unit
-
-  object Empty : AccountSettingsScreenCallbacks
-}
-
-@VisibleForTesting
-object AccountSettingsTestTags {
-  const val SCROLLER = "scroller"
-  const val ROW_MODIFY_PIN = "row-modify-pin"
-  const val ROW_PIN_REMINDER = "row-pin-reminder"
-  const val ROW_REGISTRATION_LOCK = "row-registration-lock"
-  const val ROW_ADVANCED_PIN_SETTINGS = "row-advanced-pin-settings"
-  const val ROW_CHANGE_PHONE_NUMBER = "row-change-phone-number"
-  const val ROW_TRANSFER_ACCOUNT = "row-transfer-account"
-  const val ROW_REQUEST_ACCOUNT_DATA = "row-request-account-data"
-  const val ROW_UPDATE_SIGNAL = "row-update-signal"
-  const val ROW_RE_REGISTER = "row-re-register"
-  const val ROW_DELETE_ALL_DATA = "row-delete-all-data"
-  const val ROW_DELETE_ACCOUNT = "row-delete-account"
-  const val DIALOG_CONFIRM_DELETE_ALL_DATA = "dialog-confirm-delete-all-data"
-}
-
-@Composable
-@VisibleForTesting
-fun AccountSettingsScreen(
-  state: AccountSettingsState,
-  callbacks: AccountSettingsScreenCallbacks
-) {
-  Scaffolds.Settings(
-    title = stringResource(R.string.AccountSettingsFragment__account),
-    onNavigationClick = callbacks::onNavigationClick,
-    navigationIcon = ImageVector.vectorResource(R.drawable.ic_arrow_left_24)
-  ) { contentPadding ->
-    LazyColumn(
-      modifier = Modifier
-        .padding(contentPadding)
-        .then(rememberStatusBarColorNestedScrollModifier())
-        .testTag(AccountSettingsTestTags.SCROLLER)
-    ) {
-      item {
-        Texts.SectionHeader(
-          text = stringResource(R.string.preferences_app_protection__signal_pin)
-        )
-      }
-
-      if (state.isLinkedDevice) {
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.AccountSettingsFragment_pin_settings_cannot_be_changed_from_a_linked_device),
-          )
-        }
-      } else {
-        item {
-          @StringRes val textId = if (state.hasPin || state.hasRestoredAep) {
-            R.string.preferences_app_protection__change_your_pin
-          } else {
-            R.string.preferences_app_protection__create_a_pin
-          }
-
-          Rows.TextRow(
-            text = stringResource(textId),
-            enabled = state.isNotDeprecatedOrUnregistered(),
-            onClick = {
-              if (state.hasPin) {
-                callbacks.onChangePinClick()
-              } else {
-                callbacks.onCreatePinClick()
-              }
-            },
-            modifier = Modifier.testTag(AccountSettingsTestTags.ROW_MODIFY_PIN)
-          )
-        }
-
-        item {
-          Rows.ToggleRow(
-            text = stringResource(R.string.preferences_app_protection__pin_reminders),
-            label = stringResource(R.string.AccountSettingsFragment__youll_be_asked_less_frequently),
-            checked = state.hasPin && state.pinRemindersEnabled,
-            enabled = state.hasPin && state.isNotDeprecatedOrUnregistered(),
-            onCheckChanged = callbacks::setPinRemindersEnabled,
-            modifier = Modifier.testTag(AccountSettingsTestTags.ROW_PIN_REMINDER)
-          )
-        }
-
-        item {
-          Rows.ToggleRow(
-            text = stringResource(R.string.preferences_app_protection__registration_lock),
-            label = stringResource(R.string.AccountSettingsFragment__require_your_signal_pin),
-            checked = state.registrationLockEnabled,
-            enabled = state.hasPin && state.isNotDeprecatedOrUnregistered(),
-            onCheckChanged = callbacks::setRegistrationLockEnabled,
-            modifier = Modifier.testTag(AccountSettingsTestTags.ROW_REGISTRATION_LOCK)
-          )
-        }
-
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.preferences__advanced_pin_settings),
-            enabled = state.isNotDeprecatedOrUnregistered(),
-            onClick = callbacks::openAdvancedPinSettings,
-            modifier = Modifier.testTag(AccountSettingsTestTags.ROW_ADVANCED_PIN_SETTINGS)
-          )
-        }
-      }
-
-      item {
-        Dividers.Default()
-      }
-
-      item {
-        Texts.SectionHeader(
-          text = stringResource(R.string.AccountSettingsFragment__account)
-        )
-      }
-
-      if (!state.userUnregistered) {
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.AccountSettingsFragment__change_phone_number),
-            enabled = state.isNotDeprecatedOrUnregistered() && !state.isLinkedDevice,
-            onClick = callbacks::openChangeNumberFlow,
-            modifier = Modifier.testTag(AccountSettingsTestTags.ROW_CHANGE_PHONE_NUMBER)
-          )
-        }
-      }
-
-      item {
-        Rows.TextRow(
-          text = stringResource(R.string.preferences_chats__transfer_account),
-          label = stringResource(R.string.preferences_chats__transfer_account_to_a_new_android_device),
-          enabled = state.canTransferWhileUnregistered || state.isNotDeprecatedOrUnregistered() && !state.isLinkedDevice,
-          onClick = callbacks::openDeviceTransferFlow,
-          modifier = Modifier.testTag(AccountSettingsTestTags.ROW_TRANSFER_ACCOUNT)
-=======
       AccountSettingsAction.LaunchCreatePinFlow -> {
         pinFlowLauncher.launch(CreateSvrPinActivity.getIntentForPinCreate(requireContext()))
       }
@@ -412,7 +166,6 @@ fun AccountSettingsScreen(
         findNavController().safeNavigate(
           R.id.action_accountSettingsFragment_to_twoFactorNameFragment,
           Bundle().apply { TwoFactorNavArgs.putRenamedMethod(this, action.method) }
->>>>>>> SIGNAL
         )
       }
 

@@ -75,13 +75,8 @@ class LogSectionSystemInfo : LogSection {
       Play Services     : ${getPlayServicesString(context)}
       UnifiedPush       : ${if (locked) LOCKED else SignalStore.unifiedpush.enabled}
       Locale            : ${Locale.getDefault()}
-<<<<<<< MOLLY
       Linked Devices    : ${if (locked) LOCKED else SignalStore.account.isMultiDevice}
-      First Version     : ${TextSecurePreferences.getFirstInstallVersion(context)}
-=======
-      Linked Devices    : ${SignalStore.account.isMultiDevice}
       First Version     : ${SignalStore.misc.firstInstallVersion}
->>>>>>> SIGNAL
       Days Installed    : ${getDaysSinceFirstInstalled(context)}
       Last Registration : ${if (locked) LOCKED else getTimeRegistered()}
       Build Variant     : ${BuildConfig.FLAVOR}
@@ -96,12 +91,8 @@ class LogSectionSystemInfo : LogSection {
       IgnoringBatteryOpt: ${PowerManagerCompat.isIgnoringBatteryOptimizations(context)}
       BkgRestricted     : ${if (Build.VERSION.SDK_INT >= 28) DeviceProperties.isBackgroundRestricted(context) else "N/A"}
       Data Saver        : ${DeviceProperties.getDataSaverState(context)}
-<<<<<<< MOLLY
       APNG Animation    : ${if (locked) LOCKED else DeviceProperties.shouldAllowApngStickerAnimation(context)}
       Update Check URL  : ${BuildConfig.FDROID_UPDATE_URL?.takeIf { BuildConfig.MANAGE_MOLLY_UPDATES } ?: "N/A"}
-=======
-      ApkManifestUrl    : ${BuildConfig.APK_UPDATE_MANIFEST_URL?.takeIf { BuildConfig.MANAGES_APP_UPDATES } ?: "N/A"}
->>>>>>> SIGNAL
       App               : ${getAppInfo(context)}
       Package           : ${BuildConfig.APPLICATION_ID} (${getSigningString(context)})
       FullScreenIntents : ${NotificationManagerCompat.from(context).canUseFullScreenIntent()}

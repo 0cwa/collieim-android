@@ -5,12 +5,8 @@ import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
-import androidx.core.content.ContextCompat
 import org.signal.core.ui.util.ViewUtil
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.TooltipPopup
 import org.thoughtcrime.securesms.conversation.colors.ChatColors
@@ -98,11 +94,7 @@ class ChatColorSelectionAdapter(
         SignalStore.chatColors.shouldShowAutoTooltip = false
         TooltipPopup.forTarget(itemView)
           .setText(R.string.ChatColorSelectionFragment__auto_matches_the_color_to_the_wallpaper)
-<<<<<<< MOLLY
-          .setBackgroundTint(ThemeUtil.getThemedColor(context, R.attr.signal_accent_primary))
-=======
-          .setBackgroundTint(ContextCompat.getColor(context, CoreUiR.color.signal_accent_primary))
->>>>>>> SIGNAL
+          .setBackgroundTint(ThemeUtil.getThemedColor(context, org.signal.core.ui.R.attr.signal_accent_primary))
           .setTextColor(Color.WHITE)
           .show(TooltipPopup.POSITION_BELOW)
       }

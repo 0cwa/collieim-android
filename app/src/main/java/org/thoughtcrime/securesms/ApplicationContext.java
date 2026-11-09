@@ -20,11 +20,8 @@ import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-<<<<<<< MOLLY
 import android.content.IntentFilter;
-=======
 import android.os.Build;
->>>>>>> SIGNAL
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -45,7 +42,6 @@ import org.signal.core.util.DeviceProperties;
 import org.signal.core.util.DiskUtil;
 import org.signal.core.util.MemoryTracker;
 import org.signal.core.util.PartAuthorityUris;
-import org.signal.core.util.PlayServicesUtil;
 import org.signal.core.util.Util;
 import org.signal.core.util.ThreadUtil;
 import org.signal.core.util.concurrent.SignalExecutors;
@@ -53,12 +49,8 @@ import org.signal.core.util.crypto.AttachmentSecretProvider;
 import org.signal.core.util.logging.AndroidLogger;
 import org.signal.core.util.logging.Log;
 import org.signal.core.util.logging.Scrubber;
-<<<<<<< MOLLY
-=======
-import org.signal.core.util.tracing.Tracer;
 import org.signal.emoji.EmojiSource;
 import org.signal.emoji.JumboEmoji;
->>>>>>> SIGNAL
 import org.signal.glide.SignalGlideCodecs;
 import org.signal.libsignal.net.ChatServiceException;
 import org.signal.libsignal.protocol.logging.SignalProtocolLoggerProvider;
@@ -71,21 +63,14 @@ import org.signal.storage.keyvalue.PlainTextKeyValueStore;
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener;
 import org.thoughtcrime.securesms.avatar.AvatarPickerStorage;
 import org.thoughtcrime.securesms.backup.v2.BackupRepository;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.conversation.drafts.DraftBlobs;
-import org.thoughtcrime.securesms.crypto.AppAttachmentSecretStore;
-import org.thoughtcrime.securesms.crypto.DatabaseSecretProvider;
-import org.thoughtcrime.securesms.crypto.InvalidPassphraseException;
-import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
-import org.thoughtcrime.securesms.crypto.UnrecoverableKeyException;
-=======
 import org.thoughtcrime.securesms.clockskew.ClockSkewDetector;
 import org.thoughtcrime.securesms.components.AssistantScreenSecurityObserver;
-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository;
 import org.thoughtcrime.securesms.contacts.index.ContactIndexRepository;
 import org.thoughtcrime.securesms.conversation.drafts.DraftBlobs;
 import org.thoughtcrime.securesms.crypto.AppAttachmentSecretStore;
->>>>>>> SIGNAL
+import org.thoughtcrime.securesms.crypto.InvalidPassphraseException;
+import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
+import org.thoughtcrime.securesms.crypto.UnrecoverableKeyException;
 import org.thoughtcrime.securesms.database.LogDatabase;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
@@ -119,12 +104,8 @@ import org.thoughtcrime.securesms.jobs.RetrieveProfileJob;
 import org.thoughtcrime.securesms.jobs.RetrieveRemoteAnnouncementsJob;
 import org.thoughtcrime.securesms.jobs.StorageSyncJob;
 import org.thoughtcrime.securesms.jobs.StoryOnboardingDownloadJob;
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob;
-import org.thoughtcrime.securesms.keyvalue.KeepMessagesDuration;
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod;
-=======
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.logging.CustomSignalProtocolLogger;
 import org.thoughtcrime.securesms.logging.PersistentLogger;
@@ -133,13 +114,9 @@ import org.thoughtcrime.securesms.messageprocessingalarm.RoutineMessageFetchRece
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver;
 import org.thoughtcrime.securesms.migrations.ApplicationMigrations;
 import org.thoughtcrime.securesms.mms.SignalGlideModule;
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.net.NetworkManager;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
 import org.thoughtcrime.securesms.osm.SingleSessionDiskTileWriter;
-=======
-import org.thoughtcrime.securesms.preferences.EditProxyActivity;
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.ratelimit.RateLimitUtil;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.registration.util.RegistrationUtil;
@@ -161,28 +138,15 @@ import org.thoughtcrime.securesms.service.webrtc.AndroidTelecomUtil;
 import org.thoughtcrime.securesms.storage.StorageSyncHelper;
 import org.thoughtcrime.securesms.util.AppStartup;
 import org.thoughtcrime.securesms.util.BatterySnapshotTracker;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.util.CommunicationActions;
-import org.thoughtcrime.securesms.util.BatterySnapshotTracker;
-import org.thoughtcrime.securesms.util.DeviceProperties;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.Environment;
-import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.util.FileUtils;
+import org.thoughtcrime.securesms.util.ProcessExitReasonTracker;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
 import org.thoughtcrime.securesms.util.SignalUncaughtExceptionHandler;
 import org.thoughtcrime.securesms.util.SqlCipherLogTarget;
 import org.thoughtcrime.securesms.util.SupportEmailUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
-=======
-import org.thoughtcrime.securesms.util.DynamicTheme;
-import org.thoughtcrime.securesms.util.Environment;
-import org.thoughtcrime.securesms.util.ProcessExitReasonTracker;
-import org.thoughtcrime.securesms.util.SignalLocalMetrics;
-import org.thoughtcrime.securesms.util.SignalUncaughtExceptionHandler;
-import org.thoughtcrime.securesms.util.SqlCipherLogTarget;
-import org.thoughtcrime.securesms.util.VersionTracker;
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.util.dynamiclanguage.DynamicLanguageContextWrapper;
 import org.whispersystems.signalservice.api.websocket.SignalWebSocket;
 
@@ -228,7 +192,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
   @Override
   public void onCreate() {
-<<<<<<< MOLLY
+    PartAuthorityUris.init(BuildConfig.APPLICATION_ID);
     initializeLogging(true);
     Log.i(TAG, "onCreate()");
 
@@ -245,11 +209,6 @@ public class ApplicationContext extends Application implements AppForegroundObse
   }
 
   private void onCreateUnlock() {
-=======
-    PartAuthorityUris.init(BuildConfig.APPLICATION_ID);
-
-    Tracer.getInstance().start("Application#onCreate()");
->>>>>>> SIGNAL
     AppStartup.getInstance().onApplicationCreate();
     SignalLocalMetrics.ColdStart.start();
 
@@ -276,11 +235,8 @@ public class ApplicationContext extends Application implements AppForegroundObse
               .addBlocking("first-launch", this::initializeFirstEverAppLaunch)
               .addBlocking("app-migrations", this::initializeApplicationMigrations)
               .addBlocking("lifecycle-observer", () -> AppForegroundObserver.addListener(this))
-<<<<<<< MOLLY
               .addBlocking("push", this::updatePushNotificationServices)
-=======
               .addBlocking("assistant-screen-security", () -> registerOnProvideAssistDataListener(new AssistantScreenSecurityObserver()))
->>>>>>> SIGNAL
               .addBlocking("message-retriever", this::initializeMessageRetrieval)
               .addBlocking("blob-provider", this::initializeBlobProvider)
               .addBlocking("remote-config", RemoteConfig::init)
@@ -292,11 +248,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
               .addNonBlocking(this::initializeRevealableMessageManager)
               .addNonBlocking(this::initializePendingRetryReceiptManager)
               .addNonBlocking(this::initializeScheduledMessageManager)
-<<<<<<< MOLLY
-=======
-              .addNonBlocking(this::initializeFcmCheck)
               .addNonBlocking(this::recordProcessExits)
->>>>>>> SIGNAL
               .addNonBlocking(PreKeysSyncJob::enqueueIfNeeded)
               .addNonBlocking(this::initializePeriodicTasks)
               .addNonBlocking(this::initializeCleanup)
@@ -310,7 +262,6 @@ public class ApplicationContext extends Application implements AppForegroundObse
               .addNonBlocking(this::ensureProfileUploaded)
               .addNonBlocking(() -> AppDependencies.getExpireStoriesManager().scheduleIfNecessary())
               .addNonBlocking(BackupRepository::maybeFixAnyDanglingUploadProgress)
-              .addNonBlocking(InAppPaymentsRepository::recoverAbandonedPayments)
               .addPostRender(() -> AppDependencies.getDeletedCallEventManager().scheduleIfNecessary())
               .addPostRender(() -> RateLimitUtil.retryAllRateLimitedMessages(this))
               .addPostRender(this::initializeExpiringMessageManager)
@@ -604,8 +555,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
   }
 
   private void initializeFirstEverAppLaunch() {
-<<<<<<< MOLLY
-    if (TextSecurePreferences.getFirstInstallVersion(this) == -1) {
+    if (SignalStore.misc().getFirstInstallVersion() == -1) {
       Log.i(TAG, "First ever app launch!");
       AppInitialization.onFirstEverAppLaunch(this);
 
@@ -614,7 +564,14 @@ public class ApplicationContext extends Application implements AppForegroundObse
       SignalStore.account().generatePniIdentityKeyIfNecessary();
 
       Log.i(TAG, "Setting first install version to " + ApkInfo.signalCanonicalVersionCode);
+      SignalStore.misc().setFirstInstallVersion(ApkInfo.signalCanonicalVersionCode);
       TextSecurePreferences.setFirstInstallVersion(this, ApkInfo.signalCanonicalVersionCode);
+    }
+  }
+
+  private void recordProcessExits() {
+    if (Build.VERSION.SDK_INT >= 30) {
+      ProcessExitReasonTracker.recordNewExits(this);
     }
   }
 
@@ -636,32 +593,6 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
   @MainThread
   public void updatePushNotificationServices() {
-=======
-    if (SignalStore.misc().getFirstInstallVersion() == -1) {
-      if (!SignalDatabase.databaseFileExists(this) || VersionTracker.getDaysSinceFirstInstalled(this) < 365) {
-        Log.i(TAG, "First ever app launch!");
-        AppInitialization.onFirstEverAppLaunch(this);
-      }
-
-      Log.i(TAG, "Setting first install version to " + BuildConfig.CANONICAL_VERSION_CODE);
-      SignalStore.misc().setFirstInstallVersion(BuildConfig.CANONICAL_VERSION_CODE);
-    } else if (!SignalStore.settings().getPassphraseDisabled() && VersionTracker.getDaysSinceFirstInstalled(this) < 90) {
-      Log.i(TAG, "Detected a new install that doesn't have passphrases disabled -- assuming bad initialization.");
-      AppInitialization.onRepairFirstEverAppLaunch(this);
-    } else if (!SignalStore.settings().getPassphraseDisabled() && VersionTracker.getDaysSinceFirstInstalled(this) < 912) {
-      Log.i(TAG, "Detected a not-recent install that doesn't have passphrases disabled -- disabling now.");
-      SignalStore.settings().setPassphraseDisabled(true);
-    }
-  }
-
-  private void recordProcessExits() {
-    if (Build.VERSION.SDK_INT >= 30) {
-      ProcessExitReasonTracker.recordNewExits(this);
-    }
-  }
-
-  private void initializeFcmCheck() {
->>>>>>> SIGNAL
     if (!SignalStore.account().isRegistered()) {
       return;
     }
@@ -876,7 +807,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
   @Override
   protected void attachBaseContext(Context base) {
-    PlainTextKeyValueStore.init(base, BuildConfig.VERSION_CODE);
+    PlainTextKeyValueStore.init(org.thoughtcrime.securesms.util.SecurePreferenceManager.getSecurePreferences(base), BuildConfig.VERSION_CODE);
     DynamicLanguageContextWrapper.updateContext(base);
     super.attachBaseContext(base);
   }

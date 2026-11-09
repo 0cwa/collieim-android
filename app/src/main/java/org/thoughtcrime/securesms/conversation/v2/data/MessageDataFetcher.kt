@@ -29,13 +29,8 @@ import org.thoughtcrime.securesms.groups.memberlabel.MemberLabelRepository
 import org.thoughtcrime.securesms.payments.Payment
 import org.thoughtcrime.securesms.polls.PollRecord
 import org.thoughtcrime.securesms.recipients.Recipient
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId
-=======
 import org.thoughtcrime.securesms.recipients.RecipientIds
 import org.thoughtcrime.securesms.recipients.RecipientUtil
-import java.util.UUID
->>>>>>> SIGNAL
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -161,11 +156,7 @@ object MessageDataFetcher {
       polls = pollsResult.result,
       sharedContacts = sharedContactsResult.result,
       memberLabels = memberLabelsResult?.result,
-<<<<<<< MOLLY
-      timeLog = "mentions: ${mentionsResult.duration}, is-quoted: ${hasBeenQuotedResult.duration}, reactions: ${reactionsResult.duration}, attachments: ${attachmentsResult.duration}, calls: ${callsResult.duration}, member-labels: ${memberLabelsResult?.duration ?: "n/a"} >> cpuTime: ${cpuTimeMs.roundedString(2)}, wallTime: ${wallTimeMs.roundedString(2)}"
-=======
-      timeLog = "mentions: ${mentionsResult.duration}, is-quoted: ${hasBeenQuotedResult.duration}, reactions: ${reactionsResult.duration}, attachments: ${attachmentsResult.duration}, payments: ${paymentsResult.duration}, calls: ${callsResult.duration}, shared-contacts: ${sharedContactsResult.duration}, member-labels: ${memberLabelsResult?.duration ?: "n/a"} >> cpuTime: ${cpuTimeMs.roundedString(2)}, wallTime: ${wallTimeMs.roundedString(2)}"
->>>>>>> SIGNAL
+      timeLog = "mentions: ${mentionsResult.duration}, is-quoted: ${hasBeenQuotedResult.duration}, reactions: ${reactionsResult.duration}, attachments: ${attachmentsResult.duration}, calls: ${callsResult.duration}, shared-contacts: ${sharedContactsResult.duration}, member-labels: ${memberLabelsResult?.duration ?: "n/a"} >> cpuTime: ${cpuTimeMs.roundedString(2)}, wallTime: ${wallTimeMs.roundedString(2)}"
     )
   }
 

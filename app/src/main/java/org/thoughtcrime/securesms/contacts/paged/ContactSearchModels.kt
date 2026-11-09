@@ -30,11 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-<<<<<<< MOLLY
-=======
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.colorResource
->>>>>>> SIGNAL
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -48,12 +44,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import org.signal.core.ui.compose.FastScrollCharacterProvider
-<<<<<<< MOLLY
+import org.signal.core.ui.util.SpanUtil
 import org.signal.core.ui.compose.theme.colorAttribute
 import org.signal.core.ui.util.ThemeUtil
-=======
-import org.signal.core.ui.util.SpanUtil
->>>>>>> SIGNAL
 import org.signal.core.util.BreakIteratorCompat
 import org.signal.core.util.requireDrawable
 import org.signal.emoji.EmojiUtil

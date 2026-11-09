@@ -31,7 +31,6 @@ data class DonationsCheckoutTestSpec(
 }
 
 enum class TestPaymentMethod {
-  GOOGLE_PAY,
   CREDIT_CARD,
   SEPA_DEBIT,
   IDEAL,

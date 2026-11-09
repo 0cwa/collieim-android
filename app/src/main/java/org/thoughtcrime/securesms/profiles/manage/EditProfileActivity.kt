@@ -55,8 +55,12 @@ class EditProfileActivity : PassphraseRequiredActivity() {
     }
   }
 
-  override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
+  override fun onPreCreate() {
+    super.onPreCreate()
     dynamicTheme.onCreate(this)
+  }
+
+  override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
 
     if (savedInstanceState == null) {
       when {

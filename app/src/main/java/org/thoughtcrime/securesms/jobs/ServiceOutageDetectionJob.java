@@ -7,11 +7,8 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.net.Networking;
-=======
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
->>>>>>> SIGNAL
+import org.thoughtcrime.securesms.net.Networking;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 
 import java.net.InetAddress;

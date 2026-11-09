@@ -12,8 +12,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.lifecycleScope
-import io.reactivex.rxjava3.subjects.PublishSubject
-import io.reactivex.rxjava3.subjects.Subject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,7 +26,6 @@ import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.PassphraseRequiredActivity
 import org.thoughtcrime.securesms.avatar.picker.AvatarPickerResult
 import org.thoughtcrime.securesms.avatar.picker.registerAvatarPickerScreens
-import org.thoughtcrime.securesms.badges.self.registerBadgeScreens
 import org.thoughtcrime.securesms.components.enableSettingsEdgeToEdge
 import org.thoughtcrime.securesms.components.settings.app.appearance.registerAppearanceRoutes
 import org.thoughtcrime.securesms.components.settings.app.chats.registerChatsRoutes
@@ -36,13 +33,10 @@ import org.thoughtcrime.securesms.components.settings.app.labs.registerLabsRoute
 import org.thoughtcrime.securesms.components.settings.app.notifications.registerNotificationsRoutes
 import org.thoughtcrime.securesms.components.settings.app.privacy.registerPrivacyRoutes
 import org.thoughtcrime.securesms.components.settings.app.storage.registerDataAndStorageRoutes
-import org.thoughtcrime.securesms.components.settings.app.subscription.GooglePayComponent
-import org.thoughtcrime.securesms.components.settings.app.subscription.GooglePayRepository
 import org.thoughtcrime.securesms.components.settings.app.updates.registerAppUpdatesRoutes
 import org.thoughtcrime.securesms.components.settings.app.usernamelinks.registerUsernameLinkScreens
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.main.EmptyDetailScreen
-import org.thoughtcrime.securesms.payments.preferences.PaymentsActivity
 import org.thoughtcrime.securesms.profiles.manage.editprofile.registerEditProfileScreens
 import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme
 import org.thoughtcrime.securesms.util.DynamicTheme
@@ -51,7 +45,7 @@ import org.thoughtcrime.securesms.util.DynamicTheme
  * Hosts app settings in [AppSettingsNavigation] rather than the fragment nav graph, gated by
  * [RemoteConfig.useAppSettingsNavigation].
  */
-class AppSettingsNavigationActivity : PassphraseRequiredActivity(), GooglePayComponent {
+class AppSettingsNavigationActivity : PassphraseRequiredActivity() {
 
   companion object {
     private const val START_ROUTE = "app.settings.navigation.args.START_ROUTE"
@@ -62,18 +56,44 @@ class AppSettingsNavigationActivity : PassphraseRequiredActivity(), GooglePayCom
     }
   }
 
-  override val googlePayRepository: GooglePayRepository by lazy { GooglePayRepository(this) }
-  override val googlePayResultPublisher: Subject<GooglePayComponent.GooglePayResult> = PublishSubject.create()
-
   private val dynamicTheme: DynamicTheme = DynamicNoActionBarTheme()
   private val router: AppSettingsRouter by viewModels()
+
+  override fun onPreCreate() {
+    super.onPreCreate()
+    dynamicTheme.onCreate(this)
+  }
 
   override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
     enableSettingsEdgeToEdge()
     super.onCreate(savedInstanceState, ready)
-    dynamicTheme.onCreate(this)
 
     val startRoute = intent.getParcelableExtraCompat(START_ROUTE, AppSettingsRoute::class.java)
+    if (savedInstanceState == null && startRoute == AppSettingsRoute.NotificationsRoute.Notifications) {
+      startActivity(AppSettingsActivity.notifications(this))
+      finish()
+      return
+    }
+    if (savedInstanceState == null && startRoute is AppSettingsRoute.NotificationsRoute.PlayServicesProblem) {
+      startActivity(AppSettingsActivity.playServicesProblem(this, startRoute.errorCode))
+      finish()
+      return
+    }
+    if (savedInstanceState == null && startRoute == AppSettingsRoute.DataAndStorageRoute.DataAndStorage) {
+      startActivity(AppSettingsActivity.manageStorage(this))
+      finish()
+      return
+    }
+    if (savedInstanceState == null && startRoute == AppSettingsRoute.DataAndStorageRoute.Proxy) {
+      startActivity(AppSettingsActivity.proxy(this))
+      finish()
+      return
+    }
+    if (savedInstanceState == null && (startRoute == AppSettingsRoute.PrivacyRoute.Privacy || startRoute == AppSettingsRoute.PrivacyRoute.ScreenLock)) {
+      startActivity(AppSettingsActivity.privacy(this))
+      finish()
+      return
+    }
     if (savedInstanceState == null && startRoute != null && startRoute != AppSettingsRoute.Empty) {
       router.openDirectly(startRoute)
     }
@@ -98,7 +118,6 @@ class AppSettingsNavigationActivity : PassphraseRequiredActivity(), GooglePayCom
               registerDataAndStorageRoutes(router::onEvent)
               registerEditProfileScreens(router::onEvent)
               registerAvatarPickerScreens(router::onEvent, onResult = { router.resultBus.sendResult<AvatarPickerResult>(result = it) })
-              registerBadgeScreens(router::onEvent)
               registerUsernameLinkScreens(router::onEvent)
 
               // TODO Temporary escape hatch while most destinations are unregistered here; remove before the flag ships.
@@ -117,7 +136,11 @@ class AppSettingsNavigationActivity : PassphraseRequiredActivity(), GooglePayCom
 
   private fun tryLaunchActivity(route: AppSettingsRoute): Boolean {
     val intent = when (route) {
-      AppSettingsRoute.Payments -> Intent(this, PaymentsActivity::class.java)
+      AppSettingsRoute.NotificationsRoute.Notifications -> AppSettingsActivity.notifications(this)
+      is AppSettingsRoute.NotificationsRoute.PlayServicesProblem -> AppSettingsActivity.playServicesProblem(this, route.errorCode)
+      AppSettingsRoute.DataAndStorageRoute.Proxy -> AppSettingsActivity.proxy(this)
+      AppSettingsRoute.DataAndStorageRoute.DataAndStorage -> AppSettingsActivity.manageStorage(this)
+      AppSettingsRoute.PrivacyRoute.Privacy, AppSettingsRoute.PrivacyRoute.ScreenLock -> AppSettingsActivity.privacy(this)
       else -> return false
     }
 
@@ -146,11 +169,5 @@ class AppSettingsNavigationActivity : PassphraseRequiredActivity(), GooglePayCom
     super.onNewIntent(intent)
     finish()
     startActivity(intent)
-  }
-
-  @Suppress("DEPRECATION")
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    super.onActivityResult(requestCode, resultCode, data)
-    googlePayResultPublisher.onNext(GooglePayComponent.GooglePayResult(requestCode, resultCode, data))
   }
 }

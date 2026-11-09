@@ -13,20 +13,11 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.materialswitch.MaterialSwitch
 import org.signal.core.models.badges.Badge
 import org.signal.core.ui.FixedRoundedCornerBottomSheetDialogFragment
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-import org.signal.core.util.logging.Log
-=======
 import org.signal.core.ui.util.SpanUtil
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.badges.BadgeImageView
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.badges.models.Badge
-=======
-import org.thoughtcrime.securesms.badges.BadgeRepository
 import org.thoughtcrime.securesms.badges.BadgeRepository.DonationBadgeToggle
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -53,16 +44,7 @@ class ThanksForYourSupportBottomSheetDialogFragment : FixedRoundedCornerBottomSh
   private lateinit var switch: MaterialSwitch
   private lateinit var heading: TextView
 
-<<<<<<< MOLLY
-  private lateinit var controlState: ControlState
-
-  private enum class ControlState {
-    FEATURE,
-    DISPLAY
-  }
-=======
   private lateinit var controlState: DonationBadgeToggle
->>>>>>> SIGNAL
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.thanks_for_your_support_bottom_sheet_dialog_fragment, container, false)
@@ -95,11 +77,7 @@ class ThanksForYourSupportBottomSheetDialogFragment : FixedRoundedCornerBottomSh
           .append(
             SpanUtil.clickable(
               getString(R.string.SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer),
-<<<<<<< MOLLY
-              ThemeUtil.getThemedColor(requireContext(), R.attr.signal_accent_primary)
-=======
-              ContextCompat.getColor(requireContext(), CoreUiR.color.signal_accent_primary)
->>>>>>> SIGNAL
+              ThemeUtil.getThemedColor(requireContext(), org.signal.core.ui.R.attr.signal_accent_primary)
             ) {
               requireActivity().finish()
               requireActivity().startActivity(AppSettingsActivity.subscriptions(requireContext()))
@@ -141,7 +119,6 @@ class ThanksForYourSupportBottomSheetDialogFragment : FixedRoundedCornerBottomSh
     super.onDismiss(dialog)
     val args = ThanksForYourSupportBottomSheetDialogFragmentArgs.fromBundle(requireArguments())
 
-<<<<<<< MOLLY
     // MOLLY: TODO
     // if (controlState == ControlState.DISPLAY) {
     //   badgeRepository.setVisibilityForAllBadges(controlChecked).subscribeBy(
@@ -156,9 +133,6 @@ class ThanksForYourSupportBottomSheetDialogFragment : FixedRoundedCornerBottomSh
     //     }
     //   )
     // }
-=======
-    BadgeRepository.commitDonationBadgeToggle(controlState, args.badge, switch.isChecked)
->>>>>>> SIGNAL
 
     if (args.badge.isSubscription()) {
       requireActivity().finish()

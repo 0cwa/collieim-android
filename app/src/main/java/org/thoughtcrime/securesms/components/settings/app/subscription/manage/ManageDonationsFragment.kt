@@ -10,15 +10,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.R as MaterialR
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.util.SpanUtil
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.dp
 import org.signal.core.util.money.FiatMoney
 import org.signal.donations.InAppPaymentType
 import org.thoughtcrime.securesms.R
+import org.signal.core.ui.R as CoreUiR
 import org.thoughtcrime.securesms.badges.models.BadgePreview
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
 import org.thoughtcrime.securesms.components.settings.DSLSettingsFragment
@@ -134,13 +132,8 @@ class ManageDonationsFragment :
 
   override fun getMaterial3OnScrollHelper(toolbar: Toolbar?): Material3OnScrollHelper {
     return object : Material3OnScrollHelper(activity = requireActivity(), views = listOf(toolbar!!), lifecycleOwner = viewLifecycleOwner) {
-<<<<<<< MOLLY
       override val activeColorSet: ColorSet = ColorSet.from(requireContext(), R.color.transparent, MaterialR.attr.colorSurface)
       override val inactiveColorSet: ColorSet = ColorSet.from(requireContext(), R.color.transparent, MaterialR.attr.colorSurface)
-=======
-      override val activeColorSet: ColorSet = ColorSet(R.color.transparent)
-      override val inactiveColorSet: ColorSet = ColorSet(R.color.transparent)
->>>>>>> SIGNAL
     }
   }
 
@@ -352,7 +345,6 @@ class ManageDonationsFragment :
     )
   }
 
-<<<<<<< MOLLY
   // MOLLY: TODO
   // private fun DSLConfiguration.presentBadges() {
   //   clickPref(
@@ -363,17 +355,6 @@ class ManageDonationsFragment :
   //     }
   //   )
   // }
-=======
-  private fun DSLConfiguration.presentBadges() {
-    clickPref(
-      title = DSLSettingsText.from(R.string.ManageDonationsFragment__badges),
-      icon = DSLSettingsIcon.from(CoreUiR.drawable.symbol_badge_multi_24),
-      onClick = {
-        findNavController().safeNavigate(ManageDonationsFragmentDirections.actionManageDonationsFragmentToManageBadges())
-      }
-    )
-  }
->>>>>>> SIGNAL
 
   private fun DSLConfiguration.presentReceipts() {
     clickPref(

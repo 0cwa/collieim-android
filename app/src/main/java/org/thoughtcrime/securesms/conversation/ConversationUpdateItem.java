@@ -32,6 +32,7 @@ import com.google.common.collect.Sets;
 
 import org.signal.core.models.ServiceId;
 import org.signal.core.ui.fonts.SignalSymbols;
+import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.util.DimensionUnit;
 import org.signal.core.util.DrawableUtil;
 import org.signal.core.util.Util;
@@ -696,29 +697,6 @@ public final class ConversationUpdateItem extends FrameLayout
       });
 
       actionButton.setText(R.string.ConversationActivity__invite_to_signal);
-<<<<<<< MOLLY
-=======
-    } else if (conversationMessage.getMessageRecord().isPaymentsRequestToActivate() && !conversationMessage.getMessageRecord().isOutgoing() && !SignalStore.payments().mobileCoinPaymentsEnabled() && SignalStore.account().isPrimaryDevice()) {
-      actionButton.setText(R.string.ConversationUpdateItem_activate_payments);
-      actionButton.setVisibility(VISIBLE);
-      actionButton.setOnClickListener(v -> {
-        if (batchSelected.isEmpty() && eventListener != null) {
-          eventListener.onActivatePaymentsClicked();
-        } else {
-          passthroughClickListener.onClick(v);
-        }
-      });
-    } else if (conversationMessage.getMessageRecord().isPaymentsActivated() && !conversationMessage.getMessageRecord().isOutgoing() && SignalStore.account().isPrimaryDevice()) {
-      actionButton.setText(R.string.ConversationUpdateItem_send_payment);
-      actionButton.setVisibility(VISIBLE);
-      actionButton.setOnClickListener(v -> {
-        if (batchSelected.isEmpty() && eventListener != null) {
-          eventListener.onSendPaymentClicked(conversationMessage.getMessageRecord().getFromRecipient().getId());
-        } else {
-          passthroughClickListener.onClick(v);
-        }
-      });
->>>>>>> SIGNAL
     } else if (conversationMessage.getMessageRecord().isReportedSpam()) {
       actionButton.setText(R.string.ConversationUpdateItem_learn_more);
       actionButton.setVisibility(VISIBLE);
@@ -856,11 +834,11 @@ public final class ConversationUpdateItem extends FrameLayout
       CollapsibleEvents.CollapsibleType collapsibleType = CollapsibleEvents.getCollapsibleType(messageRecord.getType(), messageRecord.getMessageExtras());
       if (collapsibleType != null) {
         SpannableStringBuilder text = new SpannableStringBuilder()
-                                          .append(SignalSymbols.getSpannedString(getContext(), SignalSymbols.Weight.BOLD, getCollapsibleSymbol(collapsibleType), com.google.android.material.R.attr.colorOnSurfaceVariant))
+                                          .append(SignalSymbols.getSpannedString(getContext(), SignalSymbols.Weight.BOLD, getCollapsibleSymbol(collapsibleType), ThemeUtil.getThemedColor(getContext(), com.google.android.material.R.attr.colorOnSurfaceVariant)))
                                           .append(" ")
                                           .append(getCollapsibleString(collapsibleType))
                                           .append(" ")
-                                          .append(SignalSymbols.getSpannedString(getContext(), SignalSymbols.Weight.BOLD, collapsedState == CollapsedState.HEAD_EXPANDED ? SignalSymbols.Glyph.CHEVRON_UP : SignalSymbols.Glyph.CHEVRON_DOWN, com.google.android.material.R.attr.colorOnSurfaceVariant));
+                                          .append(SignalSymbols.getSpannedString(getContext(), SignalSymbols.Weight.BOLD, collapsedState == CollapsedState.HEAD_EXPANDED ? SignalSymbols.Glyph.CHEVRON_UP : SignalSymbols.Glyph.CHEVRON_DOWN, ThemeUtil.getThemedColor(getContext(), com.google.android.material.R.attr.colorOnSurfaceVariant)));
         collapsedButton.setText(text);
         collapsedButton.setOnClickListener(v -> {
           if (eventListener != null) {

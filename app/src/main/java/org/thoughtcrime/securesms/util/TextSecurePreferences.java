@@ -1,11 +1,7 @@
 package org.thoughtcrime.securesms.util;
 
-import android.Manifest;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 
@@ -13,29 +9,19 @@ import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 
-import org.signal.core.util.PendingIntentFlags;
 import org.signal.core.util.logging.Log;
-import org.signal.libsignal.zkgroup.profiles.ProfileKey;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener;
 import org.thoughtcrime.securesms.backup.proto.SharedPreference;
-import org.thoughtcrime.securesms.crypto.ProfileKeyUtil;
-import org.thoughtcrime.securesms.database.SignalDatabase;
-import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.keyvalue.SettingsValues;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.lock.RegistrationLockReminders;
 import org.thoughtcrime.securesms.net.ProxyType;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
-import org.thoughtcrime.securesms.notifications.NotificationIds;
 import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference;
 import org.thoughtcrime.securesms.preferences.widgets.PassphraseLockTriggerPreference;
-import org.thoughtcrime.securesms.recipients.Recipient;
-import org.thoughtcrime.securesms.registration.ui.RegistrationActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -175,34 +161,6 @@ public class TextSecurePreferences {
     setStringPreference(context, GOOGLE_MAP_TYPE, value);
   }
 
-  private static final String[] booleanPreferencesToBackup = {SCREEN_SECURITY_PREF,
-                                                              INCOGNITO_KEYBOARD_PREF,
-                                                              ALWAYS_RELAY_CALLS_PREF,
-                                                              READ_RECEIPTS_PREF,
-                                                              TYPING_INDICATORS,
-                                                              SHOW_UNIDENTIFIED_DELIVERY_INDICATORS,
-                                                              UNIVERSAL_UNIDENTIFIED_ACCESS,
-                                                              NOTIFICATION_PREF,
-                                                              VIBRATE_PREF,
-                                                              IN_THREAD_NOTIFICATION_PREF,
-                                                              CALL_NOTIFICATIONS_PREF,
-                                                              CALL_VIBRATE_PREF,
-                                                              NEW_CONTACTS_NOTIFICATIONS,
-                                                              SYSTEM_EMOJI_PREF,
-                                                              ENTER_SENDS_PREF};
-
-  private static final String[] stringPreferencesToBackup = {LED_COLOR_PREF,
-                                                             LED_BLINK_PREF,
-                                                             REPEAT_ALERTS_PREF,
-                                                             NOTIFICATION_PRIVACY_PREF,
-                                                             THEME_PREF,
-                                                             LANGUAGE_PREF,
-                                                             MESSAGE_BODY_TEXT_SIZE_PREF};
-
-  private static final String[] stringSetPreferencesToBackup = {MEDIA_DOWNLOAD_MOBILE_PREF,
-                                                                MEDIA_DOWNLOAD_WIFI_PREF,
-                                                                MEDIA_DOWNLOAD_ROAMING_PREF};
-
   private static final String[] booleanPreferencesToBackupMolly = {
       LOG_ENABLED,
       UPDATE_APK_ENABLED,
@@ -215,87 +173,16 @@ public class TextSecurePreferences {
 
   private static final String[] stringSetPreferencesToBackupMolly = {PASSPHRASE_LOCK_TRIGGER};
 
-  private static final String[] integerPreferencesToBackupMolly = {PASSPHRASE_LOCK_TIMEOUT};
+  private static final String[] longPreferencesToBackupMolly = {PASSPHRASE_LOCK_TIMEOUT};
 
   public static long getPreferencesToSaveToBackupCount(@NonNull Context context) {
-    SharedPreferences preferences = getSharedPreferences(context);
-    long              count       = 0;
-
-    for (String booleanPreference : booleanPreferencesToBackup) {
-      if (preferences.contains(booleanPreference)) {
-        count++;
-      }
-    }
-
-    for (String stringPreference : stringPreferencesToBackup) {
-      if (preferences.contains(stringPreference)) {
-        count++;
-      }
-    }
-
-    for (String stringSetPreference : stringSetPreferencesToBackup) {
-      if (preferences.contains(stringSetPreference)) {
-        count++;
-      }
-    }
-
-    for (String booleanPreference : booleanPreferencesToBackupMolly) {
-      if (preferences.contains(booleanPreference)) {
-        count++;
-      }
-    }
-
-    for (String stringSetPreference : stringSetPreferencesToBackupMolly) {
-      if (preferences.contains(stringSetPreference)) {
-        count++;
-      }
-    }
-
-    for (String integerPreference : integerPreferencesToBackupMolly) {
-      if (preferences.contains(integerPreference)) {
-        count++;
-      }
-    }
-
-    return count;
+    return getPreferencesToSaveToBackup(context).size();
   }
 
+  /** Only Molly preferences still stored outside SignalStore belong in shared-preference backup records. */
   public static List<SharedPreference> getPreferencesToSaveToBackup(@NonNull Context context) {
     SharedPreferences      preferences  = getSharedPreferences(context);
     List<SharedPreference> backupProtos = new ArrayList<>();
-    String                 defaultFile  = BuildConfig.SIGNAL_PACKAGE_NAME + "_preferences";
-
-    for (String booleanPreference : booleanPreferencesToBackup) {
-      if (preferences.contains(booleanPreference)) {
-        backupProtos.add(new SharedPreference.Builder()
-                                             .file_(defaultFile)
-                                             .key(booleanPreference)
-                                             .booleanValue(preferences.getBoolean(booleanPreference, false))
-                                             .build());
-      }
-    }
-
-    for (String stringPreference : stringPreferencesToBackup) {
-      if (preferences.contains(stringPreference)) {
-        backupProtos.add(new SharedPreference.Builder()
-                                             .file_(defaultFile)
-                                             .key(stringPreference)
-                                             .value_(preferences.getString(stringPreference, null))
-                                             .build());
-      }
-    }
-
-    for (String stringSetPreference : stringSetPreferencesToBackup) {
-      if (preferences.contains(stringSetPreference)) {
-        backupProtos.add(new SharedPreference.Builder()
-                                             .file_(defaultFile)
-                                             .key(stringSetPreference)
-                                             .isStringSetValue(true)
-                                             .stringSetValue(new ArrayList<>(preferences.getStringSet(stringSetPreference, Collections.emptySet())))
-                                             .build());
-      }
-    }
-
     for (String booleanPreference : booleanPreferencesToBackupMolly) {
       if (preferences.contains(booleanPreference)) {
         backupProtos.add(new SharedPreference.Builder()
@@ -317,12 +204,12 @@ public class TextSecurePreferences {
       }
     }
 
-    for (String integerPreference : integerPreferencesToBackupMolly) {
-      if (preferences.contains(integerPreference)) {
+    for (String longPreference : longPreferencesToBackupMolly) {
+      if (preferences.contains(longPreference)) {
         backupProtos.add(new SharedPreference.Builder()
                                              .file_(SecurePreferenceManager.getSecurePreferencesName())
-                                             .key(integerPreference)
-                                             .integerValue(preferences.getInt(integerPreference, 0))
+                                             .key(longPreference)
+                                             .longValue(preferences.getLong(longPreference, 0))
                                              .build());
       }
     }
@@ -540,41 +427,31 @@ public class TextSecurePreferences {
   }
 
   public static void setUnauthorizedReceived(Context context, boolean value) {
-    boolean previous = isUnauthorizedReceived(context);
-    setBooleanPreference(context, UNAUTHORIZED_RECEIVED, value);
-
-    if (previous != value) {
-      Recipient.self().live().refresh();
-
-      if (value) {
-        notifyUnregisteredReceived(context);
-        clearLocalCredentials(context);
-      }
-    }
+    SignalStore.account().setUnauthorizedReceived(value);
   }
 
   public static boolean isUnauthorizedReceived(Context context) {
-    return getBooleanPreference(context, UNAUTHORIZED_RECEIVED, false);
+    return SignalStore.account().isUnauthorizedReceived();
   }
 
   public static boolean isIncognitoKeyboardEnabled(Context context) {
-    return getBooleanPreference(context, INCOGNITO_KEYBOARD_PREF, true);
+    return SignalStore.settings().isIncognitoKeyboardEnabled();
   }
 
   public static boolean isReadReceiptsEnabled(Context context) {
-    return getBooleanPreference(context, READ_RECEIPTS_PREF, true);
+    return SignalStore.settings().isReadReceiptsEnabled();
   }
 
   public static void setReadReceiptsEnabled(Context context, boolean enabled) {
-    setBooleanPreference(context, READ_RECEIPTS_PREF, enabled);
+    SignalStore.settings().setReadReceiptsEnabled(enabled);
   }
 
   public static boolean isTypingIndicatorsEnabled(Context context) {
-    return getBooleanPreference(context, TYPING_INDICATORS, true);
+    return SignalStore.settings().isTypingIndicatorsEnabled();
   }
 
   public static void setTypingIndicatorsEnabled(Context context, boolean enabled) {
-    setBooleanPreference(context, TYPING_INDICATORS, enabled);
+    SignalStore.settings().setTypingIndicatorsEnabled(enabled);
   }
 
   public static boolean isBlockUnknownEnabled(@NonNull Context context) {
@@ -611,7 +488,7 @@ public class TextSecurePreferences {
   }
 
   public static boolean isTurnOnly(Context context) {
-    return getBooleanPreference(context, ALWAYS_RELAY_CALLS_PREF, false);
+    return SignalStore.settings().isTurnOnly();
   }
 
   @Deprecated
@@ -647,7 +524,7 @@ public class TextSecurePreferences {
   }
 
   public static boolean isUniversalUnidentifiedAccess(Context context) {
-    return getBooleanPreference(context, UNIVERSAL_UNIDENTIFIED_ACCESS, false);
+    return SignalStore.settings().isUniversalUnidentifiedAccess();
   }
 
   public static void setIsUniversalUnidentifiedAccess(Context context, boolean enabled) {
@@ -659,7 +536,7 @@ public class TextSecurePreferences {
   }
 
   public static boolean isShowUnidentifiedDeliveryIndicatorsEnabled(Context context) {
-    return getBooleanPreference(context, SHOW_UNIDENTIFIED_DELIVERY_INDICATORS, false);
+    return SignalStore.settings().isShowUnidentifiedDeliveryIndicatorsEnabled();
   }
 
   public static long getSignedPreKeyRotationTime(Context context) {
@@ -720,11 +597,11 @@ public class TextSecurePreferences {
   }
 
   public static void setScreenSecurityEnabled(Context context, boolean value) {
-    setBooleanPreference(context, SCREEN_SECURITY_PREF, value);
+    SignalStore.settings().setScreenSecurityEnabled(value);
   }
 
   public static boolean isScreenSecurityEnabled(Context context) {
-    return getBooleanPreference(context, SCREEN_SECURITY_PREF, true);
+    return SignalStore.settings().isScreenSecurityEnabled();
   }
 
   public static int getLastVersionCodeForMolly(Context context) {
@@ -1043,39 +920,8 @@ public class TextSecurePreferences {
     }
   }
 
-  private static void clearLocalCredentials(Context context) {
-    ProfileKey newProfileKey = ProfileKeyUtil.createNew();
-    Recipient  self          = Recipient.self();
-    SignalDatabase.recipients().setProfileKey(self.getId(), newProfileKey);
-
-    AppDependencies.getGroupsV2Authorization().clear();
-  }
-
   public static SharedPreferences getSharedPreferences(Context context) {
     return SecurePreferenceManager.getSecurePreferences(context);
-  }
-
-  private static void notifyUnregisteredReceived(Context context) {
-    if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-      Log.w(TAG, "notifyUnregisteredReceived: Notification permission is not granted.");
-      return;
-    }
-
-    Intent registrationIntent = SignalStore.account().isLinkedDevice() ? RegistrationActivity.newIntentForReLinkDevice(context)
-                                                                       : RegistrationActivity.newIntentForReRegistration(context);
-
-    PendingIntent reRegistrationIntent = PendingIntent.getActivity(context,
-                                                                   0,
-                                                                   registrationIntent,
-                                                                   PendingIntent.FLAG_UPDATE_CURRENT | PendingIntentFlags.immutable());
-
-    final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.getInstance().FAILURES)
-        .setSmallIcon(R.drawable.ic_notification)
-        .setContentText(context.getString(R.string.LoggedOutNotification_you_have_been_logged_out))
-        .setContentIntent(reRegistrationIntent)
-        .setOnlyAlertOnce(true)
-        .setAutoCancel(true);
-    NotificationManagerCompat.from(context).notify(NotificationIds.UNREGISTERED_NOTIFICATION_ID, builder.build());
   }
 
   // NEVER rename these -- they're persisted by name

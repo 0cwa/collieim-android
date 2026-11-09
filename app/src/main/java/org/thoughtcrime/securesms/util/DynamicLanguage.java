@@ -5,10 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.res.Configuration;
 
-<<<<<<< MOLLY
-=======
 import org.signal.storage.keyvalue.PlainTextKeyValueStore;
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.util.dynamiclanguage.LanguageString;
 
 import java.util.Locale;
@@ -49,11 +46,7 @@ public class DynamicLanguage {
   }
 
   private static Locale getSelectedLocale(Context context) {
-<<<<<<< MOLLY
-    Locale locale = LanguageString.parseLocale(TextSecurePreferences.getLanguage(context));
-=======
     Locale locale = LanguageString.parseLocale(PlainTextKeyValueStore.getLanguage());
->>>>>>> SIGNAL
     if (locale == null) {
       return Locale.getDefault();
     } else {

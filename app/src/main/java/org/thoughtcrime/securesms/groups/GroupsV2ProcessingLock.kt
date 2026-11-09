@@ -5,8 +5,6 @@ import org.signal.core.util.ThreadUtil
 import org.signal.core.util.groups.GroupChangeBusyException
 import org.signal.core.util.logging.Log
 import org.signal.remoteconfig.RemoteConfig
-import org.thoughtcrime.securesms.crypto.ReentrantSessionLock
-import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver
 import java.io.Closeable
 import java.util.concurrent.ConcurrentHashMap
@@ -86,10 +84,6 @@ object GroupsV2ProcessingLock {
 
     // If we are getting this lock for the first time, check it's safe to acquire
     if (!singleGroupLock.isHeldByCurrentThread) {
-      if (RemoteConfig.internalUser) {
-        assertNotInTransactionOrSessionLock()
-      }
-
       if (allGroupsLock.readHoldCount > 0) {
         val message = "Tried to acquire the single group lock for $groupId while holding another single group or group creation lock. This can deadlock."
         if (RemoteConfig.internalUser) {
@@ -135,10 +129,6 @@ object GroupsV2ProcessingLock {
       return Closeable {}
     }
 
-    if (RemoteConfig.internalUser && allGroupsLock.readHoldCount == 0) {
-      assertNotInTransactionOrSessionLock()
-    }
-
     lock.tryLockOrThrow(timeout, message)
 
     return Closeable { lock.unlock() }
@@ -160,15 +150,6 @@ object GroupsV2ProcessingLock {
   private fun describeAllGroupsLock(): String {
     val groupHolders = singleGroupLocks.values.mapNotNull { it.ownerName }
     return "All groups lock holder: ${allGroupsLock.ownerName ?: "none"}. Waiting for all groups lock: ${allGroupsLock.queuedWriterNames.ifEmpty { "none" }}. Single group lock holders: ${groupHolders.ifEmpty { "none" }}. Shared holds: ${allGroupsLock.readLockCount}."
-  }
-
-  private fun assertNotInTransactionOrSessionLock() {
-    if (SignalDatabase.inTransaction) {
-      throw AssertionError("Tried to acquire a groups processing lock inside of a database transaction!")
-    }
-    if (ReentrantSessionLock.INSTANCE.isHeldByCurrentThread()) {
-      throw AssertionError("Tried to acquire a groups processing lock inside of the ReentrantSessionLock!!")
-    }
   }
 
   private class AllGroupsLock : ReentrantReadWriteLock(true) {

@@ -40,12 +40,9 @@ class MockAppDependenciesRule : ExternalResource() {
     .filterNot { skipList.contains(it.name) }
 
   override fun before() {
-<<<<<<< MOLLY
     ApplicationInstance.setForTests(ApplicationProvider.getApplicationContext())
-=======
     PartAuthorityUris.init(BuildConfig.APPLICATION_ID)
 
->>>>>>> SIGNAL
     if (!AppDependencies.isInitialized) {
       AppDependencies.init(MockApplicationDependencyProvider())
     }

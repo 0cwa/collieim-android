@@ -22,11 +22,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-<<<<<<< MOLLY
-=======
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
-import androidx.core.content.ContextCompat
->>>>>>> SIGNAL
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -36,11 +32,8 @@ import org.signal.core.ui.compose.FastScrollerState
 import org.signal.core.ui.compose.LazyColumnFastScroller
 import org.signal.core.ui.compose.LocalFragmentManager
 import org.signal.core.ui.compose.Previews
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.util.SpanUtil
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.logging.Log
 import org.signal.emoji.Emojifier
 import org.thoughtcrime.securesms.R

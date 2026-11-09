@@ -47,7 +47,6 @@ import org.signal.core.util.concurrent.SettableFuture;
 import org.signal.core.util.logging.Log;
 import org.signal.core.util.permissions.PermissionCompat;
 import org.signal.mediasend.MediaConstraints;
-import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.AudioView;
 import org.thoughtcrime.securesms.components.DocumentView;
@@ -59,29 +58,13 @@ import org.thoughtcrime.securesms.conversation.MessageSendType;
 import org.thoughtcrime.securesms.database.SignalDatabase;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.maps.PlacePickerActivity;
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory;
 import org.thoughtcrime.securesms.mediapreview.MediaPreviewCache;
-import org.thoughtcrime.securesms.mediapreview.MediaPreviewV2Fragment;
-import org.thoughtcrime.securesms.mediasend.v2.MediaSelectionActivity;
-=======
 import org.thoughtcrime.securesms.mediasend.MediaSendLauncher;
-import org.thoughtcrime.securesms.payments.CanNotSendPaymentDialog;
-import org.thoughtcrime.securesms.payments.PaymentsAddressException;
-import org.thoughtcrime.securesms.payments.create.CreatePaymentFragmentArgs;
-import org.thoughtcrime.securesms.payments.preferences.PaymentsActivity;
-import org.thoughtcrime.securesms.payments.preferences.RecipientHasNotEnabledPaymentsDialog;
-import org.thoughtcrime.securesms.payments.preferences.model.PayeeParcelable;
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.sms.MessageSender;
 import org.thoughtcrime.securesms.util.MediaUtil;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.util.ViewUtil;
-=======
-import org.thoughtcrime.securesms.util.ProfileUtil;
 import org.signal.core.ui.util.ViewUtil;
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.util.concurrent.AssertedSuccessListener;
 
 import java.io.IOException;
@@ -128,12 +111,7 @@ public class AttachmentManager {
       this.removableMediaView = root.findViewById(R.id.removable_media_view);
 
       removableMediaView.setRemoveClickListener(new RemoveButtonListener());
-<<<<<<< MOLLY
-      thumbnail.setOnClickListener(new ThumbnailClickListener());
       documentView.getBackground().setColorFilter(ThemeUtil.getThemedColor(context, R.attr.signal_background_secondary), PorterDuff.Mode.MULTIPLY);
-=======
-      documentView.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.signal_background_secondary), PorterDuff.Mode.MULTIPLY);
->>>>>>> SIGNAL
     }
 
   }
@@ -301,44 +279,6 @@ public class AttachmentManager {
     }
   }
 
-<<<<<<< MOLLY
-  public static void selectGif(Fragment fragment, int requestCode, RecipientId id, MessageSendType sendType, boolean isForMms, CharSequence textTrimmed) {
-    Intent intent = new Intent(fragment.requireContext(), GiphyActivity.class);
-    intent.putExtra(GiphyActivity.EXTRA_IS_MMS, isForMms);
-    intent.putExtra(GiphyActivity.EXTRA_RECIPIENT_ID, id);
-    intent.putExtra(GiphyActivity.EXTRA_TRANSPORT, sendType);
-    intent.putExtra(GiphyActivity.EXTRA_TEXT, textTrimmed);
-    fragment.startActivityForResult(intent, requestCode);
-=======
-  public static void selectPayment(@NonNull Fragment fragment, @NonNull Recipient recipient) {
-    if (!ExpiringProfileCredentialUtil.isValid(recipient.getExpiringProfileKeyCredential())) {
-      CanNotSendPaymentDialog.show(fragment.requireContext());
-      return;
-    }
-
-    SimpleTask.run(fragment.getViewLifecycleOwner().getLifecycle(),
-                   () -> {
-                     try {
-                       return ProfileUtil.getAddressForRecipient(recipient);
-                     } catch (IOException | PaymentsAddressException e) {
-                       Log.w(TAG, "Could not get address for recipient: ", e);
-                       return null;
-                     }
-                   },
-                   (address) -> {
-                     if (address != null) {
-                       Intent intent = new Intent(fragment.requireContext(), PaymentsActivity.class);
-                       intent.putExtra(PaymentsActivity.EXTRA_PAYMENTS_STARTING_ACTION, R.id.action_directly_to_createPayment);
-                       intent.putExtra(PaymentsActivity.EXTRA_STARTING_ARGUMENTS, new CreatePaymentFragmentArgs.Builder(new PayeeParcelable(recipient.getId())).setFinishOnConfirm(true).build().toBundle());
-                       fragment.startActivity(intent);
-                     } else if (RemoteConfig.paymentsRequestActivateFlow()) {
-                       showRequestToActivatePayments(fragment.requireContext(), recipient);
-                     } else {
-                       RecipientHasNotEnabledPaymentsDialog.show(fragment.requireContext());
-                     }
-                   });
->>>>>>> SIGNAL
-  }
 
   public static void showRequestToActivatePayments(@NonNull Context context, @NonNull Recipient recipient) {
     new MaterialAlertDialogBuilder(context)

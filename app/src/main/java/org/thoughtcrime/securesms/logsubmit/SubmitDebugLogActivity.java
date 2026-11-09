@@ -16,18 +16,15 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ShareCompat;
-<<<<<<< MOLLY
-=======
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
->>>>>>> SIGNAL
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -118,6 +115,18 @@ public class SubmitDebugLogActivity extends BaseActivity {
     });
 
     this.viewModel = new ViewModelProvider(this, new SubmitDebugLogViewModel.Factory()).get(SubmitDebugLogViewModel.class);
+    getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+      @Override
+      public void handleOnBackPressed() {
+        if (!viewModel.onBackPressed()) {
+          final Intent nextIntent = getIntent().getParcelableExtra("next_intent");
+          if (nextIntent != null) {
+            startActivity(nextIntent);
+          }
+          finish();
+        }
+      }
+    });
 
     initView();
     initViewModel();
@@ -313,7 +322,7 @@ public class SubmitDebugLogActivity extends BaseActivity {
     super.onOptionsItemSelected(item);
 
     if (item.getItemId() == android.R.id.home) {
-      onBackPressed();
+      getOnBackPressedDispatcher().onBackPressed();
       return true;
     } else if (item.getItemId() == R.id.menu_save) {
       onSaveClicked();
@@ -332,21 +341,6 @@ public class SubmitDebugLogActivity extends BaseActivity {
   }
 
   @Override
-<<<<<<< MOLLY
-  public void onBackPressed() {
-    if (!viewModel.onBackPressed()) {
-      super.onBackPressed();
-      final Intent nextIntent = getIntent().getParcelableExtra("next_intent");
-      if (nextIntent != null) {
-        startActivity(nextIntent);
-      }
-      finish();
-    }
-  }
-
-  @Override
-=======
->>>>>>> SIGNAL
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 

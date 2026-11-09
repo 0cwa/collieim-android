@@ -13,11 +13,8 @@ import com.google.android.material.R as MaterialR
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.signal.core.ui.compose.ComposeBottomSheetDialogFragment
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.viewModel
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.dp
 import org.signal.donations.InAppPaymentType
 import org.thoughtcrime.securesms.R
@@ -27,12 +24,6 @@ import org.thoughtcrime.securesms.components.settings.app.subscription.DonationS
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData
 import org.thoughtcrime.securesms.payments.FiatMoneyUtil
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.util.viewModel
-=======
-import org.thoughtcrime.securesms.util.fragments.requireListener
-import org.signal.core.ui.R as CoreUiR
->>>>>>> SIGNAL
 
 /**
  * Entry point to capturing the necessary payment token to pay for a donation

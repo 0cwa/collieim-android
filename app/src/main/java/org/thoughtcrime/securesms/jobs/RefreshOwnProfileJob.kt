@@ -13,13 +13,7 @@ import org.signal.libsignal.usernames.Username
 import org.signal.libsignal.zkgroup.profiles.ExpiringProfileKeyCredential
 import org.signal.libsignal.zkgroup.profiles.ProfileKey
 import org.signal.network.exceptions.PushNetworkException
-<<<<<<< MOLLY
-=======
 import org.signal.storage.keyvalue.isTerminal
-import org.thoughtcrime.securesms.badges.BadgeRepository
-import org.thoughtcrime.securesms.badges.Badges
-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil
 import org.thoughtcrime.securesms.database.RecipientTable.PhoneNumberSharingState
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -266,129 +260,7 @@ class RefreshOwnProfileJob private constructor(parameters: Parameters) : BaseJob
 
   @Throws(IOException::class)
   private fun setProfileBadges(badges: List<SignalServiceProfile.Badge>?) {
-<<<<<<< MOLLY
     // MOLLY: No badges
-=======
-    if (badges == null) {
-      return
-    }
-
-    val localDonorBadgeIds = Recipient.self()
-      .badges
-      .filter { it.category == Badge.Category.Donor }
-      .map { it.id }
-      .toSet()
-
-    val remoteDonorBadgeIds = badges
-      .filter { it.category == Badge.Category.Donor.code }
-      .map { it.id }
-      .toSet()
-
-    val remoteHasSubscriptionBadges = remoteDonorBadgeIds.any { isSubscription(it) }
-    val localHasSubscriptionBadges = localDonorBadgeIds.any { isSubscription(it) }
-    val remoteHasBoostBadges = remoteDonorBadgeIds.any { isBoost(it) }
-    val localHasBoostBadges = localDonorBadgeIds.any { isBoost(it) }
-    val remoteHasGiftBadges = remoteDonorBadgeIds.any { isGift(it) }
-    val localHasGiftBadges = localDonorBadgeIds.any { isGift(it) }
-
-    if (!remoteHasSubscriptionBadges && localHasSubscriptionBadges) {
-      val mostRecentExpiration = Recipient.self()
-        .badges
-        .filter { it.category == Badge.Category.Donor }
-        .filter { isSubscription(it.id) }
-        .maxByOrNull { it.expirationTimestamp }
-        ?: throw NoSuchElementException("No value present")
-
-      Log.d(TAG, "Marking subscription badge as expired, should notify next time the conversation list is open.", true)
-      SignalStore.inAppPayments.setExpiredBadge(mostRecentExpiration)
-
-      if (!InAppPaymentsRepository.isUserManuallyCancelled(InAppPaymentSubscriberRecord.Type.DONATION)) {
-        Log.d(TAG, "Detected an unexpected subscription expiry.", true)
-        val subscriber = InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION)
-
-        var isDueToPaymentFailure = false
-        if (subscriber != null) {
-          val response = SignalNetwork.donationsService
-            .getSubscription(subscriber.subscriberId)
-
-          if (response.getResult().isPresent()) {
-            val activeSubscription = response.getResult().get()
-            if (activeSubscription.isFailedPayment) {
-              Log.d(TAG, "Unexpected expiry due to payment failure.", true)
-              isDueToPaymentFailure = true
-            }
-
-            val chargeFailure = activeSubscription.chargeFailure
-            if (chargeFailure != null) {
-              Log.d(TAG, "Active payment contains a charge failure: " + chargeFailure.code, true)
-            }
-          }
-
-          InAppPaymentsRepository.setShouldCancelSubscriptionBeforeNextSubscribeAttempt(subscriber, true)
-        }
-
-        if (!isDueToPaymentFailure) {
-          Log.d(TAG, "Unexpected expiry due to inactivity.", true)
-        }
-
-        MultiDeviceSubscriptionSyncRequestJob.enqueue()
-      }
-    } else if (!remoteHasBoostBadges && localHasBoostBadges) {
-      val mostRecentExpiration = Recipient.self()
-        .badges
-        .filter { it.category == Badge.Category.Donor }
-        .filter { isBoost(it.id) }
-        .maxByOrNull { it.expirationTimestamp }
-        ?: throw NoSuchElementException("No value present")
-
-      Log.d(TAG, "Marking boost badge as expired, should notify next time the conversation list is open.", true)
-      SignalStore.inAppPayments.setExpiredBadge(mostRecentExpiration)
-    } else {
-      val badge = SignalStore.inAppPayments.getExpiredBadge()
-
-      if (badge != null && badge.isSubscription() && remoteHasSubscriptionBadges) {
-        Log.d(TAG, "Remote has subscription badges. Clearing local expired subscription badge.", true)
-        SignalStore.inAppPayments.setExpiredBadge(null)
-      } else if (badge != null && badge.isBoost() && remoteHasBoostBadges) {
-        Log.d(TAG, "Remote has boost badges. Clearing local expired boost badge.", true)
-        SignalStore.inAppPayments.setExpiredBadge(null)
-      }
-    }
-
-    if (!remoteHasGiftBadges && localHasGiftBadges) {
-      val mostRecentExpiration = Recipient.self()
-        .badges
-        .filter { it.category == Badge.Category.Donor }
-        .filter { isGift(it.id) }
-        .maxByOrNull { it.expirationTimestamp }
-        ?: throw NoSuchElementException("No value present")
-
-      Log.d(TAG, "Marking gift badge as expired, should notify next time the manage donations screen is open.", true)
-      SignalStore.inAppPayments.setExpiredGiftBadge(mostRecentExpiration)
-    } else if (remoteHasGiftBadges) {
-      Log.d(TAG, "We have remote gift badges. Clearing local expired gift badge.", true)
-      SignalStore.inAppPayments.setExpiredGiftBadge(null)
-    }
-
-    val userHasVisibleBadges = badges.any { it.visible }
-    val userHasInvisibleBadges = badges.any { !it.visible }
-
-    val appBadges = badges.map { Badges.fromServiceBadge(it) }
-
-    if (userHasVisibleBadges && userHasInvisibleBadges) {
-      val displayBadgesOnProfile = SignalStore.inAppPayments.getDisplayBadgesOnProfile()
-      Log.d(
-        TAG,
-        "Detected mixed visibility of badges. Telling the server to mark them all ${if (displayBadgesOnProfile) "" else "not"} visible.",
-        true
-      )
-
-      val updatedBadges = BadgeRepository.setVisibilityForAllBadgesSync(displayBadgesOnProfile, appBadges).successOrThrow()
-      SignalDatabase.recipients.setBadges(Recipient.self().id, updatedBadges)
-    } else {
-      SignalDatabase.recipients.setBadges(Recipient.self().id, appBadges)
-    }
->>>>>>> SIGNAL
   }
 
   private fun checkUsernameIsInSync() {

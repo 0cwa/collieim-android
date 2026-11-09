@@ -4,11 +4,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.text.TextUtils
-<<<<<<< MOLLY
 import androidx.annotation.CheckResult
-=======
 import androidx.annotation.VisibleForTesting
->>>>>>> SIGNAL
 import androidx.annotation.WorkerThread
 import androidx.core.content.contentValuesOf
 import okio.ByteString

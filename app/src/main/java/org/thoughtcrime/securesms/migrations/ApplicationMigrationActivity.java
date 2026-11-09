@@ -46,12 +46,8 @@ public class ApplicationMigrationActivity extends PassphraseRequiredActivity {
       if (running) {
         Log.i(TAG, "UI-blocking migration is in progress. Showing spinner.");
         setContentView(R.layout.application_migration_activity);
-<<<<<<< MOLLY
-      } else if (!isFinishing()) {
-=======
         SystemWindowInsetsSetter.attach(findViewById(R.id.application_migration_root), this, WindowInsetsCompat.Type.systemBars());
-      } else {
->>>>>>> SIGNAL
+      } else if (!isFinishing()) {
         Log.i(TAG, "UI-blocking migration is no-longer in progress. Finishing.");
         startActivity(getIntent().getParcelableExtra("next_intent"));
         finish();

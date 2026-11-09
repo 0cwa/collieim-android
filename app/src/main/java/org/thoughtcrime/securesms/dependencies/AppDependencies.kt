@@ -96,10 +96,6 @@ import org.whispersystems.signalservice.api.services.ProfileService
 import org.whispersystems.signalservice.api.storage.StorageServiceApi
 import org.whispersystems.signalservice.api.websocket.SignalWebSocket
 import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
-<<<<<<< MOLLY
-import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration
-=======
->>>>>>> SIGNAL
 import org.whispersystems.signalservice.internal.push.PushServiceSocket
 import java.util.function.BooleanSupplier
 import java.util.function.Supplier
@@ -299,11 +295,11 @@ object AppDependencies {
   @JvmStatic
   val webSocketObserver: LatestValueObservable<WebSocketConnectionState> = LatestValueObservable(_webSocketObserver)
 
-<<<<<<< MOLLY
   @JvmStatic
   val networkManager: NetworkManager by lazy {
     provider.provideNetworkManager()
-=======
+  }
+
   private val _libsignalNetwork = resettableLazy {
     provider.provideLibsignalNetwork(signalServiceNetworkAccess.getConfiguration(), networkModule.networkProxyState)
   }
@@ -321,7 +317,6 @@ object AppDependencies {
   @JvmStatic
   val unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket by lazy {
     provider.provideUnauthWebSocket({ signalServiceNetworkAccess.getConfiguration() }, { libsignalNetwork })
->>>>>>> SIGNAL
   }
 
   private val _networkModule = resettableLazy {
@@ -358,25 +353,8 @@ object AppDependencies {
     get() = networkModule.incomingMessageObserver
 
   @JvmStatic
-<<<<<<< MOLLY
-  val libsignalNetwork: Network
-    get() = networkModule.libsignalNetwork
-
-  @JvmStatic
   val networkProxyState: NetworkProxyState
     get() = networkModule.networkProxyState
-
-  @JvmStatic
-  val authWebSocket: SignalWebSocket.AuthenticatedWebSocket
-    get() = networkModule.authWebSocket
-
-  @JvmStatic
-  val unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket
-    get() = networkModule.unauthWebSocket
-=======
-  val networkProxyState: NetworkProxyState
-    get() = networkModule.networkProxyState
->>>>>>> SIGNAL
 
   @JvmStatic
   val groupsV2Authorization: GroupsV2Authorization
@@ -522,7 +500,8 @@ object AppDependencies {
    * they re-read their configuration through suppliers when they reconnect. See [authWebSocket].
    */
   @JvmStatic
-  fun resetNetwork(restartMessageObserver: Boolean) {
+  @JvmOverloads
+  fun resetNetwork(restartMessageObserver: Boolean = false) {
     networkModule.closeConnections()
     _libsignalNetwork.reset()
     _networkModule.reset()
@@ -581,10 +560,7 @@ object AppDependencies {
     fun provideScheduledMessageManager(): ScheduledMessageManager
     fun provideNetworkManager(): NetworkManager
     fun providePinnedMessageManager(): PinnedMessageManager
-<<<<<<< MOLLY
-=======
     fun provideUnreadReminderManager(): UnreadReminderManager
->>>>>>> SIGNAL
     fun provideLibsignalNetwork(config: SignalServiceConfiguration, proxyState: NetworkProxyState): Network
     fun provideBillingApi(): BillingApi
     fun provideKeysApi(authWebSocket: SignalWebSocket.AuthenticatedWebSocket, unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket): KeysApi

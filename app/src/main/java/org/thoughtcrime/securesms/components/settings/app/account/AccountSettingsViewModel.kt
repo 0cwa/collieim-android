@@ -164,27 +164,9 @@ class AccountSettingsViewModel(
     }
   }
 
-<<<<<<< MOLLY
-  private fun getCurrentState(): AccountSettingsState {
-    return AccountSettingsState(
-      isLinkedDevice = SignalStore.account.isLinkedDevice,
-      hasPin = SignalStore.svr.hasPin() && !SignalStore.svr.hasOptedOut(),
-      pinKeyboardType = SignalStore.pin.keyboardType,
-      hasRestoredAep = SignalStore.account.restoredAccountEntropyPool,
-      pinRemindersEnabled = SignalStore.pin.arePinRemindersEnabled() && SignalStore.svr.hasPin(),
-      registrationLockEnabled = SignalStore.svr.isRegistrationLockEnabled,
-      userUnregistered = TextSecurePreferences.isUnauthorizedReceived(AppDependencies.application),
-      clientDeprecated = SignalStore.misc.isClientDeprecated,
-      canTransferWhileUnregistered = true
-=======
   private suspend fun applyPinRemindersToggled(enabled: Boolean) {
-    if (enabled) {
-      accountRepository.setPinRemindersEnabled(true)
-      refresh()
-    } else {
-      val keyboardType = accountRepository.getPinKeyboardType()
-      _state.update { it.copy(dialog = Dialog.ConfirmPinToDisableReminders(isAlphanumericKeyboard = keyboardType == PinKeyboardType.ALPHA_NUMERIC)) }
-    }
+    accountRepository.setPinRemindersEnabled(enabled)
+    refresh()
   }
 
   private suspend fun applyDisablePinRemindersConfirmed() {
@@ -311,7 +293,6 @@ class AccountSettingsViewModel(
       },
       name = name,
       createdAt = createdAt?.toEpochMilli()
->>>>>>> SIGNAL
     )
   }
 

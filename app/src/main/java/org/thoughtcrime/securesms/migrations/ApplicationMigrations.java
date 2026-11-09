@@ -220,13 +220,8 @@ public class ApplicationMigrations {
    */
   public static void onApplicationCreate(@NonNull Context context, @NonNull JobManager jobManager) {
     if (isLegacyUpdate(context)) {
-<<<<<<< MOLLY
       Log.i(TAG, "Detected the need for a legacy update. Last seen canonical version: " + VersionTracker.getLastSeenVersionForMolly(context));
-      TextSecurePreferences.setAppMigrationVersion(context, 0);
-=======
-      Log.i(TAG, "Detected the need for a legacy update. Last seen canonical version: " + VersionTracker.getLastSeenVersion());
       PlainTextKeyValueStore.setAppMigrationVersion(0);
->>>>>>> SIGNAL
     }
 
     if (!isUpdate(context)) { // this returned false
@@ -967,10 +962,6 @@ public class ApplicationMigrations {
   }
 
   private static boolean isLegacyUpdate(@NonNull Context context) {
-<<<<<<< MOLLY
     return false;
-=======
-    return VersionTracker.getLastSeenVersion() < LEGACY_CANONICAL_VERSION;
->>>>>>> SIGNAL
   }
 }

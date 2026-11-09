@@ -25,21 +25,6 @@ class ConversationTooltips(fragment: Fragment) {
   /**
    *  Displayed to teach the user about sticker packs
    */
-<<<<<<< MOLLY
-=======
-  fun displayStickerIntroductionTooltip(anchor: View, onDismiss: () -> Unit) {
-    TooltipPopup.forTarget(anchor)
-      .setBackgroundTint(ContextCompat.getColor(anchor.context, CoreUiR.color.core_ultramarine))
-      .setTextColor(ContextCompat.getColor(anchor.context, CoreUiR.color.core_white))
-      .setText(R.string.ConversationActivity_new_say_it_with_stickers)
-      .setOnDismissListener {
-        SignalStore.tooltips.markStickerIntroTooltipSeen()
-        onDismiss()
-      }
-      .show(TooltipPopup.POSITION_ABOVE)
-  }
-
->>>>>>> SIGNAL
   /**
    * Displayed after a sticker pack is installed
    */

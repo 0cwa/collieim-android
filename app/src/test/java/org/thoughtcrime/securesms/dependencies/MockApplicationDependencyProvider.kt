@@ -281,13 +281,10 @@ class MockApplicationDependencyProvider : AppDependencies.Provider {
     return mockk(relaxed = true)
   }
 
-<<<<<<< MOLLY
-=======
   override fun provideUnreadReminderManager(): UnreadReminderManager {
     return mockk(relaxed = true)
   }
 
->>>>>>> SIGNAL
   override fun provideLibsignalNetwork(config: SignalServiceConfiguration, proxyState: NetworkProxyState): Network {
     return mockk(relaxed = true)
   }

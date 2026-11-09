@@ -10,25 +10,7 @@ import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-<<<<<<< MOLLY
-import org.signal.core.models.ServiceId;
 import org.signal.core.ui.util.ThemeUtil;
-import org.signal.core.util.BidiUtil;
-import org.signal.core.util.UuidUtil;
-import org.signal.storageservice.storage.protos.groups.AccessControl;
-import org.signal.storageservice.storage.protos.groups.Member;
-import org.signal.storageservice.storage.protos.groups.local.DecryptedApproveMember;
-import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup;
-import org.signal.storageservice.storage.protos.groups.local.DecryptedGroupChange;
-import org.signal.storageservice.storage.protos.groups.local.DecryptedMember;
-import org.signal.storageservice.storage.protos.groups.local.DecryptedModifyMemberRole;
-import org.signal.storageservice.storage.protos.groups.local.DecryptedPendingMember;
-import org.signal.storageservice.storage.protos.groups.local.DecryptedPendingMemberRemoval;
-import org.signal.storageservice.storage.protos.groups.local.DecryptedRequestingMember;
-import org.signal.storageservice.storage.protos.groups.local.EnabledState;
-import org.thoughtcrime.securesms.R;
-=======
->>>>>>> SIGNAL
 import org.signal.archive.proto.GenericGroupUpdate;
 import org.signal.archive.proto.GroupAdminStatusUpdate;
 import org.signal.archive.proto.GroupAnnouncementOnlyChangeUpdate;

@@ -11,10 +11,7 @@ import org.signal.core.util.ResourceUtil;
 import org.signal.core.util.Util;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.R;
-<<<<<<< MOLLY
-=======
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier;
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 
 import java.util.Locale;
@@ -82,19 +79,7 @@ public final class SupportEmailUtil {
            "\n" +
            context.getString(R.string.SupportEmailUtil_signal_package) + " " + getSignalPackage(context) +
            "\n" +
-<<<<<<< MOLLY
            context.getString(R.string.SupportEmailUtil_locale) + " " + Locale.getDefault();
-=======
-           context.getString(R.string.SupportEmailUtil_registration_lock) + " " + getRegistrationLockEnabled() +
-           "\n" +
-           context.getString(R.string.SupportEmailUtil_locale) + " " + Locale.getDefault().toString() +
-           "\n" +
-           context.getString(R.string.SupportEmailUtil_challenge_received) + " " + getChallengeReceived() +
-           "\n" +
-           context.getString(R.string.SupportEmailUtil_registered) + " " + getRegistered() +
-           "\n" +
-           context.getString(R.string.SupportEmailUtil_backups) + " " + getBackupTier();
->>>>>>> SIGNAL
   }
 
   private static CharSequence getDeviceInfo() {
@@ -123,26 +108,4 @@ public final class SupportEmailUtil {
 
     return receivedRecently ? "yes" : "no";
   }
-<<<<<<< MOLLY
-=======
-
-  private static String getRegistered() {
-    boolean registered = SignalStore.account().isRegistered() && !SignalStore.account().isUnauthorizedReceived();
-    return registered ? "yes" : "no";
-  }
-
-  private static String getBackupTier() {
-    MessageBackupTier tier = SignalStore.backup().getBackupTier();
-
-    if (tier == null) {
-      return "D1";
-    }
-
-    switch (tier) {
-      case FREE: return "U1";
-      case PAID: return "P1";
-      default:   return "D1";
-    }
-  }
->>>>>>> SIGNAL
 }

@@ -65,13 +65,8 @@ class MultiselectItemDecoration(
   private val transparentBlack20 = ContextCompat.getColor(context, R.color.transparent_black_20)
   private val transparentWhite20 = ContextCompat.getColor(context, R.color.transparent_white_20)
   private val transparentWhite60 = ContextCompat.getColor(context, R.color.transparent_white_60)
-<<<<<<< MOLLY
-  private val ultramarine = ThemeUtil.getThemedColor(context, R.attr.signal_accent_primary)
+  private val ultramarine = ThemeUtil.getThemedColor(context, org.signal.core.ui.R.attr.signal_accent_primary)
   private val ultramarine30 = ColorUtils.setAlphaComponent(ultramarine, 0x55)
-=======
-  private val ultramarine30 = ContextCompat.getColor(context, CoreUiR.color.core_ultramarine_33)
-  private val ultramarine = ContextCompat.getColor(context, CoreUiR.color.signal_accent_primary)
->>>>>>> SIGNAL
 
   private val selectedParts: MutableSet<MultiselectPart> = mutableSetOf()
   private var enterExitAnimation: ValueAnimator? = null

@@ -42,10 +42,6 @@ import org.signal.core.ui.compose.Previews
 import org.signal.core.ui.compose.SignalIcons
 import org.signal.core.ui.viewModel
 import org.thoughtcrime.securesms.R
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.badges.models.Badge
-=======
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.components.settings.app.subscription.BadgeImage112
 import org.thoughtcrime.securesms.database.model.databaseprotos.TerminalDonationQueue

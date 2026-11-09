@@ -246,18 +246,11 @@ public final class JobManagerFactories {
       put(NullMessageSendJob.KEY,                      new NullMessageSendJob.Factory());
       put(OptimizeMediaJob.KEY,                        new OptimizeMediaJob.Factory());
       put(OptimizeMessageSearchIndexJob.KEY,           new OptimizeMessageSearchIndexJob.Factory());
-<<<<<<< MOLLY
       put("PaymentLedgerUpdateJob",                    new FailingJob.Factory()); // MOLLY
       put("PaymentNotificationSendJob",                new FailingJob.Factory()); // MOLLY
       put("PaymentNotificationSendJobV2",              new FailingJob.Factory()); // MOLLY
       put("PaymentSendJob",                            new FailingJob.Factory()); // MOLLY
       put("PaymentTransactionCheckJob",                new FailingJob.Factory()); // MOLLY
-=======
-      put(PaymentLedgerUpdateJob.KEY,                  new PaymentLedgerUpdateJob.Factory());
-      put(PaymentNotificationSendJobV2.KEY,            new PaymentNotificationSendJobV2.Factory());
-      put(PaymentSendJob.KEY,                          new PaymentSendJob.Factory());
-      put(PaymentTransactionCheckJob.KEY,              new PaymentTransactionCheckJob.Factory());
->>>>>>> SIGNAL
       put(PollVoteJob.KEY,                             new PollVoteJob.Factory());
       put(PreKeysSyncJob.KEY,                          new PreKeysSyncJob.Factory());
       put(ProfileKeySendJob.KEY,                       new ProfileKeySendJob.Factory());
@@ -389,12 +382,8 @@ public final class JobManagerFactories {
       put("ResetArchiveTierMigrationJob",                 new FailingJob.Factory());  // MOLLY
       put(ResetKeyTransparencyMigrationJob.KEY,           new ResetKeyTransparencyMigrationJob.Factory());
       put(SelfRegisteredStateMigrationJob.KEY,            new SelfRegisteredStateMigrationJob.Factory());
-<<<<<<< MOLLY
       put("StickerLaunchMigrationJob",                    new FailingJob.Factory());  // MOLLY
-=======
-      put(StickerLaunchMigrationJob.KEY,                  new StickerLaunchMigrationJob.Factory());
       put(SignalLoginReminderMigrationJob.KEY,            new SignalLoginReminderMigrationJob.Factory());
->>>>>>> SIGNAL
       put(StickerAdditionMigrationJob.KEY,                new StickerAdditionMigrationJob.Factory());
       put(StickerDayByDayMigrationJob.KEY,                new StickerDayByDayMigrationJob.Factory());
       put(StickerMyDailyLifeMigrationJob.KEY,             new StickerMyDailyLifeMigrationJob.Factory());

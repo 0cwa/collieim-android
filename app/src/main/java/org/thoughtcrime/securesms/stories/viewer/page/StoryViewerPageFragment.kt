@@ -52,11 +52,8 @@ import kotlinx.coroutines.launch
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.ui.permissions.Permissions
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.util.ViewUtil
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.Debouncer
 import org.signal.core.util.DimensionUnit
 import org.signal.core.util.ServiceUtil
@@ -1155,25 +1152,15 @@ class StoryViewerPageFragment :
   }
 
   private fun presentPartialSendBottomBar() {
-<<<<<<< MOLLY
-    viewsAndReplies.setIconResource(R.drawable.symbol_error_circle_24)
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorError))
-=======
     viewsAndReplies.setIconResource(CoreUiR.drawable.symbol_error_circle_24)
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_light_colorError))
->>>>>>> SIGNAL
+    viewsAndReplies.iconTint = ColorStateList.valueOf(ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorError))
     viewsAndReplies.iconSize = 20.dp
     viewsAndReplies.setText(R.string.StoryViewerPageFragment__partially_sent)
   }
 
   private fun presentSendFailureBottomBar() {
-<<<<<<< MOLLY
-    viewsAndReplies.setIconResource(R.drawable.symbol_error_circle_24)
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorError))
-=======
     viewsAndReplies.setIconResource(CoreUiR.drawable.symbol_error_circle_24)
-    viewsAndReplies.iconTint = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_light_colorError))
->>>>>>> SIGNAL
+    viewsAndReplies.iconTint = ColorStateList.valueOf(ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorError))
     viewsAndReplies.iconSize = 20.dp
     viewsAndReplies.setText(R.string.StoryViewerPageFragment__send_failed)
   }

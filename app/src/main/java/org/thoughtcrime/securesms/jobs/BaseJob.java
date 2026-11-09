@@ -4,12 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.signal.core.util.logging.Log;
-<<<<<<< MOLLY
-=======
-import org.signal.core.util.tracing.Tracer;
 import org.signal.remoteconfig.RemoteConfig;
-import org.thoughtcrime.securesms.jobmanager.Job;
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.jobmanager.JobLogger;
 import org.thoughtcrime.securesms.jobmanager.JobManager.Chain;
 import org.thoughtcrime.securesms.jobmanager.impl.BackoffUtil;

@@ -736,24 +736,12 @@ object RemoteConfig {
   /** Whether or not the user is an 'internal' one, which activates certain developer tools. */
   @JvmStatic
   @get:JvmName("internalUser")
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/util/RemoteConfig.kt
   val internalUser: Boolean
     get() = when {
       internalUserDisabled -> false
       underTest -> false
-      Environment.isInternal() -> true
-      else -> false
-=======
-  val internalUser: Boolean by remoteValue(
-    key = INTERNAL_USER_KEY,
-    hotSwappable = true
-  ) { value ->
-    when {
-      internalUserDisabled -> false
-      underTest -> value.asBoolean(false)
       dependencies.isInternalBuild -> true
-      else -> value.asBoolean(false)
->>>>>>> SIGNAL:lib/remote-config/src/main/java/org/signal/remoteconfig/RemoteConfig.kt
+      else -> false
     }
 
 

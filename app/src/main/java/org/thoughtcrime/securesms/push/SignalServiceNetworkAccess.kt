@@ -1,10 +1,7 @@
 package org.thoughtcrime.securesms.push
 
 import android.content.Context
-<<<<<<< MOLLY
-=======
 import android.os.SystemClock
->>>>>>> SIGNAL
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
@@ -23,27 +20,12 @@ import org.signal.network.exceptions.RequestCanceledException
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-<<<<<<< MOLLY
-=======
-import org.thoughtcrime.securesms.keyvalue.proxy
-import org.thoughtcrime.securesms.net.CustomDns
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.net.DeprecatedClientPreventionInterceptor
 import org.thoughtcrime.securesms.net.DeviceTransferBlockingInterceptor
 import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.net.RemoteDeprecationDetectorInterceptor
 import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor
 import org.thoughtcrime.securesms.net.StorageServiceSizeLoggingInterceptor
-<<<<<<< MOLLY
-import org.whispersystems.signalservice.api.push.TrustStore
-import org.whispersystems.signalservice.internal.configuration.SignalCdnUrl
-import org.whispersystems.signalservice.internal.configuration.SignalCdsiUrl
-import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration
-import org.whispersystems.signalservice.internal.configuration.SignalServiceUrl
-import org.whispersystems.signalservice.internal.configuration.SignalStorageUrl
-import org.whispersystems.signalservice.internal.configuration.SignalSvr2Url
-=======
->>>>>>> SIGNAL
 import java.io.IOException
 import java.util.Optional
 import kotlin.time.Duration.Companion.minutes
@@ -193,12 +175,9 @@ class SignalServiceNetworkAccess(context: Context) {
       .build()
 
     private val APP_CONNECTION_SPEC = ConnectionSpec.MODERN_TLS
-<<<<<<< MOLLY
-=======
 
     /** How long a direct transport failure keeps CDN and storage requests on circumvention routes. */
     private val MAYBE_CENSORED_DIRECT_FAILURE_COOLDOWN = 5.minutes
->>>>>>> SIGNAL
   }
 
   private val serviceTrustStore: TrustStore = SignalServiceTrustStore(context)
@@ -269,14 +248,9 @@ class SignalServiceNetworkAccess(context: Context) {
     signalCdsiUrls = fUrls.map { SignalCdsiUrl(it, F_CDSI_HOST, fTrustStore, APP_CONNECTION_SPEC) }.toTypedArray(),
     signalSvr2Urls = fUrls.map { SignalSvr2Url(it, fTrustStore, F_SVR2_HOST, APP_CONNECTION_SPEC) }.toTypedArray(),
     networkInterceptors = interceptors,
-<<<<<<< MOLLY
     socketFactory = Networking.socketFactory,
     proxySelector = Networking.proxySelectorForSocks,
     dns = Networking.dns,
-=======
-    dns = Optional.of(DNS),
-    signalProxy = Optional.empty(),
->>>>>>> SIGNAL
     zkGroupServerPublicParams = zkGroupServerPublicParams,
     genericServerPublicParams = genericServerPublicParams,
     backupServerPublicParams = backupServerPublicParams,
@@ -333,16 +307,10 @@ class SignalServiceNetworkAccess(context: Context) {
     signalStorageUrls = arrayOf(SignalStorageUrl(BuildConfig.STORAGE_URL, serviceTrustStore)),
     signalCdsiUrls = arrayOf(SignalCdsiUrl(BuildConfig.SIGNAL_CDSI_URL, serviceTrustStore)),
     signalSvr2Urls = arrayOf(SignalSvr2Url(BuildConfig.SIGNAL_SVR2_URL, serviceTrustStore)),
-<<<<<<< MOLLY
-    networkInterceptors = interceptors,
+    networkInterceptors = interceptors + directFetchFailureInterceptor,
     socketFactory = Networking.socketFactory,
     proxySelector = Networking.proxySelectorForSocks,
     dns = Networking.dns,
-=======
-    networkInterceptors = interceptors + directFetchFailureInterceptor,
-    dns = Optional.of(DNS),
-    signalProxy = if (SignalStore.proxy.isProxyEnabled) Optional.ofNullable(SignalStore.proxy.proxy) else Optional.empty(),
->>>>>>> SIGNAL
     zkGroupServerPublicParams = zkGroupServerPublicParams,
     genericServerPublicParams = genericServerPublicParams,
     backupServerPublicParams = backupServerPublicParams,
@@ -425,14 +393,9 @@ class SignalServiceNetworkAccess(context: Context) {
       signalCdsiUrls = cdsiUrls,
       signalSvr2Urls = svr2Urls,
       networkInterceptors = interceptors,
-<<<<<<< MOLLY
       socketFactory = Networking.socketFactory,
       proxySelector = Networking.proxySelectorForSocks,
       dns = Networking.dns,
-=======
-      dns = Optional.of(DNS),
-      signalProxy = Optional.empty(),
->>>>>>> SIGNAL
       zkGroupServerPublicParams = zkGroupServerPublicParams,
       genericServerPublicParams = genericServerPublicParams,
       backupServerPublicParams = backupServerPublicParams,

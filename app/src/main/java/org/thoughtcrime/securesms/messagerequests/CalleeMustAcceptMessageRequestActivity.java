@@ -17,12 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.PassphraseRequiredActivity;
-=======
 import org.signal.core.models.recipients.RecipientId;
-import org.thoughtcrime.securesms.BaseActivity;
->>>>>>> SIGNAL
+import org.thoughtcrime.securesms.PassphraseRequiredActivity;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.components.AvatarImageView;
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;

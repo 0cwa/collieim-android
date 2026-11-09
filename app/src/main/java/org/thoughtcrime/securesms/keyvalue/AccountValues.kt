@@ -16,8 +16,6 @@ import org.signal.libsignal.protocol.IdentityKey
 import org.signal.libsignal.protocol.IdentityKeyPair
 import org.signal.libsignal.protocol.ecc.ECPrivateKey
 import org.signal.libsignal.protocol.util.Medium
-<<<<<<< MOLLY
-=======
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.LegacySharedPrefs
 import org.signal.storage.keyvalue.SignalStoreValues
@@ -27,8 +25,6 @@ import org.signal.storage.keyvalue.longValue
 import org.signal.storage.keyvalue.nullableBlobValue
 import org.signal.storage.keyvalue.stringValue
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
-import org.thoughtcrime.securesms.crypto.MasterCipher
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil
 import org.thoughtcrime.securesms.crypto.storage.PreKeyMetadataStore
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -37,11 +33,7 @@ import org.thoughtcrime.securesms.jobmanager.impl.RegisteredConstraint
 import org.thoughtcrime.securesms.jobs.PreKeysSyncJob
 import org.thoughtcrime.securesms.notifications.UnregisteredNotifier
 import org.thoughtcrime.securesms.recipients.Recipient
-<<<<<<< MOLLY
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
-=======
-import org.thoughtcrime.securesms.service.KeyCachingService
->>>>>>> SIGNAL
 import org.whispersystems.signalservice.api.push.ServiceIds
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import org.whispersystems.signalservice.api.push.UsernameLinkComponents
@@ -691,7 +683,6 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
   var verificationCodeRequestedAtMs: Long by verificationCodeRequestedAtMsValue
   val verificationCodeRequestedAtMsFlow: Flow<Long> by lazy { verificationCodeRequestedAtMsValue.toFlow() }
 
-<<<<<<< MOLLY
   // MOLLY: Keys were parametrized with the account number until 7.23.1
   private fun migrateLegacyAccountKeys() {
     Log.i(TAG, "Migrating legacy account values.")
@@ -736,55 +727,6 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
         }
       }
       apply()
-=======
-  /** Do not alter. If you need to migrate more stuff, create a new method. */
-  private fun migrateFromSharedPrefsV1(context: Context) {
-    Log.i(TAG, "[V1] Migrating account values from shared prefs.")
-
-    putString(KEY_ACI, LegacySharedPrefs.getStringOrNull(context, "pref_local_uuid"))
-    putString(KEY_E164, LegacySharedPrefs.getStringOrNull(context, "pref_local_number"))
-    putString(KEY_SERVICE_PASSWORD, LegacySharedPrefs.getStringOrNull(context, "pref_gcm_password"))
-    putBoolean(KEY_IS_REGISTERED, LegacySharedPrefs.getBoolean(context, "pref_gcm_registered", false))
-    putInteger(KEY_REGISTRATION_ID, LegacySharedPrefs.getInteger(context, "pref_local_registration_id", 0))
-    putBoolean(KEY_FCM_ENABLED, !LegacySharedPrefs.getBoolean(context, "pref_gcm_disabled", false))
-    putString(KEY_FCM_TOKEN, LegacySharedPrefs.getStringOrNull(context, "pref_gcm_registration_id"))
-    putInteger(KEY_FCM_TOKEN_VERSION, LegacySharedPrefs.getInteger(context, "pref_gcm_registration_id_version", 0))
-    putLong(KEY_FCM_TOKEN_LAST_SET_TIME, LegacySharedPrefs.getLong(context, "pref_gcm_registration_id_last_set_time", 0))
-  }
-
-  /** Do not alter. If you need to migrate more stuff, create a new method. */
-  @SuppressLint("ApplySharedPref")
-  @Suppress("DEPRECATION")
-  private fun migrateFromSharedPrefsV2(context: Context) {
-    Log.i(TAG, "[V2] Migrating account values from shared prefs.")
-
-    val masterSecretPrefs: SharedPreferences = context.getSharedPreferences("SecureSMS-Preferences", 0)
-    val defaultPrefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-    val storeWriter: KeyValueStore.Writer = store.beginWrite()
-
-    if (masterSecretPrefs.hasStringData("pref_identity_public_v3")) {
-      Log.i(TAG, "Migrating modern identity key.")
-
-      val identityPublic = Base64.decode(masterSecretPrefs.getString("pref_identity_public_v3", null)!!)
-      val identityPrivate = Base64.decode(masterSecretPrefs.getString("pref_identity_private_v3", null)!!)
-
-      storeWriter
-        .putBlob(KEY_ACI_IDENTITY_PUBLIC_KEY, identityPublic)
-        .putBlob(KEY_ACI_IDENTITY_PRIVATE_KEY, identityPrivate)
-    } else if (masterSecretPrefs.hasStringData("pref_identity_public_curve25519")) {
-      Log.i(TAG, "Migrating legacy identity key.")
-
-      val masterCipher = MasterCipher(KeyCachingService.getMasterSecret(context))
-      val identityPublic = Base64.decode(masterSecretPrefs.getString("pref_identity_public_curve25519", null)!!)
-      val identityPrivate = masterCipher.decryptKey(Base64.decode(masterSecretPrefs.getString("pref_identity_private_curve25519", null)!!)).serialize()
-
-      storeWriter
-        .putBlob(KEY_ACI_IDENTITY_PUBLIC_KEY, identityPublic)
-        .putBlob(KEY_ACI_IDENTITY_PRIVATE_KEY, identityPrivate)
-    } else {
-      Log.w(TAG, "No pre-existing identity key! No migration.")
->>>>>>> SIGNAL
     }
   }
 
@@ -792,23 +734,13 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
   private fun migrateFromSharedPrefsV3(context: Context) {
     Log.i(TAG, "[V3] Migrating account values from shared prefs.")
 
-<<<<<<< MOLLY
-    val sharedPrefs = SecurePreferenceManager.getSecurePreferences(context)
-    putBoolean(KEY_HAS_LINKED_DEVICES, sharedPrefs.getBoolean("pref_multi_device", false))
-=======
     putBoolean(KEY_HAS_LINKED_DEVICES, LegacySharedPrefs.getBoolean(context, "pref_multi_device", false))
   }
 
   /** Do not alter. If you need to migrate more stuff, create a new method. */
   private fun migrateFromSharedPrefsV4(context: Context) {
     Log.i(TAG, "[V4] Migrating account values from shared prefs.")
-
     putBoolean(KEY_IS_UNAUTHORIZED_RECEIVED, LegacySharedPrefs.getBoolean(context, "pref_unauthorized_received", false))
-  }
-
-  private fun SharedPreferences.hasStringData(key: String): Boolean {
-    return this.getString(key, null) != null
->>>>>>> SIGNAL
   }
 
   enum class UsernameSyncState(private val value: Long) {

@@ -22,11 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
-<<<<<<< MOLLY
-=======
-import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowInsetsCompat;
->>>>>>> SIGNAL
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.load.DataSource;

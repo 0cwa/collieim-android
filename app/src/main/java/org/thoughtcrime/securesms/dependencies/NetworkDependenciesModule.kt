@@ -35,26 +35,15 @@ import org.signal.network.rest.SignalRestClient
 import org.signal.network.service.ArchiveService
 import org.signal.network.service.CdnService
 import org.signal.network.service.MessageService
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.BuildConfig
-=======
 import org.signal.network.service.StorageServiceService
 import org.signal.network.service.TwoFactorMethodService
 import org.signal.network.service.UsernameService
 import org.signal.network.util.Tls12SocketFactory
-import org.signal.network.util.TlsProxySocketFactory
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.crypto.storage.SignalServiceDataStoreImpl
 import org.thoughtcrime.securesms.groups.GroupsV2Authorization
 import org.thoughtcrime.securesms.groups.GroupsV2AuthorizationMemoryValueCache
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.messages.IncomingMessageObserver
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.net.Networking
-import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor
-=======
-import org.thoughtcrime.securesms.payments.Payments
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess
 import org.thoughtcrime.securesms.push.SignalServiceTrustStore
 import org.whispersystems.signalservice.api.SignalServiceAccountManager
@@ -70,10 +59,6 @@ import org.whispersystems.signalservice.api.registration.RegistrationApi
 import org.whispersystems.signalservice.api.services.DonationsService
 import org.whispersystems.signalservice.api.services.ProfileService
 import org.whispersystems.signalservice.api.storage.StorageServiceApi
-<<<<<<< MOLLY
-import org.whispersystems.signalservice.api.util.Tls12SocketFactory
-=======
->>>>>>> SIGNAL
 import org.whispersystems.signalservice.api.websocket.SignalWebSocket
 import org.whispersystems.signalservice.api.websocket.WebSocketUnavailableException
 import org.whispersystems.signalservice.internal.push.PushServiceSocket
@@ -147,25 +132,7 @@ class NetworkDependenciesModule(
     provider.provideSignalServiceAccountManager(authWebSocket, accountApi, pushServiceSocket, groupsV2Operations)
   }
 
-<<<<<<< MOLLY
-  val libsignalNetwork: Network by lazy {
-    provider.provideLibsignalNetwork(signalServiceNetworkAccess.getConfiguration(), networkProxyState)
-  }
-
   val networkProxyState: NetworkProxyState = NetworkProxyState()
-
-  val authWebSocket: SignalWebSocket.AuthenticatedWebSocket by lazy {
-    provider.provideAuthWebSocket({ signalServiceNetworkAccess.getConfiguration() }, { libsignalNetwork }).also {
-      disposables += it.state.subscribe { s -> webSocketStateSubject.onNext(s) }
-    }
-  }
-
-  val unauthWebSocket: SignalWebSocket.UnauthenticatedWebSocket by lazy {
-    provider.provideUnauthWebSocket({ signalServiceNetworkAccess.getConfiguration() }, { libsignalNetwork })
-  }
-=======
-  val networkProxyState: NetworkProxyState = NetworkProxyState()
->>>>>>> SIGNAL
 
   val groupsV2Authorization: GroupsV2Authorization by lazy {
     val authCache: GroupsV2Authorization.ValueCache = GroupsV2AuthorizationMemoryValueCache(SignalStore.groupsV2AciAuthorizationCache)
@@ -289,16 +256,7 @@ class NetworkDependenciesModule(
   }
 
   val okHttpClient: OkHttpClient by lazy {
-<<<<<<< MOLLY
-    OkHttpClient.Builder()
-      .socketFactory(Networking.socketFactory)
-      .proxySelector(Networking.proxySelectorForSocks)
-      .dns(Networking.dns)
-      .addInterceptor(StandardUserAgentInterceptor())
-      .build()
-=======
     provider.provideOkHttpClient()
->>>>>>> SIGNAL
   }
 
   val signalOkHttpClient: OkHttpClient by lazy {

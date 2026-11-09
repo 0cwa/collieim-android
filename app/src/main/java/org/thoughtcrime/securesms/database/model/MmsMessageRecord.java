@@ -36,12 +36,6 @@ import org.thoughtcrime.securesms.mms.SlideDeck;
 import org.thoughtcrime.securesms.payments.Payment;
 import org.thoughtcrime.securesms.polls.PollRecord;
 import org.thoughtcrime.securesms.recipients.Recipient;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId;
-=======
-import org.whispersystems.signalservice.api.payments.FormatterOptions;
-import org.whispersystems.signalservice.api.payments.Money;
->>>>>>> SIGNAL
 
 import java.util.HashMap;
 import java.util.LinkedList;

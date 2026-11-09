@@ -33,12 +33,6 @@ class AppearanceSettingsViewModel(
     private val TAG = Log.tag(AppearanceSettingsViewModel::class)
   }
 
-<<<<<<< MOLLY
-  fun setTheme(activity: Activity?, theme: Theme, useDynamicColors: Boolean) {
-    store.update { it.copy(theme = theme, dynamicColors = useDynamicColors) }
-    SignalStore.settings.setTheme(theme, useDynamicColors)
-    SplashScreenUtil.setSplashScreenThemeIfNecessary(activity, theme, useDynamicColors)
-=======
   private val _state = MutableStateFlow(readState())
   private val _actions = Channel<AppearanceSettingsAction>(Channel.BUFFERED)
 
@@ -60,9 +54,17 @@ class AppearanceSettingsViewModel(
       }
 
       is AppearanceSettingsEvent.ThemeSelected -> {
-        AppearanceSettingsRepository.setTheme(event.theme)
+        val dynamicColors = _state.value.dynamicColors
+        AppearanceSettingsRepository.setTheme(event.theme, dynamicColors)
         _state.update { it.copy(theme = event.theme) }
-        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(event.theme))
+        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(event.theme, dynamicColors))
+      }
+
+      is AppearanceSettingsEvent.DynamicColorsChanged -> {
+        val theme = _state.value.theme
+        AppearanceSettingsRepository.setTheme(theme, event.enabled)
+        _state.update { it.copy(dynamicColors = event.enabled) }
+        _actions.send(AppearanceSettingsAction.ApplySplashScreenTheme(theme, event.enabled))
       }
 
       AppearanceSettingsEvent.ChatColorAndWallpaperClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.AppearanceRoute.Wallpaper)
@@ -91,25 +93,18 @@ class AppearanceSettingsViewModel(
 
       AppearanceSettingsEvent.DialogDismissed -> _state.update { it.copy(dialog = AppearanceSettingsState.Dialog.None) }
     }
->>>>>>> SIGNAL
   }
 
   private fun readState(): AppearanceSettingsState {
     return AppearanceSettingsState(
-<<<<<<< MOLLY
-      SignalStore.settings.theme,
-      dynamicColors = SignalStore.settings.isDynamicColorsEnabled,
-      SignalStore.settings.messageFontSize,
-      SignalStore.settings.language,
-      SignalStore.settings.useCompactNavigationBar
-=======
       language = AppearanceSettingsRepository.getLanguage(),
       theme = AppearanceSettingsRepository.getTheme(),
+      dynamicColors = AppearanceSettingsRepository.useDynamicColors(),
+      isDynamicColorsAvailable = AppearanceSettingsRepository.isDynamicColorsAvailable(),
       messageFontSize = AppearanceSettingsRepository.getMessageFontSize(),
       isCompactNavigationBar = AppearanceSettingsRepository.isCompactNavigationBar(),
       isSystemThemeAvailable = AppearanceSettingsRepository.isSystemThemeAvailable(),
       isAppIconSupported = AppearanceSettingsRepository.isAppIconSupported()
->>>>>>> SIGNAL
     )
   }
 }

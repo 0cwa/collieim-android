@@ -24,7 +24,6 @@ import org.thoughtcrime.securesms.util.livedata.LiveDataUtil;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class LiveUpdateMessage {
 
@@ -62,24 +61,14 @@ public final class LiveUpdateMessage {
   }
 
   private static @NonNull SpannableString toSpannable(@NonNull Context context, @NonNull UpdateDescription updateDescription, @NonNull Spannable string, @ColorInt int defaultTint, boolean adjustPosition) {
-<<<<<<< MOLLY
-    Glyph glyph = updateDescription.getGlyph();
-    int   tint  = getMessageThemedColor(context, updateDescription, defaultTint);
-=======
-    boolean             isDarkTheme = ThemeUtil.isDarkTheme(context);
-    SignalSymbols.Glyph glyph       = updateDescription.getGlyph();
-    int                 tint        = isDarkTheme ? updateDescription.getDarkTint() : updateDescription.getLightTint();
-
-    if (tint == 0) {
-      tint = defaultTint;
-    }
->>>>>>> SIGNAL
+    SignalSymbols.Glyph glyph = updateDescription.getGlyph();
+    int                 tint  = getMessageThemedColor(context, updateDescription, defaultTint);
 
     if (glyph == null) {
       return new SpannableString(string);
     } else {
       SpannableStringBuilder builder   = new SpannableStringBuilder();
-      CharSequence           glyphChar = SignalSymbols.getSpannedString(context, SignalSymbols.Weight.REGULAR, glyph, -1);
+      CharSequence           glyphChar = SignalSymbols.getSpannedString(context, SignalSymbols.Weight.REGULAR, glyph, null);
 
       builder.append(BidiUtil.BidiCodepoint.LRI);
       builder.append(glyphChar);

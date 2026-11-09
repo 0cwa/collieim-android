@@ -105,7 +105,6 @@ import org.thoughtcrime.securesms.net.DeviceTransferBlockingInterceptor;
 import org.thoughtcrime.securesms.net.NetworkManager;
 import org.thoughtcrime.securesms.net.NetworkProxyKt;
 import org.thoughtcrime.securesms.net.Networking;
-import org.thoughtcrime.securesms.net.ProxyConfig;
 import org.thoughtcrime.securesms.net.SignalWebSocketHealthMonitor;
 import org.thoughtcrime.securesms.net.StandardUserAgentInterceptor;
 import org.thoughtcrime.securesms.notifications.MessageNotifier;
@@ -376,25 +375,17 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
   }
 
   @Override
-<<<<<<< MOLLY
-=======
   public @NonNull UnreadReminderManager provideUnreadReminderManager() {
     return new UnreadReminderManager(context);
   }
 
   @Override
->>>>>>> SIGNAL
   public @NonNull Network provideLibsignalNetwork(@NonNull SignalServiceConfiguration config, @NonNull NetworkProxyState proxyState) {
     Network network = new Network(BuildConfig.LIBSIGNAL_NET_ENV, StandardUserAgentInterceptor.USER_AGENT, RemoteConfig.getLibsignalConfigs(), Network.BuildVariant.PRODUCTION);
     LibSignalNetworkExtensions.applyConfiguration(network, config);
 
-<<<<<<< MOLLY
     ProxyConfig proxyConfig = NetworkProxyKt.resolveProxyConfig();
     NetworkProxyKt.configureProxy(network, proxyConfig);
-=======
-    ProxyConfig proxyConfig = ProxyConfig.resolve(config, BuildConfig.SIGNAL_URL);
-    LibSignalNetworkExtensions.configureProxy(network, proxyConfig);
->>>>>>> SIGNAL
     proxyState.update(proxyConfig);
 
     return network;
@@ -432,11 +423,7 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
 
   @Override
   public @NonNull SignalWebSocket.AuthenticatedWebSocket provideAuthWebSocket(@NonNull Supplier<SignalServiceConfiguration> signalServiceConfigurationSupplier, @NonNull Supplier<Network> libSignalNetworkSupplier) {
-<<<<<<< MOLLY
-    SleepTimer                   sleepTimer    = !SignalStore.account().isPushAvailable() || SignalStore.settings().getForceWebsocketMode().isEnabled() ? new AlarmSleepTimer(context) : new UptimeSleepTimer();
-=======
     SleepTimer                   sleepTimer    = new AdaptiveSleepTimer(context);
->>>>>>> SIGNAL
     SignalWebSocketHealthMonitor healthMonitor = new SignalWebSocketHealthMonitor(sleepTimer, true);
 
     WebSocketFactory authFactory = () -> {
@@ -469,11 +456,7 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
 
   @Override
   public @NonNull SignalWebSocket.UnauthenticatedWebSocket provideUnauthWebSocket(@NonNull Supplier<SignalServiceConfiguration> signalServiceConfigurationSupplier, @NonNull Supplier<Network> libSignalNetworkSupplier) {
-<<<<<<< MOLLY
-    SleepTimer                   sleepTimer    = !SignalStore.account().isPushAvailable() || SignalStore.settings().getForceWebsocketMode().isEnabled() ? new AlarmSleepTimer(context) : new UptimeSleepTimer();
-=======
     SleepTimer                   sleepTimer    = new AdaptiveSleepTimer(context);
->>>>>>> SIGNAL
     SignalWebSocketHealthMonitor healthMonitor = new SignalWebSocketHealthMonitor(sleepTimer, false);
 
     WebSocketFactory unauthFactory = () -> {
@@ -604,7 +587,9 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
       return new OkHttpClient.Builder()
           .sslSocketFactory(new Tls12SocketFactory(sslContext.getSocketFactory()), trustManager)
           .addInterceptor(new StandardUserAgentInterceptor())
-          .dns(SignalServiceNetworkAccess.DNS)
+          .socketFactory(Networking.getSocketFactory())
+          .proxySelector(Networking.getProxySelectorForSocks())
+          .dns(Networking.getDns())
           .build();
     } catch (NoSuchAlgorithmException | KeyManagementException e) {
       throw new AssertionError(e);

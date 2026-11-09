@@ -65,18 +65,13 @@ class ConversationShortcutRankingUpdateJob private constructor(
   override fun getFactoryKey() = KEY
 
   override fun onRun() {
-<<<<<<< MOLLY
-    if (TextSecurePreferences.isPassphraseLockEnabled(context)) {
-      Log.i(TAG, "Passphrase lock enabled. Clearing shortcuts.")
-=======
     if (recipient.id.isUnknown) {
       Log.w(TAG, "Recipient no longer exists. Skipping shortcut update.")
       return
     }
 
-    if (SignalStore.settings.screenLockEnabled) {
-      Log.i(TAG, "Screen lock enabled. Clearing shortcuts.")
->>>>>>> SIGNAL
+    if (TextSecurePreferences.isPassphraseLockEnabled(context)) {
+      Log.i(TAG, "Passphrase lock enabled. Clearing shortcuts.")
       ConversationUtil.clearAllShortcuts(context)
       return
     }

@@ -6,7 +6,6 @@
 package org.thoughtcrime.securesms.components.settings.app.subscription.receipts.detail
 
 import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewWrapper
@@ -45,7 +43,6 @@ import org.thoughtcrime.securesms.payments.FiatMoneyUtil
 import org.thoughtcrime.securesms.util.DateUtils
 import java.math.BigDecimal
 import java.util.Currency
-import org.signal.core.ui.R as CoreUiR
 
 @VisibleForTesting
 object DonationReceiptDetailTestTags {
@@ -102,14 +99,6 @@ fun DonationReceiptDetailScreen(
 }
 
 private fun LazyListScope.receiptDetails(record: InAppPaymentReceiptRecord) {
-  item {
-    Image(
-      painter = painterResource(CoreUiR.drawable.image_signal_logo_wordmark),
-      contentDescription = null,
-      modifier = Modifier.fillMaxWidth()
-    )
-  }
-
   item {
     val resources = LocalResources.current
     val amount = remember(resources, record.amount) { FiatMoneyUtil.format(resources, record.amount) }

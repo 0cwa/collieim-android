@@ -35,12 +35,8 @@ import org.thoughtcrime.securesms.components.emoji.EmojiTextView;
 import org.thoughtcrime.securesms.contacts.avatars.ContactPhoto;
 import org.thoughtcrime.securesms.contacts.avatars.ProfileContactPhoto;
 import org.thoughtcrime.securesms.recipients.Recipient;
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.util.DynamicMediaPreviewTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
-=======
->>>>>>> SIGNAL
 import org.thoughtcrime.securesms.util.FullscreenHelper;
 import org.thoughtcrime.securesms.util.WindowUtil;
 

@@ -17,11 +17,8 @@ import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.R as MaterialR
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.util.SpanUtil
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.dp
 import org.signal.core.util.getParcelableCompat
@@ -122,13 +119,8 @@ class DonateToSignalFragment :
 
   override fun getMaterial3OnScrollHelper(toolbar: Toolbar?): Material3OnScrollHelper {
     return object : Material3OnScrollHelper(activity = requireActivity(), views = listOf(toolbar!!), lifecycleOwner = viewLifecycleOwner) {
-<<<<<<< MOLLY
       override val activeColorSet: ColorSet = ColorSet.from(requireContext(), R.color.transparent, MaterialR.attr.colorSurface)
       override val inactiveColorSet = activeColorSet
-=======
-      override val activeColorSet: ColorSet = ColorSet(R.color.transparent)
-      override val inactiveColorSet: ColorSet = ColorSet(R.color.transparent)
->>>>>>> SIGNAL
     }
   }
 

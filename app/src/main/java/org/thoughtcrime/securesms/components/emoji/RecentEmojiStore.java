@@ -2,11 +2,6 @@ package org.thoughtcrime.securesms.components.emoji;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/components/emoji/RecentEmojiPageModel.java
-import android.net.Uri;
-=======
-import android.preference.PreferenceManager;
->>>>>>> SIGNAL:app/src/main/java/org/thoughtcrime/securesms/components/emoji/RecentEmojiStore.java
 
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -17,12 +12,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.signal.core.util.JsonUtils;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/components/emoji/RecentEmojiPageModel.java
-import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.util.SecurePreferenceManager;
-=======
-import org.signal.core.util.JsonUtils;
->>>>>>> SIGNAL:app/src/main/java/org/thoughtcrime/securesms/components/emoji/RecentEmojiStore.java
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,17 +32,8 @@ public class RecentEmojiStore {
   private final String                preferenceName;
   private final LinkedHashSet<String> recentlyUsed;
 
-<<<<<<< MOLLY:app/src/main/java/org/thoughtcrime/securesms/components/emoji/RecentEmojiPageModel.java
-  public static boolean hasRecents(Context context, @NonNull String preferenceName) {
-    return SecurePreferenceManager.getSecurePreferences(context).contains(preferenceName);
-  }
-
-  public RecentEmojiPageModel(Context context, @NonNull String preferenceName) {
-    this.prefs          = SecurePreferenceManager.getSecurePreferences(context);
-=======
   public RecentEmojiStore(Context context, @NonNull String preferenceName) {
-    this.prefs          = PreferenceManager.getDefaultSharedPreferences(context);
->>>>>>> SIGNAL:app/src/main/java/org/thoughtcrime/securesms/components/emoji/RecentEmojiStore.java
+    this.prefs          = SecurePreferenceManager.getSecurePreferences(context);
     this.preferenceName = preferenceName;
     this.recentlyUsed   = getPersistedCache();
   }

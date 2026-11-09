@@ -8,11 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.signal.core.util.Util;
 import org.signal.core.util.logging.Log;
-<<<<<<< MOLLY
-=======
 import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.BuildConfig;
->>>>>>> SIGNAL
 
 import java.io.IOException;
 import java.util.Comparator;

@@ -6,12 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.annotation.StringRes
-<<<<<<< MOLLY
-=======
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
->>>>>>> SIGNAL
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
@@ -24,12 +20,9 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil
-=======
 import org.signal.core.ui.util.ViewUtil
 import org.signal.core.ui.viewModel
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.getParcelableCompat
 import org.signal.donations.InAppPaymentType
@@ -47,11 +40,6 @@ import org.thoughtcrime.securesms.databinding.CreditCardFragmentBinding
 import org.thoughtcrime.securesms.payments.FiatMoneyUtil
 import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.util.viewModel
-=======
-import org.signal.core.ui.R as CoreUiR
->>>>>>> SIGNAL
 
 class CreditCardFragment : Fragment(R.layout.credit_card_fragment), InAppPaymentCheckoutDelegate.ErrorHandlerCallback {
 

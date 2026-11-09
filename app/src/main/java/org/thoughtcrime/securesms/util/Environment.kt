@@ -17,23 +17,18 @@ object Environment {
   }
 
   @JvmField
-<<<<<<< MOLLY
-  val USE_NEW_REGISTRATION: Boolean = false // MOLLY: Test before enable
+  val USE_NEW_REGISTRATION: Boolean = true
 
   @JvmField
   val IS_LINK_AND_SYNC_AVAILABLE: Boolean = false // MOLLY: Test before enable
-=======
-  val IS_LINK_AND_SYNC_AVAILABLE: Boolean = true
 
   @JvmField
   val PHONENUMBERLESS_REGISTRATION: Boolean = true
 
-  /** Whether this build is distributed through the Play Store, and so can use Google Play billing at all. */
   @JvmStatic
   fun supportsGooglePlayBilling(): Boolean {
     return BuildConfig.APPLICATION_ID == GOOGLE_PLAY_BILLING_APPLICATION_ID
   }
->>>>>>> SIGNAL
 
   object Backups {
     @JvmStatic

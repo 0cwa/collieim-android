@@ -16,11 +16,7 @@ import org.signal.core.util.requireString
 import org.signal.storage.keyvalue.KeyValueDatabase
 import org.thoughtcrime.securesms.database.SQLiteDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
-<<<<<<< MOLLY
-import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
-=======
->>>>>>> SIGNAL
 
 /**
  * This is a combination of the edit message and message recipient migrations (would have been V185 and v186), but as they

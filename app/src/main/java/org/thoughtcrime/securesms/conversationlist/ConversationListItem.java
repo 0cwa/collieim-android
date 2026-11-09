@@ -47,12 +47,9 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.makeramen.roundedimageview.RoundedDrawable;
 
-<<<<<<< MOLLY
-import org.signal.core.ui.util.ThemeUtil;
-=======
 import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.ui.fonts.SignalSymbols.Glyph;
->>>>>>> SIGNAL
+import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.util.ContextUtil;
 import org.signal.core.util.DimensionUnit;
 import org.signal.core.util.StringUtil;

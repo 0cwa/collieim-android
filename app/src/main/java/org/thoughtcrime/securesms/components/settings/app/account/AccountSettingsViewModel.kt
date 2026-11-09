@@ -52,6 +52,7 @@ class AccountSettingsViewModel(
     AccountSettingsState(
       arePasskeysSupported = arePasskeysSupported,
       isPrimaryDevice = accountRepository.isPrimaryDevice(),
+      canOpenLinkedDevices = accountRepository.canOpenLinkedDevices(),
       showPayments = AppSettingsRepository.showPayments()
     )
   )
@@ -73,7 +74,7 @@ class AccountSettingsViewModel(
         _actions.send(AccountSettingsAction.NavigateBack)
       }
       AccountSettingsEvent.LinkedDevicesClicked -> {
-        if (_state.value.isPrimaryDevice && _state.value.isNotDeprecatedOrUnregistered) {
+        if (_state.value.canOpenLinkedDevices) {
           _actions.send(AccountSettingsAction.NavigateToLinkedDevices)
         }
       }
@@ -274,6 +275,7 @@ class AccountSettingsViewModel(
         registrationLockEnabled = accountRepository.isRegistrationLockEnabled(),
         userUnregistered = accountRepository.isUserUnregistered(),
         clientDeprecated = accountRepository.isClientDeprecated(),
+        canOpenLinkedDevices = accountRepository.canOpenLinkedDevices(),
         showDonationManagement = showDonationManagement,
         isPhoneNumberless = isPhoneNumberless,
         // Held onto across refreshes so a resume doesn't drop the list back to its loading state.

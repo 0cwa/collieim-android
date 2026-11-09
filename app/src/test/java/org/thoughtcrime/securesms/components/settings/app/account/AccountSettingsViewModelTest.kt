@@ -17,6 +17,8 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,6 +44,7 @@ import org.signal.core.models.MasterKey
 import org.signal.libsignal.net.MfaKeyKind
 import org.signal.libsignal.net.RequestResult
 import org.signal.network.service.TwoFactorMethodService
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
 import org.thoughtcrime.securesms.lock.v2.PinKeyboardType
 import org.thoughtcrime.securesms.testing.CoroutineDispatcherRule
 import java.io.IOException
@@ -73,12 +76,16 @@ class AccountSettingsViewModelTest {
   @Before
   fun setUp() {
     Dispatchers.setMain(testDispatcher)
+    mockkObject(AppSettingsRepository)
+    every { AppSettingsRepository.shouldShowManageDonations() } returns false
 
     every { repository.hasPin() } returns true
     every { repository.hasRestoredAep() } returns false
     every { repository.arePinRemindersEnabled() } returns true
     every { repository.isRegistrationLockEnabled() } returns false
     every { repository.isUserUnregistered() } returns false
+    every { repository.isPrimaryDevice() } returns false
+    every { repository.canOpenLinkedDevices() } returns false
     every { repository.isClientDeprecated() } returns false
     every { repository.getPinKeyboardType() } returns PinKeyboardType.NUMERIC
     every { repository.isPhoneNumberless() } returns false
@@ -93,6 +100,7 @@ class AccountSettingsViewModelTest {
 
   @After
   fun tearDown() {
+    unmockkObject(AppSettingsRepository)
     Dispatchers.resetMain()
   }
 
@@ -105,6 +113,22 @@ class AccountSettingsViewModelTest {
     assertThat(viewModel.state.value.hasPin).isTrue()
     assertThat(viewModel.state.value.pinRemindersEnabled).isTrue()
     assertThat(viewModel.state.value.registrationLockEnabled).isTrue()
+  }
+
+  @Test
+  fun `LinkedDevicesClicked is ignored when registration is incomplete on a primary device`() = runTest(testDispatcher) {
+    every { repository.isPrimaryDevice() } returns true
+    every { repository.canOpenLinkedDevices() } returns false
+
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+
+    assertThat(viewModel.state.value.isPrimaryDevice).isTrue()
+    assertThat(viewModel.state.value.canOpenLinkedDevices).isFalse()
+
+    viewModel.onEvent(AccountSettingsEvent.LinkedDevicesClicked)
+
+    assertThat(actions).isEmpty()
   }
 
   @Test

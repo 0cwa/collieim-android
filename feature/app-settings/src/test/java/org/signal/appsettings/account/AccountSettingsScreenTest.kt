@@ -76,7 +76,7 @@ class AccountSettingsScreenTest {
 
   @Test
   fun `linked devices are under Account and preserve the primary device registration guard`() {
-    setContent(createState(isPrimaryDevice = true))
+    setContent(createState(isPrimaryDevice = true, canOpenLinkedDevices = true))
     scrollTo(AccountSettingsTestTags.ROW_LINKED_DEVICES)
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_LINKED_DEVICES).performClick()
     assertThat(events).contains(AccountSettingsEvent.LinkedDevicesClicked)
@@ -85,6 +85,13 @@ class AccountSettingsScreenTest {
   @Test
   fun `linked devices stay disabled for an unregistered user`() {
     setContent(createState(isPrimaryDevice = true, userUnregistered = true))
+    scrollTo(AccountSettingsTestTags.ROW_LINKED_DEVICES)
+    composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_LINKED_DEVICES).assertIsNotEnabled()
+  }
+
+  @Test
+  fun `linked devices stay disabled when registration is incomplete without an unauthorized response`() {
+    setContent(createState(isPrimaryDevice = true, userUnregistered = false, canOpenLinkedDevices = false))
     scrollTo(AccountSettingsTestTags.ROW_LINKED_DEVICES)
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_LINKED_DEVICES).assertIsNotEnabled()
   }
@@ -612,6 +619,7 @@ class AccountSettingsScreenTest {
     isPhoneNumberless: Boolean = false,
     arePasskeysSupported: Boolean = true,
     isPrimaryDevice: Boolean = false,
+    canOpenLinkedDevices: Boolean = false,
     showPayments: Boolean = false,
     unreadPaymentsCount: Int = 0,
     showDonationManagement: Boolean = false,
@@ -629,6 +637,7 @@ class AccountSettingsScreenTest {
       isPhoneNumberless = isPhoneNumberless,
       arePasskeysSupported = arePasskeysSupported,
       isPrimaryDevice = isPrimaryDevice,
+      canOpenLinkedDevices = canOpenLinkedDevices,
       showPayments = showPayments,
       unreadPaymentsCount = unreadPaymentsCount,
       showDonationManagement = showDonationManagement,

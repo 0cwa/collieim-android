@@ -33,6 +33,12 @@ class AccountSettingsRepository(
 
   fun isPrimaryDevice(): Boolean = SignalStore.account.isPrimaryDevice
 
+  fun canOpenLinkedDevices(): Boolean =
+    SignalStore.account.isPrimaryDevice &&
+      SignalStore.account.isRegistered &&
+      !SignalStore.account.isUnauthorizedReceived &&
+      !SignalStore.misc.isClientDeprecated
+
   fun hasRestoredAep(): Boolean = SignalStore.account.restoredAccountEntropyPool
 
   fun arePinRemindersEnabled(): Boolean = SignalStore.pin.pinRemindersEnabled && SignalStore.svr.hasPin()

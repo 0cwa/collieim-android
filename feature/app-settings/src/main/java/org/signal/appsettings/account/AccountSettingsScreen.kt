@@ -281,7 +281,7 @@ fun AccountSettingsScreen(
           Rows.TextRow(
             text = stringResource(R.string.AppSettingsScreen__linked_devices),
             icon = SignalIcons.Devices.painter,
-            enabled = state.isNotDeprecatedOrUnregistered,
+            enabled = state.canOpenLinkedDevices,
             onClick = { onEvent(AccountSettingsEvent.LinkedDevicesClicked) },
             modifier = Modifier.testTag(AccountSettingsTestTags.ROW_LINKED_DEVICES)
           )

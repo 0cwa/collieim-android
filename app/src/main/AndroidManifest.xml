@@ -762,6 +762,11 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".registration.ui.RegistrationNetworkSettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Signal.DayNight.NoActionBar" />
+
+        <activity
             android:name="org.signal.registration.RegistrationActivity"
             tools:node="remove" />
 

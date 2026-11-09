@@ -87,11 +87,7 @@ public final class LocalBackupJobApi29 extends BaseJob {
       notification = GenericForegroundService.startForegroundTask(context,
                                                                   context.getString(R.string.LocalBackupJob_creating_signal_backup),
                                                                   NotificationChannels.getInstance().BACKUPS,
-<<<<<<< MOLLY
                                                                   R.drawable.ic_notification_backup);
-=======
-                                                                  org.signal.core.ui.R.drawable.ic_signal_backup);
->>>>>>> SIGNAL
     } catch (UnableToStartException e) {
       Log.w(TAG, "Unable to start foreground backup service, continuing without service");
     }

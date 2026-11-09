@@ -397,10 +397,6 @@ public class BackupsPreferenceFragment extends Fragment {
   }
 
   private void updateToggle() {
-<<<<<<< MOLLY
-=======
-    boolean userUnregistered          = SignalStore.account().isUnauthorizedReceived() || !SignalStore.account().isRegistered();
->>>>>>> SIGNAL
     boolean clientDeprecated          = SignalStore.misc().isClientDeprecated();
     boolean legacyLocalBackupsEnabled = SignalStore.settings().isBackupEnabled() && BackupUtil.canUserAccessBackupDirectory(AppDependencies.getApplication());
 

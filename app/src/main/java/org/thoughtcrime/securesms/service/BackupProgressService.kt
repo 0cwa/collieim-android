@@ -12,11 +12,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-<<<<<<< MOLLY
-import androidx.annotation.CheckResult
-=======
 import android.os.PowerManager
->>>>>>> SIGNAL
+import androidx.annotation.CheckResult
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -24,12 +21,12 @@ import org.signal.core.util.PendingIntentFlags
 import org.signal.core.util.SafeForegroundService
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.MainActivity
+import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.NotificationIds
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.time.Duration.Companion.hours
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * Foreground service to provide "long" run support to backup jobs.
@@ -50,14 +47,10 @@ class BackupProgressService : SafeForegroundService() {
     private var progress: Float = 0f
     private var indeterminate: Boolean = true
 
-<<<<<<< MOLLY
-    @CheckResult
-=======
     private const val WAKE_LOCK_TAG = "signal:backupProgress"
     private val WAKE_LOCK_TIMEOUT = 2.hours.inWholeMilliseconds
 
-    @CheckReturnValue
->>>>>>> SIGNAL
+    @CheckResult
     fun start(context: Context, startingTitle: String): Controller {
       controllerLock.withLock {
         if (controller != null) {
@@ -85,7 +78,7 @@ class BackupProgressService : SafeForegroundService() {
 
     private fun getForegroundNotification(context: Context): Notification {
       return NotificationCompat.Builder(context, NotificationChannels.getInstance().OTHER)
-        .setSmallIcon(CoreUiR.drawable.ic_signal_backup)
+        .setSmallIcon(R.drawable.ic_notification_backup)
         .setContentTitle(title)
         .setProgress(100, (progress * 100).toInt(), indeterminate)
         .setContentIntent(PendingIntent.getActivity(context, 0, MainActivity.clearTop(context), PendingIntentFlags.mutable()))

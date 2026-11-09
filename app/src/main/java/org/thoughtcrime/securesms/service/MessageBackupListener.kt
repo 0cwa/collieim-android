@@ -7,16 +7,9 @@ package org.thoughtcrime.securesms.service
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import org.signal.core.util.toMillis
-import org.signal.core.util.toOffset
 import org.thoughtcrime.securesms.jobs.BackupMessagesJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-<<<<<<< MOLLY
 import java.time.ZonedDateTime
-=======
-import java.time.LocalDateTime
-import java.time.ZoneId
->>>>>>> SIGNAL
 import java.util.Random
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes

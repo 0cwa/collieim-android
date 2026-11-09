@@ -24,7 +24,16 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.storage.keyvalue.PlainTextKeyValueStore
 import org.thoughtcrime.securesms.BuildConfig
+import org.thoughtcrime.securesms.backup.proto.KeyValue
 import org.thoughtcrime.securesms.backup.proto.SharedPreference
+import org.signal.storage.keyvalue.KeyValueDataSet
+import org.signal.storage.keyvalue.KeyValuePersistentStorage
+import org.signal.storage.keyvalue.KeyValueStore
+import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.SettingsValues
+import org.thoughtcrime.securesms.testutil.DirectExecutor
+import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.SecurePreferenceManager
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 
@@ -34,6 +43,8 @@ class MollyBackupPreferencesTest {
 
   private lateinit var context: Application
   private lateinit var preferences: SharedPreferences
+  private lateinit var keyValueStorage: KeyValuePersistentStorage
+  private var originalInstrumentation = false
 
   @Before
   fun setUp() {
@@ -43,10 +54,21 @@ class MollyBackupPreferencesTest {
     mockkStatic(SecurePreferenceManager::class)
     every { SecurePreferenceManager.getSecurePreferences(context) } returns preferences
     PlainTextKeyValueStore.init(preferences, BuildConfig.VERSION_CODE)
+    originalInstrumentation = Environment.IS_INSTRUMENTATION
+    Environment.IS_INSTRUMENTATION = false
+    keyValueStorage = MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet())
+    SignalStore.testInject(
+      SignalStore(
+        context,
+        KeyValueStore(keyValueStorage, DirectExecutor())
+      )
+    )
   }
 
   @After
   fun tearDown() {
+    SignalStore.testInject(null)
+    Environment.IS_INSTRUMENTATION = originalInstrumentation
     unmockkStatic(SecurePreferenceManager::class)
   }
 
@@ -67,7 +89,7 @@ class MollyBackupPreferencesTest {
 
     preferences.edit().clear().commit()
     records.forEach { record ->
-      FullBackupImporter.processPreference(context, SharedPreference.ADAPTER.decode(record.encode()))
+      FullBackupImporter.processPreference(context, SharedPreference.ADAPTER.decode(record.encode()), keyValueStorage)
     }
 
     assertEquals(timeout, TextSecurePreferences.getPassphraseLockTimeout(context))
@@ -83,9 +105,60 @@ class MollyBackupPreferencesTest {
       .integerValue(-1)
       .build()
 
-    FullBackupImporter.processPreference(context, SharedPreference.ADAPTER.decode(record.encode()))
+    FullBackupImporter.processPreference(context, SharedPreference.ADAPTER.decode(record.encode()), keyValueStorage)
 
     assertEquals(0xffff_ffffL, TextSecurePreferences.getPassphraseLockTimeout(context))
+  }
+
+  @Test
+  fun `legacy preference-only settings restore into SignalStore`() {
+    val languageRecord = SharedPreference.Builder()
+      .file_(BuildConfig.SIGNAL_PACKAGE_NAME + "_preferences")
+      .key("pref_language")
+      .value_("fr")
+      .build()
+    val privacyRecord = SharedPreference.Builder()
+      .file_(BuildConfig.SIGNAL_PACKAGE_NAME + "_preferences")
+      .key("pref_read_receipts")
+      .booleanValue(false)
+      .build()
+    val mediaRecord = SharedPreference.Builder()
+      .file_(BuildConfig.SIGNAL_PACKAGE_NAME + "_preferences")
+      .key("pref_media_download_mobile")
+      .isStringSetValue(true)
+      .stringSetValue(listOf("video"))
+      .build()
+
+    FullBackupImporter.processPreference(context, languageRecord, keyValueStorage)
+    FullBackupImporter.processPreference(context, privacyRecord, keyValueStorage)
+    FullBackupImporter.processPreference(context, mediaRecord, keyValueStorage)
+    SignalStore.onPostBackupRestore()
+    SignalStore.settings.onFirstEverAppLaunch()
+
+    assertEquals("fr", SignalStore.settings.language)
+    assertFalse(SignalStore.settings.isReadReceiptsEnabled)
+    assertEquals(setOf("video"), SignalStore.settings.mobileMediaDownloadAllowed)
+  }
+
+  @Test
+  fun `later KeyValue setting wins over its legacy preference frame`() {
+    val legacyPreference = SharedPreference.Builder()
+      .file_(BuildConfig.SIGNAL_PACKAGE_NAME + "_preferences")
+      .key("pref_notification_privacy")
+      .value_("all")
+      .build()
+
+    FullBackupImporter.processPreference(context, legacyPreference, keyValueStorage)
+
+    // The legacy exporter writes KeyValue frames after SharedPreference frames.
+    val keyValue = KeyValue.Builder()
+      .key(SettingsValues.MESSAGE_NOTIFICATION_PRIVACY)
+      .stringValue("none")
+      .build()
+    FullBackupImporter.processKeyValue(keyValue, keyValueStorage)
+    SignalStore.onPostBackupRestore()
+
+    assertEquals("none", SignalStore.settings.messageNotificationsPrivacy.toString())
   }
 
   @Test

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Включване на заключване на регистрацията?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Изключване на заключване на регистрацията?</string>
@@ -509,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Използвайте заключване на екрана</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Настройките за заключване на устройството ви с Android ще се изискват, за да отключите Signal, когато напускате или превключвате приложения. Когато е заключено, визуализациите на известия няма да показват съдържанието на съобщението.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Настройките за заключване на устройството ви с Android ще се изискват, за да отключите Molly, когато напускате или превключвате приложения. Когато е заключено, визуализациите на известия няма да показват съдържанието на съобщението.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Стартирайте заключването на екрана</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -521,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Специфично време</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Използвайте заключване на екрана на Signal</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Използвайте заключване на екрана на Molly</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Изключете заключването на екрана на Signal</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Изключете заключването на екрана на Molly</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Помощ</string>
@@ -536,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Лицензи</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Условия и Политика за поверителност</string>
-    <string name="HelpFragment__copyright_signal_messenger">Авторско право Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Авторско право Molly Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Лицензирано под GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal е организация с нестопанска цел</string>
@@ -545,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Иконите и имената на приложението се виждат на началния екран и в чекмеджето с приложения.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Известията винаги ще показват иконата и името на Signal по подразбиране.</string>
+    <string name="preferences__app_icon_notification_warning">Известията винаги ще показват иконата и името на Molly по подразбиране.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Графика, илюстрираща къде ще се вижда заместващата икона на приложението.</string>
 
@@ -565,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Промяна на иконата и името на приложението на „%1$s“</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Signal ще трябва да се затвори, за да промените иконата и името на приложението. Известията винаги ще показват иконата и името на Signal по подразбиране.</string>
+    <string name="preferences__app_icon_dialog_description">Molly ще трябва да се затвори, за да промените иконата и името на приложението. Известията винаги ще показват иконата и името на Molly по подразбиране.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Изберете икона и име на приложението, които ще се виждат на началния екран и в чекмеджето за приложения на телефона ви. Известията винаги ще показват иконата и името на Signal по подразбиране. Научете повече</string>
+    <string name="preferences__app_icon_warning_learn_more">Изберете икона и име на приложението, които ще се виждат на началния екран и в чекмеджето за приложения на телефона ви. Известията винаги ще показват иконата и името на Molly по подразбиране. Научете повече</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Научете повече</string>
 

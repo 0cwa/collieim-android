@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Voleu activar el bloqueig de registre?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Voleu desactivar el bloqueig de registre?</string>
@@ -509,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Utilitzar el bloqueig de pantalla</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">La configuració de bloqueig del dispositiu Android serà necessària per desbloquejar Signal quan surtis o canviïs d\'aplicació. Amb el bloqueig activat, les previsualitzacions de notificacions no mostraran el contingut del missatge.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">La configuració de bloqueig del dispositiu Android serà necessària per desbloquejar Molly quan surtis o canviïs d\'aplicació. Amb el bloqueig activat, les previsualitzacions de notificacions no mostraran el contingut del missatge.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Iniciar el bloqueig de pantalla</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -521,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Personalitzar el temps</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Utilitzar el bloqueig de pantalla de Signal</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Utilitzar el bloqueig de pantalla de Molly</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Desactiva el bloqueig de pantalla de Signal</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Desactiva el bloqueig de pantalla de Molly</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Ajuda</string>
@@ -536,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Llicències</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Termes i política de privadesa</string>
-    <string name="HelpFragment__copyright_signal_messenger">Copyright Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Copyright Molly Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Amb llicència de GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal és una organització sense ànim de lucre</string>
@@ -545,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Les icones i els noms de les apps són visibles a la pantalla d\'inici i al menú d\'aplicacions.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Les notificacions sempre mostraran la icona i el nom predeterminats de Signal.</string>
+    <string name="preferences__app_icon_notification_warning">Les notificacions sempre mostraran la icona i el nom predeterminats de Molly.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Gràfic que il·lustra on serà visible la icona alternativa de l\'app.</string>
 
@@ -565,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Canviar la icona i el nom de l\'app per \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Signal s\'haurà de tancar per canviar la icona i el nom de l\'app. Les notificacions sempre mostraran la icona i el nom predeterminats de Signal.</string>
+    <string name="preferences__app_icon_dialog_description">Molly s\'haurà de tancar per canviar la icona i el nom de l\'app. Les notificacions sempre mostraran la icona i el nom predeterminats de Molly.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Selecciona la icona i el nom per a l\'app, que seran visibles a la pantalla d\'inici del telèfon i al menú d\'aplicacions. Les notificacions sempre mostraran la icona i el nom predeterminats de Signal. Més informació</string>
+    <string name="preferences__app_icon_warning_learn_more">Selecciona la icona i el nom per a l\'app, que seran visibles a la pantalla d\'inici del telèfon i al menú d\'aplicacions. Les notificacions sempre mostraran la icona i el nom predeterminats de Molly. Més informació</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Més informació</string>
 

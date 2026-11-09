@@ -170,4 +170,7 @@
     <string name="MollySocketLink_experienced_a_network_error_please_try_again">Ocorreu um erro de rede. Tente novamente.</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server">Servidor MollySocket</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server_air_gapped">Isolado da rede</string>
+    <string name="NotificationsSettingsFragment__notify_when">Notificar-me quando…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">O Google Play Services está a ser atualizado ou está temporariamente indisponível. Por favor, tente novamente.</string>
+    <string name="please_wait">Aguarde, por favor…</string>
 </resources>

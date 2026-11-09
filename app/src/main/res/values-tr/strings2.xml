@@ -143,4 +143,7 @@
     <string name="UnifiedPushSettingsFragment__status_summary_pending">Beklemede</string>
     <string name="UnifiedPushSettingsFragment__status_summary_air_gapped_pending">MollySocket sunucusundan doğrulanma bekleniyor</string>
     <string name="IncomingMessageObserver_websocket_service">WebSocket Servisi</string>
+    <string name="NotificationsSettingsFragment__notify_when">Şu durumlarda bildir…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Hizmetleri güncelleniyor veya geçiçi olarak kullanılamaz durumda. Lütfen tekrar deneyiniz.</string>
+    <string name="please_wait">Lütfen bekleyin…</string>
 </resources>

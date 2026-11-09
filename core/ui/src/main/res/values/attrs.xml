@@ -9,4 +9,5 @@
     <attr name="fullScreenDialogStyle" format="reference"/>
     <attr name="fixedRoundedCornerBottomSheetStyle" format="reference"/>
     <attr name="permissionsRationaleDialogTheme" format="reference"/>
+    <attr name="signal_accent_primary" format="color" />
 </resources>

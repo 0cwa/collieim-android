@@ -168,4 +168,7 @@
     <string name="MollySocketLink_experienced_a_network_error_please_try_again">Xảy ra lỗi mạng. Hãy thử lại.</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server">Máy chủ MollySocket</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server_air_gapped">Khoảng trống</string>
+    <string name="NotificationsSettingsFragment__notify_when">Thông báo khi…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Dịch vụ Google Play đang cập nhật hoặc tạm thời không khả dụng. Hãy thử lại sau.</string>
+    <string name="please_wait">Xin chờ…</string>
 </resources>

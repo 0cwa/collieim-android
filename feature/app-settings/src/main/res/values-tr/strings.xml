@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Kayıt Kilidi Açılsın mı?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Kayıt Kilidi Kapatılsın mı?</string>
@@ -509,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Ekran kilidi kullan</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Uygulamadan ayrıldığında veya uygulama değiştirdiğinde, Signal\'ın kilidini açmak için Android cihazının kilit ayarları gerekecektir. Kilitlendiğinde, bildirim ön izlemeleri mesaj içeriğini göstermez.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Uygulamadan ayrıldığında veya uygulama değiştirdiğinde, Molly\'ın kilidini açmak için Android cihazının kilit ayarları gerekecektir. Kilitlendiğinde, bildirim ön izlemeleri mesaj içeriğini göstermez.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Ekran kilidini başlat</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -521,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Özel zaman</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Signal ekran kilidi kullan</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Molly ekran kilidi kullan</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Signal ekran kilidini kapat</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Molly ekran kilidini kapat</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Yardım</string>
@@ -536,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Lisanslar</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Koşullar ve Gizlilik İlkesi</string>
-    <string name="HelpFragment__copyright_signal_messenger">Telif hakkı Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Telif hakkı Molly Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3\'e göre lisanslanmıştır</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal kâr amacı gütmeyen bir kuruluştur</string>
@@ -545,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Uygulama simgeleri ve adları ana ekranda ve uygulama çekmecesinde görünür.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Bildirimler her zaman varsayılan Signal simgesini ve adını görüntüler.</string>
+    <string name="preferences__app_icon_notification_warning">Bildirimler her zaman varsayılan Molly simgesini ve adını görüntüler.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Değiştirilen uygulama simgesinin nerede görüneceğini gösteren grafik.</string>
 
@@ -565,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Uygulama simgesini ve adını \"%1$s\" olarak değiştir</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Signal\'in uygulama simgesini ve adını değiştirmek için kapatılması gerekir. Bildirimler her zaman varsayılan Signal simgesini ve adını görüntüler.</string>
+    <string name="preferences__app_icon_dialog_description">Molly\'in uygulama simgesini ve adını değiştirmek için kapatılması gerekir. Bildirimler her zaman varsayılan Molly simgesini ve adını görüntüler.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Telefonunun ana ekranında ve uygulama çekmecesinde görünecek bir uygulama simgesi ve adı seç. Bildirimler her zaman varsayılan Signal simgesini ve adını görüntüler. Daha fazlasını öğren</string>
+    <string name="preferences__app_icon_warning_learn_more">Telefonunun ana ekranında ve uygulama çekmecesinde görünecek bir uygulama simgesi ve adı seç. Bildirimler her zaman varsayılan Molly simgesini ve adını görüntüler. Daha fazlasını öğren</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Daha fazlasını öğren</string>
 

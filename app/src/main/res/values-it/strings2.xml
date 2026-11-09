@@ -171,4 +171,7 @@
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Utilizza i colori del sistema per il tema dell\'app</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">La versione installata dei servizi Google Play su questo dispositivo è obsoleta.</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server_air_gapped">Aria compressa</string>
+    <string name="NotificationsSettingsFragment__notify_when">Notificami quando…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services si sta aggiornando o non è al momento disponibile. Per favore riprovare.</string>
+    <string name="please_wait">Attendi…</string>
 </resources>

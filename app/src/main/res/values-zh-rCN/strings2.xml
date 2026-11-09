@@ -169,4 +169,7 @@
     <string name="preferences__follow_system">跟随系统</string>
     <string name="preferences_appearance__dynamic_colors">动态颜色</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">此设备上安装的 Google Play 服务已过时。</string>
+    <string name="NotificationsSettingsFragment__notify_when">发送通知，当…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play 服务正在更新或者暂时不可用，请稍后再试。</string>
+    <string name="please_wait">请稍候…</string>
 </resources>

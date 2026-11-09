@@ -14,17 +14,9 @@
         android:layout_marginVertical="11dp"
         android:background="?attr/signal_background_primary"
         android:minHeight="66dp"
-<<<<<<< MOLLY
-        app:cardCornerRadius="12dp"
-        app:cardBackgroundColor="?attr/colorSurfaceContainer"
-        app:cardElevation="0dp"
-        app:strokeColor="@color/signal_colorOutline_38"
-        app:strokeWidth="1dp">
-=======
         app:cardCornerRadius="24dp"
-        app:cardBackgroundColor="@color/signal_colorSurface2"
+        app:cardBackgroundColor="?attr/colorSurfaceContainer"
         app:cardElevation="0dp">
->>>>>>> SIGNAL
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -89,7 +81,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginVertical="16dp"
                 android:text="@string/ReviewBannerView__name_conflict_found"
-                android:textColor="@color/signal_colorOnSurface"
+                android:textColor="?attr/colorOnSurface"
                 android:textAppearance="@style/Signal.Text.BodyMedium"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/banner_tap_to_review"
@@ -105,7 +97,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="16dp"
-                app:tint="@color/signal_colorOnSurface"
+                app:tint="?attr/colorOnSurface"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/symbol_x_24" />
 
@@ -117,13 +109,8 @@
                 android:layout_marginHorizontal="8dp"
                 android:minWidth="0dp"
                 android:text="@string/ReviewBannerView__view"
-<<<<<<< MOLLY
-                android:textColor="?attr/colorOnSecondaryContainer"
-                app:backgroundTint="?attr/colorSurfaceContainer"
-=======
-                android:textColor="@color/signal_colorOnSurface"
-                app:backgroundTint="@color/signal_colorSurface5"
->>>>>>> SIGNAL
+                android:textColor="?attr/colorOnSurface"
+                app:backgroundTint="?attr/colorSurfaceContainerHighest"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/banner_close"
                 app:layout_constraintStart_toEndOf="@id/banner_message"

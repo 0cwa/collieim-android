@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-<<<<<<< MOLLY
-  --><!-- smartling.instruction_comments_enabled = on --><resources>
-=======
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
->>>>>>> SIGNAL
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -40,13 +34,10 @@
     <string name="ApplicationMigrationActivity__signal_is_updating">მიმდინარეობს Molly-ის განახლება…</string>
 
     <!-- ApplicationPreferencesActivity -->
-<<<<<<< MOLLY
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">პაროლფრაზა ჯერ არ დაგიყენებია!</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">გამოვრთოთ პაროლფრაზა?</string>
     <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">ეს სამუდამოდ განბლოკავს Molly-ს და მიმოწერის შეტყობინებებს.</string>
     <string name="ApplicationPreferencesActivity_disable">გამორთვა</string>
-=======
->>>>>>> SIGNAL
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">სერვერთან დაკავშირებისას დაფიქსირდა შეცდომა!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">პინ-კოდი საჭიროა რეგისტრაციის ბლოკირებისთვის. პინ-კოდის გასათიშად, ჯერ უნდა გათიშო რეგისტრაციის ბლოკირება.</string>
     <string name="ApplicationPreferencesActivity_pin_created">პინ-კოდი შექმნილია.</string>
@@ -435,10 +426,6 @@
     <string name="ConversationActivity_this_device_does_not_appear_to_support_dial_actions">ამ მოწყობილობას არ გააჩნია ნომრის აკრეფის მხარდაჭერა.</string>
     <!-- The content description for button to send a message in a conversation -->
     <string name="ConversationActivity_send_message_content_description">შეტყობინების გაგზავნა</string>
-<<<<<<< MOLLY
-    <string name="ConversationActivity_lets_switch_to_signal">მოდი, გადავერთოთ Molly-ზე %1$s</string>
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_specify_recipient">გთხოვთ აირჩიო კონტაქტი</string>
     <string name="ConversationActivity_unable_to_record_audio">აუდიოს ჩაწერა შეუძლებელია!</string>
     <string name="ConversationActivity_you_cant_send_messages_to_this_group">შენ არ შეგიძლია შეტყობინებების გაგზავნა ამ ჯგუფში, რადგან აღარ ხარ მისი წევრი.</string>
@@ -463,16 +450,6 @@
     <string name="ConversationActivity_signal_needs_microphone_access_voice_message">ხმოვანი შეტყობინების ჩასაწერად Molly-ს მიკროფონზე წვდომა სჭირდება.</string>
     <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">აუდიო შეტყობინებების გადასაგზავნად Molly-ს მიკროფონზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპის პარამეტრების მენიუში, აირჩიო \"უფლებები\" და ჩართო \"მიკროფონი\".</string>
 
-<<<<<<< MOLLY
-    <string name="ConversationActivity_signal_needs_the_microphone_and_camera_permissions_in_order_to_call_s">%1$s-თან დასარეკად Molly-ს მიკროფონსა და კამერაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპის პარამეტრების მენიუში, აირჩიო \"უფლებები\" და ჩართოთ \"მიკროფონი\" და \"კამერა\".</string>
-    <string name="ConversationActivity_to_capture_photos_and_video_allow_signal_access_to_the_camera">სურათების და ვიდეოების გადასაღებად, მიეცი Molly-ს წვდომა კამერაზე.</string>
-    <string name="ConversationActivity_signal_needs_the_camera_permission_to_take_photos_or_video">სურათების და ვიდეოების გადასაღებად Molly-ს კამერაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, გადახვიდე აპის პარამეტრების მენიუში, აირჩიო \"უფლებები\" და ჩართოთ \"კამერა\".</string>
-    <string name="ConversationActivity_signal_needs_camera_permissions_to_take_photos_or_video">სურათების და ვიდეოების გადასაღებლად Molly-ს კამერაზე წვდომის ნებართვა სჭირდება</string>
-    <string name="ConversationActivity_enable_the_microphone_permission_to_capture_videos_with_sound">გააქტიურე მიკროფონზე წვდომის ნებართვა ხმიანი ვიდეოების გადასაღებად.</string>
-    <string name="ConversationActivity_signal_needs_recording_permissions_to_capture_video">ვიდეოების გადასაღებად Molly-ს მიკროფონზე წვდომის ნებართვა სჭირდება.</string>
-
-=======
->>>>>>> SIGNAL
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d %2$d-დან</string>
     <string name="ConversationActivity_no_results">შედეგი ვერ მოიძებნა</string>
@@ -507,19 +484,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">SMS მიმოწერები Signal-ში აღარ არის ხელმისაწვდომი. მოიწვიე %1$s Signal-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-<<<<<<< MOLLY
     <string name="ConversationActivity__this_person_is_no_longer_using_signal">ეს ადამიანი Molly-ს აღარ იყენებს. მოიწვიე ის Molly-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
-    <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">მოიწვიე Molly-ში</string>
-    <!-- Snackbar message shown after dismissing the full screen sms export megaphone indicating we\'ll do it again soon -->
-    <string name="ConversationActivity__you_will_be_reminded_again_soon">მალე ისევ შეგახსენებთ.</string>
-=======
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">ეს ადამიანი Signal-ს აღარ იყენებს. მოიწვიე ის Signal-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">ეს ადამიანი Signal-ს არ იყენებს. მოიწვიე, რომ მიმოწერა აქ განაგრძოთ.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">მოიწვიე Signal-ში</string>
->>>>>>> SIGNAL
+    <string name="ConversationActivity__invite_to_signal">მოიწვიე Molly-ში</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">ზარის დროს ხმოვანი შეტყობინების ჩაწერა შეუძლებელია.</string>
 
@@ -1416,69 +1385,6 @@
     <string name="ManageGroupActivity_add_group_description">ჯგუფის აღწერის დამატება…</string>
 
     <!-- RemoteRestoreActivity -->
-<<<<<<< MOLLY
-    <!-- Progress dialog label when downloading a backup -->
-    <string name="RemoteRestoreActivity__downloading_backup">მიმდინარეობს სარეზერვო კოპიების გადმოწერა…</string>
-    <!-- Progress dialog label when restoring a backup -->
-    <string name="RemoteRestoreActivity__restoring_messages">მიმდინარეობს შეტყობინებების აღდგენა…</string>
-    <!-- Progress dialog label when finishing a backup restore -->
-    <string name="RemoteRestoreActivity__finishing_restore">სრულდება…</string>
-    <!-- Progress dialog label while awaiting updates -->
-    <string name="RemoteRestoreActivity__restoring">მიმდინარეობს აღდგენა…</string>
-    <!-- Progress readout for dialog while downloading or restoring a backup. First placeholder is the formatted size of the backup downloaded, the second is formatted total amount to go, and the last is a percentage. -->
-    <string name="RemoteRestoreActivity__s_of_s_s">%2$s-დან %1$s (%3$s)</string>
-    <!-- Feature list media label for paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_media">შენი ყველა მედია ფაილი</string>
-    <!-- Feature list media label for free tier. Placeholder is days, and is currently fixed at 30. -->
-    <string name="RemoteRestoreActivity__your_last_d_days_of_media">ბოლო %1$d დღის მედია ფაილები</string>
-    <!-- Feature list message label for free and paid tier -->
-    <string name="RemoteRestoreActivity__all_of_your_messages">შენი ყველა შეტყობინება</string>
-    <!-- Screen title for restoring from backup -->
-    <string name="RemoteRestoreActivity__restore_from_backup">სარეზერვო კოპიიდან აღდგენა</string>
-    <!-- Section title for explaining what your backup includes -->
-    <string name="RemoteRestoreActivity__your_backup_includes">შენს სარეზერვო კოპირებაში შედის:</string>
-    <!-- Primary action button copy for starting restoration -->
-    <string name="RemoteRestoreActivity__restore_backup">სარეზერვო კოპიების აღდგენა</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made. %1$s is replaced with the date (e.g. March 5, 2024) and %2$s is replaced with the time (e.g. 9:00am) -->
-    <string name="RemoteRestoreActivity__backup_created_at">შენი ბოლო სარეზერვო კოპია შეიქმნა %1$s-ში %2$s-ზე.</string>
-    <!-- Displayed at restore time to tell the user when their last backup was made and size. %1$s is replaced with the date (e.g. March 5, 2024), %2$s is replaced with the time (e.g. 9:00am), %3$1 is replaced with size (e.g., 1.2GB) -->
-    <string name="RemoteRestoreActivity__backup_created_at_with_size">შენი ბოლო სათადარიგო ასლი %1$s-ს %2$s-ზე შეიქმნა. შენი სათადარიგო ასლის ზომა %3$s-ია.</string>
-    <!-- Progress dialog label while fetching backup info if we don\'t already have it -->
-    <string name="RemoteRestoreActivity__fetching_backup_details">მიმდინარეობს სათადარიგო ასლების დეტალების მიღება…</string>
-    <!-- Text label button to skip restore from remote -->
-    <string name="RemoteRestoreActivity__skip_restore">აღდგენის გამოტოვება</string>
-    <!-- Dialog title displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__couldnt_transfer">გადატანის დასრულება ვერ მოხერხდა</string>
-    <!-- Dialog title displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_title">სათადარიგო ასლის აღდგენა შეუძლებელია</string>
-    <!-- Dialog body displayed when remote restore failed and we want them to contact support -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_body">სარეზერვო ასლის აღდგენისას შეცდომა დაფიქსირდა. შენი სარეზერვო ასლის აღდგენა შეუძლებელია. გთხოვთ, დახმარებისთვის მხარდაჭერის გუნდს მიმართე.</string>
-    <!-- Dialog action button that will link users to a flow to contact support, displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__failure_with_log_prompt_contact_button">მხარდაჭერის გუნდთან დაკავშირება</string>
-    <!-- Dialog message displayed when remote restore failed -->
-    <string name="RemoteRestoreActivity__error_occurred">შეცდომა დაფიქსირდა და შენი მონაცემების გადატანა ვერ მოხერხდა. აირჩიე გადატანის მეთოდი, რომ თავიდან სცადო.</string>
-    <!-- Dialog title displayed when remote restore failed because of an outdated backup version. -->
-    <string name="RemoteRestoreActivity__couldnt_restore">ამ სათადარიგო ასლის აღდგენა ვერ მოხერხდა</string>
-    <!-- Dialog message explaining that an update to Signal is required to restore the backup. -->
-    <string name="RemoteRestoreActivity__update_latest">Molly-ის ამ ვერსიაზე სათადარიგო ასლების აღდგენა შეუძლებელია. გადადი უახლეს ვერსიაზე და სცადე თავიდან.</string>
-    <!-- Text on button that when pressed will redirect them to update Signal -->
-    <string name="RemoteRestoreActivity__update_signal">Molly-ის განახლება</string>
-    <!-- Text label button to dismiss the dialog -->
-    <string name="RemoteRestoreActivity__not_now">ახლა არა</string>
-    <!-- Text shown on restore screen as information on what will happen if you skip -->
-    <string name="RemoteRestoreActivity__your_media_will_restore_in_the_background">შენი მედია ფაილები უკანა ფონზე აღდგება. თუ ახლა არ აღადგენ, მოგვიანებით აღდგენას ვეღარ შეძლებ.</string>
-    <!-- Dialog title -->
-    <string name="RestoreActivity__no_longer_registered_title">ეს მოწყობილობა აღარ არის რეგისტრირებული</string>
-    <!-- Dialog message -->
-    <string name="RestoreActivity__no_longer_registered_message">ეს, ალბათ, იმიტომ მოხდა, რომ შენი Signal-ის ანგარიში სხვა მოწყობილობაზე დაარეგისტრირე.</string>
-
-    <!-- GroupMentionSettingDialog -->
-    <string name="GroupMentionSettingDialog_notify_me_for_mentions">შემატყობინეთ, როცა მომნიშნავენ</string>
-    <string name="GroupMentionSettingDialog_receive_notifications_when_youre_mentioned_in_muted_chats">გსურს მიიღო შეტყობინებები, როცა დადუმებულ ჩატებში მოგნიშნავენ?</string>
-    <string name="GroupMentionSettingDialog_always_notify_me">ყოველთვის შემატყობინეთ</string>
-    <string name="GroupMentionSettingDialog_dont_notify_me">არ შემატყობინოთ</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ManageProfileFragment -->
     <string name="ManageProfileFragment_badges">ემბლემები</string>
@@ -1608,32 +1514,6 @@
     <!-- Button inside an alert dialog confirming the deletion of their draft -->
     <string name="InputPanel__discard">გაუქმება</string>
 
-<<<<<<< MOLLY
-    <!-- InviteActivity -->
-    <string name="InviteActivity_share">გაზიარება</string>
-    <string name="InviteActivity_share_with_contacts">გაუზიარე კონტაქტებს</string>
-    <string name="InviteActivity_share_via">გააზიარე…</string>
-
-    <string name="InviteActivity_cancel">გაუქმება</string>
-    <string name="InviteActivity_sending">იგზავნება…</string>
-    <string name="InviteActivity_invitations_sent">მოსაწვევები გაგზავნილია!</string>
-    <string name="InviteActivity_invite_to_signal">მოიწვიე Molly-ში</string>
-    <string name="InviteActivity_send_sms">SMS-ის გაგზავნა (%1$d)</string>
-    <plurals name="InviteActivity_send_sms_invites">
-        <item quantity="one">გავაგზავნოთ %1$d SMS-მოწვევა?</item>
-        <item quantity="other">გავაგზავნოთ %1$d SMS-მოწვევა?</item>
-    </plurals>
-    <string name="InviteActivity_lets_switch_to_signal">მოდი, Molly-ზე გადავიდეთ: %1$s</string>
-    <!-- Toast shown when Signal is unable to find an external app to share the Invite text string to -->
-    <string name="InviteActivity_no_app_to_share_to">როგორც ჩანს, არ გაქვს ისეთი აპი, იქ რომ გადააზიარო.</string>
-
-    <!-- LearnMoreTextView -->
-    <string name="LearnMoreTextView_learn_more">გაიგე მეტი</string>
-
-    <string name="SpanUtil__read_more">წაიკითე მეტი</string>
-
-=======
->>>>>>> SIGNAL
     <!-- LongMessageActivity -->
     <string name="LongMessageActivity_unable_to_find_message">შეტყობინების მოძებნა ვერ მოხერხდა</string>
     <string name="LongMessageActivity_message_from_s">შეტყობინება %1$s-სგან</string>
@@ -2066,13 +1946,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-<<<<<<< MOLLY
-    <string name="MessageRecord__you_will_no_longer_be_able_to_send_sms_messages_from_signal_soon">მალე SMS შეტყობინებების გაგზავნას Signal-იდან ვეღარ შეძლებ. მოიწვიე %1$s Signal-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
-    <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
     <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Molly-ით SMS შეტყობინებების გაგზავნას ვეღარ შეძლებ. მოიწვიე %1$s Molly-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
-=======
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Signal-ით SMS შეტყობინებების გაგზავნას ვეღარ შეძლებ. მოიწვიე %1$s Signal-ში, რათა მიმოწერა აქ განაგრძოთ.</string>
->>>>>>> SIGNAL
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">ტრანზაქცია: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2187,16 +2061,7 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">მივაბათ Signal-ს მოწყობილობა?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">დესკტოპის ან iPad-ის ამ Signal ანგარიშთან მისაბმელად, გადადი დაკავშირებულ მოწყობილობებზე, აირჩიე „ახალი მოწყობილობის მიბმა“ და თავიდან დაასკანირე QR კოდი. დარწმუნდი, რომ მხოლოდ იმ QR კოდებს ასკანირებ, რომლებიც პირდაპირ Signal-იდან მოდის.</string>
 
-<<<<<<< MOLLY
-    <string name="DeviceActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code">Molly-ს QR კოდის დასასკანერებლად კამერის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „კამერა“.</string>
-    <string name="DeviceActivity_unable_to_scan_a_qr_code_without_the_camera_permission">QR კოდის სკანირება კამერის ნებართვის გარეშე შეუძლებელია</string>
-
-    <!-- OutdatedBuildReminder -->
-    <string name="OutdatedBuildReminder_update_now">განაახლე ახლავე</string>
     <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Molly-ის ამ ვერსიას ვადა დღეს ამოეწურება. გადმოწერე უახლესი ვერსია.</string>
-=======
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Signal-ის ამ ვერსიას ვადა დღეს ამოეწურება. გადმოწერე უახლესი ვერსია.</string>
->>>>>>> SIGNAL
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
         <item quantity="one">Molly-ის ამ ვერსიას ვადა ხვალ გაუვა. გადმოწერე უახლესი ვერსია.</item>
         <item quantity="other">Molly-ის ამ ვერსიას ვადა %1$d დღეში გაუვა. გადმოწერე უახლესი ვერსია.</item>
@@ -2311,10 +2176,6 @@
 
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">დააჭირე აქ შენი ვიდეოს ჩასართავად</string>
-<<<<<<< MOLLY
-    <string name="WebRtcCallActivity__to_call_s_signal_needs_access_to_your_camera">%1$s-თან დასარეკად, Molly-ს შენს კამერაზე წვდომა დასჭირდება</string>
-=======
->>>>>>> SIGNAL
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
     <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
     <string name="WebRtcCallActivity__calling">ვრეკავთ…</string>
@@ -2649,45 +2510,12 @@
 
     <!-- Dialog title shown when re-registering and skip sms flow failed or was aborted and now need perform additional verification via sms and warn about carrier charges -->
     <string name="RegistrationActivity_additional_verification_required">საჭიროა დამატებითი ვერიფიკაცია</string>
-<<<<<<< MOLLY
-    <!-- Dialog message shown when we need to verify sms and carrier rates may apply. -->
-    <string name="RegistrationActivity_a_verification_code_will_be_sent_to_this_number">ვერიფიკაციის კოდი ამ ნომერზე გაიგზავნება. შეიძლება საფასური დაგეკისროს.</string>
-    <!-- Text explaining to users that they will be receiving a verification for their phone number and that carrier rates could apply -->
-    <string name="RegistrationActivity_you_will_receive_a_verification_code">თქვენ მიიღებთ დადასტურების კოდს. შეიძლება მოქმედებდეს გადამზიდავის ტარიფები.</string>
-    <!-- Hint text to select a country -->
-    <string name="RegistrationActivity_select_a_country">აირჩიე ქვეყანა</string>
-    <!-- Hint text explaining that this is where the country code should go -->
-    <string name="RegistrationActivity_default_country_code">0</string>
-    <string name="RegistrationActivity_you_will_receive_a_call_to_verify_this_number">თქვენ მიიღებთ ზარს ამ ნომრის დასამოწმებლად.</string>
-    <string name="RegistrationActivity_edit_number">ნომრის რედაქტირება</string>
-    <string name="RegistrationActivity_missing_google_play_services">აკლია Google Play-ის სერვისები</string>
-    <string name="RegistrationActivity_this_device_is_missing_google_play_services">ამ მოწყობილობას აკლია Google Play-ის სერვისები. შეგიძლიათ, კვლავ გამოიყენოთ Molly,მაგრამ ამ კონფიგურაციამ შეიძლება გამოიწვიოს საიმედოობის ან ფუნქციონირების შემცირება.\n\nთუ არ ხართ კვალიფიციური მომხმარებელი, არ სარგებლობთ გაყიდვისშემდგომი მომსახურების Android ROM-ით ან ფიქრობთ, რომ ამას შეცდომით ხედავთ, გთხოვთ დაუკავშირდეთ support@molly.im პრობლემების მოგვარებაში დასახმარებლად.</string>
-    <string name="RegistrationActivity_i_understand">გასაგებია</string>
-    <string name="RegistrationActivity_play_services_error">სერვისების ჩართვის შეცდომა</string>
-    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">მიმდინარეობს Google Play-ის სერვისები ს განახლება ან ისინი დროებით მიუწვდომელია. გთხოვთ სცადოთ ხელახლა.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_and_media_in_order_to_connect_with_friends">მეგობრებთან დაკავშირების დასახმარებლად და შეტყობინებების გასაგზავნად, Signal-ს კონტაქტებსა და მედიაზე წვდომის ნებართვა სჭირდება. შენი კონტაქტები იტვირთება Signal-ის პირადი კონტაქტის აღმოჩენის საშუალებით, რაც ნიშნავს, რომ ისინი ბოლომდე დაშიფრულია და არასოდეს ჩანს Signal-ის სერვისისთვის.</string>
-    <string name="RegistrationActivity_signal_needs_access_to_your_contacts_in_order_to_connect_with_friends">მეგობრებთან დაკავშირების დასახმარებლად Signal-ს კონტაქტებზე წვდომის ნებართვა სჭირდება. შენი კონტაქტები იტვირთება Signal-ის პირადი კონტაქტის აღმოჩენის საშუალებით, რაც ნიშნავს, რომ ისინი ბოლომდე დაშიფრულია და არასოდეს ჩანს Signal-ის სერვისისთვის.</string>
-=======
->>>>>>> SIGNAL
     <string name="RegistrationActivity_rate_limited_to_service">თქვენ მოახდინეთ ძალიან ბევრი მცდელობა ამ ნომრის დარეგისტრირებისთვის. გთხოვთ ხელახლა სცადოთ მოგვიანებით.</string>
     <string name="RegistrationActivity_unable_to_connect_to_service">სერვისთან დაკავშირება შეუძლებელია. გთხოვთ, შეამოწმოთ ქსელის კავშირი და ხელახლა სცადოთ.</string>
     <!-- Dialog error message shown when we are unable to send an SMS to the user\'s number -->
     <string name="RegistrationActivity_sms_provider_error">შენს ნომერზე SMS-ს ვერ ვაგზავნით. გთხოვთ, რამდენიმე საათში თავიდან სცადო.</string>
     <!-- Generic error when the app is unable to request an SMS code for an unknown reason. -->
     <string name="RegistrationActivity_unable_to_request_verification_code">ვერიფიკაციის კოდის მოთხოვნა შეუძლებელია. გთხოვთ, შეამოწმო შენი ქსელის კავშირი და თავიდან სცადო.</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_non_standard_number_format">ნომრის არასტანდარტული ფორმატი</string>
-    <!-- Dialog message shown to confirm when entering phone number (first placeholder) is normalized and formatted differently by the app (second placeholder). -->
-    <string name="RegistrationActivity_the_number_you_entered_appears_to_be_a_non_standard">შენ მიერ შეყვანილი ნომერი (%1$s), როგორც ჩანს, არასტანდარტული ფორმატისაა. %2$s-ს გულისხმობდი?</string>
-    <string name="RegistrationActivity_signal_android_phone_number_format">Molly Android-ი - ტელეფონის ნომრის ფორმატი</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via voice call.-->
-    <string name="RegistrationActivity_call_requested">დარეკვა მოთხოვნილია</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code via SMS.-->
-    <string name="RegistrationActivity_sms_requested">SMS-ი მოთხოვნილია</string>
-    <!--    Small "toast" notification to the user confirming that they have requested a new code (through an unspecified channel).-->
-    <string name="RegistrationActivity_code_requested">ვერიფიკაციის კოდი მოთხოვნილია</string>
-=======
->>>>>>> SIGNAL
     <plurals name="RegistrationActivity_debug_log_hint">
         <item quantity="one">ახლა გაშორებთ %1$d ნაბიჯი პრობლემების მოგვარების ჟურნალის გაგზავნიდან.</item>
         <item quantity="other">ახლა %1$d ნაბიჯი გაშორებს გაუმართაობის რეესტრის გაგზავნისგან.</item>
@@ -2736,19 +2564,6 @@
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_failed_to_submit" translatable="false">Failed to submit :(</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_success" translatable="false">Success!</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_share" translatable="false">Share</string> -->
-<<<<<<< MOLLY
-
-    <!-- SharedContactDetailsActivity -->
-    <string name="SharedContactDetailsActivity_add_to_contacts">კონტაქტებში დამატება</string>
-    <string name="SharedContactDetailsActivity_invite_to_signal">მოიწვიე Molly-ში</string>
-    <string name="SharedContactDetailsActivity_signal_message">Signal-ის შეტყობინება</string>
-    <string name="SharedContactDetailsActivity_signal_call">Signal-ის ზარი</string>
-
-    <!-- SharedContactView -->
-    <string name="SharedContactView_add_to_contacts">კონტაქტებში დამატება</string>
-    <string name="SharedContactView_invite_to_signal">მოიწვიე Molly-ში</string>
-    <string name="SharedContactView_message">Signal-ის შეტყობინება</string>
-=======
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting" translatable="false">Submitting debug log</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_submitting_body" translatable="false">Collecting and uploading logs. This can take a minute.</string> -->
   <!-- Removed by excludeNonTranslatables <string name="ShakeToReport_retry" translatable="false">Retry</string> -->
@@ -2758,14 +2573,13 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">კონტაქტებში დამატება</string>
-    <string name="SharedContactView_invite_to_signal">მოიწვიე Signal-ში</string>
+    <string name="SharedContactView_invite_to_signal">მოიწვიე Molly-ში</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">მიწერა</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
     <string name="SharedContactView_add_to_group">დაამატე ჯგუფში</string>
     <!-- Confirmation dialog body when adding the person on a shared contact card to the current group. %1$s is the person\'s name, %2$s is the group name -->
     <string name="SharedContactView_add_s_to_s">გსურს, რომ %1$s ჯგუფში „%2$s“ დაამატო?</string>
->>>>>>> SIGNAL
 
     <!-- SignalBottomActionBar -->
     <!-- Text to describe a button that will show more options -->
@@ -3083,12 +2897,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">ჩვენი Signal-ის უსაფრთხოების ნომერი:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">როგორც ჩანს, არ გაქვს ისეთი აპი, რითაც შეძლებ გაზიარებას.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">შესადარებელი უსაფრთხოების ნომერი ბუფერში ვერ მოიძებნა</string>
-<<<<<<< MOLLY
     <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">QR კოდის დასასკანერებლად Molly-ს კამერაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „კამერა“.</string>
-    <string name="VerifyIdentityActivity_unable_to_scan_qr_code_without_camera_permission">QR კოდის სკანირება კამერის ნებართვის გარეშე შეუძლებელია</string>
-=======
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">QR კოდის დასასკანერებლად Signal-ს კამერაზე წვდომის ნებართვა სჭირდება, მაგრამ ის სამუდამოდ იქნა უარყოფილი. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „კამერა“.</string>
->>>>>>> SIGNAL
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">%1$s-ის უსაფრთხოების ნომრის სანახავად ჯერ შეტყობინებები უნდა გაცვალოთ.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">ამ ადამიანთან უსაფრთხოების ნომერი შეიქმნება მაშინ, როდესაც ის შენთან მიმოწერას დაიწყებს.</string>
@@ -3244,15 +3053,8 @@
     <string name="NotificationChannel_additional_message_notifications">მიმოწერის დამატებითი შეტყობინებები</string>
     <!-- Notification channel name for notifications sent when a device has been linked -->
     <string name="NotificationChannel_new_linked_device">ახალი დაკავშირებული მოწყობილობა</string>
-<<<<<<< MOLLY
-
-    <!-- QuickResponseService -->
-    <string name="QuickResponseService_quick_response_unavailable_when_Signal_is_locked">სწრაფი პასუხი შეუძლებელია, როცა Molly-ი გამორთულია!</string>
-    <string name="QuickResponseService_problem_sending_message">პრობლემა შეტყობინების გაგზავნისას!</string>
-=======
     <!-- Notification channel name for unread reminder notifications -->
     <string name="NotificationChannel_unread_reminders">წაუკითხავი შეხსენებები</string>
->>>>>>> SIGNAL
 
     <!-- A toast notification that is shown when the app does not have sufficient permissions to save media files to the device storage. -->
     <string name="SaveAttachment_unable_to_write_to_sd_card_exclamation">შეუძლებელია საცავში ჩაწერა!</string>
@@ -3405,14 +3207,6 @@
     <string name="EnclaveFailureReminder_update_signal">განაახლე Signal-ი, რათა ტრანზაქციების გამოყენება განაგრძო. შეიძლება, შენი ბალანსი არ იყოს განახლებული.</string>
     <!-- Banner button to update now -->
 
-<<<<<<< MOLLY
-    <!-- WebRtcCallActivity -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone">ზარზე პასუხისთვის მიეცი Molly-ს წვდომა შენს მიკროფონზე.</string>
-    <!-- Message shown in permission dialog when attempting to answer a video call without camera or microphone permissions already granted. -->
-    <string name="WebRtcCallActivity_to_answer_the_call_give_signal_access_to_your_microphone_and_camera">მიეცი Molly-ს წვდომა შენს მიკროფონსა და კამერაზე, რათა ვიდეო ზარს უპასუხო.</string>
-    <string name="WebRtcCallActivity_signal_requires_microphone_and_camera_permissions_in_order_to_make_or_receive_calls">ზარების განსახორციელებლად ან მისაღებად Molly-ს მიკროფონსა და კამერაზე წვდომის ნებართვა სჭირდება, მაგრამ ისინი სამუდამოდ იქნა უარყოფილია. გთხოვთ, შეხვიდე აპის პარამეტრებში, აირჩიო „ნებართვები“ და ჩართო „მიკროფონი“ და „კამერა“.</string>
-=======
->>>>>>> SIGNAL
     <string name="WebRtcCallActivity__answered_on_a_linked_device">ზარი მიღებულია დაკავშირებულ მოწყობილობაზე.</string>
     <string name="WebRtcCallActivity__declined_on_a_linked_device">ზარი უარყოფილია დაკავშირებულ მოწყობილობაზე.</string>
     <string name="WebRtcCallActivity__busy_on_a_linked_device">დაკავებაა დაკავშირებულ მოწყობილობაზე.</string>
@@ -3506,24 +3300,6 @@
     <!-- Text asking for user\'s contact permission -->
     <string name="ContactSelectionListFragment__allow_access_to_your_contacts_encrypted">შენს კონტაქტებზე წვდომის მიცემა. შენი კონტაქტები დაშიფრულია და Signal-ის სერვისისთვის უხილავია.</string>
 
-<<<<<<< MOLLY
-    <!-- contact_selection_list_fragment -->
-    <string name="contact_selection_list_fragment__signal_needs_access_to_your_contacts_in_order_to_display_them">Molly-ს შენს კონტაქტებზე წვდომა სჭირდება, რათა ისინი აჩვენოს.</string>
-    <string name="contact_selection_list_fragment__show_contacts">კონტაქტების ჩვენება</string>
-
-    <!-- contact_selection_list_item -->
-    <plurals name="contact_selection_list_item__number_of_members">
-        <item quantity="one">%1$d წევრი</item>
-        <item quantity="other">%1$d წევრი</item>
-    </plurals>
-    <!-- Displays number of viewers for a story -->
-    <plurals name="contact_selection_list_item__number_of_viewers">
-        <item quantity="one">%1$d მნახველი</item>
-        <item quantity="other">%1$d მნახველი</item>
-    </plurals>
-
-=======
->>>>>>> SIGNAL
     <!-- conversation_activity -->
     <string name="conversation_activity__type_message_push">Signal-ის შეტყობინება</string>
     <!-- Option in send button context menu to schedule the message instead of sending it directly -->
@@ -3752,7 +3528,6 @@
     <string name="EditProfileFragment__group_name">ჯგუფის სახელი</string>
     <string name="EditProfileFragment__group_description">ჯგუფის აღწერილობა</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
-<<<<<<< MOLLY
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
     <string name="EditProfileFragment_deprecated_dialog_title">Molly-ის განახლება</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
@@ -3765,8 +3540,6 @@
     <string name="EditProfileFragment_unregistered_dialog_body">ეს მოწყობილობა აღარ არის რეგისტრირებული. თავიდან დარეგისტრირდი, რომ შენს მონაცემებში ცვლილებები შეიტანო.</string>
     <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
     <string name="EditProfileFragment_unregistered_dialog_reregister_button">ხელახლა რეგისტრაცია</string>
-=======
->>>>>>> SIGNAL
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">შენახვა</string>
@@ -3962,45 +3735,13 @@
     <string name="preferences__led_color_unknown">უცნობი</string>
     <string name="preferences__silent">ჩუმი</string>
     <string name="preferences__advanced">დეტალური</string>
-<<<<<<< MOLLY
     <string name="preferences__donate_to_signal">Molly-ისთვის დონაციის გაკეთება</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">კონფიდენციალურობა</string>
-=======
-    <string name="preferences__donate_to_signal">Signal-ისთვის დონაციის გაკეთება</string>
->>>>>>> SIGNAL
     <!-- Preference label for stories -->
     <string name="preferences__stories">Stories-ები</string>
     <string name="preferences__payments">ტრანზაქციები</string>
     <string name="preferences__linked_devices">დაკავშირებული მოწყობილობები</string>
-<<<<<<< MOLLY
-    <string name="preferences__light_theme">ღია</string>
-    <string name="preferences__dark_theme">მუქი</string>
-    <string name="preferences__appearance">ვიზუალი</string>
-    <string name="preferences__theme">აპის ფონი</string>
-    <string name="preferences__chat_color_and_wallpaper">ჩატის ფერი &amp; ფონის სურათი</string>
-    <!-- Clickable settings text allowing the user to change the icon visible on their phone\'s home screen. -->
-    <string name="preferences__app_icon">აპის ხატულა</string>
-    <!-- Approval for changing the app icon. -->
-    <string name="preferences__app_icon_dialog_ok">OK</string>
-    <!-- Cancelling the operation of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_cancel">გაუქმება</string>
-    <!-- Title for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_title">შეცვალე აპის ხატულა და სახელი „%1$s“-ზე</string>
-    <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">აპის ხატულასა და სახელის შესაცვლელად Molly-ი უნდა დაიხუროს. შეტყობინებები ყოველთვის გამოჩნდება Molly-ის ნაგულისხმევი ხატულათი და სახელით.</string>
-    <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">აირჩიე აპის ხატულა და სახელი, რომელიც შენი ტელეფონის მთავარ ეკრანზე და აპის პანელზე გამოჩნდება. შეტყობინებები ყოველთვის გამოჩნდება Molly-ის ნაგულისხმევი ხატულათი და სახელით. გაიგე მეტი</string>
-    <!-- Visible warning label for the limitations of changing the app icon. -->
-    <string name="preferences__app_icon_warning">აპის ხატულები და სახელები ხილვადია მთავარ ეკრანზე და აპის პანელზე.</string>
-    <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">შეტყობინებები ყოველთვის გამოჩნდება Molly-ის ნაგულისხმევი ხატულათი და სახელით.</string>
-    <!--Call to action to get more information about the limitations of the change app icon functionality. -->
-    <string name="preferences__app_icon_learn_more">გაიგე მეტი</string>
-    <!--Text description of a graphic illustrating the limitations of the app icon change. -->
-    <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">გრაფიკული ილუსტრაცია, სადაც აპის ჩასანაცვლებელი ხატულა გამოჩნდება.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences__disable_pin">პინ-კოდის გამორთვა</string>
     <string name="preferences__enable_pin">პინ-კოდის ჩართვა</string>
     <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">თუ პინ-კოდს გამორთავ, Signal-ზე ხელახლა დარეგისტრირებისას ყველა მონაცემს დაკარგავ, თუ ხელით არ შექმნი სარეზერვო კოპიას და არ აღადგენ. რეგისტრაციის დაბლოკვას ვერ ჩართავ, სანამ პინ-კოდი გამორთულია.</string>
@@ -4183,17 +3924,9 @@
     <string name="PaymentsTransferFragment__next">შემდეგი</string>
     <string name="PaymentsTransferFragment__invalid_address">არასწორი მისამართი</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">შეამოწმე საფულის მისამართი, რომელზეც ცდილობ გადარიცხვას და სცადე ხელახლა.</string>
-<<<<<<< MOLLY
     <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">შენი Molly-ის საფულის მისამართზე გადარიცხვა არ შეგიძლია. შეიყვანე საფულის მისამართი მხარდაჭერილი ბირჟის შენი ანგარიშიდან .</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR კოდის დასასკანირებლად Molly-ს კამერაზე წვდომა სჭირდება.</string>
-    <string name="PaymentsTransferFragment__signal_needs_the_camera_permission_to_capture_qr_code_go_to_settings">QR კოდის დასასკანირებლად Molly-ს კამერაზე წვდომა სჭირდება. შედი პარამეტრებში, აირჩიე \"ნებართვები\" და ჩართე \"კამერა\".</string>
     <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR კოდის დასასკანირებლად Molly-ს კამერაზე წვდომა სჭირდება.</string>
-    <string name="PaymentsTransferFragment__settings">Settings</string>
-=======
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">შენი Signal-ის საფულის მისამართზე გადარიცხვა არ შეგიძლია. შეიყვანე საფულის მისამართი მხარდაჭერილი ბირჟის შენი ანგარიშიდან .</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR კოდის დასასკანირებლად Signal-ს კამერაზე წვდომა სჭირდება.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR კოდის დასასკანირებლად Signal-ს კამერაზე წვდომა სჭირდება.</string>
->>>>>>> SIGNAL
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">მისამართის QR კოდის სკანირება</string>
@@ -4607,61 +4340,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">დამირეკეთ (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">კოდის თავიდან გაგზავნა (%1$02d:%2$02d)</string>
-<<<<<<< MOLLY
-    <string name="RegistrationActivity_contact_signal_support">დაუკავშირდით Molly-ის მხარდაჭერას</string>
     <string name="RegistrationActivity_code_support_subject">Molly-ის რეგისტრაცია - დადასტურების კოდი Android-ითვის</string>
-=======
-    <string name="RegistrationActivity_code_support_subject">Signal-ის რეგისტრაცია - დადასტურების კოდი Android-ითვის</string>
->>>>>>> SIGNAL
     <string name="RegistrationActivity_incorrect_code">არასწორი კოდი</string>
     <string name="BackupUtil_never">არასდროს</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">უცნობი</string>
-<<<<<<< MOLLY
-    <!-- Phone number heading displayed as a screen title -->
-    <string name="preferences_app_protection__phone_number">ტელეფონის ნომერი</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
     <string name="preferences_app_protection__choose_who_can_see">შეარჩიე, ვის შეუძლია ნახოს შენი ტელეფონის ნომერი და ვინ შეიძლება დაგიკავშირდეს Molly-ზე მისი დახმარებით.</string>
-    <!-- Section title above two radio buttons for enabling and disabling phone number display -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_see_my_number_heading">ვის შეუძლია ჩემი ნომრის ნახვა</string>
-    <!-- Subtext below radio buttons when who can see my number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_on_description">შენი ტელეფონის ნომერი ხილული იქნება ყველა ადამიანისა და ჯგუფისთვის, რომელთაც სწერ.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to everybody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_on_description">შენი მობილურის ნომერს ვერავინ ნახავს, თუ ის თავისი მობილურის კონტაქტებში არ აქვთ შენახული.</string>
-    <!-- Subtext below radio buttons when who can see my number is set to nobody and who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_sharing_off_discovery_off_description">შენი მობილურის ნომერს ვერავინ ნახავს.</string>
-    <!-- Section title above two radio buttons for enabling and disabling whether users can find me by my phone number  -->
-    <string name="PhoneNumberPrivacySettingsFragment_who_can_find_me_by_number_heading">ვის შეუძლია ნომრით მიპოვოს</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to everyone -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_on_description">ნებისმიერს, ვისაც შენი მობილურის ნომერი აქვს, დაინახავს, რომ Signal-ზე ხარ და შენთან ჩატის წამოწყებას შეძლებს.</string>
-    <!-- Subtext below radio buttons when who can find me by number is set to nobody -->
-    <string name="PhoneNumberPrivacySettingsFragment_discovery_off_description">ვერავინ დაინახავს, რომ Signal-ზე ხარ, სანამ არ მისწერ ან თუ არსებული ჩატი არ გექნებათ.</string>
-    <!-- Snackbar text when pressing invalid radio item -->
-    <string name="PhoneNumberPrivacySettingsFragment__to_change_this_setting">"ამ პარამეტრის შესაცვლელად, დააყენე \"ვინ ხედავს ჩემს ნომერს\" \"არავინ\"-ზე."</string>
-    <!-- Dialog title shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_title">დარწმუნებული ხარ?</string>
-    <!-- Dialog warning message shown when selecting "Nobody" in phone number privacy settings for who can find me by number -->
-    <string name="PhoneNumberPrivacySettingsFragment__nobody_can_find_me_warning_message">თუ „ვინ მიპოვის ნომრით“ პარამეტრს „არავინ“-ზე დააყენებ, სხვებს შენი Signal-ზე პოვნა გაურთულდებათ.</string>
-    <!-- Dialog button text for canceling change action -->
-    <string name="PhoneNumberPrivacySettingsFragment__cancel">გაუქმება</string>
-    <string name="PhoneNumberPrivacy_everyone">ყველა</string>
-    <string name="PhoneNumberPrivacy_nobody">არავინ</string>
-    <string name="preferences_app_protection__screen_lock">Ეკრანის დაბლოკვა</string>
-    <string name="preferences_app_protection__lock_signal_access_with_android_screen_lock_or_fingerprint">შეზღუდე Signal-ზე წვდომა Android-ის ეკრანის დაბლოკვით ან თითის ანაბეჭდით</string>
-    <string name="preferences_app_protection__screen_lock_inactivity_timeout">ეკრანის დაბლოკვის უმოქმედობის დრო</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
     <string name="preferences_app_protection__to_use_screen_lock">ეკრანის დაბლოკვის გამოსაყენებლად ამ მოწყობილობაზე პინ-კოდი, პატერნი ან პაროლი დააყენე.</string>
-    <string name="preferences_app_protection__signal_pin">Signal-ის პინ-კოდი</string>
-    <string name="preferences_app_protection__create_a_pin">შექმენი პინ-კოდი</string>
-    <string name="preferences_app_protection__change_your_pin">შეცვალე შენი პინ-კოდი</string>
-    <string name="preferences_app_protection__pin_reminders">პინ-კოდის შეხსენებები</string>
-    <string name="preferences_app_protection__turn_off">გამორთვა</string>
-    <string name="preferences_app_protection__confirm_pin">პინ-კოდის დადასტურება</string>
-    <string name="preferences_app_protection__confirm_your_signal_pin">დაადასტურე შენი Signal-ის პინ-კოდი</string>
-    <string name="preferences_app_protection__make_sure_you_memorize_or_securely_store_your_pin">დარწმუნდი, რომ დაიმახსოვრე ან უსაფრთხოდ შეინახე შენი პინ-კოდი, რადგან მისი აღდგენა შეუძლებელია. თუ შენი პინ-კოდი დაგავიწყდება, შეიძლება შენი Signal-ის ანგარიშის ხელახალი რეგისტრაციისას მონაცემები დაკარგო.</string>
-    <string name="preferences_app_protection__incorrect_pin_try_again">არასწორი პინ-კოდი. თავიდან სცადე.</string>
-=======
->>>>>>> SIGNAL
     <string name="preferences_app_protection__failed_to_enable_registration_lock">რეგისტრაციის დაბლოკვა ვერ გააქტიურდა.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">რეგისტრაციის დაბლოკვა ვერ გაითიშა.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">უნდა შეიყვანო შენი რეგისტრციის დაბლოკვის პინ-კოდი</string>
@@ -4684,31 +4371,6 @@
     <string name="prompt_passphrase_activity__try_again">ახლიდან სცადე</string>
 
     <!-- ScreenLockSettingsFragment -->
-<<<<<<< MOLLY
-    <!-- Text shown when screen lock is not enabled -->
-    <string name="ScreenLockSettingsFragment__off">გამორთული</string>
-    <!-- Text shown with toggle that when switched on will enable screen lock -->
-    <string name="ScreenLockSettingsFragment__use_screen_lock">ეკრანის დაბლოკვის გამოყენება</string>
-    <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">როცა აპიდან გამოხვალ ან სხვა აპში შეხვალ, Molly-ის განბლოკვისთვის შენი Android მოწყობილობის დაბლოკვის პარამეტრები იქნება საჭირო. როდესაც დაბლოკილია, შეტყობინებების წინასწარი ნახვა შეტყობინების შინაარსს არ აჩვენებს.</string>
-    <!-- Title text explaining when users should start the screen lock -->
-    <string name="ScreenLockSettingsFragment__start_screen_lock">ეკრანის დაბლოკვის დაწყება</string>
-    <!-- Option text explaining that screen lock should start immediately -->
-    <string name="ScreenLockSettingsFragment__immediately">დაუყოვნებლივ</string>
-    <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_1_min">1 წუთის შემდეგ</string>
-    <!-- Option text explaining that screen lock should start after 5 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_5_min">5 წუთის შემდეგ</string>
-    <!-- Option text explaining that screen lock should start after 30 minutes of inactivity -->
-    <string name="ScreenLockSettingsFragment__after_30_min">30 წუთის შემდეგ</string>
-    <!-- Option text explaining that screen lock should start at a custom time set by the user -->
-    <string name="ScreenLockSettingsFragment__custom_time">არასტანდარტული დროით</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Molly-ის ეკრანის დაბლოკვის გამოყენება</string>
-    <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">გამორთე Molly-ის ეკრანის დაბლოკვა</string>
-=======
->>>>>>> SIGNAL
 
     <string name="Recipient_unknown">უცნობი</string>
     <!-- Name to use for a user across the UI when they are unregistered and have no other name available -->
@@ -4754,18 +4416,6 @@
     <!-- NewDeviceTransferInstructionsFragment -->
 
     <!-- NewDeviceTransferSetupFragment -->
-<<<<<<< MOLLY
-    <string name="NewDeviceTransferSetup__preparing_to_connect_to_old_android_device">ვემზადებით ძველ Android მოწყობილობასთან დასაკავშირებლად…</string>
-    <string name="NewDeviceTransferSetup__take_a_moment_should_be_ready_soon">დაელოდე, მალე მზად უნდა იყოს</string>
-    <string name="NewDeviceTransferSetup__waiting_for_old_device_to_connect">ველოდებით ძველ Android მოწყობილობას, რომ დავაკავშიროთ…</string>
-    <string name="NewDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_old_device">შენი ძველი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად, Molly-ს მდებარეობაზე წვდომის ნებართვა სჭირდება.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_old_device">Molly-ს სჭირდება მდებარეობის სერვისების ჩართვა შენი ძველი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად.</string>
-    <string name="NewDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_old_device">Molly-ს სჭირდება ჩართული Wi-Fi შენი ძველი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად. Wi-Fi უნდა იყოს ჩართული, მაგრამ არ უნდა იყოს დაკავშირებული Wi-Fi ქსელთან.</string>
-    <string name="NewDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">ბოდიში, როგორც ჩანს, ამ მოწყობილობას არ აქვს Wi-Fi Direct-ის მხარდაჭერა. Molly-ი Wi-Fi Direct-ს შენი ძველი Android მოწყობილობის აღმოსაჩენად და მასთან დასაკავშირებლად იყენებს. თუმცა შენი მონაცემების აღსადგენად, შეგიძლია შენი ძველი Android მოწყობილობის სარეზერვო კოპია აღადგინო.</string>
-    <string name="NewDeviceTransferSetup__restore_a_backup">სარეზერვო კოპიის აღდგენა</string>
-    <string name="NewDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">შენს ძველ Android მოწყობილობასთან დაკავშირების მცდელობისას მოხდა მოულოდნელი შეცდომა.</string>
-=======
->>>>>>> SIGNAL
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">ვეძებთ ახალ Android მოწყობილობას…</string>
@@ -5418,44 +5068,6 @@
     <string name="ExpireTimerSettingsFragment__custom_time">არასტანდარტული დროით</string>
     <string name="ExpireTimerSettingsFragment__save">შენახვა</string>
 
-<<<<<<< MOLLY
-    <string name="CustomExpireTimerSelectorView__seconds">წამები</string>
-    <string name="CustomExpireTimerSelectorView__minutes">წუთები</string>
-    <string name="CustomExpireTimerSelectorView__hours">საათები</string>
-    <string name="CustomExpireTimerSelectorView__days">დღეები</string>
-    <string name="CustomExpireTimerSelectorView__weeks">კვირები</string>
-
-    <!-- HelpSettingsFragment -->
-    <string name="HelpSettingsFragment__support_center">მხარდაჭერის ცენტრი</string>
-    <string name="HelpSettingsFragment__contact_us">დაგვიკავშირდი</string>
-    <string name="HelpSettingsFragment__version">ვერსია</string>
-    <!-- Displayed when copying help screen text to the clipboard -->
-    <string name="HelpSettingsFragment__copied_to_clipboard">დაკოპირებულია ბუფერში</string>
-    <string name="HelpSettingsFragment__debug_log">გაუმართაობის რეესტრი</string>
-    <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
-    <string name="HelpSettingsFragment__licenses">ლიცენზიები</string>
-    <string name="HelpSettingsFragment__terms_amp_privacy_policy">პირობები &amp; კონფიდენციალურობის პოლიტიკა</string>
-    <string name="HelpFragment__copyright_signal_messenger">Copyright Molly Messenger</string>
-    <string name="HelpFragment__licenced_under_the_agplv3">ლიცენზირებულია GNU AGPLv3-ით</string>
-    <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="HelpSettingsFragment__signal_is_a_501c3">Signal-ი არაკომერციული ორგანიზაციაა</string>
-
-    <!-- DataAndStorageSettingsFragment -->
-    <string name="DataAndStorageSettingsFragment__media_quality">მედია-ფაილების ხარისხი</string>
-    <!-- Category title for the quality of the media to be sent -->
-    <string name="DataAndStorageSettingsFragment__sent_media_quality">გაგზავნილი მედია-ფაილების ხარისხი</string>
-    <string name="DataAndStorageSettingsFragment__sending_high_quality_media_will_use_more_data">მაღალი ხარისხის მედია-ფაილის გაგზავნა უფრო მეტ მობილურ ინტერნეტს გამოიყენებს.</string>
-    <!-- Disclaimer shown under the media auto-download settings. Placeholder is a formatted size like "100 KB". -->
-    <string name="DataAndStorageSettingsFragment__voice_messages_and_stickers_under_size_are_always_auto_downloaded">ხმოვანი შეტყობინებები და სტიკერები (%1$s-(ი)ს ქვეშ) ყოველთვის ავტომატურად იტვირთება.</string>
-    <string name="DataAndStorageSettingsFragment__calls">ზარები</string>
-    <!-- Title of a toggle that keeps Signal connected in the background via a persistent foreground service instead of using FCM push messages -->
-    <string name="DataAndStorageSettingsFragment__stay_connected_in_background">დარჩი ხაზზე პარალელურად</string>
-    <!-- Body of a confirmation dialog shown when a user tries to enable the "Stay connected in background" setting -->
-    <string name="DataAndStorageSettingsFragment__staying_connected_while_in_the_background_will_likely_result_in_increased_battery_usage">პარალელურად ხაზზე დარჩენა, დიდი ალბათობით, ელემენტის გაზრდილ მოხმარებას გამოიწვევს. ეს მოწყობილობების უმრავლესობისთვის საჭირო არაა. ეს მხოლოდ იმ შემთხვევაში ჩართე, თუ შეტყობინებებთან დაკავშირებული პრობლემები გაქვს.</string>
-    <!-- Button label that enables the "Stay connected in background" setting from a confirmation dialog -->
-    <string name="DataAndStorageSettingsFragment__enable">ჩართვა</string>
-=======
->>>>>>> SIGNAL
 
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
@@ -6133,15 +5745,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">ჩართული %1$s-მდე</string>
 
-<<<<<<< MOLLY
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">ამომრჩევის გახსნა ვერ მოხერხდა.</string>
     <!-- Banner title when notification permission is disabled -->
     <string name="NotificationSettingsFragment__to_enable_notifications">შეტყობინებების ჩასართავად, Molly-ს მათი ჩვენების ნებართვა სჭირდება.</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">ჩართვა</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">ეს Signal-ის ოფიციალური და ერთადერთი ჩატია</string>
@@ -7769,7 +7378,6 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Signal-ის უსაფრთხო სათადარიგო ასლების გამოწერას ვერ შეძლებ, რადგან შენს მობილურს Google Play-ის სერვისების მხარდაჭერა არ აქვს. დახმარებისთვის მიმართე მობილურის მწარმოებელს.</string>
 
-<<<<<<< MOLLY
     <!-- ManageStorageSettingsFragment -->
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
     <string name="ManageStorageSettingsFragment_chat_limit">მიმოწერის სიგრძის ლიმიტები</string>
@@ -7792,14 +7400,12 @@
     <!-- Dialog message for paid tier pending dialog -->
     <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">მეხსიერების ოპტიმიზაციის გამოყენება მხოლოდ Signal-ის სათადარიგო ასლების ფასიან ვერსიაზე შეიძლება. შენი სათადარიგო ასლების გამოწერა ჯერ კიდევ მუშავდება და აქტიური არაა. გთხოვთ, მოგვიანებით სცადე.</string>
     <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Media will be removed from your on-device backup</string>
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">შენი მოწყობილობის სათადარიგო ასლებიდან მედია ფაილები წაიშლება</string>
     <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
-    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Turning on \"Optimize Signal storage\" will offload old media from your device. You can download it again any time. It will also remove old media from your on-device backup.</string>
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">\"Signal-ის მეხსიერების ოპტიმიზაციის\" ჩართვა შენი მოწყობილობიდან ძველ მედია ფაილებს გადაიტანს. მათ თავიდან გადმოწერას ნებისმიერ დროს შეძლებ. ეს ასევე წაშლის ძველ მედია ფაილებს შენი მოწყობილობის სათადარიგო ასლებიდან.</string>
     <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
     <string name="ManageStorageSettingsFragment__turn_on">ჩართვა</string>
 
-=======
->>>>>>> SIGNAL
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">ამ ფუნქციის გასააქტიურებლად შეცვალე სატარიფო გეგმა</string>
@@ -8232,13 +7838,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">უსაფრთხოდ შეინახე შენი გასაღები</string>
     <!-- Bottom sheet subtitle -->
-<<<<<<< MOLLY
     <string name="MessageBackupsKeyRecordScreen__signal_will_not">გასაღების დაკარგვის შემთხვევაში, მის აღდგენაში Molly-ი ვერ დაგეხმარება. ის სადმე დაცულ ადგილას შეინახე და არავის გაუზიარო.</string>
-    <!-- Checkbox label -->
-    <string name="MessageBackupsKeyRecordScreen__ive_recorded_my_key">ჩავინიშნე ჩემი გასაღები</string>
-=======
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">გასაღების დაკარგვის შემთხვევაში, მის აღდგენაში Signal-ი ვერ დაგეხმარება. ის სადმე დაცულ ადგილას შეინახე და არავის გაუზიარო.</string>
->>>>>>> SIGNAL
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">გაგრძელება</string>
     <!-- Sheet secondary action button label -->
@@ -8375,244 +7975,6 @@
     <string name="MessageBackupsTypeSelectionScreen__current_plan">ახლანდელი გამოწერა</string>
 
     <!-- ConfirmBackupCancellationDialog -->
-<<<<<<< MOLLY
-    <!-- Dialog title -->
-    <string name="ConfirmBackupCancellationDialog__confirm_cancellation">გაუქმების დადასტურება</string>
-    <!-- Dialog body -->
-    <string name="ConfirmBackupCancellationDialog__you_wont_be_charged_again">თანხა აღარ ჩამოგეჭრება. სარეზერვო კოპიების შექმნა შენი გადახდის ციკლის ბოლოს გამოირთვება. ამ თარიღის შემდეგ 30 დღე გექნება იმ მედია ფაილების ჩამოსატვირთად, რომლის სარეზერვო კოპირებასაც ახდენ.</string>
-    <!-- Action button label to cancel subscription and download now -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_now">დადასტურება და ახლავე ჩამოტვირთვა</string>
-    <!-- Action button label to cancel subscription and download later -->
-    <string name="ConfirmBackupCancellationDialog__confirm_and_download_later">დადასტურება და მოგვიანებით ჩამოტვირთვა</string>
-    <!-- Action button label to keep current subscription -->
-    <string name="ConfirmBackupCancellationDialog__keep_subscription">გამოწერის შენარჩუნება</string>
-
-    <!-- Accessible content description for the reminder view, describing the icon in the view. -->
-    <string name="ReminderView_icon_content_description">შეხსენების ხატულა</string>
-
-    <!-- Row title for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_i_have_my_old_phone">ჩემი ძველი მობილური მაქვს</string>
-    <!-- Row subtitle for restore/transfer using a previous registered phone/device -->
-    <string name="WelcomeFragment_restore_action_scan_qr">სწრაფად დასაწყებად დაასკანირე QR კოდი შენი ახლანდელი Signal-ის ანგარიშიდან</string>
-
-    <!-- Row title for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">ჩემი ძველი მობილური არ მაქვს</string>
-    <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">ან Molly-ს თავიდან იწერ იმავე მოწყობილობაზე</string>
-
-    <!-- Screen title for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__restore_or_transfer_account">აღდგენა ან ანგარიშის გადატანა</string>
-    <!-- Screen subtitle for selecting which restore method to use during registration -->
-    <string name="SelectRestoreMethodFragment__get_your_signal_account">გადმოიტანე შენი Signal-ის ანგარიში და შეტყობინებების ისტორია ამ მოწყობილობაზე.</string>
-    <!-- Option title for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_signal_backup">Signal-ის სარეზერვო კოპიების აღდგენა</string>
-    <!-- Option subtitle for restoring via signal secure backups -->
-    <string name="SelectRestoreMethodFragment__restore_your_text_messages_and_media_from">აღადგინე შენი წერილები და მედია ფაილები შენი Signal-ის სათადარიგო ასლებით.</string>
-    <!-- Option title for restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_on_device_backup">მოწყობილობის სათადარიგო ასლების აღდგენა</string>
-    <!-- Option subtitle fdor restoring via a local backup file or folder -->
-    <string name="SelectRestoreMethodFragment__restore_your_messages_from">აღადგინე შენი შეტყობინებები შენს მოწყობილობაში შენახული სათადარიგო ასლიდან.</string>
-    <!-- Option title for restoring via a local backup file -->
-    <string name="SelectRestoreMethodFragment__from_a_backup_file">სათადარიგო ასლების ფაილიდან</string>
-    <!-- Option subtitle for restoring via a local backup -->
-    <string name="SelectRestoreMethodFragment__choose_a_backup_youve_saved">აირჩიე შენი შენახული სათადარიგო ასლი</string>
-    <!-- Option title for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__from_your_old_phone">შენი ძველი მობილურიდან</string>
-    <!-- Option subtitle for restoring via device transfer -->
-    <string name="SelectRestoreMethodFragment__transfer_directly_from_old">გადმოიტანე პირდაპირ შენი ძველი მობილურიდან</string>
-    <!-- Dialog title shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_title">გსურს აღდგენის გამოტოვება?</string>
-    <!-- Dialog message shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore_warning">თუ ახლა აღდგენას გამოტოვებ, მომავალში ვეღარ შეძლებ. თუ აღდგენის გამოტოვების შემდეგ სათადარიგო ასლებს ისევ ჩართავ, შენი ამჟამინდელი სათადარიგო ასლები შენი ახალი მიმოწერის ისტორიით ჩანაცვლდება.</string>
-    <!-- Dialog confirm text shown as a warning when skipping restore during registration -->
-    <string name="SelectRestoreMethodFragment__skip_restore">აღდგენის გამოტოვება</string>
-
-    <!-- Screen title for restore via local backup -->
-    <string name="RestoreLocalBackup_title">ადგილობრივი სარეზერვო კოპიების აღდგენა</string>
-    <!-- Screen subtitle for restore via local backup -->
-    <string name="RestoreLocalBackup_subtitle">აღადგინე შენი შეტყობინებები შენს მოწყობილობაში შენახული სათადარიგო ასლიდან. თუ ახლა არ აღადგენ, მოგვიანებით აღდგენას ვეღარ შეძლებ.</string>
-
-    <!-- Screen title for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_title">შეიყვანე შენი აღდგენის გასაღები</string>
-    <!-- Screen subtitle for manual entry of recovery key material for restoring via signal secure backups -->
-    <string name="EnterBackupKey_subtitle">შენი სათადარიგო ასლების გასაღები 64-სიმბოლოიანი კოდია, რომელიც შენი ანგარიშისა და მონაცემების აღსადგენადაა საჭირო.</string>
-    <!-- Button to skip entering recovery key and resuming normal registration flow -->
-    <string name="EnterBackupKey_no_backup_key">არ გაქვს აღდგენის გასაღები?</string>
-    <!-- Recovery key text field hint -->
-    <string name="EnterBackupKey_backup_key">აღდგენის გასაღები</string>
-    <!-- Recovery key not known bottom sheet info paragraph 1 -->
-    <string name="EnterBackupKey_no_key_paragraph_1">სათადარიგო ასლების აღდგენა 64-სიმბოლოიანი კოდის გარეშე შეუძლებელია. თუ შენი სათადარიგო ასლების გასაღები დაკარგე, Signal-ი შენი სათადარიგო ასლების აღდგენაში დახმარებას ვერ შეძლებს.</string>
-    <!-- Recovery key not known bottom sheet info paragraph 2 -->
-    <string name="EnterBackupKey_no_key_paragraph_2">თუ ძველი მოწყობილობა გაქვს, შეგიძლია, შენი სათადარიგო ასლების გასაღები აქ ნახო: პარამეტრები &gt; სათადარიგო ასლები. შემდეგ აღდგენის გასაღების ნახვას დააჭირე.</string>
-    <!-- Recovery key not known bottom sheet button to learn more about it -->
-    <string name="EnterBackupKey_learn_more">გაიგე მეტი</string>
-    <!-- Recovery key not known bottom sheet button to skip recovery key entry and resume normal reregistration -->
-    <string name="EnterBackupKey_skip_and_dont_restore">გამოტოვე და არ აღადგინო</string>
-    <!-- Dialog title shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_title">აღდგენის გასაღები არასწორია</string>
-    <!-- Dialog message shown when entered AEP doesn\'t work to register with provided e164 -->
-    <string name="EnterBackupKey_incorrect_backup_key_message">დარწმუნდი, რომ იმავე მობილურის ნომრითა და 64-სიმბოლოიანი სათადარიგო ასლების გასაღებით რეგისტრირდები, რომელიც Signal-ის სათადარიგო ასლების ჩართვისას შეინახე. ამ გასაღების გარეშე სათადარიგო ასლებს ვერ აღადგენ.</string>
-    <!-- Dialog positive button text to try entering their recovery key again -->
-    <string name="EnterBackupKey_try_again">ახლიდან სცადე</string>
-    <!-- Dialog negative button text to get help with recovery key -->
-    <string name="EnterBackupKey_backup_key_help">დახმარება აღდგენის გასაღებთან დაკავშირებით</string>
-    <!-- Text field error text when the recovery key provided has been confirmed invalid -->
-    <string name="EnterBackupKey_incorrect_backup_key_error">აღდგენის გასაღები არასწორია</string>
-    <!-- Text field error text when the recovery key is too long -->
-    <string name="EnterBackupKey_too_long_error">ზედმეტად გრძელია (%1$d/%2$d)</string>
-    <!-- Text field error when the recovery key is invalid -->
-    <string name="EnterBackupKey_invalid_backup_key_error">აღდგენის გასაღები არასწორია</string>
-    <!-- Dialog title shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_not_found">სათადარიგო ასლების მოძებნა ვერ მოხერხდა</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_you_entered_is_correct_but_no_backup">შენ მიერ შეყვანილი სათადარიგო ასლების გასაღები სწორია, მაგრამ მასთან ასოცირებული სათადარიგო ასლები ვერ მოიძებნა. თუ შენი ძველი მობილური ისევ გაქვს, დარწმუნდი, რომ სათადარიგო ასლები ჩართულია და სათადარიგო ასლის შექმნა დასრულებულია, შემდეგ კი თავიდან სცადე.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_incorrect_or_backups_not_enabled">შეიძლება შენი აღდგენის გასაღები არასწორად შეიყვანე, ან შენს ძველ მოწყობილობაზე ერთი სათადარიგო ასლიც არ შეგიქმნია.\n\nდარწმუნდი, რომ იმავე მობილურის ნომრითა და აღდგენის გასაღებით რეგისტრირდები, რომელიც Signal-ის უსაფრთხო სათადარიგო ასლების ჩართვისას შეინახე და დაადასტურე, რომ შენს ძველ მოწყობილობაზე სათადარიგო ასლების შექმნა დასრულდა.</string>
-    <!-- Dialog message shown during registration and trying to restore a remote backup -->
-    <string name="EnterBackupKey_backup_key_check_rate_limited">აღდგენის გასაღების ცდები ამოგეწურა. შენი უსაფრთხოებისთვის, ცდების რაოდენობა შეზღუდულია. დაელოდე ერთი საათი და კიდევ სცადე.</string>
-    <!-- Dialog button shown during registration and trying to restore a remote backup to instead skip said backup process -->
-    <string name="EnterBackupKey_skip_restore">აღდგენის გამოტოვება</string>
-    <!-- Dialog title text when encountering backup restore network error -->
-    <string name="EnterBackupKey_cant_restore_backup">სათადარიგო ასლის აღდგენა შეუძლებელია</string>
-    <!-- Dialog body text when encountering backup restore network error -->
-    <string name="EnterBackupKey_your_backup_cant_be_restored_right_now">ამჟამად შენი სათადარიგო ასლის აღდგენა შეუძლებელია. შეამოწმე შენი ინტერნეტ კავშირი და თავიდან სცადე. </string>
-    <!-- Dialog button text to contact support on network error -->
-    <string name="EnterBackupKey_contact_support">მხარდაჭერის გუნდთან დაკავშირება</string>
-
-    <!-- Email subject when contacting support on a restore backup network issue -->
-    <string name="EnterBackupKey_network_failure_support_email">Signal Android-ის სათადარიგო ასლის აღდგენის ხარვეზი</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_network_failure_support_email_filter" translatable="false">Android SignalBackups Import Failed</string> -->
-    <!-- Email subject when contacting support on a permanent backup import failure -->
-    <string name="EnterBackupKey_permanent_failure_support_email">Signal Android-ის სარეზერვო ასლის აღდგენის ხარვეზი</string>
-  <!-- Removed by excludeNonTranslatables <string name="EnterBackupKey_permanent_failure_support_email_filter" translatable="false">Android SignalBackups Import Permanent Failure</string> -->
-
-    <!-- EnterLocalBackupKeyScreen: Screen title for entering recovery key for local backup restore -->
-    <string name="EnterLocalBackupKeyScreen__enter_your_recovery_key">შეიყვანე შენი აღდგენის გასაღები</string>
-    <!-- EnterLocalBackupKeyScreen: Screen subtitle explaining what the recovery key is -->
-    <string name="EnterLocalBackupKeyScreen__your_recovery_key_is_a_64_character_code">შენი სათადარიგო ასლების გასაღები 64-სიმბოლოიანი კოდია, რომელიც შენი ანგარიშისა და მონაცემების აღსადგენადაა საჭირო.</string>
-    <!-- EnterLocalBackupKeyScreen: Button text when user does not have a recovery key -->
-    <string name="EnterLocalBackupKeyScreen__no_recovery_key">არ გაქვს აღდგენის გასაღები?</string>
-    <!-- EnterLocalBackupKeyScreen: Button to proceed to next step -->
-    <string name="EnterLocalBackupKeyScreen__next">შემდეგი</string>
-
-    <!-- RestoreLocalBackupDialog: Error message when the selected archive fails to load -->
-    <string name="RestoreLocalBackupDialog__failed_to_load_archive">არქივის ჩატვირთვა ვერ მოხერხდა. გთხოვთ, სხვა რამე აირჩიო.</string>
-    <!-- RestoreLocalBackupDialog: Dismiss button for dialog -->
-    <string name="RestoreLocalBackupDialog__ok">OK</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore">გსურს აღდგენის გამოტოვება?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user about the consequences of skipping backup restore -->
-    <string name="RestoreLocalBackupDialog__skip_restore_body">თუ ახლა აღდგენას გამოტოვებ, მომავალში ვეღარ შეძლებ. თუ აღდგენის გამოტოვების შემდეგ სათადარიგო ასლებს ისევ ჩართავ, შენი ამჟამინდელი სათადარიგო ასლები შენი ახალი მიმოწერის ისტორიით ჩანაცვლდება.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the skip restore dialog -->
-    <string name="RestoreLocalBackupDialog__skip_restore_confirm">აღდგენის გამოტოვება</string>
-    <!-- RestoreLocalBackupDialog: Title of the dialog asking the user to confirm restoring a backup from a different account -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account">ახალ ანგარიშზე აღდგენა გსურს?</string>
-    <!-- RestoreLocalBackupDialog: Body of the dialog warning the user that the backup was created with a different account and they will lose group memberships -->
-    <string name="RestoreLocalBackupDialog__restore_to_new_account_body">სათადარიგო ასლი, რომლის აღდგენასაც ცდილობ Signal-ის სხვა ანგარიშის გამოყენებით შეიქმნა. შეგიძლია ეს სათადარიგო ასლი ახალ ანაგრიშზე აღადგინო, მაგრამ არც ერთი აღდგენილი ჯგუფის წევრი აღარ იქნები.</string>
-    <!-- RestoreLocalBackupDialog: Confirm button label for the restore to new account dialog -->
-    <string name="RestoreLocalBackupDialog__restore">აღდგენა</string>
-
-    <!-- RestoreLocalBackupActivity: Toast message when backup restore fails -->
-    <string name="RestoreLocalBackupActivity__backup_restore_failed">სათადარიგო ასლების აღდგენა ვერ მოხერხდა</string>
-    <!-- RestoreLocalBackupActivity: Screen title shown during restore -->
-    <string name="RestoreLocalBackupActivity__restoring_backup">მიმდინარეობს სათადარიგო ასლების აღდგენა</string>
-    <!-- RestoreLocalBackupActivity: Screen subtitle explaining restore duration -->
-    <string name="RestoreLocalBackupActivity__depending_on_the_size">შენი სათადარიგო ასლების ზომის მიხედვით, ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</string>
-    <!-- RestoreLocalBackupActivity: Status text while restoring messages -->
-    <string name="RestoreLocalBackupActivity__restoring_messages">მიმდინარეობს შეტყობინებების აღდგენა…</string>
-    <!-- RestoreLocalBackupActivity: Status text while finalizing restore -->
-    <string name="RestoreLocalBackupActivity__finalizing">სრულდება…</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore is complete -->
-    <string name="RestoreLocalBackupActivity__restore_complete">აღდგენა დასრულებულია</string>
-    <!-- RestoreLocalBackupActivity: Status text when restore fails -->
-    <string name="RestoreLocalBackupActivity__restore_failed">აღდგენა ვერ მოხერხდა</string>
-    <!-- RestoreLocalBackupActivity: Progress text showing bytes read of total with percentage, e.g. "1.2 MB of 5.0 MB (24%)" -->
-    <string name="RestoreLocalBackupActivity__s_of_s_d_percent">%2$s-დან %1$s (%3$d%%)</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__cant_restore_backup">სათადარიგო ასლის აღდგენა შეუძლებელია</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when backup restore fails and is not recoverable -->
-    <string name="RestoreLocalBackupActivity__error_occurred_while_restoring">სარეზერვო ასლის აღდგენისას შეცდომა დაფიქსირდა. შენი სარეზერვო ასლის აღდგენა შეუძლებელია. გთხოვთ, დახმარებისთვის მხარდაჭერის გუნდს მიმართე.</string>
-
-    <!-- RestoreLocalBackupActivity: Label for the button that opens the contact support form -->
-    <string name="RestoreLocalBackupActivity__contact_support">მხარდაჭერის გუნდთან დაკავშირება</string>
-
-    <!-- RestoreLocalBackupActivity: Title for the dialog shown when on-device backups could not be automatically re-enabled -->
-    <string name="RestoreLocalBackupActivity__turn_on_on_device_backups">გსურს მოწყობილობის სათადარიგო ასლები ჩართო?</string>
-
-    <!-- RestoreLocalBackupActivity: Body for the dialog shown when on-device backups could not be automatically re-enabled, prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__to_continue_using_on_device_backups">მოწყობილობის სათადარიგო ასლების გამოყენება რომ გააგრძელო, ის ამ ანგარიშზე უნდა ჩართო. ამის გაკეთება ნებისმიერ დროს შეგიძლია, აირჩიე პარამეტრები &gt; სათადარიგო ასლები.</string>
-
-    <!-- RestoreLocalBackupActivity: Confirm button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__turn_on_now">ახლა ჩართვა</string>
-
-    <!-- RestoreLocalBackupActivity: Dismiss button label for the dialog prompting the user to re-enable on-device backups -->
-    <string name="RestoreLocalBackupActivity__not_now">ახლა არა</string>
-
-    <!-- RestoreLocalBackupActivity: Body text for the dialog shown after a successful restore, prompting the user to choose a backup folder -->
-    <string name="RestoreLocalBackupActivity__choose_a_folder_for_backups">მოწყობილობის სათადარიგო ასლების გამოსაყენებლად, შენს მოწყობილობაზე აირჩიე საქაღალდე, რომელშიც ახალი სათადარიგო ასლები შეინახება.</string>
-
-    <!-- RestoreLocalBackupActivity: Positive button label for the dialog shown after a successful restore; keeps the current backup folder -->
-    <string name="RestoreLocalBackupActivity__use_current_folder">ამჟამინდელი საქაღალდის გამოყენება</string>
-
-    <!-- RestoreLocalBackupActivity: Neutral button label for the dialog shown after a successful restore; opens folder picker to select a different backup location -->
-    <string name="RestoreLocalBackupActivity__choose_new_folder">ახალი საქაღალდის არჩევა</string>
-
-    <!-- RestoreLocalBackupActivity: Negative button label for the dialog shown after a successful restore; disables on-device backups -->
-    <string name="RestoreLocalBackupActivity__disable_backups">სათადარიგო ასლების გამორთვა</string>
-
-    <!-- SelectInstructionsSheet: Title for the select backup folder instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_folder">აირჩიე სათადარიგო ასლების საქაღალდე</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the select this folder button -->
-    <string name="SelectInstructionsSheet__tap_select_this_folder">დააჭირე \"ამ საქაღალდის მონიშვნას\"</string>
-    <!-- SelectInstructionsSheet: Instruction not to select individual files -->
-    <string name="SelectInstructionsSheet__do_not_select_individual_files">არ აირჩიო ცალკეული ფაილები</string>
-    <!-- SelectInstructionsSheet: Title for the select backup file instruction sheet -->
-    <string name="SelectInstructionsSheet__select_your_backup_file">აირჩიე შენი სათადარიგო ასლების ფაილი</string>
-    <!-- SelectInstructionsSheet: Instruction to tap the backup file saved to device -->
-    <string name="SelectInstructionsSheet__tap_on_the_backup_file">დააჭირე სათადარიგო ასლების ფაილს, რომელიც შენს მოწყობილობაზე შეინახე</string>
-    <!-- SelectInstructionsSheet: Subtitle explaining how to access backup after tapping continue -->
-    <string name="SelectInstructionsSheet__after_tapping_continue">\"გაგრძელებაზე\" დაჭერის შემდეგ შენს სათადარიგო ასლებზე წვდომას ასე შეძლებ:</string>
-    <!-- SelectInstructionsSheet: Instruction to select the top-level backup folder -->
-    <string name="SelectInstructionsSheet__select_the_top_level_folder">აირჩიე ზედა დონის საქაღალდე, სადაც შენი სათადარიგო ასლები ინახება</string>
-    <!-- SelectInstructionsSheet: Continue button text -->
-    <string name="SelectInstructionsSheet__continue_button">გაგრძელება</string>
-
-    <!-- SelectLocalBackupScreen: Screen title for restoring on-device backup -->
-    <string name="SelectLocalBackupScreen__restore_on_device_backup">მოწყობილობის სათადარიგო ასლების აღდგენა</string>
-    <!-- SelectLocalBackupScreen: Screen subtitle explaining the restore process -->
-    <string name="SelectLocalBackupScreen__restore_your_messages_from_the_backup_folder">აღადგინე შენი შეტყობინებები შენს მოწყობილობაში შენახული სარეზერვო ასლების ფაილიდან. თუ ახლა არ აღადგენ, მოგვიანებით აღდგენას ვეღარ შეძლებ.</string>
-    <!-- SelectLocalBackupScreen: Button to initiate backup restoration -->
-    <string name="SelectLocalBackupScreen__restore_backup">სარეზერვო კოპიების აღდგენა</string>
-    <!-- SelectLocalBackupScreen: Button to choose an earlier backup when current is latest -->
-    <string name="SelectLocalBackupScreen__choose_an_earlier_backup">წინა სათადარიგო ასლი აირჩიე</string>
-    <!-- SelectLocalBackupScreen: Button to choose a different backup -->
-    <string name="SelectLocalBackupScreen__choose_a_different_backup">აირჩიე სხვა სათადარიგო ასლი</string>
-    <!-- SelectLocalBackupScreen: Label for latest backup card -->
-    <string name="SelectLocalBackupScreen__your_latest_backup">შენი ბოლო სათადარიგო ასლები:</string>
-    <!-- SelectLocalBackupScreen: Label for non-latest backup card -->
-    <string name="SelectLocalBackupScreen__your_backup">შენი სათადარიგო ასლები:</string>
-
-    <!-- SelectLocalBackupSheet: Title for backup selection bottom sheet -->
-    <string name="SelectLocalBackupSheet__choose_a_backup_to_restore">აირჩიე აღსადგენი სათადარიგო ასლი</string>
-    <!-- SelectLocalBackupSheet: Subtitle warning about choosing an older backup -->
-    <string name="SelectLocalBackupSheet__choosing_an_older_backup">შეიძლება უფრო ძველი სათადარიგო ასლის არჩევას წერილების ან მედია ფაილების დაკარგვა მოჰყვეს.</string>
-    <!-- SelectLocalBackupSheet: Continue button text -->
-    <string name="SelectLocalBackupSheet__continue_button">გაგრძელება</string>
-
-    <!-- SelectLocalBackupTypeScreen: Screen title for selecting backup type -->
-    <string name="SelectLocalBackupTypeScreen__restore_on_device_backup">მოწყობილობის სათადარიგო ასლების აღდგენა</string>
-    <!-- SelectLocalBackupTypeScreen: Screen subtitle explaining restore options -->
-    <string name="SelectLocalBackupTypeScreen__restore_your_messages_from_the_backup">აღადგინე შენი შეტყობინებები შენს მოწყობილობაში შენახული სათადარიგო ასლიდან. თუ ახლა არ აღადგენ, მოგვიანებით აღდგენას ვეღარ შეძლებ.</string>
-    <!-- SelectLocalBackupTypeScreen: Button for users who saved backup as single file -->
-    <string name="SelectLocalBackupTypeScreen__i_saved_my_backup_as_a_single_file">ჩემი სათადარიგო ასლები ერთ ფაილად შევინახე</string>
-    <!-- SelectLocalBackupTypeScreen: Card title for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__choose_backup_folder">აირჩიე სათადარიგო ასლების საქაღალდე</string>
-    <!-- SelectLocalBackupTypeScreen: Card description for choosing backup folder -->
-    <string name="SelectLocalBackupTypeScreen__select_the_folder_on_your_device">აირჩიე საქაღალდე შენს მოწყობილობაზე, სადაც შენი სათადარიგო ასლები ინახება</string>
-=======
->>>>>>> SIGNAL
 
     <!-- Email subject when contacting support on a create backup failure -->
     <string name="BackupAlertBottomSheet_network_failure_support_email">Signal Android-ის სათადარიგო ასლის აღდგენის ხარვეზი</string>

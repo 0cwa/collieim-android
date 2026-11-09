@@ -148,4 +148,7 @@
     <string name="UnifiedPushSettingsFragment__tap_to_copy_to_clipboard">클립보드에 복사하기</string>
     <string name="UnifiedPushSettingsFragment__status_summary_missing_endpoint">UnifedPush 배포자 응답을 기다리는 중입니다</string>
     <string name="UnifiedPushSettingsFragment__status_summary_bad_response">서버의 잘못된 응답</string>
+    <string name="NotificationsSettingsFragment__notify_when">다음 경우에 알림</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services가 업데이트 중이거나 잠시 제공되지 않고 있습니다. 다시 시도해 주세요.</string>
+    <string name="please_wait">잠시만 기다려 주세요.</string>
 </resources>

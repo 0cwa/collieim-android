@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Катталууну Кулпулоо колдонулсунбу?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Катталууну Кулпулоо өчүрүлсүнбү?</string>
@@ -521,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Башка убакытта</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Signal\'дын экранын кулпулоо</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Molly\'дын экранын кулпулоо</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Signal\'дын экран кулпусун өчүрүү</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Molly\'дын экран кулпусун өчүрүү</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Жардам</string>
@@ -536,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Уруксаттамалар</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Шарттар жана жоболор; Купуялык Саясаты</string>
-    <string name="HelpFragment__copyright_signal_messenger">Signal Mesenger автордук укугу</string>
+    <string name="HelpFragment__copyright_signal_messenger">Molly Mesenger автордук укугу</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 боюнча уруксаттамаланган</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal 501c3 категориясындагы коммерциялык эмес уюм</string>
@@ -545,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Колдонмолордун сүрөтчөлөрү менен аталыштары башкы экранда жана колдонмонун тактасында көрүнөт.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Билдирмелерде такай демейки Signal сүрөтчөсү менен аталышы көрүнүп турат.</string>
+    <string name="preferences__app_icon_notification_warning">Билдирмелерде такай демейки Molly сүрөтчөсү менен аталышы көрүнүп турат.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Колдонмонун сүрөтчөсү кайсы жерде көрүнөрүн чагылдырган графика.</string>
 
@@ -565,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Колдонмонун сүрөтчөсү жана аталышы \"%1$s\" болуп өзгөрүлөт</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Колдонмонун сүрөтчөсү менен аталышы өзгөрүшү үчүн Signal\'ды жабышыңыз керек. Билдирмелерде такай демейки Signal сүрөтчөсү менен аталышы көрүнүп турат.</string>
+    <string name="preferences__app_icon_dialog_description">Колдонмонун сүрөтчөсү менен аталышы өзгөрүшү үчүн Molly\'ды жабышыңыз керек. Билдирмелерде такай демейки Molly сүрөтчөсү менен аталышы көрүнүп турат.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Телефонуңуздун башкы экранында жана колдонмонун тактасында көрүнө турган колдонмонун сүрөтчөсү менен аталышын тандаңыз. Билдирмелерде такай демейки Signal сүрөтчөсү менен аталышы көрүнүп турат. Кененирээк маалымат</string>
+    <string name="preferences__app_icon_warning_learn_more">Телефонуңуздун башкы экранында жана колдонмонун тактасында көрүнө турган колдонмонун сүрөтчөсү менен аталышын тандаңыз. Билдирмелерде такай демейки Molly сүрөтчөсү менен аталышы көрүнүп турат. Кененирээк маалымат</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Кененирээк маалымат</string>
 

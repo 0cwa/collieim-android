@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Aktibatu Erregistratzeko Blokeoa?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Desaktibatu Erregistratzeko Blokeoa?</string>
@@ -509,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Erabili pantaila-blokeoa</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Aplikazioetatik irteten zarenean edo aplikazioz aldatzen zarenean, Android-eko gailuaren blokeatze-ezarpenek Signal desblokeatu beharko dute. Blokeatuta dagoen bitartean, jakinarazpenen aurrebistetan ez da ikusiko mezuen edukia.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Aplikazioetatik irteten zarenean edo aplikazioz aldatzen zarenean, Android-eko gailuaren blokeatze-ezarpenek Molly desblokeatu beharko dute. Blokeatuta dagoen bitartean, jakinarazpenen aurrebistetan ez da ikusiko mezuen edukia.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Aktibatu pantaila-blokeoa</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -521,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Denbora pertsonalizatua</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Erabili Signal-en pantaila-blokeoa</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Erabili Molly-en pantaila-blokeoa</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Desaktibatu Signal-en pantaila-blokeoa</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Desaktibatu Molly-en pantaila-blokeoa</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Laguntza</string>
@@ -536,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Lizentziak</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Baldintzak eta Pribatutasun Arauak</string>
-    <string name="HelpFragment__copyright_signal_messenger">Copyright Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Copyright Molly Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 lizentziapean</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal irabazi-asmorik gabeko erakunde bat da</string>
@@ -545,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Aplikazioen ikonoak eta izenak hasierako pantailan eta aplikazio-menuan daude ikusgai.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Jakinarazpenek beti erakutsiko dituzte Signal-en ikono eta izen lehenetsiak.</string>
+    <string name="preferences__app_icon_notification_warning">Jakinarazpenek beti erakutsiko dituzte Molly-en ikono eta izen lehenetsiak.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Ordezko aplikazioaren ikonoa non egongo den erakusten duen ilustrazio grafikoa.</string>
 
@@ -565,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Ezarri \"%1$s\" aplikazioaren ikono eta izen gisa</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Aplikazioaren ikonoa eta izena aldatzeko, Signal itxi egin beharko da. Jakinarazpenek beti erakutsiko dituzte Signal-en ikono eta izen lehenetsiak.</string>
+    <string name="preferences__app_icon_dialog_description">Aplikazioaren ikonoa eta izena aldatzeko, Molly itxi egin beharko da. Jakinarazpenek beti erakutsiko dituzte Molly-en ikono eta izen lehenetsiak.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Hautatu aplikazioaren zer ikono eta izen nahi duzun telefonoaren hasierako pantailan eta aplikazio-menuan ikusgai egotea. Jakinarazpenek beti erakutsiko dituzte Signal-en ikono eta izen lehenetsiak. Informazio gehiago</string>
+    <string name="preferences__app_icon_warning_learn_more">Hautatu aplikazioaren zer ikono eta izen nahi duzun telefonoaren hasierako pantailan eta aplikazio-menuan ikusgai egotea. Jakinarazpenek beti erakutsiko dituzte Molly-en ikono eta izen lehenetsiak. Informazio gehiago</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Informazio gehiago</string>
 

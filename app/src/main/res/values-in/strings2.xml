@@ -169,4 +169,7 @@
     <string name="MollySocketLink_experienced_a_network_error_please_try_again">Terjadi kesalahan jaringan. Silakan coba lagi.</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server">Server MollySocket</string>
     <string name="UnifiedPushSettingsFragment__mollysocket_server_air_gapped">Air-gapped</string>
+    <string name="NotificationsSettingsFragment__notify_when">Beritahukan ketika …</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services diperbarui atau untuk sementara tidak tersedia. Silahkan coba lagi.</string>
+    <string name="please_wait">Tunggu sebentar…</string>
 </resources>

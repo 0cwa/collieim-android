@@ -10,4 +10,7 @@
     <string name="arrays__tor_via_orbot">Tor Orbot арқылы</string>
     <string name="app_icon_label_moon">Ай</string>
     <string name="app_icon_label_music">Өлен</string>
+    <string name="NotificationsSettingsFragment__notify_when">Хабарландыру жіберетін кездер…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play қызметтері жаңартылуда немесе уақытша жұмыс істемейді. Тағы да байқап көріңіз.</string>
+    <string name="please_wait">Күте тұрыңыз…</string>
 </resources>

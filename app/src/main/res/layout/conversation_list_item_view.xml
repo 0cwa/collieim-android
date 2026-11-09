@@ -97,12 +97,8 @@
         android:ellipsize="end"
         android:lines="2"
         android:maxLines="2"
-<<<<<<< MOLLY
         android:textColor="?attr/signal_text_secondary"
-=======
-        android:textColor="@color/signal_text_secondary"
         android:textDirection="locale"
->>>>>>> SIGNAL
         app:emoji_renderSpoilers="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/conversation_list_item_status_container"

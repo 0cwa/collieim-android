@@ -170,4 +170,7 @@
     <string name="preferences__follow_system">Volg het systeem</string>
     <string name="preferences_appearance__dynamic_colors">Dynamische kleuren</string>
     <string name="NotificationsSettingsFragment__the_installed_version_of_google_play_services_on_this_device_is_outdated">De versie van Google Play Services op dit apparaat is verouderd.</string>
+    <string name="NotificationsSettingsFragment__notify_when">Geef me een melding wanneer…</string>
+    <string name="RegistrationActivity_google_play_services_is_updating_or_unavailable">Google Play Services wordt momenteel bijgewerkt of is tijdelijk niet beschikbaar. Probeer het nog eens.</string>
+    <string name="please_wait">Even geduld…</string>
 </resources>

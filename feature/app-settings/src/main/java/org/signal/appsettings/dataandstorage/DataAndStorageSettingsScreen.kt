@@ -154,7 +154,7 @@ fun DataAndStorageSettingsScreen(
         Rows.ToggleRow(
           checked = state.isStayConnectedInBackgroundChecked,
           text = stringResource(R.string.DataAndStorageSettingsFragment__stay_connected_in_background),
-          enabled = state.playServicesAvailable,
+          enabled = state.pushAvailable,
           onCheckChanged = { onEvent(DataAndStorageSettingsEvent.StayConnectedInBackgroundToggled(it)) },
           modifier = Modifier.testTag(DataAndStorageSettingsTestTags.ROW_STAY_CONNECTED)
         )
@@ -278,7 +278,7 @@ private fun DataAndStorageSettingsScreenPreview() {
 @Composable
 private fun DataAndStorageSettingsScreenCalculatingPreview() {
   DataAndStorageSettingsScreen(
-    state = DataAndStorageSettingsState(playServicesAvailable = false),
+    state = DataAndStorageSettingsState(pushAvailable = false),
     onEvent = {}
   )
 }

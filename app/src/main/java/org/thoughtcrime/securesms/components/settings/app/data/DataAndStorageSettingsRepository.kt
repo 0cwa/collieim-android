@@ -13,8 +13,6 @@ import org.signal.appsettings.dataandstorage.AutoDownloadMediaType
 import org.signal.appsettings.dataandstorage.AutoDownloadNetwork
 import org.signal.core.models.calls.CallDataMode
 import org.signal.core.models.media.SentMediaQuality
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import org.thoughtcrime.securesms.components.settings.app.storage.StorageUsageRepository
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode
@@ -81,9 +79,7 @@ object DataAndStorageSettingsRepository {
     }
   }
 
-  fun isPlayServicesAvailable(): Boolean {
-    return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(AppDependencies.application) == ConnectionResult.SUCCESS
-  }
+  fun isPushAvailable(): Boolean = SignalStore.account.pushAvailable
 
   fun isProxyEnabled(): Boolean = AppDependencies.networkManager.isProxyEnabled
 

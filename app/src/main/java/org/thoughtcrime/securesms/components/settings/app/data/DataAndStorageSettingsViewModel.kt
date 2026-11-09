@@ -72,6 +72,10 @@ class DataAndStorageSettingsViewModel : EventDrivenViewModel<DataAndStorageSetti
       }
 
       is DataAndStorageSettingsEvent.StayConnectedInBackgroundToggled -> {
+        if (!DataAndStorageSettingsRepository.isPushAvailable()) {
+          refresh()
+          return
+        }
         if (event.enabled) {
           _state.update { it.copy(dialog = DataAndStorageSettingsState.Dialog.ConfirmStayConnectedInBackground) }
         } else {
@@ -83,6 +87,10 @@ class DataAndStorageSettingsViewModel : EventDrivenViewModel<DataAndStorageSetti
       DataAndStorageSettingsEvent.StayConnectedInBackgroundConfirmed -> {
         if (_state.value.dialog != DataAndStorageSettingsState.Dialog.ConfirmStayConnectedInBackground) return
         _state.update { it.copy(dialog = DataAndStorageSettingsState.Dialog.None) }
+        if (!DataAndStorageSettingsRepository.isPushAvailable()) {
+          refresh()
+          return
+        }
         DataAndStorageSettingsRepository.setForceWebsocketModeEnabled(true)
         refresh()
       }
@@ -101,7 +109,7 @@ class DataAndStorageSettingsViewModel : EventDrivenViewModel<DataAndStorageSetti
         sentMediaQuality = DataAndStorageSettingsRepository.getSentMediaQuality(),
         callDataMode = DataAndStorageSettingsRepository.getCallDataMode(),
         forceWebsocketMode = DataAndStorageSettingsRepository.isForceWebsocketModeEnabled(),
-        playServicesAvailable = DataAndStorageSettingsRepository.isPlayServicesAvailable(),
+        pushAvailable = DataAndStorageSettingsRepository.isPushAvailable(),
         isProxyEnabled = DataAndStorageSettingsRepository.isProxyEnabled()
       )
     }

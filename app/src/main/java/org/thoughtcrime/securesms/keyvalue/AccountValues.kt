@@ -474,7 +474,11 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
 
   @get:JvmName("isPushAvailable")
   val pushAvailable: Boolean
-    get() = canReceiveFcm || SignalStore.unifiedpush.isAvailableOrAirGapped
+    get() = when (SignalStore.settings.preferredNotificationMethod) {
+      SettingsValues.NotificationDeliveryMethod.FCM -> canReceiveFcm
+      SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH -> SignalStore.unifiedpush.isAvailableOrAirGapped
+      SettingsValues.NotificationDeliveryMethod.WEBSOCKET -> false
+    }
 
   fun invalidateFcmToken() {
     putInteger(KEY_FCM_TOKEN_VERSION, 0)

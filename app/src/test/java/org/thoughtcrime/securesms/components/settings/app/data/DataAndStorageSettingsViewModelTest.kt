@@ -73,7 +73,7 @@ class DataAndStorageSettingsViewModelTest {
     every { DataAndStorageSettingsRepository.setCallDataMode(any()) } answers { callDataMode = firstArg() }
     every { DataAndStorageSettingsRepository.isForceWebsocketModeEnabled() } answers { forceWebsocket }
     coEvery { DataAndStorageSettingsRepository.setForceWebsocketModeEnabled(any()) } answers { forceWebsocket = firstArg() }
-    every { DataAndStorageSettingsRepository.isPlayServicesAvailable() } returns true
+    every { DataAndStorageSettingsRepository.isPushAvailable() } returns true
     every { DataAndStorageSettingsRepository.isProxyEnabled() } returns false
   }
 
@@ -218,6 +218,33 @@ class DataAndStorageSettingsViewModelTest {
     coVerify { DataAndStorageSettingsRepository.setForceWebsocketModeEnabled(false) }
     assertThat(viewModel.state.value.forceWebsocketMode).isFalse()
     assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.None)
+  }
+
+  @Test
+  fun `missing selected push keeps websocket required without changing the saved preference`() = runTest(testDispatcher) {
+    forceWebsocket = true
+    every { DataAndStorageSettingsRepository.isPushAvailable() } returns false
+    val viewModel = DataAndStorageSettingsViewModel()
+
+    viewModel.onEvent(DataAndStorageSettingsEvent.StayConnectedInBackgroundToggled(false))
+
+    assertThat(viewModel.state.value.pushAvailable).isFalse()
+    assertThat(viewModel.state.value.isStayConnectedInBackgroundChecked).isTrue()
+    coVerify(exactly = 0) { DataAndStorageSettingsRepository.setForceWebsocketModeEnabled(any()) }
+  }
+
+  @Test
+  fun `selected push disappearing during confirmation does not enable forced websocket mode`() = runTest(testDispatcher) {
+    val viewModel = DataAndStorageSettingsViewModel()
+    viewModel.onEvent(DataAndStorageSettingsEvent.StayConnectedInBackgroundToggled(true))
+    every { DataAndStorageSettingsRepository.isPushAvailable() } returns false
+
+    viewModel.onEvent(DataAndStorageSettingsEvent.StayConnectedInBackgroundConfirmed)
+
+    assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.None)
+    assertThat(viewModel.state.value.pushAvailable).isFalse()
+    assertThat(viewModel.state.value.isStayConnectedInBackgroundChecked).isTrue()
+    coVerify(exactly = 0) { DataAndStorageSettingsRepository.setForceWebsocketModeEnabled(true) }
   }
 
   @Test

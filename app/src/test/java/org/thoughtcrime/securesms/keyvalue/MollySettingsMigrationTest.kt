@@ -10,7 +10,10 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -27,6 +30,7 @@ import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
 import org.thoughtcrime.securesms.BuildConfig
+import org.thoughtcrime.securesms.gcm.FcmUtil
 import org.thoughtcrime.securesms.testutil.DirectExecutor
 import org.thoughtcrime.securesms.testutil.EmptyLogger
 import org.thoughtcrime.securesms.util.Environment
@@ -142,6 +146,54 @@ class MollySettingsMigrationTest {
     assertEquals("fr", mollyPreferences.getString("pref_language", null))
     assertTrue(mollyPreferences.getBoolean("pref_system_emoji", false))
     assertTrue(PreferenceManager.getDefaultSharedPreferences(context).all.isEmpty())
+  }
+
+  @Test
+  fun `push readiness follows the selected provider and retains FCM capability guards`() {
+    mockkObject(SignalStore)
+    mockkStatic(FcmUtil::class)
+    try {
+      val settings = SettingsValues(store, context)
+      val account = AccountValues(store, context)
+      val unifiedPush = mockk<UnifiedPushValues>()
+      every { SignalStore.settings } returns settings
+      every { SignalStore.unifiedpush } returns unifiedPush
+      every { unifiedPush.isAvailableOrAirGapped } returns true
+      every { FcmUtil.isSupported() } returns true
+
+      account.fcmEnabled = true
+      account.fcmToken = "synthetic-token"
+      settings.preferredNotificationMethod = SettingsValues.NotificationDeliveryMethod.FCM
+      assertTrue(account.canReceiveFcm)
+      assertTrue(account.pushAvailable)
+
+      settings.preferredNotificationMethod = SettingsValues.NotificationDeliveryMethod.WEBSOCKET
+      assertFalse(account.pushAvailable)
+
+      settings.preferredNotificationMethod = SettingsValues.NotificationDeliveryMethod.UNIFIEDPUSH
+      assertTrue(account.pushAvailable)
+      every { unifiedPush.isAvailableOrAirGapped } returns false
+      assertFalse(account.pushAvailable)
+
+      settings.preferredNotificationMethod = SettingsValues.NotificationDeliveryMethod.FCM
+      every { unifiedPush.isAvailableOrAirGapped } returns true
+      account.fcmEnabled = false
+      assertFalse(account.canReceiveFcm)
+      assertFalse(account.pushAvailable)
+
+      account.fcmEnabled = true
+      every { FcmUtil.isSupported() } returns false
+      assertFalse(account.canReceiveFcm)
+      assertFalse(account.pushAvailable)
+
+      every { FcmUtil.isSupported() } returns true
+      account.fcmToken = null
+      assertFalse(account.canReceiveFcm)
+      assertFalse(account.pushAvailable)
+    } finally {
+      unmockkStatic(FcmUtil::class)
+      unmockkObject(SignalStore)
+    }
   }
 
   @Test

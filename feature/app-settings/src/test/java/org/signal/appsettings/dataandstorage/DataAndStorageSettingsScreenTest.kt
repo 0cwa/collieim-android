@@ -116,8 +116,8 @@ class DataAndStorageSettingsScreenTest {
   }
 
   @Test
-  fun `stay connected in background is locked on without play services`() {
-    setContent(DataAndStorageSettingsState(forceWebsocketMode = false, playServicesAvailable = false))
+  fun `stay connected in background is locked on without effective selected push`() {
+    setContent(DataAndStorageSettingsState(forceWebsocketMode = false, pushAvailable = false))
 
     scrollTo(DataAndStorageSettingsTestTags.ROW_STAY_CONNECTED)
     composeTestRule.onNodeWithTag(DataAndStorageSettingsTestTags.ROW_STAY_CONNECTED).assertIsNotEnabled()

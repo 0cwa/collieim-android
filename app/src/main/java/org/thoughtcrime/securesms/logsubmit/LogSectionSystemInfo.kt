@@ -30,6 +30,7 @@ import org.thoughtcrime.securesms.service.webrtc.AndroidTelecomUtil.telecomSuppo
 import org.thoughtcrime.securesms.util.AppSignatureUtil
 import org.thoughtcrime.securesms.util.NetworkUtil
 import org.thoughtcrime.securesms.util.PowerManagerCompat
+import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.VersionTracker.getDaysSinceFirstInstalled
 import java.util.Locale
 import kotlin.math.roundToLong
@@ -76,7 +77,7 @@ class LogSectionSystemInfo : LogSection {
       UnifiedPush       : ${if (locked) LOCKED else SignalStore.unifiedpush.enabled}
       Locale            : ${Locale.getDefault()}
       Linked Devices    : ${if (locked) LOCKED else SignalStore.account.isMultiDevice}
-      First Version     : ${SignalStore.misc.firstInstallVersion}
+      First Version     : ${if (locked) TextSecurePreferences.getFirstInstallVersion(context) else SignalStore.misc.firstInstallVersion}
       Days Installed    : ${getDaysSinceFirstInstalled(context)}
       Last Registration : ${if (locked) LOCKED else getTimeRegistered()}
       Build Variant     : ${BuildConfig.FLAVOR}

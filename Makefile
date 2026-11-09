@@ -5,12 +5,12 @@
 #
 # This Makefile is the entrypoint for the Docker builder image. It provides
 # the same stable build targets on every platform. Platform-specific commands
-# live in mk/<platform>.mk and are selected by TARGET_PLATFORM.
+# live in tooling/mk/<platform>.mk and are selected by TARGET_PLATFORM.
 
 TARGET_PLATFORM ?= android
 
 ifeq ($(TARGET_PLATFORM),android)
-include mk/android.mk
+include tooling/mk/android.mk
 else
 $(error Unsupported TARGET_PLATFORM='$(TARGET_PLATFORM)')
 endif

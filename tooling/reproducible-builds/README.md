@@ -24,7 +24,7 @@ export VERSION=v5.42.8-2
 git clone https://github.com/mollyim/mollyim-android.git
 
 # Go to this directory
-cd mollyim-android/reproducible-builds
+cd mollyim-android/tooling/reproducible-builds
 
 # Check out the release tag
 git checkout $VERSION

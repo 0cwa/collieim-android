@@ -129,4 +129,15 @@ include(":screener")
 include(":lintchecks")
 include(":fast-lint")
 
+// Stable Gradle project IDs backed by grouped source directories.
+project(":core-gms").projectDir = file("core/gms")
+project(":core-gms:base").projectDir = file("core/gms/base")
+project(":core-gms:cloud-messaging").projectDir = file("core/gms/cloud-messaging")
+project(":core-gms:safeparcel").projectDir = file("core/gms/safeparcel")
+project(":core-gms:safeparcel-processor").projectDir = file("core/gms/safeparcel-processor")
+project(":core-gms:tasks").projectDir = file("core/gms/tasks")
+project(":screener").projectDir = file("tooling/screener")
+project(":lintchecks").projectDir = file("tooling/lintchecks")
+project(":fast-lint").projectDir = file("tooling/fast-lint")
+
 rootProject.name = "Molly"

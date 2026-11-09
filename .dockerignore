@@ -9,5 +9,5 @@
 **/local.properties
 **/signing.properties
 **/test/androidTestEspresso/res/values/arrays.xml
-reproducible-builds/certs
-reproducible-builds/outputs
+tooling/reproducible-builds/certs
+tooling/reproducible-builds/outputs

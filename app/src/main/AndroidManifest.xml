@@ -946,6 +946,7 @@
         <!-- ======================================= -->
         <activity-alias
             android:name=".RoutingActivity"
+            android:roundIcon="@mipmap/ic_launcher_round"
             android:exported="true"
             android:resizeableActivity="true"
             android:targetActivity=".MainActivity">

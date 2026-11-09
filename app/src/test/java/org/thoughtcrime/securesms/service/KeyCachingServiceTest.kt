@@ -13,6 +13,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -91,6 +92,28 @@ class KeyCachingServiceTest {
   @Test
   fun `successful retry keeps fallback alarm when keyguard is locked`() {
     assertRetryAlarm(interactive = true, locked = true, expectAlarm = true)
+  }
+
+  @Test
+  fun `locked actionless request stops without promoting the service or caching a key`() {
+    KeyCachingService.clearMasterSecret()
+    val controller = Robolectric.buildService(KeyCachingService::class.java).create()
+    val service = controller.get()
+
+    try {
+      val shadow = shadowOf(service)
+      assertEquals(
+        KeyCachingService.START_NOT_STICKY,
+        service.onStartCommand(Intent(service, KeyCachingService::class.java), 0, 42)
+      )
+
+      assertTrue(KeyCachingService.isLocked())
+      assertTrue(shadow.isStoppedBySelf)
+      verify(exactly = 0) { TextSecurePreferences.isPassphraseLockEnabled(any()) }
+      verify(exactly = 0) { NotificationChannels.getInstance() }
+    } finally {
+      controller.destroy()
+    }
   }
 
   private fun assertRetryAlarm(interactive: Boolean, locked: Boolean, expectAlarm: Boolean) {

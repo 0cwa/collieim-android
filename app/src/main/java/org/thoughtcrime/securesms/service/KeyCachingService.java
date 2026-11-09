@@ -110,6 +110,11 @@ public class KeyCachingService extends Service {
     if (intent == null || (intent.getAction() != null && isLocked())) {
       return START_NOT_STICKY;
     }
+    if (intent.getAction() == null && isLocked()) {
+      Log.w(TAG, "Refuse to cache keys while the app is locked.");
+      stopSelf(startId);
+      return START_NOT_STICKY;
+    }
     Log.d(TAG, "onStartCommand, " + intent.getAction());
 
     if (intent.getAction() != null) {

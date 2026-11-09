@@ -166,9 +166,9 @@ object ChatColorsPalette {
     @JvmStatic
     val default = ULTRAMARINE
 
-    // Automatic chats without wallpaper use Collie copper; explicit presets stay unchanged.
+    // Automatic chats without wallpaper use Collie Redwood; explicit presets stay unchanged.
     @JvmStatic
-    val autoDefault = ChatColors.forColor(ChatColors.Id.Auto, 0xFF96390C.toInt())
+    val autoDefault = ChatColors.forColor(ChatColors.Id.Auto, 0xFF6F270F.toInt())
 
     /*
      * If updating this list of colors, make sure to update the backup import/export colors as well.

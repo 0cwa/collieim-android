@@ -37,12 +37,12 @@ object ChatColorsMapper {
     put(SingleColorChatWallpaper.RAINFOREST, ChatColorsPalette.Bubbles.WINTERGREEN)
     put(SingleColorChatWallpaper.PACIFIC, ChatColorsPalette.Bubbles.TEAL)
     put(SingleColorChatWallpaper.FROST, ChatColorsPalette.Bubbles.BLUE)
-    put(SingleColorChatWallpaper.NAVY, ChatColorsPalette.Bubbles.ULTRAMARINE)
+    put(SingleColorChatWallpaper.NAVY, ChatColorsPalette.Bubbles.BLUE)
     put(SingleColorChatWallpaper.LILAC, ChatColorsPalette.Bubbles.VIOLET)
     put(SingleColorChatWallpaper.PINK, ChatColorsPalette.Bubbles.PLUM)
     put(SingleColorChatWallpaper.EGGPLANT, ChatColorsPalette.Bubbles.TAUPE)
     put(SingleColorChatWallpaper.SILVER, ChatColorsPalette.Bubbles.STEEL)
-    put(GradientChatWallpaper.SUNSET, ChatColorsPalette.Bubbles.EMBER)
+    put(GradientChatWallpaper.SUNSET, ChatColorsPalette.Bubbles.autoDefault)
     put(GradientChatWallpaper.NOIR, ChatColorsPalette.Bubbles.MIDNIGHT)
     put(GradientChatWallpaper.HEATMAP, ChatColorsPalette.Bubbles.INFRARED)
     put(GradientChatWallpaper.AQUA, ChatColorsPalette.Bubbles.LAGOON)
@@ -66,7 +66,7 @@ object ChatColorsMapper {
   fun getChatColors(wallpaper: ChatWallpaper): ChatColors {
     return wallpaperToChatColorsMap.entries.find { (key, _) ->
       key.isSameSource(wallpaper)
-    }?.value ?: ChatColorsPalette.Bubbles.default
+    }?.value ?: ChatColorsPalette.Bubbles.autoDefault
   }
 
   @JvmStatic

@@ -29,7 +29,7 @@ import org.thoughtcrime.securesms.wallpaper.ChatWallpaper
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
 class Recipient_getChatColorsTest {
-  private val defaultChatColors = ChatColors.forColor(ChatColors.Id.Auto, 0xFF96390C.toInt())
+  private val defaultChatColors = ChatColors.forColor(ChatColors.Id.Auto, 0xFF6F270F.toInt())
   private val globalWallpaperChatColor = ChatColors.forColor(ChatColors.Id.BuiltIn, Color.RED)
   private val globalChatColor = ChatColors.forColor(ChatColors.Id.BuiltIn, Color.GREEN)
 

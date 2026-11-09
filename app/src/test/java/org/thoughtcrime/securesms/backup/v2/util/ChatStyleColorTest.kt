@@ -18,11 +18,11 @@ class ChatStyleColorTest {
   private val backupMode = BackupMode.LOCAL
 
   @Test
-  fun `automatic color survives export and import as automatic copper`() {
+  fun `automatic color survives export and import as automatic Redwood`() {
     val auto = ChatColorsPalette.Bubbles.autoDefault
     val exported = ChatStyleConverter.constructRemoteChatStyle(database, auto, ChatColors.Id.Auto, null, backupMode)!!
     assertNotNull(exported.autoBubbleColor)
-    assertEquals(ChatColors.forColor(ChatColors.Id.Auto, 0xFF96390C.toInt()), exported.toLocal(importState))
+    assertEquals(ChatColors.forColor(ChatColors.Id.Auto, 0xFF6F270F.toInt()), exported.toLocal(importState))
   }
 
   @Test

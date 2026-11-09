@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Molly.Starting.Light" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/core_ultramarine_icon</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_animated</item>
+    <style name="Theme.Molly.Starting.Light" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/molly_background_light</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/molly_background_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
     </style>
 
-    <style name="Theme.Molly.Starting.Dark" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/core_ultramarine_icon_dark</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_animated_dark</item>
+    <style name="Theme.Molly.Starting.Dark" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/molly_background_dark</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/molly_background_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
     </style>
 </resources>

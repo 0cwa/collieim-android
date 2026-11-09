@@ -33,8 +33,8 @@ class DataAndStorageSettingsLayoutTest : SignalLayoutStressTest() {
   }
 
   @Test
-  fun `without play services`() = assertPassesLayoutChecks {
-    DataAndStorageSettingsScreen(state = populated.copy(forceWebsocketMode = false, playServicesAvailable = false), onEvent = {})
+  fun `without effective selected push`() = assertPassesLayoutChecks {
+    DataAndStorageSettingsScreen(state = populated.copy(forceWebsocketMode = false, pushAvailable = false), onEvent = {})
   }
 
   @Test

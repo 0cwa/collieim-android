@@ -65,14 +65,15 @@ class RemoteConfigOverrideTest {
   @Before
   fun setup() {
     Log.initialize(LogRecorder())
-    RemoteConfig.underTest = true
+    // MOLLY: internalUser comes from the build type (debug builds are internal), not from the service value.
+    RemoteConfig.underTest = false
     reset()
   }
 
   @After
   fun tearDown() {
     reset()
-    RemoteConfig.underTest = false
+    RemoteConfig.internalUserDisabled = false
   }
 
   @Test
@@ -97,7 +98,8 @@ class RemoteConfigOverrideTest {
 
   @Test
   fun `overrides are ignored for non-internal users`() {
-    setServiceValues(INTERNAL_USER to false, BOOLEAN_FLAG to false)
+    RemoteConfig.internalUserDisabled = true
+    setServiceValues(BOOLEAN_FLAG to false)
     SignalStore.remoteConfig.overrides = mapOf(BOOLEAN_FLAG to "true")
 
     RemoteConfig.init()

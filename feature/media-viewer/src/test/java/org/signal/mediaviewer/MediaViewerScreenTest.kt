@@ -8,9 +8,12 @@ package org.signal.mediaviewer
 import android.app.Application
 import android.net.Uri
 import android.os.Looper
+import android.view.ContextThemeWrapper
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
@@ -395,12 +398,16 @@ class MediaViewerScreenTest {
     dismissState: DragToDismissState = DragToDismissState()
   ) {
     composeTestRule.setContent {
-      MediaViewerScreen(
-        state = state,
-        onEvent = { events += it },
-        playbackController = playbackController,
-        dismissState = dismissState
-      )
+      // Molly's video controls require a Material theme in the Robolectric activity.
+      val themedContext = ContextThemeWrapper(LocalContext.current, com.google.android.material.R.style.Theme_Material3_DayNight_NoActionBar)
+      CompositionLocalProvider(LocalContext provides themedContext) {
+        MediaViewerScreen(
+          state = state,
+          onEvent = { events += it },
+          playbackController = playbackController,
+          dismissState = dismissState
+        )
+      }
     }
   }
 

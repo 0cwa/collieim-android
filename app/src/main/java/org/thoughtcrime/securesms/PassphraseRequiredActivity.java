@@ -14,7 +14,7 @@ import org.signal.core.util.AppForegroundObserver;
 import org.signal.core.util.eventbus.EventBus;
 import org.signal.core.util.logging.Log;
 import org.signal.devicetransfer.TransferStatus;
-import org.signal.registration.RegistrationActivity;
+import org.thoughtcrime.securesms.registration.ui.RegistrationActivity;
 import org.signal.registration.RegistrationRoute;
 import org.thoughtcrime.securesms.clockskew.ClockSkewActivity;
 import org.thoughtcrime.securesms.clockskew.ClockSkewDetector;
@@ -32,6 +32,7 @@ import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.registration.ui.RegistrationIntents;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import org.thoughtcrime.securesms.util.AppStartup;
+import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 public abstract class PassphraseRequiredActivity extends PassphraseActivity implements MasterSecretListener {
   private static final String TAG = Log.tag(PassphraseRequiredActivity.class);
@@ -76,6 +77,9 @@ public abstract class PassphraseRequiredActivity extends PassphraseActivity impl
   }
 
   protected void onPreCreate() {}
+
+  /** Registration hosts still require the local passphrase, but own their registration navigation. */
+  protected boolean isRegistrationFlow() { return false; }
   protected void onCreate(Bundle savedInstanceState, boolean ready) {}
 
   @Override
@@ -130,6 +134,8 @@ public abstract class PassphraseRequiredActivity extends PassphraseActivity impl
       return STATE_PROMPT_PASSPHRASE;
     } else if (ApplicationMigrations.isUpdate(this) && ApplicationMigrations.isUiBlockingMigrationRunning()) {
       return STATE_UI_BLOCKING_UPGRADE;
+    } else if (isRegistrationFlow()) {
+      return STATE_NORMAL;
     } else if (!SignalStore.registration().getHasPromptedPushRegistration()) {
       return STATE_WELCOME_PUSH_SCREEN;
     } else if (shouldResumeLinkingRegistration()) {
@@ -171,7 +177,7 @@ public abstract class PassphraseRequiredActivity extends PassphraseActivity impl
 
   /**
    * The registration module owns every step of the flow until it marks registration complete, including the steps that
-   * happen after the account itself is registered (restore, PIN). If we come back to a cold start in the middle of that, 
+   * happen after the account itself is registered (restore, PIN). If we come back to a cold start in the middle of that,
    * hand the user back to the registration module.
    */
   private boolean shouldResumeRegistration() {
@@ -201,14 +207,7 @@ public abstract class PassphraseRequiredActivity extends PassphraseActivity impl
   }
 
   private Intent getUiBlockingUpgradeIntent() {
-<<<<<<< MOLLY
     return getRoutedIntent(ApplicationMigrationActivity.class, MainActivity.clearTop(this));
-=======
-    return getRoutedIntent(ApplicationMigrationActivity.class,
-                           SignalStore.registration().getHasPromptedPushRegistration()
-                               ? getConversationListIntent()
-                               : getPushRegistrationIntent());
->>>>>>> SIGNAL
   }
 
   private Intent getPushRegistrationIntent() {

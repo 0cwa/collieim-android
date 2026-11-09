@@ -49,42 +49,6 @@ public class PassphraseCreateActivity extends PassphraseActivity {
     initializeResources();
   }
 
-<<<<<<< MOLLY
-=======
-  private void initializeResources() {
-    new SecretGenerator().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, MasterSecretUtil.UNENCRYPTED_PASSPHRASE);
-  }
-
-  private class SecretGenerator extends AsyncTask<String, Void, Void> {
-    private MasterSecret   masterSecret;
-
-    @Override
-    protected void onPreExecute() {
-    }
-
-    @Override
-    protected Void doInBackground(String... params) {
-      String passphrase = params[0];
-      masterSecret      = MasterSecretUtil.generateMasterSecret(PassphraseCreateActivity.this,
-                                                                passphrase);
-
-      MasterSecretUtil.generateAsymmetricMasterSecret(PassphraseCreateActivity.this, masterSecret);
-      SignalStore.account().generateAciIdentityKeyIfNecessary();
-      if (SignalStore.account().getPni() != null) {
-        SignalStore.account().generatePniIdentityKeyIfNecessary();
-      }
-      VersionTracker.updateLastSeenVersion();
-
-      return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void param) {
-      setMasterSecret(masterSecret);
-    }
-  }
-
->>>>>>> SIGNAL
   @Override
   public boolean useScreenLock() {
     return false;

@@ -642,4 +642,10 @@ fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").
 
 // Publication migration gate: remove only with reviewed public native inputs and
 // direct-source acceptance. The legacy operator route is retained in engineering.
-throw GradleException("Direct Android builds BLOCKED: publish and verify locked native inputs first; see BUILD.md")
+val nativeAcceptanceFile = rootProject.file("build-inputs/native-publication.json")
+val nativeAcceptanceText = if (nativeAcceptanceFile.isFile) nativeAcceptanceFile.readText() else ""
+val nativeInputsAccepted = nativeAcceptanceText.contains("\"status\": \"ACCEPTED\"") &&
+  nativeAcceptanceText.contains("\"evidence_sha256\": \"c250fabb3deaf9b1266b23bba60f9a094636b5359c1efd3a4520114eb5a11948\"")
+if (!nativeInputsAccepted) {
+  throw GradleException("Direct Android builds BLOCKED: accepted native publication evidence is absent or differs; see BUILD.md")
+}

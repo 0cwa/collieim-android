@@ -9,27 +9,31 @@ official Linux/amd64 image by digest. Gradle/SDK/NDK and strict dependency input
 are also declared in this tree. Canonical identity is im.collie.app,
 Collie backup names and optional FCM; legacy filename aliases are one product.
 
-**Direct build readiness: BLOCKED.** `build-inputs/native-lock.json` identifies
-accepted native bytes. Their public immutable repository has not been supplied
-or independently downloaded. `native-publication.json` records this gap. Do not
+**Direct build readiness: ACCEPTED for the exact native publication evidence recorded in `build-inputs/native-publication.json`.** `build-inputs/native-lock.json` identifies
+accepted native bytes. Policy run 42569065555 attempt 1 completed; both readback phases verified all 15 canonical HTTPS paths by response body size and SHA-256. The retained pre-dispatch snapshot and receipt are bound by the evidence digest below. `previous_verified=false` records the authorized first-publication recovery classification; this does not claim origin verification or cryptographic GitHub attestation. Do not
 substitute upstream native libraries or disable strict dependency verification.
-Every direct Android Gradle configuration deliberately fails until the required publication layer
-and clean-checkout build acceptance are reviewed. This draft is not releasable.
+Native evidence SHA-256: `c250fabb3deaf9b1266b23bba60f9a094636b5359c1efd3a4520114eb5a11948`.
+Direct Android Gradle configuration proceeds only when its committed acceptance digest matches the
+validated Pages plan, journal, six pinned native files, and exact successful policy run. Native input
+acceptance does not by itself establish a releasable build.
 
-The retained local operator route is in collie-release-engineering and still
-requires its explicit trusted-local native acceptance. That is not independent
-native reproduction. The three locked binaries and transformed POMs now have tracked exclusive repository, catalog, substitutions and strict verification entries. The proposed origin in build-inputs/native-artifacts.json is NOT PUBLISHED. Obtain operator publication approval, independently read back all six exact files, review a separate acceptance/gate layer, then run a fresh controlled Gradle build. No native init script, local Maven lookup or external native source includeBuild is part of this direct-source recipe.
+The six exact pinned native files were published to the immutable repository and independently read back in both completed phases. The retained local operator route is separate and was not used to establish this acceptance. The source binds the receipt's run, policy, asset, manifest, journal, dispatch and plan digests as trusted local consistency evidence; it is not a cryptographic GitHub attestation or an origin-verification claim. No native init script, local Maven lookup or external native source includeBuild is part of this direct-source recipe.
 After reviewed gate removal, releaseVersionCode and releaseVersionName are normal source-defined Gradle properties. Final values must come from serialized external reservation and be recorded in the build receipt. The expected canonical task is `./gradlew --dependency-verification=strict
-:app:assembleProdWebsiteRelease`; it is currently BLOCKED as described above.
+:app:assembleProdWebsiteRelease`; native input acceptance is recorded above; source build and runtime acceptance remain required.
 
 Release versions must be externally reserved above 177702 and all later published
 or reserved codes using engineering's serialized version policy. RC1 ingestion
 reuses its existing signed bytes/code. No build has been performed from this G.
-**DRAFT candidate proposal:** 8.35.1-2-rc1 / 177703. This value is not allocated
-or reserved. The direct-build gate remains closed until the owner refreshes the
-inventory and confirms this proposal through the serialized reservation policy.
+**Release candidate identity:** 8.35.1-2-rc1 / 177703. Version code 177703 is held; its
+hold must be bound to the actual unsigned manifest before signing. The direct-build gate remains
+bound to the recorded native acceptance digest. Build and runtime acceptance remain required.
 No parity with historical APK bytes is claimed after changing build metadata.
 Instrumentation remains opt-in. Physical-device/account/attachment/database
 upgrade acceptance and independently reproduced native outputs are NOT RUN.
 
 Native JVM regression readiness is separate: build-inputs/host-test-inputs.json records the historical Linux testing-JNI candidate and immutable staging-guard recipe. No public host-test input or complete host build recipe is supplied; those tests are NOT RUN, not skipped/passed. Do not package test JNI in a release or treat the six production Maven files as all-test readiness.
+
+
+### Preserve build outputs before source receipt collection
+
+Build only from the registered agent-owned G checkout after recording its clean HEAD, index tree, and worktree tree. Before Gradle runs, expand and verify this exact generated-path set is absent: `.gradle/`, `.kotlin/`, `.cxx/`, root `build/`, `app/build/`, and each included module's `build/` under `core/*`, `core-gms/*`, `lib/*`, and `feature/*`, plus `screener/build/`, `lintchecks/build/`, and `fast-lint/build/`. Record the expanded paths. After the unsigned APK and required reports are complete, copy the APK, reports, build log, exact command, and tool-version record to the separate receipt directory outside the G checkout. Then remove only the recorded paths that were absent before the build and were created by that build. Do not remove `local.properties`, source files, pre-existing paths, or anything with `git clean`. Finally verify HEAD, index tree, and tracked worktree tree still equal the recorded G commit/tree, and verify there are no untracked or modified source paths before running the strict source receipt collector. Keep the copied APK and reports outside the checkout.

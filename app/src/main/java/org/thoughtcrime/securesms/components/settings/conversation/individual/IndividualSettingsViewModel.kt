@@ -8,6 +8,7 @@ package org.thoughtcrime.securesms.components.settings.conversation.individual
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,6 +71,8 @@ class IndividualSettingsViewModel(
 
   private val sharedMediaLoader = SharedMediaLoader(repository)
   private val mediaRailPresenter = RecentMediaRailPresenter(viewModelScope, sharedMediaLoader)
+  private var linkedDeviceCountJob: Job? = null
+  private var linkedDeviceCountGeneration: Long = 0
 
   init {
     require(kind != ConversationSettingsKind.GROUP) { "Groups belong to GroupSettingsViewModel" }
@@ -237,8 +240,26 @@ class IndividualSettingsViewModel(
         repository.refreshRecipient(recipientId)
       }
       is IndividualSettingsEvent.RecipientChanged -> {
-        val linkedDeviceCount = repository.getLinkedDeviceCount(event.recipient)
-        _state.update { it.applyRecipient(event.recipient).copy(linkedDeviceCount = linkedDeviceCount) }
+        val recipient = event.recipient
+        linkedDeviceCountJob?.cancel()
+        val generation = ++linkedDeviceCountGeneration
+
+        _state.update { it.applyRecipient(recipient).copy(linkedDeviceCount = null) }
+
+        if (
+          kind == ConversationSettingsKind.INDIVIDUAL &&
+          recipient.isRegistered &&
+          !recipient.isGroup &&
+          !recipient.isSelf &&
+          !recipient.isReleaseNotes
+        ) {
+          linkedDeviceCountJob = viewModelScope.launch {
+            val linkedDeviceCount = repository.getLinkedDeviceCount(recipient)
+            if (generation == linkedDeviceCountGeneration) {
+              _state.update { it.copy(linkedDeviceCount = linkedDeviceCount) }
+            }
+          }
+        }
       }
       is IndividualSettingsEvent.StoryViewStateChanged -> {
         _state.update { it.copy(storyViewState = event.storyViewState) }

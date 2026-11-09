@@ -18,14 +18,20 @@ sealed interface ProxyConfig {
   data class ProxyAddress(
     val scheme: ProxyScheme,
     val host: String,
-    val port: Int
+    val port: Int,
+    val source: ProxySource = ProxySource.SYSTEM
   ) : ProxyConfig
 
   /** Supported proxy schemes by [Network]. */
   enum class ProxyScheme(val value: String) {
     TLS(Network.SIGNAL_TLS_PROXY_SCHEME),
     SOCKS("socks5"),
+    SOCKS_REMOTE_DNS("socks5h"),
     HTTP("http")
+  }
+
+  enum class ProxySource {
+    USER, SYSTEM
   }
 
   companion object {
@@ -36,11 +42,11 @@ sealed interface ProxyConfig {
     fun resolve(
       configuration: SignalServiceConfiguration,
       targetUrl: String,
-      proxySelector: ProxySelector? = ProxySelector.getDefault()
+      proxySelector: ProxySelector? = ProxySelector.getDefault(),
+      userProxy: Proxy? = null
     ): ProxyConfig {
-      val signalProxy = configuration.signalProxy.orElse(null)
       return when {
-        signalProxy != null -> signalProxy.toProxyConfig()
+        userProxy != null && userProxy != Proxy.NO_PROXY -> checkNotNull(fromProxy(userProxy, ProxySource.USER))
         configuration.censored -> Direct
         else -> resolveSystemProxy(targetUrl, proxySelector)?.let { fromSystemProxy(it) } ?: Direct
       }
@@ -60,21 +66,26 @@ sealed interface ProxyConfig {
       }
     }
 
-    private fun fromSystemProxy(proxy: Proxy): ProxyConfig? {
+    @JvmStatic
+    fun fromProxy(proxy: Proxy, source: ProxySource): ProxyConfig? {
       val scheme = when (proxy.type()) {
         Proxy.Type.HTTP -> ProxyScheme.HTTP
-        Proxy.Type.SOCKS -> ProxyScheme.SOCKS
+        Proxy.Type.SOCKS -> if (source == ProxySource.USER) ProxyScheme.SOCKS_REMOTE_DNS else ProxyScheme.SOCKS
         Proxy.Type.DIRECT -> return null
       }
 
       val socketAddress = proxy.address() as? InetSocketAddress ?: return null
 
-      // Android surfaces a PAC (auto-config) proxy as a loopback bridge. We do not support PAC, so skip it and connect directly.
-      if (socketAddress.isLoopback()) {
+      return ProxyAddress(scheme, socketAddress.hostString, socketAddress.port, source)
+    }
+
+    private fun fromSystemProxy(proxy: Proxy): ProxyConfig? {
+      // The generic system resolver skips Android's PAC bridge. Molly's explicit proxy resolver uses fromProxy
+      // directly so an existing local SOCKS/HTTP configuration continues to work.
+      if ((proxy.address() as? InetSocketAddress)?.isLoopback() == true) {
         return null
       }
-
-      return ProxyAddress(scheme, socketAddress.hostString, socketAddress.port)
+      return fromProxy(proxy, ProxySource.SYSTEM)
     }
 
     /** [ProxySelector] returns unresolved addresses, so [InetSocketAddress.getAddress] is normally null and only the host string is available. */

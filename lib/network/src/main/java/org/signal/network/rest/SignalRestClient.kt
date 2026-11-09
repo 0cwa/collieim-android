@@ -28,23 +28,15 @@ import okio.buffer
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.net.BadRequestError
 import org.signal.libsignal.net.RequestResult
-import org.signal.network.config.SignalProxy
 import org.signal.network.config.SignalServiceConfiguration
 import org.signal.network.config.SignalUrl
 import org.signal.network.rest.RequestSpec.Host
 import org.signal.network.util.JsonUtil
 import org.signal.network.util.Tls12SocketFactory
-import org.signal.network.util.TlsProxySocketFactory
 import org.whispersystems.signalservice.api.messages.AttachmentTransferProgress
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachment.ProgressListener
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import org.whispersystems.signalservice.api.util.CredentialsProvider
-<<<<<<< MOLLY
-import org.whispersystems.signalservice.api.util.Tls12SocketFactory
-import org.whispersystems.signalservice.internal.configuration.SignalServiceConfiguration
-import org.whispersystems.signalservice.internal.configuration.SignalUrl
-=======
->>>>>>> SIGNAL
 import org.whispersystems.signalservice.internal.util.BlacklistingTrustManager
 import java.io.IOException
 import java.io.OutputStream
@@ -180,7 +172,14 @@ class SignalRestClient @JvmOverloads constructor(
   private val directCdnClientsMap: Map<Int, Array<ConnectionHolder>> by lazy {
     if (uncensoredConfiguration !== configuration) {
       uncensoredConfiguration.signalCdnUrlMap.mapValues { (_, urls) ->
-        createConnectionHolders(urls, uncensoredConfiguration.networkInterceptors, uncensoredConfiguration.dns, uncensoredConfiguration.signalProxy, clientOverride)
+        createConnectionHolders(
+          urls = urls,
+          interceptors = uncensoredConfiguration.networkInterceptors,
+          dns = uncensoredConfiguration.dns,
+          socketFactory = uncensoredConfiguration.socketFactory,
+          proxySelector = uncensoredConfiguration.proxySelector,
+          clientOverride = clientOverride
+        )
       }
     } else {
       cdnClientsMap
@@ -189,7 +188,14 @@ class SignalRestClient @JvmOverloads constructor(
 
   private val directStorageClients: Array<ConnectionHolder> by lazy {
     if (uncensoredConfiguration !== configuration) {
-      createConnectionHolders(uncensoredConfiguration.signalStorageUrls, uncensoredConfiguration.networkInterceptors, uncensoredConfiguration.dns, uncensoredConfiguration.signalProxy, clientOverride)
+      createConnectionHolders(
+        urls = uncensoredConfiguration.signalStorageUrls,
+        interceptors = uncensoredConfiguration.networkInterceptors,
+        dns = uncensoredConfiguration.dns,
+        socketFactory = uncensoredConfiguration.socketFactory,
+        proxySelector = uncensoredConfiguration.proxySelector,
+        clientOverride = clientOverride
+      )
     } else {
       storageClients
     }

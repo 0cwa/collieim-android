@@ -535,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">ലൈസൻസുകൾ</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">നിബന്ധനകളും സ്വകാര്യതാ നയവും</string>
-    <string name="HelpFragment__copyright_signal_messenger">പകർപ്പവകാശ Molly Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">പകർപ്പവകാശ Collie Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3-യ്ക്ക് കീഴിൽ ലൈസൻസ് ചെയ്‌തത്</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal ഒരു ലാഭേച്ഛയില്ലാത്ത സ്ഥാപനമാണ്</string>

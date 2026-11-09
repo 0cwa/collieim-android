@@ -534,7 +534,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Lisensi</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Istilah &amp; Kebijakan Privasi</string>
-    <string name="HelpFragment__copyright_signal_messenger">Hak Cipta Molly Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Hak Cipta Collie Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Berlisensi GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal berstatus nirlaba</string>

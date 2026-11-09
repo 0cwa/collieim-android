@@ -7,7 +7,7 @@
     <string name="app_icon_label_moon">Měsíc</string>
     <string name="app_icon_label_music">Hudba</string>
 <string name="preferences__enable_debug_log">Zapnout ladicí log</string>
-    <string name="HelpSettingsFragment__molly_im_website">Stránka Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Stránka Collie.im</string>
     <string name="preferences__include_beta_updates">Zahrnout beta aktualizace</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta verze jsou zamýšleny pro testovací účely a mouhou obsahovat bugy</string>
     <string name="preferences__autoupdate_molly">Automaticky aktualizovat Collie</string>

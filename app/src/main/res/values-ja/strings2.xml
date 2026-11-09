@@ -57,7 +57,7 @@
     <string name="arrays__daily">毎日</string>
     <string name="BackupsPreferenceFragment__number_of_backups_to_retain">保持するバックアップの数</string>
     <string name="MessageRetrievalService_ready_to_receive_messages">メッセージを受信する準備ができました</string>
-    <string name="HelpSettingsFragment__molly_im_website">Molly.im のウェブサイト</string>
+    <string name="HelpSettingsFragment__molly_im_website">Collie.im のウェブサイト</string>
     <string name="WipeMemoryService_clearing_unencrypted_data_from_ram">RAM から暗号化されていないデータを削除中</string>
     <string name="preferences_network__check_connection">接続の確認</string>
     <string name="DonateMegaphone_molly_is_free_software">Molly はフリーソフトウェアです</string>

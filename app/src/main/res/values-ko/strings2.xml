@@ -84,7 +84,7 @@
     <string name="BackupsPreferenceFragment__change_schedule">일정 변경</string>
     <string name="BackupsPreferenceFragment__number_of_backups_to_retain">보유할 백업 수</string>
     <string name="MessageRetrievalService_ready_to_receive_messages">메시지 수신 준비 완료</string>
-    <string name="HelpSettingsFragment__molly_im_website">Molly.im 웹사이트</string>
+    <string name="HelpSettingsFragment__molly_im_website">Collie.im 웹사이트</string>
     <string name="DeviceAddFragment__link_without_scanning">스캔 없이 연결하기</string>
     <string name="HelpSettingsFragment_disable_and_delete_debug_log">디버그 로그를 삭제하고 비활성화 할까요?</string>
     <string name="ConversationSettingsFragment__add_to_your_phones_contacts">기기 연락처에 추가하기</string>

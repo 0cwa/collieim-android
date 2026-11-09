@@ -7,7 +7,7 @@
     <string name="app_icon_label_music">موسيقى</string>
     <string name="preferences_appearance__dynamic_colors">ألوان حيوية</string>
 <string name="preferences__enable_debug_log">فعِّل سجل التصحيح</string>
-    <string name="HelpSettingsFragment__molly_im_website">موقع Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">موقع Collie.im</string>
     <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">تحقق دوريًا من وجود إصدارات جديدة واطلب تثبيتها</string>
     <string name="preferences__autoupdate_molly">حدّث Collie تلقائيًا</string>
     <string name="preferences__include_beta_updates">تضمين تحديثات تجريبة</string>

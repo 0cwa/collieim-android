@@ -73,7 +73,7 @@
     <string name="BackupsPreferenceFragment__change_schedule">Thay đổi lịch trìng</string>
     <string name="BackupsPreferenceFragment__number_of_backups_to_retain">Số lượng bản sao lưu giữ lại</string>
     <string name="MessageRetrievalService_ready_to_receive_messages">Sẵn sàng nhận tin nhắn</string>
-    <string name="HelpSettingsFragment__molly_im_website">Trang chủ Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Trang chủ Collie.im</string>
     <string name="DeviceAddFragment__link_without_scanning">Dùng liên kết thay vì quét</string>
     <string name="enter_device_link_dialog__if_your_phone_cant_scan_the_qr_code_you_can_manually_enter_the_link_encoded_in_the_qr_code">Nếu như thiết bị của bạn không thể quét mã QR, bạn có thể tự nhập đường dẫn trích ra được từ mã QR.</string>
     <string name="HelpSettingsFragment_disable_and_delete_debug_log">Xoá là tắt chế độ ghi lỗi?</string>

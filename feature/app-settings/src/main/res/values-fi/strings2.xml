@@ -7,7 +7,7 @@
     <string name="preferences_appearance__dynamic_colors">Dynaamiset värit</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Käytä järjestelmän värejä sovelluksen teemassa</string>
 <string name="preferences__enable_debug_log">Ota virheenkorjausloki käyttöön</string>
-    <string name="HelpSettingsFragment__molly_im_website">Molly.im-verkkosivusto</string>
+    <string name="HelpSettingsFragment__molly_im_website">Collie.im-verkkosivusto</string>
     <string name="preferences__include_beta_updates">Sisällytä beta-päivitykset</string>
     <string name="preferences__autoupdate_molly">Päivitä Collie automaattisesti</string>
     <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Tarkista säännöllisesti uudet julkaisut ja pyydä asentamaan ne</string>

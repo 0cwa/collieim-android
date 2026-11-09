@@ -75,6 +75,42 @@ class AccountSettingsScreenTest {
   }
 
   @Test
+  fun `linked devices are under Account and preserve the primary device registration guard`() {
+    setContent(createState(isPrimaryDevice = true))
+    scrollTo(AccountSettingsTestTags.ROW_LINKED_DEVICES)
+    composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_LINKED_DEVICES).performClick()
+    assertThat(events).contains(AccountSettingsEvent.LinkedDevicesClicked)
+  }
+
+  @Test
+  fun `linked devices stay disabled for an unregistered user`() {
+    setContent(createState(isPrimaryDevice = true, userUnregistered = true))
+    scrollTo(AccountSettingsTestTags.ROW_LINKED_DEVICES)
+    composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_LINKED_DEVICES).assertIsNotEnabled()
+  }
+
+  @Test
+  fun `optional payments and donation management remain available in Account`() {
+    setContent(createState(isPrimaryDevice = true, showPayments = true, showDonationManagement = true), donationManagementLabel = "Manage donations")
+
+    scrollTo(AccountSettingsTestTags.ROW_PAYMENTS)
+    composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_PAYMENTS).performClick()
+    scrollTo(AccountSettingsTestTags.ROW_MANAGE_DONATIONS)
+    composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_MANAGE_DONATIONS).performClick()
+
+    assertThat(events).contains(AccountSettingsEvent.PaymentsClicked)
+    assertThat(events).contains(AccountSettingsEvent.ManageDonationsClicked)
+  }
+
+  @Test
+  fun `payments retain the unread count badge in Account`() {
+    setContent(createState(isPrimaryDevice = true, showPayments = true, unreadPaymentsCount = 4))
+
+    scrollTo(AccountSettingsTestTags.ROW_PAYMENTS)
+    composeTestRule.onNodeWithText("4").assertIsDisplayed()
+  }
+
+  @Test
   fun givenUserWithPin_whenPinReminderToggleClicked_thenIExpectToggleEvent() {
     setContent(createState(hasPin = true, pinRemindersEnabled = true))
 
@@ -533,11 +569,12 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_CHANGE_PHONE_NUMBER).assertDoesNotExist()
   }
 
-  private fun setContent(state: AccountSettingsState) {
+  private fun setContent(state: AccountSettingsState, donationManagementLabel: String? = null) {
     composeTestRule.setContent {
       AccountSettingsScreen(
         state = state,
-        onEvent = { events += it }
+        onEvent = { events += it },
+        donationManagementLabel = donationManagementLabel
       )
     }
   }
@@ -574,6 +611,10 @@ class AccountSettingsScreenTest {
     canTransferWhileUnregistered: Boolean = true,
     isPhoneNumberless: Boolean = false,
     arePasskeysSupported: Boolean = true,
+    isPrimaryDevice: Boolean = false,
+    showPayments: Boolean = false,
+    unreadPaymentsCount: Int = 0,
+    showDonationManagement: Boolean = false,
     signalLogin: AccountSettingsState.SignalLogin? = null,
     dialog: Dialog = Dialog.None
   ): AccountSettingsState {
@@ -587,6 +628,10 @@ class AccountSettingsScreenTest {
       canTransferWhileUnregistered = canTransferWhileUnregistered,
       isPhoneNumberless = isPhoneNumberless,
       arePasskeysSupported = arePasskeysSupported,
+      isPrimaryDevice = isPrimaryDevice,
+      showPayments = showPayments,
+      unreadPaymentsCount = unreadPaymentsCount,
+      showDonationManagement = showDonationManagement,
       signalLogin = signalLogin,
       dialog = dialog
     )

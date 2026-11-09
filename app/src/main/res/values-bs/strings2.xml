@@ -18,7 +18,7 @@
     <string name="DonateMegaphone_we_maintain_molly_with_your_support_consider_donating_at_open_collective">Molly održavamo uz Vašu podršku! Razmislite o doniranju na stranici Open Collective.</string>
     <string name="arrays__daily">Dnevno</string>
     <string name="BackupsPreferenceFragment__change_schedule">Promijeni raspored</string>
-    <string name="HelpSettingsFragment__molly_im_website">Molly.im internet-stranica</string>
+    <string name="HelpSettingsFragment__molly_im_website">Collie.im internet-stranica</string>
     <string name="DeviceAddFragment__link_without_scanning">Poveži bez skeniranja</string>
     <string name="HelpSettingsFragment_disable_and_delete_debug_log">Izbrisati i deaktivirati izvještaj o greškama\?</string>
     <string name="arrays__tor_via_orbot">Tor preko Orbota</string>

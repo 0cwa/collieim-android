@@ -52,7 +52,6 @@ fun AppSettingsEntry(
 ) {
   val viewModel: AppSettingsViewModel = viewModel { AppSettingsViewModel(parentEventEmitter) }
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val showDonationManagement by viewModel.showDonationManagement.collectAsStateWithLifecycle()
   val self by remember { AppSettingsRepository.observeSelf() }.collectAsStateWithLifecycle(initialValue = null)
   val context = LocalContext.current
 
@@ -79,16 +78,7 @@ fun AppSettingsEntry(
     donationLabel = stringResource(R.string.preferences__donate_to_signal),
     donationContent = {
       DonationLinks()
-      if (showDonationManagement) {
-        Rows.TextRow(
-          text = stringResource(R.string.AppSettingsFragment__manage_existing_signal_donations),
-          icon = painterResource(R.drawable.symbol_heart_24),
-          onClick = { parentEventEmitter.openSection(AppSettingsRoute.DonationsRoute.Donations()) }
-        )
-      }
     },
-    networkLabel = stringResource(R.string.preferences__network),
-    networkIcon = painterResource(R.drawable.ic_network_24),
     avatar = { self?.let { SelfAvatar(it) } },
     banner = { bannerManager.Banner() }
   )

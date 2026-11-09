@@ -535,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">లైసెన్స్‌లు</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">నిబంధనలు &amp; గోప్యతా విధానం</string>
-    <string name="HelpFragment__copyright_signal_messenger">కాపీరైట్ Molly మెసెంజర్</string>
+    కాపీరైట్ Molly మెసెంజర్
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 కింద లైసెన్స్ పొందింది</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal ఒక 501c3 లాభాపేక్ష లేని సంస్థ</string>

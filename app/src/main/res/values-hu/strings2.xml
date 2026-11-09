@@ -78,7 +78,7 @@
     <string name="preferences__include_beta_updates">Beleértve a béta frissítéseket is</string>
     <string name="BlockUnblockDialog_delete_this_contact">Kapcsolat törlése\?</string>
     <string name="RegistrationActivity_link_retry">Kapcsolás újrapróbálása</string>
-    <string name="HelpSettingsFragment__molly_im_website">Molly.im weboldal</string>
+    <string name="HelpSettingsFragment__molly_im_website">Collie.im weboldal</string>
     <string name="arrays__none">Nincs</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">A béta verziók lényege a tesztelés, ezért tartalmazhatnak hibákat</string>
     <string name="BlockUnblockDialog_deleted_contacts_are_still_able_to_call_you_or_send_you_messages">Törölt kapcsolatok ugyanúgy tudnak hívni vagy üzenetet küldeni, kivétel ha blokkolásra kerülnek.</string>

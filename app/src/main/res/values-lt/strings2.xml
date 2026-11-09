@@ -5,7 +5,7 @@
     <string name="preferences__passphrase_lock">Duombazės užkodavimas</string>
     <string name="BlockUnblockDialog_block_and_delete">Užblokuoti ir ištrinti</string>
     <string name="arrays__none">Joks</string>
-    <string name="HelpSettingsFragment__molly_im_website">Molly.im svetainė</string>
+    <string name="HelpSettingsFragment__molly_im_website">Collie.im svetainė</string>
     <string name="MessageRetrievalService_ready_to_receive_messages">Paruošta gauti pranešimus</string>
     <string name="BackupsPreferenceFragment__number_of_backups_to_retain">Saugotinų atsarginių kopijų skaičius</string>
     <string name="BackupsPreferenceFragment__change_schedule">Keisti tvarkaraštį</string>

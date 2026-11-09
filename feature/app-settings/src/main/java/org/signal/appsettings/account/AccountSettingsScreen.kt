@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -74,6 +75,9 @@ import org.signal.core.ui.R as CoreUiR
 @VisibleForTesting
 object AccountSettingsTestTags {
   const val SCROLLER = "scroller"
+  const val ROW_LINKED_DEVICES = "row-linked-devices"
+  const val ROW_PAYMENTS = "row-payments"
+  const val ROW_MANAGE_DONATIONS = "row-manage-donations"
   const val CARD_SIGNAL_LOGIN = "card-signal-login"
   const val LINK_SIGNAL_LOGIN_LEARN_MORE = "link-signal-login-learn-more"
   const val ROW_SET_UP_TWO_FACTOR = "row-set-up-two-factor"
@@ -110,7 +114,8 @@ object AccountSettingsTestTags {
 @Composable
 fun AccountSettingsScreen(
   state: AccountSettingsState,
-  onEvent: (AccountSettingsEvent) -> Unit
+  onEvent: (AccountSettingsEvent) -> Unit,
+  donationManagementLabel: String? = null
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.AccountSettingsFragment__account),
@@ -269,6 +274,64 @@ fun AccountSettingsScreen(
         Texts.SectionHeader(
           text = stringResource(R.string.AccountSettingsFragment__account)
         )
+      }
+
+      if (state.isPrimaryDevice) {
+        item {
+          Rows.TextRow(
+            text = stringResource(R.string.AppSettingsScreen__linked_devices),
+            icon = SignalIcons.Devices.painter,
+            enabled = state.isNotDeprecatedOrUnregistered,
+            onClick = { onEvent(AccountSettingsEvent.LinkedDevicesClicked) },
+            modifier = Modifier.testTag(AccountSettingsTestTags.ROW_LINKED_DEVICES)
+          )
+        }
+      }
+
+      if (state.isPrimaryDevice && state.showPayments) {
+        item {
+          Rows.TextRow(
+            text = {
+              Text(
+                text = stringResource(R.string.AppSettingsScreen__payments),
+                modifier = Modifier.weight(1f)
+              )
+
+              if (state.unreadPaymentsCount > 0) {
+                Text(
+                  text = state.unreadPaymentsCount.toString(),
+                  color = MaterialTheme.colorScheme.inverseOnSurface,
+                  style = MaterialTheme.typography.bodyMedium,
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(50))
+                    .defaultMinSize(minWidth = 30.dp)
+                    .padding(4.dp)
+                )
+              }
+            },
+            icon = {
+              Icon(
+                painter = SignalIcons.Payment.painter,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+              )
+            },
+            onClick = { onEvent(AccountSettingsEvent.PaymentsClicked) },
+            modifier = Modifier.testTag(AccountSettingsTestTags.ROW_PAYMENTS)
+          )
+        }
+      }
+
+      if (state.showDonationManagement && donationManagementLabel != null) {
+        item {
+          Rows.TextRow(
+            text = donationManagementLabel,
+            icon = SignalIcons.Heart.painter,
+            onClick = { onEvent(AccountSettingsEvent.ManageDonationsClicked) },
+            modifier = Modifier.testTag(AccountSettingsTestTags.ROW_MANAGE_DONATIONS)
+          )
+        }
       }
 
       if (!state.userUnregistered && !state.isPhoneNumberless) {

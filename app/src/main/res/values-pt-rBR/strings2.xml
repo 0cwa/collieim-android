@@ -44,7 +44,7 @@
     <string name="ApplicationPreferencesActivity_network_summary">Proxy %1$s</string>
     <string name="RegistrationActivity_network_settings">Configurações de rede</string>
     <string name="MessageRetrievalService_ready_to_receive_messages">Pronto para receber mensagens</string>
-    <string name="HelpSettingsFragment__molly_im_website">Site do Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Site do Collie.im</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Versões beta são destinadas a testes e podem conter erros</string>
     <string name="preferences__map_hybrid">Híbrido</string>
     <string name="preferences_network__connection">Conexão</string>

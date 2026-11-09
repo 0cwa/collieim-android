@@ -47,7 +47,7 @@
     <string name="preferences__network">Síť</string>
     <string name="preferences_network__connection">Připojení</string>
     <string name="MessageRetrievalService_ready_to_receive_messages">Připraveno pro získávání zpráv</string>
-    <string name="HelpSettingsFragment__molly_im_website">Stránka Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Stránka Collie.im</string>
     <plurals name="BioTextPreference_n_linked_devices">
         <item quantity="one">%d propojené zařízení</item>
         <item quantity="few">%d propojená zařízení</item>

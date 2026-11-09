@@ -43,7 +43,7 @@
     <string name="arrays__daily">Diàriament</string>
     <string name="BackupsPreferenceFragment__number_of_backups_to_retain">Nombre de còpies de seguretat a conservar</string>
     <string name="MessageRetrievalService_ready_to_receive_messages">Preparat per rebre missatges</string>
-    <string name="HelpSettingsFragment__molly_im_website">Pàgina web de Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Pàgina web de Collie.im</string>
     <string name="preferences_appearance__navigation_bar">Barra de navegació</string>
     <string name="preferences_appearance__show_calls">Mostra les trucades</string>
     <string name="preferences_appearance__toggle_to_show_or_hide_the_icon_on_the_navigation_bar">Mostra o oculta la icona de la barra de navegació</string>

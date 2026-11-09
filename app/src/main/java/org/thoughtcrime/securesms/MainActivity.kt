@@ -1011,10 +1011,6 @@ class MainActivity :
       openSettings.launch(AppSettingsActivity.home(this@MainActivity))
     }
 
-    override fun onDonateClick() {
-      CommunicationActions.openBrowserLink(this@MainActivity, getString(R.string.donate_url))
-    }
-
     override fun onNotificationProfileClick() {
       NotificationProfileSelectionFragment.show(supportFragmentManager)
     }

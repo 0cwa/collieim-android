@@ -20,14 +20,15 @@ import org.signal.core.util.logging.Log
  */
 class HelpSettingsViewModel(
   versionName: String,
-  logEnabled: Boolean = true
+  logEnabled: Boolean = true,
+  showAppUpdates: Boolean = false
 ) : EventDrivenViewModel<HelpSettingsEvent>(TAG) {
 
   companion object {
     private val TAG = Log.tag(HelpSettingsViewModel::class)
   }
 
-  private val _state = MutableStateFlow(HelpSettingsState(versionName = versionName, logEnabled = logEnabled))
+  private val _state = MutableStateFlow(HelpSettingsState(versionName = versionName, logEnabled = logEnabled, showAppUpdates = showAppUpdates))
   private val _actions = Channel<HelpSettingsAction>(Channel.BUFFERED)
 
   val state: StateFlow<HelpSettingsState> = _state.asStateFlow()

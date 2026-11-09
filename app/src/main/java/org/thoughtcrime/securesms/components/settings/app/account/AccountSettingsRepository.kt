@@ -31,6 +31,8 @@ class AccountSettingsRepository(
 
   fun hasPin(): Boolean = SignalStore.svr.hasPin() && !SignalStore.svr.hasOptedOut()
 
+  fun isPrimaryDevice(): Boolean = SignalStore.account.isPrimaryDevice
+
   fun hasRestoredAep(): Boolean = SignalStore.account.restoredAccountEntropyPool
 
   fun arePinRemindersEnabled(): Boolean = SignalStore.pin.pinRemindersEnabled && SignalStore.svr.hasPin()

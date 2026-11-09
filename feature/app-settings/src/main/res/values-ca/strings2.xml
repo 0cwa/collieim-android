@@ -6,7 +6,7 @@
     <string name="preferences_appearance__dynamic_colors">Dinàmica de Colors</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">Empra els colors del sistema com a tema de l\'applicació</string>
 <string name="preferences__enable_debug_log">Activa el registre de depuració</string>
-    <string name="HelpSettingsFragment__molly_im_website">Pàgina web de Molly.im</string>
+    <string name="HelpSettingsFragment__molly_im_website">Pàgina web de Collie.im</string>
     <string name="preferences__include_beta_updates">Incloure actualitzacions beta</string>
     <string name="preferences__autoupdate_molly">Actualitza Collie automàticament</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Les versions beta són versions de prova i poden contenir errors</string>

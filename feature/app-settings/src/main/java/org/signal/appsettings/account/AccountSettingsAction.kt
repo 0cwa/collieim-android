@@ -16,6 +16,15 @@ sealed interface AccountSettingsAction {
   /** Leave the screen. */
   data object NavigateBack : AccountSettingsAction
 
+  /** Open the linked-device list. */
+  data object NavigateToLinkedDevices : AccountSettingsAction
+
+  /** Open Payments. */
+  data object NavigateToPayments : AccountSettingsAction
+
+  /** Open existing donation management. */
+  data object NavigateToManageDonations : AccountSettingsAction
+
   /** Open the flow for creating a PIN for the first time. */
   data object LaunchCreatePinFlow : AccountSettingsAction
 

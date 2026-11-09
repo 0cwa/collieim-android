@@ -73,6 +73,13 @@ public class FcmRefreshJob extends BaseJob {
     super(parameters);
   }
 
+  /** Retry cleanup on later app starts or foregrounds until the server confirms removal. */
+  public static void enqueueUnsupportedCleanupIfNeeded() {
+    if (!FcmUtil.isSupported() && SignalStore.account().isRegistered() && SignalStore.account().getFcmTokenLastSetTime() > 0) {
+      AppDependencies.getJobManager().add(new FcmRefreshJob());
+    }
+  }
+
   @Override
   public @Nullable byte[] serialize() {
     return null;
@@ -85,6 +92,10 @@ public class FcmRefreshJob extends BaseJob {
 
   @Override
   public void onRun() throws Exception {
+    if (!FcmUtil.isSupported() && SignalStore.account().isFcmEnabled()) {
+      SignalStore.account().setFcmEnabled(false);
+    }
+
     if (!SignalStore.account().isFcmEnabled()) {
       boolean wasFcmTokenSet = SignalStore.account().getFcmTokenLastSetTime() > 0;
       if (wasFcmTokenSet) {

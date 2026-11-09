@@ -23,6 +23,7 @@ import org.signal.storage.keyvalue.stringValue
 import org.signal.storage.protos.SignalStoreList
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.backup.proto.SharedPreference
+import org.thoughtcrime.securesms.gcm.FcmUtil
 import org.thoughtcrime.securesms.preferences.widgets.NotificationPrivacyPreference
 import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.Environment
@@ -491,13 +492,19 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
 
   var preferredNotificationMethod: NotificationDeliveryMethod
     get() {
-      return if (store.containsKey(MOLLY_NOTIFICATION_METHOD)) {
+      val method = if (store.containsKey(MOLLY_NOTIFICATION_METHOD)) {
         NotificationDeliveryMethod.deserialize(getString(MOLLY_NOTIFICATION_METHOD, NotificationDeliveryMethod.FCM.serialize()) ?: NotificationDeliveryMethod.FCM.serialize())
       } else if (SignalStore.account.fcmEnabled) {
         NotificationDeliveryMethod.FCM
       } else {
         NotificationDeliveryMethod.WEBSOCKET
       }
+      if (method == NotificationDeliveryMethod.FCM && !FcmUtil.isSupported()) {
+        // Preserve the inferred choice before the Firebase-free build disables FCM.
+        if (!store.containsKey(MOLLY_NOTIFICATION_METHOD)) preferredNotificationMethod = method
+        return NotificationDeliveryMethod.WEBSOCKET
+      }
+      return method
     }
     set(value) {
       putString(MOLLY_NOTIFICATION_METHOD, value.serialize())

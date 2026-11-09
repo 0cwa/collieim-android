@@ -105,13 +105,9 @@ object LinkDeviceRepository {
 
   private fun DeviceInfo.toLocalDevice(): Device {
     val createdAt = this.getPlaintextCreatedAt()
-<<<<<<< MOLLY
-    val canRename = !SignalStore.unifiedpush.isMollySocketDevice(getId())
-    val defaultDevice = Device(getId(), getName(), createdAt, getLastSeen(), getRegistrationId(), canRename = canRename)
-=======
+    val canRename = !SignalStore.unifiedpush.isMollySocketDevice(id)
     val encodedName = name
-    val defaultDevice = Device(id, encodedName, createdAt, lastSeen, registrationId)
->>>>>>> SIGNAL
+    val defaultDevice = Device(id, encodedName, createdAt, lastSeen, registrationId, canRename = canRename)
     try {
       if (encodedName.isNullOrEmpty() || encodedName.length < 4) {
         Log.w(TAG, "Invalid DeviceInfo name.")
@@ -130,10 +126,7 @@ object LinkDeviceRepository {
         return defaultDevice
       }
 
-<<<<<<< MOLLY
-      return Device(getId(), String(plaintext), createdAt, getLastSeen(), getRegistrationId(), canRename = canRename)
-=======
-      return Device(id, String(plaintext), createdAt, lastSeen, registrationId)
+      return Device(id, String(plaintext), createdAt, lastSeen, registrationId, canRename = canRename)
     } catch (e: Exception) {
       Log.w(TAG, "Failed while reading the protobuf.", e)
     }
@@ -142,7 +135,8 @@ object LinkDeviceRepository {
 
   private fun LibSignalLinkedDevice.toLocalDevice(): Device {
     val createdAt = getPlaintextCreatedAt()
-    val defaultDevice = Device(this.id, Base64.encodeWithPadding(this.encryptedName), createdAt, this.lastSeen.toEpochMilli(), this.registrationId)
+    val canRename = !SignalStore.unifiedpush.isMollySocketDevice(id)
+    val defaultDevice = Device(this.id, Base64.encodeWithPadding(this.encryptedName), createdAt, this.lastSeen.toEpochMilli(), this.registrationId, canRename = canRename)
     try {
       if (this.encryptedName.size < 4) {
         Log.w(TAG, "Invalid LinkedDevice name.")
@@ -161,8 +155,7 @@ object LinkDeviceRepository {
         return defaultDevice
       }
 
-      return Device(id, String(plaintext), createdAt, lastSeen.toEpochMilli(), registrationId)
->>>>>>> SIGNAL
+      return Device(id, String(plaintext), createdAt, lastSeen.toEpochMilli(), registrationId, canRename = canRename)
     } catch (e: Exception) {
       Log.w(TAG, "Failed while reading the protobuf.", e)
     }

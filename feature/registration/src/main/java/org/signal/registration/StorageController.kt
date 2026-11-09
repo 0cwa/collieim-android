@@ -46,6 +46,10 @@ import org.whispersystems.signalservice.api.push.UsernameLinkComponents
  */
 interface StorageController {
 
+  /** Refreshes app state after registration permissions are granted or declined. */
+  fun onRegistrationPermissionsResult() = Unit
+
+
   /**
    * Retrieves previously stored registration data for registered installs, if any.
    *

@@ -500,7 +500,14 @@ class FakeNetworkController(
     return onStartProvisioning()
   }
 
-  override fun startLinkDeviceProvisioning(allowLinkAndSync: Boolean): Flow<LinkDeviceProvisioningEvent> = notExpected()
+  var networkEnabledForRegistration = false
+  var onStartLinkDeviceProvisioning: (Boolean) -> Flow<LinkDeviceProvisioningEvent> = { notExpected() }
+
+  override fun enableNetworkForRegistration() {
+    networkEnabledForRegistration = true
+  }
+
+  override fun startLinkDeviceProvisioning(allowLinkAndSync: Boolean): Flow<LinkDeviceProvisioningEvent> = onStartLinkDeviceProvisioning(allowLinkAndSync)
 
   override suspend fun registerAsLinkedDevice(
     aci: ACI,

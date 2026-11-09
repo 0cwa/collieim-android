@@ -37,11 +37,7 @@ import org.signal.core.ui.compose.Scaffolds
 import org.signal.core.ui.permissions.Permissions
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.util.VibrateUtil
-<<<<<<< MOLLY
-=======
-import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import org.signal.core.ui.R as CoreUiR
->>>>>>> SIGNAL
 import org.signal.mediasend.R as MediaSendR
 
 /**

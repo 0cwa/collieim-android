@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Përdor kyçjen e ekranit</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Parametrat e kyçjes së pajisjes Android do të kërkohen për të shkyçur Molly kur largohesh ose ndërron aplikacionet. Kur kyçet, pamjet paraprake të njoftimeve nuk do të shfaqin përmbajtjen e mesazhit.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Parametrat e kyçjes së pajisjes Android do të kërkohen për të shkyçur Collie kur largohesh ose ndërron aplikacionet. Kur kyçet, pamjet paraprake të njoftimeve nuk do të shfaqin përmbajtjen e mesazhit.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Nis kyçjen e ekranit</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Kohë e personalizuar</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Përdor kyçjen e ekranit të Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Përdor kyçjen e ekranit të Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Çaktivizo kyçjen e ekranit të Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Çaktivizo kyçjen e ekranit të Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Ndihmë</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Ikonat dhe emrat e aplikacioneve janë të dukshme në ekranin bazë dhe në skedarin e aplikacioneve.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Njoftimet do të shfaqin gjithmonë ikonën dhe emrin e paracaktuar të Molly.</string>
+    <string name="preferences__app_icon_notification_warning">Njoftimet do të shfaqin gjithmonë ikonën dhe emrin e paracaktuar të Collie.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafik që ilustron se ku do të jetë e dukshme ikona e aplikacionit zëvendësues.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Ndrysho ikonën dhe emrin e aplikacionit në \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly do të duhet të mbyllet për të ndryshuar ikonën dhe emrin e aplikacionit. Njoftimet do të shfaqin gjithmonë ikonën dhe emrin e paracaktuar të Molly.</string>
+    <string name="preferences__app_icon_dialog_description">Collie do të duhet të mbyllet për të ndryshuar ikonën dhe emrin e aplikacionit. Njoftimet do të shfaqin gjithmonë ikonën dhe emrin e paracaktuar të Collie.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Zgjidh një ikonë dhe një emër aplikacioni, i cili do të jetë i dukshëm në ekranin bazë të telefonit tënd dhe në skedarin e aplikacionit. Njoftimet do të shfaqin gjithmonë ikonën dhe emrin e paracaktuar të Molly. Mëso më shumë</string>
+    <string name="preferences__app_icon_warning_learn_more">Zgjidh një ikonë dhe një emër aplikacioni, i cili do të jetë i dukshëm në ekranin bazë të telefonit tënd dhe në skedarin e aplikacionit. Njoftimet do të shfaqin gjithmonë ikonën dhe emrin e paracaktuar të Collie. Mëso më shumë</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Mëso më shumë</string>
 

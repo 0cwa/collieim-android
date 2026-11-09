@@ -137,23 +137,23 @@
   <!-- Dialog title asking users for microphone permission -->
   <string name="CameraXFragment_allow_access_microphone">Hozzáférés engedélyezése a mikrofonodhoz</string>
   <!-- Text explaining why Signal needs camera access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Fotók és videók készítéséhez engedélyezd a Mollynak a kamerához való hozzáférést!</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera">Fotók és videók készítéséhez engedélyezd a Collienak a kamerához való hozzáférést!</string>
   <!-- Text explaining why Signal needs camera and microphone access in order to take photos and videos -->
-  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Fotók és videók készítéséhez engedélyezd a Mollynak a kamerához és a mikrofonhoz való hozzáférést.</string>
+  <string name="CameraXFragment_to_capture_photos_and_video_allow_camera_microphone">Fotók és videók készítéséhez engedélyezd a Collienak a kamerához és a mikrofonhoz való hozzáférést.</string>
   <!-- Text explaining why Signal needs microphone access to take videos -->
-  <string name="CameraXFragment_to_capture_videos_with_sound">Hangos videók rögzítéséhez engedélyezd a Mollynak a mikrofonhoz való hozzáférést.</string>
+  <string name="CameraXFragment_to_capture_videos_with_sound">Hangos videók rögzítéséhez engedélyezd a Collienak a mikrofonhoz való hozzáférést.</string>
   <!-- Text explaining why Signal needs camera access to scan QR codes -->
-  <string name="CameraXFragment_to_scan_qr_code_allow_camera">QR-kód beolvasásához engedélyezd a Mollynak a kamerához való hozzáférést.</string>
+  <string name="CameraXFragment_to_scan_qr_code_allow_camera">QR-kód beolvasásához engedélyezd a Collienak a kamerához való hozzáférést.</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when capturing photos -->
-  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">Fotók készítéséhez a Mollynak hozzá kell férnie a kamerához</string>
+  <string name="CameraXFragment_signal_needs_camera_access_capture_photos">Fotók készítéséhez a Collienak hozzá kell férnie a kamerához</string>
   <!-- Toast dialog explaining why Signal needs camera permissions when scanning QR codes -->
-  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">QR-kód beolvasásához a Mollynak hozzá kell férnie a kamerához</string>
+  <string name="CameraXFragment_signal_needs_camera_access_scan_qr_code">QR-kód beolvasásához a Collienak hozzá kell férnie a kamerához</string>
   <!-- Toast dialog explaining why Signal needs microphone permissions -->
-  <string name="CameraXFragment_signal_needs_microphone_access_video">Videó rögzítéséhez a Mollynak hozzá kell férnie a mikrofonhoz</string>
+  <string name="CameraXFragment_signal_needs_microphone_access_video">Videó rögzítéséhez a Collienak hozzá kell férnie a mikrofonhoz</string>
   <!-- Dialog description that explains the steps needed to give camera permission -->
-  <string name="CameraXFragment_to_capture_photos">Fotók rögzítése a Mollyban:</string>
+  <string name="CameraXFragment_to_capture_photos">Fotók rögzítése a Collieban:</string>
   <!-- Dialog description that explains the steps needed to give camera and microphone permission -->
-  <string name="CameraXFragment_to_capture_photos_videos">Fotók és videók rögzítése a Mollyban:</string>
+  <string name="CameraXFragment_to_capture_photos_videos">Fotók és videók rögzítése a Collieban:</string>
   <!-- Dialog description that explains the steps needed to give microphone permission -->
   <string name="CameraXFragment_to_capture_videos">Videók rögzítése hanggal:</string>
   <!-- Dialog description that explains the steps needed to give Signal camera permissions -->
@@ -167,7 +167,7 @@
   <!-- Accessibility label for the camera toggle that keeps the camera open after each capture so several photos or videos can be taken in a row -->
   <string name="CameraXFragment_multi_capture">Többszörös rögzítés</string>
   <!-- Displayed in a permissions dialog when the user has denied access to hardware for image and video capture. -->
-  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">A Mollynak szüksége van mikrofon-hozzáférési engedélyre, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Mikrofon\"-t, valamint a \"Kamera\"-t.</string>
+  <string name="CameraXFragment_signal_needs_the_recording_permissions_to_capture_video">A Collienak szüksége van mikrofon-hozzáférési engedélyre, de ez jelenleg meg van tagadva. Kérlek menj az alkalmazásbeállításokhoz, válaszd az \"Engedélyek\"-et és engedélyezd a \"Mikrofon\"-t, valamint a \"Kamera\"-t.</string>
 
   <!-- Displayed when there is an error capturing video -->
   <string name="MediaSendViewModel__error_recording_video">Hiba a videó rögzítése során</string>

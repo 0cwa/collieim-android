@@ -28,23 +28,23 @@
     <color name="signal_colorErrorContainerInverse">@color/molly_error_container_dark</color>
 
     <!-- Core color alpha variants -->
-    <color name="signal_colorSecondaryContainer_12">#1FE3DBF9</color>
-    <color name="signal_colorSurface_60">#99F6F6FF</color>
-    <color name="signal_colorSurfaceVariant_38">#61E7E6F2</color>
-    <color name="signal_colorSurfaceVariant_64">#A3E7E6F2</color>
-    <color name="signal_colorOnSurface_8">#14181719</color>
-    <color name="signal_colorOnSurface_12">#1F181719</color>
-    <color name="signal_colorOnSurface_50">#80181719</color>
-    <color name="signal_colorOnSurfaceVariant_60">#99585563</color>
-    <color name="signal_colorOnBackground_60">#99171719</color>
-    <color name="signal_colorOutline_38">#6182808A</color>
-    <color name="signal_colorBackground_0">#00F6F6FF</color>
+    <color name="signal_colorSecondaryContainer_12">#1FB7C597</color>
+    <color name="signal_colorSurface_60">#99FFF8F0</color>
+    <color name="signal_colorSurfaceVariant_38">#61F8E2C0</color>
+    <color name="signal_colorSurfaceVariant_64">#A3F8E2C0</color>
+    <color name="signal_colorOnSurface_8">#1424130D</color>
+    <color name="signal_colorOnSurface_12">#1F24130D</color>
+    <color name="signal_colorOnSurface_50">#8024130D</color>
+    <color name="signal_colorOnSurfaceVariant_60">#995A4033</color>
+    <color name="signal_colorOnBackground_60">#9924130D</color>
+    <color name="signal_colorOutline_38">#61687E59</color>
+    <color name="signal_colorBackground_0">#00FFF8F0</color>
 
     <!-- Core color alpha variants without alpha channel -->
-    <color name="signal_colorSurfaceVariant_16_no_alpha">#D0CFDB</color>
-    <color name="signal_colorSurfaceVariant_32_no_alpha">#B9B8C4</color>
+    <color name="signal_colorSurfaceVariant_16_no_alpha">#DCCDBD</color>
+    <color name="signal_colorSurfaceVariant_32_no_alpha">#B9A99B</color>
 
     <color name="reminder_background">#faf0dc</color>
-<color name="signal_colorTertiaryContainer_12">#1FD1C6FB</color>
-    <color name="signal_colorOutlineVariant_38">#619384E2</color>
-    </resources>
+    <color name="signal_colorTertiaryContainer_12">#1FEE9024</color>
+    <color name="signal_colorOutlineVariant_38">#61B49D89</color>
+</resources>

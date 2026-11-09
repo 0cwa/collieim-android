@@ -510,7 +510,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Выкарыстоўваць блакіроўку экрана</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Налады блакіроўкі вашай прылады Android неабходныя, каб разблакіраваць Molly, калі вы пакідаеце або пераключаеце праграмы. Падчас блакіроўкі папярэдні прагляд апавяшчэння не будзе паказваць змест паведамлення.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Налады блакіроўкі вашай прылады Android неабходныя, каб разблакіраваць Collie, калі вы пакідаеце або пераключаеце праграмы. Падчас блакіроўкі папярэдні прагляд апавяшчэння не будзе паказваць змест паведамлення.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Пачаць блакіроўку экрана</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -522,9 +522,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Персаналізаваны час</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Выкарыстоўвайце блакіроўку экрана Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Выкарыстоўвайце блакіроўку экрана Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Адключыце блакіроўку экрана Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Адключыце блакіроўку экрана Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Дапамога</string>
@@ -546,7 +546,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Значкі і назвы праграм бачныя на галоўным экране тэлефона і панэлі праграм.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Апавяшчэнні заўсёды будуць паказваць па змоўчванні значок і назву Molly.</string>
+    <string name="preferences__app_icon_notification_warning">Апавяшчэнні заўсёды будуць паказваць па змоўчванні значок і назву Collie.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Графіка, што паказвае, дзе будзе бачны значок праграмы для замены.</string>
 
@@ -566,9 +566,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Змяніць значок і назву праграмы на «%1$s»</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly патрэбна будзе закрыць, каб змяніць значок і назву праграмы. Апавяшчэнні заўсёды будуць паказваць па змоўчванні значок і назву Molly.</string>
+    <string name="preferences__app_icon_dialog_description">Collie патрэбна будзе закрыць, каб змяніць значок і назву праграмы. Апавяшчэнні заўсёды будуць паказваць па змоўчванні значок і назву Collie.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Выбраць значок і назву праграмы, якія будуць бачныя на галоўным экране тэлефона і панэлі праграм. Апавяшчэнні заўсёды будуць паказваць па змоўчванні значок і назву Molly. Даведацца больш</string>
+    <string name="preferences__app_icon_warning_learn_more">Выбраць значок і назву праграмы, якія будуць бачныя на галоўным экране тэлефона і панэлі праграм. Апавяшчэнні заўсёды будуць паказваць па змоўчванні значок і назву Collie. Даведацца больш</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Даведацца больш</string>
 

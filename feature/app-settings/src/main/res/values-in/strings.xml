@@ -507,7 +507,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Gunakan kunci layar</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Pengaturan kunci perangkat Android diperlukan untuk membuka kunci Molly saat Anda keluar atau beralih dari aplikasi. Saat terkunci, pratinjau notifikasi tidak akan menampilkan isi pesan.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Pengaturan kunci perangkat Android diperlukan untuk membuka kunci Collie saat Anda keluar atau beralih dari aplikasi. Saat terkunci, pratinjau notifikasi tidak akan menampilkan isi pesan.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Aktifkan kunci layar</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -519,9 +519,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Waktu kustom</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Gunakan kunci layar Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Gunakan kunci layar Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Nonaktifkan kunci layar Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Nonaktifkan kunci layar Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Bantuan</string>
@@ -543,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Ikon dan nama aplikasi terlihat di layar beranda dan laci aplikasi.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Notifikasi akan selalu menampilkan ikon dan nama default Molly.</string>
+    <string name="preferences__app_icon_notification_warning">Notifikasi akan selalu menampilkan ikon dan nama default Collie.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafis yang menggambarkan tempat ikon aplikasi pengganti akan terlihat.</string>
 
@@ -563,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Ubah ikon dan nama aplikasi menjadi \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Aplikasi Molly perlu ditutup terlebih dahulu agar ikon dan nama aplikasi dapat berubah. Notifikasi akan selalu menampilkan ikon dan nama default Molly.</string>
+    <string name="preferences__app_icon_dialog_description">Aplikasi Collie perlu ditutup terlebih dahulu agar ikon dan nama aplikasi dapat berubah. Notifikasi akan selalu menampilkan ikon dan nama default Collie.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Pilih ikon dan nama aplikasi, yang akan terlihat di layar beranda dan laci aplikasi ponsel Anda. Notifikasi akan selalu menampilkan ikon dan nama default Molly. Pelajari selengkapnya</string>
+    <string name="preferences__app_icon_warning_learn_more">Pilih ikon dan nama aplikasi, yang akan terlihat di layar beranda dan laci aplikasi ponsel Anda. Notifikasi akan selalu menampilkan ikon dan nama default Collie. Pelajari selengkapnya</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Pelajari selengkapnya</string>
 

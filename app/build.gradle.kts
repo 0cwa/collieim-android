@@ -302,7 +302,8 @@ android {
 
     create("website") {
       dimension = "distribution"
-      buildConfigField("boolean", "MANAGE_MOLLY_UPDATES", "true")
+      // Collie releases do not use Molly's F-Droid repository for updates.
+      buildConfigField("boolean", "MANAGE_MOLLY_UPDATES", "false")
       isDefault = true
     }
 

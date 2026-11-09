@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Använd skärmlås</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Låsinställningarna på din Android-enhet kommer att behövas för att låsa upp Molly när du lämnar eller byter app. Förhandsvisning av aviseringar visar inte meddelandeinnehåll när låset är aktiverat.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Låsinställningarna på din Android-enhet kommer att behövas för att låsa upp Collie när du lämnar eller byter app. Förhandsvisning av aviseringar visar inte meddelandeinnehåll när låset är aktiverat.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Starta skärmlås</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Anpassad tid</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Använd Molly-skärmlås</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Använd Collie-skärmlås</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Stäng av Molly-skärmlåset</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Stäng av Collie-skärmlåset</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Hjälp</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Appikoner och namn syns på startskärmen och app-lådan.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Aviseringar visar alltid standardikonen för Molly och namn.</string>
+    <string name="preferences__app_icon_notification_warning">Aviseringar visar alltid standardikonen för Collie och namn.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafik som illustrerar var ersättningsappikonen kommer att synas.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Ändra appikon och namn till \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly måste stängas för att ändra appikonen och namn. Aviseringar visar alltid standardikonen för Molly och namn.</string>
+    <string name="preferences__app_icon_dialog_description">Collie måste stängas för att ändra appikonen och namn. Aviseringar visar alltid standardikonen för Collie och namn.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Välj en appikon och ett namn som kommer att synas på telefonens startskärm och app-låda. Aviseringar visar alltid standardikonen för Molly och namn. Läs mer</string>
+    <string name="preferences__app_icon_warning_learn_more">Välj en appikon och ett namn som kommer att synas på telefonens startskärm och app-låda. Aviseringar visar alltid standardikonen för Collie och namn. Läs mer</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Läs mer</string>
 

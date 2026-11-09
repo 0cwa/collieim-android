@@ -143,7 +143,7 @@
     <!-- Row title for restore/transfer without using a previous device -->
     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Man nav iepriekšējā tālruņa</string>
     <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">Vai arī jūs atkārtoti instalējat Molly tajā pašā ierīcē</string>
+    <string name="WelcomeFragment_restore_action_reinstalling">Vai arī jūs atkārtoti instalējat Collie tajā pašā ierīcē</string>
 
     <!-- ArchiveRestoreSelectionScreen -->
     <!-- Title text for the archive restore selection screen -->

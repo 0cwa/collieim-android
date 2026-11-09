@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Kasuta ekraanilukku</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Kui lahkud või äppi vahetad, on Mollyi avamiseks vaja sinu Android-seadme lukustussätteid. Lukustatud olekus ei näita sõnumiteavitused sõnumite sisu.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Kui lahkud või äppi vahetad, on Colliei avamiseks vaja sinu Android-seadme lukustussätteid. Lukustatud olekus ei näita sõnumiteavitused sõnumite sisu.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Käivita ekraanilukk</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Kohandatud aeg</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Kasuta Mollyi ekraanilukku</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Kasuta Colliei ekraanilukku</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Lülita Mollyi ekraanilukk välja</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Lülita Colliei ekraanilukk välja</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Abi</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Rakenduse ikoonid ja nimetused kuvatakse avakuval ja rakenduste lehel.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Teavitustes kuvatakse alati vaikimisi Mollyi ikoon ja nimetus.</string>
+    <string name="preferences__app_icon_notification_warning">Teavitustes kuvatakse alati vaikimisi Colliei ikoon ja nimetus.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Graafik, mis näitab, kus rakenduse asendusikooni kuvatakse.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Vali rakenduse ikooniks ja nimetuseks „%1$s“</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Rakenduse ikooni ja nimetuse muutmiseks tuleb rakendus sulgeda. Teavitustes kuvatakse alati vaikimisi Mollyi ikoon ja nimetus.</string>
+    <string name="preferences__app_icon_dialog_description">Rakenduse ikooni ja nimetuse muutmiseks tuleb rakendus sulgeda. Teavitustes kuvatakse alati vaikimisi Colliei ikoon ja nimetus.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Vali rakenduse ikoon ja nimetus, mida kuvatakse telefoni avakuval ja rakenduste lehel. Teavitustes kuvatakse alati vaikimisi Mollyi ikoon ja nimetus. Rohkem teavet</string>
+    <string name="preferences__app_icon_warning_learn_more">Vali rakenduse ikoon ja nimetus, mida kuvatakse telefoni avakuval ja rakenduste lehel. Teavitustes kuvatakse alati vaikimisi Colliei ikoon ja nimetus. Rohkem teavet</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Rohkem teavet</string>
 

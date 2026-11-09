@@ -510,7 +510,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Використовувати блокування екрана</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Якщо ви вийдете із застосунку чи перейдете в інший, то повинні будете розблокувати Molly — так само, як розблоковуєте свій пристрій. Під час блокування екрана застосунку в сповіщеннях не буде показано вміст повідомлень.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Якщо ви вийдете із застосунку чи перейдете в інший, то повинні будете розблокувати Collie — так само, як розблоковуєте свій пристрій. Під час блокування екрана застосунку в сповіщеннях не буде показано вміст повідомлень.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Активувати блокування екрана</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -522,9 +522,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Свій час</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Використовувати блокування екрана в Molly?</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Використовувати блокування екрана в Collie?</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Вимкнути блокування екрана в Molly?</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Вимкнути блокування екрана в Collie?</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Допомога</string>
@@ -546,7 +546,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Значки й назви застосунків видно на головному екрані й на панелі застосунків телефона.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">У сповіщеннях значок і назва Molly завжди будуть стандартні.</string>
+    <string name="preferences__app_icon_notification_warning">У сповіщеннях значок і назва Collie завжди будуть стандартні.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Зображення, яке показує, де буде видно змінений значок застосунку.</string>
 
@@ -566,9 +566,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Змінити значок і назву застосунку на «%1$s»</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Для зміни значка й назви застосунку Molly закриється. У сповіщеннях значок і назва Molly завжди будуть стандартні.</string>
+    <string name="preferences__app_icon_dialog_description">Для зміни значка й назви застосунку Collie закриється. У сповіщеннях значок і назва Collie завжди будуть стандартні.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Оберіть значок і назву застосунку, які буде видно на головному екрані та в панелі застосунків телефона. У сповіщеннях значок і назва Molly завжди будуть стандартні. Докладніше</string>
+    <string name="preferences__app_icon_warning_learn_more">Оберіть значок і назву застосунку, які буде видно на головному екрані та в панелі застосунків телефона. У сповіщеннях значок і назва Collie завжди будуть стандартні. Докладніше</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Докладніше</string>
 

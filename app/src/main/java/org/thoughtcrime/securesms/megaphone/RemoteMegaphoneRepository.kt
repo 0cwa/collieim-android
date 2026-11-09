@@ -80,6 +80,8 @@ object RemoteMegaphoneRepository {
   fun getRemoteMegaphoneToShow(now: Long = System.currentTimeMillis()): RemoteMegaphoneRecord? {
     return db.getPotentialMegaphonesAndClearOld(now)
       .asSequence()
+      // Remote donation copy may name a different recipient than our donation links.
+      .filter { it.conditionalId != "standard_donate" && it.primaryActionId?.isDonateAction != true && it.secondaryActionId?.isDonateAction != true }
       .filter { it.imageUrl == null || it.imageUri != null }
       .filter { it.countries == null || LocaleRemoteConfig.shouldShowReleaseNote(it.uuid, it.countries) }
       .filter { it.conditionalId == null || checkCondition(it.conditionalId) }

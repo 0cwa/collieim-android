@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Tumia kipengele cha screen lock</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Mipangilio ya ufungaji ya kifaa chako cha Android itahitajika ili kufungua Molly unapoondoka au kuhama programu. Inapofungwa, hakikisho ya arifa haitaonyesha maudhui ya ujumbe.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Mipangilio ya ufungaji ya kifaa chako cha Android itahitajika ili kufungua Collie unapoondoka au kuhama programu. Inapofungwa, hakikisho ya arifa haitaonyesha maudhui ya ujumbe.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Washa screen lock</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Muda maalum</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Tumia screen lock ya Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Tumia screen lock ya Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Zima screen lock ya Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Zima screen lock ya Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Msaada</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Ikoni na majina ya programu yanaonekana kwenye skrini ya kwanza na mfuko wa programu.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Arifa mara zote zitaonyesha ikoni na jina la Molly kama chaguomsingi.</string>
+    <string name="preferences__app_icon_notification_warning">Arifa mara zote zitaonyesha ikoni na jina la Collie kama chaguomsingi.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Picha kuonyesha mahali ikoni ya programu mbadala itaonekana.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Badili ikoni na jina la programu kuwa \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly itahitaji kuzimwa ili kubadili ikoni na jina la programu. Arifa mara zote zitaonyesha ikoni na jina la Molly kama chaguomsingi.</string>
+    <string name="preferences__app_icon_dialog_description">Collie itahitaji kuzimwa ili kubadili ikoni na jina la programu. Arifa mara zote zitaonyesha ikoni na jina la Collie kama chaguomsingi.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Chagua ikoni na jina la programu, ambavyo vitaonekana kwenye skrini ya kwanza na mfuko wa programu. Arifa mara zote zitaonyesha ikoni na jina la Molly kama chaguomsingi. Jifunze zaidi</string>
+    <string name="preferences__app_icon_warning_learn_more">Chagua ikoni na jina la programu, ambavyo vitaonekana kwenye skrini ya kwanza na mfuko wa programu. Arifa mara zote zitaonyesha ikoni na jina la Collie kama chaguomsingi. Jifunze zaidi</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Jifunze zaidi</string>
 

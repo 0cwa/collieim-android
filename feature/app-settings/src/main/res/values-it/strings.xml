@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Usa il blocco schermo</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Le impostazioni di blocco del tuo dispositivo Android serviranno per sbloccare Molly quando cambi o esci dall\'app. Quando Molly viene bloccata, l\'anteprima delle notifiche non mostrerà i contenuti dei messaggi.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Le impostazioni di blocco del tuo dispositivo Android serviranno per sbloccare Collie quando cambi o esci dall\'app. Quando Collie viene bloccata, l\'anteprima delle notifiche non mostrerà i contenuti dei messaggi.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Attiva il blocco schermo</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Tempo personalizzato</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Usa il blocco schermo di Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Usa il blocco schermo di Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Disattiva il blocco schermo di Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Disattiva il blocco schermo di Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Aiuto</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Le icone e i nomi dell\'app sono visibili sulla home del tuo telefono e nell\'elenco di tutte le tue app.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Ricorda che le notifiche che ricevi mostreranno sempre l\'icona standard e il nome di Molly.</string>
+    <string name="preferences__app_icon_notification_warning">Ricorda che le notifiche che ricevi mostreranno sempre l\'icona standard e il nome di Collie.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Grafico che mostra dove sarà visibile la nuova icona scelta per l\'app.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Cambiare l\'icona dell\'app e il nome in \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Molly dovrà essere chiuso per poter aggiornare l\'icona e il nome dell\'app. Ricorda che le notifiche che ricevi mostreranno sempre l\'icona standard e il nome di Molly.</string>
+    <string name="preferences__app_icon_dialog_description">Collie dovrà essere chiuso per poter aggiornare l\'icona e il nome dell\'app. Ricorda che le notifiche che ricevi mostreranno sempre l\'icona standard e il nome di Collie.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Scegli un\'icona e un nome per l\'app, che saranno visibili sulla home del tuo telefono e nell\'elenco di tutte le tue app. Ricorda che le notifiche che ricevi mostreranno sempre l\'icona standard e il nome di Molly. Scopri di più</string>
+    <string name="preferences__app_icon_warning_learn_more">Scegli un\'icona e un nome per l\'app, che saranno visibili sulla home del tuo telefono e nell\'elenco di tutte le tue app. Ricorda che le notifiche che ricevi mostreranno sempre l\'icona standard e il nome di Collie. Scopri di più</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Scopri di più</string>
 

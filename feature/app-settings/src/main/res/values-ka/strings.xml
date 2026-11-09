@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">ეკრანის დაბლოკვის გამოყენება</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">როცა აპიდან გამოხვალ ან სხვა აპში შეხვალ, Molly-ის განბლოკვისთვის შენი Android მოწყობილობის დაბლოკვის პარამეტრები იქნება საჭირო. როდესაც დაბლოკილია, შეტყობინებების წინასწარი ნახვა შეტყობინების შინაარსს არ აჩვენებს.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">როცა აპიდან გამოხვალ ან სხვა აპში შეხვალ, Collie-ის განბლოკვისთვის შენი Android მოწყობილობის დაბლოკვის პარამეტრები იქნება საჭირო. როდესაც დაბლოკილია, შეტყობინებების წინასწარი ნახვა შეტყობინების შინაარსს არ აჩვენებს.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">ეკრანის დაბლოკვის დაწყება</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">არასტანდარტული დროით</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Molly-ის ეკრანის დაბლოკვის გამოყენება</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie-ის ეკრანის დაბლოკვის გამოყენება</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">გამორთე Molly-ის ეკრანის დაბლოკვა</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">გამორთე Collie-ის ეკრანის დაბლოკვა</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">დახმარება</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">აპის ხატულები და სახელები ხილვადია მთავარ ეკრანზე და აპის პანელზე.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">შეტყობინებები ყოველთვის გამოჩნდება Molly-ის ნაგულისხმევი ხატულათი და სახელით.</string>
+    <string name="preferences__app_icon_notification_warning">შეტყობინებები ყოველთვის გამოჩნდება Collie-ის ნაგულისხმევი ხატულათი და სახელით.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">გრაფიკული ილუსტრაცია, სადაც აპის ჩასანაცვლებელი ხატულა გამოჩნდება.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">შეცვალე აპის ხატულა და სახელი „%1$s“-ზე</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">აპის ხატულასა და სახელის შესაცვლელად Molly-ი უნდა დაიხუროს. შეტყობინებები ყოველთვის გამოჩნდება Molly-ის ნაგულისხმევი ხატულათი და სახელით.</string>
+    <string name="preferences__app_icon_dialog_description">აპის ხატულასა და სახელის შესაცვლელად Collie-ი უნდა დაიხუროს. შეტყობინებები ყოველთვის გამოჩნდება Collie-ის ნაგულისხმევი ხატულათი და სახელით.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">აირჩიე აპის ხატულა და სახელი, რომელიც შენი ტელეფონის მთავარ ეკრანზე და აპის პანელზე გამოჩნდება. შეტყობინებები ყოველთვის გამოჩნდება Molly-ის ნაგულისხმევი ხატულათი და სახელით. გაიგე მეტი</string>
+    <string name="preferences__app_icon_warning_learn_more">აირჩიე აპის ხატულა და სახელი, რომელიც შენი ტელეფონის მთავარ ეკრანზე და აპის პანელზე გამოჩნდება. შეტყობინებები ყოველთვის გამოჩნდება Collie-ის ნაგულისხმევი ხატულათი და სახელით. გაიგე მეტი</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">გაიგე მეტი</string>
 

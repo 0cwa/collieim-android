@@ -53,5 +53,13 @@ class CheckoutNavHostFragment : NavHostFragment() {
     navController.setGraph(navGraph, startBundle)
 
     super.onCreate(savedInstanceState)
+
+    // A restored checkout may contain payment-entry screens from an older version.
+    // Keep cancellation and payment progress alive, but never return to entry forms.
+    navController.addOnDestinationChangedListener { controller, destination, _ ->
+      if (DonationCheckoutDestinations.isPaymentEntry(destination.id)) {
+        controller.popBackStack(R.id.donateToSignalFragment, false)
+      }
+    }
   }
 }

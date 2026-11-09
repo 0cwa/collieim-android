@@ -209,7 +209,14 @@ public class CommunicationActions {
   }
 
   public static void openBrowserLink(@NonNull Context context, @NonNull String link) {
+    tryOpenBrowserLink(context, link);
+  }
+
+  /** Returns false when no browser could handle the link. */
+  public static boolean tryOpenBrowserLink(@NonNull Context context, @NonNull String link) {
+    boolean[] opened = { true };
     LinkActions.openUrl(context, link, error -> {
+      opened[0] = false;
       if (error instanceof OpenUrlError.NoBrowserFound) {
         Toast.makeText(context, R.string.CommunicationActions_no_browser_found, Toast.LENGTH_SHORT).show();
       } else {
@@ -217,6 +224,7 @@ public class CommunicationActions {
       }
       return Unit.INSTANCE;
     });
+    return opened[0];
   }
 
   public static void openEmail(@NonNull Context context, @NonNull String address, @Nullable String subject, @Nullable String body) {

@@ -143,7 +143,7 @@
     <!-- Row title for restore/transfer without using a previous device -->
     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">У мене не лишилося старого телефона</string>
     <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">Або ви перевстановлюєте Molly на цьому ж пристрої</string>
+    <string name="WelcomeFragment_restore_action_reinstalling">Або ви перевстановлюєте Collie на цьому ж пристрої</string>
 
     <!-- ArchiveRestoreSelectionScreen -->
     <!-- Title text for the archive restore selection screen -->

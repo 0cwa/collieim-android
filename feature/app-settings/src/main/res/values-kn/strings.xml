@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಬಳಸಿ</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">ನೀವು ಆ್ಯಪ್‌ಗಳನ್ನು ತೊರೆದಾಗ ಅಥವಾ ಬದಲಾಯಿಸಿದಾಗ Molly ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ನಿಮ್ಮ Android ಸಾಧನ ಲಾಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅಗತ್ಯವಿರುತ್ತವೆ. ಲಾಕ್ ಮಾಡಿದಾಗ, ಅಧಿಸೂಚನೆ ಪ್ರಿವ್ಯೂಗಳು ಮೆಸೇಜ್‌ನ ಕಂಟೆಂಟ್ ಅನ್ನು ತೋರಿಸುವುದಿಲ್ಲ.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">ನೀವು ಆ್ಯಪ್‌ಗಳನ್ನು ತೊರೆದಾಗ ಅಥವಾ ಬದಲಾಯಿಸಿದಾಗ Collie ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ನಿಮ್ಮ Android ಸಾಧನ ಲಾಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಅಗತ್ಯವಿರುತ್ತವೆ. ಲಾಕ್ ಮಾಡಿದಾಗ, ಅಧಿಸೂಚನೆ ಪ್ರಿವ್ಯೂಗಳು ಮೆಸೇಜ್‌ನ ಕಂಟೆಂಟ್ ಅನ್ನು ತೋರಿಸುವುದಿಲ್ಲ.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಪ್ರಾರಂಭಿಸಿ</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">ಕಸ್ಟಮ್ ಸಮಯ</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Molly ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಬಳಸಿ</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಬಳಸಿ</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Molly ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಆಫ್ ಮಾಡಿ</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collie ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಆಫ್ ಮಾಡಿ</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">ಸಹಾಯ</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">ಆ್ಯಪ್ ಐಕಾನ್‌ಗಳು ಮತ್ತು ಹೆಸರುಗಳು ಹೋಮ್ ಸ್ಕ್ರೀನ್ ಮತ್ತು ಆ್ಯಪ್ ಡ್ರಾಯರ್‌ನಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">ಅಧಿಸೂಚನೆಗಳು ಯಾವತ್ತೂ ಡೀಫಾಲ್ಟ್ Molly ಐಕಾನ್ ಮತ್ತು ಹೆಸರನ್ನು ಪ್ರದರ್ಶಿಸುತ್ತವೆ.</string>
+    <string name="preferences__app_icon_notification_warning">ಅಧಿಸೂಚನೆಗಳು ಯಾವತ್ತೂ ಡೀಫಾಲ್ಟ್ Collie ಐಕಾನ್ ಮತ್ತು ಹೆಸರನ್ನು ಪ್ರದರ್ಶಿಸುತ್ತವೆ.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">ಬದಲಿ ಆ್ಯಪ್ ಐಕಾನ್ ಕಾಣಿಸುವಲ್ಲಿ ಗ್ರಾಫಿಕ್ ವಿವರಣೆಯಿರುತ್ತದೆ.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">ಆ್ಯಪ್ ಐಕಾನ್ ಬದಲಾಯಿಸಿ ಮತ್ತು \"%1$s\" ಎಂಬುದಾಗಿ ಹೆಸರಿಸಿ</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">ಆ್ಯಪ್ ಐಕಾನ್ ಮತ್ತು ಹೆಸರನ್ನು ಬದಲಾಯಿಸಲು Molly ಅನ್ನು ಮುಚ್ಚಬೇಕಾಗುತ್ತದೆ. ಅಧಿಸೂಚನೆಗಳು ಯಾವತ್ತೂ ಡೀಫಾಲ್ಟ್ Molly ಐಕಾನ್ ಮತ್ತು ಹೆಸರನ್ನು ಪ್ರದರ್ಶಿಸುತ್ತವೆ.</string>
+    <string name="preferences__app_icon_dialog_description">ಆ್ಯಪ್ ಐಕಾನ್ ಮತ್ತು ಹೆಸರನ್ನು ಬದಲಾಯಿಸಲು Collie ಅನ್ನು ಮುಚ್ಚಬೇಕಾಗುತ್ತದೆ. ಅಧಿಸೂಚನೆಗಳು ಯಾವತ್ತೂ ಡೀಫಾಲ್ಟ್ Collie ಐಕಾನ್ ಮತ್ತು ಹೆಸರನ್ನು ಪ್ರದರ್ಶಿಸುತ್ತವೆ.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">ಒಂದು ಆ್ಯಪ್ ಐಕಾನ್ ಮತ್ತು ಹೆಸರು ಆಯ್ಕೆ ಮಾಡಿ, ಅದು ನಿಮ್ಮ ಫೋನ್‌ನ ಹೋಮ್ ಸ್ಕ್ರೀನ್ ಮತ್ತು ಆ್ಯಪ್ ಡ್ರಾಯರ್‌ನಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ. ಅಧಿಸೂಚನೆಗಳು ಯಾವತ್ತೂ ಡೀಫಾಲ್ಟ್ Molly ಐಕಾನ್ ಮತ್ತು ಹೆಸರನ್ನು ಪ್ರದರ್ಶಿಸುತ್ತವೆ. ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
+    <string name="preferences__app_icon_warning_learn_more">ಒಂದು ಆ್ಯಪ್ ಐಕಾನ್ ಮತ್ತು ಹೆಸರು ಆಯ್ಕೆ ಮಾಡಿ, ಅದು ನಿಮ್ಮ ಫೋನ್‌ನ ಹೋಮ್ ಸ್ಕ್ರೀನ್ ಮತ್ತು ಆ್ಯಪ್ ಡ್ರಾಯರ್‌ನಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ. ಅಧಿಸೂಚನೆಗಳು ಯಾವತ್ತೂ ಡೀಫಾಲ್ಟ್ Collie ಐಕಾನ್ ಮತ್ತು ಹೆಸರನ್ನು ಪ್ರದರ್ಶಿಸುತ್ತವೆ. ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</string>
 

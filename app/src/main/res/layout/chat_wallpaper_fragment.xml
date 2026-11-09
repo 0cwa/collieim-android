@@ -177,7 +177,7 @@
                 app:layout_constraintStart_toEndOf="@id/chat_wallpaper_preview_bottom_bar_input"
                 app:layout_constraintTop_toTopOf="@id/chat_wallpaper_preview_bottom_bar"
                 app:srcCompat="@drawable/ic_plus_24"
-                app:tint="@color/core_white" />
+                app:tint="?attr/colorOnPrimary" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/chat_wallpaper_preview_today"

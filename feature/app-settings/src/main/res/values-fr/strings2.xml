@@ -9,7 +9,7 @@
 <string name="preferences__enable_debug_log">Activer le journal de débogage</string>
     <string name="HelpSettingsFragment__molly_im_website">Site web Molly.im</string>
     <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Vérifier régulièrement les nouvelles versions et proposer de les installer</string>
-    <string name="preferences__autoupdate_molly">Mettre à jour Molly automatiquement</string>
+    <string name="preferences__autoupdate_molly">Mettre à jour Collie automatiquement</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Les versions bêta sont destinées à des fins de test et peuvent contenir des erreurs</string>
     <string name="preferences__include_beta_updates">Inclure les mises à jour bêta</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">Rechercher des mises à jour</string>

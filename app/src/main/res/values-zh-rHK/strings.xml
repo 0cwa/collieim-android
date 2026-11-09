@@ -31,12 +31,12 @@
   <!-- Removed by excludeNonTranslatables <string name="AlbumThumbnailView_plus" translatable="false">\+%d</string> -->
 
     <!-- ApplicationMigrationActivity -->
-    <string name="ApplicationMigrationActivity__signal_is_updating">Molly 正在更新…</string>
+    <string name="ApplicationMigrationActivity__signal_is_updating">Collie 正在更新…</string>
 
     <!-- ApplicationPreferencesActivity -->
     <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">您尚未設定一個密碼！</string>
     <string name="ApplicationPreferencesActivity_disable_passphrase">要停用密碼嗎？</string>
-    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">這將永久解鎖 Molly 及訊息通知。</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">這將永久解鎖 Collie 及訊息通知。</string>
     <string name="ApplicationPreferencesActivity_disable">停用</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">連線到伺服器時發生錯誤！</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">註冊鎖定須要 PIN 碼。若要停用 PIN 碼，請先停用註冊鎖定。</string>
@@ -81,7 +81,7 @@
     <string name="AttachmentKeyboard_location">位置</string>
     <!-- Text for a button that will allow users to create a poll -->
     <string name="AttachmentKeyboard_poll">投票</string>
-    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Molly 需要獲取權限以顯示你的相片和影片</string>
+    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Collie 需要獲取權限以顯示你的相片和影片</string>
     <!-- Text for a button prompting users to allow Signal access to their gallery storage -->
     <string name="AttachmentKeyboard_allow_access">允許存取</string>
     <string name="AttachmentKeyboard_payment">付款</string>
@@ -92,34 +92,34 @@
     <!-- Option in menu to go to settings -->
     <string name="AttachmentKeyboard_go_to_settings">前往設定</string>
     <!-- Text explaining that Signal has limited access to photos -->
-    <string name="AttachmentKeyboard_signal_has_limited_access">Molly 對相片或影片的存取權有限</string>
+    <string name="AttachmentKeyboard_signal_has_limited_access">Collie 對相片或影片的存取權有限</string>
     <!-- Text shown when user has given no photos for Signal to access and an explanation on how to change those permissions -->
     <string name="AttachmentKeyboard_no_photos_found">未找到相片，請選擇要在此處顯示的相片和影片或變更權限</string>
 
     <!-- MediaGalleryFragment -->
     <!-- Text describing that no photos or videos are currently found in the gallery and that Signal can only access media that the user allows -->
-    <string name="MediaGalleryFragment__no_photos_found">未找到相片或影片。Molly 只能取用你選擇的相片和影片。</string>
+    <string name="MediaGalleryFragment__no_photos_found">未找到相片或影片。Collie 只能取用你選擇的相片和影片。</string>
 
     <!-- AttachmentManager -->
     <string name="AttachmentManager_cant_open_media_selection">找不到應用程式以選取媒體。</string>
-    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Molly 需要儲存裝置權限才可附加照片、影片或音訊，但已被永久拒絕。請前往應用程式設定功能表，選擇 「權限」，然後啟用 「儲存裝置」。</string>
-    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Molly 需要聯絡人權限才可附加聯絡人資訊，但已被永久拒絕。請前往應用程式設定功能表，選擇「權限」，然後啟用 「聯絡人」。</string>
-    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Molly 需要位置權限才可附加位置，但已被永久拒絕。請前往應用程式設定功能表，選擇「權限」，然後啟用 「位置」。</string>
+    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Collie 需要儲存裝置權限才可附加照片、影片或音訊，但已被永久拒絕。請前往應用程式設定功能表，選擇 「權限」，然後啟用 「儲存裝置」。</string>
+    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Collie 需要聯絡人權限才可附加聯絡人資訊，但已被永久拒絕。請前往應用程式設定功能表，選擇「權限」，然後啟用 「聯絡人」。</string>
+    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Collie 需要位置權限才可附加位置，但已被永久拒絕。請前往應用程式設定功能表，選擇「權限」，然後啟用 「位置」。</string>
 
     <!-- Dialog title asking users for location permission -->
     <string name="AttachmentManager_signal_allow_access_location">允許存取你的位置</string>
     <!-- Dialog description that will explain the steps needed to give location permission -->
     <string name="AttachmentManager_signal_to_send_location">要傳送你的位置：</string>
     <!-- Alert dialog description asking for location permission -->
-    <string name="AttachmentManager_signal_allow_signal_access_location">允許 Molly 存取權以發送你的位置。</string>
+    <string name="AttachmentManager_signal_allow_signal_access_location">允許 Collie 存取權以發送你的位置。</string>
     <!-- Toast text explaining Signal\'s need for location access -->
-    <string name="AttachmentManager_signal_needs_location_access">Molly 需要位置存取權以傳送你的位置。</string>
+    <string name="AttachmentManager_signal_needs_location_access">Collie 需要位置存取權以傳送你的位置。</string>
     <!-- Dialog title asking users for gallery storage permission -->
     <string name="AttachmentManager_signal_allow_storage">允許存取儲存空間</string>
     <!-- Dialog description that will explain the steps needed to give gallery storage permission -->
     <string name="AttachmentManager_signal_to_show_photos">顯示相片和影片：</string>
     <!-- Toast text explaining Signal\'s need for storage access -->
-    <string name="AttachmentManager_signal_needs_storage_access">Molly 需要存取權以顯示你的相片和影片。</string>
+    <string name="AttachmentManager_signal_needs_storage_access">Collie 需要存取權以顯示你的相片和影片。</string>
 
     <!-- Alert dialog title to show the recipient has not activated payments -->
     <string name="AttachmentManager__not_activated_payments">%1$s 尚未啟動付款 </string>
@@ -270,12 +270,12 @@
     <string name="CensorshipCircumventionMegaphone_no_thanks">不必了</string>
 
     <!-- ClientDeprecatedActivity -->
-    <string name="ClientDeprecatedActivity_update_signal">更新 Molly</string>
+    <string name="ClientDeprecatedActivity_update_signal">更新 Collie</string>
     <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">此版本的應用程式已不再被支援。若要繼續傳送和接收訊息，請更新至最新版本。</string>
     <string name="ClientDeprecatedActivity_update">更新</string>
     <string name="ClientDeprecatedActivity_dont_update">不要更新</string>
     <string name="ClientDeprecatedActivity_warning">警告</string>
-    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">你的 Molly 版本已過期。你可以瀏覽訊息紀錄，但無法傳送或接收訊息，直到你更新版本為止。</string>
+    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">你的 Collie 版本已過期。你可以瀏覽訊息紀錄，但無法傳送或接收訊息，直到你更新版本為止。</string>
 
     <!-- ClockSkewActivity -->
     <!-- Title of the full-screen dialog shown when the device clock is too far off from the real time -->
@@ -307,7 +307,7 @@
     <!-- Title on dialog when quick restore qr code is scanned in system camera -->
     <string name="CommunicationActions__transfer_dialog_title">要轉移帳戶至新的裝置嗎？</string>
     <!-- Message on dialog when quick restore qr code is scanned in system camera -->
-    <string name="CommunicationActions__transfer_dialog_message">要將此帳戶轉移至新裝置，輕按「繼續」並用 Molly 相機再次掃描二維碼。請確保只掃描直接來自 Molly 的二維碼。</string>
+    <string name="CommunicationActions__transfer_dialog_message">要將此帳戶轉移至新裝置，輕按「繼續」並用 Collie 相機再次掃描二維碼。請確保只掃描直接來自 Collie 的二維碼。</string>
     <string name="CommunicationActions__dont_transfer">不要轉移</string>
 
     <!-- ConfirmIdentityDialog -->
@@ -331,8 +331,8 @@
 
     <!-- ContactsDatabase -->
     <string name="ContactsDatabase_message_s">傳送訊息給 %1$s</string>
-    <string name="ContactsDatabase_signal_call_s">Molly 語音通話 %1$s</string>
-    <string name="ContactsDatabase_signal_video_call_s">Molly 視訊通話 %1$s</string>
+    <string name="ContactsDatabase_signal_call_s">Collie 語音通話 %1$s</string>
+    <string name="ContactsDatabase_signal_video_call_s">Collie 視訊通話 %1$s</string>
 
     <!-- ContactNameEditActivity -->
     <!-- Toolbar title for contact name edit activity -->
@@ -441,10 +441,10 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="ConversationActivity_signal_to_send_audio_messages">傳送語音訊息：</string>
     <!-- Alert dialog description asking for microphone permission in order to send voice messages -->
-    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">如要傳送語音訊息，請允許 Molly 存取你的麥克風。</string>
+    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">如要傳送語音訊息，請允許 Collie 存取你的麥克風。</string>
     <!-- Toast text explaining Signal\'s need for microphone access -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Molly 需要麥克風存取權限以錄製語音訊息。</string>
-    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Molly需要存取咪高峰來傳送語音訊息，但您已經永久拒絕。請前往應用程式設定功能表，按「權限」，然後開啟「咪高峰」。</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Collie 需要麥克風存取權限以錄製語音訊息。</string>
+    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Collie需要存取咪高峰來傳送語音訊息，但您已經永久拒絕。請前往應用程式設定功能表，按「權限」，然後開啟「咪高峰」。</string>
 
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">第 %1$d 個，共 %2$d 個</string>
@@ -464,9 +464,9 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions for a voice call -->
     <string name="ConversationActivity__to_start_call">要開始通話：</string>
     <!-- Alert dialog description asking for microphone permission in order to start a voice call -->
-    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">若要開始通話，請允許 Molly 存取你的麥克風。</string>
+    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">若要開始通話，請允許 Collie 存取你的麥克風。</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Molly 需要麥克風存取權限才能發起通話。</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Collie 需要麥克風存取權限才能發起通話。</string>
 
 
     <string name="ConversationActivity_join">加入</string>
@@ -480,11 +480,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal 不再支援短訊功能。邀請 %1$s 加入 Signal 以繼續對話。</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">此人不再使用 Molly。邀請他們加入 Molly 以繼續對話。</string>
+    <string name="ConversationActivity__this_person_is_no_longer_using_signal">此人不再使用 Collie。邀請他們加入 Collie 以繼續對話。</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">此人沒有使用 Signal。邀請他們加入以繼續對話。</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">邀請加入 Molly</string>
+    <string name="ConversationActivity__invite_to_signal">邀請加入 Collie</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">無法在通話期間錄製語音訊息。</string>
 
@@ -570,15 +570,15 @@
     <!-- Message shown after successfully blocking join requests for a user -->
     <string name="ConversationFragment__blocked">已封鎖</string>
     <!-- Action shown to allow a user to update their application because it has expired -->
-    <string name="ConversationFragment__update_build">更新 Molly</string>
+    <string name="ConversationFragment__update_build">更新 Collie</string>
     <!-- Action shown to allow a user to re-register as they are no longer registered -->
-    <string name="ConversationFragment__reregister_signal">重新註冊 Molly</string>
+    <string name="ConversationFragment__reregister_signal">重新註冊 Collie</string>
     <!-- Action shown in the conversation input area to allow a user to re-link this device as it is no longer linked -->
     <string name="ConversationFragment__relink_signal">重新連結</string>
     <!-- Label for a button displayed in the conversation toolbar to return to the previous screen. -->
     <string name="ConversationFragment__content_description_back_button">導向返回。</string>
     <!-- Label for a button displayed in the conversation toolbar to open the main screen of the app. -->
-    <string name="ConversationFragment__content_description_launch_signal_button">開啟 Molly</string>
+    <string name="ConversationFragment__content_description_launch_signal_button">開啟 Collie</string>
     <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
     <string name="ConversationFragment__no_longer_verified">已無驗證</string>
     <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
@@ -624,7 +624,7 @@
     <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
     <string name="ConversationFragment_attachment_backfill_failed_title">無法下載媒體</string>
     <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
-    <string name="ConversationFragment_attachment_backfill_timeout">檢查此裝置和手機的網絡連線。開啟手機上的 Molly，然後嘗試再次下載。</string>
+    <string name="ConversationFragment_attachment_backfill_timeout">檢查此裝置和手機的網絡連線。開啟手機上的 Collie，然後嘗試再次下載。</string>
     <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
     <string name="ConversationFragment_attachment_backfill_not_found">無法在你的手機上取得此媒體，也無法下載。</string>
     <!-- Dialog for how to long to keep a messaged pinned for -->
@@ -694,7 +694,7 @@
     <!-- Bottom sheet text explaining that profile names are chosen by the account holder. Placeholder will be \'Profile names\' -->
     <string name="ProfileNameBottomSheet__profile_names_on_signal">Signal 上的 %1$s 由其帳戶持有人選擇。</string>
     <!-- Bottom sheet text explaining that Signal can\'t verify names and photos -->
-    <string name="ProfileNameBottomSheet__signal_cant_verify">Molly 無法驗證姓名和相片</string>
+    <string name="ProfileNameBottomSheet__signal_cant_verify">Collie 無法驗證姓名和相片</string>
     <!-- Bottom sheet text explaining that Signal will never contact you for registration code, PIN, or recovery key -->
     <string name="ProfileNameBottomSheet__signal_will_never_contact">Signal 絕不會聯絡你來索取你的註冊碼、PIN 碼或恢復金鑰</string>
     <!-- Bottom sheet text explaining that accounts can impersonate other people and to be cautious -->
@@ -824,9 +824,9 @@
     <!-- Toolbar title for this screen -->
     <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">誰可以透過電話號碼找到我？</string>
     <!-- Description for radio item stating anyone can see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">任何擁有你電話號碼的人都會看到你在使用 Molly，並可以開始與你聊天。</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">任何擁有你電話號碼的人都會看到你在使用 Collie，並可以開始與你聊天。</string>
     <!-- Description for radio item stating no one will be able to see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">除非你向對方傳送訊息或與對方已有聊天紀錄，否則沒有人能看到你使用 Molly。</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">除非你向對方傳送訊息或與對方已有聊天紀錄，否則沒有人能看到你使用 Collie。</string>
 
     <!-- ChooseBackupFragment -->
 
@@ -852,7 +852,7 @@
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">測試您的備份密碼並驗證是否相符</string>
     <string name="BackupsPreferenceFragment__turn_on">開啟備份</string>
     <string name="BackupsPreferenceFragment__turn_off">關閉</string>
-    <string name="BackupsPreferenceFragment__to_restore_a_backup">"如要還原備份，在全新安裝 Molly 後，請開啟應用程式並輕觸「還原備份」，然後找出備份檔案位置。%1$s"</string>
+    <string name="BackupsPreferenceFragment__to_restore_a_backup">"如要還原備份，在全新安裝 Collie 後，請開啟應用程式並輕觸「還原備份」，然後找出備份檔案位置。%1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">了解更多</string>
     <string name="BackupsPreferenceFragment__in_progress">進行中…</string>
     <!-- Status text shown in backup preferences when verifying a backup -->
@@ -861,7 +861,7 @@
     <string name="BackupsPreferenceFragment__d_so_far">目前進度 %1$d…</string>
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">目前進度 %1$s%%…</string>
-    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Molly 需要外部儲存空間權限才可建立備份，但已被永久拒絕。請前往應用程式設定，選擇「權限」，然後啟用「儲存裝置」。</string>
+    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Collie 需要外部儲存空間權限才可建立備份，但已被永久拒絕。請前往應用程式設定，選擇「權限」，然後啟用「儲存裝置」。</string>
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">設定備份時間</string>
 
@@ -936,7 +936,7 @@
 
     <!-- DecryptionFailedDialog -->
     <string name="DecryptionFailedDialog_chat_session_refreshed">聊天工作階段已重新整理</string>
-    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Molly 使用端對端加密，偶爾或需重新整理您的聊天工作階段。這並不會影響您的聊天安全性，但您或許會錯過來自此聯絡人的一兩則訊息，您可請對方重新傳送。</string>
+    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Collie 使用端對端加密，偶爾或需重新整理您的聊天工作階段。這並不會影響您的聊天安全性，但您或許會錯過來自此聯絡人的一兩則訊息，您可請對方重新傳送。</string>
 
     <!-- LinkDeviceFragment -->
     <!-- Description for how Signal will work with a linked device (eg desktop, iPad) -->
@@ -1045,7 +1045,7 @@
     <!-- Bottom sheet title telling users to complete the linking process on the other device  -->
     <string name="AddLinkDeviceFragment__finish_linking_on_other_device">在另一部裝置上完成連結</string>
     <!-- Bottom sheet description telling users to complete the linking process -->
-    <string name="AddLinkDeviceFragment__finish_linking_signal">在你的另一部裝置上完成 Molly 連結。</string>
+    <string name="AddLinkDeviceFragment__finish_linking_signal">在你的另一部裝置上完成 Collie 連結。</string>
     <!-- Title of dialog when the QR code being scanned is invalid -->
     <string name="AddLinkDeviceFragment__linking_device_failed">裝置連結失敗</string>
     <!-- Text shown in a dialog when the QR code being scanned is invalid -->
@@ -1093,16 +1093,16 @@
     <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">此裝置不支援 Play 服務。輕觸以停用系統電量優化，以免干擾 Molly 閒置時擷取訊息。</string>
 
     <!-- ExpiredBuildReminder -->
-    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">此版本的 Molly 已過期。立即更新以傳送和接收訊息。</string>
+    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">此版本的 Collie 已過期。立即更新以傳送和接收訊息。</string>
     <string name="ExpiredBuildReminder_update_now">立即更新</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
     <string name="DeprecatedSdkBanner_body">Signal 不再適用於此裝置。若要再次使用 Signal，請將你的裝置更新至較新版本的 Android，或切換至較新的裝置。</string>
 
     <!-- Title of notification telling users to update Signal -->
-    <string name="DeprecatedNotificationJob_update_signal">更新 Molly</string>
+    <string name="DeprecatedNotificationJob_update_signal">更新 Collie</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
-    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">此版本的 Molly 已過期。輕按更新以傳送和接收訊息。</string>
+    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">此版本的 Collie 已過期。輕按更新以傳送和接收訊息。</string>
 
     <!-- PendingGroupJoinRequestsReminder -->
     <plurals name="PendingGroupJoinRequestsReminder_d_pending_member_requests">
@@ -1224,7 +1224,7 @@
     <!-- Message for dialog asking user to submit logs for debugging a crash -->
     <string name="PromptLogsSlowNotificationsDialog__message">除錯日誌可協助我們診斷並修正問題，而且不包含識別資料。</string>
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
-    <string name="PromptLogsSlowNotificationsDialog__title_crash">Molly 遇到了問題。要提交除錯日誌嗎？</string>
+    <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie 遇到了問題。要提交除錯日誌嗎？</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">你可能收不到訊息。要提交除錯日誌嗎？</string>
 
@@ -1232,12 +1232,12 @@
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">由於電池效能最佳化，通知可能會延遲</string>
     <!-- Message explaining that battery saver may delay notifications -->
-    <string name="PromptBatterySaverBottomSheet__message">你可以停用 Molly 的電池效能最佳化設定，以確保訊息通知不會延遲。</string>
+    <string name="PromptBatterySaverBottomSheet__message">你可以停用 Collie 的電池效能最佳化設定，以確保訊息通知不會延遲。</string>
 
     <!-- Title in bottom sheet that states that notifications for this device could be delayed -->
     <string name="DeviceSpecificNotificationBottomSheet__notifications_may_be_delayed">由於電池效能最佳化，通知可能會延遲</string>
     <!-- Message in bottom sheet prompting users to fix potential issues by disabling battery optimizations -->
-    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">停用 Molly 的電池效能最佳化設定，以確保訊息通知不會延遲。點按「繼續」查看特定裝置說明。</string>
+    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">停用 Collie 的電池效能最佳化設定，以確保訊息通知不會延遲。點按「繼續」查看特定裝置說明。</string>
     <!-- Button to dismiss notification help prompt -->
     <string name="DeviceSpecificNotificationBottomSheet__no_thanks">不必了</string>
     <!-- Button to continue and go to Signal support website -->
@@ -1246,7 +1246,7 @@
     <!-- Title of a bottom sheet that is shown when the user is having connectivity issues -->
     <string name="ConnectivityWarningBottomSheet_title">你可能收不到訊息</string>
     <!-- Body of a bottom sheet that is shown when the user is having connectivity issues -->
-    <string name="ConnectivityWarningBottomSheet_body">重新啟動裝置可能有助於解決訊息傳送問題。如果問題仍然存在，請與 Molly 支援聯絡。</string>
+    <string name="ConnectivityWarningBottomSheet_body">重新啟動裝置可能有助於解決訊息傳送問題。如果問題仍然存在，請與 Collie 支援聯絡。</string>
     <!-- Text for a button in a bottom sheet that is shown when the user is having connectivity issues. Clicking it will dismiss the bottom sheet. -->
     <string name="ConnectivityWarningBottomSheet_dismiss_button">我知道了</string>
 
@@ -1473,7 +1473,7 @@
     <string name="LongMessageActivity_your_message">您的訊息</string>
 
     <!-- MessageRetrievalService -->
-    <string name="MessageRetrievalService_signal">Molly</string>
+    <string name="MessageRetrievalService_signal">Collie</string>
     <string name="MessageRetrievalService_background_connection_enabled">背景連線已啟用</string>
 
     <!-- MediaOverviewActivity -->
@@ -1560,10 +1560,10 @@
   <!-- Removed by excludeNonTranslatables <string name="StarredMessages__s_chevron_s" translatable="false">%1$s \u203A %2$s</string> -->
 
     <!-- NotificationBarManager -->
-    <string name="NotificationBarManager__establishing_signal_call">正在建立 Molly 通話</string>
+    <string name="NotificationBarManager__establishing_signal_call">正在建立 Collie 通話</string>
     <!-- Temporary notification shown when starting the calling service -->
-    <string name="NotificationBarManager__starting_signal_call_service">正在開始 Molly 通話服務</string>
-    <string name="NotificationBarManager__stopping_signal_call_service">正在停止 Molly 通話服務</string>
+    <string name="NotificationBarManager__starting_signal_call_service">正在開始 Collie 通話服務</string>
+    <string name="NotificationBarManager__stopping_signal_call_service">正在停止 Collie 通話服務</string>
     <string name="NotificationBarManager__cancel_call">取消通話</string>
 
     <!-- NotificationsMegaphone -->
@@ -1884,7 +1884,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">你無法再於 Molly 傳送短訊。邀請 %1$s 加入 Molly 以繼續對話。</string>
+    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">你無法再於 Collie 傳送短訊。邀請 %1$s 加入 Collie 以繼續對話。</string>
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">付款：%1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -1994,19 +1994,19 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">要連結 Signal 裝置嗎？</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">要將桌面電腦或 iPad 連結至此 Signal 帳戶，請前往已連結裝置，並輕按「連結新的裝置」，然後再次掃描二維碼。請確保只掃描直接來自 Signal 的二維碼。</string>
 
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">此版本的 Molly 將於今天到期。請更新至最新版本。</string>
+    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">此版本的 Collie 將於今天到期。請更新至最新版本。</string>
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
-        <item quantity="other">此版本的 Molly 將於 %1$d 天後逾期。請更新至最新版本。</item>
+        <item quantity="other">此版本的 Collie 將於 %1$d 天後逾期。請更新至最新版本。</item>
     </plurals>
 
     <!-- PassphrasePromptActivity -->
     <string name="PassphrasePromptActivity_enter_passphrase">輸入密碼</string>
-    <string name="PassphrasePromptActivity_watermark_content_description">Molly 圖示</string>
+    <string name="PassphrasePromptActivity_watermark_content_description">Collie 圖示</string>
     <string name="PassphrasePromptActivity_ok_button_content_description">提交密碼</string>
     <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">密碼無效！</string>
-    <string name="PassphrasePromptActivity_unlock_signal">解除鎖定 Molly</string>
+    <string name="PassphrasePromptActivity_unlock_signal">解除鎖定 Collie</string>
     <!-- This is the subject line for the email that is sent to support -->
-    <string name="PassphrasePromptActivity_signal_android_lock_screen">Molly Android - 鎖定畫面</string>
+    <string name="PassphrasePromptActivity_signal_android_lock_screen">Collie Android - 鎖定畫面</string>
 
     <!-- PlacePickerActivity -->
     <string name="PlacePickerActivity_title">地圖</string>
@@ -2063,7 +2063,7 @@
 
     <!-- RecaptchaRequiredBottomSheetFragment -->
     <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">驗證以繼續傳訊</string>
-    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">為協助防範 Molly 垃圾訊息，請先完成驗證。</string>
+    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">為協助防範 Collie 垃圾訊息，請先完成驗證。</string>
     <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">完成驗證後，您將可繼續傳訊。暫止的訊息將會自動傳送。</string>
 
     <!-- Recipient -->
@@ -2071,7 +2071,7 @@
     <!-- Name of recipient representing user\'s \'My Story\' -->
     <string name="Recipient_my_story">我的限時動態</string>
     <!-- Name of recipient for a call link without a name -->
-    <string name="Recipient_signal_call">Molly 通話</string>
+    <string name="Recipient_signal_call">Collie 通話</string>
 
     <!-- RecipientPreferencesActivity -->
     <string name="RecipientPreferenceActivity_block">封鎖</string>
@@ -2108,7 +2108,7 @@
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">輕觸此處以開啟您的視像</string>
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
-    <string name="WebRtcCallActivity__signal_s">Molly %1$s</string>
+    <string name="WebRtcCallActivity__signal_s">Collie %1$s</string>
     <string name="WebRtcCallActivity__calling">正在撥號…</string>
     <!-- Title for dialog warning about lacking bluetooth permissions during a call -->
     <string name="WebRtcCallActivity__bluetooth_permission_denied">藍牙權限被拒</string>
@@ -2167,15 +2167,15 @@
     <!-- Dialog title asking users for camera permission -->
     <string name="WebRtcCallActivity__allow_access_camera">允許存取你的相機</string>
     <!-- Dialog description explaining why camera and microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_camera_microphone">要開始或加入通話，請允許 Molly 存取你的相機和麥克風。</string>
+    <string name="WebRtcCallActivity__to_start_call_camera_microphone">要開始或加入通話，請允許 Collie 存取你的相機和麥克風。</string>
     <!-- Dialog description explaining why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_microphone">要開始或加入通話，請允許 Molly 存取你的麥克風。</string>
+    <string name="WebRtcCallActivity__to_start_call_microphone">要開始或加入通話，請允許 Collie 存取你的麥克風。</string>
     <!-- Dialog description explaining why camera permissions are needed to enable a user\'s video in a call -->
-    <string name="WebRtcCallActivity__to_enable_video_allow_camera">要啟用視訊，請允許 Molly 存取你的相機。</string>
+    <string name="WebRtcCallActivity__to_enable_video_allow_camera">要啟用視訊，請允許 Collie 存取你的相機。</string>
     <!-- Toast describing why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Molly 需要麥克風權限以開始或加入通話。</string>
+    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Collie 需要麥克風權限以開始或加入通話。</string>
     <!-- Toast describing why camera permissions are needed to enable a video in a call -->
-    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">Molly 需要相機存取權限以啟用視訊</string>
+    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">Collie 需要相機存取權限以啟用視訊</string>
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="WebRtcCallActivity__to_start_call">要開始或加入通話：</string>
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
@@ -2188,8 +2188,8 @@
     <string name="MoveableLocalVideoRenderer__expand_local_video">放大本機影片</string>
 
     <!-- WebRtcCallView -->
-    <string name="WebRtcCallView__signal_call">Molly 通話</string>
-    <string name="WebRtcCallView__signal_video_call">Molly 視像通話</string>
+    <string name="WebRtcCallView__signal_call">Collie 通話</string>
+    <string name="WebRtcCallView__signal_video_call">Collie 視像通話</string>
     <string name="WebRtcCallView__start_call">開始通話</string>
     <string name="WebRtcCallView__join_call">加入通話</string>
     <string name="WebRtcCallView__call_is_full">通話已滿座</string>
@@ -2482,7 +2482,7 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">新增至通訊錄</string>
-    <string name="SharedContactView_invite_to_signal">邀請加入 Molly</string>
+    <string name="SharedContactView_invite_to_signal">邀請加入 Collie</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">訊息</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
@@ -2770,11 +2770,11 @@
     <string name="ThreadRecord_blocked_group">已封鎖</string>
 
     <!-- ApkUpdateNotifications -->
-    <string name="ApkUpdateNotifications_prompt_install_title">Molly 更新</string>
-    <string name="ApkUpdateNotifications_prompt_install_body">新版本的 Molly 現已提供。 輕觸以更新。</string>
-    <string name="ApkUpdateNotifications_failed_general_title">Molly 無法更新</string>
+    <string name="ApkUpdateNotifications_prompt_install_title">Collie 更新</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">新版本的 Collie 現已提供。 輕觸以更新。</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Collie 無法更新</string>
     <string name="ApkUpdateNotifications_failed_general_body">我們將稍後再試。</string>
-    <string name="ApkUpdateNotifications_auto_update_success_title">Molly 已成功更新</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Collie 已成功更新</string>
     <string name="ApkUpdateNotifications_auto_update_success_body">已自動更新到版本 %1$s。</string>
     <string name="ApkUpdateNotifications_manual_update_success_body">已更新到版本 %1$s。</string>
 
@@ -2800,7 +2800,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">我們的 Signal 安全碼：</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">您似乎未有任何應用程式可作分享。</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">在剪貼簿中找不到安全碼以作比對</string>
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Molly 需要相機權限才可掃描二維碼，但已被永久拒絕。請前往應用程式設定，選擇「權限」，然後啟用「相機」。</string>
+    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Collie 需要相機權限才可掃描二維碼，但已被永久拒絕。請前往應用程式設定，選擇「權限」，然後啟用「相機」。</string>
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">您必須先交換訊息，以便檢視 %1$s 的安全碼。</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">此人與你交換訊息後，會為其建立一個安全碼。</string>
@@ -2837,8 +2837,8 @@
 
     <!-- KeyCachingService -->
     <string name="KeyCachingService_signal_passphrase_cached">輕按一下以開啟。</string>
-    <string name="KeyCachingService_passphrase_cached">Molly 已解除鎖定</string>
-    <string name="KeyCachingService_lock">鎖定 Molly</string>
+    <string name="KeyCachingService_passphrase_cached">Collie 已解除鎖定</string>
+    <string name="KeyCachingService_lock">鎖定 Collie</string>
 
     <!-- MediaPreviewActivity -->
     <string name="MediaPreviewActivity_you">您</string>
@@ -2889,7 +2889,7 @@
     <string name="MessageNotifier_failed_to_deliver_message">送遞訊息失敗。</string>
     <string name="MessageNotifier_error_delivering_message">送遞訊息時發生錯誤。</string>
     <string name="MessageNotifier_message_delivery_paused">訊息送遞已暫止。</string>
-    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">驗證以繼續在 Molly 傳訊。</string>
+    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">驗證以繼續在 Collie 傳訊。</string>
     <string name="MessageNotifier_mark_all_as_read">全部標記為已讀</string>
     <string name="MessageNotifier_mark_read">標記為已讀</string>
     <string name="MessageNotifier_turn_off_these_notifications">關閉這些通知</string>
@@ -2913,7 +2913,7 @@
     <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
     <string name="MessageNotifier_s_voted_in_poll">%1$s %2$s 已對「%3$s」投票</string>
 
-    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">要關閉聯絡人加入 Molly 的通知嗎？您可在 Molly &gt;「設定」&gt;「通知」中再次啟用。</string>
+    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">要關閉聯絡人加入 Collie 的通知嗎？您可在 Collie &gt;「設定」&gt;「通知」中再次啟用。</string>
 
     <!-- TurnOnNotificationsBottomSheet -->
     <!-- Title for sheet explaining how to turn on app notifications -->
@@ -2985,7 +2985,7 @@
     </plurals>
 
     <!-- Message shown when the app requests permission to save media to the device storage, but that permission has been permanently denied by the user. -->
-    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">Molly 需要儲存裝置權限才可儲存到外部儲存空間，但已被永久拒絕。請前往應用程式設定，選擇「權限」，然後啟用「儲存裝置」。</string>
+    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">Collie 需要儲存裝置權限才可儲存到外部儲存空間，但已被永久拒絕。請前往應用程式設定，選擇「權限」，然後啟用「儲存裝置」。</string>
 
     <!-- Message explaining that it is not possible to save media to the device storage after the user denied the system save to storage permission. -->
     <string name="AttachmentSaver__unable_to_write_to_external_storage_without_permission">缺少權限下無法儲存到外部儲存空間</string>
@@ -2995,11 +2995,11 @@
     <!-- Dialog title shown when attempting to save media that has been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_media">無法儲存媒體</string>
     <!-- Dialog message explaining that media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__media_offloaded_message">由於裝置開啟了「最佳化 Molly 儲存空間」功能，此媒體已從裝置中卸載。你可以逐一下載項目，或關閉「最佳化 Molly 儲存空間」功能，將所有媒體下載至你的裝置。</string>
+    <string name="AttachmentSaver__media_offloaded_message">由於裝置開啟了「最佳化 Collie 儲存空間」功能，此媒體已從裝置中卸載。你可以逐一下載項目，或關閉「最佳化 Collie 儲存空間」功能，將所有媒體下載至你的裝置。</string>
     <!-- Dialog title shown when attempting to save multiple media items, some of which have been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_all_items">無法儲存全部項目</string>
     <!-- Dialog message explaining that some selected media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__some_media_offloaded_message">由於裝置開啟了「最佳化 Molly 儲存空間」功能，你所選的部分媒體已從裝置中卸載。你可以逐一儲存項目，或關閉「最佳化 Molly 儲存空間」功能，將所有媒體下載至你的裝置。</string>
+    <string name="AttachmentSaver__some_media_offloaded_message">由於裝置開啟了「最佳化 Collie 儲存空間」功能，你所選的部分媒體已從裝置中卸載。你可以逐一儲存項目，或關閉「最佳化 Collie 儲存空間」功能，將所有媒體下載至你的裝置。</string>
     <!-- Button label in the offloaded media dialog that navigates to the storage settings screen. -->
     <string name="AttachmentSaver__view_storage_settings">檢視儲存空間設定</string>
 
@@ -3012,7 +3012,7 @@
     <string name="ShortcutLauncherActivity_invalid_shortcut">捷徑無效</string>
 
     <!-- SingleRecipientNotificationBuilder -->
-    <string name="SingleRecipientNotificationBuilder_signal">Molly</string>
+    <string name="SingleRecipientNotificationBuilder_signal">Collie</string>
     <string name="SingleRecipientNotificationBuilder_new_message">新訊息</string>
     <string name="SingleRecipientNotificationBuilder_message_request">訊息請求</string>
     <string name="SingleRecipientNotificationBuilder_you">您</string>
@@ -3087,7 +3087,7 @@
 
     <!-- UnauthorizedReminder -->
     <!-- Message shown in a reminder banner when the user\'s device is no longer registered -->
-    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">此裝置已不再註冊。通常是因為你已在另一部裝置上使用你的電話號碼註冊 Molly。</string>
+    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">此裝置已不再註冊。通常是因為你已在另一部裝置上使用你的電話號碼註冊 Collie。</string>
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">重新註冊裝置</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
@@ -3096,7 +3096,7 @@
     <string name="UnauthorizedReminder_relink_action">重新連結裝置</string>
 
     <!-- Push notification when the app is forcibly logged out by the server. -->
-    <string name="LoggedOutNotification_you_have_been_logged_out">你已登出此裝置的 Molly 應用程式。</string>
+    <string name="LoggedOutNotification_you_have_been_logged_out">你已登出此裝置的 Collie 應用程式。</string>
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
@@ -3142,14 +3142,14 @@
     <string name="change_passphrase_activity__repeat_new_passphrase">重複輸入新的密碼</string>
 
     <!-- contact_selection_activity -->
-    <string name="contact_selection_activity__invite_to_signal">邀請加入 Molly</string>
+    <string name="contact_selection_activity__invite_to_signal">邀請加入 Collie</string>
     <string name="contact_selection_activity__new_group">建立新群組</string>
     <!-- Row item title for refreshing contacts -->
     <string name="contact_selection_activity__refresh_contacts">重新整理聯絡人</string>
     <!-- Row item description for refreshing contacts -->
     <string name="contact_selection_activity__missing_someone">找不到某人？嘗試重新整理</string>
     <!-- Row item title for finding people on Signal via your contacts -->
-    <string name="contact_selection_activity__find_people_you_know">在 Molly 上尋找你認識的人</string>
+    <string name="contact_selection_activity__find_people_you_know">在 Collie 上尋找你認識的人</string>
     <!-- Row item description asking users for access to their contacts to find people they know -->
     <string name="contact_selection_activity__allow_access_to_contacts">允許存取你的通訊錄</string>
     <!-- Row header title for more section -->
@@ -3168,7 +3168,7 @@
     <string name="SingleContactSelectionActivity_contact_photo">聯絡人照片</string>
 
     <!-- ContactSelectionListFragment-->
-    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Molly 需要聯絡人權限才可顯示您的聯絡人，但已被永久拒絕。請前往應用程式設定功能表，選擇「權限」，然後啟用「聯絡人」。</string>
+    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Collie 需要聯絡人權限才可顯示您的聯絡人，但已被永久拒絕。請前往應用程式設定功能表，選擇「權限」，然後啟用「聯絡人」。</string>
     <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">提取聯絡人時發生錯誤，請檢查您的網絡連線</string>
     <string name="ContactSelectionListFragment_username_not_found">找不到用戶名稱</string>
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"「%1$s」並非 Signal 使用者。請檢查用戶名稱，然後再試一次。"</string>
@@ -3187,7 +3187,7 @@
     <!-- Dialog title asking users for contact permission -->
     <string name="ContactSelectionListFragment_allow_access_contacts">允許存取通訊錄</string>
     <!-- Dialog description that will explain the steps needed to give contact permissions -->
-    <string name="ContactSelectionListFragment_to_find_people">要在 Molly 上尋找你認識的人：</string>
+    <string name="ContactSelectionListFragment_to_find_people">要在 Collie 上尋找你認識的人：</string>
     <!-- Text on button prompting users to give Signal contact permissions -->
     <string name="ContactSelectionListFragment__allow_access">允許存取</string>
     <!-- Text on button to dismiss Signal\'s request for contact permissions -->
@@ -3313,7 +3313,7 @@
 
     <!-- BubbleOptOutTooltip -->
     <!-- Message to inform the user of what Android chat bubbles are -->
-    <string name="BubbleOptOutTooltip__description">氣泡是一項 Android 功能，您可為 Molly 聊天將其關閉。</string>
+    <string name="BubbleOptOutTooltip__description">氣泡是一項 Android 功能，您可為 Collie 聊天將其關閉。</string>
     <!-- Button to dismiss the tooltip for opting out of using Android bubbles -->
     <string name="BubbleOptOutTooltip__not_now">現在不要</string>
     <!-- Button to move to the system settings to control the use of Android bubbles -->
@@ -3418,9 +3418,9 @@
     <string name="EditProfileFragment__group_description">群組描述</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
     <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_title">更新 Molly</string>
+    <string name="EditProfileFragment_deprecated_dialog_title">更新 Collie</string>
     <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
-    <string name="EditProfileFragment_deprecated_dialog_body">此版本的 Molly 已過期。請立即更新以繼續使用 Molly。</string>
+    <string name="EditProfileFragment_deprecated_dialog_body">此版本的 Collie 已過期。請立即更新以繼續使用 Collie。</string>
     <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
     <string name="EditProfileFragment_deprecated_dialog_update_button">更新</string>
     <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
@@ -3464,20 +3464,20 @@
     <!-- Bottom sheet title when encryption is auto-verified -->
     <string name="EncryptionVerifiedSheet__title_success">系統已對此聊天進行自動加密驗證</string>
     <!-- Bottom sheet body when encryption is auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_success">對於透過電話號碼建立聯繫的人，Molly 會透過稱為「金鑰透明度」的程序，自動確認聯絡對象是否安全。為了增加安全性，透過比較上一個畫面的數字或掃瞄對方裝置上的二維碼來手動驗證端對端加密。</string>
+    <string name="EncryptionVerifiedSheet__body_success">對於透過電話號碼建立聯繫的人，Collie 會透過稱為「金鑰透明度」的程序，自動確認聯絡對象是否安全。為了增加安全性，透過比較上一個畫面的數字或掃瞄對方裝置上的二維碼來手動驗證端對端加密。</string>
     <!-- Bottom sheet title when encryption is no longer auto-verified -->
     <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">自動驗證功能不適用於此聊天</string>
     <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
-    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Molly 無法自動驗證此聊天的加密。這可能是因為 %1$s 已變更電話號碼，或是調整了電話號碼的隱私設定。透過比較上一個畫面的數字，或掃瞄對方裝置上的二維碼來手動驗證端對端加密。</string>
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Collie 無法自動驗證此聊天的加密。這可能是因為 %1$s 已變更電話號碼，或是調整了電話號碼的隱私設定。透過比較上一個畫面的數字，或掃瞄對方裝置上的二維碼來手動驗證端對端加密。</string>
     <!-- Bottom sheet title when encryption cannot be auto-verified -->
     <string name="EncryptionVerifiedSheet__title_unavailable">自動驗證功能不適用於此聊天</string>
     <!-- Bottom sheet body when encryption cannot be auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_unavailable">Molly 只能在透過電話號碼與對方建立聯繫的聊天中自動進行加密驗證。如果聊天是以用戶名稱或共同的群組開始，請比較前一畫面的數字或掃描對方裝置上的二維碼，以驗證端對端加密。</string>
+    <string name="EncryptionVerifiedSheet__body_unavailable">Collie 只能在透過電話號碼與對方建立聯繫的聊天中自動進行加密驗證。如果聊天是以用戶名稱或共同的群組開始，請比較前一畫面的數字或掃描對方裝置上的二維碼，以驗證端對端加密。</string>
 
     <!-- Title for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__title">Molly 現在可自動驗證加密</string>
+    <string name="VerifyAutomaticallyEducationSheet__title">Collie 現在可自動驗證加密</string>
     <!-- Body for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__body">對於透過電話號碼建立聯繫的聯絡人，Molly 會透過稱為「金鑰透明度」的程序，自動確認聯絡對象是否安全。為了增加安全性，你仍然可以使用二維碼或比對安全碼手動驗證聯絡人。</string>
+    <string name="VerifyAutomaticallyEducationSheet__body">對於透過電話號碼建立聯繫的聯絡人，Collie 會透過稱為「金鑰透明度」的程序，自動確認聯絡對象是否安全。為了增加安全性，你仍然可以使用二維碼或比對安全碼手動驗證聯絡人。</string>
     <!-- Button to learn more about automatic verification -->
     <string name="VerifyAutomaticallyEducationSheet__learn_more">了解更多</string>
     <!-- Button to go to verification page -->
@@ -3645,7 +3645,7 @@
     <string name="preferences_communication__category_censorship_circumvention">審查規避</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">審查規避</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">一旦啟用，Molly 會嘗試規避審查。除非您所在地方會審查 Molly，否則不要使用此功能。</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">一旦啟用，Collie 會嘗試規避審查。除非您所在地方會審查 Collie，否則不要使用此功能。</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">根據您的電話號碼，我們已啟用審查規避功能。</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -3673,7 +3673,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">自動金鑰驗證</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">啟用時，Molly 會嘗試自動驗證 1 對 1 聊天的加密。</string>
+    <string name="preferences_automatic_key_verification_body">啟用時，Collie 會嘗試自動驗證 1 對 1 聊天的加密。</string>
 
 
     <!-- Internal only preferences -->
@@ -3690,7 +3690,7 @@
 
     <!-- Displayed on a welcome screen for payments -->
     <string name="PaymentsHomeFragment_introducing_payments">付款功能登場</string>
-    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">使用 Molly 傳送和接收 MobileCoin：一種注重私隱的全新電子貨幣。立即啟動便可以開始使用。</string>
+    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">使用 Collie 傳送和接收 MobileCoin：一種注重私隱的全新電子貨幣。立即啟動便可以開始使用。</string>
     <string name="PaymentsHomeFragment__activate_payments">啟用付款</string>
     <string name="PaymentsHomeFragment__activating_payments">正在啟用付款…</string>
     <string name="PaymentsHomeFragment__restore_payments_account">還原付款帳戶</string>
@@ -3716,7 +3716,7 @@
     <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">付款不適用於您的地區。</string>
     <string name="PaymentsHomeFragment__could_not_enable_payments">無法啟用付款。請稍後再試。</string>
     <string name="PaymentsHomeFragment__deactivate_payments_question">要停用付款嗎？</string>
-    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">若您停用付款，您將無法在 Molly 中發送或接收 MobileCoin。</string>
+    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">若您停用付款，您將無法在 Collie 中發送或接收 MobileCoin。</string>
     <string name="PaymentsHomeFragment__deactivate">停用</string>
     <string name="PaymentsHomeFragment__continue">繼續</string>
     <string name="PaymentsHomeFragment__balance_is_not_currently_available">餘額目前未能提供。</string>
@@ -3725,10 +3725,10 @@
     <string name="PaymentsHomeFragment__details">詳細資料</string>
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__learn_more__activate_payments" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_activate</string> -->
     <!-- Displayed as a description in a dialog when the user tries to activate payments -->
-    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">你可使用 Molly 收發 MobileCoin。所有付款均受 MobileCoin 和 MobileCoin Wallet 的使用條款約束。你或許會遇到一些問題，以及你可能遺失付款或餘額而無法還原。 </string>
+    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">你可使用 Collie 收發 MobileCoin。所有付款均受 MobileCoin 和 MobileCoin Wallet 的使用條款約束。你或許會遇到一些問題，以及你可能遺失付款或餘額而無法還原。 </string>
     <string name="PaymentsHomeFragment__activate">啟用</string>
     <string name="PaymentsHomeFragment__view_mobile_coin_terms">檢視 MobileCoin 條款</string>
-    <string name="PaymentsHomeFragment__payments_not_available">付款已不再在 Molly 上可用。您仍可轉移款項至交易平台，惟您不再能發送和接收付款或增加款項。</string>
+    <string name="PaymentsHomeFragment__payments_not_available">付款已不再在 Collie 上可用。您仍可轉移款項至交易平台，惟您不再能發送和接收付款或增加款項。</string>
 
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__mobile_coin_terms_url" translatable="false">https://www.mobilecoin.com/terms-of-use.html</string> -->
     <!-- Alert dialog title which shows up after a payment to turn on payment lock -->
@@ -3811,9 +3811,9 @@
     <string name="PaymentsTransferFragment__next">下一步</string>
     <string name="PaymentsTransferFragment__invalid_address">位址無效</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">請檢查您嘗試轉移至該處的錢包位址，然後再試一次。</string>
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">您不能轉移至您自己的 Molly 錢包位址。請輸入您在支援的交易平台上所屬帳戶的錢包位址。</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Molly 需要存取相機，以便掃描二維碼。</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Molly 需要存取相機，以便掃描二維碼。</string>
+    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">您不能轉移至您自己的 Collie 錢包位址。請輸入您在支援的交易平台上所屬帳戶的錢包位址。</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Collie 需要存取相機，以便掃描二維碼。</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Collie 需要存取相機，以便掃描二維碼。</string>
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">掃描位址二維碼</string>
@@ -4165,17 +4165,17 @@
 
     <!-- CallNotificationBuilder -->
     <!-- Displayed in a notification when a Signal voice call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_voice_call">Molly 語音通話來電</string>
+    <string name="CallNotificationBuilder__incoming_signal_voice_call">Collie 語音通話來電</string>
     <!-- Displayed in a notification when a Signal video call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_video_call">Molly 視訊通話來電</string>
+    <string name="CallNotificationBuilder__incoming_signal_video_call">Collie 視訊通話來電</string>
     <!-- Displayed in a notification when a Signal group call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_group_call">Molly 群組來電</string>
+    <string name="CallNotificationBuilder__incoming_signal_group_call">Collie 群組來電</string>
     <!-- Displayed in a notification when a Signal voice call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Molly 語音通話進行中</string>
+    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Collie 語音通話進行中</string>
     <!-- Displayed in a notification when a Signal video call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_video_call">Molly 視訊通話進行中</string>
+    <string name="CallNotificationBuilder__ongoing_signal_video_call">Collie 視訊通話進行中</string>
     <!-- Displayed in a notification when a Signal group call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_group_call">Molly 群組通話進行中</string>
+    <string name="CallNotificationBuilder__ongoing_signal_group_call">Collie 群組通話進行中</string>
 
     <string name="CallNotificationBuilder_connecting">正在連線……</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">備份密碼</string>
@@ -4201,9 +4201,9 @@
     <string name="BackupDialog_verify">驗證</string>
     <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">您已成功輸入您的備份密碼</string>
     <string name="BackupDialog_passphrase_was_not_correct">密碼不正確</string>
-    <string name="LocalBackupJob_creating_signal_backup">正在建立 Molly 備份…</string>
+    <string name="LocalBackupJob_creating_signal_backup">正在建立 Collie 備份…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">正在驗證 Molly 備份…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">正在驗證 Collie 備份…</string>
     <string name="LocalBackupJobApi29_backup_failed">備份失敗</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">您的備份目錄已被刪除或移動。</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">您的備份檔太大，無法在此磁碟機中儲存。</string>
@@ -4224,7 +4224,7 @@
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">未知</string>
     <!-- Subtext below option to launch into phone number privacy settings screen -->
-    <string name="preferences_app_protection__choose_who_can_see">選擇誰可以看到你的電話號碼，以及誰可以透過電話號碼在 Molly 與你聯絡。</string>
+    <string name="preferences_app_protection__choose_who_can_see">選擇誰可以看到你的電話號碼，以及誰可以透過電話號碼在 Collie 與你聯絡。</string>
     <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
     <string name="preferences_app_protection__to_use_screen_lock">若要使用螢幕鎖定，請在此裝置上設定 PIN 碼、圖案或密碼。</string>
     <string name="preferences_app_protection__failed_to_enable_registration_lock">啟用註冊鎖定失敗。</string>
@@ -4238,11 +4238,11 @@
     <string name="preferences_chats__backups">備份</string>
 
     <!-- Title text shown when Signal is locked and needs to be unlocked -->
-    <string name="prompt_passphrase_activity__unlock_signal">解除鎖定 Molly</string>
+    <string name="prompt_passphrase_activity__unlock_signal">解除鎖定 Collie</string>
     <!-- Description text explaining how to unlock Signal -->
-    <string name="prompt_passphrase_activity__use_your_android_device">使用 Android 裝置的鎖定設定來解鎖 Molly。</string>
+    <string name="prompt_passphrase_activity__use_your_android_device">使用 Android 裝置的鎖定設定來解鎖 Collie。</string>
     <!-- Text shown in a dialog that further explains how to unlock Signal by using the same unlocking methods that are used to unlock their own device -->
-    <string name="prompt_passphrase_activity__screen_lock_is_on">螢幕鎖定已開啟，並且 Molly 已透過你的裝置鎖定設定得到了安全保護。解鎖 Molly 的方式與平常解鎖手機的方式相同，可以使用臉部解鎖、指紋解鎖、PIN 碼、密碼或圖案。</string>
+    <string name="prompt_passphrase_activity__screen_lock_is_on">螢幕鎖定已開啟，並且 Collie 已透過你的裝置鎖定設定得到了安全保護。解鎖 Collie 的方式與平常解鎖手機的方式相同，可以使用臉部解鎖、指紋解鎖、PIN 碼、密碼或圖案。</string>
     <!-- Button in a dialog that will contact Signal support if pressed -->
     <string name="prompt_passphrase_activity__contact_support">聯絡支援團隊</string>
     <!-- Button text to try again after unlocking has previously failed -->
@@ -4297,9 +4297,9 @@
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">正在搜尋新的 Android 裝置…</string>
-    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Molly 需要「位置」權限以探索並連接您新的 Android 裝置。</string>
-    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Molly 需要啟用定位服務以探索並連接您新的 Android 裝置。</string>
-    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Molly 需要開啟 Wi-Fi 以探索並連接您新的 Android 裝置。需要開啟 Wi-Fi，惟不需要連接到 Wi-Fi 網絡。</string>
+    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie 需要「位置」權限以探索並連接您新的 Android 裝置。</string>
+    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie 需要啟用定位服務以探索並連接您新的 Android 裝置。</string>
+    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie 需要開啟 Wi-Fi 以探索並連接您新的 Android 裝置。需要開啟 Wi-Fi，惟不需要連接到 Wi-Fi 網絡。</string>
     <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">抱歉，此裝置似乎不支援 Wi-Fi Direct。Molly 使用 Wi-Fi Direct 以探索並連接您新的 Android 裝置。您仍可建立備份，以便在您新的 Android 裝置上還原您的帳戶。</string>
     <string name="OldDeviceTransferSetup__create_a_backup">建立備份</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">嘗試連接您新的 Android 裝置時發生未預期的錯誤。</string>
@@ -4340,7 +4340,7 @@
 
     <!-- DeviceTransferFragment -->
     <string name="DeviceTransfer__transferring_data">正在轉移資料</string>
-    <string name="DeviceTransfer__keep_both_devices_near_each_other">讓兩台裝置保持接近。不要關閉裝置並保持 Molly 開啟。轉移已經端對端加密。</string>
+    <string name="DeviceTransfer__keep_both_devices_near_each_other">讓兩台裝置保持接近。不要關閉裝置並保持 Collie 開啟。轉移已經端對端加密。</string>
     <string name="DeviceTransfer__d_messages_so_far">目前為止 %1$d 則訊息…</string>
     <!-- Filled in with total percentage of messages transferred -->
     <string name="DeviceTransfer__s_of_messages_so_far">訊息目前進度 %1$s%%…</string>
@@ -4354,7 +4354,7 @@
     <!-- OldDeviceTransferInstructionsFragment -->
     <string name="OldDeviceTransferInstructions__transfer_account">轉移帳戶</string>
     <string name="OldDeviceTransferInstructions__first_bullet">一、</string>
-    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">在您新的 Android 裝置上下載 Molly</string>
+    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">在您新的 Android 裝置上下載 Collie</string>
     <string name="OldDeviceTransferInstructions__second_bullet">二、</string>
     <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">"輕觸「轉移或還原帳戶」"</string>
     <string name="OldDeviceTransferInstructions__third_bullet">三、</string>
@@ -4435,7 +4435,7 @@
     <!-- GroupLinkBottomSheetDialogFragment -->
     <string name="GroupLinkBottomSheet_share_hint_requiring_approval">任何人憑此連結將可檢視群組的名稱和照片並請求加入。請與您信任的人分享此連結。</string>
     <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">任何人憑此連結將可檢視群組的名稱和照片並加入群組。請與您信任的人分享此連結。</string>
-    <string name="GroupLinkBottomSheet_share_via_signal">透過 Molly 分享</string>
+    <string name="GroupLinkBottomSheet_share_via_signal">透過 Collie 分享</string>
     <string name="GroupLinkBottomSheet_copy">複製</string>
     <string name="GroupLinkBottomSheet_qr_code">二維碼</string>
     <string name="GroupLinkBottomSheet_share">分享</string>
@@ -4586,7 +4586,7 @@
     <string name="payment_info_card_about_mobilecoin">關於 MobileCoin</string>
     <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">MobileCoin 是一種注重隱私的全新數位貨幣。</string>
     <string name="payment_info_card_adding_funds">增加款項</string>
-    <string name="payment_info_card_you_can_add_funds_for_use_in">您可傳送 MobileCoin 到您的錢包位址，以增加款項在 Molly 中使用。</string>
+    <string name="payment_info_card_you_can_add_funds_for_use_in">您可傳送 MobileCoin 到您的錢包位址，以增加款項在 Collie 中使用。</string>
     <string name="payment_info_card_cashing_out">提取款項</string>
     <string name="payment_info_card_you_can_cash_out_mobilecoin">您可隨時在支援 MobileCoin 的交易平台上提取 MobileCoin，只需進行一筆轉移至您在該交易平台上的帳戶即可。</string>
     <string name="payment_info_card_hide_this_card">要隱藏此卡片嗎？</string>
@@ -4607,12 +4607,12 @@
     <!-- DeactivateWalletFragment -->
     <string name="DeactivateWalletFragment__deactivate_wallet">停用錢包</string>
     <string name="DeactivateWalletFragment__your_balance">您的餘額</string>
-    <string name="DeactivateWalletFragment__its_recommended_that_you">我們建議你在停用付款之前，將你的資金轉移到另一個錢包位址。若你現在選擇不作轉移，當你重新啟用付款時，你的款項將會保留在已連結至 Molly 的錢包中。</string>
+    <string name="DeactivateWalletFragment__its_recommended_that_you">我們建議你在停用付款之前，將你的資金轉移到另一個錢包位址。若你現在選擇不作轉移，當你重新啟用付款時，你的款項將會保留在已連結至 Collie 的錢包中。</string>
     <string name="DeactivateWalletFragment__transfer_remaining_balance">轉移尚餘款項</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring">停用而不轉移</string>
     <string name="DeactivateWalletFragment__deactivate">停用</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring_question">要停用而不作轉移嗎？</string>
-    <string name="DeactivateWalletFragment__your_balance_will_remain">若你選擇重新啟用付款，你的餘額將會保留在已連結至 Molly 的錢包中。</string>
+    <string name="DeactivateWalletFragment__your_balance_will_remain">若你選擇重新啟用付款，你的餘額將會保留在已連結至 Collie 的錢包中。</string>
     <string name="DeactivateWalletFragment__error_deactivating_wallet">停用錢包時發生錯誤。</string>
   <!-- Removed by excludeNonTranslatables <string name="DeactivateWalletFragment__learn_more__we_recommend_transferring_your_funds" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_deactivate</string> -->
 
@@ -5313,9 +5313,9 @@
     <string name="MySupportPreference__checking_subscription">正在檢查定期贊助…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__title">更新 Molly</string>
+    <string name="UpdateSignalExpiredDialog__title">更新 Collie</string>
     <!-- Message of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__message">此版本的 Molly 已過期。請立即更新以繼續使用 Molly。</string>
+    <string name="UpdateSignalExpiredDialog__message">此版本的 Collie 已過期。請立即更新以繼續使用 Collie。</string>
     <!-- Button text of expiration dialog, will take user to update the app -->
     <string name="UpdateSignalExpiredDialog__update_action">更新</string>
     <!-- Button text of expiration dialog to cancel the dialog.  -->
@@ -5324,7 +5324,7 @@
     <!-- Title of dialog telling user they need to re-register signal -->
     <string name="ReregisterSignalDialog__title">裝置未註冊</string>
     <!-- Message of dialog telling user they need to re-register signal as it is no longer registered -->
-    <string name="ReregisterSignalDialog__message">此裝置已不再註冊。重新註冊以在此裝置繼續使用 Molly。</string>
+    <string name="ReregisterSignalDialog__message">此裝置已不再註冊。重新註冊以在此裝置繼續使用 Collie。</string>
     <!-- Button text of re-registration dialog to re-register the device.  -->
     <string name="ReregisterSignalDialog__reregister_action">重新註冊</string>
     <!-- Button text of re-registration dialog to cancel the dialog.  -->
@@ -5603,7 +5603,7 @@
     <!-- Displayed in a toast when we fail to open the ringtone picker -->
     <string name="NotificationSettingsFragment__failed_to_open_picker">無法開啟挑選器。</string>
     <!-- Banner title when notification permission is disabled -->
-    <string name="NotificationSettingsFragment__to_enable_notifications">要啟用通知，Molly 需要顯示通知的權限。</string>
+    <string name="NotificationSettingsFragment__to_enable_notifications">要啟用通知，Collie 需要顯示通知的權限。</string>
     <!-- Banner action when notification permission is disabled -->
     <string name="NotificationSettingsFragment__turn_on">開啟</string>
 
@@ -6761,7 +6761,7 @@
     <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__title">開啟 Signal 安全備份</string>
     <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
-    <string name="TurnOnSignalBackups__body">當你使用新手機或重新安裝 Molly 時，絕不會遺失訊息。</string>
+    <string name="TurnOnSignalBackups__body">當你使用新手機或重新安裝 Collie 時，絕不會遺失訊息。</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
     <string name="TurnOnSignalBackups__turn_on">開啟</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
@@ -6831,16 +6831,16 @@
     <string name="BackupSetupCompleteBottomSheet__back_up_now">立即備份</string>
 
     <!-- Title of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__title">在手機上開啟 Molly</string>
+    <string name="InactivePrimary__title">在手機上開啟 Collie</string>
     <!-- Body of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__body">若要讓你的帳戶保持在活躍狀態，請在主要裝置上開啟 Molly。</string>
+    <string name="InactivePrimary__body">若要讓你的帳戶保持在活躍狀態，請在主要裝置上開啟 Collie。</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will navigate to a support page -->
     <string name="InactivePrimary__learn_more">了解更多</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will snooze the megaphone -->
     <string name="InactivePrimary__got_it">我知道了</string>
 
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
-    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"如要還原備份，請安裝全新的 Molly 。開啟應用程式並輕按「還原備份」，再找出備份檔案位置。"</string>
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"如要還原備份，請安裝全新的 Collie 。開啟應用程式並輕按「還原備份」，再找出備份檔案位置。"</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
     <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">你已啟用「最佳化 Signal 儲存空間」。如果想將所有媒體都包含在裝置上備份中，請關閉此設定。</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
@@ -7216,9 +7216,9 @@
     <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
     <string name="ManageStorageSettingsFragment_apply_limits_description">啟用後，聊天訊息量上限也會應用在已連結裝置並刪除訊息。</string>
     <!-- Setting section title header for storage optimization -->
-    <string name="ManageStorageSettingsFragment__on_device_storage">Molly 儲存空間</string>
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie 儲存空間</string>
     <!-- Setting row title for storage optimization -->
-    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">最佳化 Molly 儲存空間</string>
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">最佳化 Collie 儲存空間</string>
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">未使用的媒體將被卸載，但可以隨時從備份中下載。</string>
     <!-- Dialog message for paid tier pending dialog -->
@@ -7380,7 +7380,7 @@
     <!-- Displays the date the subscription expired. Placeholder is the date. -->
     <string name="RemoteBackupsSettingsFragment__expired_on_s">到期日為 %1$s</string>
     <!-- Displayed at the top of the screen when no backup is currently enabled -->
-    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">備份你的訊息紀錄，讓你在使用新手機或重新安裝 Molly 時，絕不會遺失資料。</string>
+    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">備份你的訊息紀錄，讓你在使用新手機或重新安裝 Collie 時，絕不會遺失資料。</string>
     <!-- Section header for other ways to back up -->
     <string name="RemoteBackupsSettingsFragment__other_ways_to_backup">其他備份方式</string>
     <!-- Row title for performing on-device backup -->
@@ -7655,7 +7655,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">妥善保管你的金鑰</string>
     <!-- Bottom sheet subtitle -->
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">如果你遺失金鑰，Molly 將無法幫助你還原備份。將其存放在安全可靠的地方，不要與他人分享。</string>
+    <string name="MessageBackupsKeyRecordScreen__signal_will_not">如果你遺失金鑰，Collie 將無法幫助你還原備份。將其存放在安全可靠的地方，不要與他人分享。</string>
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">繼續</string>
     <!-- Sheet secondary action button label -->
@@ -7665,13 +7665,13 @@
     <!-- Dialog title for confirming you need to disable optimized storage and download media to rotate AEP key -->
     <string name="MessageBackupsKeyRecordScreen__download_media">下載媒體</string>
     <!-- Dialog body for confirming you need to disable optimized storage and download media to rotate AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">若要建立新的恢復金鑰，你必須關閉「最佳化 Molly 儲存空間」功能，並等待下載媒體完成。下載完成後，你便可以建立新金鑰。</string>
+    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">若要建立新的恢復金鑰，你必須關閉「最佳化 Collie 儲存空間」功能，並等待下載媒體完成。下載完成後，你便可以建立新金鑰。</string>
     <!-- Action label to turn off optimized storage and download media -->
     <string name="MessageBackupsKeyRecordScreen__turn_off_and_download">關閉並下載</string>
     <!-- Bottom Sheet title for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">建立新的恢復金鑰</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">只有當其他人知道你的金鑰時，才需要建立新的金鑰。你必須重新上載備份，包括媒體。如果你使用「最佳化 Molly 儲存空間」，則必須先下載已卸載的媒體。</string>
+    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">只有當其他人知道你的金鑰時，才需要建立新的金鑰。你必須重新上載備份，包括媒體。如果你使用「最佳化 Collie 儲存空間」，則必須先下載已卸載的媒體。</string>
     <!-- Dialog title shown when user attempts to exit backup setup before completion -->
     <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">要退出備份設定嗎？</string>
     <!-- Dialog body warning user that backup setup is incomplete -->
@@ -8184,7 +8184,7 @@
     <string name="CouldNotCompleteBackupRestoreSheet__body_error">發生錯誤，無法還原你的備份。這可能由於在還原備份的過程中，你的備份資料夾在裝置上被移動了。</string>
 
     <!-- Body of the sheet shown when a local backup restore could not be completed, explaining how to try again -->
-    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">若要重新嘗試，請在此裝置上解除安裝並重新安裝 Molly，然後選擇「還原或轉移」。</string>
+    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">若要重新嘗試，請在此裝置上解除安裝並重新安裝 Collie，然後選擇「還原或轉移」。</string>
 
     <!-- Button on the sheet shown when a local backup restore could not be completed, opening a support article about it -->
     <string name="CouldNotCompleteBackupRestoreSheet__learn_more">了解更多</string>

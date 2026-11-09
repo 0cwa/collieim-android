@@ -250,68 +250,14 @@ class DonateToSignalFragment :
 
       space(24.dp)
 
-      customPref(
-        CurrencySelection.Model(
-          selectedCurrency = state.selectedCurrency,
-          isEnabled = state.canSetCurrency,
-          onClick = {
-            viewModel.requestChangeCurrency()
-          }
-        )
-      )
-
-      space(16.dp)
-
-      customPref(
-        DonationPillToggle.Model(
-          selected = state.inAppPaymentType,
-          onClick = {
-            viewModel.toggleDonationType()
-          }
-        )
-      )
-
-      space(10.dp)
-
-      when (state.inAppPaymentType) {
-        InAppPaymentType.ONE_TIME_DONATION -> displayOneTimeSelection(state.areFieldsEnabled, state.oneTimeDonationState)
-        InAppPaymentType.RECURRING_DONATION -> displayMonthlySelection(state.areFieldsEnabled, state.monthlyDonationState)
-        else -> error("This fragment does not support ${state.inAppPaymentType}.")
+      // Retain the existing subscription cancellation flow without offering new payments.
+      if (state.inAppPaymentType == InAppPaymentType.RECURRING_DONATION) {
+        displayMonthlySelection(false, state.monthlyDonationState)
       }
 
       space(20.dp)
 
       if (state.inAppPaymentType == InAppPaymentType.RECURRING_DONATION && (state.monthlyDonationState.isSubscriptionActive || state.monthlyDonationState.isSubscriptionInProgress)) {
-        primaryButton(
-          text = DSLSettingsText.from(R.string.SubscribeFragment__update_subscription),
-          isEnabled = state.canUpdate,
-          onClick = {
-            if (state.monthlyDonationState.transactionState.isTransactionJobPending) {
-              showDonationPendingDialog(state)
-            } else {
-              MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.SubscribeFragment__update_subscription_question)
-                .setMessage(
-                  getString(
-                    R.string.SubscribeFragment__you_will_be_charged_the_full_amount_s_of,
-                    FiatMoneyUtil.format(
-                      requireContext().resources,
-                      viewModel.getSelectedSubscriptionCost(),
-                      FiatMoneyUtil.formatOptions().trimZerosAfterDecimal()
-                    )
-                  )
-                )
-                .setPositiveButton(R.string.SubscribeFragment__update) { _, _ ->
-                  viewModel.updateSubscription()
-                }
-                .setNegativeButton(android.R.string.cancel) { _, _ -> }
-                .show()
-            }
-          }
-        )
-
-        space(4.dp)
-
         secondaryButtonNoOutline(
           text = DSLSettingsText.from(R.string.SubscribeFragment__cancel_subscription),
           isEnabled = state.areFieldsEnabled,
@@ -327,19 +273,6 @@ class DonateToSignalFragment :
                 }
                 .setNegativeButton(R.string.SubscribeFragment__not_now) { _, _ -> }
                 .show()
-            }
-          }
-        )
-      } else {
-        primaryButton(
-          text = DSLSettingsText.from(R.string.DonateToSignalFragment__continue),
-          isEnabled = state.continueEnabled,
-          onClick = {
-            if (state.canContinue) {
-              requireView().clearFocus()
-              viewModel.requestSelectGateway()
-            } else {
-              showDonationPendingDialog(state)
             }
           }
         )
@@ -412,7 +345,7 @@ class DonateToSignalFragment :
       DonateToSignalState.DonationStage.INIT -> customPref(Subscription.LoaderModel())
       DonateToSignalState.DonationStage.FAILURE -> customPref(NetworkFailure.Model { viewModel.retryMonthlyDonationState() })
       else -> {
-        state.subscriptions.forEach { subscription ->
+        state.subscriptions.filter { it.level == state.activeLevel }.forEach { subscription ->
 
           val isActive = state.activeLevel == subscription.level && state.isSubscriptionActive
 

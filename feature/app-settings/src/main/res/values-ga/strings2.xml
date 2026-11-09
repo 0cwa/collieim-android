@@ -9,7 +9,7 @@
 <string name="preferences__enable_debug_log">Cumasaigh logáil dífhabhtaithe</string>
     <string name="HelpSettingsFragment__molly_im_website">láithreán gréasáin Molly.im</string>
     <string name="preferences__include_beta_updates">Cuir nuashonruithe béite san áireamh</string>
-    <string name="preferences__autoupdate_molly">Molly a nuashonrú go huathoibríoch</string>
+    <string name="preferences__autoupdate_molly">Collie a nuashonrú go huathoibríoch</string>
     <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">Seiceáil go tréimhsiúil le haghaidh eisiúintí nua agus iarr orthu iad a shuiteáil</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Tá leaganacha béite beartaithe chun críocha tástála agus d’fhéadfadh fabhtanna a bheith iontu</string>
     <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Le haghaidh nuashonruithe, seiceáil le do thoil do siopa app. Níl nuashonróir in-app san áireamh sa leagan seo.</string>

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="signal_light_colorPrimary">#5335DD</color>
-    <color name="signal_light_colorSecondaryContainer">#E3DBF9</color>
-    <color name="signal_light_colorSurface">#F6F6FF</color>
+    <color name="signal_light_colorPrimary">#96390C</color>
+    <color name="signal_light_colorSecondaryContainer">@color/molly_secondary_container_light</color>
+    <color name="signal_light_colorSurface">#FFF8F0</color>
     <color name="signal_light_colorSurfaceVariantFill">#CCFFFFFF</color>
-    <color name="signal_light_colorBackground">#F6F6FF</color>
+    <color name="signal_light_colorBackground">#FFF8F0</color>
     <color name="signal_light_colorOnPrimary">#FFFFFF</color>
-    <color name="signal_light_colorOnSecondaryContainer">#1E1835</color>
-    <color name="signal_light_colorOnSurface">#181719</color>
-    <color name="signal_light_colorOnSurfaceVariant">#585563</color>
-    <color name="signal_light_colorOutline">#82808A</color>
+    <color name="signal_light_colorOnSecondaryContainer">#203A29</color>
+    <color name="signal_light_colorOnSurface">#24130D</color>
+    <color name="signal_light_colorOnSurfaceVariant">#5A4033</color>
+    <color name="signal_light_colorOutline">@color/molly_outline_light</color>
     <color name="signal_light_neutralSurface">#99FFFFFF</color>
     <color name="signal_light_neutralFill">#1A000000</color>
     <color name="signal_light_colorOnCustom">#FFFFFF</color>

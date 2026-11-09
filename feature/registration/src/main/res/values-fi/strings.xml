@@ -143,7 +143,7 @@
     <!-- Row title for restore/transfer without using a previous device -->
     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">Minulla ei ole vanhaa puhelintani</string>
     <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">Tai jos asennat Mollyia uudelleen samalle laitteelle</string>
+    <string name="WelcomeFragment_restore_action_reinstalling">Tai jos asennat Collieia uudelleen samalle laitteelle</string>
 
     <!-- ArchiveRestoreSelectionScreen -->
     <!-- Title text for the archive restore selection screen -->

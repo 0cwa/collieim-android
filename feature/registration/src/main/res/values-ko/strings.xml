@@ -143,7 +143,7 @@
     <!-- Row title for restore/transfer without using a previous device -->
     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">이전 휴대폰이 없음</string>
     <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">또는 동일한 기기에 Molly을 다시 설치하는 중입니다</string>
+    <string name="WelcomeFragment_restore_action_reinstalling">또는 동일한 기기에 Collie을 다시 설치하는 중입니다</string>
 
     <!-- ArchiveRestoreSelectionScreen -->
     <!-- Title text for the archive restore selection screen -->

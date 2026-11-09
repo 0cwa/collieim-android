@@ -357,14 +357,15 @@ public final class Megaphones {
         .build();
   }
 
-  private static @NonNull Megaphone buildDonateQ2Megaphone(@NonNull Context context) {
+  static @NonNull Megaphone buildDonateQ2Megaphone(@NonNull Context context) {
     return new Megaphone.Builder(Event.DONATE_MOLLY, Megaphone.Style.BASIC)
-        .setTitle(R.string.DonateMegaphone_molly_is_free_software)
-        .setBody(R.string.DonateMegaphone_we_maintain_molly_with_your_support_consider_donating_at_open_collective)
+        .setTitle(R.string.DonateMegaphone__support_collie)
+        .setBody(R.string.DonateMegaphone__collie_support_body)
         .setImage(R.drawable.ic_donate_megaphone)
         .setActionButton(R.string.ConversationUpdateItem_donate, (megaphone, listener) -> {
-          CommunicationActions.openBrowserLink(listener.getMegaphoneActivity(), context.getString(R.string.donate_url));
-          listener.onMegaphoneCompleted(megaphone.getEvent());
+          if (CommunicationActions.tryOpenBrowserLink(listener.getMegaphoneActivity(), context.getString(R.string.donate_collie_url))) {
+            listener.onMegaphoneCompleted(megaphone.getEvent());
+          }
         })
         .setSecondaryButton(R.string.RatingManager_no_thanks, (megaphone, controller) -> controller.onMegaphoneCompleted(megaphone.getEvent()))
         .build();

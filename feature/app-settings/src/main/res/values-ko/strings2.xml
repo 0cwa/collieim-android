@@ -6,7 +6,7 @@
     <string name="HelpSettingsFragment__molly_im_website">Molly.im 웹사이트</string>
     <string name="preferences__include_beta_updates">베타 업데이트 포함하기</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">베타 버전은 테스트용이며 버그가 있을 수 있습니다</string>
-    <string name="preferences__autoupdate_molly">Molly 자동 업데이트</string>
+    <string name="preferences__autoupdate_molly">Collie 자동 업데이트</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">업데이트 확인하기</string>
     <string name="preferences__periodically_check_for_new_releases_and_ask_to_install_them">새로운 업데이트를 주기적으로 확인하고 설치를 요청합니다</string>
     <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">업데이트를 위해, 앱 스토어를 확인해주세요. 이 버전은 인앱 업데이터를 포함하지 않습니다.</string>

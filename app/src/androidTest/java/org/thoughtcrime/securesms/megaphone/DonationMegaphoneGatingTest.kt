@@ -7,10 +7,8 @@ package org.thoughtcrime.securesms.megaphone
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import assertk.assertThat
-import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNull
-import assertk.assertions.isTrue
 import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
@@ -26,7 +24,7 @@ import org.thoughtcrime.securesms.testing.InAppPaymentsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.util.VersionTracker
 
-/** Molly's donation prompt is gated by installation age and registration, not Signal donor badges. */
+/** Remote donation prompts are suppressed for donors and non-donors alike. */
 @RunWith(AndroidJUnit4::class)
 class DonationMegaphoneGatingTest {
 
@@ -52,26 +50,26 @@ class DonationMegaphoneGatingTest {
   }
 
   @Test
-  fun nonDonor_showsStandardDonateMegaphone() {
+  fun nonDonor_suppressesStandardDonateMegaphone() {
     val record = donateMegaphoneRecord(conditionalId = "standard_donate")
     SignalDatabase.remoteMegaphones.insert(record)
 
-    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()?.uuid).isEqualTo(record.uuid)
-    assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isTrue()
+    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()).isNull()
+    assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isFalse()
   }
 
   @Test
-  fun signalDonorBadge_doesNotSuppressMollyDonateMegaphone() {
+  fun signalDonorBadge_suppressesStandardDonateMegaphone() {
     val record = donateMegaphoneRecord(conditionalId = "standard_donate")
     SignalDatabase.remoteMegaphones.insert(record)
     setSelfBadges(listOf(donorBadge()))
 
-    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()?.uuid).isEqualTo(record.uuid)
-    assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isTrue()
+    assertThat(RemoteMegaphoneRepository.getRemoteMegaphoneToShow()).isNull()
+    assertThat(RemoteMegaphoneRepository.hasRemoteMegaphoneToShow(canShowLocalDonate = true)).isFalse()
   }
 
   @Test
-  fun youngInstallation_suppressesMollyDonateMegaphone() {
+  fun youngInstallation_suppressesStandardDonateMegaphone() {
     every { VersionTracker.getDaysSinceFirstInstalled(any()) } returns 6L
     SignalDatabase.remoteMegaphones.insert(donateMegaphoneRecord(conditionalId = "standard_donate"))
 

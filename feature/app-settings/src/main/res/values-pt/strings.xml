@@ -508,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Usar bloqueio de ecrã</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">As definições de bloqueio do seu dispositivo Android serão necessárias para desbloquear o Molly quando sair ou mudar de app. Quando bloqueadas, as pré-visualizações de notificações não mostrarão o conteúdo da mensagem.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">As definições de bloqueio do seu dispositivo Android serão necessárias para desbloquear o Collie quando sair ou mudar de app. Quando bloqueadas, as pré-visualizações de notificações não mostrarão o conteúdo da mensagem.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Iniciar bloqueio de ecrã</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Temporizador personalizado</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Usar bloqueio de ecrã do Molly</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Usar bloqueio de ecrã do Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Desligue o bloqueio de ecrã do Molly</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Desligue o bloqueio de ecrã do Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Ajuda</string>
@@ -544,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Os ícones e nomes da app estão visíveis no ecrã principal e na secção de apps.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">As notificações vão sempre mostrar o ícone e nome padrões do Molly.</string>
+    <string name="preferences__app_icon_notification_warning">As notificações vão sempre mostrar o ícone e nome padrões do Collie.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Ilustração gráfica onde o ícone de substituição da app estará visível.</string>
 
@@ -564,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Alterar o ícone e nome da app para \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">O Molly tem de encerrar para alterar o ícone nome da app. As notificações vão sempre mostrar o ícone e nome padrões do Molly.</string>
+    <string name="preferences__app_icon_dialog_description">O Collie tem de encerrar para alterar o ícone nome da app. As notificações vão sempre mostrar o ícone e nome padrões do Collie.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Selecione um ícone e nome da app, que ficará visível no ecrã inicial e na secção de apps do seu telemóvel. As notificações vão sempre mostrar o ícone e nome padrões do Molly. Saber mais</string>
+    <string name="preferences__app_icon_warning_learn_more">Selecione um ícone e nome da app, que ficará visível no ecrã inicial e na secção de apps do seu telemóvel. As notificações vão sempre mostrar o ícone e nome padrões do Collie. Saber mais</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Saber mais</string>
 

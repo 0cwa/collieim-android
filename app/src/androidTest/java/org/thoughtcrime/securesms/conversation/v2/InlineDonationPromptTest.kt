@@ -12,23 +12,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.FragmentActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isInstanceOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.core.models.badges.Badge
 import org.signal.core.models.recipients.RecipientId
-import org.signal.core.util.getSerializableCompat
-import org.signal.donations.InAppPaymentType
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.DonateToSignalFragment
 import org.thoughtcrime.securesms.conversation.ConversationIntents
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -38,18 +33,7 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-/**
- * Entry-path coverage for the inline chat donation prompt: the Release-Channel "donation request"
- * conversation item that renders a "Donate" action button and opens the one-time checkout.
- *
- * The conversation is hosted by [MainActivity], so this drives it the same way
- * [org.thoughtcrime.securesms.main.MainNavigationLaunchTest] does — a manual lifecycle-callback launch
- * plus direct view interaction, since ActivityScenario/Espresso misbehave for the conversation
- * custom-action intent.
- *
- * Unlike the megaphone and subscriber-upsell paths, this prompt is intentionally NOT gated by sustainer
- * status; [sustainer_donatePromptStillShown] documents that.
- */
+/** Historical release-channel donation requests remain visible without a native checkout button. */
 @RunWith(AndroidJUnit4::class)
 class InlineDonationPromptTest {
 
@@ -69,36 +53,29 @@ class InlineDonationPromptTest {
   }
 
   @Test
-  fun nonSustainer_donatePromptOpensOneTimeCheckout() {
+  fun nonSustainer_donationButtonIsHidden() {
     seedDonationRequest()
 
-    assertDonatePromptOpensCheckout()
+    assertDonationButtonHidden()
   }
 
   @Test
-  fun sustainer_donatePromptStillShown() {
+  fun sustainer_donationButtonIsHidden() {
     SignalStore.inAppPayments.setLastEndOfPeriod(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + TimeUnit.DAYS.toSeconds(30))
     SignalDatabase.recipients.setBadges(Recipient.self().id, listOf(donorBadge()))
     Recipient.self().fresh()
 
     seedDonationRequest()
 
-    assertDonatePromptOpensCheckout()
+    assertDonationButtonHidden()
   }
 
-  private fun assertDonatePromptOpensCheckout() {
+  private fun assertDonationButtonHidden() {
     val activity = launchConversation()
-
-    val donateButton = awaitView(activity, R.id.conversation_update_action)
-    runOnMainSync { donateButton.performClick() }
-
-    val dialog = await(description = "one-time checkout dialog") {
-      activity.supportFragmentManager.findFragmentByTag(ONE_TIME_NAV_TAG)
+    val donateButton = await(description = "historical donation item") {
+      activity.findViewById<View>(R.id.conversation_update_action)
     }
-
-    assertThat(dialog).isInstanceOf(DonateToSignalFragment.Dialog::class)
-    val type = dialog.requireArguments().getSerializableCompat(DonateToSignalFragment.Dialog.ARG, InAppPaymentType::class.java)
-    assertThat(type).isEqualTo(InAppPaymentType.ONE_TIME_DONATION)
+    assertThat(runOnMainSync { donateButton.visibility }).isEqualTo(View.GONE)
   }
 
   private fun seedDonationRequest() {
@@ -153,12 +130,6 @@ class InlineDonationPromptTest {
     return holder[0] ?: error("MainActivity was not captured")
   }
 
-  private fun awaitView(activity: FragmentActivity, viewId: Int): View {
-    return await(description = "view $viewId") {
-      activity.findViewById<View>(viewId)?.takeIf { it.isShown }
-    }
-  }
-
   private fun <T> await(
     timeoutMs: Long = 15_000,
     pollMs: Long = 50,
@@ -194,7 +165,4 @@ class InlineDonationPromptTest {
     )
   }
 
-  companion object {
-    private const val ONE_TIME_NAV_TAG = "one_time_nav"
-  }
 }

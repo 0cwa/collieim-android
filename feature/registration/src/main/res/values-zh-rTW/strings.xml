@@ -143,7 +143,7 @@
     <!-- Row title for restore/transfer without using a previous device -->
     <string name="WelcomeFragment_restore_action_i_dont_have_my_old_phone">我沒有我的舊手機</string>
     <!-- Row subtitle for restore/transfer without using a previous device -->
-    <string name="WelcomeFragment_restore_action_reinstalling">或者你正在同一裝置上重新安裝 Molly</string>
+    <string name="WelcomeFragment_restore_action_reinstalling">或者你正在同一裝置上重新安裝 Collie</string>
 
     <!-- ArchiveRestoreSelectionScreen -->
     <!-- Title text for the archive restore selection screen -->

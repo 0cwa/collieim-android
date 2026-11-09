@@ -14,6 +14,7 @@ import androidx.biometric.BiometricManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.R as MaterialR
 import org.signal.core.ui.util.ExpirationUtil
 import org.signal.core.ui.util.SpanUtil
 import org.signal.core.util.logging.Log
@@ -41,10 +42,18 @@ import org.thoughtcrime.securesms.util.WindowUtil
 import org.thoughtcrime.securesms.util.adapter.mapping.LayoutFactory
 import org.thoughtcrime.securesms.util.adapter.mapping.MappingAdapter
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
+import java.util.function.Consumer
 import kotlin.time.Duration.Companion.seconds
 import org.signal.appsettings.R as AppSettingsR
 
 private val TAG = Log.tag(PrivacySettingsFragment::class.java)
+
+private sealed interface NetworkConnectionStatus {
+  data object NotChecked : NetworkConnectionStatus
+  data class Checking(val throughProxy: Boolean) : NetworkConnectionStatus
+  data object Succeeded : NetworkConnectionStatus
+  data object Failed : NetworkConnectionStatus
+}
 
 class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privacy) {
 
@@ -52,6 +61,10 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
   private val passphraseLockTriggerLabels by lazy { resources.getStringArray(R.array.pref_passphrase_lock_trigger_values) }
 
   private lateinit var viewModel: PrivacySettingsViewModel
+  private var settingsAdapter: MappingAdapter? = null
+  private var latestPrivacyState: PrivacySettingsState? = null
+  private var networkConnectionStatus: NetworkConnectionStatus = NetworkConnectionStatus.NotChecked
+  private val networkSettingsController by lazy { NetworkSettingsController() }
 
   private val incognitoSummary: CharSequence by lazy {
     SpannableStringBuilder(getString(AppSettingsR.string.preferences__this_setting_is_not_a_guarantee))
@@ -66,10 +79,12 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
   override fun onResume() {
     super.onResume()
     viewModel.refreshBlockedCount()
+    submitCurrentConfiguration()
   }
 
   override fun bindAdapter(adapter: MappingAdapter) {
     adapter.registerFactory(ValueClickPreference::class.java, LayoutFactory(::ValueClickPreferenceViewHolder, R.layout.value_click_preference_item))
+    settingsAdapter = adapter
 
     val sharedPreferences = SecurePreferenceManager.getSecurePreferences(requireContext())
     val repository = PrivacySettingsRepository()
@@ -77,12 +92,40 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
     viewModel = ViewModelProvider(this, factory)[PrivacySettingsViewModel::class.java]
 
     viewModel.state.observe(viewLifecycleOwner) { state ->
-      adapter.submitList(getConfiguration(state).toMappingModelList())
+      latestPrivacyState = state
+      submitCurrentConfiguration()
     }
+  }
+
+  private fun submitCurrentConfiguration() {
+    val state = latestPrivacyState ?: return
+    settingsAdapter?.submitList(getConfiguration(state).toMappingModelList())
   }
 
   private fun getConfiguration(state: PrivacySettingsState): DSLConfiguration {
     return configure {
+
+      sectionHeaderPref(R.string.network_privacy_inline__section_title)
+
+      clickPref(
+        title = DSLSettingsText.from(R.string.preferences_network__check_connection),
+        summary = getNetworkConnectionSummary(),
+        isEnabled = networkConnectionStatus !is NetworkConnectionStatus.Checking,
+        onClick = { startNetworkConnectionCheck() }
+      )
+
+      clickPref(
+        title = DSLSettingsText.from(AppSettingsR.string.preferences_use_proxy),
+        summary = DSLSettingsText.from(networkSettingsController.getProxyConfigurationSummary(requireContext())),
+        onClick = {
+          networkSettingsController.invalidateConnectionCheck()
+          networkConnectionStatus = NetworkConnectionStatus.NotChecked
+          submitCurrentConfiguration()
+          Navigation.findNavController(requireView()).safeNavigate(R.id.action_privacy_to_networkPreferenceFragment)
+        }
+      )
+
+      dividerPref()
 
       sectionHeaderPref(AppSettingsR.string.PrivacySettingsFragment__messaging)
 
@@ -268,6 +311,34 @@ class PrivacySettingsFragment : DSLSettingsFragment(R.string.preferences__privac
         }
       )
     }
+  }
+
+  private fun getNetworkConnectionSummary(): DSLSettingsText {
+    return when (val status = networkConnectionStatus) {
+      NetworkConnectionStatus.NotChecked -> DSLSettingsText.from(R.string.network_privacy_inline__not_checked)
+      is NetworkConnectionStatus.Checking -> DSLSettingsText.from(
+        if (status.throughProxy) R.string.network_privacy_inline__checking_through_proxy else R.string.network_privacy_inline__checking
+      )
+      NetworkConnectionStatus.Succeeded -> DSLSettingsText.from(R.string.network_privacy_inline__test_succeeded)
+      NetworkConnectionStatus.Failed -> DSLSettingsText.from(
+        R.string.network_privacy_inline__test_failed,
+        DSLSettingsText.ColorModifier(ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorError))
+      )
+    }
+  }
+
+  private fun startNetworkConnectionCheck() {
+    networkSettingsController.startConnectionCheck(
+      viewLifecycleOwner.lifecycle,
+      Consumer { throughProxy ->
+        networkConnectionStatus = NetworkConnectionStatus.Checking(throughProxy)
+        submitCurrentConfiguration()
+      },
+      Consumer { succeeded ->
+        networkConnectionStatus = if (succeeded) NetworkConnectionStatus.Succeeded else NetworkConnectionStatus.Failed
+        submitCurrentConfiguration()
+      }
+    )
   }
 
   private val biometricEnrollment = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

@@ -5,9 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,29 +20,24 @@ import androidx.preference.Preference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.signal.core.util.concurrent.ListenableFuture;
-import org.signal.core.util.concurrent.SettableFuture;
-import org.signal.core.util.concurrent.SimpleTask;
+import org.signal.core.ui.util.SpanUtil;
+import org.signal.core.ui.util.ThemeUtil;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.components.settings.app.privacy.NetworkSettingsController;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.net.NetworkManager;
 import org.thoughtcrime.securesms.net.ProxyType;
 import org.thoughtcrime.securesms.net.SocksProxy;
-import org.thoughtcrime.securesms.util.SignalProxyUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import info.guardianproject.netcipher.proxy.OrbotHelper;
 
 public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
 
   private final NetworkManager networkManager;
+  private final NetworkSettingsController networkSettingsController = new NetworkSettingsController();
 
   private Preference networkState;
-
-  private SettableFuture<Boolean> connected;
 
   public NetworkPreferenceFragment() {
     networkManager = AppDependencies.getNetworkManager();
@@ -156,72 +148,39 @@ public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
   }
 
   private void applyProxyChanges(boolean alwaysRestart) {
-    final boolean changed = networkManager.applyProxyConfig();
-    if (changed || alwaysRestart) {
-      networkManager.setNetworkEnabled(true);
-      AppDependencies.resetNetwork(true);
-    }
+    networkSettingsController.applyProxyChanges(alwaysRestart);
   }
 
   public boolean onTestConnectionClicked(Preference preference) {
     preference.setOnPreferenceClickListener(null);
 
-    if (networkManager.isProxyEnabled()) {
-      preference.setSummary(R.string.preferences_connecting_to_proxy);
-    } else {
-      preference.setSummary(R.string.preferences_network__connecting);
-    }
-
-    applyProxyChanges(true);
-
-    connected = new SettableFuture<>();
-    connected.addListener(new ListenableFuture.Listener<Boolean>() {
-      @Override
-      public void onSuccess(Boolean result) {
-        preference.setSummary(getTestResultString(result));
-      }
-
-      @Override
-      public void onFailure(ExecutionException e) {
-        preference.setSummary(null);
-      }
-    });
-
-    SimpleTask.run(getViewLifecycleOwner().getLifecycle(),
-                   () -> SignalProxyUtil.testWebsocketConnection(TimeUnit.SECONDS.toMillis(10))
-        , result -> {
-      connected.set(result);
-      preference.setOnPreferenceClickListener(this::onTestConnectionClicked);
-    });
+    networkSettingsController.startConnectionCheck(
+        getViewLifecycleOwner().getLifecycle(),
+        isProxyConfigured -> preference.setSummary(isProxyConfigured ? R.string.preferences_connecting_to_proxy : R.string.preferences_network__connecting),
+        succeeded -> {
+          preference.setSummary(getTestResultString(succeeded));
+          preference.setOnPreferenceClickListener(this::onTestConnectionClicked);
+        }
+    );
 
     return true;
   }
 
   private void clearTestResult(Preference preference) {
-    if (connected != null) {
-      connected.cancel(false);
-    }
-
+    networkSettingsController.invalidateConnectionCheck();
     preference.setSummary(null);
     preference.setOnPreferenceClickListener(this::onTestConnectionClicked);
   }
 
-  private Spannable getTestResultString(boolean succeeded) {
-    int statusResId;
-    int colorResId;
-
+  private CharSequence getTestResultString(boolean succeeded) {
     if (succeeded) {
-      statusResId = R.string.preferences_network__online;
-      colorResId  = R.color.signal_accent_green;
-    } else {
-      statusResId = R.string.preferences_connection_failed;
-      colorResId  = R.color.signal_alert_primary;
+      return getString(R.string.preferences_network__online);
     }
 
-    Spannable spanned = new SpannableString(getString(statusResId));
-    spanned.setSpan(new ForegroundColorSpan(getResources().getColor(colorResId)), 0, spanned.length(), 0);
-
-    return spanned;
+    return SpanUtil.color(
+        ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorError),
+        getString(R.string.preferences_connection_failed)
+    );
   }
 
   public static CharSequence getSummary(Context context) {

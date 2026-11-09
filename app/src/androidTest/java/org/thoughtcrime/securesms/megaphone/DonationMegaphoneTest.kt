@@ -5,12 +5,12 @@
 
 package org.thoughtcrime.securesms.megaphone
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.DialogFragment
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -105,7 +105,7 @@ class DonationMegaphoneTest {
     }
 
     override fun onMegaphoneToastRequested(string: String) = Unit
-    override fun getMegaphoneActivity(): Activity = throw UnsupportedOperationException("not used")
+    override fun getMegaphoneActivity(): FragmentActivity = throw UnsupportedOperationException("not used")
     override fun onMegaphoneSnooze(event: Megaphones.Event) = Unit
     override fun onMegaphoneCompleted(event: Megaphones.Event) = Unit
     override fun onMegaphoneDialogFragmentRequested(dialogFragment: DialogFragment) = Unit

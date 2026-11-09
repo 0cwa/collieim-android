@@ -22,7 +22,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import java.util.concurrent.CountDownLatch
 import kotlin.random.Random
 
-@Ignore("This is just for testing performance, not correctness, and they can therefore take a long time. Run them manually when you need to.")
 @RunWith(AndroidJUnit4::class)
 class JobManagerPerformanceTests {
 
@@ -30,16 +29,19 @@ class JobManagerPerformanceTests {
     val TAG = Log.tag(JobManagerPerformanceTests::class.java)
   }
 
+  @Ignore("This is just for testing performance, not correctness, and they can therefore take a long time. Run them manually when you need to.")
   @Test
   fun testPerformance_singleQueue() {
     runTest("singleQueue", 2000) { TestJob(queue = "queue") }
   }
 
+  @Ignore("This is just for testing performance, not correctness, and they can therefore take a long time. Run them manually when you need to.")
   @Test
   fun testPerformance_fourQueues() {
     runTest("fourQueues", 2000) { TestJob(queue = "queue-${Random.nextInt(1, 5)}") }
   }
 
+  @Ignore("This is just for testing performance, not correctness, and they can therefore take a long time. Run them manually when you need to.")
   @Test
   fun testPerformance_noQueues() {
     runTest("noQueues", 2000) { TestJob(queue = null) }

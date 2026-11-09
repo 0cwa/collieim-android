@@ -338,8 +338,6 @@ class V2ConversationItemShapeTest {
 
     override fun onItemDoubleClick(item: MultiselectPart) = Unit
 
-    override fun onPaymentTombstoneClicked() = Unit
-
     override fun onDisplayMediaNoLongerAvailableSheet() = Unit
 
     override fun onShowUnverifiedProfileSheet(forGroup: Boolean) = Unit

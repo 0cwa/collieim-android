@@ -22,6 +22,7 @@ import org.thoughtcrime.securesms.database.IdentityTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientIds
@@ -80,7 +81,9 @@ class SignalActivityRule(private val othersCount: Int = 4, private val createGro
   }
 
   private fun setupSelf(): Recipient {
-    ApplicationDependencies.getNetworkManager().isNetworkEnabled = true
+    // Local registration can start the foreground message service.
+    NotificationChannels.getInstance()
+    AppDependencies.networkManager.setNetworkEnabled(true)
 
     SecurePreferenceManager.getSecurePreferences(application).edit().putBoolean("pref_prompted_push_registration", true).commit()
     // MOLLY: Test runner SignalTestRunner initializes MasterSecret

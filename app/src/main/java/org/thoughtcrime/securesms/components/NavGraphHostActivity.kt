@@ -72,8 +72,6 @@ open class NavGraphHostActivity : PassphraseRequiredActivity() {
     }
   }
 
-
-
   protected open fun onWillFinish() {}
 
   protected open fun resolveNavGraphId(): Int = intent.getIntExtra(ARG_NAV_GRAPH, -1)

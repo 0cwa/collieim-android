@@ -239,12 +239,22 @@ android {
       abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
     }
 
-    testInstrumentationRunner = "org.thoughtcrime.securesms.testing.SignalTestRunner"
+    testInstrumentationRunner = if (providers.gradleProperty("imoTests").isPresent) {
+      "org.thoughtcrime.securesms.testing.incomingmessageobserver.IncomingMessageObserverTestRunner"
+    } else {
+      "org.thoughtcrime.securesms.testing.SignalTestRunner"
+    }
     testInstrumentationRunnerArguments["clearPackageData"] = "true"
   }
 
   buildTypes {
     getByName("debug") {
+      // The IMO harness signs its synthetic messages with a publicly known test key.
+      // Keep that trust root and package identity confined to an explicit debug test build.
+      if (providers.gradleProperty("imoTests").isPresent) {
+        applicationIdSuffix = ".imo"
+        buildConfigField("String[]", "UNIDENTIFIED_SENDER_TRUST_ROOTS", "new String[]{\"BVT/2gHqbrG1xzuIypLIOjFgMtihrMld1/5TGADL6Dhv\"}")
+      }
       isDefault = true
       isMinifyEnabled = false
       proguardFiles(

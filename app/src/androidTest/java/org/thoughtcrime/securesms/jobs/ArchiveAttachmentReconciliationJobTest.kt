@@ -77,6 +77,10 @@ class ArchiveAttachmentReconciliationJobTest {
   private val enqueuedJobKeys: MutableList<String> = CopyOnWriteArrayList()
   private val jobListener = JobTracker.JobListener { job, _ -> enqueuedJobKeys += job.factoryKey }
 
+  private fun reconciliationJob(forced: Boolean): ArchiveAttachmentReconciliationJob {
+    return ArchiveAttachmentReconciliationJob(forced).apply { setContext(AppDependencies.application) }
+  }
+
   @Before
   fun setUp() {
     SignalStore.backup.backupTier = MessageBackupTier.PAID
@@ -114,7 +118,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitSnapshotFor(attachmentId, cdn = 3)
     fakeCdnContains(attachmentId, cdn = 3)
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalDatabase.attachments.getAttachment(attachmentId)!!.archiveTransferState).isEqualTo(AttachmentTable.ArchiveTransferState.FINISHED)
   }
@@ -129,7 +133,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitSnapshotFor(attachmentId, cdn = 3)
     fakeCdnContains(attachmentId, cdn = 3)
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalDatabase.attachments.getAttachment(attachmentId)!!.archiveTransferState).isEqualTo(AttachmentTable.ArchiveTransferState.NONE)
   }
@@ -141,7 +145,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitSnapshotFor(attachmentId, cdn = 3)
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalDatabase.attachments.getAttachment(attachmentId)!!.archiveTransferState).isEqualTo(AttachmentTable.ArchiveTransferState.NONE)
   }
@@ -160,7 +164,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitSnapshotFor(attachmentId, cdn = 3)
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = false).run()
+    reconciliationJob(forced = false).run()
 
     val healed = SignalDatabase.attachments.getAttachment(attachmentId)!!
     assertThat(healed.archiveTransferState).isEqualTo(AttachmentTable.ArchiveTransferState.NONE)
@@ -182,7 +186,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitSnapshotFor(attachmentId, cdn = 3)
     fakeCdnContains(attachmentId, cdn = 3)
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalDatabase.attachments.getAttachment(attachmentId)!!.archiveTransferState).isEqualTo(AttachmentTable.ArchiveTransferState.FINISHED)
   }
@@ -198,7 +202,7 @@ class ArchiveAttachmentReconciliationJobTest {
     SignalDatabase.attachments.setArchiveTransferState(attachmentId, AttachmentTable.ArchiveTransferState.NONE)
     fakeCdnContains(attachmentId, cdn = 3)
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalDatabase.attachments.getAttachment(attachmentId)!!.archiveTransferState).isEqualTo(AttachmentTable.ArchiveTransferState.FINISHED)
   }
@@ -213,7 +217,7 @@ class ArchiveAttachmentReconciliationJobTest {
     SignalStore.backup.lastUsedMessageCutoffTime = 30.days.inWholeMilliseconds
     fakeCdnContains(attachmentId, cdn = 3)
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(deletedFromCdn.captured.map { it.mediaId }).contains(mediaIdFor(attachmentId))
   }
@@ -228,7 +232,7 @@ class ArchiveAttachmentReconciliationJobTest {
     SignalStore.backup.lastUsedMessageCutoffTime = 30.days.inWholeMilliseconds
     fakeCdnContains(attachmentId, cdn = 3)
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     coVerify(exactly = 0) { ArchiveCommitAttachmentDeletesJob.deleteMediaObjectsFromCdn(any(), any(), any(), any()) }
   }
@@ -242,7 +246,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitSnapshotFor(attachmentId, cdn = 3)
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalDatabase.attachments.getAttachment(attachmentId)!!.archiveTransferState).isEqualTo(AttachmentTable.ArchiveTransferState.NONE)
   }
@@ -256,7 +260,7 @@ class ArchiveAttachmentReconciliationJobTest {
     SignalStore.backup.localRestoreReconcilePending = true
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalStore.backup.localRestoreReconcilePending).isFalse()
     verify(exactly = 1) { BackupMessagesJob.enqueue() }
@@ -272,7 +276,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitSnapshotFor(attachmentId, cdn = 3)
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     val after = SignalDatabase.attachments.getAttachment(attachmentId)!!
     assertThat(after.archiveTransferState).isEqualTo(AttachmentTable.ArchiveTransferState.FINISHED)
@@ -287,7 +291,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitSnapshotFor(attachmentId, cdn = 3)
     fakeCdnContains(attachmentId, cdn = 3)
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalStore.backup.lastCompletedReconciliationSnapshotVersion).isEqualTo(SignalDatabase.backupMediaSnapshots.getCurrentSnapshotVersion())
   }
@@ -304,7 +308,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitSnapshotFor(attachmentId, cdn = 3)
     coEvery { archiveService.listRemoteMediaObjects(any(), any()) } returns ArchiveError.NetworkError(IOException("boom")).left()
 
-    val result = ArchiveAttachmentReconciliationJob(forced = true).run()
+    val result = reconciliationJob(forced = true).run()
 
     assertThat(result.isSuccess).isFalse()
     assertThat(SignalStore.backup.lastCompletedReconciliationSnapshotVersion).isEqualTo(-1L)
@@ -319,7 +323,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitRandomSnapshotEntry()
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(oldSnapshotMediaIds()).doesNotContain(absentMediaId)
   }
@@ -335,7 +339,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitRandomSnapshotEntry()
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(oldSnapshotMediaIds()).contains(previouslySeenMediaId)
   }
@@ -348,7 +352,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitRandomSnapshotEntry()
     fakeCdnContains(attachmentId, cdn = 3)
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(oldSnapshotMediaIds()).contains(mediaIdFor(attachmentId))
   }
@@ -363,7 +367,7 @@ class ArchiveAttachmentReconciliationJobTest {
     SignalStore.backup.lastForcedReconciliationAttemptTime = 0
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalStore.backup.lastForcedReconciliationAttemptTime).isEqualTo(0L)
   }
@@ -374,7 +378,7 @@ class ArchiveAttachmentReconciliationJobTest {
     commitRandomSnapshotEntry()
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalStore.backup.lastForcedReconciliationAttemptTime).isGreaterThan(0L)
   }
@@ -388,7 +392,7 @@ class ArchiveAttachmentReconciliationJobTest {
     SignalStore.backup.lastForcedReconciliationAttemptTime = 0
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalStore.backup.lastForcedReconciliationAttemptTime).isEqualTo(0L)
   }
@@ -402,7 +406,7 @@ class ArchiveAttachmentReconciliationJobTest {
     SignalStore.backup.lastCompletedReconciliationSnapshotVersion = -1
     fakeCdnEmpty()
 
-    ArchiveAttachmentReconciliationJob(forced = true).run()
+    reconciliationJob(forced = true).run()
 
     assertThat(SignalStore.backup.lastCompletedReconciliationSnapshotVersion).isEqualTo(-1L)
   }

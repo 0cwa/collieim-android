@@ -1,11 +1,6 @@
-/*
- * Copyright 2025 Signal Messenger, LLC
- * SPDX-License-Identifier: AGPL-3.0-only
- */
-
 plugins {
+  alias(libs.plugins.jetbrains.kotlin.jvm)
   id("java-library")
-  id("org.jetbrains.kotlin.jvm")
 }
 
 java {
@@ -20,10 +15,12 @@ kotlin {
 }
 
 dependencies {
-  implementation(libs.libsignal.client)
-  implementation(libs.square.okio)
-  implementation(project(":core:util-jvm"))
+  implementation(gradleApi())
+
+  implementation(libs.dnsjava)
+  api(libs.square.okhttp3)
 
   testImplementation(testLibs.junit.junit)
-  testImplementation(testLibs.assertk)
+  testImplementation(testLibs.mockk)
+  testImplementation(testLibs.square.mockwebserver)
 }

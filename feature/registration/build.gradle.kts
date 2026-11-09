@@ -23,22 +23,6 @@ android {
       isIncludeAndroidResources = true
     }
   }
-<<<<<<< MOLLY
-=======
-}
-
-screenshotTests {
-  // Fraction of differing pixels tolerated before a screenshot test fails (0.0001 = 0.01%).
-  imageDifferenceThreshold = 0.0001f
-}
-
-// The screenshot validation task compares every reference image in a single forked JVM, which
-// exhausts the default heap once a module has many previews. Give it more room.
-tasks.withType<Test>().configureEach {
-  if (name.contains("ScreenshotTest")) {
-    maxHeapSize = "4g"
-  }
->>>>>>> SIGNAL
 }
 
 wire {
@@ -59,8 +43,8 @@ dependencies {
   api(project(":lib:network"))
   implementation(project(":core:ui"))
   implementation(project(":core:util"))
+  implementation(project(":core-gms:base"))
   implementation(project(":core:serialization"))
-  implementation(project(":lib:billing"))
   implementation(project(":lib:device-transfer"))
   implementation(project(":lib:password-manager"))
   implementation(project(":lib:signal-login"))
@@ -96,20 +80,16 @@ dependencies {
   // Phone number formatting
   implementation(libs.google.libphonenumber)
 
-  // Phone number hint + SMS verification code retriever
-  // implementation(libs.google.play.services.auth) // MOLLY: TODO
+  // Optional Play Services integration uses Molly's open-source implementations.
   implementation(libs.kotlinx.coroutines.play.services) {
     exclude(group = "com.google.android.gms", module = "play-services-basement")
     exclude(group = "com.google.android.gms", module = "play-services-tasks")
   }
   implementation(project(":core-gms:tasks"))
 
-<<<<<<< MOLLY
   // Credential Manager (password manager retrieval)
   implementation(libs.androidx.credentials)
 
-=======
->>>>>>> SIGNAL
   // Testing
   testImplementation(testFixtures(project(":core:ui")))
   testImplementation(testLibs.junit.junit)

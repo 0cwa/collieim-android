@@ -23,11 +23,8 @@ dependencies {
   implementation(libs.jackson.core)
   implementation(libs.jackson.module.kotlin)
   implementation(libs.google.libphonenumber)
-<<<<<<< MOLLY
+  implementation(project(":core-gms:base"))
   testImplementation(libs.androidx.sqlite.framework)
-=======
-  implementation(libs.google.play.services.base)
->>>>>>> SIGNAL
 
   testImplementation(testLibs.junit.junit)
   testImplementation(testLibs.assertk)

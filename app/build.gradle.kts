@@ -647,5 +647,5 @@ val nativeAcceptanceText = if (nativeAcceptanceFile.isFile) nativeAcceptanceFile
 val nativeInputsAccepted = nativeAcceptanceText.contains("\"status\": \"ACCEPTED\"") &&
   nativeAcceptanceText.contains("\"evidence_sha256\": \"c250fabb3deaf9b1266b23bba60f9a094636b5359c1efd3a4520114eb5a11948\"")
 if (!nativeInputsAccepted) {
-  throw GradleException("Direct Android builds BLOCKED: accepted native publication evidence is absent or differs; see BUILD.md")
+  throw GradleException("Direct Android builds BLOCKED: accepted native publication evidence is absent or differs; see docs/BUILD.md")
 }

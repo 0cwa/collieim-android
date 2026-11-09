@@ -9,5 +9,5 @@ captures
 local.properties
 signing.properties
 .kotlin
-/reproducible-builds/certs
-/reproducible-builds/outputs
+/tooling/reproducible-builds/certs
+/tooling/reproducible-builds/outputs

@@ -54,7 +54,7 @@ You can build Molly using GitHub Actions, either with GitHub-hosted public runne
 
 ## Building Using the CLI
 
-If you prefer building Molly locally on your computer, you can follow these steps, which are essentially the same procedure as in the [Reproducible Build guide](reproducible-builds/README.md). You have the option to customize the build by exporting environment variables or saving them in a `.env` file before running `docker compose`.
+If you prefer building Molly locally on your computer, you can follow these steps, which are essentially the same procedure as in the [Reproducible Build guide](../tooling/reproducible-builds/README.md). You have the option to customize the build by exporting environment variables or saving them in a `.env` file before running `docker compose`.
 
 ### Steps
 
@@ -66,7 +66,7 @@ export VERSION=v7.8.1-2
 git clone https://github.com/mollyim/mollyim-android.git
 
 # Navigate to the reproducible builds directory
-cd mollyim-android/reproducible-builds
+cd mollyim-android/tooling/reproducible-builds
 
 # Checkout the specific release tag
 git checkout $VERSION

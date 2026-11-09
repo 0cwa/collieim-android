@@ -52,7 +52,7 @@ RUN /molly/gradlew --version
 ENV GRADLE_RO_DEP_CACHE=/.gradle-ro-cache
 
 # Override project's gradle.properties
-COPY gradle.properties.docker /root/.gradle/gradle.properties
+COPY tooling/gradle.properties.docker /root/.gradle/gradle.properties
 
 # Copy project and purge generated files
 COPY . /molly/

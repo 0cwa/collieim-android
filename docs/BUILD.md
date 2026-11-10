@@ -14,10 +14,14 @@ Collie backup names and optional FCM; legacy filename aliases are one product.
 ## Build and verification
 
 Run the production build with strict dependency verification and the repository's
-Gradle wrapper:
+Gradle wrapper. For a release candidate, set the metadata to the exact generated
+source G and its approved source timestamp in Unix seconds:
 
 ```sh
-./gradlew --dependency-verification=strict :app:assembleProdWebsiteRelease
+./gradlew --dependency-verification=strict \
+  -PcollieBuildRevision=<generated-source-G> \
+  -PcollieBuildTimestamp=<approved-source-time-unix-seconds> \
+  :app:assembleProdWebsiteRelease
 ```
 
 This uses the declared toolchain and checked-in dependency-verification
@@ -31,10 +35,14 @@ A successful source build alone does not establish independent native
 reproduction or runtime, physical-device, account, attachment, database, or
 upgrade acceptance. See [VERIFY.md](VERIFY.md) for evidence and stated limits.
 
+## Release candidate identity
+
+Version code `177704` is held for `8.35.1-3-rc1`. Its exact unsigned manifest has not yet been bound to the hold; no artifact digest is asserted here. Native input acceptance and source signatures do not establish build or runtime acceptance.
+
 ## Published source dates
 
 The [v8.35.1-2-rc1 release](https://github.com/0cwa/collieim-android/releases/tag/v8.35.1-2-rc1) was published on 2026-11-09 13:57:11 UTC. Its signed tag, `v8.35.1-2-rc1`, points to source G `72e1b84383d068c488e96ca9cd451e730e6e4e77` and is dated 2026-11-09 13:38:34 UTC. The release record establishes when this release became public; the tag object records its tagger date separately.
 
-Generated commits in the source G for this release retain `2000-01-01T00:00:00Z`, the historical fixed timestamp. This is commit metadata and does not describe the age of the application or original upstream work. The release tag, source G, release record, and published APK were not rewritten.
+Generated source commits G and I for `8.35.1-3-rc1` use the canonical publication timestamp `2026-11-10T03:20:12Z`. This is commit metadata; authentic Signal and Molly history retains its original dates.
 
-The current development history is separate from that release: the 62 Collie-created commits were corrected to the recorded integration time `2026-11-09T12:43:27Z`, with each commit's source tree preserved. This does not change the old release's tag or artifacts. Authentic upstream commits retain their original metadata, and generated-layer messages retain source provenance.
+The 62 Collie-created commits in RC2 were corrected to integration time `2026-11-09T12:43:27Z`, with each source tree preserved. The RC2 tag and assets remain unchanged. Authentic upstream commits retain their original metadata; new generated RC3 commits use the publication timestamp above.

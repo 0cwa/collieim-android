@@ -8,7 +8,7 @@
 
     <style name="Theme.Molly.Starting.Dark" parent="Theme.SplashScreen.IconBackground">
         <item name="windowSplashScreenBackground">@color/molly_background_dark</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/molly_background_light</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/molly_background_dark</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_monochrome</item>
     </style>
 </resources>

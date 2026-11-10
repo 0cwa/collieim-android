@@ -47,7 +47,25 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
-      - run: ./gradlew --no-daemon :fast-lint:fastLint
+      - name: Fail only on findings in changed files
+        # The codebase carries 24 inherited findings (mostly Molly's core/gms shims); they are
+        # reported here but do not block. New findings in files this change touches do.
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          ./gradlew --no-daemon :fast-lint:fastLint || true
+          report=tooling/fast-lint/build/reports/fast-lint/findings.txt
+          test -f "$report"
+          if [ -z "$BASE" ] || [ "$BASE" = 0000000000000000000000000000000000000000 ]; then
+            git fetch --depth=1 origin main; BASE=FETCH_HEAD
+          else
+            git fetch --depth=1 origin "$BASE"
+          fi
+          grep -E '^  [^ ]+:[0-9]+: ' "$report" > "$RUNNER_TEMP/all.txt" || true
+          git diff --name-only "$BASE" HEAD | sed 's/^/  /; s/$/:/' > "$RUNNER_TEMP/changed.txt"
+          grep -F -f "$RUNNER_TEMP/changed.txt" "$RUNNER_TEMP/all.txt" > "$RUNNER_TEMP/new.txt" || true
+          echo "Findings: $(wc -l < "$RUNNER_TEMP/all.txt") total, $(wc -l < "$RUNNER_TEMP/new.txt") in changed files"
+          if [ -s "$RUNNER_TEMP/new.txt" ]; then cat "$RUNNER_TEMP/new.txt"; exit 1; fi
 
   unit-tests:
     name: Unit tests

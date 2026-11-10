@@ -4174,7 +4174,7 @@
     <string name="preferences__led_color_unknown">مجهول</string>
     <string name="preferences__silent">صامت</string>
     <string name="preferences__advanced">مُتقدِّم</string>
-    <string name="preferences__donate_to_signal">التبرُّع لسيجنال</string>
+    <string name="preferences__donate_to_signal">التبرُّع لمولي</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">القِصَص</string>
     <string name="preferences__payments">عمليات الدفع</string>
@@ -8739,7 +8739,6 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">البروكسي</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
-    <string name="MainToolbar__donate_to_signal">التبرُّع لسيجنال</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 

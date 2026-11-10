@@ -164,7 +164,6 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.math.BigDecimal
 import java.time.ZonedDateTime
 import java.util.Currency
 import java.util.Locale
@@ -337,6 +336,8 @@ object BackupRepository {
   fun displayInitialBackupFailureNotification() {
     val context = AppDependencies.application
 
+    cancelLegacyBackupNotification(NotificationIds.LEGACY_INITIAL_BACKUP_FAILED)
+
     val pendingIntent = PendingIntent.getActivity(context, 0, AppSettingsActivity.remoteBackups(context), cancelCurrent())
     val notification = NotificationCompat.Builder(context, NotificationChannels.getInstance().APP_ALERTS)
       .setSmallIcon(R.drawable.ic_notification)
@@ -351,7 +352,9 @@ object BackupRepository {
 
   fun clearBackupFailure() {
     SignalStore.backup.backupCreationError = null
-    ServiceUtil.getNotificationManager(AppDependencies.application).cancel(NotificationIds.INITIAL_BACKUP_FAILED)
+    val notificationManager = ServiceUtil.getNotificationManager(AppDependencies.application)
+    notificationManager.cancel(NotificationIds.INITIAL_BACKUP_FAILED)
+    cancelLegacyBackupNotification(NotificationIds.LEGACY_INITIAL_BACKUP_FAILED)
   }
 
   fun markOutOfRemoteStorageSpaceError() {
@@ -362,6 +365,8 @@ object BackupRepository {
     SignalStore.backup.markNotEnoughRemoteStorageSpace()
 
     val context = AppDependencies.application
+
+    cancelLegacyBackupNotification(NotificationIds.LEGACY_OUT_OF_REMOTE_STORAGE)
 
     val pendingIntent = PendingIntent.getActivity(context, 0, AppSettingsActivity.remoteBackups(context), cancelCurrent())
     val notification = NotificationCompat.Builder(context, NotificationChannels.getInstance().APP_ALERTS)
@@ -377,7 +382,27 @@ object BackupRepository {
 
   fun clearOutOfRemoteStorageSpaceError() {
     SignalStore.backup.clearNotEnoughRemoteStorageSpace()
-    ServiceUtil.getNotificationManager(AppDependencies.application).cancel(NotificationIds.OUT_OF_REMOTE_STORAGE)
+    val notificationManager = ServiceUtil.getNotificationManager(AppDependencies.application)
+    notificationManager.cancel(NotificationIds.OUT_OF_REMOTE_STORAGE)
+    cancelLegacyBackupNotification(NotificationIds.LEGACY_OUT_OF_REMOTE_STORAGE)
+  }
+
+  private fun cancelLegacyBackupNotification(legacyId: Int) {
+    val context = AppDependencies.application
+    val notificationManager = ServiceUtil.getNotificationManager(context)
+    val backupAlertsChannel = NotificationChannels.getInstance().APP_ALERTS
+
+    if (notificationManager.activeNotifications.any { notification ->
+        isLegacyBackupNotification(
+          notificationId = notification.id,
+          tag = notification.tag,
+          channelId = notification.notification.channelId,
+          legacyId = legacyId,
+          backupAlertsChannel = backupAlertsChannel
+        )
+      }) {
+      notificationManager.cancel(legacyId)
+    }
   }
 
   fun shouldDisplayOutOfRemoteStorageSpaceUx(): Boolean {
@@ -1772,7 +1797,8 @@ object BackupRepository {
       Log.d(TAG, "Accessing price via billing api.")
       AppDependencies.billingApi.queryProduct()?.price
     } else {
-      FiatMoney(BigDecimal.ZERO, SignalStore.inAppPayments.getRecurringDonationCurrency())
+      // MOLLY: Omit the PAID tier by returning null instead of a placeholder price
+      null
     }
 
     if (productPrice == null) {

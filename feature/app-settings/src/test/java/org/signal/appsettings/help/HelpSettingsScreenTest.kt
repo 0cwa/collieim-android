@@ -8,6 +8,7 @@ package org.signal.appsettings.help
 import android.app.Application
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithTag
@@ -17,7 +18,6 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
 import assertk.assertThat
 import assertk.assertions.containsExactly
-import assertk.assertions.isEmpty
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,6 +39,16 @@ class HelpSettingsScreenTest {
 
     scrollTo(HelpSettingsTestTags.ROW_VERSION)
     composeTestRule.onNodeWithText("8.33.0").assertIsDisplayed()
+  }
+
+  @Test
+  fun `Help displays the Collie website and copyright brand`() {
+    setContent(HelpSettingsState(versionName = "8.33.0"))
+
+    composeTestRule.onNodeWithText("Collie.im website").assertIsDisplayed()
+    composeTestRule.onNodeWithTag(HelpSettingsTestTags.SCROLLER)
+      .performScrollToNode(hasText("Copyright Collie Messenger", substring = true))
+    composeTestRule.onNodeWithText("Copyright Collie Messenger", substring = true).assertIsDisplayed()
   }
 
   @Test
@@ -67,13 +77,30 @@ class HelpSettingsScreenTest {
   }
 
   @Test
-  fun `tapping the version does nothing`() {
+  fun `tapping the version emits VersionClicked`() {
     setContent(HelpSettingsState(versionName = "8.33.0"))
 
     scrollTo(HelpSettingsTestTags.ROW_VERSION)
     composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_VERSION).performClick()
 
-    assertThat(events).isEmpty()
+    assertThat(events).containsExactly(HelpSettingsEvent.VersionClicked)
+  }
+
+  @Test
+  fun `app updates are shown in Help only when enabled and use the existing route`() {
+    setContent(HelpSettingsState(versionName = "8.33.0", showAppUpdates = true))
+
+    scrollTo(HelpSettingsTestTags.ROW_APP_UPDATES)
+    composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_APP_UPDATES).performClick()
+
+    assertThat(events).containsExactly(HelpSettingsEvent.VersionClicked)
+  }
+
+  @Test
+  fun `app updates are hidden when disabled`() {
+    setContent(HelpSettingsState(versionName = "8.33.0"))
+
+    composeTestRule.onNodeWithTag(HelpSettingsTestTags.ROW_APP_UPDATES).assertDoesNotExist()
   }
 
   private fun assertClickEmits(tag: String, expected: HelpSettingsEvent) {

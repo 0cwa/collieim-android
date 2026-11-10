@@ -25,7 +25,6 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -63,7 +62,7 @@ import java.util.concurrent.TimeUnit;
 public class Util {
   private static final String TAG = Log.tag(Util.class);
 
-  private static final long BUILD_LIFESPAN = TimeUnit.DAYS.toMillis(90);
+  private static final long BUILD_LIFESPAN = TimeUnit.DAYS.toMillis(180);
 
   public static final String COPY_LABEL = "text\u00AD";
 
@@ -305,29 +304,7 @@ public class Util {
     return result;
   }
 
-  /**
-   * The app version.
-   * <p>
-   * This code should be used in all places that compare app versions rather than
-   * {@link #getManifestApkVersion(Context)}.
-   */
-  public static int getCanonicalVersionCode() {
-    return CoreUtilDependencies.INSTANCE.getBuildInfo().getCanonicalVersionCode();
-  }
-
-  /**
-   * The manifest APK version may not be the same as the canonical version code due to ABI split
-   * code adding a postfix after BuildConfig is generated.
-   * <p>
-   * However, in most cases you want to use {@link #getCanonicalVersionCode()}.
-   */
-  public static int getManifestApkVersion(Context context) {
-    try {
-      return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
-    } catch (PackageManager.NameNotFoundException e) {
-      throw new AssertionError(e);
-    }
-  }
+  // MOLLY: getCanonicalVersionCode() and getManifestApkVersion() deprecated by ApkInfo
 
   public static String getSecret(int size) {
     byte[] secret = getSecretBytes(size);
@@ -353,7 +330,7 @@ public class Util {
       return 0;
     }
 
-    long buildAge                   = currentTime - CoreUtilDependencies.INSTANCE.getBuildInfo().getBuildTimestamp();
+    long buildAge                   = currentTime - CoreUtilDependencies.INSTANCE.getBuildInfo().buildTimestampOrDefault(currentTime);
     long timeUntilBuildDeprecation  = BUILD_LIFESPAN - buildAge;
     long timeUntilRemoteDeprecation = CoreUtilDependencies.INSTANCE.getTimeUntilRemoteDeprecation(currentTime);
 
@@ -386,6 +363,10 @@ public class Util {
     ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
     return activityManager.isLowRamDevice() || activityManager.getLargeMemoryClass() <= 64;
+  }
+
+  public static long getSystemAvailableMemory(@NonNull Context context) {
+    return MemoryTracker.INSTANCE.getSystemNativeMemoryUsage(context).getSystemAvailableBytes();
   }
 
   public static int clamp(int value, int min, int max) {

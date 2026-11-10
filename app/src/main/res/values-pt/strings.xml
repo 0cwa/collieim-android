@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -34,9 +31,13 @@
   <!-- Removed by excludeNonTranslatables <string name="AlbumThumbnailView_plus" translatable="false">\+%d</string> -->
 
     <!-- ApplicationMigrationActivity -->
-    <string name="ApplicationMigrationActivity__signal_is_updating">O Signal está a atualizar…</string>
+    <string name="ApplicationMigrationActivity__signal_is_updating">O Collie está a atualizar…</string>
 
     <!-- ApplicationPreferencesActivity -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Ainda não definiu uma frase-chave!</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">Desativar frase-chave?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Isto irá desbloquear permanentemente o Collie e as notificações de mensagens.</string>
+    <string name="ApplicationPreferencesActivity_disable">Desativar</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Erro a establecer a ligação com o servidor!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">Os PINs são necessários para o bloqueio do registo. Para desativar os PINs, primeiro desative o bloqueio do registo.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN criado.</string>
@@ -80,7 +81,7 @@
     <string name="AttachmentKeyboard_location">Localização</string>
     <!-- Text for a button that will allow users to create a poll -->
     <string name="AttachmentKeyboard_poll">Sondagem</string>
-    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">O Signal necessita de permissão para exibir as suas fotos e vídeos</string>
+    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">O Collie necessita de permissão para exibir as suas fotos e vídeos</string>
     <!-- Text for a button prompting users to allow Signal access to their gallery storage -->
     <string name="AttachmentKeyboard_allow_access">Permitir o acesso</string>
     <string name="AttachmentKeyboard_payment">Pagamento</string>
@@ -91,34 +92,34 @@
     <!-- Option in menu to go to settings -->
     <string name="AttachmentKeyboard_go_to_settings">ir para as definições</string>
     <!-- Text explaining that Signal has limited access to photos -->
-    <string name="AttachmentKeyboard_signal_has_limited_access">O Signal tem acesso limitado às fotos e vídeos</string>
+    <string name="AttachmentKeyboard_signal_has_limited_access">O Collie tem acesso limitado às fotos e vídeos</string>
     <!-- Text shown when user has given no photos for Signal to access and an explanation on how to change those permissions -->
     <string name="AttachmentKeyboard_no_photos_found">Não foram encontradas fotos, selecione fotos e vídeos para aparecer aqui ou altere as permissões</string>
 
     <!-- MediaGalleryFragment -->
     <!-- Text describing that no photos or videos are currently found in the gallery and that Signal can only access media that the user allows -->
-    <string name="MediaGalleryFragment__no_photos_found">Não foram encontradas fotos ou vídeos. O Signal só tem acesso às fotos e vídeos que selecionou.</string>
+    <string name="MediaGalleryFragment__no_photos_found">Não foram encontradas fotos ou vídeos. O Collie só tem acesso às fotos e vídeos que selecionou.</string>
 
     <!-- AttachmentManager -->
     <string name="AttachmentManager_cant_open_media_selection">Não foi possível encontrar uma aplicação para selecionar a multimédia.</string>
-    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">O Signal requer permissão de acesso ao armazenamento de forma a poder anexar fotografias, vídeo e áudio, mas esta foi negada permanentemente. Por favor, aceda ao menu de definições das aplicações do seu telemóvel, selecione a aplicação Signal, e em \"Permissões\" ative \"Armazenamento\" ou \"Memória\".</string>
-    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">O Signal requer permissão de acesso aos contactos para anexar os dados do contacto, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações no menu do telemóvel, selecione a aplicação Signal e em \"Permissões\" ative \"Contactos\".</string>
-    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">O Signal requer permissão de acesso à localização para poder anexar uma localização, mas esta foi negada permanentemente. Por favor aceda às definições das aplicações no menu do telemóvel, selecione a aplicação Signal e nas \"Permissões\" ative a \"Localização\".</string>
+    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">O Collie requer permissão de acesso ao armazenamento de forma a poder anexar fotografias, vídeo e áudio, mas esta foi negada permanentemente. Por favor, aceda ao menu de definições das aplicações do seu telemóvel, selecione a aplicação Collie, e em \"Permissões\" ative \"Armazenamento\" ou \"Memória\".</string>
+    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">O Collie requer permissão de acesso aos contactos para anexar os dados do contacto, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações no menu do telemóvel, selecione a aplicação Collie e em \"Permissões\" ative \"Contactos\".</string>
+    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">O Collie requer permissão de acesso à localização para poder anexar uma localização, mas esta foi negada permanentemente. Por favor aceda às definições das aplicações no menu do telemóvel, selecione a aplicação Collie e nas \"Permissões\" ative a \"Localização\".</string>
 
     <!-- Dialog title asking users for location permission -->
     <string name="AttachmentManager_signal_allow_access_location">Permitir acesso à sua localização</string>
     <!-- Dialog description that will explain the steps needed to give location permission -->
     <string name="AttachmentManager_signal_to_send_location">Para enviar a sua localização:</string>
     <!-- Alert dialog description asking for location permission -->
-    <string name="AttachmentManager_signal_allow_signal_access_location">Permita ao Signal aceder à sua localização.</string>
+    <string name="AttachmentManager_signal_allow_signal_access_location">Permita ao Collie aceder à sua localização.</string>
     <!-- Toast text explaining Signal\'s need for location access -->
-    <string name="AttachmentManager_signal_needs_location_access">O Signal necessita de acesso à localização para enviar a sua localização.</string>
+    <string name="AttachmentManager_signal_needs_location_access">O Collie necessita de acesso à localização para enviar a sua localização.</string>
     <!-- Dialog title asking users for gallery storage permission -->
     <string name="AttachmentManager_signal_allow_storage">Permitir acesso ao armazenamento</string>
     <!-- Dialog description that will explain the steps needed to give gallery storage permission -->
     <string name="AttachmentManager_signal_to_show_photos">Para mostrar fotos e vídeos:</string>
     <!-- Toast text explaining Signal\'s need for storage access -->
-    <string name="AttachmentManager_signal_needs_storage_access">O Signal precisa de acesso para mostrar as suas fotos e vídeos.</string>
+    <string name="AttachmentManager_signal_needs_storage_access">O Collie precisa de acesso para mostrar as suas fotos e vídeos.</string>
 
     <!-- Alert dialog title to show the recipient has not activated payments -->
     <string name="AttachmentManager__not_activated_payments">%1$s não ativou os Pagamentos. </string>
@@ -271,12 +272,12 @@
     <string name="CensorshipCircumventionMegaphone_no_thanks">Não, obrigado</string>
 
     <!-- ClientDeprecatedActivity -->
-    <string name="ClientDeprecatedActivity_update_signal">Atualizar o Signal</string>
+    <string name="ClientDeprecatedActivity_update_signal">Atualizar o Collie</string>
     <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">Esta versão da aplicação deixou de ser suportada. Para continuar a enviar e a receber mensagens, atualize para a última versão</string>
     <string name="ClientDeprecatedActivity_update">Atualizar</string>
     <string name="ClientDeprecatedActivity_dont_update">Não atualizar</string>
     <string name="ClientDeprecatedActivity_warning">Aviso</string>
-    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">A sua versão do Signal expirou. Pode ver o seu histórico de mensagens mas não será capaz de enviar ou receber mensagens até que atualize.</string>
+    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">A sua versão do Collie expirou. Pode ver o seu histórico de mensagens mas não será capaz de enviar ou receber mensagens até que atualize.</string>
 
     <!-- ClockSkewActivity -->
     <!-- Title of the full-screen dialog shown when the device clock is too far off from the real time -->
@@ -308,7 +309,7 @@
     <!-- Title on dialog when quick restore qr code is scanned in system camera -->
     <string name="CommunicationActions__transfer_dialog_title">Transferir conta para novo dispositivo?</string>
     <!-- Message on dialog when quick restore qr code is scanned in system camera -->
-    <string name="CommunicationActions__transfer_dialog_message">Para transferir esta conta para um novo dispositivo, toque em \"Continuar\" e leia novamente o código QR com a câmara do Signal. Certifique-se de que só lê códigos QR provenientes diretamente do Signal.</string>
+    <string name="CommunicationActions__transfer_dialog_message">Para transferir esta conta para um novo dispositivo, toque em \"Continuar\" e leia novamente o código QR com a câmara do Collie. Certifique-se de que só lê códigos QR provenientes diretamente do Collie.</string>
     <string name="CommunicationActions__dont_transfer">Não transferir</string>
 
     <!-- ConfirmIdentityDialog -->
@@ -332,8 +333,8 @@
 
     <!-- ContactsDatabase -->
     <string name="ContactsDatabase_message_s">Mensagem %1$s</string>
-    <string name="ContactsDatabase_signal_call_s">Chamada de voz do Signal %1$s</string>
-    <string name="ContactsDatabase_signal_video_call_s">Videochamada do Signal %1$s</string>
+    <string name="ContactsDatabase_signal_call_s">Chamada de voz do Collie %1$s</string>
+    <string name="ContactsDatabase_signal_video_call_s">Videochamada do Collie %1$s</string>
 
     <!-- ContactNameEditActivity -->
     <!-- Toolbar title for contact name edit activity -->
@@ -444,10 +445,10 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="ConversationActivity_signal_to_send_audio_messages">Para enviar mensagens de voz:</string>
     <!-- Alert dialog description asking for microphone permission in order to send voice messages -->
-    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Para enviar mensagens de voz, permita ao Signal aceder ao seu microfone.</string>
+    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Para enviar mensagens de voz, permita ao Collie aceder ao seu microfone.</string>
     <!-- Toast text explaining Signal\'s need for microphone access -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">O Signal necessita de acesso ao microfone para gravar uma mensagem de voz.</string>
-    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">O Signal requer permissão de acesso ao microfone para enviar mensagens áudio, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do telemóvel, selecione a aplicação Signal e nas \"Permissões\" ative \"Microfone\".</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">O Collie necessita de acesso ao microfone para gravar uma mensagem de voz.</string>
+    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">O Collie requer permissão de acesso ao microfone para enviar mensagens áudio, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do telemóvel, selecione a aplicação Collie e nas \"Permissões\" ative \"Microfone\".</string>
 
     <string name="ConversationActivity_quoted_contact_message">%1$s%2$s</string>
     <string name="ConversationActivity_search_position">%1$d de %2$d</string>
@@ -467,9 +468,9 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions for a voice call -->
     <string name="ConversationActivity__to_start_call">Para iniciar uma chamada:</string>
     <!-- Alert dialog description asking for microphone permission in order to start a voice call -->
-    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Para iniciar uma chamada, permita ao Signal aceder ao seu microfone.</string>
+    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Para iniciar uma chamada, permita ao Collie aceder ao seu microfone.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">O Signal necessita de acesso ao microfone para iniciar uma chamada.</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">O Collie necessita de acesso ao microfone para iniciar uma chamada.</string>
 
 
     <string name="ConversationActivity_join">Entrar</string>
@@ -483,11 +484,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">As mensagens SMS já não são suportadas pelo Signal. Convide %1$s para o Signal para manter a conversa aqui.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Esta pessoa já não usa o Signal. Convide-a para o Signal para manter a conversa aqui.</string>
+    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Esta pessoa já não usa o Collie. Convide-a para o Collie para manter a conversa aqui.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Esta pessoa não está a utilizar o Signal. Convide-a para manter a conversa aqui.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Convidar para o Signal</string>
+    <string name="ConversationActivity__invite_to_signal">Convidar para o Collie</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Não é possível gravar mensagem de voz durante a chamada.</string>
 
@@ -580,15 +581,15 @@
     <!-- Message shown after successfully blocking join requests for a user -->
     <string name="ConversationFragment__blocked">Bloqueado</string>
     <!-- Action shown to allow a user to update their application because it has expired -->
-    <string name="ConversationFragment__update_build">Atualizar o Signal</string>
+    <string name="ConversationFragment__update_build">Atualizar o Collie</string>
     <!-- Action shown to allow a user to re-register as they are no longer registered -->
-    <string name="ConversationFragment__reregister_signal">Voltar a inscrever no Signal</string>
+    <string name="ConversationFragment__reregister_signal">Voltar a inscrever no Collie</string>
     <!-- Action shown in the conversation input area to allow a user to re-link this device as it is no longer linked -->
     <string name="ConversationFragment__relink_signal">Reassociar</string>
     <!-- Label for a button displayed in the conversation toolbar to return to the previous screen. -->
     <string name="ConversationFragment__content_description_back_button">Navegue de volta.</string>
     <!-- Label for a button displayed in the conversation toolbar to open the main screen of the app. -->
-    <string name="ConversationFragment__content_description_launch_signal_button">Abrir Signal</string>
+    <string name="ConversationFragment__content_description_launch_signal_button">Abrir Collie</string>
     <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
     <string name="ConversationFragment__no_longer_verified">Já não está verificado</string>
     <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
@@ -635,7 +636,7 @@
     <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
     <string name="ConversationFragment_attachment_backfill_failed_title">Não é possível transferir ficheiros multimédia</string>
     <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
-    <string name="ConversationFragment_attachment_backfill_timeout">Verifique este dispositivo e a ligação à internet do seu telemóvel. Abra o Signal no seu telemóvel e volte a tentar transferir.</string>
+    <string name="ConversationFragment_attachment_backfill_timeout">Verifique este dispositivo e a ligação à internet do seu telemóvel. Abra o Collie no seu telemóvel e volte a tentar transferir.</string>
     <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
     <string name="ConversationFragment_attachment_backfill_not_found">Este ficheiro multimédia já não está disponível no seu telemóvel e não pode ser transferido.</string>
     <!-- Dialog for how to long to keep a messaged pinned for -->
@@ -705,7 +706,7 @@
     <!-- Bottom sheet text explaining that profile names are chosen by the account holder. Placeholder will be \'Profile names\' -->
     <string name="ProfileNameBottomSheet__profile_names_on_signal">%1$s no Signal são escolhidos pelo dono da conta.</string>
     <!-- Bottom sheet text explaining that Signal can\'t verify names and photos -->
-    <string name="ProfileNameBottomSheet__signal_cant_verify">O Signal não verifica nomes e fotos</string>
+    <string name="ProfileNameBottomSheet__signal_cant_verify">O Collie não verifica nomes e fotos</string>
     <!-- Bottom sheet text explaining that Signal will never contact you for registration code, PIN, or recovery key -->
     <string name="ProfileNameBottomSheet__signal_will_never_contact">O Signal nunca o tentará contactar para lhe pedir o seu código de registo, PIN ou chave de recuperação</string>
     <!-- Bottom sheet text explaining that accounts can impersonate other people and to be cautious -->
@@ -847,9 +848,9 @@
     <!-- Toolbar title for this screen -->
     <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">Quem é que me pode encontrar através do número?</string>
     <!-- Description for radio item stating anyone can see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Qualquer pessoa que tenha o seu número de telemóvel irá ver que está no Signal e poderá iniciar chats consigo.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Qualquer pessoa que tenha o seu número de telemóvel irá ver que está no Collie e poderá iniciar chats consigo.</string>
     <!-- Description for radio item stating no one will be able to see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Ninguém conseguirá ver que está no Signal, exceto as pessoas a quem envie mensagem ou com quem já tenha aberto um chat.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Ninguém conseguirá ver que está no Collie, exceto as pessoas a quem envie mensagem ou com quem já tenha aberto um chat.</string>
 
     <!-- ChooseBackupFragment -->
 
@@ -875,7 +876,7 @@
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">Teste a sua frase-chave e confirme se coincide</string>
     <string name="BackupsPreferenceFragment__turn_on">Ativar cópias de segurança</string>
     <string name="BackupsPreferenceFragment__turn_off">Desativar</string>
-    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Para poder restaurar uma cópia de segurança, instale uma nova cópia do Signal. Abra a aplicação e toque em \"Restaurar cópia de segurança\", aqui localize o ficheiro com a cópia de segurança. %1$s"</string>
+    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Para poder restaurar uma cópia de segurança, instale uma nova cópia do Collie. Abra a aplicação e toque em \"Restaurar cópia de segurança\", aqui localize o ficheiro com a cópia de segurança. %1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">Saber mais</string>
     <string name="BackupsPreferenceFragment__in_progress">Em progresso…</string>
     <!-- Status text shown in backup preferences when verifying a backup -->
@@ -884,7 +885,7 @@
     <string name="BackupsPreferenceFragment__d_so_far">%1$d até ao momento…</string>
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">%1$s%% até agora…</string>
-    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">O Signal requer permissão de acesso ao armazenamento externo para criar cópias de segurança, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do seu telemóvel, selecione a aplicação Signal e nas \"Permissões\" ative \"Armazenamento\".</string>
+    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">O Collie requer permissão de acesso ao armazenamento externo para criar cópias de segurança, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do seu telemóvel, selecione a aplicação Collie e nas \"Permissões\" ative \"Armazenamento\".</string>
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">Definir hora da cópia de segurança</string>
 
@@ -962,7 +963,7 @@
 
     <!-- DecryptionFailedDialog -->
     <string name="DecryptionFailedDialog_chat_session_refreshed">A sessão de chat foi atualizada</string>
-    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">O Signal utiliza encriptação de ponta a ponta e às vezes pode necessitar de atualizar a sua sessão de chat. Isso não afeta a segurança do seu chat, mas poderá ter perdido uma mensagem desse contacto e pode pedir que ele a reenvie.</string>
+    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">O Collie utiliza encriptação de ponta a ponta e às vezes pode necessitar de atualizar a sua sessão de chat. Isso não afeta a segurança do seu chat, mas poderá ter perdido uma mensagem desse contacto e pode pedir que ele a reenvie.</string>
 
     <!-- LinkDeviceFragment -->
     <!-- Description for how Signal will work with a linked device (eg desktop, iPad) -->
@@ -1071,7 +1072,7 @@
     <!-- Bottom sheet title telling users to complete the linking process on the other device  -->
     <string name="AddLinkDeviceFragment__finish_linking_on_other_device">Terminou a associação ao seu outro dispositivo</string>
     <!-- Bottom sheet description telling users to complete the linking process -->
-    <string name="AddLinkDeviceFragment__finish_linking_signal">Terminou de associar o Signal ao seu outro dispositivo.</string>
+    <string name="AddLinkDeviceFragment__finish_linking_signal">Terminou de associar o Collie ao seu outro dispositivo.</string>
     <!-- Title of dialog when the QR code being scanned is invalid -->
     <string name="AddLinkDeviceFragment__linking_device_failed">Falha na associação do dispositivo</string>
     <!-- Text shown in a dialog when the QR code being scanned is invalid -->
@@ -1116,19 +1117,19 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Otimizar para os \"Play Services\" em falta.</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Este dispositivo não suporta os Play Services. Toque para desativar o sistema de otimização de bateria que impede o Signal de recolher mensagens enquanto inativo.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Este dispositivo não suporta os Play Services. Toque para desativar o sistema de otimização de bateria que impede o Molly de recolher mensagens enquanto inativo.</string>
 
     <!-- ExpiredBuildReminder -->
-    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Esta versão do Signal expirou. Faça agora a atualização par aenviar e receber mensagens.</string>
+    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Esta versão do Collie expirou. Faça agora a atualização par aenviar e receber mensagens.</string>
     <string name="ExpiredBuildReminder_update_now">Atualizar agora</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
     <string name="DeprecatedSdkBanner_body">O Signal já não funciona neste dispositivo. Para voltar a usar o Signal, atualize o seu dispositivo para uma versão mais recente do Android ou utilize um dispositivo mais recente.</string>
 
     <!-- Title of notification telling users to update Signal -->
-    <string name="DeprecatedNotificationJob_update_signal">Atualizar o Signal</string>
+    <string name="DeprecatedNotificationJob_update_signal">Atualizar o Collie</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
-    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Esta versão do Signal expirou. Toque para atualizar para enviar e receber mensagens.</string>
+    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Esta versão do Collie expirou. Toque para atualizar para enviar e receber mensagens.</string>
 
     <!-- PendingGroupJoinRequestsReminder -->
     <plurals name="PendingGroupJoinRequestsReminder_d_pending_member_requests">
@@ -1262,7 +1263,7 @@
     <!-- Message for dialog asking user to submit logs for debugging a crash -->
     <string name="PromptLogsSlowNotificationsDialog__message">Os registos de depuração ajudam-nos a diagnosticar e corrigir o problema e não contêm informações pessoais.</string>
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
-    <string name="PromptLogsSlowNotificationsDialog__title_crash">O Signal encontrou um problema. Enviar registo de depuração?</string>
+    <string name="PromptLogsSlowNotificationsDialog__title_crash">O Collie encontrou um problema. Enviar registo de depuração?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">É possível que não esteja a receber mensagens. Enviar registo de depuração?</string>
 
@@ -1270,12 +1271,12 @@
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">As notificações podem chegar atrasadas devido a otimizações da bateria</string>
     <!-- Message explaining that battery saver may delay notifications -->
-    <string name="PromptBatterySaverBottomSheet__message">Pode desativar as otimizações de bateria para o Signal para garantir que as notificações de mensagens não chegam atrasadas.</string>
+    <string name="PromptBatterySaverBottomSheet__message">Pode desativar as otimizações de bateria para o Collie para garantir que as notificações de mensagens não chegam atrasadas.</string>
 
     <!-- Title in bottom sheet that states that notifications for this device could be delayed -->
     <string name="DeviceSpecificNotificationBottomSheet__notifications_may_be_delayed">As notificações podem chegar atrasadas devido a otimizações da bateria</string>
     <!-- Message in bottom sheet prompting users to fix potential issues by disabling battery optimizations -->
-    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Desative as otimizações de bateria para o Signal para garantir que as notificações de mensagens não chegam atrasadas. Toque em \"Continuar\" para ver as instruções específicas do dispositivo.</string>
+    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Desative as otimizações de bateria para o Collie para garantir que as notificações de mensagens não chegam atrasadas. Toque em \"Continuar\" para ver as instruções específicas do dispositivo.</string>
     <!-- Button to dismiss notification help prompt -->
     <string name="DeviceSpecificNotificationBottomSheet__no_thanks">Não, obrigado</string>
     <!-- Button to continue and go to Signal support website -->
@@ -1284,7 +1285,7 @@
     <!-- Title of a bottom sheet that is shown when the user is having connectivity issues -->
     <string name="ConnectivityWarningBottomSheet_title">É possível que não esteja a receber mensagens</string>
     <!-- Body of a bottom sheet that is shown when the user is having connectivity issues -->
-    <string name="ConnectivityWarningBottomSheet_body">Reiniciar o dispositivo pode ajudar a resolver o problema da entrega de mensagens. Se o problema persistir, contacte o suporte do Signal.</string>
+    <string name="ConnectivityWarningBottomSheet_body">Reiniciar o dispositivo pode ajudar a resolver o problema da entrega de mensagens. Se o problema persistir, contacte o suporte do Collie.</string>
     <!-- Text for a button in a bottom sheet that is shown when the user is having connectivity issues. Clicking it will dismiss the bottom sheet. -->
     <string name="ConnectivityWarningBottomSheet_dismiss_button">Entendido</string>
 
@@ -1519,7 +1520,7 @@
     <string name="LongMessageActivity_your_message">A sua mensagem</string>
 
     <!-- MessageRetrievalService -->
-    <string name="MessageRetrievalService_signal">Signal</string>
+    <string name="MessageRetrievalService_signal">Collie</string>
     <string name="MessageRetrievalService_background_connection_enabled">Ligação em segundo-plano ativada</string>
 
     <!-- MediaOverviewActivity -->
@@ -1611,10 +1612,10 @@
   <!-- Removed by excludeNonTranslatables <string name="StarredMessages__s_chevron_s" translatable="false">%1$s \u203A %2$s</string> -->
 
     <!-- NotificationBarManager -->
-    <string name="NotificationBarManager__establishing_signal_call">A estabelecer chamada do Signal</string>
+    <string name="NotificationBarManager__establishing_signal_call">A estabelecer chamada do Collie</string>
     <!-- Temporary notification shown when starting the calling service -->
-    <string name="NotificationBarManager__starting_signal_call_service">A iniciar serviço de chamada do Signal</string>
-    <string name="NotificationBarManager__stopping_signal_call_service">A parar o serviço de chamadas do Signal</string>
+    <string name="NotificationBarManager__starting_signal_call_service">A iniciar serviço de chamada do Collie</string>
+    <string name="NotificationBarManager__stopping_signal_call_service">A parar o serviço de chamadas do Collie</string>
     <string name="NotificationBarManager__cancel_call">Cancelar chamada</string>
 
     <!-- NotificationsMegaphone -->
@@ -1945,7 +1946,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Já não pode enviar mensagens SMS no Signal. Convide %1$s para o Signal para manter a conversa aqui.</string>
+    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Já não pode enviar mensagens SMS no Collie. Convide %1$s para o Collie para manter a conversa aqui.</string>
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Pagamento: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2060,20 +2061,20 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Associar a um dispositivo Signal?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Para associar um computador ou iPad a esta conta Signal, aceda a Dispositivos associados e toque em \"Associe um novo dispositivo\" e leia novamente o código QR. Certifique-se de que só lê códigos QR provenientes diretamente do Signal.</string>
 
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Esta versão do Signal expira hoje. Atualize para a versão mais recente.</string>
+    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Esta versão do Collie expira hoje. Atualize para a versão mais recente.</string>
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
-        <item quantity="one">Esta versão do Signal irá expirar amanhã. Atualize para a versão mais recente.</item>
-        <item quantity="other">Esta versão do Signal irá expirar dentro de %1$d dias. Atualize para a versão mais recente.</item>
+        <item quantity="one">Esta versão do Collie irá expirar amanhã. Atualize para a versão mais recente.</item>
+        <item quantity="other">Esta versão do Collie irá expirar dentro de %1$d dias. Atualize para a versão mais recente.</item>
     </plurals>
 
     <!-- PassphrasePromptActivity -->
     <string name="PassphrasePromptActivity_enter_passphrase">Insira a frase-chave</string>
-    <string name="PassphrasePromptActivity_watermark_content_description">Ícone do Signal</string>
+    <string name="PassphrasePromptActivity_watermark_content_description">Ícone do Collie</string>
     <string name="PassphrasePromptActivity_ok_button_content_description">Submeter frase-chave</string>
     <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Frase-chave inválida!</string>
-    <string name="PassphrasePromptActivity_unlock_signal">Desbloquear o Signal</string>
+    <string name="PassphrasePromptActivity_unlock_signal">Desbloquear o Collie</string>
     <!-- This is the subject line for the email that is sent to support -->
-    <string name="PassphrasePromptActivity_signal_android_lock_screen">Signal Android - Ecrã de bloqueio</string>
+    <string name="PassphrasePromptActivity_signal_android_lock_screen">Collie Android - Ecrã de bloqueio</string>
 
     <!-- PlacePickerActivity -->
     <string name="PlacePickerActivity_title">Mapa</string>
@@ -2131,7 +2132,7 @@
 
     <!-- RecaptchaRequiredBottomSheetFragment -->
     <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">Verifique para continuar a conversar</string>
-    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Para ajudar a prevenir o spam no Signal, termine a verificação.</string>
+    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Para ajudar a prevenir o spam no Collie, termine a verificação.</string>
     <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">Depois de verificar, pode continuar a conversar. Todas as mensagens em pausa serão enviadas.</string>
 
     <!-- Recipient -->
@@ -2139,7 +2140,7 @@
     <!-- Name of recipient representing user\'s \'My Story\' -->
     <string name="Recipient_my_story">A Minha História</string>
     <!-- Name of recipient for a call link without a name -->
-    <string name="Recipient_signal_call">Chamada do Signal</string>
+    <string name="Recipient_signal_call">Chamada do Collie</string>
 
     <!-- RecipientPreferencesActivity -->
     <string name="RecipientPreferenceActivity_block">Bloquear</string>
@@ -2176,7 +2177,7 @@
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Toque aqui para ativar a sua câmara</string>
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
-    <string name="WebRtcCallActivity__signal_s">Chamada Signal %1$s</string>
+    <string name="WebRtcCallActivity__signal_s">Chamada Collie %1$s</string>
     <string name="WebRtcCallActivity__calling">A chamar…</string>
     <!-- Title for dialog warning about lacking bluetooth permissions during a call -->
     <string name="WebRtcCallActivity__bluetooth_permission_denied">Permissão de bluetooth negada</string>
@@ -2241,15 +2242,15 @@
     <!-- Dialog title asking users for camera permission -->
     <string name="WebRtcCallActivity__allow_access_camera">Permita o acesso à câmara</string>
     <!-- Dialog description explaining why camera and microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Para iniciar ou participar numa chamada, permita o acesso do Signal à sua câmara e microfone.</string>
+    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Para iniciar ou participar numa chamada, permita o acesso do Collie à sua câmara e microfone.</string>
     <!-- Dialog description explaining why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_microphone">Para iniciar ou participar numa chamada, permita o acesso do Signal ao seu microfone.</string>
+    <string name="WebRtcCallActivity__to_start_call_microphone">Para iniciar ou participar numa chamada, permita o acesso do Collie ao seu microfone.</string>
     <!-- Dialog description explaining why camera permissions are needed to enable a user\'s video in a call -->
-    <string name="WebRtcCallActivity__to_enable_video_allow_camera">Para ativar o seu vídeo, permita o acesso do Signal à sua câmara.</string>
+    <string name="WebRtcCallActivity__to_enable_video_allow_camera">Para ativar o seu vídeo, permita o acesso do Collie à sua câmara.</string>
     <!-- Toast describing why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">O Signal necessita de permissões de microfone para iniciar ou participar numa chamada.</string>
+    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">O Collie necessita de permissões de microfone para iniciar ou participar numa chamada.</string>
     <!-- Toast describing why camera permissions are needed to enable a video in a call -->
-    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">O Signal necessita de acesso à câmara para ativar o seu vídeo</string>
+    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">O Collie necessita de acesso à câmara para ativar o seu vídeo</string>
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="WebRtcCallActivity__to_start_call">Para iniciar ou participar numa chamada:</string>
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
@@ -2262,8 +2263,8 @@
     <string name="MoveableLocalVideoRenderer__expand_local_video">Expandir o vídeo local</string>
 
     <!-- WebRtcCallView -->
-    <string name="WebRtcCallView__signal_call">Chamada do Signal</string>
-    <string name="WebRtcCallView__signal_video_call">Videochamada do Signal</string>
+    <string name="WebRtcCallView__signal_call">Chamada do Collie</string>
+    <string name="WebRtcCallView__signal_video_call">Videochamada do Collie</string>
     <string name="WebRtcCallView__start_call">Iniciar chamada</string>
     <string name="WebRtcCallView__join_call">Entrar na chamada</string>
     <string name="WebRtcCallView__call_is_full">A chamada encontra-se cheia</string>
@@ -2572,7 +2573,7 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Adicionar aos contactos</string>
-    <string name="SharedContactView_invite_to_signal">Convidar para o Signal</string>
+    <string name="SharedContactView_invite_to_signal">Convidar para o Collie</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Mensagem</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
@@ -2865,11 +2866,11 @@
     <string name="ThreadRecord_blocked_group">Bloqueado</string>
 
     <!-- ApkUpdateNotifications -->
-    <string name="ApkUpdateNotifications_prompt_install_title">Atualização do Signal</string>
-    <string name="ApkUpdateNotifications_prompt_install_body">Está disponível uma nova versão do Signal. Toque para atualizar.</string>
-    <string name="ApkUpdateNotifications_failed_general_title">Falha ao atualizar o Signal</string>
+    <string name="ApkUpdateNotifications_prompt_install_title">Atualização do Collie</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">Está disponível uma nova versão do Collie. Toque para atualizar.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Falha ao atualizar o Collie</string>
     <string name="ApkUpdateNotifications_failed_general_body">Tentaremos mais tarde.</string>
-    <string name="ApkUpdateNotifications_auto_update_success_title">Signal atualizado com sucesso</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Collie atualizado com sucesso</string>
     <string name="ApkUpdateNotifications_auto_update_success_body">Foi atualizado automaticamente para a versão %1$s.</string>
     <string name="ApkUpdateNotifications_manual_update_success_body">Atualizou para a versão %1$s.</string>
 
@@ -2896,7 +2897,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">O nosso número de segurança do Signal:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">Parece que não tem aplicações para as quais partilhar.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">Não foi encontrado na área de transferência nenhum número de segurança com o qual comparar</string>
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">O Signal requer permissão de acesso à câmara para ler códigos QR, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do seu telemóvel, seleccione a aplicação Signal e nas \"Permissões\" ative a \"Câmara\".</string>
+    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">O Collie requer permissão de acesso à câmara para ler códigos QR, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do seu telemóvel, seleccione a aplicação Collie e nas \"Permissões\" ative a \"Câmara\".</string>
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">Primeiro deverá trocar mensagens de forma a poder ver o número de segurança de %1$s.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">Após trocar mensagens com essa pessoa, um número de segurança será criado.</string>
@@ -2933,8 +2934,8 @@
 
     <!-- KeyCachingService -->
     <string name="KeyCachingService_signal_passphrase_cached">Toque para abrir.</string>
-    <string name="KeyCachingService_passphrase_cached">O Signal está desbloqueado</string>
-    <string name="KeyCachingService_lock">Bloquear o Signal</string>
+    <string name="KeyCachingService_passphrase_cached">O Collie está desbloqueado</string>
+    <string name="KeyCachingService_lock">Bloquear o Collie</string>
 
     <!-- MediaPreviewActivity -->
     <string name="MediaPreviewActivity_you">Você</string>
@@ -2987,7 +2988,7 @@
     <string name="MessageNotifier_failed_to_deliver_message">Falha na entrega da mensagem.</string>
     <string name="MessageNotifier_error_delivering_message">Erro ao entregar a mensagem.</string>
     <string name="MessageNotifier_message_delivery_paused">Entrega de mensagens em pausa.</string>
-    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Verifique para continuar a conversar no Signal.</string>
+    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Verifique para continuar a conversar no Collie.</string>
     <string name="MessageNotifier_mark_all_as_read">Marcar tudo como lido</string>
     <string name="MessageNotifier_mark_read">Marcar como lida</string>
     <string name="MessageNotifier_turn_off_these_notifications">Desativar estas notificações</string>
@@ -3011,7 +3012,7 @@
     <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
     <string name="MessageNotifier_s_voted_in_poll">%1$s %2$s votaram na sondagem \"%3$s\"</string>
 
-    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Deseja desativar as notificações quando um novo contacto se junta ao Signal? Pode ativar novamente em Signal &gt; Definições &gt; Notificações.</string>
+    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Deseja desativar as notificações quando um novo contacto se junta ao Collie? Pode ativar novamente em Collie &gt; Definições &gt; Notificações.</string>
 
     <!-- TurnOnNotificationsBottomSheet -->
     <!-- Title for sheet explaining how to turn on app notifications -->
@@ -3087,7 +3088,7 @@
     </plurals>
 
     <!-- Message shown when the app requests permission to save media to the device storage, but that permission has been permanently denied by the user. -->
-    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">O Signal requer permissão de acesso ao armazenamento para escrever no suporte de armazenamento externo, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do telemóvel, seleccione o Signal e, em \"Permissões\" active \"Armazenamento\".</string>
+    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">O Collie requer permissão de acesso ao armazenamento para escrever no suporte de armazenamento externo, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do telemóvel, seleccione o Collie e, em \"Permissões\" active \"Armazenamento\".</string>
 
     <!-- Message explaining that it is not possible to save media to the device storage after the user denied the system save to storage permission. -->
     <string name="AttachmentSaver__unable_to_write_to_external_storage_without_permission">Não é possível guardar para o armazenamento externo sem permissões</string>
@@ -3097,11 +3098,11 @@
     <!-- Dialog title shown when attempting to save media that has been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_media">Não é possível guardar os ficheiros</string>
     <!-- Dialog message explaining that media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__media_offloaded_message">Este ficheiro multimédia foi descarregado do seu dispositivo porque a opção \"otimizar armazenamento do Signal\" está ativada. Pode transferir itens um a um, ou desativar a opção \"Otimizar armazenamento no dispositivo\" para transferir todos os ficheiros multimédia para o seu dispositivo.</string>
+    <string name="AttachmentSaver__media_offloaded_message">Este ficheiro multimédia foi descarregado do seu dispositivo porque a opção \"otimizar armazenamento do Collie\" está ativada. Pode transferir itens um a um, ou desativar a opção \"Otimizar armazenamento no dispositivo\" para transferir todos os ficheiros multimédia para o seu dispositivo.</string>
     <!-- Dialog title shown when attempting to save multiple media items, some of which have been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_all_items">Não é possível guardar todos os itens</string>
     <!-- Dialog message explaining that some selected media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__some_media_offloaded_message">Alguns ficheiros multimédia que selecionou foram descarregados do seu dispositivo porque a opção \"Otimizar armazenamento do Signal\" está ativada. Pode guardar itens um a um, ou desativar a opção \"Otimizar armazenamento no dispositivo\" para transferir todos os ficheiros multimédia para o seu dispositivo.</string>
+    <string name="AttachmentSaver__some_media_offloaded_message">Alguns ficheiros multimédia que selecionou foram descarregados do seu dispositivo porque a opção \"Otimizar armazenamento do Collie\" está ativada. Pode guardar itens um a um, ou desativar a opção \"Otimizar armazenamento no dispositivo\" para transferir todos os ficheiros multimédia para o seu dispositivo.</string>
     <!-- Button label in the offloaded media dialog that navigates to the storage settings screen. -->
     <string name="AttachmentSaver__view_storage_settings">Ver definições de armazenamento</string>
 
@@ -3114,7 +3115,7 @@
     <string name="ShortcutLauncherActivity_invalid_shortcut">Atalho inválido</string>
 
     <!-- SingleRecipientNotificationBuilder -->
-    <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
+    <string name="SingleRecipientNotificationBuilder_signal">Collie</string>
     <string name="SingleRecipientNotificationBuilder_new_message">Nova mensagem</string>
     <string name="SingleRecipientNotificationBuilder_message_request">Pedido de mensagem</string>
     <string name="SingleRecipientNotificationBuilder_you">Você</string>
@@ -3190,7 +3191,7 @@
 
     <!-- UnauthorizedReminder -->
     <!-- Message shown in a reminder banner when the user\'s device is no longer registered -->
-    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Este dispositivo já não está registado. Isto possivelmente deve-se a ter registado o seu número de telemóvel com o Signal noutro dispositivo.</string>
+    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Este dispositivo já não está registado. Isto possivelmente deve-se a ter registado o seu número de telemóvel com o Collie noutro dispositivo.</string>
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Voltar a registar dispositivo</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
@@ -3199,7 +3200,7 @@
     <string name="UnauthorizedReminder_relink_action">Voltar a associar dispositivo</string>
 
     <!-- Push notification when the app is forcibly logged out by the server. -->
-    <string name="LoggedOutNotification_you_have_been_logged_out">Foi desconectado do Signal neste dispositivo.</string>
+    <string name="LoggedOutNotification_you_have_been_logged_out">Foi desconectado do Collie neste dispositivo.</string>
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
@@ -3245,14 +3246,14 @@
     <string name="change_passphrase_activity__repeat_new_passphrase">Repita a frase-chave nova</string>
 
     <!-- contact_selection_activity -->
-    <string name="contact_selection_activity__invite_to_signal">Convite para o Signal</string>
+    <string name="contact_selection_activity__invite_to_signal">Convite para o Collie</string>
     <string name="contact_selection_activity__new_group">Novo grupo</string>
     <!-- Row item title for refreshing contacts -->
     <string name="contact_selection_activity__refresh_contacts">Atualizar contactos</string>
     <!-- Row item description for refreshing contacts -->
     <string name="contact_selection_activity__missing_someone">Falta alguém? Tente atualizar</string>
     <!-- Row item title for finding people on Signal via your contacts -->
-    <string name="contact_selection_activity__find_people_you_know">Encontre pessoas que conhece no Signal</string>
+    <string name="contact_selection_activity__find_people_you_know">Encontre pessoas que conhece no Collie</string>
     <!-- Row item description asking users for access to their contacts to find people they know -->
     <string name="contact_selection_activity__allow_access_to_contacts">Permita o acesso aos seus contactos</string>
     <!-- Row header title for more section -->
@@ -3271,7 +3272,7 @@
     <string name="SingleContactSelectionActivity_contact_photo">Fotografia de contacto</string>
 
     <!-- ContactSelectionListFragment-->
-    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">O Signal requer permissão de acesso aos contactos para visualizar os seus contactos, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do telemóvel, seleccione a aplicação Signal e nas \"Permissões\" ative os \"Contactos\".</string>
+    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">O Collie requer permissão de acesso aos contactos para visualizar os seus contactos, mas esta foi negada permanentemente. Por favor, aceda às definições das aplicações do telemóvel, seleccione a aplicação Collie e nas \"Permissões\" ative os \"Contactos\".</string>
     <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">Problema a obter os contactos, verifique a sua ligação à rede</string>
     <string name="ContactSelectionListFragment_username_not_found">Nome de utilizador não encontrado</string>
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"\"%1$s\" não é um utilizador do Signal. Por favor, verifique o nome de utilizador e tente novamente."</string>
@@ -3291,7 +3292,7 @@
     <!-- Dialog title asking users for contact permission -->
     <string name="ContactSelectionListFragment_allow_access_contacts">Permita o acesso aos contactos</string>
     <!-- Dialog description that will explain the steps needed to give contact permissions -->
-    <string name="ContactSelectionListFragment_to_find_people">Para encontrar pessoas que conhece no Signal:</string>
+    <string name="ContactSelectionListFragment_to_find_people">Para encontrar pessoas que conhece no Collie:</string>
     <!-- Text on button prompting users to give Signal contact permissions -->
     <string name="ContactSelectionListFragment__allow_access">Permitir o acesso</string>
     <!-- Text on button to dismiss Signal\'s request for contact permissions -->
@@ -3421,7 +3422,7 @@
 
     <!-- BubbleOptOutTooltip -->
     <!-- Message to inform the user of what Android chat bubbles are -->
-    <string name="BubbleOptOutTooltip__description">Os balões são uma funcionalidade Android que pode desativar nos chats do Signal.</string>
+    <string name="BubbleOptOutTooltip__description">Os balões são uma funcionalidade Android que pode desativar nos chats do Collie.</string>
     <!-- Button to dismiss the tooltip for opting out of using Android bubbles -->
     <string name="BubbleOptOutTooltip__not_now">Agora não</string>
     <!-- Button to move to the system settings to control the use of Android bubbles -->
@@ -3527,6 +3528,18 @@
     <string name="EditProfileFragment__group_name">Nome do grupo</string>
     <string name="EditProfileFragment__group_description">Descrição do grupo</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Atualizar o Collie</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Esta versão do Collie expirou. Atualize agora para continuar a usar o Collie.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">Atualizar</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">O dispositivo não está registado</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">Este dispositivo já não está registado. Volte a registar-se para fazer alterações à sua conta.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Voltar a registar</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Guardar</string>
@@ -3562,20 +3575,20 @@
     <!-- Bottom sheet title when encryption is auto-verified -->
     <string name="EncryptionVerifiedSheet__title_success">A encriptação foi autoverificada para este chat</string>
     <!-- Bottom sheet body when encryption is auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_success">Para pessoais às quais se ligou por número de telemóvel, o Signal pode confirmar automaticamente se a ligação é segura utilizando um processo denominado transparência de chaves. Para segurança adicional, verifique a encriptação de ponta a ponta manualmente comparando os números no ecrã anterior ou digitalizando o código no seu dispositivo.</string>
+    <string name="EncryptionVerifiedSheet__body_success">Para pessoais às quais se ligou por número de telemóvel, o Collie pode confirmar automaticamente se a ligação é segura utilizando um processo denominado transparência de chaves. Para segurança adicional, verifique a encriptação de ponta a ponta manualmente comparando os números no ecrã anterior ou digitalizando o código no seu dispositivo.</string>
     <!-- Bottom sheet title when encryption is no longer auto-verified -->
     <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">A autoverificação não está disponível para este chat</string>
     <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
-    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">O Signal não pode verificar automaticamente a encriptação para este chat. Isto deve-se provavelmente ao facto de %1$s ter mudado o número de telemóvel ou as definições de privacidade do número de telemóvel. Verifique a encriptação de ponta a ponta manualmente comparando os números no ecrã anterior ou digitalizando o código no seu dispositivo.</string>
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">O Collie não pode verificar automaticamente a encriptação para este chat. Isto deve-se provavelmente ao facto de %1$s ter mudado o número de telemóvel ou as definições de privacidade do número de telemóvel. Verifique a encriptação de ponta a ponta manualmente comparando os números no ecrã anterior ou digitalizando o código no seu dispositivo.</string>
     <!-- Bottom sheet title when encryption cannot be auto-verified -->
     <string name="EncryptionVerifiedSheet__title_unavailable">A autoverificação não está disponível para este chat</string>
     <!-- Bottom sheet body when encryption cannot be auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_unavailable">O Signal só pode verificar automaticamente a encriptação em chats em que esteja ligado a alguém através de um número de telemóvel. Se o chat tiver sido iniciado com um nome de utilizador ou um grupo em comum, verifique a encriptação de ponta a ponta comparando os números no ecrã anterior ou digitalizando o código no dispositivo.</string>
+    <string name="EncryptionVerifiedSheet__body_unavailable">O Collie só pode verificar automaticamente a encriptação em chats em que esteja ligado a alguém através de um número de telemóvel. Se o chat tiver sido iniciado com um nome de utilizador ou um grupo em comum, verifique a encriptação de ponta a ponta comparando os números no ecrã anterior ou digitalizando o código no dispositivo.</string>
 
     <!-- Title for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__title">O Signal pode agora verificar automaticamente a encriptação</string>
+    <string name="VerifyAutomaticallyEducationSheet__title">O Collie pode agora verificar automaticamente a encriptação</string>
     <!-- Body for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__body">Para contactos aos quais está ligado por número de telemóvel, o Signal pode confirmar automaticamente se a ligação é segura utilizando um processo denominado transparência de chaves. Para mais segurança, pode verificar conexões manualmente utilizando um código QR ou número de segurança.</string>
+    <string name="VerifyAutomaticallyEducationSheet__body">Para contactos aos quais está ligado por número de telemóvel, o Collie pode confirmar automaticamente se a ligação é segura utilizando um processo denominado transparência de chaves. Para mais segurança, pode verificar conexões manualmente utilizando um código QR ou número de segurança.</string>
     <!-- Button to learn more about automatic verification -->
     <string name="VerifyAutomaticallyEducationSheet__learn_more">Saber mais</string>
     <!-- Button to go to verification page -->
@@ -3722,7 +3735,9 @@
     <string name="preferences__led_color_unknown">Desconhecido</string>
     <string name="preferences__silent">Silencioso</string>
     <string name="preferences__advanced">Avançado</string>
-    <string name="preferences__donate_to_signal">Doar ao Signal</string>
+    <string name="preferences__donate_to_signal">Doar ao Molly</string>
+    <!-- Preference label for making one-time donations to Signal -->
+    <string name="preferences__privacy">Privacidade</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Histórias</string>
     <string name="preferences__payments">Pagamentos</string>
@@ -3743,7 +3758,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Circunscrição de censura</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Circunscrição de censura</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Se ativo, o Signal irá tentar circunscrever a censura. Apenas ative esta opção em locais onde o Signal é censurado.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Se ativo, o Collie irá tentar circunscrever a censura. Apenas ative esta opção em locais onde o Collie é censurado.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">A circunscrição de censura foi ativada baseada no número de telefone da sua conta.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -3771,7 +3786,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Verificação automática da chave</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Quando ativado, o Signal tentará verificar automaticamente a encriptação dos chats 1:1.</string>
+    <string name="preferences_automatic_key_verification_body">Quando ativado, o Collie tentará verificar automaticamente a encriptação dos chats 1:1.</string>
 
 
     <!-- Internal only preferences -->
@@ -3788,7 +3803,7 @@
 
     <!-- Displayed on a welcome screen for payments -->
     <string name="PaymentsHomeFragment_introducing_payments">Apresentamos os pagamentos</string>
-    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Utilize o Signal para enviar e receber MobileCoin, uma nova moeda digital focada na privacidade. Ative para começar a utilizar.</string>
+    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Utilize o Collie para enviar e receber MobileCoin, uma nova moeda digital focada na privacidade. Ative para começar a utilizar.</string>
     <string name="PaymentsHomeFragment__activate_payments">Ativar os pagamentos</string>
     <string name="PaymentsHomeFragment__activating_payments">A ativar pagamentos…</string>
     <string name="PaymentsHomeFragment__restore_payments_account">Restaurar a conta de pagamentos</string>
@@ -3814,7 +3829,7 @@
     <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">Os pagamentos não se encontram disponíveis para a sua região.</string>
     <string name="PaymentsHomeFragment__could_not_enable_payments">Não foi possível ativar os pagamentos. Tente novamente mais tarde.</string>
     <string name="PaymentsHomeFragment__deactivate_payments_question">Desativar os pagamentos?</string>
-    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">Você não poderá enviar ou receber MobileCoin no Signal se desativar os pagamentos.</string>
+    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">Você não poderá enviar ou receber MobileCoin no Collie se desativar os pagamentos.</string>
     <string name="PaymentsHomeFragment__deactivate">Desativar</string>
     <string name="PaymentsHomeFragment__continue">Continuar</string>
     <string name="PaymentsHomeFragment__balance_is_not_currently_available">O saldo não se encontra atualmente disponível</string>
@@ -3823,10 +3838,10 @@
     <string name="PaymentsHomeFragment__details">Detalhes</string>
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__learn_more__activate_payments" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_activate</string> -->
     <!-- Displayed as a description in a dialog when the user tries to activate payments -->
-    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">Pode usar o Signal para enviar e receber MobileCoin. Todos os pagamentos estão sujeitos aos Termos de Utilização das MobileCoins e a MobileCoin Wallet. Pode encontrar problemas e os pagamentos ou saldos que perca não são recuperáveis. </string>
+    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">Pode usar o Collie para enviar e receber MobileCoin. Todos os pagamentos estão sujeitos aos Termos de Utilização das MobileCoins e a MobileCoin Wallet. Pode encontrar problemas e os pagamentos ou saldos que perca não são recuperáveis. </string>
     <string name="PaymentsHomeFragment__activate">Ativar</string>
     <string name="PaymentsHomeFragment__view_mobile_coin_terms">Ver termos da MobileCoin</string>
-    <string name="PaymentsHomeFragment__payments_not_available">Os pagamentos no Signal já não estão disponíveis. Você ainda pode transferir fundos para uma troca, mas deixou de poder enviar e receber pagamentos ou adicionar fundos.</string>
+    <string name="PaymentsHomeFragment__payments_not_available">Os pagamentos no Collie já não estão disponíveis. Você ainda pode transferir fundos para uma troca, mas deixou de poder enviar e receber pagamentos ou adicionar fundos.</string>
 
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__mobile_coin_terms_url" translatable="false">https://www.mobilecoin.com/terms-of-use.html</string> -->
     <!-- Alert dialog title which shows up after a payment to turn on payment lock -->
@@ -3909,9 +3924,9 @@
     <string name="PaymentsTransferFragment__next">Seguinte</string>
     <string name="PaymentsTransferFragment__invalid_address">Endereço inválido</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">Confirme o endereço da carteira para a qual está a tentar transferir e tente novamente.</string>
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Não pode transferir para o seu próprio endereço da carteira Signal. Introduza o endereço de carteira da sua conta numa transação suportada.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Para digitalizar um código QR, o Signal necessita de aceder à câmara.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Para digitalizar um código QR, o Signal necessita de aceder à câmara.</string>
+    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Não pode transferir para o seu próprio endereço da carteira Collie. Introduza o endereço de carteira da sua conta numa transação suportada.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Para digitalizar um código QR, o Collie necessita de aceder à câmara.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Para digitalizar um código QR, o Collie necessita de aceder à câmara.</string>
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Digitalizar código QR do endereço</string>
@@ -4272,17 +4287,17 @@
 
     <!-- CallNotificationBuilder -->
     <!-- Displayed in a notification when a Signal voice call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_voice_call">A receber chamada de voz do Signal</string>
+    <string name="CallNotificationBuilder__incoming_signal_voice_call">A receber chamada de voz do Collie</string>
     <!-- Displayed in a notification when a Signal video call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_video_call">A receber chamada de vídeo do Signal</string>
+    <string name="CallNotificationBuilder__incoming_signal_video_call">A receber chamada de vídeo do Collie</string>
     <!-- Displayed in a notification when a Signal group call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_group_call">A receber chamada de grupo do Signal</string>
+    <string name="CallNotificationBuilder__incoming_signal_group_call">A receber chamada de grupo do Collie</string>
     <!-- Displayed in a notification when a Signal voice call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Chamada de voz do Signal em curso</string>
+    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Chamada de voz do Collie em curso</string>
     <!-- Displayed in a notification when a Signal video call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_video_call">Chamada de vídeo do Signal em curso</string>
+    <string name="CallNotificationBuilder__ongoing_signal_video_call">Chamada de vídeo do Collie em curso</string>
     <!-- Displayed in a notification when a Signal group call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_group_call">Chamada de grupo do Signal em curso</string>
+    <string name="CallNotificationBuilder__ongoing_signal_group_call">Chamada de grupo do Collie em curso</string>
 
     <string name="CallNotificationBuilder_connecting">A ligar…</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">Frase-chave da cópia de segurança</string>
@@ -4310,7 +4325,7 @@
     <string name="BackupDialog_passphrase_was_not_correct">Frase-chave incorreta</string>
     <string name="LocalBackupJob_creating_signal_backup">A criar cópia de segurança…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">A verificar cópia de segurança do Signal…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">A verificar cópia de segurança do Collie…</string>
     <string name="LocalBackupJobApi29_backup_failed">Falha ao fazer cópia de segurança</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">A sua diretoria da cópia de segurança foi eliminada ou movida.</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">O seu ficheiro de cópia de segurança é demasiado grande para ser guardada neste volume.</string>
@@ -4325,11 +4340,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Liguem-me (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Reenviar código (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Registo Signal - Código de verificação para Android</string>
+    <string name="RegistrationActivity_code_support_subject">Registo Molly - Código de verificação para Android</string>
     <string name="RegistrationActivity_incorrect_code">Código Incorrecto</string>
     <string name="BackupUtil_never">Nunca</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Desconhecido</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">Escolha quem pode ver o seu número de telemóvel e quem o pode usar para o contactar no Collie.</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">Para utilizar o bloqueio de ecrã, defina um PIN, um padrão ou uma palavra-passe neste dispositivo.</string>
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Não foi possível ativar o bloqueio de registo.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Não foi possível desativar o bloqueio de registo.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Tem de introduzir o seu PIN de bloqueio de registo</string>
@@ -4341,11 +4360,11 @@
     <string name="preferences_chats__backups">Cópias de segurança</string>
 
     <!-- Title text shown when Signal is locked and needs to be unlocked -->
-    <string name="prompt_passphrase_activity__unlock_signal">Desbloquear o Signal</string>
+    <string name="prompt_passphrase_activity__unlock_signal">Desbloquear o Collie</string>
     <!-- Description text explaining how to unlock Signal -->
-    <string name="prompt_passphrase_activity__use_your_android_device">Use as definições de bloqueio do seu dispositivo Android para desbloquear o Signal.</string>
+    <string name="prompt_passphrase_activity__use_your_android_device">Use as definições de bloqueio do seu dispositivo Android para desbloquear o Collie.</string>
     <!-- Text shown in a dialog that further explains how to unlock Signal by using the same unlocking methods that are used to unlock their own device -->
-    <string name="prompt_passphrase_activity__screen_lock_is_on">O bloqueio de ecrã está ativo e o Signal está protegido com segurança com as suas definições de bloqueio do dispositivo. Desbloqueie o Signal da mesma forma que desbloqueia normalmente o seu telemóvel, seja através do desbloqueio facial, do desbloqueio por impressão digital, de um PIN, de uma palavra-passe ou de um padrão.</string>
+    <string name="prompt_passphrase_activity__screen_lock_is_on">O bloqueio de ecrã está ativo e o Collie está protegido com segurança com as suas definições de bloqueio do dispositivo. Desbloqueie o Collie da mesma forma que desbloqueia normalmente o seu telemóvel, seja através do desbloqueio facial, do desbloqueio por impressão digital, de um PIN, de uma palavra-passe ou de um padrão.</string>
     <!-- Button in a dialog that will contact Signal support if pressed -->
     <string name="prompt_passphrase_activity__contact_support">Contactar o Suporte</string>
     <!-- Button text to try again after unlocking has previously failed -->
@@ -4400,10 +4419,10 @@
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">A pesquisar por um dispositivo Android novo…</string>
-    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">O Signal necessita da permissão de localização para poder encontrar e depois ligar-se ao seu dispositivo Android novo.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">O Signal necessita que os serviços de localização se encontrem ativos para poder encontrar e depois ligar-se ao seu dispositivo Android novo.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">O Signal necessita de Wi-Fi para poder descobrir e ligar-se ao seu dispositivo Android novo. O Wi-Fi precisa estar ligado, mas não precisa estar ligado a uma rede Wi-Fi.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Parece que este dispositivo não é compatível com Wi-Fi Direct. O Signal usa o Wi-Fi Direct para descobrir e ligar-se ao seu dispositivo Android novo. Você ainda pode criar uma cópia de segurança para restaurar a sua conta no seu dispositivo Android novo.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">O Collie necessita da permissão de localização para poder encontrar e depois ligar-se ao seu dispositivo Android novo.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">O Collie necessita que os serviços de localização se encontrem ativos para poder encontrar e depois ligar-se ao seu dispositivo Android novo.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">O Collie necessita de Wi-Fi para poder descobrir e ligar-se ao seu dispositivo Android novo. O Wi-Fi precisa estar ligado, mas não precisa estar ligado a uma rede Wi-Fi.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Parece que este dispositivo não é compatível com Wi-Fi Direct. O Molly usa o Wi-Fi Direct para descobrir e ligar-se ao seu dispositivo Android novo. Você ainda pode criar uma cópia de segurança para restaurar a sua conta no seu dispositivo Android novo.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">Criar uma cópia de segurança</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Ocorreu um erro inesperado ao tentar ligar ao seu dispositivo Android novo.</string>
 
@@ -4443,7 +4462,7 @@
 
     <!-- DeviceTransferFragment -->
     <string name="DeviceTransfer__transferring_data">A transferir dados</string>
-    <string name="DeviceTransfer__keep_both_devices_near_each_other">Mantenha ambos o dispositivos próximos um do outro. Não desligue os dispositivos e mantenha o Signal aberto. As transferÊncia são encriptadas ponta-a-ponta.</string>
+    <string name="DeviceTransfer__keep_both_devices_near_each_other">Mantenha ambos o dispositivos próximos um do outro. Não desligue os dispositivos e mantenha o Collie aberto. As transferÊncia são encriptadas ponta-a-ponta.</string>
     <string name="DeviceTransfer__d_messages_so_far">%1$d mensagens até ao momento…</string>
     <!-- Filled in with total percentage of messages transferred -->
     <string name="DeviceTransfer__s_of_messages_so_far">%1$s%% das mensagens até ao momento…</string>
@@ -4457,7 +4476,7 @@
     <!-- OldDeviceTransferInstructionsFragment -->
     <string name="OldDeviceTransferInstructions__transfer_account">Transferir conta</string>
     <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
-    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Faça o download do Signal no seu dispositivo Android novo</string>
+    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Faça o download do Collie no seu dispositivo Android novo</string>
     <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
     <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">"Toque em \'Transferir ou restaurar conta\'"</string>
     <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
@@ -4538,7 +4557,7 @@
     <!-- GroupLinkBottomSheetDialogFragment -->
     <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Qualquer pessoa com este link pode ver o nome e a fotografia do grupo e solicitar adesão. Partilhe-o com pessoas em quem você confia.</string>
     <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Qualquer pessoa com este link pode ver o nome e a fotografia do grupo e solicitar adesão. Partilhe-o com pessoas em quem você confia.</string>
-    <string name="GroupLinkBottomSheet_share_via_signal">Partilhar através do Signal</string>
+    <string name="GroupLinkBottomSheet_share_via_signal">Partilhar através do Collie</string>
     <string name="GroupLinkBottomSheet_copy">Copiar</string>
     <string name="GroupLinkBottomSheet_qr_code">Código QR</string>
     <string name="GroupLinkBottomSheet_share">Partilhar</string>
@@ -4696,7 +4715,7 @@
     <string name="payment_info_card_about_mobilecoin">Acerca da MobileCoin</string>
     <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">A MobileCoin é uma nova moeda digital focada na privacidade.</string>
     <string name="payment_info_card_adding_funds">Adicionando fundos</string>
-    <string name="payment_info_card_you_can_add_funds_for_use_in">Você pode adicionar fundos para utilizar no Signal ao adicionar a MobileCoin ao seu endereço de carteira.</string>
+    <string name="payment_info_card_you_can_add_funds_for_use_in">Você pode adicionar fundos para utilizar no Collie ao adicionar a MobileCoin ao seu endereço de carteira.</string>
     <string name="payment_info_card_cashing_out">Tirar dinheiro</string>
     <string name="payment_info_card_you_can_cash_out_mobilecoin">Você pode tirar o dinheiro da MobileCoin a qualquer momento numa transferência que suporte a MobileCoin. Apenas necessita de fazer uma transferência para a sua conta nessa troca.</string>
     <string name="payment_info_card_hide_this_card">Ocultar este cartão?</string>
@@ -4717,12 +4736,12 @@
     <!-- DeactivateWalletFragment -->
     <string name="DeactivateWalletFragment__deactivate_wallet">Desativar carteira</string>
     <string name="DeactivateWalletFragment__your_balance">O seu saldo</string>
-    <string name="DeactivateWalletFragment__its_recommended_that_you">É recomendado que transfira os seus fundos para outro endereço de carteira antes de desativar os pagamentos. Se escolher não transferir os seus fundos agora, eles irão permanecer na sua carteira ligada ao Signal caso reative os pagamentos.</string>
+    <string name="DeactivateWalletFragment__its_recommended_that_you">É recomendado que transfira os seus fundos para outro endereço de carteira antes de desativar os pagamentos. Se escolher não transferir os seus fundos agora, eles irão permanecer na sua carteira ligada ao Collie caso reative os pagamentos.</string>
     <string name="DeactivateWalletFragment__transfer_remaining_balance">Transferir o saldo restante</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring">Desativar sem transferir</string>
     <string name="DeactivateWalletFragment__deactivate">Desativar</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring_question">Desativar sem transferir?</string>
-    <string name="DeactivateWalletFragment__your_balance_will_remain">O seu saldo irá ficar na sua carteira ligada ao Signal caso escolha reativar os pagamentos.</string>
+    <string name="DeactivateWalletFragment__your_balance_will_remain">O seu saldo irá ficar na sua carteira ligada ao Collie caso escolha reativar os pagamentos.</string>
     <string name="DeactivateWalletFragment__error_deactivating_wallet">Erro ao desativar a carteira.</string>
   <!-- Removed by excludeNonTranslatables <string name="DeactivateWalletFragment__learn_more__we_recommend_transferring_your_funds" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_deactivate</string> -->
 
@@ -5439,9 +5458,9 @@
     <string name="MySupportPreference__checking_subscription">A verificar a subscrição…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__title">Atualizar o Signal</string>
+    <string name="UpdateSignalExpiredDialog__title">Atualizar o Collie</string>
     <!-- Message of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__message">Esta versão do Signal expirou. Atualize agora para continuar a usar o Signal.</string>
+    <string name="UpdateSignalExpiredDialog__message">Esta versão do Collie expirou. Atualize agora para continuar a usar o Collie.</string>
     <!-- Button text of expiration dialog, will take user to update the app -->
     <string name="UpdateSignalExpiredDialog__update_action">Atualizar</string>
     <!-- Button text of expiration dialog to cancel the dialog.  -->
@@ -5450,7 +5469,7 @@
     <!-- Title of dialog telling user they need to re-register signal -->
     <string name="ReregisterSignalDialog__title">O dispositivo não está registado</string>
     <!-- Message of dialog telling user they need to re-register signal as it is no longer registered -->
-    <string name="ReregisterSignalDialog__message">Este dispositivo já não está registado. Volte a registar para continuar a usar o Signal neste dispositivo.</string>
+    <string name="ReregisterSignalDialog__message">Este dispositivo já não está registado. Volte a registar para continuar a usar o Collie neste dispositivo.</string>
     <!-- Button text of re-registration dialog to re-register the device.  -->
     <string name="ReregisterSignalDialog__reregister_action">Voltar a registar</string>
     <!-- Button text of re-registration dialog to cancel the dialog.  -->
@@ -5726,6 +5745,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Ligado até %1$s</string>
 
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">Falha ao abrir o seletor.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">Para ativar as notificações, o Collie precisa de permissão para as exibir.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">Ativar</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Este é o chat oficial e único do Signal</string>
@@ -6909,7 +6934,7 @@
     <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__title">Ative as cópias de segurança protegidas</string>
     <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
-    <string name="TurnOnSignalBackups__body">Nunca perca uma mensagem ao adquirir um novo telemóvel ou reinstalar o Signal.</string>
+    <string name="TurnOnSignalBackups__body">Nunca perca uma mensagem ao adquirir um novo telemóvel ou reinstalar o Collie.</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
     <string name="TurnOnSignalBackups__turn_on">Ativar</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
@@ -6979,16 +7004,16 @@
     <string name="BackupSetupCompleteBottomSheet__back_up_now">Efetuar cópia de segurança agora</string>
 
     <!-- Title of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__title">Abra o Signal no seu telemóvel</string>
+    <string name="InactivePrimary__title">Abra o Collie no seu telemóvel</string>
     <!-- Body of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__body">Para manter a sua conta ativa, abra o Signal no seu dispositivo principal.</string>
+    <string name="InactivePrimary__body">Para manter a sua conta ativa, abra o Collie no seu dispositivo principal.</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will navigate to a support page -->
     <string name="InactivePrimary__learn_more">Saber mais</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will snooze the megaphone -->
     <string name="InactivePrimary__got_it">Entendido</string>
 
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
-    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Para restaurar uma cópia de segurança, instale uma nova cópia do Signal. Abra a app e toque em \"Restaurar cópia de segurança\", depois localize um ficheiro de cópia de segurança."</string>
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Para restaurar uma cópia de segurança, instale uma nova cópia do Collie. Abra a app e toque em \"Restaurar cópia de segurança\", depois localize um ficheiro de cópia de segurança."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
     <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">A definição \"Otimizar armazenamento do Signal\" está ativada. Se quiser incluir todos os ficheiros multimédia na sua cópia de segurança no dispositivo, desative esta definição.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
@@ -7353,6 +7378,34 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Não pode subscrever às cópias de segurança do Signal porque o seu telemóvel não suporta os serviços Google Play. Contacte o fabricante do telemóvel para mais assistência.</string>
 
+    <!-- ManageStorageSettingsFragment -->
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">Limites do chat</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">Eliminar histórico de mensagens</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Mensagens mais antigas que o tempo selecionado serão permanentemente eliminadas.</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">As mensagens que excedam o comprimento selecionado serão permanentemente eliminadas.</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">Aplicar limites a dispositivos conetados</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">Quando ativado, os limites de chat também eliminarão mensagens dos seus dispositivos conetados.</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Armazenamento do Collie</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Otimizar o armazenamento do Collie</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Os ficheiros não utilizados serão movidos, mas podem ser descarregados a partir da sua cópia de segurança a qualquer altura.</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">A otimização do armazenamento só pode ser usada com a categoria paga das cópias de segurança protegidas do Signal. A sua subscrição das cópias de segurança está a ser processada e ainda não está ativa. Tente novamente mais tarde.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Os ficheiros multimédia serão removidos da sua cópia de segurança no dispositivo</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Ativar a definição \"Otimizar armazenamento do Signal\" irá carregar os ficheiros multimédia antigos do seu dispositivo. Pode transferi-los novamente a qualquer altura. Também irá remover ficheiros multimédia antigos da sua cópia de segurança no dispositivo.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">Ativar</string>
+
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Faça upgrade para ativar esta funcionalidade</string>
@@ -7507,7 +7560,7 @@
     <!-- Displays the date the subscription expired. Placeholder is the date. -->
     <string name="RemoteBackupsSettingsFragment__expired_on_s">Expira a %1$s</string>
     <!-- Displayed at the top of the screen when no backup is currently enabled -->
-    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Efetue cópias de segurança do seu histórico de mensagens para nunca perder dados ao mudar de telemóvel ou reinstalar o Signal.</string>
+    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Efetue cópias de segurança do seu histórico de mensagens para nunca perder dados ao mudar de telemóvel ou reinstalar o Collie.</string>
     <!-- Section header for other ways to back up -->
     <string name="RemoteBackupsSettingsFragment__other_ways_to_backup">Outras formas de fazer cópias de segurança</string>
     <!-- Row title for performing on-device backup -->
@@ -7785,7 +7838,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Mantenha a sua chave segura</string>
     <!-- Bottom sheet subtitle -->
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Caso perca a sua chave, o Signal não o poderá ajudar a restaurar a sua cópia de segurança. Guarde-a num local seguro e não a partilhe com outras pessoas.</string>
+    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Caso perca a sua chave, o Collie não o poderá ajudar a restaurar a sua cópia de segurança. Guarde-a num local seguro e não a partilhe com outras pessoas.</string>
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Continuar</string>
     <!-- Sheet secondary action button label -->
@@ -7795,13 +7848,13 @@
     <!-- Dialog title for confirming you need to disable optimized storage and download media to rotate AEP key -->
     <string name="MessageBackupsKeyRecordScreen__download_media">Transferir ficheiros multimédia</string>
     <!-- Dialog body for confirming you need to disable optimized storage and download media to rotate AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Para criar uma nova chave da cópia de recuperação, tem de desativar \"Otimizar armazenamento do Signal\" e aguardar que os seus ficheiros multimédia sejam transferidos. Quando a transferência estiver concluída, pode criar uma nova chave.</string>
+    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Para criar uma nova chave da cópia de recuperação, tem de desativar \"Otimizar armazenamento do Collie\" e aguardar que os seus ficheiros multimédia sejam transferidos. Quando a transferência estiver concluída, pode criar uma nova chave.</string>
     <!-- Action label to turn off optimized storage and download media -->
     <string name="MessageBackupsKeyRecordScreen__turn_off_and_download">Desativar e transferir</string>
     <!-- Bottom Sheet title for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">Criar uma nova chave de recuperação</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">A criação de uma nova chave só é necessária se mais alguém souber qual é a sua chave. Terá de voltar a carregar a sua cópia de segurança, incluindo os ficheiros multimédia. Se estiver a utilizar a opção \"Otimizar armazenamento do Signal\", terá de transferir primeiro os ficheiros carregados.</string>
+    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">A criação de uma nova chave só é necessária se mais alguém souber qual é a sua chave. Terá de voltar a carregar a sua cópia de segurança, incluindo os ficheiros multimédia. Se estiver a utilizar a opção \"Otimizar armazenamento do Collie\", terá de transferir primeiro os ficheiros carregados.</string>
     <!-- Dialog title shown when user attempts to exit backup setup before completion -->
     <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">Sair da configuração da cópia de segurança?</string>
     <!-- Dialog body warning user that backup setup is incomplete -->
@@ -7999,7 +8052,6 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Proxy</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
-    <string name="MainToolbar__donate_to_signal">Doar ao Signal</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -8318,7 +8370,7 @@
     <string name="CouldNotCompleteBackupRestoreSheet__body_error">Ocorreu um erro e a sua cópia de segurança não pode ser restaurada. Isto pode dever-se ao facto de que a pasta da cópia de segurança foi movida no seu dispositivo durante o restauro da mesma.</string>
 
     <!-- Body of the sheet shown when a local backup restore could not be completed, explaining how to try again -->
-    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Para tentar de novo, desinstale e volte a instalar o Signal neste dispositivo e escolha \"Restaurar ou transferir\".</string>
+    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Para tentar de novo, desinstale e volte a instalar o Collie neste dispositivo e escolha \"Restaurar ou transferir\".</string>
 
     <!-- Button on the sheet shown when a local backup restore could not be completed, opening a support article about it -->
     <string name="CouldNotCompleteBackupRestoreSheet__learn_more">Saber mais</string>

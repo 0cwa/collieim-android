@@ -14,6 +14,7 @@ import org.signal.network.config.TrustStore;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.Socket;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -29,6 +30,8 @@ import java.util.Set;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.X509ExtendedTrustManager;
+import javax.net.ssl.SSLEngine;
 
 import kotlin.Pair;
 
@@ -38,7 +41,7 @@ import kotlin.Pair;
  *
  * @author Moxie Marlinspike
  */
-public class BlacklistingTrustManager implements X509TrustManager {
+public class BlacklistingTrustManager extends X509ExtendedTrustManager {
 
   private static final List<Pair<String, BigInteger>> BLACKLIST = new LinkedList<Pair<String, BigInteger>>() {{
     add(new Pair<>("Open Whisper Systems", new BigInteger("4098")));
@@ -119,9 +122,60 @@ public class BlacklistingTrustManager implements X509TrustManager {
   }
 
   @Override
+  public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket)
+      throws CertificateException
+  {
+    if (trustManager instanceof X509ExtendedTrustManager) {
+      ((X509ExtendedTrustManager) trustManager).checkClientTrusted(chain, authType, socket);
+    } else {
+      trustManager.checkClientTrusted(chain, authType);
+    }
+  }
+
+  @Override
+  public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine)
+      throws CertificateException
+  {
+    if (trustManager instanceof X509ExtendedTrustManager) {
+      ((X509ExtendedTrustManager) trustManager).checkClientTrusted(chain, authType, engine);
+    } else {
+      trustManager.checkClientTrusted(chain, authType);
+    }
+  }
+
+  @Override
   public void checkServerTrusted(X509Certificate[] chain, String authType)
       throws CertificateException
   {
+    checkBlacklist(chain);
+    trustManager.checkServerTrusted(chain, authType);
+  }
+
+  @Override
+  public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket)
+      throws CertificateException
+  {
+    checkBlacklist(chain);
+    if (trustManager instanceof X509ExtendedTrustManager) {
+      ((X509ExtendedTrustManager) trustManager).checkServerTrusted(chain, authType, socket);
+    } else {
+      trustManager.checkServerTrusted(chain, authType);
+    }
+  }
+
+  @Override
+  public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine)
+      throws CertificateException
+  {
+    checkBlacklist(chain);
+    if (trustManager instanceof X509ExtendedTrustManager) {
+      ((X509ExtendedTrustManager) trustManager).checkServerTrusted(chain, authType, engine);
+    } else {
+      trustManager.checkServerTrusted(chain, authType);
+    }
+  }
+
+  private static void checkBlacklist(X509Certificate[] chain) throws CertificateException {
     for (X509Certificate certificate : chain) {
       String publicKeySha256 = Hex.toStringCondensed(CryptoUtil.sha256(certificate.getPublicKey().getEncoded()));
       if (BLACKLISTED_PUBLIC_KEY_SHA256.contains(publicKeySha256)) {
@@ -136,8 +190,6 @@ public class BlacklistingTrustManager implements X509TrustManager {
         }
       }
     }
-
-    trustManager.checkServerTrusted(chain, authType);
   }
 
   @Override

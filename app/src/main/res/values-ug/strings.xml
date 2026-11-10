@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -34,9 +31,13 @@
   <!-- Removed by excludeNonTranslatables <string name="AlbumThumbnailView_plus" translatable="false">\+%d</string> -->
 
     <!-- ApplicationMigrationActivity -->
-    <string name="ApplicationMigrationActivity__signal_is_updating">Signal يېڭىلىنىۋاتىدۇ…</string>
+    <string name="ApplicationMigrationActivity__signal_is_updating">Collie يېڭىلىنىۋاتىدۇ…</string>
 
     <!-- ApplicationPreferencesActivity -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">سىز تېخى ئىم ئىبارىسى بېكىتمىدىڭىز!</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">ئىم ئىبارىسى چەكلەمدۇ؟</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">بۇ Collie ۋە ئۇچۇر ئۇقتۇرۇش قۇلۇپىنى مەڭگۈ ئوچۇق قويىدۇ.</string>
+    <string name="ApplicationPreferencesActivity_disable">چەكلە</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">مۇلازىمېتىرغا باغلىنىش خاتالىقى!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">تىزىملىتىش قۇلۇپى ئۈچۈن PIN تەلەپ قىلىنىدۇ. PIN نى چەكلەش ئۈچۈن، ئالدى بىلەن تىزىملاش قۇلۇپىنى چەكلەڭ.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN قۇرۇلدى.</string>
@@ -80,7 +81,7 @@
     <string name="AttachmentKeyboard_location">ئورنى</string>
     <!-- Text for a button that will allow users to create a poll -->
     <string name="AttachmentKeyboard_poll">ئشلەتكۈچىلەرنىڭ رايىنى سىناش</string>
-    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">رەسىم ۋە ۋىدېيولىرىڭىزنى كۆرسىتىش ئۈچۈن Signal ئىجازىتىڭىزگە ئېھتىياجلىق</string>
+    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">رەسىم ۋە ۋىدېيولىرىڭىزنى كۆرسىتىش ئۈچۈن Collie ئىجازىتىڭىزگە ئېھتىياجلىق</string>
     <!-- Text for a button prompting users to allow Signal access to their gallery storage -->
     <string name="AttachmentKeyboard_allow_access">ئىشلىتىشكە رۇخسەت</string>
     <string name="AttachmentKeyboard_payment">چىقىم</string>
@@ -101,18 +102,18 @@
 
     <!-- AttachmentManager -->
     <string name="AttachmentManager_cant_open_media_selection">ۋاسىتە تاللىغۇدەك بىر ئەپ تاپالمىدى.</string>
-    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal رەسىم ، سىن ياكى ئۈن ھۆججەتلىرىنى قوشۇش ئۈچۈن ساقلىغۇچ ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىدىن، «ھوقۇقلار» نى تاللاپ ۋە «ساقلىغۇچ» نى قوزغىتىڭ.</string>
-    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">ئالاقىلىشىش ئۇچۇرلىرىنى چاپلاش ئۈچۈن Signal ئالاقەداشلار ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىدىن «ھوقۇقلار» نى تاللاپ، «ئالاقەداشلار» نى قوزغىتىڭ.</string>
-    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Signal ئورۇن بەلگىلەش ئۈچۈن ئورۇن ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىگە بېرىڭ، «ھوقۇقلار» نى تاللاڭ ۋە «ئورۇن» نى قوزغىتىڭ.</string>
+    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Collie رەسىم ، سىن ياكى ئۈن ھۆججەتلىرىنى قوشۇش ئۈچۈن ساقلىغۇچ ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىدىن، «ھوقۇقلار» نى تاللاپ ۋە «ساقلىغۇچ» نى قوزغىتىڭ.</string>
+    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">ئالاقىلىشىش ئۇچۇرلىرىنى چاپلاش ئۈچۈن Collie ئالاقەداشلار ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىدىن «ھوقۇقلار» نى تاللاپ، «ئالاقەداشلار» نى قوزغىتىڭ.</string>
+    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Collie ئورۇن بەلگىلەش ئۈچۈن ئورۇن ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىگە بېرىڭ، «ھوقۇقلار» نى تاللاڭ ۋە «ئورۇن» نى قوزغىتىڭ.</string>
 
     <!-- Dialog title asking users for location permission -->
     <string name="AttachmentManager_signal_allow_access_location">ئورنىڭىزغا ئىجازەت بېرىش</string>
     <!-- Dialog description that will explain the steps needed to give location permission -->
     <string name="AttachmentManager_signal_to_send_location">ئورنىڭىزنى يوللاش ئۈچۈن:</string>
     <!-- Alert dialog description asking for location permission -->
-    <string name="AttachmentManager_signal_allow_signal_access_location">ئورنىڭىزنى يوللاش ئۈچۈن Signal غا رۇخسەت قىلىڭ.</string>
+    <string name="AttachmentManager_signal_allow_signal_access_location">ئورنىڭىزنى يوللاش ئۈچۈن Collie غا رۇخسەت قىلىڭ.</string>
     <!-- Toast text explaining Signal\'s need for location access -->
-    <string name="AttachmentManager_signal_needs_location_access">ئورنىڭىزنى يوللاش ئۈچۈن Signal ئ‍ورۇن ئىجازىتىنى لازىم قىلىدۇ.</string>
+    <string name="AttachmentManager_signal_needs_location_access">ئورنىڭىزنى يوللاش ئۈچۈن Collie ئ‍ورۇن ئىجازىتىنى لازىم قىلىدۇ.</string>
     <!-- Dialog title asking users for gallery storage permission -->
     <string name="AttachmentManager_signal_allow_storage">ساقلاش بوشلۇقىغا ئىجازەت قىلىش</string>
     <!-- Dialog description that will explain the steps needed to give gallery storage permission -->
@@ -269,12 +270,12 @@
     <string name="CensorshipCircumventionMegaphone_no_thanks">ياق، رەھمەت</string>
 
     <!-- ClientDeprecatedActivity -->
-    <string name="ClientDeprecatedActivity_update_signal">Signal نى يېڭىلا</string>
+    <string name="ClientDeprecatedActivity_update_signal">Collie نى يېڭىلا</string>
     <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">بۇ ئەپنىڭ مەزكۇر نەشرىنى ئەمدى قوللىمايدۇ. ئۇچۇر ئەۋەتىش ۋە تاپشۇرۇۋېلىشنى داۋاملاشتۇرۇش ئۈچۈن، ئەڭ يېڭى نەشرىگە يېڭىلاڭ.</string>
     <string name="ClientDeprecatedActivity_update">يېڭىلا</string>
     <string name="ClientDeprecatedActivity_dont_update">يېڭىلىما</string>
     <string name="ClientDeprecatedActivity_warning">ئاگاھلاندۇرۇش</string>
-    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Signal نەشرىڭىزنىڭ ۋاقتى توشتى. سىز ئۇچۇر تارىخىڭىزنى كۆرەلەيسىز، ئەمما يېڭىلىمىغۇچە ئۇچۇر ئەۋەتەلەيسىز ۋە تاپشۇرۇپ ئالالمايسىز.</string>
+    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Collie نەشرىڭىزنىڭ ۋاقتى توشتى. سىز ئۇچۇر تارىخىڭىزنى كۆرەلەيسىز، ئەمما يېڭىلىمىغۇچە ئۇچۇر ئەۋەتەلەيسىز ۋە تاپشۇرۇپ ئالالمايسىز.</string>
 
     <!-- ClockSkewActivity -->
     <!-- Title of the full-screen dialog shown when the device clock is too far off from the real time -->
@@ -306,7 +307,7 @@
     <!-- Title on dialog when quick restore qr code is scanned in system camera -->
     <string name="CommunicationActions__transfer_dialog_title">ھېساباتنى يېڭى ئۈسكۈنىگە يۆتكەمسىز؟</string>
     <!-- Message on dialog when quick restore qr code is scanned in system camera -->
-    <string name="CommunicationActions__transfer_dialog_message">بۇ ھېساباتنى يېڭى ئۈسكۈنىگە يۆتكەش ئۈچۈن «داۋاملاشتۇرۇش» نى چېكىپ، Signal كامېراسى ئارقىلىق QR كودىنى قايتا سكاننېرلاڭ. پەقەت Signal دىنلا كەلگەن QR كودىنى سكاننېرلاڭ.</string>
+    <string name="CommunicationActions__transfer_dialog_message">بۇ ھېساباتنى يېڭى ئۈسكۈنىگە يۆتكەش ئۈچۈن «داۋاملاشتۇرۇش» نى چېكىپ، Collie كامېراسى ئارقىلىق QR كودىنى قايتا سكاننېرلاڭ. پەقەت Collie دىنلا كەلگەن QR كودىنى سكاننېرلاڭ.</string>
     <string name="CommunicationActions__dont_transfer">يۆتكىمەڭ</string>
 
     <!-- ConfirmIdentityDialog -->
@@ -330,8 +331,8 @@
 
     <!-- ContactsDatabase -->
     <string name="ContactsDatabase_message_s">%1$s گە ئۇچۇر قىلىش</string>
-    <string name="ContactsDatabase_signal_call_s">Signal ئاۋازلىق چاقىرىق %1$s</string>
-    <string name="ContactsDatabase_signal_video_call_s">Signal سىنلىق چاقىرىق %1$s</string>
+    <string name="ContactsDatabase_signal_call_s">Collie ئاۋازلىق چاقىرىق %1$s</string>
+    <string name="ContactsDatabase_signal_video_call_s">Collie سىنلىق چاقىرىق %1$s</string>
 
     <!-- ContactNameEditActivity -->
     <!-- Toolbar title for contact name edit activity -->
@@ -440,10 +441,10 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="ConversationActivity_signal_to_send_audio_messages">ئاۋازلىق ئۇچۇر يوللاش:</string>
     <!-- Alert dialog description asking for microphone permission in order to send voice messages -->
-    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">ئاۋازلىق ئۇچۇر يوللاش ئۈچۈن، Signal نىڭ مىكروفونىڭىزنى زىيارەت قىلىشىغا رۇخسەت قىلىڭ.</string>
+    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">ئاۋازلىق ئۇچۇر يوللاش ئۈچۈن، Collie نىڭ مىكروفونىڭىزنى زىيارەت قىلىشىغا رۇخسەت قىلىڭ.</string>
     <!-- Toast text explaining Signal\'s need for microphone access -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">ئاۋازلىق ئۇچۇر خاتىرىلەش ئۈچۈن Signal مىكروفون ئىجازىتىنى لازىم قىلىدۇ.</string>
-    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">ئۈنلىك ئۇچۇر يوللاش ئۈچۈن Signal مىكروفون ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىدىن «ھوقۇقلار» نى تاللاپ ۋە «مىكروفون» نى قوزغىتىڭ.</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">ئاۋازلىق ئۇچۇر خاتىرىلەش ئۈچۈن Collie مىكروفون ئىجازىتىنى لازىم قىلىدۇ.</string>
+    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">ئۈنلىك ئۇچۇر يوللاش ئۈچۈن Collie مىكروفون ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىدىن «ھوقۇقلار» نى تاللاپ ۋە «مىكروفون» نى قوزغىتىڭ.</string>
 
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d نىڭ%2$d</string>
@@ -463,9 +464,9 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions for a voice call -->
     <string name="ConversationActivity__to_start_call">چاقىرىق باشلاش ئ‍ۈچۈن:</string>
     <!-- Alert dialog description asking for microphone permission in order to start a voice call -->
-    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">چاقىرىق باشلاش ئۈچۈن Signal نىڭ مىكروفوننى ئىشلىتىشىگە ئىجازەت قىلىڭ.</string>
+    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">چاقىرىق باشلاش ئۈچۈن Collie نىڭ مىكروفوننى ئىشلىتىشىگە ئىجازەت قىلىڭ.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">چاقىرىق باشلاش ئۈچۈن Signal مىكروفوننى ئىشلىتىدۇ.</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">چاقىرىق باشلاش ئۈچۈن Collie مىكروفوننى ئىشلىتىدۇ.</string>
 
 
     <string name="ConversationActivity_join">قوشۇل</string>
@@ -479,11 +480,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal ئەمدى SMS ئۇچۇرلىشىش ئىقتىدارىنى قوللىمايدۇ. «%1$s» نى Signal غا تەكلىپ قىلىپ داۋاملىق پاراڭلاشسىڭىز بولىدۇ.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">بۇ كىشى Signal نى ئەمدى ئىشلەتمەيدۇ. ئۇلارنى Signal غا تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
+    <string name="ConversationActivity__this_person_is_no_longer_using_signal">بۇ كىشى Collie نى ئەمدى ئىشلەتمەيدۇ. ئۇلارنى Collie غا تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">بۇ ئادەم Signal ئىشلەتمەيدۇ. ئۇلارنى بۇ يەرگە تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Signal ئىشلىتىش تەكلىپى</string>
+    <string name="ConversationActivity__invite_to_signal">Collie ئىشلىتىش تەكلىپى</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">تېلېفوندا پاراڭلىشىۋاتقاندا ئاۋازلىق ئۇچۇرنى خاتىرىلىيەلمەيدۇ.</string>
 
@@ -569,15 +570,15 @@
     <!-- Message shown after successfully blocking join requests for a user -->
     <string name="ConversationFragment__blocked">چەكلەندى</string>
     <!-- Action shown to allow a user to update their application because it has expired -->
-    <string name="ConversationFragment__update_build">Signal نى يېڭىلا</string>
+    <string name="ConversationFragment__update_build">Collie نى يېڭىلا</string>
     <!-- Action shown to allow a user to re-register as they are no longer registered -->
-    <string name="ConversationFragment__reregister_signal">Signal غا قايتا تىزىملىتىش</string>
+    <string name="ConversationFragment__reregister_signal">Collie غا قايتا تىزىملىتىش</string>
     <!-- Action shown in the conversation input area to allow a user to re-link this device as it is no longer linked -->
     <string name="ConversationFragment__relink_signal">قايتا باغلاڭ</string>
     <!-- Label for a button displayed in the conversation toolbar to return to the previous screen. -->
     <string name="ConversationFragment__content_description_back_button">كەينىگە قايتىش.</string>
     <!-- Label for a button displayed in the conversation toolbar to open the main screen of the app. -->
-    <string name="ConversationFragment__content_description_launch_signal_button">Signal نى ئېچىڭ</string>
+    <string name="ConversationFragment__content_description_launch_signal_button">Collie نى ئېچىڭ</string>
     <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
     <string name="ConversationFragment__no_longer_verified">دەلىللەنمىگەن</string>
     <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
@@ -623,7 +624,7 @@
     <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
     <string name="ConversationFragment_attachment_backfill_failed_title">مېدىيانى چۈشۈرگىلى بولمىدى</string>
     <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
-    <string name="ConversationFragment_attachment_backfill_timeout">بۇ ئۈسكۈنىنى ۋە تېلېفونىڭىزنىڭ تور ئۇلىنىشىنى تەكشۈرۈڭ. تېلېفونىڭىزدا Signal نى ئېچىڭ ، ئاندىن قايتا چۈشۈرۈپ سىناپ بېقىڭ.</string>
+    <string name="ConversationFragment_attachment_backfill_timeout">بۇ ئۈسكۈنىنى ۋە تېلېفونىڭىزنىڭ تور ئۇلىنىشىنى تەكشۈرۈڭ. تېلېفونىڭىزدا Collie نى ئېچىڭ ، ئاندىن قايتا چۈشۈرۈپ سىناپ بېقىڭ.</string>
     <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
     <string name="ConversationFragment_attachment_backfill_not_found">بۇ مېدىيانى تېلېفونىڭىزدا ئىشلەتكىلى ۋە چۈشۈرگىلى بولمايدۇ.</string>
     <!-- Dialog for how to long to keep a messaged pinned for -->
@@ -693,7 +694,7 @@
     <!-- Bottom sheet text explaining that profile names are chosen by the account holder. Placeholder will be \'Profile names\' -->
     <string name="ProfileNameBottomSheet__profile_names_on_signal">Signal دىكى %1$s ئۇلارنىڭ ھېسابات ئىگىسى تەرىپىدىن تاللىنىدۇ.</string>
     <!-- Bottom sheet text explaining that Signal can\'t verify names and photos -->
-    <string name="ProfileNameBottomSheet__signal_cant_verify">Signal، ئىسىملار ۋە سۈرەتلەرنى دەلىلليەلمەيدۇ</string>
+    <string name="ProfileNameBottomSheet__signal_cant_verify">Collie، ئىسىملار ۋە سۈرەتلەرنى دەلىلليەلمەيدۇ</string>
     <!-- Bottom sheet text explaining that Signal will never contact you for registration code, PIN, or recovery key -->
     <string name="ProfileNameBottomSheet__signal_will_never_contact">Signal ھەرگىز تىزىملىتىش كودىڭىز، PIN نومۇرىڭىز، ياكى ئەسلىگە كەلتۈرۈش ئاچقۇچىڭىزنى سوراپ سىز بىلەن ئالاقىلاشمايدۇ</string>
     <!-- Bottom sheet text explaining that accounts can impersonate other people and to be cautious -->
@@ -823,9 +824,9 @@
     <!-- Toolbar title for this screen -->
     <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">كىملەر مېنى تېلېفون نومۇرۇم بىلەن تاپسا بولىدۇ؟</string>
     <!-- Description for radio item stating anyone can see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">تېلېفون نومۇرىڭىز بار ھەرقانداق كىشى سىزنىڭ Signal دا ئىكەنلىكىڭىزنى كۆرەلەيدۇ ۋە سىز بىلەن پاراڭ باشلىيالايدۇ.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">تېلېفون نومۇرىڭىز بار ھەرقانداق كىشى سىزنىڭ Collie دا ئىكەنلىكىڭىزنى كۆرەلەيدۇ ۋە سىز بىلەن پاراڭ باشلىيالايدۇ.</string>
     <!-- Description for radio item stating no one will be able to see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">ئەگەر باشقىلارغا ئۇچۇر يوللىسىمىڭىز ياكى باشقىلار بىلەن بۇرۇندىنلا مەۋجۇت پارىڭىڭىز بولمىسا، باشقىلار سىزنىڭ Signal دا ئىكەنلىكىڭىزنى كۆرەلمەيدۇ.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">ئەگەر باشقىلارغا ئۇچۇر يوللىسىمىڭىز ياكى باشقىلار بىلەن بۇرۇندىنلا مەۋجۇت پارىڭىڭىز بولمىسا، باشقىلار سىزنىڭ Collie دا ئىكەنلىكىڭىزنى كۆرەلمەيدۇ.</string>
 
     <!-- ChooseBackupFragment -->
 
@@ -851,7 +852,7 @@
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">زاپاسلاش ئىم ئىبارىڭىزنى سىناپ بېقىڭ ھەمدە ئۇنىڭ ماس كەلگەن-كەلمىگەنلىكىنى دەلىللەڭ</string>
     <string name="BackupsPreferenceFragment__turn_on">زاپاسلارنى قوزغىتىش</string>
     <string name="BackupsPreferenceFragment__turn_off">تاقا</string>
-    <string name="BackupsPreferenceFragment__to_restore_a_backup">"زاپاسلانمىنى ئەسلىگە كەلتۈرۈش ئۈچۈن، Signal نى قايتا قاچىلاڭ. ئاندىن ئەپنى ئېچىپ «زاپاسلانمىنى ئەسلىگە كەلتۈرۈش» نى چېكىڭ، ئاندىن زاپاسلانما ھۆججىتىنى كۆرسىتىپ بېرىڭ. %1$s"</string>
+    <string name="BackupsPreferenceFragment__to_restore_a_backup">"زاپاسلانمىنى ئەسلىگە كەلتۈرۈش ئۈچۈن، Collie نى قايتا قاچىلاڭ. ئاندىن ئەپنى ئېچىپ «زاپاسلانمىنى ئەسلىگە كەلتۈرۈش» نى چېكىڭ، ئاندىن زاپاسلانما ھۆججىتىنى كۆرسىتىپ بېرىڭ. %1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">كۆپرەك ئۆگىنىش</string>
     <string name="BackupsPreferenceFragment__in_progress">داۋام قىلىۋاتىدۇ…</string>
     <!-- Status text shown in backup preferences when verifying a backup -->
@@ -860,7 +861,7 @@
     <string name="BackupsPreferenceFragment__d_so_far">%1$d ھازىرغىچە..</string>
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">%1$s تاماملاندى…</string>
-    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">زاپاسلاشنى قۇرۇش ئۈچۈن Signal سىرتقى ساقلىغۇچ ھوقۇقىنى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشەكلىرىگە بېرىڭ، «ھوقۇقلار» نى تاللاڭ ۋە «ساقلىغۇچ» نى قوزغىتىڭ.</string>
+    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">زاپاسلاشنى قۇرۇش ئۈچۈن Collie سىرتقى ساقلىغۇچ ھوقۇقىنى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشەكلىرىگە بېرىڭ، «ھوقۇقلار» نى تاللاڭ ۋە «ساقلىغۇچ» نى قوزغىتىڭ.</string>
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">زاپاسلاش ۋاقتىنى تەڭشەش</string>
 
@@ -935,7 +936,7 @@
 
     <!-- DecryptionFailedDialog -->
     <string name="DecryptionFailedDialog_chat_session_refreshed">پاراڭ يېڭىلاندى</string>
-    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Signal ئۇچتىن-ئۇچقا مەخىپىيلەشتۈرۈش تېخنىكىسىنى قوللانغان بولۇپ، پاراڭلىرىڭىزنى بەزىدە يېڭىلاپ تۇرۇشى مۇمكىن. بۇ پاراڭنىڭ بىخەتەرلىكىگە تەسىر كۆرسەتمەيدۇ، لېكىن بۇ ئالاقىداشتىن كەلگەن بەزى ئۇچۇرلارنى كۆرمەي قېلىشىڭىز مۇمكىن، سىز ئالاقىداشتىن ئۇنى قايتا يوللاشنى سورىسىڭىز بولىدۇ.</string>
+    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Collie ئۇچتىن-ئۇچقا مەخىپىيلەشتۈرۈش تېخنىكىسىنى قوللانغان بولۇپ، پاراڭلىرىڭىزنى بەزىدە يېڭىلاپ تۇرۇشى مۇمكىن. بۇ پاراڭنىڭ بىخەتەرلىكىگە تەسىر كۆرسەتمەيدۇ، لېكىن بۇ ئالاقىداشتىن كەلگەن بەزى ئۇچۇرلارنى كۆرمەي قېلىشىڭىز مۇمكىن، سىز ئالاقىداشتىن ئۇنى قايتا يوللاشنى سورىسىڭىز بولىدۇ.</string>
 
     <!-- LinkDeviceFragment -->
     <!-- Description for how Signal will work with a linked device (eg desktop, iPad) -->
@@ -1044,7 +1045,7 @@
     <!-- Bottom sheet title telling users to complete the linking process on the other device  -->
     <string name="AddLinkDeviceFragment__finish_linking_on_other_device">باشقا ئۈسكۈنىلەردە ئۇلاشنى تاماملاش</string>
     <!-- Bottom sheet description telling users to complete the linking process -->
-    <string name="AddLinkDeviceFragment__finish_linking_signal">باشقا ئۈسكۈنىلەردىكى Signal نى ئۇلاشنى تاماملاش</string>
+    <string name="AddLinkDeviceFragment__finish_linking_signal">باشقا ئۈسكۈنىلەردىكى Collie نى ئۇلاشنى تاماملاش</string>
     <!-- Title of dialog when the QR code being scanned is invalid -->
     <string name="AddLinkDeviceFragment__linking_device_failed">ئۈسكۈنە باغلاش مەغلۇب بولدى</string>
     <!-- Text shown in a dialog when the QR code being scanned is invalid -->
@@ -1089,19 +1090,19 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">يۈتكەن Google Play مۇلازىمەتلىرىگە ئەلالاشتۇرۇش</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">بۇ ئۈسكۈنە Google Play مۇلازىمەتلىرىنى قوللىمايدۇ. Signalنىڭ ھەرىكەتسىز ھالەتتىمۇ ئۇچۇر ئېلىشىنى توسۇپ قويىدىغان «سىستېما باتارېيەسىنى ئەلالاشتۇرۇش»نى چەكلەڭ.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">بۇ ئۈسكۈنە Google Play مۇلازىمەتلىرىنى قوللىمايدۇ. Mollyنىڭ ھەرىكەتسىز ھالەتتىمۇ ئۇچۇر ئېلىشىنى توسۇپ قويىدىغان «سىستېما باتارېيەسىنى ئەلالاشتۇرۇش»نى چەكلەڭ.</string>
 
     <!-- ExpiredBuildReminder -->
-    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">بۇ Signal نەشرىنىڭ ۋاقتى توشتى. ئۇچۇر يوللىيالىشىڭىز ۋە قوبۇل قىلالىشىڭىز ئۈچۈن ھازىرلا يېڭىلاڭ.</string>
+    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">بۇ Collie نەشرىنىڭ ۋاقتى توشتى. ئۇچۇر يوللىيالىشىڭىز ۋە قوبۇل قىلالىشىڭىز ئۈچۈن ھازىرلا يېڭىلاڭ.</string>
     <string name="ExpiredBuildReminder_update_now">ھازىر يېڭىلاڭ</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
     <string name="DeprecatedSdkBanner_body">Signal بۇ ئۈسكۈنىدە ئەمدى ئىشلىمەيدۇ. Signalنى قايتا ئىشلىتىش ئۈچۈن، ئۈسكۈنىڭىزنى ئاندىرويىدنىڭ يېڭىراق نەشرىگە يېڭىلاڭ ياكى يېڭى ئۈسكۈنىگە ئالماشتۇرۇڭ.</string>
 
     <!-- Title of notification telling users to update Signal -->
-    <string name="DeprecatedNotificationJob_update_signal">Signal نى يېڭىلا</string>
+    <string name="DeprecatedNotificationJob_update_signal">Collie نى يېڭىلا</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
-    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Signalنىڭ بۇ نەشرىنىڭ ۋاقتى ئ‍ۆتكەن. ئۇچۇرلارنى يوللاش ۋە تاپشۇرۇۋېلىش ئۈچۈن يېڭىلاشنى چېكىڭ.</string>
+    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Collieنىڭ بۇ نەشرىنىڭ ۋاقتى ئ‍ۆتكەن. ئۇچۇرلارنى يوللاش ۋە تاپشۇرۇۋېلىش ئۈچۈن يېڭىلاشنى چېكىڭ.</string>
 
     <!-- PendingGroupJoinRequestsReminder -->
     <plurals name="PendingGroupJoinRequestsReminder_d_pending_member_requests">
@@ -1472,7 +1473,7 @@
     <string name="LongMessageActivity_your_message">ئۇچۇرىڭىز</string>
 
     <!-- MessageRetrievalService -->
-    <string name="MessageRetrievalService_signal">Signal </string>
+    <string name="MessageRetrievalService_signal">Collie </string>
     <string name="MessageRetrievalService_background_connection_enabled">ئارقا سۇپا باغلىنىشى قوزغىتىلدى</string>
 
     <!-- MediaOverviewActivity -->
@@ -1559,10 +1560,10 @@
   <!-- Removed by excludeNonTranslatables <string name="StarredMessages__s_chevron_s" translatable="false">%1$s \u203A %2$s</string> -->
 
     <!-- NotificationBarManager -->
-    <string name="NotificationBarManager__establishing_signal_call">Signal چاقىرىشى قۇرۇلۇۋاتىدۇ</string>
+    <string name="NotificationBarManager__establishing_signal_call">Collie چاقىرىشى قۇرۇلۇۋاتىدۇ</string>
     <!-- Temporary notification shown when starting the calling service -->
-    <string name="NotificationBarManager__starting_signal_call_service">Signal چاقىرىش مۇلازىمىتىنى قوزغىتىۋاتىدۇ</string>
-    <string name="NotificationBarManager__stopping_signal_call_service">Signal چاقىرىش مۇلازىمىتىنى توختىتىۋاتىدۇ</string>
+    <string name="NotificationBarManager__starting_signal_call_service">Collie چاقىرىش مۇلازىمىتىنى قوزغىتىۋاتىدۇ</string>
+    <string name="NotificationBarManager__stopping_signal_call_service">Collie چاقىرىش مۇلازىمىتىنى توختىتىۋاتىدۇ</string>
     <string name="NotificationBarManager__cancel_call">چاقىرىشتىن ۋاز كەچ</string>
 
     <!-- NotificationsMegaphone -->
@@ -1883,7 +1884,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Signal دا ئەمدى SMS ئۇچۇرى يوللىيالمايسىز. «%1$s» نى Signal غا تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
+    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Collie دا ئەمدى SMS ئۇچۇرى يوللىيالمايسىز. «%1$s» نى Collie غا تەكلىپ قىلىپ پاراڭنى داۋاملاشتۇرۇڭ.</string>
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">چىقىم: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -1993,19 +1994,19 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">بىر Signal ئۈسكۈنىسى ئۇلامسىز؟</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">ئۈستەل يۈزى ياكى iPad نى بۇ سىگنال ھېساباتىغا ئۇلاش ئۈچۈن ، «ئۇلانغان ئۈسكۈنىلەر»گە كىرىپ «بىر يېڭى ئۈسكۈنىنى ئۇلاش» نى چېكىپ ، QR كودىنى قايتا سكاننېرلاڭ. پەقەت Signal دىنلا كەلگەن QR كودىنى سكاننېرلاڭ.</string>
 
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">بۇ Signal نەشرىنىڭ ۋاقتى بۈگۈن توشىدۇ. ئەڭ يېڭى نەشرىگە يېڭىلاڭ.</string>
+    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">بۇ Collie نەشرىنىڭ ۋاقتى بۈگۈن توشىدۇ. ئەڭ يېڭى نەشرىگە يېڭىلاڭ.</string>
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
-        <item quantity="other">Signal نىڭ بۇ نەشرىنىڭ %1$d كۈندىن كېيىن ۋاقتى توشىدۇ. ئەڭ يېڭى نەشرىگە يېڭىلاڭ.</item>
+        <item quantity="other">Collie نىڭ بۇ نەشرىنىڭ %1$d كۈندىن كېيىن ۋاقتى توشىدۇ. ئەڭ يېڭى نەشرىگە يېڭىلاڭ.</item>
     </plurals>
 
     <!-- PassphrasePromptActivity -->
     <string name="PassphrasePromptActivity_enter_passphrase">ئىم ئىبارىسى كىرگۈزۈڭ</string>
-    <string name="PassphrasePromptActivity_watermark_content_description">Signal سىنبەلگىسى</string>
+    <string name="PassphrasePromptActivity_watermark_content_description">Collie سىنبەلگىسى</string>
     <string name="PassphrasePromptActivity_ok_button_content_description">ئىم ئىبارىسىنى تاپشۇرۇڭ</string>
     <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">ئىناۋەتسىز ئىم ئىبارىسى!</string>
-    <string name="PassphrasePromptActivity_unlock_signal">Signal نى ئاجرىتىڭ</string>
+    <string name="PassphrasePromptActivity_unlock_signal">Collie نى ئاجرىتىڭ</string>
     <!-- This is the subject line for the email that is sent to support -->
-    <string name="PassphrasePromptActivity_signal_android_lock_screen">Signal Android - قۇلۇپ ئېكرانى</string>
+    <string name="PassphrasePromptActivity_signal_android_lock_screen">Collie Android - قۇلۇپ ئېكرانى</string>
 
     <!-- PlacePickerActivity -->
     <string name="PlacePickerActivity_title">خەرىتە</string>
@@ -2062,7 +2063,7 @@
 
     <!-- RecaptchaRequiredBottomSheetFragment -->
     <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">ئۇچۇرلىشىشنى داۋاملاشتۇرۇش ئۈچۈن دەلىللەش زۆرۈر</string>
-    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Signal دا ئەخلەت خەتنىڭ ئالدىنى ئېلىش ئۈچۈن، دەلىللەشنى تاماملاڭ.</string>
+    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Collie دا ئەخلەت خەتنىڭ ئالدىنى ئېلىش ئۈچۈن، دەلىللەشنى تاماملاڭ.</string>
     <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">دەلىللىگەندىن كېيىن، ئۇچۇر يوللاشنى داۋاملاشتۇرالايسىز. ۋاقىتلىق توختىتىلغان ھەر قانداق ئۇچۇر ئۆزلۈكىدىن يوللىنىدۇ.</string>
 
     <!-- Recipient -->
@@ -2070,7 +2071,7 @@
     <!-- Name of recipient representing user\'s \'My Story\' -->
     <string name="Recipient_my_story">ھېكايەم</string>
     <!-- Name of recipient for a call link without a name -->
-    <string name="Recipient_signal_call">Signal چاقىرىقى</string>
+    <string name="Recipient_signal_call">Collie چاقىرىقى</string>
 
     <!-- RecipientPreferencesActivity -->
     <string name="RecipientPreferenceActivity_block">چەكلەش</string>
@@ -2107,7 +2108,7 @@
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">بۇ جاي چېكىلسە سىن ئېچىلىدۇ</string>
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
-    <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
+    <string name="WebRtcCallActivity__signal_s">Collie %1$s</string>
     <string name="WebRtcCallActivity__calling">چاقىرىۋاتىدۇ…</string>
     <!-- Title for dialog warning about lacking bluetooth permissions during a call -->
     <string name="WebRtcCallActivity__bluetooth_permission_denied">Bluetooth ھوقۇقى رەت قىلىندى</string>
@@ -2166,15 +2167,15 @@
     <!-- Dialog title asking users for camera permission -->
     <string name="WebRtcCallActivity__allow_access_camera">كامېرا ھوقۇقىغا ئىجازەت قىلىش</string>
     <!-- Dialog description explaining why camera and microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Signal چاقىرىق باشلاش ياكى چاقىرىققا قوشۇلۇش ئۈچۈن كامېرا ۋە مىكروفون ئىجازىتىنى تەلەپ قىلىدۇ.</string>
+    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Collie چاقىرىق باشلاش ياكى چاقىرىققا قوشۇلۇش ئۈچۈن كامېرا ۋە مىكروفون ئىجازىتىنى تەلەپ قىلىدۇ.</string>
     <!-- Dialog description explaining why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_microphone">چاقىرىق باشلاش ياكى قوشۇلۇش ئۈچۈن Signal نىڭ مىكروفوننى زىيارەت قىلىشىغا رۇخسەت قىلىڭ.</string>
+    <string name="WebRtcCallActivity__to_start_call_microphone">چاقىرىق باشلاش ياكى قوشۇلۇش ئۈچۈن Collie نىڭ مىكروفوننى زىيارەت قىلىشىغا رۇخسەت قىلىڭ.</string>
     <!-- Dialog description explaining why camera permissions are needed to enable a user\'s video in a call -->
-    <string name="WebRtcCallActivity__to_enable_video_allow_camera">ۋىدېيونى قوزغىتىش ئۈچۈن Signal نىڭ كامېرانى ئىجازەت قىلىشىغا رۇخسەت قىلىشىڭىز كېرەك.</string>
+    <string name="WebRtcCallActivity__to_enable_video_allow_camera">ۋىدېيونى قوزغىتىش ئۈچۈن Collie نىڭ كامېرانى ئىجازەت قىلىشىغا رۇخسەت قىلىشىڭىز كېرەك.</string>
     <!-- Toast describing why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Signal چاقىرىق باشلاش ياكى چاقىرىققا قوشۇلۇش ئۈچۈن مىكروفون ئىجازىتىنى تەلەپ قىلىدۇ.</string>
+    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Collie چاقىرىق باشلاش ياكى چاقىرىققا قوشۇلۇش ئۈچۈن مىكروفون ئىجازىتىنى تەلەپ قىلىدۇ.</string>
     <!-- Toast describing why camera permissions are needed to enable a video in a call -->
-    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">ۋىدېيونى قوزغىتىش ئۈچۈن Signal كامېرا ئىجازىتىنى لازىم قىلىدۇ</string>
+    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">ۋىدېيونى قوزغىتىش ئۈچۈن Collie كامېرا ئىجازىتىنى لازىم قىلىدۇ</string>
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="WebRtcCallActivity__to_start_call">چاقىرىق باشلاش ياكى قوشۇلۇش ئۈچۈن:</string>
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
@@ -2187,8 +2188,8 @@
     <string name="MoveableLocalVideoRenderer__expand_local_video">يەرلىك سىننى كېڭەيتىڭ</string>
 
     <!-- WebRtcCallView -->
-    <string name="WebRtcCallView__signal_call">‫Signal چاقىرىقى</string>
-    <string name="WebRtcCallView__signal_video_call">‏Signal سىنلىق چاقىرىقى</string>
+    <string name="WebRtcCallView__signal_call">‫Collie چاقىرىقى</string>
+    <string name="WebRtcCallView__signal_video_call">‏Collie سىنلىق چاقىرىقى</string>
     <string name="WebRtcCallView__start_call">چاقىرىق باشلا</string>
     <string name="WebRtcCallView__join_call">چاقىرىققا قېتىل</string>
     <string name="WebRtcCallView__call_is_full">چاقىرىق توشتى</string>
@@ -2481,7 +2482,7 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">ئالاقەداشلارغا قوش</string>
-    <string name="SharedContactView_invite_to_signal">Signal ئىشلىتىش تەكلىپى</string>
+    <string name="SharedContactView_invite_to_signal">Collie ئىشلىتىش تەكلىپى</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">ئۇچۇر</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
@@ -2769,11 +2770,11 @@
     <string name="ThreadRecord_blocked_group">چەكلەندى</string>
 
     <!-- ApkUpdateNotifications -->
-    <string name="ApkUpdateNotifications_prompt_install_title">Signal يېڭىلاش</string>
-    <string name="ApkUpdateNotifications_prompt_install_body">Signal نىڭ يېڭى نۇسخىسى بار. چېكىپ يېڭىلاڭ.</string>
-    <string name="ApkUpdateNotifications_failed_general_title">Signal نى يېڭىلىغىلى بولمىدى</string>
+    <string name="ApkUpdateNotifications_prompt_install_title">Collie يېڭىلاش</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">Collie نىڭ يېڭى نۇسخىسى بار. چېكىپ يېڭىلاڭ.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Collie نى يېڭىلىغىلى بولمىدى</string>
     <string name="ApkUpdateNotifications_failed_general_body">كېيىنرەك قايتا سىناپ باقىمىز.</string>
-    <string name="ApkUpdateNotifications_auto_update_success_title">Signal ئوڭۇشلۇق يېڭىلاندى</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Collie ئوڭۇشلۇق يېڭىلاندى</string>
     <string name="ApkUpdateNotifications_auto_update_success_body">سىز ئاپتوماتىك ھالدا %1$s نەشرىگە يېڭىلاندىڭىز.</string>
     <string name="ApkUpdateNotifications_manual_update_success_body">سىز%1$s نەشرىگە يېڭىلىدىڭىز.</string>
 
@@ -2799,7 +2800,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">Signal بىخەتەرلىك نومۇرىمىز:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">قارىغاندا ھەمبەھىرلەيدىغان ئەپ يوقتەك تۇرىدۇ.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">چاپلاش تاختىسىدا سېلىشتۇرغۇدەك بىر بىخەتەرلىك نومۇرى تېپىلمىدى</string>
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">QR كودىنى سايىلەش ئۈچۈن Signal كامېرا ھوقۇقىغا موھتاج ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشەكلىرىدىن، «ھوقۇقلار» نى تاللاپ ۋە «كامېرا» نى قوزغىتىڭ. </string>
+    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">QR كودىنى سايىلەش ئۈچۈن Collie كامېرا ھوقۇقىغا موھتاج ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشەكلىرىدىن، «ھوقۇقلار» نى تاللاپ ۋە «كامېرا» نى قوزغىتىڭ. </string>
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view"> %1$sنىڭ بىخەتەرلىك نومۇرىنى كۆرۈش ئۈچۈن. ئاۋۋال ئۇنىڭ بىلەن ئۇچۇر ئالماشتۇرىشىڭىز كېرەك.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">سىز بىلەن ئۇچۇر ئالماشتۇرغاندىن كىيىن بۇ كىشىگە مۇناسىۋەتلىك بىر بىخەتەرلىك نومۇرى يارىتىلىدۇ.</string>
@@ -2836,8 +2837,8 @@
 
     <!-- KeyCachingService -->
     <string name="KeyCachingService_signal_passphrase_cached">نوقۇپ ئېچىڭ.</string>
-    <string name="KeyCachingService_passphrase_cached">Signal ئېچىلىپ كەتتى.</string>
-    <string name="KeyCachingService_lock">Signal نى قۇلۇپلاش</string>
+    <string name="KeyCachingService_passphrase_cached">Collie ئېچىلىپ كەتتى.</string>
+    <string name="KeyCachingService_lock">Collie نى قۇلۇپلاش</string>
 
     <!-- MediaPreviewActivity -->
     <string name="MediaPreviewActivity_you">سىز</string>
@@ -2888,7 +2889,7 @@
     <string name="MessageNotifier_failed_to_deliver_message">ئۇچۇرنى يەتكۈزەلمىدى.</string>
     <string name="MessageNotifier_error_delivering_message">ئۇچۇر يەتكۈزۈشتە خاتالىق كۆرۈلدى.</string>
     <string name="MessageNotifier_message_delivery_paused">ئۇچۇر يەتكۈزۈش ۋاقىتلىق توختىدى.</string>
-    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Signal دا ئۇچۇر يوللاشنى داۋاملاشتۇرۇش ئۈچۈن دەلىللەش زۆرۈر.</string>
+    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Collie دا ئۇچۇر يوللاشنى داۋاملاشتۇرۇش ئۈچۈن دەلىللەش زۆرۈر.</string>
     <string name="MessageNotifier_mark_all_as_read">ھەممىسى ئوقۇلدى</string>
     <string name="MessageNotifier_mark_read">ئوقۇلدى</string>
     <string name="MessageNotifier_turn_off_these_notifications">بۇ ئۇقتۇرۇشلارنى تاقا</string>
@@ -2912,7 +2913,7 @@
     <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
     <string name="MessageNotifier_s_voted_in_poll">«%3$s»غا %2$s%1$s بېلەت تاشلىدى</string>
 
-    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">ئالاقەداشلار Signal غا قوشۇلغانلىق ئۇقتۇرۇشىنى تاقامسىز؟ سىز Signal &gt; تەڭشەكلەر&gt;ئۇقتۇرۇشتىن قايتا قوزغىتالايسىز.</string>
+    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">ئالاقەداشلار Collie غا قوشۇلغانلىق ئۇقتۇرۇشىنى تاقامسىز؟ سىز Collie &gt; تەڭشەكلەر&gt;ئۇقتۇرۇشتىن قايتا قوزغىتالايسىز.</string>
 
     <!-- TurnOnNotificationsBottomSheet -->
     <!-- Title for sheet explaining how to turn on app notifications -->
@@ -2984,7 +2985,7 @@
     </plurals>
 
     <!-- Message shown when the app requests permission to save media to the device storage, but that permission has been permanently denied by the user. -->
-    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">ھۆججەتنى سىرتقا ساقلىغۇچقا ساقلاش ئۈچۈن Signal ساقلاش ھوقۇقىغا ئېھتىياجلىق، ئەمما ئۇ مەڭگۈلۈك چەكلەنگەن، ئەپ تەڭشىكىدىن، «ھوقۇقلار» نى تاللاپ، «ساقلاش» نى قوزغىتىڭ.</string>
+    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">ھۆججەتنى سىرتقا ساقلىغۇچقا ساقلاش ئۈچۈن Collie ساقلاش ھوقۇقىغا ئېھتىياجلىق، ئەمما ئۇ مەڭگۈلۈك چەكلەنگەن، ئەپ تەڭشىكىدىن، «ھوقۇقلار» نى تاللاپ، «ساقلاش» نى قوزغىتىڭ.</string>
 
     <!-- Message explaining that it is not possible to save media to the device storage after the user denied the system save to storage permission. -->
     <string name="AttachmentSaver__unable_to_write_to_external_storage_without_permission">ئىجازەتسىز سىرتقى ساقلىغۇچقا ساقلىيالمايدۇ</string>
@@ -2994,11 +2995,11 @@
     <!-- Dialog title shown when attempting to save media that has been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_media">مېدىيانى ساقلىغىلى بولمىدى</string>
     <!-- Dialog message explaining that media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__media_offloaded_message">بۇ مېدىيا «Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارى قوزغىتىلغانلىقى سەۋەپلىك، ئۈسكىنىڭىزدىن چۈشۈرۈۋېتىلگەن. مەزمۇنلارنى بىرمۇ-بىر چۈشۈرەلەيسىز، ۋەياكى ھەممە مېدىيانى ئۈسكۈنىڭىزگە چۈشۈرۈش ئۈچۈن «Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارىنى تاقىۋېتىڭ.</string>
+    <string name="AttachmentSaver__media_offloaded_message">بۇ مېدىيا «Collie ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارى قوزغىتىلغانلىقى سەۋەپلىك، ئۈسكىنىڭىزدىن چۈشۈرۈۋېتىلگەن. مەزمۇنلارنى بىرمۇ-بىر چۈشۈرەلەيسىز، ۋەياكى ھەممە مېدىيانى ئۈسكۈنىڭىزگە چۈشۈرۈش ئۈچۈن «Collie ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارىنى تاقىۋېتىڭ.</string>
     <!-- Dialog title shown when attempting to save multiple media items, some of which have been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_all_items">بارلىق مەزمۇنلارنى ساقلىغىلى بولمىدى</string>
     <!-- Dialog message explaining that some selected media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__some_media_offloaded_message">سىز تللىغان بەزى مېدىيالار «Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارى قوزغىتىلغانلىقى سەۋەپلىك، ئۈسكىنىڭىزدىن چۈشۈرۈۋېتىلگەن. مەزمۇنلارنى بىرمۇ-بىر ساقلىيالايسىز، ۋەياكى ھەممە مېدىيانى ئۈسكۈنىڭىزگە چۈشۈرۈش ئۈچۈن «Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارىنى تاقىۋېتىڭ.</string>
+    <string name="AttachmentSaver__some_media_offloaded_message">سىز تللىغان بەزى مېدىيالار «Collie ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارى قوزغىتىلغانلىقى سەۋەپلىك، ئۈسكىنىڭىزدىن چۈشۈرۈۋېتىلگەن. مەزمۇنلارنى بىرمۇ-بىر ساقلىيالايسىز، ۋەياكى ھەممە مېدىيانى ئۈسكۈنىڭىزگە چۈشۈرۈش ئۈچۈن «Collie ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارىنى تاقىۋېتىڭ.</string>
     <!-- Button label in the offloaded media dialog that navigates to the storage settings screen. -->
     <string name="AttachmentSaver__view_storage_settings">ساقلاش بوشلۇقى تەڭشەكلىرىنى كۆرۈش</string>
 
@@ -3011,7 +3012,7 @@
     <string name="ShortcutLauncherActivity_invalid_shortcut">ئىناۋەتسىز قىسقا يول</string>
 
     <!-- SingleRecipientNotificationBuilder -->
-    <string name="SingleRecipientNotificationBuilder_signal">Signal </string>
+    <string name="SingleRecipientNotificationBuilder_signal">Collie </string>
     <string name="SingleRecipientNotificationBuilder_new_message">يېڭى ئۇچۇر</string>
     <string name="SingleRecipientNotificationBuilder_message_request">ئۇچۇر ئىلتىماسى</string>
     <string name="SingleRecipientNotificationBuilder_you">سىز</string>
@@ -3086,7 +3087,7 @@
 
     <!-- UnauthorizedReminder -->
     <!-- Message shown in a reminder banner when the user\'s device is no longer registered -->
-    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">بۇ ئۈسكۈنە تىزىملاشتىن چىقىپ كەتكەن. بۇنىڭ سەۋەبى سىز تېلېفون نومۇرىڭىز بىلەن Signal نى باشقا بىر ئۈسكۈنىدە تىزىملاتقان بولۇشىڭىز مۇمكىن.</string>
+    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">بۇ ئۈسكۈنە تىزىملاشتىن چىقىپ كەتكەن. بۇنىڭ سەۋەبى سىز تېلېفون نومۇرىڭىز بىلەن Collie نى باشقا بىر ئۈسكۈنىدە تىزىملاتقان بولۇشىڭىز مۇمكىن.</string>
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">قايتا تىزىملىتىلغان ئۈسكۈنە</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
@@ -3095,7 +3096,7 @@
     <string name="UnauthorizedReminder_relink_action">ئۈسكۈنىنى قايتا ئۇلاش</string>
 
     <!-- Push notification when the app is forcibly logged out by the server. -->
-    <string name="LoggedOutNotification_you_have_been_logged_out">سىز بۇ ئۈسكۈنىدە Signal دىن چېكىنىپ چىققان.</string>
+    <string name="LoggedOutNotification_you_have_been_logged_out">سىز بۇ ئۈسكۈنىدە Collie دىن چېكىنىپ چىققان.</string>
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
@@ -3141,14 +3142,14 @@
     <string name="change_passphrase_activity__repeat_new_passphrase">يېڭى ئىم ئىبارىسى قايتا</string>
 
     <!-- contact_selection_activity -->
-    <string name="contact_selection_activity__invite_to_signal">Signal ئىشلىتىش تەكلىپى</string>
+    <string name="contact_selection_activity__invite_to_signal">Collie ئىشلىتىش تەكلىپى</string>
     <string name="contact_selection_activity__new_group">يېڭى گۇرۇپپا</string>
     <!-- Row item title for refreshing contacts -->
     <string name="contact_selection_activity__refresh_contacts">ئالاقىداشلارنى يېڭىلاش</string>
     <!-- Row item description for refreshing contacts -->
     <string name="contact_selection_activity__missing_someone">بىرەرسى تېپىلمىدىمۇ؟ يېڭىلاپ سىناپ بېقىڭ</string>
     <!-- Row item title for finding people on Signal via your contacts -->
-    <string name="contact_selection_activity__find_people_you_know">Signal دا تونۇيدىغان كىشىلەرنى تېپىش</string>
+    <string name="contact_selection_activity__find_people_you_know">Collie دا تونۇيدىغان كىشىلەرنى تېپىش</string>
     <!-- Row item description asking users for access to their contacts to find people they know -->
     <string name="contact_selection_activity__allow_access_to_contacts">ئالاقىداش ھوقۇقىغا ئىجازەت قىلىڭ</string>
     <!-- Row header title for more section -->
@@ -3167,7 +3168,7 @@
     <string name="SingleContactSelectionActivity_contact_photo">ئالاقەداش سۈرەت</string>
 
     <!-- ContactSelectionListFragment-->
-    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Signal ئالاقەداشلىرىڭىزنى كۆرسىتىش ئۈچۈن ئالاقەداش ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىگە بېرىڭ، «ھوقۇقلار» نى تاللاڭ ۋە «ئالاقەداشلار» نى قوزغىتىڭ.</string>
+    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Collie ئالاقەداشلىرىڭىزنى كۆرسىتىش ئۈچۈن ئالاقەداش ھوقۇقى تەلەپ قىلىدۇ، ئەمما ئۇ مەڭگۈلۈك رەت قىلىندى. ئەپ تەڭشىكى تىزىملىكىگە بېرىڭ، «ھوقۇقلار» نى تاللاڭ ۋە «ئالاقەداشلار» نى قوزغىتىڭ.</string>
     <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">ئالاقەداش ئېرىشىشتە خاتالىق كۆرۈلدى، تور باغلىنىشىڭىزنى تەكشۈرۈڭ</string>
     <string name="ContactSelectionListFragment_username_not_found">ئىشلەتكۈچى ئىسمى تېپىلمىدى</string>
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"%1$s بولسا Signal ئىشلەتكۈچى ئەمەس. ئىشلەتكۈچى نامىنى تەكشۈرۈپ قايتا سىناڭ."</string>
@@ -3186,7 +3187,7 @@
     <!-- Dialog title asking users for contact permission -->
     <string name="ContactSelectionListFragment_allow_access_contacts">ئالاقىداش ھوقۇقىغا ئىجازەت قىلىش</string>
     <!-- Dialog description that will explain the steps needed to give contact permissions -->
-    <string name="ContactSelectionListFragment_to_find_people">Signal دا تونۇيدىغان كىشىلەرنى تېپىش:</string>
+    <string name="ContactSelectionListFragment_to_find_people">Collie دا تونۇيدىغان كىشىلەرنى تېپىش:</string>
     <!-- Text on button prompting users to give Signal contact permissions -->
     <string name="ContactSelectionListFragment__allow_access">ئىشلىتىشكە رۇخسەت</string>
     <!-- Text on button to dismiss Signal\'s request for contact permissions -->
@@ -3312,7 +3313,7 @@
 
     <!-- BubbleOptOutTooltip -->
     <!-- Message to inform the user of what Android chat bubbles are -->
-    <string name="BubbleOptOutTooltip__description">Bubbles بولسا Android نىڭ بىر خىل ئىقتىدارى بولۇپ، Signal پاراڭلىرى ئۈچۈن ئۇنى ئېتىۋېتەلەيسىز.</string>
+    <string name="BubbleOptOutTooltip__description">Bubbles بولسا Android نىڭ بىر خىل ئىقتىدارى بولۇپ، Collie پاراڭلىرى ئۈچۈن ئۇنى ئېتىۋېتەلەيسىز.</string>
     <!-- Button to dismiss the tooltip for opting out of using Android bubbles -->
     <string name="BubbleOptOutTooltip__not_now">ھازىر ئەمەس</string>
     <!-- Button to move to the system settings to control the use of Android bubbles -->
@@ -3416,6 +3417,18 @@
     <string name="EditProfileFragment__group_name">گۇرۇپپا ئاتى</string>
     <string name="EditProfileFragment__group_description">گۇرۇپپا تونۇشتۇرۇشى</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Collie نى يېڭىلا</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Collie نىڭ بۇ نەشرىنىڭ ۋاقتى ئ‍ۆتكەن. Collie نى داۋاملىق ئىشلىتىش ئۈچۈن دەرھال يېڭىلاڭ.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">يېڭىلا</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">ئۈسكۈنە تىزىملىتىلمىغان</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">بۇ ئۈسكۈنە تىزىملاشتىن قالغان. قايتا تىزىملاتسىڭىز ھېساباتىڭىزدا ئۆزگىرىشلەر يۈز بېرىدۇ.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">قايتا تىزىملاش</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">ساقلا</string>
@@ -3451,20 +3464,20 @@
     <!-- Bottom sheet title when encryption is auto-verified -->
     <string name="EncryptionVerifiedSheet__title_success">بۇ سۆھبەت ئۈچۈن شىفىرلاشتۇرۇش ئاپتوماتىك دەلىللەندى</string>
     <!-- Bottom sheet body when encryption is auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_success">تېلېفون نومۇرى ئارقىلىق باغلانغان كىشىلەر ئۈچۈن، Signal، ئاچقۇچ ئاشكارىلىقى دەپ ئاتىلىدىغان جەريان ئارقىلىق ئۇلىنىشنىڭ بىخەتەر ياكى ئەمەسلىكىنى ئاپتوماتىك جەزملەشتۈرەلەيدۇ. بىخەتەرلىكنى ئاشۇرۇش ئۈچۈن، ئالدىنقى ئېكراندىكى سانلارنى سېلىشتۇرۇش ياكى ئۇلارنىڭ ئۈسكۈنىسىدىكى كودنى سىكانىرلاش ئارقىلىق ئاخىرغىچە شىفىرلاشنى قولدا دەلىللەڭ.</string>
+    <string name="EncryptionVerifiedSheet__body_success">تېلېفون نومۇرى ئارقىلىق باغلانغان كىشىلەر ئۈچۈن، Collie، ئاچقۇچ ئاشكارىلىقى دەپ ئاتىلىدىغان جەريان ئارقىلىق ئۇلىنىشنىڭ بىخەتەر ياكى ئەمەسلىكىنى ئاپتوماتىك جەزملەشتۈرەلەيدۇ. بىخەتەرلىكنى ئاشۇرۇش ئۈچۈن، ئالدىنقى ئېكراندىكى سانلارنى سېلىشتۇرۇش ياكى ئۇلارنىڭ ئۈسكۈنىسىدىكى كودنى سىكانىرلاش ئارقىلىق ئاخىرغىچە شىفىرلاشنى قولدا دەلىللەڭ.</string>
     <!-- Bottom sheet title when encryption is no longer auto-verified -->
     <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">بۇ سۆھبەت ئۈچۈن ئاپتوماتىك دەلىللەشنى ئىشلەتكىلى بولمايدۇ</string>
     <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
-    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Signal بۇ سۆھبەتنىڭ شىفىرلاشتۇرۇلىشىنى ئاپتوماتىك دەلىللىيەلمەيدۇ. بۇنىڭ سەۋەبى بەلكىم %1$s نىڭ تېلېفون نومۇرىنى ياكى تېلېفون نۇمۇرىنىڭ شەخسىي مەخپىيەتلىك تەڭشەكلىرىنى ئۆزگەرتكەنلىكى سەۋەبىدىن بولۇشى مۇمكىن. ئالدىنقى ئېكراندىكى نۇمۇرلارنى سېلىشتۇرۇش ياكى ئۈسكۈنىدىكى كودنى سىكانىرلاش ئارقىلىق ئاخىرغىچە شىفىرلاشتۇرۇشنى قولدا دەلىللەڭ.</string>
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Collie بۇ سۆھبەتنىڭ شىفىرلاشتۇرۇلىشىنى ئاپتوماتىك دەلىللىيەلمەيدۇ. بۇنىڭ سەۋەبى بەلكىم %1$s نىڭ تېلېفون نومۇرىنى ياكى تېلېفون نۇمۇرىنىڭ شەخسىي مەخپىيەتلىك تەڭشەكلىرىنى ئۆزگەرتكەنلىكى سەۋەبىدىن بولۇشى مۇمكىن. ئالدىنقى ئېكراندىكى نۇمۇرلارنى سېلىشتۇرۇش ياكى ئۈسكۈنىدىكى كودنى سىكانىرلاش ئارقىلىق ئاخىرغىچە شىفىرلاشتۇرۇشنى قولدا دەلىللەڭ.</string>
     <!-- Bottom sheet title when encryption cannot be auto-verified -->
     <string name="EncryptionVerifiedSheet__title_unavailable">بۇ سۆھبەت ئۈچۈن ئاپتوماتىك دەلىللەشنى ئىشلەتكىلى بولمايدۇ</string>
     <!-- Bottom sheet body when encryption cannot be auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_unavailable">Signal پەقەت تېلېفون نومۇرى ئارقىلىق بىرەيلەن بىلەن باغلىنىشلىق بولغان پاراڭلاردىلا شىفىرلاشتۇرۇشنى ئاپتوماتىك دەلىللىيەلەيدۇ. ئەگەر پاراڭ، ئىشلەتكۈچى نامى ياكى ئورتاق بىر گۇرۇپپىدىكى بىىرى بىلەن باشلانغان بولسا، ئالدىنقى ئېكراندىكى سانلارنى سېلىشتۇرۇش ياكى ئۇلارنىڭ ئۈسكۈنىسىدىكى كودنى سىكانىرلاش ئارقىلىق ئاخىرغىچە شىفىرلاشتۇرۇشنى دەلىللەڭ.</string>
+    <string name="EncryptionVerifiedSheet__body_unavailable">Collie پەقەت تېلېفون نومۇرى ئارقىلىق بىرەيلەن بىلەن باغلىنىشلىق بولغان پاراڭلاردىلا شىفىرلاشتۇرۇشنى ئاپتوماتىك دەلىللىيەلەيدۇ. ئەگەر پاراڭ، ئىشلەتكۈچى نامى ياكى ئورتاق بىر گۇرۇپپىدىكى بىىرى بىلەن باشلانغان بولسا، ئالدىنقى ئېكراندىكى سانلارنى سېلىشتۇرۇش ياكى ئۇلارنىڭ ئۈسكۈنىسىدىكى كودنى سىكانىرلاش ئارقىلىق ئاخىرغىچە شىفىرلاشتۇرۇشنى دەلىللەڭ.</string>
 
     <!-- Title for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__title">Signal ھازىر شىفىرلاشتۇرۇشنى ئاپتوماتىك دەلىللىيەلەيدۇ</string>
+    <string name="VerifyAutomaticallyEducationSheet__title">Collie ھازىر شىفىرلاشتۇرۇشنى ئاپتوماتىك دەلىللىيەلەيدۇ</string>
     <!-- Body for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__body">تېلېفون نومۇرى ئارقىلىق باغلانغان ئالاقىلاشقۇچىلىرىڭىز ئۈچۈن، Signal، ئاچقۇچ ئاشكارىلىقى دەپ ئاتىلىدىغان جەريان ئارقىلىق ئۇلىنىشنىڭ بىخەتەر ياكى ئەمەسلىكىنى ئاپتوماتىك جەزملەشتۈرەلەيدۇ. بىخەتەرلىكنى ئاشۇرۇش ئۈچۈن، سىز يەنىلا QR كودى ياكى بىخەتەرلىك نومۇرى ئارقىلىق ئۇلىنىشلارنى قولدا دەلىللىيەلەيسىز.</string>
+    <string name="VerifyAutomaticallyEducationSheet__body">تېلېفون نومۇرى ئارقىلىق باغلانغان ئالاقىلاشقۇچىلىرىڭىز ئۈچۈن، Collie، ئاچقۇچ ئاشكارىلىقى دەپ ئاتىلىدىغان جەريان ئارقىلىق ئۇلىنىشنىڭ بىخەتەر ياكى ئەمەسلىكىنى ئاپتوماتىك جەزملەشتۈرەلەيدۇ. بىخەتەرلىكنى ئاشۇرۇش ئۈچۈن، سىز يەنىلا QR كودى ياكى بىخەتەرلىك نومۇرى ئارقىلىق ئۇلىنىشلارنى قولدا دەلىللىيەلەيسىز.</string>
     <!-- Button to learn more about automatic verification -->
     <string name="VerifyAutomaticallyEducationSheet__learn_more">تەپسىلاتى</string>
     <!-- Button to go to verification page -->
@@ -3609,7 +3622,9 @@
     <string name="preferences__led_color_unknown">نامەلۇم</string>
     <string name="preferences__silent">تىنچ</string>
     <string name="preferences__advanced">ئالىي</string>
-    <string name="preferences__donate_to_signal">‫Signal غا ئىئانە قىلىڭ</string>
+    <string name="preferences__donate_to_signal">‫Molly غا ئىئانە قىلىڭ</string>
+    <!-- Preference label for making one-time donations to Signal -->
+    <string name="preferences__privacy">مەخپىيەتلىك</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">ھېكايىلەر</string>
     <string name="preferences__payments">چىقىملار</string>
@@ -3630,7 +3645,7 @@
     <string name="preferences_communication__category_censorship_circumvention">تەكشۈرۈشتىن دالدىلىنىش</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">تەكشۈرۈشتىن دالدىلىنىش</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">ئەگەر قوزغىتىلسا، Signal تەكشۈرۈشتىن دالدىلىنىشنى سىنايدۇ. Signal سىز تۇرۇۋاتقان جايدا تەكشۈرۈلمىسە بۇ ئىقتىدارنى قوزغاتماڭ.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">ئەگەر قوزغىتىلسا، Collie تەكشۈرۈشتىن دالدىلىنىشنى سىنايدۇ. Collie سىز تۇرۇۋاتقان جايدا تەكشۈرۈلمىسە بۇ ئىقتىدارنى قوزغاتماڭ.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">تەكشۈرۈشتىن دالدىلىنىش ھېساباتىڭىزدىكى تېلېفون نومۇرىغا ئاساسەن ئاكتىپلىنىدۇ.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -3658,7 +3673,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">ئاپتوماتىك ئاچقۇچ دەلىللەش</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">قوزغىتىلغاندا، Signal، ئىككى كىشى ئوتتۇرىسىدىكى(1:1) سۆھبەتلىرىنىڭ شىفىرلىنىشىنى ئاپتوماتىك دەلىللەشنى سىنايدۇ.</string>
+    <string name="preferences_automatic_key_verification_body">قوزغىتىلغاندا، Collie، ئىككى كىشى ئوتتۇرىسىدىكى(1:1) سۆھبەتلىرىنىڭ شىفىرلىنىشىنى ئاپتوماتىك دەلىللەشنى سىنايدۇ.</string>
 
 
     <!-- Internal only preferences -->
@@ -3675,7 +3690,7 @@
 
     <!-- Displayed on a welcome screen for payments -->
     <string name="PaymentsHomeFragment_introducing_payments">تۆلەمنى تونۇشتۇرۇش</string>
-    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">سىز Signal دا MobileCoin يوللاپ ۋە قوبۇللىيالايسىز، ئۇ شەخسىيەت گەۋدىلەندۈرۈلگەن يېڭى رەقەملىك پۇل. باشلاش ئۈچۈن ئاكتىپلاڭ.</string>
+    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">سىز Collie دا MobileCoin يوللاپ ۋە قوبۇللىيالايسىز، ئۇ شەخسىيەت گەۋدىلەندۈرۈلگەن يېڭى رەقەملىك پۇل. باشلاش ئۈچۈن ئاكتىپلاڭ.</string>
     <string name="PaymentsHomeFragment__activate_payments">چىقىم قىلىشنى ئاكتىپلا</string>
     <string name="PaymentsHomeFragment__activating_payments">چىقىم قىلىشنى ئاكتىپلاۋاتىدۇ…</string>
     <string name="PaymentsHomeFragment__restore_payments_account">چىقىم ھېساباتىنى ئەسلىگە قايتۇر</string>
@@ -3701,7 +3716,7 @@
     <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">چىقىم ئىقتىدارىنى سىز تۇرۇشلۇق جايدا ئىشلەتكىلى بولمايدۇ.</string>
     <string name="PaymentsHomeFragment__could_not_enable_payments">چىقىمنى قوزغىتالمىدى. سەل تۇرۇپ قايتا سىناڭ.</string>
     <string name="PaymentsHomeFragment__deactivate_payments_question">چىقىملارنى چەكلەمدۇ؟</string>
-    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">ئەگەر چىقىم قىلىشنى چەكلىسىڭىز Signal دا MobileCoin ئەۋەتىپ ياكى قوبۇللىيالمايسىز.</string>
+    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">ئەگەر چىقىم قىلىشنى چەكلىسىڭىز Collie دا MobileCoin ئەۋەتىپ ياكى قوبۇللىيالمايسىز.</string>
     <string name="PaymentsHomeFragment__deactivate">چەكلە</string>
     <string name="PaymentsHomeFragment__continue">داۋاملاشتۇر</string>
     <string name="PaymentsHomeFragment__balance_is_not_currently_available">نۆۋەتتە قالدۇقنى ئىشلەتكىلى بولمايدۇ.</string>
@@ -3710,10 +3725,10 @@
     <string name="PaymentsHomeFragment__details">تەپسىلاتى</string>
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__learn_more__activate_payments" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_activate</string> -->
     <!-- Displayed as a description in a dialog when the user tries to activate payments -->
-    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">‫Signal نى ئىشلىتىپ MobileCoin ئەۋەتەلەيسىز ۋە تاپشۇرىۋالالايسىز. بارلىق تۆلەم ۋە چىقىملار MobileCoin ۋە MobileCoin ھەميانىنىڭ ئىشلىتىش شەرتلىرىگە بويسۇنىدۇ. بەزى مەسىلىلەرگە دۇچ كېلىشىڭز، يوقىتىش ئىھتىمالىڭىز بولغان تۆلەملەر ۋە قالدۇقلارنى ئەسلىگە كەلتۈرەلمەسلىكىڭىز مۇمكىن. </string>
+    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">‫Collie نى ئىشلىتىپ MobileCoin ئەۋەتەلەيسىز ۋە تاپشۇرىۋالالايسىز. بارلىق تۆلەم ۋە چىقىملار MobileCoin ۋە MobileCoin ھەميانىنىڭ ئىشلىتىش شەرتلىرىگە بويسۇنىدۇ. بەزى مەسىلىلەرگە دۇچ كېلىشىڭز، يوقىتىش ئىھتىمالىڭىز بولغان تۆلەملەر ۋە قالدۇقلارنى ئەسلىگە كەلتۈرەلمەسلىكىڭىز مۇمكىن. </string>
     <string name="PaymentsHomeFragment__activate">ئاكتىپلا</string>
     <string name="PaymentsHomeFragment__view_mobile_coin_terms">MobileCoin ماددىلىرىنى كۆرسەت</string>
-    <string name="PaymentsHomeFragment__payments_not_available">‫Signal دا چىقىم ئەمدى ئىشلىمەيدۇ. سىز مەبلەغلىرىڭىزنى ئالماشتۇرۇش ئورنىغا داۋاملىق يۆتكىيەلەيسىز. ئەمما ئەمدى چىقىمنى يوللاپ ۋە تاپشۇرىۋالالمايسىز ياكى مەبلەغ قوشالمايسىز.</string>
+    <string name="PaymentsHomeFragment__payments_not_available">‫Collie دا چىقىم ئەمدى ئىشلىمەيدۇ. سىز مەبلەغلىرىڭىزنى ئالماشتۇرۇش ئورنىغا داۋاملىق يۆتكىيەلەيسىز. ئەمما ئەمدى چىقىمنى يوللاپ ۋە تاپشۇرىۋالالمايسىز ياكى مەبلەغ قوشالمايسىز.</string>
 
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__mobile_coin_terms_url" translatable="false">https://www.mobilecoin.com/terms-of-use.html</string> -->
     <!-- Alert dialog title which shows up after a payment to turn on payment lock -->
@@ -3796,9 +3811,9 @@
     <string name="PaymentsTransferFragment__next">كېيىنكى</string>
     <string name="PaymentsTransferFragment__invalid_address">ئىناۋەتسىز ئادرېس</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">سىز يۆتكىمەكچى بولغان ھەميان ئادرېسىنى تەكشۈرۈڭ ۋە قايتا سىناڭ.</string>
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">ئۆزىڭىزنىڭ Signal ھەميان ئادرېسىغا يۆتكىيەلمەيسىز. قوللايدىغان ئالماشتۇرغۇچىدىكى ھېساباتىڭىزدىن ھەميان ئادرېسىنى كىرگۈزۈڭ.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR كودىنى سايىلەش ئۈچۈن Signal كامېرانى زىيارەت قىلالىشى كېرەك.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR كودىنى سايىلەش ئۈچۈن Signal كامېرانى زىيارەت قىلالىشى كېرەك.</string>
+    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">ئۆزىڭىزنىڭ Collie ھەميان ئادرېسىغا يۆتكىيەلمەيسىز. قوللايدىغان ئالماشتۇرغۇچىدىكى ھېساباتىڭىزدىن ھەميان ئادرېسىنى كىرگۈزۈڭ.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">QR كودىنى سايىلەش ئۈچۈن Collie كامېرانى زىيارەت قىلالىشى كېرەك.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">QR كودىنى سايىلەش ئۈچۈن Collie كامېرانى زىيارەت قىلالىشى كېرەك.</string>
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">ئادرېس QR كودىنى سايىلە</string>
@@ -4150,17 +4165,17 @@
 
     <!-- CallNotificationBuilder -->
     <!-- Displayed in a notification when a Signal voice call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_voice_call">كەلگەن Signal ئاۋازلىق چاقىرىق</string>
+    <string name="CallNotificationBuilder__incoming_signal_voice_call">كەلگەن Collie ئاۋازلىق چاقىرىق</string>
     <!-- Displayed in a notification when a Signal video call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_video_call">كەلگەن Signal ۋىدېيولۇق چاقىرىق</string>
+    <string name="CallNotificationBuilder__incoming_signal_video_call">كەلگەن Collie ۋىدېيولۇق چاقىرىق</string>
     <!-- Displayed in a notification when a Signal group call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_group_call">كەلگەن Signal گۇرۇپ چاقىرىقى</string>
+    <string name="CallNotificationBuilder__incoming_signal_group_call">كەلگەن Collie گۇرۇپ چاقىرىقى</string>
     <!-- Displayed in a notification when a Signal voice call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_voice_call">داۋاملىشىۋاتقان Signal ئاۋازلىق چاقىرىق</string>
+    <string name="CallNotificationBuilder__ongoing_signal_voice_call">داۋاملىشىۋاتقان Collie ئاۋازلىق چاقىرىق</string>
     <!-- Displayed in a notification when a Signal video call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_video_call">داۋاملىشىۋاتقان Signal ۋىدېيولۇق چاقىرىق</string>
+    <string name="CallNotificationBuilder__ongoing_signal_video_call">داۋاملىشىۋاتقان Collie ۋىدېيولۇق چاقىرىق</string>
     <!-- Displayed in a notification when a Signal group call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_group_call">داۋاملىشىۋاتقان Signal گۇرۇپپا چاقىرىقى</string>
+    <string name="CallNotificationBuilder__ongoing_signal_group_call">داۋاملىشىۋاتقان Collie گۇرۇپپا چاقىرىقى</string>
 
     <string name="CallNotificationBuilder_connecting">باغلىنىۋاتىدۇ…</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">زاپاسلاش ئىم ئىبارىسى</string>
@@ -4186,9 +4201,9 @@
     <string name="BackupDialog_verify">دەلىللەش</string>
     <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">زاپاسلاش ئىم ئىبارىسىنى توغرا كىرگۈزدىڭىز</string>
     <string name="BackupDialog_passphrase_was_not_correct">ئىم ئىبارىسى توغرا ئەمەس</string>
-    <string name="LocalBackupJob_creating_signal_backup">Signal زاپاسلىنىۋاتىدۇ…</string>
+    <string name="LocalBackupJob_creating_signal_backup">Collie زاپاسلىنىۋاتىدۇ…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">زاپاسلانغان Signal نى دەلىللەۋاتىدۇ…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">زاپاسلانغان Collie نى دەلىللەۋاتىدۇ…</string>
     <string name="LocalBackupJobApi29_backup_failed">زاپاسلاش مەغلۇپ بولدى</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">زاپاسلاش مۇندەرىجىڭىز ئۆچۈرۈلگەن ياكى يۆتكىۋېتىلگەن.</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">زاپاس ھۆججىتىڭىز بەك چوڭ بولغاچقا بۇ جىلدقا سىغمىدى.</string>
@@ -4203,11 +4218,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">بۇ ۋاقىتتا ماڭا تېلېفون قىلىنسۇن (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">كودنى قايتا يوللاش (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Signal تىزىملىتىش - Android ئۈچۈن دەلىللەش كودى</string>
+    <string name="RegistrationActivity_code_support_subject">Molly تىزىملىتىش - Android ئۈچۈن دەلىللەش كودى</string>
     <string name="RegistrationActivity_incorrect_code">خاتا كود</string>
     <string name="BackupUtil_never">ھەرگىز</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">نامەلۇم</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">تېلېفون نومۇرىڭىزنى كۆرسە بولىدىغان كىشىلەرنى ۋە تېلېفون نومۇرىڭىز ئارقىلىق سىز بىلەن Collie دا ئالاقىلاشسا بولىدىغان كىشىلەرنى تاللاڭ.</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">ئېكران قۇلۇپىنى ئىشلىتىش ئۈچۈن بۇ ئۈسكۈنىگە PIN نومۇر ، ئەندىزە ياكى پارول بەلگىلەڭ.</string>
     <string name="preferences_app_protection__failed_to_enable_registration_lock">تىزىملىتىش قۇلۇپىنى قوزغاتقىلى بولمىدى.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">تىزىملىتىش قۇلۇپىنى ئاكتىپسىزلىغىلى بولمىدى.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">سىز چۇقۇم تىزىملىتىش قۇلۇپى PIN ڭىزنى كىرگۈزۈشىڭىز كېرەك</string>
@@ -4278,10 +4297,10 @@
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">يېڭى Android ئۈسكۈنە ئىزدەۋاتىدۇ…</string>
-    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Signal يېڭى Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن ئورۇن ھوقۇقىغا ئېھتىياجلىق.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Signal يېڭى Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن ئورۇن مۇلازىمىتى قوزغىتىلغان بولۇشى كېرەك.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Signal يېڭى Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن Wi-Fi قوزغىتىلغان بولۇشى كېرەك. Wi-Fi قوزغىتىلغان بولۇشى ئەمما Wi-Fi تورغا باغلانمىغان بولسىمۇ بولىدۇ.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">كەچۈرۈڭ، بۇ ئۈسكۈنە Wi-Fi Direct نى قوللىمايدىغاندەك قىلىدۇ. Signal يېڭى Android ئۈسكۈنىڭىزنى Wi-Fi Direct ئارقىلىق بايقاپ ۋە باغلىنىدۇ. سىز Android ئۈسكۈنىڭىزدە زاپاس قۇرۇپ، ھېساباتنى ئەسلىگە قايتۈرۈش ئارقىلىق زاپاسنى يېڭى ئۈسكۈنىڭىزگە ئەسلىگە قايتۇرالايسىز.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie يېڭى Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن ئورۇن ھوقۇقىغا ئېھتىياجلىق.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie يېڭى Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن ئورۇن مۇلازىمىتى قوزغىتىلغان بولۇشى كېرەك.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie يېڭى Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن Wi-Fi قوزغىتىلغان بولۇشى كېرەك. Wi-Fi قوزغىتىلغان بولۇشى ئەمما Wi-Fi تورغا باغلانمىغان بولسىمۇ بولىدۇ.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">كەچۈرۈڭ، بۇ ئۈسكۈنە Wi-Fi Direct نى قوللىمايدىغاندەك قىلىدۇ. Molly يېڭى Android ئۈسكۈنىڭىزنى Wi-Fi Direct ئارقىلىق بايقاپ ۋە باغلىنىدۇ. سىز Android ئۈسكۈنىڭىزدە زاپاس قۇرۇپ، ھېساباتنى ئەسلىگە قايتۈرۈش ئارقىلىق زاپاسنى يېڭى ئۈسكۈنىڭىزگە ئەسلىگە قايتۇرالايسىز.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">زاپاس قۇر</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">يېڭى Android ئۈسكۈنىڭىزگە باغلىنىشنى سىناۋاتقاندا كۈتۈلمىگەن خاتالىققا يولۇقتى.</string>
 
@@ -4321,7 +4340,7 @@
 
     <!-- DeviceTransferFragment -->
     <string name="DeviceTransfer__transferring_data">مەلۇمات يۆتكىلىۋاتىدۇ</string>
-    <string name="DeviceTransfer__keep_both_devices_near_each_other">ئىككى ئۈسكىنىنى يېقىن تۇتۇڭ. ئۈسكۈنىلەر ئېتىلىپ قالمىسۇن، Signal ئوچۇق ھالەتتە تۇرسۇن. يۆتكەش ئۇچتىن-ئۇچقا شىفرىلىنىدۇ.</string>
+    <string name="DeviceTransfer__keep_both_devices_near_each_other">ئىككى ئۈسكىنىنى يېقىن تۇتۇڭ. ئۈسكۈنىلەر ئېتىلىپ قالمىسۇن، Collie ئوچۇق ھالەتتە تۇرسۇن. يۆتكەش ئۇچتىن-ئۇچقا شىفرىلىنىدۇ.</string>
     <string name="DeviceTransfer__d_messages_so_far">ھازىرچە %1$d ئۇچۇر…</string>
     <!-- Filled in with total percentage of messages transferred -->
     <string name="DeviceTransfer__s_of_messages_so_far">ھازىرچە %1$s%% ئۇچۇر يۆتكەلدى…</string>
@@ -4335,7 +4354,7 @@
     <!-- OldDeviceTransferInstructionsFragment -->
     <string name="OldDeviceTransferInstructions__transfer_account">ھېساباتنى يۆتكە</string>
     <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
-    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">يېڭى Android ئۈسكىنىڭىزدە Signal نى چۈشۈرۈڭ</string>
+    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">يېڭى Android ئۈسكىنىڭىزدە Collie نى چۈشۈرۈڭ</string>
     <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
     <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">"«ھېسابات يۆتكەش» ياكى «ھېسابات ئەسلىگە كەلتۈرۈش» نى چېكىڭ"</string>
     <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
@@ -4416,7 +4435,7 @@
     <!-- GroupLinkBottomSheetDialogFragment -->
     <string name="GroupLinkBottomSheet_share_hint_requiring_approval">بۇ ئۇلانما بىلەن ھەرقانداق كىشى گۇرۇپپىنىڭ ئىسمى ۋە رەسىمىنى كۆرەلەيدۇ. ھەمدە گۇرۇپپىغا قېتىلىشنى ئىلتىماس قىلالايدۇ. ئۇنى ئىشەنچلىك كىشىلەرگە ھەمبەھىرلەڭ.</string>
     <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">بۇ ئۇلانما بىلەن ھەرقانداق كىشى گۇرۇپپىنىڭ ئىسمى ۋە رەسىمىنى كۆرەلەيدۇ. ھەمدە گۇرۇپپىغا قېتىلالايدۇ. ئۇنى ئىشەنچلىك كىشىلەرگە ھەمبەھىرلەڭ.</string>
-    <string name="GroupLinkBottomSheet_share_via_signal">Signal ئارقىلىق ھەمبەھىرلە</string>
+    <string name="GroupLinkBottomSheet_share_via_signal">Collie ئارقىلىق ھەمبەھىرلە</string>
     <string name="GroupLinkBottomSheet_copy">كۆچۈر</string>
     <string name="GroupLinkBottomSheet_qr_code">QR كودى</string>
     <string name="GroupLinkBottomSheet_share">ھەمبەھىرلە</string>
@@ -4567,7 +4586,7 @@
     <string name="payment_info_card_about_mobilecoin">MobileCoin ھەققىدە</string>
     <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">‫MobileCoin شەخسىيەت گەۋدىلەندۈرۈلگەن يېڭى رەقەملىك پۇل.</string>
     <string name="payment_info_card_adding_funds"> قوشۇلغان مەبلەغ</string>
-    <string name="payment_info_card_you_can_add_funds_for_use_in">ھەميان ئادرېسىڭىزغا MobileCoin ئەۋەتىش ئارقىلىق Signal دا ئىشلىتىشكە مەبلەغ قوشالايسىز.</string>
+    <string name="payment_info_card_you_can_add_funds_for_use_in">ھەميان ئادرېسىڭىزغا MobileCoin ئەۋەتىش ئارقىلىق Collie دا ئىشلىتىشكە مەبلەغ قوشالايسىز.</string>
     <string name="payment_info_card_cashing_out">نەق پۇلغا ئايلاندۇر</string>
     <string name="payment_info_card_you_can_cash_out_mobilecoin">MobileCoin نى قوللايدىغان ئالماشتۇرغۇچىدا خالىغان ۋاقىتتا MobileCoin نى نەقلەشتۈرەلەيسىز. پەقەت بۇ ئالماشتۇرغۇچىدىكى ھېساباتىڭىزغا يۆتكىسىڭىزلا بولىدۇ.</string>
     <string name="payment_info_card_hide_this_card">بۇ كارت كۆرۈنمىسۇنمۇ؟</string>
@@ -4588,12 +4607,12 @@
     <!-- DeactivateWalletFragment -->
     <string name="DeactivateWalletFragment__deactivate_wallet">ھەمياننى ئاكتىپسىزلا</string>
     <string name="DeactivateWalletFragment__your_balance">قالدۇقىڭىز</string>
-    <string name="DeactivateWalletFragment__its_recommended_that_you">چىقىمنى ئاكتىپسىزلاشتىن بۇرۇن مەبلىغىڭىزنى باشقا ھەميان ئادرېسىغا يۆتكەش تەۋسىيە قىلىنىدۇ. ئەگەر ھازىر مەبلىغىڭىزنى يۆتكىمەسلىكنى تاللىسىڭىز، چىقىمنى قايتا ئاكتىپلىسىڭىز ئۇلار Signal غا باغلانغان ھەميانىڭىزدا قالىدۇ.</string>
+    <string name="DeactivateWalletFragment__its_recommended_that_you">چىقىمنى ئاكتىپسىزلاشتىن بۇرۇن مەبلىغىڭىزنى باشقا ھەميان ئادرېسىغا يۆتكەش تەۋسىيە قىلىنىدۇ. ئەگەر ھازىر مەبلىغىڭىزنى يۆتكىمەسلىكنى تاللىسىڭىز، چىقىمنى قايتا ئاكتىپلىسىڭىز ئۇلار Collie غا باغلانغان ھەميانىڭىزدا قالىدۇ.</string>
     <string name="DeactivateWalletFragment__transfer_remaining_balance">قالغان قالدۇقنى يۆتكە</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring">يۆتكىمەي تۇرۇپ ئاكتىپسىزلا</string>
     <string name="DeactivateWalletFragment__deactivate">چەكلە</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring_question">يۆتكىمەي تۇرۇپ ئاكتىپسىزلىسۇنمۇ؟</string>
-    <string name="DeactivateWalletFragment__your_balance_will_remain">ئەگەر چىقىمنى قايتا ئاكتىپلاشنى تاللىسىڭىز، قالدۇق سوممىڭىز Signal غا باغلانغان ھەميانىڭىزدا قالىدۇ.</string>
+    <string name="DeactivateWalletFragment__your_balance_will_remain">ئەگەر چىقىمنى قايتا ئاكتىپلاشنى تاللىسىڭىز، قالدۇق سوممىڭىز Collie غا باغلانغان ھەميانىڭىزدا قالىدۇ.</string>
     <string name="DeactivateWalletFragment__error_deactivating_wallet">ئاكتىپسىزلاشتا خاتالىق كۆرۈلدى.</string>
   <!-- Removed by excludeNonTranslatables <string name="DeactivateWalletFragment__learn_more__we_recommend_transferring_your_funds" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_deactivate</string> -->
 
@@ -5294,9 +5313,9 @@
     <string name="MySupportPreference__checking_subscription">مۇشتەرىلىكنى تەكشۈرۈۋاتىدۇ…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__title">Signal نى يېڭىلا</string>
+    <string name="UpdateSignalExpiredDialog__title">Collie نى يېڭىلا</string>
     <!-- Message of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__message">Signal نىڭ بۇ نەشرىنىڭ ۋاقتى ئ‍ۆتكەن. Signal نى داۋاملىق ئىشلىتىش ئۈچۈن دەرھال يېڭىلاڭ.</string>
+    <string name="UpdateSignalExpiredDialog__message">Collie نىڭ بۇ نەشرىنىڭ ۋاقتى ئ‍ۆتكەن. Collie نى داۋاملىق ئىشلىتىش ئۈچۈن دەرھال يېڭىلاڭ.</string>
     <!-- Button text of expiration dialog, will take user to update the app -->
     <string name="UpdateSignalExpiredDialog__update_action">يېڭىلا</string>
     <!-- Button text of expiration dialog to cancel the dialog.  -->
@@ -5305,7 +5324,7 @@
     <!-- Title of dialog telling user they need to re-register signal -->
     <string name="ReregisterSignalDialog__title">ئۈسكۈنە تىزىملىتىلمىغان</string>
     <!-- Message of dialog telling user they need to re-register signal as it is no longer registered -->
-    <string name="ReregisterSignalDialog__message">بۇ ئۈسكۈنە تىزىملاشتىن قالغان بولۇپ، Signal نى بۇ ئۈسكۈنىدە داۋاملىق ئىشلىتىش ئۈچۈن ئۈسكۈنىنى قايتا تىزىملاڭ.</string>
+    <string name="ReregisterSignalDialog__message">بۇ ئۈسكۈنە تىزىملاشتىن قالغان بولۇپ، Collie نى بۇ ئۈسكۈنىدە داۋاملىق ئىشلىتىش ئۈچۈن ئۈسكۈنىنى قايتا تىزىملاڭ.</string>
     <!-- Button text of re-registration dialog to re-register the device.  -->
     <string name="ReregisterSignalDialog__reregister_action">قايتا تىزىملاش</string>
     <!-- Button text of re-registration dialog to cancel the dialog.  -->
@@ -6806,16 +6825,16 @@
     <string name="BackupSetupCompleteBottomSheet__back_up_now">ھازىر زاپاسلاڭ</string>
 
     <!-- Title of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__title">تېلېفونىڭىزدا Signal نى ئېچىڭ</string>
+    <string name="InactivePrimary__title">تېلېفونىڭىزدا Collie نى ئېچىڭ</string>
     <!-- Body of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__body">ھېساباتىڭىزنى ئاكتىپ ھالەتتە ساقلاش ئۈچۈن ئاساسلىق ئۈسكۈنىڭىزدە Signalنى ئېچىڭ.</string>
+    <string name="InactivePrimary__body">ھېساباتىڭىزنى ئاكتىپ ھالەتتە ساقلاش ئۈچۈن ئاساسلىق ئۈسكۈنىڭىزدە Collieنى ئېچىڭ.</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will navigate to a support page -->
     <string name="InactivePrimary__learn_more">تەپسىلاتى</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will snooze the megaphone -->
     <string name="InactivePrimary__got_it">بىلدىم</string>
 
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
-    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"زاپاسلانمىنى ئەسلىگە كەلتۈرۈش ئۈچۈن، Signal نى قايتا قاچىلاڭ. ئاندىن ئەپنى ئېچىپ «زاپاسلانمىنى ئەسلىگە كەلتۈرۈش» نى چېكىڭ، ئاندىن زاپاسلانما ھۆججىتىنى كۆرسىتىپ بېرىڭ."</string>
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"زاپاسلانمىنى ئەسلىگە كەلتۈرۈش ئۈچۈن، Collie نى قايتا قاچىلاڭ. ئاندىن ئەپنى ئېچىپ «زاپاسلانمىنى ئەسلىگە كەلتۈرۈش» نى چېكىڭ، ئاندىن زاپاسلانما ھۆججىتىنى كۆرسىتىپ بېرىڭ."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
     <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">سىزدىكى «Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدار ئوچۇق. ئەگەر ئۈسكۈنىدە زاپاسلاشتا ھەممە مېدىيانىڭ ئۆز ئچىگە ئېلىنىشىنى ئۈمىد قىلسىڭىز، تەڭشەكنى تاقىۋېتىڭ.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
@@ -7176,6 +7195,34 @@
     <string name="GooglePlayServicesAvailability__learn_more">تەپسىلاتى</string>
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">تېلېفونىڭىزGoogle Play مۇلازىمىتىنى قوللىمىغاچقا، Signal بىخەتەر زاپاسلانمىللىرىغا مۇشتەرى بولالمايسىز. ياردەم ئۈچۈن تېلېفون ئىشلەپچىقارغۇچى بىلەن ئالاقىلىشىڭ.</string>
+
+    <!-- ManageStorageSettingsFragment -->
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">پاراڭ چېكى</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">ئۇچۇر تارىخىنى ئۆچۈرۈش</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">تاللانغان ۋاقىتتىن بۇرۇنقى ئۇچۇرلار مەڭگۈلۈك ئۆچۈرۈلىدۇ.</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">تاللانغان ئۇزۇنلۇقتىن ئېشىپ كەتكەن ئۇچۇرلار مەڭگۈلۈك ئۆچۈرۈلىدۇ.</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">چەكلىمىنى ئۇلانغان ئۈسكۈنىلەرگە قوللىنىش</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">قوزغىتىلغاندا، پاراڭ چەكلىمىسى ئۇلانغان ئۈسكۈنىلەردىكى ئۇچۇرلارنىمۇ ئۆچۈرىدۇ.</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie ساقلاش بوشلۇقى</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Collie ساقلاش بوشلىقىنى ئەلالاشتۇرۇش</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">ئىشلىتىلمىگەن مېدىيا چۈشۈرۋېتىلىدۇ، ئەمما زاپاسلىغان ئورۇندىن خالىغان ۋاقىتتا چۈشۈرەلەيسىز.</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">ساقلاشنى ئەلالاشتۇرۇش، پەقەت Signal بىخەتەر زاپاسلانمىللىرىنىڭ ھەقلىق دەرىجىسى بىلەنلا ئىشلىتىلىدۇ. زاپاسلاش مۇشتەرىلىكىڭىز يەنىلا بىر تەرەپ قىلىنىۋاتىدۇ، تېخى قوزغىتىلمىدى. كېيىن قايتا سىناڭ.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">مېدىيا سىزنىڭ ئۈسكۈنىدىكى زاپىسىڭىزدىن چىقىرىۋېتىلىدۇ</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">«Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» ئىقتىدارىنى ئېچىپ قويسىڭىز، ئۇ كونا مېديارىڭىزنى ئۈسكىنىڭىزدىن ۋاقىتلىق چۈشۈرۈۋېتىدۇ. سىز ئۇنى ھەرقانداق ۋاقىتتا قايتا يۈكلىيەلەيسىز. ھەمدە بۇ سىزنىڭ كونا مېدىيارىڭىزنى ئۈسكۈنىدىكى زاپىسىڭىزدىن چىقىرىۋېتىلىدۇ.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">ئېچىش</string>
 
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
@@ -7612,13 +7659,13 @@
     <!-- Dialog title for confirming you need to disable optimized storage and download media to rotate AEP key -->
     <string name="MessageBackupsKeyRecordScreen__download_media">مېدىيانى چۈشۈرۈڭ</string>
     <!-- Dialog body for confirming you need to disable optimized storage and download media to rotate AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">يېڭى ئەسلىگە كەلتۈرۈش ئاچقۇچى قۇرۇش ئۈچۈن چوقۇم «Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» نى ئېتىۋېتىشىڭىز ھەمدە مېدىيانىڭ چۈشۈرۈلۈپ بولۇنۇشىنى ساقلىشىڭىز كېرەك. چۈشۈرۈش تاماملانغاندىن كېيىن يېڭى بىر ئاچقۇچ قۇرالايسىز.</string>
+    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">يېڭى ئەسلىگە كەلتۈرۈش ئاچقۇچى قۇرۇش ئۈچۈن چوقۇم «Collie ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» نى ئېتىۋېتىشىڭىز ھەمدە مېدىيانىڭ چۈشۈرۈلۈپ بولۇنۇشىنى ساقلىشىڭىز كېرەك. چۈشۈرۈش تاماملانغاندىن كېيىن يېڭى بىر ئاچقۇچ قۇرالايسىز.</string>
     <!-- Action label to turn off optimized storage and download media -->
     <string name="MessageBackupsKeyRecordScreen__turn_off_and_download">تاقىۋېتىش ھەمدە چۈشۈرۈش</string>
     <!-- Bottom Sheet title for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">يېڭى بىر ئەسلىگە كەلتۈرۈش ئاچقۇچى قۇرۇڭ</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">يېڭى ئاچقۇچ قۇرۇش پەقەت ئاچقۇچنى باشقا بىرى بىلىپ قالغاندىلا زۆرۈر. مېدىيانى ئۆز ئىچىگە ئالغان زاپاسلاشنى قايتا يۈكلىشىڭىز كېرەك. ئەگەر «Signal ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» نى ئىشلىتىۋاتقان بولسىڭىز ، ئالدى بىلەن چۈشۈرۈۋېتىلگەن مېدىيانى چۈشۈرۈشىڭىز كېرەك.</string>
+    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">يېڭى ئاچقۇچ قۇرۇش پەقەت ئاچقۇچنى باشقا بىرى بىلىپ قالغاندىلا زۆرۈر. مېدىيانى ئۆز ئىچىگە ئالغان زاپاسلاشنى قايتا يۈكلىشىڭىز كېرەك. ئەگەر «Collie ساقلاش بوشلۇقىنى ئەلالاشتۇرۇش» نى ئىشلىتىۋاتقان بولسىڭىز ، ئالدى بىلەن چۈشۈرۈۋېتىلگەن مېدىيانى چۈشۈرۈشىڭىز كېرەك.</string>
     <!-- Dialog title shown when user attempts to exit backup setup before completion -->
     <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">زاپاسلاشنى قۇرۇشتىن چېكىنەمىسىز؟</string>
     <!-- Dialog body warning user that backup setup is incomplete -->
@@ -7814,7 +7861,6 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">ۋاكالەتچى</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
-    <string name="MainToolbar__donate_to_signal">‫Signal غا ئىئانە قىلىڭ</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -8131,7 +8177,7 @@
     <string name="CouldNotCompleteBackupRestoreSheet__body_error">بىر خاتالىق تۈپەيلى زاپىسىڭىزنى ئەسلىگە كەلتۈرگىلى بولمىدى. بۇ بەلكىم، زاپىسىڭىزنى ئەسلىگە كەلتۈرۈۋاتقان ۋاقىتتا، زاپاسنى ساقلىغان ھۆججەت قىسقۇچ ئۈسكىنىڭىزدە يۆتكىلىپ كەتكەنلىك سەۋەبىدىن بولۇشى مۇمكىن.</string>
 
     <!-- Body of the sheet shown when a local backup restore could not be completed, explaining how to try again -->
-    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">قايتا سىناش ئۈچۈن، Signal دېتالىنى بۇ ئۈسكىنىدىن ئۆچۈرۈپ قايتا قاچىلاڭ ھەمدە «ئەسلىگە كەلتۈرۈش ياكى يۆتكەش»نى تاللاڭ.</string>
+    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">قايتا سىناش ئۈچۈن، Collie دېتالىنى بۇ ئۈسكىنىدىن ئۆچۈرۈپ قايتا قاچىلاڭ ھەمدە «ئەسلىگە كەلتۈرۈش ياكى يۆتكەش»نى تاللاڭ.</string>
 
     <!-- Button on the sheet shown when a local backup restore could not be completed, opening a support article about it -->
     <string name="CouldNotCompleteBackupRestoreSheet__learn_more">تەپسىلاتى</string>

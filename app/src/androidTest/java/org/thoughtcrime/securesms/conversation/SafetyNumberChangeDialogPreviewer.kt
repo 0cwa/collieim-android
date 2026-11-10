@@ -21,12 +21,12 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 /**
  * Android test to help show SNC dialog quickly with custom data to make sure it displays properly.
  */
-@Ignore("For testing/previewing manually, no assertions")
 @RunWith(AndroidJUnit4::class)
 class SafetyNumberChangeDialogPreviewer {
 
   @get:Rule val harness = SignalActivityRule(othersCount = 10)
 
+  @Ignore("For testing/previewing manually, no assertions")
   @Test
   fun testShowLongName() {
     val other: Recipient = Recipient.resolved(harness.others.first())
@@ -45,6 +45,7 @@ class SafetyNumberChangeDialogPreviewer {
     // ThreadUtil.sleep(15000)
   }
 
+  @Ignore("For testing/previewing manually, no assertions")
   @Test
   fun testShowLargeSheet() {
     SignalDatabase.distributionLists.setPrivacyMode(DistributionListId.MY_STORY, DistributionListPrivacyMode.ONLY_WITH)

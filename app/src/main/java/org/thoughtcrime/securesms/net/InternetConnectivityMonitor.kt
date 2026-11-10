@@ -54,8 +54,8 @@ import kotlin.time.Duration.Companion.minutes
  * transport swap leaves the old transport stale), and on the first state of every callback re-registration.
  * The current state is delivered immediately upon registration. If the OS reports no matching networks at all,
  * [ConnectivityState.OFFLINE] is reported after [INITIAL_STATE_TIMEOUT], since no callbacks will ever arrive.
- * If we lose the ability to observe connectivity entirely, we fail open and report
- * [ConnectivityState.MONITORING_UNAVAILABLE] (treated as online) while retrying in the background.
+ * If we lose the ability to observe connectivity entirely, we report
+ * [ConnectivityState.MONITORING_UNAVAILABLE] while retrying in the background.
  *
  * [onProxyChanged] is invoked when the system reports a proxy change, and additionally whenever the set of
  * tracked networks or the aggregate connectivity state changes, since the proxy we read can lag the broadcast.
@@ -158,8 +158,8 @@ class InternetConnectivityMonitor(
 
   /**
    * Wraps [connectivityStateFlow] so a failure to observe connectivity never permanently stops monitoring:
-   * an expected [NetworkStateStaleException] re-subscribes immediately, while any other failure fails open
-   * ([ConnectivityState.MONITORING_UNAVAILABLE]) and retries with capped backoff.
+   * an expected [NetworkStateStaleException] re-subscribes immediately, while any other failure reports
+   * [ConnectivityState.MONITORING_UNAVAILABLE] and retries with capped backoff.
    */
   private fun resilientConnectivityStateFlow(): Flow<ConnectivitySnapshot> = flow {
     var failures = 0
@@ -179,7 +179,7 @@ class InternetConnectivityMonitor(
             }
             else -> {
               failures++
-              Log.w(TAG, "Connectivity monitoring failed (attempt $failures). Assuming online until it recovers.", cause)
+              Log.w(TAG, "Connectivity monitoring failed (attempt $failures). Retrying.", cause)
               // Latched so a long outage emits MONITORING_UNAVAILABLE once instead of once per retry. Reset on the next successful collect.
               if (!reportedUnavailable) {
                 emit(ConnectivitySnapshot(ConnectivityState.MONITORING_UNAVAILABLE, emptyMap()))
@@ -419,7 +419,7 @@ class InternetConnectivityMonitor(
       callbackScope.cancel()
     }
   }.conflate()
-    .debounce { if (it.state.isAssumedOnline) ONLINE_SETTLE_TIMEOUT else Duration.ZERO }
+    .debounce { if (it.state.isOnline) ONLINE_SETTLE_TIMEOUT else Duration.ZERO }
     // Keyed on networks and the default too: a swap can hold the state (WiFi drops, cellular stays ONLINE) while the old transport goes stale.
     .distinctUntilChanged { old, new -> old.state == new.state && old.networks.keys == new.networks.keys && old.defaultNetwork == new.defaultNetwork }
 

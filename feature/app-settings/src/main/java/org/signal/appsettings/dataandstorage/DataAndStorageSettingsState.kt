@@ -17,15 +17,16 @@ data class DataAndStorageSettingsState(
   val alwaysAutoDownloadedBytes: Long = 0,
   val sentMediaQuality: SentMediaQuality = SentMediaQuality.STANDARD,
   val callDataMode: CallDataMode = CallDataMode.HIGH_ALWAYS,
+  val showNetworkSettings: Boolean = true,
   val forceWebsocketMode: Boolean = false,
-  val playServicesAvailable: Boolean = true,
+  val pushAvailable: Boolean = true,
   val isProxyEnabled: Boolean = false,
   val dialog: Dialog = Dialog.None
 ) {
 
-  /** Without Play Services there's no push, so the app always stays connected and the toggle is locked on. */
+  /** Without an available selected push method, the websocket must stay connected. */
   val isStayConnectedInBackgroundChecked: Boolean
-    get() = forceWebsocketMode || !playServicesAvailable
+    get() = forceWebsocketMode || !pushAvailable
 
   fun autoDownloadFor(network: AutoDownloadNetwork): Set<AutoDownloadMediaType> = autoDownload[network].orEmpty()
 

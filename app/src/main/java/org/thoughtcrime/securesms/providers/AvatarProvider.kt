@@ -31,7 +31,6 @@ import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.dependencies.ApplicationDependencyProvider
 import org.thoughtcrime.securesms.keyvalue.SignalStore
-import org.thoughtcrime.securesms.logging.PersistentLogger
 import org.thoughtcrime.securesms.profiles.AvatarHelper
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientCreator
@@ -70,6 +69,11 @@ class AvatarProvider : BaseContentProvider() {
   }
 
   private fun init(): Application? {
+    if (KeyCachingService.isLocked()) {
+      Log.w(TAG, "masterSecret was null, abandoning.")
+      return null
+    }
+
     val application = context as? ApplicationContext ?: return null
 
     PartAuthorityUris.init(BuildConfig.APPLICATION_ID)
@@ -83,11 +87,11 @@ class AvatarProvider : BaseContentProvider() {
 
     SignalStore.init(application)
 
-    Log.initialize(RemoteConfig::internalUser, AndroidLogger, PersistentLogger.getInstance(application))
+    Log.initialize(AndroidLogger)
 
     if (!AppDependencies.isInitialized) {
       Log.i(TAG, "Initializing AppDependencies.")
-      AppDependencies.init(application, ApplicationDependencyProvider(application))
+      AppDependencies.init(ApplicationDependencyProvider(application))
     }
 
     return application
@@ -103,11 +107,6 @@ class AvatarProvider : BaseContentProvider() {
     if (VERBOSE) Log.i(TAG, "openFile() called!")
 
     val application = init() ?: return null
-
-    if (KeyCachingService.isLocked(application)) {
-      Log.w(TAG, "masterSecret was null, abandoning.")
-      return null
-    }
 
     if (SignalDatabase.instance == null) {
       Log.w(TAG, "SignalDatabase unavailable")

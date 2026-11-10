@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -34,9 +31,13 @@
   <!-- Removed by excludeNonTranslatables <string name="AlbumThumbnailView_plus" translatable="false">\+%d</string> -->
 
     <!-- ApplicationMigrationActivity -->
-    <string name="ApplicationMigrationActivity__signal_is_updating">Signal se aktualizuje…</string>
+    <string name="ApplicationMigrationActivity__signal_is_updating">Collie se aktualizuje…</string>
 
     <!-- ApplicationPreferencesActivity -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Dosud nemáte nastavené heslo!</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">Zakázat heslo?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tímto trvale odemknete Collie a upozornění na zprávy.</string>
+    <string name="ApplicationPreferencesActivity_disable">Deaktivovat</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Chyba při připojování k serveru!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">PIN je vyžadován pro zámek registrace. Nejprve prosím zakažte zámek registrace, aby bylo možné PIN deaktivovat.</string>
     <string name="ApplicationPreferencesActivity_pin_created">PIN vytvořen.</string>
@@ -80,7 +81,7 @@
     <string name="AttachmentKeyboard_location">Poloha</string>
     <!-- Text for a button that will allow users to create a poll -->
     <string name="AttachmentKeyboard_poll">Anketa</string>
-    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Aplikace Signal potřebuje povolení, aby mohla zobrazovat vaše fotografie a videa.</string>
+    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Aplikace Collie potřebuje povolení, aby mohla zobrazovat vaše fotografie a videa.</string>
     <!-- Text for a button prompting users to allow Signal access to their gallery storage -->
     <string name="AttachmentKeyboard_allow_access">Povolit přístup</string>
     <string name="AttachmentKeyboard_payment">Platba</string>
@@ -91,34 +92,34 @@
     <!-- Option in menu to go to settings -->
     <string name="AttachmentKeyboard_go_to_settings">Přejít do nastavení</string>
     <!-- Text explaining that Signal has limited access to photos -->
-    <string name="AttachmentKeyboard_signal_has_limited_access">Aplikace Signal má omezený přístup k fotkám nebo videím</string>
+    <string name="AttachmentKeyboard_signal_has_limited_access">Aplikace Collie má omezený přístup k fotkám nebo videím</string>
     <!-- Text shown when user has given no photos for Signal to access and an explanation on how to change those permissions -->
     <string name="AttachmentKeyboard_no_photos_found">Nebyly nalezeny žádné fotografie. Vyberte fotografie a videa, která se zde mají zobrazit, nebo změňte oprávnění.</string>
 
     <!-- MediaGalleryFragment -->
     <!-- Text describing that no photos or videos are currently found in the gallery and that Signal can only access media that the user allows -->
-    <string name="MediaGalleryFragment__no_photos_found">Nebyly nalezeny žádné fotografie ani videa. Aplikace Signal má přístup pouze k vybraným fotografiím a videím.</string>
+    <string name="MediaGalleryFragment__no_photos_found">Nebyly nalezeny žádné fotografie ani videa. Aplikace Collie má přístup pouze k vybraným fotografiím a videím.</string>
 
     <!-- AttachmentManager -->
     <string name="AttachmentManager_cant_open_media_selection">Nemohu nalézt aplikaci pro vybraný typ dat.</string>
-    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal potřebuje oprávnění pro přístup k úložišti, aby mohl připojovat fotky, videa nebo audio, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Úložiště\".</string>
-    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Signal potřebuje oprávnění pro přístup ke kontaktům, aby mohl připojit informace o kontaktu, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Kontakty\".</string>
-    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Signal potřebuje oprávnění pro přístup k poloze, aby mohl připojit informace o poloze, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Poloha\".</string>
+    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Collie potřebuje oprávnění pro přístup k úložišti, aby mohl připojovat fotky, videa nebo audio, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Úložiště\".</string>
+    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Collie potřebuje oprávnění pro přístup ke kontaktům, aby mohl připojit informace o kontaktu, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Kontakty\".</string>
+    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Collie potřebuje oprávnění pro přístup k poloze, aby mohl připojit informace o poloze, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Poloha\".</string>
 
     <!-- Dialog title asking users for location permission -->
     <string name="AttachmentManager_signal_allow_access_location">Povolit přístup k poloze</string>
     <!-- Dialog description that will explain the steps needed to give location permission -->
     <string name="AttachmentManager_signal_to_send_location">Jak poslat svou polohu:</string>
     <!-- Alert dialog description asking for location permission -->
-    <string name="AttachmentManager_signal_allow_signal_access_location">Povolte pro aplikaci Signal přístup k odeslání polohy.</string>
+    <string name="AttachmentManager_signal_allow_signal_access_location">Povolte pro aplikaci Collie přístup k odeslání polohy.</string>
     <!-- Toast text explaining Signal\'s need for location access -->
-    <string name="AttachmentManager_signal_needs_location_access">Aplikace Signal potřebuje povolení přístupu k poloze, aby ji mohla odeslat.</string>
+    <string name="AttachmentManager_signal_needs_location_access">Aplikace Collie potřebuje povolení přístupu k poloze, aby ji mohla odeslat.</string>
     <!-- Dialog title asking users for gallery storage permission -->
     <string name="AttachmentManager_signal_allow_storage">Povolte přístup k úložišti</string>
     <!-- Dialog description that will explain the steps needed to give gallery storage permission -->
     <string name="AttachmentManager_signal_to_show_photos">Zobrazení fotografií a videí:</string>
     <!-- Toast text explaining Signal\'s need for storage access -->
-    <string name="AttachmentManager_signal_needs_storage_access">Aplikace Signal potřebuje povolit přístup k fotografiím a videím.</string>
+    <string name="AttachmentManager_signal_needs_storage_access">Aplikace Collie potřebuje povolit přístup k fotografiím a videím.</string>
 
     <!-- Alert dialog title to show the recipient has not activated payments -->
     <string name="AttachmentManager__not_activated_payments">%1$s nemá aktivované Platby </string>
@@ -275,12 +276,12 @@
     <string name="CensorshipCircumventionMegaphone_no_thanks">Ne, díky</string>
 
     <!-- ClientDeprecatedActivity -->
-    <string name="ClientDeprecatedActivity_update_signal">Aktualizovat Signal</string>
+    <string name="ClientDeprecatedActivity_update_signal">Aktualizovat Collie</string>
     <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">Tato verze aplikace již není podporována. Chcete-li pokračovat v odesílání a přijímání zpráv, aktualizujte na nejnovější verzi.</string>
     <string name="ClientDeprecatedActivity_update">Aktualizovat</string>
     <string name="ClientDeprecatedActivity_dont_update">Neaktualizovat</string>
     <string name="ClientDeprecatedActivity_warning">Varování</string>
-    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Verze Signal, kterou používáte, je zastaralá. Můžete zobrazit svoji historii zpráv, ale nebudete moci zprávy odesílat ani přijímat, dokud neprovedete aktualizaci.</string>
+    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Verze Collie, kterou používáte, je zastaralá. Můžete zobrazit svoji historii zpráv, ale nebudete moci zprávy odesílat ani přijímat, dokud neprovedete aktualizaci.</string>
 
     <!-- ClockSkewActivity -->
     <!-- Title of the full-screen dialog shown when the device clock is too far off from the real time -->
@@ -312,7 +313,7 @@
     <!-- Title on dialog when quick restore qr code is scanned in system camera -->
     <string name="CommunicationActions__transfer_dialog_title">Přenést účet do nového zařízení?</string>
     <!-- Message on dialog when quick restore qr code is scanned in system camera -->
-    <string name="CommunicationActions__transfer_dialog_message">Chcete-li tento účet přenést do nového zařízení, klepněte na Pokračovat a znovu naskenujte QR kód pomocí kamery aplikace Signal. Ujistěte se, že skenujete pouze QR kódy, které pocházejí přímo z aplikace Signal.</string>
+    <string name="CommunicationActions__transfer_dialog_message">Chcete-li tento účet přenést do nového zařízení, klepněte na Pokračovat a znovu naskenujte QR kód pomocí kamery aplikace Collie. Ujistěte se, že skenujete pouze QR kódy, které pocházejí přímo z aplikace Collie.</string>
     <string name="CommunicationActions__dont_transfer">Nepřenášet</string>
 
     <!-- ConfirmIdentityDialog -->
@@ -336,8 +337,8 @@
 
     <!-- ContactsDatabase -->
     <string name="ContactsDatabase_message_s">Zpráva %1$s</string>
-    <string name="ContactsDatabase_signal_call_s">Hlasový hovor Signal %1$s</string>
-    <string name="ContactsDatabase_signal_video_call_s">Videohovor Signal %1$s</string>
+    <string name="ContactsDatabase_signal_call_s">Hlasový hovor Collie %1$s</string>
+    <string name="ContactsDatabase_signal_video_call_s">Videohovor Collie %1$s</string>
 
     <!-- ContactNameEditActivity -->
     <!-- Toolbar title for contact name edit activity -->
@@ -452,10 +453,10 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="ConversationActivity_signal_to_send_audio_messages">Pro odesílání hlasových zpráv:</string>
     <!-- Alert dialog description asking for microphone permission in order to send voice messages -->
-    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Pro odeslání hlasové zprávy povolte aplikaci Signal přístup k mikrofonu.</string>
+    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Pro odeslání hlasové zprávy povolte aplikaci Collie přístup k mikrofonu.</string>
     <!-- Toast text explaining Signal\'s need for microphone access -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Aplikace Signal potřebuje pro nahrání hlasové zprávy povolit přístup k mikrofonu.</string>
-    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Signal potřebuje oprávnění pro přístup k mikrofonu, aby mohl poslat audio zprávu, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Mikrofon\".</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Aplikace Collie potřebuje pro nahrání hlasové zprávy povolit přístup k mikrofonu.</string>
+    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Collie potřebuje oprávnění pro přístup k mikrofonu, aby mohl poslat audio zprávu, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Mikrofon\".</string>
 
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d z %2$d</string>
@@ -475,9 +476,9 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions for a voice call -->
     <string name="ConversationActivity__to_start_call">Jak zahájit hovor:</string>
     <!-- Alert dialog description asking for microphone permission in order to start a voice call -->
-    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Abyste mohli telefonovat, je potřeba pro aplikaci Signal povolit přístup k mikrofonu.</string>
+    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Abyste mohli telefonovat, je potřeba pro aplikaci Collie povolit přístup k mikrofonu.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Aplikace Signal potřebuje pro zahájení hovoru povolit přístup k mikrofonu.</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Aplikace Collie potřebuje pro zahájení hovoru povolit přístup k mikrofonu.</string>
 
 
     <string name="ConversationActivity_join">Připojit</string>
@@ -491,11 +492,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Zasílání SMS zpráv již není aplikací Signal podporováno. Pozvěte kontakt %1$s do aplikace Signal a pokračujte v konverzaci zde.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Tato osoba již Signal nepoužívá. Pozvěte ji do aplikace Signal a pokračujte v konverzaci zde.</string>
+    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Tato osoba již Collie nepoužívá. Pozvěte ji do aplikace Collie a pokračujte v konverzaci zde.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Tato osoba nepoužívá Signal. Pozvěte ji a pokračujte v konverzaci zde.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Pozvat do Signal</string>
+    <string name="ConversationActivity__invite_to_signal">Pozvat do Collie</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Během hovoru nelze nahrát hlasovou zprávu.</string>
 
@@ -602,15 +603,15 @@
     <!-- Message shown after successfully blocking join requests for a user -->
     <string name="ConversationFragment__blocked">Zablokováno</string>
     <!-- Action shown to allow a user to update their application because it has expired -->
-    <string name="ConversationFragment__update_build">Aktualizovat Signal</string>
+    <string name="ConversationFragment__update_build">Aktualizovat Collie</string>
     <!-- Action shown to allow a user to re-register as they are no longer registered -->
-    <string name="ConversationFragment__reregister_signal">Znovu se zaregistrovat do služby Signal</string>
+    <string name="ConversationFragment__reregister_signal">Znovu se zaregistrovat do služby Collie</string>
     <!-- Action shown in the conversation input area to allow a user to re-link this device as it is no longer linked -->
     <string name="ConversationFragment__relink_signal">Znovu propojit</string>
     <!-- Label for a button displayed in the conversation toolbar to return to the previous screen. -->
     <string name="ConversationFragment__content_description_back_button">Přejít zpět.</string>
     <!-- Label for a button displayed in the conversation toolbar to open the main screen of the app. -->
-    <string name="ConversationFragment__content_description_launch_signal_button">Otevřít Signal</string>
+    <string name="ConversationFragment__content_description_launch_signal_button">Otevřít Collie</string>
     <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
     <string name="ConversationFragment__no_longer_verified">Již bez ověření</string>
     <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
@@ -659,7 +660,7 @@
     <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
     <string name="ConversationFragment_attachment_backfill_failed_title">Média nelze stáhnout</string>
     <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
-    <string name="ConversationFragment_attachment_backfill_timeout">Zkontrolujte připojení počítače a telefonu k internetu. Otevřete aplikaci Signal v telefonu a zkuste je stáhnout znovu.</string>
+    <string name="ConversationFragment_attachment_backfill_timeout">Zkontrolujte připojení počítače a telefonu k internetu. Otevřete aplikaci Collie v telefonu a zkuste je stáhnout znovu.</string>
     <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
     <string name="ConversationFragment_attachment_backfill_not_found">Tato média již nejsou v telefonu k dispozici a nelze je stáhnout.</string>
     <!-- Dialog for how to long to keep a messaged pinned for -->
@@ -729,7 +730,7 @@
     <!-- Bottom sheet text explaining that profile names are chosen by the account holder. Placeholder will be \'Profile names\' -->
     <string name="ProfileNameBottomSheet__profile_names_on_signal">%1$s v aplikaci Signal si vybírá majitel účtu.</string>
     <!-- Bottom sheet text explaining that Signal can\'t verify names and photos -->
-    <string name="ProfileNameBottomSheet__signal_cant_verify">Signal nemůže ověřovat jména a fotky</string>
+    <string name="ProfileNameBottomSheet__signal_cant_verify">Collie nemůže ověřovat jména a fotky</string>
     <!-- Bottom sheet text explaining that Signal will never contact you for registration code, PIN, or recovery key -->
     <string name="ProfileNameBottomSheet__signal_will_never_contact">Signal vás nikdy nebude kontaktovat ohledně registračního kódu, PIN nebo klíče pro obnovení</string>
     <!-- Bottom sheet text explaining that accounts can impersonate other people and to be cautious -->
@@ -895,9 +896,9 @@
     <!-- Toolbar title for this screen -->
     <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">Kdo mě může najít podle čísla?</string>
     <!-- Description for radio item stating anyone can see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Každý, kdo má vaše telefonní číslo, uvidí, že používáte Signal, a může s vámi začít chatovat.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Každý, kdo má vaše telefonní číslo, uvidí, že používáte Collie, a může s vámi začít chatovat.</string>
     <!-- Description for radio item stating no one will be able to see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Nikdo neuvidí, že používáte Signal, dokud mu nenapíšete nebo pokud s ním už nejste v existujícím chatu.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Nikdo neuvidí, že používáte Collie, dokud mu nenapíšete nebo pokud s ním už nejste v existujícím chatu.</string>
 
     <!-- ChooseBackupFragment -->
 
@@ -923,7 +924,7 @@
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">Otestujte přístupovou frázi pro vaši zálohu a ověřte, že se shoduje</string>
     <string name="BackupsPreferenceFragment__turn_on">Zapnout zálohování</string>
     <string name="BackupsPreferenceFragment__turn_off">Vypnout</string>
-    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Pro obnovení ze zálohy znovu nainstalujte aplikaci Signal. Spusťte aplikaci a klepněte na \"Obnovení ze zálohy\", pak najděte soubor se zálohou. %1$s"</string>
+    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Pro obnovení ze zálohy znovu nainstalujte aplikaci Collie. Spusťte aplikaci a klepněte na \"Obnovení ze zálohy\", pak najděte soubor se zálohou. %1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">Zjistit více</string>
     <string name="BackupsPreferenceFragment__in_progress">Probíhá…</string>
     <!-- Status text shown in backup preferences when verifying a backup -->
@@ -932,7 +933,7 @@
     <string name="BackupsPreferenceFragment__d_so_far">%1$d dosud…</string>
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">Zatím %1$s%%…</string>
-    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Signal potřebuje oprávnění pro přístup k úložišti, aby mohl vytvářet zálohy, ale toto oprávnění je nyní trvale zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Úložiště\".</string>
+    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Collie potřebuje oprávnění pro přístup k úložišti, aby mohl vytvářet zálohy, ale toto oprávnění je nyní trvale zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Úložiště\".</string>
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">Nastavte si čas zálohování</string>
 
@@ -1016,7 +1017,7 @@
 
     <!-- DecryptionFailedDialog -->
     <string name="DecryptionFailedDialog_chat_session_refreshed">Relace chatu byla obnovena</string>
-    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Signal používá koncové šifrování a někdy může být nutné obnovit relaci chatu. Na zabezpečení komunikace to nemá vliv, ale mohlo se stát, že vám unikla zpráva od kontaktu. Můžete jej však požádat, aby vám ji poslal znovu.</string>
+    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Collie používá koncové šifrování a někdy může být nutné obnovit relaci chatu. Na zabezpečení komunikace to nemá vliv, ale mohlo se stát, že vám unikla zpráva od kontaktu. Můžete jej však požádat, aby vám ji poslal znovu.</string>
 
     <!-- LinkDeviceFragment -->
     <!-- Description for how Signal will work with a linked device (eg desktop, iPad) -->
@@ -1125,7 +1126,7 @@
     <!-- Bottom sheet title telling users to complete the linking process on the other device  -->
     <string name="AddLinkDeviceFragment__finish_linking_on_other_device">Dokončete propojení na druhém zařízení</string>
     <!-- Bottom sheet description telling users to complete the linking process -->
-    <string name="AddLinkDeviceFragment__finish_linking_signal">Dokončete propojení aplikace Signal na druhém zařízení.</string>
+    <string name="AddLinkDeviceFragment__finish_linking_signal">Dokončete propojení aplikace Collie na druhém zařízení.</string>
     <!-- Title of dialog when the QR code being scanned is invalid -->
     <string name="AddLinkDeviceFragment__linking_device_failed">Propojení zařízení se nezdařilo</string>
     <!-- Text shown in a dialog when the QR code being scanned is invalid -->
@@ -1170,19 +1171,19 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Optimlizovat pro chybějící Google Play službu</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Toto zařízení nepodporuje službu Google Play. Klepnutím zakážete systémové optimalizace baterie, které způsobují nemožnost aplikaci Signal přijímat zprávy v době nečinnosti.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Toto zařízení nepodporuje službu Google Play. Klepnutím zakážete systémové optimalizace baterie, které způsobují nemožnost aplikaci Molly přijímat zprávy v době nečinnosti.</string>
 
     <!-- ExpiredBuildReminder -->
-    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Tato verze aplikace Signal je zastaralá. Proveďte aktualizaci, abyste mohli odesílat a přijímat zprávy.</string>
+    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Tato verze aplikace Collie je zastaralá. Proveďte aktualizaci, abyste mohli odesílat a přijímat zprávy.</string>
     <string name="ExpiredBuildReminder_update_now">Aktualizovat nyní</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
     <string name="DeprecatedSdkBanner_body">Signal na tomto zařízení již nefunguje. Pokud chcete Signal zase používat, aktualizujte své zařízení na novější verzi systému Android nebo přejděte na novější zařízení.</string>
 
     <!-- Title of notification telling users to update Signal -->
-    <string name="DeprecatedNotificationJob_update_signal">Aktualizujte Signal</string>
+    <string name="DeprecatedNotificationJob_update_signal">Aktualizujte Collie</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
-    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Platnost této verze aplikace Signal vypršela. Proveďte aktualizaci, abyste mohli odesílat a přijímat zprávy.</string>
+    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Platnost této verze aplikace Collie vypršela. Proveďte aktualizaci, abyste mohli odesílat a přijímat zprávy.</string>
 
     <!-- PendingGroupJoinRequestsReminder -->
     <plurals name="PendingGroupJoinRequestsReminder_d_pending_member_requests">
@@ -1340,7 +1341,7 @@
     <!-- Message for dialog asking user to submit logs for debugging a crash -->
     <string name="PromptLogsSlowNotificationsDialog__message">Protokoly ladění nám pomáhají diagnostikovat a opravit problém a neobsahují identifikační informace.</string>
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
-    <string name="PromptLogsSlowNotificationsDialog__title_crash">U aplikace Signal se vyskytl problém. Odeslat protokol ladění?</string>
+    <string name="PromptLogsSlowNotificationsDialog__title_crash">U aplikace Collie se vyskytl problém. Odeslat protokol ladění?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">Možná nebudete moci přijímat zprávy. Odeslat protokol ladění?</string>
 
@@ -1348,12 +1349,12 @@
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">Oznámení se mohou zpožďovat kvůli optimalizaci baterie</string>
     <!-- Message explaining that battery saver may delay notifications -->
-    <string name="PromptBatterySaverBottomSheet__message">Optimalizaci baterie pro službu Signal můžete vypnout, abyste zajistili, že se oznámení zpráv nebudou zpožďovat.</string>
+    <string name="PromptBatterySaverBottomSheet__message">Optimalizaci baterie pro službu Collie můžete vypnout, abyste zajistili, že se oznámení zpráv nebudou zpožďovat.</string>
 
     <!-- Title in bottom sheet that states that notifications for this device could be delayed -->
     <string name="DeviceSpecificNotificationBottomSheet__notifications_may_be_delayed">Oznámení se mohou zpožďovat kvůli optimalizaci baterie</string>
     <!-- Message in bottom sheet prompting users to fix potential issues by disabling battery optimizations -->
-    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Vypněte optimalizaci baterie pro službu Signal, aby se oznámení zpráv nezpožďovala. Klepnutím na „Pokračovat“ zobrazíte pokyny pro konkrétní zařízení.</string>
+    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Vypněte optimalizaci baterie pro službu Collie, aby se oznámení zpráv nezpožďovala. Klepnutím na „Pokračovat“ zobrazíte pokyny pro konkrétní zařízení.</string>
     <!-- Button to dismiss notification help prompt -->
     <string name="DeviceSpecificNotificationBottomSheet__no_thanks">Ne, díky</string>
     <!-- Button to continue and go to Signal support website -->
@@ -1362,7 +1363,7 @@
     <!-- Title of a bottom sheet that is shown when the user is having connectivity issues -->
     <string name="ConnectivityWarningBottomSheet_title">Možná nebudete moci přijímat zprávy</string>
     <!-- Body of a bottom sheet that is shown when the user is having connectivity issues -->
-    <string name="ConnectivityWarningBottomSheet_body">Problém s doručováním zpráv může vyřešit restart zařízení. Pokud problém přetrvává, obraťte se na podporu služby Signal.</string>
+    <string name="ConnectivityWarningBottomSheet_body">Problém s doručováním zpráv může vyřešit restart zařízení. Pokud problém přetrvává, obraťte se na podporu služby Collie.</string>
     <!-- Text for a button in a bottom sheet that is shown when the user is having connectivity issues. Clicking it will dismiss the bottom sheet. -->
     <string name="ConnectivityWarningBottomSheet_dismiss_button">Rozumím</string>
 
@@ -1613,7 +1614,7 @@
     <string name="LongMessageActivity_your_message">Vaše zpráva</string>
 
     <!-- MessageRetrievalService -->
-    <string name="MessageRetrievalService_signal">Signal</string>
+    <string name="MessageRetrievalService_signal">Collie</string>
     <string name="MessageRetrievalService_background_connection_enabled">Komunikace na pozadí povolena</string>
 
     <!-- MediaOverviewActivity -->
@@ -1715,10 +1716,10 @@
   <!-- Removed by excludeNonTranslatables <string name="StarredMessages__s_chevron_s" translatable="false">%1$s \u203A %2$s</string> -->
 
     <!-- NotificationBarManager -->
-    <string name="NotificationBarManager__establishing_signal_call">Navazuji hovor Signal</string>
+    <string name="NotificationBarManager__establishing_signal_call">Navazuji hovor Collie</string>
     <!-- Temporary notification shown when starting the calling service -->
-    <string name="NotificationBarManager__starting_signal_call_service">Zahájení služby volání Signal</string>
-    <string name="NotificationBarManager__stopping_signal_call_service">Zastavuji službu hovorů Signal</string>
+    <string name="NotificationBarManager__starting_signal_call_service">Zahájení služby volání Collie</string>
+    <string name="NotificationBarManager__stopping_signal_call_service">Zastavuji službu hovorů Collie</string>
     <string name="NotificationBarManager__cancel_call">Zrušit hovor</string>
 
     <!-- NotificationsMegaphone -->
@@ -2069,7 +2070,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">V aplikaci Signal již nelze odesílat zprávy SMS. Pozvěte kontakt %1$s do aplikace Signal a pokračujte v konverzaci zde.</string>
+    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">V aplikaci Collie již nelze odesílat zprávy SMS. Pozvěte kontakt %1$s do aplikace Collie a pokračujte v konverzaci zde.</string>
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Platba: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2194,22 +2195,22 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Propojit zařízení Signal?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Pokud chcete s tímto účtem Signal propojit stolní počítač nebo iPad, přejděte do části Propojená zařízení, klepněte na Propojit nové zařízení a znovu naskenujte QR kód. Ujistěte se, že skenujete pouze QR kódy, které pocházejí přímo z aplikace Signal.</string>
 
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Tato verze aplikace Signal dnes vyprší. Aktualizujte na nejnovější verzi.</string>
+    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Tato verze aplikace Collie dnes vyprší. Aktualizujte na nejnovější verzi.</string>
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
-        <item quantity="one">Platnost této verze aplikace Signal vyprší zítra. Aktualizujte na nejnovější verzi.</item>
-        <item quantity="few">Platnost této verze aplikace Signal vyprší za %1$d dny. Aktualizujte na nejnovější verzi.</item>
-        <item quantity="many">Platnost této verze aplikace Signal vyprší za %1$d dnů. Aktualizujte na nejnovější verzi.</item>
-        <item quantity="other">Platnost této verze aplikace Signal vyprší za %1$d dnů. Aktualizujte na nejnovější verzi.</item>
+        <item quantity="one">Platnost této verze aplikace Collie vyprší zítra. Aktualizujte na nejnovější verzi.</item>
+        <item quantity="few">Platnost této verze aplikace Collie vyprší za %1$d dny. Aktualizujte na nejnovější verzi.</item>
+        <item quantity="many">Platnost této verze aplikace Collie vyprší za %1$d dnů. Aktualizujte na nejnovější verzi.</item>
+        <item quantity="other">Platnost této verze aplikace Collie vyprší za %1$d dnů. Aktualizujte na nejnovější verzi.</item>
     </plurals>
 
     <!-- PassphrasePromptActivity -->
     <string name="PassphrasePromptActivity_enter_passphrase">Zadat heslo</string>
-    <string name="PassphrasePromptActivity_watermark_content_description">Ikona Signal</string>
+    <string name="PassphrasePromptActivity_watermark_content_description">Ikona Collie</string>
     <string name="PassphrasePromptActivity_ok_button_content_description">Zadejte heslo</string>
     <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Chybné heslo!</string>
-    <string name="PassphrasePromptActivity_unlock_signal">Odemknout Signal</string>
+    <string name="PassphrasePromptActivity_unlock_signal">Odemknout Collie</string>
     <!-- This is the subject line for the email that is sent to support -->
-    <string name="PassphrasePromptActivity_signal_android_lock_screen">Signal Android - Zamykací obrazovka</string>
+    <string name="PassphrasePromptActivity_signal_android_lock_screen">Collie Android - Zamykací obrazovka</string>
 
     <!-- PlacePickerActivity -->
     <string name="PlacePickerActivity_title">Mapa</string>
@@ -2277,7 +2278,7 @@
     <!-- Name of recipient representing user\'s \'My Story\' -->
     <string name="Recipient_my_story">Můj příběh</string>
     <!-- Name of recipient for a call link without a name -->
-    <string name="Recipient_signal_call">Hovor přes Signal</string>
+    <string name="Recipient_signal_call">Hovor přes Collie</string>
 
     <!-- RecipientPreferencesActivity -->
     <string name="RecipientPreferenceActivity_block">Blokovat</string>
@@ -2314,7 +2315,7 @@
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Klepnutím sem zapnete své video</string>
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
-    <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
+    <string name="WebRtcCallActivity__signal_s">Collie %1$s</string>
     <string name="WebRtcCallActivity__calling">Volání…</string>
     <!-- Title for dialog warning about lacking bluetooth permissions during a call -->
     <string name="WebRtcCallActivity__bluetooth_permission_denied">Oprávnění Bluetooth odepřeno</string>
@@ -2391,15 +2392,15 @@
     <!-- Dialog title asking users for camera permission -->
     <string name="WebRtcCallActivity__allow_access_camera">Povolte přístup k fotoaparátu</string>
     <!-- Dialog description explaining why camera and microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Pro zahájení nebo připojení se k hovoru potřebuje aplikace Signal přístup ke kameře a mikrofonu.</string>
+    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Pro zahájení nebo připojení se k hovoru potřebuje aplikace Collie přístup ke kameře a mikrofonu.</string>
     <!-- Dialog description explaining why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_microphone">Pro zahájení nebo připojení se k hovoru povolte aplikaci Signal přístup k mikrofonu.</string>
+    <string name="WebRtcCallActivity__to_start_call_microphone">Pro zahájení nebo připojení se k hovoru povolte aplikaci Collie přístup k mikrofonu.</string>
     <!-- Dialog description explaining why camera permissions are needed to enable a user\'s video in a call -->
-    <string name="WebRtcCallActivity__to_enable_video_allow_camera">Pro použití videa povolte aplikaci Signal přístup k fotoaparátu.</string>
+    <string name="WebRtcCallActivity__to_enable_video_allow_camera">Pro použití videa povolte aplikaci Collie přístup k fotoaparátu.</string>
     <!-- Toast describing why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Pro zahájení nebo připojení k hovoru potřebuje aplikace Signal přístup k mikrofonu.</string>
+    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Pro zahájení nebo připojení k hovoru potřebuje aplikace Collie přístup k mikrofonu.</string>
     <!-- Toast describing why camera permissions are needed to enable a video in a call -->
-    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">Pro použití videa potřebuje aplikace Signal přístup k fotoaparátu</string>
+    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">Pro použití videa potřebuje aplikace Collie přístup k fotoaparátu</string>
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="WebRtcCallActivity__to_start_call">Zahájení hovoru nebo připojení se k němu:</string>
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
@@ -2412,8 +2413,8 @@
     <string name="MoveableLocalVideoRenderer__expand_local_video">Zvětšit místní video</string>
 
     <!-- WebRtcCallView -->
-    <string name="WebRtcCallView__signal_call">Signal hovor</string>
-    <string name="WebRtcCallView__signal_video_call">Signal video hovor</string>
+    <string name="WebRtcCallView__signal_call">Collie hovor</string>
+    <string name="WebRtcCallView__signal_video_call">Collie video hovor</string>
     <string name="WebRtcCallView__start_call">Zahájit hovor</string>
     <string name="WebRtcCallView__join_call">Připojit se k hovoru</string>
     <string name="WebRtcCallView__call_is_full">Hovor je plný</string>
@@ -2754,7 +2755,7 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Přidat do kontaktů</string>
-    <string name="SharedContactView_invite_to_signal">Pozvat do Signal</string>
+    <string name="SharedContactView_invite_to_signal">Pozvat do Collie</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Zpráva</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
@@ -3057,11 +3058,11 @@
     <string name="ThreadRecord_blocked_group">Zablokováno</string>
 
     <!-- ApkUpdateNotifications -->
-    <string name="ApkUpdateNotifications_prompt_install_title">Aktualizace Signal</string>
-    <string name="ApkUpdateNotifications_prompt_install_body">K dispozici je nová verze aplikace Signal. Klepnutím ji aktualizujete.</string>
-    <string name="ApkUpdateNotifications_failed_general_title">Signal se nepodařilo aktualizovat</string>
+    <string name="ApkUpdateNotifications_prompt_install_title">Aktualizace Collie</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">K dispozici je nová verze aplikace Collie. Klepnutím ji aktualizujete.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Collie se nepodařilo aktualizovat</string>
     <string name="ApkUpdateNotifications_failed_general_body">Zkusíme to znovu později.</string>
-    <string name="ApkUpdateNotifications_auto_update_success_title">Signal byl úspěšně aktualizován</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Collie byl úspěšně aktualizován</string>
     <string name="ApkUpdateNotifications_auto_update_success_body">Byla provedena automatická aktualizace na verzi %1$s.</string>
     <string name="ApkUpdateNotifications_manual_update_success_body">Aktualizovali jste na verzi %1$s.</string>
 
@@ -3127,8 +3128,8 @@
 
     <!-- KeyCachingService -->
     <string name="KeyCachingService_signal_passphrase_cached">Dotykem otevřete.</string>
-    <string name="KeyCachingService_passphrase_cached">Signal je odemčen</string>
-    <string name="KeyCachingService_lock">Zamknout Signal</string>
+    <string name="KeyCachingService_passphrase_cached">Collie je odemčen</string>
+    <string name="KeyCachingService_lock">Zamknout Collie</string>
 
     <!-- MediaPreviewActivity -->
     <string name="MediaPreviewActivity_you">Vy</string>
@@ -3185,7 +3186,7 @@
     <string name="MessageNotifier_failed_to_deliver_message">Nepodařilo se zprávu doručit.</string>
     <string name="MessageNotifier_error_delivering_message">Chyba při doručení zprávy.</string>
     <string name="MessageNotifier_message_delivery_paused">Doručení zprávy pozastaveno.</string>
-    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Ověřte pro pokračování konverzace na Signalu.</string>
+    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Ověřte pro pokračování konverzace na Collieu.</string>
     <string name="MessageNotifier_mark_all_as_read">Označit vše jako přečtené</string>
     <string name="MessageNotifier_mark_read">Označit jako přečtené</string>
     <string name="MessageNotifier_turn_off_these_notifications">Vypnout tato upozornění</string>
@@ -3209,7 +3210,7 @@
     <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
     <string name="MessageNotifier_s_voted_in_poll">%1$s %2$s hlasoval/a v anketě „%3$s“</string>
 
-    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Vypnout upozornění, že se kontakt připojil k Signal? Můžete je znovu zapnout v Signal &gt; Nastavení &gt; Upozornění.</string>
+    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Vypnout upozornění, že se kontakt připojil k Collie? Můžete je znovu zapnout v Collie &gt; Nastavení &gt; Upozornění.</string>
 
     <!-- TurnOnNotificationsBottomSheet -->
     <!-- Title for sheet explaining how to turn on app notifications -->
@@ -3293,7 +3294,7 @@
     </plurals>
 
     <!-- Message shown when the app requests permission to save media to the device storage, but that permission has been permanently denied by the user. -->
-    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">Signal potřebuje oprávnění pro přístup k úložišti, aby mohl zapisovat do externího úložiště, ale to bylo trvale zamítnuto. Pokračujte do nastavení aplikací, vyberte „Oprávnění“ a povolte „Úložiště“.</string>
+    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">Collie potřebuje oprávnění pro přístup k úložišti, aby mohl zapisovat do externího úložiště, ale to bylo trvale zamítnuto. Pokračujte do nastavení aplikací, vyberte „Oprávnění“ a povolte „Úložiště“.</string>
 
     <!-- Message explaining that it is not possible to save media to the device storage after the user denied the system save to storage permission. -->
     <string name="AttachmentSaver__unable_to_write_to_external_storage_without_permission">Nelze uložit do externího úložiště bez oprávnění</string>
@@ -3303,11 +3304,11 @@
     <!-- Dialog title shown when attempting to save media that has been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_media">Média nelze uložit</string>
     <!-- Dialog message explaining that media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__media_offloaded_message">Tato média byla z vašeho zařízení odložena, protože je zapnutá funkce Optimalizovat úložiště Signal. Položky můžete stahovat po jedné, nebo můžete vypnout funkci Optimalizovat úložiště Signal a stáhnout všechna média do svého zařízení.</string>
+    <string name="AttachmentSaver__media_offloaded_message">Tato média byla z vašeho zařízení odložena, protože je zapnutá funkce Optimalizovat úložiště Collie. Položky můžete stahovat po jedné, nebo můžete vypnout funkci Optimalizovat úložiště Collie a stáhnout všechna média do svého zařízení.</string>
     <!-- Dialog title shown when attempting to save multiple media items, some of which have been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_all_items">Nejde uložit všechny položky</string>
     <!-- Dialog message explaining that some selected media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__some_media_offloaded_message">Některá vybraná média byla z vašeho zařízení odložena, protože je zapnutá funkce Optimalizovat úložiště Signal. Položky můžete ukládat po jedné, nebo můžete vypnout funkci Optimalizovat úložiště Signal a stáhnout všechna média do svého zařízení.</string>
+    <string name="AttachmentSaver__some_media_offloaded_message">Některá vybraná média byla z vašeho zařízení odložena, protože je zapnutá funkce Optimalizovat úložiště Collie. Položky můžete ukládat po jedné, nebo můžete vypnout funkci Optimalizovat úložiště Collie a stáhnout všechna média do svého zařízení.</string>
     <!-- Button label in the offloaded media dialog that navigates to the storage settings screen. -->
     <string name="AttachmentSaver__view_storage_settings">Zobrazit nastavení úložiště</string>
 
@@ -3320,7 +3321,7 @@
     <string name="ShortcutLauncherActivity_invalid_shortcut">Chybná klávesová zkratka</string>
 
     <!-- SingleRecipientNotificationBuilder -->
-    <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
+    <string name="SingleRecipientNotificationBuilder_signal">Collie</string>
     <string name="SingleRecipientNotificationBuilder_new_message">Nová zpráva</string>
     <string name="SingleRecipientNotificationBuilder_message_request">Žádost o zprávu</string>
     <string name="SingleRecipientNotificationBuilder_you">Vy</string>
@@ -3398,7 +3399,7 @@
 
     <!-- UnauthorizedReminder -->
     <!-- Message shown in a reminder banner when the user\'s device is no longer registered -->
-    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Toto zařízení již není registrované. Je to pravděpodobně proto, že jste své telefonní číslo zaregistrovali v aplikaci Signal z jiného zařízení.</string>
+    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Toto zařízení již není registrované. Je to pravděpodobně proto, že jste své telefonní číslo zaregistrovali v aplikaci Collie z jiného zařízení.</string>
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Znovu zaregistrujte zařízení</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
@@ -3407,7 +3408,7 @@
     <string name="UnauthorizedReminder_relink_action">Znovu propojit zařízení</string>
 
     <!-- Push notification when the app is forcibly logged out by the server. -->
-    <string name="LoggedOutNotification_you_have_been_logged_out">Na tomto zařízení jste odhlášeni ze služby Signal.</string>
+    <string name="LoggedOutNotification_you_have_been_logged_out">Na tomto zařízení jste odhlášeni ze služby Collie.</string>
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
@@ -3453,14 +3454,14 @@
     <string name="change_passphrase_activity__repeat_new_passphrase">Zopakujte nové heslo</string>
 
     <!-- contact_selection_activity -->
-    <string name="contact_selection_activity__invite_to_signal">Pozvat do Signal</string>
+    <string name="contact_selection_activity__invite_to_signal">Pozvat do Collie</string>
     <string name="contact_selection_activity__new_group">Nová skupina</string>
     <!-- Row item title for refreshing contacts -->
     <string name="contact_selection_activity__refresh_contacts">Obnovit kontakty</string>
     <!-- Row item description for refreshing contacts -->
     <string name="contact_selection_activity__missing_someone">Chybí někdo? Zkuste provést obnovení</string>
     <!-- Row item title for finding people on Signal via your contacts -->
-    <string name="contact_selection_activity__find_people_you_know">Najděte v aplikaci Signal lidi, které znáte</string>
+    <string name="contact_selection_activity__find_people_you_know">Najděte v aplikaci Collie lidi, které znáte</string>
     <!-- Row item description asking users for access to their contacts to find people they know -->
     <string name="contact_selection_activity__allow_access_to_contacts">Povolte přístup ke svým kontaktům</string>
     <!-- Row header title for more section -->
@@ -3479,7 +3480,7 @@
     <string name="SingleContactSelectionActivity_contact_photo">Fotografie kontaktu</string>
 
     <!-- ContactSelectionListFragment-->
-    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Signal potřebuje oprávnění pro přístup ke kontaktům, aby vám je mohl zobrazit, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Kontakty\".</string>
+    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Collie potřebuje oprávnění pro přístup ke kontaktům, aby vám je mohl zobrazit, ale toto oprávnění je nyní zakázáno. Prosím pokračujte do menu nastavení aplikací, vyberte \"Oprávnění\" a povolte \"Kontakty\".</string>
     <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">Nepodařilo se načíst kontakty, zkontrolujte připojení k síti.</string>
     <string name="ContactSelectionListFragment_username_not_found">Uživatelské jméno nebylo nalezeno</string>
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"\"%1$s\" není uživatel Signal. Zkontrolujte prosím uživatelské jméno a zkuste to znovu."</string>
@@ -3501,7 +3502,7 @@
     <!-- Dialog title asking users for contact permission -->
     <string name="ContactSelectionListFragment_allow_access_contacts">Povolte přístup ke kontaktům</string>
     <!-- Dialog description that will explain the steps needed to give contact permissions -->
-    <string name="ContactSelectionListFragment_to_find_people">Jak najít v aplikaci Signal lidi, které znáte:</string>
+    <string name="ContactSelectionListFragment_to_find_people">Jak najít v aplikaci Collie lidi, které znáte:</string>
     <!-- Text on button prompting users to give Signal contact permissions -->
     <string name="ContactSelectionListFragment__allow_access">Povolit přístup</string>
     <!-- Text on button to dismiss Signal\'s request for contact permissions -->
@@ -3639,7 +3640,7 @@
 
     <!-- BubbleOptOutTooltip -->
     <!-- Message to inform the user of what Android chat bubbles are -->
-    <string name="BubbleOptOutTooltip__description">Bubliny jsou funkcí systému Android, kterou můžete pro chaty aplikace Signal vypnout.</string>
+    <string name="BubbleOptOutTooltip__description">Bubliny jsou funkcí systému Android, kterou můžete pro chaty aplikace Collie vypnout.</string>
     <!-- Button to dismiss the tooltip for opting out of using Android bubbles -->
     <string name="BubbleOptOutTooltip__not_now">Teď ne</string>
     <!-- Button to move to the system settings to control the use of Android bubbles -->
@@ -3749,6 +3750,18 @@
     <string name="EditProfileFragment__group_name">Název skupiny</string>
     <string name="EditProfileFragment__group_description">Popisek skupiny</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Aktualizovat Collie</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Platnost této verze aplikace Collie vypršela. Aktualizujte ji, ať můžete Collie dál používat.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">Aktualizovat</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">Zařízení není registrováno</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">Toto zařízení již není registrované. Chcete-li provést změny ve svém účtu, znovu ho zaregistrujte.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Znovu se zaregistrovat</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Uložit</string>
@@ -3784,20 +3797,20 @@
     <!-- Bottom sheet title when encryption is auto-verified -->
     <string name="EncryptionVerifiedSheet__title_success">Šifrování pro tento chat bylo automaticky ověřeno</string>
     <!-- Bottom sheet body when encryption is auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_success">U lidí, se kterými jste propojeni pomocí telefonního čísla, může aplikace Signal automaticky potvrdit, zda je spojení bezpečné, pomocí procesu zvaného transparentnost klíče. Pro vyšší bezpečnost můžete koncové šifrování ověřit ručně porovnáním čísel na předchozí obrazovce nebo naskenováním kódu na zařízení daného člověka.</string>
+    <string name="EncryptionVerifiedSheet__body_success">U lidí, se kterými jste propojeni pomocí telefonního čísla, může aplikace Collie automaticky potvrdit, zda je spojení bezpečné, pomocí procesu zvaného transparentnost klíče. Pro vyšší bezpečnost můžete koncové šifrování ověřit ručně porovnáním čísel na předchozí obrazovce nebo naskenováním kódu na zařízení daného člověka.</string>
     <!-- Bottom sheet title when encryption is no longer auto-verified -->
     <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">Automatické ověření není pro tento chat k dispozici</string>
     <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
-    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Signal nemůže automaticky ověřit šifrování tohoto chatu. Může to být tím, že %1$s změnil/a své telefonní číslo nebo nastavení soukromí. Koncové šifrování můžete ověřit ručně porovnáním čísel na předchozí obrazovce nebo naskenováním kódu na zařízení daného člověka.</string>
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Collie nemůže automaticky ověřit šifrování tohoto chatu. Může to být tím, že %1$s změnil/a své telefonní číslo nebo nastavení soukromí. Koncové šifrování můžete ověřit ručně porovnáním čísel na předchozí obrazovce nebo naskenováním kódu na zařízení daného člověka.</string>
     <!-- Bottom sheet title when encryption cannot be auto-verified -->
     <string name="EncryptionVerifiedSheet__title_unavailable">Automatické ověřování není pro tento chat k dispozici</string>
     <!-- Bottom sheet body when encryption cannot be auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_unavailable">Aplikace Signal může automaticky ověřit šifrování pouze v chatech, kde jste s někým propojeni prostřednictvím telefonního čísla. Pokud byl chat zahájen se společným uživatelským jménem nebo skupinou, ověřte koncové šifrování porovnáním čísel na předchozí obrazovce nebo naskenováním kódu na jejich zařízení.</string>
+    <string name="EncryptionVerifiedSheet__body_unavailable">Aplikace Collie může automaticky ověřit šifrování pouze v chatech, kde jste s někým propojeni prostřednictvím telefonního čísla. Pokud byl chat zahájen se společným uživatelským jménem nebo skupinou, ověřte koncové šifrování porovnáním čísel na předchozí obrazovce nebo naskenováním kódu na jejich zařízení.</string>
 
     <!-- Title for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__title">Signal nyní podporuje automatické ověření šifrování</string>
+    <string name="VerifyAutomaticallyEducationSheet__title">Collie nyní podporuje automatické ověření šifrování</string>
     <!-- Body for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__body">U kontaktů, se kterými jste propojeni pomocí telefonního čísla, může aplikace Signal automaticky potvrdit, zda je připojení zabezpečené, pomocí procesu zvaného transparentnost klíče. Pro větší bezpečnost můžete připojení i nadále ověřovat ručně pomocí QR kódu nebo bezpečnostního čísla.</string>
+    <string name="VerifyAutomaticallyEducationSheet__body">U kontaktů, se kterými jste propojeni pomocí telefonního čísla, může aplikace Collie automaticky potvrdit, zda je připojení zabezpečené, pomocí procesu zvaného transparentnost klíče. Pro větší bezpečnost můžete připojení i nadále ověřovat ručně pomocí QR kódu nebo bezpečnostního čísla.</string>
     <!-- Button to learn more about automatic verification -->
     <string name="VerifyAutomaticallyEducationSheet__learn_more">Zjistit více</string>
     <!-- Button to go to verification page -->
@@ -3948,7 +3961,9 @@
     <string name="preferences__led_color_unknown">Neznámý</string>
     <string name="preferences__silent">Ticho</string>
     <string name="preferences__advanced">Rozšířené možnosti</string>
-    <string name="preferences__donate_to_signal">Podpořte Signal finančně</string>
+    <string name="preferences__donate_to_signal">Podpořte Molly finančně</string>
+    <!-- Preference label for making one-time donations to Signal -->
+    <string name="preferences__privacy">Soukromí</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Příběhy</string>
     <string name="preferences__payments">Platby</string>
@@ -3969,7 +3984,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Obcházení cenzury</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Obcházení cenzury</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Pokud je povoleno, Signal se pokusí obejít cenzuru. Nepovolujte v místech, kde Signal není cenzurován.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Pokud je povoleno, Collie se pokusí obejít cenzuru. Nepovolujte v místech, kde Collie není cenzurován.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Obcházení cenzury bylo aktivováno na základě vašeho telefonního čísla.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -3997,7 +4012,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automatické ověření klíče</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Pokud je tato funkce povolena, služba Signal se pokusí automaticky ověřit šifrování 1:1 chatů.</string>
+    <string name="preferences_automatic_key_verification_body">Pokud je tato funkce povolena, služba Collie se pokusí automaticky ověřit šifrování 1:1 chatů.</string>
 
 
     <!-- Internal only preferences -->
@@ -4014,7 +4029,7 @@
 
     <!-- Displayed on a welcome screen for payments -->
     <string name="PaymentsHomeFragment_introducing_payments">Představujeme Platby</string>
-    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Pomocí Signalu můžete odesílat a přijímat MobileCoin, novou digitální měnu zaměřenou na soukromí. Stačí aktivovat a můžete začít.</string>
+    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Pomocí Collieu můžete odesílat a přijímat MobileCoin, novou digitální měnu zaměřenou na soukromí. Stačí aktivovat a můžete začít.</string>
     <string name="PaymentsHomeFragment__activate_payments">Aktivovat platby</string>
     <string name="PaymentsHomeFragment__activating_payments">Aktivuji platby…</string>
     <string name="PaymentsHomeFragment__restore_payments_account">Obnovit platební účet</string>
@@ -4040,7 +4055,7 @@
     <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">Platby nejsou ve vašem regionu dostupné.</string>
     <string name="PaymentsHomeFragment__could_not_enable_payments">Nepodařilo se povolit platby. Zkuste to znovu.</string>
     <string name="PaymentsHomeFragment__deactivate_payments_question">Deaktivovat platby?</string>
-    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">Nebudete moci posílat ani přijímat MobileCoin v Signalu, pokud deaktivujete platby.</string>
+    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">Nebudete moci posílat ani přijímat MobileCoin v Collieu, pokud deaktivujete platby.</string>
     <string name="PaymentsHomeFragment__deactivate">Deaktivovat</string>
     <string name="PaymentsHomeFragment__continue">Pokračovat</string>
     <string name="PaymentsHomeFragment__balance_is_not_currently_available">Zůstatek není aktuálně k dispozici.</string>
@@ -4049,10 +4064,10 @@
     <string name="PaymentsHomeFragment__details">Podrobnosti</string>
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__learn_more__activate_payments" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_activate</string> -->
     <!-- Displayed as a description in a dialog when the user tries to activate payments -->
-    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">Pomocí služby Signal můžete odesílat a přijímat měnu MobileCoin. Na všechny platby se vztahují Podmínky používání služby MobileCoin a peněženky MobileCoin. Můžete se setkat s problémy a platby i zůstatky, o které přijdete, není možné obnovit. </string>
+    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">Pomocí služby Collie můžete odesílat a přijímat měnu MobileCoin. Na všechny platby se vztahují Podmínky používání služby MobileCoin a peněženky MobileCoin. Můžete se setkat s problémy a platby i zůstatky, o které přijdete, není možné obnovit. </string>
     <string name="PaymentsHomeFragment__activate">Aktivovat</string>
     <string name="PaymentsHomeFragment__view_mobile_coin_terms">Zobrazit MobileCoin podmínky</string>
-    <string name="PaymentsHomeFragment__payments_not_available">Platby v Signal již nejsou k dispozici. Stále můžete převádět prostředky na burzu, ale již nemůžete posílat a přijímat platby ani přidávat prostředky.</string>
+    <string name="PaymentsHomeFragment__payments_not_available">Platby v Collie již nejsou k dispozici. Stále můžete převádět prostředky na burzu, ale již nemůžete posílat a přijímat platby ani přidávat prostředky.</string>
 
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__mobile_coin_terms_url" translatable="false">https://www.mobilecoin.com/terms-of-use.html</string> -->
     <!-- Alert dialog title which shows up after a payment to turn on payment lock -->
@@ -4135,9 +4150,9 @@
     <string name="PaymentsTransferFragment__next">Další</string>
     <string name="PaymentsTransferFragment__invalid_address">Neplatná adresa</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">Zkontrolujte adresu peněženky, na kterou se pokoušíte převést, a zkuste to znovu.</string>
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Nelze převést na svou vlastní adresu peněženky Signal. Zadejte adresu peněženky ze svého účtu na podporované burze.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Signal potřebuje přístup ke kameře pro naskenování QR kódu.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">K naskenování QR kódu potřebuje Signal přístup ke kameře.</string>
+    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Nelze převést na svou vlastní adresu peněženky Collie. Zadejte adresu peněženky ze svého účtu na podporované burze.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Collie potřebuje přístup ke kameře pro naskenování QR kódu.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">K naskenování QR kódu potřebuje Collie přístup ke kameře.</string>
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Naskenujte QR kód adresy</string>
@@ -4516,17 +4531,17 @@
 
     <!-- CallNotificationBuilder -->
     <!-- Displayed in a notification when a Signal voice call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_voice_call">Příchozí hlasový hovor Signal</string>
+    <string name="CallNotificationBuilder__incoming_signal_voice_call">Příchozí hlasový hovor Collie</string>
     <!-- Displayed in a notification when a Signal video call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_video_call">Příchozí videohovor Signal</string>
+    <string name="CallNotificationBuilder__incoming_signal_video_call">Příchozí videohovor Collie</string>
     <!-- Displayed in a notification when a Signal group call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_group_call">Příchozí Signal skupinový hovor</string>
+    <string name="CallNotificationBuilder__incoming_signal_group_call">Příchozí Collie skupinový hovor</string>
     <!-- Displayed in a notification when a Signal voice call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Probíhající hlasový hovor Signal</string>
+    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Probíhající hlasový hovor Collie</string>
     <!-- Displayed in a notification when a Signal video call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_video_call">Probíhající videohovor Signal</string>
+    <string name="CallNotificationBuilder__ongoing_signal_video_call">Probíhající videohovor Collie</string>
     <!-- Displayed in a notification when a Signal group call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_group_call">Probíhající skupinový hovor Signal</string>
+    <string name="CallNotificationBuilder__ongoing_signal_group_call">Probíhající skupinový hovor Collie</string>
 
     <string name="CallNotificationBuilder_connecting">Připojování…</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">Heslo pro zálohy</string>
@@ -4552,9 +4567,9 @@
     <string name="BackupDialog_verify">Ověřit</string>
     <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">Úspěšně jste zadali přístupovou frázi pro vaši zálohu</string>
     <string name="BackupDialog_passphrase_was_not_correct">Přístupová fráze nebyla správná</string>
-    <string name="LocalBackupJob_creating_signal_backup">Vytvářím zálohu Signalu…</string>
+    <string name="LocalBackupJob_creating_signal_backup">Vytvářím zálohu Collieu…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">Ověřování zálohy Signal…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">Ověřování zálohy Collie…</string>
     <string name="LocalBackupJobApi29_backup_failed">Zálohování selhalo</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">Váš adresář se zálohami byl odstraněn nebo přesunut.</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">Soubor s vaší zálohou je příliš velký pro uložení na tento disk.</string>
@@ -4569,11 +4584,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Zavolejte mi (%1$02d:%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Znovu odeslat kód (%1$02d:%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Registrace Signal - ověřovací kód pro Android</string>
+    <string name="RegistrationActivity_code_support_subject">Registrace Molly - ověřovací kód pro Android</string>
     <string name="RegistrationActivity_incorrect_code">Špatný kód</string>
     <string name="BackupUtil_never">Nikdy</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Neznámý</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">Zvolte si, kdo uvidí vaše telefonní číslo a kdo vás pomocí něj může v aplikaci Collie kontaktovat.</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">Pro využití zámku obrazovky nastavte v tomto zařízení PIN, vzorec nebo heslo.</string>
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Aktivace zámku registrace se nezdařila.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Zablokování zámku registrace se nezdařilo.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Musíte zadat PIN zámku registrace</string>
@@ -4585,11 +4604,11 @@
     <string name="preferences_chats__backups">Zálohy</string>
 
     <!-- Title text shown when Signal is locked and needs to be unlocked -->
-    <string name="prompt_passphrase_activity__unlock_signal">Odemknout Signal</string>
+    <string name="prompt_passphrase_activity__unlock_signal">Odemknout Collie</string>
     <!-- Description text explaining how to unlock Signal -->
     <string name="prompt_passphrase_activity__use_your_android_device">K odemknutí aplikace Signál použijte nastavení zámku zařízení se systémem Android.</string>
     <!-- Text shown in a dialog that further explains how to unlock Signal by using the same unlocking methods that are used to unlock their own device -->
-    <string name="prompt_passphrase_activity__screen_lock_is_on">Zámek obrazovky je zapnutý a aplikace Signal je zabezpečena pomocí nastavení zámku zařízení. Aplikaci Signal odemknete stejným způsobem, jakým běžně odemykáte telefon, tedy pomocí rozpoznání obličeje, otisku prstu, kódu PIN, hesla nebo vzorce.</string>
+    <string name="prompt_passphrase_activity__screen_lock_is_on">Zámek obrazovky je zapnutý a aplikace Collie je zabezpečena pomocí nastavení zámku zařízení. Aplikaci Collie odemknete stejným způsobem, jakým běžně odemykáte telefon, tedy pomocí rozpoznání obličeje, otisku prstu, kódu PIN, hesla nebo vzorce.</string>
     <!-- Button in a dialog that will contact Signal support if pressed -->
     <string name="prompt_passphrase_activity__contact_support">Kontaktovat podporu</string>
     <!-- Button text to try again after unlocking has previously failed -->
@@ -4644,10 +4663,10 @@
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">Hledám nové Android zařízení…</string>
-    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Signal potřebuje oprávnění k poloze pro nalezení nového Android zařízení a připojení se k němu.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Signal potřebuje povolené služby polohy pro nalezení a připojení k novému Android zařízení.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Signal potřebuje zapnutou Wi-Fi pro nalezení a připojení k novému Android zařízení. Wi-Fi musí být zapnuté, ale nemusí být připojené k žádné Wi-Fi síti.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Omlouváme se, ale vypadá to, že toto zařízení nepodporuje Wi-Fi Direct. Signal používá Wi-Fi Direct pro nalezení nového Android zařízení a připojení se k němu. Můžete stále obnovit zálohu pro obnovení vašeho původního účtu na novém Android zařízení.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie potřebuje oprávnění k poloze pro nalezení nového Android zařízení a připojení se k němu.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie potřebuje povolené služby polohy pro nalezení a připojení k novému Android zařízení.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie potřebuje zapnutou Wi-Fi pro nalezení a připojení k novému Android zařízení. Wi-Fi musí být zapnuté, ale nemusí být připojené k žádné Wi-Fi síti.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Omlouváme se, ale vypadá to, že toto zařízení nepodporuje Wi-Fi Direct. Molly používá Wi-Fi Direct pro nalezení nového Android zařízení a připojení se k němu. Můžete stále obnovit zálohu pro obnovení vašeho původního účtu na novém Android zařízení.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">Vytvořit zálohu</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Nastala neočekávaná chyba při pokusu o připojení k novému Android zařízení.</string>
 
@@ -4687,7 +4706,7 @@
 
     <!-- DeviceTransferFragment -->
     <string name="DeviceTransfer__transferring_data">Přenáším data</string>
-    <string name="DeviceTransfer__keep_both_devices_near_each_other">Ponechte obě zařízení blízko sebe. Nevypínejte zařízení a nechte spuštěnou aplikaci Signal. Přenos je koncově šifrován.</string>
+    <string name="DeviceTransfer__keep_both_devices_near_each_other">Ponechte obě zařízení blízko sebe. Nevypínejte zařízení a nechte spuštěnou aplikaci Collie. Přenos je koncově šifrován.</string>
     <string name="DeviceTransfer__d_messages_so_far">%1$d zpráv zatím…</string>
     <!-- Filled in with total percentage of messages transferred -->
     <string name="DeviceTransfer__s_of_messages_so_far">Zatím %1$s%% zpráv…</string>
@@ -4701,7 +4720,7 @@
     <!-- OldDeviceTransferInstructionsFragment -->
     <string name="OldDeviceTransferInstructions__transfer_account">Přenést účet</string>
     <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
-    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Stáhněte Signal na novém Android zařízení</string>
+    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Stáhněte Collie na novém Android zařízení</string>
     <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
     <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">"Klepněte na \"Přenést nebo obnovit účet\""</string>
     <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
@@ -4782,7 +4801,7 @@
     <!-- GroupLinkBottomSheetDialogFragment -->
     <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Kdokoli, kdo má tento odkaz, může vidět jméno skupiny a fotografii a může požádat o připojení ke skupině. Sdílejte pouze s lidmi, kterým důvěřujete.</string>
     <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Kdokoli, kdo má tento odkaz, může vidět jméno skupiny a fotografii a může se připojit ke skupině. Sdílejte pouze s lidmi, kterým důvěřujete.</string>
-    <string name="GroupLinkBottomSheet_share_via_signal">Sdílet přes Signal</string>
+    <string name="GroupLinkBottomSheet_share_via_signal">Sdílet přes Collie</string>
     <string name="GroupLinkBottomSheet_copy">Kopírovat</string>
     <string name="GroupLinkBottomSheet_qr_code">QR kód</string>
     <string name="GroupLinkBottomSheet_share">Sdílet</string>
@@ -4954,7 +4973,7 @@
     <string name="payment_info_card_about_mobilecoin">O MobileCoin</string>
     <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">MobileCoin je nová digitální měna zaměřená na soukromí.</string>
     <string name="payment_info_card_adding_funds">Přidávám prostředky</string>
-    <string name="payment_info_card_you_can_add_funds_for_use_in">Prostředky pro použití v Signal můžete přidat zasláním MobileCoin na adresu vaší peněženky.</string>
+    <string name="payment_info_card_you_can_add_funds_for_use_in">Prostředky pro použití v Collie můžete přidat zasláním MobileCoin na adresu vaší peněženky.</string>
     <string name="payment_info_card_cashing_out">Vyplacení</string>
     <string name="payment_info_card_you_can_cash_out_mobilecoin">MobileCoin můžete kdykoli vyplatit na burze, která podporuje MobileCoin. Stačí provést převod na svůj účet na této burze.</string>
     <string name="payment_info_card_hide_this_card">Schovat tuto kartu?</string>
@@ -4975,12 +4994,12 @@
     <!-- DeactivateWalletFragment -->
     <string name="DeactivateWalletFragment__deactivate_wallet">Deaktivovat peněženku</string>
     <string name="DeactivateWalletFragment__your_balance">Váš zůstatek</string>
-    <string name="DeactivateWalletFragment__its_recommended_that_you">Před deaktivací plateb doporučujeme převést prostředky na jinou adresu peněženky. Pokud se rozhodnete své prostředky nyní nepřevádět, zůstanou ve vaší peněžence propojené se službou Signal, pokud platby znovu aktivujete.</string>
+    <string name="DeactivateWalletFragment__its_recommended_that_you">Před deaktivací plateb doporučujeme převést prostředky na jinou adresu peněženky. Pokud se rozhodnete své prostředky nyní nepřevádět, zůstanou ve vaší peněžence propojené se službou Collie, pokud platby znovu aktivujete.</string>
     <string name="DeactivateWalletFragment__transfer_remaining_balance">Převést zbývající zůstatek</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring">Deaktivovat bez převodu</string>
     <string name="DeactivateWalletFragment__deactivate">Deaktivovat</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring_question">Deaktivovat bez převodu?</string>
-    <string name="DeactivateWalletFragment__your_balance_will_remain">Pokud se rozhodnete platby znovu aktivovat, zůstanou vaše prostředky v peněžence propojené se službou Signal.</string>
+    <string name="DeactivateWalletFragment__your_balance_will_remain">Pokud se rozhodnete platby znovu aktivovat, zůstanou vaše prostředky v peněžence propojené se službou Collie.</string>
     <string name="DeactivateWalletFragment__error_deactivating_wallet">Chyba při deaktivování peněženky.</string>
   <!-- Removed by excludeNonTranslatables <string name="DeactivateWalletFragment__learn_more__we_recommend_transferring_your_funds" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_deactivate</string> -->
 
@@ -5729,9 +5748,9 @@
     <string name="MySupportPreference__checking_subscription">Kontrola předplatného…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__title">Aktualizovat Signal</string>
+    <string name="UpdateSignalExpiredDialog__title">Aktualizovat Collie</string>
     <!-- Message of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__message">Platnost této verze aplikace Signal vypršela. Aktualizujte ji, ať můžete Signal dál používat.</string>
+    <string name="UpdateSignalExpiredDialog__message">Platnost této verze aplikace Collie vypršela. Aktualizujte ji, ať můžete Collie dál používat.</string>
     <!-- Button text of expiration dialog, will take user to update the app -->
     <string name="UpdateSignalExpiredDialog__update_action">Aktualizovat</string>
     <!-- Button text of expiration dialog to cancel the dialog.  -->
@@ -5740,7 +5759,7 @@
     <!-- Title of dialog telling user they need to re-register signal -->
     <string name="ReregisterSignalDialog__title">Zařízení není registrováno</string>
     <!-- Message of dialog telling user they need to re-register signal as it is no longer registered -->
-    <string name="ReregisterSignalDialog__message">Toto zařízení již není registrované. Zařízení znovu zaregistrujte, chcete-li na něm nadále používat službu Signal.</string>
+    <string name="ReregisterSignalDialog__message">Toto zařízení již není registrované. Zařízení znovu zaregistrujte, chcete-li na něm nadále používat službu Collie.</string>
     <!-- Button text of re-registration dialog to re-register the device.  -->
     <string name="ReregisterSignalDialog__reregister_action">Znovu se zaregistrovat</string>
     <!-- Button text of re-registration dialog to cancel the dialog.  -->
@@ -6016,6 +6035,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Zapnuto do %1$s</string>
 
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">Nepodařilo se otevřít picker.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">Aby bylo možné oznámení zapnout, Collie potřebuje povolení k jejich zobrazování.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">Zapnout</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Toto je jediný oficiální chat od Signal</string>
@@ -7255,7 +7280,7 @@
     <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__title">Zapněte Zabezpečené zálohování služby Signal</string>
     <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
-    <string name="TurnOnSignalBackups__body">Už nepřijdete o žádnou zprávu, když si pořídíte nový telefon nebo přeinstalujete aplikaci Signal.</string>
+    <string name="TurnOnSignalBackups__body">Už nepřijdete o žádnou zprávu, když si pořídíte nový telefon nebo přeinstalujete aplikaci Collie.</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
     <string name="TurnOnSignalBackups__turn_on">Zapnout</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
@@ -7325,16 +7350,16 @@
     <string name="BackupSetupCompleteBottomSheet__back_up_now">Zálohovat nyní</string>
 
     <!-- Title of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__title">Otevřete Signal ve svém telefonu</string>
+    <string name="InactivePrimary__title">Otevřete Collie ve svém telefonu</string>
     <!-- Body of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__body">Aby váš účet zůstal aktivní, otevřete aplikaci Signal ve svém primárním zařízení.</string>
+    <string name="InactivePrimary__body">Aby váš účet zůstal aktivní, otevřete aplikaci Collie ve svém primárním zařízení.</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will navigate to a support page -->
     <string name="InactivePrimary__learn_more">Zjistit více</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will snooze the megaphone -->
     <string name="InactivePrimary__got_it">Rozumím</string>
 
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
-    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Pro obnovení zálohy znovu nainstalujte aplikaci Signal. Spusťte aplikaci a klepněte na Obnovit zálohu a poté vyhledejte soubor se zálohou."</string>
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Pro obnovení zálohy znovu nainstalujte aplikaci Collie. Spusťte aplikaci a klepněte na Obnovit zálohu a poté vyhledejte soubor se zálohou."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
     <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Máte zapnutou funkci Optimalizovat úložiště Signal. Pokud chcete do zálohy v zařízení zahrnout všechna média, tuto funkci vypněte.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
@@ -7705,6 +7730,34 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Nemůžete si předplatit zabezpečené zálohy Signal, protože váš telefon nepodporuje služby Google Play. Obraťte se na výrobce telefonu a požádejte o pomoc.</string>
 
+    <!-- ManageStorageSettingsFragment -->
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">Limity délky historie chatu</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">Smazat historii zpráv</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Zprávy starší než zvolené období budou trvale odstraněny.</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Zprávy přesahující zvolenou délku budou trvale odstraněny.</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">Použít limity u propojených zařízení</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">Pokud jsou limity chatu povoleny, budou se mazat i zprávy z propojených zařízení.</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Úložiště Collie</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimalizovat úložiště Collie</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Nepoužívaná média budou odložena, ale můžete si je kdykoli stáhnout ze zálohy.</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Optimalizaci úložiště lze použít pouze s placenou verzí zabezpečeného zálohování služby Signal. Vaše předplatné zálohování se stále zpracovává a není ještě aktivní. Zkuste to prosím znovu později.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Ze zálohy ve vašem zařízení budou odebrána média</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Zapnutím funkce Optimalizovat úložiště Signal dojde k odložení starších médií z vašeho zařízení. Kdykoliv si je můžete opět stáhnout. Tím se stará média odeberou i ze zálohy ve vašem zařízení.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">Zapnout</string>
+
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Pro tuto funkci je nutná aktualizace</string>
@@ -7867,7 +7920,7 @@
     <!-- Displays the date the subscription expired. Placeholder is the date. -->
     <string name="RemoteBackupsSettingsFragment__expired_on_s">Vypršelo dne %1$s</string>
     <!-- Displayed at the top of the screen when no backup is currently enabled -->
-    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Zálohujte si historii zpráv. Už nikdy nepřijdete o data, když si pořídíte nový telefon nebo přeinstalujete aplikaci Signal.</string>
+    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Zálohujte si historii zpráv. Už nikdy nepřijdete o data, když si pořídíte nový telefon nebo přeinstalujete aplikaci Collie.</string>
     <!-- Section header for other ways to back up -->
     <string name="RemoteBackupsSettingsFragment__other_ways_to_backup">Další způsoby zálohování</string>
     <!-- Row title for performing on-device backup -->
@@ -8151,7 +8204,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Uchovávejte svůj klíč v bezpečí</string>
     <!-- Bottom sheet subtitle -->
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Pokud klíč ztratíte, Signal vám s obnovením zálohy nemůže pomoct. Uložte jej na bezpečném místě a nesdělujte jej ostatním.</string>
+    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Pokud klíč ztratíte, Collie vám s obnovením zálohy nemůže pomoct. Uložte jej na bezpečném místě a nesdělujte jej ostatním.</string>
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Pokračovat</string>
     <!-- Sheet secondary action button label -->
@@ -8161,13 +8214,13 @@
     <!-- Dialog title for confirming you need to disable optimized storage and download media to rotate AEP key -->
     <string name="MessageBackupsKeyRecordScreen__download_media">Stáhnout média</string>
     <!-- Dialog body for confirming you need to disable optimized storage and download media to rotate AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Pro vytvoření nového klíče pro obnovení musíte vypnout funkci Optimalizovat úložiště Signal a počkat, dokud se vaše média nestáhnou. Jakmile se stahování dokončí, můžete vytvořit nový klíč.</string>
+    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Pro vytvoření nového klíče pro obnovení musíte vypnout funkci Optimalizovat úložiště Collie a počkat, dokud se vaše média nestáhnou. Jakmile se stahování dokončí, můžete vytvořit nový klíč.</string>
     <!-- Action label to turn off optimized storage and download media -->
     <string name="MessageBackupsKeyRecordScreen__turn_off_and_download">Vypnout a stáhnout</string>
     <!-- Bottom Sheet title for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">Vytvořit nový klíč pro obnovení</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">Vytvoření nového klíče je nutné pouze v případě, že váš klíč zná někdo jiný. Budete muset znovu nahrát svou zálohu včetně médií. Pokud používáte funkci Optimalizovat úložiště Signal, budete muset nejprve stáhnout odložená média.</string>
+    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">Vytvoření nového klíče je nutné pouze v případě, že váš klíč zná někdo jiný. Budete muset znovu nahrát svou zálohu včetně médií. Pokud používáte funkci Optimalizovat úložiště Collie, budete muset nejprve stáhnout odložená média.</string>
     <!-- Dialog title shown when user attempts to exit backup setup before completion -->
     <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">Ukončit nastavení zálohování?</string>
     <!-- Dialog body warning user that backup setup is incomplete -->
@@ -8369,7 +8422,6 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Proxy</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
-    <string name="MainToolbar__donate_to_signal">Přispějte na Signal</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -8692,7 +8744,7 @@
     <string name="CouldNotCompleteBackupRestoreSheet__body_error">Došlo k chybě a zálohu nelze obnovit. Mohlo k tomu dojít proto, že se během obnovování zálohy změnilo umístění složky se zálohou ve vašem zařízení.</string>
 
     <!-- Body of the sheet shown when a local backup restore could not be completed, explaining how to try again -->
-    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Můžete to zkusit znovu tak, že odinstalujete a znovu nainstalujete Signal v tomto zařízení a zvolíte Obnovit nebo přenést.</string>
+    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Můžete to zkusit znovu tak, že odinstalujete a znovu nainstalujete Collie v tomto zařízení a zvolíte Obnovit nebo přenést.</string>
 
     <!-- Button on the sheet shown when a local backup restore could not be completed, opening a support article about it -->
     <string name="CouldNotCompleteBackupRestoreSheet__learn_more">Zjistit více</string>

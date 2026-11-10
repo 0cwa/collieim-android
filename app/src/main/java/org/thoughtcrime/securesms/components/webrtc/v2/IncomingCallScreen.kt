@@ -28,11 +28,10 @@ import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.signal.core.ui.compose.NightPreview
@@ -117,9 +116,9 @@ fun IncomingCallScreen(
         modifier = Modifier.padding(callTypePadding)
       ) {
         Icon(
-          imageVector = ImageVector.vectorResource(R.drawable.ic_signal_logo_small),
+          painter = painterResource(R.drawable.ic_collie_notification_mask),
           contentDescription = null,
-          modifier = Modifier.padding(end = 6.dp)
+          modifier = Modifier.padding(end = 6.dp).size(15.dp)
         )
 
         Text(

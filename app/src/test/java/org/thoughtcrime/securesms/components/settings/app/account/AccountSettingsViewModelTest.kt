@@ -17,6 +17,8 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,6 +44,7 @@ import org.signal.core.models.MasterKey
 import org.signal.libsignal.net.MfaKeyKind
 import org.signal.libsignal.net.RequestResult
 import org.signal.network.service.TwoFactorMethodService
+import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
 import org.thoughtcrime.securesms.lock.v2.PinKeyboardType
 import org.thoughtcrime.securesms.testing.CoroutineDispatcherRule
 import java.io.IOException
@@ -73,12 +76,16 @@ class AccountSettingsViewModelTest {
   @Before
   fun setUp() {
     Dispatchers.setMain(testDispatcher)
+    mockkObject(AppSettingsRepository)
+    every { AppSettingsRepository.shouldShowManageDonations() } returns false
 
     every { repository.hasPin() } returns true
     every { repository.hasRestoredAep() } returns false
     every { repository.arePinRemindersEnabled() } returns true
     every { repository.isRegistrationLockEnabled() } returns false
     every { repository.isUserUnregistered() } returns false
+    every { repository.isPrimaryDevice() } returns false
+    every { repository.canOpenLinkedDevices() } returns false
     every { repository.isClientDeprecated() } returns false
     every { repository.getPinKeyboardType() } returns PinKeyboardType.NUMERIC
     every { repository.isPhoneNumberless() } returns false
@@ -93,6 +100,7 @@ class AccountSettingsViewModelTest {
 
   @After
   fun tearDown() {
+    unmockkObject(AppSettingsRepository)
     Dispatchers.resetMain()
   }
 
@@ -105,6 +113,22 @@ class AccountSettingsViewModelTest {
     assertThat(viewModel.state.value.hasPin).isTrue()
     assertThat(viewModel.state.value.pinRemindersEnabled).isTrue()
     assertThat(viewModel.state.value.registrationLockEnabled).isTrue()
+  }
+
+  @Test
+  fun `LinkedDevicesClicked is ignored when registration is incomplete on a primary device`() = runTest(testDispatcher) {
+    every { repository.isPrimaryDevice() } returns true
+    every { repository.canOpenLinkedDevices() } returns false
+
+    val viewModel = createViewModel()
+    val actions = collectActions(viewModel.actions)
+
+    assertThat(viewModel.state.value.isPrimaryDevice).isTrue()
+    assertThat(viewModel.state.value.canOpenLinkedDevices).isFalse()
+
+    viewModel.onEvent(AccountSettingsEvent.LinkedDevicesClicked)
+
+    assertThat(actions).isEmpty()
   }
 
   @Test
@@ -140,84 +164,13 @@ class AccountSettingsViewModelTest {
   }
 
   @Test
-  fun `turning PIN reminders off asks for the PIN first`() = runTest(testDispatcher) {
-    every { repository.getPinKeyboardType() } returns PinKeyboardType.ALPHA_NUMERIC
-
+  fun `turning PIN reminders off writes straight through`() = runTest(testDispatcher) {
     val viewModel = createViewModel()
 
     viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-
-    verify(exactly = 0) { repository.setPinRemindersEnabled(any()) }
-    assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.ConfirmPinToDisableReminders(isAlphanumericKeyboard = true))
-  }
-
-  @Test
-  fun `a correct PIN turns reminders off and closes the dialog`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged(CORRECT_PIN))
-    viewModel.onEvent(AccountSettingsEvent.DisablePinRemindersConfirmed)
 
     verify { repository.setPinRemindersEnabled(false) }
     assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.None)
-  }
-
-  @Test
-  fun `canSubmit only turns on once the PIN is long enough`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged("123"))
-    assertThat((viewModel.state.value.dialog as Dialog.ConfirmPinToDisableReminders).canSubmit).isFalse()
-
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged("1234"))
-    assertThat((viewModel.state.value.dialog as Dialog.ConfirmPinToDisableReminders).canSubmit).isTrue()
-  }
-
-  @Test
-  fun `an incorrect PIN leaves the dialog up with an error`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged(INCORRECT_PIN))
-    viewModel.onEvent(AccountSettingsEvent.DisablePinRemindersConfirmed)
-
-    verify(exactly = 0) { repository.setPinRemindersEnabled(any()) }
-
-    val dialog = viewModel.state.value.dialog
-    assertThat(dialog).isInstanceOf(Dialog.ConfirmPinToDisableReminders::class)
-    assertThat((dialog as Dialog.ConfirmPinToDisableReminders).incorrectPin).isTrue()
-  }
-
-  @Test
-  fun `typing again clears the incorrect PIN error`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged(INCORRECT_PIN))
-    viewModel.onEvent(AccountSettingsEvent.DisablePinRemindersConfirmed)
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged("1"))
-
-    val dialog = viewModel.state.value.dialog as Dialog.ConfirmPinToDisableReminders
-    assertThat(dialog.incorrectPin).isFalse()
-    assertThat(dialog.pin).isEqualTo("1")
-    assertThat(dialog.canSubmit).isFalse()
-  }
-
-  @Test
-  fun `toggling the keyboard swaps the type and clears what was typed`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-
-    viewModel.onEvent(AccountSettingsEvent.PinRemindersToggled(false))
-    viewModel.onEvent(AccountSettingsEvent.PinEntryChanged(CORRECT_PIN))
-    viewModel.onEvent(AccountSettingsEvent.PinKeyboardToggled)
-
-    val dialog = viewModel.state.value.dialog as Dialog.ConfirmPinToDisableReminders
-    assertThat(dialog.isAlphanumericKeyboard).isTrue()
-    assertThat(dialog.pin).isEqualTo("")
-    assertThat(dialog.canSubmit).isFalse()
   }
 
   @Test

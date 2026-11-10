@@ -8,6 +8,7 @@ package org.thoughtcrime.securesms.components.settings.conversation.individual
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,6 +71,8 @@ class IndividualSettingsViewModel(
 
   private val sharedMediaLoader = SharedMediaLoader(repository)
   private val mediaRailPresenter = RecentMediaRailPresenter(viewModelScope, sharedMediaLoader)
+  private var linkedDeviceCountJob: Job? = null
+  private var linkedDeviceCountGeneration: Long = 0
 
   init {
     require(kind != ConversationSettingsKind.GROUP) { "Groups belong to GroupSettingsViewModel" }
@@ -129,9 +132,7 @@ class IndividualSettingsViewModel(
       IndividualSettingsEvent.AvatarClicked -> {
         BlockAndSpamHandler.avatarClickAction(state.recipient, state.storyViewState, repository.isStoriesFeatureEnabled())?.let { _actions.send(it) }
       }
-      is IndividualSettingsEvent.BadgeClicked -> {
-        _actions.send(ConversationSettingsAction.ShowBadgeSheet(recipientId, event.badge))
-      }
+      is IndividualSettingsEvent.BadgeClicked -> Unit
       IndividualSettingsEvent.HeadlineClicked -> {
         _actions.send(ConversationSettingsAction.ShowAboutSheet(state.recipient))
       }
@@ -197,9 +198,7 @@ class IndividualSettingsViewModel(
       IndividualSettingsEvent.ContactUsClicked -> {
         _actions.send(ConversationSettingsAction.OpenContactUs)
       }
-      IndividualSettingsEvent.DonateClicked -> {
-        _actions.send(ConversationSettingsAction.OpenDonate)
-      }
+      IndividualSettingsEvent.DonateClicked -> Unit
       IndividualSettingsEvent.AddToAGroupClicked -> {
         val groupMembership = repository.getGroupMembership(recipientId)
         _actions.send(ConversationSettingsAction.AddToAGroup(recipientId, groupMembership))
@@ -241,7 +240,26 @@ class IndividualSettingsViewModel(
         repository.refreshRecipient(recipientId)
       }
       is IndividualSettingsEvent.RecipientChanged -> {
-        _state.update { it.applyRecipient(event.recipient) }
+        val recipient = event.recipient
+        linkedDeviceCountJob?.cancel()
+        val generation = ++linkedDeviceCountGeneration
+
+        _state.update { it.applyRecipient(recipient).copy(linkedDeviceCount = null) }
+
+        if (
+          kind == ConversationSettingsKind.INDIVIDUAL &&
+          recipient.isRegistered &&
+          !recipient.isGroup &&
+          !recipient.isSelf &&
+          !recipient.isReleaseNotes
+        ) {
+          linkedDeviceCountJob = viewModelScope.launch {
+            val linkedDeviceCount = repository.getLinkedDeviceCount(recipient)
+            if (generation == linkedDeviceCountGeneration) {
+              _state.update { it.copy(linkedDeviceCount = linkedDeviceCount) }
+            }
+          }
+        }
       }
       is IndividualSettingsEvent.StoryViewStateChanged -> {
         _state.update { it.copy(storyViewState = event.storyViewState) }

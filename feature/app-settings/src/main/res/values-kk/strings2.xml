@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_icon_label_moon">Ай</string>
+    <string name="app_icon_label_music">Өлен</string>
+    <string name="preferences__autoupdate_molly">Collie-ды авто-жаңарту</string>
+</resources>

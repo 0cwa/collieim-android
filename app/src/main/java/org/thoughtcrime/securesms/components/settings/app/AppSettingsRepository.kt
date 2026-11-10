@@ -5,7 +5,6 @@
 
 package org.thoughtcrime.securesms.components.settings.app
 
-import androidx.lifecycle.asFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.rx3.asFlow
@@ -19,12 +18,12 @@ import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppDonations
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.RecurringInAppPaymentRepository
-import org.thoughtcrime.securesms.conversationlist.model.UnreadPaymentsLiveData
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
-import org.thoughtcrime.securesms.util.Environment
+import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.util.SignalE164Util
 
 /**
@@ -47,9 +46,7 @@ object AppSettingsRepository {
     }
   }
 
-  fun observeUnreadPaymentsCount(): Flow<Int> {
-    return UnreadPaymentsLiveData().asFlow().map { payments -> payments.map { it.unreadCount }.orElse(0) }
-  }
+  fun observeUnreadPaymentsCount(): Flow<Int> = kotlinx.coroutines.flow.flowOf(0)
 
   fun isPrimaryDevice(): Boolean = SignalStore.account.isPrimaryDevice
 
@@ -57,16 +54,22 @@ object AppSettingsRepository {
 
   fun isClientDeprecated(): Boolean = SignalStore.misc.isClientDeprecated
 
-  fun hasExpiredGiftBadge(): Boolean = SignalStore.inAppPayments.getExpiredGiftBadge() != null
+  fun hasExpiredGiftBadge(): Boolean = false
 
   fun showInternalPreferences(): Boolean = RemoteConfig.internalUser
 
-  fun showPayments(): Boolean = SignalStore.payments.paymentsAvailability.showPaymentsMenu()
+  fun showPayments(): Boolean = false
 
-  fun showAppUpdates(): Boolean = Environment.IS_NIGHTLY
+  fun showAppUpdates(): Boolean = BuildConfig.MANAGE_MOLLY_UPDATES
 
   /** A quick guess at whether the user can manage donations in the app, before [canManageDonations] has an answer. */
   fun likelyCanManageDonations(): Boolean = SignalStore.inAppPayments.isLikelyASustainer() || InAppDonations.hasAtLeastOnePaymentMethodAvailable()
+
+  fun shouldShowManageDonations(): Boolean =
+    InAppPaymentsRepository.getSubscriber(InAppPaymentSubscriberRecord.Type.DONATION) != null ||
+      SignalDatabase.inAppPayments.hasDonationInProgress() ||
+      SignalDatabase.donationReceipts.hasReceipts() ||
+      SignalStore.inAppPayments.isLikelyASustainer()
 
   /** Whether the user can manage donations in the app, or null if their subscription couldn't be fetched. */
   suspend fun canManageDonations(): Boolean? {

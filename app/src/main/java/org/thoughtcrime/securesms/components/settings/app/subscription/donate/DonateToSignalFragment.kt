@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -15,9 +14,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
+import com.google.android.material.R as MaterialR
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import org.signal.core.ui.util.SpanUtil
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.dp
 import org.signal.core.util.getParcelableCompat
@@ -53,7 +54,6 @@ import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
 import java.math.BigDecimal
 import java.util.Currency
-import org.signal.core.ui.R as CoreUiR
 
 /**
  * Unified donation fragment which allows users to choose between monthly or one-time donations.
@@ -100,10 +100,10 @@ class DonateToSignalFragment :
   private val binding by ViewBinderDelegate(DonateToSignalFragmentBinding::bind)
 
   private val supportTechSummary: CharSequence by lazy {
-    SpannableStringBuilder(SpanUtil.color(ContextCompat.getColor(requireContext(), CoreUiR.color.signal_colorOnSurfaceVariant), requireContext().getString(R.string.DonateToSignalFragment__private_messaging)))
+    SpannableStringBuilder(SpanUtil.color(ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorOnSurfaceVariant), requireContext().getString(R.string.DonateToSignalFragment__private_messaging)))
       .append("\n")
       .append(
-        SpanUtil.readMore(requireContext(), ContextCompat.getColor(requireContext(), CoreUiR.color.signal_colorPrimary)) {
+        SpanUtil.readMore(requireContext(), ThemeUtil.getThemedColor(requireContext(), MaterialR.attr.colorPrimary)) {
           findNavController().safeNavigate(DonateToSignalFragmentDirections.actionDonateToSignalFragmentToSubscribeLearnMoreBottomSheetDialog())
         }
       )
@@ -119,8 +119,8 @@ class DonateToSignalFragment :
 
   override fun getMaterial3OnScrollHelper(toolbar: Toolbar?): Material3OnScrollHelper {
     return object : Material3OnScrollHelper(activity = requireActivity(), views = listOf(toolbar!!), lifecycleOwner = viewLifecycleOwner) {
-      override val activeColorSet: ColorSet = ColorSet(R.color.transparent)
-      override val inactiveColorSet: ColorSet = ColorSet(R.color.transparent)
+      override val activeColorSet: ColorSet = ColorSet.from(requireContext(), R.color.transparent, MaterialR.attr.colorSurface)
+      override val inactiveColorSet = activeColorSet
     }
   }
 
@@ -250,68 +250,14 @@ class DonateToSignalFragment :
 
       space(24.dp)
 
-      customPref(
-        CurrencySelection.Model(
-          selectedCurrency = state.selectedCurrency,
-          isEnabled = state.canSetCurrency,
-          onClick = {
-            viewModel.requestChangeCurrency()
-          }
-        )
-      )
-
-      space(16.dp)
-
-      customPref(
-        DonationPillToggle.Model(
-          selected = state.inAppPaymentType,
-          onClick = {
-            viewModel.toggleDonationType()
-          }
-        )
-      )
-
-      space(10.dp)
-
-      when (state.inAppPaymentType) {
-        InAppPaymentType.ONE_TIME_DONATION -> displayOneTimeSelection(state.areFieldsEnabled, state.oneTimeDonationState)
-        InAppPaymentType.RECURRING_DONATION -> displayMonthlySelection(state.areFieldsEnabled, state.monthlyDonationState)
-        else -> error("This fragment does not support ${state.inAppPaymentType}.")
+      // Retain the existing subscription cancellation flow without offering new payments.
+      if (state.inAppPaymentType == InAppPaymentType.RECURRING_DONATION) {
+        displayMonthlySelection(false, state.monthlyDonationState)
       }
 
       space(20.dp)
 
       if (state.inAppPaymentType == InAppPaymentType.RECURRING_DONATION && (state.monthlyDonationState.isSubscriptionActive || state.monthlyDonationState.isSubscriptionInProgress)) {
-        primaryButton(
-          text = DSLSettingsText.from(R.string.SubscribeFragment__update_subscription),
-          isEnabled = state.canUpdate,
-          onClick = {
-            if (state.monthlyDonationState.transactionState.isTransactionJobPending) {
-              showDonationPendingDialog(state)
-            } else {
-              MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.SubscribeFragment__update_subscription_question)
-                .setMessage(
-                  getString(
-                    R.string.SubscribeFragment__you_will_be_charged_the_full_amount_s_of,
-                    FiatMoneyUtil.format(
-                      requireContext().resources,
-                      viewModel.getSelectedSubscriptionCost(),
-                      FiatMoneyUtil.formatOptions().trimZerosAfterDecimal()
-                    )
-                  )
-                )
-                .setPositiveButton(R.string.SubscribeFragment__update) { _, _ ->
-                  viewModel.updateSubscription()
-                }
-                .setNegativeButton(android.R.string.cancel) { _, _ -> }
-                .show()
-            }
-          }
-        )
-
-        space(4.dp)
-
         secondaryButtonNoOutline(
           text = DSLSettingsText.from(R.string.SubscribeFragment__cancel_subscription),
           isEnabled = state.areFieldsEnabled,
@@ -327,19 +273,6 @@ class DonateToSignalFragment :
                 }
                 .setNegativeButton(R.string.SubscribeFragment__not_now) { _, _ -> }
                 .show()
-            }
-          }
-        )
-      } else {
-        primaryButton(
-          text = DSLSettingsText.from(R.string.DonateToSignalFragment__continue),
-          isEnabled = state.continueEnabled,
-          onClick = {
-            if (state.canContinue) {
-              requireView().clearFocus()
-              viewModel.requestSelectGateway()
-            } else {
-              showDonationPendingDialog(state)
             }
           }
         )
@@ -412,7 +345,7 @@ class DonateToSignalFragment :
       DonateToSignalState.DonationStage.INIT -> customPref(Subscription.LoaderModel())
       DonateToSignalState.DonationStage.FAILURE -> customPref(NetworkFailure.Model { viewModel.retryMonthlyDonationState() })
       else -> {
-        state.subscriptions.forEach { subscription ->
+        state.subscriptions.filter { it.level == state.activeLevel }.forEach { subscription ->
 
           val isActive = state.activeLevel == subscription.level && state.isSubscriptionActive
 

@@ -36,7 +36,10 @@ import org.thoughtcrime.securesms.notifications.profiles.NotificationProfiles
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
 import org.thoughtcrime.securesms.testutil.SignalStoreRule
+import org.thoughtcrime.securesms.util.formatHours
 import java.time.DayOfWeek
+import java.time.LocalTime
+import java.util.Locale
 import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
@@ -134,7 +137,10 @@ class NotificationProfileDetailsScreenTest {
     setContent(loadedState(schedule = NotificationProfileSchedule(id = 1L, enabled = true, start = 900, end = 1700, daysEnabled = DayOfWeek.entries.toSet())))
 
     scrollTo(NotificationProfileDetailsTestTags.ROW_SCHEDULE)
-    composeTestRule.onNodeWithText("9:00 AM to 5:00 PM\nEveryday", substring = true).assertExists()
+    // MOLLY: times use the locale's best pattern (Robolectric returns the raw skeleton), so don't hard-code "9:00 AM".
+    val start = LocalTime.of(9, 0).formatHours(is24Hour = false, locale = Locale.getDefault())
+    val end = LocalTime.of(17, 0).formatHours(is24Hour = false, locale = Locale.getDefault())
+    composeTestRule.onNodeWithText("$start to $end\nEveryday", substring = true).assertExists()
     composeTestRule.onNodeWithTag(NotificationProfileDetailsTestTags.ROW_SCHEDULE).performClick()
 
     assertThat(events).containsExactly(NotificationProfileDetailsEvent.ScheduleClicked)

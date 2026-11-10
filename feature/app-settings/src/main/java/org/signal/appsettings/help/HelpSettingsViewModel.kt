@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
 
@@ -18,14 +19,16 @@ import org.signal.core.util.logging.Log
  * Drives [HelpSettingsScreen].
  */
 class HelpSettingsViewModel(
-  versionName: String
+  versionName: String,
+  logEnabled: Boolean = true,
+  showAppUpdates: Boolean = false
 ) : EventDrivenViewModel<HelpSettingsEvent>(TAG) {
 
   companion object {
     private val TAG = Log.tag(HelpSettingsViewModel::class)
   }
 
-  private val _state = MutableStateFlow(HelpSettingsState(versionName = versionName))
+  private val _state = MutableStateFlow(HelpSettingsState(versionName = versionName, logEnabled = logEnabled, showAppUpdates = showAppUpdates))
   private val _actions = Channel<HelpSettingsAction>(Channel.BUFFERED)
 
   val state: StateFlow<HelpSettingsState> = _state.asStateFlow()
@@ -33,11 +36,15 @@ class HelpSettingsViewModel(
 
   override suspend fun processEvent(event: HelpSettingsEvent) {
     when (event) {
+      HelpSettingsEvent.WebsiteClicked -> _actions.send(HelpSettingsAction.OpenWebsite)
+      HelpSettingsEvent.VersionClicked -> _actions.send(HelpSettingsAction.NavigateToAppUpdates)
+      is HelpSettingsEvent.LogEnabledChanged -> _actions.send(HelpSettingsAction.SetLogEnabled(event.enabled))
+      is HelpSettingsEvent.LogEnabledSaved -> _state.update { it.copy(logEnabled = event.enabled) }
       HelpSettingsEvent.NavigateBackClicked -> _actions.send(HelpSettingsAction.NavigateBack)
       HelpSettingsEvent.SupportCenterClicked -> _actions.send(HelpSettingsAction.OpenSupportCenter)
       HelpSettingsEvent.ContactUsClicked -> _actions.send(HelpSettingsAction.NavigateToContactUs)
       HelpSettingsEvent.VersionLongClicked -> _actions.send(HelpSettingsAction.CopyVersionToClipboard(_state.value.versionName))
-      HelpSettingsEvent.DebugLogClicked -> _actions.send(HelpSettingsAction.NavigateToDebugLog)
+      HelpSettingsEvent.DebugLogClicked -> if (_state.value.logEnabled) _actions.send(HelpSettingsAction.NavigateToDebugLog)
       HelpSettingsEvent.LicensesClicked -> _actions.send(HelpSettingsAction.NavigateToLicenses)
       HelpSettingsEvent.TermsAndPrivacyPolicyClicked -> _actions.send(HelpSettingsAction.OpenTermsAndPrivacyPolicy)
     }

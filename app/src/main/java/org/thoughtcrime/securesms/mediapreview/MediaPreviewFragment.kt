@@ -21,7 +21,6 @@ import android.view.animation.PathInterpolator
 import android.widget.Toast
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.app.ShareCompat
-import androidx.core.content.ContextCompat
 import androidx.core.text.getSpans
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -48,6 +47,7 @@ import org.signal.core.models.recipients.RecipientId
 import org.signal.core.ui.logging.LoggingFragment
 import org.signal.core.ui.util.SpanUtil
 import org.signal.core.ui.util.ViewUtil
+import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.Debouncer
 import org.signal.core.util.concurrent.LifecycleDisposable
 import org.signal.core.util.logging.Log
@@ -547,7 +547,7 @@ class MediaPreviewFragment :
     }
     val builder = SpannableStringBuilder(text)
 
-    val onSurfaceColor = ContextCompat.getColor(requireContext(), CoreUiR.color.signal_colorOnSurface)
+    val onSurfaceColor = ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorOnSurface)
     val chevron = requireContext().requireDrawable(R.drawable.ic_chevron_end_24)
     chevron.colorFilter = PorterDuffColorFilter(onSurfaceColor, PorterDuff.Mode.SRC_IN)
 

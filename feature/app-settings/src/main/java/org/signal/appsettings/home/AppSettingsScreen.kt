@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,7 +29,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -73,6 +70,7 @@ object AppSettingsTestTags {
   const val ROW_NOTIFICATIONS = "row-notifications"
   const val ROW_PRIVACY = "row-privacy"
   const val ROW_BACKUPS = "row-backups"
+  const val ROW_NETWORK = "row-network"
   const val ROW_DATA_AND_STORAGE = "row-data-and-storage"
   const val ROW_APP_UPDATES = "row-app-updates"
   const val ROW_PAYMENTS = "row-payments"
@@ -97,6 +95,8 @@ fun AppSettingsScreen(
   containerColor: Color = if (rememberIsSplitPaneSettings()) SignalTheme.colors.colorSurface4 else MaterialTheme.colorScheme.background,
   contentColor: Color = MaterialTheme.colorScheme.contentColorFor(containerColor).takeOrElse { MaterialTheme.colorScheme.onSurface },
   selectedRoute: AppSettingsRoute? = null,
+  donationLabel: String? = null,
+  donationContent: (@Composable () -> Unit)? = null,
   avatar: @Composable () -> Unit = {},
   banner: @Composable () -> Unit = {}
 ) {
@@ -166,55 +166,6 @@ fun AppSettingsScreen(
           )
         }
 
-        if (state.isPrimaryDevice) {
-          item {
-            Rows.TextRow(
-              text = stringResource(R.string.AppSettingsScreen__linked_devices),
-              icon = SignalIcons.Devices.painter,
-              onClick = { onEvent(AppSettingsEvent.LinkedDevicesClicked) },
-              enabled = state.isRegisteredAndUpToDate,
-              modifier = Modifier
-                .selectionHighlight(selectedRoute is AppSettingsRoute.LinkDeviceRoute)
-                .testTag(AppSettingsTestTags.ROW_LINKED_DEVICES)
-            )
-          }
-        }
-
-        item {
-          Rows.TextRow(
-            text = {
-              Text(
-                text = stringResource(R.string.AppSettingsScreen__donate_to_signal),
-                modifier = Modifier.weight(1f)
-              )
-
-              if (state.hasExpiredGiftBadge) {
-                Icon(
-                  painter = painterResource(CoreUiR.drawable.symbol_info_fill_24),
-                  tint = colorResource(CoreUiR.color.signal_accent_primary),
-                  contentDescription = null
-                )
-              }
-            },
-            icon = {
-              Icon(
-                painter = SignalIcons.Heart.painter,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface
-              )
-            },
-            onClick = { onEvent(AppSettingsEvent.DonateClicked) },
-            onLongClick = { onEvent(AppSettingsEvent.DonateLongClicked) },
-            modifier = Modifier
-              .selectionHighlight(selectedRoute is AppSettingsRoute.DonationsRoute)
-              .testTag(AppSettingsTestTags.ROW_DONATE)
-          )
-        }
-
-        item {
-          Dividers.Default()
-        }
-
         item {
           Rows.TextRow(
             text = stringResource(R.string.preferences__appearance),
@@ -238,17 +189,7 @@ fun AppSettingsScreen(
           )
         }
 
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.AppSettingsScreen__stories),
-            icon = SignalIcons.Stories.painter,
-            onClick = { onEvent(AppSettingsEvent.StoriesClicked) },
-            enabled = state.isRegisteredAndUpToDate,
-            modifier = Modifier
-              .selectionHighlight(selectedRoute is AppSettingsRoute.StoriesRoute)
-              .testTag(AppSettingsTestTags.ROW_STORIES)
-          )
-        }
+        item { Dividers.Default() }
 
         item {
           Rows.TextRow(
@@ -274,6 +215,8 @@ fun AppSettingsScreen(
           )
         }
 
+        item { Dividers.Default() }
+
         item {
           Rows.TextRow(
             icon = SignalIcons.Backup.imageVector,
@@ -293,40 +236,48 @@ fun AppSettingsScreen(
             icon = SignalIcons.Data.painter,
             onClick = { onEvent(AppSettingsEvent.DataAndStorageClicked) },
             modifier = Modifier
-              .selectionHighlight(selectedRoute is AppSettingsRoute.DataAndStorageRoute)
+              .selectionHighlight(selectedRoute == AppSettingsRoute.DataAndStorageRoute.DataAndStorage)
               .testTag(AppSettingsTestTags.ROW_DATA_AND_STORAGE)
           )
         }
 
-        if (state.showAppUpdates) {
-          item {
-            Rows.TextRow(
-              text = "App updates",
-              icon = SignalIcons.Calendar.painter,
-              onClick = { onEvent(AppSettingsEvent.AppUpdatesClicked) },
-              modifier = Modifier
-                .selectionHighlight(selectedRoute == AppSettingsRoute.AppUpdates)
-                .testTag(AppSettingsTestTags.ROW_APP_UPDATES)
-            )
-          }
-        }
-
-        if (state.isPrimaryDevice && state.showPayments) {
-          item {
-            Dividers.Default()
-          }
-
-          item {
-            PaymentsRow(
-              unreadPaymentsCount = state.unreadPaymentsCount,
-              onClick = { onEvent(AppSettingsEvent.PaymentsClicked) },
-              modifier = Modifier.selectionHighlight(selectedRoute == AppSettingsRoute.Payments)
-            )
-          }
+        item {
+          Dividers.Default()
         }
 
         item {
-          Dividers.Default()
+          if (donationContent != null) {
+            donationContent()
+          } else {
+            Rows.TextRow(
+              text = {
+                Text(
+                  text = donationLabel ?: stringResource(R.string.AppSettingsScreen__donate_to_signal),
+                  modifier = Modifier.weight(1f)
+                )
+
+                if (state.hasExpiredGiftBadge) {
+                  Icon(
+                    painter = painterResource(CoreUiR.drawable.symbol_info_fill_24),
+                    tint = colorResource(CoreUiR.color.signal_accent_primary),
+                    contentDescription = null
+                  )
+                }
+              },
+              icon = {
+                Icon(
+                  painter = SignalIcons.Heart.painter,
+                  contentDescription = null,
+                  tint = MaterialTheme.colorScheme.onSurface
+                )
+              },
+              onClick = { onEvent(AppSettingsEvent.DonateClicked) },
+              onLongClick = { onEvent(AppSettingsEvent.DonateLongClicked) },
+              modifier = Modifier
+                .selectionHighlight(selectedRoute is AppSettingsRoute.DonationsRoute)
+                .testTag(AppSettingsTestTags.ROW_DONATE)
+            )
+          }
         }
 
         item {
@@ -337,17 +288,6 @@ fun AppSettingsScreen(
             modifier = Modifier
               .selectionHighlight(selectedRoute is AppSettingsRoute.HelpRoute)
               .testTag(AppSettingsTestTags.ROW_HELP)
-          )
-        }
-
-        item {
-          Rows.TextRow(
-            text = stringResource(R.string.AppSettingsFragment__invite_your_friends),
-            icon = SignalIcons.Invite.painter,
-            onClick = { onEvent(AppSettingsEvent.InviteClicked) },
-            modifier = Modifier
-              .selectionHighlight(selectedRoute == AppSettingsRoute.Invite)
-              .testTag(AppSettingsTestTags.ROW_INVITE)
           )
         }
 
@@ -439,47 +379,6 @@ private fun BackupWarningRow(
     },
     onClick = onClick,
     modifier = modifier
-  )
-}
-
-@Composable
-private fun PaymentsRow(
-  unreadPaymentsCount: Int,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier
-) {
-  Rows.TextRow(
-    text = {
-      Text(
-        text = stringResource(R.string.AppSettingsScreen__payments),
-        modifier = Modifier.weight(1f)
-      )
-
-      if (unreadPaymentsCount > 0) {
-        Text(
-          text = unreadPaymentsCount.toString(),
-          color = MaterialTheme.colorScheme.inverseOnSurface,
-          style = MaterialTheme.typography.bodyMedium,
-          textAlign = TextAlign.Center,
-          modifier = Modifier
-            .background(
-              color = MaterialTheme.colorScheme.primary,
-              shape = RoundedCornerShape(50)
-            )
-            .defaultMinSize(minWidth = 30.dp)
-            .padding(4.dp)
-        )
-      }
-    },
-    icon = {
-      Icon(
-        painter = SignalIcons.Payment.painter,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurface
-      )
-    },
-    onClick = onClick,
-    modifier = modifier.testTag(AppSettingsTestTags.ROW_PAYMENTS)
   )
 }
 

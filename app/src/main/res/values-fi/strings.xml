@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright 2024 Signal Messenger, LLC
   ~ SPDX-License-Identifier: AGPL-3.0-only
-  -->
-<!-- smartling.instruction_comments_enabled = on -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+  --><!-- smartling.instruction_comments_enabled = on --><resources xmlns:tools="http://schemas.android.com/tools">
   <!-- Removed by excludeNonTranslatables <string name="app_name" translatable="false">Signal</string> -->
 
   <!-- Removed by excludeNonTranslatables <string name="donate_url" translatable="false">https://signal.org/donate</string> -->
@@ -34,9 +31,13 @@
   <!-- Removed by excludeNonTranslatables <string name="AlbumThumbnailView_plus" translatable="false">\+%d</string> -->
 
     <!-- ApplicationMigrationActivity -->
-    <string name="ApplicationMigrationActivity__signal_is_updating">Signal päivittyy…</string>
+    <string name="ApplicationMigrationActivity__signal_is_updating">Collie päivittyy…</string>
 
     <!-- ApplicationPreferencesActivity -->
+    <string name="ApplicationPreferenceActivity_you_havent_set_a_passphrase_yet">Et ole vielä määritellyt salalausetta!</string>
+    <string name="ApplicationPreferencesActivity_disable_passphrase">Poista salalause käytöstä?</string>
+    <string name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">Tämä avaa Colliein ja viesti-ilmoitusten lukituksen pysyvästi.</string>
+    <string name="ApplicationPreferencesActivity_disable">Poista käytöstä</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Virhe yhdistettäessä palvelimeen!</string>
     <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">Rekisteröintiesto vaatii tunnusluvun. Poista rekisteröintiesto käytöstä ennen tunnusluvun poistamista.</string>
     <string name="ApplicationPreferencesActivity_pin_created">Tunnusluku on luotu.</string>
@@ -80,7 +81,7 @@
     <string name="AttachmentKeyboard_location">Sijainti</string>
     <!-- Text for a button that will allow users to create a poll -->
     <string name="AttachmentKeyboard_poll">Kysely</string>
-    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Signal tarvitsee käyttöoikeuden kuvien ja videoiden näyttämiseksi</string>
+    <string name="AttachmentKeyboard_Signal_needs_permission_to_show_your_photos_and_videos">Collie tarvitsee käyttöoikeuden kuvien ja videoiden näyttämiseksi</string>
     <!-- Text for a button prompting users to allow Signal access to their gallery storage -->
     <string name="AttachmentKeyboard_allow_access">Myönnä käyttöoikeus</string>
     <string name="AttachmentKeyboard_payment">Maksu</string>
@@ -91,34 +92,34 @@
     <!-- Option in menu to go to settings -->
     <string name="AttachmentKeyboard_go_to_settings">Siirry asetuksiin</string>
     <!-- Text explaining that Signal has limited access to photos -->
-    <string name="AttachmentKeyboard_signal_has_limited_access">Signalilla on rajoitettu pääsy kuviin tai videoihin</string>
+    <string name="AttachmentKeyboard_signal_has_limited_access">Collieilla on rajoitettu pääsy kuviin tai videoihin</string>
     <!-- Text shown when user has given no photos for Signal to access and an explanation on how to change those permissions -->
     <string name="AttachmentKeyboard_no_photos_found">Kuvia ei löytynyt. Valitse tässä näytettävät kuvat ja videot tai muuta käyttöoikeuksia</string>
 
     <!-- MediaGalleryFragment -->
     <!-- Text describing that no photos or videos are currently found in the gallery and that Signal can only access media that the user allows -->
-    <string name="MediaGalleryFragment__no_photos_found">Kuvia tai videoita ei löytynyt. Signalilla on pääsy vain valitsemiisi valokuviin ja videoihin.</string>
+    <string name="MediaGalleryFragment__no_photos_found">Kuvia tai videoita ei löytynyt. Collieilla on pääsy vain valitsemiisi valokuviin ja videoihin.</string>
 
     <!-- AttachmentManager -->
     <string name="AttachmentManager_cant_open_media_selection">Median valintaan ei löytynyt sovellusta.</string>
-    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Signal tarvitsee luvan käyttää laitteesi tallennustilaa kuvien, videoiden tai äänitiedostojen liittämistä varten, mutta tämä käyttöoikeus on pysyvästi evätty Signalilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Tallennustila\".</string>
-    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Signal tarvitsee luvan käyttää laitteesi yhteystietoja oman yhteystietolistansa käsittelyä varten, mutta tämä käyttöoikeus on pysyvästi evätty Signalilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Yhteystiedot\".</string>
-    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Signal tarvitsee luvan käyttää sijaintitietoja sijainnin liittämistä varten, mutta tämä käyttöoikeus on pysyvästi evätty Signalilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Sijainti\".</string>
+    <string name="AttachmentManager_signal_requires_the_external_storage_permission_in_order_to_attach_photos_videos_or_audio">Collie tarvitsee luvan käyttää laitteesi tallennustilaa kuvien, videoiden tai äänitiedostojen liittämistä varten, mutta tämä käyttöoikeus on pysyvästi evätty Collieilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Tallennustila\".</string>
+    <string name="AttachmentManager_signal_requires_contacts_permission_in_order_to_attach_contact_information">Collie tarvitsee luvan käyttää laitteesi yhteystietoja oman yhteystietolistansa käsittelyä varten, mutta tämä käyttöoikeus on pysyvästi evätty Collieilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Yhteystiedot\".</string>
+    <string name="AttachmentManager_signal_requires_location_information_in_order_to_attach_a_location">Collie tarvitsee luvan käyttää sijaintitietoja sijainnin liittämistä varten, mutta tämä käyttöoikeus on pysyvästi evätty Collieilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Sijainti\".</string>
 
     <!-- Dialog title asking users for location permission -->
     <string name="AttachmentManager_signal_allow_access_location">Myönnä sijaintisi käyttöoikeus</string>
     <!-- Dialog description that will explain the steps needed to give location permission -->
     <string name="AttachmentManager_signal_to_send_location">Sijaintisi lähettäminen:</string>
     <!-- Alert dialog description asking for location permission -->
-    <string name="AttachmentManager_signal_allow_signal_access_location">Myönnä Signalille oikeus lähettää sijaintisi.</string>
+    <string name="AttachmentManager_signal_allow_signal_access_location">Myönnä Collieille oikeus lähettää sijaintisi.</string>
     <!-- Toast text explaining Signal\'s need for location access -->
-    <string name="AttachmentManager_signal_needs_location_access">Signal tarvitsee sijaintitietojen oikeudet sijaintisi lähettämiseksi.</string>
+    <string name="AttachmentManager_signal_needs_location_access">Collie tarvitsee sijaintitietojen oikeudet sijaintisi lähettämiseksi.</string>
     <!-- Dialog title asking users for gallery storage permission -->
     <string name="AttachmentManager_signal_allow_storage">Myönnä pääsy tallennustilaan</string>
     <!-- Dialog description that will explain the steps needed to give gallery storage permission -->
     <string name="AttachmentManager_signal_to_show_photos">Kuvien ja videoiden näyttäminen:</string>
     <!-- Toast text explaining Signal\'s need for storage access -->
-    <string name="AttachmentManager_signal_needs_storage_access">Signal tarvitsee käyttöoikeuden kuvien ja videoiden näyttämiseksi.</string>
+    <string name="AttachmentManager_signal_needs_storage_access">Collie tarvitsee käyttöoikeuden kuvien ja videoiden näyttämiseksi.</string>
 
     <!-- Alert dialog title to show the recipient has not activated payments -->
     <string name="AttachmentManager__not_activated_payments">%1$s ei ole aktivoinut Signal-maksuja </string>
@@ -271,12 +272,12 @@
     <string name="CensorshipCircumventionMegaphone_no_thanks">Ei kiitos</string>
 
     <!-- ClientDeprecatedActivity -->
-    <string name="ClientDeprecatedActivity_update_signal">Päivitä Signal</string>
+    <string name="ClientDeprecatedActivity_update_signal">Päivitä Collie</string>
     <string name="ClientDeprecatedActivity_this_version_of_the_app_is_no_longer_supported">Tätä sovelluksen versiota ei enää tueta. Voit lähettää ja vastaanottaa viestejä päivittämällä uusimpaan versioon.</string>
     <string name="ClientDeprecatedActivity_update">Päivitä</string>
     <string name="ClientDeprecatedActivity_dont_update">Älä päivitä</string>
     <string name="ClientDeprecatedActivity_warning">Varoitus</string>
-    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Signal-versiosi on vanhentunut. Voit tarkastella viestihistoriaasi, mutta et voi lähettää tai vastaanottaa viestejä ennen sovelluksen päivittämistä.</string>
+    <string name="ClientDeprecatedActivity_your_version_of_signal_has_expired_you_can_view_your_message_history">Collie-versiosi on vanhentunut. Voit tarkastella viestihistoriaasi, mutta et voi lähettää tai vastaanottaa viestejä ennen sovelluksen päivittämistä.</string>
 
     <!-- ClockSkewActivity -->
     <!-- Title of the full-screen dialog shown when the device clock is too far off from the real time -->
@@ -308,7 +309,7 @@
     <!-- Title on dialog when quick restore qr code is scanned in system camera -->
     <string name="CommunicationActions__transfer_dialog_title">Siirretäänkö tili uudelle laitteelle?</string>
     <!-- Message on dialog when quick restore qr code is scanned in system camera -->
-    <string name="CommunicationActions__transfer_dialog_message">Jos haluat siirtää tilin uudelle laitteelle, napauta Jatka ja skannaa QR-koodi uudelleen Signalin kameralla. Skannaa vain QR-koodeja, jotka ovat suoraan Signalin lähettämiä.</string>
+    <string name="CommunicationActions__transfer_dialog_message">Jos haluat siirtää tilin uudelle laitteelle, napauta Jatka ja skannaa QR-koodi uudelleen Colliein kameralla. Skannaa vain QR-koodeja, jotka ovat suoraan Colliein lähettämiä.</string>
     <string name="CommunicationActions__dont_transfer">Älä siirrä</string>
 
     <!-- ConfirmIdentityDialog -->
@@ -332,8 +333,8 @@
 
     <!-- ContactsDatabase -->
     <string name="ContactsDatabase_message_s">Viesti: %1$s</string>
-    <string name="ContactsDatabase_signal_call_s">Signal-äänipuhelu %1$s</string>
-    <string name="ContactsDatabase_signal_video_call_s">Signal-videopuhelu %1$s</string>
+    <string name="ContactsDatabase_signal_call_s">Collie-äänipuhelu %1$s</string>
+    <string name="ContactsDatabase_signal_video_call_s">Collie-videopuhelu %1$s</string>
 
     <!-- ContactNameEditActivity -->
     <!-- Toolbar title for contact name edit activity -->
@@ -444,10 +445,10 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="ConversationActivity_signal_to_send_audio_messages">Puheviestien lähettäminen:</string>
     <!-- Alert dialog description asking for microphone permission in order to send voice messages -->
-    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Myönnä Signalille mikrofonin käyttöoikeus lähettääksesi ääniviestejä.</string>
+    <string name="ConversationActivity_to_send_voice_messages_allow_signal_access_to_your_microphone">Myönnä Collieille mikrofonin käyttöoikeus lähettääksesi ääniviestejä.</string>
     <!-- Toast text explaining Signal\'s need for microphone access -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Signal tarvitsee mikrofonin käyttöoikeuden ääniviestin tallennusta varten.</string>
-    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Signal tarvitsee luvan käyttää mikrofonia äänitiedostojen lähettämistä varten, mutta tämä käyttöoikeus on pysyvästi evätty Signalilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Mikrofoni\".</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_message">Collie tarvitsee mikrofonin käyttöoikeuden ääniviestin tallennusta varten.</string>
+    <string name="ConversationActivity_signal_requires_the_microphone_permission_in_order_to_send_audio_messages">Collie tarvitsee luvan käyttää mikrofonia äänitiedostojen lähettämistä varten, mutta tämä käyttöoikeus on pysyvästi evätty Collieilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Mikrofoni\".</string>
 
     <string name="ConversationActivity_quoted_contact_message">%1$s %2$s</string>
     <string name="ConversationActivity_search_position">%1$d / %2$d</string>
@@ -467,9 +468,9 @@
     <!-- Dialog description that will explain the steps needed to give microphone permissions for a voice call -->
     <string name="ConversationActivity__to_start_call">Puhelun aloittaminen:</string>
     <!-- Alert dialog description asking for microphone permission in order to start a voice call -->
-    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Myönnä Signalille mikrofonin käyttöoikeus soittaaksesi puhelun.</string>
+    <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Myönnä Collieille mikrofonin käyttöoikeus soittaaksesi puhelun.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
-    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Signal tarvitsee mikrofonin käyttöoikeuden puhelun aloittamiseksi.</string>
+    <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Collie tarvitsee mikrofonin käyttöoikeuden puhelun aloittamiseksi.</string>
 
 
     <string name="ConversationActivity_join">Liity</string>
@@ -483,11 +484,11 @@
     <!-- Message shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
     <string name="ConversationActivity__sms_messaging_is_no_longer_supported_in_signal_invite_s_to_to_signal_to_keep_the_conversation_here">Signal ei enää tue tekstiviestejä. Kutsu %1$s Signaliin, niin voit jatkaa keskustelua täällä.</string>
     <!-- Message shown when opening a conversation with an unregistered user who used to be on Signal -->
-    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Tämä henkilö ei enää käytä Signalia. Kutsu hänet mukaan Signaliin, niin voit jatkaa keskustelua täällä.</string>
+    <string name="ConversationActivity__this_person_is_no_longer_using_signal">Tämä henkilö ei enää käytä Collieia. Kutsu hänet mukaan Collieiin, niin voit jatkaa keskustelua täällä.</string>
     <!-- Message shown when opening a conversation with an unregistered user who is not on Signal -->
     <string name="ConversationActivity__this_person_is_not_using_signal">Henkilö ei käytä Signalia. Kutsu hänet mukaan, niin voit jatkaa keskustelua täällä.</string>
     <!-- Action button shown when opening an SMS conversation with SMS disabled and there are no exported messages -->
-    <string name="ConversationActivity__invite_to_signal">Kutsu Signaliin</string>
+    <string name="ConversationActivity__invite_to_signal">Kutsu Collieiin</string>
     <!-- Toast message shown when trying to record a voice message during an ongoing call -->
     <string name="ConversationFragment_cannot_record_voice_message_during_call">Puheviestiä ei voi tallentaa puhelun aikana.</string>
 
@@ -580,15 +581,15 @@
     <!-- Message shown after successfully blocking join requests for a user -->
     <string name="ConversationFragment__blocked">Estetty</string>
     <!-- Action shown to allow a user to update their application because it has expired -->
-    <string name="ConversationFragment__update_build">Päivitä Signal</string>
+    <string name="ConversationFragment__update_build">Päivitä Collie</string>
     <!-- Action shown to allow a user to re-register as they are no longer registered -->
-    <string name="ConversationFragment__reregister_signal">Rekisteröi Signal uudelleen</string>
+    <string name="ConversationFragment__reregister_signal">Rekisteröi Collie uudelleen</string>
     <!-- Action shown in the conversation input area to allow a user to re-link this device as it is no longer linked -->
     <string name="ConversationFragment__relink_signal">Yhdistä uudelleen</string>
     <!-- Label for a button displayed in the conversation toolbar to return to the previous screen. -->
     <string name="ConversationFragment__content_description_back_button">Siirry takaisin.</string>
     <!-- Label for a button displayed in the conversation toolbar to open the main screen of the app. -->
-    <string name="ConversationFragment__content_description_launch_signal_button">Avaa Signal</string>
+    <string name="ConversationFragment__content_description_launch_signal_button">Avaa Collie</string>
     <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
     <string name="ConversationFragment__no_longer_verified">Ei enää varmennettu</string>
     <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
@@ -635,7 +636,7 @@
     <!-- Title of the dialog shown when re-requesting an expired attachment from your primary device fails -->
     <string name="ConversationFragment_attachment_backfill_failed_title">Mediaa ei voi ladata</string>
     <!-- Body of the dialog shown when your phone didn\'t respond to a request to re-send an expired attachment -->
-    <string name="ConversationFragment_attachment_backfill_timeout">Tarkista laitteen ja puhelimen internetyhteys. Avaa Signal puhelimella ja yritä sitten ladata uudelleen.</string>
+    <string name="ConversationFragment_attachment_backfill_timeout">Tarkista laitteen ja puhelimen internetyhteys. Avaa Collie puhelimella ja yritä sitten ladata uudelleen.</string>
     <!-- Body of the dialog shown when your phone no longer has the attachment you tried to download -->
     <string name="ConversationFragment_attachment_backfill_not_found">Media ei ole enää saatavilla puhelimessa, eikä sitä voi ladata.</string>
     <!-- Dialog for how to long to keep a messaged pinned for -->
@@ -705,7 +706,7 @@
     <!-- Bottom sheet text explaining that profile names are chosen by the account holder. Placeholder will be \'Profile names\' -->
     <string name="ProfileNameBottomSheet__profile_names_on_signal">%1$s Signalissa on tilin haltijan valittavissa.</string>
     <!-- Bottom sheet text explaining that Signal can\'t verify names and photos -->
-    <string name="ProfileNameBottomSheet__signal_cant_verify">Signal ei voi vahvistaa nimien tai kuvien oikeellisuutta</string>
+    <string name="ProfileNameBottomSheet__signal_cant_verify">Collie ei voi vahvistaa nimien tai kuvien oikeellisuutta</string>
     <!-- Bottom sheet text explaining that Signal will never contact you for registration code, PIN, or recovery key -->
     <string name="ProfileNameBottomSheet__signal_will_never_contact">Signal ei koskaan ota sinuun yhteyttä pyytääkseen rekisteröintikoodia, PIN-koodia tai palautusavainta.</string>
     <!-- Bottom sheet text explaining that accounts can impersonate other people and to be cautious -->
@@ -847,9 +848,9 @@
     <!-- Toolbar title for this screen -->
     <string name="WhoCanSeeMyPhoneNumberFragment__who_can_find_me_by_number">Kuka voi löytää minut puhelinnumeron avulla?</string>
     <!-- Description for radio item stating anyone can see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Kuka tahansa, jolla on puhelinnumerosi, näkee, että olet Signalissa, ja voi aloittaa keskustelut kanssasi.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__anyone_who_has_your">Kuka tahansa, jolla on puhelinnumerosi, näkee, että olet Collieissa, ja voi aloittaa keskustelut kanssasi.</string>
     <!-- Description for radio item stating no one will be able to see your phone number -->
-    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Kukaan ei näe, että olet Signalissa, ellet lähetä heille viestiä tai keskustele heidän kanssaan.</string>
+    <string name="WhoCanSeeMyPhoneNumberFragment__nobody_will_be_able">Kukaan ei näe, että olet Collieissa, ellet lähetä heille viestiä tai keskustele heidän kanssaan.</string>
 
     <!-- ChooseBackupFragment -->
 
@@ -875,7 +876,7 @@
     <string name="BackupsPreferenceFragment__test_your_backup_passphrase">Tarkista varmuuskopion salalause ja varmista että se täsmää</string>
     <string name="BackupsPreferenceFragment__turn_on">Ota varmuuskopiot käyttöön</string>
     <string name="BackupsPreferenceFragment__turn_off">Poista käytöstä</string>
-    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Palauta varmuuskopio asentamalla Signal uudelleen tai uuteen laitteeseen. Avaa sovellus, napauta Palauta varmuuskopio ja etsi sitten varmuuskopiotiedosto. %1$s"</string>
+    <string name="BackupsPreferenceFragment__to_restore_a_backup">"Palauta varmuuskopio asentamalla Collie uudelleen tai uuteen laitteeseen. Avaa sovellus, napauta Palauta varmuuskopio ja etsi sitten varmuuskopiotiedosto. %1$s"</string>
     <string name="BackupsPreferenceFragment__learn_more">Lue lisää</string>
     <string name="BackupsPreferenceFragment__in_progress">Käsitellään…</string>
     <!-- Status text shown in backup preferences when verifying a backup -->
@@ -884,7 +885,7 @@
     <string name="BackupsPreferenceFragment__d_so_far">%1$d tähän mennessä…</string>
     <!-- Show percentage of completion of backup -->
     <string name="BackupsPreferenceFragment__s_so_far">%1$s%% tähän mennessä…</string>
-    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Signal tarvitsee luvan käyttää laitteesi tallennustilaa varmuuskopioiden luomista varten, mutta tämä käyttöoikeus on pysyvästi evätty Signalilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Tallennustila\".</string>
+    <string name="BackupsPreferenceFragment_signal_requires_external_storage_permission_in_order_to_create_backups">Collie tarvitsee luvan käyttää laitteesi tallennustilaa varmuuskopioiden luomista varten, mutta tämä käyttöoikeus on pysyvästi evätty Collieilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Tallennustila\".</string>
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">Aseta varmuuskopiointiaika</string>
 
@@ -962,7 +963,7 @@
 
     <!-- DecryptionFailedDialog -->
     <string name="DecryptionFailedDialog_chat_session_refreshed">Keskustelu on päivitetty</string>
-    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Signalin sisältö salataan päästä päähän. Tästä syystä keskustelu täytyy joskus päivittää. Tämä ei vaikuta tietoturvaan. Tämän yhteyshenkilön viimeisin viesti ei välttämättä näy. Voit pyytää häntä lähettämään sen uudelleen.</string>
+    <string name="DecryptionFailedDialog_signal_uses_end_to_end_encryption">Colliein sisältö salataan päästä päähän. Tästä syystä keskustelu täytyy joskus päivittää. Tämä ei vaikuta tietoturvaan. Tämän yhteyshenkilön viimeisin viesti ei välttämättä näy. Voit pyytää häntä lähettämään sen uudelleen.</string>
 
     <!-- LinkDeviceFragment -->
     <!-- Description for how Signal will work with a linked device (eg desktop, iPad) -->
@@ -1071,7 +1072,7 @@
     <!-- Bottom sheet title telling users to complete the linking process on the other device  -->
     <string name="AddLinkDeviceFragment__finish_linking_on_other_device">Viimeistele yhdistäminen toisella laitteellasi</string>
     <!-- Bottom sheet description telling users to complete the linking process -->
-    <string name="AddLinkDeviceFragment__finish_linking_signal">Viimeistele Signalin yhdistäminen toisella laitteellasi.</string>
+    <string name="AddLinkDeviceFragment__finish_linking_signal">Viimeistele Colliein yhdistäminen toisella laitteellasi.</string>
     <!-- Title of dialog when the QR code being scanned is invalid -->
     <string name="AddLinkDeviceFragment__linking_device_failed">Laitteen yhdistäminen epäonnistui</string>
     <!-- Text shown in a dialog when the QR code being scanned is invalid -->
@@ -1119,16 +1120,16 @@
     <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Laite ei tue Play-palveluita. Virransäästöominaisuudet estävät viestien hakemisen taustalla. Ota toiminto pois käytöstä napauttamalla.</string>
 
     <!-- ExpiredBuildReminder -->
-    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Tämä Signal-versio on vanhentunut. Päivitä nyt lähettääksesi ja vastaanottaaksesi viestejä.</string>
+    <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Tämä Collie-versio on vanhentunut. Päivitä nyt lähettääksesi ja vastaanottaaksesi viestejä.</string>
     <string name="ExpiredBuildReminder_update_now">Päivitä nyt</string>
 
     <!-- A message in a banner shown at the top of the screen indicating that the user must upgrade their device to use signal. -->
     <string name="DeprecatedSdkBanner_body">Signal ei enää toimi tässä laitteessa. Jos haluat käyttää Signalia uudelleen, päivitä laite uudempaan Android-versioon tai vaihda uudempaan laitteeseen.</string>
 
     <!-- Title of notification telling users to update Signal -->
-    <string name="DeprecatedNotificationJob_update_signal">Päivitä Signal</string>
+    <string name="DeprecatedNotificationJob_update_signal">Päivitä Collie</string>
     <!-- Message body of notification telling users that this current version of Signal has expired. If pressed, we will direct them to the website APK or PlayStore page -->
-    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Tämä Signal-versio on vanhentunut. Päivitä napauttamalla lähettääksesi ja vastaanottaaksesi viestejä.</string>
+    <string name="DeprecatedNotificationJob_this_version_of_signal_has_expired">Tämä Collie-versio on vanhentunut. Päivitä napauttamalla lähettääksesi ja vastaanottaaksesi viestejä.</string>
 
     <!-- PendingGroupJoinRequestsReminder -->
     <plurals name="PendingGroupJoinRequestsReminder_d_pending_member_requests">
@@ -1262,7 +1263,7 @@
     <!-- Message for dialog asking user to submit logs for debugging a crash -->
     <string name="PromptLogsSlowNotificationsDialog__message">Virheenkorjauslokit auttavat meitä diagnosoimaan ja korjaamaan ongelman, eivätkä ne sisällä tunnistetietoja.</string>
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
-    <string name="PromptLogsSlowNotificationsDialog__title_crash">Signal kohtasi ongelman. Lähetetäänkö virheenkorjausloki?</string>
+    <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie kohtasi ongelman. Lähetetäänkö virheenkorjausloki?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">Et ehkä saa viestejä. Lähetetäänkö vianetsintäloki?</string>
 
@@ -1270,12 +1271,12 @@
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">Akun käytön optimointi voi aiheuttaa viiveitä ilmoituksissa</string>
     <!-- Message explaining that battery saver may delay notifications -->
-    <string name="PromptBatterySaverBottomSheet__message">Voit poistaa akun käytön optimoinnin käytöstä Signalin osalta varmistaaksesi, etteivät viesti-ilmoitukset viivästy.</string>
+    <string name="PromptBatterySaverBottomSheet__message">Voit poistaa akun käytön optimoinnin käytöstä Colliein osalta varmistaaksesi, etteivät viesti-ilmoitukset viivästy.</string>
 
     <!-- Title in bottom sheet that states that notifications for this device could be delayed -->
     <string name="DeviceSpecificNotificationBottomSheet__notifications_may_be_delayed">Akun käytön optimointi voi aiheuttaa viiveitä ilmoituksissa</string>
     <!-- Message in bottom sheet prompting users to fix potential issues by disabling battery optimizations -->
-    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Voit poistaa akun käytön optimoinnin käytöstä Signalin osalta varmistaaksesi, etteivät viesti-ilmoitukset viivästy. Napauta Jatka nähdäksesi laitekohtaiset ohjeet.</string>
+    <string name="DeviceSpecificNotificationBottomSheet__disable_battery_optimizations">Voit poistaa akun käytön optimoinnin käytöstä Colliein osalta varmistaaksesi, etteivät viesti-ilmoitukset viivästy. Napauta Jatka nähdäksesi laitekohtaiset ohjeet.</string>
     <!-- Button to dismiss notification help prompt -->
     <string name="DeviceSpecificNotificationBottomSheet__no_thanks">Ei kiitos</string>
     <!-- Button to continue and go to Signal support website -->
@@ -1284,7 +1285,7 @@
     <!-- Title of a bottom sheet that is shown when the user is having connectivity issues -->
     <string name="ConnectivityWarningBottomSheet_title">Et ehkä saa viestejä</string>
     <!-- Body of a bottom sheet that is shown when the user is having connectivity issues -->
-    <string name="ConnectivityWarningBottomSheet_body">Laitteen uudelleenkäynnistäminen voi auttaa ratkaisemaan viestien toimitusongelman. Jos ongelma jatkuu, ota yhteyttä Signal-tukeen.</string>
+    <string name="ConnectivityWarningBottomSheet_body">Laitteen uudelleenkäynnistäminen voi auttaa ratkaisemaan viestien toimitusongelman. Jos ongelma jatkuu, ota yhteyttä Collie-tukeen.</string>
     <!-- Text for a button in a bottom sheet that is shown when the user is having connectivity issues. Clicking it will dismiss the bottom sheet. -->
     <string name="ConnectivityWarningBottomSheet_dismiss_button">Selvä</string>
 
@@ -1519,7 +1520,7 @@
     <string name="LongMessageActivity_your_message">Sinun viestisi</string>
 
     <!-- MessageRetrievalService -->
-    <string name="MessageRetrievalService_signal">Signal</string>
+    <string name="MessageRetrievalService_signal">Collie</string>
     <string name="MessageRetrievalService_background_connection_enabled">Taustayhteys päällä</string>
 
     <!-- MediaOverviewActivity -->
@@ -1611,10 +1612,10 @@
   <!-- Removed by excludeNonTranslatables <string name="StarredMessages__s_chevron_s" translatable="false">%1$s \u203A %2$s</string> -->
 
     <!-- NotificationBarManager -->
-    <string name="NotificationBarManager__establishing_signal_call">Muodostetaan Signal-puhelua</string>
+    <string name="NotificationBarManager__establishing_signal_call">Muodostetaan Collie-puhelua</string>
     <!-- Temporary notification shown when starting the calling service -->
-    <string name="NotificationBarManager__starting_signal_call_service">Käynnistetään Signalin puhelupalvelu</string>
-    <string name="NotificationBarManager__stopping_signal_call_service">Pysäytetään Signalin puhelupalvelua</string>
+    <string name="NotificationBarManager__starting_signal_call_service">Käynnistetään Colliein puhelupalvelu</string>
+    <string name="NotificationBarManager__stopping_signal_call_service">Pysäytetään Colliein puhelupalvelua</string>
     <string name="NotificationBarManager__cancel_call">Peru puhelu</string>
 
     <!-- NotificationsMegaphone -->
@@ -1945,7 +1946,7 @@
     </plurals>
 
     <!-- In-conversation update message to indicate that the current contact is sms only and will need to migrate to signal to continue the conversation in signal. -->
-    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Et voi enää lähettää tekstiviestejä Signalissa. Kutsu %1$s Signaliin, niin voit jatkaa keskustelua täällä.</string>
+    <string name="MessageRecord__you_can_no_longer_send_sms_messages_in_signal">Et voi enää lähettää tekstiviestejä Collieissa. Kutsu %1$s Collieiin, niin voit jatkaa keskustelua täällä.</string>
     <!-- Body for quote when message being quoted is an in-app payment message -->
     <string name="MessageRecord__payment_s">Maksu: %1$s</string>
     <!-- Body for quote when message being quoted is an in-app payment message tombstone without an amount -->
@@ -2060,20 +2061,20 @@
     <string name="DeviceProvisioningActivity_link_a_signal_device">Yhdistetäänkö Signal-laite?</string>
     <string name="DeviceProvisioningActivity_to_link_a_desktop_or_ipad_to_this_signal_account">Jos haluat yhdistää tietokoneen tai iPadin tähän Signal-tiliin, siirry kohtaan Yhdistetyt laitteet, napauta Yhdistä uusi laite ja skannaa QR-koodi uudelleen. Skannaa vain QR-koodeja, jotka tulevat suoraan Signalista.</string>
 
-    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Tämä Signal-versio vanhenee tänään. Päivitä viimeisimpään versioon.</string>
+    <string name="OutdatedBuildReminder_your_version_of_signal_will_expire_today">Tämä Collie-versio vanhenee tänään. Päivitä viimeisimpään versioon.</string>
     <plurals name="OutdatedBuildReminder_your_version_of_signal_will_expire_in_n_days">
-        <item quantity="one">Tämä Signal-versio vanhenee huomenna. Päivitä viimeisimpään versioon.</item>
-        <item quantity="other">Tämä Signal-versio vanhenee %1$d päivän kuluttua. Päivitä viimeisimpään versioon.</item>
+        <item quantity="one">Tämä Collie-versio vanhenee huomenna. Päivitä viimeisimpään versioon.</item>
+        <item quantity="other">Tämä Collie-versio vanhenee %1$d päivän kuluttua. Päivitä viimeisimpään versioon.</item>
     </plurals>
 
     <!-- PassphrasePromptActivity -->
     <string name="PassphrasePromptActivity_enter_passphrase">Syötä salalause</string>
-    <string name="PassphrasePromptActivity_watermark_content_description">Signal-kuvake</string>
+    <string name="PassphrasePromptActivity_watermark_content_description">Collie-kuvake</string>
     <string name="PassphrasePromptActivity_ok_button_content_description">Syötä salalause</string>
     <string name="PassphrasePromptActivity_invalid_passphrase_exclamation">Salalause ei kelpaa!</string>
-    <string name="PassphrasePromptActivity_unlock_signal">Avaa Signalin lukitus</string>
+    <string name="PassphrasePromptActivity_unlock_signal">Avaa Colliein lukitus</string>
     <!-- This is the subject line for the email that is sent to support -->
-    <string name="PassphrasePromptActivity_signal_android_lock_screen">Signal Android - Lukitusnäyttö</string>
+    <string name="PassphrasePromptActivity_signal_android_lock_screen">Collie Android - Lukitusnäyttö</string>
 
     <!-- PlacePickerActivity -->
     <string name="PlacePickerActivity_title">Kartta</string>
@@ -2131,7 +2132,7 @@
 
     <!-- RecaptchaRequiredBottomSheetFragment -->
     <string name="RecaptchaRequiredBottomSheetFragment_verify_to_continue_messaging">Vahvista jatkaaksesi viestintää</string>
-    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Auta vähentämään roskapostia Signalissa ja suorita vahvistaminen.</string>
+    <string name="RecaptchaRequiredBottomSheetFragment_to_help_prevent_spam_on_signal">Auta vähentämään roskapostia Collieissa ja suorita vahvistaminen.</string>
     <string name="RecaptchaRequiredBottomSheetFragment_after_verifying_you_can_continue_messaging">Voit jatkaa viestintää vahvistamisen jälkeen. Kaikki odottavat viestit lähetetään automaattisesti.</string>
 
     <!-- Recipient -->
@@ -2139,7 +2140,7 @@
     <!-- Name of recipient representing user\'s \'My Story\' -->
     <string name="Recipient_my_story">Oma tarina</string>
     <!-- Name of recipient for a call link without a name -->
-    <string name="Recipient_signal_call">Signal-puhelu</string>
+    <string name="Recipient_signal_call">Collie-puhelu</string>
 
     <!-- RecipientPreferencesActivity -->
     <string name="RecipientPreferenceActivity_block">Estä</string>
@@ -2176,7 +2177,7 @@
     <!-- WebRtcCallActivity -->
     <string name="WebRtcCallActivity__tap_here_to_turn_on_your_video">Ota video käyttöön napauttamalla tästä</string>
     <!-- Subtitle shown at top of call where %s is the elapsed time of the call -->
-    <string name="WebRtcCallActivity__signal_s">Signal %1$s</string>
+    <string name="WebRtcCallActivity__signal_s">Collie %1$s</string>
     <string name="WebRtcCallActivity__calling">Soitetaan…</string>
     <!-- Title for dialog warning about lacking bluetooth permissions during a call -->
     <string name="WebRtcCallActivity__bluetooth_permission_denied">Bluetooth-käyttöoikeus on estetty</string>
@@ -2241,15 +2242,15 @@
     <!-- Dialog title asking users for camera permission -->
     <string name="WebRtcCallActivity__allow_access_camera">Anna kameran käyttöoikeus</string>
     <!-- Dialog description explaining why camera and microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Myönnä Signalille kameran ja mikrofonin käyttöoikeus puhelun aloittamiseksi tai siihen liittymiseksi.</string>
+    <string name="WebRtcCallActivity__to_start_call_camera_microphone">Myönnä Collieille kameran ja mikrofonin käyttöoikeus puhelun aloittamiseksi tai siihen liittymiseksi.</string>
     <!-- Dialog description explaining why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__to_start_call_microphone">Myönnä Signalille mikrofonin käyttöoikeus puhelun aloittamiseksi tai siihen liittymiseksi.</string>
+    <string name="WebRtcCallActivity__to_start_call_microphone">Myönnä Collieille mikrofonin käyttöoikeus puhelun aloittamiseksi tai siihen liittymiseksi.</string>
     <!-- Dialog description explaining why camera permissions are needed to enable a user\'s video in a call -->
-    <string name="WebRtcCallActivity__to_enable_video_allow_camera">Videon käyttöönotto edellyttää, että annat Signalille kameran käyttöoikeuden.</string>
+    <string name="WebRtcCallActivity__to_enable_video_allow_camera">Videon käyttöönotto edellyttää, että annat Collieille kameran käyttöoikeuden.</string>
     <!-- Toast describing why microphone permissions are needed to start or join a call -->
-    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Signal tarvitsee mikrofonin käyttöoikeuden puhelun aloittamiseksi tai siihen liittymiseksi.</string>
+    <string name="WebRtcCallActivity__signal_needs_microphone_start_call">Collie tarvitsee mikrofonin käyttöoikeuden puhelun aloittamiseksi tai siihen liittymiseksi.</string>
     <!-- Toast describing why camera permissions are needed to enable a video in a call -->
-    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">Signal tarvitsee kameran käyttöoikeuden kuvien ottamiseksi</string>
+    <string name="WebRtcCallActivity__signal_needs_camera_access_enable_video">Collie tarvitsee kameran käyttöoikeuden kuvien ottamiseksi</string>
     <!-- Dialog description that will explain the steps needed to give microphone permissions -->
     <string name="WebRtcCallActivity__to_start_call">Puhelun aloittaminen tai puheluun liittyminen:</string>
     <!-- Dialog description that will explain the steps needed to give camera permissions -->
@@ -2262,8 +2263,8 @@
     <string name="MoveableLocalVideoRenderer__expand_local_video">Laajenna paikallinen video</string>
 
     <!-- WebRtcCallView -->
-    <string name="WebRtcCallView__signal_call">Signal -puhelu</string>
-    <string name="WebRtcCallView__signal_video_call">Signal-videopuhelu</string>
+    <string name="WebRtcCallView__signal_call">Collie -puhelu</string>
+    <string name="WebRtcCallView__signal_video_call">Collie-videopuhelu</string>
     <string name="WebRtcCallView__start_call">Aloita puhelu</string>
     <string name="WebRtcCallView__join_call">Liity puheluun</string>
     <string name="WebRtcCallView__call_is_full">Puhelu on täynnä</string>
@@ -2572,7 +2573,7 @@
 
     <!-- SharedContactView -->
     <string name="SharedContactView_add_to_contacts">Lisää yhteystietoihin</string>
-    <string name="SharedContactView_invite_to_signal">Kutsu Signaliin</string>
+    <string name="SharedContactView_invite_to_signal">Kutsu Collieiin</string>
     <!-- Button on a shared contact card that opens a chat with that contact. It can share a row with other buttons, so a short label is preferred -->
     <string name="SharedContactView_message_button">Viesti</string>
     <!-- Button on a contact card shared in a group chat that adds the person on the card to that group -->
@@ -2865,11 +2866,11 @@
     <string name="ThreadRecord_blocked_group">Estetty</string>
 
     <!-- ApkUpdateNotifications -->
-    <string name="ApkUpdateNotifications_prompt_install_title">Signal-päivitys</string>
-    <string name="ApkUpdateNotifications_prompt_install_body">Uusi versio Signalista on saatavilla. Päivitä napauttamalla.</string>
-    <string name="ApkUpdateNotifications_failed_general_title">Signalin päivitys epäonnistui</string>
+    <string name="ApkUpdateNotifications_prompt_install_title">Collie-päivitys</string>
+    <string name="ApkUpdateNotifications_prompt_install_body">Uusi versio Collieista on saatavilla. Päivitä napauttamalla.</string>
+    <string name="ApkUpdateNotifications_failed_general_title">Colliein päivitys epäonnistui</string>
     <string name="ApkUpdateNotifications_failed_general_body">Yritämme myöhemmin uudelleen.</string>
-    <string name="ApkUpdateNotifications_auto_update_success_title">Signalin päivitys onnistui</string>
+    <string name="ApkUpdateNotifications_auto_update_success_title">Colliein päivitys onnistui</string>
     <string name="ApkUpdateNotifications_auto_update_success_body">Päivitettiin automaattisesti versioon %1$s.</string>
     <string name="ApkUpdateNotifications_manual_update_success_body">Päivitit versioon %1$s.</string>
 
@@ -2896,7 +2897,7 @@
     <string name="VerifyIdentityActivity_our_signal_safety_number">Signal-turvanumeromme:</string>
     <string name="VerifyIdentityActivity_no_app_to_share_to">Sinulla ole yhtään sovellusta, joihin voi jakaa sisältöä.</string>
     <string name="VerifyIdentityActivity_no_safety_number_to_compare_was_found_in_the_clipboard">Leikepöydältä ei löytynyt turvanumeroa, johon verrata</string>
-    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Signal tarvitsee luvan käyttää kameraa QR-koodien skannaamista varten, mutta tämä käyttöoikeus on pysyvästi evätty Signalilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla Sovelluksen käyttöoikeudet ja laittamalla päälle Kamera.</string>
+    <string name="VerifyIdentityActivity_signal_needs_the_camera_permission_in_order_to_scan_a_qr_code_but_it_has_been_permanently_denied">Collie tarvitsee luvan käyttää kameraa QR-koodien skannaamista varten, mutta tämä käyttöoikeus on pysyvästi evätty Collieilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla Sovelluksen käyttöoikeudet ja laittamalla päälle Kamera.</string>
     <string name="VerifyIdentityActivity_you_must_first_exchange_messages_in_order_to_view">Voit nähdä käyttäjän %1$s turvanumeron viestimällä hänen kanssaan.</string>
     <!-- Dialog message explaining to user they must exchange messages first to create a safety number -->
     <string name="VerifyIdentityActivity_dialog_exchange_messages_to_create_safety_number_message">Tälle henkilölle luodaan turvanumero, kun olet vaihtanut viestejä hänen kanssaan.</string>
@@ -2933,8 +2934,8 @@
 
     <!-- KeyCachingService -->
     <string name="KeyCachingService_signal_passphrase_cached">Siirry takaisin sovellukseen koskettamalla tästä.</string>
-    <string name="KeyCachingService_passphrase_cached">Signalin lukitus on avattu</string>
-    <string name="KeyCachingService_lock">Lukitse Signal</string>
+    <string name="KeyCachingService_passphrase_cached">Colliein lukitus on avattu</string>
+    <string name="KeyCachingService_lock">Lukitse Collie</string>
 
     <!-- MediaPreviewActivity -->
     <string name="MediaPreviewActivity_you">Sinä</string>
@@ -2987,7 +2988,7 @@
     <string name="MessageNotifier_failed_to_deliver_message">Viestin lähetys ei onnistunut.</string>
     <string name="MessageNotifier_error_delivering_message">Virhe viestiä toimitettaessa.</string>
     <string name="MessageNotifier_message_delivery_paused">Viestin toimitus keskeytetty.</string>
-    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Vahvista jatkaaksesi viestintää Signalissa.</string>
+    <string name="MessageNotifier_verify_to_continue_messaging_on_signal">Vahvista jatkaaksesi viestintää Collieissa.</string>
     <string name="MessageNotifier_mark_all_as_read">Merkitse kaikki luetuiksi</string>
     <string name="MessageNotifier_mark_read">Luettu</string>
     <string name="MessageNotifier_turn_off_these_notifications">Poista nämä ilmoitukset käytöstä</string>
@@ -3011,7 +3012,7 @@
     <!-- Body of a notification when someone votes in a poll. First placeholder is the poll emoji, second placeholder is the name of the voter and third is the poll question -->
     <string name="MessageNotifier_s_voted_in_poll">%1$s %2$s äänesti kyselyssä ”%3$s”</string>
 
-    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Poistetaanko Yhteystietosi liittyi Signaliin -ilmoitukset käytöstä? Voit ottaa ne uudelleen käyttöön avaamalla Signal &gt; Asetukset &gt; Ilmoitukset.</string>
+    <string name="TurnOffContactJoinedNotificationsActivity__turn_off_contact_joined_signal">Poistetaanko Yhteystietosi liittyi Collieiin -ilmoitukset käytöstä? Voit ottaa ne uudelleen käyttöön avaamalla Collie &gt; Asetukset &gt; Ilmoitukset.</string>
 
     <!-- TurnOnNotificationsBottomSheet -->
     <!-- Title for sheet explaining how to turn on app notifications -->
@@ -3087,7 +3088,7 @@
     </plurals>
 
     <!-- Message shown when the app requests permission to save media to the device storage, but that permission has been permanently denied by the user. -->
-    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">Signal tarvitsee luvan käyttää laitteesi tallennustilaa tallentaakseen sinne, mutta tämä käyttöoikeus on pysyvästi evätty Signalilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Tallennustila\".</string>
+    <string name="AttachmentSaver__signal_needs_the_storage_permission_in_order_to_write_to_external_storage_but_it_has_been_permanently_denied">Collie tarvitsee luvan käyttää laitteesi tallennustilaa tallentaakseen sinne, mutta tämä käyttöoikeus on pysyvästi evätty Collieilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Tallennustila\".</string>
 
     <!-- Message explaining that it is not possible to save media to the device storage after the user denied the system save to storage permission. -->
     <string name="AttachmentSaver__unable_to_write_to_external_storage_without_permission">Tallennus ulkoiseen tallennustilaan ei onnistu ilman käyttöoikeutta.</string>
@@ -3097,11 +3098,11 @@
     <!-- Dialog title shown when attempting to save media that has been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_media">Mediaa ei voi tallentaa</string>
     <!-- Dialog message explaining that media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__media_offloaded_message">Mediasisältö on siirretty sivuun laitteelta, koska Signalin tallennustilan optimointi on päällä. Voit tallentaa kohteet yksittäin. Laittamalla Signalin tallennustilan optimoinnin pois päältä voit ladata kaiken median laitteellesi.</string>
+    <string name="AttachmentSaver__media_offloaded_message">Mediasisältö on siirretty sivuun laitteelta, koska Colliein tallennustilan optimointi on päällä. Voit tallentaa kohteet yksittäin. Laittamalla Colliein tallennustilan optimoinnin pois päältä voit ladata kaiken median laitteellesi.</string>
     <!-- Dialog title shown when attempting to save multiple media items, some of which have been offloaded from the device by the storage optimization feature. -->
     <string name="AttachmentSaver__cant_save_all_items">Kaikkia kohteita ei voi tallentaa</string>
     <!-- Dialog message explaining that some selected media cannot be saved because it has been offloaded from the device by the storage optimization feature. -->
-    <string name="AttachmentSaver__some_media_offloaded_message">Osa valitsemastasi mediasisällöstä on siirretty sivuun laitteelta, koska Signalin tallennustilan optimointi on päällä. Voit tallentaa kohteet yksittäin. Laittamalla Signalin tallennustilan optimoinnin pois päältä voit ladata kaiken median laitteellesi.</string>
+    <string name="AttachmentSaver__some_media_offloaded_message">Osa valitsemastasi mediasisällöstä on siirretty sivuun laitteelta, koska Colliein tallennustilan optimointi on päällä. Voit tallentaa kohteet yksittäin. Laittamalla Colliein tallennustilan optimoinnin pois päältä voit ladata kaiken median laitteellesi.</string>
     <!-- Button label in the offloaded media dialog that navigates to the storage settings screen. -->
     <string name="AttachmentSaver__view_storage_settings">Näytä tallennustilan asetukset</string>
 
@@ -3114,7 +3115,7 @@
     <string name="ShortcutLauncherActivity_invalid_shortcut">Virheellinen pikakuvake</string>
 
     <!-- SingleRecipientNotificationBuilder -->
-    <string name="SingleRecipientNotificationBuilder_signal">Signal</string>
+    <string name="SingleRecipientNotificationBuilder_signal">Collie</string>
     <string name="SingleRecipientNotificationBuilder_new_message">Uusi viesti</string>
     <string name="SingleRecipientNotificationBuilder_message_request">Viestipyyntö</string>
     <string name="SingleRecipientNotificationBuilder_you">Sinä</string>
@@ -3190,7 +3191,7 @@
 
     <!-- UnauthorizedReminder -->
     <!-- Message shown in a reminder banner when the user\'s device is no longer registered -->
-    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Tämä laite ei ole enää rekisteröity. Todennäköisesti olet rekisteröinyt puhelinnumerosi Signaliin toisella laitteella.</string>
+    <string name="UnauthorizedReminder_this_is_likely_because_you_registered_your_phone_number_with_Signal_on_a_different_device">Tämä laite ei ole enää rekisteröity. Todennäköisesti olet rekisteröinyt puhelinnumerosi Collieiin toisella laitteella.</string>
     <!-- Action in reminder banner that will take user to re-register -->
     <string name="UnauthorizedReminder_reregister_action">Rekisteröi laite uudelleen</string>
     <!-- Message shown in a reminder banner when this linked device is no longer linked to a primary device -->
@@ -3199,7 +3200,7 @@
     <string name="UnauthorizedReminder_relink_action">Yhdistä laite uudelleen</string>
 
     <!-- Push notification when the app is forcibly logged out by the server. -->
-    <string name="LoggedOutNotification_you_have_been_logged_out">Olet kirjautunut ulos Signalista tällä laitteella.</string>
+    <string name="LoggedOutNotification_you_have_been_logged_out">Olet kirjautunut ulos Collieista tällä laitteella.</string>
 
     <!-- EnclaveFailureReminder -->
     <!-- Banner message to update app to use payments -->
@@ -3245,14 +3246,14 @@
     <string name="change_passphrase_activity__repeat_new_passphrase">Toista uusi salalause</string>
 
     <!-- contact_selection_activity -->
-    <string name="contact_selection_activity__invite_to_signal">Kutsu Signaliin</string>
+    <string name="contact_selection_activity__invite_to_signal">Kutsu Collieiin</string>
     <string name="contact_selection_activity__new_group">Uusi ryhmä</string>
     <!-- Row item title for refreshing contacts -->
     <string name="contact_selection_activity__refresh_contacts">Päivitä yhteystiedot</string>
     <!-- Row item description for refreshing contacts -->
     <string name="contact_selection_activity__missing_someone">Puuttuuko joku? Kokeile päivittää</string>
     <!-- Row item title for finding people on Signal via your contacts -->
-    <string name="contact_selection_activity__find_people_you_know">Löydä tuntemiasi ihmisiä Signalista</string>
+    <string name="contact_selection_activity__find_people_you_know">Löydä tuntemiasi ihmisiä Collieista</string>
     <!-- Row item description asking users for access to their contacts to find people they know -->
     <string name="contact_selection_activity__allow_access_to_contacts">Salli yhteystietojesi käyttöoikeus</string>
     <!-- Row header title for more section -->
@@ -3271,7 +3272,7 @@
     <string name="SingleContactSelectionActivity_contact_photo">Yhteystiedon kuva</string>
 
     <!-- ContactSelectionListFragment-->
-    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Signal tarvitsee luvan käyttää laitteesi yhteystietoja voidakseen näyttää ne, mutta tämä käyttöoikeus on pysyvästi evätty Signalilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Yhteystiedot\".</string>
+    <string name="ContactSelectionListFragment_signal_requires_the_contacts_permission_in_order_to_display_your_contacts">Collie tarvitsee luvan käyttää laitteesi yhteystietoja voidakseen näyttää ne, mutta tämä käyttöoikeus on pysyvästi evätty Collieilta. Voit muuttaa tätä menemällä sovellusten asetuksiin, valitsemalla \"Sovelluksen käyttöoikeudet\" ja laittamalla päälle \"Yhteystiedot\".</string>
     <string name="ContactSelectionListFragment_error_retrieving_contacts_check_your_network_connection">Yhteystietojen haussa tapahtui virhe. Tarkista verkkoyhteytesi.</string>
     <string name="ContactSelectionListFragment_username_not_found">Käyttäjänimeä ei löydy</string>
     <string name="ContactSelectionListFragment_s_is_not_a_signal_user">"%1$s ei käytä Signalia. Tarkista käyttäjänimi ja yritä uudelleen."</string>
@@ -3291,7 +3292,7 @@
     <!-- Dialog title asking users for contact permission -->
     <string name="ContactSelectionListFragment_allow_access_contacts">Anna yhteystietojen käyttöoikeus</string>
     <!-- Dialog description that will explain the steps needed to give contact permissions -->
-    <string name="ContactSelectionListFragment_to_find_people">Näin löydät tuntemasi ihmiset Signalista:</string>
+    <string name="ContactSelectionListFragment_to_find_people">Näin löydät tuntemasi ihmiset Collieista:</string>
     <!-- Text on button prompting users to give Signal contact permissions -->
     <string name="ContactSelectionListFragment__allow_access">Myönnä käyttöoikeus</string>
     <!-- Text on button to dismiss Signal\'s request for contact permissions -->
@@ -3421,7 +3422,7 @@
 
     <!-- BubbleOptOutTooltip -->
     <!-- Message to inform the user of what Android chat bubbles are -->
-    <string name="BubbleOptOutTooltip__description">Kuplat on Android-ominaisuus, jonka voit poistaa käytöstä Signalin keskusteluista.</string>
+    <string name="BubbleOptOutTooltip__description">Kuplat on Android-ominaisuus, jonka voit poistaa käytöstä Colliein keskusteluista.</string>
     <!-- Button to dismiss the tooltip for opting out of using Android bubbles -->
     <string name="BubbleOptOutTooltip__not_now">Ei nyt</string>
     <!-- Button to move to the system settings to control the use of Android bubbles -->
@@ -3527,6 +3528,18 @@
     <string name="EditProfileFragment__group_name">Ryhmän nimi</string>
     <string name="EditProfileFragment__group_description">Ryhmän kuvaus</string>
   <!-- Removed by excludeNonTranslatables <string name="EditProfileFragment__support_link" translatable="false">https://support.signal.org/hc/articles/360007459591</string> -->
+    <!-- The title of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_title">Päivitä Collie</string>
+    <!-- The body of a dialog prompting user to update to the latest version of Signal. -->
+    <string name="EditProfileFragment_deprecated_dialog_body">Tämä Collie-versio on vanhentunut. Päivitä nyt jatkaaksesi Colliein käyttöä.</string>
+    <!-- The button on a dialog prompting user to update to the latest version of Signal. When clicked, the user will be taken to the store to update their app. -->
+    <string name="EditProfileFragment_deprecated_dialog_update_button">Päivitä</string>
+    <!-- The title of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_title">Laitetta ei ole rekisteröity</string>
+    <!-- The body of a dialog informing the user that they cannot use this app feature when they are unregistered. -->
+    <string name="EditProfileFragment_unregistered_dialog_body">Tämä laite ei ole enää rekisteröity. Rekisteröi laite uudelleen tehdäksesi muutoksia tiliisi.</string>
+    <!-- The button on a dialog informing the user that they cannot use this app feature when they are unregistered. When clicked, the user will be taken to a screen to help them re-register. -->
+    <string name="EditProfileFragment_unregistered_dialog_reregister_button">Rekisteröidy uudelleen</string>
 
     <!-- EditProfileNameFragment -->
     <string name="EditProfileNameFragment_save">Tallenna</string>
@@ -3562,20 +3575,20 @@
     <!-- Bottom sheet title when encryption is auto-verified -->
     <string name="EncryptionVerifiedSheet__title_success">Tämän keskustelun salaus vahvistettiin automaattisesti.</string>
     <!-- Bottom sheet body when encryption is auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_success">Kun yhteys toiseen henkilöön perustuu puhelinnumeroon, Signal voi vahvistaa yhteyden suojauksen automaattisesti avaimen läpinäkyvyydeksi kutsutulla prosessilla. Saat lisäturvaa varmistamalla päästä päähän -salauksen vertaamalla edellisen näytön numeroita tai skannaamalla käyttäjän laitteen koodin.</string>
+    <string name="EncryptionVerifiedSheet__body_success">Kun yhteys toiseen henkilöön perustuu puhelinnumeroon, Collie voi vahvistaa yhteyden suojauksen automaattisesti avaimen läpinäkyvyydeksi kutsutulla prosessilla. Saat lisäturvaa varmistamalla päästä päähän -salauksen vertaamalla edellisen näytön numeroita tai skannaamalla käyttäjän laitteen koodin.</string>
     <!-- Bottom sheet title when encryption is no longer auto-verified -->
     <string name="EncryptionVerifiedSheet__title_no_longer_unavailable">Automaattinen vahvistus ei ole enää käytettävissä tässä keskustelussa</string>
     <!-- Bottom sheet body when encryption is no longer auto-verified. Placeholder is the name of the person. -->
-    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Signal ei voi enää automaattisesti vahvistaa keskustelun salausta. Tämä johtuu todennäköisesti siitä, että %1$s on vaihtanut puhelinnumeroaan tai puhelinnumeronsa yksityisyysasetuksia. Varmista päästä päähän -salaus vertaamalla edellisen näytön numeroita tai skannaamalla käyttäjän laitteen koodi.</string>
+    <string name="EncryptionVerifiedSheet__body_no_longer_unavailable">Collie ei voi enää automaattisesti vahvistaa keskustelun salausta. Tämä johtuu todennäköisesti siitä, että %1$s on vaihtanut puhelinnumeroaan tai puhelinnumeronsa yksityisyysasetuksia. Varmista päästä päähän -salaus vertaamalla edellisen näytön numeroita tai skannaamalla käyttäjän laitteen koodi.</string>
     <!-- Bottom sheet title when encryption cannot be auto-verified -->
     <string name="EncryptionVerifiedSheet__title_unavailable">Automaattinen vahvistus ei ole keskustelussa enää käytettävissä.</string>
     <!-- Bottom sheet body when encryption cannot be auto-verified -->
-    <string name="EncryptionVerifiedSheet__body_unavailable">Signal voi automaattisesti tarkistaa salauksen vain keskusteluissa, joissa yhteys on muodostettu puhelinnumeron avulla. Jos keskustelu on aloitettu käyttäjänimen tai yhteisen ryhmän perusteella, varmista päästä päähän -salaus vertaamalla edellisen näytön numeroita tai skannaamalla hänen laitteensa koodi.</string>
+    <string name="EncryptionVerifiedSheet__body_unavailable">Collie voi automaattisesti tarkistaa salauksen vain keskusteluissa, joissa yhteys on muodostettu puhelinnumeron avulla. Jos keskustelu on aloitettu käyttäjänimen tai yhteisen ryhmän perusteella, varmista päästä päähän -salaus vertaamalla edellisen näytön numeroita tai skannaamalla hänen laitteensa koodi.</string>
 
     <!-- Title for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__title">Signal voi nyt tarkistaa avaimen salauksen automaattisesti.</string>
+    <string name="VerifyAutomaticallyEducationSheet__title">Collie voi nyt tarkistaa avaimen salauksen automaattisesti.</string>
     <!-- Body for auto verification education sheet -->
-    <string name="VerifyAutomaticallyEducationSheet__body">Kun yhteys toiseen käyttäjään perustuu puhelinnumeroon, Signal voi vahvistaa yhteyden suojauksen automaattisesti avaimen läpinäkyvyydeksi kutsutulla prosessilla. Lisäturvan saamiseksi voit edelleen vahvistaa yhteydet manuaalisesti QR-koodilla tai turvanumerolla.</string>
+    <string name="VerifyAutomaticallyEducationSheet__body">Kun yhteys toiseen käyttäjään perustuu puhelinnumeroon, Collie voi vahvistaa yhteyden suojauksen automaattisesti avaimen läpinäkyvyydeksi kutsutulla prosessilla. Lisäturvan saamiseksi voit edelleen vahvistaa yhteydet manuaalisesti QR-koodilla tai turvanumerolla.</string>
     <!-- Button to learn more about automatic verification -->
     <string name="VerifyAutomaticallyEducationSheet__learn_more">Lue lisää</string>
     <!-- Button to go to verification page -->
@@ -3722,7 +3735,9 @@
     <string name="preferences__led_color_unknown">Tuntematon</string>
     <string name="preferences__silent">Ei ääntä</string>
     <string name="preferences__advanced">Lisäasetukset</string>
-    <string name="preferences__donate_to_signal">Lahjoita Signalille</string>
+    <string name="preferences__donate_to_signal">Lahjoita Mollyille</string>
+    <!-- Preference label for making one-time donations to Signal -->
+    <string name="preferences__privacy">Yksityisyys</string>
     <!-- Preference label for stories -->
     <string name="preferences__stories">Tarinat</string>
     <string name="preferences__payments">Maksut</string>
@@ -3743,7 +3758,7 @@
     <string name="preferences_communication__category_censorship_circumvention">Sensuurin kiertäminen</string>
     <!-- Title of the \'censorship circumvention\' toggle switch -->
     <string name="preferences_communication__censorship_circumvention">Sensuurin kiertäminen</string>
-    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Signal yrittää kiertää sensuuria toiminnon ollessa käytössä. Käytä toimintoa vain paikassa, jossa Signal on sensuroitu.</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Collie yrittää kiertää sensuuria toiminnon ollessa käytössä. Käytä toimintoa vain paikassa, jossa Collie on sensuroitu.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
     <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Puhelinnumerosi sijaintiin perustuva sensuurin kiertäminen otettu käyttöön.</string>
     <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
@@ -3771,7 +3786,7 @@
     <!-- Preference title for automatic key verification -->
     <string name="preferences_automatic_key_verification">Automaattinen avaimen vahvistus</string>
     <!-- Preference summary for automatic key verification -->
-    <string name="preferences_automatic_key_verification_body">Kun toiminto on käytössä, Signal yrittää automaattisesti varmistaa henkilökohtaisten keskustelujen salauksen.</string>
+    <string name="preferences_automatic_key_verification_body">Kun toiminto on käytössä, Collie yrittää automaattisesti varmistaa henkilökohtaisten keskustelujen salauksen.</string>
 
 
     <!-- Internal only preferences -->
@@ -3788,7 +3803,7 @@
 
     <!-- Displayed on a welcome screen for payments -->
     <string name="PaymentsHomeFragment_introducing_payments">Esittelyssä maksut</string>
-    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Voit lähettää ja vastaanottaa Signalissa uutta, yksityisyyteen panostavaa digitaalista MobileCoin-valuuttaa. Aloita ottamalla se käyttöön.</string>
+    <string name="PaymentsHomeFragment__use_signal_to_send_and_receive">Voit lähettää ja vastaanottaa Collieissa uutta, yksityisyyteen panostavaa digitaalista MobileCoin-valuuttaa. Aloita ottamalla se käyttöön.</string>
     <string name="PaymentsHomeFragment__activate_payments">Aktivoi maksut</string>
     <string name="PaymentsHomeFragment__activating_payments">Aktivoidaan maksut…</string>
     <string name="PaymentsHomeFragment__restore_payments_account">Palauta maksutili</string>
@@ -3814,7 +3829,7 @@
     <string name="PaymentsHomeFragment__payments_is_not_available_in_your_region">Maksutoiminto ei ole saatavilla alueellasi.</string>
     <string name="PaymentsHomeFragment__could_not_enable_payments">Maksutoiminnon käyttöönotto epäonnistui. Yritä myöhemmin uudelleen.</string>
     <string name="PaymentsHomeFragment__deactivate_payments_question">Poistetaanko maksut käytöstä?</string>
-    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">MobileCoin-maksuja ei voi lähettää tai vastaanottaa Signalissa, jos maksut poistetaan käytöstä.</string>
+    <string name="PaymentsHomeFragment__you_will_not_be_able_to_send">MobileCoin-maksuja ei voi lähettää tai vastaanottaa Collieissa, jos maksut poistetaan käytöstä.</string>
     <string name="PaymentsHomeFragment__deactivate">Poista käytöstä</string>
     <string name="PaymentsHomeFragment__continue">Jatka</string>
     <string name="PaymentsHomeFragment__balance_is_not_currently_available">Saldo ei ole saatavilla tällä hetkellä.</string>
@@ -3823,10 +3838,10 @@
     <string name="PaymentsHomeFragment__details">Lisätietoja</string>
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__learn_more__activate_payments" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_activate</string> -->
     <!-- Displayed as a description in a dialog when the user tries to activate payments -->
-    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">Signalissa voi lähettää tai vastaanottaa MobileCoineja. Maksujen siirto tapahtuu MobileCoinsin ja MobileCoin Walletin käyttöehtojen mukaisesti. Mahdollisten teknisten ongelmien takia keskeytyneitä siirtoja tai katemenetyksiä ei korvata. </string>
+    <string name="PaymentsHomeFragment__you_can_use_signal_to_send_and">Collieissa voi lähettää tai vastaanottaa MobileCoineja. Maksujen siirto tapahtuu MobileCoinsin ja MobileCoin Walletin käyttöehtojen mukaisesti. Mahdollisten teknisten ongelmien takia keskeytyneitä siirtoja tai katemenetyksiä ei korvata. </string>
     <string name="PaymentsHomeFragment__activate">Aktivoi</string>
     <string name="PaymentsHomeFragment__view_mobile_coin_terms">Näytä MobileCoinin ehdot</string>
-    <string name="PaymentsHomeFragment__payments_not_available">Signalin maksutoiminto ei ole enää käytettävissä. Varat voi yhä siirtää toiseen kauppapaikkaan, mutta varojen lisääminen tai maksujen lähettäminen ja vastaanottaminen ei ole enää mahdollista.</string>
+    <string name="PaymentsHomeFragment__payments_not_available">Colliein maksutoiminto ei ole enää käytettävissä. Varat voi yhä siirtää toiseen kauppapaikkaan, mutta varojen lisääminen tai maksujen lähettäminen ja vastaanottaminen ei ole enää mahdollista.</string>
 
   <!-- Removed by excludeNonTranslatables <string name="PaymentsHomeFragment__mobile_coin_terms_url" translatable="false">https://www.mobilecoin.com/terms-of-use.html</string> -->
     <!-- Alert dialog title which shows up after a payment to turn on payment lock -->
@@ -3909,9 +3924,9 @@
     <string name="PaymentsTransferFragment__next">Seuraava</string>
     <string name="PaymentsTransferFragment__invalid_address">Virheellinen osoite</string>
     <string name="PaymentsTransferFragment__check_the_wallet_address">Tarkista vastaanottajan lompakko-osoite ja yritä uudelleen.</string>
-    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Siirtoa ei voi tehdä Signalin lompakko-osoitteeseen. Syötä yhteensopivan kauppapaikan tilin lompakko-osoite.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Jotta voit skannata QR-koodin, Signal tarvitsee luvan käyttää kameraa.</string>
-    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Jotta voit skannata QR-koodin, Signal tarvitsee luvan käyttää kameraa.</string>
+    <string name="PaymentsTransferFragment__you_cant_transfer_to_your_own_signal_wallet_address">Siirtoa ei voi tehdä Colliein lompakko-osoitteeseen. Syötä yhteensopivan kauppapaikan tilin lompakko-osoite.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs">Jotta voit skannata QR-koodin, Collie tarvitsee luvan käyttää kameraa.</string>
+    <string name="PaymentsTransferFragment__to_scan_a_qr_code_signal_needs_access_to_the_camera">Jotta voit skannata QR-koodin, Collie tarvitsee luvan käyttää kameraa.</string>
 
     <!-- PaymentsTransferQrScanFragment -->
     <string name="PaymentsTransferQrScanFragment__scan_address_qr_code">Skannaa osoitteen QR-koodi</string>
@@ -4272,17 +4287,17 @@
 
     <!-- CallNotificationBuilder -->
     <!-- Displayed in a notification when a Signal voice call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_voice_call">Saapuva Signal-äänipuhelu</string>
+    <string name="CallNotificationBuilder__incoming_signal_voice_call">Saapuva Collie-äänipuhelu</string>
     <!-- Displayed in a notification when a Signal video call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_video_call">Saapuva Signal-videopuhelu</string>
+    <string name="CallNotificationBuilder__incoming_signal_video_call">Saapuva Collie-videopuhelu</string>
     <!-- Displayed in a notification when a Signal group call is ringing -->
-    <string name="CallNotificationBuilder__incoming_signal_group_call">Saapuva Signal-ryhmäpuhelu</string>
+    <string name="CallNotificationBuilder__incoming_signal_group_call">Saapuva Collie-ryhmäpuhelu</string>
     <!-- Displayed in a notification when a Signal voice call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Signal-äänipuhelu käynnissä</string>
+    <string name="CallNotificationBuilder__ongoing_signal_voice_call">Collie-äänipuhelu käynnissä</string>
     <!-- Displayed in a notification when a Signal video call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_video_call">Signal-videopuhelu käynnissä</string>
+    <string name="CallNotificationBuilder__ongoing_signal_video_call">Collie-videopuhelu käynnissä</string>
     <!-- Displayed in a notification when a Signal group call is in progress -->
-    <string name="CallNotificationBuilder__ongoing_signal_group_call">Signal-ryhmäpuhelu käynnissä</string>
+    <string name="CallNotificationBuilder__ongoing_signal_group_call">Collie-ryhmäpuhelu käynnissä</string>
 
     <string name="CallNotificationBuilder_connecting">Yhdistetään…</string>
     <string name="enter_backup_passphrase_dialog__backup_passphrase">Varmuuskopion salalause</string>
@@ -4308,9 +4323,9 @@
     <string name="BackupDialog_verify">Varmenna</string>
     <string name="BackupDialog_you_successfully_entered_your_backup_passphrase">Varmuuskopion salalauseen syöttö onnistui</string>
     <string name="BackupDialog_passphrase_was_not_correct">Salalause ei ollut oikea</string>
-    <string name="LocalBackupJob_creating_signal_backup">Luodaan Signal-varmuuskopiota…</string>
+    <string name="LocalBackupJob_creating_signal_backup">Luodaan Collie-varmuuskopiota…</string>
     <!-- Title for progress notification shown in a system notification while verifying a recent backup. -->
-    <string name="LocalBackupJob_verifying_signal_backup">Vahvistetaan Signal-varmuuskopiota…</string>
+    <string name="LocalBackupJob_verifying_signal_backup">Vahvistetaan Collie-varmuuskopiota…</string>
     <string name="LocalBackupJobApi29_backup_failed">Varmuuskopio epäonnistui</string>
     <string name="LocalBackupJobApi29_your_backup_directory_has_been_deleted_or_moved">Varmuuskopiohakemisto on poistettu tai siirretty.</string>
     <string name="LocalBackupJobApi29_your_backup_file_is_too_large">Varmuuskopiotiedosto on liian suuri tallennettavaksi tähän tallennustilaan.</string>
@@ -4325,11 +4340,15 @@
     <string name="RegistrationActivity_call_me_instead_available_in">Soita minulle (%1$02d.%2$02d)</string>
     <!--    Countdown to when the user can request a new SMS code during registration.-->
     <string name="RegistrationActivity_resend_sms_available_in">Lähetä koodi uudelleen (%1$02d.%2$02d)</string>
-    <string name="RegistrationActivity_code_support_subject">Signalin rekisteröinti – vahvistuskoodi Androidille</string>
+    <string name="RegistrationActivity_code_support_subject">Mollyin rekisteröinti – vahvistuskoodi Androidille</string>
     <string name="RegistrationActivity_incorrect_code">Väärä koodi</string>
     <string name="BackupUtil_never">ei koskaan</string>
     <!-- Subtext below last backup time when we do not know when the last backup was -->
     <string name="BackupUtil_unknown">Tuntematon</string>
+    <!-- Subtext below option to launch into phone number privacy settings screen -->
+    <string name="preferences_app_protection__choose_who_can_see">Valitse, kuka voi nähdä puhelinnumerosi ja kuka voi ottaa sinuun yhteyttä Collieissa sen avulla.</string>
+    <!-- Snackbar text shown when trying to enable screen lock but the user does not have a password or biometrics enabled -->
+    <string name="preferences_app_protection__to_use_screen_lock">Voit käyttää näytön lukitusta määrittämällä PIN-koodin, kuvion tai salasanan tälle laitteelle.</string>
     <string name="preferences_app_protection__failed_to_enable_registration_lock">Rekisteröintiestoa ei voitu ottaa käyttöön.</string>
     <string name="preferences_app_protection__failed_to_disable_registration_lock">Rekisteröintiestoa ei voitu poistaa käytöstä.</string>
     <string name="RegistrationActivity_you_must_enter_your_registration_lock_PIN">Rekisteröintieston tunnusluku vaaditaan</string>
@@ -4341,11 +4360,11 @@
     <string name="preferences_chats__backups">Varmuuskopiot</string>
 
     <!-- Title text shown when Signal is locked and needs to be unlocked -->
-    <string name="prompt_passphrase_activity__unlock_signal">Avaa Signalin lukitus</string>
+    <string name="prompt_passphrase_activity__unlock_signal">Avaa Colliein lukitus</string>
     <!-- Description text explaining how to unlock Signal -->
-    <string name="prompt_passphrase_activity__use_your_android_device">Käytä Android-laitteen lukitusasetuksia Signalin lukituksen avaamiseen.</string>
+    <string name="prompt_passphrase_activity__use_your_android_device">Käytä Android-laitteen lukitusasetuksia Colliein lukituksen avaamiseen.</string>
     <!-- Text shown in a dialog that further explains how to unlock Signal by using the same unlocking methods that are used to unlock their own device -->
-    <string name="prompt_passphrase_activity__screen_lock_is_on">Näytön lukitus on päällä ja Signal on suojattu laitteesi lukitusasetuksilla. Signalin lukitus avataan samalla tavalla kuin tavallisesti avaisit puhelimen lukituksen, esimerkiksi kasvojentunnistuksen, sormenjälkitunnistuksen, PIN-koodin, salasanan tai kuvion avulla.</string>
+    <string name="prompt_passphrase_activity__screen_lock_is_on">Näytön lukitus on päällä ja Collie on suojattu laitteesi lukitusasetuksilla. Colliein lukitus avataan samalla tavalla kuin tavallisesti avaisit puhelimen lukituksen, esimerkiksi kasvojentunnistuksen, sormenjälkitunnistuksen, PIN-koodin, salasanan tai kuvion avulla.</string>
     <!-- Button in a dialog that will contact Signal support if pressed -->
     <string name="prompt_passphrase_activity__contact_support">Ota yhteyttä tukeen</string>
     <!-- Button text to try again after unlocking has previously failed -->
@@ -4400,10 +4419,10 @@
 
     <!-- OldDeviceTransferSetupFragment -->
     <string name="OldDeviceTransferSetup__searching_for_new_android_device">Etsitään uutta Android-laitetta…</string>
-    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Signal tarvitsee luvan käyttää sijaintitietojasi uuden Android-laitteesi löytämiseen ja yhdistämiseen.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie tarvitsee luvan käyttää sijaintitietojasi uuden Android-laitteesi löytämiseen ja yhdistämiseen.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Sijaintipalveluiden täytyy olla päällä, jotta uusi Android-laitteesi voidaan löytää ja yhdistää.</string>
-    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Signal tarvitsee Wi-Fi:ä uuden Android-laitteesi löytämiseen ja yhdistämiseen. Wi-Fi:n pitää olla päällä, mutta sen ei tarvitse olla yhdistettynä langattomaan verkkoon.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Näyttää siltä että laitteesi ei tue Wi-Fi Direct -toimintoa. Signal käyttää Wi-Fi Direct -toimintoa uuden Android-laitteesi löytämiseen ja yhdistämiseen. Voit silti siirtää tiedot luomalla varmuuskopion ja palauttamalla sen uudessa Android-laitteessa.</string>
+    <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie tarvitsee Wi-Fi:ä uuden Android-laitteesi löytämiseen ja yhdistämiseen. Wi-Fi:n pitää olla päällä, mutta sen ei tarvitse olla yhdistettynä langattomaan verkkoon.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Näyttää siltä että laitteesi ei tue Wi-Fi Direct -toimintoa. Molly käyttää Wi-Fi Direct -toimintoa uuden Android-laitteesi löytämiseen ja yhdistämiseen. Voit silti siirtää tiedot luomalla varmuuskopion ja palauttamalla sen uudessa Android-laitteessa.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">Luo varmuuskopio</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Tapahtui odottamaton virhe yritettäessä luoda yhteyttä uuteen Android-laitteeseesi.</string>
 
@@ -4443,7 +4462,7 @@
 
     <!-- DeviceTransferFragment -->
     <string name="DeviceTransfer__transferring_data">Siirretään tietoja</string>
-    <string name="DeviceTransfer__keep_both_devices_near_each_other">Pidä laitteet lähekkäin. Älä sammuta niitä ja pidä Signal käynnissä. Siirto on päästä päähän salattu.</string>
+    <string name="DeviceTransfer__keep_both_devices_near_each_other">Pidä laitteet lähekkäin. Älä sammuta niitä ja pidä Collie käynnissä. Siirto on päästä päähän salattu.</string>
     <string name="DeviceTransfer__d_messages_so_far">%1$d viestiä tähän mennessä…</string>
     <!-- Filled in with total percentage of messages transferred -->
     <string name="DeviceTransfer__s_of_messages_so_far">%1$s%% viestiä tähän mennessä…</string>
@@ -4457,7 +4476,7 @@
     <!-- OldDeviceTransferInstructionsFragment -->
     <string name="OldDeviceTransferInstructions__transfer_account">Siirrä tili</string>
     <string name="OldDeviceTransferInstructions__first_bullet">1.</string>
-    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Lataa Signal uuteen Android-laitteeseesi</string>
+    <string name="OldDeviceTransferInstructions__download_signal_on_your_new_android_device">Lataa Collie uuteen Android-laitteeseesi</string>
     <string name="OldDeviceTransferInstructions__second_bullet">2.</string>
     <string name="OldDeviceTransferInstructions__tap_on_transfer_or_restore_account">"Napauta Siirrä tai palauta tili"</string>
     <string name="OldDeviceTransferInstructions__third_bullet">3.</string>
@@ -4538,7 +4557,7 @@
     <!-- GroupLinkBottomSheetDialogFragment -->
     <string name="GroupLinkBottomSheet_share_hint_requiring_approval">Kuka tahansa, jolla on tämä linkki, näkee ryhmän nimen ja kuvan ja voi pyytää liittymistä jäseneksi. Jaa linkki vain henkilöille, joihin luotat.</string>
     <string name="GroupLinkBottomSheet_share_hint_not_requiring_approval">Kuka tahansa, jolla on tämä linkki, näkee ryhmän nimen ja kuvan ja voi liittyä jäseneksi. Jaa linkki vain henkilöille, joihin luotat.</string>
-    <string name="GroupLinkBottomSheet_share_via_signal">Jaa Signalin kautta</string>
+    <string name="GroupLinkBottomSheet_share_via_signal">Jaa Colliein kautta</string>
     <string name="GroupLinkBottomSheet_copy">Kopioi</string>
     <string name="GroupLinkBottomSheet_qr_code">QR-koodi</string>
     <string name="GroupLinkBottomSheet_share">Jaa</string>
@@ -4696,7 +4715,7 @@
     <string name="payment_info_card_about_mobilecoin">Tietoa MobileCoinista</string>
     <string name="payment_info_card_mobilecoin_is_a_new_privacy_focused_digital_currency">MobileCoin on uusi yksityisyyden suojaan keskittyvä digitaalinen valuutta.</string>
     <string name="payment_info_card_adding_funds">Varojen lisääminen</string>
-    <string name="payment_info_card_you_can_add_funds_for_use_in">Voit lisätä rahaa käytettäväksi Signalissa lähettämällä MobileCoineja lompakko-osoitteeseen.</string>
+    <string name="payment_info_card_you_can_add_funds_for_use_in">Voit lisätä rahaa käytettäväksi Collieissa lähettämällä MobileCoineja lompakko-osoitteeseen.</string>
     <string name="payment_info_card_cashing_out">Nostaminen</string>
     <string name="payment_info_card_you_can_cash_out_mobilecoin">MobileCoinit voi nostaa rahana milloin tahansa MobileCoin-yhteensopivalla kauppapaikalla siirtämällä rahat sillä sijaitsevalle tilille.</string>
     <string name="payment_info_card_hide_this_card">Piilota tämä kortti?</string>
@@ -4717,12 +4736,12 @@
     <!-- DeactivateWalletFragment -->
     <string name="DeactivateWalletFragment__deactivate_wallet">Poista Wallet käytöstä</string>
     <string name="DeactivateWalletFragment__your_balance">Saldosi</string>
-    <string name="DeactivateWalletFragment__its_recommended_that_you">Varat kannattaa siirtää toiseen lompakko-osoitteeseen ennen maksujen poistamista käytöstä. Jos varoja ei siirretä nyt, ne säilyvät Signal-tiliin liitetyssä lompakossa siltä varalta, että maksut otetaan taas käyttöön.</string>
+    <string name="DeactivateWalletFragment__its_recommended_that_you">Varat kannattaa siirtää toiseen lompakko-osoitteeseen ennen maksujen poistamista käytöstä. Jos varoja ei siirretä nyt, ne säilyvät Collie-tiliin liitetyssä lompakossa siltä varalta, että maksut otetaan taas käyttöön.</string>
     <string name="DeactivateWalletFragment__transfer_remaining_balance">Siirrä koko saldo</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring">Poista käytöstä siirtämättä varoja</string>
     <string name="DeactivateWalletFragment__deactivate">Poista käytöstä</string>
     <string name="DeactivateWalletFragment__deactivate_without_transferring_question">Poistetaanko käytöstä siirtämättä varoja?</string>
-    <string name="DeactivateWalletFragment__your_balance_will_remain">Varat säilytetään Signal-tiliin liitetyssä lompakossa siltä varalta, että maksut otetaan uudestaan käyttöön.</string>
+    <string name="DeactivateWalletFragment__your_balance_will_remain">Varat säilytetään Collie-tiliin liitetyssä lompakossa siltä varalta, että maksut otetaan uudestaan käyttöön.</string>
     <string name="DeactivateWalletFragment__error_deactivating_wallet">Lompakon poisto käytöstä epäonnistui.</string>
   <!-- Removed by excludeNonTranslatables <string name="DeactivateWalletFragment__learn_more__we_recommend_transferring_your_funds" translatable="false">https://support.signal.org/hc/articles/360057625692#payments_deactivate</string> -->
 
@@ -5439,9 +5458,9 @@
     <string name="MySupportPreference__checking_subscription">Tarkistetaan tilausta…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__title">Päivitä Signal</string>
+    <string name="UpdateSignalExpiredDialog__title">Päivitä Collie</string>
     <!-- Message of dialog telling user they need to update signal as it expired -->
-    <string name="UpdateSignalExpiredDialog__message">Tämä Signal-versio on vanhentunut. Päivitä nyt jatkaaksesi Signalin käyttöä.</string>
+    <string name="UpdateSignalExpiredDialog__message">Tämä Collie-versio on vanhentunut. Päivitä nyt jatkaaksesi Colliein käyttöä.</string>
     <!-- Button text of expiration dialog, will take user to update the app -->
     <string name="UpdateSignalExpiredDialog__update_action">Päivitä</string>
     <!-- Button text of expiration dialog to cancel the dialog.  -->
@@ -5450,7 +5469,7 @@
     <!-- Title of dialog telling user they need to re-register signal -->
     <string name="ReregisterSignalDialog__title">Laitetta ei ole rekisteröity</string>
     <!-- Message of dialog telling user they need to re-register signal as it is no longer registered -->
-    <string name="ReregisterSignalDialog__message">Tämä laite ei ole enää rekisteröity. Rekisteröi uudelleen jatkaaksesi Signalin käyttöä tällä laitteella.</string>
+    <string name="ReregisterSignalDialog__message">Tämä laite ei ole enää rekisteröity. Rekisteröi uudelleen jatkaaksesi Colliein käyttöä tällä laitteella.</string>
     <!-- Button text of re-registration dialog to re-register the device.  -->
     <string name="ReregisterSignalDialog__reregister_action">Rekisteröidy uudelleen</string>
     <!-- Button text of re-registration dialog to cancel the dialog.  -->
@@ -5726,6 +5745,12 @@
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">Käytössä %1$s saakka</string>
 
+    <!-- Displayed in a toast when we fail to open the ringtone picker -->
+    <string name="NotificationSettingsFragment__failed_to_open_picker">Valitsimen avaus epäonnistui.</string>
+    <!-- Banner title when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__to_enable_notifications">Collie tarvitsee luvan ilmoitusten näyttämiseen, jotta ne voidaan ottaa käyttöön.</string>
+    <!-- Banner action when notification permission is disabled -->
+    <string name="NotificationSettingsFragment__turn_on">Ota käyttöön</string>
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">Tämä on ainoa virallinen Signal-keskustelu</string>
@@ -6909,7 +6934,7 @@
     <!-- Title of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
     <string name="TurnOnSignalBackups__title">Ota Signal Secure -varmuuskopiointi käyttöön</string>
     <!-- Body of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups -->
-    <string name="TurnOnSignalBackups__body">Älä koskaan menetä viestiä, kun hankit uuden puhelimen tai asennat Signalin uudelleen.</string>
+    <string name="TurnOnSignalBackups__body">Älä koskaan menetä viestiä, kun hankit uuden puhelimen tai asennat Colliein uudelleen.</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will take the user to the flow to enable backups -->
     <string name="TurnOnSignalBackups__turn_on">Ota käyttöön</string>
     <!-- Button of a megaphone shown at the bottom of the chat list to prompt the user to enable message backups that will simply dismiss the megaphone -->
@@ -6979,16 +7004,16 @@
     <string name="BackupSetupCompleteBottomSheet__back_up_now">Varmuuskopioi nyt</string>
 
     <!-- Title of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__title">Avaa Signal puhelimessa</string>
+    <string name="InactivePrimary__title">Avaa Collie puhelimessa</string>
     <!-- Body of a megaphone shown to prompt the user to open Signal on their primary device -->
-    <string name="InactivePrimary__body">Pidä tilisi aktiivisena avaamalla Signal ensisijaisella laitteellasi.</string>
+    <string name="InactivePrimary__body">Pidä tilisi aktiivisena avaamalla Collie ensisijaisella laitteellasi.</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will navigate to a support page -->
     <string name="InactivePrimary__learn_more">Lue lisää</string>
     <!-- Button of a megaphone shown to prompt the user to open Signal on their primary device that will snooze the megaphone -->
     <string name="InactivePrimary__got_it">Selvä</string>
 
     <!-- Text describing how to restore a backup displayed on the on-device backups screen -->
-    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Palauta varmuuskopio asentamalla uusi kopio Signalista. Avaa sovellus, napauta Palauta varmuuskopio ja etsi sitten varmuuskopiokansio."</string>
+    <string name="OnDeviceBackupsScreen__to_restore_a_backup">"Palauta varmuuskopio asentamalla uusi kopio Collieista. Avaa sovellus, napauta Palauta varmuuskopio ja etsi sitten varmuuskopiokansio."</string>
     <!-- Body of a dialog shown when turning on on-device backups while "Optimize Signal storage" is enabled, warning that optimized media won\'t be included -->
     <string name="OnDeviceBackupsScreen__you_have_optimize_signal_storage_on">Signalin tallennustilan optimointi on päällä. Jos haluat sisällyttää kaiken median laitteessa olevaan varmuuskopioon, laita asetus pois päältä.</string>
     <!-- Dialog action that takes the user to the "Optimize Signal storage" setting -->
@@ -7353,6 +7378,34 @@
     <!-- Dialog message shown when Google Play services is invalid and subscriptions are not available -->
     <string name="GooglePlayServicesAvailability__service_invalid_message">Et voi tilata Signal Secure -varmuuskopiointia, koska puhelimesi ei tue Google Play -palveluita. Ota yhteyttä puhelimen valmistajaan saadaksesi apua.</string>
 
+    <!-- ManageStorageSettingsFragment -->
+    <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
+    <string name="ManageStorageSettingsFragment_chat_limit">Keskustelun rajoitukset</string>
+    <!-- Settings row title text that can be clicked to delete all messages and associated data from the device -->
+    <string name="ManageStorageSettingsFragment_delete_message_history">Poista viestihistoria</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (time is a range like 30 days or 1 year etc) -->
+    <string name="ManageStorageSettingsFragment_keep_messages_duration_warning">Määriteltyä aikaa vanhemmat viestit poistetaan pysyvästi.</string>
+    <!-- Warning message at the bottom of a settings screen indicating how messages will be deleted based on user\'s selection (limit is a number like 500 or 5,000) -->
+    <string name="ManageStorageSettingsFragment_chat_length_limit_warning">Määritellyn pituuden ylittävät viestit poistetaan pysyvästi.</string>
+    <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_title">Käytä rajoituksia yhdistetyille laitteille</string>
+    <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
+    <string name="ManageStorageSettingsFragment_apply_limits_description">Kun keskustelurajoitukset ovat käytössä, ne poistavat viestit myös yhdistetyistä laitteistasi.</string>
+    <!-- Setting section title header for storage optimization -->
+    <string name="ManageStorageSettingsFragment__on_device_storage">Collie-tallennustila</string>
+    <!-- Setting row title for storage optimization -->
+    <string name="ManageStorageSettingsFragment__optimize_on_device_storage">Optimoi Colliein tallennustila</string>
+    <!-- Setting row explanation for storage optimization -->
+    <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">Käyttämätön media poistetaan, mutta se voidaan ladata varmuuskopiosta milloin tahansa.</string>
+    <!-- Dialog message for paid tier pending dialog -->
+    <string name="ManageStorageSettingsFragment__storage_optimization_can_only_be_used">Tallennustilan optimointia voidaan käyttää vain maksullisen Signal Secure -varmuuskopiointitilauksen yhteydessä. Varmuuskopiotilaustasi käsitellään, eikä se ole vielä aktiivinen. Yritä myöhemmin uudelleen.</string>
+    <!-- Title of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__media_will_be_removed_from_your_on_device_backup">Mediasisältö poistetaan laitteessa olevasta varmuuskopiosta</string>
+    <!-- Body of a dialog shown when turning on "Optimize Signal storage" while on-device backups are enabled -->
+    <string name="ManageStorageSettingsFragment__turning_on_optimize_signal_storage_will_offload">Laittamalla Signalin tallennustilan optimoinnin pois päältä voit siirtää vanhan mediasisällön sivuun. Voi ladata sen takaisin laitteellesi milloin vain. Tämä poistaa myös vanhan mediasisällön laitteessa olevasta varmuuskopiosta.</string>
+    <!-- Dialog action to confirm turning on "Optimize Signal storage" -->
+    <string name="ManageStorageSettingsFragment__turn_on">Ota käyttöön</string>
+
     <!-- UpgradeToEnableOptimizedStorageSheet -->
     <!-- Title on a bottom sheet, detailing that the user must upgrade to enable storage optimization -->
     <string name="UpgradeToEnableOptimizedStorageSheet__upgrade_to_enable_this_feature">Päivitä ottaaksesi tämän ominaisuuden käyttöön</string>
@@ -7507,7 +7560,7 @@
     <!-- Displays the date the subscription expired. Placeholder is the date. -->
     <string name="RemoteBackupsSettingsFragment__expired_on_s">Päättyi %1$s</string>
     <!-- Displayed at the top of the screen when no backup is currently enabled -->
-    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Varmuuskopioi viestihistoriasi, jotta et koskaan menetä tietoja, kun hankit uuden puhelimen tai asennat Signalin uudelleen.</string>
+    <string name="RemoteBackupsSettingsFragment__back_up_your_message_history">Varmuuskopioi viestihistoriasi, jotta et koskaan menetä tietoja, kun hankit uuden puhelimen tai asennat Colliein uudelleen.</string>
     <!-- Section header for other ways to back up -->
     <string name="RemoteBackupsSettingsFragment__other_ways_to_backup">Muita tapoja varmuuskopioida</string>
     <!-- Row title for performing on-device backup -->
@@ -7785,7 +7838,7 @@
     <!-- Bottom sheet title -->
     <string name="MessageBackupsKeyRecordScreen__keep_your_key_safe">Pidä avain turvassa</string>
     <!-- Bottom sheet subtitle -->
-    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Signal ei voi auttaa sinua palauttamaan varmuuskopiota, jos kadotat avaimesi. Säilytä avain turvallisessa paikassa äläkä jaa sitä muiden kanssa.</string>
+    <string name="MessageBackupsKeyRecordScreen__signal_will_not">Collie ei voi auttaa sinua palauttamaan varmuuskopiota, jos kadotat avaimesi. Säilytä avain turvallisessa paikassa äläkä jaa sitä muiden kanssa.</string>
     <!-- Sheet action button label -->
     <string name="MessageBackupsKeyRecordScreen__continue">Jatka</string>
     <!-- Sheet secondary action button label -->
@@ -7795,13 +7848,13 @@
     <!-- Dialog title for confirming you need to disable optimized storage and download media to rotate AEP key -->
     <string name="MessageBackupsKeyRecordScreen__download_media">Lataa media</string>
     <!-- Dialog body for confirming you need to disable optimized storage and download media to rotate AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Uuden palautusavaimen luomiseksi sinun on poistettava käytöstä Optimoi Signalin tallennustila ja odotettava, kunnes mediasisältö on ladattu. Kun lataus on valmis, voit luoda uuden avaimen.</string>
+    <string name="MessageBackupsKeyRecordScreen__to_create_a_new_backup_key">Uuden palautusavaimen luomiseksi sinun on poistettava käytöstä Optimoi Colliein tallennustila ja odotettava, kunnes mediasisältö on ladattu. Kun lataus on valmis, voit luoda uuden avaimen.</string>
     <!-- Action label to turn off optimized storage and download media -->
     <string name="MessageBackupsKeyRecordScreen__turn_off_and_download">Poista käytöstä ja lataa</string>
     <!-- Bottom Sheet title for creating a new AEP key -->
     <string name="MessageBackupsKeyRecordScreen__create_a_new_backup_key">Luo uusi palautusavain</string>
     <!-- Bottom Sheet body for creating a new AEP key -->
-    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">Uuden avaimen luominen on tarpeen vain, jos joku muu tietää sen. Sinun on ladattava varmuuskopio uudelleen, mediasisältö mukaan lukien. Jos Optimoi Signalin tallennustila -toiminto on käytössä, sinun on ensin ladattava sivuun siirretty media.</string>
+    <string name="MessageBackupsKeyRecordScreen__creating_a_new_key_is_only_necessary">Uuden avaimen luominen on tarpeen vain, jos joku muu tietää sen. Sinun on ladattava varmuuskopio uudelleen, mediasisältö mukaan lukien. Jos Optimoi Colliein tallennustila -toiminto on käytössä, sinun on ensin ladattava sivuun siirretty media.</string>
     <!-- Dialog title shown when user attempts to exit backup setup before completion -->
     <string name="MessageBackupsKeyRecordScreen__exit_backup_setup">Poistutaanko varmuuskopioinnin asetuksista?</string>
     <!-- Dialog body warning user that backup setup is incomplete -->
@@ -7999,7 +8052,6 @@
     <!-- Accessibility label for more options button in MainToolbar -->
     <string name="MainToolbar__proxy_content_description">Välityspalvelin</string>
     <!-- Overflow menu item in MainToolbar that opens donation settings -->
-    <string name="MainToolbar__donate_to_signal">Lahjoita Signalille</string>
     <!-- Accessibility label for search filter button in MainToolbar -->
   <!-- Removed by excludeNonTranslatables <string name="MainToolbar__search_filter_content_description" translatable="false">Search filter</string> -->
 
@@ -8318,7 +8370,7 @@
     <string name="CouldNotCompleteBackupRestoreSheet__body_error">Varmuuskopiotasi ei voitu palauttaa virheen vuoksi. Varmuuskopiokansiota saatettiin siirtää laitteellasi varmuuskopioinnin palautuksen aikana.</string>
 
     <!-- Body of the sheet shown when a local backup restore could not be completed, explaining how to try again -->
-    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Yritä uudelleen poistamalla Signal laitteeltasi, asentamalla se uudelleen ja valitsemalla ”Palauta tai siirrä”.</string>
+    <string name="CouldNotCompleteBackupRestoreSheet__body_retry">Yritä uudelleen poistamalla Collie laitteeltasi, asentamalla se uudelleen ja valitsemalla ”Palauta tai siirrä”.</string>
 
     <!-- Button on the sheet shown when a local backup restore could not be completed, opening a support article about it -->
     <string name="CouldNotCompleteBackupRestoreSheet__learn_more">Lue lisää</string>

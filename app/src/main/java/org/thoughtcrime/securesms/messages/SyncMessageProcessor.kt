@@ -2,7 +2,6 @@ package org.thoughtcrime.securesms.messages
 
 import android.content.Context
 import androidx.annotation.WorkerThread
-import com.mobilecoin.lib.exceptions.SerializationException
 import org.signal.core.models.AccountEntropyPool
 import org.signal.core.models.ServiceId
 import org.signal.core.models.ServiceId.ACI
@@ -41,7 +40,6 @@ import org.thoughtcrime.securesms.database.GroupTable
 import org.thoughtcrime.securesms.database.MessageTable
 import org.thoughtcrime.securesms.database.MessageTable.MarkedMessageInfo
 import org.thoughtcrime.securesms.database.NoSuchMessageException
-import org.thoughtcrime.securesms.database.PaymentMetaDataUtil
 import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.SentStorySyncManifest
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -101,7 +99,6 @@ import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isMediaMessage
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isProfileKeyUpdate
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.isUnidentified
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.serviceIdsToUnidentifiedStatus
-import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.toMobileCoinMoney
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.toPointer
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.toPointersWithinLimit
 import org.thoughtcrime.securesms.messages.SignalServiceProtoUtil.toSignalServiceAttachmentPointer
@@ -110,7 +107,6 @@ import org.thoughtcrime.securesms.mms.MmsException
 import org.thoughtcrime.securesms.mms.OutgoingMessage
 import org.thoughtcrime.securesms.mms.QuoteModel
 import org.thoughtcrime.securesms.notifications.MarkReadReceiver
-import org.thoughtcrime.securesms.payments.MobileCoinPublicAddress
 import org.thoughtcrime.securesms.polls.Poll
 import org.thoughtcrime.securesms.ratelimit.RateLimitUtil
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -152,7 +148,6 @@ import org.whispersystems.signalservice.internal.push.SyncMessage.StickerPackOpe
 import org.whispersystems.signalservice.internal.push.SyncMessage.ViewOnceOpen
 import org.whispersystems.signalservice.internal.push.Verified
 import java.io.IOException
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -1094,7 +1089,9 @@ object SyncMessageProcessor {
     val record: MessageRecord? = SignalDatabase.messages.getMessageFor(timestamp, author)
 
     if (record != null) {
-      SignalDatabase.attachments.deleteAttachmentFilesForViewOnceMessage(record.id)
+      if (record.isViewOnce) {
+        SignalDatabase.attachments.deleteAttachmentFilesForViewOnceMessage(record.id)
+      }
     } else {
       warn(envelopeTimestamp.toString(), "Got a view-once open message for a message we don't have!")
       if (earlyMessageCacheEntry != null) {
@@ -1278,54 +1275,7 @@ object SyncMessageProcessor {
   }
 
   private fun handleSynchronizeOutgoingPayment(outgoingPayment: SyncMessage.OutgoingPayment, envelopeTimestamp: Long) {
-    log(envelopeTimestamp, "Synchronize outgoing payment.")
-
-    val mobileCoin = if (outgoingPayment.mobileCoin != null) {
-      outgoingPayment.mobileCoin!!
-    } else {
-      log(envelopeTimestamp, "Unknown outgoing payment, ignoring.")
-      return
-    }
-
-    var recipientId: RecipientId? = ServiceId.parseOrNull(outgoingPayment.recipientServiceId)?.let { RecipientIds.from(it) }
-
-    var timestamp: Long = mobileCoin.ledgerBlockTimestamp ?: 0L
-    if (timestamp == 0L) {
-      timestamp = System.currentTimeMillis()
-    }
-
-    var address: MobileCoinPublicAddress? = if (mobileCoin.recipientAddress != null) {
-      MobileCoinPublicAddress.fromBytes(mobileCoin.recipientAddress!!.toByteArray())
-    } else {
-      null
-    }
-
-    if (address == null && recipientId == null) {
-      log(envelopeTimestamp, "Inserting defrag")
-      address = AppDependencies.payments.wallet.mobileCoinPublicAddress
-      recipientId = Recipient.self().id
-    }
-
-    val uuid = UUID.randomUUID()
-    try {
-      SignalDatabase.payments
-        .createSuccessfulPayment(
-          uuid,
-          recipientId,
-          address!!,
-          timestamp,
-          mobileCoin.ledgerBlockIndex!!,
-          outgoingPayment.note ?: "",
-          mobileCoin.amountPicoMob!!.toMobileCoinMoney(),
-          mobileCoin.feePicoMob!!.toMobileCoinMoney(),
-          mobileCoin.receipt!!.toByteArray(),
-          PaymentMetaDataUtil.fromKeysAndImages(mobileCoin.outputPublicKeys, mobileCoin.spentKeyImages)
-        )
-    } catch (e: SerializationException) {
-      warn(envelopeTimestamp, "Ignoring synchronized outgoing payment with bad data.", e)
-    }
-
-    log("Inserted synchronized payment $uuid")
+    log(envelopeTimestamp, "Outgoing payment, ignoring.")
   }
 
   private fun handleSynchronizeKeys(keys: SyncMessage.Keys, envelopeTimestamp: Long) {

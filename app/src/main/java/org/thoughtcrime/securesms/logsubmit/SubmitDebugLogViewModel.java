@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.signal.core.util.Stopwatch;
 import org.signal.core.util.logging.Log;
-import org.signal.core.util.tracing.Tracer;
 import org.signal.debuglogsviewer.DebugLogsViewer;
 import org.signal.remoteconfig.RemoteConfig;
 import org.thoughtcrime.securesms.database.LogDatabase;
@@ -42,7 +41,7 @@ public class SubmitDebugLogViewModel extends ViewModel {
   private SubmitDebugLogViewModel() {
     this.repo              = new SubmitDebugLogRepository();
     this.mode              = new MutableLiveData<>();
-    this.trace             = Tracer.getInstance().serialize();
+    this.trace             = new byte[0];
     this.firstViewTime     = System.currentTimeMillis();
     this.event             = new SingleLiveEvent<>();
     this.slowPrefixWarning = new SingleLiveEvent<>();
@@ -66,6 +65,9 @@ public class SubmitDebugLogViewModel extends ViewModel {
             for (LogLine line : prefixLines) {
               prefixStrings.add(line.getText());
             }
+            if (!emitter.isDisposed()) {
+              emitter.onNext(new ArrayList<>(prefixStrings));
+            }
             stopwatch.split("prefix");
 
             Log.blockUntilAllWritesFinished();
@@ -74,10 +76,6 @@ public class SubmitDebugLogViewModel extends ViewModel {
             LogDatabase logDatabase = LogDatabase.getInstance(AppDependencies.getApplication());
             logDatabase.logs().trimToSize();
             stopwatch.split("trim-old");
-
-            if (!emitter.isDisposed()) {
-              emitter.onNext(new ArrayList<>(prefixStrings));
-            }
 
             List<String> currentChunk = new ArrayList<>();
             logDatabase.getReadableDatabase().beginTransactionNonExclusive();
@@ -114,6 +112,11 @@ public class SubmitDebugLogViewModel extends ViewModel {
               logDatabase.getReadableDatabase().setTransactionSuccessful();
             } finally {
               logDatabase.getReadableDatabase().endTransaction();
+            }
+          } catch (IllegalStateException ise) {
+            if (!emitter.isDisposed()) {
+              mode.postValue(Mode.NORMAL);
+              emitter.onComplete();
             }
           } catch (Exception e) {
             if (!emitter.isDisposed()) {

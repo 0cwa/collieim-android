@@ -12,7 +12,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.core.content.ContextCompat
-import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import kotlinx.coroutines.CoroutineScope
@@ -26,14 +25,12 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.Json
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 import org.signal.archive.LocalBackupRestoreProgress
-import org.signal.billing.BillingFactory
 import org.signal.core.models.AccountEntropyPool
 import org.signal.core.models.MasterKey
 import org.signal.core.models.ServiceId.ACI
@@ -154,11 +151,8 @@ class RegistrationRepository(
         storageController = dependencies.storageController,
         isLinkAndSyncAvailable = dependencies.isLinkAndSyncAvailable,
         isPhoneNumberlessRegistrationAvailable = dependencies.isPhoneNumberlessRegistrationAvailable,
-        isGooglePlayBillingAvailable = dependencies.isGooglePlayBillingAvailable,
-        signalLoginPurchaseApi = BillingFactory.createOneTimePurchaseApi(
-          context = application,
-          isAvailable = dependencies.isGooglePlayBillingAvailable
-        )
+        isGooglePlayBillingAvailable = false,
+        signalLoginPurchaseApi = OneTimePurchaseApi.Empty
       )
     }
 
@@ -167,6 +161,10 @@ class RegistrationRepository(
      * not the option within it, so this half stays a client constant.
      */
     internal const val SIGNAL_LOGIN_PURCHASE_OPTION_ID = "nonumber"
+  }
+
+  fun enableNetworkForRegistration() {
+    networkController.enableNetworkForRegistration()
   }
 
   suspend fun createSession(e164: String): RequestResult<SessionMetadata, CreateSessionError> = withContext(Dispatchers.IO) {
@@ -192,34 +190,8 @@ class RegistrationRepository(
     )
   }
 
-  /**
-   * Starts the Play Services SMS retriever so an incoming verification code can be automatically entered.
-   *
-   * The listener [lives for 5 minutes](https://developers.google.com/android/reference/com/google/android/gms/auth/api/phone/SmsRetrieverApi).
-   * Callers should pass the result as `smsAutoRetrieveCodeSupported` when requesting a code so the server formats the
-   * SMS for retrieval.
-   *
-   * @return whether the Play Services SMS retriever was successfully started.
-   */
-  suspend fun registerSmsListener(): Boolean {
-    Log.d(TAG, "Attempting to start verification code SMS retriever.")
-    val started = withTimeoutOrNull(5.seconds.inWholeMilliseconds) {
-      try {
-        SmsRetriever.getClient(context).startSmsRetriever().await()
-        Log.d(TAG, "Successfully started verification code SMS retriever.")
-        true
-      } catch (ex: Exception) {
-        Log.w(TAG, "Could not start verification code SMS retriever due to exception.", ex)
-        false
-      }
-    }
-
-    if (started == null) {
-      Log.w(TAG, "Could not start verification code SMS retriever due to timeout.")
-    }
-
-    return started == true
-  }
+  /** Manual verification remains available without a Play Services SMS receiver. */
+  suspend fun registerSmsListener(): Boolean = false
 
   fun getCaptchaUrl(): String = networkController.getCaptchaUrl()
 
@@ -860,8 +832,9 @@ class RegistrationRepository(
    * Starts a provisioning session for QR-based quick restore.
    * See [NetworkController.startProvisioning].
    */
-  fun startProvisioning(): Flow<ProvisioningEvent> {
-    return networkController.startProvisioning()
+  fun startProvisioning(): Flow<ProvisioningEvent> = flow {
+    enableNetworkForRegistration()
+    emitAll(networkController.startProvisioning())
   }
 
   /**
@@ -869,7 +842,8 @@ class RegistrationRepository(
    * See [NetworkController.startLinkDeviceProvisioning].
    */
   fun startLinkDeviceProvisioning(): Flow<NetworkController.LinkDeviceProvisioningEvent> = flow {
-    emitAll(networkController.startLinkDeviceProvisioning(allowLinkAndSync = isCleanStart()))
+    enableNetworkForRegistration()
+    emitAll(networkController.startLinkDeviceProvisioning(allowLinkAndSync = isLinkAndSyncAvailable && isCleanStart()))
   }
 
   /**

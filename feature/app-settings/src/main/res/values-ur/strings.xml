@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">رجسٹریشن لاک آن کریں؟</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">رجسٹریشن لاک آف کریں؟</string>
@@ -509,7 +508,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">اسکرین لاک استعمال کریں</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">آپ کے ایپس تبدیل کرنے یا چھوڑنے پر آپ کی Android ڈیوائس کی لاک سیٹنگز سے Signal کو ان لاک کرنے کی ضرورت ہو گی۔ لاک ہونے پر، اطلاعات کا پری ویو میسج کا مواد ظاہر نہیں کرے گا۔</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">آپ کے ایپس تبدیل کرنے یا چھوڑنے پر آپ کی Android ڈیوائس کی لاک سیٹنگز سے Collie کو ان لاک کرنے کی ضرورت ہو گی۔ لاک ہونے پر، اطلاعات کا پری ویو میسج کا مواد ظاہر نہیں کرے گا۔</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">اسکرین لاک اسٹارٹ کریں</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -521,9 +520,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">حسب منشا وقت</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Signal اسکرین لاک استعمال کریں</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie اسکرین لاک استعمال کریں</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Signal اسکرین لاک بند کر دیں</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collie اسکرین لاک بند کر دیں</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">مدد کریں</string>
@@ -536,7 +535,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">لائسنسز</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">شرائط &amp;amp:رازداری کی پالیسی</string>
-    <string name="HelpFragment__copyright_signal_messenger">کاپی رائٹ Signal میسنجر</string>
+    کاپی رائٹ Molly میسنجر
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3 کے تحت لائسنس یافتہ</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal ایک غیر منافع بخش ایپ ہے</string>
@@ -545,7 +544,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">ایپ آئیکنز اور نام ہوم اسکرین اور ایپ ڈرار پر نظر آتے ہیں۔</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">اطلاعات ہمیشہ Signal کے ڈیفالٹ آئیکن اور نام کو ظاہر کریں گی۔</string>
+    <string name="preferences__app_icon_notification_warning">اطلاعات ہمیشہ Collie کے ڈیفالٹ آئیکن اور نام کو ظاہر کریں گی۔</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">گرافک وہ جگہ ظاہر کر رہی ہے جہاں تبدیل کیا گیا ایپ آئیکن نظر آئے گا۔</string>
 
@@ -565,9 +564,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">ایپ آئیکن اور نام کو \"%1$s\" سے تبدیل کریں</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">ایپ آئیکن اور نام کو تبدیل کرنے کے لیے Signal کو بند کرنے کی ضرورت ہو گی۔ اطلاعات ہمیشہ Signal کے ڈیفالٹ آئیکن اور نام کو ظاہر کریں گی۔</string>
+    <string name="preferences__app_icon_dialog_description">ایپ آئیکن اور نام کو تبدیل کرنے کے لیے Collie کو بند کرنے کی ضرورت ہو گی۔ اطلاعات ہمیشہ Collie کے ڈیفالٹ آئیکن اور نام کو ظاہر کریں گی۔</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">وہ ایپ آئیکن اور نام منتخب کریں، جو آپ کے فون کی ہوم اسکرین اور ایپ ڈرار پر نظر آئیں گے۔ اطلاعات ہمیشہ Signal کے ڈیفالٹ آئیکن اور نام کو ظاہر کریں گی۔ مزید جانیں</string>
+    <string name="preferences__app_icon_warning_learn_more">وہ ایپ آئیکن اور نام منتخب کریں، جو آپ کے فون کی ہوم اسکرین اور ایپ ڈرار پر نظر آئیں گے۔ اطلاعات ہمیشہ Collie کے ڈیفالٹ آئیکن اور نام کو ظاہر کریں گی۔ مزید جانیں</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">مزید جانیں</string>
 

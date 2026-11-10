@@ -8,7 +8,6 @@ plugins {
   id("org.jetbrains.kotlin.jvm")
   alias(libs.plugins.kotlinx.serialization)
   id("java-test-fixtures")
-  id("ktlint")
 }
 
 java {

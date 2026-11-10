@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">Bật Khóa đăng kí?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">Tắt Khóa đăng kí?</string>
@@ -508,7 +507,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">Sử dụng khóa màn hình</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">Thiết lập khóa thiết bị Android của bạn sẽ được yêu cầu để mở khóa Signal khi bạn rời khỏi hoặc chuyển đổi ứng dụng. Khi đã khóa, phần xem trước thông báo sẽ không hiển thị nội dung tin nhắn.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">Thiết lập khóa thiết bị Android của bạn sẽ được yêu cầu để mở khóa Collie khi bạn rời khỏi hoặc chuyển đổi ứng dụng. Khi đã khóa, phần xem trước thông báo sẽ không hiển thị nội dung tin nhắn.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">Bắt đầu khóa màn hình</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +519,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">Thời gian tuỳ chỉnh</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Sử dụng khóa màn hình Signal</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Sử dụng khóa màn hình Collie</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Tắt khóa màn hình Signal</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Tắt khóa màn hình Collie</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">Hỗ trợ</string>
@@ -535,7 +534,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">Các loại giấy phép</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">Điều khoản &amp; Quyền riêng tư</string>
-    <string name="HelpFragment__copyright_signal_messenger">Bản quyền Signal Messenger</string>
+    <string name="HelpFragment__copyright_signal_messenger">Bản quyền Collie Messenger</string>
     <string name="HelpFragment__licenced_under_the_agplv3">Được cấp phép GNU AGPLv3</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal là một tổ chức phi lợi nhuận</string>
@@ -544,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">Các biểu tượng và tên ứng dụng được hiển thị trên màn hình chính và ngăn ứng dụng.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">Thông báo sẽ luôn hiển thị tên và biểu tượng Signal mặc định.</string>
+    <string name="preferences__app_icon_notification_warning">Thông báo sẽ luôn hiển thị tên và biểu tượng Collie mặc định.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">Đồ họa minh họa nơi hiển thị biểu tượng ứng dụng thay thế.</string>
 
@@ -564,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">Thay đổi tên và biểu tượng ứng dụng thành \"%1$s\"</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">Cần phải đóng Signal để thay đổi tên và biểu tượng ứng dụng. Thông báo sẽ luôn hiển thị tên và biểu tượng Signal mặc định.</string>
+    <string name="preferences__app_icon_dialog_description">Cần phải đóng Collie để thay đổi tên và biểu tượng ứng dụng. Thông báo sẽ luôn hiển thị tên và biểu tượng Collie mặc định.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">Chọn một biểu tượng và tên ứng dụng, chúng sẽ được hiển thị trên màn hình chính và ngăn ứng dụng của điện thoại. Thông báo sẽ luôn hiển thị tên và biểu tượng Signal mặc định. Tìm hiểu thêm</string>
+    <string name="preferences__app_icon_warning_learn_more">Chọn một biểu tượng và tên ứng dụng, chúng sẽ được hiển thị trên màn hình chính và ngăn ứng dụng của điện thoại. Thông báo sẽ luôn hiển thị tên và biểu tượng Collie mặc định. Tìm hiểu thêm</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">Tìm hiểu thêm</string>
 

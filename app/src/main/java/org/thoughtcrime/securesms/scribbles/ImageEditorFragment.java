@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
@@ -32,6 +31,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.signal.core.ui.util.ThemeUtil;
 import org.signal.core.ui.permissions.Permissions;
 import org.signal.core.util.FontUtil;
 import org.signal.core.util.ParcelUtil;
@@ -262,7 +262,7 @@ public final class ImageEditorFragment extends Fragment implements ImageEditorHu
       restoredModel = null;
     }
 
-    @ColorInt int blackoutColor = ContextCompat.getColor(requireContext(), org.signal.core.ui.R.color.signal_colorBackground);
+    @ColorInt int blackoutColor = ThemeUtil.getThemedColor(requireContext(), com.google.android.material.R.attr.colorSurface);
     if (editorModel == null) {
       switch (mode) {
         case AVATAR_EDIT:

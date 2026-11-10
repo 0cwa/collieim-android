@@ -18,7 +18,8 @@ class NetworkProxyState {
   val currentConfig: ProxyConfig
     get() = current.get()
 
-  fun update(proxyConfig: ProxyConfig) {
-    current.set(proxyConfig)
+  /** Returns true if the proxy changed and connections should be restarted. */
+  fun update(proxyConfig: ProxyConfig): Boolean {
+    return current.getAndSet(proxyConfig) != proxyConfig
   }
 }

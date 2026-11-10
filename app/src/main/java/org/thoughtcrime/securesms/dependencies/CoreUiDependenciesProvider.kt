@@ -6,19 +6,28 @@
 package org.thoughtcrime.securesms.dependencies
 
 import org.signal.core.ui.CoreUiDependencies
-import org.thoughtcrime.securesms.BuildConfig
+import org.thoughtcrime.securesms.ScreenLockController
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.service.KeyCachingService
+import org.thoughtcrime.securesms.util.BackupUtil
+import org.thoughtcrime.securesms.util.TextSecurePreferences
 
 object CoreUiDependenciesProvider : CoreUiDependencies.Provider {
-  override fun providePackageId(): String {
-    return BuildConfig.APPLICATION_ID
+  override fun provideBackupBaseDirName(): String {
+    return BackupUtil.getBackupBaseDirName();
   }
 
   override fun provideIsIncognitoKeyboardEnabled(): Boolean {
+    if (KeyCachingService.isLocked()) {
+      return true
+    }
     return SignalStore.settings.isIncognitoKeyboardEnabled
   }
 
   override fun provideIsScreenSecurityEnabled(): Boolean {
+    if (ScreenLockController.alwaysSetSecureFlagOnResume || KeyCachingService.isLocked()) {
+      return true
+    }
     return SignalStore.settings.isScreenSecurityEnabled
   }
 }

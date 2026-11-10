@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources>
     <!-- RegistrationLockV2Dialog -->
     <string name="RegistrationLockV2Dialog_turn_on_registration_lock">등록 잠금을 켤까요?</string>
     <string name="RegistrationLockV2Dialog_turn_off_registration_lock">등록 잠금을 끌까요?</string>
@@ -508,7 +507,7 @@
     <!-- Text shown with toggle that when switched on will enable screen lock -->
     <string name="ScreenLockSettingsFragment__use_screen_lock">화면 잠금 사용</string>
     <!-- Description of what screen locking will do and how notification content will not be shown when screen is locked -->
-    <string name="ScreenLockSettingsFragment__your_android_device">앱을 벗어나거나 전환할 때, Android 기기 잠금 설정으로 Signal 잠금을 해제합니다. 잠금 상태에서는 알림 미리보기에 메시지 내용이 표시되지 않습니다.</string>
+    <string name="ScreenLockSettingsFragment__your_android_device">앱을 벗어나거나 전환할 때, Android 기기 잠금 설정으로 Collie 잠금을 해제합니다. 잠금 상태에서는 알림 미리보기에 메시지 내용이 표시되지 않습니다.</string>
     <!-- Title text explaining when users should start the screen lock -->
     <string name="ScreenLockSettingsFragment__start_screen_lock">화면 잠금 시작</string>
     <!-- Option text explaining that screen lock should start after 1 minute of inactivity -->
@@ -520,9 +519,9 @@
     <!-- Option text explaining that screen lock should start at a custom time set by the user -->
     <string name="ScreenLockSettingsFragment__custom_time">맞춤 시간</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn on screen lock -->
-    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Signal 화면 잠금 사용</string>
+    <string name="ScreenLockSettingsFragment__use_signal_screen_lock">Collie 화면 잠금 사용</string>
     <!-- Title on biometrics prompt explaining that biometrics are needed to turn off screen lock -->
-    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Signal 화면 잠금 해제</string>
+    <string name="ScreenLockSettingsFragment__turn_off_signal_lock">Collie 화면 잠금 해제</string>
 
     <!-- HelpSettingsFragment -->
     <string name="preferences__help">문의</string>
@@ -535,7 +534,7 @@
     <!--    Header for the screen that displays the licenses of the open-source software dependencies of the Signal app-->
     <string name="HelpSettingsFragment__licenses">라이선스</string>
     <string name="HelpSettingsFragment__terms_amp_privacy_policy">이용약관 &amp; 개인정보처리방침</string>
-    <string name="HelpFragment__copyright_signal_messenger">Signal Messenger 저작권</string>
+    <string name="HelpFragment__copyright_signal_messenger">Collie Messenger 저작권</string>
     <string name="HelpFragment__licenced_under_the_agplv3">GNU AGPLv3에 따라 라이선스가 부여됨</string>
     <!-- Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
     <string name="HelpSettingsFragment__signal_is_a_501c3">Signal은 비영리단체입니다</string>
@@ -544,7 +543,7 @@
     <!-- Visible warning label for the limitations of changing the app icon. -->
     <string name="preferences__app_icon_warning">앱 아이콘과 이름이 홈 화면과 앱 서랍에 표시됩니다.</string>
     <!-- Visible warning label explaining that changing the app icon and name does not affect notifications. -->
-    <string name="preferences__app_icon_notification_warning">알림은 항상 기본 Signal 아이콘과 이름을 표시합니다.</string>
+    <string name="preferences__app_icon_notification_warning">알림은 항상 기본 Collie 아이콘과 이름을 표시합니다.</string>
     <!--Text description of a graphic illustrating the limitations of the app icon change. -->
     <string name="preferences__graphic_illustrating_where_the_replacement_app_icon_will_be_visible">대체 앱 아이콘의 노출 위치 안내 그래픽</string>
 
@@ -564,9 +563,9 @@
     <!-- Title for the confirmation dialog of changing the app icon. -->
     <string name="preferences__app_icon_dialog_title">앱 아이콘과 이름을 \'%1$s\'(으)로 변경</string>
     <!-- Description for the confirmation dialog of changing the app icon. -->
-    <string name="preferences__app_icon_dialog_description">앱 아이콘과 이름을 변경하려면 Signal을 종료해야 합니다. 알림은 항상 기본 Signal 아이콘과 이름을 표시합니다.</string>
+    <string name="preferences__app_icon_dialog_description">앱 아이콘과 이름을 변경하려면 Collie을 종료해야 합니다. 알림은 항상 기본 Collie 아이콘과 이름을 표시합니다.</string>
     <!-- Visible warning label for the limitations of changing the app icon with learn more call to action. -->
-    <string name="preferences__app_icon_warning_learn_more">휴대폰 홈 화면과 앱 서랍에 표시될 앱 아이콘과 이름을 선택하세요. 알림은 항상 기본 Signal 아이콘과 이름을 표시합니다. 자세히 알아보기</string>
+    <string name="preferences__app_icon_warning_learn_more">휴대폰 홈 화면과 앱 서랍에 표시될 앱 아이콘과 이름을 선택하세요. 알림은 항상 기본 Collie 아이콘과 이름을 표시합니다. 자세히 알아보기</string>
     <!--Call to action to get more information about the limitations of the change app icon functionality. -->
     <string name="preferences__app_icon_learn_more">자세히 알아보기</string>
 

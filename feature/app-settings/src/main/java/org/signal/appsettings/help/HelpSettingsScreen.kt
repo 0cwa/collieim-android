@@ -36,6 +36,7 @@ object HelpSettingsTestTags {
   const val ROW_SUPPORT_CENTER = "row-support-center"
   const val ROW_CONTACT_US = "row-contact-us"
   const val ROW_VERSION = "row-version"
+  const val ROW_APP_UPDATES = "row-app-updates"
   const val ROW_DEBUG_LOG = "row-debug-log"
   const val ROW_LICENSES = "row-licenses"
   const val ROW_TERMS_AND_PRIVACY_POLICY = "row-terms-and-privacy-policy"
@@ -63,6 +64,14 @@ fun HelpSettingsScreen(
     ) {
       item {
         Rows.LinkRow(
+          text = stringResource(R.string.HelpSettingsFragment__molly_im_website),
+          icon = ImageVector.vectorResource(CoreUiR.drawable.symbol_open_20),
+          onClick = { onEvent(HelpSettingsEvent.WebsiteClicked) }
+        )
+      }
+
+      item {
+        Rows.LinkRow(
           text = stringResource(R.string.HelpSettingsFragment__support_center),
           icon = ImageVector.vectorResource(CoreUiR.drawable.symbol_open_20),
           onClick = { onEvent(HelpSettingsEvent.SupportCenterClicked) },
@@ -86,13 +95,34 @@ fun HelpSettingsScreen(
         Rows.TextRow(
           text = stringResource(R.string.HelpSettingsFragment__version),
           label = state.versionName,
+          onClick = { onEvent(HelpSettingsEvent.VersionClicked) },
           onLongClick = { onEvent(HelpSettingsEvent.VersionLongClicked) },
           modifier = Modifier.testTag(HelpSettingsTestTags.ROW_VERSION)
         )
       }
 
+      if (state.showAppUpdates) {
+        item {
+          Rows.TextRow(
+            text = stringResource(R.string.preferences_app_updates__title),
+            icon = SignalIcons.Calendar.painter,
+            onClick = { onEvent(HelpSettingsEvent.VersionClicked) },
+            modifier = Modifier.testTag(HelpSettingsTestTags.ROW_APP_UPDATES)
+          )
+        }
+      }
+
+      item {
+        Rows.ToggleRow(
+          checked = state.logEnabled,
+          text = stringResource(R.string.preferences__enable_debug_log),
+          onCheckChanged = { onEvent(HelpSettingsEvent.LogEnabledChanged(it)) }
+        )
+      }
+
       item {
         Rows.TextRow(
+          enabled = state.logEnabled,
           text = stringResource(R.string.HelpSettingsFragment__debug_log),
           onClick = { onEvent(HelpSettingsEvent.DebugLogClicked) },
           modifier = Modifier.testTag(HelpSettingsTestTags.ROW_DEBUG_LOG)

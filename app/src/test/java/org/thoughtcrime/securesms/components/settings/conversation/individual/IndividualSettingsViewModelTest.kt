@@ -13,12 +13,16 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -27,6 +31,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -77,6 +82,7 @@ class IndividualSettingsViewModelTest {
     every { repository.observeStoryViewState(RECIPIENT_ID) } returns flowOf(StoryViewState.NONE)
     every { repository.observeGroupsInCommon(RECIPIENT_ID) } returns flowOf(emptyList())
     every { repository.observeCalls(any<Flow<Long>>(), any()) } returns flowOf(emptyList())
+    coEvery { repository.getLinkedDeviceCount(any()) } returns null
     coEvery { repository.getThreadId(RECIPIENT_ID) } returns THREAD_ID
     coEvery { repository.hasGroups() } returns true
     coEvery { repository.getIdentity(RECIPIENT_ID) } returns null
@@ -198,6 +204,84 @@ class IndividualSettingsViewModelTest {
   }
 
   @Test
+  fun `recipient state updates immediately and the latest linked-device count wins`() = runTest(testDispatcher) {
+    val firstCount = CompletableDeferred<Int?>()
+    val latestCount = CompletableDeferred<Int?>()
+    coEvery { repository.getLinkedDeviceCount(any()) } coAnswers {
+      if (firstArg<Recipient>().isBlocked) latestCount.await() else firstCount.await()
+    }
+
+    val viewModel = createViewModel()
+    val blockedRecipient = individual(isBlocked = true)
+    viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(blockedRecipient))
+
+    assertTrue(viewModel.state.value.recipient.isBlocked)
+    assertNull(viewModel.state.value.linkedDeviceCount)
+    coVerify(exactly = 2) { repository.getLinkedDeviceCount(any()) }
+
+    latestCount.complete(2)
+    assertEquals(2, viewModel.state.value.linkedDeviceCount)
+
+    firstCount.complete(1)
+
+    assertTrue(viewModel.state.value.recipient.isBlocked)
+    assertEquals(2, viewModel.state.value.linkedDeviceCount)
+  }
+
+  @Test
+  fun `changing to an ineligible recipient clears and fences an earlier lookup`() = runTest(testDispatcher) {
+    val delayedCount = CompletableDeferred<Int?>()
+    val oldLookupReturned = CompletableDeferred<Unit>()
+    coEvery { repository.getLinkedDeviceCount(any()) } coAnswers {
+      try {
+        withContext(NonCancellable) { delayedCount.await() }
+      } catch (cancelled: CancellationException) {
+        delayedCount.getCompleted()
+      }
+      oldLookupReturned.complete(Unit)
+      delayedCount.getCompleted()
+    }
+
+    val viewModel = createViewModel()
+    viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(individual(isSelf = true)))
+    assertTrue(viewModel.state.value.recipient.isSelf)
+    assertNull(viewModel.state.value.linkedDeviceCount)
+    coVerify(exactly = 1) { repository.getLinkedDeviceCount(any()) }
+
+    delayedCount.complete(4)
+
+    assertTrue(oldLookupReturned.isCompleted)
+    assertNull(viewModel.state.value.linkedDeviceCount)
+    coVerify(exactly = 1) { repository.getLinkedDeviceCount(any()) }
+  }
+
+  @Test
+  fun `unregistered and group recipients do not retain a prior linked-device count`() = runTest(testDispatcher) {
+    coEvery { repository.getLinkedDeviceCount(any()) } returns 2
+    val viewModel = createViewModel()
+    assertEquals(2, viewModel.state.value.linkedDeviceCount)
+
+    viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(individual(isRegistered = false)))
+    assertNull(viewModel.state.value.linkedDeviceCount)
+    viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(individual(isGroup = true)))
+    assertNull(viewModel.state.value.linkedDeviceCount)
+
+    coVerify(exactly = 1) { repository.getLinkedDeviceCount(any()) }
+  }
+
+  @Test
+  fun `linked-device count preserves the difference between unknown and zero`() = runTest(testDispatcher) {
+    coEvery { repository.getLinkedDeviceCount(any()) } returns 0
+    val viewModel = createViewModel()
+    assertEquals(0, viewModel.state.value.linkedDeviceCount)
+
+    coEvery { repository.getLinkedDeviceCount(any()) } returns null
+    viewModel.onEvent(IndividualSettingsEvent.RecipientChanged(individual()))
+
+    assertNull(viewModel.state.value.linkedDeviceCount)
+  }
+
+  @Test
   fun `groups in common are shown in full when there are six or fewer`() = runTest(testDispatcher) {
     every { repository.observeGroupsInCommon(RECIPIENT_ID) } returns flowOf(groups(6))
 
@@ -265,14 +349,14 @@ class IndividualSettingsViewModelTest {
   }
 
   @Test
-  fun `badge click opens the badge sheet`() = runTest(testDispatcher) {
+  fun `badge click does nothing because Molly has no badges`() = runTest(testDispatcher) {
     val badge = mockk<Badge>()
     val viewModel = createViewModel()
     val actions = collectActions(viewModel)
 
     viewModel.onEvent(IndividualSettingsEvent.BadgeClicked(badge))
 
-    assertEquals(ConversationSettingsAction.ShowBadgeSheet(RECIPIENT_ID, badge), actions.single())
+    assertTrue(actions.isEmpty())
   }
 
   @Test
@@ -733,7 +817,7 @@ class IndividualSettingsViewModelTest {
   }
 
   @Test
-  fun `release notes help rows open their destinations`() = runTest(testDispatcher) {
+  fun `release notes help rows open their destinations, except donate which Molly does not have`() = runTest(testDispatcher) {
     recipientFlow.value = individual(isReleaseNotes = true)
     val viewModel = createViewModel(kind = ConversationSettingsKind.RELEASE_NOTES)
     val actions = collectActions(viewModel)
@@ -745,8 +829,7 @@ class IndividualSettingsViewModelTest {
     assertEquals(
       listOf(
         ConversationSettingsAction.OpenSupportCenter,
-        ConversationSettingsAction.OpenContactUs,
-        ConversationSettingsAction.OpenDonate
+        ConversationSettingsAction.OpenContactUs
       ),
       actions
     )
@@ -761,6 +844,8 @@ class IndividualSettingsViewModelTest {
       isBlocked: Boolean = false,
       isSelf: Boolean = false,
       isReleaseNotes: Boolean = false,
+      isRegistered: Boolean = true,
+      isGroup: Boolean = false,
       isSystemContact: Boolean = false,
       hasE164: Boolean = false,
       shouldShowE164: Boolean = false,
@@ -778,9 +863,13 @@ class IndividualSettingsViewModelTest {
         every { this@mockk.expiresInSeconds } returns expiresInSeconds
         every { this@mockk.isMuted } returns isMuted
         every { isIndividual } returns (!isSelf && !isReleaseNotes)
-        every { isGroup } returns false
-        every { isRegistered } returns true
-        every { registered } returns RecipientTable.RegisteredState.REGISTERED
+        every { this@mockk.isGroup } returns isGroup
+        every { this@mockk.isRegistered } returns isRegistered
+        every { registered } returns if (isRegistered) {
+          RecipientTable.RegisteredState.REGISTERED
+        } else {
+          RecipientTable.RegisteredState.NOT_REGISTERED
+        }
       }
     }
 

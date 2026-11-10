@@ -145,15 +145,16 @@ fun DataAndStorageSettingsScreen(
         Description(stringResource(R.string.preference_data_and_storage__using_less_data_may_improve_calls_on_bad_networks))
       }
 
-      item {
-        Dividers.Default()
-      }
+      if (state.showNetworkSettings) {
+        item {
+          Dividers.Default()
+        }
 
       item {
         Rows.ToggleRow(
           checked = state.isStayConnectedInBackgroundChecked,
           text = stringResource(R.string.DataAndStorageSettingsFragment__stay_connected_in_background),
-          enabled = state.playServicesAvailable,
+          enabled = state.pushAvailable,
           onCheckChanged = { onEvent(DataAndStorageSettingsEvent.StayConnectedInBackgroundToggled(it)) },
           modifier = Modifier.testTag(DataAndStorageSettingsTestTags.ROW_STAY_CONNECTED)
         )
@@ -167,13 +168,14 @@ fun DataAndStorageSettingsScreen(
         Texts.SectionHeader(stringResource(R.string.preferences_proxy))
       }
 
-      item {
-        Rows.TextRow(
-          text = stringResource(R.string.preferences_use_proxy),
-          label = stringResource(if (state.isProxyEnabled) CoreUiR.string.preferences_on else CoreUiR.string.preferences_off),
-          onClick = { onEvent(DataAndStorageSettingsEvent.UseProxyClicked) },
-          modifier = Modifier.testTag(DataAndStorageSettingsTestTags.ROW_USE_PROXY)
-        )
+        item {
+          Rows.TextRow(
+            text = stringResource(R.string.preferences_use_proxy),
+            label = stringResource(if (state.isProxyEnabled) CoreUiR.string.preferences_on else CoreUiR.string.preferences_off),
+            onClick = { onEvent(DataAndStorageSettingsEvent.UseProxyClicked) },
+            modifier = Modifier.testTag(DataAndStorageSettingsTestTags.ROW_USE_PROXY)
+          )
+        }
       }
     }
 
@@ -276,7 +278,7 @@ private fun DataAndStorageSettingsScreenPreview() {
 @Composable
 private fun DataAndStorageSettingsScreenCalculatingPreview() {
   DataAndStorageSettingsScreen(
-    state = DataAndStorageSettingsState(playServicesAvailable = false),
+    state = DataAndStorageSettingsState(pushAvailable = false),
     onEvent = {}
   )
 }

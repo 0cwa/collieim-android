@@ -56,6 +56,13 @@ class AppSettingsScreenTest {
   }
 
   @Test
+  fun `donation row displays the host app label`() {
+    setContent(createState(), donationLabel = "Donate to Molly")
+    scrollTo(AppSettingsTestTags.ROW_DONATE)
+    composeTestRule.onNodeWithText("Donate to Molly").assertIsDisplayed()
+  }
+
+  @Test
   fun `clicking the profile emits ProfileClicked`() {
     setContent(createState())
 
@@ -103,19 +110,14 @@ class AppSettingsScreenTest {
 
     val rows = listOf(
       AppSettingsTestTags.ROW_ACCOUNT to AppSettingsEvent.AccountClicked,
-      AppSettingsTestTags.ROW_LINKED_DEVICES to AppSettingsEvent.LinkedDevicesClicked,
       AppSettingsTestTags.ROW_DONATE to AppSettingsEvent.DonateClicked,
       AppSettingsTestTags.ROW_APPEARANCE to AppSettingsEvent.AppearanceClicked,
       AppSettingsTestTags.ROW_CHATS to AppSettingsEvent.ChatsClicked,
-      AppSettingsTestTags.ROW_STORIES to AppSettingsEvent.StoriesClicked,
       AppSettingsTestTags.ROW_NOTIFICATIONS to AppSettingsEvent.NotificationsClicked,
       AppSettingsTestTags.ROW_PRIVACY to AppSettingsEvent.PrivacyClicked,
       AppSettingsTestTags.ROW_BACKUPS to AppSettingsEvent.BackupsClicked,
       AppSettingsTestTags.ROW_DATA_AND_STORAGE to AppSettingsEvent.DataAndStorageClicked,
-      AppSettingsTestTags.ROW_APP_UPDATES to AppSettingsEvent.AppUpdatesClicked,
-      AppSettingsTestTags.ROW_PAYMENTS to AppSettingsEvent.PaymentsClicked,
       AppSettingsTestTags.ROW_HELP to AppSettingsEvent.HelpClicked,
-      AppSettingsTestTags.ROW_INVITE to AppSettingsEvent.InviteClicked,
       AppSettingsTestTags.ROW_LABS to AppSettingsEvent.LabsClicked,
       AppSettingsTestTags.ROW_INTERNAL to AppSettingsEvent.InternalClicked
     )
@@ -149,13 +151,11 @@ class AppSettingsScreenTest {
   }
 
   @Test
-  fun `rows that need registration do nothing while unregistered`() {
+  fun `normal settings rows that need registration do nothing while unregistered`() {
     setContent(createState(userUnregistered = true))
 
     listOf(
-      AppSettingsTestTags.ROW_LINKED_DEVICES,
       AppSettingsTestTags.ROW_CHATS,
-      AppSettingsTestTags.ROW_STORIES,
       AppSettingsTestTags.ROW_NOTIFICATIONS,
       AppSettingsTestTags.ROW_PRIVACY,
       AppSettingsTestTags.ROW_BACKUPS
@@ -168,10 +168,13 @@ class AppSettingsScreenTest {
   }
 
   @Test
-  fun `linked devices and payments are hidden on a linked device`() {
+  fun `moved rows and network are absent from the settings home`() {
     setContent(createState(isPrimaryDevice = false, showPayments = true))
 
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_LINKED_DEVICES).assertDoesNotExist()
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_STORIES).assertDoesNotExist()
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_NETWORK).assertDoesNotExist()
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_APP_UPDATES).assertDoesNotExist()
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_PAYMENTS).assertDoesNotExist()
   }
 
@@ -183,14 +186,6 @@ class AppSettingsScreenTest {
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_PAYMENTS).assertDoesNotExist()
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_LABS).assertDoesNotExist()
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_INTERNAL).assertDoesNotExist()
-  }
-
-  @Test
-  fun `the payments row shows the unread count`() {
-    setContent(createState(showPayments = true, unreadPaymentsCount = 4))
-
-    scrollTo(AppSettingsTestTags.ROW_PAYMENTS)
-    composeTestRule.onNodeWithText("4").assertIsDisplayed()
   }
 
   @Test
@@ -249,12 +244,13 @@ class AppSettingsScreenTest {
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_CHATS).assertIsSelected()
   }
 
-  private fun setContent(state: AppSettingsState, selectedRoute: AppSettingsRoute? = null) {
+  private fun setContent(state: AppSettingsState, selectedRoute: AppSettingsRoute? = null, donationLabel: String? = null) {
     composeTestRule.setContent {
       AppSettingsScreen(
         state = state,
         onEvent = { events += it },
-        selectedRoute = selectedRoute
+        selectedRoute = selectedRoute,
+        donationLabel = donationLabel
       )
     }
   }

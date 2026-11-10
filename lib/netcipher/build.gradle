@@ -1,0 +1,28 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'info.guardianproject.netcipher'
+
+    buildToolsVersion = libs.versions.buildTools.get()
+    compileSdk {
+        version = release(libs.versions.compileSdk.get().toInteger())
+    }
+
+    defaultConfig {
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.toVersion(libs.versions.javaVersion.get())
+        targetCompatibility = JavaVersion.toVersion(libs.versions.javaVersion.get())
+    }
+}
+
+dependencies {
+    implementation project(':core:util')
+    implementation libs.androidx.core.ktx
+    lintChecks project(':lintchecks')
+}

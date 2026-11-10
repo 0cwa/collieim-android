@@ -21,6 +21,7 @@ import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.backup.toBackupCreationProgress
+import org.thoughtcrime.securesms.R
 
 /**
  * Drives [org.signal.appsettings.chats.ChatsSettingsScreen]. Navigation goes straight to [parentEventEmitter].
@@ -77,6 +78,7 @@ class ChatsSettingsViewModel(
       is ChatsSettingsEvents.AutoplayStickersAndGifsChanged -> setAutoplayStickersAndGifsEnabled(event.enabled)
       ChatsSettingsEvents.NavigateBackClicked -> parentEventEmitter.navigateBack()
       ChatsSettingsEvents.ChatFoldersClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.ChatFoldersRoute.ChatFolders)
+      ChatsSettingsEvents.StoriesClicked -> parentEventEmitter.navigateTo(AppSettingsRoute.StoriesRoute.Privacy(titleId = R.string.preferences__stories))
     }
   }
 

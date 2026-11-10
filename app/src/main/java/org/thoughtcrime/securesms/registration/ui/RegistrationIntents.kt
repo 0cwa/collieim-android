@@ -7,7 +7,6 @@ package org.thoughtcrime.securesms.registration.ui
 
 import android.content.Context
 import android.content.Intent
-import org.signal.registration.RegistrationActivity
 import org.signal.registration.RegistrationRoute
 import org.thoughtcrime.securesms.MainActivity
 
@@ -23,7 +22,12 @@ object RegistrationIntents {
 
   @JvmStatic
   fun newIntentForReRegistration(context: Context): Intent {
-    return RegistrationActivity.createIntent(context, nextIntent = MainActivity.clearTop(context), startFresh = true)
+    return RegistrationActivity.createIntent(
+      context = context,
+      nextIntent = MainActivity.clearTop(context),
+      startFresh = true,
+      isReRegistration = true
+    )
   }
 
   @JvmStatic

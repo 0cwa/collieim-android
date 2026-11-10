@@ -25,7 +25,6 @@ import org.signal.core.ui.navigation.NavRouter
 import org.signal.core.ui.navigation.TransitionSpecs
 import org.thoughtcrime.securesms.avatar.picker.AvatarPickerResult
 import org.thoughtcrime.securesms.avatar.picker.registerAvatarPickerScreens
-import org.thoughtcrime.securesms.badges.self.registerBadgeScreens
 import org.thoughtcrime.securesms.components.settings.app.usernamelinks.registerUsernameLinkScreens
 import org.thoughtcrime.securesms.profiles.manage.about.EditAboutEntry
 import org.thoughtcrime.securesms.profiles.manage.name.EditProfileNameEntry
@@ -60,7 +59,6 @@ fun EditProfileNavigation(
     entryProvider {
       registerEditProfileScreens(parentEventEmitter)
       registerAvatarPickerScreens(parentEventEmitter, onResult = { router.resultBus.sendResult<AvatarPickerResult>(result = it) })
-      registerBadgeScreens(parentEventEmitter)
       registerUsernameLinkScreens(parentEventEmitter)
     }
   }

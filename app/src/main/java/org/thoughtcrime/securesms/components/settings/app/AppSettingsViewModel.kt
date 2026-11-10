@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 import org.signal.appsettings.home.AppSettingsAction
 import org.signal.appsettings.home.AppSettingsEvent
 import org.signal.appsettings.home.AppSettingsState
-import org.signal.appsettings.home.AppSettingsState.Snackbar
 import org.signal.appsettings.home.BackupFailureState
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.appsettings.routes.AppSettingsRoute
@@ -21,7 +20,6 @@ import org.signal.appsettings.routes.openSection
 import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.R
-import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 
 /**
  * Drives [org.signal.appsettings.home.AppSettingsScreen]. Navigation goes straight to [parentEventEmitter].
@@ -37,9 +35,7 @@ class AppSettingsViewModel(
   private val _state = MutableStateFlow(
     AppSettingsState(
       isPrimaryDevice = AppSettingsRepository.isPrimaryDevice(),
-      allowUserToGoToDonationManagementScreen = AppSettingsRepository.likelyCanManageDonations(),
       showInternalPreferences = AppSettingsRepository.showInternalPreferences(),
-      showPayments = AppSettingsRepository.showPayments(),
       showAppUpdates = AppSettingsRepository.showAppUpdates()
     )
   )
@@ -54,15 +50,6 @@ class AppSettingsViewModel(
     viewModelScope.launch {
       AppSettingsRepository.observeProfile().collect { profile -> _state.update { it.copy(profile = profile) } }
     }
-
-    viewModelScope.launch {
-      AppSettingsRepository.observeUnreadPaymentsCount().collect { count -> _state.update { it.copy(unreadPaymentsCount = count) } }
-    }
-
-    viewModelScope.launch {
-      val canManageDonations = AppSettingsRepository.canManageDonations() ?: return@launch
-      _state.update { it.copy(allowUserToGoToDonationManagementScreen = canManageDonations) }
-    }
   }
 
   override suspend fun processEvent(event: AppSettingsEvent) {
@@ -73,34 +60,29 @@ class AppSettingsViewModel(
       AppSettingsEvent.UsernameLinkClicked -> parentEventEmitter.openSection(AppSettingsRoute.UsernameLinkRoute.UsernameLink)
       AppSettingsEvent.BackupWarningClicked -> onBackupWarningClicked()
       AppSettingsEvent.AccountClicked -> parentEventEmitter.openSection(AppSettingsRoute.AccountRoute.Account)
-      AppSettingsEvent.LinkedDevicesClicked -> parentEventEmitter.openSection(AppSettingsRoute.LinkDeviceRoute.LinkDevice)
-      AppSettingsEvent.DonateClicked -> {
-        if (_state.value.allowUserToGoToDonationManagementScreen) {
-          parentEventEmitter.openSection(AppSettingsRoute.DonationsRoute.Donations())
-        } else {
-          _actions.send(AppSettingsAction.OpenDonateUrl)
+      AppSettingsEvent.LinkedDevicesClicked -> {
+        if (_state.value.isPrimaryDevice && _state.value.isRegisteredAndUpToDate) {
+          parentEventEmitter.openSection(AppSettingsRoute.LinkDeviceRoute.LinkDevice)
         }
       }
-      AppSettingsEvent.DonateLongClicked -> copySubscriberId(InAppPaymentSubscriberRecord.Type.DONATION, Snackbar.CopiedDonorSubscriberId)
+      AppSettingsEvent.DonateClicked -> _actions.send(AppSettingsAction.OpenDonateUrl)
+      AppSettingsEvent.DonateLongClicked -> Unit
       AppSettingsEvent.AppearanceClicked -> parentEventEmitter.openSection(AppSettingsRoute.AppearanceRoute.Appearance)
       AppSettingsEvent.ChatsClicked -> parentEventEmitter.openSection(AppSettingsRoute.ChatsRoute.Chats)
       AppSettingsEvent.StoriesClicked -> parentEventEmitter.openSection(AppSettingsRoute.StoriesRoute.Privacy(titleId = R.string.preferences__stories))
       AppSettingsEvent.NotificationsClicked -> parentEventEmitter.openSection(AppSettingsRoute.NotificationsRoute.Notifications)
       AppSettingsEvent.PrivacyClicked -> parentEventEmitter.openSection(AppSettingsRoute.PrivacyRoute.Privacy)
       AppSettingsEvent.BackupsClicked -> parentEventEmitter.openSection(AppSettingsRoute.BackupsRoute.Backups())
-      AppSettingsEvent.BackupsLongClicked -> {
-        if (_state.value.isPrimaryDevice) {
-          copySubscriberId(InAppPaymentSubscriberRecord.Type.BACKUP, Snackbar.CopiedBackupsSubscriberId)
-        }
-      }
+      AppSettingsEvent.BackupsLongClicked -> Unit
+      AppSettingsEvent.NetworkClicked -> parentEventEmitter.openSection(AppSettingsRoute.DataAndStorageRoute.Proxy)
       AppSettingsEvent.DataAndStorageClicked -> parentEventEmitter.openSection(AppSettingsRoute.DataAndStorageRoute.DataAndStorage)
       AppSettingsEvent.AppUpdatesClicked -> parentEventEmitter.openSection(AppSettingsRoute.AppUpdates)
-      AppSettingsEvent.PaymentsClicked -> parentEventEmitter.openSection(AppSettingsRoute.Payments)
+      AppSettingsEvent.PaymentsClicked -> Unit
       AppSettingsEvent.HelpClicked -> parentEventEmitter.openSection(AppSettingsRoute.HelpRoute.Settings())
       AppSettingsEvent.InviteClicked -> parentEventEmitter.openSection(AppSettingsRoute.Invite)
       AppSettingsEvent.LabsClicked -> parentEventEmitter.openSection(AppSettingsRoute.LabsRoute.Labs)
       AppSettingsEvent.InternalClicked -> parentEventEmitter.openSection(AppSettingsRoute.InternalRoute.Internal)
-      AppSettingsEvent.SnackbarDismissed -> _state.update { it.copy(snackbar = Snackbar.None) }
+      AppSettingsEvent.SnackbarDismissed -> _state.update { it.copy(snackbar = AppSettingsState.Snackbar.None) }
     }
   }
 
@@ -115,16 +97,9 @@ class AppSettingsViewModel(
     parentEventEmitter.openSection(AppSettingsRoute.BackupsRoute.Remote())
   }
 
-  private suspend fun copySubscriberId(type: InAppPaymentSubscriberRecord.Type, snackbar: Snackbar) {
-    if (AppSettingsRepository.copySubscriberIdToClipboard(type)) {
-      _state.update { it.copy(snackbar = snackbar) }
-    }
-  }
-
   private fun refresh() {
     _state.update {
       it.copy(
-        hasExpiredGiftBadge = AppSettingsRepository.hasExpiredGiftBadge(),
         backupFailureState = AppSettingsRepository.getBackupFailureState(),
         clientDeprecated = AppSettingsRepository.isClientDeprecated(),
         userUnregistered = AppSettingsRepository.isUserUnregistered()

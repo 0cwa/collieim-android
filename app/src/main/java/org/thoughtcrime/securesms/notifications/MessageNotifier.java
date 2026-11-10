@@ -1,6 +1,5 @@
 package org.thoughtcrime.securesms.notifications;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
@@ -12,6 +11,7 @@ import org.signal.core.util.concurrent.SignalExecutors;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.notifications.v2.ConversationId;
 import org.thoughtcrime.securesms.recipients.Recipient;
+import org.thoughtcrime.securesms.service.ExportedBroadcastReceiver;
 
 import java.util.Optional;
 import java.util.Set;
@@ -30,6 +30,7 @@ public interface MessageNotifier {
   void notifyStoryDeliveryFailed(@NonNull Context context, @NonNull Recipient recipient, @NonNull ConversationId conversationId);
   void notifyProofRequired(@NonNull Context context, @NonNull Recipient recipient, @NonNull ConversationId conversationId);
   void cancelDelayedNotifications();
+  boolean clearNotifications(@NonNull Context context);
   void updateNotification(@NonNull Context context);
   void updateNotification(@NonNull Context context, @NonNull ConversationId conversationId);
 
@@ -38,9 +39,9 @@ public interface MessageNotifier {
   void addStickyThread(@NonNull ConversationId conversationId, long earliestTimestamp);
   void removeStickyThread(@NonNull ConversationId conversationId);
 
-  class ReminderReceiver extends BroadcastReceiver {
+  class ReminderReceiver extends ExportedBroadcastReceiver {
     @Override
-    public void onReceive(final Context context, final Intent intent) {
+    public void onReceiveUnlock(final Context context, final Intent intent) {
       SignalExecutors.BOUNDED.execute(() -> {
         AppDependencies.getMessageNotifier().updateNotification(context);
       });

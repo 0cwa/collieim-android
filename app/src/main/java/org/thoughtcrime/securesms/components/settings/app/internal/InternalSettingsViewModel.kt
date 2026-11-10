@@ -47,11 +47,6 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
     refresh()
   }
 
-  fun setShakeToReport(enabled: Boolean) {
-    preferenceDataStore.putBoolean(InternalValues.SHAKE_TO_REPORT, enabled)
-    refresh()
-  }
-
   fun setShowMediaArchiveStateHint(enabled: Boolean) {
     preferenceDataStore.putBoolean(InternalValues.SHOW_ARCHIVE_STATE_HINT, enabled)
     refresh()
@@ -74,11 +69,6 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
 
   fun setAllowCensorshipSetting(enabled: Boolean) {
     preferenceDataStore.putBoolean(InternalValues.ALLOW_CENSORSHIP_SETTING, enabled)
-    refresh()
-  }
-
-  fun resetPnpInitializedState() {
-    SignalStore.misc.hasPniInitializedDevices = false
     refresh()
   }
 
@@ -195,10 +185,6 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
     repository.addRemoteMegaphone(RemoteMegaphoneRecord.ActionId.DONATE)
   }
 
-  fun addRemoteDonateFriendMegaphone() {
-    repository.addRemoteMegaphone(RemoteMegaphoneRecord.ActionId.DONATE_FOR_FRIEND)
-  }
-
   fun enqueueSubscriptionRedemption() {
     repository.enqueueSubscriptionRedemption()
   }
@@ -249,7 +235,6 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
 
   private fun getState() = InternalSettingsState(
     seeMoreUserDetails = SignalStore.internal.recipientDetails,
-    shakeToReport = SignalStore.internal.shakeToReport,
     showArchiveStateHint = SignalStore.internal.showArchiveStateHint,
     gv2forceInvites = SignalStore.internal.gv2ForceInvites,
     gv2ignoreP2PChanges = SignalStore.internal.gv2IgnoreP2PChanges,
@@ -277,7 +262,6 @@ class InternalSettingsViewModel(private val repository: InternalSettingsReposito
     delayResends = SignalStore.internal.delayResends,
     disableStorageService = SignalStore.internal.storageServiceDisabled,
     canClearOnboardingState = SignalStore.story.hasDownloadedOnboardingStory && Stories.isFeatureEnabled(),
-    pnpInitialized = SignalStore.misc.hasPniInitializedDevices,
     useConversationItemV2ForMedia = SignalStore.internal.useConversationItemV2Media,
     hasPendingOneTimeDonation = SignalStore.inAppPayments.getPendingOneTimeDonation() != null,
     disableInternalUser = RemoteConfig.internalUserDisabled

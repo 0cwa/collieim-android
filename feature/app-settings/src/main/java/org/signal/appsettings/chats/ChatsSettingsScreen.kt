@@ -39,6 +39,7 @@ object ChatsSettingsTestTags {
   const val ROW_USE_ADDRESS_BOOK = "row-use-address-book"
   const val ROW_KEEP_MUTED_CHATS_ARCHIVED = "row-keep-muted-chats-archived"
   const val ROW_CHAT_FOLDERS = "row-chat-folders"
+  const val ROW_STORIES = "row-stories"
   const val ROW_EXPORT_CHAT_HISTORY = "row-export-chat-history"
   const val ROW_EXPORT_PROGRESS = "row-export-progress"
   const val ROW_USE_SYSTEM_EMOJI = "row-use-system-emoji"
@@ -128,6 +129,16 @@ fun ChatsSettingsScreen(
       }
 
       item {
+        Rows.TextRow(
+          modifier = Modifier.testTag(ChatsSettingsTestTags.ROW_STORIES),
+          text = stringResource(R.string.AppSettingsScreen__stories),
+          icon = SignalIcons.Stories.painter,
+          enabled = state.isRegisteredAndUpToDate(),
+          onClick = { onEvent(ChatsSettingsEvents.StoriesClicked) }
+        )
+      }
+
+      item {
         Dividers.Default()
       }
 
@@ -154,6 +165,34 @@ fun ChatsSettingsScreen(
             onClick = { onEvent(ChatsSettingsEvents.ChatFoldersClicked) }
           )
         }
+      }
+
+      item {
+        Dividers.Default()
+      }
+
+      item {
+        Texts.SectionHeader(stringResource(R.string.ChatsSettingsFragment__keyboard))
+      }
+
+      item {
+        Rows.ToggleRow(
+          modifier = Modifier.testTag(ChatsSettingsTestTags.ROW_USE_SYSTEM_EMOJI),
+          text = stringResource(R.string.preferences_advanced__use_system_emoji),
+          enabled = state.isRegisteredAndUpToDate(),
+          checked = state.useSystemEmoji,
+          onCheckChanged = { onEvent(ChatsSettingsEvents.UseSystemEmojiChanged(it)) }
+        )
+      }
+
+      item {
+        Rows.ToggleRow(
+          modifier = Modifier.testTag(ChatsSettingsTestTags.ROW_ENTER_KEY_SENDS),
+          text = stringResource(R.string.ChatsSettingsFragment__send_with_enter),
+          enabled = state.isRegisteredAndUpToDate(),
+          checked = state.enterKeySends,
+          onCheckChanged = { onEvent(ChatsSettingsEvents.EnterKeySendsChanged(it)) }
+        )
       }
 
       if (state.isPlaintextExportEnabled) {
@@ -188,34 +227,6 @@ fun ChatsSettingsScreen(
             )
           }
         }
-      }
-
-      item {
-        Dividers.Default()
-      }
-
-      item {
-        Texts.SectionHeader(stringResource(R.string.ChatsSettingsFragment__keyboard))
-      }
-
-      item {
-        Rows.ToggleRow(
-          modifier = Modifier.testTag(ChatsSettingsTestTags.ROW_USE_SYSTEM_EMOJI),
-          text = stringResource(R.string.preferences_advanced__use_system_emoji),
-          enabled = state.isRegisteredAndUpToDate(),
-          checked = state.useSystemEmoji,
-          onCheckChanged = { onEvent(ChatsSettingsEvents.UseSystemEmojiChanged(it)) }
-        )
-      }
-
-      item {
-        Rows.ToggleRow(
-          modifier = Modifier.testTag(ChatsSettingsTestTags.ROW_ENTER_KEY_SENDS),
-          text = stringResource(R.string.ChatsSettingsFragment__send_with_enter),
-          enabled = state.isRegisteredAndUpToDate(),
-          checked = state.enterKeySends,
-          onCheckChanged = { onEvent(ChatsSettingsEvents.EnterKeySendsChanged(it)) }
-        )
       }
     }
   }

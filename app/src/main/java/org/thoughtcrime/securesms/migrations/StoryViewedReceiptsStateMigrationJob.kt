@@ -18,9 +18,10 @@ internal class StoryViewedReceiptsStateMigrationJob(
 
   override fun getFactoryKey(): String = KEY
 
-  override fun isUiBlocking(): Boolean = false
+  override fun isUiBlocking(): Boolean = true
 
   override fun performMigration() {
+    SignalStore.story.isFeatureDisabled = false
     if (!SignalStore.story.isViewedReceiptsStateSet()) {
       SignalStore.story.viewedReceiptsEnabled = SignalStore.settings.isReadReceiptsEnabled
       if (SignalStore.account.isRegistered) {

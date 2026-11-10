@@ -20,6 +20,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -32,6 +33,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 
@@ -78,6 +81,8 @@ public class PassphrasePromptActivity extends PassphraseActivity {
   private EditText                       passphraseInput;
   private CircularProgressMaterialButton okButton;
   private View                           successView;
+  private View                           promptActionBarContainer;
+  private int                            promptContentBaseTopMargin;
 
   private final DynamicTheme dynamicTheme = new DynamicTheme();
 
@@ -103,6 +108,14 @@ public class PassphrasePromptActivity extends PassphraseActivity {
 
     // Manually lock the screen since the app lifecycle observer is not running yet
     ScreenLockController.setLockScreenAtStart(ScreenLockController.getAutoLock());
+
+    schedulePromptActionBarClearance();
+  }
+
+  @Override
+  public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    schedulePromptActionBarClearance();
   }
 
   @Override
@@ -251,6 +264,63 @@ public class PassphrasePromptActivity extends PassphraseActivity {
     passphraseInput.setOnEditorActionListener(this::onEditorActionTriggered);
 
     okButton.setOnClickListener(this::onOkClicked);
+
+    initializePromptActionBarClearance();
+  }
+
+  /**
+   * BaseActivity draws edge-to-edge, which lets this content view sit underneath the action bar.
+   * Keep the form below the action bar while preserving its original XML margin. The offset is
+   * calculated from laid-out screen coordinates, so it adds only the overlap and repeated
+   * lifecycle/configuration callbacks do not accumulate the margin.
+   */
+  private void initializePromptActionBarClearance() {
+    promptActionBarContainer = findViewById(androidx.appcompat.R.id.action_bar_container);
+    ViewGroup.LayoutParams layoutParams = passphraseAuthContainer.getLayoutParams();
+    if (promptActionBarContainer == null || !(layoutParams instanceof ViewGroup.MarginLayoutParams)) {
+      promptActionBarContainer = null;
+    } else {
+      promptContentBaseTopMargin = ((ViewGroup.MarginLayoutParams) layoutParams).topMargin;
+    }
+  }
+
+  private void schedulePromptActionBarClearance() {
+    if (promptActionBarContainer == null || !(passphraseAuthContainer.getParent() instanceof View)) {
+      return;
+    }
+
+    View contentFrame = (View) passphraseAuthContainer.getParent();
+    ViewTreeObserver observer = passphraseAuthContainer.getViewTreeObserver();
+    if (!observer.isAlive()) {
+      return;
+    }
+
+    observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+      @Override
+      public boolean onPreDraw() {
+        if (observer.isAlive()) {
+          observer.removeOnPreDrawListener(this);
+        }
+
+        int[] actionBarLocation = new int[2];
+        int[] contentFrameLocation = new int[2];
+        promptActionBarContainer.getLocationOnScreen(actionBarLocation);
+        contentFrame.getLocationOnScreen(contentFrameLocation);
+
+        int actionBarBottom = actionBarLocation[1] + promptActionBarContainer.getHeight();
+        int actionBarOverlap = Math.max(0, actionBarBottom - contentFrameLocation[1]);
+        int requiredTopMargin = promptContentBaseTopMargin + actionBarOverlap;
+
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) passphraseAuthContainer.getLayoutParams();
+        if (params.topMargin != requiredTopMargin) {
+          params.topMargin = requiredTopMargin;
+          passphraseAuthContainer.setLayoutParams(params);
+          return false;
+        }
+
+        return true;
+      }
+    });
   }
 
   private void sendEmailToSupport() {

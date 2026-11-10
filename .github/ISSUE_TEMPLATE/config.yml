@@ -1,8 +1,14 @@
 blank_issues_enabled: false
 contact_links:
-  - name: ❓ Question
+  - name: ✨ Feature Request
+    url: https://github.com/0cwa/collieim-android/discussions/new?category=ideas-requests
+    about: Ask/Vote for a Feature in Discussions
+  - name: ❓ Quick Question
     url: https://matrix.to/#/#collieim:worldethicaldataforum.org
     about: Please ask and answer questions in our chat room.
+  - name: ❓ Bigger Questions
+    url: https://github.com/0cwa/collieim-android/discussions/new?category=q-a
+    about: Any bigger questions, possibly relevant to documentation.
   - name: 📚 Translation Feedback
     url: https://hosted.weblate.org/projects/molly-instant-messenger/
     about: Share feedback on translations with Molly - Collie adopts Molly's changes. (With more features we'll set up our own Weblate).

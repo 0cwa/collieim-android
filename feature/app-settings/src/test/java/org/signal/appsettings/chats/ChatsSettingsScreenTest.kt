@@ -93,21 +93,11 @@ class ChatsSettingsScreenTest {
   }
 
   @Test
-  fun `stories are available from Chats and keep the registration guard`() {
+  fun `stories is not nested in Chats`() {
     setContent(createState())
 
-    scrollTo(ChatsSettingsTestTags.ROW_STORIES)
-    composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_STORIES).performClick()
-
-    assertThat(events).contains(ChatsSettingsEvents.StoriesClicked)
-  }
-
-  @Test
-  fun `stories are disabled for an unregistered user`() {
-    setContent(createState(userUnregistered = true))
-
-    scrollTo(ChatsSettingsTestTags.ROW_STORIES)
-    composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_STORIES).assertIsNotEnabled()
+    scrollTo(ChatsSettingsTestTags.ROW_CHAT_FOLDERS)
+    composeTestRule.onNodeWithText(context.getString(R.string.AppSettingsScreen__stories)).assertDoesNotExist()
   }
 
   @Test

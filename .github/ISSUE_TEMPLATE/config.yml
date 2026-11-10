@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: ❓ Question
-    url: https://matrix.to/#/#mollyim:matrix.org
+    url: https://matrix.to/#/#collieim:worldethicaldataforum.org
     about: Please ask and answer questions in our chat room.
   - name: 📚 Translation Feedback
     url: https://hosted.weblate.org/projects/molly-instant-messenger/
-    about: Share feedback on translations.
+    about: Share feedback on translations with Molly - Collie adopts Molly's changes. (With more features we'll set up our own Weblate).

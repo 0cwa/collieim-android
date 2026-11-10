@@ -11,7 +11,7 @@ import java.io.File
 
 class StressTestPreviewTest {
 
-  private val source = File("../core/ui/src/main/java/org/signal/core/ui/compose/StressTestPreview.kt")
+  private val source = File("../../core/ui/src/main/java/org/signal/core/ui/compose/StressTestPreview.kt")
 
   @Test
   fun `StressTestPreview previews every default config`() {

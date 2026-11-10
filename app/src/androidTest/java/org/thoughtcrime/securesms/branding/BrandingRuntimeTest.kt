@@ -138,18 +138,19 @@ class BrandingRuntimeTest {
     check(restoreFile.exists()) { "No saved branding runtime state is available to restore" }
 
     val snapshot = Properties().apply { restoreFile.inputStream().use(::load) }
-    try {
-      persistThemePreferences(
-        theme = snapshot.getProperty("theme"),
-        dynamicColors = snapshot.getProperty("dynamicColors").toBoolean(),
-        biometricLock = snapshot.getProperty("biometricLock").toBoolean()
-      )
-    } finally {
-      SignalStore.settings.isScreenSecurityEnabled = snapshot.getProperty("screenSecurity").toBoolean()
-      ScreenLockController.enableAutoLock(snapshot.getProperty("autoLock").toBoolean())
-      ScreenLockController.lockScreenAtStart = snapshot.getProperty("lockAtStart").toBoolean()
-      AppCompatDelegate.setDefaultNightMode(snapshot.getProperty("appCompatNightMode").toInt())
-    }
+    restoreEverySetting(
+      {
+        persistThemePreferences(
+          theme = requireNotNull(snapshot.getProperty("theme")),
+          dynamicColors = requireNotNull(snapshot.getProperty("dynamicColors")).toBooleanStrict(),
+          biometricLock = requireNotNull(snapshot.getProperty("biometricLock")).toBooleanStrict()
+        )
+      },
+      { SignalStore.settings.isScreenSecurityEnabled = requireNotNull(snapshot.getProperty("screenSecurity")).toBooleanStrict() },
+      { ScreenLockController.enableAutoLock(requireNotNull(snapshot.getProperty("autoLock")).toBooleanStrict()) },
+      { ScreenLockController.lockScreenAtStart = requireNotNull(snapshot.getProperty("lockAtStart")).toBooleanStrict() },
+      { AppCompatDelegate.setDefaultNightMode(requireNotNull(snapshot.getProperty("appCompatNightMode")).toInt()) }
+    )
 
     check(TextSecurePreferences.getTheme(context) == snapshot.getProperty("theme"))
     check(TextSecurePreferences.isDynamicColorsEnabled(context) == snapshot.getProperty("dynamicColors").toBoolean())
@@ -221,30 +222,31 @@ class BrandingNormalDarkActivityTest {
         try {
           val expected = Color.rgb(0x24, 0x13, 0x0D)
           var matchingPixels = 0
+          var sampledPixels = 0
           for (y in 0 until screenshot.height step 2) {
             for (x in 0 until screenshot.width step 2) {
+              sampledPixels++
               if (screenshot.getPixel(x, y) == expected) matchingPixels++
             }
           }
 
           saveScreenshot(screenshot, "normal-dark-background-24130d.png")
           assertTrue(
-            "Expected the resolved static dark MainActivity surface #24130D; matching pixels=$matchingPixels",
-            matchingPixels > 10_000
+            "Expected the resolved static dark MainActivity surface #24130D; matching pixels=$matchingPixels of $sampledPixels",
+            matchingPixels > sampledPixels / 10
           )
         } finally {
           screenshot.recycle()
         }
       }
     } finally {
-      try {
-        commitThemePreferences(oldTheme, oldDynamicColors, oldBiometricLock)
-      } finally {
-        SignalStore.settings.isScreenSecurityEnabled = oldScreenSecurity
-        ScreenLockController.enableAutoLock(oldAutoLock)
-        ScreenLockController.lockScreenAtStart = oldLockAtStart
-        AppCompatDelegate.setDefaultNightMode(oldAppCompatNightMode)
-      }
+      restoreEverySetting(
+        { commitThemePreferences(oldTheme, oldDynamicColors, oldBiometricLock) },
+        { SignalStore.settings.isScreenSecurityEnabled = oldScreenSecurity },
+        { ScreenLockController.enableAutoLock(oldAutoLock) },
+        { ScreenLockController.lockScreenAtStart = oldLockAtStart },
+        { AppCompatDelegate.setDefaultNightMode(oldAppCompatNightMode) }
+      )
     }
   }
 
@@ -269,4 +271,18 @@ class BrandingNormalDarkActivityTest {
     check(TextSecurePreferences.isDynamicColorsEnabled(context) == dynamicColors)
     check(TextSecurePreferences.isBiometricScreenLockEnabled(context) == biometricLock)
   }
+}
+
+/** Restore independent fixture values even if an earlier setter fails, then report the failure. */
+private fun restoreEverySetting(vararg steps: () -> Unit) {
+  var failure: Throwable? = null
+  for (step in steps) {
+    try {
+      step()
+    } catch (error: Throwable) {
+      val previous = failure
+      if (previous == null) failure = error else previous.addSuppressed(error)
+    }
+  }
+  failure?.let { throw it }
 }

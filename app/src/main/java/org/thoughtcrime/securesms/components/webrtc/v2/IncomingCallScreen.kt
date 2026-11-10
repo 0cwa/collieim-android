@@ -116,7 +116,7 @@ fun IncomingCallScreen(
         modifier = Modifier.padding(callTypePadding)
       ) {
         Icon(
-          painter = painterResource(R.drawable.ic_notification),
+          painter = painterResource(R.drawable.ic_collie_notification_mask),
           contentDescription = null,
           modifier = Modifier.padding(end = 6.dp).size(15.dp)
         )

@@ -66,10 +66,10 @@ jobs:
           gh release download "$TAG" --pattern collie.apk
           bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           "$bt/apksigner" verify --print-certs collie.apk | tee certs.txt
-          grep -qx "Signer #1 certificate SHA-256 digest: $APK_CERT_SHA256" certs.txt \
-            || { echo "::error::collie.apk is not signed with the Collie release certificate"; exit 1; }
-          [ "$(grep -c 'certificate SHA-256 digest' certs.txt)" -eq 1 ] \
-            || { echo "::error::collie.apk has more than one signer"; exit 1; }
+          # Output format differs between build-tools versions, so compare the distinct digests.
+          digests=$(grep -o 'certificate SHA-256 digest: [0-9a-f]\{64\}' certs.txt | awk '{print $NF}' | sort -u)
+          [ "$digests" = "$APK_CERT_SHA256" ] \
+            || { echo "::error::collie.apk is not signed only with the Collie release certificate (found: $digests)"; exit 1; }
           "$bt/aapt2" dump badging collie.apk | head -1 | tee badging.txt
           grep -q "package: name='$PACKAGE_ID' versionCode='$CODE' versionName='$NAME'" badging.txt \
             || { echo "::error::APK identity does not match $PACKAGE_ID $CODE $NAME"; exit 1; }

@@ -265,7 +265,16 @@ internal class OneTimePurchaseApiImpl(
     }
 
     val details = result.productDetailsList?.firstOrNull { it.productId == product.productId } ?: return QueryResult.Success(null)
-    val offer = details.oneTimePurchaseOfferDetailsList?.firstOrNull { it.purchaseOptionId == product.purchaseOptionId } ?: return QueryResult.Success(null)
+    val list = details.oneTimePurchaseOfferDetailsList?.map { OfferCandidate(it.purchaseOptionId, it.offerToken, it.formattedPrice) }
+
+    @Suppress("DEPRECATION")
+    val legacy = details.oneTimePurchaseOfferDetails?.let { OfferCandidate(purchaseOptionId = null, offerToken = it.offerToken, formattedPrice = it.formattedPrice) }
+
+    if (list == null && legacy != null) {
+      Log.i(TAG, "[queryOfferDetails] Play did not report a purchase option list. Using the single legacy offer.", true)
+    }
+
+    val offer = OfferSelection.select(list, legacy, product.purchaseOptionId) ?: return QueryResult.Success(null)
     val offerToken = offer.offerToken ?: return QueryResult.Success(null)
     val formattedPrice = offer.formattedPrice ?: return QueryResult.Success(null)
 

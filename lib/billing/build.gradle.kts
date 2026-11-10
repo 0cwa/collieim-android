@@ -11,4 +11,7 @@ dependencies {
 
   implementation(libs.android.billing)
   implementation(project(":core:util"))
+
+  testImplementation(testLibs.junit.junit)
+  testImplementation(testLibs.assertk)
 }

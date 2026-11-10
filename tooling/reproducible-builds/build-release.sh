@@ -25,6 +25,8 @@ dockerfile=tooling/reproducible-builds/Dockerfile
 mkdir -p "$out"
 
 if [ "${BUILD_MODE:-container}" = host ]; then
+  # The build records the Git revision in the APK only if it finds a regular repository.
+  [ -d .git ] || { echo "build-release: host builds need a regular clone, not a git worktree (.git must be a directory)" >&2; exit 1; }
   arg() { sed -n "s/^ARG $1=\"\(.*\)\"/\1/p" "$dockerfile"; }
   ndk=$(arg NDK_VERSION); tools=$(arg BUILD_TOOLS_VERSION); platform=$(arg COMPILE_SDK)
   jdk=$HOME/.local/opt/jdk-$(sed -n 's/^java temurin-//p' .tool-versions)

@@ -71,6 +71,9 @@ To use the same Signal account in two apps, one must be linked as a secondary de
 
 Signal's [Terms and Privacy Policy](https://signal.org/legal/) apply when using its service.
 
+## Security
+Collie's native libraries (including libringrtc and libsignal) combine Signal sources, all of Molly's proxy protections, plus Collie adaptations. [Release-engineering PR #17 documents their origins and testing.](https://github.com/0cwa/collie-release-engineering/pull/17)
+
 ## Backups
 
 Collie supports local Signal-format backups. Restoring a backup requires an app version that supports the version of the backup being imported.

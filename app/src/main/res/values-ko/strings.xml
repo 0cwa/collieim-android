@@ -4300,7 +4300,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie이 새 Android 기기를 검색하고 연결하려면 위치 권한이 필요합니다.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie에서 새 Android 기기를 검색하고 연결하려면 위치 서비스를 활성화해야 합니다.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie이 새 Android 기기를 검색하고 연결하려면 Wi-Fi가 켜져 있어야 합니다. Wi-Fi만 켜져 있으면 되며, 특정 Wi-Fi 네트워크에 연결되어 있을 필요는 없습니다.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">죄송하지만, 현재 기기에서는 Wi-Fi Direct 기능을 지원하지 않습니다. Molly은 Wi-Fi Direct를 사용하여 새 Android 장치를 검색하고 연결합니다. 새 Android 기기에 계정을 가져오려면 백업을 생성하세요.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">죄송하지만, 현재 기기에서는 Wi-Fi Direct 기능을 지원하지 않습니다. Collie은 Wi-Fi Direct를 사용하여 새 Android 장치를 검색하고 연결합니다. 새 Android 기기에 계정을 가져오려면 백업을 생성하세요.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">백업 생성하기</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">새 Android 장치에 연결하는 동안 예기치 않은 오류가 발생했습니다.</string>
 

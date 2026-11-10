@@ -1117,7 +1117,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Əskik Play Xidmətləri üçün optimallaşdırın</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Bu cihaz Play Xidmətlərini dəstəkləmir. Molly-ın aktiv olmadığı müddətdə mesajların alınmasına maneə törədən sistem batareya optimallaşdırmasını sıradan çıxartmaq üçün toxunun.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Bu cihaz Play Xidmətlərini dəstəkləmir. Collie-ın aktiv olmadığı müddətdə mesajların alınmasına maneə törədən sistem batareya optimallaşdırmasını sıradan çıxartmaq üçün toxunun.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Collie-ın bu versiyasının istifadə müddəti bitib. Mesaj göndərmək və almaq üçün indi yeniləyin.</string>
@@ -4422,7 +4422,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie-ın, yeni Android cihazını kəşf etmək və onunla bağlantı qurmaq üçün yerləşmə xidmətlərinə ehtiyacı var.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie-ın, yeni Android cihazını kəşf etmək və onunla bağlantı qurmaq üçün yerləşmə xidmətlərinin fəallaşdırılmasına ehtiyacı var.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie-ın, yeni Android cihazını kəşf etmək və onunla bağlantı qurmaq üçün \"Wi-Fi\"a ehtiyacı var. Wi-Fi açıq olmalıdır, ancaq hər hansısa bir Wi-Fi şəbəkəsi ilə bağlantı qurmağınıza ehtiyac yoxdur.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Təəssüf ki, bu cihazda Wi-Fi Direct dəstəklənmir. Molly, yeni Android cihazını kəşf etmək və onunla bağlantı qurmaq üçün Wi-Fi Direct istifadə edir. Hesabınızı yeni Android cihazınızda geri yükləmək üçün hələ də bir nüsxə yarada bilərsiniz.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Təəssüf ki, bu cihazda Wi-Fi Direct dəstəklənmir. Collie, yeni Android cihazını kəşf etmək və onunla bağlantı qurmaq üçün Wi-Fi Direct istifadə edir. Hesabınızı yeni Android cihazınızda geri yükləmək üçün hələ də bir nüsxə yarada bilərsiniz.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">Bir nüsxə yarat</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Yeni Android cihazınızla bağlantı qurmağa cəhd edərkən gözlənilməz bir xəta baş verdi.</string>
 

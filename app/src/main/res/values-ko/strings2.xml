@@ -3,7 +3,7 @@
     <string name="preferences__enable_debug_log">디버그 파일 활성화시키기</string>
     <string name="ChangePassphraseDialogFragment_weak_passphrase">약한 암호 입니다!</string>
     <string name="PassphraseCreateActivity_turn_on_database_encryption">데이터베이스 암호화를 켜세요</string>
-    <string name="PassphraseCreateActivity_require_passphrase_to_unlock_molly">몰리를 잠금해제 하려면 암호가 필요합니까\?</string>
+    <string name="PassphraseCreateActivity_require_passphrase_to_unlock_molly">Collie를 잠금해제 하려면 암호가 필요합니까\?</string>
     <string name="PassphraseCreateActivity_now_you_can_set_a_passphrase_to_encrypt_the_database">이제 데이터베이스를 암호화하기 위해 암호를 설정할 수 있습니다. 잠금이 해제될 때까지 Collie는 알림이나 전화를 받을 수 없습니다. 이렇게 하면 분실하거나 도난당한 기기의 데이터를 보호할 수 있습니다.</string>
     <string name="AppProtectionPreferenceFragment_instant">즉시</string>
     <string name="WipeMemoryService_secure_wipe_in_progress">보안 초기화 진행중</string>

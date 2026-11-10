@@ -9,8 +9,8 @@
     <string name="ChangePassphraseDialogFragment_estimated_time_to_crack_suggestion">%1$s\n\nОчаквано време за разбиване: %2$s.\n\nПредложение: %3$s</string>
     <string name="ChangePassphraseDialogFragment_weak_passphrase">Слаба паролна фраза!</string>
     <string name="PassphraseCreateActivity_turn_on_database_encryption">Включете криптирането на базата данни</string>
-    <string name="PassphraseCreateActivity_require_passphrase_to_unlock_molly">Изискване на парола за отключване на Мolly\?</string>
-    <string name="PassphraseCreateActivity_now_you_can_set_a_passphrase_to_encrypt_the_database">Сега можете да зададете пропуск за криптиране на базата данни. Докато не се отключи, Моли не може да получава известия или обаждания. Това помага да се защитят данните за изгубени или откраднати устройства.</string>
+    <string name="PassphraseCreateActivity_require_passphrase_to_unlock_molly">Изискване на парола за отключване на Collie\?</string>
+    <string name="PassphraseCreateActivity_now_you_can_set_a_passphrase_to_encrypt_the_database">Сега можете да зададете пропуск за криптиране на базата данни. Докато не се отключи, Collie не може да получава известия или обаждания. Това помага да се защитят данните за изгубени или откраднати устройства.</string>
     <string name="WipeMemoryService_secure_wipe_in_progress">В ход е сигурно изтриване</string>
     <string name="preferences__passphrase_changed">Паролната фраза е променена</string>
     <string name="preferences__device_lock_timeout">Време за изчакване на заключване на устройството</string>

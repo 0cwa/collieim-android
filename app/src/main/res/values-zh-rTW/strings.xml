@@ -1090,7 +1090,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">為缺少的 Play 服務優化</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">這個裝置不支援 Play 服務。輕觸關閉，因為系統電池效能最佳化會防止 Molly 在閒置時取得訊息。</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">這個裝置不支援 Play 服務。輕觸關閉，因為系統電池效能最佳化會防止 Collie 在閒置時取得訊息。</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">此版本的 Collie 已過期。立即更新以傳送和接收訊息。</string>
@@ -4300,7 +4300,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie需要位置權限才能發現並連接到新的Android裝置。</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie須要開啟定位服務才能發現新的Android裝置並與之連接。</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie需要開啟Wi-Fi才能發現新的Android裝置並與之連接。 Wi-Fi需要開啟，但不必連接到Wi-Fi網路。</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">抱歉，該裝置似乎不支援Wi-Fi Direct。 Molly使用Wi-Fi Direct搜尋並連接新的Android裝置。你仍然可以建立備份以在新的Android裝置上還原帳號。</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">抱歉，該裝置似乎不支援Wi-Fi Direct。 Collie使用Wi-Fi Direct搜尋並連接新的Android裝置。你仍然可以建立備份以在新的Android裝置上還原帳號。</string>
     <string name="OldDeviceTransferSetup__create_a_backup">建立備份</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">嘗試連接到新的Android裝置時發生未預期的錯誤。</string>
 

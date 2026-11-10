@@ -1171,7 +1171,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">מטב עבור שירותי Play חסרים</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">מכשיר זה אינו תומך בשירותי Play. הקש כדי להשבית מיטובי סוללה של מערכת שמונעים מ־Molly לאחזר הודעות בעת אי־פעילות.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">מכשיר זה אינו תומך בשירותי Play. הקש כדי להשבית מיטובי סוללה של מערכת שמונעים מ־Collie לאחזר הודעות בעת אי־פעילות.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">גרסה זו של Collie פגה. עדכן עכשיו כדי לשלוח ולקבל הודעות.</string>
@@ -4666,7 +4666,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie צריך את הרשאת המיקום כדי לגלות ולהתחבר אל מכשיר ה־Android החדש שלך.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie צריך שירותי מיקום מופעלים כדי לגלות ולהתחבר אל מכשיר ה־Android החדש שלך.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie צריך Wi-Fi מופעל כדי לגלות להתחבר אל מכשיר ה־Android החדש שלך. Wi-Fi צריך להיות מופעל אבל הוא לא חייב להיות מחובר אל רשת Wi-Fi.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">סליחה, נראה שמכשיר זה אינו תומך ב־Wi-Fi Direct. היישום Molly משתמש ב־Wi-Fi Direct כדי לגלות להתחבר אל מכשיר Android החדש שלך. אתה עדין יכול ליצור גיבוי כדי לשחזר את החשבון שלך במכשיר ה־Android החדש שלך.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">סליחה, נראה שמכשיר זה אינו תומך ב־Wi-Fi Direct. היישום Collie משתמש ב־Wi-Fi Direct כדי לגלות להתחבר אל מכשיר Android החדש שלך. אתה עדין יכול ליצור גיבוי כדי לשחזר את החשבון שלך במכשיר ה־Android החדש שלך.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">צור גיבוי</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">שגיאה בלתי צפויה התרחשה בזמן ניסיון להתחבר אל מכשיר ה־Android החדש שלך.</string>
 

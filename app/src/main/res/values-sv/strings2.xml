@@ -80,7 +80,7 @@
     <string name="PrivacySettingsFragment__no_biometric_features_available_on_this_device">Denna enhet saknar stöd för biometrisk upplåsning</string>
     <string name="ProxyManager_successfully_started_orbot">Orbot har startat</string>
     <string name="NetworkPreferenceFragment_molly_wont_connect_without_orbot_which_is_not_installed_on_this_device">Collie ansluter bara genom Orbot, som inte är installerat på den här enheten.</string>
-    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Den här versionen av Molly stödjer inte automatiska uppdateringar, kolla efter uppdateringar pp din app-platform.</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Den här versionen av Collie stödjer inte automatiska uppdateringar, kolla efter uppdateringar pp din app-platform.</string>
     <string name="TimeDurationPickerDialog_single_letter_second_abbreviation">s</string>
     <string name="RegistrationActivity_link_device">Länka till befintlig enhet</string>
     <string name="DeviceListItem_this_device">Denna enhet</string>

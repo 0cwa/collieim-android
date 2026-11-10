@@ -1117,7 +1117,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Otimizar para ausência do Play Services</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Este dispositivo não tem suporte para o Play Services. Clique para desabilitar as otimizações de bateria do sistema que impedem o Molly de receber mensagens enquanto está inativo.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Este dispositivo não tem suporte para o Play Services. Clique para desabilitar as otimizações de bateria do sistema que impedem o Collie de receber mensagens enquanto está inativo.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Esta versão do Collie não é mais suportada. Atualize agora para poder enviar e receber as mensagens.</string>
@@ -4422,7 +4422,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">O Collie precisa de permissão de localização para encontrar e se conectar ao seu novo aparelho Android.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">O Collie precisa de serviços de localização ativados para encontrar e se conectar ao seu novo aparelho Android.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">O Collie precisa de Wi-Fi para encontrar e se conectar ao seu novo aparelho Android. O Wi-Fi precisa estar ativado, mas o aparelho não precisa estar conectado a uma rede Wi-Fi.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Desculpe, parece que este dispositivo não suporta Wi-Fi Direct. O Molly usa Wi-Fi Direct para descobrir e conectar-se ao seu novo dispositivo Android. Você ainda pode criar um backup para restaurar sua conta no seu novo dispositivo Android.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Desculpe, parece que este dispositivo não suporta Wi-Fi Direct. O Collie usa Wi-Fi Direct para descobrir e conectar-se ao seu novo dispositivo Android. Você ainda pode criar um backup para restaurar sua conta no seu novo dispositivo Android.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">Criar um backup</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Ocorreu um erro inesperado ao tentar se conectar ao seu novo aparelho Android.</string>
 

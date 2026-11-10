@@ -1117,7 +1117,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">ಕಾಣೆಯಾದ ಪ್ಲೇ ಸೇವೆಗಳನ್ನು ಅತ್ಯುತ್ತಮವಾಗಿಸಿ</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">ಈ ಸಾಧನವು ಪ್ಲೇ ಸರ್ವೀಸಸ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ನಿಷ್ಕ್ರಿಯವಾಗಿದ್ದಾಗ Molly ಸಂದೇಶಗಳನ್ನು ಹಿಂದಕ್ಕೆ ಪಡೆಯದಂತೆ ತಡೆಯಲು ಸಿಸ್ಟಂ ಬ್ಯಾಟರಿ ಆಪ್ಟಿಮೈಸೇಶನ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ ಅನ್ನು ಒತ್ತಿ.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">ಈ ಸಾಧನವು ಪ್ಲೇ ಸರ್ವೀಸಸ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ನಿಷ್ಕ್ರಿಯವಾಗಿದ್ದಾಗ Collie ಸಂದೇಶಗಳನ್ನು ಹಿಂದಕ್ಕೆ ಪಡೆಯದಂತೆ ತಡೆಯಲು ಸಿಸ್ಟಂ ಬ್ಯಾಟರಿ ಆಪ್ಟಿಮೈಸೇಶನ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ ಅನ್ನು ಒತ್ತಿ.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">ನಿಮ್ಮ Collie ಆವೃತ್ತಿಯ ವಾಯಿದೆ ಮುಗಿದಿದೆ. ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸಲು ಮತ್ತೆ ಪಡೆಯಲು ನವೀಕರಿಸಿ.</string>
@@ -4422,7 +4422,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">ನಿಮ್ಮ ಹೊಸ ಆಂಡ್ರಾಯ್ಡ್ ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಿಸಲು ಮತ್ತು ಶೋಧಿಸಲು ಸ್ಥಳ ಅನುಮತಿಯು Collie ಗೆ ಅಗತ್ಯವಿದೆ.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">ನಿಮ್ಮ ಹೊಸ ಆಂಡ್ರಾಯ್ಡ್ ಸಾಧನದೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಲು ಮತ್ತು ಶೋಧಿಸಲು Collie ಗೆ ಸ್ಥಳ ಸೇವೆಗಳು ಸಕ್ರಿಯಗೊಳ್ಳಬೇಕು.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">ನಿಮ್ಮ ಹೊಸ ಆಂಡ್ರಾಯ್ಡ್‌ ಸಾಧನದೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಲು ಮತ್ತು ಶೋಧಿಸಲು Collie ಗೆ ವೈಫೈ ಆನ್ ಆಗಿರುವುದು ಅಗತ್ಯವಿದೆ. ವೈಫೈ ಆನ್ ಆಗಿರಬೇಕು. ಆದರೆ, ಇದು ವೈಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕ ಹೊಂದಿರಬೇಕಿಲ್ಲ.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">ಕ್ಷಮಿಸಿ, ಈ ಸಾಧನವು ವೈಫೈ ಡೈರೆಕ್ಟ್ ಅನ್ನು ಬೆಂಬಲಿಸುವಂತೆ ತೋರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಹೊಸ ಆಂಡ್ರಾಯ್ಡ್ ಸಾಧನದೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಲು ಮತ್ತು ಶೋಧಿಸಲು ವೈಫೈ ಡೈರೆಕ್ಟ್ ಅನ್ನು Molly ಬಳಸುತ್ತದೆ. ನಿಮ್ಮ ಹೊಸ ಆಂಡ್ರಾಯ್ಡ್ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ರಿಸ್ಟೋರ್ ಮಾಡಲು ಬ್ಯಾಕಪ್‌ ಅನ್ನು ಇನ್ನೂ ನೀವು ರಿಸ್ಟೋರ್ ಮಾಡಬಹುದು.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">ಕ್ಷಮಿಸಿ, ಈ ಸಾಧನವು ವೈಫೈ ಡೈರೆಕ್ಟ್ ಅನ್ನು ಬೆಂಬಲಿಸುವಂತೆ ತೋರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಹೊಸ ಆಂಡ್ರಾಯ್ಡ್ ಸಾಧನದೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಲು ಮತ್ತು ಶೋಧಿಸಲು ವೈಫೈ ಡೈರೆಕ್ಟ್ ಅನ್ನು Collie ಬಳಸುತ್ತದೆ. ನಿಮ್ಮ ಹೊಸ ಆಂಡ್ರಾಯ್ಡ್ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ರಿಸ್ಟೋರ್ ಮಾಡಲು ಬ್ಯಾಕಪ್‌ ಅನ್ನು ಇನ್ನೂ ನೀವು ರಿಸ್ಟೋರ್ ಮಾಡಬಹುದು.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">ಬ್ಯಾಕಪ್ ರಚಿಸಿ</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">ನಿಮ್ಮ ಹೊಸ ಆಂಡ್ರಾಯ್ಡ್ ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವಾಗ ಒಂದು ಅನಿರೀಕ್ಷಿತ ದೋಷ ಕಂಡುಬಂದಿದೆ.</string>
 

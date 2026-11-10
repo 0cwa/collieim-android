@@ -118,11 +118,11 @@
     <string name="preferences__follow_system">עקוב אחר המערכת</string>
     <string name="preferences_appearance__dynamic_colors">צבעים דינמיים</string>
     <string name="preferences_appearance__use_system_colors_for_the_app_theme">השתמש בצבעי המערכת עבור האפליקציה</string>
-    <string name="DozeReminder_allow_molly_to_deliver_timely_notifications">אפשר למולי לשלוח התראות בזמן, גם אם המכשיר במצב המתנה.</string>
+    <string name="DozeReminder_allow_molly_to_deliver_timely_notifications">אפשר ל־Collie לשלוח התראות בזמן, גם אם המכשיר במצב המתנה.</string>
     <string name="DozeReminder_disable_battery_restrictions">בטל מגבלות בטריה</string>
     <string name="AppUpdatesSettingsFragment__last_checked_s">נבדק לאחרונה: %s</string>
-    <string name="LinkDeviceFragment__use_molly_on_another_devices">השתמש במולי במכשיר אחר. הודעותיך יסתנכרנו למכשירים המקושרים.</string>
-    <string name="LinkDeviceFragment__molly_on_another_device">מולי במכשיר אחר</string>
+    <string name="LinkDeviceFragment__use_molly_on_another_devices">השתמש ב־Collie במכשיר אחר. הודעותיך יסתנכרנו למכשירים המקושרים.</string>
+    <string name="LinkDeviceFragment__molly_on_another_device">Collie במכשיר אחר</string>
     <string name="LinkDeviceFragment__messaging_is_private_on_all_linked_devices">ההתכתבות פרטית בכל המכשירים המקושרים.</string>
     <string name="LinkDeviceFragment__once_linked_new_messages_sync_across_devices">כאשר קושר, הודעות חדשות יסתנכרנו בין המכשירים, אבל היסטוריית ההודעות לא תועבר.</string>
     <string name="LinkDeviceFragment__molly_supports_linking_to_other_android_devices">מולי תומכת בקישור מכשירי אנדרואיד אחרים המריצים את מולי, כמו גם במחשבים ואייפדים שמריצים סיגנל.</string>

@@ -1090,7 +1090,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Tối ưu hóa khi không có dịch vụ Google Play</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Thiết bị này không hỗ trợ dịch vụ Google Play. Nhấn để tắt tính năng tối ưu hóa pin khiến Molly không thể nhận tin nhắn duới nền.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Thiết bị này không hỗ trợ dịch vụ Google Play. Nhấn để tắt tính năng tối ưu hóa pin khiến Collie không thể nhận tin nhắn duới nền.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Phiên bản này của Collie đã hết hạn. Cập nhật ngay để gửi và nhận tin nhắn.</string>
@@ -4300,7 +4300,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie cần quyền truy cập vị trí để kết nối và ngắt kết nối với thiết bị Android mới của bạn.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie cần dịch vụ Vị trí được bật để kết nối và ngắt kết nối với thiết bị Android mới của bạn.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie cần Wi-Fi được bật để phát hiện và kết nối với thiết bị Android mới của bạn. Wi-Fi cần được bật nhưng không bắt buộc phải kết nối với một mạng Wi-Fi nào đó.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Xin lỗi, có vẻ như thiết bị này không hỗ trợ Wi-Fi Direct. Molly sử dụng Wi-Fi Direct để phát hiện và kết nối với thiết bị Android mới của bạn. Bạn vẫn có thể tạo bản sao lưu để khôi phục tài khoản trên thiết bị Android mới của bạn.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Xin lỗi, có vẻ như thiết bị này không hỗ trợ Wi-Fi Direct. Collie sử dụng Wi-Fi Direct để phát hiện và kết nối với thiết bị Android mới của bạn. Bạn vẫn có thể tạo bản sao lưu để khôi phục tài khoản trên thiết bị Android mới của bạn.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">Tạo bản sao lưu</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Lỗi không xác định khi đang cố gắng kết nối với thiết bị Android mới của bạn.</string>
 

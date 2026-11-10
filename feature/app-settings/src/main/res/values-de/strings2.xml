@@ -13,6 +13,6 @@
     <string name="preferences__include_beta_updates">Beta-Aktualisierungen einbeziehen</string>
     <string name="preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs">Beta-Versionen sind für Testzwecke bestimmt und können Fehler enthalten</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">Nach Aktualisierungen suchen</string>
-    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Bitte überprüfe deinen App-Store auf Molly-Updates. Diese Version enthält keine integrierte Aktualisierungsfunktion.</string>
+    <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">Bitte überprüfe deinen App-Store auf Collie-Updates. Diese Version enthält keine integrierte Aktualisierungsfunktion.</string>
     <string name="AppUpdatesSettingsFragment__last_checked_s">Letzte Prüfung: %s</string>
 </resources>

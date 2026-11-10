@@ -1090,7 +1090,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">မပါရှိသေးသော Play Service များကို ရှာဖွေပါ</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">ဤဖုန်းသည် Play Services အသုံးပြု၍မရပါ။ Molly အသုံးမပြုသည့်အချိန်တွင် သတင်းစကားများပြန်လည် ထုတ်ယူရာတွင် အနှောက်အယှက်ပြုသည့်အတွက် ဘက်ထရီ အသုံးပြုမှုစောင့် ကြည့်သည့်စနစ်ကို ပိတ်ထားပေးပါ။</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">ဤဖုန်းသည် Play Services အသုံးပြု၍မရပါ။ Collie အသုံးမပြုသည့်အချိန်တွင် သတင်းစကားများပြန်လည် ထုတ်ယူရာတွင် အနှောက်အယှက်ပြုသည့်အတွက် ဘက်ထရီ အသုံးပြုမှုစောင့် ကြည့်သည့်စနစ်ကို ပိတ်ထားပေးပါ။</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">ယခု အသုံးပြုနေသော Collie ဗားရှင်း သက်တမ်းကုန်သွားပြီ။ မက်ဆေ့ခ်ျများပို့ရန်နှင့် လက်ခံရန် ယခု Update လုပ်ပါ။</string>
@@ -4300,7 +4300,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">သင့် Android စက်အသစ်ဖြင့် ချိတ်ရန် Collie မှ တည်နေရာအသုံးပြုရန်ခွင့် လိုအပ်ပါသည်။</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">သင့် Android စက်အသစ်ဖြင့် ချိတ်ရန် Collie မှ တည်နေရာဝန်ဆောင်မှုများ ဖွင့်ထားရန် လိုအပ်ပါသည်။</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">သင့် Android စက်အသစ်အား ရှာဖွေချိတ်ဆက်ရန် Collie မှ ဝိုင်ဖိုင်ဖွင့်ထားခြင်း လိုအပ်ပါသည်။ ဝိုင်ဖိုင်ဖွင့်ထားရန်သာ လိုအပ်ပြီး ဝိုင်ဖိုင်လိုင်းပေါ်တက်ခြင်း မလိုအပ်ပါ။</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">တောင်းပန်ပါသည်၊ ကြည့်ရတာ ဤစက်သည် ဝိုင်ဖိုင်တိုက်ရိုက် ဝန်ဆောင်မှုအား မပံ့ပိုးပါ။ သင့် Android စက်အသစ်အား ရှာဖွေချိတ်ဆက်ရန် Molly မှ ဝိုင်ဖိုင်တိုက်ရိုက် အသုံးပြုရပါသည်။ သင့် Android စက်အသစ်မှ အကောင့်အား ပြန်လည်ရယူရန် နောက်ခံအရန်အား တည်ထောင်နိုင်ပါသည်။</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">တောင်းပန်ပါသည်၊ ကြည့်ရတာ ဤစက်သည် ဝိုင်ဖိုင်တိုက်ရိုက် ဝန်ဆောင်မှုအား မပံ့ပိုးပါ။ သင့် Android စက်အသစ်အား ရှာဖွေချိတ်ဆက်ရန် Collie မှ ဝိုင်ဖိုင်တိုက်ရိုက် အသုံးပြုရပါသည်။ သင့် Android စက်အသစ်မှ အကောင့်အား ပြန်လည်ရယူရန် နောက်ခံအရန်အား တည်ထောင်နိုင်ပါသည်။</string>
     <string name="OldDeviceTransferSetup__create_a_backup">နောက်ခံအရန်အား တည်ထောင်မယ်</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">သင့် Android စက်အသစ်ဖြင့် ချိတ်ရန်ကြိုးစားနေစဥ် မမျှော်လင့်ထားသော ချို့ယွင်းချက်တစ်ခု ဖြစ်ခဲ့ပါသည်။</string>
 

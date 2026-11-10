@@ -1198,7 +1198,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Optamaigh le haghaidh Play Services atá ar iarraidh</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Níl tacú sa ghléas seo do Play Services. Tapáil le hoptamú ceallra an chórais a dhíchumasú, rud a chuireann srian ar Molly teachtaireachtaí a aisghabháil agus é neamhghníomhach.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">Níl tacú sa ghléas seo do Play Services. Tapáil le hoptamú ceallra an chórais a dhíchumasú, rud a chuireann srian ar Collie teachtaireachtaí a aisghabháil agus é neamhghníomhach.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Chuaigh an leagan seo de Collie i léig. Nuashonraigh anois é chun teachtaireachtaí a sheoladh agus a fháil.</string>
@@ -4788,7 +4788,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Tá cead suímh ag teastáil ó Collie chun do ghléas nua Android a aimsiú agus nascadh leis.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Tá cumasú seirbhísí suímh ag teastáil ó Collie chun do ghléas nua Android a aimsiú agus nascadh leis.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Tá Wi-Fi air ag teastáil ó Collie chun do ghléas nua Android a aimsiú agus nascadh leis. Is gá Wi-Fi a bheith air ach ní gá dó a bheith nasctha le líonra Wi-Fi.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Ár leithscéal, is cosúil nach dtacaíonn an gléas seo le Wi-Fi Direct. Úsáideann Molly Wi-Fi Direct chun do ghléas nua Android a aimsiú agus nascadh leis. Is féidir leat cúltaca a chruthú fós chun do chuntas a aischur ar do ghléas nua Android.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">Ár leithscéal, is cosúil nach dtacaíonn an gléas seo le Wi-Fi Direct. Úsáideann Collie Wi-Fi Direct chun do ghléas nua Android a aimsiú agus nascadh leis. Is féidir leat cúltaca a chruthú fós chun do chuntas a aischur ar do ghléas nua Android.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">Cruthaigh cúltaca</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">Tharla earráid gan choinne agus iarracht á déanamh nascadh le do ghléas nua Android.</string>
 

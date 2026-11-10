@@ -1117,7 +1117,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">Play Services ഇല്ലാത്തതിനാൽ ഡിവൈസ് ഒപ്റ്റിമൈസ് ചെയ്യുക</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">ഈ ഉപകരണം Play Services പിന്തുണയ്ക്കുന്നില്ല. നിഷ്‌ക്രിയമായിരിക്കുമ്പോൾ സന്ദേശങ്ങൾ വീണ്ടെടുക്കുന്നതിൽ നിന്ന് Molly നെ തടയുന്ന സിസ്റ്റം ബാറ്ററി ഒപ്റ്റിമൈസേഷനുകൾ പ്രവർത്തനരഹിതമാക്കാൻ ടാപ്പുചെയ്യുക.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">ഈ ഉപകരണം Play Services പിന്തുണയ്ക്കുന്നില്ല. നിഷ്‌ക്രിയമായിരിക്കുമ്പോൾ സന്ദേശങ്ങൾ വീണ്ടെടുക്കുന്നതിൽ നിന്ന് Collie നെ തടയുന്ന സിസ്റ്റം ബാറ്ററി ഒപ്റ്റിമൈസേഷനുകൾ പ്രവർത്തനരഹിതമാക്കാൻ ടാപ്പുചെയ്യുക.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Collie-ന്റെ ഈ പതിപ്പ് കാലഹരണപ്പെട്ടു. സന്ദേശങ്ങൾ അയയ്‌ക്കുന്നതിനും സ്വീകരിക്കുന്നതിനും ഇപ്പോൾ തന്നെ പുതുക്കുക.</string>
@@ -4422,7 +4422,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">നിങ്ങളുടെ പുതിയ ആൻഡ്രോയിഡ് ഉപകരണം കണ്ടെത്തുന്നതിനും ബന്ധിപ്പിക്കുന്നതിനും Collie-ന് ലൊക്കേഷൻ അനുമതി ആവശ്യമാണ്.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">നിങ്ങളുടെ പുതിയ ആൻഡ്രോയിഡ് ഉപകരണം കണ്ടെത്തുന്നതിനും ബന്ധിപ്പിക്കുന്നതിനും പ്രാപ്തമാക്കിയ ലൊക്കേഷൻ സേവനങ്ങൾ Collie-ന് ആവശ്യമാണ്.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">നിങ്ങളുടെ പുതിയ ആൻഡ്രോയിഡ് ഉപകരണം കണ്ടെത്തുന്നതിനും ബന്ധിപ്പിക്കുന്നതിനും Collie-ന് വൈ-ഫൈ ആവശ്യമാണ്. വൈ-ഫൈ ഓണായിരിക്കേണ്ടതുണ്ട്, പക്ഷേ അത് ഒരു വൈ-ഫൈ നെറ്റ്‌വർക്കിലേക്ക് ബന്ധിപ്പിക്കേണ്ടതില്ല.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">ക്ഷമിക്കണം, ഈ ഉപകരണം വൈ-ഫൈ ഡയറക്റ്റിനെ പിന്തുണയ്ക്കുന്നില്ലെന്ന് പ്രത്യക്ഷപ്പെടുന്നു. നിങ്ങളുടെ പുതിയ ആൻഡ്രോയിഡ് ഉപകരണം കണ്ടെത്തുന്നതിനും ബന്ധിപ്പിക്കുന്നതിനും Molly വൈ-ഫൈ ഡയറക്റ്റ് ഉപയോഗിക്കുന്നു. നിങ്ങളുടെ പുതിയ ആൻഡ്രോയിഡ് ഉപകരണത്തിൽ നിങ്ങളുടെ അക്കൗണ്ട് പുന:സ്ഥാപിക്കുന്നതിന് നിങ്ങൾക്ക് ഇപ്പോഴും ഒരു ബാക്കപ്പ് സൃഷ്ടിക്കാൻ കഴിയും.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">ക്ഷമിക്കണം, ഈ ഉപകരണം വൈ-ഫൈ ഡയറക്റ്റിനെ പിന്തുണയ്ക്കുന്നില്ലെന്ന് പ്രത്യക്ഷപ്പെടുന്നു. നിങ്ങളുടെ പുതിയ ആൻഡ്രോയിഡ് ഉപകരണം കണ്ടെത്തുന്നതിനും ബന്ധിപ്പിക്കുന്നതിനും Collie വൈ-ഫൈ ഡയറക്റ്റ് ഉപയോഗിക്കുന്നു. നിങ്ങളുടെ പുതിയ ആൻഡ്രോയിഡ് ഉപകരണത്തിൽ നിങ്ങളുടെ അക്കൗണ്ട് പുന:സ്ഥാപിക്കുന്നതിന് നിങ്ങൾക്ക് ഇപ്പോഴും ഒരു ബാക്കപ്പ് സൃഷ്ടിക്കാൻ കഴിയും.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">ഒരു ബാക്കപ്പ് സൃഷ്ടിക്കുക</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">നിങ്ങളുടെ പുതിയ ആൻഡ്രോയിഡ് ഉപകരണവുമായി ബന്ധിപ്പിക്കാൻ ശ്രമിക്കുമ്പോൾ അപ്രതീക്ഷിത പിശക് സംഭവിച്ചു.</string>
 

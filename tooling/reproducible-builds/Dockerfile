@@ -60,7 +60,7 @@ WORKDIR /molly
 RUN git clean -ffdx
 
 # Use Make as the builder entrypoint
-ENTRYPOINT ["make"]
+ENTRYPOINT ["make", "-f", "tooling/mk/Makefile"]
 CMD ["help"]
 
 FROM workspace AS deps-override

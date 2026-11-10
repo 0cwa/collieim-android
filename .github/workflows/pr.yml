@@ -1,0 +1,93 @@
+name: PR checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pr-checks-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  layer-trailers:
+    name: Layer trailers
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Every non-merge commit names its feature layer
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          missing=0
+          for c in $(git rev-list --no-merges "$BASE..HEAD"); do
+            layer=$(git log -1 --format='%(trailers:key=Layer,valueonly,separator=%x2C)' "$c")
+            if ! [[ "$layer" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+              echo "::error::$(git log -1 --format='%h %s' "$c") needs one 'Layer: <feature>' trailer (lowercase, hyphens)"
+              missing=1
+            fi
+          done
+          exit $missing
+
+  fast-lint:
+    name: Fast lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+      - name: Fail only on findings in changed files
+        # The codebase carries 24 inherited findings (mostly Molly's core/gms shims); they are
+        # reported here but do not block. New findings in files this change touches do.
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          ./gradlew --no-daemon :fast-lint:fastLint || true
+          report=tooling/fast-lint/build/reports/fast-lint/findings.txt
+          test -f "$report"
+          if [ -z "$BASE" ] || [ "$BASE" = 0000000000000000000000000000000000000000 ]; then
+            git fetch --depth=1 origin main; BASE=FETCH_HEAD
+          else
+            git fetch --depth=1 origin "$BASE"
+          fi
+          grep -E '^  [^ ]+:[0-9]+: ' "$report" > "$RUNNER_TEMP/all.txt" || true
+          git diff --name-only "$BASE" HEAD | sed 's/^/  /; s/$/:/' > "$RUNNER_TEMP/changed.txt"
+          grep -F -f "$RUNNER_TEMP/changed.txt" "$RUNNER_TEMP/all.txt" > "$RUNNER_TEMP/new.txt" || true
+          echo "Findings: $(wc -l < "$RUNNER_TEMP/all.txt") total, $(wc -l < "$RUNNER_TEMP/new.txt") in changed files"
+          if [ -s "$RUNNER_TEMP/new.txt" ]; then cat "$RUNNER_TEMP/new.txt"; exit 1; fi
+
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+      - run: ./gradlew --no-daemon --continue :app:testProdWebsiteDebugUnitTest testDebugUnitTest
+      - name: Keep reports from a failed run
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unit-test-reports-${{ github.run_id }}
+          path: |
+            **/build/reports/tests
+            **/build/test-results
+          if-no-files-found: ignore

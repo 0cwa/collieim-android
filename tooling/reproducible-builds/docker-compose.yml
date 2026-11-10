@@ -2,7 +2,8 @@ services:
   assemble:
     image: reproducible-molly
     build:
-      context: ..
+      context: ../..
+      dockerfile: tooling/reproducible-builds/Dockerfile
     command: assemble
     volumes:
       - ./certs:/molly/app/certs:ro

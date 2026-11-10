@@ -6,7 +6,7 @@ See [VERIFY.md](VERIFY.md) for Git-only source inspection.
 
 This checkout contains the reconstructed application source; Gradle does not run
 an assembler or inject source from another worktree. Its JDK is Eclipse Temurin
-21.0.13+9: `.tool-versions` pins that release and `Dockerfile` pins the matching
+21.0.13+9: `.tool-versions` pins that release and `tooling/reproducible-builds/Dockerfile` pins the matching
 official Linux/amd64 image by digest. Gradle, SDK, NDK, and strict dependency
 inputs are also declared in this tree. Canonical identity is `im.collie.app`,
 Collie backup names and optional FCM; legacy filename aliases are one product.

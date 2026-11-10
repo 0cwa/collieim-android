@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 0cwa/collie-release-engineering
-          ref: 7f9e63d6d55861c0c4e7757ba7eb07d6484289a6
+          ref: 9b7803d1a1b699ad705a1110f94ded2c3016fa08
           path: policy
           sparse-checkout: tools/screenshots
           persist-credentials: false

@@ -1117,7 +1117,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">తప్పిపోయిన ప్లే సర్వీసులు కోసం ఆప్టిమైజ్</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">ఈ వస్తువు ఆట సేవలను సహకరించదు. క్రియారహితంగా ఉన్నప్పుడు సందేశాలను పొందటం నుండి Molly నిరోధించే వ్యవస్థ బ్యాటరీ అనుకూలతలు డిసేబుల్ నొక్కండి.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">ఈ వస్తువు ఆట సేవలను సహకరించదు. క్రియారహితంగా ఉన్నప్పుడు సందేశాలను పొందటం నుండి Collie నిరోధించే వ్యవస్థ బ్యాటరీ అనుకూలతలు డిసేబుల్ నొక్కండి.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Collie యొక్క ఈ వెర్షన్ గడువు ముగిసింది. సందేశాలను పంపడానికి మరియు స్వీకరించడానికి ఇప్పుడే నవీకరించండి.</string>
@@ -4422,7 +4422,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">మీ కొత్త Android పరికరాన్ని కనుగొని, దానితో అనుసంధానం కావడానికి Collie కు లొకేషన్ పర్మిషన్ కావాలి.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">మీ కొత్త Android పరికరాన్ని కనుగొని, దానితో అనుసంధానం కావడానికి లొకేషన్‌ సర్వీస్‌లు ప్రారంభించడం Collie కొరకు అవసరం.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">మీ కొత్త Android పరికరాన్ని కనుగొని, దానితో అనుసంధానం కావడానికి Collie కు Wi-Fi అవసరం. Wi-Fiని ఆన్ చేసి ఉంచాలి కానీ, Wi-Fi నెట్‌వర్క్‌కు కనెక్ట్ కావాల్సిన అవసరం లేదు.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">క్షమించండి, ఈ పరికరం Wi-Fi Directకు మద్దతు ఇవ్వదు. మీ కొత్త Android పరికరాన్ని కనుగొనడానికి, కనెక్ట్ చేయడానికి Wi-Fi Directని Molly ఉపయోగిస్తుంది. మీరు ఇప్పటికీ మీ పాత Android పరికరం నుండి మీ ఖాతాను పునరుద్ధరించడానికి బ్యాకప్ స్టోరేజీని పునరుద్ధరించవచ్చు.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">క్షమించండి, ఈ పరికరం Wi-Fi Directకు మద్దతు ఇవ్వదు. మీ కొత్త Android పరికరాన్ని కనుగొనడానికి, కనెక్ట్ చేయడానికి Wi-Fi Directని Collie ఉపయోగిస్తుంది. మీరు ఇప్పటికీ మీ పాత Android పరికరం నుండి మీ ఖాతాను పునరుద్ధరించడానికి బ్యాకప్ స్టోరేజీని పునరుద్ధరించవచ్చు.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">ఒక బ్యాకప్‌ని సృష్టించండి</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">మీ కొత్త Android పరికరానికి కనెక్ట్ చేయడానికి ప్రయత్నించేటప్పుడు ఊహించని దోషం ఏర్పడింది.</string>
 

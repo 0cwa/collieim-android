@@ -1117,7 +1117,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">غائب پلے سروسز بہتر بنائیں</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">یہ ڈیوائس پلے سروسز کا تعاون نہیں کرتی ہے۔ سسٹم کی بیٹری کی اصلاح کو غیر فعال کرنے کیلئے ٹیپ کریں جو Molly کو غیر فعال ہونے پر پیغامات کی بازیافت سے روکتی ہیں۔</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">یہ ڈیوائس پلے سروسز کا تعاون نہیں کرتی ہے۔ سسٹم کی بیٹری کی اصلاح کو غیر فعال کرنے کیلئے ٹیپ کریں جو Collie کو غیر فعال ہونے پر پیغامات کی بازیافت سے روکتی ہیں۔</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">Collie کا یہ ورژن ختم ہوگیا ہے۔ پیغامات بھیجنے اور موصول کرنے کے لئے ابھی اپ ڈیٹ کریں۔</string>
@@ -4422,7 +4422,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">آپ کے نئے Android آلہ کو دریافت کرنے اور ان سے رابطہ کرنے کیلئے Collie کو مقام کی اجازت درکار ہے۔</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">آپ کے نئے Android آلہ کو دریافت کرنے اور ان سے مربوط ہونے کے لئے Collie کو مقام کی خدمات کی ضرورت ہوتی ہے۔</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie کو آپ کے نئے Android آلہ کو دریافت کرنے اور ان سے مربوط ہونے کے لئے Wi-Fi کی ضرورت ہے۔ Wi-Fi کو چلانے کی ضرورت ہے لیکن اسے Wi-Fi نیٹ ورک سے متصل ہونا ضروری نہیں ہے۔</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">معذرت ، ایسا لگتا ہے کہ یہ آلہ Wi-Fi Direct کی حمایت نہیں کرتا ہے۔ Molly آپ کے نئے Android آلہ کو دریافت کرنے اور ان سے مربوط ہونے کیلئے Wi-Fi Direct کا استعمال کرتا ہے۔ آپ اب بھی اپنے نئے Android آلہ پر اپنے اکاؤنٹ کو بحال کرنے کے لئے بیک اپ تشکیل دے سکتے ہیں۔</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">معذرت ، ایسا لگتا ہے کہ یہ آلہ Wi-Fi Direct کی حمایت نہیں کرتا ہے۔ Collie آپ کے نئے Android آلہ کو دریافت کرنے اور ان سے مربوط ہونے کیلئے Wi-Fi Direct کا استعمال کرتا ہے۔ آپ اب بھی اپنے نئے Android آلہ پر اپنے اکاؤنٹ کو بحال کرنے کے لئے بیک اپ تشکیل دے سکتے ہیں۔</string>
     <string name="OldDeviceTransferSetup__create_a_backup">بیک اپ بنائیں</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">آپ کے نئے Android آلہ سے رابطہ قائم کرنے کی کوشش کے دوران ایک غیر متوقع نقص پیش آگیا۔</string>
 

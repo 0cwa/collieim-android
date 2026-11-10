@@ -1090,7 +1090,7 @@
 
     <!-- DozeReminder -->
     <string name="DozeReminder_optimize_for_missing_play_services">يۈتكەن Google Play مۇلازىمەتلىرىگە ئەلالاشتۇرۇش</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">بۇ ئۈسكۈنە Google Play مۇلازىمەتلىرىنى قوللىمايدۇ. Mollyنىڭ ھەرىكەتسىز ھالەتتىمۇ ئۇچۇر ئېلىشىنى توسۇپ قويىدىغان «سىستېما باتارېيەسىنى ئەلالاشتۇرۇش»نى چەكلەڭ.</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">بۇ ئۈسكۈنە Google Play مۇلازىمەتلىرىنى قوللىمايدۇ. Collieنىڭ ھەرىكەتسىز ھالەتتىمۇ ئۇچۇر ئېلىشىنى توسۇپ قويىدىغان «سىستېما باتارېيەسىنى ئەلالاشتۇرۇش»نى چەكلەڭ.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">بۇ Collie نەشرىنىڭ ۋاقتى توشتى. ئۇچۇر يوللىيالىشىڭىز ۋە قوبۇل قىلالىشىڭىز ئۈچۈن ھازىرلا يېڭىلاڭ.</string>
@@ -4300,7 +4300,7 @@
     <string name="OldDeviceTransferSetup__signal_needs_the_location_permission_to_discover_and_connect_with_your_new_device">Collie يېڭى Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن ئورۇن ھوقۇقىغا ئېھتىياجلىق.</string>
     <string name="OldDeviceTransferSetup__signal_needs_location_services_enabled_to_discover_and_connect_with_your_new_device">Collie يېڭى Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن ئورۇن مۇلازىمىتى قوزغىتىلغان بولۇشى كېرەك.</string>
     <string name="OldDeviceTransferSetup__signal_needs_wifi_on_to_discover_and_connect_with_your_new_device">Collie يېڭى Android ئۈسكۈنىڭىزنى بايقاپ ۋە باغلىنىشى ئۈچۈن Wi-Fi قوزغىتىلغان بولۇشى كېرەك. Wi-Fi قوزغىتىلغان بولۇشى ئەمما Wi-Fi تورغا باغلانمىغان بولسىمۇ بولىدۇ.</string>
-    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">كەچۈرۈڭ، بۇ ئۈسكۈنە Wi-Fi Direct نى قوللىمايدىغاندەك قىلىدۇ. Molly يېڭى Android ئۈسكۈنىڭىزنى Wi-Fi Direct ئارقىلىق بايقاپ ۋە باغلىنىدۇ. سىز Android ئۈسكۈنىڭىزدە زاپاس قۇرۇپ، ھېساباتنى ئەسلىگە قايتۈرۈش ئارقىلىق زاپاسنى يېڭى ئۈسكۈنىڭىزگە ئەسلىگە قايتۇرالايسىز.</string>
+    <string name="OldDeviceTransferSetup__sorry_it_appears_your_device_does_not_support_wifi_direct">كەچۈرۈڭ، بۇ ئۈسكۈنە Wi-Fi Direct نى قوللىمايدىغاندەك قىلىدۇ. Collie يېڭى Android ئۈسكۈنىڭىزنى Wi-Fi Direct ئارقىلىق بايقاپ ۋە باغلىنىدۇ. سىز Android ئۈسكۈنىڭىزدە زاپاس قۇرۇپ، ھېساباتنى ئەسلىگە قايتۈرۈش ئارقىلىق زاپاسنى يېڭى ئۈسكۈنىڭىزگە ئەسلىگە قايتۇرالايسىز.</string>
     <string name="OldDeviceTransferSetup__create_a_backup">زاپاس قۇر</string>
     <string name="OldDeviceTransferSetup__an_unexpected_error_occurred_while_attempting_to_connect_to_your_old_device">يېڭى Android ئۈسكۈنىڭىزگە باغلىنىشنى سىناۋاتقاندا كۈتۈلمىگەن خاتالىققا يولۇقتى.</string>
 

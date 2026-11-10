@@ -39,7 +39,6 @@ object ChatsSettingsTestTags {
   const val ROW_USE_ADDRESS_BOOK = "row-use-address-book"
   const val ROW_KEEP_MUTED_CHATS_ARCHIVED = "row-keep-muted-chats-archived"
   const val ROW_CHAT_FOLDERS = "row-chat-folders"
-  const val ROW_STORIES = "row-stories"
   const val ROW_EXPORT_CHAT_HISTORY = "row-export-chat-history"
   const val ROW_EXPORT_PROGRESS = "row-export-progress"
   const val ROW_USE_SYSTEM_EMOJI = "row-use-system-emoji"
@@ -125,16 +124,6 @@ fun ChatsSettingsScreen(
           enabled = state.isRegisteredAndUpToDate(),
           checked = state.keepMutedChatsArchived,
           onCheckChanged = { onEvent(ChatsSettingsEvents.KeepMutedChatsArchivedChanged(it)) }
-        )
-      }
-
-      item {
-        Rows.TextRow(
-          modifier = Modifier.testTag(ChatsSettingsTestTags.ROW_STORIES),
-          text = stringResource(R.string.AppSettingsScreen__stories),
-          icon = SignalIcons.Stories.painter,
-          enabled = state.isRegisteredAndUpToDate(),
-          onClick = { onEvent(ChatsSettingsEvents.StoriesClicked) }
         )
       }
 

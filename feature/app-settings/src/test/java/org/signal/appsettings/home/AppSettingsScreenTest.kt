@@ -105,6 +105,16 @@ class AppSettingsScreenTest {
   }
 
   @Test
+  fun `stories opens from the settings home`() {
+    setContent(createState())
+
+    scrollTo(AppSettingsTestTags.ROW_STORIES)
+    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_STORIES).performClick()
+
+    assertThat(interactionEvents).containsExactly(AppSettingsEvent.StoriesClicked)
+  }
+
+  @Test
   fun `each row emits its click event`() {
     setContent(createState(showAppUpdates = true, showPayments = true, showInternalPreferences = true))
 
@@ -113,6 +123,7 @@ class AppSettingsScreenTest {
       AppSettingsTestTags.ROW_DONATE to AppSettingsEvent.DonateClicked,
       AppSettingsTestTags.ROW_APPEARANCE to AppSettingsEvent.AppearanceClicked,
       AppSettingsTestTags.ROW_CHATS to AppSettingsEvent.ChatsClicked,
+      AppSettingsTestTags.ROW_STORIES to AppSettingsEvent.StoriesClicked,
       AppSettingsTestTags.ROW_NOTIFICATIONS to AppSettingsEvent.NotificationsClicked,
       AppSettingsTestTags.ROW_PRIVACY to AppSettingsEvent.PrivacyClicked,
       AppSettingsTestTags.ROW_BACKUPS to AppSettingsEvent.BackupsClicked,
@@ -156,6 +167,7 @@ class AppSettingsScreenTest {
 
     listOf(
       AppSettingsTestTags.ROW_CHATS,
+      AppSettingsTestTags.ROW_STORIES,
       AppSettingsTestTags.ROW_NOTIFICATIONS,
       AppSettingsTestTags.ROW_PRIVACY,
       AppSettingsTestTags.ROW_BACKUPS
@@ -172,7 +184,6 @@ class AppSettingsScreenTest {
     setContent(createState(isPrimaryDevice = false, showPayments = true))
 
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_LINKED_DEVICES).assertDoesNotExist()
-    composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_STORIES).assertDoesNotExist()
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_NETWORK).assertDoesNotExist()
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_APP_UPDATES).assertDoesNotExist()
     composeTestRule.onNodeWithTag(AppSettingsTestTags.ROW_PAYMENTS).assertDoesNotExist()

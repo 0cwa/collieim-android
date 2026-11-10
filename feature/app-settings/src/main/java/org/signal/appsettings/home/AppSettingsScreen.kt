@@ -189,6 +189,18 @@ fun AppSettingsScreen(
           )
         }
 
+        item {
+          Rows.TextRow(
+            text = stringResource(R.string.AppSettingsScreen__stories),
+            icon = SignalIcons.Stories.painter,
+            onClick = { onEvent(AppSettingsEvent.StoriesClicked) },
+            enabled = state.isRegisteredAndUpToDate,
+            modifier = Modifier
+              .selectionHighlight(selectedRoute is AppSettingsRoute.StoriesRoute)
+              .testTag(AppSettingsTestTags.ROW_STORIES)
+          )
+        }
+
         item { Dividers.Default() }
 
         item {

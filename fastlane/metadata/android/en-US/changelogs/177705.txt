@@ -1,0 +1,1 @@
+Stories is back in Settings and no longer crashes. The password prompt no longer draws under the action bar. Translations now say Collie instead of Molly.

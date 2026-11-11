@@ -50,6 +50,12 @@ jobs:
           [ "v$name" = "$TAG" ] || { echo "::error::gradle.properties releaseVersionName=$name does not match $TAG"; exit 1; }
           echo "name=$name" >> "$GITHUB_OUTPUT"
           echo "code=$code" >> "$GITHUB_OUTPUT"
+      - name: Tag source has the store changelog for this version
+        env:
+          CODE: ${{ steps.version.outputs.code }}
+        run: |
+          git cat-file -e "$TAG^{commit}:fastlane/metadata/android/en-US/changelogs/$CODE.txt" \
+            || { echo "::error::add fastlane/metadata/android/en-US/changelogs/$CODE.txt before tagging"; exit 1; }
       - name: Release notes exist in the release-engineering repo
         env:
           VERSION: ${{ steps.version.outputs.name }}

@@ -25,10 +25,10 @@ object EnrollmentExporter {
   const val FILE_NAME = "colliesocket-enrollment.json"
   private const val TEMP_NAME = "$FILE_NAME.tmp"
 
-  /** The file, the epoch it carries, and the epoch the operator's input alone would have given ([entered]). */
-  class Export(val file: File, val epoch: Long, val entered: Long) {
-    /** True when this phone had already used a higher epoch than the operator's input implies. */
-    val raised get() = epoch != entered
+  /** The file, the epoch it carries, and the highest epoch this phone has put into an update (see [collides]). */
+  class Export(val file: File, val epoch: Long, val highestUsed: Long) {
+    /** True when an unconfirmed update may be waiting at the epoch this export claims. */
+    val collides get() = epoch <= highestUsed
   }
 
   /**
@@ -41,8 +41,7 @@ object EnrollmentExporter {
 
   /**
    * Writes the file. [serverEpoch] is the epoch CollieSocket reports for this account, or null if it is not enrolled;
-   * the file carries that + 1, or one above the highest epoch this phone has put into an endpoint update if that is
-   * more, and a fresh control key. The epoch, key and subscription are recorded durably before the file is published,
+   * the file carries that + 1, which is the only epoch the server accepts, and a fresh control key. The epoch, key and subscription are recorded durably before the file is published,
    * so a crash cannot leave a file the phone does not know about. Throws [EnrollmentFile.Invalid] (fixed code only)
    * or IOException. Any earlier file is removed first, so a refused export never leaves an old password file behind.
    */
@@ -56,7 +55,6 @@ object EnrollmentExporter {
 
     if (Build.VERSION.SDK_INT < 30) throw EnrollmentFile.Invalid("unsupported_android")
     if (dir == null || temp == null || target == null) throw EnrollmentFile.Invalid("storage_unavailable")
-    val entered = EnrollmentFile.nextEpoch(serverEpoch)
 
     val values = SignalStore.unifiedpush
     val device = values.device
@@ -70,7 +68,7 @@ object EnrollmentExporter {
 
     val store = UnifiedPushControlStore(values)
     val before = store.read()
-    val epoch = EndpointUpdates.exportEpoch(serverEpoch, before)
+    val epoch = EndpointUpdates.exportEpoch(serverEpoch)
     // Every export gets its own key: the server refuses a repeated key on a state-changing import. It replaces the
     // current key only once the server proves it imported this file, so updates keep working with the old key until.
     // Exporting again at the epoch of an export nobody imported yet keeps that export's key, so the epoch the proving
@@ -109,7 +107,7 @@ object EnrollmentExporter {
     if (values.replayState == null) {
       values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
     }
-    return Export(target, epoch, entered)
+    return Export(target, epoch, before.highestEpoch)
   }
 
   /** Deletes the export file and its temporary file now, on the calling thread. */

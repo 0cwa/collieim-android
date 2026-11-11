@@ -251,16 +251,65 @@ class EndpointUpdatesTest {
   }
 
   @Test
-  fun `an export is numbered above the operator's epoch and above every epoch this phone used`() {
-    val state = ControlState(key = keyOld, activeEpoch = 1, highestEpoch = 5)
-    assertEquals(6, EndpointUpdates.exportEpoch(1, state))
-    assertEquals(10, EndpointUpdates.exportEpoch(9, state))
-    assertEquals(6, EndpointUpdates.exportEpoch(null, state))
-    assertEquals(1, EndpointUpdates.exportEpoch(null, ControlState()))
-    // an export does not raise the mark, so exporting again before an import reuses the epoch
+  fun `an export is exactly one above the server's epoch, whatever this phone allocated`() {
+    assertEquals(2, EndpointUpdates.exportEpoch(1))
+    assertEquals(10, EndpointUpdates.exportEpoch(9))
+    assertEquals(1, EndpointUpdates.exportEpoch(null))
+    assertEquals(1, EndpointUpdates.exportEpoch(0))
+    // exporting again before an import reuses the epoch
     val store = Memory(ControlState(key = keyOld, activeEpoch = 1, highestEpoch = 1))
     EndpointUpdates.recordExport(store, 2, keyNew, target("x"))
-    assertEquals(2, EndpointUpdates.exportEpoch(1, store.state))
+    assertEquals(2, EndpointUpdates.exportEpoch(1))
+  }
+
+  @Test
+  fun `an update stuck above the server does not move the export, which only warns`() {
+    // The server is at epoch 4. An update at epoch 5 never reached it. The operator enters 4.
+    val store = enrolled { copy(activeEpoch = 4, highestEpoch = 4, serverTarget = target("old")) }
+    val stuck = reconcile(store, "new").update!!
+    assertEquals(5, stuck.epoch)
+    val epoch = EndpointUpdates.exportEpoch(4)
+    assertEquals("the only epoch the server accepts", 5, epoch)
+    assertTrue("but the operator is warned", EndpointUpdates.exportCollides(epoch, store.state))
+    assertFalse(EndpointUpdates.exportCollides(6, store.state))
+    assertFalse(EndpointUpdates.exportCollides(2, enrolled().state.copy(highestEpoch = 1)))
+  }
+
+  @Test
+  fun `if the import wins at the stuck update's epoch, promotion drops the update and reconcile goes above it`() {
+    val store = enrolled { copy(activeEpoch = 4, highestEpoch = 4, serverTarget = target("old")) }
+    reconcile(store, "new")                                       // update at 5 under keyOld, never arrived
+    EndpointUpdates.recordExport(store, 5, keyNew, target("new"))  // export at 5
+    assertEquals(EndpointUpdates.Effect.PROMOTED, EndpointUpdates.accepted(store, "r", event(5, null, EncryptedPush.Kind.WAKE)))
+    assertEquals(keyNew, store.state.key)
+    assertNull("the old-key update is dropped", store.state.update)
+    assertEquals(5, store.state.activeEpoch)
+    // the server holds the exported subscription; a different current one is sent above everything used
+    val r = reconcile(store, "newer")
+    assertEquals(6, r.update!!.epoch)
+    assertArrayEquals(ControlFrame.build(keyNew, account, 2, 6, sub("newer"), r.update!!.frame.copyOfRange(46, 58)), r.update!!.frame)
+  }
+
+  @Test
+  fun `if the update wins at the stuck epoch, its confirmation retires the export and the old key stays`() {
+    val store = enrolled { copy(activeEpoch = 4, highestEpoch = 4, serverTarget = target("old")) }
+    val stuck = reconcile(store, "new").update!!
+    EndpointUpdates.recordExport(store, 5, keyNew, target("new"))
+    assertEquals(EndpointUpdates.Effect.CONFIRMED, EndpointUpdates.accepted(store, "r", event(stuck.epoch)))
+    assertEquals(0, store.state.pendingEpoch)
+    assertNull(store.state.pendingKey)
+    assertEquals(keyOld, store.state.key)
+    assertEquals(5, store.state.activeEpoch)
+  }
+
+  @Test
+  fun `a repeated export at the stuck epoch keeps its key`() {
+    val store = enrolled { copy(activeEpoch = 4, highestEpoch = 4) }
+    reconcile(store, "new")
+    val first = EndpointUpdates.recordExport(store, 5, keyNew, target("new"))
+    assertEquals(first, EndpointUpdates.recordExport(store, 5, keyOld, target("new")))
+    EndpointUpdates.accepted(store, "r", event(5, null, EncryptedPush.Kind.WAKE))
+    assertEquals(keyNew, store.state.key)
   }
 
   @Test

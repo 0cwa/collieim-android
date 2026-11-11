@@ -109,7 +109,9 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
    */
   fun mutateControl(replay: String? = null, block: (ControlState) -> ControlState): ControlState {
     synchronized(controlLock) {
-      val next = block(controlState)
+      val old = controlState
+      val next = block(old)
+      if (next == old && replay == null) return old
       val write = store.beginWrite().putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
       if (replay != null) write.putString(UNIFIEDPUSH_REPLAY_STATE, replay)
       write.commit()

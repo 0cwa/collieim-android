@@ -20,9 +20,12 @@ import android.os.Bundle;
 
 import android.view.View;
 
+import androidx.core.view.WindowInsetsCompat;
+
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.crypto.MasterSecret;
 import org.thoughtcrime.securesms.crypto.MasterSecretUtil;
+import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 /**
@@ -45,6 +48,7 @@ public class PassphraseCreateActivity extends PassphraseActivity {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.create_passphrase_activity);
+    SystemWindowInsetsSetter.attach(findViewById(R.id.create_passphrase_root), this, WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
 
     initializeResources();
   }

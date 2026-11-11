@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -28,6 +29,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.net.NetworkManager;
 import org.thoughtcrime.securesms.net.ProxyType;
 import org.thoughtcrime.securesms.net.SocksProxy;
+import org.thoughtcrime.securesms.util.SystemWindowInsetsSetter;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 
 import info.guardianproject.netcipher.proxy.OrbotHelper;
@@ -57,6 +59,7 @@ public class NetworkPreferenceFragment extends ListSummaryPreferenceFragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    SystemWindowInsetsSetter.attach(view, getViewLifecycleOwner(), WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
     Toolbar toolbar = view.findViewById(R.id.toolbar);
     toolbar.setNavigationOnClickListener(v -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
   }

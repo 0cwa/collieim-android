@@ -73,27 +73,29 @@ object EnrollmentExporter {
     val epoch = EndpointUpdates.exportEpoch(serverEpoch, before)
     // Every export gets its own key: the server refuses a repeated key on a state-changing import. It replaces the
     // current key only once the server proves it imported this file, so updates keep working with the old key until.
-    val controlKey = EnrollmentFile.newControlKey()
-    val draft = EnrollmentFile.Input(
-      requestId = UUID.randomUUID().toString(),
-      accountId = aci.toString(),
-      deviceId = device.deviceId,
-      password = device.password,
-      endpoint = endpoint,
-      p256dh = p256dh,
-      auth = auth,
-      instance = values.endpointInstance ?: "default",
-      epoch = epoch,
-      controlKey = controlKey,
-    )
-    val contents = EnrollmentFile.render(draft)
-
-    // The server has not imported the file yet, so nothing switches: the receiver promotes this epoch to the
-    // active one when it receives a valid event at it. The export is recorded before the file exists.
-    EndpointUpdates.recordExport(
-      store, epoch, controlKey,
-      Target(endpoint, EnrollmentFile.canonicalKey(p256dh, 65), EnrollmentFile.canonicalKey(auth, 16)),
-    )
+    // Exporting again at the epoch of an export nobody imported yet keeps that export's key, so the epoch the proving
+    // event carries still names exactly one key. The export is recorded before the file exists.
+    val exported = Target(endpoint, EnrollmentFile.canonicalKey(p256dh, 65), EnrollmentFile.canonicalKey(auth, 16))
+    val controlKey = EndpointUpdates.recordExport(store, epoch, EnrollmentFile.newControlKey(), exported)
+    val contents = try {
+      EnrollmentFile.render(
+        EnrollmentFile.Input(
+          requestId = UUID.randomUUID().toString(),
+          accountId = aci.toString(),
+          deviceId = device.deviceId,
+          password = device.password,
+          endpoint = endpoint,
+          p256dh = p256dh,
+          auth = auth,
+          instance = values.endpointInstance ?: "default",
+          epoch = epoch,
+          controlKey = controlKey,
+        )
+      )
+    } catch (e: Exception) {
+      EndpointUpdates.retireExport(store, epoch, before)
+      throw e
+    }
     try {
       temp.outputStream().use { it.write(contents.toByteArray(Charsets.UTF_8)) }
       Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)

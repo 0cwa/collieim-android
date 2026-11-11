@@ -317,6 +317,8 @@ public class ApplicationContext extends Application implements AppForegroundObse
     FcmFetchManager.onForeground(this);
     FcmRefreshJob.enqueueUnsupportedCleanupIfNeeded();
 
+    SignalExecutors.BOUNDED.execute(UnifiedPushReceiver::resumeControl); // MOLLY
+
     SignalExecutors.BOUNDED.execute(() -> {
       SealedSenderConstraint.refreshAndRotateIfNeeded();
       BackupRefreshJob.enqueueIfNecessary();

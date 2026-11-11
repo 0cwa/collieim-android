@@ -27,6 +27,9 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_ENDPOINT_AUTH = "up.endpoint.auth"
     private const val UNIFIEDPUSH_ENDPOINT_INSTANCE = "up.endpoint.instance"
     private const val UNIFIEDPUSH_ENROLLMENT_EPOCH = "up.enrollment.epoch"
+    private const val UNIFIEDPUSH_PENDING_EPOCH = "up.enrollment.pendingEpoch"
+    private const val UNIFIEDPUSH_REPLAY_STATE = "up.enrollment.replay"
+    private const val UNIFIEDPUSH_STATUS_CODE = "up.enrollment.statusCode"
     private const val UNIFIEDPUSH_REGISTRATION_FAILED = "up.registrationFailed"
     private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
@@ -71,8 +74,34 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   var endpointInstance: String? by stringValue(UNIFIEDPUSH_ENDPOINT_INSTANCE, null)
 
-  /** Subscription epoch written into the last enrollment export (0: none yet). */
+  /**
+   * Epoch of the encrypted enrollment the server has proven it imported (0: none). While it is set the receiver
+   * accepts no plaintext wake. It is set only by [commitReceived], never by an export.
+   */
   var enrollmentEpoch: Long by longValue(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0)
+
+  /** Subscription epoch written into the last enrollment export that no event has confirmed yet (0: none). */
+  var pendingEnrollmentEpoch: Long by longValue(UNIFIEDPUSH_PENDING_EPOCH, 0)
+
+  /** Encrypted push replay state (clock high-water mark and live event ids), see [im.molly.unifiedpush.receiver.EncryptedPush]. */
+  var replayState: String? by stringValue(UNIFIEDPUSH_REPLAY_STATE, null)
+
+  /** Writes the replay state durably before returning, so it is on disk before the event's effect starts. */
+  fun commitReplayState(value: String) {
+    store.beginWrite().putString(UNIFIEDPUSH_REPLAY_STATE, value).commit()
+  }
+
+  /** Like [commitReplayState], and in the same write makes the pending epoch the active one. */
+  fun commitReceived(value: String, promoteEpoch: Long) {
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_REPLAY_STATE, value)
+      .putLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, promoteEpoch)
+      .putLong(UNIFIEDPUSH_PENDING_EPOCH, 0)
+      .commit()
+  }
+
+  /** Last generic status code the server reported in an accepted encrypted push status event. */
+  var statusCode: String? by stringValue(UNIFIEDPUSH_STATUS_CODE, null)
 
   var registrationFailed: Boolean by booleanValue(UNIFIEDPUSH_REGISTRATION_FAILED, false)
 

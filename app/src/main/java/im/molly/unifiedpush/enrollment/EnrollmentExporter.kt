@@ -3,6 +3,7 @@ package im.molly.unifiedpush.enrollment
 import android.content.Context
 import android.os.Build
 import im.molly.unifiedpush.UnifiedPushDistributor
+import im.molly.unifiedpush.receiver.EncryptedPush
 import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import java.io.File
@@ -32,8 +33,7 @@ object EnrollmentExporter {
     val dir = context.getExternalFilesDir(null)
     val temp = dir?.let { File(it, TEMP_NAME) }
     val target = dir?.let { File(it, FILE_NAME) }
-    temp?.delete()
-    target?.delete()
+    removeFiles(context)
 
     if (Build.VERSION.SDK_INT < 30) throw EnrollmentFile.Invalid("unsupported_android")
     if (dir == null || temp == null || target == null) throw EnrollmentFile.Invalid("storage_unavailable")
@@ -69,8 +69,21 @@ object EnrollmentExporter {
       temp.delete()
     }
 
-    values.enrollmentEpoch = epoch
+    // The server has not imported the file yet, so nothing switches: the receiver promotes this epoch to the
+    // active one when it receives a valid event at it.
+    values.pendingEnrollmentEpoch = epoch
+    if (values.replayState == null) {
+      values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    }
     return target
+  }
+
+  /** Deletes the export file and its temporary file now, on the calling thread. */
+  @JvmStatic
+  fun removeFiles(context: Context) {
+    val dir = context.getExternalFilesDir(null) ?: return
+    File(dir, FILE_NAME).delete()
+    File(dir, TEMP_NAME).delete()
   }
 
   /** Removes any file left by an earlier export. Called from the application's onCreate. */

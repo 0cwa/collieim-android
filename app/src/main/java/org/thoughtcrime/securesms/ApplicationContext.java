@@ -161,6 +161,7 @@ import im.molly.app.base.ApkInfo;
 import im.molly.app.base.ApplicationInstance;
 import im.molly.unifiedpush.UnifiedPushDistributor;
 import im.molly.unifiedpush.enrollment.EnrollmentExporter;
+import im.molly.unifiedpush.receiver.UnifiedPushReceiver;
 import io.reactivex.rxjava3.exceptions.OnErrorNotImplementedException;
 import io.reactivex.rxjava3.exceptions.UndeliverableException;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
@@ -379,6 +380,8 @@ public class ApplicationContext extends Application implements AppForegroundObse
       onStartUnlock();
       isAppInitialized = true;
     }
+
+    SignalExecutors.BOUNDED.execute(() -> UnifiedPushReceiver.applyPendingEndpoint(this));
   }
 
   @MainThread

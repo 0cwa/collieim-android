@@ -41,7 +41,7 @@ class EnrollmentExportTest {
     SignalStore.unifiedpush.endpointInstance = "default"
     SignalStore.unifiedpush.endpointP256dh = if (withKeys) args.getString("ep_p256dh") ?: "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4" else null
     SignalStore.unifiedpush.endpointAuth = if (withKeys) args.getString("ep_auth") ?: "BTBZMqHH6r4Tts7J_aSIgg" else null
-    SignalStore.unifiedpush.enrollmentEpoch = 0
+    SignalStore.unifiedpush.pendingEnrollmentEpoch = 0
   }
 
   private val active = { true }
@@ -64,7 +64,7 @@ class EnrollmentExportTest {
     assertEquals(2, json["device_id"].asInt())
     assertEquals((serverEpoch ?: 0) + 1, json["subscription"]["subscription_epoch"].asLong())
     assertEquals(SignalStore.unifiedpush.endpoint, json["subscription"]["endpoint"].asText())
-    assertEquals((serverEpoch ?: 0) + 1, SignalStore.unifiedpush.enrollmentEpoch)
+    assertEquals((serverEpoch ?: 0) + 1, SignalStore.unifiedpush.pendingEnrollmentEpoch)
 
     // A second export replaces the file with a fresh request id.
     val second = ObjectMapper().readTree(EnrollmentExporter.export(context, serverEpoch, active).readText())
@@ -76,7 +76,7 @@ class EnrollmentExportTest {
     seed()
     assertEquals(1, epochOf(EnrollmentExporter.export(context, null, active)))
     assertEquals(2, epochOf(EnrollmentExporter.export(context, 1, active)))
-    assertEquals(2L, SignalStore.unifiedpush.enrollmentEpoch)
+    assertEquals(2L, SignalStore.unifiedpush.pendingEnrollmentEpoch)
     assertEquals(8, epochOf(EnrollmentExporter.export(context, 7, active)))
   }
 
@@ -111,6 +111,20 @@ class EnrollmentExportTest {
     assertTrue(file.exists())
 
     EnrollmentExporter.deleteStale(context)
+
+    val deadline = System.currentTimeMillis() + 5000
+    while (file.exists() && System.currentTimeMillis() < deadline) Thread.sleep(50)
+    assertFalse(file.exists())
+  }
+
+  @Test
+  fun anOverflowingEpochInTheDialogStillRemovesTheOldFile() {
+    seed()
+    val file = EnrollmentExporter.export(context, null, active)
+    assertTrue(file.exists())
+
+    im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsViewModel(context.applicationContext as android.app.Application)
+      .exportEnrollment(context, "99999999999999999999")
 
     val deadline = System.currentTimeMillis() + 5000
     while (file.exists() && System.currentTimeMillis() < deadline) Thread.sleep(50)

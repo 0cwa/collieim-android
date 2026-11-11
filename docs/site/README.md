@@ -1,0 +1,57 @@
+# collie.im website
+
+One static page that explains Collie and links to the downloads. The source is in
+this folder, `tooling/site/build.py` builds it, and `.github/workflows/site.yml`
+deploys it to GitHub Pages at https://collie.im.
+
+## Build and preview locally
+
+```sh
+python3 tooling/site/build.py --out /path/to/out              # uses the latest GitHub release
+python3 tooling/site/build.py --out /path/to/out --tag v8.35.1-3-rc2   # offline
+cd /path/to/out && python3 -m http.server 8000
+```
+
+The build copies this folder (except Markdown files), fills `{{RELEASE_TAG}}` and
+`{{APK_URL}}` in `index.html`, and fails if a placeholder or a local file is
+missing. No Python packages are needed.
+
+## When it deploys
+
+- Every push to `main` that changes `docs/site/`, `tooling/site/` or the workflow.
+- Daily at 06:17 UTC, so the "Latest release" line follows new releases.
+- By hand: Actions → Website → Run workflow.
+
+Pull requests only build. The APK button always points at
+`releases/latest/download/collie.apk`, so it never lags behind a release.
+
+## One-time setup (repository owner)
+
+1. DNS for `collie.im`: apex `A` records `185.199.108.153`, `185.199.109.153`,
+   `185.199.110.153`, `185.199.111.153`; apex `AAAA` records `2606:50c0:8000::153`,
+   `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`;
+   `www` `CNAME` `0cwa.github.io`.
+2. Pages: Settings → Pages → Source "GitHub Actions", custom domain `collie.im`,
+   then tick "Enforce HTTPS" once the certificate is issued.
+
+## Design
+
+- Palette: Bark Black `#24130D` and the Redwood darks for the hero and footer,
+  Golden orange `#F2982B` for the main buttons, Forest `#2F4F3A` for the build
+  section, links and focus, Lichen Mist `#EDF2E4` for repeated cards, Soft Lichen
+  `#DFE9CC` for the featured card and the download block. Parchment appears only
+  inside the logo. Dark mode follows the visitor's system setting.
+- Type: Manrope (weights 250–500) for body text and the headline, Sora (200–300)
+  for subheadings.
+- The dashed ring from the logo is the recurring shape: behind the hero phones,
+  on the featured card, around the dog in the download block, and as the line
+  down the patch stack.
+
+## Assets and where they come from
+
+| File | Source |
+|---|---|
+| `assets/fonts/manrope.ttf`, `sora.ttf` and their `OFL.txt` | google/fonts at commit `b31870aff700ab7a1d74fa0c6887d95beb9e0037`, the same files repo.collie.im pins |
+| `assets/collie-icon.svg`, `collie-foreground.svg` | `docs/assets/` unchanged |
+| `assets/og.png` | `docs/assets/collie-feature-graphic.svg` rendered at 1200 px wide with `rsvg-convert` |
+| `assets/screens/*.webp` | `fastlane/metadata/android/en-US/images/phoneScreenshots/` 3, 4 and 6, resized to 540 px wide with `cwebp -q 82` |

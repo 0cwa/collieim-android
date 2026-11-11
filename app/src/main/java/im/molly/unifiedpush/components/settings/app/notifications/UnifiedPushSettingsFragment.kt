@@ -127,6 +127,12 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
           },
         )
       }
+
+      clickPref(
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment),
+        summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment_summary),
+        onClick = { viewModel.exportEnrollment(requireContext()) },
+      )
     }
   }
 

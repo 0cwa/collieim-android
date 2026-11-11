@@ -130,7 +130,7 @@
     <string name="LinkDeviceFragment__once_linked_new_messages_sync_across_devices">Once linked, new messages sync across devices, but previous message history will not be transferred.</string>
     <string name="LinkDeviceFragment__molly_supports_linking_to_other_android_devices">Collie supports linking to other Android devices running Collie or Molly, as well as desktops and iPads running Signal.</string>
     <string name="LinkDeviceFragment__for_android_devices_visit_s_to_install_molly">For Android devices: Visit %s to install Molly.</string>
-    <string name="GcmRefreshJob_unable_to_register_with_Google_Play_Services">"Unable to register with Play Services</string>
+    <string name="GcmRefreshJob_unable_to_register_with_Google_Play_Services">Unable to register with Play Services</string>
     <string name="GcmRefreshJob_switch_to_an_alternative_push_service_in_settings_notifications">Switch to an alternative push service in Settings &gt; Notifications or fix the issue with Play Services.</string>
     <string name="NotificationsSettingsFragment__an_error_occurred_while_registering_for_push_notifications_s">An error occurred while registering for push notifications. %s</string>
     <string name="NotificationsSettingsFragment__please_check_if_google_play_services_is_installed_and_enabled">Please check if Google Play Services is installed and enabled, or switch to an alternative push service.</string>
@@ -150,6 +150,11 @@
     <string name="UnifiedPushSettingsFragment__account_id">Account ID</string>
     <string name="UnifiedPushSettingsFragment__test_configuration">Test configuration</string>
     <string name="UnifiedPushSettingsFragment__tap_to_request_a_test_notification_from_mollysocket">Tap to request a test notification from MollySocket</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment">Export enrollment file</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_summary">Writes a file for CollieSocket\'s protected import. Copy it off the device with adb pull.</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_done">Exported to %1$s. It is deleted when the app next starts.</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_not_ready">Not ready: a linked device and a distributor endpoint with keys are needed.</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_failed">Export failed</string>
     <string name="UnifiedPushSettingsFragment__a_test_notification_should_appear_in_a_few_moments">A test notification should appear in a few moments…</string>
     <string name="UnifiedPushSettingsFragment__status_summary_mollysocket_url_missing">Missing MollySocket URL</string>
     <string name="UnifiedPushSettingsFragment__status_summary_pending">Pending</string>
@@ -174,7 +179,7 @@
     <string name="NotificationDeliveryMethod__fcm" translatable="false">FCM (Google Play Services)</string>
     <string name="NotificationDeliveryMethod__websocket" translatable="false">WebSocket</string>
     <string name="IncomingMessageObserver_websocket_service">WebSocket Service</string>
-    <string name="MollySocketLink_scan_the_qr_code">"Scan the QR code displayed on your MollySocket server's homepage or in the console.</string>
+    <string name="MollySocketLink_scan_the_qr_code">Scan the QR code displayed on your MollySocket server\'s homepage or in the console.</string>
     <string name="MollySocketLink_try_scanning_another_image_containing_a_mollysocket_qr_code">Try scanning another image containing a MollySocket QR code.</string>
     <string name="MollySocketLink_mollysocket_server_not_found_at_s">MollySocket server not found at \'%s\'</string>
     <string name="MollySocketLink_experienced_a_network_error_please_try_again">Experienced a network error. Please try again.</string>

@@ -7,7 +7,9 @@ import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
+import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.logging.Log
+import org.thoughtcrime.securesms.events.PushServiceEvent
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
@@ -39,21 +41,32 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
 
   override fun getFactoryKey(): String = KEY
 
-  override fun onFailure() = Unit
+  /** The settings screen shows "testing" until it hears from the job, so every way out ends with an event. */
+  override fun onFailure() = EventBus.default.post(PushServiceEvent)
 
   override fun onShouldRetry(e: Exception): Boolean = false
 
   @Throws(Exception::class)
   public override fun onRun() {
+    try {
+      runPing()
+    } finally {
+      EventBus.default.post(PushServiceEvent)
+    }
+  }
+
+  private fun runPing() {
     val values = SignalStore.unifiedpush
     val store = UnifiedPushControlStore(values)
+    val state = store.read()
     val aci = SignalStore.account.aci
     val device = values.device
     val endpoint = values.endpoint
     val distributorActive = distributorActive()
 
-    if (aci == null || device == null || endpoint == null || !distributorActive || values.controlKey == null || values.enrollmentEpoch <= 0) {
-      // Nothing can be sent. A missing distributor or endpoint is a verdict of its own; the rest is just unavailable.
+    if (aci == null || device == null || endpoint == null || !distributorActive || state.key == null || state.activeEpoch <= 0) {
+      // Nothing can be sent. A missing distributor or endpoint is a verdict of its own; the rest is "unavailable",
+      // which is shown but never counted as a failure.
       val hop = PushHealth.diagnose(null, distributorActive, endpoint != null)
       if (manual || hop == PushHealth.Hop.DISTRIBUTOR) PushHealthActions.onPing(hop)
       return
@@ -65,26 +78,27 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
       PushHealthActions.onPing(PushHealth.Hop.UNAVAILABLE)
       return
     }
-    val update = EndpointUpdates.begin(store, aci.toString(), device.deviceId, subscription, System.currentTimeMillis() / 1000, ping = true)
+    val update = EndpointUpdates.reconcile(store, aci.toString(), device.deviceId, subscription, System.currentTimeMillis() / 1000, force = true).update
     if (update == null) {
       PushHealthActions.onPing(PushHealth.Hop.UNAVAILABLE)
       return
     }
+    // Replaces an instance waiting out a backoff, so the first send is inside the timeout.
     UnifiedPushControlJob.enqueue()
 
     val deadline = System.currentTimeMillis() + timeoutMs
     while (System.currentTimeMillis() < deadline) {
-      val current = store.update
+      val current = store.read().update
       if (current == null || current.epoch != update.epoch) {
         // The epoch is no longer pending. The receiver recorded the success when the confirmation arrived; otherwise a
         // newer endpoint update replaced the ping and there is no verdict.
-        if (values.enrollmentEpoch < update.epoch) Log.i(TAG, "The ping was replaced by a newer endpoint update; no verdict.")
+        if (store.read().activeEpoch < update.epoch) Log.i(TAG, "The ping was replaced by a newer endpoint update; no verdict.")
         return
       }
       Thread.sleep(POLL_MS)
     }
 
-    val hop = PushHealth.diagnose(store.update, distributorActive(), SignalStore.unifiedpush.endpoint != null)
+    val hop = PushHealth.diagnose(store.read().update, distributorActive(), SignalStore.unifiedpush.endpoint != null)
     PushHealthActions.onPing(hop)
   }
 

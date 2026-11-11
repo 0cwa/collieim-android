@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.jobs
 
+import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -47,7 +48,7 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
   public override fun onRun() {
     val values = SignalStore.unifiedpush
     val store = UnifiedPushControlStore(values)
-    val update = store.update
+    val update = store.read().update
     if (update == null) {
       Log.d(TAG, "No endpoint update pending.")
       return
@@ -57,11 +58,12 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
     try {
       AppDependencies.signalServiceMessageSender.sendControlMessage(device.deviceId, update.frame)
     } catch (e: Exception) {
-      store.replace(update.afterAttempt(System.currentTimeMillis() / 1000, error = e.javaClass.simpleName))
+      EndpointUpdates.recordAttempt(store, update.epoch, System.currentTimeMillis() / 1000, e.javaClass.simpleName)
       // BaseJob turns a RuntimeException into a crash; a failed send is only a reason to try again.
       throw if (e is IOException) e else IOException("Endpoint update send failed", e)
     }
-    store.replace(update.afterAttempt(System.currentTimeMillis() / 1000))
+    // Only bookkeeping, and only for this epoch: a newer update that replaced it meanwhile is not touched.
+    EndpointUpdates.recordAttempt(store, update.epoch, System.currentTimeMillis() / 1000, null)
     Log.i(TAG, "Endpoint update for epoch ${update.epoch} sent (attempt ${update.attempts + 1}).")
     throw AwaitingConfirmation()
   }
@@ -77,16 +79,14 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
     private val BACKOFF_FIRST_MS = TimeUnit.SECONDS.toMillis(30)
     private val BACKOFF_MAX_MS = TimeUnit.MINUTES.toMillis(30)
 
-    /** Queues a send for the stored update. A send already queued or running is reused (one instance per queue). */
+    /**
+     * Queues a send of the stored update now. An instance that is waiting out a backoff would otherwise make the new
+     * one a no-op (one instance per queue), so it is cancelled first; both calls run in order on the job manager.
+     */
     @JvmStatic
     fun enqueue() {
+      AppDependencies.jobManager.cancelAllInQueue(KEY)
       AppDependencies.jobManager.add(UnifiedPushControlJob())
-    }
-
-    /** Queues a send if an update is still unconfirmed. Called when the app can read its state, e.g. after unlock. */
-    @JvmStatic
-    fun resumeIfPending() {
-      if (UnifiedPushControlStore(SignalStore.unifiedpush).update != null) enqueue()
     }
   }
 }

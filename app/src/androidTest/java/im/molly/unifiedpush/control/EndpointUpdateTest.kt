@@ -191,7 +191,7 @@ class EndpointUpdateTest {
     // Export and first wake: the enrollment is proven, the control key becomes the active one.
     File(dir, "inject-ids.txt").delete(); File(dir, "inject-ids2.txt").delete(); File(dir, "control-request.json").delete()
     EnrollmentExporter.export(context, null) { true }
-    assertNotNull(values.pendingControlKey)
+    assertNotNull(values.controlState.pendingKey)
     assertNull(values.controlKey)
     File(dir, "ready.txt").writeText("ready")
     waitFor("first wake", 180) { File(dir, "inject-ids.txt").exists() }
@@ -200,8 +200,8 @@ class EndpointUpdateTest {
     assertTrue("first wake not recorded", seen().contains(firstWake))
     assertEquals(1L, values.enrollmentEpoch)
     assertNotNull(values.controlKey)
-    assertNull(values.pendingControlKey)
-    assertNull(values.controlUpdate)
+    assertNull(values.controlState.pendingKey)
+    assertNull(values.controlState.update)
 
     // The distributor hands out a new endpoint and new keys while the app is locked: it is kept, nothing is sent.
     val secret = KeyCachingService.getMasterSecret()
@@ -226,15 +226,15 @@ class EndpointUpdateTest {
       KeyCachingService.setMasterSecret(secret)
     }
     assertNotEquals(rotatedUrl, values.endpoint)
-    assertNull(values.controlUpdate)
+    assertNull(values.controlState.update)
 
     // Unlock: the endpoint is applied, the update is built at epoch 2 and sent.
     instrumentation.runOnMainSync { ApplicationContext.getInstance(context).onUnlock() }
-    waitFor("the update to be stored") { values.controlUpdate != null }
-    val update = ControlUpdate.parse(values.controlUpdate)!!
+    waitFor("the update to be stored") { values.controlState.update != null }
+    val update = values.controlState.update!!
     assertEquals(2L, update.epoch)
     assertEquals(rotatedUrl, update.endpoint)
-    assertEquals(2L, values.controlHighestEpoch)
+    assertEquals(2L, values.controlState.highestEpoch)
     assertEquals("enrollment epoch stays until the confirmation", 1L, values.enrollmentEpoch)
     waitFor("the request CollieSocket's copy", 120) { File(dir, "control-request.json").exists() }
 
@@ -258,7 +258,7 @@ class EndpointUpdateTest {
     assertNotEquals("the other device must not receive the blob", control(2)["content"].asText(), other["content"].asText())
     assertEquals(2, entries[2]["messages"].size())
     // Sent, not confirmed: the update stays pending.
-    assertNotNull(values.controlUpdate)
+    assertNotNull(values.controlState.update)
     assertEquals(1L, values.enrollmentEpoch)
     File(dir, "control-sent.txt").writeText("sent")
 
@@ -268,9 +268,10 @@ class EndpointUpdateTest {
     val before = seen().size
     inject(File(dir, "inject-status.bin").readBytes())
     assertEquals("confirmation not recorded", before + 1, seen().size)
-    assertNull("pending update not cleared by the confirmation", values.controlUpdate)
+    assertNull("pending update not cleared by the confirmation", values.controlState.update)
     assertEquals(2L, values.enrollmentEpoch)
-    assertEquals(2L, values.controlHighestEpoch)
+    assertEquals(2L, values.controlState.highestEpoch)
+    assertEquals("the server is now known to hold the rotated endpoint", rotatedUrl, values.controlState.serverTarget!!.endpoint)
     assertNull("a confirmation is not a server problem", values.statusCode)
     values.lastReceivedTime = 0
     inject(File(dir, "inject-wake2.bin").readBytes())

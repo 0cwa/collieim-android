@@ -117,4 +117,32 @@ class PushHealthTest {
     assertEquals(minute, PushHealth.PING_TIMEOUT_MS)
     assertEquals(2, PushHealth.FAILURES_TO_FALLBACK)
   }
+
+  @Test
+  fun `a test that could not run is shown but never counted as a failure`() {
+    val store = Memory()
+    repeat(5) { assertEquals(0, PushHealth.recordPing(store, PushHealth.Hop.UNAVAILABLE, 10L + it).failures) }
+    assertFalse(store.fallback)
+    assertEquals("unavailable", store.lastResult)
+    assertEquals(14, store.lastResultAt)
+    // and it does not erase the failures that were already counted
+    PushHealth.recordPing(store, PushHealth.Hop.SIGNAL_SEND, 20)
+    assertEquals(1, PushHealth.recordPing(store, PushHealth.Hop.UNAVAILABLE, 21).failures)
+    assertEquals(1, store.failures)
+  }
+
+  @Test
+  fun `reset forgets everything`() {
+    val store = Memory()
+    PushHealth.recordPing(store, PushHealth.Hop.SIGNAL_SEND, 1)
+    PushHealth.recordMiss(store, t0)
+    PushHealth.recordPing(store, PushHealth.Hop.SIGNAL_SEND, 2)
+    assertTrue(store.fallback)
+    PushHealth.reset(store)
+    assertEquals(0, store.failures)
+    assertFalse(store.fallback)
+    assertNull(store.lastResult)
+    assertEquals(0L, store.lastResultAt)
+    assertEquals(0L, store.lastMissAt)
+  }
 }

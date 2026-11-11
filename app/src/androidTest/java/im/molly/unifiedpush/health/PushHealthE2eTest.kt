@@ -195,7 +195,7 @@ class PushHealthE2eTest {
     waitFor("the verdict", 90) { values.health.lastResult == "ok" }
     assertEquals(0, values.health.failures)
     assertEquals(2L, values.enrollmentEpoch)
-    assertNull(values.controlUpdate)
+    assertNull(values.controlState.update)
     assertFalse(values.health.fallback)
     assertEquals(PushHealth.Hop.NONE, PushHealth.Hop.fromCode(values.health.lastResult))
     File(dir, "step1-ok.txt").writeText("ok")

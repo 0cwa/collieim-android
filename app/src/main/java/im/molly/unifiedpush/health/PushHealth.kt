@@ -44,6 +44,7 @@ object PushHealth {
 
   class Outcome(val failures: Int, val enteredFallback: Boolean, val leftFallback: Boolean)
 
+  /** [lastPushMs] is the latest time any push reached the phone, including pushes it had to drop while locked. */
   fun isMiss(urgent: Boolean, serverTimestampMs: Long, deliveredMs: Long, lastPushMs: Long): Boolean =
     urgent && deliveredMs - serverTimestampMs > MISS_AFTER_MS && lastPushMs < serverTimestampMs
 
@@ -54,9 +55,29 @@ object PushHealth {
     return fail(store, Hop.COLLIESOCKET_OR_PROVIDER, nowMs / 1000, keepResult = true)
   }
 
-  /** A ping outcome: [Hop.NONE] is a confirmed round trip, anything else a failure that names the hop. */
-  fun recordPing(store: HealthStore, hop: Hop, nowSeconds: Long): Outcome =
-    if (hop == Hop.NONE) succeed(store, nowSeconds) else fail(store, hop, nowSeconds, keepResult = false)
+  /**
+   * A ping outcome: [Hop.NONE] is a confirmed round trip, [Hop.UNAVAILABLE] means the test could not run at all (there
+   * is no keyed enrollment to ping through, as with a stock MollySocket server) and says nothing about push, so it is
+   * shown but never counted. Anything else is a failure that names the hop.
+   */
+  fun recordPing(store: HealthStore, hop: Hop, nowSeconds: Long): Outcome = when (hop) {
+    Hop.NONE -> succeed(store, nowSeconds)
+    Hop.UNAVAILABLE -> {
+      store.lastResult = hop.code
+      store.lastResultAt = nowSeconds
+      Outcome(store.failures, enteredFallback = false, leftFallback = false)
+    }
+    else -> fail(store, hop, nowSeconds, keepResult = false)
+  }
+
+  /** Forgets all health state: a different server, where the old verdicts no longer apply. */
+  fun reset(store: HealthStore) {
+    store.failures = 0
+    store.fallback = false
+    store.lastResult = null
+    store.lastResultAt = 0
+    store.lastMissAt = 0
+  }
 
   private fun succeed(store: HealthStore, nowSeconds: Long): Outcome {
     val wasFallback = store.fallback

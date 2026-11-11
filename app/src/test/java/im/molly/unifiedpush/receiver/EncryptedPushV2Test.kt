@@ -56,4 +56,12 @@ class EncryptedPushV2Test {
       EncryptedPush.ReplayState(now - 1, emptyList()), versionForEpoch = { 2 })
     assertEquals(EncryptedPush.Decision.DROP_INVALID, outcome.decision)
   }
+
+  @Test
+  fun `a version that only equals 1 or 2 after truncation to an int is refused`() {
+    // 2^32 + 2 truncates to 2 as an Int
+    assertNull(EncryptedPush.parse(text("\"version\": 2" to "\"version\": 4294967298"), now, setOf(1, 2)))
+    assertNull(EncryptedPush.parse(text("\"version\": 2" to "\"version\": 4294967297"), now, setOf(1, 2)))
+    assertNotNull(EncryptedPush.parse(status, now, setOf(1, 2)))
+  }
 }

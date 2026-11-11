@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.keyvalue
 
+import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
@@ -31,10 +32,8 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_PENDING_EPOCH = "up.enrollment.pendingEpoch"
     private const val UNIFIEDPUSH_REPLAY_STATE = "up.enrollment.replay"
     private const val UNIFIEDPUSH_STATUS_CODE = "up.enrollment.statusCode"
-    private const val UNIFIEDPUSH_CONTROL_KEY = "up.control.key"
-    private const val UNIFIEDPUSH_PENDING_CONTROL_KEY = "up.control.pendingKey"
-    private const val UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH = "up.control.highestEpoch"
-    private const val UNIFIEDPUSH_CONTROL_UPDATE = "up.control.update"
+    private const val UNIFIEDPUSH_CONTROL_STATE = "up.control.state"
+    private val controlLock = Any()
     private const val UNIFIEDPUSH_HEALTH_FAILURES = "up.health.failures"
     private const val UNIFIEDPUSH_HEALTH_FALLBACK = "up.health.fallback"
     private const val UNIFIEDPUSH_HEALTH_RESULT = "up.health.result"
@@ -86,70 +85,42 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   /**
    * Epoch of the encrypted enrollment the server has proven it imported (0: none). While it is set the receiver
-   * accepts no plaintext wake. It is set only by [commitReceived], never by an export.
+   * accepts no plaintext wake. It is set only when an event proves it, never by an export.
    */
-  var enrollmentEpoch: Long by longValue(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0)
+  var enrollmentEpoch: Long
+    get() = controlState.activeEpoch
+    set(value) { mutateControl { it.copy(activeEpoch = value) } }
 
   /** Subscription epoch written into the last enrollment export that no event has confirmed yet (0: none). */
-  var pendingEnrollmentEpoch: Long by longValue(UNIFIEDPUSH_PENDING_EPOCH, 0)
+  var pendingEnrollmentEpoch: Long
+    get() = controlState.pendingEpoch
+    set(value) { mutateControl { it.copy(pendingEpoch = value) } }
 
   /** Encrypted push replay state (clock high-water mark and live event ids), see [im.molly.unifiedpush.receiver.EncryptedPush]. */
   var replayState: String? by stringValue(UNIFIEDPUSH_REPLAY_STATE, null)
 
-  /** Writes the replay state durably before returning, so it is on disk before the event's effect starts. */
-  fun commitReplayState(value: String) {
-    store.beginWrite().putString(UNIFIEDPUSH_REPLAY_STATE, value).commit()
-  }
+  /**
+   * The control state: keys, epochs, the subscription the server holds and the unconfirmed endpoint update, as one
+   * record. Before it was first written it is read from the two epoch keys older versions used.
+   */
+  val controlState: ControlState
+    get() = ControlState.parse(getString(UNIFIEDPUSH_CONTROL_STATE, null))
+      ?: ControlState(activeEpoch = getLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0), pendingEpoch = getLong(UNIFIEDPUSH_PENDING_EPOCH, 0))
+
+  val controlKey: String? get() = controlState.key
 
   /**
-   * Like [commitReplayState], and in the same write makes the pending epoch the active one. The export that was
-   * pending also made a fresh control key; the server has now imported it, so it replaces the old key and any
-   * endpoint update built with the old key is dropped (the import carried the current endpoint).
+   * The only writer of the control state. One lock, the state re-read inside it, one durable write that also carries
+   * [replay], the encrypted-push replay state, when given. Returns the state that was written.
    */
-  fun commitReceived(value: String, promoteEpoch: Long) {
-    val write = store.beginWrite()
-      .putString(UNIFIEDPUSH_REPLAY_STATE, value)
-      .putLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, promoteEpoch)
-      .putLong(UNIFIEDPUSH_PENDING_EPOCH, 0)
-    val newKey = getString(UNIFIEDPUSH_PENDING_CONTROL_KEY, null)
-    if (newKey != null) {
-      write.putString(UNIFIEDPUSH_CONTROL_KEY, newKey)
-        .putString(UNIFIEDPUSH_PENDING_CONTROL_KEY, null)
-        .putString(UNIFIEDPUSH_CONTROL_UPDATE, null)
-        .putLong(UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH, promoteEpoch)
+  fun mutateControl(replay: String? = null, block: (ControlState) -> ControlState): ControlState {
+    synchronized(controlLock) {
+      val next = block(controlState)
+      val write = store.beginWrite().putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
+      if (replay != null) write.putString(UNIFIEDPUSH_REPLAY_STATE, replay)
+      write.commit()
+      return next
     }
-    write.commit()
-  }
-
-  /**
-   * Control key of the enrollment the server has imported (null: endpoint updates over Signal are not available).
-   * The key an export just wrote waits in [pendingControlKey] until the server proves it imported that file.
-   */
-  var controlKey: String? by stringValue(UNIFIEDPUSH_CONTROL_KEY, null)
-
-  var pendingControlKey: String? by stringValue(UNIFIEDPUSH_PENDING_CONTROL_KEY, null)
-
-  /** The highest subscription epoch this phone has put into an endpoint update, sent or not. */
-  var controlHighestEpoch: Long by longValue(UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH, 0)
-
-  /** The unconfirmed endpoint update (JSON, see [im.molly.unifiedpush.control.ControlUpdate]); null when none. */
-  var controlUpdate: String? by stringValue(UNIFIEDPUSH_CONTROL_UPDATE, null)
-
-  /** Durably records a new unconfirmed update and the highest epoch it used, in one write. */
-  fun commitControlUpdate(update: String, highestEpoch: Long) {
-    store.beginWrite()
-      .putString(UNIFIEDPUSH_CONTROL_UPDATE, update)
-      .putLong(UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH, highestEpoch)
-      .commit()
-  }
-
-  /** The server confirmed the update at [epoch]: that epoch is active and nothing is pending any more. */
-  fun commitControlConfirmed(replay: String, epoch: Long) {
-    store.beginWrite()
-      .putString(UNIFIEDPUSH_REPLAY_STATE, replay)
-      .putLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, epoch)
-      .putString(UNIFIEDPUSH_CONTROL_UPDATE, null)
-      .commit()
   }
 
   /** Push health, see [im.molly.unifiedpush.health.PushHealth]. */
@@ -171,14 +142,9 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       set(value) = putLong(UNIFIEDPUSH_HEALTH_MISS_AT, value)
   }
 
-  /** Forgets every control key and update: a different server, or a new enrollment lifecycle. */
+  /** Forgets every control key, epoch and update: a different server, or a new enrollment lifecycle. */
   fun clearControl() {
-    store.beginWrite()
-      .putString(UNIFIEDPUSH_CONTROL_KEY, null)
-      .putString(UNIFIEDPUSH_PENDING_CONTROL_KEY, null)
-      .putString(UNIFIEDPUSH_CONTROL_UPDATE, null)
-      .putLong(UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH, 0)
-      .commit()
+    mutateControl { ControlState() }
   }
 
   /** Last generic status code the server reported in an accepted encrypted push status event. */

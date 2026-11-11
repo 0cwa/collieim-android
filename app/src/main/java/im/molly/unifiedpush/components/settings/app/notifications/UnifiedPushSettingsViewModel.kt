@@ -22,6 +22,7 @@ import im.molly.unifiedpush.receiver.LockedPushState
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.UnifiedPushHealthJob
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
+import org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.thoughtcrime.securesms.util.livedata.Store
@@ -84,11 +85,17 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       pushFallback = SignalStore.unifiedpush.health.fallback,
       pushTestResult = PushHealth.Hop.fromCode(SignalStore.unifiedpush.health.lastResult),
       pushTestResultAt = SignalStore.unifiedpush.health.lastResultAt,
-      pushTestRunning = pushTestStartedAt > 0 && SignalStore.unifiedpush.health.lastResultAt * 1000 < pushTestStartedAt,
+      // Only for as long as the job can run: it ends within the timeout, and a missing verdict must not leave "testing" up.
+      pushTestRunning = pushTestStartedAt > 0 && SignalStore.unifiedpush.health.lastResultAt * 1000 < pushTestStartedAt &&
+        System.currentTimeMillis() - pushTestStartedAt < UnifiedPushHealthJob.timeoutMs + TEST_GRACE_MS,
     )
   }
 
   private var pushTestStartedAt = 0L
+
+  private companion object {
+    const val TEST_GRACE_MS = 15_000L
+  }
 
   /** Runs the end-to-end push test; the verdict arrives through [PushServiceEvent] and is shown on the screen. */
   fun testPush() {
@@ -138,7 +145,12 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       EnrollmentExporter.removeFiles(app)
       val message = try {
         val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
-        app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, EnrollmentExporter.export(app, serverEpoch).absolutePath)
+        val export = EnrollmentExporter.exportWithEpoch(app, serverEpoch)
+        if (export.raised) {
+          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_raised, export.file.absolutePath, export.epoch, export.entered)
+        } else {
+          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, export.file.absolutePath)
+        }
       } catch (e: EnrollmentFile.Invalid) {
         app.getString(
           when (e.code) {
@@ -174,9 +186,12 @@ fun UnifiedPushValues.updateMollySocket(mollySocket: MollySocket) {
     endpoint = null
     // A different MollySocket server: the encrypted enrollment no longer applies. The replay state stays,
     // because the contract forbids lowering its clock mark.
-    enrollmentEpoch = 0
-    pendingEnrollmentEpoch = 0
     clearControl()
+    // The push health verdicts and the WebSocket mode they caused belong to the server that is gone.
+    PushHealth.reset(health)
+    if (SignalStore.settings.forceWebsocketMode == ForceWebsocketMode.ENABLED_AUTOMATICALLY) {
+      SignalStore.settings.forceWebsocketMode = ForceWebsocketMode.DISABLED_AUTOMATICALLY
+    }
     LockedPushState.setEncryptedEnrollment(AppDependencies.application, false)
   }
 

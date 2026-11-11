@@ -42,7 +42,12 @@ import org.thoughtcrime.securesms.gcm.PushFetchHandler
 import im.molly.unifiedpush.model.RegistrationStatus
 import im.molly.unifiedpush.control.ControlUpdate
 import im.molly.unifiedpush.model.MollySocketDevice
-import io.mockk.slot
+import io.mockk.spyk
+import org.signal.storage.keyvalue.KeyValueDataSet
+import org.signal.storage.keyvalue.KeyValueStore
+import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
+import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.Target
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 
@@ -52,7 +57,8 @@ class UnifiedPushReceiverTest {
   @get:Rule val dependencies = MockAppDependenciesRule()
   @get:Rule val signalStore = MockSignalStoreRule()
 
-  private val values = mockk<UnifiedPushValues>(relaxUnitFun = true)
+  // A real values object over an in-memory store, so the control record is the real one; a spy lets tests stub and verify.
+  private val values = spyk(UnifiedPushValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()))))
   private val context: Application get() = ApplicationProvider.getApplicationContext()
   private val healthStore = object : im.molly.unifiedpush.health.PushHealth.HealthStore {
     override var failures = 0
@@ -77,11 +83,6 @@ class UnifiedPushReceiverTest {
     every { values.registrationRetryScheduled } answers { retryScheduled }
     every { values.registrationRetryScheduled = any() } answers { retryScheduled = firstArg() }
     every { values.health } returns healthStore
-    every { values.controlKey } returns null
-    every { values.pendingControlKey } returns null
-    every { values.controlUpdate } returns null
-    every { values.endpointP256dh } returns null
-    every { values.endpointAuth } returns null
     every { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) } returns Unit
     mockkConstructor(UnifiedPushNotificationBuilder::class)
     every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationRegistrationFailed() } returns Unit
@@ -223,35 +224,31 @@ class UnifiedPushReceiverTest {
     )
   }
 
-  private fun wake(epoch: Long = 1, id: String = "11111111-1111-4111-8111-111111111111"): ByteArray {
+  private fun wake(epoch: Long = 1, id: String = "11111111-1111-4111-8111-111111111111", version: Int = 1): ByteArray {
     val now = System.currentTimeMillis() / 1000
-    return ("""{"version":1,"event_id":"$id","instance":"default","subscription_epoch":$epoch,"kind":"wake",""" +
+    return ("""{"version":$version,"event_id":"$id","instance":"default","subscription_epoch":$epoch,"kind":"wake",""" +
       """"issued_at":$now,"expires_at":${now + 300}}""").toByteArray()
   }
 
-  private var active = 0L
-  private var pending = 0L
-  private var replay: String? = null
+  private val active get() = values.enrollmentEpoch
+  private val pending get() = values.pendingEnrollmentEpoch
+  private val replay get() = values.replayState
 
-  /** Sets up the stored enrollment state (epochs, replay state) and the fetch handler, then runs [block]. */
-  private fun enrollment(active: Long, pending: Long, block: () -> Unit) {
-    this.active = active
-    this.pending = pending
-    replay = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000 - 1, emptyList()).serialize()
-    every { values.enrollmentEpoch } answers { this@UnifiedPushReceiverTest.active }
-    every { values.pendingEnrollmentEpoch } answers { this@UnifiedPushReceiverTest.pending }
+  /**
+   * Sets up the stored enrollment state (epochs, an optional control key, replay state) and the fetch handler, then
+   * runs [block] with the recorded calls cleared.
+   */
+  private fun enrollment(active: Long, pending: Long, key: String? = null, state: (ControlState) -> ControlState = { it }, block: () -> Unit) {
+    values.mutateControl { state(ControlState(key = key, activeEpoch = active, pendingEpoch = pending)) }
+    values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000 - 1, emptyList()).serialize()
     every { values.endpointInstance } returns "default"
-    every { values.replayState } answers { replay }
-    every { values.commitReplayState(any()) } answers { replay = firstArg() }
-    every { values.commitReceived(any(), any()) } answers {
-      replay = firstArg(); this@UnifiedPushReceiverTest.active = secondArg(); this@UnifiedPushReceiverTest.pending = 0
-    }
     every { values.lastReceivedTime = any() } returns Unit
     every { values.enabled } returns true
     every { values.registrationStatus } returns RegistrationStatus.REGISTERED
     every { SignalStore.account.isRegistered } returns true
     mockkStatic(PushFetchHandler::class)
     every { PushFetchHandler.handleReceivedNotification(any(), any()) } returns Unit
+    clearMocks(values, answers = false, recordedCalls = true)
     block()
   }
 
@@ -273,7 +270,7 @@ class UnifiedPushReceiverTest {
       verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
       receiver.onMessage(context, PushMessage(wake(), true), "default")
       fetches(1)
-      verify(exactly = 1) { values.commitReplayState(any()) }
+      verify(exactly = 1) { values.mutateControl(any(), any()) }
     }
   }
 
@@ -288,8 +285,7 @@ class UnifiedPushReceiverTest {
       receiver.onMessage(context, PushMessage(wake(), false), "default")
       receiver.onMessage(context, PushMessage(wake(epoch = 2), true), "default")
       fetches(0)
-      verify(exactly = 0) { values.commitReplayState(any()) }
-      verify(exactly = 0) { values.commitReceived(any(), any()) }
+      verify(exactly = 0) { values.mutateControl(any(), any()) }
       org.junit.Assert.assertEquals(before, replay)
     }
   }
@@ -303,10 +299,22 @@ class UnifiedPushReceiverTest {
       UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
       UnifiedPushReceiver().onMessage(context, urgent(), "default")
       fetches(0)
-      verify(exactly = 0) { values.commitReplayState(any()) }
+      verify(exactly = 0) { values.mutateControl(any(), any()) }
       verify(exactly = 0) { values.enrollmentEpoch }
     }
     LockedPushState.setEncryptedEnrollment(context, false)
+  }
+
+  @Test
+  fun `a push dropped while locked is remembered, where it can be read without the database`() {
+    enrollment(active = 1, pending = 0, key = fixtureKey) {
+      org.junit.Assert.assertEquals(0L, LockedPushState.lastPushArrived(context))
+      every { KeyCachingService.isLocked() } returns true
+      val before = System.currentTimeMillis()
+      UnifiedPushReceiver().onMessage(context, PushMessage(wake(version = 2), true), "default")
+      org.junit.Assert.assertTrue(LockedPushState.lastPushArrived(context) >= before)
+      fetches(0)
+    }
   }
 
   @Test
@@ -324,7 +332,6 @@ class UnifiedPushReceiverTest {
       receiver.onMessage(context, urgent(), "default")
       verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
       receiver.onMessage(context, PushMessage("""{"test":true}""".toByteArray(), true), "default")
-      verify(exactly = 0) { values.commitReceived(any(), any()) }
       org.junit.Assert.assertEquals(0L, active)
       org.junit.Assert.assertEquals(1L, pending)
     }
@@ -336,7 +343,6 @@ class UnifiedPushReceiverTest {
       val receiver = UnifiedPushReceiver()
       receiver.onMessage(context, PushMessage(wake(), true), "default")
       verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
-      verify(exactly = 1) { values.commitReceived(any(), 1) }
       org.junit.Assert.assertEquals(1L, active)
       org.junit.Assert.assertEquals(0L, pending)
       org.junit.Assert.assertTrue(LockedPushState.isEncryptedEnrollment(context))
@@ -365,13 +371,12 @@ class UnifiedPushReceiverTest {
       val receiver = UnifiedPushReceiver()
       receiver.onMessage(context, PushMessage(wake(epoch = 1), true), "default")
       verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
-      verify(exactly = 1) { values.commitReplayState(any()) }
+      verify(exactly = 1) { values.mutateControl(any(), any()) }
       org.junit.Assert.assertEquals(1L, active)
       receiver.onMessage(context, urgent(), "default")
       fetches(1)
       receiver.onMessage(context, PushMessage(wake(epoch = 2, id = "22222222-2222-4222-8222-222222222222"), true), "default")
       verify(timeout = 3000, exactly = 2) { PushFetchHandler.handleReceivedNotification(any(), true) }
-      verify(exactly = 1) { values.commitReceived(any(), 2) }
       org.junit.Assert.assertEquals(2L, active)
       receiver.onMessage(context, PushMessage(wake(epoch = 1, id = "33333333-3333-4333-8333-333333333333"), true), "default")
       fetches(2)
@@ -382,14 +387,13 @@ class UnifiedPushReceiverTest {
   fun `stock settings change clears the encrypted enrollment but keeps the replay state`() {
     enrollment(active = 1, pending = 2) {
       LockedPushState.setEncryptedEnrollment(context, true)
+      every { SignalStore.settings.forceWebsocketMode } returns org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode.DISABLED_AUTOMATICALLY
       every { values.vapidPublicKey } returns "old"
       every { values.vapidPublicKey = any() } returns Unit
       every { values.airGapped = any() } returns Unit
       every { values.mollySocketUrl = any() } returns Unit
       every { values.vapidKeySynced = any() } returns Unit
       every { values.endpoint = any() } returns Unit
-      every { values.enrollmentEpoch = any() } answers { active = firstArg() }
-      every { values.pendingEnrollmentEpoch = any() } answers { pending = firstArg() }
       val before = replay
       values.updateMollySocket(im.molly.unifiedpush.model.MollySocket.AirGapped("new"))
       org.junit.Assert.assertEquals(0L, active)
@@ -419,14 +423,13 @@ class UnifiedPushReceiverTest {
 
   private fun withPendingUpdate(epoch: Long, block: () -> Unit) {
     val update = ControlUpdate(epoch, "https://push.example.invalid/new", fixtureP256dh, fixtureAuth, ByteArray(80), 1)
-    every { values.controlKey } returns fixtureKey
-    var storedUpdate: String? = update.serialize()
-    every { values.controlUpdate } answers { storedUpdate }
-    every { values.commitControlConfirmed(any(), any()) } answers {
-      replay = firstArg(); active = secondArg(); storedUpdate = null
-    }
     every { values.statusCode = any() } returns Unit
-    enrollment(active = 1, pending = 0, block = block)
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    every { SignalStore.account.aci } returns aci
+    enrollment(active = 1, pending = 0, key = fixtureKey, state = {
+      it.copy(update = update, highestEpoch = epoch, serverTarget = Target("https://push.example.invalid/old", fixtureP256dh, fixtureAuth))
+    }, block = block)
   }
 
   @Test
@@ -434,11 +437,12 @@ class UnifiedPushReceiverTest {
     withPendingUpdate(epoch = 2) {
       healthStore.failures = 1
       UnifiedPushReceiver().onMessage(context, PushMessage(statusEvent(2, "subscription_updated"), true), "default")
-      verify(exactly = 1) { values.commitControlConfirmed(any(), 2) }
       org.junit.Assert.assertEquals("the whole path worked, so earlier failures stop counting", 0, healthStore.failures)
-      verify(exactly = 0) { values.statusCode = any() }
-      verify(exactly = 0) { values.commitReplayState(any()) }
+      org.junit.Assert.assertNull(values.controlState.update)
       org.junit.Assert.assertEquals(2L, active)
+      org.junit.Assert.assertEquals("https://push.example.invalid/new", values.controlState.serverTarget!!.endpoint)
+      verify(exactly = 0) { values.statusCode = any() }
+      verify(exactly = 1) { values.mutateControl(any(), any()) }
       fetches(0)
     }
   }
@@ -451,72 +455,132 @@ class UnifiedPushReceiverTest {
       receiver.onMessage(context, PushMessage(statusEvent(3, "subscription_updated"), true), "default")
       receiver.onMessage(context, PushMessage(statusEvent(2, "connection_conflict"), true), "default")
       receiver.onMessage(context, PushMessage(statusEvent(2, "subscription_updated", version = 1), true), "default")
-      verify(exactly = 0) { values.commitControlConfirmed(any(), any()) }
+      org.junit.Assert.assertEquals(2L, values.controlState.update!!.epoch)
       org.junit.Assert.assertEquals(1L, active)
     }
   }
 
   @Test
-  fun `a keyed enrollment accepts only version 2 events and an unkeyed one only version 1`() {
-    every { values.controlKey } returns fixtureKey
-    enrollment(active = 1, pending = 0) {
+  fun `a keyed enrollment accepts only version 2 events`() {
+    enrollment(active = 1, pending = 0, key = fixtureKey) {
       UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
       fetches(0)
+      UnifiedPushReceiver().onMessage(context, PushMessage(wake(version = 2), true), "default")
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
     }
-    every { values.controlKey } returns null
+  }
+
+  @Test
+  fun `an unkeyed enrollment accepts only version 1 events`() {
     enrollment(active = 1, pending = 0) {
-      val v2 = String(wake()).replace("\"version\":1", "\"version\":2").toByteArray()
-      UnifiedPushReceiver().onMessage(context, PushMessage(v2, true), "default")
+      UnifiedPushReceiver().onMessage(context, PushMessage(wake(version = 2), true), "default")
       fetches(0)
       UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
       verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
     }
   }
 
-  @Test
-  fun `a new endpoint on an imported keyed enrollment stores an update and queues the send`() {
-    val stored = slot<String>()
+  private fun fakeAccount() {
     val aci = mockk<org.signal.core.models.ServiceId.ACI>()
     every { aci.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
     every { SignalStore.account.aci } returns aci
-    every { values.device } returns MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
-    every { values.controlKey } returns fixtureKey
-    every { values.enrollmentEpoch } returns 3
-    every { values.pendingEnrollmentEpoch } returns 0
-    every { values.controlHighestEpoch } returns 3
-    every { values.endpoint } returns "https://push.example.invalid/old"
-    every { values.endpoint = any() } returns Unit
+    values.device = MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
     every { values.airGapped } returns false
-    every { values.commitControlUpdate(capture(stored), any()) } returns Unit
+  }
 
-    UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://push.example.invalid/new", PublicKeySet(fixtureP256dh, fixtureAuth)), "default")
+  private fun controlJobAdds(n: Int) = verify(exactly = n) { AppDependencies.jobManager.add(match { it is UnifiedPushControlJob }) }
 
-    verify(exactly = 1) { values.commitControlUpdate(any(), 4) }
-    verify(exactly = 1) { AppDependencies.jobManager.add(match { it is UnifiedPushControlJob }) }
-    val update = ControlUpdate.parse(stored.captured)!!
-    org.junit.Assert.assertEquals(4L, update.epoch)
-    org.junit.Assert.assertEquals("https://push.example.invalid/new", update.endpoint)
+  private val oldTarget get() = Target("https://push.example.invalid/old", fixtureP256dh, fixtureAuth)
+
+  @Test
+  fun `a new endpoint on an imported keyed enrollment stores an update and queues the send`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/old"
+    enrollment(active = 3, pending = 0, key = fixtureKey, state = { it.copy(highestEpoch = 3, serverTarget = oldTarget) }) {
+      UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://push.example.invalid/new", PublicKeySet(fixtureP256dh, fixtureAuth)), "default")
+
+      val update = values.controlState.update!!
+      org.junit.Assert.assertEquals(4L, update.epoch)
+      org.junit.Assert.assertEquals("https://push.example.invalid/new", update.endpoint)
+      org.junit.Assert.assertEquals(4L, values.controlState.highestEpoch)
+      controlJobAdds(1)
+      verify(exactly = 1) { AppDependencies.jobManager.cancelAllInQueue(UnifiedPushControlJob.KEY) }
+    }
   }
 
   @Test
   fun `a new endpoint without a control key or before the server proved the enrollment sends nothing`() {
-    every { values.endpoint } returns "https://push.example.invalid/old"
-    every { values.endpoint = any() } returns Unit
-    every { values.airGapped } returns false
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/old"
     val endpoint = PushEndpoint("https://push.example.invalid/new", PublicKeySet(fixtureP256dh, fixtureAuth))
+    enrollment(active = 3, pending = 0, key = null) {
+      UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
+      controlJobAdds(0)
+    }
+    values.endpoint = "https://push.example.invalid/old"
+    enrollment(active = 0, pending = 1, key = null, state = { it.copy(pendingKey = fixtureKey) }) {
+      UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
+      controlJobAdds(0)
+    }
+  }
 
-    UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
-    verify(exactly = 0) { AppDependencies.jobManager.add(match { it is UnifiedPushControlJob }) }
+  @Test
+  fun `an endpoint that changed after the export is sent after the promotion, under the new key`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/rotated"
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+    enrollment(active = 0, pending = 2, state = { it.copy(pendingKey = fixtureKey, pendingTarget = oldTarget) }) {
+      UnifiedPushReceiver().onMessage(context, PushMessage(wake(epoch = 2, version = 2), true), "default")
+      org.junit.Assert.assertEquals(2L, active)
+      org.junit.Assert.assertEquals(fixtureKey, values.controlState.key)
+      val update = values.controlState.update!!
+      org.junit.Assert.assertEquals(3L, update.epoch)
+      org.junit.Assert.assertEquals("https://push.example.invalid/rotated", update.endpoint)
+      controlJobAdds(1)
+    }
+    LockedPushState.setEncryptedEnrollment(context, false)
+  }
 
-    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
-    every { aci.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
-    every { SignalStore.account.aci } returns aci
-    every { values.device } returns MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
-    every { values.controlKey } returns fixtureKey
-    every { values.enrollmentEpoch } returns 0
-    every { values.pendingEnrollmentEpoch } returns 1
-    every { values.controlHighestEpoch } returns 0
-    UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
-    verify(exactly = 0) { AppDependencies.jobManager.add(match { it is UnifiedPushControlJob }) }
+  @Test
+  fun `an update lost before it was stored is rebuilt when the app starts or comes to the foreground`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/stored-then-killed"
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+    enrollment(active = 3, pending = 0, key = fixtureKey, state = { it.copy(highestEpoch = 3, serverTarget = oldTarget) }) {
+      org.junit.Assert.assertNull(values.controlState.update)
+      UnifiedPushReceiver.resumeControl()
+      org.junit.Assert.assertEquals(4L, values.controlState.update!!.epoch)
+      controlJobAdds(1)
+    }
+  }
+
+  @Test
+  fun `coming to the foreground resends an unconfirmed update that has not been tried lately, and not one that has`() {
+    fakeAccount()
+    val stale = ControlUpdate(4, "https://push.example.invalid/new", fixtureP256dh, fixtureAuth, ByteArray(80), 1, attempts = 5, lastAttemptAt = 10)
+    values.endpoint = "https://push.example.invalid/new"
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+    enrollment(active = 3, pending = 0, key = fixtureKey, state = { it.copy(highestEpoch = 4, update = stale, serverTarget = oldTarget) }) {
+      UnifiedPushReceiver.resumeControl()
+      controlJobAdds(1)
+      org.junit.Assert.assertEquals("no new epoch for a resend", 4L, values.controlState.highestEpoch)
+      val fresh = stale.afterAttempt(System.currentTimeMillis() / 1000)
+      values.mutateControl { it.copy(update = fresh) }
+      UnifiedPushReceiver.resumeControl()
+      controlJobAdds(1)
+    }
+  }
+
+  @Test
+  fun `a locked app does not resume the control update`() {
+    fakeAccount()
+    enrollment(active = 3, pending = 0, key = fixtureKey, state = { it.copy(highestEpoch = 3, serverTarget = oldTarget) }) {
+      every { KeyCachingService.isLocked() } returns true
+      UnifiedPushReceiver.resumeControl()
+      controlJobAdds(0)
+    }
   }
 }

@@ -116,7 +116,7 @@ object EncryptedPush {
       root[name].takeIf { it.isIntegralNumber && it.canConvertToLong() }?.asLong()?.takeIf { it in min..MAX_JSON_INT }
     fun string(name: String): String? = root[name].takeIf { it.isTextual }?.asText()
 
-    val version = integer("version", 1)?.toInt()?.takeIf { it in versions } ?: return null
+    val version = integer("version", 1)?.takeIf { v -> versions.any { it.toLong() == v } }?.toInt() ?: return null
     val eventId = string("event_id")?.takeIf { EVENT_ID.matches(it) } ?: return null
     val instance = string("instance")?.takeIf { INSTANCE.matches(it) } ?: return null
     val epoch = integer("subscription_epoch", 1) ?: return null

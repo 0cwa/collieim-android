@@ -15,6 +15,7 @@ object LockedPushState {
   private const val PREFS = "collie_locked_push"
   private const val ENCRYPTED = "encrypted_enrollment"
   private const val PENDING = "pending_endpoint"
+  private const val PUSH_ARRIVED = "last_push_arrived"
   private const val SEPARATOR = '\n'
 
   data class Endpoint(val url: String, val p256dh: String?, val auth: String?, val instance: String)
@@ -27,6 +28,19 @@ object LockedPushState {
   fun setEncryptedEnrollment(context: Context, encrypted: Boolean) {
     context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(ENCRYPTED, encrypted).apply()
   }
+
+  /**
+   * When a push last reached the phone, kept here because it can be written while locked. A push that is dropped while
+   * locked is still proof that push works, and message delivery that follows the unlock is not a miss.
+   */
+  @JvmStatic
+  fun recordPushArrived(context: Context, nowMs: Long) {
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putLong(PUSH_ARRIVED, nowMs).apply()
+  }
+
+  @JvmStatic
+  fun lastPushArrived(context: Context): Long =
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getLong(PUSH_ARRIVED, 0)
 
   /** Keeps only the newest endpoint. Never throws: a failure here is the same as the old behavior of dropping it. */
   @JvmStatic

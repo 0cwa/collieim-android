@@ -54,6 +54,10 @@
     <attr name="reactions_pill_text_color" format="color" />
     <attr name="reactions_overlay_any_emoji_background" format="color" />
     <attr name="reactions_overlay_any_emoji_foreground" format="color" />
+    <attr name="reactions_overlay_shade_color" format="color" />
+    <attr name="reactions_overlay_selected_emoji_background" format="color" />
+    <attr name="media_preview_background" format="color" />
+    <attr name="media_preview_bar_background" format="color" />
     <attr name="megaphone_body_text_color" format="color" />
     <attr name="tooltip_default_color" format="color" />
     <attr name="quote_view_background_incoming_wallpaper" format="color" />

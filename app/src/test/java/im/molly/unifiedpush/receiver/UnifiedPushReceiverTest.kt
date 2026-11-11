@@ -481,6 +481,7 @@ class UnifiedPushReceiverTest {
       org.junit.Assert.assertEquals("https://push.example.invalid/new", update.endpoint)
       org.junit.Assert.assertEquals(4L, values.controlState.highestEpoch)
       controlJobAdds(1)
+      verify(exactly = 1) { AppDependencies.jobManager.cancelAllInQueue(UnifiedPushControlJob.KEY) }
     }
   }
 

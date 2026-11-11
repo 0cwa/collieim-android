@@ -85,6 +85,7 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
      */
     @JvmStatic
     fun enqueue() {
+      AppDependencies.jobManager.cancelAllInQueue(KEY)
       AppDependencies.jobManager.add(UnifiedPushControlJob())
     }
   }

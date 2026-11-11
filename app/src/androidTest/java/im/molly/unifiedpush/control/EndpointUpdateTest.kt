@@ -157,8 +157,7 @@ class EndpointUpdateTest {
     assumeTrue(args.getString("ep_rotate") != null)
     val rotatedUrl = args.getString("ep_rotated")!!
     registerConnector()
-    // The instrumentation application context does not start the job loop by itself. Jobs the fresh account queued
-    // (sticker packs, key sync) would only compete for the runners, so they are dropped first.
+    // The fresh account queued jobs (billing, stickers) that need servers; drop them before the job loop starts.
     AppDependencies.jobManager.find { true }.forEach { AppDependencies.jobManager.cancel(it.id) }
     (AppDependencies.application as SignalInstrumentationApplicationContext).beginJobLoopForTests()
     val aci = SignalStore.account.requireAci().toString()

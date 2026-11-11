@@ -41,6 +41,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
         UnifiedPushNotificationBuilder(context).clearRegistrationFailed()
         EventBus.default.post(PushServiceEvent)
       }
+      SignalStore.unifiedpush.endpointP256dh = endpoint.pubKeySet?.pubKey
+      SignalStore.unifiedpush.endpointAuth = endpoint.pubKeySet?.auth
+      SignalStore.unifiedpush.endpointInstance = instance
       val changed = refreshEndpoint(endpoint.url)
       if (failed && !changed) {
         AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
@@ -72,6 +75,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
     Log.i(TAG, "onUnregistered($instance)")
     UnifiedPush.forceRemoveDistributor(context)
     if (!appLocked) {
+      SignalStore.unifiedpush.endpointP256dh = null
+      SignalStore.unifiedpush.endpointAuth = null
+      SignalStore.unifiedpush.endpointInstance = null
       refreshEndpoint(null)
     }
   }

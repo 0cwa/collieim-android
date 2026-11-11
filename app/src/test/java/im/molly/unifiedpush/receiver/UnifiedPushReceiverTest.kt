@@ -34,6 +34,7 @@ import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.UnifiedPush
+import org.unifiedpush.android.connector.data.PublicKeySet
 import org.unifiedpush.android.connector.data.PushEndpoint
 
 @RunWith(RobolectricTestRunner::class)
@@ -89,6 +90,7 @@ class UnifiedPushReceiverTest {
     val receiver = UnifiedPushReceiver()
     val endpoint = mockk<PushEndpoint>()
     every { endpoint.url } returns "https://example.org/push"
+    every { endpoint.pubKeySet } returns null
     every { values.endpoint } returns endpoint.url
     receiver.onRegistrationFailed(context, FailedReason.NETWORK, "instance")
     receiver.onNewEndpoint(context, endpoint, "instance")
@@ -98,6 +100,39 @@ class UnifiedPushReceiverTest {
 
     // Two recovery jobs and one endpoint refresh, even though the endpoint did not change.
     verify(exactly = 3) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
+  }
+
+  @Test
+  fun `new endpoint stores the connector keys and instance for enrollment export`() {
+    val receiver = UnifiedPushReceiver()
+    every { values.endpoint } returns null
+    every { values.endpoint = any() } returns Unit
+    every { values.airGapped } returns false
+    val endpoint = PushEndpoint("https://example.org/push", PublicKeySet("pub-key", "auth-secret"))
+
+    receiver.onNewEndpoint(context, endpoint, "default")
+
+    verify { values.endpointP256dh = "pub-key" }
+    verify { values.endpointAuth = "auth-secret" }
+    verify { values.endpointInstance = "default" }
+  }
+
+  @Test
+  fun `unregistering clears the stored connector keys`() {
+    mockkStatic(UnifiedPush::class)
+    try {
+      every { UnifiedPush.forceRemoveDistributor(any()) } returns Unit
+      every { values.endpoint } returns "https://example.org/push"
+      every { values.endpoint = any() } returns Unit
+
+      UnifiedPushReceiver().onUnregistered(context, "default")
+
+      verify { values.endpointP256dh = null }
+      verify { values.endpointAuth = null }
+      verify { values.endpointInstance = null }
+    } finally {
+      unmockkStatic(UnifiedPush::class)
+    }
   }
 
   @Test
@@ -116,6 +151,7 @@ class UnifiedPushReceiverTest {
     val receiver = UnifiedPushReceiver()
     val endpoint = mockk<PushEndpoint>()
     every { endpoint.url } returns "https://example.org/push"
+    every { endpoint.pubKeySet } returns null
     every { values.endpoint } returns endpoint.url
 
     receiver.onRegistrationFailed(context, FailedReason.NETWORK, "instance")

@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.jobs
 
 import im.molly.unifiedpush.MollySocketRepository
+import im.molly.unifiedpush.control.ControlReset
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import im.molly.unifiedpush.model.LinkStatus
@@ -228,7 +229,7 @@ class UnifiedPushRefreshJob private constructor(
     SignalStore.unifiedpush.device = null
     // The server's copy of the enrollment belongs to the old linked device's credentials: its key, epochs and any
     // pending update no longer apply, and the next export starts a new lifecycle with a fresh key.
-    SignalStore.unifiedpush.clearControl()
+    ControlReset.discard(context)
   }
 
   override fun onFailure() = Unit

@@ -298,6 +298,16 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `discarding the enrollment forgets the record and clears the flag the receiver reads while locked`() {
+    enrollment(active = 2, pending = 3, key = fixtureKey) {
+      LockedPushState.setEncryptedEnrollment(context, true)
+      im.molly.unifiedpush.control.ControlReset.discard(context)
+      org.junit.Assert.assertEquals(ControlState(), values.controlState)
+      org.junit.Assert.assertFalse(LockedPushState.isEncryptedEnrollment(context))
+    }
+  }
+
+  @Test
   fun `stock enrollment still fetches on a plaintext wake`() {
     enrollment(active = 0, pending = 0) {
       UnifiedPushReceiver().onMessage(context, urgent(), "default")

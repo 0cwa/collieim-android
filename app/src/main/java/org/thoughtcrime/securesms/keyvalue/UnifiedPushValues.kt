@@ -27,7 +27,6 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_ENDPOINT_AUTH = "up.endpoint.auth"
     private const val UNIFIEDPUSH_ENDPOINT_INSTANCE = "up.endpoint.instance"
     private const val UNIFIEDPUSH_ENROLLMENT_EPOCH = "up.enrollment.epoch"
-    private const val UNIFIEDPUSH_ENROLLMENT_FINGERPRINT = "up.enrollment.fingerprint"
     private const val UNIFIEDPUSH_REGISTRATION_FAILED = "up.registrationFailed"
     private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
@@ -72,10 +71,8 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   var endpointInstance: String? by stringValue(UNIFIEDPUSH_ENDPOINT_INSTANCE, null)
 
-  /** Epoch and fingerprint of the last enrollment export, so a changed subscription gets the next epoch. */
+  /** Subscription epoch written into the last enrollment export (0: none yet). */
   var enrollmentEpoch: Long by longValue(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0)
-
-  var enrollmentFingerprint: String? by stringValue(UNIFIEDPUSH_ENROLLMENT_FINGERPRINT, null)
 
   var registrationFailed: Boolean by booleanValue(UNIFIEDPUSH_REGISTRATION_FAILED, false)
 

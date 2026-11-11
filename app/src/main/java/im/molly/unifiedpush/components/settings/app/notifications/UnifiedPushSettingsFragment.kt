@@ -1,10 +1,14 @@
 package im.molly.unifiedpush.components.settings.app.notifications
 
+import android.text.InputType
+import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
 import androidx.annotation.StringRes
 import androidx.lifecycle.Lifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.eventbus.EventBus
@@ -43,6 +47,27 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       .bindTo(viewLifecycleOwner, Lifecycle.State.RESUMED)
 
     viewModel.updateRegistration()
+  }
+
+  private fun showExportEpochDialog() {
+    val input = EditText(requireContext()).apply {
+      inputType = InputType.TYPE_CLASS_NUMBER
+      hint = getString(R.string.UnifiedPushSettingsFragment__export_enrollment_epoch_hint)
+    }
+    val padding = (24 * resources.displayMetrics.density).toInt()
+    val container = FrameLayout(requireContext()).apply {
+      setPadding(padding, 0, padding, 0)
+      addView(input)
+    }
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.UnifiedPushSettingsFragment__export_enrollment)
+      .setMessage(R.string.UnifiedPushSettingsFragment__export_enrollment_epoch_message)
+      .setView(container)
+      .setPositiveButton(R.string.UnifiedPushSettingsFragment__export_enrollment_export) { _, _ ->
+        viewModel.exportEnrollment(requireContext(), input.text.toString())
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
   }
 
   private fun onPushServiceEvent(event: PushServiceEvent) {
@@ -131,7 +156,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       clickPref(
         title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment),
         summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment_summary),
-        onClick = { viewModel.exportEnrollment(requireContext()) },
+        onClick = { showExportEpochDialog() },
       )
     }
   }

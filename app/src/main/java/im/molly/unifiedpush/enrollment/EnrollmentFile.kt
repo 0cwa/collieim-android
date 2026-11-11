@@ -1,7 +1,6 @@
 package im.molly.unifiedpush.enrollment
 
 import java.math.BigInteger
-import java.security.MessageDigest
 import java.util.Base64
 
 /**
@@ -117,18 +116,13 @@ object EnrollmentFile {
   private fun json(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
   /**
-   * CollieSocket requires epoch 1 first and exactly previous+1 for any changed endpoint, key, instance or
-   * credential. An unchanged subscription keeps its epoch (the server answers `unchanged`).
+   * CollieSocket accepts epoch 1 for an account it has no row for, and otherwise exactly its stored epoch + 1.
+   * The app cannot know the server's epoch, so the operator reads it from `enrollment status` and enters it here
+   * (null: not enrolled).
    */
-  fun epochFor(lastEpoch: Long, lastFingerprint: String?, fingerprint: String): Long = when {
-    lastFingerprint == null || lastEpoch < 1 -> 1
-    lastFingerprint == fingerprint -> lastEpoch
-    else -> lastEpoch + 1
-  }
-
-  /** Digest of everything a changed epoch must cover; stored instead of the secrets themselves. */
-  fun fingerprint(input: Input): String {
-    val text = listOf(input.accountId, input.deviceId.toString(), input.password, input.endpoint, input.p256dh, input.auth, input.instance).joinToString("\n")
-    return MessageDigest.getInstance("SHA-256").digest(text.toByteArray()).joinToString("") { "%02x".format(it) }
+  fun nextEpoch(serverEpoch: Long?): Long {
+    val current = serverEpoch ?: 0
+    if (current !in 0 until MAX_EPOCH) throw Invalid("invalid_epoch")
+    return current + 1
   }
 }

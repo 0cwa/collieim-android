@@ -151,15 +151,23 @@ class EnrollmentFileTest {
   }
 
   @Test
-  fun `epoch starts at 1, holds when unchanged and advances by one when the subscription changed`() {
-    val first = EnrollmentFile.fingerprint(valid)
-    assertEquals(1, EnrollmentFile.epochFor(0, null, first))
-    assertEquals(1, EnrollmentFile.epochFor(1, first, first))
-    val rotated = EnrollmentFile.fingerprint(valid.copy(endpoint = valid.endpoint + "2"))
-    assertEquals(2, EnrollmentFile.epochFor(1, first, rotated))
-    assertTrue(first != EnrollmentFile.fingerprint(valid.copy(password = valid.password + "x")))
-    assertTrue(first != EnrollmentFile.fingerprint(valid.copy(auth = "AAAAAAAAAAAAAAAAAAAAAA")))
-    assertFalse(first.contains(valid.password))
+  fun `epoch is the server's epoch plus one, or 1 when not enrolled`() {
+    assertEquals(1, EnrollmentFile.nextEpoch(null))
+    assertEquals(1, EnrollmentFile.nextEpoch(0))
+    assertEquals(2, EnrollmentFile.nextEpoch(1))
+    assertEquals(9007199254740991L, EnrollmentFile.nextEpoch(9007199254740990L))
+  }
+
+  @Test
+  fun `a server epoch outside the contract range is refused`() {
+    listOf(-1L, 9007199254740991L, Long.MAX_VALUE).forEach {
+      try {
+        EnrollmentFile.nextEpoch(it)
+        fail("expected refusal")
+      } catch (e: EnrollmentFile.Invalid) {
+        assertEquals("invalid_epoch", e.code)
+      }
+    }
   }
 
   @Test

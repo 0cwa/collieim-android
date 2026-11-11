@@ -155,6 +155,11 @@
     <string name="UnifiedPushSettingsFragment__export_enrollment_done">Exported to %1$s. It is deleted when the app next starts.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_not_ready">Not ready: a linked device and a distributor endpoint with keys are needed.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_failed">Export failed</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_export">Export</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_epoch_hint">Current epoch (blank if not enrolled)</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_epoch_message">Enter the epoch that `mollysocket enrollment status ACCOUNT_UUID` reports on the server, or leave it blank if this account is not enrolled yet.</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_invalid_epoch">The epoch must be a whole number from 0 to 9007199254740990</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_unsupported_android">Export needs Android 11 or newer, where other apps cannot read this app\'s files</string>
     <string name="UnifiedPushSettingsFragment__a_test_notification_should_appear_in_a_few_moments">A test notification should appear in a few moments…</string>
     <string name="UnifiedPushSettingsFragment__status_summary_mollysocket_url_missing">Missing MollySocket URL</string>
     <string name="UnifiedPushSettingsFragment__status_summary_pending">Pending</string>

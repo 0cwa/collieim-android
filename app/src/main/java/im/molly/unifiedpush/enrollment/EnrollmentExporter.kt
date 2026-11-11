@@ -1,6 +1,8 @@
 package im.molly.unifiedpush.enrollment
 
 import android.content.Context
+import android.os.Build
+import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import java.io.File
@@ -10,7 +12,8 @@ import java.util.UUID
 
 /**
  * Writes the CollieSocket enrollment file to the app-specific external files directory, which other apps
- * cannot read and which is excluded from backups (see `backup_rules.xml`). It is moved with `adb pull`.
+ * cannot read from Android 11 on (earlier versions let apps holding the storage permission read it, so export
+ * is refused there) and which is excluded from backups (see `backup_rules.xml`). It is moved with `adb pull`.
  * It is replaced on every export and deleted on the next app start. No share intent, no logging of contents.
  */
 object EnrollmentExporter {
@@ -18,16 +21,31 @@ object EnrollmentExporter {
   const val FILE_NAME = "colliesocket-enrollment.json"
   private const val TEMP_NAME = "$FILE_NAME.tmp"
 
-  /** Writes the file and returns it. Throws [EnrollmentFile.Invalid] (fixed code only) or IOException. */
+  /**
+   * Writes the file and returns it. [serverEpoch] is the epoch CollieSocket reports for this account, or null if
+   * it is not enrolled; the file carries that + 1. Throws [EnrollmentFile.Invalid] (fixed code only) or IOException.
+   * Any earlier file is removed first, so a refused export never leaves an old password file behind.
+   */
   @JvmStatic
-  fun export(context: Context): File {
+  @JvmOverloads
+  fun export(context: Context, serverEpoch: Long?, isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive): File {
+    val dir = context.getExternalFilesDir(null)
+    val temp = dir?.let { File(it, TEMP_NAME) }
+    val target = dir?.let { File(it, FILE_NAME) }
+    temp?.delete()
+    target?.delete()
+
+    if (Build.VERSION.SDK_INT < 30) throw EnrollmentFile.Invalid("unsupported_android")
+    if (dir == null || temp == null || target == null) throw EnrollmentFile.Invalid("storage_unavailable")
+    val epoch = EnrollmentFile.nextEpoch(serverEpoch)
+
     val values = SignalStore.unifiedpush
     val device = values.device
     val endpoint = values.endpoint
     val p256dh = values.endpointP256dh
     val auth = values.endpointAuth
     val aci = SignalStore.account.aci
-    if (aci == null || device == null || endpoint == null || p256dh == null || auth == null) {
+    if (aci == null || device == null || endpoint == null || p256dh == null || auth == null || !isDistributorActive()) {
       throw EnrollmentFile.Invalid("not_ready")
     }
 
@@ -40,15 +58,10 @@ object EnrollmentExporter {
       p256dh = p256dh,
       auth = auth,
       instance = values.endpointInstance ?: "default",
-      epoch = 1,
+      epoch = epoch,
     )
-    val fingerprint = EnrollmentFile.fingerprint(draft)
-    val epoch = EnrollmentFile.epochFor(values.enrollmentEpoch, values.enrollmentFingerprint, fingerprint)
-    val contents = EnrollmentFile.render(draft.copy(epoch = epoch))
+    val contents = EnrollmentFile.render(draft)
 
-    val dir = context.getExternalFilesDir(null) ?: throw EnrollmentFile.Invalid("storage_unavailable")
-    val temp = File(dir, TEMP_NAME)
-    val target = File(dir, FILE_NAME)
     try {
       temp.outputStream().use { it.write(contents.toByteArray(Charsets.UTF_8)) }
       Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
@@ -57,7 +70,6 @@ object EnrollmentExporter {
     }
 
     values.enrollmentEpoch = epoch
-    values.enrollmentFingerprint = fingerprint
     return target
   }
 

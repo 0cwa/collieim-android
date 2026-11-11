@@ -115,13 +115,21 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   }
 
   /** Writes the CollieSocket enrollment file off the main thread and reports the outcome as a toast. */
-  fun exportEnrollment(context: Context) {
+  fun exportEnrollment(context: Context, serverEpochText: String) {
     val app = context.applicationContext
     SignalExecutors.BOUNDED.execute {
       val message = try {
-        app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, EnrollmentExporter.export(app).absolutePath)
+        val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
+        app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, EnrollmentExporter.export(app, serverEpoch).absolutePath)
       } catch (e: EnrollmentFile.Invalid) {
-        app.getString(if (e.code == "not_ready") R.string.UnifiedPushSettingsFragment__export_enrollment_not_ready else R.string.UnifiedPushSettingsFragment__export_enrollment_failed)
+        app.getString(
+          when (e.code) {
+            "not_ready" -> R.string.UnifiedPushSettingsFragment__export_enrollment_not_ready
+            "invalid_epoch" -> R.string.UnifiedPushSettingsFragment__export_enrollment_invalid_epoch
+            "unsupported_android" -> R.string.UnifiedPushSettingsFragment__export_enrollment_unsupported_android
+            else -> R.string.UnifiedPushSettingsFragment__export_enrollment_failed
+          }
+        )
       } catch (e: IOException) {
         app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_failed)
       }

@@ -123,7 +123,12 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       EnrollmentExporter.removeFiles(app)
       val message = try {
         val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
-        app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, EnrollmentExporter.export(app, serverEpoch).absolutePath)
+        val export = EnrollmentExporter.exportWithEpoch(app, serverEpoch)
+        if (export.raised) {
+          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_raised, export.file.absolutePath, export.epoch, export.entered)
+        } else {
+          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, export.file.absolutePath)
+        }
       } catch (e: EnrollmentFile.Invalid) {
         app.getString(
           when (e.code) {
@@ -159,8 +164,6 @@ fun UnifiedPushValues.updateMollySocket(mollySocket: MollySocket) {
     endpoint = null
     // A different MollySocket server: the encrypted enrollment no longer applies. The replay state stays,
     // because the contract forbids lowering its clock mark.
-    enrollmentEpoch = 0
-    pendingEnrollmentEpoch = 0
     clearControl()
     LockedPushState.setEncryptedEnrollment(AppDependencies.application, false)
   }

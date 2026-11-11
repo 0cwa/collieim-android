@@ -10,6 +10,8 @@ import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
+import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
+import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.model.MollySocketDevice
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -70,6 +72,7 @@ class EncryptedPushReceiverTest {
     values.endpointAuth = set.auth
     values.enabled = true
     values.enrollmentEpoch = 0
+    values.pendingEnrollmentEpoch = 0
     values.replayState = null
     values.lastReceivedTime = 0
     LockedPushState.setEncryptedEnrollment(context, false)
@@ -133,14 +136,22 @@ class EncryptedPushReceiverTest {
   fun injectedPushesAreAcceptedOrRejectedAsTheContractSays() {
     registerConnector()
     export()
-    assertEquals(1L, values.enrollmentEpoch)
-    assertTrue(LockedPushState.isEncryptedEnrollment(context))
+    // The export alone switches nothing: the server has not proven it imported the file.
+    assertEquals(0L, values.enrollmentEpoch)
+    assertEquals(1L, values.pendingEnrollmentEpoch)
+    assertFalse(LockedPushState.isEncryptedEnrollment(context))
+    inject("""{"urgent":true}""".toByteArray())
+    assertNotEquals("plaintext wake before promotion was refused", 0L, values.lastReceivedTime)
+    values.lastReceivedTime = 0
 
-    // A valid wake is accepted and wakes the app (lastReceivedTime is set where the wake path starts).
+    // A valid wake at the pending epoch is accepted, wakes the app and promotes the enrollment.
     val wakeId = UUID.randomUUID().toString()
     val wake = encrypt(eventJson(id = wakeId))
     accepted(wake, wakeId)
     assertNotEquals(0L, values.lastReceivedTime)
+    assertEquals(1L, values.enrollmentEpoch)
+    assertEquals(0L, values.pendingEnrollmentEpoch)
+    assertTrue(LockedPushState.isEncryptedEnrollment(context))
 
     // The same body again is a replay: nothing changes.
     rejected("replay", wake)
@@ -166,18 +177,47 @@ class EncryptedPushReceiverTest {
     rejected("wrong key", ByteArray(4096).also { java.security.SecureRandom().nextBytes(it) })
     assertNull(values.statusCode?.takeIf { it != "connection_unavailable" })
 
-    // A stock MollySocket enrollment (no export) still accepts its plaintext wake.
-    values.enrollmentEpoch = 0
-    LockedPushState.setEncryptedEnrollment(context, false)
+    // Switching to another MollySocket server goes through the production path and brings stock back.
+    val replay = values.replayState
+    values.updateMollySocket(MollySocket.AirGapped("synthetic-new-vapid-key"))
+    assertEquals(0L, values.enrollmentEpoch)
+    assertEquals(0L, values.pendingEnrollmentEpoch)
+    assertFalse(LockedPushState.isEncryptedEnrollment(context))
+    assertEquals("replay state must be kept", replay, values.replayState)
     values.lastReceivedTime = 0
     inject("""{"urgent":true}""".toByteArray())
     assertNotEquals("stock plaintext wake was refused", 0L, values.lastReceivedTime)
   }
 
   @Test
+  fun anExportNeverImportedKeepsTheActiveEpochAccepted() {
+    registerConnector()
+    export()
+    val first = UUID.randomUUID().toString()
+    accepted(encrypt(eventJson(id = first)), first)
+    assertEquals(1L, values.enrollmentEpoch)
+    // Re-export at the server's epoch 1: pending 2, nothing else changes.
+    EnrollmentExporter.export(context, 1) { true }
+    assertEquals(1L, values.enrollmentEpoch)
+    assertEquals(2L, values.pendingEnrollmentEpoch)
+    val second = UUID.randomUUID().toString()
+    accepted(encrypt(eventJson(id = second)), second)
+    assertEquals(1L, values.enrollmentEpoch)
+    values.lastReceivedTime = 0
+    rejected("plaintext while epoch 1 is active", """{"urgent":true}""".toByteArray())
+    val third = UUID.randomUUID().toString()
+    accepted(encrypt(eventJson(id = third, epoch = 2)), third)
+    assertEquals(2L, values.enrollmentEpoch)
+    assertEquals(0L, values.pendingEnrollmentEpoch)
+    rejected("epoch 1 after promotion", encrypt(eventJson(epoch = 1)))
+  }
+
+  @Test
   fun lockedStateDropsEncryptedPushesAndKeepsNewEndpoints() {
     registerConnector()
     export()
+    values.commitReceived(EncryptedPush.ReplayState(now() - 1, emptyList()).serialize(), 1)
+    LockedPushState.setEncryptedEnrollment(context, true)
     val secret = KeyCachingService.getMasterSecret()
     val replay = values.replayState
     val newUrl = "https://push.example.invalid/rotated-endpoint-secret-path"

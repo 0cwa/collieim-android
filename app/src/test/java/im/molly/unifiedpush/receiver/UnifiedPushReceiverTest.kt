@@ -39,6 +39,8 @@ import org.unifiedpush.android.connector.data.PublicKeySet
 import org.unifiedpush.android.connector.data.PushEndpoint
 import org.unifiedpush.android.connector.data.PushMessage
 import org.thoughtcrime.securesms.gcm.PushFetchHandler
+import im.molly.unifiedpush.model.RegistrationStatus
+import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class, sdk = [28])
@@ -210,64 +212,81 @@ class UnifiedPushReceiverTest {
       """"issued_at":$now,"expires_at":${now + 300}}""").toByteArray()
   }
 
-  /** Runs [block] with an encrypted enrollment (epoch 1, instance "default") and returns the stored replay state. */
-  private fun encrypted(block: () -> Unit): () -> String? {
-    var replay: String? = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000 - 1, emptyList()).serialize()
-    every { values.enrollmentEpoch } returns 1
+  private var active = 0L
+  private var pending = 0L
+  private var replay: String? = null
+
+  /** Sets up the stored enrollment state (epochs, replay state) and the fetch handler, then runs [block]. */
+  private fun enrollment(active: Long, pending: Long, block: () -> Unit) {
+    this.active = active
+    this.pending = pending
+    replay = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000 - 1, emptyList()).serialize()
+    every { values.enrollmentEpoch } answers { this@UnifiedPushReceiverTest.active }
+    every { values.pendingEnrollmentEpoch } answers { this@UnifiedPushReceiverTest.pending }
     every { values.endpointInstance } returns "default"
     every { values.replayState } answers { replay }
-    every { values.replayState = any() } answers { replay = firstArg() }
+    every { values.commitReplayState(any()) } answers { replay = firstArg() }
+    every { values.commitReceived(any(), any()) } answers {
+      replay = firstArg(); this@UnifiedPushReceiverTest.active = secondArg(); this@UnifiedPushReceiverTest.pending = 0
+    }
     every { values.lastReceivedTime = any() } returns Unit
     every { values.enabled } returns true
+    every { values.registrationStatus } returns RegistrationStatus.REGISTERED
     every { SignalStore.account.isRegistered } returns true
     mockkStatic(PushFetchHandler::class)
     every { PushFetchHandler.handleReceivedNotification(any(), any()) } returns Unit
     block()
-    return { replay }
   }
 
   @After
   fun unmockFetch() = unmockkStatic(PushFetchHandler::class)
 
+  private fun urgent(decrypted: Boolean = true) = PushMessage("""{"urgent":true}""".toByteArray(), decrypted)
+
+  private fun fetches(count: Int) {
+    Thread.sleep(400)
+    verify(exactly = count) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+  }
+
   @Test
-  fun `encrypted enrollment fetches on a decrypted valid wake and refuses its replay`() {
-    encrypted {
+  fun `active enrollment fetches on a decrypted valid wake and refuses its replay`() {
+    enrollment(active = 1, pending = 0) {
       val receiver = UnifiedPushReceiver()
       receiver.onMessage(context, PushMessage(wake(), true), "default")
       verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
       receiver.onMessage(context, PushMessage(wake(), true), "default")
-      Thread.sleep(300)
-      verify(exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+      fetches(1)
+      verify(exactly = 1) { values.commitReplayState(any()) }
     }
   }
 
   @Test
-  fun `encrypted enrollment refuses plaintext wakes, undecrypted pushes and other epochs without any effect`() {
-    val replay = encrypted {
+  fun `active enrollment refuses plaintext wakes, undecrypted pushes and other epochs without any effect`() {
+    enrollment(active = 1, pending = 0) {
+      val before = replay
       val receiver = UnifiedPushReceiver()
-      receiver.onMessage(context, PushMessage("""{"urgent":true}""".toByteArray(), true), "default")
-      receiver.onMessage(context, PushMessage("""{"urgent":true}""".toByteArray(), false), "default")
+      receiver.onMessage(context, urgent(), "default")
+      receiver.onMessage(context, urgent(false), "default")
       receiver.onMessage(context, PushMessage("""{"test":true}""".toByteArray(), true), "default")
       receiver.onMessage(context, PushMessage(wake(), false), "default")
       receiver.onMessage(context, PushMessage(wake(epoch = 2), true), "default")
-      Thread.sleep(300)
-      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any()) }
-      verify(exactly = 0) { values.replayState = any() }
+      fetches(0)
+      verify(exactly = 0) { values.commitReplayState(any()) }
+      verify(exactly = 0) { values.commitReceived(any(), any()) }
+      org.junit.Assert.assertEquals(before, replay)
     }
-    org.junit.Assert.assertNotNull(replay())
   }
 
   @Test
-  fun `locked encrypted enrollment drops pushes without reading stored state`() {
-    encrypted {
+  fun `locked active enrollment drops pushes without reading stored state`() {
+    enrollment(active = 1, pending = 0) {
       LockedPushState.setEncryptedEnrollment(context, true)
       every { KeyCachingService.isLocked() } returns true
       clearMocks(values, answers = false, recordedCalls = true)
       UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
-      UnifiedPushReceiver().onMessage(context, PushMessage("""{"urgent":true}""".toByteArray(), true), "default")
-      Thread.sleep(300)
-      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any()) }
-      verify(exactly = 0) { values.replayState = any() }
+      UnifiedPushReceiver().onMessage(context, urgent(), "default")
+      fetches(0)
+      verify(exactly = 0) { values.commitReplayState(any()) }
       verify(exactly = 0) { values.enrollmentEpoch }
     }
     LockedPushState.setEncryptedEnrollment(context, false)
@@ -275,10 +294,91 @@ class UnifiedPushReceiverTest {
 
   @Test
   fun `stock enrollment still fetches on a plaintext wake`() {
-    encrypted {
-      every { values.enrollmentEpoch } returns 0
-      UnifiedPushReceiver().onMessage(context, PushMessage("""{"urgent":true}""".toByteArray(), true), "default")
+    enrollment(active = 0, pending = 0) {
+      UnifiedPushReceiver().onMessage(context, urgent(), "default")
       verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+    }
+  }
+
+  @Test
+  fun `an export the server never imported leaves a stock enrollment on plaintext wakes`() {
+    enrollment(active = 0, pending = 1) {
+      val receiver = UnifiedPushReceiver()
+      receiver.onMessage(context, urgent(), "default")
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      receiver.onMessage(context, PushMessage("""{"test":true}""".toByteArray(), true), "default")
+      verify(exactly = 0) { values.commitReceived(any(), any()) }
+      org.junit.Assert.assertEquals(0L, active)
+      org.junit.Assert.assertEquals(1L, pending)
+    }
+  }
+
+  @Test
+  fun `an event at the pending epoch promotes it, commits first and ends plaintext wakes`() {
+    enrollment(active = 0, pending = 1) {
+      val receiver = UnifiedPushReceiver()
+      receiver.onMessage(context, PushMessage(wake(), true), "default")
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(exactly = 1) { values.commitReceived(any(), 1) }
+      org.junit.Assert.assertEquals(1L, active)
+      org.junit.Assert.assertEquals(0L, pending)
+      org.junit.Assert.assertTrue(LockedPushState.isEncryptedEnrollment(context))
+
+      receiver.onMessage(context, urgent(), "default")
+      fetches(1)
+    }
+    LockedPushState.setEncryptedEnrollment(context, false)
+  }
+
+  @Test
+  fun `a rejected or replayed event never falls back to the plaintext path while an export is pending`() {
+    enrollment(active = 0, pending = 1) {
+      val receiver = UnifiedPushReceiver()
+      val expired = ("""{"version":1,"event_id":"11111111-1111-4111-8111-111111111111","instance":"default","subscription_epoch":1,""" +
+        """"kind":"wake","issued_at":1,"expires_at":2}""").toByteArray()
+      receiver.onMessage(context, PushMessage(expired, true), "default")
+      receiver.onMessage(context, PushMessage(wake(epoch = 2), true), "default")
+      fetches(0)
+    }
+  }
+
+  @Test
+  fun `an export at a new epoch keeps the active epoch accepted until the new one is confirmed`() {
+    enrollment(active = 1, pending = 2) {
+      val receiver = UnifiedPushReceiver()
+      receiver.onMessage(context, PushMessage(wake(epoch = 1), true), "default")
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(exactly = 1) { values.commitReplayState(any()) }
+      org.junit.Assert.assertEquals(1L, active)
+      receiver.onMessage(context, urgent(), "default")
+      fetches(1)
+      receiver.onMessage(context, PushMessage(wake(epoch = 2, id = "22222222-2222-4222-8222-222222222222"), true), "default")
+      verify(timeout = 3000, exactly = 2) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(exactly = 1) { values.commitReceived(any(), 2) }
+      org.junit.Assert.assertEquals(2L, active)
+      receiver.onMessage(context, PushMessage(wake(epoch = 1, id = "33333333-3333-4333-8333-333333333333"), true), "default")
+      fetches(2)
+    }
+  }
+
+  @Test
+  fun `stock settings change clears the encrypted enrollment but keeps the replay state`() {
+    enrollment(active = 1, pending = 2) {
+      LockedPushState.setEncryptedEnrollment(context, true)
+      every { values.vapidPublicKey } returns "old"
+      every { values.vapidPublicKey = any() } returns Unit
+      every { values.airGapped = any() } returns Unit
+      every { values.mollySocketUrl = any() } returns Unit
+      every { values.vapidKeySynced = any() } returns Unit
+      every { values.endpoint = any() } returns Unit
+      every { values.enrollmentEpoch = any() } answers { active = firstArg() }
+      every { values.pendingEnrollmentEpoch = any() } answers { pending = firstArg() }
+      val before = replay
+      values.updateMollySocket(im.molly.unifiedpush.model.MollySocket.AirGapped("new"))
+      org.junit.Assert.assertEquals(0L, active)
+      org.junit.Assert.assertEquals(0L, pending)
+      org.junit.Assert.assertFalse(LockedPushState.isEncryptedEnrollment(context))
+      org.junit.Assert.assertEquals(before, replay)
     }
   }
 

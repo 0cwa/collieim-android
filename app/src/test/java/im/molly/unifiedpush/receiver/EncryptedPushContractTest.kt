@@ -80,7 +80,7 @@ class EncryptedPushContractTest {
         now = case["now"].asLong(),
         locked = { locked || (lockBeforeCommit && lockChecks++ > 0) },
         activeInstance = case["active_instance"].asText(),
-        activeEpoch = case["active_epoch"].asLong(),
+        acceptedEpochs = setOf(case["active_epoch"].asLong()),
         state = before,
       )
       assertEquals(name, case["expected"].asText(), outcome.decision.name.lowercase())
@@ -110,7 +110,7 @@ class EncryptedPushContractTest {
     val wake = bytes("event-valid-wake.json")
     val now = 1735689600L
     fun run(at: Long, state: EncryptedPush.ReplayState) =
-      EncryptedPush.decide(wake, true, at, { false }, "fixture-instance", 1, state)
+      EncryptedPush.decide(wake, true, at, { false }, "fixture-instance", setOf(1L), state)
     val first = run(now, EncryptedPush.ReplayState(now - 1, emptyList()))
     assertEquals(EncryptedPush.Decision.ACCEPT_WAKE, first.decision)
     val reloaded = EncryptedPush.ReplayState.parse(first.state.serialize())!!

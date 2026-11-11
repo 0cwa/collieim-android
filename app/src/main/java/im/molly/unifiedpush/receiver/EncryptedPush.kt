@@ -133,6 +133,17 @@ object EncryptedPush {
   }
 
   /**
+   * True if [bytes] is a JSON object carrying event fields, valid or not. Used only to keep a rejected event from
+   * being mistaken for a plaintext wake; it never accepts anything.
+   */
+  fun isEventShaped(bytes: ByteArray): Boolean = try {
+    val root = eventMapper.readTree(String(bytes, Charsets.UTF_8))
+    root != null && root.isObject && (root.has("event_id") || root.has("subscription_epoch"))
+  } catch (e: Exception) {
+    false
+  }
+
+  /**
    * The contract's receiver rules in order: lock gate, connector decryption, event validity, active instance and
    * epoch, clock rollback, duplicate, replay capacity, then a second lock check before the state commit.
    * [locked] is called twice, once first and once just before the commit. The caller persists [Outcome.state]
@@ -144,7 +155,7 @@ object EncryptedPush {
     now: Long,
     locked: () -> Boolean,
     activeInstance: String,
-    activeEpoch: Long,
+    acceptedEpochs: Set<Long>,
     state: ReplayState,
   ): Outcome {
     fun drop(decision: Decision, event: Event? = null) = Outcome(decision, event, state)
@@ -152,7 +163,7 @@ object EncryptedPush {
     if (locked()) return drop(Decision.DROP_LOCKED)
     if (!decrypted) return drop(Decision.DROP_NOT_DECRYPTED)
     val event = parse(content, now) ?: return drop(Decision.DROP_INVALID)
-    if (event.instance != activeInstance || event.epoch != activeEpoch) return drop(Decision.DROP_ENROLLMENT_MISMATCH)
+    if (event.instance != activeInstance || event.epoch !in acceptedEpochs) return drop(Decision.DROP_ENROLLMENT_MISMATCH)
     if (now < state.clockHighWater) return drop(Decision.DROP_CLOCK_ROLLBACK)
     val retained = state.seen.filter { it.expiresAt + REPLAY_GRACE_SECONDS > now }
     if (retained.any { it.eventId == event.eventId }) return drop(Decision.DROP_DUPLICATE)

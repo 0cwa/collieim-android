@@ -17,6 +17,7 @@ import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.R
 import org.signal.core.util.ThreadUtil
 import java.io.IOException
+import im.molly.unifiedpush.receiver.LockedPushState
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -118,6 +119,8 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   fun exportEnrollment(context: Context, serverEpochText: String) {
     val app = context.applicationContext
     SignalExecutors.BOUNDED.execute {
+      // Before anything can fail, so a refused or overflowing epoch never leaves the old password file behind.
+      EnrollmentExporter.removeFiles(app)
       val message = try {
         val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
         app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, EnrollmentExporter.export(app, serverEpoch).absolutePath)
@@ -154,6 +157,11 @@ fun UnifiedPushValues.updateMollySocket(mollySocket: MollySocket) {
   if (changed) {
     vapidKeySynced = false
     endpoint = null
+    // A different MollySocket server: the encrypted enrollment no longer applies. The replay state stays,
+    // because the contract forbids lowering its clock mark.
+    enrollmentEpoch = 0
+    pendingEnrollmentEpoch = 0
+    LockedPushState.setEncryptedEnrollment(AppDependencies.application, false)
   }
 
   lastReceivedTime = 0

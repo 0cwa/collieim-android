@@ -2,6 +2,7 @@ package im.molly.unifiedpush.receiver
 
 import android.content.Context
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
+import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import org.signal.core.util.eventbus.EventBus
@@ -91,6 +92,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
     // isPushAvailable becomes false => The websocket starts
     Log.i(TAG, "onUnregistered($instance)")
     UnifiedPush.forceRemoveDistributor(context)
+    LockedPushState.takePending(context)
     if (!appLocked) {
       SignalStore.unifiedpush.endpointP256dh = null
       SignalStore.unifiedpush.endpointAuth = null
@@ -110,25 +112,31 @@ class UnifiedPushReceiver : MessagingReceiver() {
       return
     }
 
-    val epoch = SignalStore.unifiedpush.enrollmentEpoch
-    LockedPushState.setEncryptedEnrollment(context, epoch > 0)
-    if (epoch > 0) {
-      onEncryptedMessage(context, message, epoch)
-    } else {
-      updateLastReceivedTime(System.currentTimeMillis())
-      onMessageUnlocked(context, message.content.toString(Charsets.UTF_8))
+    val active = SignalStore.unifiedpush.enrollmentEpoch
+    val pending = SignalStore.unifiedpush.pendingEnrollmentEpoch
+    LockedPushState.setEncryptedEnrollment(context, active > 0)
+    // An active encrypted enrollment accepts nothing but encrypted events. Until the first event confirms an
+    // exported enrollment, anything that is not an event keeps the stock plaintext behavior.
+    if (active > 0 || pending > 0) {
+      if (onEncryptedMessage(context, message, active, pending)) return
+      if (active > 0 || EncryptedPush.isEventShaped(message.content)) return
     }
+    updateLastReceivedTime(System.currentTimeMillis())
+    onMessageUnlocked(context, message.content.toString(Charsets.UTF_8))
   }
 
-  /** An encrypted enrollment accepts nothing but a decrypted, valid, current, unseen v1 event. */
-  private fun onEncryptedMessage(context: Context, message: PushMessage, epoch: Long) {
+  /**
+   * Handles [message] as an encrypted event. Returns true if it was accepted (and its effect started). With an
+   * active enrollment the epochs accepted are the active one and, until it is confirmed, the pending one.
+   */
+  private fun onEncryptedMessage(context: Context, message: PushMessage, active: Long, pending: Long): Boolean {
     val values = SignalStore.unifiedpush
     val outcome = synchronized(replayLock) {
       val now = System.currentTimeMillis() / 1000
       val state = EncryptedPush.ReplayState.parse(values.replayState)
       if (state == null) {
         Log.w(TAG, "Replay state unavailable. Encrypted push dropped.")
-        return
+        return false
       }
       EncryptedPush.decide(
         content = message.content,
@@ -136,13 +144,28 @@ class UnifiedPushReceiver : MessagingReceiver() {
         now = now,
         locked = { appLocked },
         activeInstance = values.endpointInstance ?: "default",
-        activeEpoch = epoch,
+        acceptedEpochs = setOf(active, pending).filter { it > 0 }.toSet(),
         state = state,
-      ).also { if (it.decision.accepted) values.replayState = it.state.serialize() }
+      ).also {
+        if (it.decision.accepted) {
+          // Committed to disk before any effect. An event at the pending epoch proves the server imported the file.
+          if (it.event!!.epoch == pending) {
+            values.commitReceived(it.state.serialize(), pending)
+            LockedPushState.setEncryptedEnrollment(context, true)
+          } else {
+            values.commitReplayState(it.state.serialize())
+          }
+        }
+      }
     }
 
     Log.d(TAG, "Encrypted push: ${outcome.decision}")
-    if (!outcome.decision.accepted || appLocked) return
+    if (!outcome.decision.accepted || appLocked) return outcome.decision.accepted
+    if (values.registrationStatus != RegistrationStatus.REGISTERED) {
+      // The server holds our credentials and just reached us, so the stock server check (an HTTP call) is not needed.
+      values.registrationStatus = RegistrationStatus.REGISTERED
+      EventBus.default.post(PushServiceEvent)
+    }
     when (outcome.decision) {
       EncryptedPush.Decision.ACCEPT_WAKE -> {
         updateLastReceivedTime(System.currentTimeMillis())
@@ -155,6 +178,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       EncryptedPush.Decision.ACCEPT_STATUS -> values.statusCode = outcome.event?.code
       else -> Unit
     }
+    return true
   }
 
   private fun onMessageLocked(context: Context, message: String) {

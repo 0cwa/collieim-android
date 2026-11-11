@@ -4,12 +4,19 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import im.molly.unifiedpush.enrollment.EnrollmentExporter
+import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
+import org.signal.core.util.concurrent.SignalExecutors
+import org.thoughtcrime.securesms.R
+import org.signal.core.util.ThreadUtil
+import java.io.IOException
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -40,7 +47,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
     val distributors = distributorIds.map { appId ->
       val name = try {
-        val ai = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val ai = if (Build.VERSION.SDK_INT >= 33) {
           application.packageManager.getApplicationInfo(
             appId, PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA.toLong())
           )
@@ -105,6 +112,29 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   fun copyAciToClipboard(context: Context) {
     val aci = state.value?.aci ?: ""
     writeTextToClipboard(context, "Account ID", aci)
+  }
+
+  /** Writes the CollieSocket enrollment file off the main thread and reports the outcome as a toast. */
+  fun exportEnrollment(context: Context, serverEpochText: String) {
+    val app = context.applicationContext
+    SignalExecutors.BOUNDED.execute {
+      val message = try {
+        val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
+        app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, EnrollmentExporter.export(app, serverEpoch).absolutePath)
+      } catch (e: EnrollmentFile.Invalid) {
+        app.getString(
+          when (e.code) {
+            "not_ready" -> R.string.UnifiedPushSettingsFragment__export_enrollment_not_ready
+            "invalid_epoch" -> R.string.UnifiedPushSettingsFragment__export_enrollment_invalid_epoch
+            "unsupported_android" -> R.string.UnifiedPushSettingsFragment__export_enrollment_unsupported_android
+            else -> R.string.UnifiedPushSettingsFragment__export_enrollment_failed
+          }
+        )
+      } catch (e: IOException) {
+        app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_failed)
+      }
+      ThreadUtil.runOnMain { Toast.makeText(app, message, Toast.LENGTH_LONG).show() }
+    }
   }
 
   class Factory(private val application: Application) : ViewModelProvider.Factory {

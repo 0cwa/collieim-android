@@ -1,0 +1,1 @@
+colliesocket 5a2f0cc2590efac50aa4238aeeb19de667e6d4eb contracts/encrypted-push/v1 (enrollment.schema.json, fixtures/enrollment-valid.json)

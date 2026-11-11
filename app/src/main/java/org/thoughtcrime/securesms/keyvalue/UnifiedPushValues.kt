@@ -23,6 +23,10 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val MOLLYSOCKET_VAPID_SYNCED = "mollysocket.vapid.synced"
     private const val UNIFIEDPUSH_ENABLED = "up.enabled"
     private const val UNIFIEDPUSH_ENDPOINT = "up.endpoint"
+    private const val UNIFIEDPUSH_ENDPOINT_P256DH = "up.endpoint.p256dh"
+    private const val UNIFIEDPUSH_ENDPOINT_AUTH = "up.endpoint.auth"
+    private const val UNIFIEDPUSH_ENDPOINT_INSTANCE = "up.endpoint.instance"
+    private const val UNIFIEDPUSH_ENROLLMENT_EPOCH = "up.enrollment.epoch"
     private const val UNIFIEDPUSH_REGISTRATION_FAILED = "up.registrationFailed"
     private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
@@ -59,6 +63,16 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     }
 
   var endpoint: String? by stringValue(UNIFIEDPUSH_ENDPOINT, null)
+
+  /** Receiver keys (base64url) and connector instance delivered with [endpoint]; null when unregistered. */
+  var endpointP256dh: String? by stringValue(UNIFIEDPUSH_ENDPOINT_P256DH, null)
+
+  var endpointAuth: String? by stringValue(UNIFIEDPUSH_ENDPOINT_AUTH, null)
+
+  var endpointInstance: String? by stringValue(UNIFIEDPUSH_ENDPOINT_INSTANCE, null)
+
+  /** Subscription epoch written into the last enrollment export (0: none yet). */
+  var enrollmentEpoch: Long by longValue(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0)
 
   var registrationFailed: Boolean by booleanValue(UNIFIEDPUSH_REGISTRATION_FAILED, false)
 

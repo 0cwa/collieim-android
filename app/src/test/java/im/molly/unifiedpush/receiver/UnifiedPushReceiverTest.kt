@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import androidx.test.core.app.ApplicationProvider
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
@@ -36,6 +37,8 @@ import org.unifiedpush.android.connector.FailedReason
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PublicKeySet
 import org.unifiedpush.android.connector.data.PushEndpoint
+import org.unifiedpush.android.connector.data.PushMessage
+import org.thoughtcrime.securesms.gcm.PushFetchHandler
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class, sdk = [28])
@@ -199,5 +202,91 @@ class UnifiedPushReceiverTest {
       context.getString(R.string.UnifiedPushNotificationBuilder__registration_failed),
       notifications.single().extras.getCharSequence(Notification.EXTRA_TEXT).toString()
     )
+  }
+
+  private fun wake(epoch: Long = 1, id: String = "11111111-1111-4111-8111-111111111111"): ByteArray {
+    val now = System.currentTimeMillis() / 1000
+    return ("""{"version":1,"event_id":"$id","instance":"default","subscription_epoch":$epoch,"kind":"wake",""" +
+      """"issued_at":$now,"expires_at":${now + 300}}""").toByteArray()
+  }
+
+  /** Runs [block] with an encrypted enrollment (epoch 1, instance "default") and returns the stored replay state. */
+  private fun encrypted(block: () -> Unit): () -> String? {
+    var replay: String? = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000 - 1, emptyList()).serialize()
+    every { values.enrollmentEpoch } returns 1
+    every { values.endpointInstance } returns "default"
+    every { values.replayState } answers { replay }
+    every { values.replayState = any() } answers { replay = firstArg() }
+    every { values.lastReceivedTime = any() } returns Unit
+    every { values.enabled } returns true
+    every { SignalStore.account.isRegistered } returns true
+    mockkStatic(PushFetchHandler::class)
+    every { PushFetchHandler.handleReceivedNotification(any(), any()) } returns Unit
+    block()
+    return { replay }
+  }
+
+  @After
+  fun unmockFetch() = unmockkStatic(PushFetchHandler::class)
+
+  @Test
+  fun `encrypted enrollment fetches on a decrypted valid wake and refuses its replay`() {
+    encrypted {
+      val receiver = UnifiedPushReceiver()
+      receiver.onMessage(context, PushMessage(wake(), true), "default")
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      receiver.onMessage(context, PushMessage(wake(), true), "default")
+      Thread.sleep(300)
+      verify(exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+    }
+  }
+
+  @Test
+  fun `encrypted enrollment refuses plaintext wakes, undecrypted pushes and other epochs without any effect`() {
+    val replay = encrypted {
+      val receiver = UnifiedPushReceiver()
+      receiver.onMessage(context, PushMessage("""{"urgent":true}""".toByteArray(), true), "default")
+      receiver.onMessage(context, PushMessage("""{"urgent":true}""".toByteArray(), false), "default")
+      receiver.onMessage(context, PushMessage("""{"test":true}""".toByteArray(), true), "default")
+      receiver.onMessage(context, PushMessage(wake(), false), "default")
+      receiver.onMessage(context, PushMessage(wake(epoch = 2), true), "default")
+      Thread.sleep(300)
+      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+      verify(exactly = 0) { values.replayState = any() }
+    }
+    org.junit.Assert.assertNotNull(replay())
+  }
+
+  @Test
+  fun `locked encrypted enrollment drops pushes without reading stored state`() {
+    encrypted {
+      LockedPushState.setEncryptedEnrollment(context, true)
+      every { KeyCachingService.isLocked() } returns true
+      clearMocks(values, answers = false, recordedCalls = true)
+      UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
+      UnifiedPushReceiver().onMessage(context, PushMessage("""{"urgent":true}""".toByteArray(), true), "default")
+      Thread.sleep(300)
+      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+      verify(exactly = 0) { values.replayState = any() }
+      verify(exactly = 0) { values.enrollmentEpoch }
+    }
+    LockedPushState.setEncryptedEnrollment(context, false)
+  }
+
+  @Test
+  fun `stock enrollment still fetches on a plaintext wake`() {
+    encrypted {
+      every { values.enrollmentEpoch } returns 0
+      UnifiedPushReceiver().onMessage(context, PushMessage("""{"urgent":true}""".toByteArray(), true), "default")
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+    }
+  }
+
+  @Test
+  fun `endpoint received while locked is not applied to the stored values`() {
+    every { KeyCachingService.isLocked() } returns true
+    clearMocks(values, answers = false, recordedCalls = true)
+    UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://example.org/push", PublicKeySet("pub", "auth")), "default")
+    verify(exactly = 0) { SignalStore.unifiedpush }
   }
 }

@@ -3,6 +3,8 @@ package im.molly.unifiedpush.enrollment
 import android.content.Context
 import android.os.Build
 import im.molly.unifiedpush.UnifiedPushDistributor
+import im.molly.unifiedpush.receiver.EncryptedPush
+import im.molly.unifiedpush.receiver.LockedPushState
 import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import java.io.File
@@ -70,6 +72,12 @@ object EnrollmentExporter {
     }
 
     values.enrollmentEpoch = epoch
+    // From here the enrollment is an encrypted one: plaintext wakes stop being accepted, and the receiver
+    // needs the flag while locked, when the epoch cannot be read.
+    LockedPushState.setEncryptedEnrollment(context, true)
+    if (values.replayState == null) {
+      values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    }
     return target
   }
 

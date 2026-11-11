@@ -24,6 +24,14 @@ class UnifiedPushReceiver : MessagingReceiver() {
 
   companion object {
     private val TAG = Log.tag(UnifiedPushReceiver::class.java)
+    private val replayLock = Any()
+
+    /** Applies an endpoint that arrived while the app was locked. Called after unlock. */
+    @JvmStatic
+    fun applyPendingEndpoint(context: Context) {
+      val pending = LockedPushState.takePending(context) ?: return
+      UnifiedPushReceiver().applyEndpoint(context, pending)
+    }
   }
 
   private val executor = SerialMonoLifoExecutor(SignalExecutors.UNBOUNDED)
@@ -33,25 +41,34 @@ class UnifiedPushReceiver : MessagingReceiver() {
 
   override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
     Log.i(TAG, "onNewEndpoint($instance)")
-    if (!appLocked) {
-      val failed = SignalStore.unifiedpush.registrationFailed
-      SignalStore.unifiedpush.registrationFailed = false
-      SignalStore.unifiedpush.registrationRetryScheduled = false
-      if (failed) {
-        UnifiedPushNotificationBuilder(context).clearRegistrationFailed()
-        EventBus.default.post(PushServiceEvent)
-      }
-      SignalStore.unifiedpush.endpointP256dh = endpoint.pubKeySet?.pubKey
-      SignalStore.unifiedpush.endpointAuth = endpoint.pubKeySet?.auth
-      SignalStore.unifiedpush.endpointInstance = instance
-      val changed = refreshEndpoint(endpoint.url)
-      if (failed && !changed) {
-        AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
-      }
-      if (changed && SignalStore.unifiedpush.airGapped) {
-        updateLastReceivedTime(0)
-        UnifiedPushNotificationBuilder(context).setNotificationEndpointChangedAirGapped()
-      }
+    val received = LockedPushState.Endpoint(endpoint.url, endpoint.pubKeySet?.pubKey, endpoint.pubKeySet?.auth, instance)
+    if (appLocked) {
+      // SignalStore cannot be read while locked: keep the endpoint sealed and apply it at the next unlock.
+      LockedPushState.savePending(context, received)
+    } else {
+      LockedPushState.takePending(context)
+      applyEndpoint(context, received)
+    }
+  }
+
+  private fun applyEndpoint(context: Context, endpoint: LockedPushState.Endpoint) {
+    val failed = SignalStore.unifiedpush.registrationFailed
+    SignalStore.unifiedpush.registrationFailed = false
+    SignalStore.unifiedpush.registrationRetryScheduled = false
+    if (failed) {
+      UnifiedPushNotificationBuilder(context).clearRegistrationFailed()
+      EventBus.default.post(PushServiceEvent)
+    }
+    SignalStore.unifiedpush.endpointP256dh = endpoint.p256dh
+    SignalStore.unifiedpush.endpointAuth = endpoint.auth
+    SignalStore.unifiedpush.endpointInstance = endpoint.instance
+    val changed = refreshEndpoint(endpoint.url)
+    if (failed && !changed) {
+      AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
+    }
+    if (changed && SignalStore.unifiedpush.airGapped) {
+      updateLastReceivedTime(0)
+      UnifiedPushNotificationBuilder(context).setNotificationEndpointChangedAirGapped()
     }
   }
 
@@ -83,13 +100,60 @@ class UnifiedPushReceiver : MessagingReceiver() {
   }
 
   override fun onMessage(context: Context, message: PushMessage, instance: String) {
-    val msg = message.content.toString(Charsets.UTF_8)
-
     if (appLocked) {
-      onMessageLocked(context, msg)
+      // Which kind of enrollment this is cannot be read from SignalStore while locked.
+      if (LockedPushState.isEncryptedEnrollment(context)) {
+        Log.d(TAG, "Encrypted push dropped while locked.")
+      } else {
+        onMessageLocked(context, message.content.toString(Charsets.UTF_8))
+      }
+      return
+    }
+
+    val epoch = SignalStore.unifiedpush.enrollmentEpoch
+    LockedPushState.setEncryptedEnrollment(context, epoch > 0)
+    if (epoch > 0) {
+      onEncryptedMessage(context, message, epoch)
     } else {
       updateLastReceivedTime(System.currentTimeMillis())
-      onMessageUnlocked(context, msg)
+      onMessageUnlocked(context, message.content.toString(Charsets.UTF_8))
+    }
+  }
+
+  /** An encrypted enrollment accepts nothing but a decrypted, valid, current, unseen v1 event. */
+  private fun onEncryptedMessage(context: Context, message: PushMessage, epoch: Long) {
+    val values = SignalStore.unifiedpush
+    val outcome = synchronized(replayLock) {
+      val now = System.currentTimeMillis() / 1000
+      val state = EncryptedPush.ReplayState.parse(values.replayState)
+      if (state == null) {
+        Log.w(TAG, "Replay state unavailable. Encrypted push dropped.")
+        return
+      }
+      EncryptedPush.decide(
+        content = message.content,
+        decrypted = message.decrypted,
+        now = now,
+        locked = { appLocked },
+        activeInstance = values.endpointInstance ?: "default",
+        activeEpoch = epoch,
+        state = state,
+      ).also { if (it.decision.accepted) values.replayState = it.state.serialize() }
+    }
+
+    Log.d(TAG, "Encrypted push: ${outcome.decision}")
+    if (!outcome.decision.accepted || appLocked) return
+    when (outcome.decision) {
+      EncryptedPush.Decision.ACCEPT_WAKE -> {
+        updateLastReceivedTime(System.currentTimeMillis())
+        startFetch(context)
+      }
+      EncryptedPush.Decision.ACCEPT_TEST -> {
+        updateLastReceivedTime(System.currentTimeMillis())
+        UnifiedPushNotificationBuilder(context).setNotificationTest()
+      }
+      EncryptedPush.Decision.ACCEPT_STATUS -> values.statusCode = outcome.event?.code
+      else -> Unit
     }
   }
 
@@ -113,13 +177,15 @@ class UnifiedPushReceiver : MessagingReceiver() {
         AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
       }
 
-      else -> {
-        if (SignalStore.account.isRegistered && SignalStore.unifiedpush.enabled) {
-          Log.d(TAG, "New message")
-          executor.enqueue {
-            PushFetchHandler.handleReceivedNotification(context, true)
-          }
-        }
+      else -> startFetch(context)
+    }
+  }
+
+  private fun startFetch(context: Context) {
+    if (SignalStore.account.isRegistered && SignalStore.unifiedpush.enabled) {
+      Log.d(TAG, "New message")
+      executor.enqueue {
+        PushFetchHandler.handleReceivedNotification(context, true)
       }
     }
   }

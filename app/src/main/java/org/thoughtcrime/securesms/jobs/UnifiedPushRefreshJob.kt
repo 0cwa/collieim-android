@@ -226,6 +226,9 @@ class UnifiedPushRefreshJob private constructor(
 
   private fun clearDevice() {
     SignalStore.unifiedpush.device = null
+    // The server's copy of the enrollment belongs to the old linked device's credentials: its key, epochs and any
+    // pending update no longer apply, and the next export starts a new lifecycle with a fresh key.
+    SignalStore.unifiedpush.clearControl()
   }
 
   override fun onFailure() = Unit

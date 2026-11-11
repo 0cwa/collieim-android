@@ -1,5 +1,6 @@
 package im.molly.unifiedpush.components.settings.app.notifications
 
+import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
 
@@ -19,6 +20,10 @@ data class UnifiedPushSettingsState(
   val selectedNotAck: Boolean,
   val endpoint: String?,
   val mollySocketUrl: String?,
+  val pushFallback: Boolean = false,
+  val pushTestResult: PushHealth.Hop? = null,
+  val pushTestResultAt: Long = 0,
+  val pushTestRunning: Boolean = false,
 ) {
   val serverParameters: String?
     get() {

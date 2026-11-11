@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
@@ -19,6 +20,7 @@ import org.signal.core.util.ThreadUtil
 import java.io.IOException
 import im.molly.unifiedpush.receiver.LockedPushState
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.jobs.UnifiedPushHealthJob
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
@@ -79,7 +81,20 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       selectedNotAck = !ack,
       endpoint = SignalStore.unifiedpush.endpoint,
       mollySocketUrl = mollySocketUrl,
+      pushFallback = SignalStore.unifiedpush.health.fallback,
+      pushTestResult = PushHealth.Hop.fromCode(SignalStore.unifiedpush.health.lastResult),
+      pushTestResultAt = SignalStore.unifiedpush.health.lastResultAt,
+      pushTestRunning = pushTestStartedAt > 0 && SignalStore.unifiedpush.health.lastResultAt * 1000 < pushTestStartedAt,
     )
+  }
+
+  private var pushTestStartedAt = 0L
+
+  /** Runs the end-to-end push test; the verdict arrives through [PushServiceEvent] and is shown on the screen. */
+  fun testPush() {
+    pushTestStartedAt = System.currentTimeMillis()
+    UnifiedPushHealthJob.enqueue(manual = true)
+    refresh()
   }
 
   fun setUnifiedPushDistributor(distributor: String) {

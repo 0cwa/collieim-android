@@ -56,9 +56,10 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
 
     try {
       AppDependencies.signalServiceMessageSender.sendControlMessage(device.deviceId, update.frame)
-    } catch (e: RuntimeException) {
+    } catch (e: Exception) {
+      store.replace(update.afterAttempt(System.currentTimeMillis() / 1000, error = e.javaClass.simpleName))
       // BaseJob turns a RuntimeException into a crash; a failed send is only a reason to try again.
-      throw IOException("Endpoint update send failed", e)
+      throw if (e is IOException) e else IOException("Endpoint update send failed", e)
     }
     store.replace(update.afterAttempt(System.currentTimeMillis() / 1000))
     Log.i(TAG, "Endpoint update for epoch ${update.epoch} sent (attempt ${update.attempts + 1}).")

@@ -19,19 +19,28 @@ class ControlUpdate(
   val createdAt: Long,
   val attempts: Int = 0,
   val lastAttemptAt: Long = 0,
+  /** True when the update only repeats the current subscription to test the round trip (see [EndpointUpdates.begin]). */
+  val ping: Boolean = false,
+  /** When a send of this blob last succeeded (0: never). A send success is not a confirmation. */
+  val sentAt: Long = 0,
+  /** Fixed code of the last failed send, never a message or a value. */
+  val failure: String? = null,
 ) {
   override fun toString() = "ControlUpdate(epoch=$epoch)"
 
   fun sameTarget(subscription: ControlFrame.Subscription) =
     endpoint == subscription.endpoint && p256dh == subscription.p256dh && auth == subscription.auth
 
-  fun afterAttempt(now: Long) = ControlUpdate(epoch, endpoint, p256dh, auth, frame, createdAt, attempts + 1, now)
+  /** [error] is a fixed code, or null when the send succeeded. */
+  fun afterAttempt(now: Long, error: String? = null) =
+    ControlUpdate(epoch, endpoint, p256dh, auth, frame, createdAt, attempts + 1, now, ping, if (error == null) now else sentAt, error)
 
   fun serialize(): String = mapper.writeValueAsString(
     mapOf(
       "epoch" to epoch, "endpoint" to endpoint, "p256dh" to p256dh, "auth" to auth,
       "frame" to Base64.getUrlEncoder().withoutPadding().encodeToString(frame),
       "created" to createdAt, "attempts" to attempts, "last" to lastAttemptAt,
+      "ping" to ping, "sent" to sentAt, "failure" to failure,
     )
   )
 
@@ -50,6 +59,9 @@ class ControlUpdate(
         createdAt = root["created"].asLong(),
         attempts = root["attempts"].asInt(),
         lastAttemptAt = root["last"].asLong(),
+        ping = root["ping"]?.asBoolean() ?: false,
+        sentAt = root["sent"]?.asLong() ?: 0,
+        failure = root["failure"]?.takeIf { it.isTextual }?.asText(),
       ).takeIf { it.epoch > 0 && it.frame.size in ControlFrame.HEADER_SIZE..ControlFrame.MAX_FRAME }
     } catch (e: Exception) {
       null
@@ -83,6 +95,10 @@ object EndpointUpdates {
    * the same subscription is returned unchanged, so a repeated endpoint callback never allocates another epoch or
    * builds another blob. A different subscription supersedes it with an epoch above everything allocated so far.
    * The caller sends the result.
+   *
+   * [ping] marks an update that repeats the subscription the server already has. The contract has no ping message:
+   * a control update at a higher epoch is the one thing the phone can send that the server answers with a push, so it
+   * is used to test the whole path. The server applies the same values and confirms with `subscription_updated`.
    */
   fun begin(
     store: ControlStore,
@@ -91,6 +107,7 @@ object EndpointUpdates {
     subscription: ControlFrame.Subscription,
     now: Long,
     nonce: ByteArray? = null,
+    ping: Boolean = false,
   ): ControlUpdate? {
     val key = store.controlKey ?: return null
     if (store.enrollmentEpoch <= 0) return null
@@ -100,7 +117,7 @@ object EndpointUpdates {
     if (epoch > MAX_EPOCH) throw EnrollmentFile.Invalid("invalid_epoch")
     val frame = if (nonce == null) ControlFrame.build(key, accountId, deviceId, epoch, subscription)
     else ControlFrame.build(key, accountId, deviceId, epoch, subscription, nonce)
-    val update = ControlUpdate(epoch, subscription.endpoint, subscription.p256dh, subscription.auth, frame, now)
+    val update = ControlUpdate(epoch, subscription.endpoint, subscription.p256dh, subscription.auth, frame, now, ping = ping)
     store.commit(update)
     return update
   }

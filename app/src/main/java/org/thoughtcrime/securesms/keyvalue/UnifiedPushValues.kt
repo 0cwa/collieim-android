@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.keyvalue
 
+import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.logging.Log
@@ -34,6 +35,11 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_PENDING_CONTROL_KEY = "up.control.pendingKey"
     private const val UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH = "up.control.highestEpoch"
     private const val UNIFIEDPUSH_CONTROL_UPDATE = "up.control.update"
+    private const val UNIFIEDPUSH_HEALTH_FAILURES = "up.health.failures"
+    private const val UNIFIEDPUSH_HEALTH_FALLBACK = "up.health.fallback"
+    private const val UNIFIEDPUSH_HEALTH_RESULT = "up.health.result"
+    private const val UNIFIEDPUSH_HEALTH_RESULT_AT = "up.health.resultAt"
+    private const val UNIFIEDPUSH_HEALTH_MISS_AT = "up.health.missAt"
     private const val UNIFIEDPUSH_REGISTRATION_FAILED = "up.registrationFailed"
     private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
@@ -144,6 +150,25 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       .putLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, epoch)
       .putString(UNIFIEDPUSH_CONTROL_UPDATE, null)
       .commit()
+  }
+
+  /** Push health, see [im.molly.unifiedpush.health.PushHealth]. */
+  val health = object : PushHealth.HealthStore {
+    override var failures: Int
+      get() = getInteger(UNIFIEDPUSH_HEALTH_FAILURES, 0)
+      set(value) = putInteger(UNIFIEDPUSH_HEALTH_FAILURES, value)
+    override var fallback: Boolean
+      get() = getBoolean(UNIFIEDPUSH_HEALTH_FALLBACK, false)
+      set(value) = putBoolean(UNIFIEDPUSH_HEALTH_FALLBACK, value)
+    override var lastResult: String?
+      get() = getString(UNIFIEDPUSH_HEALTH_RESULT, null)
+      set(value) = putString(UNIFIEDPUSH_HEALTH_RESULT, value)
+    override var lastResultAt: Long
+      get() = getLong(UNIFIEDPUSH_HEALTH_RESULT_AT, 0)
+      set(value) = putLong(UNIFIEDPUSH_HEALTH_RESULT_AT, value)
+    override var lastMissAt: Long
+      get() = getLong(UNIFIEDPUSH_HEALTH_MISS_AT, 0)
+      set(value) = putLong(UNIFIEDPUSH_HEALTH_MISS_AT, value)
   }
 
   /** Forgets every control key and update: a different server, or a new enrollment lifecycle. */

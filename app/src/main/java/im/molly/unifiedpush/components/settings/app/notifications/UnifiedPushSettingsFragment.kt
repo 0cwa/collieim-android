@@ -10,6 +10,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.Lifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.lifecycle.ViewModelProvider
+import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
@@ -80,6 +81,13 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
         title = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__status)),
         summary = DSLSettingsText.from(getStatusSummary(state)),
       )
+
+      if (state.pushFallback) {
+        textPref(
+          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__push_warning_title, requireContext().getColor(R.color.signal_alert_primary)),
+          summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__push_warning_summary),
+        )
+      }
 
       if (state.registrationFailed) {
         clickPref(
@@ -154,10 +162,33 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       }
 
       clickPref(
+        title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__test_push),
+        summary = DSLSettingsText.from(getPushTestSummary(state)),
+        isEnabled = !state.pushTestRunning,
+        onClick = { viewModel.testPush() },
+      )
+
+      clickPref(
         title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment),
         summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment_summary),
         onClick = { showExportEpochDialog() },
       )
+    }
+  }
+
+  @StringRes
+  private fun getPushTestSummary(state: UnifiedPushSettingsState): Int {
+    return when {
+      state.pushTestRunning -> R.string.UnifiedPushSettingsFragment__test_push_running
+      state.pushTestResultAt == 0L -> R.string.UnifiedPushSettingsFragment__test_push_summary
+      else -> when (state.pushTestResult) {
+        PushHealth.Hop.NONE -> R.string.UnifiedPushSettingsFragment__test_push_ok
+        PushHealth.Hop.DISTRIBUTOR -> R.string.UnifiedPushSettingsFragment__test_push_failed_distributor
+        PushHealth.Hop.SIGNAL_SEND -> R.string.UnifiedPushSettingsFragment__test_push_failed_signal_send
+        PushHealth.Hop.COLLIESOCKET_OR_PROVIDER -> R.string.UnifiedPushSettingsFragment__test_push_failed_colliesocket_or_provider
+        PushHealth.Hop.UNAVAILABLE -> R.string.UnifiedPushSettingsFragment__test_push_unavailable
+        null -> R.string.UnifiedPushSettingsFragment__test_push_summary
+      }
     }
   }
 

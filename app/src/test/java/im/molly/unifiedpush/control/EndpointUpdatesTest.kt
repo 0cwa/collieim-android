@@ -159,4 +159,38 @@ class EndpointUpdatesTest {
     assertNotNull(update)
     assertEquals("ControlUpdate(epoch=${update.epoch})", update.toString())
   }
+
+  @Test
+  fun `a ping repeats the current subscription at a higher epoch and is marked as a ping`() {
+    val store = Memory(enrollmentEpoch = 2)
+    val ping = EndpointUpdates.begin(store, account, 2, sub("a"), 100, ping = true)!!
+    assertEquals(3, ping.epoch)
+    assertTrue(ping.ping)
+    assertEquals(sub("a").endpoint, ping.endpoint)
+    // an unconfirmed ping for the same subscription is reused, not stacked
+    assertArrayEquals(ping.frame, EndpointUpdates.begin(store, account, 2, sub("a"), 200, ping = true)!!.frame)
+    assertEquals(1, store.commits)
+    // a real endpoint change replaces it
+    val real = begin(store, "b")!!
+    assertEquals(4, real.epoch)
+    assertFalse(real.ping)
+  }
+
+  @Test
+  fun `send outcomes are recorded as fixed codes and a success is not a confirmation`() {
+    val update = begin(Memory(), "a")!!
+    assertEquals(0, update.sentAt)
+    val failed = update.afterAttempt(50, error = "SocketTimeoutException")
+    assertEquals(0, failed.sentAt)
+    assertEquals("SocketTimeoutException", failed.failure)
+    val sent = failed.afterAttempt(60)
+    assertEquals(60, sent.sentAt)
+    assertNull(sent.failure)
+    assertEquals(2, sent.attempts)
+    val back = ControlUpdate.parse(sent.serialize())!!
+    assertEquals(60, back.sentAt)
+    assertEquals(sent.ping, back.ping)
+    // an update stored before pings existed still reads
+    assertNotNull(ControlUpdate.parse("""{"epoch":3,"endpoint":"x","p256dh":"x","auth":"x","frame":"${java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(ByteArray(60))}","created":1,"attempts":0,"last":0}"""))
+  }
 }

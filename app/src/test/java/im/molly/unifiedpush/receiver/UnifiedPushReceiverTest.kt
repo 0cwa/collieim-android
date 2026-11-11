@@ -54,6 +54,13 @@ class UnifiedPushReceiverTest {
 
   private val values = mockk<UnifiedPushValues>(relaxUnitFun = true)
   private val context: Application get() = ApplicationProvider.getApplicationContext()
+  private val healthStore = object : im.molly.unifiedpush.health.PushHealth.HealthStore {
+    override var failures = 0
+    override var fallback = false
+    override var lastResult: String? = null
+    override var lastResultAt = 0L
+    override var lastMissAt = 0L
+  }
   private var failed = false
   private var retryScheduled = false
 
@@ -69,6 +76,7 @@ class UnifiedPushReceiverTest {
     every { values.registrationFailed = any() } answers { failed = firstArg() }
     every { values.registrationRetryScheduled } answers { retryScheduled }
     every { values.registrationRetryScheduled = any() } answers { retryScheduled = firstArg() }
+    every { values.health } returns healthStore
     every { values.controlKey } returns null
     every { values.pendingControlKey } returns null
     every { values.controlUpdate } returns null
@@ -424,8 +432,10 @@ class UnifiedPushReceiverTest {
   @Test
   fun `subscription_updated at the pending update's epoch confirms it and is not a server problem`() {
     withPendingUpdate(epoch = 2) {
+      healthStore.failures = 1
       UnifiedPushReceiver().onMessage(context, PushMessage(statusEvent(2, "subscription_updated"), true), "default")
       verify(exactly = 1) { values.commitControlConfirmed(any(), 2) }
+      org.junit.Assert.assertEquals("the whole path worked, so earlier failures stop counting", 0, healthStore.failures)
       verify(exactly = 0) { values.statusCode = any() }
       verify(exactly = 0) { values.commitReplayState(any()) }
       org.junit.Assert.assertEquals(2L, active)

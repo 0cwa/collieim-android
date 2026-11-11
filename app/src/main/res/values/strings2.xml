@@ -156,6 +156,16 @@
     <string name="UnifiedPushSettingsFragment__export_enrollment_not_ready">Not ready: a linked device and a distributor endpoint with keys are needed.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_failed">Export failed</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_export">Export</string>
+    <string name="UnifiedPushSettingsFragment__test_push">Test my push</string>
+    <string name="UnifiedPushSettingsFragment__test_push_summary">Sends a test through Signal, CollieSocket and your push provider and names the step that fails</string>
+    <string name="UnifiedPushSettingsFragment__test_push_running">Testing… this takes up to a minute</string>
+    <string name="UnifiedPushSettingsFragment__test_push_ok">Push works. Your phone received CollieSocket\'s confirmation.</string>
+    <string name="UnifiedPushSettingsFragment__test_push_failed_distributor">Failing step: the distributor app. None is active or it has given no endpoint.</string>
+    <string name="UnifiedPushSettingsFragment__test_push_failed_signal_send">Failing step: sending to CollieSocket through Signal. The test could not be sent.</string>
+    <string name="UnifiedPushSettingsFragment__test_push_failed_colliesocket_or_provider">Failing step: CollieSocket or the push provider. The test went out through Signal but no confirmation arrived within a minute.</string>
+    <string name="UnifiedPushSettingsFragment__test_push_unavailable">Cannot test yet: CollieSocket must have imported an enrollment file exported from this app.</string>
+    <string name="UnifiedPushSettingsFragment__push_warning_title">Push is not working</string>
+    <string name="UnifiedPushSettingsFragment__push_warning_summary">Messages are arriving late, so this app switched to WebSocket mode, which uses more battery. Run Test my push after fixing the problem to switch back.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_epoch_hint">Current epoch (blank if not enrolled)</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_epoch_message">Enter the epoch that `mollysocket enrollment status ACCOUNT_UUID` reports on the server, or leave it blank if this account is not enrolled yet.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_invalid_epoch">The epoch must be a whole number from 0 to 9007199254740990</string>

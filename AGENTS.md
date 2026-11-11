@@ -10,3 +10,5 @@
 - Put new UI only where the request says. If it doesn't say, ask.
 - Ported upstream changes keep their original author (`git am`, or a `Co-authored-by:` trailer).
 - CodeRabbit: its rate-limit and "review in progress" comments are not findings. Translation strings are excluded (`.coderabbit.yaml`).
+- Encrypted push follows `contracts/encrypted-push/v1` in `0cwa/colliesocket`. If the contract is wrong or unclear, open an issue or PR in that repo and continue here with the contract as written; do not reinterpret a field here.
+- This repo is public. Name only projects with a public repo, or Collie Pack, and describe anything else generically ("the push provider", "the distributor").

@@ -63,6 +63,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
   val apkUpdateValues = ApkUpdateValues(store, context)
   val backupValues = BackupValues(store, context)
   val unifiedPushValues = UnifiedPushValues(store)
+  val updateNoticeValues = UpdateNoticeValues(store)
   val labsValues = LabsValues(store) { RemoteConfig.internalUser }
 
   companion object {
@@ -110,6 +111,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
       apkUpdate.onFirstEverAppLaunch()
       backup.onFirstEverAppLaunch()
       unifiedpush.onFirstEverAppLaunch()
+      updateNotices.onFirstEverAppLaunch()
       labs.onFirstEverAppLaunch()
     }
 
@@ -144,6 +146,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
           apkUpdate.keysToIncludeInBackup +
           backup.keysToIncludeInBackup +
           unifiedpush.keysToIncludeInBackup +
+          updateNotices.keysToIncludeInBackup +
           labs.keysToIncludeInBackup
       }
 
@@ -216,6 +219,11 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
     @get:JvmName("misc")
     val misc: MiscellaneousValues
       get() = instance!!.miscValues
+
+    @JvmStatic
+    @get:JvmName("updateNotices")
+    val updateNotices: UpdateNoticeValues
+      get() = instance!!.updateNoticeValues
 
     @JvmStatic
     @get:JvmName("internal")

@@ -158,6 +158,9 @@ import org.thoughtcrime.securesms.main.MainToolbarState
 import org.thoughtcrime.securesms.main.MainToolbarViewModel
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder
 import org.thoughtcrime.securesms.main.rememberDecoratedDetailEntries
+import org.thoughtcrime.securesms.main.updates.CollieReleaseNotes
+import org.thoughtcrime.securesms.main.updates.CollieReleaseNotesCard
+import org.thoughtcrime.securesms.main.updates.UpdateNoticeViewModel
 import org.thoughtcrime.securesms.mediasend.MediaSendLauncher
 import org.thoughtcrime.securesms.megaphone.Megaphone
 import org.thoughtcrime.securesms.megaphone.MegaphoneActionController
@@ -248,6 +251,10 @@ class MainActivity :
 
   private val toolbarViewModel: MainToolbarViewModel by viewModels()
   private val toolbarCallback = ToolbarCallback()
+
+  private val updateNoticeViewModel: UpdateNoticeViewModel by viewModel {
+    UpdateNoticeViewModel(SignalStore.updateNotices, CollieReleaseNotes.ID)
+  }
 
   private val motionEventRelay: MotionEventRelay by viewModels()
 
@@ -417,6 +424,14 @@ class MainActivity :
         val paneAnchor by mainNavigationViewModel.paneAnchor.collectAsStateWithLifecycle()
         val hasDetailContent by mainNavigationViewModel.hasDetailContent.collectAsStateWithLifecycle()
 
+        // This lives outside the list chrome, which can leave composition while a conversation is
+        // open. Coming back to the list must not reopen notes that were expanded before navigating.
+        LaunchedEffect(mainNavigationState.currentListLocation, mainToolbarState.mode, hasDetailContent) {
+          if (mainNavigationState.currentListLocation != MainListRoute.Chats || mainToolbarState.mode != MainToolbarMode.FULL || hasDetailContent) {
+            updateNoticeViewModel.minimize()
+          }
+        }
+
         val tabEntries = rememberDecoratedDetailEntries(mainNavigationViewModel, isSplitPane)
 
         val paneLayout = rememberMainPaneLayout(
@@ -529,17 +544,41 @@ class MainActivity :
     val mainToolbarState by toolbarViewModel.state.collectAsStateWithLifecycle()
     val mainNavigationState by mainNavigationViewModel.mainNavigationBarState.collectAsStateWithLifecycle()
     val megaphone by mainNavigationViewModel.megaphone.collectAsStateWithLifecycle()
+    val hasDetailContent by mainNavigationViewModel.hasDetailContent.collectAsStateWithLifecycle()
+    val noticePresentation by updateNoticeViewModel.presentation.collectAsStateWithLifecycle()
+
+    val canHostNotice = mainNavigationState.currentListLocation == MainListRoute.Chats &&
+      mainToolbarState.destination == MainListRoute.Chats &&
+      mainToolbarState.mode == MainToolbarMode.FULL &&
+      !hasDetailContent
+
+    // Passive notices yield to existing prompts. An explicit menu selection still opens the notes.
+    val showNotice = canHostNotice &&
+      noticePresentation != UpdateNoticeViewModel.Presentation.DISMISSED &&
+      (megaphone == Megaphone.NONE || noticePresentation == UpdateNoticeViewModel.Presentation.EXPANDED)
+
+    BackHandler(enabled = showNotice && noticePresentation == UpdateNoticeViewModel.Presentation.EXPANDED) {
+      updateNoticeViewModel.minimize()
+    }
 
     val isSplitPane = LocalResources.current.rememberIsSplitPane()
     val contentLayoutData = rememberListDetailPaneMetrics(listPaddingStart = mainToolbarState.mode.listPaddingStart)
     val navigationType = NavigationType.rememberNavigationType()
 
-    val bottomChromeState = remember(mainToolbarState.destination, mainToolbarState.mode, megaphone) {
+    // Reading notes is an explicit choice. Temporarily make room for it without snoozing or
+    // acknowledging another notice. Fullscreen flows have no inline card and keep their callbacks.
+    val bottomMegaphone = if (showNotice && noticePresentation == UpdateNoticeViewModel.Presentation.EXPANDED && megaphone != Megaphone.NONE && megaphone.style != Megaphone.Style.FULLSCREEN) {
+      Megaphone.NONE
+    } else {
+      megaphone
+    }
+
+    val bottomChromeState = remember(mainToolbarState.destination, mainToolbarState.mode, bottomMegaphone) {
       MainBottomChromeState(
         destination = mainToolbarState.destination,
         mainToolbarMode = mainToolbarState.mode,
         megaphoneState = MainMegaphoneState(
-          megaphone = megaphone,
+          megaphone = bottomMegaphone,
           mainToolbarMode = mainToolbarState.mode
         )
       )
@@ -578,15 +617,41 @@ class MainActivity :
           callback = toolbarCallback
         )
 
-        Box(modifier = Modifier.weight(1f)) {
-          content()
+        // Measure only the space left by the toolbar and navigation. Even in a short multi-window
+        // layout, an expanded notice leaves room for the list and never pushes navigation offscreen.
+        BoxWithConstraints(modifier = Modifier.weight(1f)) {
+          val compactNoticeActions = showNotice && navigationType == NavigationType.BAR && maxHeight < 320.dp
+          val reservedListHeight = if (navigationType == NavigationType.BAR) {
+            // Short windows use one row of camera/compose controls instead of squeezing the stack.
+            (maxHeight * 0.5f).coerceAtMost(if (compactNoticeActions) 96.dp else 160.dp)
+          } else {
+            (maxHeight * 0.25f).coerceAtMost(96.dp)
+          }
+          val noticeMaxHeight = (maxHeight - reservedListHeight).coerceAtMost(440.dp)
 
-          MainBottomChrome(
-            state = bottomChromeState,
-            callback = mainBottomChromeCallback,
-            megaphoneActionController = megaphoneActionController,
-            modifier = Modifier.align(Alignment.BottomCenter)
-          )
+          Column(modifier = Modifier.fillMaxSize()) {
+            if (showNotice) {
+              CollieReleaseNotesCard(
+                presentation = noticePresentation,
+                onExpand = updateNoticeViewModel::expand,
+                onMinimize = updateNoticeViewModel::minimize,
+                onDismiss = updateNoticeViewModel::dismiss,
+                maxExpandedHeight = (noticeMaxHeight - 12.dp).coerceAtLeast(0.dp)
+              )
+            }
+
+            Box(modifier = Modifier.weight(1f)) {
+              content()
+
+              MainBottomChrome(
+                state = bottomChromeState,
+                callback = mainBottomChromeCallback,
+                megaphoneActionController = megaphoneActionController,
+                modifier = Modifier.align(Alignment.BottomCenter),
+                compactActionButtons = compactNoticeActions
+              )
+            }
+          }
         }
 
         if (navigationType == NavigationType.BAR && mainToolbarState.mode == MainToolbarMode.FULL) {
@@ -1009,6 +1074,11 @@ class MainActivity :
 
     override fun onSettingsClick() {
       openSettings.launch(AppSettingsActivity.home(this@MainActivity))
+    }
+
+    override fun onWhatsNewClick() {
+      mainNavigationViewModel.onEvent(MainNavigationEvents.ExitDetail)
+      updateNoticeViewModel.expand()
     }
 
     override fun onNotificationProfileClick() {

@@ -11,8 +11,10 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -65,8 +67,37 @@ fun MainFloatingActionButtons(
   destination: MainListRoute,
   callback: MainFloatingActionButtonsCallback,
   modifier: Modifier = Modifier,
-  navigationType: NavigationType = NavigationType.rememberNavigationType()
+  navigationType: NavigationType = NavigationType.rememberNavigationType(),
+  compact: Boolean = false
 ) {
+  if (compact && navigationType == NavigationType.BAR) {
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(ACTION_BUTTON_SPACING),
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = modifier.padding(ACTION_BUTTON_SPACING)
+    ) {
+      if (destination == MainListRoute.Chats || destination == MainListRoute.Archive) {
+        CameraButton(
+          onClick = { callback.onCameraClick(MainListRoute.Chats) },
+          colors = IconButtonDefaults.filledTonalIconButtonColors().copy(
+            containerColor = SignalTheme.colors.colorSurface2,
+            contentColor = MaterialTheme.colorScheme.onSurface
+          ),
+          shadowElevation = 4.dp
+        )
+      }
+
+      PrimaryActionButton(
+        destination = destination,
+        onNewChatClick = callback::onNewChatClick,
+        onCameraClick = callback::onCameraClick,
+        onNewCallClick = callback::onNewCallClick,
+        elevation = 4.dp
+      )
+    }
+    return
+  }
+
   val boxHeightDp = (ACTION_BUTTON_SIZE * 2 + ACTION_BUTTON_SPACING)
   val boxHeightPx = with(LocalDensity.current) {
     boxHeightDp.toPx().roundToInt()

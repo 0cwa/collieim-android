@@ -96,6 +96,7 @@ interface MainToolbarCallback {
   fun onClearUnreadChatsFilterClick()
   fun onOpenArchiveClick()
   fun onSettingsClick()
+  fun onWhatsNewClick()
   fun onNotificationProfileClick()
   fun onProxyClick()
   fun onSearchClick()
@@ -120,6 +121,7 @@ interface MainToolbarCallback {
     override fun onClearUnreadChatsFilterClick() = Unit
     override fun onOpenArchiveClick() = Unit
     override fun onSettingsClick() = Unit
+    override fun onWhatsNewClick() = Unit
     override fun onNotificationProfileClick() = Unit
     override fun onProxyClick() = Unit
     override fun onSearchClick() = Unit
@@ -773,6 +775,17 @@ private fun ChatDropdownItems(state: MainToolbarState, callback: MainToolbarCall
       }
     )
   }
+
+  DropdownMenus.Item(
+    leadingIconResId = R.drawable.symbol_file_24,
+    text = {
+      Text(text = stringResource(R.string.CollieUpdates__whats_new))
+    },
+    onClick = {
+      callback.onWhatsNewClick()
+      onOptionSelected()
+    }
+  )
 
   DropdownMenus.Item(
     leadingIconResId = CoreUiR.drawable.symbol_settings_android_24,

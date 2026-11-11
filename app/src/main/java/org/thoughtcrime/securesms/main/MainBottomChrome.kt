@@ -63,7 +63,8 @@ fun MainBottomChrome(
   state: MainBottomChromeState,
   callback: MainBottomChromeCallback,
   megaphoneActionController: MegaphoneActionController,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  compactActionButtons: Boolean = false
 ) {
   val isSplitPane = LocalResources.current.rememberIsSplitPane()
   val navigationType = NavigationType.rememberNavigationType()
@@ -81,7 +82,8 @@ fun MainBottomChrome(
       ) {
         MainFloatingActionButtons(
           destination = state.destination,
-          callback = callback
+          callback = callback,
+          compact = compactActionButtons
         )
       }
     }

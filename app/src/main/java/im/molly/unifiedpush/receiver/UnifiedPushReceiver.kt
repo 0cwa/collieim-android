@@ -2,6 +2,10 @@ package im.molly.unifiedpush.receiver
 
 import android.content.Context
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
+import im.molly.unifiedpush.control.ControlFrame
+import im.molly.unifiedpush.control.EndpointUpdates
+import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
@@ -10,6 +14,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.PushServiceEvent
 import org.thoughtcrime.securesms.gcm.FcmFetchManager
 import org.thoughtcrime.securesms.gcm.PushFetchHandler
+import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.service.KeyCachingService
@@ -30,8 +35,10 @@ class UnifiedPushReceiver : MessagingReceiver() {
     /** Applies an endpoint that arrived while the app was locked. Called after unlock. */
     @JvmStatic
     fun applyPendingEndpoint(context: Context) {
-      val pending = LockedPushState.takePending(context) ?: return
-      UnifiedPushReceiver().applyEndpoint(context, pending)
+      val pending = LockedPushState.takePending(context)
+      if (pending != null) UnifiedPushReceiver().applyEndpoint(context, pending)
+      // An endpoint update that was built but never confirmed is sent again now that the app can read its state.
+      UnifiedPushControlJob.resumeIfPending()
     }
   }
 
@@ -60,16 +67,45 @@ class UnifiedPushReceiver : MessagingReceiver() {
       UnifiedPushNotificationBuilder(context).clearRegistrationFailed()
       EventBus.default.post(PushServiceEvent)
     }
+    val subscriptionChanged = SignalStore.unifiedpush.endpoint != endpoint.url ||
+      SignalStore.unifiedpush.endpointP256dh != endpoint.p256dh || SignalStore.unifiedpush.endpointAuth != endpoint.auth
     SignalStore.unifiedpush.endpointP256dh = endpoint.p256dh
     SignalStore.unifiedpush.endpointAuth = endpoint.auth
     SignalStore.unifiedpush.endpointInstance = endpoint.instance
     val changed = refreshEndpoint(endpoint.url)
+    if (subscriptionChanged) beginEndpointUpdate(endpoint)
     if (failed && !changed) {
       AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
     }
     if (changed && SignalStore.unifiedpush.airGapped) {
       updateLastReceivedTime(0)
       UnifiedPushNotificationBuilder(context).setNotificationEndpointChangedAirGapped()
+    }
+  }
+
+  /**
+   * Tells CollieSocket about a new endpoint over Signal. Does nothing unless the server has imported an enrollment
+   * with a control key. The update is recorded durably first; the job sends it and resends it until confirmed.
+   */
+  private fun beginEndpointUpdate(endpoint: LockedPushState.Endpoint) {
+    val values = SignalStore.unifiedpush
+    if (values.controlKey == null) return
+    val aci = SignalStore.account.aci
+    val device = values.device
+    if (aci == null || device == null) return
+    try {
+      val subscription = ControlFrame.Subscription(endpoint.url, endpoint.p256dh.orEmpty(), endpoint.auth.orEmpty())
+      val update = EndpointUpdates.begin(
+        store = UnifiedPushControlStore(values),
+        accountId = aci.toString(),
+        deviceId = device.deviceId,
+        subscription = subscription,
+        now = System.currentTimeMillis() / 1000,
+      )
+      if (update != null) UnifiedPushControlJob.enqueue()
+    } catch (e: EnrollmentFile.Invalid) {
+      // The distributor gave an endpoint the contract would refuse, so there is nothing valid to send.
+      Log.w(TAG, "Endpoint update not built: ${e.code}")
     }
   }
 
@@ -131,6 +167,8 @@ class UnifiedPushReceiver : MessagingReceiver() {
    */
   private fun onEncryptedMessage(context: Context, message: PushMessage, active: Long, pending: Long): Boolean {
     val values = SignalStore.unifiedpush
+    val controlStore = UnifiedPushControlStore(values)
+    var confirmed = false
     val outcome = synchronized(replayLock) {
       val now = System.currentTimeMillis() / 1000
       val state = EncryptedPush.ReplayState.parse(values.replayState)
@@ -144,12 +182,17 @@ class UnifiedPushReceiver : MessagingReceiver() {
         now = now,
         locked = { appLocked },
         activeInstance = values.endpointInstance ?: "default",
-        acceptedEpochs = setOf(active, pending).filter { it > 0 }.toSet(),
+        acceptedEpochs = EndpointUpdates.acceptedEpochs(controlStore, active, pending),
         state = state,
+        versionForEpoch = { epoch -> eventVersion(epoch, active, pending, controlStore.update?.epoch) },
       ).also {
         if (it.decision.accepted) {
-          // Committed to disk before any effect. An event at the pending epoch proves the server imported the file.
-          if (it.event!!.epoch == pending) {
+          // Committed to disk before any effect. An event at the pending epoch proves the server imported the file;
+          // `subscription_updated` at the update's epoch proves the server applied the new endpoint.
+          if (EndpointUpdates.confirms(controlStore.update, it.event!!)) {
+            values.commitControlConfirmed(it.state.serialize(), it.event.epoch)
+            confirmed = true
+          } else if (it.event.epoch == pending) {
             values.commitReceived(it.state.serialize(), pending)
             LockedPushState.setEncryptedEnrollment(context, true)
           } else {
@@ -175,10 +218,22 @@ class UnifiedPushReceiver : MessagingReceiver() {
         updateLastReceivedTime(System.currentTimeMillis())
         UnifiedPushNotificationBuilder(context).setNotificationTest()
       }
-      EncryptedPush.Decision.ACCEPT_STATUS -> values.statusCode = outcome.event?.code
+      EncryptedPush.Decision.ACCEPT_STATUS -> {
+        // A confirmation is not a server problem; it is only recorded as the end of the pending update.
+        if (confirmed) Log.i(TAG, "Endpoint update confirmed at epoch ${outcome.event?.epoch}")
+        else if (outcome.event?.code != EncryptedPush.CODE_SUBSCRIPTION_UPDATED) values.statusCode = outcome.event?.code
+      }
       else -> Unit
     }
     return true
+  }
+
+  /** A keyed enrollment sends version 2 events, an unkeyed (earlier) one version 1. */
+  private fun eventVersion(epoch: Long, active: Long, pending: Long, updateEpoch: Long?): Int = when {
+    epoch == updateEpoch -> 2
+    epoch == pending && SignalStore.unifiedpush.pendingControlKey != null -> 2
+    epoch == active && SignalStore.unifiedpush.controlKey != null -> 2
+    else -> 1
   }
 
   private fun onMessageLocked(context: Context, message: String) {

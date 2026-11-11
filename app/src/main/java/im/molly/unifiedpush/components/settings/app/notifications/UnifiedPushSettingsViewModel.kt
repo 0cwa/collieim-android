@@ -161,6 +161,7 @@ fun UnifiedPushValues.updateMollySocket(mollySocket: MollySocket) {
     // because the contract forbids lowering its clock mark.
     enrollmentEpoch = 0
     pendingEnrollmentEpoch = 0
+    clearControl()
     LockedPushState.setEncryptedEnrollment(AppDependencies.application, false)
   }
 

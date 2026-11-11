@@ -49,6 +49,9 @@ object EnrollmentExporter {
       throw EnrollmentFile.Invalid("not_ready")
     }
 
+    // Every export gets its own key: the server refuses a repeated key on a state-changing import. It replaces the
+    // current key only once the server proves it imported this file, so updates keep working with the old key until.
+    val controlKey = EnrollmentFile.newControlKey()
     val draft = EnrollmentFile.Input(
       requestId = UUID.randomUUID().toString(),
       accountId = aci.toString(),
@@ -59,6 +62,7 @@ object EnrollmentExporter {
       auth = auth,
       instance = values.endpointInstance ?: "default",
       epoch = epoch,
+      controlKey = controlKey,
     )
     val contents = EnrollmentFile.render(draft)
 
@@ -72,6 +76,7 @@ object EnrollmentExporter {
     // The server has not imported the file yet, so nothing switches: the receiver promotes this epoch to the
     // active one when it receives a valid event at it.
     values.pendingEnrollmentEpoch = epoch
+    values.pendingControlKey = controlKey
     if (values.replayState == null) {
       values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
     }

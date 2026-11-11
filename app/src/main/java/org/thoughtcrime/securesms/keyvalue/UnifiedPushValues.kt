@@ -30,6 +30,10 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_PENDING_EPOCH = "up.enrollment.pendingEpoch"
     private const val UNIFIEDPUSH_REPLAY_STATE = "up.enrollment.replay"
     private const val UNIFIEDPUSH_STATUS_CODE = "up.enrollment.statusCode"
+    private const val UNIFIEDPUSH_CONTROL_KEY = "up.control.key"
+    private const val UNIFIEDPUSH_PENDING_CONTROL_KEY = "up.control.pendingKey"
+    private const val UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH = "up.control.highestEpoch"
+    private const val UNIFIEDPUSH_CONTROL_UPDATE = "up.control.update"
     private const val UNIFIEDPUSH_REGISTRATION_FAILED = "up.registrationFailed"
     private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
@@ -91,12 +95,64 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     store.beginWrite().putString(UNIFIEDPUSH_REPLAY_STATE, value).commit()
   }
 
-  /** Like [commitReplayState], and in the same write makes the pending epoch the active one. */
+  /**
+   * Like [commitReplayState], and in the same write makes the pending epoch the active one. The export that was
+   * pending also made a fresh control key; the server has now imported it, so it replaces the old key and any
+   * endpoint update built with the old key is dropped (the import carried the current endpoint).
+   */
   fun commitReceived(value: String, promoteEpoch: Long) {
-    store.beginWrite()
+    val write = store.beginWrite()
       .putString(UNIFIEDPUSH_REPLAY_STATE, value)
       .putLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, promoteEpoch)
       .putLong(UNIFIEDPUSH_PENDING_EPOCH, 0)
+    val newKey = getString(UNIFIEDPUSH_PENDING_CONTROL_KEY, null)
+    if (newKey != null) {
+      write.putString(UNIFIEDPUSH_CONTROL_KEY, newKey)
+        .putString(UNIFIEDPUSH_PENDING_CONTROL_KEY, null)
+        .putString(UNIFIEDPUSH_CONTROL_UPDATE, null)
+        .putLong(UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH, promoteEpoch)
+    }
+    write.commit()
+  }
+
+  /**
+   * Control key of the enrollment the server has imported (null: endpoint updates over Signal are not available).
+   * The key an export just wrote waits in [pendingControlKey] until the server proves it imported that file.
+   */
+  var controlKey: String? by stringValue(UNIFIEDPUSH_CONTROL_KEY, null)
+
+  var pendingControlKey: String? by stringValue(UNIFIEDPUSH_PENDING_CONTROL_KEY, null)
+
+  /** The highest subscription epoch this phone has put into an endpoint update, sent or not. */
+  var controlHighestEpoch: Long by longValue(UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH, 0)
+
+  /** The unconfirmed endpoint update (JSON, see [im.molly.unifiedpush.control.ControlUpdate]); null when none. */
+  var controlUpdate: String? by stringValue(UNIFIEDPUSH_CONTROL_UPDATE, null)
+
+  /** Durably records a new unconfirmed update and the highest epoch it used, in one write. */
+  fun commitControlUpdate(update: String, highestEpoch: Long) {
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_CONTROL_UPDATE, update)
+      .putLong(UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH, highestEpoch)
+      .commit()
+  }
+
+  /** The server confirmed the update at [epoch]: that epoch is active and nothing is pending any more. */
+  fun commitControlConfirmed(replay: String, epoch: Long) {
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_REPLAY_STATE, replay)
+      .putLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, epoch)
+      .putString(UNIFIEDPUSH_CONTROL_UPDATE, null)
+      .commit()
+  }
+
+  /** Forgets every control key and update: a different server, or a new enrollment lifecycle. */
+  fun clearControl() {
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_CONTROL_KEY, null)
+      .putString(UNIFIEDPUSH_PENDING_CONTROL_KEY, null)
+      .putString(UNIFIEDPUSH_CONTROL_UPDATE, null)
+      .putLong(UNIFIEDPUSH_CONTROL_HIGHEST_EPOCH, 0)
       .commit()
   }
 

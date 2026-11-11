@@ -40,6 +40,10 @@ import org.unifiedpush.android.connector.data.PushEndpoint
 import org.unifiedpush.android.connector.data.PushMessage
 import org.thoughtcrime.securesms.gcm.PushFetchHandler
 import im.molly.unifiedpush.model.RegistrationStatus
+import im.molly.unifiedpush.control.ControlUpdate
+import im.molly.unifiedpush.model.MollySocketDevice
+import io.mockk.slot
+import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 
 @RunWith(RobolectricTestRunner::class)
@@ -65,6 +69,11 @@ class UnifiedPushReceiverTest {
     every { values.registrationFailed = any() } answers { failed = firstArg() }
     every { values.registrationRetryScheduled } answers { retryScheduled }
     every { values.registrationRetryScheduled = any() } answers { retryScheduled = firstArg() }
+    every { values.controlKey } returns null
+    every { values.pendingControlKey } returns null
+    every { values.controlUpdate } returns null
+    every { values.endpointP256dh } returns null
+    every { values.endpointAuth } returns null
     every { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) } returns Unit
     mockkConstructor(UnifiedPushNotificationBuilder::class)
     every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationRegistrationFailed() } returns Unit
@@ -388,5 +397,116 @@ class UnifiedPushReceiverTest {
     clearMocks(values, answers = false, recordedCalls = true)
     UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://example.org/push", PublicKeySet("pub", "auth")), "default")
     verify(exactly = 0) { SignalStore.unifiedpush }
+  }
+
+  private val fixtureKey = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"
+  private val fixtureP256dh = "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4"
+  private val fixtureAuth = "MDEyMzQ1Njc4OTo7PD0-Pw"
+
+  private fun statusEvent(epoch: Long, code: String, version: Int = 2, id: String = "33333333-3333-4333-8333-333333333333"): ByteArray {
+    val now = System.currentTimeMillis() / 1000
+    return ("""{"version":$version,"event_id":"$id","instance":"default","subscription_epoch":$epoch,"kind":"status",""" +
+      """"issued_at":$now,"expires_at":${now + 300},"code":"$code"}""").toByteArray()
+  }
+
+  private fun withPendingUpdate(epoch: Long, block: () -> Unit) {
+    val update = ControlUpdate(epoch, "https://push.example.invalid/new", fixtureP256dh, fixtureAuth, ByteArray(80), 1)
+    every { values.controlKey } returns fixtureKey
+    var storedUpdate: String? = update.serialize()
+    every { values.controlUpdate } answers { storedUpdate }
+    every { values.commitControlConfirmed(any(), any()) } answers {
+      replay = firstArg(); active = secondArg(); storedUpdate = null
+    }
+    every { values.statusCode = any() } returns Unit
+    enrollment(active = 1, pending = 0, block = block)
+  }
+
+  @Test
+  fun `subscription_updated at the pending update's epoch confirms it and is not a server problem`() {
+    withPendingUpdate(epoch = 2) {
+      UnifiedPushReceiver().onMessage(context, PushMessage(statusEvent(2, "subscription_updated"), true), "default")
+      verify(exactly = 1) { values.commitControlConfirmed(any(), 2) }
+      verify(exactly = 0) { values.statusCode = any() }
+      verify(exactly = 0) { values.commitReplayState(any()) }
+      org.junit.Assert.assertEquals(2L, active)
+      fetches(0)
+    }
+  }
+
+  @Test
+  fun `a confirmation at another epoch, another status, or in event version 1 leaves the update pending`() {
+    withPendingUpdate(epoch = 2) {
+      val receiver = UnifiedPushReceiver()
+      receiver.onMessage(context, PushMessage(statusEvent(1, "subscription_updated"), true), "default")
+      receiver.onMessage(context, PushMessage(statusEvent(3, "subscription_updated"), true), "default")
+      receiver.onMessage(context, PushMessage(statusEvent(2, "connection_conflict"), true), "default")
+      receiver.onMessage(context, PushMessage(statusEvent(2, "subscription_updated", version = 1), true), "default")
+      verify(exactly = 0) { values.commitControlConfirmed(any(), any()) }
+      org.junit.Assert.assertEquals(1L, active)
+    }
+  }
+
+  @Test
+  fun `a keyed enrollment accepts only version 2 events and an unkeyed one only version 1`() {
+    every { values.controlKey } returns fixtureKey
+    enrollment(active = 1, pending = 0) {
+      UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
+      fetches(0)
+    }
+    every { values.controlKey } returns null
+    enrollment(active = 1, pending = 0) {
+      val v2 = String(wake()).replace("\"version\":1", "\"version\":2").toByteArray()
+      UnifiedPushReceiver().onMessage(context, PushMessage(v2, true), "default")
+      fetches(0)
+      UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+    }
+  }
+
+  @Test
+  fun `a new endpoint on an imported keyed enrollment stores an update and queues the send`() {
+    val stored = slot<String>()
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    every { SignalStore.account.aci } returns aci
+    every { values.device } returns MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
+    every { values.controlKey } returns fixtureKey
+    every { values.enrollmentEpoch } returns 3
+    every { values.pendingEnrollmentEpoch } returns 0
+    every { values.controlHighestEpoch } returns 3
+    every { values.endpoint } returns "https://push.example.invalid/old"
+    every { values.endpoint = any() } returns Unit
+    every { values.airGapped } returns false
+    every { values.commitControlUpdate(capture(stored), any()) } returns Unit
+
+    UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://push.example.invalid/new", PublicKeySet(fixtureP256dh, fixtureAuth)), "default")
+
+    verify(exactly = 1) { values.commitControlUpdate(any(), 4) }
+    verify(exactly = 1) { AppDependencies.jobManager.add(match { it is UnifiedPushControlJob }) }
+    val update = ControlUpdate.parse(stored.captured)!!
+    org.junit.Assert.assertEquals(4L, update.epoch)
+    org.junit.Assert.assertEquals("https://push.example.invalid/new", update.endpoint)
+  }
+
+  @Test
+  fun `a new endpoint without a control key or before the server proved the enrollment sends nothing`() {
+    every { values.endpoint } returns "https://push.example.invalid/old"
+    every { values.endpoint = any() } returns Unit
+    every { values.airGapped } returns false
+    val endpoint = PushEndpoint("https://push.example.invalid/new", PublicKeySet(fixtureP256dh, fixtureAuth))
+
+    UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
+    verify(exactly = 0) { AppDependencies.jobManager.add(match { it is UnifiedPushControlJob }) }
+
+    val aci = mockk<org.signal.core.models.ServiceId.ACI>()
+    every { aci.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    every { SignalStore.account.aci } returns aci
+    every { values.device } returns MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
+    every { values.controlKey } returns fixtureKey
+    every { values.enrollmentEpoch } returns 0
+    every { values.pendingEnrollmentEpoch } returns 1
+    every { values.controlHighestEpoch } returns 0
+    UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
+    verify(exactly = 0) { AppDependencies.jobManager.add(match { it is UnifiedPushControlJob }) }
   }
 }

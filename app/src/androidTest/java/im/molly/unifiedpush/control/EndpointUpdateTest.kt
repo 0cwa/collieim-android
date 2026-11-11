@@ -11,6 +11,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fasterxml.jackson.databind.ObjectMapper
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
+import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.EndpointReconciler
+import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.receiver.EncryptedPush
 import im.molly.unifiedpush.receiver.LockedPushState
@@ -279,5 +282,50 @@ class EndpointUpdateTest {
     assertNotEquals(0L, values.lastReceivedTime)
     assertEquals(rotatedUrl, values.endpoint)
     File(dir, "result.txt").writeText("ok")
+  }
+
+  /**
+   * The endpoint changes while the first update is being sent. The running job is cancelled and a replacement is queued
+   * behind it; with an instance limit on the queue the replacement was dropped and the new update stayed unsent. The
+   * replacement must send the newer update after the first request finishes.
+   */
+  @Test
+  fun aReplacementUpdateIsSentAfterTheRunningSend() {
+    registerConnector()
+    AppDependencies.jobManager.find { true }.forEach { AppDependencies.jobManager.cancel(it.id) }
+    (AppDependencies.application as SignalInstrumentationApplicationContext).beginJobLoopForTests()
+    val aci = SignalStore.account.requireAci().toString()
+    process(Remote(2, 1111))
+    val key = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"
+    val connectorKeys = values.endpointP256dh!! to values.endpointAuth!!
+    fun target(name: String) = Target("https://push.example.invalid/$name", connectorKeys.first, connectorKeys.second)
+    values.endpoint = "https://push.example.invalid/one"
+    values.mutateControl { ControlState(key = key, activeEpoch = 1, highestEpoch = 1, serverTarget = target("old")) }
+
+    val started = java.util.concurrent.CountDownLatch(1)
+    val release = java.util.concurrent.CountDownLatch(1)
+    val epochs = CopyOnWriteArrayList<Long>()
+    MockEndpoints.responder.put("/v1/messages/$aci") { request ->
+      val entry = mapper.readTree(request.bodyString)["messages"].single { it["destinationDeviceId"].asInt() == 2 }
+      epochs += java.nio.ByteBuffer.wrap(Base64.getDecoder().decode(entry["content"].asText()), 38, 8).long
+      if (epochs.size == 1) {
+        started.countDown()
+        release.await(60, java.util.concurrent.TimeUnit.SECONDS)
+      }
+      EndpointResponse(200, """{"needsSync":false}""")
+    }
+
+    EndpointReconciler.reconcile()
+    assertTrue("the first send did not start", started.await(60, java.util.concurrent.TimeUnit.SECONDS))
+    assertEquals(2L, values.controlState.update!!.epoch)
+
+    // the endpoint changes while that request is in flight
+    values.endpoint = "https://push.example.invalid/two"
+    EndpointReconciler.reconcile()
+    assertEquals(3L, values.controlState.update!!.epoch)
+    release.countDown()
+
+    waitFor("the replacement update to be sent", 90) { epochs.contains(3L) }
+    assertEquals("the newer update is the last one sent", 3L, epochs.last())
   }
 }

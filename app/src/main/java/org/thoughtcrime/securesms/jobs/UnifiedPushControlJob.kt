@@ -26,7 +26,6 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
   private constructor() : this(
     Parameters.Builder()
       .setQueue(KEY)
-      .setMaxInstancesForQueue(1)
       .addConstraint(NetworkConstraint.KEY)
       .setMaxAttempts(MAX_ATTEMPTS)
       .setLifespan(TimeUnit.HOURS.toMillis(24))
@@ -80,8 +79,11 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
     private val BACKOFF_MAX_MS = TimeUnit.MINUTES.toMillis(30)
 
     /**
-     * Queues a send of the stored update now. An instance that is waiting out a backoff would otherwise make the new
-     * one a no-op (one instance per queue), so it is cancelled first; both calls run in order on the job manager.
+     * Queues a send of the stored update now. Instances already in the queue are cancelled first, so an instance
+     * waiting out a backoff is replaced. There is deliberately no instance limit: a job that is running when this is
+     * called is still counted until it exits, and a limit would drop the replacement, leaving the new update unsent.
+     * The queue is serial, so the replacement runs after the running job, and every run sends whatever update is
+     * stored when it starts. At most one running and one waiting job exist, because each call cancels the others.
      */
     @JvmStatic
     fun enqueue() {

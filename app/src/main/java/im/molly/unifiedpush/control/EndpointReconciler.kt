@@ -10,7 +10,7 @@ object EndpointReconciler {
 
   private val TAG = Log.tag(EndpointReconciler::class.java)
 
-  /** A resume does not resend an update that was sent more recently than this. */
+  /** A resume does not resend an update that was built or tried more recently than this: its send is probably queued. */
   private const val RESUME_AFTER_SECONDS = 30L
 
   /**
@@ -37,6 +37,6 @@ object EndpointReconciler {
     }
     val result = EndpointUpdates.reconcile(store, aci.toString(), device.deviceId, subscription, now)
     val update = result.update ?: return
-    if (result.built || (resume && now - update.lastAttemptAt >= RESUME_AFTER_SECONDS)) UnifiedPushControlJob.enqueue()
+    if (result.built || (resume && now - maxOf(update.lastAttemptAt, update.createdAt) >= RESUME_AFTER_SECONDS)) UnifiedPushControlJob.enqueue()
   }
 }

@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import im.molly.unifiedpush.control.ControlReset
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.health.PushHealth
@@ -186,13 +187,12 @@ fun UnifiedPushValues.updateMollySocket(mollySocket: MollySocket) {
     endpoint = null
     // A different MollySocket server: the encrypted enrollment no longer applies. The replay state stays,
     // because the contract forbids lowering its clock mark.
-    clearControl()
+    ControlReset.discard(AppDependencies.application)
     // The push health verdicts and the WebSocket mode they caused belong to the server that is gone.
     PushHealth.reset(health)
     if (SignalStore.settings.forceWebsocketMode == ForceWebsocketMode.ENABLED_AUTOMATICALLY) {
       SignalStore.settings.forceWebsocketMode = ForceWebsocketMode.DISABLED_AUTOMATICALLY
     }
-    LockedPushState.setEncryptedEnrollment(AppDependencies.application, false)
   }
 
   lastReceivedTime = 0

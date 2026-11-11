@@ -371,4 +371,53 @@ class EndpointUpdatesTest {
     EndpointUpdates.recordAttempt(store, update.epoch, 99, null)
     assertNull(store.state.update)
   }
+
+  // --- exporting again before an event arrives ---
+
+  @Test
+  fun `a re-export at the same epoch keeps the pending key, so the epoch names one key`() {
+    val store = enrolled()
+    val first = EndpointUpdates.recordExport(store, 2, keyNew, target("a"))
+    val second = EndpointUpdates.recordExport(store, 2, "fresh-key-that-must-not-be-used", target("a"))
+    assertEquals(keyNew, first)
+    assertEquals(keyNew, second)
+    assertEquals(keyNew, store.state.pendingKey)
+    assertEquals(target("a"), store.state.pendingTarget)
+    // the event of the first import promotes exactly the key both files carry
+    assertEquals(EndpointUpdates.Effect.PROMOTED, EndpointUpdates.accepted(store, "r", event(2, null, EncryptedPush.Kind.WAKE)))
+    assertEquals(keyNew, store.state.key)
+  }
+
+  @Test
+  fun `an export at another epoch gets a new key`() {
+    val store = enrolled()
+    EndpointUpdates.recordExport(store, 2, keyNew, target("a"))
+    assertEquals(keyOld, EndpointUpdates.recordExport(store, 3, keyOld, target("a")))
+    assertEquals(3, store.state.pendingEpoch)
+    // and the first export with nothing pending takes the key it was given
+    assertEquals(keyNew, EndpointUpdates.recordExport(enrolled(), 2, keyNew, target("a")))
+  }
+
+  @Test
+  fun `two exports at one epoch with different subscriptions leave the server's subscription unknown, and reconcile sends the current one`() {
+    val store = enrolled()
+    EndpointUpdates.recordExport(store, 2, keyNew, target("a"))
+    EndpointUpdates.recordExport(store, 2, keyOld, target("b"))
+    assertNull(store.state.pendingTarget)
+    EndpointUpdates.accepted(store, "r", event(2, null, EncryptedPush.Kind.WAKE))
+    assertEquals(keyNew, store.state.key)
+    assertNull("unknown, not the old one", store.state.serverTarget)
+    // whichever file the server imported, the current subscription is sent
+    assertTrue(reconcile(store, "b").built)
+  }
+
+  @Test
+  fun `a re-export after a failed publish does not keep a key nobody saw`() {
+    val store = enrolled()
+    val before = store.state
+    EndpointUpdates.recordExport(store, 2, keyNew, target("a"))
+    EndpointUpdates.retireExport(store, 2, before)
+    assertNull(store.state.pendingKey)
+    assertEquals(keyOld, EndpointUpdates.recordExport(store, 2, keyOld, target("a")))
+  }
 }

@@ -68,7 +68,8 @@ object EndpointUpdates {
    *
    * A confirmation at or above the epoch of an export awaiting import also retires that export, whose key must not
    * replace the working one later. An event at the pending export's epoch proves the server imported that file: its
-   * key, epoch and subscription become the active ones and an update built under the old key is dropped (the caller
+   * key and epoch become the active ones, the server's subscription becomes the exported one (unknown if two exports
+   * shared the epoch) and an update built under the old key is dropped (the caller
    * then reconciles, which rebuilds it under the new key if the endpoint moved on).
    */
   fun accepted(store: ControlStore, replay: String, event: EncryptedPush.Event): Effect {
@@ -90,7 +91,7 @@ object EndpointUpdates {
           effect = Effect.PROMOTED
           val newKey = old.pendingKey
           old.copy(
-            key = newKey ?: old.key, activeEpoch = old.pendingEpoch, serverTarget = old.pendingTarget ?: old.serverTarget,
+            key = newKey ?: old.key, activeEpoch = old.pendingEpoch, serverTarget = old.pendingTarget,
             highestEpoch = maxOf(old.highestEpoch, old.pendingEpoch),
             pendingEpoch = 0, pendingKey = null, pendingTarget = null,
             update = if (newKey != null) null else old.update,
@@ -107,9 +108,24 @@ object EndpointUpdates {
     store.mutate { old -> if (old.update?.epoch == epoch) old.copy(update = old.update.afterAttempt(now, error)) else old }
   }
 
-  /** Records an export before its file is published; [retireExport] undoes it if publishing fails. */
-  fun recordExport(store: ControlStore, epoch: Long, key: String, target: Target) {
-    store.mutate { old -> old.copy(pendingEpoch = epoch, pendingKey = key, pendingTarget = target) }
+  /**
+   * Records an export before its file is published and returns the key its file must carry; [retireExport] undoes it
+   * if publishing fails. A pending epoch must identify one key: the server may have imported either file, and the
+   * event that proves it carries only the epoch. So an export at the epoch of the pending one reuses its key (the
+   * server has not seen that key as current, so the fresh-key rule is not broken) instead of replacing it. If the two
+   * files carry different subscriptions the phone cannot tell which one the server holds, so the exported
+   * subscription is recorded as unknown and the next [reconcile] sends the current one.
+   */
+  fun recordExport(store: ControlStore, epoch: Long, newKey: String, target: Target): String {
+    val recorded = store.mutate { old ->
+      val same = old.pendingEpoch == epoch && old.pendingKey != null
+      old.copy(
+        pendingEpoch = epoch,
+        pendingKey = if (same) old.pendingKey else newKey,
+        pendingTarget = if (same && old.pendingTarget != target) null else target,
+      )
+    }
+    return recorded.pendingKey!!
   }
 
   /** Undoes [recordExport] for [epoch] if nothing has replaced it, e.g. because the file could not be written. */

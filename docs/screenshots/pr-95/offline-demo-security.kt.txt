@@ -33,14 +33,22 @@ class OfflineConversationCaptureTest {
     SignalDatabase.recipients.setNicknameAndNote(recipientId, ProfileName.fromParts("Alex", ""), "")
     val recipient = Recipient.resolved(recipientId)
     val threadId = SignalDatabase.threads.getOrCreateThreadIdFor(recipient)
-    val start = System.currentTimeMillis() - 8 * 60_000L
+    val start = System.currentTimeMillis() - 18 * 60_000L
     val messages = listOf(
       true to "Are we still meeting by the river?",
       false to "Yes! I'll be there at 10.",
       true to "Perfect. I'll bring coffee.",
       false to "I'll bring the pastries.",
       true to "See you soon!",
-      false to "On my way."
+      false to "On my way.",
+      true to "I've found a table outside.",
+      false to "Great, is it near the bridge?",
+      true to "Yes, beside the little bookshop.",
+      false to "I can see it now.",
+      true to "The coffee smells amazing.",
+      false to "I brought cinnamon rolls too.",
+      true to "That sounds perfect!",
+      false to "Be there in a minute."
     )
     messages.forEachIndexed { index, (incoming, body) ->
       val time = start + index * 60_000L

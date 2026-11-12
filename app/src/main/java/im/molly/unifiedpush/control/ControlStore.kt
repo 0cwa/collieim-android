@@ -10,4 +10,11 @@ interface ControlStore {
    * same write. [block] must be quick and free of side effects, and may return its argument to change nothing.
    */
   fun mutate(replay: String? = null, block: (ControlState) -> ControlState): ControlState
+
+  /** Initializes replay state in the same state transaction, without replacing an existing replay record. */
+  fun mutateWithReplayIfAbsent(replayIfAbsent: String, block: (ControlState) -> ControlState): ControlState
+
+  fun ensureReplayStateIfAbsent(replayIfAbsent: String) {
+    mutateWithReplayIfAbsent(replayIfAbsent) { it }
+  }
 }

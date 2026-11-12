@@ -11,11 +11,13 @@ import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.control.ControlReset
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
 import org.signal.core.util.concurrent.SignalExecutors
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.R
 import org.signal.core.util.ThreadUtil
 import java.io.IOException
@@ -72,6 +74,7 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
     val mollySocketUrl = SignalStore.unifiedpush.mollySocketUrl
 
+    val controlRead = SignalStore.unifiedpush.controlStateRead.stateOrNull
     return UnifiedPushSettingsState(
       airGapped = SignalStore.unifiedpush.airGapped,
       device = SignalStore.unifiedpush.device,
@@ -89,6 +92,10 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       // Only for as long as the job can run: it ends within the timeout, and a missing verdict must not leave "testing" up.
       pushTestRunning = pushTestStartedAt > 0 && SignalStore.unifiedpush.health.lastResultAt * 1000 < pushTestStartedAt &&
         System.currentTimeMillis() - pushTestStartedAt < UnifiedPushHealthJob.timeoutMs + TEST_GRACE_MS,
+      controlStateCorrupt = SignalStore.unifiedpush.hasCorruptControlState,
+      savedExports = controlRead?.intents?.map { SavedExport(it.requestId, it.epoch, it.eligible) } ?: emptyList(),
+      pendingExportCount = controlRead?.pendingIntentCount ?: 0,
+      hasLegacyPendingExport = controlRead?.legacyPending != null,
     )
   }
 
@@ -139,14 +146,14 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
   }
 
   /** Writes the CollieSocket enrollment file off the main thread and reports the outcome as a toast. */
-  fun exportEnrollment(context: Context, serverEpochText: String) {
+  fun exportEnrollment(context: Context, serverEpochText: String, mode: ExportMode, requestId: String? = null) {
     val app = context.applicationContext
     SignalExecutors.BOUNDED.execute {
       // Before anything can fail, so a refused or overflowing epoch never leaves the old password file behind.
       EnrollmentExporter.removeFiles(app)
       val message = try {
         val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
-        val export = EnrollmentExporter.exportWithEpoch(app, serverEpoch)
+        val export = EnrollmentExporter.exportWithEpoch(app, serverEpoch, mode, requestId)
         if (export.collides) {
           app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_collides, export.file.absolutePath, export.epoch, export.highestUsed)
         } else {
@@ -158,6 +165,12 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
             "not_ready" -> R.string.UnifiedPushSettingsFragment__export_enrollment_not_ready
             "invalid_epoch" -> R.string.UnifiedPushSettingsFragment__export_enrollment_invalid_epoch
             "unsupported_android" -> R.string.UnifiedPushSettingsFragment__export_enrollment_unsupported_android
+            "state_unavailable" -> R.string.UnifiedPushSettingsFragment__export_enrollment_state_unavailable
+            "recovery_ack_required" -> R.string.UnifiedPushSettingsFragment__export_enrollment_recovery_ack_required
+            "pending_limit" -> R.string.UnifiedPushSettingsFragment__export_enrollment_pending_limit
+            "sequence_exhausted" -> R.string.UnifiedPushSettingsFragment__export_enrollment_sequence_exhausted
+            "same_epoch_conflict" -> R.string.UnifiedPushSettingsFragment__export_enrollment_same_epoch_conflict
+            "intent_unavailable" -> R.string.UnifiedPushSettingsFragment__export_enrollment_intent_unavailable
             else -> R.string.UnifiedPushSettingsFragment__export_enrollment_failed
           }
         )
@@ -165,7 +178,38 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
         app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_failed)
       }
       ThreadUtil.runOnMain { Toast.makeText(app, message, Toast.LENGTH_LONG).show() }
+      refresh()
     }
+  }
+
+  /** Clears unreadable local control state only after the user confirms server-side removal. */
+  fun recoverCorruptControlState() {
+    runPersistedControlAction { ControlReset.recoverCorrupt(application) }
+  }
+
+  fun forgetExport(requestId: String) {
+    runPersistedControlAction { EnrollmentExporter.forgetIntent(requestId) }
+  }
+
+  fun forgetLegacyExport() {
+    runPersistedControlAction {
+      im.molly.unifiedpush.control.EndpointUpdates.forgetLegacyPending(
+        im.molly.unifiedpush.control.UnifiedPushControlStore(SignalStore.unifiedpush)
+      )
+    }
+  }
+
+  private inline fun runPersistedControlAction(action: () -> Unit) {
+    val persistenceFailed = try {
+      action()
+      false
+    } catch (_: KeyValuePersistenceException) {
+      true
+    }
+    if (persistenceFailed) {
+      Toast.makeText(application, R.string.UnifiedPushSettingsFragment__export_enrollment_failed, Toast.LENGTH_LONG).show()
+    }
+    refresh()
   }
 
   class Factory(private val application: Application) : ViewModelProvider.Factory {
@@ -185,9 +229,8 @@ fun UnifiedPushValues.updateMollySocket(mollySocket: MollySocket) {
   if (changed) {
     vapidKeySynced = false
     endpoint = null
-    // A different MollySocket server: the encrypted enrollment no longer applies. The replay state stays,
-    // because the contract forbids lowering its clock mark.
-    ControlReset.discard(AppDependencies.application)
+    // The old server's keys and epochs no longer apply. Keep the import sequence so switching back cannot lower a retained server floor.
+    ControlReset.discardForServerChange(AppDependencies.application)
     // The push health verdicts and the WebSocket mode they caused belong to the server that is gone.
     PushHealth.reset(health)
     if (SignalStore.settings.forceWebsocketMode == ForceWebsocketMode.ENABLED_AUTOMATICALLY) {

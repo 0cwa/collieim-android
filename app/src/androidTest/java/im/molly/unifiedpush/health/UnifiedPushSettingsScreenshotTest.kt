@@ -7,6 +7,11 @@ package im.molly.unifiedpush.health
 
 import android.content.Context
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assume.assumeTrue
@@ -36,8 +41,9 @@ class UnifiedPushSettingsScreenshotTest {
   private val args = InstrumentationRegistry.getArguments()
 
   @Test
-  fun settingsScreenShowsTheWarningAndTheTestButton() {
-    assumeTrue(args.getString("ep_screenshot") != null)
+  fun settingsOffersExplicitImportAndRecoveryModes() {
+    val screenshotName = args.getString("ep_screenshot")
+    assumeTrue(screenshotName != null)
     val before = TextSecurePreferences.isScreenSecurityEnabled(context)
     TextSecurePreferences.setScreenSecurityEnabled(context, false)
     val values = SignalStore.unifiedpush
@@ -52,12 +58,25 @@ class UnifiedPushSettingsScreenshotTest {
           (it.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as androidx.navigation.fragment.NavHostFragment)
             .navController.navigate(R.id.notificationUnifiedPushFragment)
         }
-        Thread.sleep(3000)
         instrumentation.waitForIdleSync()
+        onView(withText(R.string.UnifiedPushSettingsFragment__export_enrollment))
+          .check(matches(isDisplayed()))
+          .perform(click())
+        onView(withText(R.string.UnifiedPushSettingsFragment__export_new_intent)).check(matches(isDisplayed()))
+        onView(withText(R.string.UnifiedPushSettingsFragment__export_recovery_intent)).check(matches(isDisplayed()))
+
         val bitmap = instrumentation.uiAutomation.takeScreenshot()
-        FileOutputStream(File(context.getExternalFilesDir(null), args.getString("ep_screenshot")!!)).use {
-          bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 90, it)
+        try {
+          FileOutputStream(File(context.getExternalFilesDir(null), screenshotName!!)).use {
+            check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it))
+          }
+        } finally {
+          bitmap.recycle()
         }
+
+        onView(withText(R.string.UnifiedPushSettingsFragment__export_recovery_intent)).perform(click())
+        onView(withText(R.string.UnifiedPushSettingsFragment__export_recovery_title)).check(matches(isDisplayed()))
+        onView(withText(R.string.UnifiedPushSettingsFragment__export_recovery_message)).check(matches(isDisplayed()))
       }
     } finally {
       TextSecurePreferences.setScreenSecurityEnabled(context, before)

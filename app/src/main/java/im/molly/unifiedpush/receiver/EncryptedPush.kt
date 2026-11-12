@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import im.molly.unifiedpush.enrollment.ControlKeyId
 import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
 
 /**
- * Receiver side of `contracts/encrypted-push/v1` and additive v2 (event version 2 adds `subscription_updated`) in
- * https://github.com/0cwa/colliesocket. V1 is pinned at [CONTRACT_COMMIT]; v2 has its separate source revision in
- * `app/src/test/resources/colliesocket-contract-v2/PIN.txt`. Pure functions: the caller supplies the clock, the lock
+ * Receiver side of the frozen v1/v2 contracts and v3 import identity in
+ * https://github.com/0cwa/colliesocket. Each version has a separate source pin in test resources. Pure functions: the caller supplies the clock, the lock
  * state and the stored replay state, and persists the state this returns. Nothing here logs or echoes input.
  */
 object EncryptedPush {
@@ -25,6 +25,7 @@ object EncryptedPush {
   private const val MAX_LIFETIME_SECONDS = 300L
   private const val MAX_FUTURE_SECONDS = 60L
   private const val MAX_JSON_INT = 9007199254740991L
+  private val EVENT_ID = Regex("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
 
   enum class Kind { WAKE, TEST, STATUS }
 
@@ -37,6 +38,8 @@ object EncryptedPush {
     val code: String?,
     val issuedAt: Long,
     val expiresAt: Long,
+    val keyId: String? = null,
+    val importId: String? = null,
   )
 
   enum class Decision {
@@ -56,15 +59,42 @@ object EncryptedPush {
     )
 
     companion object {
-      /** Returns null for anything unreadable; the caller must then drop rather than guess. */
-      fun parse(text: String?): ReplayState? = try {
-        val root = mapper.readTree(text ?: return null)
-        ReplayState(
-          root["hw"].takeIf { it.canConvertToLong() }!!.asLong(),
-          root["seen"].map { Seen(it[0].asText(), it[1].takeIf { n -> n.canConvertToLong() }!!.asLong()) },
-        )
-      } catch (e: Exception) {
-        null
+      private val replayMapper = ObjectMapper(JsonFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
+
+      /** Returns null for anything unreadable or structurally invalid; the caller must then drop rather than guess. */
+      fun parse(text: String?): ReplayState? {
+        if (text == null) return null
+        return try {
+          replayMapper.factory.createParser(text).use { parser ->
+            val root = replayMapper.readTree<JsonNode>(parser) ?: return null
+            if (parser.nextToken() != null) return null
+            if (!root.isObject || root.size() != 2 || root.fieldNames().asSequence().toSet() != setOf("hw", "seen")) return null
+
+            val highWaterNode = root["hw"]
+            if (!highWaterNode.isIntegralNumber || !highWaterNode.canConvertToLong()) return null
+            val highWater = highWaterNode.asLong().takeIf { it in 0..MAX_JSON_INT } ?: return null
+
+            val seenNode = root["seen"]
+            if (!seenNode.isArray || seenNode.size() > MAX_REPLAY_RECORDS) return null
+            val seen = ArrayList<Seen>(seenNode.size())
+            val eventIds = HashSet<String>(seenNode.size())
+            for (record in seenNode) {
+              if (!record.isArray || record.size() != 2) return null
+              val idNode = record[0]
+              if (!idNode.isTextual || !EVENT_ID.matches(idNode.asText())) return null
+              val eventId = idNode.asText()
+              if (!eventIds.add(eventId)) return null
+
+              val expiresAtNode = record[1]
+              if (!expiresAtNode.isIntegralNumber || !expiresAtNode.canConvertToLong()) return null
+              val expiresAt = expiresAtNode.asLong().takeIf { it in 1..MAX_JSON_INT } ?: return null
+              seen += Seen(eventId, expiresAt)
+            }
+            ReplayState(highWater, seen)
+          }
+        } catch (e: Exception) {
+          null
+        }
       }
     }
   }
@@ -73,13 +103,17 @@ object EncryptedPush {
 
   private val mapper = ObjectMapper()
   private val eventMapper = ObjectMapper(JsonFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
-  private val EVENT_ID = Regex("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
   private val INSTANCE = Regex("[A-Za-z0-9._:-]{1,128}")
-  private val FIELDS = setOf("version", "event_id", "instance", "subscription_epoch", "kind", "issued_at", "expires_at", "code")
-  private val REQUIRED = FIELDS - "code"
+  private val COMMON_FIELDS = setOf("version", "event_id", "instance", "subscription_epoch", "kind", "issued_at", "expires_at")
+  private val V1_V2_FIELDS = COMMON_FIELDS + "code"
+  private val V3_FIELDS = V1_V2_FIELDS + setOf("key_id", "import_id")
+  private val REQUIRED = COMMON_FIELDS
   const val CODE_SUBSCRIPTION_UPDATED = "subscription_updated"
+  const val CODE_ENROLLMENT_IMPORTED = "enrollment_imported"
   private val CODES = setOf("connection_conflict", "connection_unavailable")
   private val CODES_V2 = CODES + CODE_SUBSCRIPTION_UPDATED
+  private val CODES_V3 = CODES_V2 + CODE_ENROLLMENT_IMPORTED
+  private val KEY_ID = Regex("[A-Za-z0-9_-]{43}")
 
   /**
    * Parses and validates one event against `event.schema.json` plus the time rules of `protocol.md`. Only the
@@ -111,13 +145,17 @@ object EncryptedPush {
       if (parser.nextToken() != null) return null
       node
     }
-    if (!root.isObject || root.fieldNames().asSequence().any { it !in FIELDS } || REQUIRED.any { !root.has(it) }) return null
+    if (!root.isObject || !root.has("version")) return null
 
     fun integer(name: String, min: Long): Long? =
       root[name].takeIf { it.isIntegralNumber && it.canConvertToLong() }?.asLong()?.takeIf { it in min..MAX_JSON_INT }
     fun string(name: String): String? = root[name].takeIf { it.isTextual }?.asText()
 
-    val version = integer("version", 1)?.takeIf { v -> versions.any { it.toLong() == v } }?.toInt() ?: return null
+    val version = integer("version", 1)?.takeIf { it in 1L..3L }?.toInt() ?: return null
+    if (version !in versions) return null
+    val fields = if (version == 3) V3_FIELDS else V1_V2_FIELDS
+    if (root.fieldNames().asSequence().any { it !in fields } || REQUIRED.any { !root.has(it) }) return null
+    if (version == 3 && ("key_id" !in root.fieldNames().asSequence().toSet() || "import_id" !in root.fieldNames().asSequence().toSet())) return null
     val eventId = string("event_id")?.takeIf { EVENT_ID.matches(it) } ?: return null
     val instance = string("instance")?.takeIf { INSTANCE.matches(it) } ?: return null
     val epoch = integer("subscription_epoch", 1) ?: return null
@@ -129,12 +167,15 @@ object EncryptedPush {
     }
     val issuedAt = integer("issued_at", 0) ?: return null
     val expiresAt = integer("expires_at", 1) ?: return null
-    val code = if (root.has("code")) string("code")?.takeIf { it in (if (version >= 2) CODES_V2 else CODES) } ?: return null else null
+    val code = if (root.has("code")) string("code")?.takeIf { it in when (version) { 1 -> CODES; 2 -> CODES_V2; else -> CODES_V3 } } ?: return null else null
     if ((kind == Kind.STATUS) != (code != null)) return null
+
+    val keyId = if (version == 3) string("key_id")?.takeIf { KEY_ID.matches(it) && ControlKeyId.isCanonical(it) } ?: return null else null
+    val importId = if (version == 3) string("import_id")?.takeIf { EVENT_ID.matches(it) } ?: return null else null
 
     if (expiresAt - issuedAt !in 1..MAX_LIFETIME_SECONDS) return null
     if (issuedAt > now + MAX_FUTURE_SECONDS || expiresAt <= now) return null
-    return Event(version, eventId, instance, epoch, kind, code, issuedAt, expiresAt)
+    return Event(version, eventId, instance, epoch, kind, code, issuedAt, expiresAt, keyId, importId)
   }
 
   /**
@@ -163,15 +204,19 @@ object EncryptedPush {
     acceptedEpochs: Set<Long>,
     state: ReplayState,
     versionForEpoch: (Long) -> Int = { 1 },
+    versionsForEpoch: ((Long) -> Set<Int>)? = null,
+    identityMatches: (Event) -> Boolean = { true },
   ): Outcome {
     fun drop(decision: Decision, event: Event? = null) = Outcome(decision, event, state)
 
     if (locked()) return drop(Decision.DROP_LOCKED)
     if (!decrypted) return drop(Decision.DROP_NOT_DECRYPTED)
-    val event = parse(content, now, setOf(1, 2)) ?: return drop(Decision.DROP_INVALID)
+    val event = parse(content, now, setOf(1, 2, 3)) ?: return drop(Decision.DROP_INVALID)
     if (event.instance != activeInstance || event.epoch !in acceptedEpochs) return drop(Decision.DROP_ENROLLMENT_MISMATCH)
-    // A keyed (version 2) enrollment sends every event as version 2, and an unkeyed one only version 1.
-    if (event.version != versionForEpoch(event.epoch)) return drop(Decision.DROP_INVALID)
+    // An old active generation and a same-epoch v3 adoption candidate can overlap at the same server epoch.
+    val allowedVersions = versionsForEpoch?.invoke(event.epoch) ?: setOf(versionForEpoch(event.epoch))
+    if (event.version !in allowedVersions) return drop(Decision.DROP_INVALID)
+    if (!identityMatches(event)) return drop(Decision.DROP_ENROLLMENT_MISMATCH)
     if (now < state.clockHighWater) return drop(Decision.DROP_CLOCK_ROLLBACK)
     val retained = state.seen.filter { it.expiresAt + REPLAY_GRACE_SECONDS > now }
     if (retained.any { it.eventId == event.eventId }) return drop(Decision.DROP_DUPLICATE)

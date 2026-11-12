@@ -53,6 +53,7 @@ import org.thoughtcrime.securesms.backup.v2.RestoreTimestampResult
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ReclaimUsernameAndLinkJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import org.thoughtcrime.securesms.pin.SvrRepository
 import org.thoughtcrime.securesms.pin.SvrWrongPinException
 import org.thoughtcrime.securesms.registration.data.AccountRegistrationResult
@@ -1079,19 +1080,25 @@ class RegistrationViewModel : ViewModel() {
     setInProgress(true)
 
     viewModelScope.launch(context = coroutineExceptionHandler) {
-      if (e164 != null) {
-        setPhoneNumber(PhoneNumberUtil.getInstance().parse(e164, null))
-      }
-
       val accountEntropyPool = AccountEntropyPool(backupKey)
-      SignalStore.account.restoreAccountEntropyPool(accountEntropyPool)
+      val restoreKeys: suspend () -> Unit = {
+        if (e164 != null) {
+          setPhoneNumber(PhoneNumberUtil.getInstance().parse(e164, null))
+        }
 
-      if (aciIdentityKeyPair != null) {
-        SignalStore.account.restoreAciIdentityKeyFromBackup(aciIdentityKeyPair.publicKey.serialize(), aciIdentityKeyPair.privateKey.serialize())
-        if (pniIdentityKeyPair != null) {
-          SignalStore.account.restorePniIdentityKeyFromBackup(pniIdentityKeyPair.publicKey.serialize(), pniIdentityKeyPair.privateKey.serialize())
+        SignalStore.account.restoreAccountEntropyPool(accountEntropyPool)
+
+        if (aciIdentityKeyPair != null) {
+          SignalStore.account.restoreAciIdentityKeyFromBackup(aciIdentityKeyPair.publicKey.serialize(), aciIdentityKeyPair.privateKey.serialize())
+          if (pniIdentityKeyPair != null) {
+            SignalStore.account.restorePniIdentityKeyFromBackup(pniIdentityKeyPair.publicKey.serialize(), pniIdentityKeyPair.privateKey.serialize())
+          }
         }
       }
+      // Backup keys can replace identity material while a registration commit is in flight, including when
+      // the current store still reports unregistered. Serialize both paths and keep push unavailable until
+      // the later full registration commit acknowledges a coherent account.
+      UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = restoreKeys)
 
       val masterKey = accountEntropyPool.deriveMasterKey()
       setRecoveryPassword(masterKey.deriveRegistrationRecoveryPassword())

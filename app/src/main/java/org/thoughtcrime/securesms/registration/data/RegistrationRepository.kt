@@ -49,6 +49,7 @@ import org.thoughtcrime.securesms.jobs.PreKeysSyncJob
 import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob
 import org.thoughtcrime.securesms.jobs.RotateCertificateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.thoughtcrime.securesms.pin.Svr3Migration
 import org.thoughtcrime.securesms.pin.SvrRepository
@@ -163,6 +164,7 @@ object RegistrationRepository {
    */
   @JvmStatic
   suspend fun registerAccountLocally(context: Context, data: LocalRegistrationMetadata) = withContext(Dispatchers.IO) {
+    UnifiedPushAccountTransition.withTransition(completesAccountRegistration = true) {
     Log.v(TAG, "registerAccountLocally()")
     val linkedDeviceInfo = data.linkedDeviceInfo
     if (linkedDeviceInfo != null) {
@@ -257,6 +259,7 @@ object RegistrationRepository {
 
       jobManager.add(RotateCertificateJob())
       RotateSignedPreKeyListener.schedule(context)
+    }
     }
   }
 
@@ -444,31 +447,37 @@ object RegistrationRepository {
       recoveryPassword = registrationData.recoveryPassword
     )
 
-    SignalStore.account.generateAciIdentityKeyIfNecessary()
-    val aciIdentity: IdentityKeyPair = SignalStore.account.aciIdentityKey
+    val register: suspend () -> RegisterAccountResult = {
+      SignalStore.account.generateAciIdentityKeyIfNecessary()
+      val aciIdentity: IdentityKeyPair = SignalStore.account.aciIdentityKey
 
-    SignalStore.account.generatePniIdentityKeyIfNecessary()
-    val pniIdentity: IdentityKeyPair = SignalStore.account.pniIdentityKey
+      SignalStore.account.generatePniIdentityKeyIfNecessary()
+      val pniIdentity: IdentityKeyPair = SignalStore.account.pniIdentityKey
 
-    val aciPreKeyCollection = generateSignedAndLastResortPreKeys(aciIdentity, SignalStore.account.aciPreKeys)
-    val pniPreKeyCollection = generateSignedAndLastResortPreKeys(pniIdentity, SignalStore.account.pniPreKeys)
+      val aciPreKeyCollection = generateSignedAndLastResortPreKeys(aciIdentity, SignalStore.account.aciPreKeys)
+      val pniPreKeyCollection = generateSignedAndLastResortPreKeys(pniIdentity, SignalStore.account.pniPreKeys)
 
-    val result: NetworkResult<AccountRegistrationResult> = api.registerAccount(sessionId, registrationData.recoveryPassword, accountAttributes, aciPreKeyCollection, pniPreKeyCollection, registrationData.fcmToken, true)
-      .map { accountRegistrationResponse: VerifyAccountResponse ->
-        AccountRegistrationResult(
-          uuid = accountRegistrationResponse.uuid!!,
-          pni = accountRegistrationResponse.pni!!,
-          storageCapable = accountRegistrationResponse.storageCapable,
-          number = accountRegistrationResponse.number!!,
-          masterKey = masterKey,
-          pin = pin,
-          aciPreKeyCollection = aciPreKeyCollection,
-          pniPreKeyCollection = pniPreKeyCollection,
-          reRegistration = accountRegistrationResponse.reregistration
-        )
-      }
+      val result: NetworkResult<AccountRegistrationResult> = api.registerAccount(sessionId, registrationData.recoveryPassword, accountAttributes, aciPreKeyCollection, pniPreKeyCollection, registrationData.fcmToken, true)
+        .map { accountRegistrationResponse: VerifyAccountResponse ->
+          AccountRegistrationResult(
+            uuid = accountRegistrationResponse.uuid!!,
+            pni = accountRegistrationResponse.pni!!,
+            storageCapable = accountRegistrationResponse.storageCapable,
+            number = accountRegistrationResponse.number!!,
+            masterKey = masterKey,
+            pin = pin,
+            aciPreKeyCollection = aciPreKeyCollection,
+            pniPreKeyCollection = pniPreKeyCollection,
+            reRegistration = accountRegistrationResponse.reregistration
+          )
+        }
 
-    return@withContext RegisterAccountResult.from(result)
+      RegisterAccountResult.from(result)
+    }
+    // Identity keys are read by the request and can be replaced by restore/re-registration paths. Serialize
+    // this branch even for a first registration; no live push lease exists yet, but another identity writer
+    // must not overlap its key generation and network request.
+    return@withContext UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = register)
   }
 
   @WorkerThread

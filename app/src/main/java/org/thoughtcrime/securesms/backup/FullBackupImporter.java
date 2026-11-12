@@ -44,6 +44,7 @@ import org.thoughtcrime.securesms.database.SignedPreKeyTable;
 import org.thoughtcrime.securesms.database.StickerTables;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
+import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues;
 import org.thoughtcrime.securesms.profiles.AvatarHelper;
 import org.thoughtcrime.securesms.util.BackupUtil;
 import org.thoughtcrime.securesms.util.SecurePreferenceManager;
@@ -318,6 +319,13 @@ public class FullBackupImporter extends FullBackupBase {
 
     if (keyValue.key == null) {
       Log.w(TAG, "Null preference key!");
+      return;
+    }
+
+    // This marker is local recovery state, not backup data. In particular, an imported false value
+    // must not make a partially restored account appear complete after a process restart.
+    if (UnifiedPushValues.UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING.equals(keyValue.key)) {
+      Log.i(TAG, "Skipping restore of the local UnifiedPush transition marker");
       return;
     }
 

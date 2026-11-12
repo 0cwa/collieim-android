@@ -10,16 +10,23 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.Job;
+import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.messages.WebSocketDrainer;
+import org.thoughtcrime.securesms.messages.UnifiedPushFetchResult;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.service.GenericForegroundService;
 import org.signal.core.util.AppForegroundObserver;
 import org.signal.core.util.UnableToStartException;
 import org.signal.network.exceptions.PushNetworkException;
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition;
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.FetchAuthorization;
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * Fetches messages from the service, posting a foreground service if possible if the app is in the background.
@@ -27,36 +34,92 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class MessageFetchJob extends BaseJob {
 
   public static final String KEY = "PushNotificationReceiveJob";
+  public static final String UNIFIED_PUSH_KEY = "UnifiedPushMessageFetchJob";
 
   private static final String TAG = Log.tag(MessageFetchJob.class);
+  private static final String EXTRA_UP_AUTHORIZED = "up_fetch_authorized";
+  private static final String EXTRA_UP_PROCESS = "up_fetch_process";
+  private static final String EXTRA_UP_GENERATION = "up_fetch_generation";
+  private static final String EXTRA_UP_ACCOUNT = "up_fetch_account";
+  private static final String EXTRA_UP_LOCAL_DEVICE = "up_fetch_local_device";
+  private static final String EXTRA_UP_PUSH_DEVICE = "up_fetch_push_device";
+  private static final String EXTRA_UP_INSTANCE = "up_fetch_instance";
+
+  private final FetchAuthorization fetchAuthorization;
+  private final boolean invalidFetchAuthorization;
+  private final String factoryKey;
 
   public MessageFetchJob() {
-    this(new Job.Parameters.Builder()
-             .addConstraint(NetworkConstraint.KEY)
-             .setQueue("__notification_received")
-             .setMaxAttempts(3)
-             .setMaxInstancesForFactory(1)
-             .build());
+    this(defaultParameters(), null, false, KEY);
   }
 
   private MessageFetchJob(Job.Parameters parameters) {
+    this(parameters, null, false, KEY);
+  }
+
+  private MessageFetchJob(Job.Parameters parameters, FetchAuthorization authorization, boolean invalidAuthorization, String factoryKey) {
     super(parameters);
+    this.fetchAuthorization = authorization;
+    this.invalidFetchAuthorization = invalidAuthorization;
+    this.factoryKey = factoryKey;
+  }
+
+  public static MessageFetchJob forUnifiedPush(FetchAuthorization authorization) {
+    return new MessageFetchJob(defaultParameters(), authorization, false, UNIFIED_PUSH_KEY);
+  }
+
+  public static boolean isUnifiedPushSerializedData(@Nullable byte[] serializedData) {
+    return JsonJobData.deserialize(serializedData).getBooleanOrDefault(EXTRA_UP_AUTHORIZED, false);
+  }
+
+  private static Job.Parameters defaultParameters() {
+    return new Job.Parameters.Builder()
+        .addConstraint(NetworkConstraint.KEY)
+        .setQueue("__notification_received")
+        .setMaxAttempts(3)
+        .setMaxInstancesForFactory(1)
+        .build();
   }
 
   @Override
   public @Nullable byte[] serialize() {
-    return null;
+    if (fetchAuthorization == null && !invalidFetchAuthorization) return null;
+    JsonJobData.Builder data = new JsonJobData.Builder().putBoolean(EXTRA_UP_AUTHORIZED, true);
+    if (fetchAuthorization != null) {
+      data.putString(EXTRA_UP_PROCESS, fetchAuthorization.getProcessInstanceId())
+          .putLong(EXTRA_UP_GENERATION, fetchAuthorization.getGeneration())
+          .putString(EXTRA_UP_ACCOUNT, fetchAuthorization.getAccountId())
+          .putInt(EXTRA_UP_LOCAL_DEVICE, fetchAuthorization.getLocalDeviceId())
+          .putInt(EXTRA_UP_PUSH_DEVICE, fetchAuthorization.getPushDeviceId())
+          .putString(EXTRA_UP_INSTANCE, fetchAuthorization.getInstance());
+    }
+    return data.serialize();
   }
 
   @Override
   public @NonNull String getFactoryKey() {
-    return KEY;
+    return factoryKey;
   }
 
   @Override
   public void onRun() throws IOException {
-    boolean success;
+    if (invalidFetchAuthorization) {
+      Log.w(TAG, "Dropping malformed UnifiedPush fetch authorization.");
+      return;
+    }
 
+    if (fetchAuthorization != null) {
+      UnifiedPushFetchResult result;
+      try (ForegroundServiceController controller = ForegroundServiceController.create(context)) {
+        result = controller.awaitUnifiedPushResult(fetchAuthorization);
+      }
+      if (result == UnifiedPushFetchResult.RETRYABLE_FAILURE) {
+        throw new PushNetworkException("Failed to pull messages through observer admission.");
+      }
+      return;
+    }
+
+    boolean success;
     try (ForegroundServiceController controller = ForegroundServiceController.create(context)) {
       success = controller.awaitResult();
     }
@@ -71,7 +134,21 @@ public final class MessageFetchJob extends BaseJob {
   @Override
   public boolean onShouldRetry(@NonNull Exception e) {
     Log.w(TAG, e);
-    return e instanceof PushNetworkException;
+    if (!(e instanceof PushNetworkException)) {
+      return false;
+    }
+
+    if (fetchAuthorization == null) {
+      return true;
+    }
+
+    UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> retryLease =
+        UnifiedPushAccountTransition.acquireFetchLease(fetchAuthorization);
+    if (retryLease == null) {
+      return false;
+    }
+    retryLease.close();
+    return true;
   }
 
   @Override
@@ -131,16 +208,22 @@ public final class MessageFetchJob extends BaseJob {
     }
 
     public boolean awaitResult() {
-      isRunning = true;
+      return awaitResult(WebSocketDrainer::blockUntilDrainedAndProcessed);
+    }
 
-      boolean success;
+    public UnifiedPushFetchResult awaitUnifiedPushResult(FetchAuthorization authorization) {
+      return awaitResult(() -> WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(
+          authorization,
+          TimeUnit.MINUTES.toMillis(1)));
+    }
+
+    private <T> T awaitResult(Supplier<T> operation) {
+      isRunning = true;
       try {
-        success = WebSocketDrainer.blockUntilDrainedAndProcessed();
+        return operation.get();
       } finally {
         isRunning = false;
       }
-
-      return success;
     }
 
     private void closeNotificationController() {
@@ -167,7 +250,37 @@ public final class MessageFetchJob extends BaseJob {
   public static final class Factory implements Job.Factory<MessageFetchJob> {
     @Override
     public @NonNull MessageFetchJob create(@NonNull Parameters parameters, @Nullable byte[] serializedData) {
-      return new MessageFetchJob(parameters);
+      return MessageFetchJob.create(parameters, serializedData, KEY);
     }
+  }
+
+  /** Factory for newly separated UnifiedPush fetches; the legacy factory remains registered for persisted jobs. */
+  public static final class UnifiedPushFactory implements Job.Factory<MessageFetchJob> {
+    @Override
+    public @NonNull MessageFetchJob create(@NonNull Parameters parameters, @Nullable byte[] serializedData) {
+      return MessageFetchJob.create(parameters, serializedData, UNIFIED_PUSH_KEY);
+    }
+  }
+
+  private static MessageFetchJob create(@NonNull Parameters parameters, @Nullable byte[] serializedData, @NonNull String factoryKey) {
+    JsonJobData data = JsonJobData.deserialize(serializedData);
+    if (!data.getBooleanOrDefault(EXTRA_UP_AUTHORIZED, false)) {
+      return new MessageFetchJob(parameters, null, factoryKey.equals(UNIFIED_PUSH_KEY), factoryKey);
+    }
+
+    if (!data.hasString(EXTRA_UP_PROCESS) || !data.hasLong(EXTRA_UP_GENERATION) ||
+        !data.hasString(EXTRA_UP_ACCOUNT) || !data.hasInt(EXTRA_UP_LOCAL_DEVICE) ||
+        !data.hasInt(EXTRA_UP_PUSH_DEVICE) || !data.hasString(EXTRA_UP_INSTANCE)) {
+      return new MessageFetchJob(parameters, null, true, factoryKey);
+    }
+
+    FetchAuthorization authorization = new FetchAuthorization(
+        data.getString(EXTRA_UP_PROCESS),
+        data.getLong(EXTRA_UP_GENERATION),
+        data.getString(EXTRA_UP_ACCOUNT),
+        data.getInt(EXTRA_UP_LOCAL_DEVICE),
+        data.getInt(EXTRA_UP_PUSH_DEVICE),
+        data.getString(EXTRA_UP_INSTANCE));
+    return new MessageFetchJob(parameters, authorization, false, factoryKey);
   }
 }

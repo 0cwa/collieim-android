@@ -11,7 +11,10 @@ import org.junit.Test
 class EnrollmentFileTest {
 
   private val mapper = ObjectMapper()
-  private fun resource(name: String) = javaClass.getResourceAsStream("/colliesocket-contract-v2/$name")!!.readBytes().toString(Charsets.UTF_8)
+  private fun resource(name: String) = (
+    javaClass.getResourceAsStream("/colliesocket-contract-v2/$name")
+      ?: javaClass.getResourceAsStream("/colliesocket-contract-v2/fixtures/$name")
+    )!!.readBytes().toString(Charsets.UTF_8)
   private val schema = mapper.readTree(resource("enrollment.schema.json"))
   private val fixture = mapper.readTree(resource("enrollment-keyed.json"))
 

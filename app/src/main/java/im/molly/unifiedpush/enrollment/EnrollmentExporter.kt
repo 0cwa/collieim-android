@@ -2,116 +2,199 @@ package im.molly.unifiedpush.enrollment
 
 import android.content.Context
 import android.os.Build
+import androidx.annotation.VisibleForTesting
 import im.molly.unifiedpush.UnifiedPushDistributor
+import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.EndpointUpdates
+import im.molly.unifiedpush.control.ImportIntent
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.receiver.EncryptedPush
-import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.ReplayStateUnavailableException
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.UUID
 
-/**
- * Writes the CollieSocket enrollment file to the app-specific external files directory, which other apps
- * cannot read from Android 11 on (earlier versions let apps holding the storage permission read it, so export
- * is refused there) and which is excluded from backups (see `backup_rules.xml`). It is moved with `adb pull`.
- * It is replaced on every export and deleted on the next app start. No share intent, no logging of contents.
- */
+/** Explicit choice for one v3 export action. */
+enum class ExportMode { NEW_INTENT, RECOVERY, RERENDER }
+
+/** Writes the app-private v3 enrollment file after its logical intent has been committed to SignalStore. */
 object EnrollmentExporter {
 
   const val FILE_NAME = "colliesocket-enrollment.json"
   private const val TEMP_NAME = "$FILE_NAME.tmp"
 
-  /** The file, the epoch it carries, and the highest epoch this phone has put into an update (see [collides]). */
-  class Export(val file: File, val epoch: Long, val highestUsed: Long) {
-    /** True when an unconfirmed update may be waiting at the epoch this export claims. */
+  class Export(val file: File, val epoch: Long, val highestUsed: Long, val requestId: String) {
     val collides get() = epoch <= highestUsed
   }
 
-  /**
-   * Writes the file and returns it. See [exportWithEpoch].
-   */
   @JvmStatic
-  @JvmOverloads
-  fun export(context: Context, serverEpoch: Long?, isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive): File =
-    exportWithEpoch(context, serverEpoch, isDistributorActive).file
-
-  /**
-   * Writes the file. [serverEpoch] is the epoch CollieSocket reports for this account, or null if it is not enrolled;
-   * the file carries that + 1, which is the only epoch the server accepts, and a fresh control key. The epoch, key and subscription are recorded durably before the file is published,
-   * so a crash cannot leave a file the phone does not know about. Throws [EnrollmentFile.Invalid] (fixed code only)
-   * or IOException. Any earlier file is removed first, so a refused export never leaves an old password file behind.
-   */
-  @JvmStatic
-  @JvmOverloads
   @Synchronized
-  fun exportWithEpoch(context: Context, serverEpoch: Long?, isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive): Export {
+  fun exportWithEpoch(
+    context: Context,
+    serverEpoch: Long?,
+    mode: ExportMode,
+    requestId: String? = null,
+    isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive,
+  ): Export = exportWithEpochAtTime(
+    context = context,
+    serverEpoch = serverEpoch,
+    mode = mode,
+    requestId = requestId,
+    nowSeconds = System.currentTimeMillis() / 1000,
+    isDistributorActive = isDistributorActive,
+  )
+
+  @VisibleForTesting
+  @Synchronized
+  internal fun exportWithEpochAtTime(
+    context: Context,
+    serverEpoch: Long?,
+    mode: ExportMode,
+    requestId: String? = null,
+    nowSeconds: Long,
+    isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive,
+  ): Export {
     val dir = context.getExternalFilesDir(null)
     val temp = dir?.let { File(it, TEMP_NAME) }
-    val target = dir?.let { File(it, FILE_NAME) }
+    val output = dir?.let { File(it, FILE_NAME) }
     removeFiles(context)
-
     if (Build.VERSION.SDK_INT < 30) throw EnrollmentFile.Invalid("unsupported_android")
-    if (dir == null || temp == null || target == null) throw EnrollmentFile.Invalid("storage_unavailable")
+    if (dir == null || temp == null || output == null) throw EnrollmentFile.Invalid("storage_unavailable")
 
     val values = SignalStore.unifiedpush
-    val device = values.device
-    val endpoint = values.endpoint
-    val p256dh = values.endpointP256dh
-    val auth = values.endpointAuth
-    val aci = SignalStore.account.aci
-    if (aci == null || device == null || endpoint == null || p256dh == null || auth == null || !isDistributorActive()) {
-      throw EnrollmentFile.Invalid("not_ready")
-    }
-
+    if (values.controlStateRead == ControlStateRead.Corrupt) throw EnrollmentFile.Invalid("state_unavailable")
+    if (!isDistributorActive()) throw EnrollmentFile.Invalid("not_ready")
     val store = UnifiedPushControlStore(values)
     val before = store.read()
-    val epoch = EndpointUpdates.exportEpoch(serverEpoch)
-    // Every export gets its own key: the server refuses a repeated key on a state-changing import. It replaces the
-    // current key only once the server proves it imported this file, so updates keep working with the old key until.
-    // Exporting again at the epoch of an export nobody imported yet keeps that export's key, so the epoch the proving
-    // event carries still names exactly one key. The export is recorded before the file exists.
-    val exported = Target(endpoint, EnrollmentFile.canonicalKey(p256dh, 65), EnrollmentFile.canonicalKey(auth, 16))
-    val controlKey = EndpointUpdates.recordExport(store, epoch, EnrollmentFile.newControlKey(), exported)
-    val contents = try {
-      EnrollmentFile.render(
-        EnrollmentFile.Input(
-          requestId = UUID.randomUUID().toString(),
-          accountId = aci.toString(),
-          deviceId = device.deviceId,
-          password = device.password,
-          endpoint = endpoint,
-          p256dh = p256dh,
-          auth = auth,
-          instance = values.endpointInstance ?: "default",
-          epoch = epoch,
-          controlKey = controlKey,
-        )
-      )
-    } catch (e: Exception) {
-      EndpointUpdates.retireExport(store, epoch, before)
-      throw e
+
+    val intent: ImportIntent
+    val contents: String
+    val replayIfAbsent = EncryptedPush.ReplayState(nowSeconds, emptyList()).serialize()
+    when (mode) {
+      ExportMode.RERENDER -> {
+        val savedId = requestId ?: throw EnrollmentFile.Invalid("intent_unavailable")
+        val saved = before.intents.firstOrNull { it.requestId == savedId && it.eligible }
+          ?: throw EnrollmentFile.Invalid("intent_unavailable")
+        intent = saved
+        contents = EnrollmentFile.render(saved.toInput())
+        requireReplayStateAvailability { store.ensureReplayStateIfAbsent(replayIfAbsent) }
+      }
+      ExportMode.NEW_INTENT, ExportMode.RECOVERY -> {
+        if (requestId != null) throw EnrollmentFile.Invalid("invalid_enrollment")
+        val device = values.device
+        val endpoint = values.endpoint
+        val p256dh = values.endpointP256dh
+        val auth = values.endpointAuth
+        val aci = SignalStore.account.aci
+        if (aci == null || device == null || endpoint == null || p256dh == null || auth == null) throw EnrollmentFile.Invalid("not_ready")
+
+        val epoch = EndpointUpdates.exportEpoch(serverEpoch)
+        val accountId = aci.toString()
+        val instance = values.endpointInstance ?: "default"
+        val exported = Target(endpoint, EnrollmentFile.canonicalKey(p256dh, 65), EnrollmentFile.canonicalKey(auth, 16))
+        val activeNow = mode == ExportMode.RECOVERY
+        var rendered: String? = null
+        intent = requireReplayStateAvailability {
+          EndpointUpdates.recordIntent(store, fullRecovery = activeNow, replayIfAbsent = replayIfAbsent) { old, sequence ->
+            if (epoch <= old.activeEpoch && !activeNow) throw EnrollmentFile.Invalid("recovery_ack_required")
+
+            // A matching epoch alone is not enough to reuse a candidate key: the intent may belong to a different
+            // Signal account, linked device, or UnifiedPush instance that happens to use the same epoch number.
+            val sameEpoch = old.intents.filter {
+              it.epoch == epoch && it.accountId == accountId && it.deviceId == device.deviceId && it.instance == instance
+            }
+            val sameEpochKey = when {
+              sameEpoch.isNotEmpty() -> {
+                if (sameEpoch.any { !sameExportParameters(it, accountId, device.deviceId, device.password, instance, exported) }) {
+                  throw EnrollmentFile.Invalid("same_epoch_conflict")
+                }
+                val keys = sameEpoch.map { it.controlKey }.toSet()
+                val ids = sameEpoch.map { it.keyId }.toSet()
+                if (keys.size != 1 || ids.size != 1) throw EnrollmentFile.Invalid("same_epoch_conflict")
+                keys.single()
+              }
+              epoch == old.activeEpoch && old.key != null &&
+                (old.activeImportId == null ||
+                  (old.activeAccountId == accountId && old.activeDeviceId == device.deviceId && old.activeInstance == instance)) -> {
+                if (old.serverTarget != exported) throw EnrollmentFile.Invalid("same_epoch_conflict")
+                old.key
+              }
+              epoch == old.activeEpoch && old.key == null -> throw EnrollmentFile.Invalid("same_epoch_conflict")
+              else -> null
+            }
+            val controlKey = sameEpochKey ?: EnrollmentFile.newControlKey()
+            val keyId = ControlKeyId.derive(controlKey, accountId, device.deviceId, instance)
+            val candidate = ImportIntent(
+              requestId = UUID.randomUUID().toString(),
+              sequence = sequence,
+              epoch = epoch,
+              controlKey = controlKey,
+              keyId = keyId,
+              target = exported,
+              accountId = accountId,
+              deviceId = device.deviceId,
+              password = device.password,
+              instance = instance,
+              recovery = activeNow,
+            )
+            // Validate immutable bytes while still inside the state transaction, before sequence/intent commit.
+            rendered = EnrollmentFile.render(candidate.toInput())
+            candidate
+          }
+        }
+        contents = checkNotNull(rendered)
+      }
     }
+
+    // New intents and their sequence are already committed. A failed file write keeps the intent for re-render.
     try {
       temp.outputStream().use { it.write(contents.toByteArray(Charsets.UTF_8)) }
-      Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
-    } catch (e: Exception) {
-      EndpointUpdates.retireExport(store, epoch, before)
-      throw e
+      Files.move(temp.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING)
     } finally {
       temp.delete()
     }
 
-    if (values.replayState == null) {
-      values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
-    }
-    return Export(target, epoch, store.read().highestEpoch)
+    return Export(output, intent.epoch, store.read().highestEpoch, intent.requestId)
   }
 
-  /** Deletes the export file and its temporary file now, on the calling thread. */
+  /** Forget a chosen candidate only after the settings UI has warned that its file may still exist. */
+  @JvmStatic
+  fun forgetIntent(requestId: String): Boolean = EndpointUpdates.forgetIntent(UnifiedPushControlStore(SignalStore.unifiedpush), requestId)
+
+  private fun ImportIntent.toInput() = EnrollmentFile.Input(
+    requestId = requestId,
+    accountId = accountId,
+    deviceId = deviceId,
+    password = password,
+    endpoint = target.endpoint,
+    p256dh = target.p256dh,
+    auth = target.auth,
+    instance = instance,
+    epoch = epoch,
+    controlKey = controlKey,
+    importSequence = sequence,
+  )
+
+  private fun sameExportParameters(
+    intent: ImportIntent,
+    accountId: String,
+    deviceId: Int,
+    password: String,
+    instance: String,
+    target: Target,
+  ): Boolean = intent.accountId == accountId && intent.deviceId == deviceId && intent.password == password &&
+    intent.instance == instance && intent.target == target
+
+  private inline fun <T> requireReplayStateAvailability(block: () -> T): T = try {
+    block()
+  } catch (_: ReplayStateUnavailableException) {
+    throw EnrollmentFile.Invalid("state_unavailable")
+  }
+
+  /** Deletes any published or temporary export now, on the calling thread. */
   @JvmStatic
   @Synchronized
   fun removeFiles(context: Context) {
@@ -120,15 +203,10 @@ object EnrollmentExporter {
     File(dir, TEMP_NAME).delete()
   }
 
-  /** Removes any file left by an earlier export. Called from the application's onCreate. */
+  /** Synchronously removes the two export files during startup, before settings can publish a new export. */
   @JvmStatic
+  @Synchronized
   fun deleteStale(context: Context) {
-    SignalExecutors.BOUNDED.execute {
-      synchronized(EnrollmentExporter) {
-        val dir = context.getExternalFilesDir(null) ?: return@synchronized
-        File(dir, FILE_NAME).delete()
-        File(dir, TEMP_NAME).delete()
-      }
-    }
+    removeFiles(context)
   }
 }

@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.health.PushHealth
+import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
@@ -50,7 +51,36 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
     viewModel.updateRegistration()
   }
 
-  private fun showExportEpochDialog() {
+  private fun showExportModeDialog(state: UnifiedPushSettingsState) {
+    val eligible = state.savedExports.filter { it.eligible }
+    val choices = mutableListOf(
+      getString(R.string.UnifiedPushSettingsFragment__export_new_intent),
+      getString(R.string.UnifiedPushSettingsFragment__export_recovery_intent),
+    )
+    if (eligible.isNotEmpty()) choices += getString(R.string.UnifiedPushSettingsFragment__export_rerender_intent)
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.UnifiedPushSettingsFragment__export_enrollment)
+      .setItems(choices.toTypedArray()) { _, which ->
+        when (which) {
+          0 -> showExportEpochDialog(ExportMode.NEW_INTENT)
+          1 -> showRecoveryAcknowledgement()
+          2 -> showRerenderDialog(eligible)
+        }
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  private fun showRecoveryAcknowledgement() {
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.UnifiedPushSettingsFragment__export_recovery_title)
+      .setMessage(R.string.UnifiedPushSettingsFragment__export_recovery_message)
+      .setPositiveButton(R.string.UnifiedPushSettingsFragment__export_continue) { _, _ -> showExportEpochDialog(ExportMode.RECOVERY) }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  private fun showExportEpochDialog(mode: ExportMode) {
     val input = EditText(requireContext()).apply {
       inputType = InputType.TYPE_CLASS_NUMBER
       hint = getString(R.string.UnifiedPushSettingsFragment__export_enrollment_epoch_hint)
@@ -65,7 +95,63 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
       .setMessage(R.string.UnifiedPushSettingsFragment__export_enrollment_epoch_message)
       .setView(container)
       .setPositiveButton(R.string.UnifiedPushSettingsFragment__export_enrollment_export) { _, _ ->
-        viewModel.exportEnrollment(requireContext(), input.text.toString())
+        viewModel.exportEnrollment(requireContext(), input.text.toString(), mode)
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  private fun showRerenderDialog(exports: List<SavedExport>) {
+    val labels = exports.mapIndexed { index, saved ->
+      getString(R.string.UnifiedPushSettingsFragment__saved_export_label, index + 1, saved.epoch)
+    }.toTypedArray()
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.UnifiedPushSettingsFragment__rerender_export_title)
+      .setItems(labels) { _, which ->
+        viewModel.exportEnrollment(requireContext(), "", ExportMode.RERENDER, exports[which].requestId)
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  private fun showForgetIntentDialog(state: UnifiedPushSettingsState) {
+    val items = state.savedExports.map { saved ->
+      Triple(
+        getString(
+          if (saved.eligible) R.string.UnifiedPushSettingsFragment__forget_export_label
+          else R.string.UnifiedPushSettingsFragment__forget_superseded_export_label,
+          saved.epoch,
+        ),
+        saved.requestId,
+        false,
+      )
+    }.toMutableList()
+    if (state.hasLegacyPendingExport) {
+      items += Triple(getString(R.string.UnifiedPushSettingsFragment__forget_legacy_export_label), "", true)
+    }
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.UnifiedPushSettingsFragment__forget_export_title)
+      .setItems(items.map { it.first }.toTypedArray()) { _, which ->
+        val selected = items[which]
+        MaterialAlertDialogBuilder(requireContext())
+          .setTitle(R.string.UnifiedPushSettingsFragment__forget_export_title)
+          .setMessage(R.string.UnifiedPushSettingsFragment__forget_export_warning)
+          .setPositiveButton(R.string.UnifiedPushSettingsFragment__forget_export_confirm) { _, _ ->
+            if (selected.third) viewModel.forgetLegacyExport() else viewModel.forgetExport(selected.second)
+          }
+          .setNegativeButton(android.R.string.cancel, null)
+          .show()
+      }
+      .setNegativeButton(android.R.string.cancel, null)
+      .show()
+  }
+
+  private fun showControlStateRecoveryDialog() {
+    MaterialAlertDialogBuilder(requireContext())
+      .setTitle(R.string.UnifiedPushSettingsFragment__control_state_recovery_title)
+      .setMessage(R.string.UnifiedPushSettingsFragment__control_state_recovery_message)
+      .setPositiveButton(R.string.UnifiedPushSettingsFragment__control_state_recovery_confirm) { _, _ ->
+        viewModel.recoverCorruptControlState()
       }
       .setNegativeButton(android.R.string.cancel, null)
       .show()
@@ -168,10 +254,30 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
         onClick = { viewModel.testPush() },
       )
 
+      if (state.controlStateCorrupt) {
+        clickPref(
+          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__control_state_recovery),
+          summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__control_state_recovery_summary),
+          onClick = { showControlStateRecoveryDialog() },
+        )
+      }
+
+      if (!state.controlStateCorrupt && state.pendingExportCount > 0) {
+        clickPref(
+          title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__pending_exports),
+          summary = DSLSettingsText.from(getString(R.string.UnifiedPushSettingsFragment__pending_exports_summary, state.pendingExportCount)),
+          onClick = { showForgetIntentDialog(state) },
+        )
+      }
+
       clickPref(
         title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment),
-        summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__export_enrollment_summary),
-        onClick = { showExportEpochDialog() },
+        summary = DSLSettingsText.from(
+          if (state.controlStateCorrupt) R.string.UnifiedPushSettingsFragment__export_enrollment_state_unavailable
+          else R.string.UnifiedPushSettingsFragment__export_enrollment_summary
+        ),
+        isEnabled = !state.controlStateCorrupt,
+        onClick = { showExportModeDialog(state) },
       )
     }
   }
@@ -195,6 +301,7 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
   @StringRes
   private fun getStatusSummary(state: UnifiedPushSettingsState): Int {
     return when {
+      state.controlStateCorrupt -> R.string.UnifiedPushSettingsFragment__control_state_unavailable
       state.distributors.isEmpty() -> R.string.UnifiedPushSettingsFragment__status_summary_no_distributor
       state.selected == -1 -> R.string.UnifiedPushSettingsFragment__status_summary_distributor_not_selected
       state.registrationFailed -> R.string.UnifiedPushSettingsFragment__registration_failed

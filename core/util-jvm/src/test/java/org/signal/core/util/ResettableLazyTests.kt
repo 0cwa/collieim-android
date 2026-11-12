@@ -10,6 +10,9 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 class ResettableLazyTests {
 
@@ -84,5 +87,95 @@ class ResettableLazyTests {
 
       assertEquals(1, counter)
     }
+  }
+
+  @Test
+  fun `reset waits for an in-flight initializer before invalidating its publication`() {
+    val initializerStarted = CountDownLatch(1)
+    val allowInitializerToReturn = CountDownLatch(1)
+    val resetAttempted = CountDownLatch(1)
+    val resetFinished = CountDownLatch(1)
+    val values = AtomicInteger()
+    val lazyDelegate = resettableLazy {
+      val value = values.getAndIncrement()
+      if (value == 0) {
+        initializerStarted.countDown()
+        check(allowInitializerToReturn.await(5, TimeUnit.SECONDS))
+      }
+      value
+    }
+    val holder = object {
+      val value by lazyDelegate
+    }
+    val firstValue = AtomicReference<Int?>()
+    val reader = Thread { firstValue.set(holder.value) }
+    val resetter = Thread {
+      resetAttempted.countDown()
+      lazyDelegate.reset()
+      resetFinished.countDown()
+    }
+
+    reader.start()
+    assertTrue(initializerStarted.await(5, TimeUnit.SECONDS))
+    resetter.start()
+    assertTrue(resetAttempted.await(5, TimeUnit.SECONDS))
+
+    while (resetFinished.count == 1L && resetter.state != Thread.State.BLOCKED) {
+      Thread.yield()
+    }
+    val resetWaitedForInitializer = resetter.state == Thread.State.BLOCKED
+    allowInitializerToReturn.countDown()
+    reader.join(5000)
+    resetter.join(5000)
+
+    assertTrue("reset must wait for the current initializer", resetWaitedForInitializer)
+    assertTrue("reader must finish", !reader.isAlive)
+    assertTrue("reset must finish", !resetter.isAlive)
+    assertEquals(0, firstValue.get())
+    assertEquals(1, holder.value)
+  }
+
+  @Test
+  fun `concurrent reset never returns the uninitialized sentinel`() {
+    val lazyDelegate = resettableLazy { 7 }
+    val holder = object {
+      val value by lazyDelegate
+    }
+    val start = CountDownLatch(1)
+    val done = CountDownLatch(5)
+    val failure = AtomicReference<Throwable?>()
+
+    repeat(4) {
+      Thread {
+        try {
+          check(start.await(5, TimeUnit.SECONDS))
+          repeat(100_000) {
+            if (holder.value != 7) error("unexpected initialized value")
+          }
+        } catch (t: Throwable) {
+          failure.compareAndSet(null, t)
+        } finally {
+          done.countDown()
+        }
+      }.start()
+    }
+
+    Thread {
+      try {
+        check(start.await(5, TimeUnit.SECONDS))
+        repeat(100_000) {
+          lazyDelegate.reset()
+          check(holder.value == 7)
+        }
+      } catch (t: Throwable) {
+        failure.compareAndSet(null, t)
+      } finally {
+        done.countDown()
+      }
+    }.start()
+
+    start.countDown()
+    assertTrue("all readers and the resetter must finish", done.await(10, TimeUnit.SECONDS))
+    assertEquals(null, failure.get())
   }
 }

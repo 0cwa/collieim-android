@@ -46,6 +46,12 @@ class EnrollmentExportTest {
 
   private val active = { true }
   private val dir get() = context.getExternalFilesDir(null)
+  private fun export(serverEpoch: Long?) = EnrollmentExporter.exportWithEpoch(
+    context,
+    serverEpoch,
+    ExportMode.NEW_INTENT,
+    isDistributorActive = active,
+  )
   private fun epochOf(file: File) = ObjectMapper().readTree(file.readText())["subscription"]["subscription_epoch"].asInt()
 
   @Test
@@ -54,12 +60,15 @@ class EnrollmentExportTest {
 
     // Optional argument: the epoch CollieSocket reports for the account (absent: not enrolled).
     val serverEpoch = args.getString("ep_server_epoch")?.toLong()
-    val file = EnrollmentExporter.export(context, serverEpoch, active)
+    val first = export(serverEpoch)
+    val file = first.file
 
     assertEquals(File(dir, EnrollmentExporter.FILE_NAME), file)
     assertFalse(File(dir, EnrollmentExporter.FILE_NAME + ".tmp").exists())
     val json = ObjectMapper().readTree(file.readText())
-    assertEquals(1, json["enrollment_version"].asInt())
+    assertEquals(3, json["enrollment_version"].asInt())
+    assertEquals(first.requestId, json["request_id"].asText())
+    assertTrue(json["import_seq"].asLong() > 0)
     assertEquals(SignalStore.account.aci.toString(), json["account_id"].asText())
     assertEquals(2, json["device_id"].asInt())
     assertEquals((serverEpoch ?: 0) + 1, json["subscription"]["subscription_epoch"].asLong())
@@ -67,17 +76,20 @@ class EnrollmentExportTest {
     assertEquals((serverEpoch ?: 0) + 1, SignalStore.unifiedpush.pendingEnrollmentEpoch)
 
     // A second export replaces the file with a fresh request id.
-    val second = ObjectMapper().readTree(EnrollmentExporter.export(context, serverEpoch, active).readText())
-    assertTrue(second["request_id"].asText() != json["request_id"].asText())
+    val second = export(serverEpoch)
+    val secondJson = ObjectMapper().readTree(second.file.readText())
+    assertTrue(secondJson["request_id"].asText() != json["request_id"].asText())
+    assertEquals(json["control_key"].asText(), secondJson["control_key"].asText())
+    assertTrue(secondJson["import_seq"].asLong() > json["import_seq"].asLong())
   }
 
   @Test
   fun enteredServerEpochGivesTheNextEpoch() {
     seed()
-    assertEquals(1, epochOf(EnrollmentExporter.export(context, null, active)))
-    assertEquals(2, epochOf(EnrollmentExporter.export(context, 1, active)))
+    assertEquals(1, epochOf(export(null).file))
+    assertEquals(2, epochOf(export(1).file))
     assertEquals(2L, SignalStore.unifiedpush.pendingEnrollmentEpoch)
-    assertEquals(8, epochOf(EnrollmentExporter.export(context, 7, active)))
+    assertEquals(8, epochOf(export(7).file))
   }
 
   @Test
@@ -97,17 +109,17 @@ class EnrollmentExportTest {
       assertFalse(File(dir, EnrollmentExporter.FILE_NAME + ".tmp").exists())
     }
 
-    assertRefused("invalid_epoch") { EnrollmentExporter.export(context, -1, active) }
-    assertRefused("invalid_epoch") { EnrollmentExporter.export(context, 9007199254740991L, active) }
-    assertRefused("not_ready") { EnrollmentExporter.export(context, null) { false } }
+    assertRefused("invalid_epoch") { EnrollmentExporter.exportWithEpoch(context, -1, ExportMode.NEW_INTENT, isDistributorActive = active) }
+    assertRefused("invalid_epoch") { EnrollmentExporter.exportWithEpoch(context, 9007199254740991L, ExportMode.NEW_INTENT, isDistributorActive = active) }
+    assertRefused("not_ready") { EnrollmentExporter.exportWithEpoch(context, null, ExportMode.NEW_INTENT, isDistributorActive = { false }) }
     SignalStore.unifiedpush.endpointAuth = null
-    assertRefused("not_ready") { EnrollmentExporter.export(context, null, active) }
+    assertRefused("not_ready") { export(null) }
   }
 
   @Test
   fun deleteStaleRemovesAnEarlierExport() {
     seed()
-    val file = EnrollmentExporter.export(context, null, active)
+    val file = export(null).file
     assertTrue(file.exists())
 
     EnrollmentExporter.deleteStale(context)
@@ -120,11 +132,11 @@ class EnrollmentExportTest {
   @Test
   fun anOverflowingEpochInTheDialogStillRemovesTheOldFile() {
     seed()
-    val file = EnrollmentExporter.export(context, null, active)
+    val file = export(null).file
     assertTrue(file.exists())
 
     im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsViewModel(context.applicationContext as android.app.Application)
-      .exportEnrollment(context, "99999999999999999999")
+      .exportEnrollment(context, "99999999999999999999", ExportMode.NEW_INTENT)
 
     val deadline = System.currentTimeMillis() + 5000
     while (file.exists() && System.currentTimeMillis() < deadline) Thread.sleep(50)

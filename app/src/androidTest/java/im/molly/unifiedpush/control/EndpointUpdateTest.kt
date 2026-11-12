@@ -193,7 +193,7 @@ class EndpointUpdateTest {
 
     // Export and first wake: the enrollment is proven, the control key becomes the active one.
     File(dir, "inject-ids.txt").delete(); File(dir, "inject-ids2.txt").delete(); File(dir, "control-request.json").delete()
-    EnrollmentExporter.export(context, null) { true }
+    EnrollmentExporter.exportWithEpoch(context, null, im.molly.unifiedpush.enrollment.ExportMode.NEW_INTENT, isDistributorActive = { true })
     assertNotNull(values.controlState.pendingKey)
     assertNull(values.controlKey)
     File(dir, "ready.txt").writeText("ready")

@@ -10,6 +10,7 @@ import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
+import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.model.MollySocketDevice
@@ -78,14 +79,32 @@ class EncryptedPushReceiverTest {
     LockedPushState.setEncryptedEnrollment(context, false)
   }
 
-  private fun export(): File = EnrollmentExporter.export(context, null) { true }
+  private fun export(): EnrollmentExporter.Export = EnrollmentExporter.exportWithEpoch(
+    context,
+    null,
+    ExportMode.NEW_INTENT,
+    isDistributorActive = { true },
+  )
+
+  private fun identityFor(epoch: Long): Pair<String, String> {
+    val state = values.controlState
+    if (state.activeEpoch == epoch && state.activeKeyId != null && state.activeImportId != null) {
+      return state.activeKeyId to state.activeImportId
+    }
+    val candidate = state.intents.filter { it.eligible && it.epoch == epoch }.maxByOrNull { it.sequence }
+      ?: state.intents.maxByOrNull { it.sequence }
+      ?: throw AssertionError("No local v3 import identity")
+    return candidate.keyId to candidate.requestId
+  }
 
   private fun now() = System.currentTimeMillis() / 1000
 
   private fun eventJson(kind: String = "wake", id: String = UUID.randomUUID().toString(), instance: String = "default", epoch: Long = 1,
-                        issued: Long = now(), expires: Long = issued + 300, code: String? = null): String =
-    """{"version":1,"event_id":"$id","instance":"$instance","subscription_epoch":$epoch,"kind":"$kind",""" +
-      """"issued_at":$issued,"expires_at":$expires${code?.let { ""","code":"$it"""" } ?: ""}}"""
+                        issued: Long = now(), expires: Long = issued + 300, code: String? = null): String {
+    val (keyId, importId) = identityFor(epoch)
+    return """{"version":3,"event_id":"$id","instance":"$instance","subscription_epoch":$epoch,"kind":"$kind",""" +
+      """"issued_at":$issued,"expires_at":$expires${code?.let { ""","code":"$it"""" } ?: ""},"key_id":"$keyId","import_id":"$importId"}"""
+  }
 
   /** The wire profile: JSON padded with spaces to 3993 bytes, then RFC 8291 for the connector's public key. */
   private fun encrypt(json: String): ByteArray {
@@ -197,7 +216,7 @@ class EncryptedPushReceiverTest {
     accepted(encrypt(eventJson(id = first)), first)
     assertEquals(1L, values.enrollmentEpoch)
     // Re-export at the server's epoch 1: pending 2, nothing else changes.
-    EnrollmentExporter.export(context, 1) { true }
+    EnrollmentExporter.exportWithEpoch(context, 1, ExportMode.NEW_INTENT, isDistributorActive = { true })
     assertEquals(1L, values.enrollmentEpoch)
     assertEquals(2L, values.pendingEnrollmentEpoch)
     val second = UUID.randomUUID().toString()
@@ -216,7 +235,9 @@ class EncryptedPushReceiverTest {
   fun lockedStateDropsEncryptedPushesAndKeepsNewEndpoints() {
     registerConnector()
     export()
-    values.mutateControl(EncryptedPush.ReplayState(now() - 1, emptyList()).serialize()) { it.copy(activeEpoch = 1, pendingEpoch = 0, pendingKey = null, pendingTarget = null) }
+    val wakeId = UUID.randomUUID().toString()
+    accepted(encrypt(eventJson(id = wakeId)), wakeId)
+    values.mutateControl(EncryptedPush.ReplayState(now() - 1, emptyList()).serialize()) { it }
     LockedPushState.setEncryptedEnrollment(context, true)
     val secret = KeyCachingService.getMasterSecret()
     val replay = values.replayState

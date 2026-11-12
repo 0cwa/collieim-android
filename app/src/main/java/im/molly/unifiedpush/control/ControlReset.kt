@@ -15,4 +15,20 @@ object ControlReset {
     SignalStore.unifiedpush.clearControl()
     LockedPushState.setEncryptedEnrollment(context, false)
   }
+
+  /** A provider change discards its keys and epochs but never decreases a retained v3 import sequence. */
+  @JvmStatic
+  fun discardForServerChange(context: Context) {
+    if (SignalStore.unifiedpush.clearControlForServerChange()) {
+      LockedPushState.setEncryptedEnrollment(context, false)
+    }
+  }
+
+  /** Explicit user recovery after server removal; clears only a corrupt local control record. */
+  @JvmStatic
+  fun recoverCorrupt(context: Context): Boolean {
+    val cleared = SignalStore.unifiedpush.clearCorruptControlAfterServerRemoval()
+    if (cleared) LockedPushState.setEncryptedEnrollment(context, false)
+    return cleared
+  }
 }

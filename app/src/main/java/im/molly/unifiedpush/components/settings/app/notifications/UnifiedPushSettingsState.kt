@@ -24,6 +24,10 @@ data class UnifiedPushSettingsState(
   val pushTestResult: PushHealth.Hop? = null,
   val pushTestResultAt: Long = 0,
   val pushTestRunning: Boolean = false,
+  val controlStateCorrupt: Boolean = false,
+  val savedExports: List<SavedExport> = emptyList(),
+  val pendingExportCount: Int = 0,
+  val hasLegacyPendingExport: Boolean = false,
 ) {
   val serverParameters: String?
     get() {
@@ -31,4 +35,8 @@ data class UnifiedPushSettingsState(
         "connection add $aci ${device.deviceId} ${device.password} $endpoint"
       } else null
     }
+}
+
+data class SavedExport(val requestId: String, val epoch: Long, val eligible: Boolean) {
+  override fun toString() = "SavedExport(epoch=$epoch, eligible=$eligible)"
 }

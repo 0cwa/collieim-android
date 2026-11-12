@@ -9,9 +9,11 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition;
 import org.signal.core.models.ServiceId.PNI;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 /**
  * Migration to fetch our own PNI from the service.
@@ -42,19 +44,24 @@ public class PniMigrationJob extends MigrationJob {
 
   @Override
   void performMigration() throws Exception {
-    if (!SignalStore.account().isRegistered() || SignalStore.account().getAci() == null) {
-      Log.w(TAG, "Not registered! Skipping migration, as it wouldn't do anything.");
-      return;
-    }
+    UnifiedPushAccountTransition.callTransitionBlocking(false, new Callable<Void>() {
+      @Override
+      public Void call() throws Exception {
+        if (!SignalStore.account().isRegistered() || SignalStore.account().getAci() == null) {
+          Log.w(TAG, "Not registered! Skipping migration, as it wouldn't do anything.");
+          return null;
+        }
 
-    PNI pni = PNI.parseOrNull(AppDependencies.getSignalServiceAccountManager().getWhoAmI().getPni());
+        PNI pni = PNI.parseOrNull(AppDependencies.getSignalServiceAccountManager().getWhoAmI().getPni());
+        if (pni == null) throw new IOException("Invalid PNI!");
 
-    if (pni == null) {
-      throw new IOException("Invalid PNI!");
-    }
-
-    SignalDatabase.recipients().linkIdsForSelf(SignalStore.account().requireAci(), pni, SignalStore.account().requireE164());
-    SignalStore.account().setPni(pni);
+        SignalDatabase.recipients().linkIdsForSelf(SignalStore.account().requireAci(), pni, SignalStore.account().requireE164());
+        SignalStore.account().setPni(pni);
+        AppDependencies.resetProtocolStores();
+        AppDependencies.resetNetwork(true);
+        return null;
+      }
+    });
   }
 
   @Override

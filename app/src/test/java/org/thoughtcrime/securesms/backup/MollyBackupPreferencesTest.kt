@@ -162,6 +162,19 @@ class MollyBackupPreferencesTest {
   }
 
   @Test
+  fun `archive cannot overwrite the local UnifiedPush transition marker`() {
+    SignalStore.unifiedpush.setIncompleteAccountTransition(true)
+    val marker = KeyValue.Builder()
+      .key("up.account.transition.pending")
+      .booleanValue(false)
+      .build()
+
+    FullBackupImporter.processKeyValue(marker, keyValueStorage)
+
+    assertTrue(SignalStore.unifiedpush.hasIncompleteAccountTransition)
+  }
+
+  @Test
   fun `stale shared preferences for migrated Signal settings are not exported`() {
     preferences.edit()
       .putBoolean("pref_read_receipts", false)

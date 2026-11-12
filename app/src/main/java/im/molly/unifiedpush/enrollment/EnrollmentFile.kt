@@ -6,17 +6,17 @@ import java.util.Base64
 /**
  * Builds the protected enrollment file that CollieSocket's `enrollment import` reads.
  *
- * The format is defined by `contracts/encrypted-push/v2` (`enrollment.schema.json`, `README.md`) in
- * https://github.com/0cwa/colliesocket, pinned at [CONTRACT_COMMIT]. That revision was merged to `main` in PR #11
- * on 2026-11-11.
- * Version 2 adds the control key that lets the phone change its own push endpoint over Signal.
+ * V1 and v2 remain frozen. V3 is defined by `contracts/encrypted-push/v3` in the separate pinned contract resource.
+ * The v2 source pin remains [V2_CONTRACT_COMMIT]; the v1 event source pin is held by [EncryptedPush].
  *
  * The file holds the linked-device password, so nothing in here logs or echoes a value: failures carry
  * only a fixed [Invalid.code].
  */
 object EnrollmentFile {
 
-  const val CONTRACT_COMMIT = "371a744b2b15ead17cf50000e59cc7d347574b7c"
+  const val V2_CONTRACT_COMMIT = "371a744b2b15ead17cf50000e59cc7d347574b7c"
+  /** Canonical source revision for the pinned v3 contract artifacts in test resources. */
+  const val V3_CONTRACT_COMMIT = "9751c1effba7c94f49474febd941ca7fe3ba31cc"
 
   class Invalid(val code: String) : Exception(code)
 
@@ -32,6 +32,8 @@ object EnrollmentFile {
     val epoch: Long,
     /** Canonical unpadded base64url of 32 random bytes, see [newControlKey]. */
     val controlKey: String,
+    /** Null emits the byte-compatible v2 file; positive values emit v3. */
+    val importSequence: Long? = null,
   ) {
     override fun toString() = "EnrollmentFile.Input"
   }
@@ -91,7 +93,7 @@ object EnrollmentFile {
     }
   }
 
-  /** Validates [input] against the v2 contract and returns the file contents. */
+  /** Validates [input] against the selected v2/v3 contract and returns the file contents. */
   fun render(input: Input): String {
     if (!UUID_V4.matches(input.requestId) || !UUID_ANY.matches(input.accountId)) throw Invalid("invalid_enrollment")
     if (input.deviceId < 2) throw Invalid("invalid_enrollment")
@@ -103,10 +105,13 @@ object EnrollmentFile {
     requireOnCurve(Base64.getUrlDecoder().decode(p256dh))
     val auth = canonicalKey(input.auth, 16)
     val controlKey = canonicalKey(input.controlKey, 32)
+    val version = if (input.importSequence == null) 2 else 3
+    if (version == 3 && (input.importSequence!! <= 0 || input.controlKey != controlKey)) throw Invalid("invalid_enrollment")
 
     return buildString {
-      append("{\"enrollment_version\":2")
+      append("{\"enrollment_version\":").append(version)
       append(",\"request_id\":").append(json(input.requestId))
+      if (version == 3) append(",\"import_seq\":").append(input.importSequence)
       append(",\"account_id\":").append(json(input.accountId))
       append(",\"device_id\":").append(input.deviceId)
       append(",\"password\":").append(json(input.password))
@@ -116,7 +121,7 @@ object EnrollmentFile {
       append(",\"instance\":").append(json(input.instance))
       append(",\"subscription_epoch\":").append(input.epoch)
       append(",\"encryption_required\":true")
-      append(",\"supported_event_versions\":[1,2]")
+      append(if (version == 3) ",\"supported_event_versions\":[1,2,3]" else ",\"supported_event_versions\":[1,2]")
       append(",\"capabilities\":[\"wake\",\"test\",\"status\"]}")
       append(",\"control_key\":").append(json(controlKey)).append("}")
     }

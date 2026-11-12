@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -113,11 +114,11 @@ object FcmFetchManager {
     NotificationManagerCompat.from(context).cancel(NotificationIds.MAY_HAVE_MESSAGES_NOTIFICATION_ID)
   }
 
-  private fun fetch(context: Context, now: Long) {
+  private fun fetch(context: Context, now: Long, authorization: UnifiedPushAccountTransition.FetchAuthorization?) {
     val hasHighPriorityContext = highPriority
 
     val metricId = SignalLocalMetrics.PushWebsocketFetch.startFetch()
-    val success = retrieveMessages(context)
+    val success = retrieveMessages(context, authorization)
     if (success) {
       SignalLocalMetrics.PushWebsocketFetch.onDrained(metricId)
       cancelMayHaveMessagesNotification(context)
@@ -147,32 +148,81 @@ object FcmFetchManager {
 
   @JvmStatic
   fun enqueueFetch(context: Context, highPriority: Boolean) {
+    enqueueFetch(context, highPriority, null)
+  }
+
+  /** Queues an optional UnifiedPush-origin request; no lease is held until this queued work actually starts. */
+  @JvmStatic
+  fun enqueueFetch(
+    context: Context,
+    highPriority: Boolean,
+    authorization: UnifiedPushAccountTransition.FetchAuthorization?,
+  ) {
     synchronized(this) {
       if (highPriority) {
         this.highPriority = true
       }
       last = System.nanoTime()
       Log.i(TAG, "Updating last event to $last")
-      EXECUTOR.enqueue { fetch(context, last) }
+      EXECUTOR.enqueue { fetch(context, last, authorization) }
     }
   }
 
   @JvmStatic
   fun retrieveMessages(context: Context): Boolean {
+    return retrieveMessages(context, null)
+  }
+
+  /** Executes an ordinary fetch or hands authorized UnifiedPush demand to the receive observer. */
+  @JvmStatic
+  fun retrieveMessages(
+    context: Context,
+    authorization: UnifiedPushAccountTransition.FetchAuthorization?,
+  ): Boolean {
+    if (authorization != null) {
+      when (WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, WEBSOCKET_DRAIN_TIMEOUT)) {
+        org.thoughtcrime.securesms.messages.UnifiedPushFetchResult.DRAINED -> {
+          Log.i(TAG, "Successfully retrieved messages through observer admission.")
+          return true
+        }
+        org.thoughtcrime.securesms.messages.UnifiedPushFetchResult.REVOKED -> {
+          Log.i(TAG, "UnifiedPush fetch was revoked before fallback scheduling.")
+          return true
+        }
+        org.thoughtcrime.securesms.messages.UnifiedPushFetchResult.RETRYABLE_FAILURE -> {
+          val fallbackLease = UnifiedPushAccountTransition.acquireFetchLease(authorization)
+          if (fallbackLease == null) {
+            Log.i(TAG, "UnifiedPush fallback authorization expired before scheduling.")
+            return true
+          }
+          try {
+            scheduleFallback(context, authorization)
+          } finally {
+            fallbackLease.close()
+          }
+          return false
+        }
+      }
+    }
+
     val success = WebSocketDrainer.blockUntilDrainedAndProcessed(WEBSOCKET_DRAIN_TIMEOUT, KEEP_ALIVE_TOKEN)
 
     if (success) {
       Log.i(TAG, "Successfully retrieved messages.")
     } else {
-      if (Build.VERSION.SDK_INT >= 26) {
-        Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on the system JobScheduler (API " + Build.VERSION.SDK_INT + ").")
-        FcmJobService.schedule(context)
-      } else {
-        Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on JobManager (API " + Build.VERSION.SDK_INT + ").")
-        AppDependencies.jobManager.add(MessageFetchJob())
-      }
+      scheduleFallback(context, null)
     }
 
     return success
+  }
+
+  private fun scheduleFallback(context: Context, authorization: UnifiedPushAccountTransition.FetchAuthorization?) {
+    if (Build.VERSION.SDK_INT >= 26) {
+      Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on the system JobScheduler (API " + Build.VERSION.SDK_INT + ").")
+      FcmJobService.schedule(context, authorization)
+    } else {
+      Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on JobManager (API " + Build.VERSION.SDK_INT + ").")
+      AppDependencies.jobManager.add(if (authorization == null) MessageFetchJob() else MessageFetchJob.forUnifiedPush(authorization))
+    }
   }
 }

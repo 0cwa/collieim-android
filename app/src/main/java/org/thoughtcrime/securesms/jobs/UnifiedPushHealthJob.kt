@@ -4,6 +4,7 @@ import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
@@ -58,7 +59,13 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
   private fun runPing() {
     val values = SignalStore.unifiedpush
     val store = UnifiedPushControlStore(values)
-    val state = store.read()
+    val state = try {
+      store.read()
+    } catch (e: CorruptControlStateException) {
+      Log.w(TAG, "Push test unavailable: control state unavailable")
+      if (manual) PushHealthActions.onPing(PushHealth.Hop.UNAVAILABLE)
+      return
+    }
     val aci = SignalStore.account.aci
     val device = values.device
     val endpoint = values.endpoint
@@ -88,11 +95,22 @@ class UnifiedPushHealthJob private constructor(private val manual: Boolean, para
 
     val deadline = System.currentTimeMillis() + timeoutMs
     while (System.currentTimeMillis() < deadline) {
-      val current = store.read().update
+      val current = try {
+        store.read().update
+      } catch (e: CorruptControlStateException) {
+        Log.w(TAG, "Push test stopped: control state unavailable")
+        return
+      }
       if (current == null || current.epoch != update.epoch) {
         // The epoch is no longer pending. The receiver recorded the success when the confirmation arrived; otherwise a
         // newer endpoint update replaced the ping and there is no verdict.
-        if (store.read().activeEpoch < update.epoch) Log.i(TAG, "The ping was replaced by a newer endpoint update; no verdict.")
+        val currentState = try {
+          store.read()
+        } catch (e: CorruptControlStateException) {
+          Log.w(TAG, "Push test stopped: control state unavailable")
+          return
+        }
+        if (currentState.activeEpoch < update.epoch) Log.i(TAG, "The ping was replaced by a newer endpoint update; no verdict.")
         return
       }
       Thread.sleep(POLL_MS)

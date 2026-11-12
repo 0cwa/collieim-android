@@ -8,7 +8,7 @@ import org.junit.Test
 /** Plain JVM tests (no libsignal) of event version 2 against the pinned CollieSocket v2 fixture. */
 class EncryptedPushV2Test {
 
-  private val status = javaClass.getResourceAsStream("/colliesocket-contract-v2/status-updated.json")!!.readBytes()
+  private val status = javaClass.getResourceAsStream("/colliesocket-contract-v2/fixtures/status-updated.json")!!.readBytes()
   private val now = 1800000010L
   private fun text(vararg replace: Pair<String, String>) =
     replace.fold(String(status)) { acc, (from, to) -> acc.replace(from, to) }.toByteArray()

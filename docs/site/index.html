@@ -82,12 +82,16 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
 
 <main id="main">
   <section id="about" class="intro shell" aria-labelledby="about-title">
-    <h2 id="about-title">Talk to anyone on Signal</h2>
-    <p class="statement">Message and call your Signal contacts over the <strong>same end-to-end encrypted Signal network</strong>. Collie adds stronger protection for the messages stored on your phone.</p>
-    <p class="statement-sub">Built on <a href="https://signal.org/">Signal</a> and <a href="https://molly.im/">Molly</a>, Collie keeps Molly's privacy protections, follows newer Signal releases, and adds features of its own.</p>
-    <p class="statement-sub">Collie is <strong>free and open source</strong>. Its code is public, so people with the expertise to inspect it can see how it works.</p>
+    <div class="intro-copy">
+      <h2 id="about-title">Talk to anyone on Signal</h2>
+      <p class="statement">Message and call <strong>your Signal contacts</strong> over the same end-to-end encrypted network, with more protection for the messages on your phone.</p>
+    </div>
+    <aside class="intro-source" aria-labelledby="source-title">
+      <h3 id="source-title">Built on <a href="https://signal.org/">Signal</a> and <a href="https://molly.im/">Molly</a></h3>
+      <p>Collie keeps Molly's privacy protections, follows newer Signal releases, and adds features of its own.</p>
     <details class="technical-details">
-      <summary>Source and security details</summary>
+      <summary><span><strong>Free and open source</strong><span class="source-summary-help">Source and security details</span></span></summary>
+      <p class="source-explanation">Collie's code is public, so people with the expertise to inspect it can see how it works.</p>
       <ul class="ticks">
         <li>One APK, with no proprietary libraries, licensed <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE">AGPL-3.0</a>.</li>
         <li><a href="https://github.com/0cwa/collieim-android">Browse the source code</a> or read the <a href="https://github.com/0cwa/collie-release-engineering">release engineering and signing details</a>.</li>
@@ -95,6 +99,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
       </ul>
       <p class="note">Collie's native libraries have not yet been independently reproduced.</p>
     </details>
+    </aside>
   </section>
 
   <section id="features" class="features shell" aria-labelledby="features-title">

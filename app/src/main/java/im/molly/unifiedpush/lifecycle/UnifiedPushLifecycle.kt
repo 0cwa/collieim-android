@@ -42,6 +42,12 @@ object UnifiedPushLifecycle {
     override fun close() = owner.release(this)
   }
 
+  /** Result tied to the generation owned by one completed transition. */
+  data class TransitionResult<T>(
+    val value: T,
+    val generation: Long,
+  )
+
   /** Called after SignalStore initialization and before startup jobs or push work can run. */
   @JvmStatic
   fun initialize(incompleteTransition: Boolean, legacyContextIsCoherent: Boolean) {
@@ -125,7 +131,32 @@ object UnifiedPushLifecycle {
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
     block: suspend () -> T,
-  ): T {
+  ): T = withTransitionAndGeneration(
+    hasIncompleteMarker = hasIncompleteMarker,
+    persistIncompleteMarker = persistIncompleteMarker,
+    readyAfter = readyAfter,
+    expectedGeneration = expectedGeneration,
+    keepIncompleteMarker = keepIncompleteMarker,
+    completesAccountRegistration = completesAccountRegistration,
+    completesInvalidation = completesInvalidation,
+    block = block,
+  ).value
+
+  /**
+   * Like [withTransition], while retaining the generation assigned to this transition. Callers can
+   * later reacquire work only for this result; reading [currentGeneration] after return could instead
+   * authorize the operation under a competing account transition.
+   */
+  suspend fun <T> withTransitionAndGeneration(
+    hasIncompleteMarker: () -> Boolean = { false },
+    persistIncompleteMarker: (Boolean) -> Unit,
+    readyAfter: () -> Boolean,
+    expectedGeneration: Long? = null,
+    keepIncompleteMarker: Boolean = false,
+    completesAccountRegistration: Boolean = false,
+    completesInvalidation: Boolean = false,
+    block: suspend () -> T,
+  ): TransitionResult<T> {
     require(!keepIncompleteMarker || !completesAccountRegistration) {
       "A transition cannot both retain the incomplete marker and complete registration"
     }
@@ -152,7 +183,7 @@ object UnifiedPushLifecycle {
           finishTransition(token, canStartPushWork, completesInvalidation || completesAccountRegistration)
         }
       }
-      return result
+      return TransitionResult(result, token.generation)
     } catch (failure: Throwable) {
       ownership?.let(::failTransition)
       throw failure

@@ -44,6 +44,7 @@ import org.thoughtcrime.securesms.jobmanager.migrations.PushProcessMessageJobMig
 import org.thoughtcrime.securesms.jobmanager.migrations.RetrieveProfileJobMigration;
 import org.thoughtcrime.securesms.jobmanager.migrations.SendReadReceiptsJobMigration;
 import org.thoughtcrime.securesms.jobmanager.migrations.SenderKeyDistributionSendJobRecipientMigration;
+import org.thoughtcrime.securesms.jobmanager.migrations.UnifiedPushMessageFetchJobMigration;
 import org.thoughtcrime.securesms.migrations.AccountConsistencyMigrationJob;
 import org.thoughtcrime.securesms.migrations.AccountRecordMigrationJob;
 import org.thoughtcrime.securesms.migrations.AepMigrationJob;
@@ -261,6 +262,7 @@ public final class JobManagerFactories {
       put(PushGroupSendJob.KEY,                        new PushGroupSendJob.Factory());
       put(PushGroupSilentUpdateSendJob.KEY,            new PushGroupSilentUpdateSendJob.Factory());
       put(MessageFetchJob.KEY,                         new MessageFetchJob.Factory());
+      put(MessageFetchJob.UNIFIED_PUSH_KEY,            new MessageFetchJob.UnifiedPushFactory());
       put(PostRegistrationBackupRedemptionJob.KEY,     new PostRegistrationBackupRedemptionJob.Factory());
       put(PushProcessEarlyMessagesJob.KEY,             new PushProcessEarlyMessagesJob.Factory());
       put(PushProcessMessageErrorJob.KEY,              new PushProcessMessageErrorJob.Factory());
@@ -522,6 +524,7 @@ public final class JobManagerFactories {
                          new SenderKeyDistributionSendJobRecipientMigration(),
                          new PushProcessMessageJobMigration(),
                          new DonationReceiptRedemptionJobMigration(),
-                         new GroupCallPeekJobDataMigration());
+                         new GroupCallPeekJobDataMigration(),
+                         new UnifiedPushMessageFetchJobMigration());
   }
 }

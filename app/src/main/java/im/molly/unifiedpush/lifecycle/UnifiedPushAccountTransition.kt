@@ -55,8 +55,25 @@ object UnifiedPushAccountTransition {
     completesInvalidation: Boolean = false,
     readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
     block: suspend () -> T,
-  ): T {
-    val result = UnifiedPushLifecycle.withTransition(
+  ): T = withTransitionAndGeneration(
+    expectedGeneration = expectedGeneration,
+    keepIncompleteMarker = keepIncompleteMarker,
+    completesAccountRegistration = completesAccountRegistration,
+    completesInvalidation = completesInvalidation,
+    readyAfter = readyAfter,
+    block = block,
+  ).value
+
+  /** Runs a transition and returns the generation owned by that transition, not a later global sample. */
+  suspend fun <T> withTransitionAndGeneration(
+    expectedGeneration: Long? = null,
+    keepIncompleteMarker: Boolean = false,
+    completesAccountRegistration: Boolean = false,
+    completesInvalidation: Boolean = false,
+    readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
+    block: suspend () -> T,
+  ): UnifiedPushLifecycle.TransitionResult<T> {
+    val result = UnifiedPushLifecycle.withTransitionAndGeneration(
       hasIncompleteMarker = SignalStore.unifiedpush::hasIncompleteAccountTransition,
       persistIncompleteMarker = SignalStore.unifiedpush::setIncompleteAccountTransition,
       readyAfter = readyAfter,

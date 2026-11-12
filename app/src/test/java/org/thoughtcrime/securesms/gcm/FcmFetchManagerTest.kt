@@ -20,6 +20,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -197,6 +198,60 @@ class FcmFetchManagerTest {
       finishDrain.countDown()
       executor.shutdownNow()
     }
+  }
+
+  @Test
+  fun `stale UnifiedPush fallback does not replace an ordinary persisted fallback`() {
+    val scheduler = mockk<JobScheduler>()
+    val scheduledJobs = mutableMapOf<Int, JobInfo>()
+    mockkStatic(ServiceUtil::class)
+    every { ServiceUtil.getJobScheduler(context) } returns scheduler
+    every { scheduler.schedule(any()) } answers {
+      val job = firstArg<JobInfo>()
+      scheduledJobs[job.id] = job
+      JobScheduler.RESULT_SUCCESS
+    }
+
+    val previousProcessAuthorization = UnifiedPushAccountTransition.FetchAuthorization(
+      processInstanceId = "previous-process-instance",
+      generation = 17,
+      accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      localDeviceId = 1,
+      pushDeviceId = 4,
+      instance = "fixture-instance",
+    )
+    FcmJobService.schedule(context)
+    FcmJobService.schedule(context, previousProcessAuthorization)
+
+    assertEquals("both independent requests must remain scheduled", setOf(1337, 1338), scheduledJobs.keys)
+    val ordinaryJob = scheduledJobs.getValue(1337)
+    val unifiedPushJob = scheduledJobs.getValue(1338)
+    assertTrue(unifiedPushJob.extras.getBoolean("up_fetch_authorized", false))
+
+    mockkStatic(KeyCachingService::class)
+    mockkStatic(AppForegroundObserver::class)
+    every { KeyCachingService.isLocked() } returns false
+    every { AppForegroundObserver.isForegrounded() } returns false
+
+    val drainCalls = java.util.concurrent.atomic.AtomicInteger()
+    val ordinaryDrain = CountDownLatch(1)
+    every { WebSocketDrainer.blockUntilDrainedAndProcessed() } answers {
+      drainCalls.incrementAndGet()
+      ordinaryDrain.countDown()
+      true
+    }
+
+    val service = Robolectric.buildService(FcmJobService::class.java).create().get()
+    val staleParameters = mockk<JobParameters>()
+    every { staleParameters.extras } returns unifiedPushJob.extras
+    assertFalse("a prior-process UnifiedPush authorization must be rejected", service.onStartJob(staleParameters))
+    assertEquals(0, drainCalls.get())
+
+    val ordinaryParameters = mockk<JobParameters>()
+    every { ordinaryParameters.extras } returns ordinaryJob.extras
+    assertTrue("the ordinary persisted fallback must still run", service.onStartJob(ordinaryParameters))
+    assertTrue(ordinaryDrain.await(5, TimeUnit.SECONDS))
+    assertEquals(1, drainCalls.get())
   }
 
   @Test

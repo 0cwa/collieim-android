@@ -28,7 +28,8 @@ public class FcmJobService extends JobService {
 
   private static final String TAG = Log.tag(FcmJobService.class);
 
-  private static final int ID = 1337;
+  private static final int ORDINARY_ID = 1337;
+  private static final int UNIFIED_PUSH_ID = 1338;
   private static final String EXTRA_UP_AUTHORIZED = "up_fetch_authorized";
   private static final String EXTRA_UP_PROCESS = "up_fetch_process";
   private static final String EXTRA_UP_GENERATION = "up_fetch_generation";
@@ -44,7 +45,8 @@ public class FcmJobService extends JobService {
 
   @RequiresApi(26)
   public static void schedule(@NonNull Context context, FetchAuthorization authorization) {
-    JobInfo.Builder jobInfoBuilder = new JobInfo.Builder(ID, new ComponentName(context, FcmJobService.class))
+    int jobId = authorization == null ? ORDINARY_ID : UNIFIED_PUSH_ID;
+    JobInfo.Builder jobInfoBuilder = new JobInfo.Builder(jobId, new ComponentName(context, FcmJobService.class))
                                                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                                                 .setBackoffCriteria(0, JobInfo.BACKOFF_POLICY_LINEAR)
                                                 .setPersisted(true);

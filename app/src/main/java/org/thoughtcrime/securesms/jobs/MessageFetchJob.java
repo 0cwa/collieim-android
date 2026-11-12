@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class MessageFetchJob extends BaseJob {
 
   public static final String KEY = "PushNotificationReceiveJob";
+  public static final String UNIFIED_PUSH_KEY = "UnifiedPushMessageFetchJob";
 
   private static final String TAG = Log.tag(MessageFetchJob.class);
   private static final String EXTRA_UP_AUTHORIZED = "up_fetch_authorized";
@@ -43,23 +44,29 @@ public final class MessageFetchJob extends BaseJob {
 
   private final FetchAuthorization fetchAuthorization;
   private final boolean invalidFetchAuthorization;
+  private final String factoryKey;
 
   public MessageFetchJob() {
-    this(defaultParameters(), null, false);
+    this(defaultParameters(), null, false, KEY);
   }
 
   private MessageFetchJob(Job.Parameters parameters) {
-    this(parameters, null, false);
+    this(parameters, null, false, KEY);
   }
 
-  private MessageFetchJob(Job.Parameters parameters, FetchAuthorization authorization, boolean invalidAuthorization) {
+  private MessageFetchJob(Job.Parameters parameters, FetchAuthorization authorization, boolean invalidAuthorization, String factoryKey) {
     super(parameters);
     this.fetchAuthorization = authorization;
     this.invalidFetchAuthorization = invalidAuthorization;
+    this.factoryKey = factoryKey;
   }
 
   public static MessageFetchJob forUnifiedPush(FetchAuthorization authorization) {
-    return new MessageFetchJob(defaultParameters(), authorization, false);
+    return new MessageFetchJob(defaultParameters(), authorization, false, UNIFIED_PUSH_KEY);
+  }
+
+  public static boolean isUnifiedPushSerializedData(@Nullable byte[] serializedData) {
+    return JsonJobData.deserialize(serializedData).getBooleanOrDefault(EXTRA_UP_AUTHORIZED, false);
   }
 
   private static Job.Parameters defaultParameters() {
@@ -88,7 +95,7 @@ public final class MessageFetchJob extends BaseJob {
 
   @Override
   public @NonNull String getFactoryKey() {
-    return KEY;
+    return factoryKey;
   }
 
   @Override
@@ -220,25 +227,37 @@ public final class MessageFetchJob extends BaseJob {
   public static final class Factory implements Job.Factory<MessageFetchJob> {
     @Override
     public @NonNull MessageFetchJob create(@NonNull Parameters parameters, @Nullable byte[] serializedData) {
-      JsonJobData data = JsonJobData.deserialize(serializedData);
-      if (!data.getBooleanOrDefault(EXTRA_UP_AUTHORIZED, false)) {
-        return new MessageFetchJob(parameters);
-      }
-
-      if (!data.hasString(EXTRA_UP_PROCESS) || !data.hasLong(EXTRA_UP_GENERATION) ||
-          !data.hasString(EXTRA_UP_ACCOUNT) || !data.hasInt(EXTRA_UP_LOCAL_DEVICE) ||
-          !data.hasInt(EXTRA_UP_PUSH_DEVICE) || !data.hasString(EXTRA_UP_INSTANCE)) {
-        return new MessageFetchJob(parameters, null, true);
-      }
-
-      FetchAuthorization authorization = new FetchAuthorization(
-          data.getString(EXTRA_UP_PROCESS),
-          data.getLong(EXTRA_UP_GENERATION),
-          data.getString(EXTRA_UP_ACCOUNT),
-          data.getInt(EXTRA_UP_LOCAL_DEVICE),
-          data.getInt(EXTRA_UP_PUSH_DEVICE),
-          data.getString(EXTRA_UP_INSTANCE));
-      return new MessageFetchJob(parameters, authorization, false);
+      return MessageFetchJob.create(parameters, serializedData, KEY);
     }
+  }
+
+  /** Factory for newly separated UnifiedPush fetches; the legacy factory remains registered for persisted jobs. */
+  public static final class UnifiedPushFactory implements Job.Factory<MessageFetchJob> {
+    @Override
+    public @NonNull MessageFetchJob create(@NonNull Parameters parameters, @Nullable byte[] serializedData) {
+      return MessageFetchJob.create(parameters, serializedData, UNIFIED_PUSH_KEY);
+    }
+  }
+
+  private static MessageFetchJob create(@NonNull Parameters parameters, @Nullable byte[] serializedData, @NonNull String factoryKey) {
+    JsonJobData data = JsonJobData.deserialize(serializedData);
+    if (!data.getBooleanOrDefault(EXTRA_UP_AUTHORIZED, false)) {
+      return new MessageFetchJob(parameters, null, factoryKey.equals(UNIFIED_PUSH_KEY), factoryKey);
+    }
+
+    if (!data.hasString(EXTRA_UP_PROCESS) || !data.hasLong(EXTRA_UP_GENERATION) ||
+        !data.hasString(EXTRA_UP_ACCOUNT) || !data.hasInt(EXTRA_UP_LOCAL_DEVICE) ||
+        !data.hasInt(EXTRA_UP_PUSH_DEVICE) || !data.hasString(EXTRA_UP_INSTANCE)) {
+      return new MessageFetchJob(parameters, null, true, factoryKey);
+    }
+
+    FetchAuthorization authorization = new FetchAuthorization(
+        data.getString(EXTRA_UP_PROCESS),
+        data.getLong(EXTRA_UP_GENERATION),
+        data.getString(EXTRA_UP_ACCOUNT),
+        data.getInt(EXTRA_UP_LOCAL_DEVICE),
+        data.getInt(EXTRA_UP_PUSH_DEVICE),
+        data.getString(EXTRA_UP_INSTANCE));
+    return new MessageFetchJob(parameters, authorization, false, factoryKey);
   }
 }

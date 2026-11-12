@@ -121,6 +121,10 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
    */
   private val inProgressDataLock = Mutex()
 
+  /** Shared account-data mutation boundary used by registration commit and local backup restoration. */
+  internal suspend fun <T> withRegistrationDataOperationLock(block: suspend () -> T): T =
+    registrationDataOperationLock.withLock { block() }
+
   /**
    * Restarts the process-wide network stack after account data is applied. Overridable only so tests can avoid
    * touching the real, suite-shared network module; production must never replace it.
@@ -132,6 +136,8 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
 
   companion object {
     private val TAG = Log.tag(AppRegistrationStorageController::class)
+    /** Serializes account-data planning with complete registration commits and backup reapplication across controller instances. */
+    private val registrationDataOperationLock = Mutex()
     private const val TEMP_PROTO_FILENAME = "registration-in-progress.proto"
     private val MODERN_BACKUP_PATTERN = Regex("^signal-backup-(\\d{4})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})$")
     private val LEGACY_BACKUP_PATTERN = Regex("^.+-(\\d{4})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})-(\\d{2})\\.backup$")
@@ -171,9 +177,11 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
   }
 
   override suspend fun clearAllData() = withContext(Dispatchers.IO) {
-    inProgressDataLock.withLock {
-      SignalStore.registration.inProgressRegistrationDataBlobUri?.toUri()?.let { AppDependencies.blobs.delete(context, it) }
-      SignalStore.registration.inProgressRegistrationDataBlobUri = null
+    withRegistrationDataOperationLock {
+      inProgressDataLock.withLock {
+        SignalStore.registration.inProgressRegistrationDataBlobUri?.toUri()?.let { AppDependencies.blobs.delete(context, it) }
+        SignalStore.registration.inProgressRegistrationDataBlobUri = null
+      }
     }
 
     // Best-effort cleanup of the legacy plaintext file written by older builds.
@@ -220,12 +228,25 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
   }
 
   override suspend fun readInProgressRegistrationData(): RegistrationData = withContext(Dispatchers.IO) {
+    withRegistrationDataOperationLock { readInProgressRegistrationDataWhileOperationLocked() }
+  }
+
+  internal suspend fun readInProgressRegistrationDataWhileOperationLocked(): RegistrationData =
     inProgressDataLock.withLock {
       readInProgressRegistrationDataInternal()
     }
-  }
+
+  /** Reads the V1 restore snapshot while its caller holds the complete account-data operation lock. */
+  internal suspend fun readV1RestorePlanWhileOperationLocked(): V1RestoreRegistrationPlan =
+    V1RestoreRegistrationPlan(readInProgressRegistrationDataWhileOperationLocked())
 
   override suspend fun updateInProgressRegistrationData(updater: RegistrationData.Builder.() -> Unit) = withContext(Dispatchers.IO) {
+    withRegistrationDataOperationLock {
+      updateInProgressRegistrationDataWhileOperationLocked(updater)
+    }
+  }
+
+  internal suspend fun updateInProgressRegistrationDataWhileOperationLocked(updater: RegistrationData.Builder.() -> Unit) {
     inProgressDataLock.withLock {
       val current = readInProgressRegistrationDataInternal()
       val updated = current.newBuilder().apply(updater).build()
@@ -244,20 +265,19 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
   }
 
   override suspend fun commitRegistrationData() = withContext(Dispatchers.IO) {
-    val data = readInProgressRegistrationData()
+    withRegistrationDataOperationLock { commitRegistrationDataWhileOperationLocked() }
+  }
+
+  private suspend fun commitRegistrationDataWhileOperationLocked() {
+    val data = readInProgressRegistrationDataWhileOperationLocked()
     val accountData = data.accountData
 
     val masterKey: MasterKey? = applyAccountEntropyPool(data)
 
     // We only want to apply account data a single time
     val svrStateUpdated = if (!data.accountDataCommitted && accountData != null && accountData.isComplete()) {
-      applyAccountData(
-        accountData = accountData,
-        pin = data.pin,
-        registrationLockEnabled = data.registrationLockEnabled,
-        masterKey = masterKey
-      )
-      updateInProgressRegistrationData { accountDataCommitted = true }
+      applyAccountDataForCommit(accountData, data.pin, data.registrationLockEnabled, masterKey)
+      updateInProgressRegistrationDataWhileOperationLocked { accountDataCommitted = true }
       true
     } else {
       false
@@ -354,44 +374,49 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
           return@launch
         }
 
-        // If this flow has already committed an account locally, keep its fresh key material out of the restore.
-        val inProgressData = readInProgressRegistrationData()
-        val excludeKeyTables = inProgressData.accountDataCommitted
+        withRegistrationDataOperationLock {
+          // If registration commits first, this snapshot includes accountDataCommitted. If the restore
+          // enters first, commit waits until import and any committed-account reapplication finish.
+          val restorePlan = readV1RestorePlanWhileOperationLocked()
+          val inProgressData = restorePlan.registrationData
+          val excludeKeyTables = restorePlan.excludeKeyTables
 
-        val database = SignalDatabase.backupDatabase
-        val inputStream = context.contentResolver.openInputStream(backupUri) ?: throw IOException("Unable to open backup stream for $backupUri")
-        val importBackup: suspend () -> Unit = {
-          CountingInputStream(inputStream).use { counting ->
-            countingStream = counting
-            FullBackupImporter.importFile(
-              context,
-              AttachmentSecretProvider.getInstance(context, AppAttachmentSecretStore).getOrCreateAttachmentSecret(),
-              database,
-              counting,
-              passphrase,
-              excludeKeyTables
-            )
+          val database = SignalDatabase.backupDatabase
+          val inputStream = context.contentResolver.openInputStream(backupUri) ?: throw IOException("Unable to open backup stream for $backupUri")
+          val importBackup: suspend () -> Unit = {
+            CountingInputStream(inputStream).use { counting ->
+              countingStream = counting
+              FullBackupImporter.importFile(
+                context,
+                AttachmentSecretProvider.getInstance(context, AppAttachmentSecretStore).getOrCreateAttachmentSecret(),
+                database,
+                counting,
+                passphrase,
+                excludeKeyTables
+              )
+            }
+
+            SignalDatabase.runPostBackupRestoreTasks(database)
+
+            // The importer writes the restored key-value store straight to disk, bypassing the in-memory SignalStore cache.
+            // Reset it so the state we read below reflects the restored values rather than stale pre-restore ones.
+            SignalStore.onPostBackupRestore()
+            SignalStore.unifiedpush.setIncompleteAccountTransition(true)
           }
 
-          SignalDatabase.runPostBackupRestoreTasks(database)
+          // The account frame can set registration state, even on an install that was unregistered when
+          // restore began. Serialize both branches with local registration and keep readiness closed
+          // until the complete account registration is applied.
+          UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = importBackup)
 
-          // The importer writes the restored key-value store straight to disk, bypassing the in-memory SignalStore cache.
-          // Reset it so the state we read below reflects the restored values rather than stale pre-restore ones.
-          SignalStore.onPostBackupRestore()
-          SignalStore.unifiedpush.setIncompleteAccountTransition(true)
-        }
-        // The account frame can set registration state, even on an install that was unregistered when
-        // restore began. Serialize both branches with local registration and keep readiness closed
-        // until the complete account registration is applied.
-        UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = importBackup)
-
-        // A post-registration restore clobbers parts of SignalStore.account with the backup's values -- V1 backups
-        // carry the identity keys and AEP. Re-apply the frozen account data to heal the committed registration.
-        val committedAccountData = inProgressData.accountData
-        if (inProgressData.accountDataCommitted && committedAccountData != null) {
-          Log.i(TAG, "V1 restore ran after an account was committed. Re-applying committed account data.")
-          val masterKey = applyAccountEntropyPool(inProgressData)
-          applyAccountData(committedAccountData, pin = inProgressData.pin, registrationLockEnabled = inProgressData.registrationLockEnabled, masterKey = masterKey)
+          // A post-registration restore clobbers parts of SignalStore.account with the backup's values -- V1 backups
+          // carry the identity keys and AEP. Re-apply the frozen account data to heal the committed registration.
+          val committedAccountData = inProgressData.accountData
+          if (inProgressData.accountDataCommitted && committedAccountData != null) {
+            Log.i(TAG, "V1 restore ran after an account was committed. Re-applying committed account data.")
+            val masterKey = applyAccountEntropyPool(inProgressData)
+            applyAccountData(committedAccountData, pin = inProgressData.pin, registrationLockEnabled = inProgressData.registrationLockEnabled, masterKey = masterKey)
+          }
         }
 
         reenableLegacyLocalBackups(rootUri, passphrase)
@@ -474,8 +499,10 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
 
             // The entered recovery key decrypted the backup the user chose to restore, so it always becomes the
             // account's AEP -- even if the backup was made by a different account.
-            adoptAccountEntropyPool(aep)
-            updateInProgressRegistrationData { this.accountEntropyPool = aep.value }
+            withRegistrationDataOperationLock {
+              adoptAccountEntropyPool(aep)
+              updateInProgressRegistrationDataWhileOperationLocked { this.accountEntropyPool = aep.value }
+            }
 
             // Re-enable new-style local backups pointing at the restored location, so the user keeps getting backups.
             // Skip it if the folder is the SignalBackups directory itself, since it can't be reused as a destination.
@@ -718,6 +745,13 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
     return accountEntropyPool.deriveMasterKey()
   }
 
+  /** Narrow seam for testing the real commit lock/committed-flag ordering without native account storage. */
+  @VisibleForTesting
+  internal var applyAccountDataForCommit: suspend (AccountData, String, Boolean, MasterKey?) -> Unit =
+    { accountData, pin, registrationLockEnabled, masterKey ->
+      applyAccountData(accountData, pin, registrationLockEnabled, masterKey)
+    }
+
   /**
    * Makes [aep] the account's AEP. Clears any dependent data, like SVRB state.
    */
@@ -953,4 +987,8 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
       restoredPniIdentityKey = restoredPniIdentityKey
     )
   }
+}
+
+internal data class V1RestoreRegistrationPlan(val registrationData: RegistrationData) {
+  val excludeKeyTables: Boolean = registrationData.accountDataCommitted
 }

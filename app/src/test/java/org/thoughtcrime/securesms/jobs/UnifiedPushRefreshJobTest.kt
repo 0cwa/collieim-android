@@ -15,6 +15,7 @@ import im.molly.unifiedpush.control.ControlUpdate
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -27,6 +28,7 @@ import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
@@ -139,6 +141,29 @@ class UnifiedPushRefreshJobTest {
     assertNull(controlState.update)
     verify(exactly = 1) { unifiedPush.device = null }
     coVerify(exactly = 1) { LinkDeviceRepository.removeDevice(device.deviceId) }
+  }
+
+  @Test
+  fun `refresh continuation cannot acquire the generation of a competing transition`() {
+    val lease = UnifiedPushAccountTransition.acquireLease()!!
+    val job = UnifiedPushRefreshJob()
+    val clearedGeneration = checkNotNull(job.clearDevice(device, lease))
+
+    val sameGenerationLease = job.acquireLeaseAfterDeviceClear(clearedGeneration)
+    assertNotNull("the clear transition's own generation remains usable", sameGenerationLease)
+    sameGenerationLease!!.close()
+
+    val replacement = runBlocking {
+      UnifiedPushLifecycle.withTransitionAndGeneration(
+        persistIncompleteMarker = { transitionMarker = it },
+        readyAfter = { true },
+      ) {
+        storedDevice = MollySocketDevice(deviceId = 8, password = "replacement-relay-credential")
+      }
+    }
+
+    assertTrue(replacement.generation != clearedGeneration)
+    assertNull("a continuation from the old refresh cannot adopt a later generation", job.acquireLeaseAfterDeviceClear(clearedGeneration))
   }
 
   @Test

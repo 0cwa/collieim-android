@@ -158,7 +158,7 @@ class UnifiedPushReceiverTest {
     receiver.onRegistrationFailed(context, FailedReason.NETWORK, "instance")
 
     // Two recovery jobs and one endpoint refresh, even though the endpoint did not change.
-    verify(exactly = 3) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
+    verify(timeout = 3000, exactly = 3) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
   }
 
   @Test
@@ -192,6 +192,39 @@ class UnifiedPushReceiverTest {
     } finally {
       unmockkStatic(UnifiedPush::class)
     }
+  }
+
+  @Test
+  fun `pending endpoint effects are dropped after a replacement account transition`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/old"
+    values.airGapped = true
+    every { values.airGapped } returns true
+    values.lastReceivedTime = 1234L
+    mockPendingEndpointStorage(
+      LockedPushState.Endpoint("https://push.example.invalid/new", fixtureP256dh, fixtureAuth, "default"),
+    )
+    val receiver = UnifiedPushReceiver()
+    receiver.onRegistrationFailed(context, FailedReason.NETWORK, "default")
+
+    val committed = checkNotNull(UnifiedPushReceiver.commitPendingEndpoint(context))
+    val effects = checkNotNull(committed.value)
+    assertTrue(effects.failed)
+    assertEquals("local timestamp reset is committed with the endpoint tuple", 0L, values.lastReceivedTime)
+
+    fakeAccount("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
+    runBlocking {
+      UnifiedPushLifecycle.withTransition(
+        persistIncompleteMarker = {},
+        readyAfter = { true },
+      ) { Unit }
+    }
+    UnifiedPushReceiver().onRegistrationFailed(context, FailedReason.NETWORK, "replacement")
+
+    UnifiedPushReceiver.publishPendingEndpointEffects(context, committed)
+
+    assertTrue("the replacement account's failure remains visible", failed)
+    verify(exactly = 0) { anyConstructed<UnifiedPushNotificationBuilder>().clearRegistrationFailed() }
   }
 
   @Test

@@ -148,7 +148,7 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .card p{color:var(--ink-2);font-size:1rem;line-height:1.5}
 .card.featured{grid-column:span 2;grid-row:span 2;background:var(--featured);padding:32px 36px;position:relative;overflow:hidden;gap:20px}
 .feature-head{display:flex;align-items:flex-start;gap:16px}
-.feature-head h3{max-width:17ch}
+.feature-head h3{max-width:17ch;text-wrap:balance}
 .card.featured .ico.big{width:40px;height:40px;margin:0}
 .card.featured h3{font-size:clamp(1.6rem,2.6vw,2.1rem);font-weight:200;letter-spacing:-.03em}
 .card.featured p{font-size:1.0625rem;max-width:46ch;color:var(--ink);line-height:1.6}

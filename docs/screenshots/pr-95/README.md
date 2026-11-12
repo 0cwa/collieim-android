@@ -1,10 +1,10 @@
 # Current website review evidence
 
-Implementation source is signed 53465c289ae5fc5487ea1900132a08e27c7569e0; native assets/provenance are signed b3b4857fe6ebc0338f732cd9129c8b1bc94880f0. Review the containing evidence commit as one stable candidate. No rating is supplied by the implementation owner.
+Implementation source is signed e532bde62ac1e4d4429b822055ee60ecc365c38a; native assets/provenance are signed b3b4857fe6ebc0338f732cd9129c8b1bc94880f0. Review the containing evidence commit as one stable candidate. No rating is supplied by the implementation owner.
 
 ## Current views
 
-All paths below are in this directory. The current phone page tops, desktop facts, Upcoming, downloads and phone introductions are freshly rendered after this focused clarity pass. Unchanged component views retain their original source provenance: feature views from b7b32031a75c, community from 4a954f19b0b0, downloads/footer from 2917bdc27ad5. Their component source/appearance is unchanged by this image-only hero pass; their document offsets are reported separately.
+All paths below are in this directory. Features at all four widths, Upcoming at 320/390/1280, community at 320/390/1280, desktop-light/phone-dark downloads and the 390 page top are freshly rendered from this source. The 390 page-top PNG is byte-identical to b11ce6f9cebac1ac52b8c711b188a249f1f13429. Other hero/about/download/footer views retain that revision's unchanged component appearance; their source provenance is explicit rather than claimed as new captures. Historical menu/Obtainium support retains its earlier provenance below.
 
 | View | File | Actual iframe CSS viewport / PNG dimensions |
 | --- | --- | --- |
@@ -35,9 +35,9 @@ Collie is an Android messenger for ordinary Signal users. Copy is largely approv
 
 Immediately below the hero, one introduction consolidates Signal compatibility and Signal/Molly foundations. The benefit leads, provenance is quieter, and Source and security details is an optional native disclosure. Side by side, package-name and one-account/two-app explanations remain absent from that introduction; installation verification still names the package. The legal footer disclaimer remains byte-identical.
 
-Matrix chat and GitHub Discussions forum are prominent, with distinct chat/thread-list icons, 40px icon boxes and 22px titles against 16.8px lighter Help subheads. Bug reporting/donations retain a separate Help the project group. Actions remain underlined, with selective bold/italic emphasis.
+Matrix chat and GitHub Discussions forum are prominent, with distinct chat/thread-list icons, 40px icon boxes and 22px titles; Help the project is a quieter 20px heading, with 16.8px Help subheads. Bug reporting/donations retain a separate Help the project group. Actions remain underlined, with selective bold/italic emphasis.
 
-Upcoming now separates the existing nine-word first sentence into an 18px/weight 400 visual lead; the full UnifiedPush/MollySocket and linked-phone sentences remain in a quieter 16px supporting paragraph. Normalized content is identical: no fact, disclaimer, list item or URL was removed.
+Upcoming retains the existing nine-word first sentence as an 18px/400 benefit lead. A native details summary keeps the complete UnifiedPush/trusted MollySocket sentence visible. Only the unchanged easier-setup/linked-phone sentence is disclosed. Phones initially close this detail; desktop, direct #upcoming entry and markup without the site script keep it open. The exact feature Why link opens it before following #upcoming. Ordinary menu navigation does not force it open. No sentence, disclaimer, plan or URL was removed. The native underlined summary remains focusable, with measured heights 96/72/44px at 320/390/1280.
 
 Plans are generated from the existing upcoming-planned-features category during daily builds, priority-labelled discussions first with a separate label-derived Priority badge. The supplied snapshot has ten discussions/eight plans. The planned-work disclaimer is explicit; URLs remain unchanged. Discussion 106's title “Send a text with its own timer” was checked against its source: holding Send applies a one-time timer to one text; no duration/start/view-once claim was invented.
 
@@ -72,7 +72,20 @@ Headline and lede wording, weight/line-height ratio, orange second sentence, nat
 
 Y is document CSS pixels at scrollY 0 in the accurate overlay-scrollbar renderer, using actual front-image geometry and matching native UI text bounds. Fixed phone gaps: header→headline 20px, headline→lede 20, lede→buttons 24, button rows 12, buttons→facts 20, facts→stage 16. Lede is 16px/26.4px. Focus-ring CSS is unchanged. At 768 and 1280, measured headline, lede, actions, stage and front-image rectangles/fonts are exactly identical to the prior candidate; only the third fact is deliberately absent.
 
-At 390 the Get panel grows 859.52→881.52px, exactly 22px, from the prerequisite's 20px line plus 2px margin. Existing card copy/Recommended/primary styles/handoff are unchanged; no extra auto-update promise. All six feature descriptions, community, legal line and planned disclaimer/list/URLs are byte-identical. This pass does not tighten the desktop feature card or alter native assets, metadata, local main or native proof.
+At 390 the Get panel grows 859.52→881.52px, exactly 22px, from the prerequisite's 20px line plus 2px margin. Existing card copy/Recommended/primary styles/handoff are unchanged; no extra auto-update promise. All six feature descriptions, community, legal line and planned disclaimer/list/URLs are byte-identical. The current pass preserves this phone hero/download behavior and all native assets, metadata, local main and native proof. It changes supporting text weight, roadmap disclosure, desktop lead balance and desktop section spacing only.
+
+## Verified focused changes and measurements
+
+| Supplied finding | Current evidence and disposition | Result |
+| --- | --- | --- |
+| Phone roadmap preamble hides first plan | Valid: first border was 568.06/478.64px at 320/390 with section top about 56px | 478.88/391.84px at the same header offset; lead 81/54px, summary 96/72px, planned note 68.39px, list gap 14px |
+| Secondary type is delicate | Valid: 300 body weight | 400 for secondary feature bodies (16px/24px), community descriptions (15.6px/25.74px), Help copy (17px desktop, 16px phone), Upcoming detail (16px); colors/hero lede/headings unchanged |
+| Desktop protection body/facts have an isolated band | Valid: body→divider 89.69px | 20px; the existing whole content group is centered with equal 67.84px outer clearance. Card remains 714.66×408px and six-card topology is unchanged; phone lead is unchanged |
+| Section gaps vary; Help heading outranks channels | Valid: measured text/group boundaries 191.98/64/179.19px, Help title 23.2px | One desktop --section-gap token yields 96/96/96px; Help title20px versus Matrix/forum22px |
+
+Visible desktop boundary definition is consistent: last Also included paragraph bottom→Upcoming heading top; Upcoming-more paragraph bottom→community heading top; entire Help group bottom→Get panel top. The shared gap token applies above 860px only. Desktop Upcoming supporting detail is 78.39px versus 79.17px before (0.78px shorter); its full-width open flow preserves the intro height without duplicated copy or a custom disclosure widget.
+
+Browser DOM-action probes on the actual built page observed: summary click opens, second click closes, exact Why click opens the explanation; all eight plans remain present. A direct-fragment setup and site-script-omitted setup both leave the native detail open with the full explanation visible. Those are programmatic DOM-action/source probes, not new trusted keyboard/physical-pointer transport evidence. Native summary supplies the keyboard behavior; T3 live input remains unavailable. No-JS markup defaults open.
 
 ## Layout and validation evidence
 
@@ -82,15 +95,15 @@ Current overlay-scrollbar measurements:
 
 | Width / usable width | Five-item region | Downloads document Y | Overflow |
 | --- | --- | --- | --- |
-|320 /320|685.63px|5137.02px|none|
-|390 /390|566.69px|4649.31px|none|
-|768 /768|644px|4203.81px|none|
-|1280 /1280|668px|3695.44px|none|
+|320 /320|685.63px|5043.67px|none|
+|390 /390|614.69px|4632.08px|none|
+|768 /768|668px|4258.05px|none|
+|1280 /1280|668px|3559.33px|none|
 
-The 390 compact region is unchanged by the final notification wording; 320 uses one extra 24px text line. The phone-only hero compaction moves downstream sections earlier; the desktop/tablet hero geometry is unchanged. Phone intro heading is 24px against 32px features (75%). Notification action is 306×48px at 390 and 236×48px at 320, above 24px. Earlier live T3 reserved 15px for a scrollbar: its390 region 614.73px was measured against real 978px baseline; that environment is distinct, not substituted for current source-render widths.
+The stronger secondary body weight adds two 24px lines to the combined five-item region at 390 and one at 768; the 320 and desktop region heights are unchanged. Text and links remain complete. The phone-only hero compaction moves downstream sections earlier; the desktop/tablet hero geometry is unchanged. Phone intro heading is 24px against 32px features (75%). Notification action is 306×48px at 390 and 236×48px at 320, above 24px. Earlier live T3 reserved 15px for a scrollbar: its390 region 614.73px was measured against real 978px baseline; that environment is distinct, not substituted for current source-render widths.
 
-The56px page-level sticky narrow header retains Menu/Get Collie and all five section links. Prior native Tab→Menu, Enter/Escape, outside/link closing and heading-clearance checks apply to unchanged navigation source; heading tops were 88–134px with header bottom 56px. Later timed-out pointer/key transport did not reach DOM and is not new successful interaction evidence. Native source disclosure is focusable/underlined, 44px high with 8px chevron gap. Previous cream-strip checks remain valid: full-width 40px bands after the curve were exactly 249/251/244 at 390/320. No CSS changed in this image pass.
+The56px page-level sticky narrow header retains Menu/Get Collie and all five section links. Prior native Tab→Menu, Enter/Escape, outside/link closing and heading-clearance checks apply to unchanged navigation source; heading tops were 88–134px with header bottom 56px. Later timed-out pointer/key transport did not reach DOM and is not new successful interaction evidence. Native source disclosure is focusable/underlined, 44px high with 8px chevron gap. Previous cream-strip checks remain valid: full-width 40px bands after the curve were exactly 249/251/244 at 390/320. Navigation and curve CSS remain unchanged. The preceding phone hero type/spacing refinement and this supporting-text/disclosure/desktop-spacing pass did change CSS; the unchanged navigation/curve evidence is not a claim that the whole stylesheet stayed fixed.
 
 Fourteen website tests pass (category/priority/title mapping/escaping/API failures/pagination/safe paths/Obtainium), the Fastlane metadata validator passes, and git diff --check passes. Native seed, offline centering and durable restore each collected/passed 1 test. Selected computed-CSS contrast evidence only: light badge 14.20/menu 15.69/facts 14.20; dark badge 14.20/menu 16.55/facts 8.01. No whole-site AA claim. The Impeccable detector used its limited fallback because parser modules are absent; no full automated audit is claimed. Impeccable 4.1.1 was already installed for Codex and used; no installation/download.
 
-Remaining design tradeoffs are visible in the images: a large genuine native profile header in the demo chat, rear-screen overlap and the technical setup detail in Upcoming. No independent approval is implied by passing checks. The requested localhost:8879 server/shared caches remain; temporary Android test sources, 47 generated build/cache directories and owned AVD/runtime were removed after exact proof was saved. Unrelated emulators/worktrees and user files were untouched.
+Remaining design tradeoffs are visible in the images: a large genuine native profile header in the demo chat, rear-screen overlap and a technical limitation in the visible Upcoming summary. No independent approval is implied by passing checks. The requested localhost:8879 server/shared caches remain; temporary Android test sources, 47 generated build/cache directories and owned AVD/runtime were removed after exact proof was saved. Unrelated emulators/worktrees and user files were untouched.

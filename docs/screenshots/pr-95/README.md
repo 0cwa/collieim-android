@@ -1,10 +1,10 @@
 # Current website review evidence
 
-Implementation source is signed e532bde62ac1e4d4429b822055ee60ecc365c38a; native assets/provenance are signed b3b4857fe6ebc0338f732cd9129c8b1bc94880f0. Review the containing evidence commit as one stable candidate. No rating is supplied by the implementation owner.
+Implementation source is signed eb9e7c2376d78222dc0a86926f33084b26d96879; native assets/provenance are signed b3b4857fe6ebc0338f732cd9129c8b1bc94880f0. Review the containing evidence commit as one stable candidate. No rating is supplied by the implementation owner.
 
 ## Current views
 
-All paths below are in this directory. Features at all four widths, Upcoming at 320/390/1280, community at 320/390/1280, desktop-light/phone-dark downloads and the 390 page top are freshly rendered from this source. The 390 page-top PNG is byte-identical to b11ce6f9cebac1ac52b8c711b188a249f1f13429. Other hero/about/download/footer views retain that revision's unchanged component appearance; their source provenance is explicit rather than claimed as new captures. Historical menu/Obtainium support retains its earlier provenance below.
+All paths below are in this directory. The three community views are current eb9e7c source renders. Other freshly identified component views below retain e532bde source provenance and unchanged appearance. Features at all four widths, Upcoming at 320/390/1280, community at 320/390/1280, desktop-light/phone-dark downloads and the 390 page top are freshly rendered from this source. The 390 page-top PNG is byte-identical to b11ce6f9cebac1ac52b8c711b188a249f1f13429. Other hero/about/download/footer views retain that revision's unchanged component appearance; their source provenance is explicit rather than claimed as new captures. Historical menu/Obtainium support retains its earlier provenance below.
 
 | View | File | Actual iframe CSS viewport / PNG dimensions |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ Collie is an Android messenger for ordinary Signal users. Copy is largely approv
 
 Immediately below the hero, one introduction consolidates Signal compatibility and Signal/Molly foundations. The benefit leads, provenance is quieter, and Source and security details is an optional native disclosure. Side by side, package-name and one-account/two-app explanations remain absent from that introduction; installation verification still names the package. The legal footer disclaimer remains byte-identical.
 
-Matrix chat and GitHub Discussions forum are prominent, with distinct chat/thread-list icons, 40px icon boxes and 22px titles; Help the project is a quieter 20px heading, with 16.8px Help subheads. Bug reporting/donations retain a separate Help the project group. Actions remain underlined, with selective bold/italic emphasis.
+Matrix chat and GitHub Discussions forum are prominent, with distinct chat/thread-list icons, 40px icon boxes and 22px titles; Help the project is a quieter 20px heading, with 16.8px Help subheads. Bug reporting/donations retain a separate Help the project group. Actions remain underlined, with selective bold/italic emphasis. Matrix/forum actions now compute weight600 against Help action500, correcting a specificity override that previously made the primary actions400. Their sizes/colors/icons are unchanged. The existing emphasized “suggest a feature” words in the Community intro now link to the already-used Ideas/Requests category; a real request returned HTTP200 at that exact GitHub category.
 
 Upcoming retains the existing nine-word first sentence as an 18px/400 benefit lead. A native details summary keeps the complete UnifiedPush/trusted MollySocket sentence visible. Only the unchanged easier-setup/linked-phone sentence is disclosed. Phones initially close this detail; desktop, direct #upcoming entry and markup without the site script keep it open. The exact feature Why link opens it before following #upcoming. Ordinary menu navigation does not force it open. No sentence, disclaimer, plan or URL was removed. The native underlined summary remains focusable, with measured heights 96/72/44px at 320/390/1280.
 

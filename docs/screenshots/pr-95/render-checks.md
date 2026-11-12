@@ -154,3 +154,28 @@ behavior {"mode":"click","before":false,"togglesOpen":true,"togglesClosed":true,
 behavior {"mode":"direct","open":true,"explanationVisible":true,"planCount":8}
 behavior {"mode":"no-site-js","open":true,"explanationVisible":true,"planCount":8}
 ```
+
+## Current community action refinement
+
+Source eb9e7c2376d78222dc0a86926f33084b26d96879. Before the change, `.links span` overrode `.community-action`: main actions computed400 while Help computed600. The corrected main selector computes600 and Help500. Sizes, colors, icons and underlines are unchanged. The existing emphasized introduction words now form a link to the already-used Ideas/Requests category. An actual request returned HTTP200 at the exact destination, with title `0cwa/collieim-android Ideas Requests · Discussions · GitHub`. Three current native source renders are below. The same source also passed the768px overflow/readiness check without saving another image.
+
+### community-desktop-light.png
+
+```text
+ready {"width":1280,"height":900,"usable":1280,"fonts":"loaded","images":[],"overflow":false,"dark":false}
+communityActions {"main":[{"weight":"600","size":"15.6px","color":"rgb(90, 64, 51)","underline":"underline"},{"weight":"600","size":"15.6px","color":"rgb(90, 64, 51)","underline":"underline"}],"help":[{"weight":"500","size":"17px","color":"rgb(47, 79, 58)","underline":"underline"},{"weight":"500","size":"17px","color":"rgb(47, 79, 58)","underline":"underline"}],"introLink":"https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests"}
+```
+
+### community-mobile-dark.png
+
+```text
+ready {"width":390,"height":1300,"usable":390,"fonts":"loaded","images":[true],"overflow":false,"dark":true}
+communityActions {"main":[{"weight":"600","size":"15.6px","color":"rgb(183, 197, 151)","underline":"underline"},{"weight":"600","size":"15.6px","color":"rgb(183, 197, 151)","underline":"underline"}],"help":[{"weight":"500","size":"16px","color":"rgb(183, 197, 151)","underline":"underline"},{"weight":"500","size":"16px","color":"rgb(183, 197, 151)","underline":"underline"}],"introLink":"https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests"}
+```
+
+### community-narrow-light.png
+
+```text
+ready {"width":320,"height":1500,"usable":320,"fonts":"loaded","images":[true],"overflow":false,"dark":false}
+communityActions {"main":[{"weight":"600","size":"15.6px","color":"rgb(90, 64, 51)","underline":"underline"},{"weight":"600","size":"15.6px","color":"rgb(90, 64, 51)","underline":"underline"}],"help":[{"weight":"500","size":"16px","color":"rgb(47, 79, 58)","underline":"underline"},{"weight":"500","size":"16px","color":"rgb(47, 79, 58)","underline":"underline"}],"introLink":"https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests"}
+```

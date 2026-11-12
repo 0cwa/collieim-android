@@ -286,12 +286,14 @@ class UnifiedPushRefreshJobTest {
     every { SignalStore.account.deviceId } returns 1
     every { unifiedPush.device } answers { storedDevice }
     every { unifiedPush.endpoint } returns "https://push.example.invalid/endpoint"
-    every { unifiedPush.endpointP256dh } returns "SYNTHETIC-P256DH"
-    every { unifiedPush.endpointAuth } returns "SYNTHETIC-AUTH"
+    val endpointP256dh = "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4"
+    val endpointAuth = "MDEyMzQ1Njc4OTo7PD0-Pw"
+    every { unifiedPush.endpointP256dh } returns endpointP256dh
+    every { unifiedPush.endpointAuth } returns endpointAuth
     every { unifiedPush.endpointInstance } returns "fixture-instance"
 
     val frame = ControlFrame.header(accountId, device.deviceId, 5) + ByteArray(20)
-    val update = ControlUpdate(5, "https://push.example.invalid/new", "p", "a", frame, 1)
+    val update = ControlUpdate(5, "https://push.example.invalid/endpoint", endpointP256dh, endpointAuth, frame, 1)
     controlState = ControlState(key = "retained-control-key", activeEpoch = 4, highestEpoch = 5, importSequence = 7, update = update)
     every { unifiedPush.controlState } answers { controlState }
     every { unifiedPush.mutateControl(any(), any()) } answers {

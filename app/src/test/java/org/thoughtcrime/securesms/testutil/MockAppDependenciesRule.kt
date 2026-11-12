@@ -8,6 +8,7 @@ package org.thoughtcrime.securesms.testutil
 import androidx.test.core.app.ApplicationProvider
 import im.molly.app.base.ApplicationInstance
 import io.mockk.clearMocks
+import io.mockk.isMockKMock
 import org.junit.rules.ExternalResource
 import org.signal.core.util.PartAuthorityUris
 import org.thoughtcrime.securesms.BuildConfig
@@ -51,7 +52,11 @@ class MockAppDependenciesRule : ExternalResource() {
   override fun after() {
     properties
       .forEach { property ->
-        property.get(AppDependencies)?.let { clearMocks(it) }
+        val dependency = property.get(AppDependencies)
+        // Other rules can replace a dependency with a real instance, such as a recipient cache.
+        if (dependency != null && isMockKMock(dependency)) {
+          clearMocks(dependency)
+        }
       }
     ApplicationInstance.clearForTests()
   }

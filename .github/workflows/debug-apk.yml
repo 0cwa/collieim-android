@@ -1,31 +1,346 @@
-name: Debug APK (optional)
+name: Theme regression validation (API 35)
+# Validation-only branch. Checkout is pinned to the app PR, not this workflow commit.
+# Keep this workflow change separate from the app correction; do not merge it with the fix.
 on:
   pull_request:
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: debug-apk-${{ github.ref }}
+  group: theme-regression-${{ github.ref }}
   cancel-in-progress: true
+env:
+  APP_FIX_SHA: 0e733a0c4bd05dd80c93bc61fd46c75cb6a36311
+  APP_FIX_TREE: 587a21b543bf87e8eea79828600dc9cbda36d7ce
+  THEME_RUNTIME_TESTS: org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceThemePropagationTest,org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest,org.thoughtcrime.securesms.conversation.v2.MessageOverlayThemeTest
 jobs:
-  debug-apk:
-    name: Debug APK
+  theme-jvm:
+    name: Focused theme JVM regressions
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out the exact app source under test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ env.APP_FIX_SHA }}
           persist-credentials: false
+      - name: Record the tested revision and tree
+        env:
+          VALIDATION_WORKFLOW_REF: ${{ github.workflow_ref }}
+          VALIDATION_WORKFLOW_SHA: ${{ github.workflow_sha }}
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$APP_FIX_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$APP_FIX_TREE"
+          mkdir -p "$RUNNER_TEMP/theme-evidence"
+          git rev-parse HEAD HEAD^{tree} | tee "$RUNNER_TEMP/theme-evidence/source.txt"
+          printf '%s\n%s\n' "$VALIDATION_WORKFLOW_REF" "$VALIDATION_WORKFLOW_SHA" > "$RUNNER_TEMP/theme-evidence/workflow-source.txt"
       - uses: ./.github/actions/disk-cleanup
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
-      - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
-      - run: ./gradlew --no-daemon :app:assembleProdWebsiteDebug
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: collie-debug-${{ github.event.pull_request.head.sha || github.sha }}
-          path: app/build/outputs/apk/prodWebsite/debug/*.apk
-          retention-days: 7
+          cache-read-only: true
+      - name: Use the repository's CI Gradle settings
+        run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+      - name: Run the focused theme unit tests
+        id: unit
+        timeout-minutes: 60
+        # Preserve reports and enforce the outcome below, including after a step timeout.
+        continue-on-error: true
+        shell: bash
+        run: |
+          ./gradlew --no-daemon --console=plain --info :app:testProdWebsiteDebugUnitTest \
+            --tests org.thoughtcrime.securesms.util.DynamicThemeTest \
+            --tests org.thoughtcrime.securesms.util.OverlayThemeTest \
+            --tests org.thoughtcrime.securesms.conversation.v2.ChatReactionOverlayThemeTest \
+            --tests org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceSettingsViewModelTest \
+            | tee "$RUNNER_TEMP/theme-evidence/unit-tests.log"
+      - name: Require all focused JVM tests to pass
+        if: always() && !cancelled()
+        env:
+          UNIT_OUTCOME: ${{ steps.unit.outcome }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+
+          expected_counts = {
+              'org.thoughtcrime.securesms.util.DynamicThemeTest': 15,
+              'org.thoughtcrime.securesms.util.OverlayThemeTest': 13,
+              'org.thoughtcrime.securesms.conversation.v2.ChatReactionOverlayThemeTest': 4,
+              'org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceSettingsViewModelTest': 16,
+          }
+          classes = {name: set() for name in expected_counts}
+          failures = []
+          parse_errors = []
+          for path in Path('app/build/test-results/testProdWebsiteDebugUnitTest').rglob('TEST-*.xml'):
+              try:
+                  report = ET.parse(path).getroot()
+              except ET.ParseError as error:
+                  parse_errors.append(f'{path}: {error}')
+                  continue
+              for case in report.iter('testcase'):
+                  name = case.get('classname')
+                  if name not in classes:
+                      continue
+                  skipped = case.find('skipped') is not None
+                  failed = case.find('failure') is not None or case.find('error') is not None
+                  if skipped or failed:
+                      failures.append(f'{name}#{case.get("name")}: {"skipped" if skipped else "failed"}')
+                  else:
+                      classes[name].add(case.get('name'))
+          result = {
+              'expected_tests_by_class': expected_counts,
+              'passed_tests_by_class': {name: sorted(tests) for name, tests in classes.items()},
+              'failures_or_skips': failures,
+              'parse_errors': parse_errors,
+              'unit_outcome': os.environ['UNIT_OUTCOME'],
+          }
+          evidence = Path(os.environ['RUNNER_TEMP']) / 'theme-evidence'
+          evidence.mkdir(parents=True, exist_ok=True)
+          (evidence / 'test-summary.json').write_text(json.dumps(result, indent=2) + '\n')
+          print(json.dumps(result, indent=2))
+          assert not parse_errors, 'A JVM test report could not be parsed'
+          assert not failures, 'Focused JVM tests failed or were skipped'
+          for name, count in expected_counts.items():
+              assert len(classes[name]) == count, f'{name}: expected {count} passing tests, got {len(classes[name])}'
+          assert os.environ['UNIT_OUTCOME'] == 'success', f'UNIT_OUTCOME={os.environ["UNIT_OUTCOME"]}'
+          PY
+      - name: Keep JVM revision, reports, and logs
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: theme-jvm-${{ env.APP_FIX_SHA }}
+          path: |
+            ${{ runner.temp }}/theme-evidence
+            app/build/reports/tests/testProdWebsiteDebugUnitTest
+            app/build/test-results
+          retention-days: 14
+          if-no-files-found: error
+
+  theme-device:
+    name: Theme regression on Android 15
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out the exact app source under test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.APP_FIX_SHA }}
+          persist-credentials: false
+      - name: Record the tested revision and tree
+        env:
+          VALIDATION_WORKFLOW_REF: ${{ github.workflow_ref }}
+          VALIDATION_WORKFLOW_SHA: ${{ github.workflow_sha }}
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$APP_FIX_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$APP_FIX_TREE"
+          mkdir -p "$RUNNER_TEMP/theme-evidence/screenshots"
+          git rev-parse HEAD HEAD^{tree} | tee "$RUNNER_TEMP/theme-evidence/source.txt"
+          printf '%s\n%s\n' "$VALIDATION_WORKFLOW_REF" "$VALIDATION_WORKFLOW_SHA" > "$RUNNER_TEMP/theme-evidence/workflow-source.txt"
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+        with:
+          cache-read-only: true
+      - name: Use the repository's CI Gradle settings
+        run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+      - name: Build the app and instrumentation APKs together
+        id: build
+        shell: bash
+        run: |
+          ./gradlew --no-daemon --console=plain \
+            :app:assembleProdWebsiteDebug :app:assembleProdWebsiteDebugAndroidTest
+          sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+            app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk \
+            > "$RUNNER_TEMP/theme-evidence/apk-sha256.txt"
+      - name: Enable KVM for the Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Prepare the emulator test and evidence collection
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/run-theme-tests.sh" <<'SH'
+          set -euo pipefail
+          collect_evidence() {
+            adb logcat -d > "$RUNNER_TEMP/theme-evidence/logcat.txt" || true
+            adb pull /sdcard/Android/data/im.collie.app/files/theme-regression \
+              "$RUNNER_TEMP/theme-evidence/screenshots/app-files" || true
+            adb pull /sdcard/Android/media/im.collie.app/additional_test_output \
+              "$RUNNER_TEMP/theme-evidence/screenshots/additional-output" || true
+          }
+          trap collect_evidence EXIT
+          test "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" = 35
+          adb shell getprop ro.build.fingerprint > "$RUNNER_TEMP/theme-evidence/device-fingerprint.txt"
+          adb shell getprop ro.build.version.sdk > "$RUNNER_TEMP/theme-evidence/device-api.txt"
+          # A fresh disposable emulator and fixture restoration isolate these focused tests.
+          # AGP 9.4's engine splits commas in runner argument values; pass one class per run.
+          # Preserve every run's reports before the next invocation replaces Gradle's outputs.
+          IFS=',' read -r -a theme_classes <<< "$THEME_RUNTIME_TESTS"
+          overall_status=0
+          for test_class in "${theme_classes[@]}"; do
+            class_evidence="$RUNNER_TEMP/theme-evidence/device-tests/$test_class"
+            mkdir -p "$class_evidence/screenshots"
+            rm -rf app/build/outputs/androidTest-results \
+              app/build/reports/androidTests \
+              app/build/outputs/connected_android_test_additional_output
+            adb logcat -c
+            if ./gradlew --no-daemon --console=plain :app:connectedProdWebsiteDebugAndroidTest \
+              -Pandroid.testInstrumentationRunnerArguments.class="$test_class" \
+              -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
+              | tee "$class_evidence/connected-tests.log"; then
+              class_status=0
+            else
+              class_status=$?
+              overall_status=1
+            fi
+            printf '%s\n' "$class_status" > "$class_evidence/exit-code.txt"
+            adb logcat -d > "$class_evidence/logcat.txt" || overall_status=1
+            if ! sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+              app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk \
+              > "$class_evidence/apk-sha256.txt"; then
+              overall_status=1
+            fi
+            for report in androidTest-results connected_android_test_additional_output; do
+              if [ -d "app/build/outputs/$report" ]; then
+                cp -a "app/build/outputs/$report" "$class_evidence/$report" || overall_status=1
+              fi
+            done
+            if [ -d app/build/reports/androidTests ]; then
+              cp -a app/build/reports/androidTests "$class_evidence/androidTests" || overall_status=1
+            fi
+            # Gradle normally collects additional output before uninstalling the APKs.
+            # Also preserve the fallback when the app remains installed after this run.
+            adb pull /sdcard/Android/data/im.collie.app/files/theme-regression \
+              "$class_evidence/screenshots/app-files" || true
+          done
+          exit "$overall_status"
+          SH
+      - name: Run real settings, media, and message overlays on API 35
+        id: device
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7_pro
+          ram-size: 2048M
+          cores: 2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash "$RUNNER_TEMP/run-theme-tests.sh"
+      - name: Require executed tests and captured screens
+        if: always() && !cancelled()
+        env:
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          DEVICE_OUTCOME: ${{ steps.device.outcome }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from xml.etree import ElementTree as ET
+
+          evidence = Path(os.environ['RUNNER_TEMP']) / 'theme-evidence'
+          runtime_methods = {
+              'org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceThemePropagationTest': {
+                  'dynamicColorsRoundTripFromLegacySettingsInLightMode',
+                  'dynamicColorsRoundTripFromNavigationSettingsInDarkMode',
+                  'lightDarkAndSystemSelectionsReachTheOverviewWithoutRestarting',
+              },
+              'org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest': {
+                  'legacyImageStaysDarkAndUpdatesItsPaletteWithoutRestarting',
+                  'legacyVideoUpdatesItsPaletteWithoutRestarting',
+                  'composeImageUpdatesItsLightPaletteWithoutRestarting',
+                  'composeVideoUpdatesItsDarkPaletteWithoutRestarting',
+              },
+              'org.thoughtcrime.securesms.conversation.v2.MessageOverlayThemeTest': {
+                  'lightMessageOverlayUsesTheSelectedPalette',
+                  'darkMessageOverlayUsesTheSelectedPalette',
+              },
+          }
+          classes = {name: set() for name in runtime_methods}
+          failures = []
+          for root in [evidence / 'device-tests']:
+              for path in root.rglob('*.xml'):
+                  try:
+                      report = ET.parse(path).getroot()
+                  except ET.ParseError:
+                      continue
+                  for case in report.iter('testcase'):
+                      name = case.get('classname')
+                      if name not in classes:
+                          continue
+                      skipped = case.find('skipped') is not None
+                      failed = case.find('failure') is not None or case.find('error') is not None
+                      if skipped or failed:
+                          failures.append(f'{name}#{case.get("name")}: {"skipped" if skipped else "failed"}')
+                      else:
+                          classes[name].add(case.get('name'))
+          screenshots = sorted(str(p) for p in (evidence / 'device-tests').rglob('*.png'))
+          expected_screenshots = {f'overview-{theme}.png' for theme in ['light', 'dark', 'system']}
+          for mode in ['light', 'dark']:
+              for dynamic in ['false', 'true']:
+                  expected_screenshots.add(f'overview-{mode}-dynamic-{dynamic}.png')
+                  expected_screenshots.add(f'message-overlay-{mode}-dynamic-{dynamic}.png')
+          for viewer in ['legacy', 'compose']:
+              for sample in ['image', 'video']:
+                  for index, dynamic in enumerate(['false', 'true', 'false']):
+                      expected_screenshots.add(f'media-{viewer}-{sample}-{index}-dynamic-{dynamic}.png')
+          missing_screenshots = sorted(expected_screenshots - {Path(p).name for p in screenshots})
+          missing_methods = {name: sorted(methods - classes[name]) for name, methods in runtime_methods.items() if methods - classes[name]}
+          device_runs = {}
+          for name in runtime_methods:
+              output = evidence / 'device-tests' / name
+              exit_code = output / 'exit-code.txt'
+              hashes = output / 'apk-sha256.txt'
+              device_runs[name] = {
+                  'exit_code': exit_code.read_text().strip() if exit_code.is_file() else None,
+                  'apk_sha256': hashes.read_text().splitlines() if hashes.is_file() else [],
+              }
+          result = {
+              'passed_tests_by_class': {name: sorted(tests) for name, tests in classes.items()},
+              'failures_or_skips': failures,
+              'expected_screenshot_count': len(expected_screenshots),
+              'missing_screenshots': missing_screenshots,
+              'screenshots': screenshots,
+              'missing_runtime_methods': missing_methods,
+              'device_runs': device_runs,
+          }
+          (evidence / 'test-summary.json').write_text(json.dumps(result, indent=2) + '\n')
+          print(json.dumps(result, indent=2))
+          assert all(classes.values()), 'A required class collected zero passing tests'
+          assert not failures, 'Focused tests failed or were skipped'
+          assert not missing_methods, 'All nine named runtime methods must execute and pass'
+          assert not missing_screenshots, 'Missing required overview, media, or message-overlay screenshots'
+          for name, result in device_runs.items():
+              assert result['exit_code'] == '0', f'{name} did not complete successfully'
+              assert len(result['apk_sha256']) >= 2, f'Missing app/test APK hashes for {name}'
+          for variable in ['BUILD_OUTCOME', 'DEVICE_OUTCOME']:
+              assert os.environ[variable] == 'success', f'{variable}={os.environ[variable]}'
+          PY
+      - name: Keep revision, reports, logs, and screenshots
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: theme-device-${{ env.APP_FIX_SHA }}
+          path: |
+            ${{ runner.temp }}/theme-evidence
+            app/build/reports/androidTests
+            app/build/outputs/androidTest-results
+            app/build/outputs/connected_android_test_additional_output
+          retention-days: 14
           if-no-files-found: error

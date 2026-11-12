@@ -29,6 +29,29 @@ class RoadmapTest(unittest.TestCase):
         self.assertIn('&lt;script&gt;', result)
         self.assertIn('&amp; more', result)
 
+    def test_mapping_uses_discussion_number_before_cleaning(self):
+        self.assertEqual('UnifiedPush on linked devices', build.display_roadmap_title(discussion(55, '[Enhancement] Changed title')))
+
+    def test_cleaner_removes_editorial_prefixes(self):
+        for title in ('High Priority - Future feature', 'High priority: Future feature', '[Enhancement] Future feature', '[Research] - Future feature', '[Enhancement] [Research]: Future feature'):
+            with self.subTest(title=title):
+                self.assertEqual('Future feature', build.display_roadmap_title(discussion(999, title)))
+
+    def test_mapped_titles_still_escape_markup(self):
+        with patch.dict(build.ROADMAP_TITLES, {55: '<>&"'}):
+            result = build.render_roadmap([discussion(55, 'Source title')], 'owner/repo')
+        self.assertIn('&lt;&gt;&amp;&quot;', result)
+        self.assertIn('/discussions/55', result)
+
+    def test_unknown_title_keeps_its_wording(self):
+        self.assertEqual('A future feature: choices', build.display_roadmap_title(discussion(999, 'A future feature: choices')))
+
+    def test_priority_badge_depends_on_label_not_title(self):
+        result = build.render_roadmap([discussion(998, 'High Priority - Ordinary label'), discussion(999, 'Labelled plan', priority=True)], 'owner/repo')
+        self.assertEqual(1, result.count('class="plan-badge"'))
+        self.assertIn('<li class="priority-plan"><span class="plan-badge">Priority</span><a href="https://github.com/owner/repo/discussions/999">Labelled plan</a>', result)
+        self.assertIn('<li><a href="https://github.com/owner/repo/discussions/998">Ordinary label</a>', result)
+
     def test_empty_category_does_not_imply_work_is_promised(self):
         self.assertIn('No upcoming features', build.render_roadmap([], 'owner/repo'))
 

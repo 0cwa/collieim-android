@@ -26,6 +26,32 @@ REPO = "0cwa/collieim-android"
 APK_NAME = "collie.apk"
 TAG_RE = re.compile(r"^v[0-9][0-9A-Za-z.\-]*$")
 ROADMAP_CATEGORY = "upcoming-planned-features"
+ROADMAP_TITLES = {
+    55: "UnifiedPush on linked devices",
+    57: "Silent notifications for reactions",
+    53: "Shorter disappearing timers per chat and device",
+    52: "Security hardening settings",
+    97: "Custom themes",
+    56: "On-device translation",
+    54: "On-device voice message transcription",
+    106: "Press and hold for one-time message duration",
+}
+
+
+def is_priority(node: dict) -> bool:
+    return any(label["name"].lower() == "priority" for label in node.get("labels", {}).get("nodes", []))
+
+
+def display_roadmap_title(node: dict) -> str:
+    if int(node["number"]) in ROADMAP_TITLES:
+        return ROADMAP_TITLES[int(node["number"])]
+    title = node["title"].strip()
+    prefix = r"^(?:high\s+priority\s*[-:–—]\s*|\[[^\]]+\]\s*[-:–—]?\s*)"
+    while cleaned := re.sub(prefix, "", title, count=1, flags=re.IGNORECASE):
+        if cleaned == title:
+            break
+        title = cleaned.strip(" \t:-–—")
+    return title or node["title"]
 
 
 def fetch_roadmap(repo: str) -> list[dict]:
@@ -66,15 +92,19 @@ def fetch_roadmap(repo: str) -> list[dict]:
 def render_roadmap(nodes: list[dict], repo: str) -> str:
     planned = [node for node in nodes if node["category"]["slug"] == ROADMAP_CATEGORY]
     planned.sort(key=lambda node: (
-        not any(label["name"].lower() == "priority" for label in node.get("labels", {}).get("nodes", [])),
+        not is_priority(node),
         -int(node["number"]),
     ))
     if not planned:
         return "<li>No upcoming features are listed right now. Share an idea in our forum.</li>"
-    return "\n      ".join(
-        f'<li><a href="https://github.com/{repo}/discussions/{int(node["number"])}">{html.escape(node["title"])}</a></li>'
-        for node in planned
-    )
+    items = []
+    for node in planned:
+        priority = is_priority(node)
+        item_class = ' class="priority-plan"' if priority else ""
+        badge = '<span class="plan-badge">Priority</span>' if priority else ""
+        title = html.escape(display_roadmap_title(node))
+        items.append(f'<li{item_class}>{badge}<a href="https://github.com/{repo}/discussions/{int(node["number"])}">{title}</a></li>')
+    return "\n      ".join(items)
 
 
 def latest_release(repo: str) -> str:

@@ -7,7 +7,8 @@ import java.util.Base64
  * Builds the protected enrollment file that CollieSocket's `enrollment import` reads.
  *
  * The format is defined by `contracts/encrypted-push/v2` (`enrollment.schema.json`, `README.md`) in
- * https://github.com/0cwa/colliesocket, pinned at [CONTRACT_COMMIT] (an open pull request at the time of writing).
+ * https://github.com/0cwa/colliesocket, pinned at [CONTRACT_COMMIT]. That revision was merged to `main` in PR #11
+ * on 2026-11-11.
  * Version 2 adds the control key that lets the phone change its own push endpoint over Signal.
  *
  * The file holds the linked-device password, so nothing in here logs or echoes a value: failures carry

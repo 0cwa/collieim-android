@@ -8,8 +8,9 @@ import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
 
 /**
- * Receiver side of `contracts/encrypted-push/v1` and `v2` (event version 2 adds `subscription_updated`) in https://github.com/0cwa/colliesocket, pinned at
- * [CONTRACT_COMMIT] (`event.schema.json`, `protocol.md`). Pure functions: the caller supplies the clock, the lock
+ * Receiver side of `contracts/encrypted-push/v1` and additive v2 (event version 2 adds `subscription_updated`) in
+ * https://github.com/0cwa/colliesocket. V1 is pinned at [CONTRACT_COMMIT]; v2 has its separate source revision in
+ * `app/src/test/resources/colliesocket-contract-v2/PIN.txt`. Pure functions: the caller supplies the clock, the lock
  * state and the stored replay state, and persists the state this returns. Nothing here logs or echoes input.
  */
 object EncryptedPush {

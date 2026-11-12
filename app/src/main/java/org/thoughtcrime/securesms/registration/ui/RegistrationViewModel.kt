@@ -53,6 +53,7 @@ import org.thoughtcrime.securesms.backup.v2.RestoreTimestampResult
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ReclaimUsernameAndLinkJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import org.thoughtcrime.securesms.pin.SvrRepository
 import org.thoughtcrime.securesms.pin.SvrWrongPinException
 import org.thoughtcrime.securesms.registration.data.AccountRegistrationResult
@@ -1079,18 +1080,26 @@ class RegistrationViewModel : ViewModel() {
     setInProgress(true)
 
     viewModelScope.launch(context = coroutineExceptionHandler) {
-      if (e164 != null) {
-        setPhoneNumber(PhoneNumberUtil.getInstance().parse(e164, null))
-      }
-
       val accountEntropyPool = AccountEntropyPool(backupKey)
-      SignalStore.account.restoreAccountEntropyPool(accountEntropyPool)
-
-      if (aciIdentityKeyPair != null) {
-        SignalStore.account.restoreAciIdentityKeyFromBackup(aciIdentityKeyPair.publicKey.serialize(), aciIdentityKeyPair.privateKey.serialize())
-        if (pniIdentityKeyPair != null) {
-          SignalStore.account.restorePniIdentityKeyFromBackup(pniIdentityKeyPair.publicKey.serialize(), pniIdentityKeyPair.privateKey.serialize())
+      val restoreKeys: suspend () -> Unit = {
+        if (e164 != null) {
+          setPhoneNumber(PhoneNumberUtil.getInstance().parse(e164, null))
         }
+
+        SignalStore.account.restoreAccountEntropyPool(accountEntropyPool)
+
+        if (aciIdentityKeyPair != null) {
+          SignalStore.account.restoreAciIdentityKeyFromBackup(aciIdentityKeyPair.publicKey.serialize(), aciIdentityKeyPair.privateKey.serialize())
+          if (pniIdentityKeyPair != null) {
+            SignalStore.account.restorePniIdentityKeyFromBackup(pniIdentityKeyPair.publicKey.serialize(), pniIdentityKeyPair.privateKey.serialize())
+          }
+        }
+      }
+      if (SignalStore.account.isRegistered) {
+        UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = restoreKeys)
+      } else {
+        // Initial registration has no prior credentialed push context; its local commit remains transition-gated.
+        restoreKeys()
       }
 
       val masterKey = accountEntropyPool.deriveMasterKey()

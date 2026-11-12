@@ -38,6 +38,7 @@ class ResettableLazy<T>(
     return value as T
   }
 
+  @Synchronized
   fun reset() {
     value = UNINITIALIZED
   }

@@ -2,7 +2,10 @@ package org.thoughtcrime.securesms.jobs
 
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.CorruptControlStateException
+import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
@@ -55,31 +58,53 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
 
   @Throws(Exception::class)
   public override fun onRun() {
+    val lease = UnifiedPushAccountTransition.acquireLease()
+    if (lease == null) {
+      val registered = synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushAccountTransition.isRegisteredLocked() }
+      if (!registered) return
+      throw IOException("UnifiedPush account context is transitioning")
+    }
     val values = SignalStore.unifiedpush
     val store = UnifiedPushControlStore(values)
-    val update = try {
-      store.read().update
-    } catch (e: CorruptControlStateException) {
-      Log.w(TAG, "Endpoint update stopped: control state unavailable")
-      return
-    }
-    if (update == null) {
-      Log.d(TAG, "No endpoint update pending.")
-      return
-    }
-    val device = values.device ?: return
-
     try {
-      AppDependencies.signalServiceMessageSender.sendControlMessage(device.deviceId, update.frame)
-    } catch (e: Exception) {
-      EndpointUpdates.recordAttempt(store, update.epoch, System.currentTimeMillis() / 1000, e.javaClass.simpleName)
-      // BaseJob turns a RuntimeException into a crash; a failed send is only a reason to try again.
-      throw if (e is IOException) e else IOException("Endpoint update send failed", e)
+      val selected = synchronized(UnifiedPushLifecycle.monitor) {
+        if (!UnifiedPushLifecycle.isReadyLocked() || !UnifiedPushAccountTransition.contextStillMatchesLocked(lease.snapshot)) return
+        val update = try {
+          store.read().update
+        } catch (e: CorruptControlStateException) {
+          Log.w(TAG, "Endpoint update stopped: control state unavailable")
+          return
+        } ?: run {
+          Log.d(TAG, "No endpoint update pending.")
+          return
+        }
+        val device = lease.snapshot.pushDevice ?: return
+        if (!ControlFrame.matchesIdentity(update.frame, lease.snapshot.accountId, device.deviceId, update.epoch)) return
+
+        val state = store.read()
+        if (state.activeImportId != null &&
+          (state.activeAccountId != lease.snapshot.accountId || state.activeDeviceId != device.deviceId || state.activeInstance != lease.snapshot.instance)) return
+        update to device
+      }
+
+      try {
+        AppDependencies.signalServiceMessageSender.sendControlMessage(
+          lease.snapshot.accountId,
+          lease.snapshot.localDeviceId,
+          selected.second.deviceId,
+          selected.first.frame,
+        )
+      } catch (e: Exception) {
+        EndpointUpdates.recordAttempt(store, selected.first, lease.generation, System.currentTimeMillis() / 1000, e.javaClass.simpleName)
+        // BaseJob turns a RuntimeException into a crash; a failed send is only a reason to try again.
+        throw if (e is IOException) e else IOException("Endpoint update send failed", e)
+      }
+      EndpointUpdates.recordAttempt(store, selected.first, lease.generation, System.currentTimeMillis() / 1000, null)
+      Log.i(TAG, "Endpoint update for epoch ${selected.first.epoch} sent (attempt ${selected.first.attempts + 1}).")
+      throw AwaitingConfirmation()
+    } finally {
+      lease.close()
     }
-    // Only bookkeeping, and only for this epoch: a newer update that replaced it meanwhile is not touched.
-    EndpointUpdates.recordAttempt(store, update.epoch, System.currentTimeMillis() / 1000, null)
-    Log.i(TAG, "Endpoint update for epoch ${update.epoch} sent (attempt ${update.attempts + 1}).")
-    throw AwaitingConfirmation()
   }
 
   class Factory : Job.Factory<UnifiedPushControlJob> {

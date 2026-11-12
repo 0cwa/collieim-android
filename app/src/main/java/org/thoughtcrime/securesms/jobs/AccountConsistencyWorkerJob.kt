@@ -6,10 +6,14 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle.StaleLifecycleGenerationException
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.ProfileUtil
 import org.whispersystems.signalservice.api.profiles.SignalServiceProfile
 import java.io.IOException
+import kotlinx.coroutines.runBlocking
 import kotlin.time.Duration.Companion.days
 
 /**
@@ -50,50 +54,60 @@ class AccountConsistencyWorkerJob private constructor(parameters: Parameters) : 
       Log.i(TAG, "No identity set yet, skipping.")
       return
     }
-
-    if (!SignalStore.account.isRegistered || SignalStore.account.aci == null) {
+    val lease = UnifiedPushAccountTransition.acquireLease()
+    if (lease == null) {
+      val registered = synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushAccountTransition.isRegisteredLocked() }
+      if (registered) throw IOException("UnifiedPush account context is transitioning")
       Log.i(TAG, "Not yet registered, skipping.")
       return
     }
 
-    if (SignalStore.account.isLinkedDevice) {
-      Log.i(TAG, "Linked device, skipping.")
-      return
+    var mismatched = false
+    var complete = false
+    try {
+      if (SignalStore.account.isLinkedDevice) {
+        Log.i(TAG, "Linked device, skipping.")
+        return
+      }
+
+      val aciProfile: SignalServiceProfile = ProfileUtil.retrieveProfileSync(context, Recipient.self(), SignalServiceProfile.RequestType.PROFILE, false).profile
+      val encodedAciPublicKey = Base64.encodeWithPadding(SignalStore.account.aciIdentityKey.publicKey.serialize())
+      if (aciProfile.identityKey != encodedAciPublicKey) {
+        Log.w(TAG, "ACI identity key on profile differed from the one we have locally! Marking ourselves unregistered.")
+        mismatched = true
+      } else if (SignalStore.account.pni == null) {
+        Log.i(TAG, "Phonenumberless account, skipping the rest.")
+        complete = true
+      } else {
+        val pniProfile: SignalServiceProfile = ProfileUtil.retrieveProfileSync(SignalStore.account.pni!!, SignalServiceProfile.RequestType.PROFILE).profile
+        val encodedPniPublicKey = Base64.encodeWithPadding(SignalStore.account.pniIdentityKey.publicKey.serialize())
+        if (pniProfile.identityKey != encodedPniPublicKey) {
+          Log.w(TAG, "PNI identity key on profile differed from the one we have locally! Marking ourselves unregistered.")
+          mismatched = true
+        } else {
+          Log.i(TAG, "Everything matched.")
+          complete = true
+        }
+      }
+
+      if (complete) SignalStore.misc.lastConsistencyCheckTime = System.currentTimeMillis()
+    } finally {
+      lease.close()
     }
 
-    val aciProfile: SignalServiceProfile = ProfileUtil.retrieveProfileSync(context, Recipient.self(), SignalServiceProfile.RequestType.PROFILE, false).profile
-    val encodedAciPublicKey = Base64.encodeWithPadding(SignalStore.account.aciIdentityKey.publicKey.serialize())
-
-    if (aciProfile.identityKey != encodedAciPublicKey) {
-      Log.w(TAG, "ACI identity key on profile differed from the one we have locally! Marking ourselves unregistered.")
-
-      markUnregistered()
-
-      SignalStore.misc.lastConsistencyCheckTime = System.currentTimeMillis()
-      return
+    if (mismatched) {
+      try {
+        runBlocking {
+          UnifiedPushAccountTransition.withTransition(expectedGeneration = lease.generation) {
+            markUnregistered()
+            AppDependencies.resetNetwork(true)
+          }
+        }
+        SignalStore.misc.lastConsistencyCheckTime = System.currentTimeMillis()
+      } catch (_: StaleLifecycleGenerationException) {
+        Log.i(TAG, "Account changed during the consistency check; ignoring its stale result.")
+      }
     }
-
-    if (SignalStore.account.pni == null) {
-      Log.i(TAG, "Phonenumberless account, skipping the rest.")
-      SignalStore.misc.lastConsistencyCheckTime = System.currentTimeMillis()
-      return
-    }
-
-    val pniProfile: SignalServiceProfile = ProfileUtil.retrieveProfileSync(SignalStore.account.pni!!, SignalServiceProfile.RequestType.PROFILE).profile
-    val encodedPniPublicKey = Base64.encodeWithPadding(SignalStore.account.pniIdentityKey.publicKey.serialize())
-
-    if (pniProfile.identityKey != encodedPniPublicKey) {
-      Log.w(TAG, "PNI identity key on profile differed from the one we have locally! Marking ourselves unregistered.")
-
-      markUnregistered()
-
-      SignalStore.misc.lastConsistencyCheckTime = System.currentTimeMillis()
-      return
-    }
-
-    Log.i(TAG, "Everything matched.")
-
-    SignalStore.misc.lastConsistencyCheckTime = System.currentTimeMillis()
   }
 
   /** Marks the account unregistered so the user is prompted to re-register. */

@@ -2,6 +2,7 @@ package im.molly.unifiedpush.control
 
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.receiver.EncryptedPush
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 
 /** Phone-side encrypted-push state transitions for legacy endpoint updates and v3 import intents. */
 object EndpointUpdates {
@@ -182,9 +183,18 @@ object EndpointUpdates {
     return effect
   }
 
-  /** Attempt bookkeeping for the update at [epoch]; a replaced update is left alone. */
-  fun recordAttempt(store: ControlStore, epoch: Long, now: Long, error: String?) {
-    store.mutate { old -> if (old.update?.epoch == epoch) old.copy(update = old.update.afterAttempt(now, error)) else old }
+  /** Attempt bookkeeping only for the exact selected frame in the same account execution generation. */
+  fun recordAttempt(store: ControlStore, expected: ControlUpdate, generation: Long, now: Long, error: String?) {
+    synchronized(UnifiedPushLifecycle.monitor) {
+      if (!UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.currentGeneration() != generation) return
+      store.mutate { old ->
+        val current = old.update
+        if (current != null && current.epoch == expected.epoch && current.frame.contentEquals(expected.frame) &&
+          current.endpoint == expected.endpoint && current.p256dh == expected.p256dh && current.auth == expected.auth) {
+          old.copy(update = current.afterAttempt(now, error))
+        } else old
+      }
+    }
   }
 
   /** Active and pending-intent epochs the receiver may parse before exact identity checks. */

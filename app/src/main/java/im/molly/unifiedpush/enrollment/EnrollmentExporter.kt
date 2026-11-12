@@ -2,6 +2,7 @@ package im.molly.unifiedpush.enrollment
 
 import android.content.Context
 import android.os.Build
+import androidx.annotation.VisibleForTesting
 import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.EndpointUpdates
@@ -37,6 +38,24 @@ object EnrollmentExporter {
     mode: ExportMode,
     requestId: String? = null,
     isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive,
+  ): Export = exportWithEpochAtTime(
+    context = context,
+    serverEpoch = serverEpoch,
+    mode = mode,
+    requestId = requestId,
+    nowSeconds = System.currentTimeMillis() / 1000,
+    isDistributorActive = isDistributorActive,
+  )
+
+  @VisibleForTesting
+  @Synchronized
+  internal fun exportWithEpochAtTime(
+    context: Context,
+    serverEpoch: Long?,
+    mode: ExportMode,
+    requestId: String? = null,
+    nowSeconds: Long,
+    isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive,
   ): Export {
     val dir = context.getExternalFilesDir(null)
     val temp = dir?.let { File(it, TEMP_NAME) }
@@ -53,7 +72,7 @@ object EnrollmentExporter {
 
     val intent: ImportIntent
     val contents: String
-    val replayIfAbsent = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
+    val replayIfAbsent = EncryptedPush.ReplayState(nowSeconds, emptyList()).serialize()
     when (mode) {
       ExportMode.RERENDER -> {
         val savedId = requestId ?: throw EnrollmentFile.Invalid("intent_unavailable")

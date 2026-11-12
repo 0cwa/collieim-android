@@ -489,16 +489,14 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
       throw new IllegalStateException("No ACI set!");
     }
 
-    boolean needsPreKeyJob = false;
+    boolean missingAciIdentity = !SignalStore.account().hasAciIdentityKey();
+    boolean missingPniIdentity = localPni != null && !SignalStore.account().hasPniIdentityKey();
+    boolean needsPreKeyJob = missingAciIdentity || missingPniIdentity;
 
-    if (!SignalStore.account().hasAciIdentityKey()) {
-      SignalStore.account().generateAciIdentityKeyIfNecessary();
-      needsPreKeyJob = true;
-    }
-
-    if (localPni != null && !SignalStore.account().hasPniIdentityKey()) {
-      SignalStore.account().generatePniIdentityKeyIfNecessary();
-      needsPreKeyJob = true;
+    if (needsPreKeyJob) {
+      // This provider is being constructed before AppDependencies publishes a sender or push jobs can run.
+      if (missingAciIdentity) SignalStore.account().generateAciIdentityKeyIfNecessary();
+      if (missingPniIdentity) SignalStore.account().generatePniIdentityKeyIfNecessary();
     }
 
     if (needsPreKeyJob) {

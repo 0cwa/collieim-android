@@ -18,7 +18,8 @@ object LockedPushState {
   private const val PUSH_ARRIVED = "last_push_arrived"
   private const val SEPARATOR = '\n'
 
-  data class Endpoint(val url: String, val p256dh: String?, val auth: String?, val instance: String)
+  /** A null URL is the persisted unregister tombstone used while account state is locked or transitioning. */
+  data class Endpoint(val url: String?, val p256dh: String?, val auth: String?, val instance: String)
 
   @JvmStatic
   fun isEncryptedEnrollment(context: Context): Boolean =
@@ -46,7 +47,7 @@ object LockedPushState {
   @JvmStatic
   fun savePending(context: Context, endpoint: Endpoint) {
     try {
-      val fields = listOf(endpoint.url, endpoint.p256dh.orEmpty(), endpoint.auth.orEmpty(), endpoint.instance)
+      val fields = listOf(endpoint.url.orEmpty(), endpoint.p256dh.orEmpty(), endpoint.auth.orEmpty(), endpoint.instance)
       val sealed = KeyStoreHelper.seal(fields.joinToString(SEPARATOR.toString()).toByteArray(Charsets.UTF_8))
       context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(PENDING, sealed.serialize()).commit()
     } catch (e: Throwable) {
@@ -62,7 +63,7 @@ object LockedPushState {
     prefs.edit().remove(PENDING).commit()
     return try {
       val fields = String(KeyStoreHelper.unseal(KeyStoreHelper.SealedData.fromString(value)), Charsets.UTF_8).split(SEPARATOR)
-      if (fields.size != 4) null else Endpoint(fields[0], fields[1].ifEmpty { null }, fields[2].ifEmpty { null }, fields[3])
+      if (fields.size != 4) null else Endpoint(fields[0].ifEmpty { null }, fields[1].ifEmpty { null }, fields[2].ifEmpty { null }, fields[3])
     } catch (e: Throwable) {
       Log.w(TAG, "Could not read the endpoint received while locked.", e)
       null

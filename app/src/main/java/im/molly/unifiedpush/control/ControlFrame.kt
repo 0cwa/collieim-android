@@ -63,6 +63,24 @@ object ControlFrame {
       .array()
   }
 
+  /** Checks the account, local device, and epoch carried in a persisted update before choosing its sender. */
+  fun matchesIdentity(frame: ByteArray, accountId: String, deviceId: Int, epoch: Long): Boolean {
+    if (frame.size < HEADER_SIZE) return false
+    return try {
+      val accountBytes = accountId.replace("-", "").chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+      val buffer = ByteBuffer.wrap(frame)
+      val magic = ByteArray(MAGIC.length).also(buffer::get)
+      val version = buffer.get().toInt() and 0xff
+      val frameAccount = ByteArray(16).also(buffer::get)
+      val frameDevice = buffer.int
+      val frameEpoch = buffer.long
+      magic.contentEquals(MAGIC.toByteArray(Charsets.US_ASCII)) && version == VERSION &&
+        frameAccount.contentEquals(accountBytes) && frameDevice == deviceId && frameEpoch == epoch
+    } catch (_: IllegalArgumentException) {
+      false
+    }
+  }
+
   /**
    * Builds one frame. A new update uses a fresh random [nonce]; a retry must resend these same bytes and never call
    * this again for the same epoch.

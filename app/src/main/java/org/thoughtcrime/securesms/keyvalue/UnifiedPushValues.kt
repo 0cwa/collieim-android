@@ -7,6 +7,7 @@ import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
 import im.molly.unifiedpush.receiver.EncryptedPush
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
@@ -46,6 +47,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_REGISTRATION_FAILED = "up.registrationFailed"
     private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
+    private const val UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING = "up.account.transition.pending"
   }
 
   public override fun onFirstEverAppLaunch() = Unit
@@ -87,6 +89,16 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   var endpointInstance: String? by stringValue(UNIFIEDPUSH_ENDPOINT_INSTANCE, null)
 
+  /** Publishes one connector route tuple so readers never combine a new URL with old key material or instance. */
+  fun setEndpointRegistration(endpoint: String?, p256dh: String?, auth: String?, instance: String?) {
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_ENDPOINT, endpoint)
+      .putString(UNIFIEDPUSH_ENDPOINT_P256DH, p256dh)
+      .putString(UNIFIEDPUSH_ENDPOINT_AUTH, auth)
+      .putString(UNIFIEDPUSH_ENDPOINT_INSTANCE, instance)
+      .apply()
+  }
+
   /**
    * Epoch of the encrypted enrollment the server has proven it imported (0: none). While it is set the receiver
    * accepts no plaintext wake. It is set only when an event proves it, never by an export.
@@ -115,6 +127,17 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   /** Encrypted push replay state (clock high-water mark and live event ids), see [im.molly.unifiedpush.receiver.EncryptedPush]. */
   var replayState: String? by stringValue(UNIFIEDPUSH_REPLAY_STATE, null)
+
+  /** Durable fail-closed marker for identity writes that may have stopped before coherent registration completed. */
+  val hasIncompleteAccountTransition: Boolean
+    get() = getBoolean(UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING, false)
+
+  /** Acknowledges the marker write before identity mutation or readiness publication. */
+  fun setIncompleteAccountTransition(pending: Boolean) {
+    store.beginWrite()
+      .putBoolean(UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING, pending)
+      .commitAndWaitForPersistence()
+  }
 
   /** Typed view of the stored record. Corrupt serialized data never falls through to the legacy epoch keys. */
   val controlStateRead: ControlStateRead
@@ -151,12 +174,16 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
    * [replay], the encrypted-push replay state, when given. Returns the state that was written.
    */
   fun mutateControl(replay: String? = null, block: (ControlState) -> ControlState): ControlState {
-    return mutateControl(replay, replayIfAbsent = null, block)
+    return synchronized(UnifiedPushLifecycle.monitor) {
+      mutateControl(replay, replayIfAbsent = null, block)
+    }
   }
 
   /** Commits [replayIfAbsent] with the state change only when replay has not been initialized yet. */
   fun mutateControlWithReplayIfAbsent(replayIfAbsent: String, block: (ControlState) -> ControlState): ControlState {
-    return mutateControl(replay = null, replayIfAbsent = replayIfAbsent, block = block)
+    return synchronized(UnifiedPushLifecycle.monitor) {
+      mutateControl(replay = null, replayIfAbsent = replayIfAbsent, block = block)
+    }
   }
 
   private fun mutateControl(replay: String?, replayIfAbsent: String?, block: (ControlState) -> ControlState): ControlState {
@@ -165,7 +192,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       val old = loaded.stateOrNull ?: throw CorruptControlStateException()
       val existingReplay = if (replayIfAbsent != null) getString(UNIFIEDPUSH_REPLAY_STATE, null) else null
       if (replayIfAbsent != null) {
-        if (existingReplay == null && old != ControlState()) throw ReplayStateUnavailableException()
+        if (existingReplay == null && loaded !is ControlStateRead.Absent) throw ReplayStateUnavailableException()
         if (existingReplay != null && EncryptedPush.ReplayState.parse(existingReplay) == null) throw ReplayStateUnavailableException()
       }
       val next = block(old)
@@ -205,34 +232,43 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   /** Forgets every control key, epoch and update: a different server, or a new enrollment lifecycle. */
   fun clearControl() {
-    synchronized(controlLock) {
-      // Callers use this only after deliberately removing/replacing the server enrollment. Keep replay data intact.
-      clearControlLocked()
+    synchronized(UnifiedPushLifecycle.monitor) {
+      synchronized(controlLock) {
+        // Callers use this only after deliberately removing/replacing the server enrollment. Keep replay data intact.
+        clearControlLocked()
+      }
     }
   }
 
   /** Clears provider-specific keys/epochs when the server changes without lowering the registration import counter. */
-  fun clearControlForServerChange(): Boolean = synchronized(controlLock) {
-    val loaded = controlStateRead
-    val old = loaded.stateOrNull ?: return@synchronized false
-    val next = ControlState(importSequence = old.importSequence)
-    if (old == next && loaded !is ControlStateRead.Legacy) return@synchronized true
-    store.beginWrite()
-      .putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
-      .remove(UNIFIEDPUSH_ENROLLMENT_EPOCH)
-      .remove(UNIFIEDPUSH_PENDING_EPOCH)
-      .commitAndWaitForPersistence()
-    true
+  fun clearControlForServerChange(): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    synchronized(controlLock) {
+      val loaded = controlStateRead
+      val old = loaded.stateOrNull ?: return@synchronized false
+      val next = ControlState(importSequence = old.importSequence)
+      if (old == next && loaded !is ControlStateRead.Legacy) return@synchronized true
+      store.beginWrite()
+        .putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
+        .remove(UNIFIEDPUSH_ENROLLMENT_EPOCH)
+        .remove(UNIFIEDPUSH_PENDING_EPOCH)
+        .commitAndWaitForPersistence()
+      true
+    }
   }
 
   /** Explicit recovery after the operator removed the server enrollment. Does nothing if the record is no longer corrupt. */
-  fun clearCorruptControlAfterServerRemoval(): Boolean = synchronized(controlLock) {
-    if (ControlState.parse(getString(UNIFIEDPUSH_CONTROL_STATE, null)) != ControlStateRead.Corrupt) return@synchronized false
-    clearControlLocked()
-    true
+  fun clearCorruptControlAfterServerRemoval(): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    synchronized(controlLock) {
+      if (ControlState.parse(getString(UNIFIEDPUSH_CONTROL_STATE, null)) != ControlStateRead.Corrupt) return@synchronized false
+      clearControlLocked()
+      true
+    }
   }
 
   private fun clearControlLocked() {
+    // Keep first-setup typed as Absent. A serialized empty record after an explicit reset is different: it proves
+    // that enrollment state once existed, so missing replay history must never be bootstrapped over it.
+    if (controlStateRead is ControlStateRead.Absent) return
     store.beginWrite()
       .putString(UNIFIEDPUSH_CONTROL_STATE, ControlState().serialize())
       .remove(UNIFIEDPUSH_ENROLLMENT_EPOCH)

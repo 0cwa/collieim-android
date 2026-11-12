@@ -85,6 +85,7 @@ import org.thoughtcrime.securesms.jobs.ReclaimUsernameAndLinkJob
 import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob
 import org.thoughtcrime.securesms.jobs.RotateCertificateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import org.thoughtcrime.securesms.megaphone.SignalLoginReminderSchedule
 import org.thoughtcrime.securesms.megaphone.TwoFactorReminderSchedule
 import org.thoughtcrime.securesms.pin.SvrRepository
@@ -359,23 +360,33 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
 
         val database = SignalDatabase.backupDatabase
         val inputStream = context.contentResolver.openInputStream(backupUri) ?: throw IOException("Unable to open backup stream for $backupUri")
-        CountingInputStream(inputStream).use { counting ->
-          countingStream = counting
-          FullBackupImporter.importFile(
-            context,
-            AttachmentSecretProvider.getInstance(context, AppAttachmentSecretStore).getOrCreateAttachmentSecret(),
-            database,
-            counting,
-            passphrase,
-            excludeKeyTables
-          )
+        val hadRegisteredContext = SignalStore.account.isRegistered
+        val importBackup: suspend () -> Unit = {
+          CountingInputStream(inputStream).use { counting ->
+            countingStream = counting
+            FullBackupImporter.importFile(
+              context,
+              AttachmentSecretProvider.getInstance(context, AppAttachmentSecretStore).getOrCreateAttachmentSecret(),
+              database,
+              counting,
+              passphrase,
+              excludeKeyTables
+            )
+          }
+
+          SignalDatabase.runPostBackupRestoreTasks(database)
+
+          // The importer writes the restored key-value store straight to disk, bypassing the in-memory SignalStore cache.
+          // Reset it so the state we read below reflects the restored values rather than stale pre-restore ones.
+          SignalStore.onPostBackupRestore()
+          if (hadRegisteredContext) SignalStore.unifiedpush.setIncompleteAccountTransition(true)
         }
-
-        SignalDatabase.runPostBackupRestoreTasks(database)
-
-        // The importer writes the restored key-value store straight to disk, bypassing the in-memory SignalStore cache.
-        // Reset it so the state we read below reflects the restored values rather than stale pre-restore ones.
-        SignalStore.onPostBackupRestore()
+        if (hadRegisteredContext) {
+          UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = importBackup)
+        } else {
+          // The subsequent local registration commit gates push readiness; before it, no registered context is usable.
+          importBackup()
+        }
 
         // A post-registration restore clobbers parts of SignalStore.account with the backup's values -- V1 backups
         // carry the identity keys and AEP. Re-apply the frozen account data to heal the committed registration.
@@ -738,6 +749,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
    * data to heal them.
    */
   private suspend fun applyAccountData(accountData: AccountData, pin: String, registrationLockEnabled: Boolean, masterKey: MasterKey?) {
+    UnifiedPushAccountTransition.withTransition {
     Log.i(TAG, "[applyAccountData] Registering account locally.")
 
     SignalStore.account.registrationId = accountData.aciRegistrationId
@@ -870,6 +882,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
     }
 
     accountData.linkedDeviceData?.readReceipts?.let { SignalStore.settings.isReadReceiptsEnabled = it }
+    }
   }
 
   private fun getOrCreateProfileKey(aci: ACI?): ProfileKey {

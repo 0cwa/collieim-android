@@ -61,6 +61,7 @@ import org.thoughtcrime.securesms.jobs.RotateProfileKeyJob
 import org.thoughtcrime.securesms.jobs.StorageForcePushJob
 import org.thoughtcrime.securesms.jobs.UnreadReminderJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import org.thoughtcrime.securesms.megaphone.MegaphoneRepository
 import org.thoughtcrime.securesms.megaphone.Megaphones
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -1102,9 +1103,12 @@ class InternalSettingsFragment : DSLSettingsFragment(R.string.preferences__inter
         lifecycleScope.launch {
           when (AdvancedPrivacySettingsRepository().disablePushMessages()) {
             AdvancedPrivacySettingsRepository.DisablePushMessagesResult.SUCCESS -> {
-              SignalStore.account.setRegistered(false)
-              SignalStore.registration.clearRegistrationComplete()
-              SignalStore.registration.hasUploadedProfile = false
+              UnifiedPushAccountTransition.withTransition {
+                SignalStore.account.setRegistered(false)
+                SignalStore.registration.clearRegistrationComplete()
+                SignalStore.registration.hasUploadedProfile = false
+                AppDependencies.resetNetwork(true)
+              }
               Toast.makeText(context, "Unregistered!", Toast.LENGTH_SHORT).show()
             }
 

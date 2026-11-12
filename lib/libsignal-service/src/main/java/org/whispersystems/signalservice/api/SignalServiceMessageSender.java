@@ -2180,9 +2180,13 @@ public class SignalServiceMessageSender {
    * A successful send is not a confirmation of the update. Throws {@link NoSessionException} / {@link IOException}
    * when the CollieSocket device cannot be found, and the caller keeps the update pending.
    */
-  public SendMessageResult sendControlMessage(int controlDeviceId, byte[] frame)
+  public SendMessageResult sendControlMessage(String expectedAccountId, int expectedLocalDeviceId, int controlDeviceId, byte[] frame)
       throws IOException, UntrustedIdentityException, NoSessionException
   {
+    if (!localAddress.getIdentifier().equals(expectedAccountId) || localDeviceId != expectedLocalDeviceId) {
+      throw new IOException("Signal sender context changed before control send");
+    }
+
     long                  startTime = System.currentTimeMillis();
     long                  timestamp = startTime;
     Content               content   = new Content.Builder().syncMessage(createSyncMessageBuilder().build()).build();

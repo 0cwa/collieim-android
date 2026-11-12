@@ -2,9 +2,12 @@ package im.molly.unifiedpush.control
 
 import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.receiver.EncryptedPush
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -318,6 +321,33 @@ class EndpointUpdatesTest {
 
     assertTrue(EndpointUpdates.confirms(state, valid, liveRegistration))
     assertFalse(EndpointUpdates.confirms(state, stale, liveRegistration))
+  }
+
+  @Test
+  fun `stale send attempt cannot update a replacement frame at the same epoch or cross a generation`() {
+    UnifiedPushLifecycle.resetForTests()
+    val generation = UnifiedPushLifecycle.currentGeneration()
+    val sent = ControlUpdate(6, target.endpoint, target.p256dh, target.auth, byteArrayOf(1, 2), 10)
+    val replacement = ControlUpdate(6, target.endpoint, target.p256dh, target.auth, byteArrayOf(3, 4), 11)
+    val store = Memory(ControlState(key = keyA, activeEpoch = 5, update = replacement))
+
+    EndpointUpdates.recordAttempt(store, sent, generation, now = 20, error = "IOException")
+
+    assertSame(replacement, store.state.update)
+    assertEquals(0, store.state.update!!.attempts)
+
+    runBlocking {
+      UnifiedPushLifecycle.withTransition(
+        persistIncompleteMarker = {},
+        readyAfter = { true },
+      ) { }
+    }
+    store.state = store.state.copy(update = sent)
+
+    EndpointUpdates.recordAttempt(store, sent, generation, now = 30, error = "IOException")
+
+    assertSame(sent, store.state.update)
+    assertEquals(0, store.state.update!!.attempts)
   }
 
   @Test

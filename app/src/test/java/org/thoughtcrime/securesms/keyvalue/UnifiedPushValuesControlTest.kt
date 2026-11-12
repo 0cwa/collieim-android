@@ -293,4 +293,24 @@ class UnifiedPushValuesControlTest {
     assertEquals(2, storage.writes)
     assertEquals("replay", values.replayState)
   }
+
+  @Test
+  fun `missing replay can only bootstrap from typed absent control state`() {
+    val values = values()
+    values.mutateControl { it.copy(highestEpoch = 1) }
+    values.mutateControl { ControlState() }
+    assertTrue(values.controlStateRead is ControlStateRead.Current)
+
+    val failure = runCatching {
+      values.mutateControlWithReplayIfAbsent("lower-clock-replay") { it.copy(importSequence = 1) }
+    }.exceptionOrNull()
+
+    assertTrue(failure is org.thoughtcrime.securesms.keyvalue.ReplayStateUnavailableException)
+    assertEquals(ControlState(), values.controlState)
+    assertNull(values.replayState)
+
+    val absent = values(KeyValueDataSet())
+    absent.clearControl()
+    assertTrue(absent.controlStateRead is ControlStateRead.Absent)
+  }
 }

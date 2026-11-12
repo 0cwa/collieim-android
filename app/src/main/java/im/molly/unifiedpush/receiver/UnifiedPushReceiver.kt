@@ -8,6 +8,8 @@ import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
@@ -33,13 +35,16 @@ class UnifiedPushReceiver : MessagingReceiver() {
 
   companion object {
     private val TAG = Log.tag(UnifiedPushReceiver::class.java)
-    private val replayLock = Any()
 
     /** Applies an endpoint that arrived while the app was locked. Called after unlock. */
     @JvmStatic
     fun applyPendingEndpoint(context: Context) {
-      val pending = LockedPushState.takePending(context)
-      if (pending != null) UnifiedPushReceiver().applyEndpoint(context, pending)
+      val receiver = UnifiedPushReceiver()
+      val effects = synchronized(UnifiedPushLifecycle.monitor) {
+        if (!UnifiedPushLifecycle.isReadyLocked()) return
+        LockedPushState.takePending(context)?.let(receiver::applyEndpointLocked)
+      }
+      effects?.let { receiver.publishEndpointEffects(context, it) }
       // Now that the app can read its state: make sure the server holds the current endpoint, and send an update
       // that was built but never confirmed again.
       EndpointReconciler.reconcile(resume = true)
@@ -60,33 +65,48 @@ class UnifiedPushReceiver : MessagingReceiver() {
   override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
     Log.i(TAG, "onNewEndpoint($instance)")
     val received = LockedPushState.Endpoint(endpoint.url, endpoint.pubKeySet?.pubKey, endpoint.pubKeySet?.auth, instance)
-    if (appLocked) {
-      // SignalStore cannot be read while locked: keep the endpoint sealed and apply it at the next unlock.
-      LockedPushState.savePending(context, received)
-    } else {
+    val effects = synchronized(UnifiedPushLifecycle.monitor) {
+      if (appLocked || !UnifiedPushLifecycle.isReadyLocked()) {
+        // Keep the whole tuple sealed until stored account state is readable and its transition has completed.
+        LockedPushState.savePending(context, received)
+        return
+      }
       LockedPushState.takePending(context)
-      applyEndpoint(context, received)
+      applyEndpointLocked(received)
     }
+    publishEndpointEffects(context, effects)
   }
 
-  private fun applyEndpoint(context: Context, endpoint: LockedPushState.Endpoint) {
+  private data class EndpointEffects(val failed: Boolean, val changed: Boolean, val airGapped: Boolean)
+
+  /** Updates route tuple and control frame under the lifecycle monitor; UI and job callbacks happen after release. */
+  private fun applyEndpointLocked(endpoint: LockedPushState.Endpoint): EndpointEffects {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val failed = SignalStore.unifiedpush.registrationFailed
     SignalStore.unifiedpush.registrationFailed = false
     SignalStore.unifiedpush.registrationRetryScheduled = false
-    if (failed) {
+    val values = SignalStore.unifiedpush
+    val changed = endpoint.url != values.endpoint
+    values.setEndpointRegistration(
+      endpoint = endpoint.url,
+      p256dh = endpoint.p256dh,
+      auth = endpoint.auth,
+      instance = endpoint.instance.takeIf { endpoint.url != null },
+    )
+    return EndpointEffects(failed, changed, values.airGapped)
+  }
+
+  private fun publishEndpointEffects(context: Context, effects: EndpointEffects) {
+    if (effects.failed) {
       UnifiedPushNotificationBuilder(context).clearRegistrationFailed()
       EventBus.default.post(PushServiceEvent)
     }
-    SignalStore.unifiedpush.endpointP256dh = endpoint.p256dh
-    SignalStore.unifiedpush.endpointAuth = endpoint.auth
-    SignalStore.unifiedpush.endpointInstance = endpoint.instance
-    val changed = refreshEndpoint(endpoint.url)
-    // After the endpoint is stored: the update is derived from the stored state, so it is rebuilt if this is interrupted.
+    // The route is durable and coherent before reconciliation builds a frame from it.
     EndpointReconciler.reconcile()
-    if (failed && !changed) {
+    if (effects.failed && !effects.changed) {
       AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
     }
-    if (changed && SignalStore.unifiedpush.airGapped) {
+    if (effects.changed && effects.airGapped) {
       updateLastReceivedTime(0)
       UnifiedPushNotificationBuilder(context).setNotificationEndpointChangedAirGapped()
     }
@@ -112,12 +132,14 @@ class UnifiedPushReceiver : MessagingReceiver() {
     Log.i(TAG, "onUnregistered($instance)")
     UnifiedPush.forceRemoveDistributor(context)
     LockedPushState.takePending(context)
-    if (!appLocked) {
-      SignalStore.unifiedpush.endpointP256dh = null
-      SignalStore.unifiedpush.endpointAuth = null
-      SignalStore.unifiedpush.endpointInstance = null
-      refreshEndpoint(null)
+    val effects = synchronized(UnifiedPushLifecycle.monitor) {
+      if (appLocked || !UnifiedPushLifecycle.isReadyLocked()) {
+        LockedPushState.savePending(context, LockedPushState.Endpoint(null, null, null, instance))
+        return
+      }
+      applyEndpointLocked(LockedPushState.Endpoint(null, null, null, instance))
     }
+    publishEndpointEffects(context, effects)
   }
 
   override fun onMessage(context: Context, message: PushMessage, instance: String) {
@@ -132,122 +154,161 @@ class UnifiedPushReceiver : MessagingReceiver() {
       return
     }
 
-    val values = SignalStore.unifiedpush
-    val controlState = values.controlStateRead.stateOrNull
-    if (controlState == null) {
-      Log.w(TAG, "Control state unavailable. Push dropped.")
+    val lease = UnifiedPushAccountTransition.acquireLease()
+    if (lease == null) {
+      Log.w(TAG, "Account transition or registration context unavailable. Push dropped.")
       return
     }
-    val active = controlState.activeEpoch
-    val pending = controlState.pendingEpoch
-    LockedPushState.setEncryptedEnrollment(context, active > 0)
-    // A saved import intent also requires encrypted delivery, before or after an active import is confirmed.
-    if (active > 0 || pending > 0) {
-      if (onEncryptedMessage(context, message)) return
-      if (active > 0 || EncryptedPush.isEventShaped(message.content)) return
+
+    var leaseTransferred = false
+    try {
+      val handling = synchronized(UnifiedPushLifecycle.monitor) {
+        if (!UnifiedPushLifecycle.isReadyLocked() || !UnifiedPushAccountTransition.contextStillMatchesLocked(lease.snapshot)) {
+          return@synchronized null
+        }
+        val values = SignalStore.unifiedpush
+        val controlState = values.controlStateRead.stateOrNull
+        if (controlState == null) {
+          Log.w(TAG, "Control state unavailable. Push dropped.")
+          return@synchronized MessageHandling(drop = true)
+        }
+        val active = controlState.activeEpoch
+        val pending = controlState.pendingEpoch
+        LockedPushState.setEncryptedEnrollment(context, active > 0)
+
+        // A saved import intent also requires encrypted delivery, before or after an active import is confirmed.
+        if (active > 0 || pending > 0) {
+          val encrypted = acceptEncryptedMessageLocked(context, message)
+          if (encrypted != null && encrypted.effect != EndpointUpdates.Effect.REJECTED && encrypted.outcome.decision.accepted) {
+            return@synchronized MessageHandling(encrypted = encrypted)
+          }
+          if (active > 0 || EncryptedPush.isEventShaped(message.content)) {
+            return@synchronized MessageHandling(drop = true)
+          }
+        }
+        MessageHandling(plaintext = message.content.toString(Charsets.UTF_8))
+      }
+
+      if (handling == null || handling.drop) return
+      val encrypted = handling.encrypted
+      if (encrypted != null) {
+        leaseTransferred = finishEncryptedMessage(context, lease, encrypted)
+      } else {
+        updateLastReceivedTime(System.currentTimeMillis())
+        leaseTransferred = onMessageUnlocked(context, checkNotNull(handling.plaintext), lease)
+      }
+    } finally {
+      if (!leaseTransferred) lease.close()
     }
-    updateLastReceivedTime(System.currentTimeMillis())
-    onMessageUnlocked(context, message.content.toString(Charsets.UTF_8))
   }
 
-  /**
-   * Handles [message] as an encrypted event. Returns true if it was accepted (and its effect started). V3 events
-   * must identify either the exact eligible import intent or the confirmed active intent.
-   */
-  private fun onEncryptedMessage(context: Context, message: PushMessage): Boolean {
+  private data class MessageHandling(
+    val encrypted: EncryptedHandling? = null,
+    val plaintext: String? = null,
+    val drop: Boolean = false,
+  )
+
+  private data class EncryptedHandling(
+    val outcome: EncryptedPush.Outcome,
+    val effect: EndpointUpdates.Effect,
+  )
+
+  /** Reads, validates, and durably commits an event while the lifecycle/replay monitor is held. */
+  private fun acceptEncryptedMessageLocked(context: Context, message: PushMessage): EncryptedHandling? {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
     val values = SignalStore.unifiedpush
     val controlStore = UnifiedPushControlStore(values)
     val snapshot = try {
       controlStore.read()
     } catch (e: CorruptControlStateException) {
       Log.w(TAG, "Control state unavailable. Encrypted push dropped.")
-      return false
+      return null
     }
-    // A persisted key_id proves only its stored export context. Bind v3 identity to the registration currently
-    // loaded by Signal and UnifiedPush; missing local context must not promote or confirm a v3 identity.
-    val currentRegistration = lazy {
-      SignalStore.account.aci?.toString()?.let { accountId ->
-        values.device?.let { device ->
-          EndpointUpdates.RegistrationContext(
-            accountId = accountId,
-            deviceId = device.deviceId,
-            instance = values.endpointInstance ?: "default",
-          )
-        }
-      }
+    val currentContext = UnifiedPushAccountTransition.captureContextLocked()
+    val currentRegistration = currentContext?.let {
+      EndpointUpdates.RegistrationContext(it.accountId, it.pushDevice?.deviceId ?: -1, it.instance)
     }
     var effect = EndpointUpdates.Effect.NONE
-    val outcome = try {
-      synchronized(replayLock) {
-        val now = System.currentTimeMillis() / 1000
-        val state = EncryptedPush.ReplayState.parse(values.replayState)
-        if (state == null) {
-          Log.w(TAG, "Replay state unavailable. Encrypted push dropped.")
-          return false
-        }
-        EncryptedPush.decide(
-          content = message.content,
-          decrypted = message.decrypted,
-          now = now,
-          locked = { appLocked },
-          activeInstance = values.endpointInstance ?: "default",
-          acceptedEpochs = EndpointUpdates.acceptedEpochs(snapshot),
-          state = state,
-          versionsForEpoch = { epoch -> EndpointUpdates.versionsForEpoch(snapshot, epoch) },
-          identityMatches = { event ->
-            EndpointUpdates.identityMatches(snapshot, event, if (event.version == 3) currentRegistration.value else null)
-          },
-        ).also {
-          if (it.decision.accepted) {
-            // Committed to disk with replay state before any effect. A matching v3 import identity binds the exact
-            // intent; a `subscription_updated` event must match the already active identity.
-            val event = it.event!!
-            val registration = if (event.version == 3) currentRegistration.value else null
-            effect = EndpointUpdates.accepted(controlStore, it.state.serialize(), event, registration)
-            if (effect == EndpointUpdates.Effect.PROMOTED) LockedPushState.setEncryptedEnrollment(context, true)
-          }
-        }
-      }
-    } catch (e: KeyValuePersistenceException) {
-      Log.w(TAG, "Encrypted push state persistence was not acknowledged. Push dropped.", e)
-      return false
+    val now = System.currentTimeMillis() / 1000
+    val state = EncryptedPush.ReplayState.parse(values.replayState)
+    if (state == null) {
+      Log.w(TAG, "Replay state unavailable. Encrypted push dropped.")
+      return null
     }
-    if (effect == EndpointUpdates.Effect.REJECTED) return false
-    // The endpoint may have changed since the update or the export was built: converge on the current one.
+    val outcome = EncryptedPush.decide(
+      content = message.content,
+      decrypted = message.decrypted,
+      now = now,
+      locked = { appLocked },
+      activeInstance = currentContext?.instance ?: values.endpointInstance ?: "default",
+      acceptedEpochs = EndpointUpdates.acceptedEpochs(snapshot),
+      state = state,
+      versionsForEpoch = { epoch -> EndpointUpdates.versionsForEpoch(snapshot, epoch) },
+      identityMatches = { event ->
+        EndpointUpdates.identityMatches(snapshot, event, if (event.version == 3) currentRegistration else null)
+      },
+    )
+    if (outcome.decision.accepted) {
+      // Replay and intent promotion share one acknowledged write before any effect starts.
+      val event = outcome.event!!
+      effect = try {
+        EndpointUpdates.accepted(controlStore, outcome.state.serialize(), event, if (event.version == 3) currentRegistration else null)
+      } catch (e: KeyValuePersistenceException) {
+        Log.w(TAG, "Encrypted push state persistence was not acknowledged. Push dropped.", e)
+        return null
+      }
+      if (effect == EndpointUpdates.Effect.PROMOTED) LockedPushState.setEncryptedEnrollment(context, true)
+    }
+    return EncryptedHandling(outcome, effect)
+  }
+
+  /** Runs callbacks after the durable decision and monitor release. A queued wake keeps its lease through fetch. */
+  private fun finishEncryptedMessage(
+    context: Context,
+    lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
+    handling: EncryptedHandling,
+  ): Boolean {
+    val outcome = handling.outcome
+    val effect = handling.effect
+    if (effect == EndpointUpdates.Effect.REJECTED || !outcome.decision.accepted) return false
+    if (!UnifiedPushLifecycle.isCurrentGeneration(lease.generation)) return false
     if (effect != EndpointUpdates.Effect.NONE) EndpointReconciler.reconcile()
 
     Log.d(TAG, "Encrypted push: ${outcome.decision}")
-    if (!outcome.decision.accepted || appLocked) return outcome.decision.accepted
-    if (values.registrationStatus != RegistrationStatus.REGISTERED) {
-      // The server holds our credentials and just reached us, so the stock server check (an HTTP call) is not needed.
-      values.registrationStatus = RegistrationStatus.REGISTERED
-      EventBus.default.post(PushServiceEvent)
-    }
-    when (outcome.decision) {
+    if (appLocked) return false
+
+    val values = SignalStore.unifiedpush
+    val becameRegistered = UnifiedPushLifecycle.withCurrentLease(lease) {
+      if (values.registrationStatus != RegistrationStatus.REGISTERED) {
+        values.registrationStatus = RegistrationStatus.REGISTERED
+        true
+      } else false
+    } ?: return false
+    if (becameRegistered) EventBus.default.post(PushServiceEvent)
+
+    return when (outcome.decision) {
       EncryptedPush.Decision.ACCEPT_WAKE -> {
         updateLastReceivedTime(System.currentTimeMillis())
         PushHealthActions.onPushAccepted()
-        startFetch(context)
+        startFetch(context, lease)
       }
       EncryptedPush.Decision.ACCEPT_TEST -> {
         updateLastReceivedTime(System.currentTimeMillis())
         PushHealthActions.onPushAccepted()
-        UnifiedPushNotificationBuilder(context).setNotificationTest()
+        if (UnifiedPushLifecycle.isCurrentGeneration(lease.generation)) UnifiedPushNotificationBuilder(context).setNotificationTest()
+        false
       }
       EncryptedPush.Decision.ACCEPT_STATUS -> {
-        // A confirmation is not a server problem; it is only recorded as the end of the pending update.
         if (effect == EndpointUpdates.Effect.CONFIRMED) {
           Log.i(TAG, "Endpoint update confirmed at epoch ${outcome.event?.epoch}")
-          // The confirmation came through Signal, CollieSocket and the push provider: the whole path works.
           PushHealthActions.onPing(PushHealth.Hop.NONE)
+        } else if (outcome.event?.code != EncryptedPush.CODE_SUBSCRIPTION_UPDATED && outcome.event?.code != EncryptedPush.CODE_ENROLLMENT_IMPORTED) {
+          UnifiedPushLifecycle.withCurrentLease(lease) { values.statusCode = outcome.event?.code }
         }
-        else if (outcome.event?.code != EncryptedPush.CODE_SUBSCRIPTION_UPDATED && outcome.event?.code != EncryptedPush.CODE_ENROLLMENT_IMPORTED) {
-          values.statusCode = outcome.event?.code
-        }
+        false
       }
-      else -> Unit
+      else -> false
     }
-    return true
   }
 
   private fun onMessageLocked(context: Context, message: String) {
@@ -262,42 +323,40 @@ class UnifiedPushReceiver : MessagingReceiver() {
     }
   }
 
-  private fun onMessageUnlocked(context: Context, message: String) {
-    when {
+  private fun onMessageUnlocked(context: Context, message: String, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): Boolean {
+    return when {
       message.contains("\"test\":true") -> {
         Log.d(TAG, "Test message received.")
+        if (!UnifiedPushLifecycle.isCurrentGeneration(lease.generation)) return false
         UnifiedPushNotificationBuilder(context).setNotificationTest()
         AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
+        false
       }
 
-      else -> startFetch(context)
+      else -> startFetch(context, lease)
     }
   }
 
-  private fun startFetch(context: Context) {
-    if (SignalStore.account.isRegistered && SignalStore.unifiedpush.enabled) {
-      Log.d(TAG, "New message")
-      executor.enqueue {
-        PushFetchHandler.handleReceivedNotification(context, true)
-      }
+  private fun startFetch(context: Context, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): Boolean {
+    val enqueued = UnifiedPushLifecycle.withCurrentLease(lease) {
+      if (SignalStore.account.isRegistered && SignalStore.unifiedpush.enabled) {
+        Log.d(TAG, "New message")
+        executor.enqueue {
+          try {
+            if (UnifiedPushLifecycle.isCurrentGeneration(lease.generation)) {
+              PushFetchHandler.handleReceivedNotification(context, true)
+            }
+          } finally {
+            lease.close()
+          }
+        }
+        true
+      } else false
     }
+    return enqueued == true
   }
 
   private fun updateLastReceivedTime(timestamp: Long) {
     SignalStore.unifiedpush.lastReceivedTime = timestamp
-  }
-
-  /**
-   * Update UnifiedPush endpoint
-   *
-   * @return `true` if the endpoint has been updated, `false` if the endpoint is the same
-   */
-  private fun refreshEndpoint(endpoint: String?): Boolean {
-    val stored = SignalStore.unifiedpush.endpoint
-    return if (endpoint != stored) {
-      SignalStore.unifiedpush.endpoint = endpoint
-      AppDependencies.jobManager.add(UnifiedPushRefreshJob(testPing = false, fromNewEndpoint = true))
-      true
-    } else false
   }
 }

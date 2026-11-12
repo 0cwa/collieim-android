@@ -218,9 +218,13 @@ class EnrollmentExporterPersistenceTest {
   }
 
   private fun resetForFirstEnrollment() {
-    values.mutateControl { ControlState() }
+    storage.removePersistedKey("up.control.state")
+    storage.removePersistedKey("up.enrollment.epoch")
+    storage.removePersistedKey("up.enrollment.pendingEpoch")
+    values.store.resetCache()
     values.replayState = null
     values.store.blockUntilAllWritesFinished()
+    assertTrue(values.controlStateRead is ControlStateRead.Absent)
   }
 
   @Test

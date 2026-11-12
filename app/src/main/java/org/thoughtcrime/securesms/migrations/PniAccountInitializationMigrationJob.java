@@ -12,6 +12,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition;
 import org.thoughtcrime.securesms.net.SignalNetwork;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.whispersystems.signalservice.api.NetworkResultUtil;
@@ -21,6 +22,7 @@ import org.signal.core.models.ServiceId.PNI;
 import org.whispersystems.signalservice.api.push.ServiceIdType;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.List;
 
 /**
@@ -57,38 +59,52 @@ public class PniAccountInitializationMigrationJob extends MigrationJob {
 
   @Override
   public void performMigration() throws IOException {
-    if (SignalStore.account().isLinkedDevice()) {
-      Log.i(TAG, "Linked device, skipping");
-      return;
-    }
+    try {
+      UnifiedPushAccountTransition.callTransitionBlocking(false, new Callable<Void>() {
+        @Override
+        public Void call() throws Exception {
+          if (SignalStore.account().isLinkedDevice()) {
+            Log.i(TAG, "Linked device, skipping");
+            return null;
+          }
 
-    PNI pni = SignalStore.account().getPni();
+          PNI pni = SignalStore.account().getPni();
+          if (pni == null || SignalStore.account().getAci() == null || !Recipient.self().isRegistered()) {
+            Log.w(TAG, "Not yet registered! No need to perform this migration.");
+            return null;
+          }
 
-    if (pni == null || SignalStore.account().getAci() == null || !Recipient.self().isRegistered()) {
-      Log.w(TAG, "Not yet registered! No need to perform this migration.");
-      return;
-    }
+          boolean generatedIdentity = !SignalStore.account().hasPniIdentityKey();
+          if (generatedIdentity) {
+            Log.i(TAG, "Generating PNI identity.");
+            SignalStore.account().generatePniIdentityKeyIfNecessary();
+            AppDependencies.resetProtocolStores();
+          } else {
+            Log.w(TAG, "Already generated the PNI identity. Skipping this step.");
+          }
 
-    if (!SignalStore.account().hasPniIdentityKey()) {
-      Log.i(TAG, "Generating PNI identity.");
-      SignalStore.account().generatePniIdentityKeyIfNecessary();
-    } else {
-      Log.w(TAG, "Already generated the PNI identity. Skipping this step.");
-    }
+          SignalServiceAccountDataStore protocolStore = AppDependencies.getProtocolStore().pni();
+          PreKeyMetadataStore metadataStore = SignalStore.account().pniPreKeys();
 
-    SignalServiceAccountDataStore protocolStore  = AppDependencies.getProtocolStore().pni();
-    PreKeyMetadataStore           metadataStore  = SignalStore.account().pniPreKeys();
+          if (!metadataStore.isSignedPreKeyRegistered()) {
+            Log.i(TAG, "Uploading signed prekey for PNI.");
+            SignedPreKeyRecord signedPreKey = PreKeyUtil.generateAndStoreSignedPreKey(protocolStore, metadataStore);
+            List<PreKeyRecord> oneTimePreKeys = PreKeyUtil.generateAndStoreOneTimeEcPreKeys(protocolStore, metadataStore);
+            NetworkResultUtil.toPreKeysLegacy(SignalNetwork.keysApi().setPreKeysSync(new PreKeyUpload(ServiceIdType.PNI, signedPreKey, oneTimePreKeys, null, null)));
+            metadataStore.setActiveSignedPreKeyId(signedPreKey.getId());
+            metadataStore.setSignedPreKeyRegistered(true);
+          } else {
+            Log.w(TAG, "Already uploaded signed prekey for PNI. Skipping this step.");
+          }
 
-    if (!metadataStore.isSignedPreKeyRegistered()) {
-      Log.i(TAG, "Uploading signed prekey for PNI.");
-      SignedPreKeyRecord signedPreKey   = PreKeyUtil.generateAndStoreSignedPreKey(protocolStore, metadataStore);
-      List<PreKeyRecord> oneTimePreKeys = PreKeyUtil.generateAndStoreOneTimeEcPreKeys(protocolStore, metadataStore);
-
-      NetworkResultUtil.toPreKeysLegacy(SignalNetwork.keysApi().setPreKeysSync(new PreKeyUpload(ServiceIdType.PNI, signedPreKey, oneTimePreKeys, null, null)));
-      metadataStore.setActiveSignedPreKeyId(signedPreKey.getId());
-      metadataStore.setSignedPreKeyRegistered(true);
-    } else {
-      Log.w(TAG, "Already uploaded signed prekey for PNI. Skipping this step.");
+          if (generatedIdentity) AppDependencies.resetNetwork(true);
+          return null;
+        }
+      });
+    } catch (IOException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new IOException(e);
     }
   }
 

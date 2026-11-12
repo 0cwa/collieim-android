@@ -60,6 +60,7 @@ import org.signal.ringrtc.CallManager;
 import org.signal.storage.database.DatabaseSecretProvider;
 import org.signal.storage.database.SqlCipherLibraryLoader;
 import org.signal.storage.keyvalue.PlainTextKeyValueStore;
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition;
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener;
 import org.thoughtcrime.securesms.avatar.AvatarPickerStorage;
 import org.thoughtcrime.securesms.backup.v2.BackupRepository;
@@ -223,6 +224,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
                 Logger.setTarget(SqlCipherLogTarget.INSTANCE);
               })
               .addBlocking("signal-store", () -> SignalStore.init(this))
+              .addBlocking("unified-push-lifecycle", UnifiedPushAccountTransition::initializeFromSignalStore)
               .addBlocking("logging", () -> {
                 initializeLogging(false);
                 Log.i(TAG, "onCreateUnlock()");
@@ -569,6 +571,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
       AppInitialization.onFirstEverAppLaunch(this);
 
       Log.i(TAG, "Generating new identity keys...");
+      // First launch precedes registration and the app has no usable push account context yet.
       SignalStore.account().generateAciIdentityKeyIfNecessary();
       SignalStore.account().generatePniIdentityKeyIfNecessary();
 

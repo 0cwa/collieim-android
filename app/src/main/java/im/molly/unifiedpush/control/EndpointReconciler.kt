@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.control
 
 import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -21,35 +22,40 @@ object EndpointReconciler {
   @JvmStatic
   @JvmOverloads
   fun reconcile(resume: Boolean = false) {
-    val values = SignalStore.unifiedpush
-    val store = UnifiedPushControlStore(values)
-    val control = values.controlStateRead
-    val controlState = control.stateOrNull
-    if (controlState == null) {
-      Log.w(TAG, "Endpoint update not built: control state unavailable")
-      return
+    val shouldEnqueue = synchronized(UnifiedPushLifecycle.monitor) {
+      if (!UnifiedPushLifecycle.isReadyLocked()) return
+      val values = SignalStore.unifiedpush
+      val store = UnifiedPushControlStore(values)
+      val control = values.controlStateRead
+      val controlState = control.stateOrNull
+      if (controlState == null) {
+        Log.w(TAG, "Endpoint update not built: control state unavailable")
+        return
+      }
+      if (controlState.key == null) return
+      val context = im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.captureContextLocked() ?: return
+      if (controlState.activeImportId != null &&
+        (controlState.activeAccountId != context.accountId || controlState.activeDeviceId != context.pushDevice?.deviceId || controlState.activeInstance != context.instance)) return
+      val device = context.pushDevice ?: return
+
+      val now = System.currentTimeMillis() / 1000
+      val subscription = try {
+        val endpoint = context.endpoint
+        if (endpoint == null) null else ControlFrame.Subscription(endpoint, context.endpointP256dh.orEmpty(), context.endpointAuth.orEmpty())
+      } catch (e: EnrollmentFile.Invalid) {
+        // The distributor gave an endpoint the contract would refuse, so there is nothing valid to send.
+        Log.w(TAG, "Endpoint update not built: ${e.code}")
+        null
+      }
+      val result = try {
+        EndpointUpdates.reconcile(store, context.accountId, device.deviceId, subscription, now)
+      } catch (e: CorruptControlStateException) {
+        Log.w(TAG, "Endpoint update not built: control state unavailable")
+        return
+      }
+      val update = result.update ?: return
+      result.built || (resume && now - maxOf(update.lastAttemptAt, update.createdAt) >= RESUME_AFTER_SECONDS)
     }
-    if (controlState.key == null) {
-      return
-    }
-    val aci = SignalStore.account.aci ?: return
-    val device = values.device ?: return
-    val now = System.currentTimeMillis() / 1000
-    val subscription = try {
-      val endpoint = values.endpoint
-      if (endpoint == null) null else ControlFrame.Subscription(endpoint, values.endpointP256dh.orEmpty(), values.endpointAuth.orEmpty())
-    } catch (e: EnrollmentFile.Invalid) {
-      // The distributor gave an endpoint the contract would refuse, so there is nothing valid to send.
-      Log.w(TAG, "Endpoint update not built: ${e.code}")
-      null
-    }
-    val result = try {
-      EndpointUpdates.reconcile(store, aci.toString(), device.deviceId, subscription, now)
-    } catch (e: CorruptControlStateException) {
-      Log.w(TAG, "Endpoint update not built: control state unavailable")
-      return
-    }
-    val update = result.update ?: return
-    if (result.built || (resume && now - maxOf(update.lastAttemptAt, update.createdAt) >= RESUME_AFTER_SECONDS)) UnifiedPushControlJob.enqueue()
+    if (shouldEnqueue) UnifiedPushControlJob.enqueue()
   }
 }

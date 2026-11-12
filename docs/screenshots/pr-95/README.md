@@ -15,11 +15,27 @@ Implementation source is signed `b1baba8fbc0906b3470ca3db3fea2591a2200370`; revi
 
 These six are actual browser renders of the existing build HTML, CSS, embedded original fonts and image bytes in a fixed-size iframe via T3 `html_preview`. They are **source renders**, not live-tab screenshots. Only resource URLs are embedded; a capture script waits for fonts and scrolls to the requested existing section. No page layout, content, colors or assets are reconstructed or changed. Visible images reported loaded, fonts reported loaded, and actual iframe widths matched all four requested widths. This renderer uses overlay scrollbars and DPR 1; its usable width equals its viewport width. The last live T3 browser reserved 15px for a scrollbar and used DPR 2. Both measurements are reported separately below. Current and previous-source feature renders at 768 and 1280 are byte-for-byte identical in the same renderer.
 
-All other images retain their actual live T3 captures packaged in `c2a7b7c647de24fa50185f84b29fe141aaa6d931`, with unchanged source appearance in this phone-only pass. These include hero, desktop introduction, upcoming, menu, community, Obtainium, and downloads/footer in light/dark modes. Lower sections move earlier in the document; their own anchored content grouping is unchanged. Their pixels are not relabelled as fresh captures.
+## Current remaining key views
 
-Retained download/footer paths: [desktop light](downloads-footer-desktop-light.png), [desktop dark](downloads-footer-desktop-dark.png), [phone downloads light](downloads-mobile-light.png), [dark](downloads-mobile-dark.png), [phone footer light](footer-mobile-light.png), [dark](footer-mobile-dark.png). Hero: [desktop](desktop-light.png), [mobile phones](mobile-light.png). Community: [desktop](community-desktop-light.png), [phone dark](community-mobile-dark.png), [narrow dark](community-narrow-dark.png). Other unchanged views remain in this directory.
+| View | Screenshot | Actual iframe CSS viewport / PNG dimensions |
+| --- | --- | --- |
+| Hero | [desktop-light.png](desktop-light.png) | 1280 × 800 |
+| Hero phones | [mobile-light.png](mobile-light.png) | 390 × 844 |
+| Upcoming plans | [upcoming-desktop-light.png](upcoming-desktop-light.png) | 1280 × 900 |
+| Dark phone plans | [upcoming-mobile-dark.png](upcoming-mobile-dark.png) | 390 × 1100 |
+| Community and help | [community-desktop-light.png](community-desktop-light.png) | 1280 × 900 |
+| Dark phone community and help | [community-mobile-dark.png](community-mobile-dark.png) | 390 × 1300 |
+| Downloads/footer | [light](downloads-footer-desktop-light.png) · [dark](downloads-footer-desktop-dark.png) | 1280 × 1100 |
+| Phone downloads | [light](downloads-mobile-light.png) · [dark](downloads-mobile-dark.png) | 390 × 1100 |
+| Phone footer | [light](footer-mobile-light.png) · [dark](footer-mobile-dark.png) | 390 × 844 |
 
-Retained live T3 PNGs can shift orange into pink; the discrepancy was measured in exported pixels, not just the viewer. Current source renders show the source palette without recoloring. Contrast checks below use computed CSS rather than exported-image sampling. Live screenshot and recording transport timed out across callers, then reported an unavailable automation host. Cached Chromium failed before CDP under the host allocator; the installed child-only standard-allocator wrapper was denied by the execution context. No browser was installed and no system security policy was changed.
+These twelve use the same exact-source renderer, native overlay-scrollbar environment and DPR 1 as the six affected views. CSS animations are finished through their native animation API before capture, showing their actual final state. The phone hero is scrolled with the stage top 80px below the viewport top to keep all cases visible beneath the 56px sticky header. Every capture reports the requested actual width, loaded fonts and visible images, expected light/dark media and no horizontal overflow. Built CSS bytes exactly match signed production source.
+
+Exported hero pixels match source colors without recoloring: at (120,590), inside the primary button, RGB 242/152/43 is source #F2982B; at (20,100), bark RGB 36/19/13 is source #24130D. These were sampled from the 1280×800 PNG using `ffmpeg -vf 'format=rgb24,crop=1:1:X:Y' -frames:v 1 -f rawvideo - | od -An -tu1`. Current key review views therefore need no pink/orange capture caveat. Contrast checks below remain computed-CSS measurements with their original scope.
+
+Exact capture-helper source is retained in [render-source.py.txt](render-source.py.txt). It reads the existing static build, embeds original resources, wraps it in a fixed-size iframe and logs readiness/position evidence. Invocation was `python3 render-exact.py WIDTH HEIGHT SECTION`, followed by T3 `html_preview` with the resulting exact-render.html path, matching width and light/dark appearance. PNG data was saved directly without processing. Sections are existing IDs, or hero/phones/footer for their existing class selectors.
+
+Supporting images not listed in either current table retain their actual live T3 captures packaged in c2a7b7c647de24fa50185f84b29fe141aaa6d931: desktop introduction, narrow header, open/closed menu, narrow dark community, dark hero/phones and Obtainium handoff. Their source appearance is unchanged, but their pixels are not relabelled as fresh. Those older exports can shift orange into pink, a discrepancy measured in PNG pixels. Live screenshot/recording transport later timed out across callers and reported an unavailable automation host. Cached Chromium failed before CDP under the host allocator; its installed child-only standard-allocator wrapper was denied by the execution context. No browser was installed and no system security policy changed.
 
 ## Product requirements to preserve
 

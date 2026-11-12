@@ -50,7 +50,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
     </a>
     <nav aria-label="Main">
       <a href="#features">Features</a>
-      <a href="#open">About Collie</a>
+      <a href="#about">About Collie</a>
       <a href="#upcoming">Upcoming features</a>
       <a class="nav-community" href="#community">Community</a>
       <a class="nav-get" href="#get">Get Collie</a>
@@ -81,9 +81,20 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
 </div>
 
 <main id="main">
-  <section class="intro shell" aria-label="What Collie is">
-    <p class="statement">Collie talks to the same people over the same end-to-end encrypted Signal network. What changes is how carefully your phone guards everything once it arrives.</p>
-    <p class="statement-sub">Collie is built on <a href="https://signal.org/">Signal</a> and <a href="https://molly.im/">Molly</a>. It keeps Molly's protections, follows newer Signal releases, and develops its own features.</p>
+  <section id="about" class="intro shell" aria-labelledby="about-title">
+    <h2 id="about-title">Talk to anyone on Signal</h2>
+    <p class="statement">Message and call your Signal contacts over the <strong>same end-to-end encrypted Signal network</strong>. Collie adds stronger protection for the messages stored on your phone.</p>
+    <p class="statement-sub">Built on <a href="https://signal.org/">Signal</a> and <a href="https://molly.im/">Molly</a>, Collie keeps Molly's privacy protections, follows newer Signal releases, and adds features of its own.</p>
+    <p class="statement-sub">Collie is <strong>free and open source</strong>. Its code is public, so people with the expertise to inspect it can see how it works.</p>
+    <details class="technical-details">
+      <summary>Source and security details</summary>
+      <ul class="ticks">
+        <li>One APK, with no proprietary libraries, licensed <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE">AGPL-3.0</a>.</li>
+        <li><a href="https://github.com/0cwa/collieim-android">Browse the source code</a> or read the <a href="https://github.com/0cwa/collie-release-engineering">release engineering and signing details</a>.</li>
+        <li>We contribute work back to Molly, for example <a href="https://github.com/mollyim/mollyim-android/pull/852">#852</a> and <a href="https://github.com/mollyim/mollyim-android/pull/853">#853</a>.</li>
+      </ul>
+      <p class="note">Collie's native libraries have not yet been independently reproduced.</p>
+    </details>
   </section>
 
   <section id="features" class="features shell" aria-labelledby="features-title">
@@ -123,48 +134,6 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
     <p class="also"><strong>Also included:</strong> blocking messages and calls from unknown contacts, disappearing call history, and scheduled local backups.</p>
   </section>
 
-  <section id="open" class="open" aria-labelledby="open-title">
-    <div class="shell open-inner">
-      <div class="open-copy">
-        <h2 id="open-title">Built on Signal and Molly</h2>
-        <p>Collie combines familiar Signal messaging with extra privacy protections from Molly and features developed for Collie. You stay connected to your Signal contacts, with more control over your messages on your phone.</p>
-        <p>Collie is free and open source. Its code is public, so people with the expertise to inspect it can see how it works.</p>
-        <details class="technical-details">
-          <summary>Source and security details</summary>
-          <ul class="ticks">
-            <li>One APK, with no proprietary libraries, licensed <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE">AGPL-3.0</a>.</li>
-            <li><a href="https://github.com/0cwa/collieim-android">Browse the source code</a> or read the <a href="https://github.com/0cwa/collie-release-engineering">release engineering and signing details</a>.</li>
-            <li>We contribute work back to Molly, for example <a href="https://github.com/mollyim/mollyim-android/pull/852">#852</a> and <a href="https://github.com/mollyim/mollyim-android/pull/853">#853</a>.</li>
-          </ul>
-          <p class="note">Collie's native libraries have not yet been independently reproduced.</p>
-        </details>
-      </div>
-      <div class="stack" role="img" aria-label="Collie brings together Signal messaging, Molly privacy protections and features developed for Collie">
-        <div class="layer l-collie"><span class="name">Collie</span><span class="what">more choice and control over your privacy</span></div>
-        <div class="layer l-molly"><span class="name">Molly</span><span class="what">extra protection for messages on your phone</span></div>
-        <div class="layer l-signal"><span class="name">Signal</span><span class="what">message and call your Signal contacts</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="signal shell" aria-labelledby="signal-title">
-    <h2 id="signal-title">Talk to anyone on Signal</h2>
-    <div class="cols">
-      <div>
-        <h3>Same network</h3>
-        <p>Collie connects to Signal's servers, so your Signal contacts message and call you as usual.</p>
-      </div>
-      <div>
-        <h3>Side by side</h3>
-        <p>Collie has its own package, <code>im.collie.app</code>, so it installs next to Signal or Molly.</p>
-      </div>
-      <div>
-        <h3>One account, two apps</h3>
-        <p>To use one account in both, link Collie as a secondary device. Registering the same number in a second app disconnects the first.</p>
-      </div>
-    </div>
-    <p class="fine">Collie is independent of Signal and Molly. Signal's <a href="https://signal.org/legal/">Terms and Privacy Policy</a> apply when you use its service.</p>
-  </section>
 
   <section id="upcoming" class="upcoming shell" aria-labelledby="upcoming-title">
     <h2 id="upcoming-title">Upcoming features</h2>
@@ -255,6 +224,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
       <li><a href="assets/fonts/sora-OFL.txt">Sora licence</a></li>
     </ul>
   </div>
+  <div class="shell"><p class="foot-legal">Collie is independent of Signal and Molly. Signal's <a href="https://signal.org/legal/">Terms and Privacy Policy</a> apply when you use its service.</p></div>
 </footer>
 </body>
 </html>

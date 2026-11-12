@@ -17,6 +17,7 @@ import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
 import org.signal.core.util.concurrent.SignalExecutors
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.R
 import org.signal.core.util.ThreadUtil
 import java.io.IOException
@@ -183,19 +184,31 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   /** Clears unreadable local control state only after the user confirms server-side removal. */
   fun recoverCorruptControlState() {
-    ControlReset.recoverCorrupt(application)
-    refresh()
+    runPersistedControlAction { ControlReset.recoverCorrupt(application) }
   }
 
   fun forgetExport(requestId: String) {
-    EnrollmentExporter.forgetIntent(requestId)
-    refresh()
+    runPersistedControlAction { EnrollmentExporter.forgetIntent(requestId) }
   }
 
   fun forgetLegacyExport() {
-    im.molly.unifiedpush.control.EndpointUpdates.forgetLegacyPending(
-      im.molly.unifiedpush.control.UnifiedPushControlStore(SignalStore.unifiedpush)
-    )
+    runPersistedControlAction {
+      im.molly.unifiedpush.control.EndpointUpdates.forgetLegacyPending(
+        im.molly.unifiedpush.control.UnifiedPushControlStore(SignalStore.unifiedpush)
+      )
+    }
+  }
+
+  private inline fun runPersistedControlAction(action: () -> Unit) {
+    val persistenceFailed = try {
+      action()
+      false
+    } catch (_: KeyValuePersistenceException) {
+      true
+    }
+    if (persistenceFailed) {
+      Toast.makeText(application, R.string.UnifiedPushSettingsFragment__export_enrollment_failed, Toast.LENGTH_LONG).show()
+    }
     refresh()
   }
 

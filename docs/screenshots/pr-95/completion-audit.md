@@ -14,7 +14,7 @@ This is a factual requirement audit, not a design rating. Source and current ima
 | Actual hero/current pixels | Encryption stays in front, lock left, proxy right. Browser loads the new WebP hash. Current native hashes match signed 555fff83a6b7 and local-main signed bf7e38610090. |
 | Brand/live workflow | Solid hero; no CSS radial gradients. Fonts/palette/order unchanged. Existing localhost:8879 server retained. Impeccable 4.1.1 was present and used; no install/download. |
 | Narrow navigation | 56px persistent header, native button/ARIA state, existing section links and Escape/outside/link closing. Prior successful keyboard/anchor evidence is distinguished from later degraded input transport in README. |
-| Validation | 14 website tests passed; no overflow at actual 320/390/768/1280. Current intro/features, hero, roadmap, community and downloads/footer use exact built-source browser renders with verified fonts/images/media/viewport. Exported button/bark RGB matches source. Supporting older live captures retain original provenance. Selected contrast scope only; no whole-site AA assertion. |
+| Validation | 14 website tests passed; no overflow at actual 320/390/768/1280. Current intro/features, hero, roadmap, community and downloads/footer use exact built-source browser renders with verified fonts/images/media/viewport; latest affected groups/page tops are fresh, unchanged components retain explicit 2917 provenance. Exported button/bark RGB matches source. Supporting older live captures retain original provenance. Selected contrast scope only; no whole-site AA assertion. |
 | Local main |Only the two immutable image blobs were committed as bf7e386100905d5c5c03bb2f22cff480c647ebe4. Main was not pushed; unrelated .local/ and tools/ were preserved. |
 | Cleanup |Dedicated emulator-5562/AVD, temporary app tests and 47 generated build/cache directories removed. Emulator-5554 was untouched. Shared SDK/JDK/dependency caches and requested preview server retained. |
 
@@ -22,6 +22,9 @@ This is a factual requirement audit, not a design rating. Source and current ima
 
 | Finding | Disposition/confidence | Scoped result |
 | --- | --- | --- |
+| Desktop lead body cap | Valid, high | Above 860px body 460 to 640.66px; card remains 408px; text-to-card-edge 51.66px. |
+| Community primary hierarchy | Valid, high | Titles 22px vs help 16.8px, icons 40px; lighter Help, unchanged copy/links. |
+| Phone curve shadow spill | Valid, high | Full-width 40px bands are uniformly 249/251/244 at 390/320; desktop hero unchanged. |
 | Phone secondary cards are too tall | Valid, high | Below600 only: five visible list items with inline40px icons and aligned body text. Live390 region978 to614.73px; encryption lead unchanged. Wider feature PNGs are byte-identical to baseline. |
 | Phone introduction competes with features | Valid, high | Heading24px against32px features (75%); disclosure remains visible. |
 | Phone feature facts repeat the paragraph | Valid, high | Hidden with their divider only at widths up to 600px; desktop remains. |

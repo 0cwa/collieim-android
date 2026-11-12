@@ -17,6 +17,7 @@ import re
 import shutil
 import sys
 import urllib.request
+from urllib.parse import quote
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -108,7 +109,10 @@ def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None) -> 
         "RELEASE_TAG": tag,
         "APK_URL": f"https://github.com/{repo}/releases/latest/download/{APK_NAME}",
         "UPCOMING_FEATURES": upcoming,
-
+        "OBTAINIUM_URL": "obtainium://app/" + quote(
+            json.dumps(json.loads(Path(__file__).with_name("obtainium.json").read_text(encoding="utf-8")), separators=(",", ":")),
+            safe="",
+        ),
     }
     for page in out.rglob("*.html"):
         rendered = page.read_text(encoding="utf-8")

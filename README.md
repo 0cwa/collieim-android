@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22im.collie.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2F0cwa%2Fcollieim-android%22%2C%22author%22%3A%220cwa%22%2C%22name%22%3A%22Collie%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Afalse%2C%5C%22apkFilterRegEx%5C%22%3A%5C%22%5Ecollie%5C%5C%5C%5C.apk%24%5C%22%7D%22%7D"><img src="docs/assets/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a> <a href="https://repo.collie.im/" title="Our custom F-Droid repository"><img src="docs/assets/badge_fdroid.svg" alt="Our F-Droid repository" height="80"></a> <a href="https://liberapay.com/Collie/">
+  <a href="https://collie.im/obtainium/"><img src="docs/assets/badge_obtainium.png" alt="Get it on Obtainium" height="80"></a> <a href="https://repo.collie.im/" title="Our custom F-Droid repository"><img src="docs/assets/badge_fdroid.svg" alt="Our F-Droid repository" height="80"></a> <a href="https://liberapay.com/Collie/">
   <img src="https://raw.githubusercontent.com/aha999/DonateButtons/master/LiberaPay.png" alt="Donate via Liberapay" height="80">
 </a>
 </p>

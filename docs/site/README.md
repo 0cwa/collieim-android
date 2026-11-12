@@ -74,3 +74,12 @@ source discussions and makes clear that planned features are not yet available.
 Run `python3 -m unittest discover -s tooling/site -p 'test_*.py' -v` to check
 category filtering, priority ordering, title escaping, API pagination/failures,
 output-directory safety and the built page.
+
+## Obtainium links
+
+Use `https://collie.im/obtainium/` for the website button and README badge.
+The Collie-hosted handoff page opens the import configuration from
+`tooling/site/obtainium.json`. Its APK update source stays on GitHub; the manual
+installation link points to `https://collie.im/#get`. This avoids depending on
+the external redirect page's fallback text and its assumption that the update
+source is the app's home page.

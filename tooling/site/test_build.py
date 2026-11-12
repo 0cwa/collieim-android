@@ -74,5 +74,30 @@ class RoadmapTest(unittest.TestCase):
             self.assertIn('Linked phones', page)
 
 
+class ObtainiumTest(unittest.TestCase):
+    def test_filter_selects_the_canonical_apk(self):
+        import re
+        config = json.loads(Path(build.__file__).with_name('obtainium.json').read_text())
+        settings = json.loads(config['additionalSettings'])
+        self.assertRegex('collie.apk', settings['apkFilterRegEx'])
+        self.assertIsNone(re.fullmatch(settings['apkFilterRegEx'], 'collie-fcm.apk'))
+        self.assertFalse(settings['includePrereleases'])
+
+    def test_handoff_keeps_github_updates_and_collie_homepage_separate(self):
+        import re
+        from urllib.parse import unquote
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory) / 'out'
+            build.build(out, 'v1.2', '0cwa/collieim-android', [])
+            page = (out / 'obtainium/index.html').read_text()
+            uri = re.search(r'href="(obtainium://app/[^"]+)"', page).group(1)
+            config = json.loads(unquote(uri.removeprefix('obtainium://app/')))
+            self.assertEqual('im.collie.app', config['id'])
+            self.assertEqual('https://github.com/0cwa/collieim-android', config['url'])
+            self.assertIn('href="https://collie.im/#get"', page)
+            self.assertNotIn('GetCollie', page)
+            self.assertNotIn('{{', page)
+
+
 if __name__ == '__main__':
     unittest.main()

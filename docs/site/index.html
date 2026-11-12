@@ -22,7 +22,7 @@
 <!--
 THESIS: Signal's network, with a phone that keeps its mouth shut. Refuses the stock hero-plus-icon-grid: the hero shows the app's own lock, encryption and Tor screens, and the story connects familiar messaging with privacy on the phone.
 OWN-WORLD: Bark Black and Redwood fields with Golden orange actions; lichen text on bark; Lichen Mist cards, Soft Lichen for the one featured card and the download block; Forest band for the build story. The logo's dashed speech ring recurs as the signature line. Sora 200-300 headings, Manrope 300-400 body.
-STORY: A Signal user learns Collie talks to the same contacts, sees what it adds on the phone, trusts it because every change is a readable patch, and installs it.
+STORY: A Signal user learns Collie talks to the same contacts, sees what it adds on the phone, understands its Signal and Molly foundations, and installs it.
 FIRST VIEWPORT: Dark hero. Left: headline, one paragraph, Get Collie (golden) and View source. Right: three phones fanned inside a dashed ring.
 FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no roll.
 -->
@@ -38,6 +38,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
   <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13.5 6.5L19 12l-5.5 5.5"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M6.5 10.5L12 16l5.5-5.5M5 20h14"/></symbol>
 </svg>
 <a class="skip" href="#main">Skip to content</a>
@@ -82,15 +83,15 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
 
 <main id="main">
   <section id="about" class="intro shell" aria-labelledby="about-title">
-    <div class="intro-copy">
-      <h2 id="about-title">Talk to anyone on Signal</h2>
+    <h2 id="about-title">Talk to anyone on Signal</h2>
+    <div class="intro-body">
       <p class="statement">Message and call <strong>your Signal contacts</strong> over the same end-to-end encrypted network, with more protection for the messages on your phone.</p>
-    </div>
-    <aside class="intro-source" aria-labelledby="source-title">
-      <h3 id="source-title">Built on <a href="https://signal.org/">Signal</a> and <a href="https://molly.im/">Molly</a></h3>
-      <p>Collie keeps Molly's privacy protections, follows newer Signal releases, and adds features of its own.</p>
+      <div class="intro-source">
+        <h3>Built on <a href="https://signal.org/">Signal</a> and <a href="https://molly.im/">Molly</a></h3>
+        <p>Collie keeps Molly's privacy protections, follows newer Signal releases, and adds features of its own.</p>
+      </div>
     <details class="technical-details">
-      <summary><span><strong>Free and open source</strong><span class="source-summary-help">Source and security details</span></span></summary>
+      <summary>Source and security details<svg class="ico" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
       <p class="source-explanation">Collie's code is public, so people with the expertise to inspect it can see how it works.</p>
       <ul class="ticks">
         <li>One APK, with no proprietary libraries, licensed <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE">AGPL-3.0</a>.</li>
@@ -99,7 +100,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
       </ul>
       <p class="note">Collie's native libraries have not yet been independently reproduced.</p>
     </details>
-    </aside>
+    </div>
   </section>
 
   <section id="features" class="features shell" aria-labelledby="features-title">

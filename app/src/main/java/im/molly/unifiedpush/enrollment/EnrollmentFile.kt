@@ -6,15 +6,16 @@ import java.util.Base64
 /**
  * Builds the protected enrollment file that CollieSocket's `enrollment import` reads.
  *
- * The format is defined by `contracts/encrypted-push/v1` (`enrollment.schema.json`, `protocol.md`) in
- * https://github.com/0cwa/colliesocket, pinned at [CONTRACT_COMMIT].
+ * The format is defined by `contracts/encrypted-push/v2` (`enrollment.schema.json`, `README.md`) in
+ * https://github.com/0cwa/colliesocket, pinned at [CONTRACT_COMMIT] (an open pull request at the time of writing).
+ * Version 2 adds the control key that lets the phone change its own push endpoint over Signal.
  *
  * The file holds the linked-device password, so nothing in here logs or echoes a value: failures carry
  * only a fixed [Invalid.code].
  */
 object EnrollmentFile {
 
-  const val CONTRACT_COMMIT = "5a2f0cc2590efac50aa4238aeeb19de667e6d4eb"
+  const val CONTRACT_COMMIT = "371a744b2b15ead17cf50000e59cc7d347574b7c"
 
   class Invalid(val code: String) : Exception(code)
 
@@ -28,6 +29,8 @@ object EnrollmentFile {
     val auth: String,
     val instance: String,
     val epoch: Long,
+    /** Canonical unpadded base64url of 32 random bytes, see [newControlKey]. */
+    val controlKey: String,
   ) {
     override fun toString() = "EnrollmentFile.Input"
   }
@@ -38,6 +41,10 @@ object EnrollmentFile {
   private val INSTANCE = Regex("[A-Za-z0-9._:-]{1,128}")
   private val ENDPOINT = Regex("(?i)(https?)://([^/?#]*)(.*)")
   private const val MAX_EPOCH = 9007199254740991L
+
+  /** A fresh 32-byte control key as canonical unpadded base64url. Every export and every new enrollment gets its own. */
+  fun newControlKey(random: java.security.SecureRandom = java.security.SecureRandom()): String =
+    Base64.getUrlEncoder().withoutPadding().encodeToString(ByteArray(32).also(random::nextBytes))
 
   /** The connector hands keys over as base64url; padding or the standard alphabet are normalized. */
   fun canonicalKey(value: String, size: Int): String {
@@ -56,7 +63,7 @@ object EnrollmentFile {
   private val P = BigInteger("ffffffff00000001000000000000000000000000ffffffffffffffffffffffff", 16)
   private val B = BigInteger("5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b", 16)
 
-  private fun requireOnCurve(point: ByteArray) {
+  internal fun requireOnCurve(point: ByteArray) {
     if (point[0] != 4.toByte()) throw Invalid("invalid_key")
     val x = BigInteger(1, point.copyOfRange(1, 33))
     val y = BigInteger(1, point.copyOfRange(33, 65))
@@ -66,7 +73,7 @@ object EnrollmentFile {
     if (left != right) throw Invalid("invalid_key")
   }
 
-  private fun requireEndpoint(endpoint: String) {
+  internal fun requireEndpoint(endpoint: String) {
     if (endpoint.length !in 1..2048 || endpoint.any { it !in '!'..'~' } || endpoint.contains('\\') || endpoint.contains('#')) {
       throw Invalid("invalid_endpoint")
     }
@@ -83,7 +90,7 @@ object EnrollmentFile {
     }
   }
 
-  /** Validates [input] against the v1 contract and returns the file contents. */
+  /** Validates [input] against the v2 contract and returns the file contents. */
   fun render(input: Input): String {
     if (!UUID_V4.matches(input.requestId) || !UUID_ANY.matches(input.accountId)) throw Invalid("invalid_enrollment")
     if (input.deviceId < 2) throw Invalid("invalid_enrollment")
@@ -94,9 +101,10 @@ object EnrollmentFile {
     val p256dh = canonicalKey(input.p256dh, 65)
     requireOnCurve(Base64.getUrlDecoder().decode(p256dh))
     val auth = canonicalKey(input.auth, 16)
+    val controlKey = canonicalKey(input.controlKey, 32)
 
     return buildString {
-      append("{\"enrollment_version\":1")
+      append("{\"enrollment_version\":2")
       append(",\"request_id\":").append(json(input.requestId))
       append(",\"account_id\":").append(json(input.accountId))
       append(",\"device_id\":").append(input.deviceId)
@@ -107,13 +115,14 @@ object EnrollmentFile {
       append(",\"instance\":").append(json(input.instance))
       append(",\"subscription_epoch\":").append(input.epoch)
       append(",\"encryption_required\":true")
-      append(",\"supported_event_versions\":[1]")
-      append(",\"capabilities\":[\"wake\",\"test\",\"status\"]}}")
+      append(",\"supported_event_versions\":[1,2]")
+      append(",\"capabilities\":[\"wake\",\"test\",\"status\"]}")
+      append(",\"control_key\":").append(json(controlKey)).append("}")
     }
   }
 
   /** Every value is validated printable ASCII by now, so only the two JSON-significant characters need escaping. */
-  private fun json(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+  internal fun json(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
   /**
    * CollieSocket accepts epoch 1 for an account it has no row for, and otherwise exactly its stored epoch + 1.

@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.keyvalue
 
+import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.logging.Log
@@ -30,6 +31,8 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_PENDING_EPOCH = "up.enrollment.pendingEpoch"
     private const val UNIFIEDPUSH_REPLAY_STATE = "up.enrollment.replay"
     private const val UNIFIEDPUSH_STATUS_CODE = "up.enrollment.statusCode"
+    private const val UNIFIEDPUSH_CONTROL_STATE = "up.control.state"
+    private val controlLock = Any()
     private const val UNIFIEDPUSH_REGISTRATION_FAILED = "up.registrationFailed"
     private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
@@ -76,28 +79,49 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   /**
    * Epoch of the encrypted enrollment the server has proven it imported (0: none). While it is set the receiver
-   * accepts no plaintext wake. It is set only by [commitReceived], never by an export.
+   * accepts no plaintext wake. It is set only when an event proves it, never by an export.
    */
-  var enrollmentEpoch: Long by longValue(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0)
+  var enrollmentEpoch: Long
+    get() = controlState.activeEpoch
+    set(value) { mutateControl { it.copy(activeEpoch = value) } }
 
   /** Subscription epoch written into the last enrollment export that no event has confirmed yet (0: none). */
-  var pendingEnrollmentEpoch: Long by longValue(UNIFIEDPUSH_PENDING_EPOCH, 0)
+  var pendingEnrollmentEpoch: Long
+    get() = controlState.pendingEpoch
+    set(value) { mutateControl { it.copy(pendingEpoch = value) } }
 
   /** Encrypted push replay state (clock high-water mark and live event ids), see [im.molly.unifiedpush.receiver.EncryptedPush]. */
   var replayState: String? by stringValue(UNIFIEDPUSH_REPLAY_STATE, null)
 
-  /** Writes the replay state durably before returning, so it is on disk before the event's effect starts. */
-  fun commitReplayState(value: String) {
-    store.beginWrite().putString(UNIFIEDPUSH_REPLAY_STATE, value).commit()
+  /**
+   * The control state: keys, epochs, the subscription the server holds and the unconfirmed endpoint update, as one
+   * record. Before it was first written it is read from the two epoch keys older versions used.
+   */
+  val controlState: ControlState
+    get() = ControlState.parse(getString(UNIFIEDPUSH_CONTROL_STATE, null))
+      ?: ControlState(activeEpoch = getLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0), pendingEpoch = getLong(UNIFIEDPUSH_PENDING_EPOCH, 0))
+
+  val controlKey: String? get() = controlState.key
+
+  /**
+   * The only writer of the control state. One lock, the state re-read inside it, one durable write that also carries
+   * [replay], the encrypted-push replay state, when given. Returns the state that was written.
+   */
+  fun mutateControl(replay: String? = null, block: (ControlState) -> ControlState): ControlState {
+    synchronized(controlLock) {
+      val old = controlState
+      val next = block(old)
+      if (next == old && replay == null) return old
+      val write = store.beginWrite().putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
+      if (replay != null) write.putString(UNIFIEDPUSH_REPLAY_STATE, replay)
+      write.commit()
+      return next
+    }
   }
 
-  /** Like [commitReplayState], and in the same write makes the pending epoch the active one. */
-  fun commitReceived(value: String, promoteEpoch: Long) {
-    store.beginWrite()
-      .putString(UNIFIEDPUSH_REPLAY_STATE, value)
-      .putLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, promoteEpoch)
-      .putLong(UNIFIEDPUSH_PENDING_EPOCH, 0)
-      .commit()
+  /** Forgets every control key, epoch and update: a different server, or a new enrollment lifecycle. */
+  fun clearControl() {
+    mutateControl { ControlState() }
   }
 
   /** Last generic status code the server reported in an accepted encrypted push status event. */

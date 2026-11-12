@@ -153,6 +153,7 @@
     <string name="UnifiedPushSettingsFragment__export_enrollment">Export enrollment file</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_summary">Writes a file for CollieSocket\'s protected import. Copy it off the device with adb pull.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_done">Exported to %1$s. It is deleted when the app next starts.</string>
+    <string name="UnifiedPushSettingsFragment__export_enrollment_done_collides">Exported to %1$s at epoch %2$d. Warning: this phone already used epoch %3$d for an endpoint update that CollieSocket may not have received. If it arrived first, this import is refused as out of sequence; check `enrollment status` and export again. The file is deleted when the app next starts.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_not_ready">Not ready: a linked device and a distributor endpoint with keys are needed.</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_failed">Export failed</string>
     <string name="UnifiedPushSettingsFragment__export_enrollment_export">Export</string>

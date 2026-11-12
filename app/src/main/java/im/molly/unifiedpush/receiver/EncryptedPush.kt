@@ -8,7 +8,7 @@ import java.nio.ByteBuffer
 import java.nio.charset.CodingErrorAction
 
 /**
- * Receiver side of `contracts/encrypted-push/v1` in https://github.com/0cwa/colliesocket, pinned at
+ * Receiver side of `contracts/encrypted-push/v1` and `v2` (event version 2 adds `subscription_updated`) in https://github.com/0cwa/colliesocket, pinned at
  * [CONTRACT_COMMIT] (`event.schema.json`, `protocol.md`). Pure functions: the caller supplies the clock, the lock
  * state and the stored replay state, and persists the state this returns. Nothing here logs or echoes input.
  */
@@ -28,6 +28,7 @@ object EncryptedPush {
   enum class Kind { WAKE, TEST, STATUS }
 
   data class Event(
+    val version: Int,
     val eventId: String,
     val instance: String,
     val epoch: Long,
@@ -75,21 +76,24 @@ object EncryptedPush {
   private val INSTANCE = Regex("[A-Za-z0-9._:-]{1,128}")
   private val FIELDS = setOf("version", "event_id", "instance", "subscription_epoch", "kind", "issued_at", "expires_at", "code")
   private val REQUIRED = FIELDS - "code"
+  const val CODE_SUBSCRIPTION_UPDATED = "subscription_updated"
   private val CODES = setOf("connection_conflict", "connection_unavailable")
+  private val CODES_V2 = CODES + CODE_SUBSCRIPTION_UPDATED
 
   /**
-   * Parses and validates one event against `event.schema.json` plus the time rules of `protocol.md`.
+   * Parses and validates one event against `event.schema.json` plus the time rules of `protocol.md`. Only the
+   * event versions in [versions] are accepted.
    * Returns null for anything else: bad UTF-8, a BOM, duplicate or unknown fields, nulls, floats, trailing data,
    * wrong types or values, a lifetime outside 1..300 seconds, an issue time more than 60 seconds ahead of [now],
    * or an event already expired at [now]. Trailing ASCII spaces are the wire profile's padding.
    */
-  fun parse(bytes: ByteArray, now: Long): Event? = try {
-    parseStrict(bytes, now)
+  fun parse(bytes: ByteArray, now: Long, versions: Set<Int> = setOf(1)): Event? = try {
+    parseStrict(bytes, now, versions)
   } catch (e: Exception) {
     null
   }
 
-  private fun parseStrict(bytes: ByteArray, now: Long): Event? {
+  private fun parseStrict(bytes: ByteArray, now: Long, versions: Set<Int>): Event? {
     if (bytes.size > MAX_INPUT_BYTES) return null
     var end = bytes.size
     while (end > 0 && bytes[end - 1] == ' '.code.toByte()) end--
@@ -112,7 +116,7 @@ object EncryptedPush {
       root[name].takeIf { it.isIntegralNumber && it.canConvertToLong() }?.asLong()?.takeIf { it in min..MAX_JSON_INT }
     fun string(name: String): String? = root[name].takeIf { it.isTextual }?.asText()
 
-    if (integer("version", 1) != 1L) return null
+    val version = integer("version", 1)?.takeIf { v -> versions.any { it.toLong() == v } }?.toInt() ?: return null
     val eventId = string("event_id")?.takeIf { EVENT_ID.matches(it) } ?: return null
     val instance = string("instance")?.takeIf { INSTANCE.matches(it) } ?: return null
     val epoch = integer("subscription_epoch", 1) ?: return null
@@ -124,12 +128,12 @@ object EncryptedPush {
     }
     val issuedAt = integer("issued_at", 0) ?: return null
     val expiresAt = integer("expires_at", 1) ?: return null
-    val code = if (root.has("code")) string("code")?.takeIf { it in CODES } ?: return null else null
+    val code = if (root.has("code")) string("code")?.takeIf { it in (if (version >= 2) CODES_V2 else CODES) } ?: return null else null
     if ((kind == Kind.STATUS) != (code != null)) return null
 
     if (expiresAt - issuedAt !in 1..MAX_LIFETIME_SECONDS) return null
     if (issuedAt > now + MAX_FUTURE_SECONDS || expiresAt <= now) return null
-    return Event(eventId, instance, epoch, kind, code, issuedAt, expiresAt)
+    return Event(version, eventId, instance, epoch, kind, code, issuedAt, expiresAt)
   }
 
   /**
@@ -157,13 +161,16 @@ object EncryptedPush {
     activeInstance: String,
     acceptedEpochs: Set<Long>,
     state: ReplayState,
+    versionForEpoch: (Long) -> Int = { 1 },
   ): Outcome {
     fun drop(decision: Decision, event: Event? = null) = Outcome(decision, event, state)
 
     if (locked()) return drop(Decision.DROP_LOCKED)
     if (!decrypted) return drop(Decision.DROP_NOT_DECRYPTED)
-    val event = parse(content, now) ?: return drop(Decision.DROP_INVALID)
+    val event = parse(content, now, setOf(1, 2)) ?: return drop(Decision.DROP_INVALID)
     if (event.instance != activeInstance || event.epoch !in acceptedEpochs) return drop(Decision.DROP_ENROLLMENT_MISMATCH)
+    // A keyed (version 2) enrollment sends every event as version 2, and an unkeyed one only version 1.
+    if (event.version != versionForEpoch(event.epoch)) return drop(Decision.DROP_INVALID)
     if (now < state.clockHighWater) return drop(Decision.DROP_CLOCK_ROLLBACK)
     val retained = state.seen.filter { it.expiresAt + REPLAY_GRACE_SECONDS > now }
     if (retained.any { it.eventId == event.eventId }) return drop(Decision.DROP_DUPLICATE)

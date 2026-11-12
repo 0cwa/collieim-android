@@ -7,13 +7,13 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.fail
 import org.junit.Test
 
-/** Plain JVM tests (no libsignal): the output must satisfy the pinned CollieSocket v1 enrollment contract. */
+/** Plain JVM tests (no libsignal): the output must satisfy the pinned CollieSocket v2 enrollment contract. */
 class EnrollmentFileTest {
 
   private val mapper = ObjectMapper()
-  private fun resource(name: String) = javaClass.getResourceAsStream("/colliesocket-contract/$name")!!.readBytes().toString(Charsets.UTF_8)
+  private fun resource(name: String) = javaClass.getResourceAsStream("/colliesocket-contract-v2/$name")!!.readBytes().toString(Charsets.UTF_8)
   private val schema = mapper.readTree(resource("enrollment.schema.json"))
-  private val fixture = mapper.readTree(resource("enrollment-valid.json"))
+  private val fixture = mapper.readTree(resource("enrollment-keyed.json"))
 
   private val sub = fixture["subscription"]
   private val valid = EnrollmentFile.Input(
@@ -26,6 +26,7 @@ class EnrollmentFileTest {
     auth = sub["auth"].asText(),
     instance = sub["instance"].asText(),
     epoch = sub["subscription_epoch"].asLong(),
+    controlKey = fixture["control_key"].asText(),
   )
 
   /** Just the keywords enrollment.schema.json uses. Returns the first violation or null. */
@@ -78,6 +79,29 @@ class EnrollmentFileTest {
     val out = mapper.readTree(EnrollmentFile.render(valid))
     assertEquals(fixture, out)
     assertEquals(null, violation(schema, out))
+  }
+
+  @Test
+  fun `the control key is carried and negotiates event versions 1 and 2`() {
+    val out = mapper.readTree(EnrollmentFile.render(valid))
+    assertEquals(2, out["enrollment_version"].asInt())
+    assertEquals(valid.controlKey, out["control_key"].asText())
+    assertEquals(mapper.readTree("[1,2]"), out["subscription"]["supported_event_versions"])
+    assertEquals(43, out["control_key"].asText().length)
+  }
+
+  @Test
+  fun `a malformed control key refuses to export`() {
+    refused(valid.copy(controlKey = ""), "invalid_key")
+    refused(valid.copy(controlKey = valid.controlKey.dropLast(1)), "invalid_key")
+    refused(valid.copy(controlKey = "!".repeat(43)), "invalid_key")
+  }
+
+  @Test
+  fun `new control keys are 32 random bytes in canonical form and never repeat`() {
+    val keys = (1..50).map { EnrollmentFile.newControlKey() }
+    keys.forEach { assertEquals(it, EnrollmentFile.canonicalKey(it, 32)) }
+    assertEquals(50, keys.toSet().size)
   }
 
   @Test
@@ -173,5 +197,6 @@ class EnrollmentFileTest {
   fun `input never prints its secrets`() {
     assertFalse(valid.toString().contains(valid.password))
     assertFalse(valid.toString().contains(valid.auth))
+    assertFalse(valid.toString().contains(valid.controlKey))
   }
 }

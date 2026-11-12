@@ -185,6 +185,7 @@ public final class JobManagerFactories {
       put(EmojiSearchIndexDownloadJob.KEY,             new EmojiSearchIndexDownloadJob.Factory());
       put(FcmRefreshJob.KEY,                           new FcmRefreshJob.Factory());
       put(UnifiedPushRefreshJob.KEY,                   new UnifiedPushRefreshJob.Factory());  // MOLLY
+      put(UnifiedPushControlJob.KEY,                   new UnifiedPushControlJob.Factory());  // MOLLY
       put(FetchRemoteMegaphoneImageJob.KEY,            new FetchRemoteMegaphoneImageJob.Factory());
       put(FontDownloaderJob.KEY,                       new FontDownloaderJob.Factory());
       put(ForceUpdateGroupV2Job.KEY,                   new ForceUpdateGroupV2Job.Factory());

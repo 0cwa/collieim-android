@@ -3,6 +3,9 @@ package im.molly.unifiedpush.enrollment
 import android.content.Context
 import android.os.Build
 import im.molly.unifiedpush.UnifiedPushDistributor
+import im.molly.unifiedpush.control.EndpointUpdates
+import im.molly.unifiedpush.control.Target
+import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.receiver.EncryptedPush
 import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -22,14 +25,30 @@ object EnrollmentExporter {
   const val FILE_NAME = "colliesocket-enrollment.json"
   private const val TEMP_NAME = "$FILE_NAME.tmp"
 
+  /** The file, the epoch it carries, and the highest epoch this phone has put into an update (see [collides]). */
+  class Export(val file: File, val epoch: Long, val highestUsed: Long) {
+    /** True when an unconfirmed update may be waiting at the epoch this export claims. */
+    val collides get() = epoch <= highestUsed
+  }
+
   /**
-   * Writes the file and returns it. [serverEpoch] is the epoch CollieSocket reports for this account, or null if
-   * it is not enrolled; the file carries that + 1. Throws [EnrollmentFile.Invalid] (fixed code only) or IOException.
-   * Any earlier file is removed first, so a refused export never leaves an old password file behind.
+   * Writes the file and returns it. See [exportWithEpoch].
    */
   @JvmStatic
   @JvmOverloads
-  fun export(context: Context, serverEpoch: Long?, isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive): File {
+  fun export(context: Context, serverEpoch: Long?, isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive): File =
+    exportWithEpoch(context, serverEpoch, isDistributorActive).file
+
+  /**
+   * Writes the file. [serverEpoch] is the epoch CollieSocket reports for this account, or null if it is not enrolled;
+   * the file carries that + 1, which is the only epoch the server accepts, and a fresh control key. The epoch, key and subscription are recorded durably before the file is published,
+   * so a crash cannot leave a file the phone does not know about. Throws [EnrollmentFile.Invalid] (fixed code only)
+   * or IOException. Any earlier file is removed first, so a refused export never leaves an old password file behind.
+   */
+  @JvmStatic
+  @JvmOverloads
+  @Synchronized
+  fun exportWithEpoch(context: Context, serverEpoch: Long?, isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive): Export {
     val dir = context.getExternalFilesDir(null)
     val temp = dir?.let { File(it, TEMP_NAME) }
     val target = dir?.let { File(it, FILE_NAME) }
@@ -37,7 +56,6 @@ object EnrollmentExporter {
 
     if (Build.VERSION.SDK_INT < 30) throw EnrollmentFile.Invalid("unsupported_android")
     if (dir == null || temp == null || target == null) throw EnrollmentFile.Invalid("storage_unavailable")
-    val epoch = EnrollmentFile.nextEpoch(serverEpoch)
 
     val values = SignalStore.unifiedpush
     val device = values.device
@@ -49,37 +67,53 @@ object EnrollmentExporter {
       throw EnrollmentFile.Invalid("not_ready")
     }
 
-    val draft = EnrollmentFile.Input(
-      requestId = UUID.randomUUID().toString(),
-      accountId = aci.toString(),
-      deviceId = device.deviceId,
-      password = device.password,
-      endpoint = endpoint,
-      p256dh = p256dh,
-      auth = auth,
-      instance = values.endpointInstance ?: "default",
-      epoch = epoch,
-    )
-    val contents = EnrollmentFile.render(draft)
-
+    val store = UnifiedPushControlStore(values)
+    val before = store.read()
+    val epoch = EndpointUpdates.exportEpoch(serverEpoch)
+    // Every export gets its own key: the server refuses a repeated key on a state-changing import. It replaces the
+    // current key only once the server proves it imported this file, so updates keep working with the old key until.
+    // Exporting again at the epoch of an export nobody imported yet keeps that export's key, so the epoch the proving
+    // event carries still names exactly one key. The export is recorded before the file exists.
+    val exported = Target(endpoint, EnrollmentFile.canonicalKey(p256dh, 65), EnrollmentFile.canonicalKey(auth, 16))
+    val controlKey = EndpointUpdates.recordExport(store, epoch, EnrollmentFile.newControlKey(), exported)
+    val contents = try {
+      EnrollmentFile.render(
+        EnrollmentFile.Input(
+          requestId = UUID.randomUUID().toString(),
+          accountId = aci.toString(),
+          deviceId = device.deviceId,
+          password = device.password,
+          endpoint = endpoint,
+          p256dh = p256dh,
+          auth = auth,
+          instance = values.endpointInstance ?: "default",
+          epoch = epoch,
+          controlKey = controlKey,
+        )
+      )
+    } catch (e: Exception) {
+      EndpointUpdates.retireExport(store, epoch, before)
+      throw e
+    }
     try {
       temp.outputStream().use { it.write(contents.toByteArray(Charsets.UTF_8)) }
       Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)
+    } catch (e: Exception) {
+      EndpointUpdates.retireExport(store, epoch, before)
+      throw e
     } finally {
       temp.delete()
     }
 
-    // The server has not imported the file yet, so nothing switches: the receiver promotes this epoch to the
-    // active one when it receives a valid event at it.
-    values.pendingEnrollmentEpoch = epoch
     if (values.replayState == null) {
       values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
     }
-    return target
+    return Export(target, epoch, store.read().highestEpoch)
   }
 
   /** Deletes the export file and its temporary file now, on the calling thread. */
   @JvmStatic
+  @Synchronized
   fun removeFiles(context: Context) {
     val dir = context.getExternalFilesDir(null) ?: return
     File(dir, FILE_NAME).delete()
@@ -90,9 +124,11 @@ object EnrollmentExporter {
   @JvmStatic
   fun deleteStale(context: Context) {
     SignalExecutors.BOUNDED.execute {
-      val dir = context.getExternalFilesDir(null) ?: return@execute
-      File(dir, FILE_NAME).delete()
-      File(dir, TEMP_NAME).delete()
+      synchronized(EnrollmentExporter) {
+        val dir = context.getExternalFilesDir(null) ?: return@synchronized
+        File(dir, FILE_NAME).delete()
+        File(dir, TEMP_NAME).delete()
+      }
     }
   }
 }

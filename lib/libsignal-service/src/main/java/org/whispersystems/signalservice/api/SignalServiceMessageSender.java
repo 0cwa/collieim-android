@@ -28,6 +28,7 @@ import org.signal.libsignal.protocol.InvalidRegistrationIdException;
 import org.signal.libsignal.protocol.InvalidSessionException;
 import org.signal.libsignal.protocol.NoSessionException;
 import org.signal.libsignal.protocol.SessionBuilder;
+import org.signal.libsignal.protocol.SessionCipher;
 import org.signal.libsignal.protocol.SignalProtocolAddress;
 import org.signal.libsignal.protocol.groups.GroupSessionBuilder;
 import org.signal.libsignal.protocol.message.DecryptionErrorMessage;
@@ -48,6 +49,7 @@ import org.whispersystems.signalservice.api.crypto.EnvelopeContent;
 import org.whispersystems.signalservice.api.crypto.SignalGroupSessionBuilder;
 import org.whispersystems.signalservice.api.crypto.SignalServiceCipher;
 import org.whispersystems.signalservice.api.crypto.SignalSessionBuilder;
+import org.whispersystems.signalservice.api.crypto.SignalSessionCipher;
 import org.whispersystems.signalservice.api.crypto.UntrustedIdentityException;
 import org.whispersystems.signalservice.api.groupsv2.GroupSendEndorsements;
 import org.whispersystems.signalservice.api.keys.KeysApi;
@@ -55,6 +57,7 @@ import org.whispersystems.signalservice.api.keys.PreKeyRepository;
 import org.whispersystems.signalservice.api.message.MessageApi;
 import org.whispersystems.signalservice.api.message.MessageApiKt;
 import org.whispersystems.signalservice.api.messages.AttachmentUploader;
+import org.whispersystems.signalservice.api.messages.ControlMessageList;
 import org.whispersystems.signalservice.api.messages.SendMessageResult;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachment;
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentPointer;
@@ -2166,6 +2169,128 @@ public class SignalServiceMessageSender {
     }
 
     throw new IOException("Failed to resolve conflicts after " + RETRY_COUNT + " attempts!");
+  }
+
+  /**
+   * Sends an endpoint-update frame to this account's own CollieSocket linked device ({@code controlDeviceId}) as a
+   * dedicated non-urgent sync send. {@code frame} is the whole content CollieSocket receives; it is placed in that
+   * device's entry unchanged, and every other linked device gets an ordinary encrypted sync message. A 409 or 410
+   * rebuilds all entries and resends the identical frame; only CollieSocket's registration ID may change.
+   *
+   * A successful send is not a confirmation of the update. Throws {@link NoSessionException} / {@link IOException}
+   * when the CollieSocket device cannot be found, and the caller keeps the update pending.
+   */
+  public SendMessageResult sendControlMessage(int controlDeviceId, byte[] frame)
+      throws IOException, UntrustedIdentityException, NoSessionException
+  {
+    long                  startTime = System.currentTimeMillis();
+    long                  timestamp = startTime;
+    Content               content   = new Content.Builder().syncMessage(createSyncMessageBuilder().build()).build();
+    EnvelopeContent       envelope  = EnvelopeContent.encrypted(content, ContentHint.IMPLICIT, Optional.empty());
+    SignalProtocolAddress control   = new SignalProtocolAddress(localAddress.getIdentifier(), controlDeviceId);
+
+    if (controlDeviceId == localDeviceId || controlDeviceId < 2) {
+      throw new IOException("Not a linked CollieSocket device");
+    }
+
+    for (int i = 0; i < RETRY_COUNT; i++) {
+      try {
+        ensureSession(control);
+
+        int registrationId = new SignalSessionCipher(sessionLock, new SessionCipher(aciStore, localProtocolAddress, control)).getRemoteRegistrationId();
+
+        Set<Integer> others = getSubDeviceSessions(localAddress).stream()
+                                                                .filter(id -> aciStore.containsSession(new SignalProtocolAddress(localAddress.getIdentifier(), id)))
+                                                                .collect(Collectors.toSet());
+        others.add(SignalServiceAddress.DEFAULT_DEVICE_ID);
+        others.remove(localDeviceId);
+        others.remove(controlDeviceId);
+
+        OutgoingPushMessageList messages = ControlMessageList.build(localAddress.getIdentifier(),
+                                                                    timestamp,
+                                                                    controlDeviceId,
+                                                                    registrationId,
+                                                                    frame,
+                                                                    others,
+                                                                    id -> {
+                                                                      try {
+                                                                        return getEncryptedMessage(localAddress, SealedSenderAccess.NONE, id, envelope, false);
+                                                                      } catch (IOException | InvalidKeyException | UntrustedIdentityException | NoSessionException e) {
+                                                                        throw new ControlSendFailure(e);
+                                                                      }
+                                                                    });
+
+        SendMessageResponse response;
+        try {
+          response = NetworkResultUtil.toMessageSendLegacy(messages.getDestination(), messageApi.sendMessage(messages, null, false));
+        } catch (AuthorizationFailedException | UnregisteredUserException | MismatchedDevicesException | StaleDevicesException | ProofRequiredException | ServerRejectedException | RateLimitException e) {
+          throw e;
+        } catch (IOException e) {
+          if (!useRestFallback.getAsBoolean()) {
+            throw e;
+          }
+          Log.w(TAG, "[sendControlMessage] Pipe failed, falling back... (" + e.getClass().getSimpleName() + ")");
+          response = socket.sendMessage(messages, null, false);
+        }
+
+        return SendMessageResult.success(localAddress, messages.getDevices(), response.getSentUnidentified(), true, System.currentTimeMillis() - startTime, Optional.empty());
+      } catch (ControlSendFailure failure) {
+        Throwable cause = failure.getCause();
+        if (cause instanceof IOException)             throw (IOException) cause;
+        if (cause instanceof UntrustedIdentityException) throw (UntrustedIdentityException) cause;
+        if (cause instanceof NoSessionException)      throw (NoSessionException) cause;
+        throw new IOException(cause);
+      } catch (MismatchedDevicesException mde) {
+        Log.w(TAG, "[sendControlMessage] Handling mismatched devices.");
+        try {
+          handleMismatchedDevices(localAddress, mde.getMismatchedDevices());
+        } catch (InvalidPreKeyException e) {
+          throw new IOException(e);
+        }
+      } catch (StaleDevicesException ste) {
+        Log.w(TAG, "[sendControlMessage] Handling stale devices.");
+        handleStaleDevices(localAddress, ste.getStaleDevices());
+      }
+    }
+
+    throw new IOException("Failed to resolve conflicts after " + RETRY_COUNT + " attempts!");
+  }
+
+  private static final class ControlSendFailure extends RuntimeException {
+    ControlSendFailure(Throwable cause) {
+      super(cause);
+    }
+  }
+
+  /** Creates the session from the device's pre-key bundle when there is none. Nothing is encrypted to it. */
+  private void ensureSession(SignalProtocolAddress address) throws IOException, UntrustedIdentityException {
+    if (aciStore.containsSession(address)) {
+      return;
+    }
+
+    try {
+      List<PreKeyBundle> preKeys = getPreKeys(localAddress, null, address.getDeviceId(), false);
+      boolean            found   = false;
+
+      for (PreKeyBundle preKey : preKeys) {
+        if (preKey.getDeviceId() != address.getDeviceId()) {
+          continue;
+        }
+        found = true;
+        try {
+          SignalSessionBuilder sessionBuilder = new SignalSessionBuilder(sessionLock, new SessionBuilder(aciStore, address, localProtocolAddress));
+          sessionBuilder.process(preKey);
+        } catch (org.signal.libsignal.protocol.UntrustedIdentityException e) {
+          throw new UntrustedIdentityException("Untrusted identity key!", localAddress.getIdentifier(), preKey.getIdentityKey());
+        }
+      }
+
+      if (!found) {
+        throw new IOException("CollieSocket device has no pre-key bundle");
+      }
+    } catch (InvalidKeyException e) {
+      throw new IOException(e);
+    }
   }
 
   /**

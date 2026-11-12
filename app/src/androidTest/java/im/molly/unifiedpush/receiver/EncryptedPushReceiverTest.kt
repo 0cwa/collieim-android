@@ -216,7 +216,7 @@ class EncryptedPushReceiverTest {
   fun lockedStateDropsEncryptedPushesAndKeepsNewEndpoints() {
     registerConnector()
     export()
-    values.commitReceived(EncryptedPush.ReplayState(now() - 1, emptyList()).serialize(), 1)
+    values.mutateControl(EncryptedPush.ReplayState(now() - 1, emptyList()).serialize()) { it.copy(activeEpoch = 1, pendingEpoch = 0, pendingKey = null, pendingTarget = null) }
     LockedPushState.setEncryptedEnrollment(context, true)
     val secret = KeyCachingService.getMasterSecret()
     val replay = values.replayState

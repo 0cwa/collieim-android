@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.PowerManager
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.ServiceUtil
 import org.signal.core.util.Stopwatch
 import org.signal.core.util.logging.Log
@@ -20,6 +22,8 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+
+enum class UnifiedPushFetchResult { DRAINED, RETRYABLE_FAILURE, REVOKED }
 
 /**
  * Forces the websocket to stay open until all messages have been drained and processed or until a user-specified timeout has been hit.
@@ -73,6 +77,198 @@ object WebSocketDrainer {
     } finally {
       WakeLockUtil.release(wakeLock, WAKELOCK_TAG)
     }
+  }
+
+  /**
+   * Hands an authorized UnifiedPush fetch to the ordinary receive observer. This method never starts
+   * or keeps alive the websocket itself; only MessageRetrievalThread may consume the demand and
+   * register its private token. The lease ends at handoff, before ordinary message processing drains.
+   */
+  @JvmStatic
+  @WorkerThread
+  fun blockUntilUnifiedPushFetchDrainedAndProcessed(
+    authorization: UnifiedPushAccountTransition.FetchAuthorization,
+    requestedWebsocketDrainTimeoutMs: Long,
+  ): UnifiedPushFetchResult {
+    val lease = UnifiedPushAccountTransition.acquireFetchLease(authorization)
+      ?: return UnifiedPushFetchResult.REVOKED
+    val admission = UnifiedPushAccountTransition.registerFetchAdmission(lease, authorization)
+    if (admission == null) {
+      lease.close()
+      return UnifiedPushFetchResult.REVOKED
+    }
+
+    var wakeLock: PowerManager.WakeLock? = null
+    var queueListener: QueueFindingJobListener? = null
+    var decryptionListener: Runnable? = null
+    var decryptionDone: CountDownLatch? = null
+    var observer: IncomingMessageObserver? = null
+    val jobMarkerListeners = mutableListOf<JobListener>()
+    var result = UnifiedPushFetchResult.RETRYABLE_FAILURE
+
+    try {
+      val context = AppDependencies.application
+      val jobManager = AppDependencies.jobManager
+      val incomingMessageObserver = AppDependencies.incomingMessageObserver
+      observer = incomingMessageObserver
+      val queueFindingListener = QueueFindingJobListener()
+      queueListener = queueFindingListener
+      jobManager.addListener(
+        { job: Job -> job.parameters.queue?.startsWith(PushProcessMessageJob.QUEUE_PREFIX) ?: false },
+        queueFindingListener
+      )
+
+      val decryptionLatch = CountDownLatch(1)
+      decryptionDone = decryptionLatch
+      var decryptionsDrained = false
+      val listener = object : Runnable {
+        override fun run() {
+          decryptionsDrained = true
+          decryptionLatch.countDown()
+          incomingMessageObserver.removeDecryptionDrainedListener(this)
+        }
+      }
+      decryptionListener = listener
+      incomingMessageObserver.addDecryptionDrainedListener(listener)
+      admission.addTransitionCancellationWaiter(decryptionLatch)
+
+      val powerManager = ServiceUtil.getPowerManager(context)
+      val doze = PowerManagerCompat.isDeviceIdleMode(powerManager)
+      val network = NetworkUtil.isConnected(context)
+      if (doze || !network) {
+        Log.w(TAG, "UnifiedPush fetch may be constrained. Doze: $doze Network: $network.")
+      }
+      val timeoutMs = if (network) requestedWebsocketDrainTimeoutMs else NO_NETWORK_WEBSOCKET_TIMEOUT
+      val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs)
+      wakeLock = WakeLockUtil.acquire(context, PowerManager.PARTIAL_WAKE_LOCK, timeoutMs + QUEUE_TIMEOUT, WAKELOCK_TAG)
+
+      // Listeners are installed before waking the observer so a fast receive cannot be missed.
+      incomingMessageObserver.notifyUnifiedPushFetchStateChanged()
+      val (handoffState, wasInterrupted) = awaitFetchAdmission(admission, timeoutMs)
+      if (admission.transitionRevoked || handoffState == UnifiedPushLifecycle.FetchAdmissionState.REVOKED) {
+        result = UnifiedPushFetchResult.REVOKED
+      } else if (handoffState != UnifiedPushLifecycle.FetchAdmissionState.ADMITTED || wasInterrupted) {
+        result = UnifiedPushFetchResult.RETRYABLE_FAILURE
+      } else {
+        // The observer has registered its token outside the lifecycle monitor. A transition that
+        // starts now can proceed; this waiter no longer owns credentialed socket admission.
+        lease.close()
+
+        if (admission.transitionRevoked) {
+          result = UnifiedPushFetchResult.REVOKED
+        } else if (!awaitSignalOrTransition(admission, decryptionLatch, deadline)) {
+          result = if (admission.transitionRevoked) UnifiedPushFetchResult.REVOKED else UnifiedPushFetchResult.RETRYABLE_FAILURE
+        } else if (!decryptionsDrained) {
+          result = if (admission.transitionRevoked) UnifiedPushFetchResult.REVOKED else UnifiedPushFetchResult.RETRYABLE_FAILURE
+        } else {
+          val queues = queueFindingListener.getQueues()
+          Log.d(TAG, "UnifiedPush fetch discovered ${queues.size} processing queue(s): $queues")
+          var allQueuesDrained = true
+          for (queue in queues) {
+            if (admission.transitionRevoked) {
+              allQueuesDrained = false
+              break
+            }
+
+            val markerJob = MarkerJob(queue)
+            val markerDone = CountDownLatch(1)
+            val markerListener = object : JobListener {
+              override fun onStateChanged(job: Job, jobState: JobTracker.JobState) {
+                if (jobState.isComplete) markerDone.countDown()
+              }
+            }
+            jobMarkerListeners += markerListener
+            admission.addTransitionCancellationWaiter(markerDone)
+            jobManager.addListener(markerJob.id, markerListener)
+            try {
+              jobManager.add(markerJob)
+              if (!awaitSignalOrTransition(admission, markerDone, System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(QUEUE_TIMEOUT))) {
+                allQueuesDrained = false
+                break
+              }
+            } finally {
+              jobManager.removeListener(markerListener)
+              jobMarkerListeners.remove(markerListener)
+              admission.removeTransitionCancellationWaiter(markerDone)
+            }
+          }
+
+          result = when {
+            admission.transitionRevoked -> UnifiedPushFetchResult.REVOKED
+            allQueuesDrained -> UnifiedPushFetchResult.DRAINED
+            else -> UnifiedPushFetchResult.RETRYABLE_FAILURE
+          }
+        }
+      }
+    } catch (e: InterruptedException) {
+      Log.w(TAG, "Interrupted while waiting for UnifiedPush fetch handoff/drain.", e)
+      result = if (admission.transitionRevoked) UnifiedPushFetchResult.REVOKED else UnifiedPushFetchResult.RETRYABLE_FAILURE
+    } finally {
+      lease.close()
+      observer?.let { incoming -> decryptionListener?.let(incoming::removeDecryptionDrainedListener) }
+      jobMarkerListeners.forEach(AppDependencies.jobManager::removeListener)
+      queueListener?.let(AppDependencies.jobManager::removeListener)
+      decryptionDone?.let(admission::removeTransitionCancellationWaiter)
+      UnifiedPushAccountTransition.finishFetchAdmission(admission)
+      wakeLock?.let { WakeLockUtil.release(it, WAKELOCK_TAG) }
+    }
+
+    return result
+  }
+
+  private fun awaitFetchAdmission(
+    admission: UnifiedPushLifecycle.FetchAdmission,
+    timeoutMs: Long,
+  ): Pair<UnifiedPushLifecycle.FetchAdmissionState, Boolean> {
+    val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs)
+    var interrupted = false
+
+    while (true) {
+      val remainingMs = TimeUnit.NANOSECONDS.toMillis((deadline - System.nanoTime()).coerceAtLeast(0))
+      try {
+        if (!admission.awaitHandoff(remainingMs)) {
+          UnifiedPushLifecycle.timeoutFetchAdmission(admission)
+        }
+      } catch (e: InterruptedException) {
+        interrupted = true
+        UnifiedPushLifecycle.timeoutFetchAdmission(admission)
+      }
+
+      var state = admission.state
+      if (state == UnifiedPushLifecycle.FetchAdmissionState.CLAIMED) {
+        // Once the observer claims the request, keep its lease until token registration settles.
+        // Interruption cannot let account publication overtake that local socket-start call.
+        while (state == UnifiedPushLifecycle.FetchAdmissionState.CLAIMED) {
+          try {
+            admission.awaitHandoffCompletion()
+          } catch (e: InterruptedException) {
+            interrupted = true
+          }
+          state = admission.state
+        }
+      }
+
+      if (interrupted) {
+        Log.w(TAG, "Interrupted while awaiting UnifiedPush observer admission.")
+      }
+      return state to interrupted
+    }
+  }
+
+  private fun awaitSignalOrTransition(
+    admission: UnifiedPushLifecycle.FetchAdmission,
+    signal: CountDownLatch,
+    deadline: Long,
+  ): Boolean {
+    if (admission.transitionRevoked) return false
+    val remainingNanos = (deadline - System.nanoTime()).coerceAtLeast(0)
+    val signalled = try {
+      signal.await(remainingNanos, TimeUnit.NANOSECONDS)
+    } catch (e: InterruptedException) {
+      Log.w(TAG, "Interrupted while waiting for UnifiedPush receive work.", e)
+      false
+    }
+    return signalled && !admission.transitionRevoked
   }
 
   /**

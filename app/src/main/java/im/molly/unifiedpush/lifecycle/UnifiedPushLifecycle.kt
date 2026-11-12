@@ -6,7 +6,9 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Semaphore
+import java.util.concurrent.TimeUnit
 
 /**
  * Orders UnifiedPush effects against account identity changes. The monitor is also the receiver's replay lock.
@@ -27,6 +29,8 @@ object UnifiedPushLifecycle {
   private var invalidationPending = false
   private var leaseCount = 0
   private var drainSignal: CountDownLatch? = null
+  private val pendingFetchAdmissions = LinkedHashSet<FetchAdmission>()
+  private val activeFetchAdmissions = LinkedHashSet<FetchAdmission>()
 
   private data class TransitionOwnership(
     val generation: Long,
@@ -40,6 +44,53 @@ object UnifiedPushLifecycle {
   ) : AutoCloseable {
     internal var closed = false
     override fun close() = owner.release(this)
+  }
+
+  enum class FetchAdmissionState { PENDING, CLAIMED, ADMITTED, REVOKED, FAILED, TIMED_OUT }
+
+  /** One UnifiedPush fetch awaiting handoff to the executing ordinary receive observer. */
+  class FetchAdmission internal constructor(
+    val processInstanceId: String,
+    val generation: Long,
+    val accountId: String,
+    val localDeviceId: Int,
+    val pushDeviceId: Int,
+    val instance: String,
+  ) {
+    private val handoff = CountDownLatch(1)
+    private val cancellationWaiters = CopyOnWriteArrayList<CountDownLatch>()
+
+    @Volatile
+    var transitionRevoked: Boolean = false
+      private set
+
+    @Volatile
+    var state: FetchAdmissionState = FetchAdmissionState.PENDING
+      internal set
+
+    @Throws(InterruptedException::class)
+    fun awaitHandoff(timeoutMs: Long): Boolean = handoff.await(timeoutMs, TimeUnit.MILLISECONDS)
+
+    @Throws(InterruptedException::class)
+    fun awaitHandoffCompletion() = handoff.await()
+
+    internal fun signalHandoff() = handoff.countDown()
+
+    fun addTransitionCancellationWaiter(waiter: CountDownLatch) {
+      cancellationWaiters.add(waiter)
+      if (transitionRevoked) waiter.countDown()
+    }
+
+    fun removeTransitionCancellationWaiter(waiter: CountDownLatch) {
+      cancellationWaiters.remove(waiter)
+    }
+
+    internal fun revokeForTransition() {
+      transitionRevoked = true
+      cancellationWaiters.forEach(CountDownLatch::countDown)
+    }
+
+    override fun toString() = "FetchAdmission(generation=$generation, localDeviceId=$localDeviceId, instance=$instance, state=$state)"
   }
 
   /** Result tied to the generation owned by one completed transition. */
@@ -74,6 +125,101 @@ object UnifiedPushLifecycle {
     Lease(this, generation, snapshot)
   }
 
+  /** Registers one UP demand while its execution lease still pins the authorized account context. */
+  fun registerFetchAdmission(
+    lease: Lease<*>,
+    processId: String,
+    accountId: String,
+    localDeviceId: Int,
+    pushDeviceId: Int,
+    instance: String,
+  ): FetchAdmission? = synchronized(monitor) {
+    if (!isReadyLocked() || lease.closed || lease.generation != generation || processId != processInstanceId) return@synchronized null
+    FetchAdmission(processId, generation, accountId, localDeviceId, pushDeviceId, instance).also(pendingFetchAdmissions::add)
+  }
+
+  fun hasPendingFetchAdmissions(): Boolean = synchronized(monitor) { pendingFetchAdmissions.isNotEmpty() }
+
+  fun hasActiveFetchAdmissions(): Boolean = synchronized(monitor) { activeFetchAdmissions.isNotEmpty() }
+
+  /** Must be called at the observer receive seam while [monitor] is held. */
+  fun claimPendingFetchAdmissionsLocked(
+    processId: String,
+    accountId: String,
+    localDeviceId: Int,
+    pushDeviceId: Int,
+    instance: String,
+  ): List<FetchAdmission> {
+    check(Thread.holdsLock(monitor))
+    if (!isReadyLocked()) return emptyList()
+
+    val claimed = mutableListOf<FetchAdmission>()
+    for (admission in pendingFetchAdmissions.toList()) {
+      pendingFetchAdmissions.remove(admission)
+      if (admission.generation == generation && admission.processInstanceId == processId &&
+        admission.accountId == accountId && admission.localDeviceId == localDeviceId &&
+        admission.pushDeviceId == pushDeviceId && admission.instance == instance &&
+        admission.state == FetchAdmissionState.PENDING) {
+        admission.state = FetchAdmissionState.CLAIMED
+        activeFetchAdmissions.add(admission)
+        claimed += admission
+      } else {
+        admission.state = FetchAdmissionState.REVOKED
+        admission.signalHandoff()
+        admission.revokeForTransition()
+      }
+    }
+    return claimed
+  }
+
+  fun revokePendingFetchAdmissionsLocked() {
+    check(Thread.holdsLock(monitor))
+    for (admission in pendingFetchAdmissions) {
+      admission.state = FetchAdmissionState.REVOKED
+      admission.signalHandoff()
+      admission.revokeForTransition()
+    }
+    pendingFetchAdmissions.clear()
+  }
+
+  fun completeFetchAdmission(admission: FetchAdmission): Boolean = synchronized(monitor) {
+    if (admission.state != FetchAdmissionState.CLAIMED) return@synchronized false
+    admission.state = FetchAdmissionState.ADMITTED
+    admission.signalHandoff()
+    true
+  }
+
+  fun failFetchAdmission(admission: FetchAdmission) = synchronized(monitor) {
+    if (admission.state == FetchAdmissionState.CLAIMED) {
+      admission.state = FetchAdmissionState.FAILED
+      activeFetchAdmissions.remove(admission)
+      admission.signalHandoff()
+    }
+  }
+
+  /** A timeout can cancel only a request the observer has not claimed. */
+  fun timeoutFetchAdmission(admission: FetchAdmission): FetchAdmissionState = synchronized(monitor) {
+    if (admission.state == FetchAdmissionState.PENDING) {
+      pendingFetchAdmissions.remove(admission)
+      admission.state = FetchAdmissionState.TIMED_OUT
+      admission.signalHandoff()
+    }
+    admission.state
+  }
+
+  /** Removes an admitted observer demand after its receive waiter and demand token have been cleaned up. */
+  fun finishFetchAdmission(admission: FetchAdmission) = synchronized(monitor) {
+    pendingFetchAdmissions.remove(admission)
+    activeFetchAdmissions.remove(admission)
+    if (admission.state == FetchAdmissionState.PENDING) {
+      admission.state = FetchAdmissionState.TIMED_OUT
+      admission.signalHandoff()
+    } else if (admission.state == FetchAdmissionState.CLAIMED) {
+      admission.state = FetchAdmissionState.FAILED
+      admission.signalHandoff()
+    }
+  }
+
   /** Runs a short local publication only if this lease still belongs to the ready generation. */
   fun <T : Any> withCurrentLease(lease: Lease<*>, action: () -> T): T? = synchronized(monitor) {
     if (lease.closed || lease.generation != generation || !ready || transitionGeneration != null) null else action()
@@ -105,6 +251,7 @@ object UnifiedPushLifecycle {
     generation = nextGeneration(generation)
     ready = false
     invalidationPending = true
+    revokeFetchAdmissionsForTransitionLocked()
   }
 
   fun hasPendingInvalidationLocked(): Boolean {
@@ -130,6 +277,7 @@ object UnifiedPushLifecycle {
     keepIncompleteMarker: Boolean = false,
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
+    afterTransitionStarted: () -> Unit = {},
     block: suspend () -> T,
   ): T = withTransitionAndGeneration(
     hasIncompleteMarker = hasIncompleteMarker,
@@ -139,6 +287,7 @@ object UnifiedPushLifecycle {
     keepIncompleteMarker = keepIncompleteMarker,
     completesAccountRegistration = completesAccountRegistration,
     completesInvalidation = completesInvalidation,
+    afterTransitionStarted = afterTransitionStarted,
     block = block,
   ).value
 
@@ -155,6 +304,7 @@ object UnifiedPushLifecycle {
     keepIncompleteMarker: Boolean = false,
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
+    afterTransitionStarted: () -> Unit = {},
     block: suspend () -> T,
   ): TransitionResult<T> {
     require(!keepIncompleteMarker || !completesAccountRegistration) {
@@ -166,7 +316,7 @@ object UnifiedPushLifecycle {
       // Store ownership before leaving NonCancellable. withContext has a prompt cancellation guarantee when
       // dispatching back to the caller; cancellation there must still reach cleanup with the acquired token.
       withContext(NonCancellable + Dispatchers.IO) {
-        ownership = beginTransition(hasIncompleteMarker, persistIncompleteMarker, expectedGeneration)
+        ownership = beginTransition(hasIncompleteMarker, persistIncompleteMarker, expectedGeneration, afterTransitionStarted)
       }
       val token = checkNotNull(ownership)
       val result = block()
@@ -196,6 +346,7 @@ object UnifiedPushLifecycle {
     hasIncompleteMarker: () -> Boolean,
     persistIncompleteMarker: (Boolean) -> Unit,
     expectedGeneration: Long?,
+    afterTransitionStarted: () -> Unit,
   ): TransitionOwnership {
     transitionWriter.acquire()
     var token: TransitionOwnership? = null
@@ -211,10 +362,15 @@ object UnifiedPushLifecycle {
         ready = false
         transitionGeneration = next
         token = TransitionOwnership(next, inheritedIncompleteMarker)
+        revokeFetchAdmissionsForTransitionLocked()
         if (leaseCount == 0) null else CountDownLatch(1).also { drainSignal = it }
       }
 
-      persistIncompleteMarker(true)
+      try {
+        persistIncompleteMarker(true)
+      } finally {
+        afterTransitionStarted()
+      }
       drain?.await()
       return checkNotNull(token)
     } catch (failure: Throwable) {
@@ -222,6 +378,17 @@ object UnifiedPushLifecycle {
       transitionWriter.release()
       throw failure
     }
+  }
+
+  private fun revokeFetchAdmissionsForTransitionLocked() {
+    check(Thread.holdsLock(monitor))
+    revokePendingFetchAdmissionsLocked()
+    // Claimed requests have already handed responsibility to the ordinary observer. They may finish the
+    // current callback, but an old UP demand cannot keep later observer loop iterations connected. A
+    // claimed admission is cancelled only after its token registration settles and handoff can release
+    // the lease that this transition is draining.
+    activeFetchAdmissions.forEach(FetchAdmission::revokeForTransition)
+    activeFetchAdmissions.clear()
   }
 
   private fun finishTransition(token: TransitionOwnership, readyAfter: Boolean, completesInvalidation: Boolean) {
@@ -269,6 +436,8 @@ object UnifiedPushLifecycle {
       generation = 1
       invalidationPending = false
       drainSignal = null
+      pendingFetchAdmissions.clear()
+      activeFetchAdmissions.clear()
     }
   }
 

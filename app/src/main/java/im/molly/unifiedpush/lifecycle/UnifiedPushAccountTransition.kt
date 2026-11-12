@@ -81,6 +81,11 @@ object UnifiedPushAccountTransition {
       keepIncompleteMarker = keepIncompleteMarker,
       completesAccountRegistration = completesAccountRegistration,
       completesInvalidation = completesInvalidation,
+      afterTransitionStarted = {
+        if (AppDependencies.isInitialized) {
+          AppDependencies.incomingMessageObserver.notifyUnifiedPushFetchStateChanged()
+        }
+      },
       block = block,
     )
     if (!keepIncompleteMarker && !completesInvalidation && UnifiedPushLifecycle.isReady() && AppDependencies.isInitialized) {
@@ -108,12 +113,60 @@ object UnifiedPushAccountTransition {
   fun acquireFetchLease(authorization: FetchAuthorization): UnifiedPushLifecycle.Lease<AccountContext>? {
     if (authorization.processInstanceId != UnifiedPushLifecycle.processInstanceId()) return null
     return UnifiedPushLifecycle.acquireLease(authorization.generation) {
+      if (!SignalStore.unifiedpush.enabled) return@acquireLease null
       captureContextLocked()?.takeIf {
         it.accountId == authorization.accountId &&
           it.localDeviceId == authorization.localDeviceId &&
           (it.pushDevice?.deviceId ?: -1) == authorization.pushDeviceId &&
           it.instance == authorization.instance
       }
+    }
+  }
+
+  /** Registers the authorized fetch as observer demand while its lease pins the live context. */
+  fun registerFetchAdmission(
+    lease: UnifiedPushLifecycle.Lease<AccountContext>,
+    authorization: FetchAuthorization,
+  ): UnifiedPushLifecycle.FetchAdmission? {
+    val context = lease.snapshot
+    if (authorization.processInstanceId != UnifiedPushLifecycle.processInstanceId() ||
+      authorization.generation != lease.generation || authorization.accountId != context.accountId ||
+      authorization.localDeviceId != context.localDeviceId ||
+      authorization.pushDeviceId != (context.pushDevice?.deviceId ?: -1) ||
+      authorization.instance != context.instance) return null
+
+    return UnifiedPushLifecycle.registerFetchAdmission(
+      lease = lease,
+      processId = authorization.processInstanceId,
+      accountId = authorization.accountId,
+      localDeviceId = authorization.localDeviceId,
+      pushDeviceId = authorization.pushDeviceId,
+      instance = authorization.instance,
+    )
+  }
+
+  /** Claims queued demands only at the executing observer seam, rechecking live context under its monitor. */
+  fun claimPendingFetchAdmissionsLocked(): List<UnifiedPushLifecycle.FetchAdmission> {
+    check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+    val context = if (SignalStore.unifiedpush.enabled && !SignalStore.account.isUnauthorizedReceived) {
+      captureContextLocked()
+    } else {
+      null
+    }
+    return UnifiedPushLifecycle.claimPendingFetchAdmissionsLocked(
+      processId = UnifiedPushLifecycle.processInstanceId(),
+      accountId = context?.accountId ?: "",
+      localDeviceId = context?.localDeviceId ?: -1,
+      pushDeviceId = context?.pushDevice?.deviceId ?: -2,
+      instance = context?.instance ?: "",
+    )
+  }
+
+  /** Removes observer demand after drain, timeout or revocation, then wakes the observer outside the monitor. */
+  fun finishFetchAdmission(admission: UnifiedPushLifecycle.FetchAdmission) {
+    UnifiedPushLifecycle.finishFetchAdmission(admission)
+    if (AppDependencies.isInitialized) {
+      AppDependencies.incomingMessageObserver.notifyUnifiedPushFetchStateChanged()
     }
   }
 

@@ -9,14 +9,15 @@ import androidx.test.core.app.ApplicationProvider
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.Runs
 import io.mockk.slot
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -38,12 +39,12 @@ import org.thoughtcrime.securesms.jobs.MessageFetchJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.thoughtcrime.securesms.messages.WebSocketDrainer
+import org.thoughtcrime.securesms.messages.UnifiedPushFetchResult
 import org.thoughtcrime.securesms.push.SignalServiceNetworkAccess
 import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
@@ -62,6 +63,7 @@ class FcmFetchManagerTest {
     Log.initialize(SystemOutLogger())
     UnifiedPushLifecycle.resetForTests()
     mockkObject(AppDependencies, WebSocketDrainer)
+    mockkStatic(WebSocketDrainer::class)
     every { AppDependencies.signalServiceNetworkAccess } returns networkAccess
     every { networkAccess.isCensored() } returns false
     every { SignalStore.unifiedpush } returns values
@@ -73,6 +75,7 @@ class FcmFetchManagerTest {
     every { SignalStore.account.hasAciIdentityKey() } returns true
     every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
     every { SignalStore.account.deviceId } returns 1
+    every { values.enabled } returns true
     every { values.device } returns im.molly.unifiedpush.model.MollySocketDevice(4, "SYNTHETIC-RELAY-PASSWORD")
     every { values.endpoint } returns "https://push.example.invalid/endpoint"
     every { values.endpointP256dh } returns "SYNTHETIC-P256DH"
@@ -83,6 +86,7 @@ class FcmFetchManagerTest {
   @After
   fun tearDown() {
     unmockkObject(AppDependencies, WebSocketDrainer)
+    unmockkStatic(WebSocketDrainer::class)
     unmockkStatic(AppForegroundObserver::class)
     unmockkStatic(KeyCachingService::class)
     unmockkStatic(ServiceUtil::class)
@@ -90,45 +94,46 @@ class FcmFetchManagerTest {
   }
 
   @Test
-  fun `queued UnifiedPush fetch holds its lease through the websocket drain`() {
-    val originalLease = UnifiedPushAccountTransition.acquireLease()!!
-    val authorization = UnifiedPushAccountTransition.fetchAuthorization(originalLease)
-    originalLease.close()
+  fun `UnifiedPush fetch delegates to observer admission and never registers a drainer token`() {
+    val lease = UnifiedPushAccountTransition.acquireLease()!!
+    val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
+    lease.close()
+    every { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) } returns UnifiedPushFetchResult.DRAINED
 
-    val drainEntered = CountDownLatch(1)
-    val finishDrain = CountDownLatch(1)
-    every { WebSocketDrainer.blockUntilDrainedAndProcessed(any(), any()) } answers {
-      drainEntered.countDown()
-      check(finishDrain.await(5, TimeUnit.SECONDS))
-      true
-    }
+    assertTrue(FcmFetchManager.retrieveMessages(context, authorization))
 
-    val executor = Executors.newFixedThreadPool(2)
-    try {
-      val fetch = executor.submit<Boolean> { FcmFetchManager.retrieveMessages(context, authorization) }
-      assertTrue(drainEntered.await(5, TimeUnit.SECONDS))
+    verify(exactly = 1) { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) }
+    verify(exactly = 0) { WebSocketDrainer.blockUntilDrainedAndProcessed(any(), any()) }
+  }
 
-      val markerPersisted = CountDownLatch(1)
-      val transitionBody = CountDownLatch(1)
-      val transition = executor.submit {
-        runBlocking {
-          UnifiedPushLifecycle.withTransition(
-            persistIncompleteMarker = { if (it) markerPersisted.countDown() },
-            readyAfter = { true },
-          ) { transitionBody.countDown() }
-        }
-      }
+  @Test
+  fun `ordinary fetch keeps its existing drainer token path`() {
+    every { WebSocketDrainer.blockUntilDrainedAndProcessed(any(), any()) } returns true
 
-      assertTrue(markerPersisted.await(5, TimeUnit.SECONDS))
-      assertEquals("account mutation must wait for the actual websocket drain", 1L, transitionBody.count)
-      finishDrain.countDown()
-      assertTrue(fetch.get(5, TimeUnit.SECONDS))
-      transition.get(5, TimeUnit.SECONDS)
-      assertEquals(0L, transitionBody.count)
-    } finally {
-      finishDrain.countDown()
-      executor.shutdownNow()
-    }
+    assertTrue(FcmFetchManager.retrieveMessages(context))
+
+    verify(exactly = 1) { WebSocketDrainer.blockUntilDrainedAndProcessed(any(), "FcmFetch") }
+    verify(exactly = 0) { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(any(), any()) }
+  }
+
+  @Test
+  fun `UnifiedPush MessageFetch fallback uses observer admission and keeps foreground handling`() {
+    val lease = UnifiedPushAccountTransition.acquireLease()!!
+    val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
+    lease.close()
+    every { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) } returns UnifiedPushFetchResult.DRAINED
+    mockkStatic(AppForegroundObserver::class)
+    every { AppForegroundObserver.addListener(any()) } just Runs
+    every { AppForegroundObserver.removeListener(any()) } just Runs
+
+    val job = MessageFetchJob.forUnifiedPush(authorization)
+    job.setContext(context)
+    job.onRun()
+
+    verify(exactly = 1) { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) }
+    verify(exactly = 0) { WebSocketDrainer.blockUntilDrainedAndProcessed() }
+    verify(exactly = 1) { AppForegroundObserver.addListener(any()) }
+    verify(exactly = 1) { AppForegroundObserver.removeListener(any()) }
   }
 
   @Test
@@ -136,7 +141,7 @@ class FcmFetchManagerTest {
     val lease = UnifiedPushAccountTransition.acquireLease()!!
     val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
     lease.close()
-    every { WebSocketDrainer.blockUntilDrainedAndProcessed(any(), any()) } returns false
+    every { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) } returns UnifiedPushFetchResult.RETRYABLE_FAILURE
     mockkStatic(FcmJobService::class)
     every { FcmJobService.schedule(context, authorization) } returns Unit
 
@@ -146,7 +151,21 @@ class FcmFetchManagerTest {
   }
 
   @Test
-  fun `system fallback holds its reacquired lease through the actual drain`() {
+  fun `revoked UnifiedPush demand does not schedule a fallback`() {
+    val lease = UnifiedPushAccountTransition.acquireLease()!!
+    val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
+    lease.close()
+    every { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) } returns UnifiedPushFetchResult.REVOKED
+    mockkStatic(FcmJobService::class)
+    every { FcmJobService.schedule(context, authorization) } returns Unit
+
+    assertTrue(FcmFetchManager.retrieveMessages(context, authorization))
+
+    verify(exactly = 0) { FcmJobService.schedule(context, authorization) }
+  }
+
+  @Test
+  fun `system fallback delegates authorized work to observer admission`() {
     val originalLease = UnifiedPushAccountTransition.acquireLease()!!
     val authorization = UnifiedPushAccountTransition.fetchAuthorization(originalLease)
     originalLease.close()
@@ -165,39 +184,12 @@ class FcmFetchManagerTest {
     mockkStatic(AppForegroundObserver::class)
     every { AppForegroundObserver.isForegrounded() } returns false
 
-    val drainEntered = CountDownLatch(1)
-    val finishDrain = CountDownLatch(1)
-    every { WebSocketDrainer.blockUntilDrainedAndProcessed() } answers {
-      drainEntered.countDown()
-      check(finishDrain.await(5, TimeUnit.SECONDS))
-      true
-    }
+    every { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) } returns UnifiedPushFetchResult.DRAINED
 
     val service = Robolectric.buildService(FcmJobService::class.java).create().get()
     assertTrue(service.onStartJob(parameters))
-    assertTrue(drainEntered.await(5, TimeUnit.SECONDS))
-
-    val executor = Executors.newSingleThreadExecutor()
-    val markerPersisted = CountDownLatch(1)
-    val transitionBody = CountDownLatch(1)
-    try {
-      val transition = executor.submit {
-        runBlocking {
-          UnifiedPushLifecycle.withTransition(
-            persistIncompleteMarker = { if (it) markerPersisted.countDown() },
-            readyAfter = { true },
-          ) { transitionBody.countDown() }
-        }
-      }
-      assertTrue(markerPersisted.await(5, TimeUnit.SECONDS))
-      assertEquals("account mutation must wait for the actual system fallback drain", 1L, transitionBody.count)
-      finishDrain.countDown()
-      transition.get(5, TimeUnit.SECONDS)
-      assertEquals(0L, transitionBody.count)
-    } finally {
-      finishDrain.countDown()
-      executor.shutdownNow()
-    }
+    verify(timeout = 5000, exactly = 1) { WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, any()) }
+    verify(exactly = 0) { WebSocketDrainer.blockUntilDrainedAndProcessed() }
   }
 
   @Test
@@ -244,7 +236,7 @@ class FcmFetchManagerTest {
     val service = Robolectric.buildService(FcmJobService::class.java).create().get()
     val staleParameters = mockk<JobParameters>()
     every { staleParameters.extras } returns unifiedPushJob.extras
-    assertFalse("a prior-process UnifiedPush authorization must be rejected", service.onStartJob(staleParameters))
+    assertFalse("a prior-process UnifiedPush authorization must be rejected before worker scheduling", service.onStartJob(staleParameters))
     assertEquals(0, drainCalls.get())
 
     val ordinaryParameters = mockk<JobParameters>()

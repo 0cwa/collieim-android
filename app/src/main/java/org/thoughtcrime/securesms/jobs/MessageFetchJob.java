@@ -13,6 +13,7 @@ import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.messages.WebSocketDrainer;
+import org.thoughtcrime.securesms.messages.UnifiedPushFetchResult;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
 import org.thoughtcrime.securesms.service.GenericForegroundService;
 import org.signal.core.util.AppForegroundObserver;
@@ -23,7 +24,9 @@ import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.FetchAuthoriz
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * Fetches messages from the service, posting a foreground service if possible if the app is in the background.
@@ -105,33 +108,47 @@ public final class MessageFetchJob extends BaseJob {
       return;
     }
 
-    UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> lease =
-        fetchAuthorization == null ? null : UnifiedPushAccountTransition.acquireFetchLease(fetchAuthorization);
-    if (fetchAuthorization != null && lease == null) {
-      Log.i(TAG, "Dropping UnifiedPush fallback after its account context changed.");
+    if (fetchAuthorization != null) {
+      UnifiedPushFetchResult result;
+      try (ForegroundServiceController controller = ForegroundServiceController.create(context)) {
+        result = controller.awaitUnifiedPushResult(fetchAuthorization);
+      }
+      if (result == UnifiedPushFetchResult.RETRYABLE_FAILURE) {
+        throw new PushNetworkException("Failed to pull messages through observer admission.");
+      }
       return;
     }
 
     boolean success;
-    try {
-      try (ForegroundServiceController controller = ForegroundServiceController.create(context)) {
-        success = controller.awaitResult();
-      }
+    try (ForegroundServiceController controller = ForegroundServiceController.create(context)) {
+      success = controller.awaitResult();
+    }
 
-      if (success) {
-        Log.i(TAG, "Successfully pulled messages.");
-      } else {
-        throw new PushNetworkException("Failed to pull messages.");
-      }
-    } finally {
-      if (lease != null) lease.close();
+    if (success) {
+      Log.i(TAG, "Successfully pulled messages.");
+    } else {
+      throw new PushNetworkException("Failed to pull messages.");
     }
   }
 
   @Override
   public boolean onShouldRetry(@NonNull Exception e) {
     Log.w(TAG, e);
-    return e instanceof PushNetworkException;
+    if (!(e instanceof PushNetworkException)) {
+      return false;
+    }
+
+    if (fetchAuthorization == null) {
+      return true;
+    }
+
+    UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> retryLease =
+        UnifiedPushAccountTransition.acquireFetchLease(fetchAuthorization);
+    if (retryLease == null) {
+      return false;
+    }
+    retryLease.close();
+    return true;
   }
 
   @Override
@@ -191,16 +208,22 @@ public final class MessageFetchJob extends BaseJob {
     }
 
     public boolean awaitResult() {
-      isRunning = true;
+      return awaitResult(WebSocketDrainer::blockUntilDrainedAndProcessed);
+    }
 
-      boolean success;
+    public UnifiedPushFetchResult awaitUnifiedPushResult(FetchAuthorization authorization) {
+      return awaitResult(() -> WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(
+          authorization,
+          TimeUnit.MINUTES.toMillis(1)));
+    }
+
+    private <T> T awaitResult(Supplier<T> operation) {
+      isRunning = true;
       try {
-        success = WebSocketDrainer.blockUntilDrainedAndProcessed();
+        return operation.get();
       } finally {
         isRunning = false;
       }
-
-      return success;
     }
 
     private void closeNotificationController() {

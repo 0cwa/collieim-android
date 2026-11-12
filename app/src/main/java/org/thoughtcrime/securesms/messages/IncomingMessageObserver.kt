@@ -26,6 +26,8 @@ import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.isDecisionPending
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
 import im.molly.unifiedpush.health.PushHealthActions
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.clockskew.ClockSkewDetector
 import org.thoughtcrime.securesms.crypto.ReentrantSessionLock
@@ -216,6 +218,11 @@ class IncomingMessageObserver(
     notifyConnectionConditionsChanged()
   }
 
+  /** Wakes the ordinary receive thread to consider or drop queued UnifiedPush demand. */
+  fun notifyUnifiedPushFetchStateChanged() {
+    notifyConnectionConditionsChanged()
+  }
+
   fun notifyRestoreDecisionMade() {
     Log.i(TAG, "Restore decision made, can restart network and process messages")
     AppDependencies.resetNetwork(restartMessageObserver = false)
@@ -283,13 +290,58 @@ class IncomingMessageObserver(
   }
 
   /** Conditions are evaluated outside of [connectionLock] so notifiers never block on them. We only park if nothing signaled since the version we evaluated against. */
-  private fun waitForConnectionNecessary() {
+  private fun claimPendingUnifiedPushFetches(): List<UnifiedPushLifecycle.FetchAdmission> {
+    if (ClockSkewDetector.isDetected || !internetConnection.isOnline) return emptyList()
+    return synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushAccountTransition.claimPendingFetchAdmissionsLocked()
+    }
+  }
+
+  private fun shouldContinueReceiveLoop(
+    unhandedAdmissions: MutableList<UnifiedPushLifecycle.FetchAdmission>,
+  ): Boolean {
+    unhandedAdmissions += claimPendingUnifiedPushFetches()
+    return unhandedAdmissions.isNotEmpty() || isConnectionNecessary() ||
+      UnifiedPushLifecycle.hasActiveFetchAdmissions() || isConnectionAvailable()
+  }
+
+  /** The real observer token decision, exposed to tests so barriers exercise this exact admission seam. */
+  @VisibleForTesting
+  internal fun updateReceiveLoopToken(
+    unhandedAdmissions: MutableList<UnifiedPushLifecycle.FetchAdmission> = mutableListOf(),
+  ): Boolean {
+    unhandedAdmissions += claimPendingUnifiedPushFetches()
+    val ordinaryConnectionNecessary = isConnectionNecessary()
+    val unifiedPushDemand = UnifiedPushLifecycle.hasActiveFetchAdmissions()
+    if (ordinaryConnectionNecessary || unifiedPushDemand || unhandedAdmissions.isNotEmpty()) {
+      try {
+        // Token registration calls connect(). It must stay outside the lifecycle monitor, while any
+        // claimed request's lease remains open until registration returns.
+        authWebSocket.registerKeepAliveToken(WEB_SOCKET_KEEP_ALIVE_TOKEN)
+        unhandedAdmissions.forEach(UnifiedPushLifecycle::completeFetchAdmission)
+        unhandedAdmissions.clear()
+      } catch (failure: Throwable) {
+        unhandedAdmissions.forEach(UnifiedPushLifecycle::failFetchAdmission)
+        unhandedAdmissions.clear()
+        throw failure
+      }
+      return true
+    }
+
+    authWebSocket.removeKeepAliveToken(WEB_SOCKET_KEEP_ALIVE_TOKEN)
+    return false
+  }
+
+  private fun waitForConnectionNecessary(): List<UnifiedPushLifecycle.FetchAdmission> {
+    val claimedAdmissions = mutableListOf<UnifiedPushLifecycle.FetchAdmission>()
     try {
       var observedVersion = connectionConditionsVersion
 
       while (!terminated) {
-        if (!ClockSkewDetector.isDetected && (isConnectionNecessary() || isConnectionAvailable())) {
-          return
+        claimedAdmissions += claimPendingUnifiedPushFetches()
+        if (UnifiedPushLifecycle.hasActiveFetchAdmissions() ||
+          (!ClockSkewDetector.isDetected && (isConnectionNecessary() || isConnectionAvailable()))) {
+          return claimedAdmissions
         }
 
         connectionLock.withLock {
@@ -302,6 +354,7 @@ class IncomingMessageObserver(
     } catch (e: InterruptedException) {
       throw AssertionError(e)
     }
+    return claimedAdmissions
   }
 
   private fun notifyConnectionConditionsChanged() {
@@ -484,8 +537,9 @@ class IncomingMessageObserver(
           sleepTimer.sleep(backoff)
         }
 
-        waitForConnectionNecessary()
+        val unhandedAdmissions = waitForConnectionNecessary().toMutableList()
         if (terminated) {
+          unhandedAdmissions.forEach(UnifiedPushLifecycle::failFetchAdmission)
           break
         }
 
@@ -501,13 +555,15 @@ class IncomingMessageObserver(
         }
 
         try {
-          authWebSocket.connect()
-          var isConnectionNecessary = false
-          while (!terminated && !ClockSkewDetector.isDetected && (isConnectionNecessary().also { isConnectionNecessary = it } || isConnectionAvailable())) {
-            if (isConnectionNecessary) {
-              authWebSocket.registerKeepAliveToken(WEB_SOCKET_KEEP_ALIVE_TOKEN)
-            } else {
-              authWebSocket.removeKeepAliveToken(WEB_SOCKET_KEEP_ALIVE_TOKEN)
+          if (isConnectionNecessary()) {
+            authWebSocket.connect()
+          }
+
+          while (!terminated && !ClockSkewDetector.isDetected) {
+            val receiveLoopNeeded = shouldContinueReceiveLoop(unhandedAdmissions)
+            val receiveTokenNeeded = updateReceiveLoopToken(unhandedAdmissions)
+            if (!receiveLoopNeeded && !receiveTokenNeeded && !isConnectionAvailable()) {
+              break
             }
 
             try {
@@ -576,6 +632,7 @@ class IncomingMessageObserver(
             Log.w(TAG, e)
           }
         } finally {
+          unhandedAdmissions.forEach(UnifiedPushLifecycle::failFetchAdmission)
           Log.w(TAG, "Disconnecting auth websocket")
           authWebSocket.disconnect()
           webSocketDisposable.dispose()

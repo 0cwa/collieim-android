@@ -173,36 +173,56 @@ object FcmFetchManager {
     return retrieveMessages(context, null)
   }
 
-  /** Reacquires the event's lease for the websocket drain and binds any fallback to the same context. */
+  /** Executes an ordinary fetch or hands authorized UnifiedPush demand to the receive observer. */
   @JvmStatic
   fun retrieveMessages(
     context: Context,
     authorization: UnifiedPushAccountTransition.FetchAuthorization?,
   ): Boolean {
-    val lease = authorization?.let(UnifiedPushAccountTransition::acquireFetchLease)
-    if (authorization != null && lease == null) {
-      Log.i(TAG, "UnifiedPush fetch authorization expired before execution.")
-      return true
+    if (authorization != null) {
+      when (WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(authorization, WEBSOCKET_DRAIN_TIMEOUT)) {
+        org.thoughtcrime.securesms.messages.UnifiedPushFetchResult.DRAINED -> {
+          Log.i(TAG, "Successfully retrieved messages through observer admission.")
+          return true
+        }
+        org.thoughtcrime.securesms.messages.UnifiedPushFetchResult.REVOKED -> {
+          Log.i(TAG, "UnifiedPush fetch was revoked before fallback scheduling.")
+          return true
+        }
+        org.thoughtcrime.securesms.messages.UnifiedPushFetchResult.RETRYABLE_FAILURE -> {
+          val fallbackLease = UnifiedPushAccountTransition.acquireFetchLease(authorization)
+          if (fallbackLease == null) {
+            Log.i(TAG, "UnifiedPush fallback authorization expired before scheduling.")
+            return true
+          }
+          try {
+            scheduleFallback(context, authorization)
+          } finally {
+            fallbackLease.close()
+          }
+          return false
+        }
+      }
     }
 
-    try {
     val success = WebSocketDrainer.blockUntilDrainedAndProcessed(WEBSOCKET_DRAIN_TIMEOUT, KEEP_ALIVE_TOKEN)
 
     if (success) {
       Log.i(TAG, "Successfully retrieved messages.")
     } else {
-      if (Build.VERSION.SDK_INT >= 26) {
-        Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on the system JobScheduler (API " + Build.VERSION.SDK_INT + ").")
-        FcmJobService.schedule(context, authorization)
-      } else {
-        Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on JobManager (API " + Build.VERSION.SDK_INT + ").")
-        AppDependencies.jobManager.add(if (authorization == null) MessageFetchJob() else MessageFetchJob.forUnifiedPush(authorization))
-      }
+      scheduleFallback(context, null)
     }
 
     return success
-    } finally {
-      lease?.close()
+  }
+
+  private fun scheduleFallback(context: Context, authorization: UnifiedPushAccountTransition.FetchAuthorization?) {
+    if (Build.VERSION.SDK_INT >= 26) {
+      Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on the system JobScheduler (API " + Build.VERSION.SDK_INT + ").")
+      FcmJobService.schedule(context, authorization)
+    } else {
+      Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on JobManager (API " + Build.VERSION.SDK_INT + ").")
+      AppDependencies.jobManager.add(if (authorization == null) MessageFetchJob() else MessageFetchJob.forUnifiedPush(authorization))
     }
   }
 }

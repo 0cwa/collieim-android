@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi;
 import org.signal.core.util.concurrent.SignalExecutors;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.messages.WebSocketDrainer;
+import org.thoughtcrime.securesms.messages.UnifiedPushFetchResult;
 import org.thoughtcrime.securesms.service.KeyCachingService;
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition;
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.FetchAuthorization;
@@ -75,8 +76,8 @@ public class FcmJobService extends JobService {
       return false;
     }
 
-    UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> lease = null;
     PersistableBundle extras = params.getExtras();
+    FetchAuthorization authorization = null;
     if (extras != null && extras.getBoolean(EXTRA_UP_AUTHORIZED, false)) {
       if (!extras.containsKey(EXTRA_UP_PROCESS) || !extras.containsKey(EXTRA_UP_GENERATION) ||
           !extras.containsKey(EXTRA_UP_ACCOUNT) || !extras.containsKey(EXTRA_UP_LOCAL_DEVICE) ||
@@ -91,36 +92,61 @@ public class FcmJobService extends JobService {
         Log.w(TAG, "Dropping malformed UnifiedPush fetch authorization.");
         return false;
       }
-      FetchAuthorization authorization = new FetchAuthorization(
+      authorization = new FetchAuthorization(
           processInstanceId,
           extras.getLong(EXTRA_UP_GENERATION),
           accountId,
           extras.getInt(EXTRA_UP_LOCAL_DEVICE),
           extras.getInt(EXTRA_UP_PUSH_DEVICE),
           instance);
-      lease = UnifiedPushAccountTransition.acquireFetchLease(authorization);
-      if (lease == null) {
-        Log.i(TAG, "Dropping UnifiedPush fallback after its account context changed.");
-        return false;
-      }
     }
 
-    final UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> operationLease = lease;
+    if (authorization != null) {
+      // Reject stale persisted work before handing it to the executor. The worker still reacquires
+      // the authorization at its actual fetch boundary because a transition may begin afterward.
+      UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> validationLease =
+          UnifiedPushAccountTransition.acquireFetchLease(authorization);
+      if (validationLease == null) {
+        Log.i(TAG, "Dropping stale UnifiedPush fallback before worker scheduling.");
+        return false;
+      }
+      validationLease.close();
+    }
+
+    final FetchAuthorization operationAuthorization = authorization;
 
     SignalExecutors.UNBOUNDED.execute(() -> {
-      try {
+      if (operationAuthorization == null) {
         boolean success = WebSocketDrainer.blockUntilDrainedAndProcessed();
-
         if (success) {
           Log.i(TAG, "Successfully retrieved messages.");
           FcmFetchManager.cancelMayHaveMessagesNotification(this);
+        } else {
+          Log.w(TAG, "Failed to retrieve messages. Scheduling a retry.");
+        }
+        jobFinished(params, !success);
+        return;
+      }
+
+      UnifiedPushFetchResult result = WebSocketDrainer.blockUntilUnifiedPushFetchDrainedAndProcessed(operationAuthorization, 1 * 60 * 1000L);
+      if (result == UnifiedPushFetchResult.DRAINED) {
+        Log.i(TAG, "Successfully retrieved messages through observer admission.");
+        FcmFetchManager.cancelMayHaveMessagesNotification(this);
+        jobFinished(params, false);
+      } else if (result == UnifiedPushFetchResult.RETRYABLE_FAILURE) {
+        UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> retryLease =
+            UnifiedPushAccountTransition.acquireFetchLease(operationAuthorization);
+        if (retryLease == null) {
+          Log.i(TAG, "Dropping UnifiedPush retry after its account context changed.");
           jobFinished(params, false);
         } else {
+          retryLease.close();
           Log.w(TAG, "Failed to retrieve messages. Scheduling a retry.");
           jobFinished(params, true);
         }
-      } finally {
-        if (operationLease != null) operationLease.close();
+      } else {
+        Log.i(TAG, "UnifiedPush fallback was revoked; no retry will be scheduled.");
+        jobFinished(params, false);
       }
     });
 

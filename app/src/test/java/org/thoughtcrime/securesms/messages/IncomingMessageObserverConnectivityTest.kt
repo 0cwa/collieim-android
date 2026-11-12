@@ -310,60 +310,74 @@ class IncomingMessageObserverConnectivityTest {
 
   @Test fun `handed off UP demand retains its token but does not re-register after transition revocation`() {
     putObserverInBackgroundIdle()
-    update(ConnectivityState.ONLINE)
-    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
-    val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
-    val admission = checkNotNull(UnifiedPushAccountTransition.registerFetchAdmission(lease, authorization))
-
-    Assert.assertTrue(observer.updateReceiveLoopToken())
-    Assert.assertEquals(UnifiedPushLifecycle.FetchAdmissionState.ADMITTED, admission.state)
-    lease.close()
-    verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
-
-    val activeDemandRead = CountDownLatch(1)
-    val resumeTokenDecision = CountDownLatch(1)
-    val executor = Executors.newFixedThreadPool(2)
+    val observerParked = CountDownLatch(1)
+    val resumeObserver = CountDownLatch(1)
+    observer.beforeConnectionWaitForTesting = {
+      observerParked.countDown()
+      resumeObserver.await()
+    }
+    observer.notifyUnifiedPushFetchStateChanged()
     try {
-      val laterLoop = executor.submit<Boolean> {
-        observer.updateReceiveLoopToken {
-          activeDemandRead.countDown()
-          check(resumeTokenDecision.await(5, TimeUnit.SECONDS))
-        }
-      }
-      Assert.assertTrue("later loop did not read active UP demand", activeDemandRead.await(5, TimeUnit.SECONDS))
-      Assert.assertTrue(UnifiedPushLifecycle.hasActiveFetchAdmissions())
+      Assert.assertTrue("real observer did not park before direct token decisions", observerParked.await(5, TimeUnit.SECONDS))
+      update(ConnectivityState.ONLINE)
+      val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+      val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
+      val admission = checkNotNull(UnifiedPushAccountTransition.registerFetchAdmission(lease, authorization))
 
-      val markerPersisted = CountDownLatch(1)
-      val transitionBody = CountDownLatch(1)
-      val transition = executor.submit {
-        kotlinx.coroutines.runBlocking {
-          UnifiedPushLifecycle.withTransition(
-            persistIncompleteMarker = { if (it) markerPersisted.countDown() },
-            readyAfter = { true },
-            afterTransitionStarted = { observer.notifyUnifiedPushFetchStateChanged() },
-          ) { transitionBody.countDown() }
-        }
-      }
-
-      Assert.assertTrue("transition did not start", markerPersisted.await(5, TimeUnit.SECONDS))
-      transition.get(5, TimeUnit.SECONDS)
-      Assert.assertEquals(0L, transitionBody.count)
-      Assert.assertFalse(UnifiedPushLifecycle.hasActiveFetchAdmissions())
-      Assert.assertTrue(admission.transitionRevoked)
-
-      resumeTokenDecision.countDown()
-      Assert.assertTrue("a retained demand must keep the observer loop active", laterLoop.get(5, TimeUnit.SECONDS))
-      verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
-      verify(exactly = 0) { auth.removeKeepAliveToken("MessageRetrieval") }
-
-      Assert.assertFalse(observer.updateReceiveLoopToken())
-      verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
-      verify(exactly = 1) { auth.connect() }
-      verify(exactly = 1) { auth.removeKeepAliveToken("MessageRetrieval") }
-    } finally {
-      resumeTokenDecision.countDown()
+      Assert.assertTrue(observer.updateReceiveLoopToken())
+      Assert.assertEquals(UnifiedPushLifecycle.FetchAdmissionState.ADMITTED, admission.state)
       lease.close()
-      executor.shutdownNow()
+      verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
+
+      val activeDemandRead = CountDownLatch(1)
+      val resumeTokenDecision = CountDownLatch(1)
+      val executor = Executors.newFixedThreadPool(2)
+      try {
+        val laterLoop = executor.submit<Boolean> {
+          observer.updateReceiveLoopToken {
+            activeDemandRead.countDown()
+            check(resumeTokenDecision.await(5, TimeUnit.SECONDS))
+          }
+        }
+        Assert.assertTrue("later loop did not read active UP demand", activeDemandRead.await(5, TimeUnit.SECONDS))
+        Assert.assertTrue(UnifiedPushLifecycle.hasActiveFetchAdmissions())
+
+        val markerPersisted = CountDownLatch(1)
+        val transitionBody = CountDownLatch(1)
+        val transition = executor.submit {
+          kotlinx.coroutines.runBlocking {
+            UnifiedPushLifecycle.withTransition(
+              persistIncompleteMarker = { if (it) markerPersisted.countDown() },
+              readyAfter = { true },
+              afterTransitionStarted = { observer.notifyUnifiedPushFetchStateChanged() },
+            ) { transitionBody.countDown() }
+          }
+        }
+
+        Assert.assertTrue("transition did not start", markerPersisted.await(5, TimeUnit.SECONDS))
+        transition.get(5, TimeUnit.SECONDS)
+        Assert.assertEquals(0L, transitionBody.count)
+        Assert.assertFalse(UnifiedPushLifecycle.hasActiveFetchAdmissions())
+        Assert.assertTrue(admission.transitionRevoked)
+
+        resumeTokenDecision.countDown()
+        Assert.assertTrue("a retained demand must keep the observer loop active", laterLoop.get(5, TimeUnit.SECONDS))
+        verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
+        verify(exactly = 0) { auth.removeKeepAliveToken("MessageRetrieval") }
+
+        Assert.assertFalse(observer.updateReceiveLoopToken())
+        verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
+        verify(exactly = 1) { auth.connect() }
+        verify(exactly = 1) { auth.removeKeepAliveToken("MessageRetrieval") }
+      } finally {
+        resumeTokenDecision.countDown()
+        lease.close()
+        executor.shutdownNow()
+      }
+    } finally {
+      observer.beforeConnectionWaitForTesting = null
+      resumeObserver.countDown()
+      observer.notifyUnifiedPushFetchStateChanged()
     }
   }
 

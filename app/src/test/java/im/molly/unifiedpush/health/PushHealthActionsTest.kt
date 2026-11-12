@@ -2,6 +2,7 @@ package im.molly.unifiedpush.health
 
 import android.app.Application
 import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.LegacyPending
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.model.MollySocketDevice
@@ -70,9 +71,10 @@ class PushHealthActionsTest {
   }
 
   private val health get() = values.health
+  private val controlKey = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8"
 
   private fun keyed(pendingEpoch: Long = 0) {
-    values.mutateControl { ControlState(key = "key", activeEpoch = 2, pendingEpoch = pendingEpoch) }
+    values.mutateControl { ControlState(key = controlKey, activeEpoch = 2, highestEpoch = 2, legacyPending = pendingEpoch.takeIf { it > 0 }?.let { LegacyPending(null, it, null) }) }
   }
 
   private val minute = 60_000L
@@ -229,7 +231,7 @@ class PushHealthActionsTest {
   fun `only an active keyed enrollment is watched for misses`() {
     values.mutateControl { ControlState() }
     lateUrgent()
-    values.mutateControl { ControlState(key = "key", pendingEpoch = 1, pendingKey = "new") } // exported, not yet proven
+    values.mutateControl { ControlState(key = controlKey, legacyPending = LegacyPending(null, 1, null)) } // exported, not yet proven
     lateUrgent()
     assertEquals(0, health.failures)
     pingJobs(0)
@@ -260,7 +262,7 @@ class PushHealthActionsTest {
   @Test
   fun `a miss while an export awaits import counts but sends no automatic ping`() {
     // active enrollment with an unimported export waiting
-    values.mutateControl { ControlState(key = "key", activeEpoch = 2, pendingEpoch = 3, pendingKey = "new") }
+    values.mutateControl { ControlState(key = controlKey, activeEpoch = 2, highestEpoch = 3, legacyPending = LegacyPending(null, 3, null)) }
     lateUrgent()
     assertEquals(1, health.failures)
     pingJobs(0)

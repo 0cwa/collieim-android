@@ -39,7 +39,7 @@ object PushHealthActions {
   fun onEnvelope(urgent: Boolean, serverTimestampMs: Long, deliveredMs: Long) {
     val values = SignalStore.unifiedpush
     if (SignalStore.settings.preferredNotificationMethod != NotificationDeliveryMethod.UNIFIEDPUSH || !values.enabled) return
-    val control = values.controlState
+    val control = values.controlStateRead.stateOrNull ?: return
     if (control.key == null || control.activeEpoch <= 0) return
     val lastPush = maxOf(values.lastReceivedTime, lockedPushArrived())
     if (!PushHealth.isMiss(urgent, serverTimestampMs, deliveredMs, lastPush)) return

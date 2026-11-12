@@ -1,1 +1,2 @@
-colliesocket 371a744b2b15ead17cf50000e59cc7d347574b7c contracts/encrypted-push/v2 (enrollment.schema.json, event.schema.json, control.schema.json, fixtures/control-v2.json, fixtures/enrollment-keyed.json, fixtures/status-updated.json). Byte copies from the source revision merged to main in https://github.com/0cwa/colliesocket/pull/11 on 2026-11-11.
+CollieSocket v2 wire contract pin: 371a744b2b15ead17cf50000e59cc7d347574b7c.
+The v2 README and copy manifest are refreshed from the PR18 base at baf437633d6243a1c37c074917d075a12c625d95; v2 schemas and fixtures remain byte-identical.

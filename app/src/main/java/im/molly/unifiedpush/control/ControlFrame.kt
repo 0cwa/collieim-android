@@ -10,7 +10,7 @@ import javax.crypto.spec.SecretKeySpec
 
 /**
  * The endpoint-update frame of `contracts/encrypted-push/v2` ("Exact control wire format") in
- * https://github.com/0cwa/colliesocket, pinned at [EnrollmentFile.CONTRACT_COMMIT].
+ * https://github.com/0cwa/colliesocket, frozen at the v2 source pin [EnrollmentFile.V2_CONTRACT_COMMIT].
  *
  * The frame is the entire content of the Signal envelope CollieSocket receives, so it is not Signal ciphertext:
  * header (magic, version, account, device, epoch), a 12-byte nonce, then AES-256-GCM of the new subscription with

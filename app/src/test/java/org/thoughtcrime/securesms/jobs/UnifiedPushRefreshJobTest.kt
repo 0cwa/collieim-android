@@ -5,6 +5,7 @@
 package org.thoughtcrime.securesms.jobs
 
 import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
 import io.mockk.coEvery
@@ -108,7 +109,8 @@ class UnifiedPushRefreshJobTest {
     val executor = Executors.newSingleThreadExecutor()
     return try {
       executor.submit<Throwable?> {
-        runCatching { UnifiedPushRefreshJob().onRun() }.exceptionOrNull()
+        val job = UnifiedPushRefreshJob().apply { setContext(ApplicationProvider.getApplicationContext()) }
+        runCatching { job.onRun() }.exceptionOrNull()
       }.get(5, TimeUnit.SECONDS)
     } finally {
       executor.shutdownNow()

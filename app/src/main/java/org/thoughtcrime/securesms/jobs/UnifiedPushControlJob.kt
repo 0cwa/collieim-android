@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.jobs
 
 import im.molly.unifiedpush.control.EndpointUpdates
+import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -40,7 +41,11 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
     // Job cancellation means enqueue() already scheduled a replacement. A terminal retry/lifespan
     // failure is different: keep the durable update moving through another bounded job lifecycle.
     if (isCanceled()) return
-    if (UnifiedPushControlStore(SignalStore.unifiedpush).read().update != null) enqueue()
+    try {
+      if (UnifiedPushControlStore(SignalStore.unifiedpush).read().update != null) enqueue()
+    } catch (e: CorruptControlStateException) {
+      Log.w(TAG, "Endpoint update stopped: control state unavailable")
+    }
   }
 
   override fun onShouldRetry(e: Exception): Boolean = true
@@ -52,7 +57,12 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
   public override fun onRun() {
     val values = SignalStore.unifiedpush
     val store = UnifiedPushControlStore(values)
-    val update = store.read().update
+    val update = try {
+      store.read().update
+    } catch (e: CorruptControlStateException) {
+      Log.w(TAG, "Endpoint update stopped: control state unavailable")
+      return
+    }
     if (update == null) {
       Log.d(TAG, "No endpoint update pending.")
       return

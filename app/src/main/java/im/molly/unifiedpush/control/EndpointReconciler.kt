@@ -23,7 +23,15 @@ object EndpointReconciler {
   fun reconcile(resume: Boolean = false) {
     val values = SignalStore.unifiedpush
     val store = UnifiedPushControlStore(values)
-    if (store.read().key == null) return
+    val control = values.controlStateRead
+    val controlState = control.stateOrNull
+    if (controlState == null) {
+      Log.w(TAG, "Endpoint update not built: control state unavailable")
+      return
+    }
+    if (controlState.key == null) {
+      return
+    }
     val aci = SignalStore.account.aci ?: return
     val device = values.device ?: return
     val now = System.currentTimeMillis() / 1000
@@ -35,7 +43,12 @@ object EndpointReconciler {
       Log.w(TAG, "Endpoint update not built: ${e.code}")
       null
     }
-    val result = EndpointUpdates.reconcile(store, aci.toString(), device.deviceId, subscription, now)
+    val result = try {
+      EndpointUpdates.reconcile(store, aci.toString(), device.deviceId, subscription, now)
+    } catch (e: CorruptControlStateException) {
+      Log.w(TAG, "Endpoint update not built: control state unavailable")
+      return
+    }
     val update = result.update ?: return
     if (result.built || (resume && now - maxOf(update.lastAttemptAt, update.createdAt) >= RESUME_AFTER_SECONDS)) UnifiedPushControlJob.enqueue()
   }

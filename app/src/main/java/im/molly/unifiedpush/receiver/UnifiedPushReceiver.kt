@@ -4,6 +4,7 @@ import android.content.Context
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.EndpointUpdates
+import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.health.PushHealthActions
@@ -130,11 +131,16 @@ class UnifiedPushReceiver : MessagingReceiver() {
       return
     }
 
-    val active = SignalStore.unifiedpush.enrollmentEpoch
-    val pending = SignalStore.unifiedpush.pendingEnrollmentEpoch
+    val values = SignalStore.unifiedpush
+    val controlState = values.controlStateRead.stateOrNull
+    if (controlState == null) {
+      Log.w(TAG, "Control state unavailable. Push dropped.")
+      return
+    }
+    val active = controlState.activeEpoch
+    val pending = controlState.pendingEpoch
     LockedPushState.setEncryptedEnrollment(context, active > 0)
-    // An active encrypted enrollment accepts nothing but encrypted events. Until the first event confirms an
-    // exported enrollment, anything that is not an event keeps the stock plaintext behavior.
+    // A saved import intent also requires encrypted delivery, before or after an active import is confirmed.
     if (active > 0 || pending > 0) {
       if (onEncryptedMessage(context, message)) return
       if (active > 0 || EncryptedPush.isEventShaped(message.content)) return
@@ -144,13 +150,31 @@ class UnifiedPushReceiver : MessagingReceiver() {
   }
 
   /**
-   * Handles [message] as an encrypted event. Returns true if it was accepted (and its effect started). With an
-   * active enrollment the epochs accepted are the active one and, until it is confirmed, the pending one.
+   * Handles [message] as an encrypted event. Returns true if it was accepted (and its effect started). V3 events
+   * must identify either the exact eligible import intent or the confirmed active intent.
    */
   private fun onEncryptedMessage(context: Context, message: PushMessage): Boolean {
     val values = SignalStore.unifiedpush
     val controlStore = UnifiedPushControlStore(values)
-    val snapshot = controlStore.read()
+    val snapshot = try {
+      controlStore.read()
+    } catch (e: CorruptControlStateException) {
+      Log.w(TAG, "Control state unavailable. Encrypted push dropped.")
+      return false
+    }
+    // A persisted key_id proves only its stored export context. Bind v3 identity to the registration currently
+    // loaded by Signal and UnifiedPush; missing local context must not promote or confirm a v3 identity.
+    val currentRegistration = lazy {
+      SignalStore.account.aci?.toString()?.let { accountId ->
+        values.device?.let { device ->
+          EndpointUpdates.RegistrationContext(
+            accountId = accountId,
+            deviceId = device.deviceId,
+            instance = values.endpointInstance ?: "default",
+          )
+        }
+      }
+    }
     var effect = EndpointUpdates.Effect.NONE
     val outcome = synchronized(replayLock) {
       val now = System.currentTimeMillis() / 1000
@@ -167,17 +191,22 @@ class UnifiedPushReceiver : MessagingReceiver() {
         activeInstance = values.endpointInstance ?: "default",
         acceptedEpochs = EndpointUpdates.acceptedEpochs(snapshot),
         state = state,
-        versionForEpoch = { epoch -> EndpointUpdates.versionForEpoch(snapshot, epoch) },
+        versionsForEpoch = { epoch -> EndpointUpdates.versionsForEpoch(snapshot, epoch) },
+        identityMatches = { event ->
+          EndpointUpdates.identityMatches(snapshot, event, if (event.version == 3) currentRegistration.value else null)
+        },
       ).also {
         if (it.decision.accepted) {
-          // Committed to disk, with the control state it changes, before any effect. An event at the pending epoch
-          // proves the server imported the file; `subscription_updated` at the update's epoch proves it applied the
-          // new endpoint. Both are decided inside the write, against the state as it is then.
-          effect = EndpointUpdates.accepted(controlStore, it.state.serialize(), it.event!!)
+          // Committed to disk with replay state before any effect. A matching v3 import identity binds the exact
+          // intent; a `subscription_updated` event must match the already active identity.
+          val event = it.event!!
+          val registration = if (event.version == 3) currentRegistration.value else null
+          effect = EndpointUpdates.accepted(controlStore, it.state.serialize(), event, registration)
           if (effect == EndpointUpdates.Effect.PROMOTED) LockedPushState.setEncryptedEnrollment(context, true)
         }
       }
     }
+    if (effect == EndpointUpdates.Effect.REJECTED) return false
     // The endpoint may have changed since the update or the export was built: converge on the current one.
     if (effect != EndpointUpdates.Effect.NONE) EndpointReconciler.reconcile()
 
@@ -206,7 +235,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
           // The confirmation came through Signal, CollieSocket and the push provider: the whole path works.
           PushHealthActions.onPing(PushHealth.Hop.NONE)
         }
-        else if (outcome.event?.code != EncryptedPush.CODE_SUBSCRIPTION_UPDATED) values.statusCode = outcome.event?.code
+        else if (outcome.event?.code != EncryptedPush.CODE_SUBSCRIPTION_UPDATED && outcome.event?.code != EncryptedPush.CODE_ENROLLMENT_IMPORTED) {
+          values.statusCode = outcome.event?.code
+        }
       }
       else -> Unit
     }

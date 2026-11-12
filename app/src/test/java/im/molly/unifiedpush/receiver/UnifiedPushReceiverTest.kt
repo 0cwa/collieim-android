@@ -47,7 +47,12 @@ import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
 import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.ControlStateRead
+import im.molly.unifiedpush.control.EndpointUpdates
+import im.molly.unifiedpush.control.ImportIntent
+import im.molly.unifiedpush.control.LegacyPending
 import im.molly.unifiedpush.control.Target
+import im.molly.unifiedpush.enrollment.ControlKeyId
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 
@@ -239,7 +244,14 @@ class UnifiedPushReceiverTest {
    * runs [block] with the recorded calls cleared.
    */
   private fun enrollment(active: Long, pending: Long, key: String? = null, state: (ControlState) -> ControlState = { it }, block: () -> Unit) {
-    values.mutateControl { state(ControlState(key = key, activeEpoch = active, pendingEpoch = pending)) }
+    values.mutateControl {
+      state(ControlState(
+        key = key,
+        activeEpoch = active,
+        highestEpoch = active,
+        legacyPending = pending.takeIf { it > 0 }?.let { LegacyPending(null, it, null) },
+      ))
+    }
     values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000 - 1, emptyList()).serialize()
     every { values.endpointInstance } returns "default"
     every { values.lastReceivedTime = any() } returns Unit
@@ -336,6 +348,18 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `corrupt control state does not fall back to plaintext push handling`() {
+    enrollment(active = 0, pending = 0) {
+      every { values.controlStateRead } returns ControlStateRead.Corrupt
+
+      UnifiedPushReceiver().onMessage(context, urgent(), "default")
+
+      fetches(0)
+      verify(exactly = 0) { values.mutateControl(any(), any()) }
+    }
+  }
+
+  @Test
   fun `an export the server never imported leaves a stock enrollment on plaintext wakes`() {
     enrollment(active = 0, pending = 1) {
       val receiver = UnifiedPushReceiver()
@@ -348,17 +372,69 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
-  fun `an event at the pending epoch promotes it, commits first and ends plaintext wakes`() {
-    enrollment(active = 0, pending = 1) {
+  fun `only a matching v3 intent event promotes and commits before effects`() {
+    fakeAccount()
+    val candidate = importIntent("22222222-2222-4222-8222-222222222222", 1, 1, fixtureKey)
+    enrollment(active = 0, pending = 0, state = { it.copy(intents = listOf(candidate), importSequence = 1, highestEpoch = 1) }) {
       val receiver = UnifiedPushReceiver()
-      receiver.onMessage(context, PushMessage(wake(), true), "default")
+      receiver.onMessage(context, PushMessage(v3Event(candidate, "11111111-1111-4111-8111-111111111111", "wake"), true), "default")
       verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
       org.junit.Assert.assertEquals(1L, active)
       org.junit.Assert.assertEquals(0L, pending)
+      org.junit.Assert.assertEquals(candidate.requestId, values.controlState.activeImportId)
+      org.junit.Assert.assertEquals(1L, values.controlState.activeImportSeq)
       org.junit.Assert.assertTrue(LockedPushState.isEncryptedEnrollment(context))
 
       receiver.onMessage(context, urgent(), "default")
       fetches(1)
+    }
+    LockedPushState.setEncryptedEnrollment(context, false)
+  }
+
+  @Test
+  fun `v3 candidate from another live account is dropped without changing key state or replay state`() {
+    LockedPushState.setEncryptedEnrollment(context, false)
+    fakeAccount()
+    val candidate = importIntent("22222222-2222-4222-8222-222222222222", 1, 1, fixtureKey)
+    enrollment(active = 0, pending = 0, state = { it.copy(intents = listOf(candidate), importSequence = 1, highestEpoch = 1) }) {
+      val before = values.controlState
+      val replayBefore = values.replayState
+      fakeAccount("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
+
+      UnifiedPushReceiver().onMessage(
+        context,
+        PushMessage(v3Event(candidate, "11111111-1111-4111-8111-111111111111", "wake"), true),
+        "default",
+      )
+
+      fetches(0)
+      org.junit.Assert.assertEquals(before, values.controlState)
+      org.junit.Assert.assertEquals(replayBefore, values.replayState)
+      org.junit.Assert.assertFalse(LockedPushState.isEncryptedEnrollment(context))
+    }
+    LockedPushState.setEncryptedEnrollment(context, false)
+  }
+
+  @Test
+  fun `v3 candidate for another live device is dropped without changing key state or replay state`() {
+    LockedPushState.setEncryptedEnrollment(context, false)
+    fakeAccount()
+    val candidate = importIntent("22222222-2222-4222-8222-222222222222", 1, 1, fixtureKey)
+    enrollment(active = 0, pending = 0, state = { it.copy(intents = listOf(candidate), importSequence = 1, highestEpoch = 1) }) {
+      val before = values.controlState
+      val replayBefore = values.replayState
+      values.device = MollySocketDevice(3, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
+
+      UnifiedPushReceiver().onMessage(
+        context,
+        PushMessage(v3Event(candidate, "11111111-1111-4111-8111-111111111111", "wake"), true),
+        "default",
+      )
+
+      fetches(0)
+      org.junit.Assert.assertEquals(before, values.controlState)
+      org.junit.Assert.assertEquals(replayBefore, values.replayState)
+      org.junit.Assert.assertFalse(LockedPushState.isEncryptedEnrollment(context))
     }
     LockedPushState.setEncryptedEnrollment(context, false)
   }
@@ -385,9 +461,9 @@ class UnifiedPushReceiverTest {
       org.junit.Assert.assertEquals(1L, active)
       receiver.onMessage(context, urgent(), "default")
       fetches(1)
-      receiver.onMessage(context, PushMessage(wake(epoch = 2, id = "22222222-2222-4222-8222-222222222222"), true), "default")
-      verify(timeout = 3000, exactly = 2) { PushFetchHandler.handleReceivedNotification(any(), true) }
-      org.junit.Assert.assertEquals(2L, active)
+      receiver.onMessage(context, PushMessage(wake(epoch = 2, version = 2, id = "22222222-2222-4222-8222-222222222222"), true), "default")
+      fetches(1)
+      org.junit.Assert.assertEquals("v2 cannot invent the pending import identity", 1L, active)
       receiver.onMessage(context, PushMessage(wake(epoch = 1, id = "33333333-3333-4333-8333-333333333333"), true), "default")
       fetches(2)
     }
@@ -425,6 +501,25 @@ class UnifiedPushReceiverTest {
   private val fixtureP256dh = "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4"
   private val fixtureAuth = "MDEyMzQ1Njc4OTo7PD0-Pw"
 
+  private fun importIntent(requestId: String, sequence: Long, epoch: Long, key: String) = ImportIntent(
+    requestId = requestId,
+    sequence = sequence,
+    epoch = epoch,
+    controlKey = key,
+    keyId = ControlKeyId.derive(key, "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", 2, "default"),
+    target = Target("https://push.example.invalid/old", fixtureP256dh, fixtureAuth),
+    accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    deviceId = 2,
+    password = "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL",
+    instance = "default",
+    recovery = false,
+  )
+
+  private fun v3Event(intent: ImportIntent, eventId: String, kind: String): ByteArray {
+    val now = System.currentTimeMillis() / 1000
+    return """{"version":3,"event_id":"$eventId","instance":"${intent.instance}","subscription_epoch":${intent.epoch},"kind":"$kind","issued_at":$now,"expires_at":${now + 300},"key_id":"${intent.keyId}","import_id":"${intent.requestId}"}""".toByteArray()
+  }
+
   private fun statusEvent(epoch: Long, code: String, version: Int = 2, id: String = "33333333-3333-4333-8333-333333333333"): ByteArray {
     val now = System.currentTimeMillis() / 1000
     return ("""{"version":$version,"event_id":"$id","instance":"default","subscription_epoch":$epoch,"kind":"status",""" +
@@ -446,7 +541,10 @@ class UnifiedPushReceiverTest {
   fun `subscription_updated at the pending update's epoch confirms it and is not a server problem`() {
     withPendingUpdate(epoch = 2) {
       healthStore.failures = 1
-      UnifiedPushReceiver().onMessage(context, PushMessage(statusEvent(2, "subscription_updated"), true), "default")
+      val eventBytes = statusEvent(2, "subscription_updated")
+      val event = EncryptedPush.parse(eventBytes, System.currentTimeMillis() / 1000, setOf(2))!!
+      org.junit.Assert.assertTrue(EndpointUpdates.identityMatches(values.controlState, event))
+      UnifiedPushReceiver().onMessage(context, PushMessage(eventBytes, true), "default")
       org.junit.Assert.assertEquals("the whole path worked, so earlier failures stop counting", 0, healthStore.failures)
       org.junit.Assert.assertNull(values.controlState.update)
       org.junit.Assert.assertEquals(2L, active)
@@ -490,9 +588,9 @@ class UnifiedPushReceiverTest {
     }
   }
 
-  private fun fakeAccount() {
+  private fun fakeAccount(accountId: String = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa") {
     val aci = mockk<org.signal.core.models.ServiceId.ACI>()
-    every { aci.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    every { aci.toString() } returns accountId
     every { SignalStore.account.aci } returns aci
     values.device = MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
     every { values.airGapped } returns false
@@ -528,7 +626,7 @@ class UnifiedPushReceiverTest {
       controlJobAdds(0)
     }
     values.endpoint = "https://push.example.invalid/old"
-    enrollment(active = 0, pending = 1, key = null, state = { it.copy(pendingKey = fixtureKey) }) {
+    enrollment(active = 0, pending = 1, key = null, state = { it.copy(legacyPending = LegacyPending(fixtureKey, 1, null)) }) {
       UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
       controlJobAdds(0)
     }
@@ -540,14 +638,11 @@ class UnifiedPushReceiverTest {
     values.endpoint = "https://push.example.invalid/rotated"
     values.endpointP256dh = fixtureP256dh
     values.endpointAuth = fixtureAuth
-    enrollment(active = 0, pending = 2, state = { it.copy(pendingKey = fixtureKey, pendingTarget = oldTarget) }) {
+    enrollment(active = 0, pending = 2, state = { it.copy(legacyPending = LegacyPending(fixtureKey, 2, oldTarget)) }) {
       UnifiedPushReceiver().onMessage(context, PushMessage(wake(epoch = 2, version = 2), true), "default")
-      org.junit.Assert.assertEquals(2L, active)
-      org.junit.Assert.assertEquals(fixtureKey, values.controlState.key)
-      val update = values.controlState.update!!
-      org.junit.Assert.assertEquals(3L, update.epoch)
-      org.junit.Assert.assertEquals("https://push.example.invalid/rotated", update.endpoint)
-      controlJobAdds(1)
+      org.junit.Assert.assertEquals("legacy event cannot promote an unknown import", 0L, active)
+      org.junit.Assert.assertNull(values.controlState.key)
+      controlJobAdds(0)
     }
     LockedPushState.setEncryptedEnrollment(context, false)
   }

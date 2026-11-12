@@ -17,7 +17,7 @@ import javax.crypto.spec.SecretKeySpec
 class ControlFrameTest {
 
   private val mapper = ObjectMapper()
-  private val fixture = mapper.readTree(javaClass.getResourceAsStream("/colliesocket-contract-v2/control-v2.json")!!.readBytes())
+  private val fixture = mapper.readTree(javaClass.getResourceAsStream("/colliesocket-contract-v2/fixtures/control-v2.json")!!.readBytes())
   private val url = Base64.getUrlDecoder()
   private val plain = mapper.readTree(fixture["plaintext_utf8"].asText())
   private val subscription = ControlFrame.Subscription(plain["endpoint"].asText(), plain["p256dh"].asText(), plain["auth"].asText())

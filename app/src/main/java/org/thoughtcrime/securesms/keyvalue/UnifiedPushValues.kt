@@ -1,6 +1,8 @@
 package org.thoughtcrime.securesms.keyvalue
 
 import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.ControlStateRead
+import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
@@ -89,23 +91,50 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
    */
   var enrollmentEpoch: Long
     get() = controlState.activeEpoch
-    set(value) { mutateControl { it.copy(activeEpoch = value) } }
+    set(value) { mutateControl { it.copy(activeEpoch = value, highestEpoch = maxOf(it.highestEpoch, value)) } }
 
-  /** Subscription epoch written into the last enrollment export that no event has confirmed yet (0: none). */
+  /** Compatibility view for a pending candidate or migrated unknown export. */
   var pendingEnrollmentEpoch: Long
     get() = controlState.pendingEpoch
-    set(value) { mutateControl { it.copy(pendingEpoch = value) } }
+    set(value) {
+      mutateControl {
+        val old = it.legacyPending
+        it.copy(legacyPending = when {
+          value <= 0 -> null
+          else -> im.molly.unifiedpush.control.LegacyPending(old?.key, value, old?.target)
+        })
+      }
+    }
 
   /** Encrypted push replay state (clock high-water mark and live event ids), see [im.molly.unifiedpush.receiver.EncryptedPush]. */
   var replayState: String? by stringValue(UNIFIEDPUSH_REPLAY_STATE, null)
 
-  /**
-   * The control state: keys, epochs, the subscription the server holds and the unconfirmed endpoint update, as one
-   * record. Before it was first written it is read from the two epoch keys older versions used.
-   */
+  /** Typed view of the stored record. Corrupt serialized data never falls through to the legacy epoch keys. */
+  val controlStateRead: ControlStateRead
+    get() = when (val stored = ControlState.parse(getString(UNIFIEDPUSH_CONTROL_STATE, null))) {
+      ControlStateRead.Absent -> {
+        val active = getLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0)
+        val pending = getLong(UNIFIEDPUSH_PENDING_EPOCH, 0)
+        when {
+          active < 0 || pending < 0 -> ControlStateRead.Corrupt
+          active == 0L && pending == 0L -> ControlStateRead.Absent
+          else -> ControlStateRead.Legacy(
+            ControlState(
+              activeEpoch = active,
+              legacyPending = pending.takeIf { it > 0 }?.let { im.molly.unifiedpush.control.LegacyPending(null, it, null) },
+            )
+          )
+        }
+      }
+      else -> stored
+    }
+
+  /** Keys, epochs, the server subscription and the unconfirmed endpoint update as one record. */
   val controlState: ControlState
-    get() = ControlState.parse(getString(UNIFIEDPUSH_CONTROL_STATE, null))
-      ?: ControlState(activeEpoch = getLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0), pendingEpoch = getLong(UNIFIEDPUSH_PENDING_EPOCH, 0))
+    get() = controlStateRead.stateOrNull ?: throw CorruptControlStateException()
+
+  val hasCorruptControlState: Boolean
+    get() = controlStateRead == ControlStateRead.Corrupt
 
   val controlKey: String? get() = controlState.key
 
@@ -115,10 +144,16 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
    */
   fun mutateControl(replay: String? = null, block: (ControlState) -> ControlState): ControlState {
     synchronized(controlLock) {
-      val old = controlState
+      val loaded = controlStateRead
+      val old = loaded.stateOrNull ?: throw CorruptControlStateException()
       val next = block(old)
-      if (next == old && replay == null) return old
+      if (ControlState.parse(next.serialize()) !is ControlStateRead.Current) {
+        throw IllegalArgumentException("Invalid Unified Push control state")
+      }
+      val migration = loaded is ControlStateRead.Legacy
+      if (next == old && replay == null && !migration) return old
       val write = store.beginWrite().putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
+      if (migration) write.remove(UNIFIEDPUSH_ENROLLMENT_EPOCH).remove(UNIFIEDPUSH_PENDING_EPOCH)
       if (replay != null) write.putString(UNIFIEDPUSH_REPLAY_STATE, replay)
       write.commit()
       return next
@@ -146,7 +181,39 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
 
   /** Forgets every control key, epoch and update: a different server, or a new enrollment lifecycle. */
   fun clearControl() {
-    mutateControl { ControlState() }
+    synchronized(controlLock) {
+      // Callers use this only after deliberately removing/replacing the server enrollment. Keep replay data intact.
+      clearControlLocked()
+    }
+  }
+
+  /** Clears provider-specific keys/epochs when the server changes without lowering the registration import counter. */
+  fun clearControlForServerChange(): Boolean = synchronized(controlLock) {
+    val loaded = controlStateRead
+    val old = loaded.stateOrNull ?: return@synchronized false
+    val next = ControlState(importSequence = old.importSequence)
+    if (old == next && loaded !is ControlStateRead.Legacy) return@synchronized true
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
+      .remove(UNIFIEDPUSH_ENROLLMENT_EPOCH)
+      .remove(UNIFIEDPUSH_PENDING_EPOCH)
+      .commit()
+    true
+  }
+
+  /** Explicit recovery after the operator removed the server enrollment. Does nothing if the record is no longer corrupt. */
+  fun clearCorruptControlAfterServerRemoval(): Boolean = synchronized(controlLock) {
+    if (ControlState.parse(getString(UNIFIEDPUSH_CONTROL_STATE, null)) != ControlStateRead.Corrupt) return@synchronized false
+    clearControlLocked()
+    true
+  }
+
+  private fun clearControlLocked() {
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_CONTROL_STATE, ControlState().serialize())
+      .remove(UNIFIEDPUSH_ENROLLMENT_EPOCH)
+      .remove(UNIFIEDPUSH_PENDING_EPOCH)
+      .commit()
   }
 
   /** Last generic status code the server reported in an accepted encrypted push status event. */

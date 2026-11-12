@@ -167,7 +167,7 @@ class PushHealthE2eTest {
 
     // Enrollment proven by a first wake, as in the endpoint update test.
     File(dir, "inject-ids.txt").delete()
-    EnrollmentExporter.export(context, null) { true }
+    EnrollmentExporter.exportWithEpoch(context, null, im.molly.unifiedpush.enrollment.ExportMode.NEW_INTENT, isDistributorActive = { true })
     File(dir, "ready.txt").writeText("ready")
     waitFor("first wake", 180) { File(dir, "inject-ids.txt").exists() }
     inject(File(dir, "inject-wake.bin").readBytes())

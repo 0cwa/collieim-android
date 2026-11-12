@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.control.ControlReset
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocket
 import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
@@ -20,7 +21,9 @@ import org.signal.core.util.ThreadUtil
 import java.io.IOException
 import im.molly.unifiedpush.receiver.LockedPushState
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.jobs.UnifiedPushHealthJob
 import org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJob
+import org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.thoughtcrime.securesms.util.livedata.Store
@@ -80,7 +83,26 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       selectedNotAck = !ack,
       endpoint = SignalStore.unifiedpush.endpoint,
       mollySocketUrl = mollySocketUrl,
+      pushFallback = SignalStore.unifiedpush.health.fallback,
+      pushTestResult = PushHealth.Hop.fromCode(SignalStore.unifiedpush.health.lastResult),
+      pushTestResultAt = SignalStore.unifiedpush.health.lastResultAt,
+      // Only for as long as the job can run: it ends within the timeout, and a missing verdict must not leave "testing" up.
+      pushTestRunning = pushTestStartedAt > 0 && SignalStore.unifiedpush.health.lastResultAt * 1000 < pushTestStartedAt &&
+        System.currentTimeMillis() - pushTestStartedAt < UnifiedPushHealthJob.timeoutMs + TEST_GRACE_MS,
     )
+  }
+
+  private var pushTestStartedAt = 0L
+
+  private companion object {
+    const val TEST_GRACE_MS = 15_000L
+  }
+
+  /** Runs the end-to-end push test; the verdict arrives through [PushServiceEvent] and is shown on the screen. */
+  fun testPush() {
+    pushTestStartedAt = System.currentTimeMillis()
+    UnifiedPushHealthJob.enqueue(manual = true)
+    refresh()
   }
 
   fun setUnifiedPushDistributor(distributor: String) {
@@ -166,6 +188,11 @@ fun UnifiedPushValues.updateMollySocket(mollySocket: MollySocket) {
     // A different MollySocket server: the encrypted enrollment no longer applies. The replay state stays,
     // because the contract forbids lowering its clock mark.
     ControlReset.discard(AppDependencies.application)
+    // The push health verdicts and the WebSocket mode they caused belong to the server that is gone.
+    PushHealth.reset(health)
+    if (SignalStore.settings.forceWebsocketMode == ForceWebsocketMode.ENABLED_AUTOMATICALLY) {
+      SignalStore.settings.forceWebsocketMode = ForceWebsocketMode.DISABLED_AUTOMATICALLY
+    }
   }
 
   lastReceivedTime = 0

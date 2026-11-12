@@ -60,6 +60,13 @@ class UnifiedPushReceiverTest {
   // A real values object over an in-memory store, so the control record is the real one; a spy lets tests stub and verify.
   private val values = spyk(UnifiedPushValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()))))
   private val context: Application get() = ApplicationProvider.getApplicationContext()
+  private val healthStore = object : im.molly.unifiedpush.health.PushHealth.HealthStore {
+    override var failures = 0
+    override var fallback = false
+    override var lastResult: String? = null
+    override var lastResultAt = 0L
+    override var lastMissAt = 0L
+  }
   private var failed = false
   private var retryScheduled = false
 
@@ -75,6 +82,7 @@ class UnifiedPushReceiverTest {
     every { values.registrationFailed = any() } answers { failed = firstArg() }
     every { values.registrationRetryScheduled } answers { retryScheduled }
     every { values.registrationRetryScheduled = any() } answers { retryScheduled = firstArg() }
+    every { values.health } returns healthStore
     every { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) } returns Unit
     mockkConstructor(UnifiedPushNotificationBuilder::class)
     every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationRegistrationFailed() } returns Unit
@@ -298,6 +306,18 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `a push dropped while locked is remembered, where it can be read without the database`() {
+    enrollment(active = 1, pending = 0, key = fixtureKey) {
+      org.junit.Assert.assertEquals(0L, LockedPushState.lastPushArrived(context))
+      every { KeyCachingService.isLocked() } returns true
+      val before = System.currentTimeMillis()
+      UnifiedPushReceiver().onMessage(context, PushMessage(wake(version = 2), true), "default")
+      org.junit.Assert.assertTrue(LockedPushState.lastPushArrived(context) >= before)
+      fetches(0)
+    }
+  }
+
+  @Test
   fun `discarding the enrollment forgets the record and clears the flag the receiver reads while locked`() {
     enrollment(active = 2, pending = 3, key = fixtureKey) {
       LockedPushState.setEncryptedEnrollment(context, true)
@@ -377,6 +397,7 @@ class UnifiedPushReceiverTest {
   fun `stock settings change clears the encrypted enrollment but keeps the replay state`() {
     enrollment(active = 1, pending = 2) {
       LockedPushState.setEncryptedEnrollment(context, true)
+      every { SignalStore.settings.forceWebsocketMode } returns org.thoughtcrime.securesms.keyvalue.SettingsValues.ForceWebsocketMode.DISABLED_AUTOMATICALLY
       every { values.vapidPublicKey } returns "old"
       every { values.vapidPublicKey = any() } returns Unit
       every { values.airGapped = any() } returns Unit
@@ -424,7 +445,9 @@ class UnifiedPushReceiverTest {
   @Test
   fun `subscription_updated at the pending update's epoch confirms it and is not a server problem`() {
     withPendingUpdate(epoch = 2) {
+      healthStore.failures = 1
       UnifiedPushReceiver().onMessage(context, PushMessage(statusEvent(2, "subscription_updated"), true), "default")
+      org.junit.Assert.assertEquals("the whole path worked, so earlier failures stop counting", 0, healthStore.failures)
       org.junit.Assert.assertNull(values.controlState.update)
       org.junit.Assert.assertEquals(2L, active)
       org.junit.Assert.assertEquals("https://push.example.invalid/new", values.controlState.serverTarget!!.endpoint)

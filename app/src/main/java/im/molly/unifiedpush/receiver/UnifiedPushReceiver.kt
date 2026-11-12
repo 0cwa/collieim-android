@@ -5,6 +5,8 @@ import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.health.PushHealth
+import im.molly.unifiedpush.health.PushHealthActions
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
@@ -118,6 +120,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
 
   override fun onMessage(context: Context, message: PushMessage, instance: String) {
     if (appLocked) {
+      LockedPushState.recordPushArrived(context, System.currentTimeMillis())
       // Which kind of enrollment this is cannot be read from SignalStore while locked.
       if (LockedPushState.isEncryptedEnrollment(context)) {
         Log.d(TAG, "Encrypted push dropped while locked.")
@@ -188,15 +191,21 @@ class UnifiedPushReceiver : MessagingReceiver() {
     when (outcome.decision) {
       EncryptedPush.Decision.ACCEPT_WAKE -> {
         updateLastReceivedTime(System.currentTimeMillis())
+        PushHealthActions.onPushAccepted()
         startFetch(context)
       }
       EncryptedPush.Decision.ACCEPT_TEST -> {
         updateLastReceivedTime(System.currentTimeMillis())
+        PushHealthActions.onPushAccepted()
         UnifiedPushNotificationBuilder(context).setNotificationTest()
       }
       EncryptedPush.Decision.ACCEPT_STATUS -> {
         // A confirmation is not a server problem; it is only recorded as the end of the pending update.
-        if (effect == EndpointUpdates.Effect.CONFIRMED) Log.i(TAG, "Endpoint update confirmed at epoch ${outcome.event?.epoch}")
+        if (effect == EndpointUpdates.Effect.CONFIRMED) {
+          Log.i(TAG, "Endpoint update confirmed at epoch ${outcome.event?.epoch}")
+          // The confirmation came through Signal, CollieSocket and the push provider: the whole path works.
+          PushHealthActions.onPing(PushHealth.Hop.NONE)
+        }
         else if (outcome.event?.code != EncryptedPush.CODE_SUBSCRIPTION_UPDATED) values.statusCode = outcome.event?.code
       }
       else -> Unit

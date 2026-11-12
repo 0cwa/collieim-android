@@ -25,6 +25,7 @@ import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.isDecisionPending
 import org.signal.storageservice.storage.protos.groups.local.DecryptedGroup
+import im.molly.unifiedpush.health.PushHealthActions
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.clockskew.ClockSkewDetector
 import org.thoughtcrime.securesms.crypto.ReentrantSessionLock
@@ -359,6 +360,7 @@ class IncomingMessageObserver(
     var isNetworkResetRequired = false
 
     SignalLocalMetrics.MessageLatency.onMessageReceived(envelope.serverTimestamp!!, serverDeliveredTimestamp, envelope.urgent!!)
+    PushHealthActions.onEnvelope(envelope.urgent!!, envelope.serverTimestamp!!, serverDeliveredTimestamp) // MOLLY
     when (result) {
       is MessageDecryptor.Result.Success -> {
         val job = PushProcessMessageJob.processOrDefer(messageContentProcessor, result, localReceiveMetric, batchCache)

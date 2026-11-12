@@ -23,6 +23,8 @@ class ControlUpdate(
   val sentAt: Long = 0,
   /** Fixed code of the last failed send, never a message or a value. */
   val failure: String? = null,
+  /** True when the update only repeats the current subscription to test the round trip (see [EndpointUpdates.reconcile]). */
+  val ping: Boolean = false,
 ) {
   override fun toString() = "ControlUpdate(epoch=$epoch)"
 
@@ -33,14 +35,14 @@ class ControlUpdate(
 
   /** [error] is a fixed code, or null when the send succeeded. */
   fun afterAttempt(now: Long, error: String? = null) =
-    ControlUpdate(epoch, endpoint, p256dh, auth, frame, createdAt, attempts + 1, now, if (error == null) now else sentAt, error)
+    ControlUpdate(epoch, endpoint, p256dh, auth, frame, createdAt, attempts + 1, now, if (error == null) now else sentAt, error, ping)
 
   fun serialize(): String = mapper.writeValueAsString(
     mapOf(
       "epoch" to epoch, "endpoint" to endpoint, "p256dh" to p256dh, "auth" to auth,
       "frame" to Base64.getUrlEncoder().withoutPadding().encodeToString(frame),
       "created" to createdAt, "attempts" to attempts, "last" to lastAttemptAt,
-      "sent" to sentAt, "failure" to failure,
+      "sent" to sentAt, "failure" to failure, "ping" to ping,
     )
   )
 
@@ -61,6 +63,7 @@ class ControlUpdate(
         lastAttemptAt = root["last"].asLong(),
         sentAt = root["sent"]?.asLong() ?: 0,
         failure = root["failure"]?.takeIf { it.isTextual }?.asText(),
+        ping = root["ping"]?.asBoolean() ?: false,
       ).takeIf { it.epoch > 0 && it.frame.size in ControlFrame.HEADER_SIZE..ControlFrame.MAX_FRAME }
     } catch (e: Exception) {
       null

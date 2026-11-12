@@ -396,6 +396,31 @@ class EndpointUpdatesTest {
     assertEquals("ControlUpdate(epoch=${update.epoch})", update.toString())
   }
 
+  @Test
+  fun `a ping repeats the current subscription at a higher epoch and is marked as a ping`() {
+    val store = enrolled { copy(activeEpoch = 2, highestEpoch = 2) }
+    val ping = reconcile(store, "old", force = true).update!!
+    assertEquals(3, ping.epoch)
+    assertTrue(ping.ping)
+    assertEquals(sub("old").endpoint, ping.endpoint)
+    // an unconfirmed ping for the same subscription is reused, not stacked
+    assertArrayEquals(ping.frame, reconcile(store, "old", force = true).update!!.frame)
+    assertEquals(3, store.state.highestEpoch)
+    // a real endpoint change replaces it
+    val real = reconcile(store, "b").update!!
+    assertEquals(4, real.epoch)
+    assertFalse(real.ping)
+  }
+
+  @Test
+  fun `a send that raced a confirmation cannot bring the update back`() {
+    val store = enrolled()
+    val update = reconcile(store, "a").update!!
+    EndpointUpdates.accepted(store, "r", event(update.epoch))
+    EndpointUpdates.recordAttempt(store, update.epoch, 99, null)
+    assertNull(store.state.update)
+  }
+
   // --- exporting again before an event arrives ---
 
   @Test

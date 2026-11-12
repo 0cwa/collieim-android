@@ -19,7 +19,10 @@ object EndpointUpdates {
    * receiving an endpoint and storing its update, and an endpoint that changed before the first keyed import.
    * The caller sends the returned update.
    *
-   * [force] builds an update even when the server already holds [current] (used to test the whole path).
+   * [force] builds an update even when the server already holds [current], marked as a ping. The contract has no ping
+   * message: a control update at a higher epoch is the one thing the phone can send that the server answers with a
+   * push, so it is used to test the whole path. The server applies the same values and confirms with
+   * `subscription_updated`.
    */
   fun reconcile(
     store: ControlStore,
@@ -44,7 +47,7 @@ object EndpointUpdates {
           val frame = if (nonce == null) ControlFrame.build(key, accountId, deviceId, epoch, current)
           else ControlFrame.build(key, accountId, deviceId, epoch, current, nonce)
           built = true
-          old.copy(highestEpoch = epoch, update = ControlUpdate(epoch, current.endpoint, current.p256dh, current.auth, frame, now))
+          old.copy(highestEpoch = epoch, update = ControlUpdate(epoch, current.endpoint, current.p256dh, current.auth, frame, now, ping = force))
         }
       }
     }

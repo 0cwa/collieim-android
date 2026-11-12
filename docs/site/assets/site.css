@@ -131,7 +131,7 @@ a:hover{text-decoration-thickness:2px}
 .intro-source h3 a{color:inherit}
 .intro-source p{margin-top:8px;font-size:1rem;line-height:1.6;max-width:54ch}
 .intro .technical-details{margin-top:20px}
-.intro .technical-details summary{display:flex;align-items:center;justify-content:space-between;gap:16px;list-style:none;min-height:44px;font-size:.95rem;line-height:1.5;color:var(--link)}
+.intro .technical-details summary{display:flex;align-items:center;justify-content:flex-start;gap:8px;list-style:none;min-height:44px;font-size:.95rem;line-height:1.5;color:var(--link)}
 .intro summary::-webkit-details-marker{display:none}
 .intro summary .ico{width:18px;height:18px;transition:transform .2s}
 .intro details[open] summary .ico{transform:rotate(180deg)}
@@ -269,13 +269,19 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .card .ico{margin-bottom:6px}
   .card.featured{gap:16px}
   .feature-head{align-items:flex-start;gap:12px}
-  .feature-facts{grid-template-columns:1fr;gap:8px;padding-top:16px}
+  .feature-facts{display:none}
+  .upcoming-status{margin-top:12px}
+  .roadmap-list{margin-top:22px}
   .actions .button{flex:1 1 auto}
   .ways li{flex-direction:column;align-items:stretch}
   .ways .button{min-width:0;width:100%}
   .phone{border-radius:24px;padding:4px}
   .phone img{border-radius:20px}
   .get{border-radius:24px}
+}
+
+@media (max-width:359px){
+  .top .brand{font-size:1rem}
 }
 
 @media (prefers-reduced-motion:reduce){

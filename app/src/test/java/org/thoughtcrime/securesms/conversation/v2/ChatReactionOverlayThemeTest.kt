@@ -8,6 +8,8 @@ package org.thoughtcrime.securesms.conversation.v2
 import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.view.ContextThemeWrapper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -29,7 +31,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.mockk
@@ -126,16 +127,26 @@ class ChatReactionOverlayThemeTest {
     val pixels = compose.onNodeWithTag(OVERLAY).captureToImage().toPixelMap()
     // This corner is clear of the message snapshot and controls, so it contains both scrim layers.
     val actual = pixels[pixels.width - 1, pixels.height - 1].toArgb()
-    val expected = ColorUtils.compositeColors(
-      ThemeUtil.getThemedColor(context, R.attr.reactions_overlay_shade_color),
-      ColorUtils.compositeColors(ContextCompat.getColor(context, R.color.reactions_screen_light_shade_color), WALLPAPER.toArgb())
-    )
+    val expected = renderExpectedScrim(context)
 
     // Native raster compositing can round a channel by one at the alpha boundary.
     assertEquals(AndroidColor.red(expected).toDouble(), AndroidColor.red(actual).toDouble(), 1.0)
     assertEquals(AndroidColor.green(expected).toDouble(), AndroidColor.green(actual).toDouble(), 1.0)
     assertEquals(AndroidColor.blue(expected).toDouble(), AndroidColor.blue(actual).toDouble(), 1.0)
     assertEquals(255, AndroidColor.alpha(actual))
+  }
+
+  private fun renderExpectedScrim(context: Context): Int {
+    // Use the native rasterizer for the independent reference pixel. Integer color arithmetic
+    // truncates after each translucent layer, unlike the renderer used by captureToImage on API 31.
+    val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    canvas.drawColor(WALLPAPER.toArgb())
+    canvas.drawColor(ContextCompat.getColor(context, R.color.reactions_screen_light_shade_color))
+    canvas.drawColor(ThemeUtil.getThemedColor(context, R.attr.reactions_overlay_shade_color))
+    val pixel = bitmap.getPixel(0, 0)
+    bitmap.recycle()
+    return pixel
   }
 
   companion object {

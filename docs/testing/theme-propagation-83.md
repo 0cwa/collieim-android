@@ -61,16 +61,62 @@ same source checkout and build invocation:
   :app:assembleProdWebsiteDebugAndroidTest
 ```
 
-Run the focused instrumentation classes. Gradle installs the matching app and test
-APKs and the configured Android Test Orchestrator:
+Run each focused instrumentation class separately. The current AGP 9.4.0 and
+Android test engine 1.0.1 serialize runner arguments using commas, then split
+on those commas when reading them. A comma-separated `class` argument therefore
+reaches the runner as only its first class. This was observed in the
+[initial validation run](https://github.com/0cwa/collieim-android/actions/runs/43127416339)
+and confirmed in the published
+[AGP sources](https://dl.google.com/dl/android/maven2/com/android/tools/build/gradle/9.4.0/gradle-9.4.0-sources.jar)
+and [engine sources](https://dl.google.com/dl/android/maven2/com/android/tools/androidtest/android-test-engine/1.0.1/android-test-engine-1.0.1-sources.jar).
 
-```sh
-theme_tests=org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceThemePropagationTest
-theme_tests="$theme_tests,org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest"
-theme_tests="$theme_tests,org.thoughtcrime.securesms.conversation.v2.MessageOverlayThemeTest"
-./gradlew --no-daemon :app:connectedProdWebsiteDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class="$theme_tests" \
-  -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false
+Gradle installs the matching app and test APKs and the configured Android Test
+Orchestrator. Capture each class's reports, screenshots, and APK hashes before
+the next invocation replaces the generated outputs. This Bash loop attempts all
+three classes even if one fails, then returns a failure if any invocation failed:
+
+```bash
+set -o pipefail
+theme_evidence="$(mktemp -d "${TMPDIR:-/tmp}/collie-theme-83.XXXXXX")"
+git rev-parse HEAD HEAD^{tree} > "$theme_evidence/source.txt"
+sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+  app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk \
+  > "$theme_evidence/apk-sha256.txt"
+theme_status=0
+for theme_class in \
+  org.thoughtcrime.securesms.components.settings.app.appearance.AppearanceThemePropagationTest \
+  org.thoughtcrime.securesms.mediapreview.MediaThemeRuntimeTest \
+  org.thoughtcrime.securesms.conversation.v2.MessageOverlayThemeTest; do
+  theme_output="$theme_evidence/$theme_class"
+  mkdir -p "$theme_output"
+  # These generated directories were saved after the previous invocation.
+  rm -rf app/build/outputs/androidTest-results \
+    app/build/reports/androidTests \
+    app/build/outputs/connected_android_test_additional_output
+  if ./gradlew --no-daemon :app:connectedProdWebsiteDebugAndroidTest \
+    -Pandroid.testInstrumentationRunnerArguments.class="$theme_class" \
+    -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
+    | tee "$theme_output/connected-tests.log"; then
+    theme_class_status=0
+  else
+    theme_class_status=$?
+    theme_status=1
+  fi
+  printf '%s\n' "$theme_class_status" > "$theme_output/exit-code.txt"
+  sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+    app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk \
+    > "$theme_output/apk-sha256.txt" || theme_status=1
+  for theme_report in androidTest-results connected_android_test_additional_output; do
+    if [ -d "app/build/outputs/$theme_report" ]; then
+      cp -a "app/build/outputs/$theme_report" "$theme_output/$theme_report" || theme_status=1
+    fi
+  done
+  if [ -d app/build/reports/androidTests ]; then
+    cp -a app/build/reports/androidTests "$theme_output/androidTests" || theme_status=1
+  fi
+done
+printf 'Evidence: %s\n' "$theme_evidence"
+test "$theme_status" -eq 0
 ```
 
 The `clearPackageData=false` override preserves screenshots until collection on
@@ -120,8 +166,10 @@ validation workflow requires every expected filename, so duplicated copies in
 different report directories cannot conceal a missing screen.
 
 Collect Gradle's `app/build/outputs/connected_android_test_additional_output`
-directory and the instrumentation reports. For the fallback location, pull the
-files before resetting or uninstalling the app:
+directory and the instrumentation reports after each class, as in the loop above.
+Gradle collects additional output before uninstalling the APKs. When the app is
+still installed and the fallback location was used, pull its files before
+resetting or uninstalling it:
 
 ```sh
 adb pull /sdcard/Android/data/im.collie.app/files/theme-regression ./theme-regression-screenshots

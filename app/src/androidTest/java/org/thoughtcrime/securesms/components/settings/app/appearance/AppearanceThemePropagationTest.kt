@@ -15,6 +15,7 @@ import android.util.TypedValue
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -199,11 +200,21 @@ class AppearanceThemePropagationTest {
       )
     }
 
+    awaitSettings()
     if (!navigationSettings) {
+      awaitComposeNode(AppSettingsTestTags.SCROLLER)
       compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_APPEARANCE))
       compose.onNodeWithTag(AppSettingsTestTags.ROW_APPEARANCE).performClick()
     }
+    awaitComposeNode(AppearanceSettingsTestTags.ROW_THEME)
     compose.onNodeWithTag(AppearanceSettingsTestTags.ROW_THEME).assertExists()
+  }
+
+  private fun awaitComposeNode(tag: String) {
+    // Activity transitions can briefly leave no registered Compose root, especially after recreation.
+    compose.waitUntil(15_000) {
+      compose.onAllNodesWithTag(tag).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+    }
   }
 
   private fun awaitSettings(previous: Activity? = null): Activity {

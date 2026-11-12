@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.ColorStateListDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.view.ContextThemeWrapper
@@ -189,6 +190,7 @@ class OverlayThemeTest {
 
   private fun backgroundColor(view: View): Int = when (val background = view.background) {
     is ColorDrawable -> background.color
+    is ColorStateListDrawable -> background.colorStateList.defaultColor
     is MaterialShapeDrawable -> background.fillColor!!.defaultColor
     else -> error("Unexpected background $background")
   }

@@ -1,3 +1,9 @@
+# Current encryption assets: native viewport follow-up
+
+The website retains the original corrected 540×1200 WebP described below. Fastlane 3.png now uses a **new, unmodified 1080×2160 native API 35 capture**, because the original 1080×2400 PNG exceeded the documented 2:1 distribution limit. Its hash is b85f15db028af21b96692d4baa431496e19ccc7304e11cd4612046ee0245f5da. Title 451, bottom button 1760 and system insets 115/63 give 336/337px clearance; the offline centering method passed without skip. See [conversation-capture.md](conversation-capture.md) for matching APKs, exact helper sources, actual UI bounds and durable security restoration.
+
+The original 1080×2400 capture remains preserved in signed 555fff83a6b7e8f5b8de89f522859f250a166b5f, linked at the end of this historical record, and as the website derivative's source. These are two real captures at different viewport sizes; they are not claimed to have identical pixels/hashes. The original record below describes the first correction, not the current Fastlane dimensions.
+
 # Fresh database-encryption capture
 
 The native Android app sources are unchanged from `02c414c19ae686451de85bd4f46cc9d3209f4c5c`, which contains PR 86's `85779e109803` system-bar and centering fix. Website-only changes do not alter that native source. Both app and instrumentation APKs were assembled together from this worktree using the cached SDK, JDK 21 and Gradle dependencies:

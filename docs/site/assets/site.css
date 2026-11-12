@@ -118,8 +118,8 @@ a:hover{text-decoration-thickness:2px}
 
 /* ---------- intro ---------- */
 .intro{padding-block:clamp(48px,7vw,96px) clamp(40px,6vw,72px)}
-.statement{max-width:34ch;font:250 clamp(1.6rem,3.2vw,2.5rem)/1.28 Manrope,sans-serif;letter-spacing:-.02em;text-wrap:balance}
-.statement-sub{max-width:60ch;margin-top:24px;color:var(--ink-2);font-size:1.0625rem}
+.statement{max-width:58ch;margin-top:28px;font:350 clamp(1.2rem,2.3vw,1.5rem)/1.5 Manrope,sans-serif;letter-spacing:-.01em}
+.statement-sub{max-width:66ch;margin-top:20px;color:var(--ink-2);font-size:1.0625rem}
 
 /* ---------- features ---------- */
 h2{font:200 clamp(2rem,4vw,3rem)/1.12 Sora,sans-serif;letter-spacing:-.035em;text-wrap:balance}
@@ -137,32 +137,12 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .also{margin-top:28px;color:var(--ink-2);max-width:70ch}
 .also strong{color:var(--ink)}
 
-/* ---------- about Collie ---------- */
-.open{background:var(--forest);color:var(--mist);padding-block:clamp(72px,9vw,128px)}
-.open a{color:var(--mist)}
-.open-inner{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(40px,6vw,96px);align-items:center}
-.open-copy>p{margin-top:24px;max-width:52ch;color:#DCE5CD;font-size:1.0625rem}
-.ticks{margin-top:28px;display:grid;gap:12px;max-width:54ch}
-.ticks li{position:relative;padding-left:30px}
-.ticks li::before{content:"";position:absolute;left:2px;top:.45em;width:12px;height:7px;border-left:2px solid var(--gold-2);border-bottom:2px solid var(--gold-2);transform:rotate(-45deg)}
-.open .note{margin-top:28px;font-size:.9rem;color:var(--lichen);max-width:52ch}
-.stack{position:relative;display:grid;gap:10px;padding-left:28px}
-.stack::before{content:"";position:absolute;left:6px;top:18px;bottom:18px;border-left:3px dashed rgba(242,152,43,.6)}
-.layer{position:relative;display:grid;gap:4px;padding:22px 26px;border-radius:16px;box-shadow:0 18px 30px -20px rgba(10,20,12,.8)}
-.layer::before{content:"";position:absolute;left:-28px;top:50%;width:15px;height:15px;margin-top:-7.5px;border-radius:50%;background:var(--forest);border:3px solid var(--gold-2)}
-.layer .name{font:300 1.3rem/1.2 Sora,sans-serif;letter-spacing:-.015em}
-.layer .what{font-size:.95rem}
-.l-collie{background:var(--gold-2);color:var(--bark);margin-right:0}
-.l-molly{background:var(--lichen);color:var(--bark);margin-right:7%}
-.l-signal{background:var(--bark);color:var(--mist);margin-right:14%}
-.l-signal .what{color:var(--lichen)}
-
-/* ---------- signal ---------- */
-.signal{padding-block:clamp(72px,9vw,120px) clamp(40px,5vw,64px)}
-.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,4vw,56px);margin-top:40px}
-.cols>div{border-top:1px solid var(--rule);padding-top:22px}
-.cols p{margin-top:10px;color:var(--ink-2)}
-.fine{margin-top:40px;font-size:.9rem;color:var(--ink-2);max-width:70ch}
+/* ---------- source details ---------- */
+.technical-details{max-width:70ch}
+.ticks{margin-top:20px;display:grid;gap:12px}
+.ticks li{position:relative;padding-left:26px}
+.ticks li::before{content:"";position:absolute;left:2px;top:.45em;width:10px;height:6px;border-left:2px solid var(--icon);border-bottom:2px solid var(--icon);transform:rotate(-45deg)}
+.technical-details .note{margin-top:20px;font-size:.9rem;color:var(--ink-2)}
 
 /* ---------- get ---------- */
 .get-wrap{padding-block:clamp(40px,5vw,64px)}
@@ -222,12 +202,12 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .foot .brand img{width:32px;height:32px}
 .foot ul{display:flex;flex-wrap:wrap;gap:10px 24px;font-size:.92rem}
 
+.foot-legal{margin-top:28px;padding-top:24px;border-top:1px solid rgba(220,229,205,.25);font-size:.875rem;line-height:1.6;color:var(--lichen)}
+
 /* ---------- responsive ---------- */
 @media (max-width:960px){
   .hero{grid-template-columns:1fr}
   .stage{width:min(100%,440px)}
-  .open-inner{grid-template-columns:1fr}
-  .stack{max-width:520px}
   .get{grid-template-columns:1fr}
   .get-art{display:none}
 }
@@ -235,8 +215,7 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .card.featured{grid-row:auto}
   .grid>.card:last-child{grid-column:span 2}
-  .cols,.links{grid-template-columns:1fr}
-  .cols{gap:28px}
+  .links{grid-template-columns:1fr}
   .links{gap:0}
   .top nav a:not(.nav-get):not(.nav-community){display:none}
   .top nav{gap:14px}
@@ -260,9 +239,6 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .phone{border-radius:24px;padding:4px}
   .phone img{border-radius:20px}
   .get{border-radius:24px}
-  .stack{padding-left:24px}
-  .layer{padding:18px 20px}
-  .l-molly{margin-right:4%}.l-signal{margin-right:8%}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -271,5 +247,5 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 }
 @media (forced-colors:active){
   .button{border:1px solid ButtonText}
-  .card,.layer{border:1px solid CanvasText}
+  .card{border:1px solid CanvasText}
 }

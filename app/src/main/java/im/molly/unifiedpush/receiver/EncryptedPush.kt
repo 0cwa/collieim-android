@@ -25,6 +25,7 @@ object EncryptedPush {
   private const val MAX_LIFETIME_SECONDS = 300L
   private const val MAX_FUTURE_SECONDS = 60L
   private const val MAX_JSON_INT = 9007199254740991L
+  private val EVENT_ID = Regex("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
 
   enum class Kind { WAKE, TEST, STATUS }
 
@@ -58,15 +59,42 @@ object EncryptedPush {
     )
 
     companion object {
-      /** Returns null for anything unreadable; the caller must then drop rather than guess. */
-      fun parse(text: String?): ReplayState? = try {
-        val root = mapper.readTree(text ?: return null)
-        ReplayState(
-          root["hw"].takeIf { it.canConvertToLong() }!!.asLong(),
-          root["seen"].map { Seen(it[0].asText(), it[1].takeIf { n -> n.canConvertToLong() }!!.asLong()) },
-        )
-      } catch (e: Exception) {
-        null
+      private val replayMapper = ObjectMapper(JsonFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
+
+      /** Returns null for anything unreadable or structurally invalid; the caller must then drop rather than guess. */
+      fun parse(text: String?): ReplayState? {
+        if (text == null) return null
+        return try {
+          replayMapper.factory.createParser(text).use { parser ->
+            val root = replayMapper.readTree<JsonNode>(parser) ?: return null
+            if (parser.nextToken() != null) return null
+            if (!root.isObject || root.size() != 2 || root.fieldNames().asSequence().toSet() != setOf("hw", "seen")) return null
+
+            val highWaterNode = root["hw"]
+            if (!highWaterNode.isIntegralNumber || !highWaterNode.canConvertToLong()) return null
+            val highWater = highWaterNode.asLong().takeIf { it in 0..MAX_JSON_INT } ?: return null
+
+            val seenNode = root["seen"]
+            if (!seenNode.isArray || seenNode.size() > MAX_REPLAY_RECORDS) return null
+            val seen = ArrayList<Seen>(seenNode.size())
+            val eventIds = HashSet<String>(seenNode.size())
+            for (record in seenNode) {
+              if (!record.isArray || record.size() != 2) return null
+              val idNode = record[0]
+              if (!idNode.isTextual || !EVENT_ID.matches(idNode.asText())) return null
+              val eventId = idNode.asText()
+              if (!eventIds.add(eventId)) return null
+
+              val expiresAtNode = record[1]
+              if (!expiresAtNode.isIntegralNumber || !expiresAtNode.canConvertToLong()) return null
+              val expiresAt = expiresAtNode.asLong().takeIf { it in 1..MAX_JSON_INT } ?: return null
+              seen += Seen(eventId, expiresAt)
+            }
+            ReplayState(highWater, seen)
+          }
+        } catch (e: Exception) {
+          null
+        }
       }
     }
   }
@@ -75,7 +103,6 @@ object EncryptedPush {
 
   private val mapper = ObjectMapper()
   private val eventMapper = ObjectMapper(JsonFactory().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION))
-  private val EVENT_ID = Regex("[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
   private val INSTANCE = Regex("[A-Za-z0-9._:-]{1,128}")
   private val COMMON_FIELDS = setOf("version", "event_id", "instance", "subscription_epoch", "kind", "issued_at", "expires_at")
   private val V1_V2_FIELDS = COMMON_FIELDS + "code"

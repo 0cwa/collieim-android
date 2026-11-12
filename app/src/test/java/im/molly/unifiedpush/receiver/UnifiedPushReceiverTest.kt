@@ -55,8 +55,12 @@ import im.molly.unifiedpush.control.ImportIntent
 import im.molly.unifiedpush.control.LegacyPending
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.enrollment.ControlKeyId
+import im.molly.unifiedpush.enrollment.EnrollmentExporter
+import im.molly.unifiedpush.enrollment.EnrollmentFile
+import im.molly.unifiedpush.enrollment.ExportMode
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
+import org.signal.core.models.ServiceId
 import java.util.concurrent.Executor
 
 @RunWith(RobolectricTestRunner::class)
@@ -268,7 +272,10 @@ class UnifiedPushReceiverTest {
   }
 
   @After
-  fun unmockFetch() = unmockkStatic(PushFetchHandler::class)
+  fun unmockFetch() {
+    EnrollmentExporter.removeFiles(context)
+    unmockkStatic(PushFetchHandler::class)
+  }
 
   private fun urgent(decrypted: Boolean = true) = PushMessage("""{"urgent":true}""".toByteArray(), decrypted)
 
@@ -286,6 +293,47 @@ class UnifiedPushReceiverTest {
       receiver.onMessage(context, PushMessage(wake(), true), "default")
       fetches(1)
       verify(exactly = 1) { values.mutateControl(any(), any()) }
+    }
+  }
+
+  @Config(sdk = [35])
+  @Test
+  fun `export refuses missing replay history after an accepted wake and redelivery has no effect`() {
+    enrollment(active = 1, pending = 0) {
+      val aci = mockk<ServiceId.ACI>()
+      every { aci.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+      every { signalStore.account.aci } returns aci
+      every { SignalStore.account.aci } returns aci
+      values.device = MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
+      values.endpoint = "https://push.example.invalid/synthetic-endpoint"
+      values.endpointP256dh = "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4"
+      values.endpointAuth = "BTBZMqHH6r4Tts7J_aSIgg"
+
+      val receiver = UnifiedPushReceiver()
+      val accepted = wake()
+      receiver.onMessage(context, PushMessage(accepted, true), "default")
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      val controlBefore = values.controlState
+      org.junit.Assert.assertNotNull(values.replayState)
+
+      // Model losing only the replay key while the accepted registration remains intact.
+      values.replayState = null
+      org.junit.Assert.assertEquals(1L, values.controlState.activeEpoch)
+      org.junit.Assert.assertNull(values.replayState)
+      val exportFailure = runCatching {
+        EnrollmentExporter.exportWithEpoch(context, 1, ExportMode.NEW_INTENT) { true }
+      }.exceptionOrNull()
+
+      org.junit.Assert.assertEquals("state_unavailable (failure=$exportFailure)", "state_unavailable", (exportFailure as? EnrollmentFile.Invalid)?.code)
+      org.junit.Assert.assertEquals(controlBefore, values.controlState)
+      org.junit.Assert.assertNull(values.replayState)
+      val directory = checkNotNull(context.getExternalFilesDir(null))
+      org.junit.Assert.assertFalse(java.io.File(directory, EnrollmentExporter.FILE_NAME).exists())
+      org.junit.Assert.assertFalse(java.io.File(directory, "${EnrollmentExporter.FILE_NAME}.tmp").exists())
+
+      receiver.onMessage(context, PushMessage(accepted, true), "default")
+      fetches(1)
+      org.junit.Assert.assertEquals(controlBefore, values.controlState)
     }
   }
 

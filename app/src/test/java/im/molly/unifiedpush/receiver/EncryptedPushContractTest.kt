@@ -103,6 +103,12 @@ class EncryptedPushContractTest {
     assertNull(EncryptedPush.ReplayState.parse("not json"))
     assertNull(EncryptedPush.ReplayState.parse("""{"hw":"x","seen":[]}"""))
     assertNull(EncryptedPush.ReplayState.parse("""{"hw":1}"""))
+    assertNull(EncryptedPush.ReplayState.parse("""{"hw":1735689600,"seen":{}}"""))
+    assertNull(EncryptedPush.ReplayState.parse("""{"hw":1735689600,"seen":[{}]}"""))
+    assertNull(EncryptedPush.ReplayState.parse("""{"hw":1735689600,"seen":[["11111111-1111-4111-8111-111111111111","1735689900"]]}"""))
+    assertNull(EncryptedPush.ReplayState.parse("""{"hw":-1,"seen":[]}"""))
+    assertNull(EncryptedPush.ReplayState.parse("""{"hw":1735689600,"seen":[],"extra":true}"""))
+    assertNull(EncryptedPush.ReplayState.parse("""{"hw":1735689600,"seen":[],"hw":1735689601}"""))
   }
 
   @Test

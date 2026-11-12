@@ -9,8 +9,8 @@ import im.molly.unifiedpush.control.ImportIntent
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.receiver.EncryptedPush
-import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.keyvalue.ReplayStateUnavailableException
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -61,7 +61,7 @@ object EnrollmentExporter {
           ?: throw EnrollmentFile.Invalid("intent_unavailable")
         intent = saved
         contents = EnrollmentFile.render(saved.toInput())
-        store.ensureReplayStateIfAbsent(replayIfAbsent)
+        requireReplayStateAvailability { store.ensureReplayStateIfAbsent(replayIfAbsent) }
       }
       ExportMode.NEW_INTENT, ExportMode.RECOVERY -> {
         if (requestId != null) throw EnrollmentFile.Invalid("invalid_enrollment")
@@ -78,51 +78,53 @@ object EnrollmentExporter {
         val exported = Target(endpoint, EnrollmentFile.canonicalKey(p256dh, 65), EnrollmentFile.canonicalKey(auth, 16))
         val activeNow = mode == ExportMode.RECOVERY
         var rendered: String? = null
-        intent = EndpointUpdates.recordIntent(store, fullRecovery = activeNow, replayIfAbsent = replayIfAbsent) { old, sequence ->
-          if (epoch <= old.activeEpoch && !activeNow) throw EnrollmentFile.Invalid("recovery_ack_required")
+        intent = requireReplayStateAvailability {
+          EndpointUpdates.recordIntent(store, fullRecovery = activeNow, replayIfAbsent = replayIfAbsent) { old, sequence ->
+            if (epoch <= old.activeEpoch && !activeNow) throw EnrollmentFile.Invalid("recovery_ack_required")
 
-          // A matching epoch alone is not enough to reuse a candidate key: the intent may belong to a different
-          // Signal account, linked device, or UnifiedPush instance that happens to use the same epoch number.
-          val sameEpoch = old.intents.filter {
-            it.epoch == epoch && it.accountId == accountId && it.deviceId == device.deviceId && it.instance == instance
-          }
-          val sameEpochKey = when {
-            sameEpoch.isNotEmpty() -> {
-              if (sameEpoch.any { !sameExportParameters(it, accountId, device.deviceId, device.password, instance, exported) }) {
-                throw EnrollmentFile.Invalid("same_epoch_conflict")
+            // A matching epoch alone is not enough to reuse a candidate key: the intent may belong to a different
+            // Signal account, linked device, or UnifiedPush instance that happens to use the same epoch number.
+            val sameEpoch = old.intents.filter {
+              it.epoch == epoch && it.accountId == accountId && it.deviceId == device.deviceId && it.instance == instance
+            }
+            val sameEpochKey = when {
+              sameEpoch.isNotEmpty() -> {
+                if (sameEpoch.any { !sameExportParameters(it, accountId, device.deviceId, device.password, instance, exported) }) {
+                  throw EnrollmentFile.Invalid("same_epoch_conflict")
+                }
+                val keys = sameEpoch.map { it.controlKey }.toSet()
+                val ids = sameEpoch.map { it.keyId }.toSet()
+                if (keys.size != 1 || ids.size != 1) throw EnrollmentFile.Invalid("same_epoch_conflict")
+                keys.single()
               }
-              val keys = sameEpoch.map { it.controlKey }.toSet()
-              val ids = sameEpoch.map { it.keyId }.toSet()
-              if (keys.size != 1 || ids.size != 1) throw EnrollmentFile.Invalid("same_epoch_conflict")
-              keys.single()
+              epoch == old.activeEpoch && old.key != null &&
+                (old.activeImportId == null ||
+                  (old.activeAccountId == accountId && old.activeDeviceId == device.deviceId && old.activeInstance == instance)) -> {
+                if (old.serverTarget != exported) throw EnrollmentFile.Invalid("same_epoch_conflict")
+                old.key
+              }
+              epoch == old.activeEpoch && old.key == null -> throw EnrollmentFile.Invalid("same_epoch_conflict")
+              else -> null
             }
-            epoch == old.activeEpoch && old.key != null &&
-              (old.activeImportId == null ||
-                (old.activeAccountId == accountId && old.activeDeviceId == device.deviceId && old.activeInstance == instance)) -> {
-              if (old.serverTarget != exported) throw EnrollmentFile.Invalid("same_epoch_conflict")
-              old.key
-            }
-            epoch == old.activeEpoch && old.key == null -> throw EnrollmentFile.Invalid("same_epoch_conflict")
-            else -> null
+            val controlKey = sameEpochKey ?: EnrollmentFile.newControlKey()
+            val keyId = ControlKeyId.derive(controlKey, accountId, device.deviceId, instance)
+            val candidate = ImportIntent(
+              requestId = UUID.randomUUID().toString(),
+              sequence = sequence,
+              epoch = epoch,
+              controlKey = controlKey,
+              keyId = keyId,
+              target = exported,
+              accountId = accountId,
+              deviceId = device.deviceId,
+              password = device.password,
+              instance = instance,
+              recovery = activeNow,
+            )
+            // Validate immutable bytes while still inside the state transaction, before sequence/intent commit.
+            rendered = EnrollmentFile.render(candidate.toInput())
+            candidate
           }
-          val controlKey = sameEpochKey ?: EnrollmentFile.newControlKey()
-          val keyId = ControlKeyId.derive(controlKey, accountId, device.deviceId, instance)
-          val candidate = ImportIntent(
-            requestId = UUID.randomUUID().toString(),
-            sequence = sequence,
-            epoch = epoch,
-            controlKey = controlKey,
-            keyId = keyId,
-            target = exported,
-            accountId = accountId,
-            deviceId = device.deviceId,
-            password = device.password,
-            instance = instance,
-            recovery = activeNow,
-          )
-          // Validate immutable bytes while still inside the state transaction, before sequence/intent commit.
-          rendered = EnrollmentFile.render(candidate.toInput())
-          candidate
         }
         contents = checkNotNull(rendered)
       }
@@ -167,6 +169,12 @@ object EnrollmentExporter {
   ): Boolean = intent.accountId == accountId && intent.deviceId == deviceId && intent.password == password &&
     intent.instance == instance && intent.target == target
 
+  private inline fun <T> requireReplayStateAvailability(block: () -> T): T = try {
+    block()
+  } catch (_: ReplayStateUnavailableException) {
+    throw EnrollmentFile.Invalid("state_unavailable")
+  }
+
   /** Deletes any published or temporary export now, on the calling thread. */
   @JvmStatic
   @Synchronized
@@ -176,15 +184,10 @@ object EnrollmentExporter {
     File(dir, TEMP_NAME).delete()
   }
 
-  /** Removes any file left by an earlier export. Called from the application's onCreate. */
+  /** Synchronously removes the two export files during startup, before settings can publish a new export. */
   @JvmStatic
+  @Synchronized
   fun deleteStale(context: Context) {
-    SignalExecutors.BOUNDED.execute {
-      synchronized(EnrollmentExporter) {
-        val dir = context.getExternalFilesDir(null) ?: return@synchronized
-        File(dir, FILE_NAME).delete()
-        File(dir, TEMP_NAME).delete()
-      }
-    }
+    removeFiles(context)
   }
 }

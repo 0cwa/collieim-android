@@ -9,6 +9,7 @@ import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.ImportIntent
 import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.model.MollySocketDevice
+import im.molly.unifiedpush.receiver.EncryptedPush
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
@@ -63,6 +64,7 @@ class EnrollmentExporterTest {
     values.endpointP256dh = p256dh
     values.endpointAuth = auth
     values.mutateControl { it.copy(highestEpoch = 8) }
+    values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000 - 1, emptyList()).serialize()
   }
 
   @After fun cleanup() = EnrollmentExporter.removeFiles(context)
@@ -243,6 +245,25 @@ class EnrollmentExporterTest {
     assertEquals(sequence, values.controlState.importSequence)
     assertEquals(1, values.controlState.intents.size)
     assertEquals(first.requestId, rerendered.requestId)
+  }
+
+  @Test
+  fun `rerender refuses missing replay history without changing the saved intent`() {
+    val first = EnrollmentExporter.exportWithEpoch(context, 4, ExportMode.NEW_INTENT) { true }
+    val before = values.controlState
+    values.replayState = null
+
+    val failure = try {
+      EnrollmentExporter.exportWithEpoch(context, null, ExportMode.RERENDER, first.requestId) { true }
+      null
+    } catch (e: EnrollmentFile.Invalid) {
+      e.code
+    }
+
+    assertEquals("state_unavailable", failure)
+    assertEquals(before, values.controlState)
+    assertTrue(values.replayState == null)
+    assertFalse(first.file.exists())
   }
 
   @Test

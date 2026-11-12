@@ -6,6 +6,7 @@ import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
+import im.molly.unifiedpush.receiver.EncryptedPush
 import org.signal.core.util.logging.Log
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
@@ -162,12 +163,17 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     synchronized(controlLock) {
       val loaded = controlStateRead
       val old = loaded.stateOrNull ?: throw CorruptControlStateException()
+      val existingReplay = if (replayIfAbsent != null) getString(UNIFIEDPUSH_REPLAY_STATE, null) else null
+      if (replayIfAbsent != null) {
+        if (existingReplay == null && old != ControlState()) throw ReplayStateUnavailableException()
+        if (existingReplay != null && EncryptedPush.ReplayState.parse(existingReplay) == null) throw ReplayStateUnavailableException()
+      }
       val next = block(old)
       if (ControlState.parse(next.serialize()) !is ControlStateRead.Current) {
         throw IllegalArgumentException("Invalid Unified Push control state")
       }
       val migration = loaded is ControlStateRead.Legacy
-      val missingReplay = replayIfAbsent != null && getString(UNIFIEDPUSH_REPLAY_STATE, null) == null
+      val missingReplay = replayIfAbsent != null && existingReplay == null
       if (next == old && replay == null && !missingReplay && !migration) return old
       val write = store.beginWrite().putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
       if (migration) write.remove(UNIFIEDPUSH_ENROLLMENT_EPOCH).remove(UNIFIEDPUSH_PENDING_EPOCH)
@@ -254,3 +260,5 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
   val isAvailableOrAirGapped: Boolean
     get() = enabled && registrationStatus == RegistrationStatus.REGISTERED
 }
+
+class ReplayStateUnavailableException : IllegalStateException("Encrypted push replay state is unavailable")

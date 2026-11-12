@@ -4,6 +4,10 @@ import android.app.Application
 import android.content.Context
 import com.fasterxml.jackson.databind.ObjectMapper
 import im.molly.unifiedpush.model.MollySocketDevice
+import im.molly.unifiedpush.control.ControlState
+import im.molly.unifiedpush.control.ControlStateRead
+import im.molly.unifiedpush.control.LegacyPending
+import im.molly.unifiedpush.receiver.EncryptedPush
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.After
@@ -66,6 +70,7 @@ class EnrollmentExporterPersistenceTest {
     values.endpointP256dh = p256dh
     values.endpointAuth = auth
     values.mutateControl { it.copy(highestEpoch = 8) }
+    values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000 - 1, emptyList()).serialize()
     values.store.blockUntilAllWritesFinished()
   }
 
@@ -77,6 +82,7 @@ class EnrollmentExporterPersistenceTest {
 
   @Test
   fun `new intent is persisted with replay state before publication and survives restart`() {
+    resetForFirstEnrollment()
     val export = EnrollmentExporter.exportWithEpoch(context, 4, ExportMode.NEW_INTENT) { true }
     val persisted = storage.getDataSet()
 
@@ -92,7 +98,111 @@ class EnrollmentExporterPersistenceTest {
   }
 
   @Test
+  fun `pristine first enrollment atomically creates intent and replay state`() {
+    resetForFirstEnrollment()
+
+    val export = EnrollmentExporter.exportWithEpoch(context, 0, ExportMode.NEW_INTENT) { true }
+    val persisted = storage.getDataSet()
+
+    assertTrue(export.file.exists())
+    assertTrue(storage.lastWriteKeys.containsAll(setOf("up.control.state", "up.enrollment.replay")))
+    assertNotNull(persisted.getString("up.control.state", null))
+    assertNotNull(persisted.getString("up.enrollment.replay", null))
+    assertEquals(export.requestId, values.controlState.intents.single().requestId)
+  }
+
+  @Test
+  fun `missing replay history refuses exports for pending and migrated state`() {
+    val states = listOf(
+      ControlState(highestEpoch = 3, legacyPending = LegacyPending(null, 3, null)),
+      ControlState(highestEpoch = 3, legacyPending = LegacyPending("AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8", 3, null)),
+    )
+
+    for (state in states) {
+      values.mutateControl { state }
+      values.replayState = null
+      val before = values.controlState
+      val failure = runCatching {
+        EnrollmentExporter.exportWithEpoch(context, 0, ExportMode.NEW_INTENT) { true }
+      }.exceptionOrNull()
+
+      assertEquals("state_unavailable", (failure as? EnrollmentFile.Invalid)?.code)
+      assertEquals(before, values.controlState)
+      assertNull(values.replayState)
+      assertFalse(File(checkNotNull(context.getExternalFilesDir(null)), EnrollmentExporter.FILE_NAME).exists())
+    }
+  }
+
+  @Test
+  fun `missing replay refuses export without migrating recognized legacy epoch keys`() {
+    storage = SnapshotKeyValuePersistentStorage(
+      KeyValueDataSet().apply {
+        putLong("up.enrollment.epoch", 3)
+        putLong("up.enrollment.pendingEpoch", 4)
+      }
+    )
+    values = UnifiedPushValues(KeyValueStore(storage, executor))
+    every { SignalStore.unifiedpush } returns values
+    values.device = MollySocketDevice(2, "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
+    values.endpoint = endpoint
+    values.endpointInstance = "fixture-instance"
+    values.endpointP256dh = p256dh
+    values.endpointAuth = auth
+    values.store.blockUntilAllWritesFinished()
+    assertTrue(values.controlStateRead is ControlStateRead.Legacy)
+
+    val failure = runCatching {
+      EnrollmentExporter.exportWithEpoch(context, 0, ExportMode.NEW_INTENT) { true }
+    }.exceptionOrNull()
+
+    assertEquals("state_unavailable", (failure as? EnrollmentFile.Invalid)?.code)
+    assertTrue(values.controlStateRead is ControlStateRead.Legacy)
+    val persisted = storage.getDataSet()
+    assertEquals(3L, persisted.getLong("up.enrollment.epoch", 0))
+    assertEquals(4L, persisted.getLong("up.enrollment.pendingEpoch", 0))
+    assertNull(persisted.getString("up.control.state", null))
+    assertNull(persisted.getString("up.enrollment.replay", null))
+    assertFalse(File(checkNotNull(context.getExternalFilesDir(null)), EnrollmentExporter.FILE_NAME).exists())
+  }
+
+  @Test
+  fun `malformed non-null replay history refuses export without mutation`() {
+    values.replayState = """{"hw":1735689600,"seen":{}}"""
+    val controlBefore = values.controlState
+    val replayBefore = values.replayState
+
+    val failure = runCatching {
+      EnrollmentExporter.exportWithEpoch(context, 4, ExportMode.NEW_INTENT) { true }
+    }.exceptionOrNull()
+
+    assertEquals("state_unavailable", (failure as? EnrollmentFile.Invalid)?.code)
+    assertEquals(controlBefore, values.controlState)
+    assertEquals(replayBefore, values.replayState)
+    assertFalse(File(checkNotNull(context.getExternalFilesDir(null)), EnrollmentExporter.FILE_NAME).exists())
+  }
+
+  @Test
+  fun `startup cleanup finishes before a later export is published`() {
+    val directory = checkNotNull(context.getExternalFilesDir(null))
+    val published = File(directory, EnrollmentExporter.FILE_NAME)
+    val temporary = File(directory, "${EnrollmentExporter.FILE_NAME}.tmp")
+    published.writeText("stale export")
+    temporary.writeText("stale partial export")
+
+    EnrollmentExporter.deleteStale(context)
+
+    assertFalse(published.exists())
+    assertFalse(temporary.exists())
+    resetForFirstEnrollment()
+    val export = EnrollmentExporter.exportWithEpoch(context, 0, ExportMode.NEW_INTENT) { true }
+
+    assertTrue(export.file.exists())
+    assertTrue(export.file.readText().contains(export.requestId))
+  }
+
+  @Test
   fun `database failure leaves cache and enrollment file unchanged`() {
+    resetForFirstEnrollment()
     val before = values.controlState
     storage.nextWriteFailure = IllegalStateException("synthetic database write failure")
 
@@ -105,6 +215,12 @@ class EnrollmentExporterPersistenceTest {
     assertEquals(before, values.controlState)
     assertEquals(before, UnifiedPushValues(KeyValueStore(storage, Executor { it.run() })).controlState)
     assertNull(values.replayState)
+  }
+
+  private fun resetForFirstEnrollment() {
+    values.mutateControl { ControlState() }
+    values.replayState = null
+    values.store.blockUntilAllWritesFinished()
   }
 
   @Test
@@ -156,7 +272,7 @@ class EnrollmentExporterPersistenceTest {
   }
 
   @Test
-  fun `rerender initializes missing replay state durably before publishing`() {
+  fun `rerender refuses missing replay history without writing or changing the intent`() {
     val original = EnrollmentExporter.exportWithEpoch(context, 4, ExportMode.NEW_INTENT) { true }
     storage.removePersistedKey("up.enrollment.replay")
     values.store.resetCache()
@@ -167,10 +283,11 @@ class EnrollmentExporterPersistenceTest {
       EnrollmentExporter.exportWithEpoch(context, null, ExportMode.RERENDER, original.requestId) { true }
     }.exceptionOrNull()
 
-    assertNotNull("replay initialization failure must stop publication", failure)
+    assertEquals("state_unavailable", (failure as? EnrollmentFile.Invalid)?.code)
     assertFalse(File(checkNotNull(context.getExternalFilesDir(null)), EnrollmentExporter.FILE_NAME).exists())
     assertNull(values.replayState)
     assertEquals(original.requestId, values.controlState.intents.single().requestId)
+    assertNotNull(storage.nextWriteFailure)
   }
 
   private class CountingExecutor : Executor {

@@ -13,12 +13,15 @@ import android.graphics.Color
 import android.os.Process
 import android.util.TypedValue
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -44,6 +47,7 @@ import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.core.ui.util.ThemeUtil
 import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.MainActivity
+import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.ScreenLockController
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationActivity
@@ -56,6 +60,8 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.signal.appsettings.R as AppSettingsR
 import org.signal.core.ui.R as CoreUiR
 
@@ -239,6 +245,13 @@ class AppearanceThemePropagationTest {
     compose.waitForIdle()
     val settings = awaitSettings(previous)
     instrumentation.runOnMainSync { settings.finish() }
+    compose.waitUntil(15_000) {
+      var windowRemoved = false
+      instrumentation.runOnMainSync {
+        windowRemoved = settings.isDestroyed && !settings.window.decorView.isAttachedToWindow
+      }
+      windowRemoved
+    }
   }
 
   private fun awaitOverview(dynamicColors: Boolean, nightMode: Int): MainActivity {
@@ -261,7 +274,7 @@ class AppearanceThemePropagationTest {
   }
 
   private fun saveOverviewScreenshot(activity: MainActivity, name: String, dynamicColors: Boolean) {
-    compose.waitForIdle()
+    awaitOverviewFrame(activity)
     val dark = activity.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     val expected = if (dynamicColors) {
       ThemeUtil.getThemedColor(activity, com.google.android.material.R.attr.colorSurface)
@@ -288,5 +301,39 @@ class AppearanceThemePropagationTest {
     } finally {
       bitmap.recycle()
     }
+  }
+
+  private fun awaitOverviewFrame(activity: MainActivity) {
+    val searchDescription = context.getString(R.string.conversation_list_search_description)
+    compose.waitUntil(15_000) {
+      var hasFocus = false
+      instrumentation.runOnMainSync {
+        hasFocus = activity.hasWindowFocus() && activity.window.decorView.isShown
+      }
+      hasFocus && compose.onAllNodesWithContentDescription(searchDescription)
+        .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+    }
+    compose.onNodeWithContentDescription(searchDescription).assertIsDisplayed()
+    compose.waitForIdle()
+
+    // RESUMED and a matching theme do not guarantee that Main's replacement frame has been drawn.
+    val frameCommitted = CountDownLatch(1)
+    val callback = Runnable { frameCommitted.countDown() }
+    instrumentation.runOnMainSync {
+      val decor = activity.window.decorView
+      assertTrue("The overview must use hardware rendering for frame capture", decor.isHardwareAccelerated)
+      decor.viewTreeObserver.registerFrameCommitCallback(callback)
+      decor.postInvalidateOnAnimation()
+    }
+    try {
+      assertTrue("The overview did not submit its rendered frame", frameCommitted.await(15, TimeUnit.SECONDS))
+    } finally {
+      instrumentation.runOnMainSync {
+        val observer = activity.window.decorView.viewTreeObserver
+        if (observer.isAlive) observer.unregisterFrameCommitCallback(callback)
+      }
+    }
+    // Let the closing Settings window's accessibility events settle before the display-wide capture.
+    instrumentation.uiAutomation.waitForIdle(500, 5_000)
   }
 }

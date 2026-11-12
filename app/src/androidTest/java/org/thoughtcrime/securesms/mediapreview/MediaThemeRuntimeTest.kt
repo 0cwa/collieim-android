@@ -65,7 +65,7 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
-import kotlin.math.abs
+import kotlin.math.roundToInt
 import org.signal.core.ui.R as CoreUiR
 import org.signal.uicomponents.R as UiComponentsR
 
@@ -180,7 +180,7 @@ class MediaThemeRuntimeTest {
           val toolbar = media.findViewById<View>(R.id.toolbar_layout)
           chromeUnderlayY = centerYOnScreen(toolbar) + toolbar.height / 2 + 8
         }
-        assertScreenshot(captureName, sample, surface, sampleYs, chromeUnderlayY)
+        assertScreenshot(activity, captureName, sample, surface, sampleYs, chromeUnderlayY)
         previousActivity = activity
       }
     }
@@ -224,7 +224,7 @@ class MediaThemeRuntimeTest {
         }
         val toolbarY = compose.onNodeWithTag(MediaViewerScreenTestTags.BACK_BUTTON).fetchSemanticsNode().boundsInWindow.center.y.toInt()
         val captionY = compose.onNodeWithTag(MediaViewerScreenTestTags.CAPTION).fetchSemanticsNode().boundsInWindow.center.y.toInt()
-        assertScreenshot(captureName, sample, surface, intArrayOf(toolbarY, captionY))
+        assertScreenshot(activity, captureName, sample, surface, intArrayOf(toolbarY, captionY), composeContent = true)
         previousActivity = activity
       }
     }
@@ -283,7 +283,7 @@ class MediaThemeRuntimeTest {
     if (sample == Sample.IMAGE) {
       return activity.findViewById<SubsamplingScaleImageView>(UiComponentsR.id.subsampling_image_view)?.isImageLoaded == true
     }
-    val video = (activity.window.decorView as ViewGroup).descendants.filterIsInstance<VideoPlayer>().firstOrNull { it.isShown } ?: return false
+    val video = findVideoPlayer(activity) ?: return false
     if (video.duration <= 0) return false
     if (pausedVideo !== video) {
       // Keep the real one-second fixture on a decoded frame instead of its end/replay screen.
@@ -351,8 +351,8 @@ class MediaThemeRuntimeTest {
     return location[1] + view.height / 2
   }
 
-  private fun assertScreenshot(name: String, sample: Sample, surface: Int, sampleYs: IntArray, chromeUnderlayY: Int? = null) {
-    val bitmap = captureDecodedMedia(name, sample)
+  private fun assertScreenshot(activity: Activity, name: String, sample: Sample, surface: Int, sampleYs: IntArray, chromeUnderlayY: Int? = null, composeContent: Boolean = false) {
+    val bitmap = captureDecodedMedia(activity, name, sample, composeContent)
     try {
       saveScreenshot(bitmap, name)
       val chrome = if (chromeUnderlayY != null) {
@@ -378,27 +378,72 @@ class MediaThemeRuntimeTest {
     }
   }
 
-  private fun captureDecodedMedia(name: String, sample: Sample): Bitmap {
+  private fun captureDecodedMedia(activity: Activity, name: String, sample: Sample, composeContent: Boolean): Bitmap {
     val deadline = SystemClock.uptimeMillis() + 5_000
     while (true) {
+      // A decoded bitmap can be ready before its next draw. Keep driving Compose while waiting
+      // for the fixture itself to appear; a load-state or caption alone cannot prove rendering.
+      if (composeContent) compose.waitForIdle()
+      instrumentation.waitForIdleSync()
+      var points = emptyList<PatternPoint>()
+      instrumentation.runOnMainSync { points = fixturePoints(activity, sample) }
       val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
-      // The generated video is a solid #285F8F frame. This point avoids the central controls;
-      // allowing codec conversion by six levels does not change the chrome's RGB tolerance.
-      val frame = bitmap.getPixel(bitmap.width / 4, bitmap.height / 2)
-      val videoVisible = abs(Color.red(frame) - 40) <= 6 && abs(Color.green(frame) - 95) <= 6 && abs(Color.blue(frame) - 143) <= 6
-      if (sample != Sample.VIDEO || videoVisible) return bitmap
+      val pixels = points.map { point ->
+        if (point.x in 0 until bitmap.width && point.y in 0 until bitmap.height) bitmap.getPixel(point.x, point.y) else Color.TRANSPARENT
+      }
+      // Both fixtures have red, green, and blue vertical bands. Check two interior rows so a
+      // blank frame, placeholder, or covering dialog cannot pass. Channel dominance is stable
+      // across SDR video color conversion; exact theme/chrome RGB assertions remain separate.
+      val fixtureVisible = points.size == 6 && points.indices.all { index ->
+        val channels = intArrayOf(Color.red(pixels[index]), Color.green(pixels[index]), Color.blue(pixels[index]))
+        channels[points[index].dominantChannel] >= 192 && channels.indices.all { channel ->
+          channel == points[index].dominantChannel || channels[channel] <= 64
+        }
+      }
+      if (fixtureVisible) return bitmap
       if (SystemClock.uptimeMillis() >= deadline) {
         try {
           saveScreenshot(bitmap, "$name-frame-failure")
         } finally {
           bitmap.recycle()
         }
-        error("The decoded video fixture was not visible in the screenshot")
+        error("The ${sample.name.lowercase()} fixture's RGB bands were not visible: ${points.zip(pixels).joinToString { (point, color) -> "$point=${Integer.toHexString(color)}" }}")
       }
       bitmap.recycle()
       SystemClock.sleep(50)
     }
   }
+
+  private fun fixturePoints(activity: Activity, sample: Sample): List<PatternPoint> {
+    val location = IntArray(2)
+    val points = mutableListOf<PatternPoint>()
+    if (sample == Sample.IMAGE) {
+      val image = activity.findViewById<SubsamplingScaleImageView>(UiComponentsR.id.subsampling_image_view) ?: return emptyList()
+      if (!image.isShown || !image.isImageLoaded) return emptyList()
+      image.getLocationOnScreen(location)
+      for (row in listOf(0.25f, 0.75f)) {
+        for (channel in 0..2) {
+          val point = image.sourceToViewCoord(sample.width * (channel + 0.5f) / 3f, sample.height * row) ?: return emptyList()
+          points += PatternPoint(location[0] + point.x.roundToInt(), location[1] + point.y.roundToInt(), channel)
+        }
+      }
+    } else {
+      val frame = findVideoPlayer(activity)?.findViewById<View>(androidx.media3.ui.R.id.exo_content_frame) ?: return emptyList()
+      if (!frame.isShown || frame.width == 0 || frame.height == 0) return emptyList()
+      frame.getLocationOnScreen(location)
+      for (row in listOf(0.25f, 0.75f)) {
+        for (channel in 0..2) {
+          points += PatternPoint(location[0] + (frame.width * (channel + 0.5f) / 3f).roundToInt(), location[1] + (frame.height * row).roundToInt(), channel)
+        }
+      }
+    }
+    return points
+  }
+
+  private fun findVideoPlayer(activity: Activity): VideoPlayer? =
+    (activity.window.decorView as ViewGroup).descendants.filterIsInstance<VideoPlayer>().firstOrNull { it.isShown }
+
+  private data class PatternPoint(val x: Int, val y: Int, val dominantChannel: Int)
 
   private fun saveScreenshot(bitmap: Bitmap, name: String) {
     val output = InstrumentationRegistry.getArguments().getString("additionalTestOutputDir")
@@ -410,8 +455,8 @@ class MediaThemeRuntimeTest {
   }
 
   private enum class Sample(val asset: String, val mimeType: String, val width: Int, val height: Int) {
-    IMAGE("images/sample_image.png", "image/png", 1560, 1024),
-    // One-second H.264 baseline, generated with ffmpeg's color source; no external footage.
+    IMAGE("images/theme_sample.png", "image/png", 160, 90),
+    // Matching RGB bands, one-second H.264 baseline with explicit SDR BT.709 color metadata.
     VIDEO("videos/theme_sample.mp4", "video/mp4", 160, 90)
   }
 

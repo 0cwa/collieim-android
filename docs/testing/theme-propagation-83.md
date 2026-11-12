@@ -137,11 +137,18 @@ test checks the application identity and process ID, resolved theme attributes,
 and rendered overview surface. Activity recreation is expected when required to
 apply a new resource theme; it must preserve the application process.
 
+Before each overview capture, the test waits for the Settings window to detach,
+Main to regain window focus with its search control displayed, and a rendered
+Main frame to be committed. This prevents a last Settings frame from being
+misidentified as the overview merely because both surfaces share a palette.
+
 `MediaThemeRuntimeTest` has four tests: image preview in light app mode and video
 preview in dark app mode for each of the legacy and Compose media viewers. Each
 test changes the palette off, on, and off again while retaining the application
 process, checking actual activity surfaces and controls. The test assets include
-an image and a small, generated H.264 video.
+a generated PNG and a matching H.264 video. Every capture must contain their
+red, green, and blue bands; decoded/load-state flags alone do not establish that
+the image or video has appeared on screen.
 
 `MessageOverlayThemeTest` has two tests, for light and dark mode. Each long-presses
 a real seeded conversation message with Dynamic Colors off and on, checking the
@@ -179,6 +186,47 @@ Retain the tested SHA/tree, emulator fingerprint, API level, app and test APK
 SHA-256 digests, test counts, reports, and screenshots together. Inspect the
 images for the selected palette and readable foreground colors. A nonempty PNG
 alone does not prove the screen rendered correctly.
+
+### Media fixtures and capture readiness
+
+The two media fixtures are 160×90 with red, green, and blue vertical bands of
+54, 52, and 54 pixels. The video lasts one second at 10 frames per second and
+declares limited-range SDR BT.709 matrix, transfer, and primaries. Generate them
+from the repository root with FFmpeg:
+
+```sh
+ffmpeg -y -v error -f lavfi \
+  -i 'color=c=red:s=160x90:r=10:d=1,format=rgb24,drawbox=x=54:y=0:w=52:h=90:color=0x00FF00:t=fill,drawbox=x=106:y=0:w=54:h=90:color=blue:t=fill' \
+  -frames:v 1 -update 1 app/src/androidTest/assets/images/theme_sample.png
+
+ffmpeg -y -v error -loop 1 \
+  -i app/src/androidTest/assets/images/theme_sample.png -t 1 -r 10 \
+  -vf 'scale=out_color_matrix=bt709:out_range=tv,format=yuv420p,setparams=range=limited:color_primaries=bt709:color_trc=bt709:colorspace=bt709' \
+  -c:v libx264 -profile:v baseline -level 1.0 -preset veryslow -crf 18 \
+  -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 \
+  -movflags +faststart -an app/src/androidTest/assets/videos/theme_sample.mp4
+```
+
+Check the resulting stream metadata with:
+
+```sh
+ffprobe -v error -select_streams v:0 \
+  -show_entries stream=codec_name,profile,width,height,pix_fmt,color_range,color_space,color_transfer,color_primaries,duration,nb_frames \
+  -of json app/src/androidTest/assets/videos/theme_sample.mp4
+```
+
+`MediaThemeRuntimeTest` samples two interior rows of all three bands using the
+image's source-to-view coordinates or the video's content-frame bounds. Each
+sample must have its expected channel at least 192 and the other channels at
+most 64. This verifies the decoded content and its arrangement without equating
+encoder RGB values with the output of a color-managed video decoder. A blank
+frame, uniform placeholder, or covering dialog cannot satisfy this pattern.
+The separate theme/chrome checks still use their exact resource colors and
+alpha values, with the existing two-level screenshot rounding tolerance.
+
+Capture waits continue synchronizing the Compose test clock while the real
+Android view draws. A timeout preserves a `-frame-failure.png` and records the
+sample coordinates and observed ARGB colors in the failure message.
 
 ## Visual review matrix
 

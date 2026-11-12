@@ -73,6 +73,7 @@ class MessageOverlayThemeTest {
 
   private val instrumentation = InstrumentationRegistry.getInstrumentation()
   private val context get() = harness.context
+  private val messageIds = mutableListOf<Long>()
   private lateinit var previousTheme: SettingsValues.Theme
   private var previousDynamicColors = false
   private var previousScreenSecurity = true
@@ -111,6 +112,7 @@ class MessageOverlayThemeTest {
       AppCompatDelegate.setDefaultNightMode(previousNightMode)
       AppDependencies.networkManager.setNetworkEnabled(previousNetworkEnabled)
     }
+    messageIds.forEach { SignalDatabase.messages.deleteMessage(it) }
   }
 
   @Test
@@ -137,6 +139,7 @@ class MessageOverlayThemeTest {
       body = MESSAGE_BODY
     )
     val messageId = SignalDatabase.messages.insertMessageInbox(message, threadId).get().messageId
+    messageIds += messageId
     SignalDatabase.reactions.addReaction(
       MessageId(messageId),
       ReactionRecord(SignalStore.emoji.reactions.first(), harness.self.id, timestamp, timestamp)

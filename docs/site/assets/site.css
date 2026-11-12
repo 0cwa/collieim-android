@@ -169,17 +169,19 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .get-art img{position:absolute;inset:9%;width:82%;height:82%}
 
 /* ---------- upcoming features ---------- */
-.upcoming{padding-block:clamp(56px,7vw,96px)}
+.upcoming{padding-block:clamp(56px,7vw,96px) 32px}
 .upcoming-intro{max-width:66ch;margin-top:24px;color:var(--ink-2);font-size:1.0625rem}
 .upcoming-status{max-width:70ch;margin-top:18px;color:var(--ink-2);font-size:.95rem}
 .roadmap-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px;margin-top:32px}
-.roadmap-list li{border-top:1px solid var(--rule);padding-block:18px}
-.roadmap-list a{display:block;color:var(--ink);text-underline-offset:.2em}
+.roadmap-list li{display:flex;align-items:baseline;gap:10px;border-top:1px solid var(--rule);padding-block:18px}
+.roadmap-list a{display:block;color:var(--ink);font-weight:500;text-underline-offset:.2em}
+.roadmap-list .priority-plan a{font-weight:600}
+.plan-badge{flex:none;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--bark);font:600 .75rem/1.5 Manrope,sans-serif}
 .upcoming-more{margin-top:28px;max-width:65ch;line-height:1.8}
 @media (max-width:600px){.roadmap-list{grid-template-columns:1fr}}
 
 /* ---------- community ---------- */
-.community{padding-block:clamp(56px,7vw,96px) clamp(72px,9vw,120px)}
+.community{padding-block:32px clamp(72px,9vw,120px)}
 .links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:32px}
 .links a{display:flex;gap:16px;align-items:flex-start;padding:20px 4px;border-top:1px solid var(--rule);text-decoration:none;color:var(--ink)}
 .links a .ico{width:28px;height:28px;color:var(--icon);margin-top:2px;transition:transform .25s var(--ease)}

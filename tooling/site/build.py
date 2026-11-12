@@ -34,7 +34,7 @@ ROADMAP_TITLES = {
     97: "Custom themes",
     56: "On-device translation",
     54: "On-device voice message transcription",
-    106: "Press and hold for one-time message duration",
+    106: "Send a text with its own timer",
 }
 
 

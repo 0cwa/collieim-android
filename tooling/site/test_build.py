@@ -31,6 +31,7 @@ class RoadmapTest(unittest.TestCase):
 
     def test_mapping_uses_discussion_number_before_cleaning(self):
         self.assertEqual('UnifiedPush on linked devices', build.display_roadmap_title(discussion(55, '[Enhancement] Changed title')))
+        self.assertEqual('Send a text with its own timer', build.display_roadmap_title(discussion(106, 'Press and hold for one-time message duration')))
 
     def test_cleaner_removes_editorial_prefixes(self):
         for title in ('High Priority - Future feature', 'High priority: Future feature', '[Enhancement] Future feature', '[Research] - Future feature', '[Enhancement] [Research]: Future feature'):

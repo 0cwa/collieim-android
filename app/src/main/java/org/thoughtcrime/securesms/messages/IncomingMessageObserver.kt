@@ -116,6 +116,15 @@ class IncomingMessageObserver(
   @Volatile
   private var connectionConditionsVersion: Long = 0
 
+  /** Allows the observer's actual wait loop to be stopped at the post-claim boundary in tests. */
+  @VisibleForTesting
+  @Volatile
+  internal var afterAdmissionClaimForTesting: (() -> Unit)? = null
+
+  @VisibleForTesting
+  @Volatile
+  internal var beforeConnectionWaitForTesting: (() -> Unit)? = null
+
   /** Tracks Internet connection as reported by [InternetConnectivityMonitor]. Starts offline until the first report. */
   @Volatile
   private var internetConnection: ConnectivityState = ConnectivityState.OFFLINE
@@ -309,11 +318,17 @@ class IncomingMessageObserver(
   @VisibleForTesting
   internal fun updateReceiveLoopToken(
     unhandedAdmissions: MutableList<UnifiedPushLifecycle.FetchAdmission> = mutableListOf(),
+    afterDemandSnapshotForTesting: (() -> Unit)? = null,
   ): Boolean {
     unhandedAdmissions += claimPendingUnifiedPushFetches()
     val ordinaryConnectionNecessary = isConnectionNecessary()
     val unifiedPushDemand = UnifiedPushLifecycle.hasActiveFetchAdmissions()
-    if (ordinaryConnectionNecessary || unifiedPushDemand || unhandedAdmissions.isNotEmpty()) {
+    afterDemandSnapshotForTesting?.invoke()
+    val claimedAdmissionNeedsRegistration = unhandedAdmissions.any {
+      it.state == UnifiedPushLifecycle.FetchAdmissionState.CLAIMED
+    }
+    val tokenShouldRemain = ordinaryConnectionNecessary || unifiedPushDemand || claimedAdmissionNeedsRegistration
+    if (ordinaryConnectionNecessary || claimedAdmissionNeedsRegistration) {
       try {
         // Token registration calls connect(). It must stay outside the lifecycle monitor, while any
         // claimed request's lease remains open until registration returns.
@@ -325,11 +340,11 @@ class IncomingMessageObserver(
         unhandedAdmissions.clear()
         throw failure
       }
-      return true
+    } else if (!tokenShouldRemain) {
+      authWebSocket.removeKeepAliveToken(WEB_SOCKET_KEEP_ALIVE_TOKEN)
     }
 
-    authWebSocket.removeKeepAliveToken(WEB_SOCKET_KEEP_ALIVE_TOKEN)
-    return false
+    return tokenShouldRemain
   }
 
   private fun waitForConnectionNecessary(): List<UnifiedPushLifecycle.FetchAdmission> {
@@ -338,12 +353,15 @@ class IncomingMessageObserver(
       var observedVersion = connectionConditionsVersion
 
       while (!terminated) {
-        claimedAdmissions += claimPendingUnifiedPushFetches()
-        if (UnifiedPushLifecycle.hasActiveFetchAdmissions() ||
+        val newlyClaimedAdmissions = claimPendingUnifiedPushFetches()
+        claimedAdmissions += newlyClaimedAdmissions
+        if (newlyClaimedAdmissions.isNotEmpty()) afterAdmissionClaimForTesting?.invoke()
+        if (claimedAdmissions.isNotEmpty() || UnifiedPushLifecycle.hasActiveFetchAdmissions() ||
           (!ClockSkewDetector.isDetected && (isConnectionNecessary() || isConnectionAvailable()))) {
           return claimedAdmissions
         }
 
+        beforeConnectionWaitForTesting?.invoke()
         connectionLock.withLock {
           if (!terminated && connectionConditionsVersion == observedVersion) {
             connectionConditionsChanged.await()

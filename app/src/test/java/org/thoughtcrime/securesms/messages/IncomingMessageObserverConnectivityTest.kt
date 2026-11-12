@@ -155,6 +155,91 @@ class IncomingMessageObserverConnectivityTest {
     }
   }
 
+  @Test fun `claimed admission does not park when transition revokes it before the wait predicate`() {
+    putObserverInBackgroundIdle()
+    val observerAboutToWait = CountDownLatch(1)
+    observer.beforeConnectionWaitForTesting = { observerAboutToWait.countDown() }
+    observer.notifyUnifiedPushFetchStateChanged()
+    Assert.assertTrue("observer did not reach its idle condition wait", observerAboutToWait.await(5, TimeUnit.SECONDS))
+    observer.beforeConnectionWaitForTesting = null
+
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+    val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
+    val admission = checkNotNull(UnifiedPushAccountTransition.registerFetchAdmission(lease, authorization))
+
+    val claimReached = CountDownLatch(1)
+    val resumeWaitPredicate = CountDownLatch(1)
+    val registrationEntered = CountDownLatch(1)
+    val finishRegistration = CountDownLatch(1)
+    val events = java.util.Collections.synchronizedList(mutableListOf<String>())
+    every { auth.registerKeepAliveToken("MessageRetrieval") } answers {
+      registrationEntered.countDown()
+      check(finishRegistration.await(5, TimeUnit.SECONDS))
+      events += "token-registration-settled"
+      auth.connect()
+    }
+
+    val executor = Executors.newFixedThreadPool(3)
+    try {
+      val fetchOwner = executor.submit {
+        admission.awaitHandoffCompletion()
+        events += "lease-closed"
+        lease.close()
+      }
+      observer.afterAdmissionClaimForTesting = {
+        claimReached.countDown()
+        check(resumeWaitPredicate.await(5, TimeUnit.SECONDS))
+      }
+      update(ConnectivityState.ONLINE)
+
+      Assert.assertTrue("observer did not claim the pending request", claimReached.await(5, TimeUnit.SECONDS))
+      Assert.assertEquals(UnifiedPushLifecycle.FetchAdmissionState.CLAIMED, admission.state)
+
+      val markerPersisted = CountDownLatch(1)
+      val transitionBody = CountDownLatch(1)
+      val transition = executor.submit {
+        kotlinx.coroutines.runBlocking {
+          UnifiedPushLifecycle.withTransition(
+            persistIncompleteMarker = { if (it) markerPersisted.countDown() },
+            readyAfter = { true },
+            afterTransitionStarted = { observer.notifyUnifiedPushFetchStateChanged() },
+          ) {
+            events += "identity-publication"
+            transitionBody.countDown()
+          }
+        }
+      }
+
+      Assert.assertTrue("transition did not revoke the claimed demand", markerPersisted.await(5, TimeUnit.SECONDS))
+      Assert.assertTrue(admission.transitionRevoked)
+      Assert.assertFalse(UnifiedPushLifecycle.hasActiveFetchAdmissions())
+      Assert.assertEquals("transition published while the claimed lease was open", 1L, transitionBody.count)
+
+      resumeWaitPredicate.countDown()
+      Assert.assertTrue("observer did not resume token registration after its claim", registrationEntered.await(5, TimeUnit.SECONDS))
+      Assert.assertEquals("transition published before token registration settled", 1L, transitionBody.count)
+      finishRegistration.countDown()
+
+      Assert.assertTrue("observer did not complete the claimed handoff", admission.awaitHandoff(5_000))
+      fetchOwner.get(5, TimeUnit.SECONDS)
+      transition.get(5, TimeUnit.SECONDS)
+      Assert.assertTrue(events.indexOf("token-registration-settled") < events.indexOf("lease-closed"))
+      Assert.assertTrue(events.indexOf("lease-closed") < events.indexOf("identity-publication"))
+      verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
+    } finally {
+      resumeWaitPredicate.countDown()
+      finishRegistration.countDown()
+      observer.afterAdmissionClaimForTesting = null
+      observer.beforeConnectionWaitForTesting = null
+      if (admission.state == UnifiedPushLifecycle.FetchAdmissionState.CLAIMED) {
+        UnifiedPushLifecycle.completeFetchAdmission(admission)
+      }
+      lease.close()
+      observer.notifyUnifiedPushFetchStateChanged()
+      executor.shutdownNow()
+    }
+  }
+
   @Test fun `claimed registration settles before publication and current callback may finish afterward`() {
     putObserverInBackgroundIdle()
     update(ConnectivityState.ONLINE)
@@ -184,7 +269,7 @@ class IncomingMessageObserverConnectivityTest {
         UnifiedPushAccountTransition.finishFetchAdmission(admission)
         observer.updateReceiveLoopToken()
       }
-      val observerStep = executor.submit { observer.updateReceiveLoopToken() }
+      observer.notifyUnifiedPushFetchStateChanged()
       Assert.assertTrue("observer did not reach the actual token-registration seam", registrationEntered.await(5, TimeUnit.SECONDS))
 
       val markerPersisted = CountDownLatch(1)
@@ -204,7 +289,7 @@ class IncomingMessageObserverConnectivityTest {
       Assert.assertTrue("transition did not begin while registration was blocked", markerPersisted.await(5, TimeUnit.SECONDS))
       Assert.assertEquals("publication overtook the claimed token registration", 1L, transitionBody.count)
       finishRegistration.countDown()
-      observerStep.get(5, TimeUnit.SECONDS)
+      Assert.assertTrue("observer did not complete the claimed handoff", admission.awaitHandoff(5_000))
       Assert.assertEquals(UnifiedPushLifecycle.FetchAdmissionState.ADMITTED, admission.state)
       Assert.assertTrue("publication did not follow lease release", transitionBody.await(5, TimeUnit.SECONDS))
       Assert.assertEquals("callback must still be in flight after publication", 1L, finishAdmittedCallback.count)
@@ -219,6 +304,65 @@ class IncomingMessageObserverConnectivityTest {
     } finally {
       finishRegistration.countDown()
       finishAdmittedCallback.countDown()
+      executor.shutdownNow()
+    }
+  }
+
+  @Test fun `handed off UP demand retains its token but does not re-register after transition revocation`() {
+    putObserverInBackgroundIdle()
+    update(ConnectivityState.ONLINE)
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+    val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
+    val admission = checkNotNull(UnifiedPushAccountTransition.registerFetchAdmission(lease, authorization))
+
+    Assert.assertTrue(observer.updateReceiveLoopToken())
+    Assert.assertEquals(UnifiedPushLifecycle.FetchAdmissionState.ADMITTED, admission.state)
+    lease.close()
+    verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
+
+    val activeDemandRead = CountDownLatch(1)
+    val resumeTokenDecision = CountDownLatch(1)
+    val executor = Executors.newFixedThreadPool(2)
+    try {
+      val laterLoop = executor.submit<Boolean> {
+        observer.updateReceiveLoopToken {
+          activeDemandRead.countDown()
+          check(resumeTokenDecision.await(5, TimeUnit.SECONDS))
+        }
+      }
+      Assert.assertTrue("later loop did not read active UP demand", activeDemandRead.await(5, TimeUnit.SECONDS))
+      Assert.assertTrue(UnifiedPushLifecycle.hasActiveFetchAdmissions())
+
+      val markerPersisted = CountDownLatch(1)
+      val transitionBody = CountDownLatch(1)
+      val transition = executor.submit {
+        kotlinx.coroutines.runBlocking {
+          UnifiedPushLifecycle.withTransition(
+            persistIncompleteMarker = { if (it) markerPersisted.countDown() },
+            readyAfter = { true },
+            afterTransitionStarted = { observer.notifyUnifiedPushFetchStateChanged() },
+          ) { transitionBody.countDown() }
+        }
+      }
+
+      Assert.assertTrue("transition did not start", markerPersisted.await(5, TimeUnit.SECONDS))
+      transition.get(5, TimeUnit.SECONDS)
+      Assert.assertEquals(0L, transitionBody.count)
+      Assert.assertFalse(UnifiedPushLifecycle.hasActiveFetchAdmissions())
+      Assert.assertTrue(admission.transitionRevoked)
+
+      resumeTokenDecision.countDown()
+      Assert.assertTrue("a retained demand must keep the observer loop active", laterLoop.get(5, TimeUnit.SECONDS))
+      verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
+      verify(exactly = 0) { auth.removeKeepAliveToken("MessageRetrieval") }
+
+      Assert.assertFalse(observer.updateReceiveLoopToken())
+      verify(exactly = 1) { auth.registerKeepAliveToken("MessageRetrieval") }
+      verify(exactly = 1) { auth.connect() }
+      verify(exactly = 1) { auth.removeKeepAliveToken("MessageRetrieval") }
+    } finally {
+      resumeTokenDecision.countDown()
+      lease.close()
       executor.shutdownNow()
     }
   }

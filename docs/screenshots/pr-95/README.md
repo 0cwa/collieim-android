@@ -1,28 +1,25 @@
 # Current Collie website review set
 
-These are actual T3 browser captures from the live static build at `http://localhost:8879/`, using an owned incognito tab. They replace the earlier images in this directory. Review the commit containing this document as one stable candidate; implementation source is `c3a82ef73fc842a0f2158f928fd72d464188875e`, with the fresh native assets in `555fff83a6b7e8f5b8de89f522859f250a166b5f`. No score is supplied by the implementation owner.
+Implementation source is signed `b1baba8fbc0906b3470ca3db3fea2591a2200370`; review the containing evidence commit as one candidate. Fresh native assets remain in `555fff83a6b7e8f5b8de89f522859f250a166b5f`. No score is supplied by the implementation owner.
 
-## Start with these views
+## Current affected views
 
-| View | Screenshot | CSS viewport |
+| View | Screenshot | Actual iframe CSS viewport / PNG dimensions |
 | --- | --- | --- |
-| Hero and fresh encryption screen | [desktop-light.png](desktop-light.png) | 1280 × 800 |
-| Foreground phone on mobile | [mobile-light.png](mobile-light.png) | 390 × 844, scrolled to phones |
-| Compact feature grid | [features-desktop-light.png](features-desktop-light.png) | 1280 × 1000 |
-| Mobile features | [features-mobile-light.png](features-mobile-light.png) | 390 × 1100 |
-| Curated upcoming plans | [upcoming-desktop-light.png](upcoming-desktop-light.png) | 1280 × 900 |
-| Upcoming plans in dark mode | [upcoming-mobile-dark.png](upcoming-mobile-dark.png) | 390 × 1100 |
-| Persistent menu, closed | [menu-mobile-closed.png](menu-mobile-closed.png) | 390 × 844 |
-| Persistent menu, open | [menu-mobile-open.png](menu-mobile-open.png) | 390 × 844 |
-| Narrow header | [header-narrow-light.png](header-narrow-light.png) | 320 × 844 |
-| Downloads and footer, light | [downloads-footer-desktop-light.png](downloads-footer-desktop-light.png) | 1280 × 1100 |
-| Downloads and footer, dark | [downloads-footer-desktop-dark.png](downloads-footer-desktop-dark.png) | 1280 × 1100 |
-| Phone downloads | [light](downloads-mobile-light.png) · [dark](downloads-mobile-dark.png) | 390 × 1100 |
-| Phone footer | [light](footer-mobile-light.png) · [dark](footer-mobile-dark.png) | 390 × 844 |
+| Phone features | [features-mobile-light.png](features-mobile-light.png) | 390 × 1100 |
+| Phone introduction | [about-mobile.png](about-mobile.png) | 390 × 844 |
+| Narrow features | [features-narrow-light.png](features-narrow-light.png) | 320 × 1300 |
+| Narrow introduction | [about-narrow-light.png](about-narrow-light.png) | 320 × 844 |
+| Unchanged desktop features | [features-desktop-light.png](features-desktop-light.png) | 1280 × 1000 |
+| Unchanged tablet features | [features-tablet-light.png](features-tablet-light.png) | 768 × 1300 |
 
-All captures use device pixel ratio 2; PNG dimensions are twice the CSS viewport dimensions. Supporting captures cover the consolidated introduction ([desktop](about-desktop.png), [mobile](about-mobile.png)), community ([desktop light](community-desktop-light.png), [mobile dark](community-mobile-dark.png), [320px dark](community-narrow-dark.png)), dark hero ([desktop](desktop-dark.png), [mobile phones](mobile-dark.png)), and the [actual Obtainium handoff](obtainium-desktop-light.png).
+These six are actual browser renders of the existing build HTML, CSS, embedded original fonts and image bytes in a fixed-size iframe via T3 `html_preview`. They are **source renders**, not live-tab screenshots. Only resource URLs are embedded; a capture script waits for fonts and scrolls to the requested existing section. No page layout, content, colors or assets are reconstructed or changed. Visible images reported loaded, fonts reported loaded, and actual iframe widths matched all four requested widths. This renderer uses overlay scrollbars and DPR 1; its usable width equals its viewport width. The last live T3 browser reserved 15px for a scrollbar and used DPR 2. Both measurements are reported separately below. Current and previous-source feature renders at 768 and 1280 are byte-for-byte identical in the same renderer.
 
-The browser capture pipeline can shift orange into pink despite normal computed CSS colors; this discrepancy was observed in exported PNG pixels as well as the inline viewer. Do not adjust source colors to compensate. Layout, reading order, content, overlap and navigation remain assessable. The native PNG itself has the app's actual orange pixels. Contrast values below come from computed CSS, not color sampling of these browser images.
+All other images retain their actual live T3 captures packaged in `c2a7b7c647de24fa50185f84b29fe141aaa6d931`, with unchanged source appearance in this phone-only pass. These include hero, desktop introduction, upcoming, menu, community, Obtainium, and downloads/footer in light/dark modes. Lower sections move earlier in the document; their own anchored content grouping is unchanged. Their pixels are not relabelled as fresh captures.
+
+Retained download/footer paths: [desktop light](downloads-footer-desktop-light.png), [desktop dark](downloads-footer-desktop-dark.png), [phone downloads light](downloads-mobile-light.png), [dark](downloads-mobile-dark.png), [phone footer light](footer-mobile-light.png), [dark](footer-mobile-dark.png). Hero: [desktop](desktop-light.png), [mobile phones](mobile-light.png). Community: [desktop](community-desktop-light.png), [phone dark](community-mobile-dark.png), [narrow dark](community-narrow-dark.png). Other unchanged views remain in this directory.
+
+Retained live T3 PNGs can shift orange into pink; the discrepancy was measured in exported pixels, not just the viewer. Current source renders show the source palette without recoloring. Contrast checks below use computed CSS rather than exported-image sampling. Live screenshot and recording transport timed out across callers, then reported an unavailable automation host. Cached Chromium failed before CDP under the host allocator; the installed child-only standard-allocator wrapper was denied by the execution context. No browser was installed and no system security policy was changed.
 
 ## Product requirements to preserve
 
@@ -37,6 +34,8 @@ Plans come from the existing `upcoming-planned-features` Discussions category, r
 ## Changes in this candidate
 
 The roadmap renderer maps stable discussion numbers to concise display titles. Unknown titles retain their wording after removing editorial prefixes such as High Priority or bracketed tags. Escaping happens after display-title selection. A separate Priority badge comes only from the label, never title text. All eight discussion URLs are unchanged. Priority title weight is 600; ordinary plan titles are 500. The two-column grid reads across rows; mobile uses one column. The notifications introduction and italic planned-work disclaimer are unchanged. The gap from the roadmap follow-up links to the community heading is now 64 CSS px.
+
+Only below 600px, the five secondary feature cards now form a compact list: 40px icons sit beside titles, body text aligns beneath titles, and the existing rule color separates items. Their card backgrounds, outlines, radii and inner padding are removed. Every word and link is retained. The encryption lead is unchanged. The intro heading is 24px against the 32px feature heading (75%), with the source/security disclosure visible in both introduction captures. At 768px and above, cards and typography are unchanged.
 
 The lead feature retains its desktop two-column/two-row position and featured surface. Its 40px icon sits beside the heading; the approved explanation remains. Three short facts restate that explanation: Passphrase you choose; Locks after a set time; Stays encrypted if lost or stolen. A hairline separates the facts, and their row sits at the bottom. Smaller cards use one deliberate icon-to-heading gap rather than stacked padding and automatic margins. At phone widths up to 600px, the repeated facts and their divider are hidden; the approved paragraph already says the same thing. Wider screens retain the three facts. Phone spacing from the upcoming introduction to the italic note is 12px, and from that note to the list is 22px. No wording in either paragraph changed.
 
@@ -77,6 +76,14 @@ The display title for [Discussion 106](https://github.com/0cwa/collieim-android/
 }
 @media(max-width:600px){
   .feature-facts{display:none}
+  .intro h2{font-size:1.5rem;line-height:1.25}
+  .card:not(.featured){position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;margin-top:0;padding:0;border:0;border-radius:0;background:none}
+  .card.featured + .card{margin-top:8px}
+  .card:not(.featured)::before{content:"";position:absolute;inset-inline:0;top:-6px;border-top:1px solid var(--rule)}
+  .card:not(.featured) .ico{grid-column:1;grid-row:1/span 2;width:40px;height:40px;margin:0}
+  .card:not(.featured) h3{grid-column:2;grid-row:1;min-width:0;font-size:1.0625rem;line-height:1.35;font-weight:400}
+  .card:not(.featured) p{grid-column:2;grid-row:2;min-width:0}
+  .card:not(.featured) a[href="#upcoming"]{display:inline-block;min-height:24px;line-height:24px}
   .upcoming-status{margin-top:12px}
   .roadmap-list{margin-top:22px}
 }
@@ -98,12 +105,14 @@ items.append(f'<li{item_class}>{badge}<a href="https://github.com/{repo}/discuss
 
 | Actual CSS width | Horizontal overflow | Header | Downloads start, CSS px |
 | --- | --- | --- | --- |
-| 320 | none; document width 305 | 56px sticky | 5890.07 |
-| 390 | none; document width 375 | 56px sticky | 5264.13 |
+| 320 | none; document width 305 | 56px sticky | 5437.09 |
+| 390 | none; document width 375 | 56px sticky | 4865.26 |
 | 768 | none; document width 753 | 56px sticky | 4214.27 |
 | 1280 | none; document width 1265 | 90px normal | 3684.98 |
 
-These checks used actual `innerWidth`, not only the requested viewport setting. The narrower document widths reflect the vertical scrollbar. At 390px, downloads start 624.52px earlier than the previous 5888.64px. At 1280px the lead card is 408px tall, compared with 482.39px before this pass. Paragraph-to-facts space is 62.5px; the three lower-row heading tops all measure 1839.70px from the document top. At 390px the lead is 280px tall, with its original paragraph retained and no repeated recap.
+These live checks used actual `innerWidth`. At 390px, the five-item region shrank from 978px to 614.73px; at 320px, from 1150px to 732.62px. This counts first secondary item top through last item bottom, including gaps. The encryption lead remains exactly 279.73px at 390 and 306.93px at 320. Every title and body starts at x68, to the right of the icon at x16; wrapped titles never flow below the icon. The notification action measures 291×48px at 390 and 221×48px at 320. All six card rectangles match the previous source exactly at 768 and 1280.
+
+The source-render environment has no reserved scrollbar. At widths 320/390/768/1280, usable widths are likewise 320/390/768/1280, with no horizontal overflow and loaded fonts. Five-item heights are 661.63/566.69/644/668px; downloads start at 5219.22/4776.11/4188.48/3684.78px. This is an explicit environment difference, not a replacement for live measurements. Intro/feature headings are 24/32px on phones, 32/32px at 768, and 44/48px at1280. Current and baseline PNG bytes match exactly at both wider widths. The intro disclosure is visible in both phone introduction renders.
 
 Native keyboard Tab from the brand reached Menu, Enter changed `aria-expanded` to true, and Escape restored false with focus on Menu. Outside-click closing passed. Each of the five actual menu links was clicked at both 390px and 768px. Every menu closed, and all headings landed below the header: heading tops ranged from 88.01px to 134.22px, with the header bottom at 56px. These position checks used automatic scrolling in the owned test tab to avoid measuring a smooth-scroll midpoint; source motion rules were unchanged. That Menu keyboard evidence applies to the unchanged navigation markup and JavaScript. In this scoped pass, the native summary was focusable and DOM activation opened and closed it. Later pointer transport timed out, and an instrumented Enter attempt produced no DOM keydown or keyup events; no fresh trusted-keyboard or pointer result is claimed from those failed transport calls.
 
@@ -128,6 +137,6 @@ Fourteen website tests pass, including five added checks for stable mappings, pr
 
 ## Remaining review questions
 
-Mobile hero length remains deliberately outside this pass: its copy appears before the phones, so the fresh image is below the first fold on narrow screens. Community remains lower in the page but has hero and persistent-menu entry points. Six feature cards remain the established topology. The notifications explanation is technical because it states real setup requirements, and the user asked to preserve that paragraph. No real conversation capture was supplied. Review these as honest remaining design tradeoffs; do not infer approval from passing tests or from this implementation note.
+Mobile hero length remains deliberately outside this pass: its copy appears before the phones, so the fresh image is below the first fold on narrow screens. Community remains lower in the page but has hero and persistent-menu entry points. Desktop/tablet six-card topology is unchanged; phones retain the featured card followed by five visible list items. The notifications explanation is technical because it states real setup requirements, and the user asked to preserve that paragraph. No real conversation capture was supplied. Review these as honest remaining design tradeoffs; do not infer approval from passing tests or from this implementation note.
 
 Impeccable 4.1.1 was already installed for Codex under `~/.agents/skills/impeccable`. Its context, layout and craft-floor guidance was used. Canonical documentation confirms that path and `$impeccable`; nothing was installed or downloaded. Source, imagery and validation limits are recorded for independent review at the containing commit.

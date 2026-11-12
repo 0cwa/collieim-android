@@ -14,7 +14,7 @@ This is a factual requirement audit, not a design rating. Source and current ima
 | Actual hero/current pixels | Encryption stays in front, lock left, proxy right. Browser loads the new WebP hash. Current native hashes match signed 555fff83a6b7 and local-main signed bf7e38610090. |
 | Brand/live workflow | Solid hero; no CSS radial gradients. Fonts/palette/order unchanged. Existing localhost:8879 server retained. Impeccable 4.1.1 was present and used; no install/download. |
 | Narrow navigation | 56px persistent header, native button/ARIA state, existing section links and Escape/outside/link closing. Prior successful keyboard/anchor evidence is distinguished from later degraded input transport in README. |
-| Validation | 14 website tests passed; no overflow at actual 320/390/768/1280. Current affected and downloads/footer renders cover light/dark and narrow layouts. Selected contrast scope only; no whole-site AA assertion. |
+| Validation | 14 website tests passed; no overflow at actual 320/390/768/1280. Current affected intro/features use exact built-source browser renders; unchanged live downloads/footer captures retain light/dark coverage and original provenance. Selected contrast scope only; no whole-site AA assertion. |
 | Local main |Only the two immutable image blobs were committed as bf7e386100905d5c5c03bb2f22cff480c647ebe4. Main was not pushed; unrelated .local/ and tools/ were preserved. |
 | Cleanup |Dedicated emulator-5562/AVD, temporary app tests and 47 generated build/cache directories removed. Emulator-5554 was untouched. Shared SDK/JDK/dependency caches and requested preview server retained. |
 
@@ -22,6 +22,8 @@ This is a factual requirement audit, not a design rating. Source and current ima
 
 | Finding | Disposition/confidence | Scoped result |
 | --- | --- | --- |
+| Phone secondary cards are too tall | Valid, high | Below600 only: five visible list items with inline40px icons and aligned body text. Live390 region978 to614.73px; encryption lead unchanged. Wider feature PNGs are byte-identical to baseline. |
+| Phone introduction competes with features | Valid, high | Heading24px against32px features (75%); disclosure remains visible. |
 | Phone feature facts repeat the paragraph | Valid, high | Hidden with their divider only at widths up to 600px; desktop remains. |
 | Phone roadmap spacing is too generous | Valid, high | Margins changed from 18/32px to 12/22px without changing either paragraph. |
 | Disclosure chevron is detached from its label | Valid, high | Flex alignment now starts at the label with an 8px gap; native summary retained. |

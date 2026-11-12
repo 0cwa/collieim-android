@@ -44,6 +44,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.reactions
+import org.thoughtcrime.securesms.main.MainDetailRoute
 import org.thoughtcrime.securesms.mms.IncomingMessage
 import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -157,11 +158,13 @@ class MessageOverlayThemeTest {
           val value = TypedValue()
           assertTrue(it.theme.resolveAttribute(CoreUiR.attr.dynamic_colors, value, true))
           assertEquals(dynamicColors, value.data != 0)
+          // This supported warm navigation route leaves the launch intent intact, so
+          // ActivityScenario can observe the activity's later lifecycle events.
           it.startActivity(
-            MainActivity.clearTop(it).apply {
-              action = ConversationIntents.ACTION
-              putExtras(conversationIntent)
-            }
+            MainActivity.clearTopAndOpenDetail(
+              it,
+              MainDetailRoute.Conversation(ConversationIntents.readArgsFromBundle(conversationIntent.extras!!))
+            )
           )
         }
 

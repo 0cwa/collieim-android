@@ -8,9 +8,8 @@ package org.thoughtcrime.securesms.conversation.v2
 import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.view.ContextThemeWrapper
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -111,23 +110,34 @@ class ChatReactionOverlayThemeTest {
         SignalTheme(isDarkMode = dark, incognitoKeyboardEnabled = false) {
           Box(Modifier.size(320.dp, 480.dp).background(WALLPAPER)) {
             ChatReactionOverlay(controller, Modifier.testTag(OVERLAY))
+
+            // Render an independent reference in the same scene: a software Bitmap Canvas and
+            // the captured Compose scene can round translucent layers differently on API 31.
+            val lightShade = ContextCompat.getColor(currentContext, R.color.reactions_screen_light_shade_color)
+            val themeShade = ThemeUtil.getThemedColor(currentContext, R.attr.reactions_overlay_shade_color)
+            Canvas(Modifier.size(8.dp).testTag(REFERENCE)) {
+              drawRect(WALLPAPER)
+              drawRect(Color(lightShade))
+              drawRect(Color(themeShade))
+            }
           }
         }
       }
     }
 
-    assertScrim(regularContext)
+    assertScrim()
     compose.runOnIdle { currentContext = dynamicContext }
-    assertScrim(dynamicContext)
+    assertScrim()
     compose.runOnIdle { currentContext = regularContext }
-    assertScrim(regularContext)
+    assertScrim()
   }
 
-  private fun assertScrim(context: Context) {
+  private fun assertScrim() {
     val pixels = compose.onNodeWithTag(OVERLAY).captureToImage().toPixelMap()
     // This corner is clear of the message snapshot and controls, so it contains both scrim layers.
     val actual = pixels[pixels.width - 1, pixels.height - 1].toArgb()
-    val expected = renderExpectedScrim(context)
+    val reference = compose.onNodeWithTag(REFERENCE).captureToImage().toPixelMap()
+    val expected = reference[reference.width / 2, reference.height / 2].toArgb()
 
     // Native raster compositing can round a channel by one at the alpha boundary.
     assertEquals(AndroidColor.red(expected).toDouble(), AndroidColor.red(actual).toDouble(), 1.0)
@@ -136,21 +146,9 @@ class ChatReactionOverlayThemeTest {
     assertEquals(255, AndroidColor.alpha(actual))
   }
 
-  private fun renderExpectedScrim(context: Context): Int {
-    // Use the native rasterizer for the independent reference pixel. Integer color arithmetic
-    // truncates after each translucent layer, unlike the renderer used by captureToImage on API 31.
-    val bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    canvas.drawColor(WALLPAPER.toArgb())
-    canvas.drawColor(ContextCompat.getColor(context, R.color.reactions_screen_light_shade_color))
-    canvas.drawColor(ThemeUtil.getThemedColor(context, R.attr.reactions_overlay_shade_color))
-    val pixel = bitmap.getPixel(0, 0)
-    bitmap.recycle()
-    return pixel
-  }
-
   companion object {
     private const val OVERLAY = "theme-reaction-overlay"
+    private const val REFERENCE = "theme-reaction-overlay-reference"
     private val WALLPAPER = Color(0xFF204060)
   }
 }

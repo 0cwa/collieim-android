@@ -13,7 +13,10 @@ import android.graphics.Color
 import android.os.Process
 import android.util.TypedValue
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
@@ -139,7 +142,7 @@ class AppearanceThemePropagationTest {
           SettingsValues.Theme.LIGHT -> AppSettingsR.string.preferences__light_theme
           SettingsValues.Theme.SYSTEM -> AppSettingsR.string.preferences__system_default
         }
-        compose.onNodeWithText(context.getString(label)).performClick()
+        compose.onNode(hasText(context.getString(label)) and hasAnyAncestor(isDialog())).performClick()
         compose.waitUntil(15_000) { SignalStore.settings.theme == theme }
         closeSettings(previousSettings)
 

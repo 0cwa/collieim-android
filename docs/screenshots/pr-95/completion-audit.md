@@ -4,12 +4,12 @@ This is a factual requirement audit, not a design rating. Source and current ima
 
 | Requirement | Evidence/current state |
 | --- | --- |
-| Ordinary messenger audience and skimming | Patch-reading pitch removed; mostly approved factual paragraphs retained. Intro is one reading group immediately after hero; phone feature recap removed. |
+| Ordinary messenger audience and skimming | Patch/coexistence/two-app marketing removed, including the final hero coexistence fact at all widths. Two useful hero facts remain. Phone-only hero compaction brings actual first-message text to 705px at 390/721px at 320 without rewriting headline/lede. |
 | Signal/Molly consolidation | Intro contains compatibility, foundations and optional source/security details. Side by side and account/two-app explanations are absent. The installation verification still names the package as before. |
 | Community/help | Matrix and Discussions have distinct chat/forum icons and visible actions. Help the project remains a separate bug-report/donation group. |
 | Exact notification link and emphasis | Required sentence/UnifiedPush anchor remain unchanged. Feature now describes alerts/connection plainly; precise trusted MollySocket requirement is at Upcoming. Selective emphasis/underlined links remain. |
 | Discussion-generated plans | Existing category only; eight plans in the supplied snapshot, label-priority first, separate badge, explicit planned disclaimer. Daily workflow uses 06:17 UTC and read permissions. Discussion106 wording was checked against the public source; URL unchanged. |
-| Installation options | Obtainium/F-Droid share primary styling; Recommended appears only once; manual APK remains secondary. Website's actual CTA reaches its local handoff; README retains absolute Collie URL. GitHub update source, manual collie.im/#get fallback and tested nested-JSON filter are unchanged. |
+| Installation options | Short secondary Obtainium prerequisite note adds 22px at 390; existing buttons/copy/handoff retained.  Obtainium/F-Droid share primary styling; Recommended appears only once; manual APK remains secondary. Website's actual CTA reaches its local handoff; README retains absolute Collie URL. GitHub update source, manual collie.im/#get fallback and tested nested-JSON filter are unchanged. |
 | Fresh native screenshots | Genuine offline Alex/six-message chat and corrected encryption captured at native 1080×2160. Seed/centering/durable restore each passed 1 test, no skip; encryption geometry 336/337px with title below bars. Cold production PID 6443/task 18 showed SECURE. Website encryption retains original 1080×2400 source/540×1200 derivative and 450/450px geometry. Distinct hashes/viewports are documented; no fabricated UI. |
 | Actual hero/current pixels | Genuine conversation front, original corrected encryption left, locked screen right. Natural image ratios preserve front header/composer; rear title/controls are partially overlapped, never claimed fully unobscured. Chat PNG 28ade62d…/WebP b94444ee…; new Fastlane encryption b85f15db…; original website encryption 6862fbc6…. |
 | Brand/live workflow | Solid hero; no CSS radial gradients. Fonts/palette/section order unchanged; selected real hero screens updated. Existing localhost:8879 server retained. Impeccable 4.1.1 was present and used; no install/download. |
@@ -22,6 +22,10 @@ This is a factual requirement audit, not a design rating. Source and current ima
 
 | Finding | Disposition/confidence | Scoped result |
 | --- | --- | --- |
+| Hero coexistence fact | Valid, high | Removed at all widths; unrelated Upcoming “alongside” and installation verification package ID retained. |
+| Obtainium prerequisite missing upfront | Valid, high | Needs the Obtainium app note adds exactly 22px to 390 Get panel; no new update promise. |
+| Phone hero hides real conversation below fold | Valid, high | Headline 30/32px, lede 16px, reduced scoped gaps; first message 721/705px at 320/390, fact rows 2/1, hero targets 50/44px. Wider typography/image geometry unchanged. |
+| Upcoming reads as one dense paragraph | Valid, high | Existing nine-word sentence is visual lead; full supporting sentences, planned disclaimer/list/URLs unchanged. |
 | Notification terminology | Valid, high | Plain connection/trusted-server feature copy verified against native source. Exact why/UnifiedPush anchors retained; MollySocket requirement moved to existing Upcoming sentence. |
 | Featured heading orphan | Valid, high | text-wrap:balance yields Locked when / you step away at 320/390/768/1280;320 wrap unchanged, no card/facts change. |
 | Desktop lead body cap | Valid, high | Above 860px body 460 to 640.66px; card remains 408px; text-to-card-edge 51.66px. |

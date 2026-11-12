@@ -141,6 +141,7 @@ class AvatarProviderLoggingTest {
         ProviderInfo().apply {
           authority = "${BuildConfig.APPLICATION_ID}.avatar"
           exported = false
+          grantUriPermissions = true
         }
       )
     }

@@ -43,6 +43,9 @@ import java.util.concurrent.atomic.AtomicReference
 
 class UnifiedPushControlJobTest {
 
+  private val validP256dh = "BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4"
+  private val validAuth = "BTBZMqHH6r4Tts7J_aSIgg"
+
   @get:Rule
   val signalStore = MockSignalStoreRule()
 
@@ -99,13 +102,13 @@ class UnifiedPushControlJobTest {
 
     val device = MollySocketDevice(deviceId = 4, password = "SYNTHETIC-REMOTE-DEVICE-PASSWORD")
     every { unifiedPush.device } returns device
-    every { unifiedPush.endpoint } returns "https://push.example.invalid/endpoint"
-    every { unifiedPush.endpointP256dh } returns "SYNTHETIC-P256DH"
-    every { unifiedPush.endpointAuth } returns "SYNTHETIC-AUTH"
+    every { unifiedPush.endpoint } returns "https://push.example.invalid/new"
+    every { unifiedPush.endpointP256dh } returns validP256dh
+    every { unifiedPush.endpointAuth } returns validAuth
     every { unifiedPush.endpointInstance } returns "fixture-instance"
 
     val frame = ControlFrame.header(accountId, device.deviceId, 6) + ByteArray(20)
-    val update = ControlUpdate(6, "https://push.example.invalid/new", "p", "a", frame, 1)
+    val update = ControlUpdate(6, "https://push.example.invalid/new", validP256dh, validAuth, frame, 1)
     var state = ControlState(key = "SYNTHETIC-CONTROL-KEY", activeEpoch = 5, highestEpoch = 6, update = update)
     every { unifiedPush.controlState } answers { state }
     every { unifiedPush.mutateControl(any(), any()) } answers {
@@ -166,6 +169,71 @@ class UnifiedPushControlJobTest {
       jobExecutor.shutdownNow()
       transitionExecutor.shutdownNow()
     }
+  }
+
+  @Test
+  fun `control job does not send an old target after the endpoint tuple changed before reconciliation`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val device = MollySocketDevice(deviceId = 4, password = "SYNTHETIC-REMOTE-DEVICE-PASSWORD")
+    configureRegisteredContext(accountId, device, "https://push.example.invalid/e2")
+
+    val stale = controlUpdate(accountId, device, "https://push.example.invalid/e1")
+    val state = installControlState(ControlState(key = "SYNTHETIC-CONTROL-KEY", activeEpoch = 5, highestEpoch = 6, update = stale))
+    val sender = mockk<SignalServiceMessageSender>()
+    every { AppDependencies.signalServiceMessageSender } returns sender
+
+    newJob().onRun()
+
+    assertEquals(stale, state.get().update)
+    verify(exactly = 0) { sender.sendControlMessage(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `control job does not send a retained update when the live endpoint is absent`() {
+    val accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    val device = MollySocketDevice(deviceId = 4, password = "SYNTHETIC-REMOTE-DEVICE-PASSWORD")
+    configureRegisteredContext(accountId, device, null)
+
+    val stale = controlUpdate(accountId, device, "https://push.example.invalid/e1")
+    val state = installControlState(ControlState(key = "SYNTHETIC-CONTROL-KEY", activeEpoch = 5, highestEpoch = 6, update = stale))
+    val sender = mockk<SignalServiceMessageSender>()
+    every { AppDependencies.signalServiceMessageSender } returns sender
+
+    newJob().onRun()
+
+    assertEquals(stale, state.get().update)
+    verify(exactly = 0) { sender.sendControlMessage(any(), any(), any(), any()) }
+  }
+
+  private fun configureRegisteredContext(accountId: String, device: MollySocketDevice, endpoint: String?) {
+    val aci = mockk<ServiceId.ACI>()
+    every { aci.toString() } returns accountId
+    every { SignalStore.account.isRegistered } returns true
+    every { SignalStore.account.aci } returns aci
+    every { SignalStore.account.hasAciIdentityKey() } returns true
+    every { SignalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
+    every { SignalStore.account.deviceId } returns 1
+    every { unifiedPush.device } returns device
+    every { unifiedPush.endpoint } returns endpoint
+    every { unifiedPush.endpointP256dh } returns validP256dh
+    every { unifiedPush.endpointAuth } returns validAuth
+    every { unifiedPush.endpointInstance } returns "fixture-instance"
+  }
+
+  private fun controlUpdate(accountId: String, device: MollySocketDevice, endpoint: String): ControlUpdate {
+    val frame = ControlFrame.header(accountId, device.deviceId, 6) + ByteArray(20)
+    return ControlUpdate(6, endpoint, validP256dh, validAuth, frame, 1)
+  }
+
+  private fun installControlState(initial: ControlState): AtomicReference<ControlState> {
+    val state = AtomicReference(initial)
+    every { unifiedPush.controlState } answers { state.get() }
+    every { unifiedPush.mutateControl(any(), any()) } answers {
+      val next = secondArg<(ControlState) -> ControlState>().invoke(state.get())
+      state.set(next)
+      next
+    }
+    return state
   }
 
   private fun newJob() = UnifiedPushControlJob.Factory().create(Job.Parameters.Builder().build(), null)

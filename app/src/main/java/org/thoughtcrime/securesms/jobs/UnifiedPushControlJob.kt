@@ -4,6 +4,7 @@ import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.CorruptControlStateException
 import im.molly.unifiedpush.control.ControlFrame
 import im.molly.unifiedpush.control.UnifiedPushControlStore
+import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.signal.core.util.logging.Log
@@ -69,19 +70,26 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
     try {
       val selected = synchronized(UnifiedPushLifecycle.monitor) {
         if (!UnifiedPushLifecycle.isReadyLocked() || !UnifiedPushAccountTransition.contextStillMatchesLocked(lease.snapshot)) return
-        val update = try {
-          store.read().update
+        val state = try {
+          store.read()
         } catch (e: CorruptControlStateException) {
           Log.w(TAG, "Endpoint update stopped: control state unavailable")
           return
-        } ?: run {
+        }
+        val update = state.update ?: run {
           Log.d(TAG, "No endpoint update pending.")
           return
         }
         val device = lease.snapshot.pushDevice ?: return
         if (!ControlFrame.matchesIdentity(update.frame, lease.snapshot.accountId, device.deviceId, update.epoch)) return
+        val endpoint = lease.snapshot.endpoint ?: return
+        val subscription = try {
+          ControlFrame.Subscription(endpoint, lease.snapshot.endpointP256dh.orEmpty(), lease.snapshot.endpointAuth.orEmpty())
+        } catch (e: EnrollmentFile.Invalid) {
+          return
+        }
+        if (!update.sameTarget(subscription)) return
 
-        val state = store.read()
         if (state.activeImportId != null &&
           (state.activeAccountId != lease.snapshot.accountId || state.activeDeviceId != device.deviceId || state.activeInstance != lease.snapshot.instance)) return
         update to device

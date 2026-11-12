@@ -7,7 +7,7 @@ This is a factual requirement audit, not a design rating. Source and current ima
 | Ordinary messenger audience and skimming | Patch-reading pitch removed; mostly approved factual paragraphs retained. Intro is one reading group immediately after hero; phone feature recap removed. |
 | Signal/Molly consolidation | Intro contains compatibility, foundations and optional source/security details. Side by side and account/two-app explanations are absent. The installation verification still names the package as before. |
 | Community/help | Matrix and Discussions have distinct chat/forum icons and visible actions. Help the project remains a separate bug-report/donation group. |
-| Exact notification link and emphasis | Required sentence still links to #upcoming; selective bold/italic and underlined actions remain. |
+| Exact notification link and emphasis | Required sentence/UnifiedPush anchor remain unchanged. Feature now describes alerts/connection plainly; precise trusted MollySocket requirement is at Upcoming. Selective emphasis/underlined links remain. |
 | Discussion-generated plans | Existing category only; eight plans in the supplied snapshot, label-priority first, separate badge, explicit planned disclaimer. Daily workflow uses 06:17 UTC and read permissions. Discussion106 wording was checked against the public source; URL unchanged. |
 | Installation options | Obtainium/F-Droid share primary styling; Recommended appears only once; manual APK remains secondary. Website's actual CTA reaches its local handoff; README retains absolute Collie URL. GitHub update source, manual collie.im/#get fallback and tested nested-JSON filter are unchanged. |
 | Fresh native screenshot | Fastlane PNG and website WebP share the new 06:53 API 35 capture. Matching-APK centering test passed unskipped; actual title/button geometry gives equal 450px clearance. Security preference restoration passed and subsequent window SECURE flag was verified. No fabricated chat image. |
@@ -22,6 +22,8 @@ This is a factual requirement audit, not a design rating. Source and current ima
 
 | Finding | Disposition/confidence | Scoped result |
 | --- | --- | --- |
+| Notification terminology | Valid, high | Plain connection/trusted-server feature copy verified against native source. Exact why/UnifiedPush anchors retained; MollySocket requirement moved to existing Upcoming sentence. |
+| Featured heading orphan | Valid, high | text-wrap:balance yields Locked when / you step away at 320/390/768/1280;320 wrap unchanged, no card/facts change. |
 | Desktop lead body cap | Valid, high | Above 860px body 460 to 640.66px; card remains 408px; text-to-card-edge 51.66px. |
 | Community primary hierarchy | Valid, high | Titles 22px vs help 16.8px, icons 40px; lighter Help, unchanged copy/links. |
 | Phone curve shadow spill | Valid, high | Full-width 40px bands are uniformly 249/251/244 at 390/320; desktop hero unchanged. |
@@ -40,8 +42,8 @@ PR102 head is signed 614ed0f18d5301496fa1f86a756e64cb07e4910b. Its code matches 
 
 ## Remaining completion steps outside this frozen review packet
 
-- Independent reviews of this exact candidate are pending; no prior scores or desired grade are supplied here.
-- PR95 remote head is 555fff83a6b7e8f5b8de89f522859f250a166b5f, including the fresh native assets. The final design candidate has not been pushed. After acceptance/push, its description needs the current screenshot gallery, 14-test count and precise selected-contrast wording; the original blanket all-text AA statement is stronger than the recorded evidence.
+- Independent design approval is not claimed. Authentic everyday-messaging imagery remains absent; optional offline capture awaits explicit user disk-WARN approval.
+- PR95 contains the fresh native asset correction 555fff83a6b7e8f5b8de89f522859f250a166b5f. Its description uses immutable published candidate images, 14-test scope and selected contrast evidence; no blanket all-text AA claim is supported.
 - Public deployment and actual Obtainium app installation/import have not been performed in this website lane. The local CTA/handoff was read end to end. No default-branch push, merge or production deployment occurred.
 
 The footer disclaimer is byte-for-byte unchanged from the consolidation base. No source, screenshot or documentation updates should be made while this candidate is being scored.

@@ -360,7 +360,6 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
 
         val database = SignalDatabase.backupDatabase
         val inputStream = context.contentResolver.openInputStream(backupUri) ?: throw IOException("Unable to open backup stream for $backupUri")
-        val hadRegisteredContext = SignalStore.account.isRegistered
         val importBackup: suspend () -> Unit = {
           CountingInputStream(inputStream).use { counting ->
             countingStream = counting
@@ -379,14 +378,12 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
           // The importer writes the restored key-value store straight to disk, bypassing the in-memory SignalStore cache.
           // Reset it so the state we read below reflects the restored values rather than stale pre-restore ones.
           SignalStore.onPostBackupRestore()
-          if (hadRegisteredContext) SignalStore.unifiedpush.setIncompleteAccountTransition(true)
+          SignalStore.unifiedpush.setIncompleteAccountTransition(true)
         }
-        if (hadRegisteredContext) {
-          UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = importBackup)
-        } else {
-          // The subsequent local registration commit gates push readiness; before it, no registered context is usable.
-          importBackup()
-        }
+        // The account frame can set registration state, even on an install that was unregistered when
+        // restore began. Serialize both branches with local registration and keep readiness closed
+        // until the complete account registration is applied.
+        UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = importBackup)
 
         // A post-registration restore clobbers parts of SignalStore.account with the backup's values -- V1 backups
         // carry the identity keys and AEP. Re-apply the frozen account data to heal the committed registration.
@@ -749,7 +746,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
    * data to heal them.
    */
   private suspend fun applyAccountData(accountData: AccountData, pin: String, registrationLockEnabled: Boolean, masterKey: MasterKey?) {
-    UnifiedPushAccountTransition.withTransition {
+    UnifiedPushAccountTransition.withTransition(completesAccountRegistration = true) {
     Log.i(TAG, "[applyAccountData] Registering account locally.")
 
     SignalStore.account.registrationId = accountData.aciRegistrationId

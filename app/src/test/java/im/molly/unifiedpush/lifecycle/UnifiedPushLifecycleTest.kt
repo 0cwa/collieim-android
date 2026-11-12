@@ -1,6 +1,11 @@
 package im.molly.unifiedpush.lifecycle
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
@@ -109,5 +114,93 @@ class UnifiedPushLifecycleTest {
 
     assertTrue(failure is UnifiedPushLifecycle.StaleLifecycleGenerationException)
     assertTrue(UnifiedPushLifecycle.isReady())
+  }
+
+  @Test
+  fun `cancellation after transition ownership is acquired releases the writer`() {
+    val lease = UnifiedPushLifecycle.acquireLease { "account-a" }!!
+    val markerSet = CountDownLatch(1)
+    val pending = AtomicBoolean(false)
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val transition = scope.launch {
+      UnifiedPushLifecycle.withTransition(
+        hasIncompleteMarker = { pending.get() },
+        persistIncompleteMarker = {
+          pending.set(it)
+          if (it) markerSet.countDown()
+        },
+        readyAfter = { true },
+      ) { error("the canceled transition must not run its mutation") }
+    }
+
+    assertTrue(markerSet.await(5, TimeUnit.SECONDS))
+    transition.cancel()
+    lease.close()
+    runBlocking { transition.join() }
+    assertTrue(transition.isCancelled)
+    assertTrue(pending.get())
+    assertFalse(UnifiedPushLifecycle.isReady())
+
+    val nextTransitionEntered = CountDownLatch(1)
+    runBlocking {
+      UnifiedPushLifecycle.withTransition(
+        hasIncompleteMarker = { pending.get() },
+        persistIncompleteMarker = { pending.set(it) },
+        readyAfter = { true },
+        keepIncompleteMarker = true,
+      ) {
+        nextTransitionEntered.countDown()
+      }
+    }
+    assertTrue("the next writer must not remain stranded", nextTransitionEntered.count == 0L)
+    scope.cancel()
+  }
+
+  @Test
+  fun `ordinary transitions preserve an inherited incomplete marker until full registration completes`() {
+    val pending = AtomicBoolean(true)
+    UnifiedPushLifecycle.initialize(incompleteTransition = true, legacyContextIsCoherent = true)
+
+    runBlocking {
+      UnifiedPushLifecycle.withTransition(
+        hasIncompleteMarker = { pending.get() },
+        persistIncompleteMarker = { pending.set(it) },
+        readyAfter = { true },
+      ) { Unit }
+    }
+
+    assertTrue("an unrelated successful transition must not clear the inherited marker", pending.get())
+    assertFalse(UnifiedPushLifecycle.isReady())
+
+    UnifiedPushLifecycle.initialize(incompleteTransition = true, legacyContextIsCoherent = true)
+    runBlocking {
+      UnifiedPushLifecycle.withTransition(
+        hasIncompleteMarker = { pending.get() },
+        persistIncompleteMarker = { pending.set(it) },
+        readyAfter = { true },
+        completesAccountRegistration = true,
+      ) { Unit }
+    }
+
+    assertFalse(pending.get())
+    assertTrue(UnifiedPushLifecycle.isReady())
+  }
+
+  @Test
+  fun `incomplete full registration retains the marker`() {
+    val pending = AtomicBoolean(true)
+    UnifiedPushLifecycle.initialize(incompleteTransition = true, legacyContextIsCoherent = true)
+
+    runBlocking {
+      UnifiedPushLifecycle.withTransition(
+        hasIncompleteMarker = { pending.get() },
+        persistIncompleteMarker = { pending.set(it) },
+        readyAfter = { false },
+        completesAccountRegistration = true,
+      ) { Unit }
+    }
+
+    assertTrue(pending.get())
+    assertFalse(UnifiedPushLifecycle.isReady())
   }
 }

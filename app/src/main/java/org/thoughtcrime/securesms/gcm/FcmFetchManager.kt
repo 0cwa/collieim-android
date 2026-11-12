@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -113,11 +114,11 @@ object FcmFetchManager {
     NotificationManagerCompat.from(context).cancel(NotificationIds.MAY_HAVE_MESSAGES_NOTIFICATION_ID)
   }
 
-  private fun fetch(context: Context, now: Long) {
+  private fun fetch(context: Context, now: Long, authorization: UnifiedPushAccountTransition.FetchAuthorization?) {
     val hasHighPriorityContext = highPriority
 
     val metricId = SignalLocalMetrics.PushWebsocketFetch.startFetch()
-    val success = retrieveMessages(context)
+    val success = retrieveMessages(context, authorization)
     if (success) {
       SignalLocalMetrics.PushWebsocketFetch.onDrained(metricId)
       cancelMayHaveMessagesNotification(context)
@@ -147,18 +148,44 @@ object FcmFetchManager {
 
   @JvmStatic
   fun enqueueFetch(context: Context, highPriority: Boolean) {
+    enqueueFetch(context, highPriority, null)
+  }
+
+  /** Queues an optional UnifiedPush-origin request; no lease is held until this queued work actually starts. */
+  @JvmStatic
+  fun enqueueFetch(
+    context: Context,
+    highPriority: Boolean,
+    authorization: UnifiedPushAccountTransition.FetchAuthorization?,
+  ) {
     synchronized(this) {
       if (highPriority) {
         this.highPriority = true
       }
       last = System.nanoTime()
       Log.i(TAG, "Updating last event to $last")
-      EXECUTOR.enqueue { fetch(context, last) }
+      EXECUTOR.enqueue { fetch(context, last, authorization) }
     }
   }
 
   @JvmStatic
   fun retrieveMessages(context: Context): Boolean {
+    return retrieveMessages(context, null)
+  }
+
+  /** Reacquires the event's lease for the websocket drain and binds any fallback to the same context. */
+  @JvmStatic
+  fun retrieveMessages(
+    context: Context,
+    authorization: UnifiedPushAccountTransition.FetchAuthorization?,
+  ): Boolean {
+    val lease = authorization?.let(UnifiedPushAccountTransition::acquireFetchLease)
+    if (authorization != null && lease == null) {
+      Log.i(TAG, "UnifiedPush fetch authorization expired before execution.")
+      return true
+    }
+
+    try {
     val success = WebSocketDrainer.blockUntilDrainedAndProcessed(WEBSOCKET_DRAIN_TIMEOUT, KEEP_ALIVE_TOKEN)
 
     if (success) {
@@ -166,13 +193,16 @@ object FcmFetchManager {
     } else {
       if (Build.VERSION.SDK_INT >= 26) {
         Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on the system JobScheduler (API " + Build.VERSION.SDK_INT + ").")
-        FcmJobService.schedule(context)
+        FcmJobService.schedule(context, authorization)
       } else {
         Log.w(TAG, "[API ${Build.VERSION.SDK_INT}] Failed to retrieve messages. Scheduling on JobManager (API " + Build.VERSION.SDK_INT + ").")
-        AppDependencies.jobManager.add(MessageFetchJob())
+        AppDependencies.jobManager.add(if (authorization == null) MessageFetchJob() else MessageFetchJob.forUnifiedPush(authorization))
       }
     }
 
     return success
+    } finally {
+      lease?.close()
+    }
   }
 }

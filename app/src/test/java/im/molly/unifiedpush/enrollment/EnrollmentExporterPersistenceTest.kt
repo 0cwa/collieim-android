@@ -294,6 +294,76 @@ class EnrollmentExporterPersistenceTest {
     assertNotNull(storage.nextWriteFailure)
   }
 
+  @Test
+  fun `recovery refuses to seed a lost replay clock after explicit control reset`() {
+    resetForFirstEnrollment()
+    values.mutateControl { it.copy(highestEpoch = 1) }
+    val highWater = 1_735_689_600L
+    values.replayState = EncryptedPush.ReplayState(highWater, emptyList()).serialize()
+    values.store.blockUntilAllWritesFinished()
+    values.clearControl()
+    val resetState = values.controlState
+    assertEquals(ControlState(), resetState)
+
+    values.replayState = null
+    values.store.blockUntilAllWritesFinished()
+    storage.removePersistedKey("up.enrollment.replay")
+    values.store.resetCache()
+
+    val failure = runCatching {
+      EnrollmentExporter.exportWithEpochAtTime(
+        context = context,
+        serverEpoch = 0,
+        mode = ExportMode.RECOVERY,
+        nowSeconds = highWater - 1,
+        isDistributorActive = { true },
+      )
+    }.exceptionOrNull()
+
+    assertEquals("state_unavailable", (failure as? EnrollmentFile.Invalid)?.code)
+    assertEquals(resetState, values.controlState)
+    assertNull(values.replayState)
+    val directory = checkNotNull(context.getExternalFilesDir(null))
+    assertFalse(File(directory, EnrollmentExporter.FILE_NAME).exists())
+    assertFalse(File(directory, "${EnrollmentExporter.FILE_NAME}.tmp").exists())
+  }
+
+  @Test
+  fun `rerender cannot initialize missing replay below the accepted clock mark`() {
+    resetForFirstEnrollment()
+    val original = EnrollmentExporter.exportWithEpochAtTime(
+      context = context,
+      serverEpoch = 4,
+      mode = ExportMode.NEW_INTENT,
+      nowSeconds = 100,
+      isDistributorActive = { true },
+    )
+    val highWater = 200L
+    values.replayState = EncryptedPush.ReplayState(highWater, emptyList()).serialize()
+    values.store.blockUntilAllWritesFinished()
+    val stateBefore = values.controlState
+    storage.removePersistedKey("up.enrollment.replay")
+    values.store.resetCache()
+
+    val failure = runCatching {
+      EnrollmentExporter.exportWithEpochAtTime(
+        context = context,
+        serverEpoch = null,
+        mode = ExportMode.RERENDER,
+        requestId = original.requestId,
+        nowSeconds = highWater - 1,
+        isDistributorActive = { true },
+      )
+    }.exceptionOrNull()
+
+    assertEquals("state_unavailable", (failure as? EnrollmentFile.Invalid)?.code)
+    assertEquals(stateBefore, values.controlState)
+    assertNull(values.replayState)
+    val directory = checkNotNull(context.getExternalFilesDir(null))
+    assertFalse(File(directory, EnrollmentExporter.FILE_NAME).exists())
+    assertFalse(File(directory, "${EnrollmentExporter.FILE_NAME}.tmp").exists())
+  }
+
   private class CountingExecutor : Executor {
     private val delegate = Executors.newSingleThreadExecutor()
     private val lock = Object()

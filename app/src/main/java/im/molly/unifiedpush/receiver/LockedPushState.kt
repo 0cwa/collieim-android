@@ -69,4 +69,21 @@ object LockedPushState {
       null
     }
   }
+
+  /** Reads the sealed endpoint without consuming it so a failed durable application can be retried. */
+  fun peekPending(context: Context): Endpoint? {
+    val value = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(PENDING, null) ?: return null
+    return try {
+      val fields = String(KeyStoreHelper.unseal(KeyStoreHelper.SealedData.fromString(value)), Charsets.UTF_8).split(SEPARATOR)
+      if (fields.size != 4) null else Endpoint(fields[0].ifEmpty { null }, fields[1].ifEmpty { null }, fields[2].ifEmpty { null }, fields[3])
+    } catch (e: Throwable) {
+      Log.w(TAG, "Could not read the endpoint received while locked.", e)
+      null
+    }
+  }
+
+  /** Removes pending state only after the route tuple and control update have been applied. */
+  fun clearPending(context: Context) {
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(PENDING).commit()
+  }
 }

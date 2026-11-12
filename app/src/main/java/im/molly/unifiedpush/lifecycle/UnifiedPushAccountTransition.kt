@@ -25,6 +25,18 @@ object UnifiedPushAccountTransition {
     override fun toString() = "AccountContext(localDeviceId=$localDeviceId, instance=$instance)"
   }
 
+  /** Opaque, process-scoped authorization carried by UnifiedPush-origin message fetch work. */
+  data class FetchAuthorization internal constructor(
+    val processInstanceId: String,
+    val generation: Long,
+    val accountId: String,
+    val localDeviceId: Int,
+    val pushDeviceId: Int,
+    val instance: String,
+  ) {
+    override fun toString() = "FetchAuthorization(generation=$generation, localDeviceId=$localDeviceId, instance=$instance)"
+  }
+
   /** Legacy stores have no transition marker. They remain usable only when registered identity and credentials agree. */
   @JvmStatic
   fun initializeFromSignalStore() {
@@ -39,16 +51,22 @@ object UnifiedPushAccountTransition {
   suspend fun <T> withTransition(
     expectedGeneration: Long? = null,
     keepIncompleteMarker: Boolean = false,
+    completesAccountRegistration: Boolean = false,
+    completesInvalidation: Boolean = false,
+    readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
     block: suspend () -> T,
   ): T {
     val result = UnifiedPushLifecycle.withTransition(
+      hasIncompleteMarker = SignalStore.unifiedpush::hasIncompleteAccountTransition,
       persistIncompleteMarker = SignalStore.unifiedpush::setIncompleteAccountTransition,
-      readyAfter = ::hasCoherentRegisteredContext,
+      readyAfter = readyAfter,
       expectedGeneration = expectedGeneration,
       keepIncompleteMarker = keepIncompleteMarker,
+      completesAccountRegistration = completesAccountRegistration,
+      completesInvalidation = completesInvalidation,
       block = block,
     )
-    if (!keepIncompleteMarker && UnifiedPushLifecycle.isReady() && AppDependencies.isInitialized) {
+    if (!keepIncompleteMarker && !completesInvalidation && UnifiedPushLifecycle.isReady() && AppDependencies.isInitialized) {
       SignalExecutors.BOUNDED.execute { UnifiedPushReceiver.applyPendingEndpoint(AppDependencies.application) }
     }
     return result
@@ -58,6 +76,30 @@ object UnifiedPushAccountTransition {
   fun acquireLease(expectedGeneration: Long? = null): UnifiedPushLifecycle.Lease<AccountContext>? =
     UnifiedPushLifecycle.acquireLease(expectedGeneration, ::captureContextLocked)
 
+  fun fetchAuthorization(lease: UnifiedPushLifecycle.Lease<AccountContext>): FetchAuthorization =
+    FetchAuthorization(
+      processInstanceId = UnifiedPushLifecycle.processInstanceId(),
+      generation = lease.generation,
+      accountId = lease.snapshot.accountId,
+      localDeviceId = lease.snapshot.localDeviceId,
+      pushDeviceId = lease.snapshot.pushDevice?.deviceId ?: -1,
+      instance = lease.snapshot.instance,
+    )
+
+  /** Reacquires authorization at the actual fetch/fallback execution boundary. */
+  @JvmStatic
+  fun acquireFetchLease(authorization: FetchAuthorization): UnifiedPushLifecycle.Lease<AccountContext>? {
+    if (authorization.processInstanceId != UnifiedPushLifecycle.processInstanceId()) return null
+    return UnifiedPushLifecycle.acquireLease(authorization.generation) {
+      captureContextLocked()?.takeIf {
+        it.accountId == authorization.accountId &&
+          it.localDeviceId == authorization.localDeviceId &&
+          (it.pushDevice?.deviceId ?: -1) == authorization.pushDeviceId &&
+          it.instance == authorization.instance
+      }
+    }
+  }
+
   /** Reads only the registration flag while the same monitor that gates identity writers is held. */
   fun isRegisteredLocked(): Boolean {
     check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
@@ -65,8 +107,17 @@ object UnifiedPushAccountTransition {
   }
 
   @JvmStatic
-  fun <T> withTransitionBlocking(keepIncompleteMarker: Boolean, block: () -> T): T = runBlocking {
-    withTransition(keepIncompleteMarker = keepIncompleteMarker) { block() }
+  fun <T> withTransitionBlocking(
+    keepIncompleteMarker: Boolean = false,
+    completesInvalidation: Boolean = false,
+    expectedGeneration: Long? = null,
+    block: () -> T,
+  ): T = runBlocking {
+    withTransition(
+      keepIncompleteMarker = keepIncompleteMarker,
+      completesInvalidation = completesInvalidation,
+      expectedGeneration = expectedGeneration,
+    ) { block() }
   }
 
   @JvmStatic

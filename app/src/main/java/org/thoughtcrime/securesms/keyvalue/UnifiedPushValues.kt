@@ -47,7 +47,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_REGISTRATION_FAILED = "up.registrationFailed"
     private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
-    private const val UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING = "up.account.transition.pending"
+    const val UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING = "up.account.transition.pending"
   }
 
   public override fun onFirstEverAppLaunch() = Unit

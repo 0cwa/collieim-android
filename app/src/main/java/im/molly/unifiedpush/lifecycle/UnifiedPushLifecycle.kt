@@ -4,9 +4,9 @@ import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Semaphore
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Orders UnifiedPush effects against account identity changes. The monitor is also the receiver's replay lock.
@@ -18,13 +18,20 @@ object UnifiedPushLifecycle {
   val monitor = Any()
 
   private val transitionWriter = Semaphore(1, true)
+  private val processInstanceId = UUID.randomUUID().toString()
 
   private var initialized = false
   private var ready = false
   private var generation = 0L
   private var transitionGeneration: Long? = null
+  private var invalidationPending = false
   private var leaseCount = 0
   private var drainSignal: CountDownLatch? = null
+
+  private data class TransitionOwnership(
+    val generation: Long,
+    val inheritedIncompleteMarker: Boolean,
+  )
 
   class Lease<T : Any> internal constructor(
     internal val owner: UnifiedPushLifecycle,
@@ -42,6 +49,7 @@ object UnifiedPushLifecycle {
       check(leaseCount == 0 && transitionGeneration == null) { "Cannot initialize UnifiedPush lifecycle while work is active" }
       initialized = true
       generation = nextGeneration(generation)
+      invalidationPending = false
       ready = !incompleteTransition && legacyContextIsCoherent
     }
   }
@@ -82,10 +90,25 @@ object UnifiedPushLifecycle {
   /** Must be called from inside [monitor]. */
   fun isReadyLocked(): Boolean {
     check(Thread.holdsLock(monitor))
-    return initialized && ready && transitionGeneration == null
+    return initialized && ready && transitionGeneration == null && !invalidationPending
+  }
+
+  /** Immediately revokes effect authorization; the caller must queue a transition that completes the invalidation. */
+  fun invalidateLocked() {
+    check(Thread.holdsLock(monitor))
+    generation = nextGeneration(generation)
+    ready = false
+    invalidationPending = true
+  }
+
+  fun hasPendingInvalidationLocked(): Boolean {
+    check(Thread.holdsLock(monitor))
+    return invalidationPending
   }
 
   fun currentGeneration(): Long = synchronized(monitor) { generation }
+
+  fun processInstanceId(): String = processInstanceId
 
   /**
    * Marks push work unavailable, durably records the incomplete transition, drains old account-credentialed work,
@@ -94,41 +117,59 @@ object UnifiedPushLifecycle {
    * [keepIncompleteMarker].
    */
   suspend fun <T> withTransition(
+    hasIncompleteMarker: () -> Boolean = { false },
     persistIncompleteMarker: (Boolean) -> Unit,
     readyAfter: () -> Boolean,
     expectedGeneration: Long? = null,
     keepIncompleteMarker: Boolean = false,
+    completesAccountRegistration: Boolean = false,
+    completesInvalidation: Boolean = false,
     block: suspend () -> T,
   ): T {
-    val token = withContext(NonCancellable + Dispatchers.IO) {
-      beginTransition(persistIncompleteMarker, expectedGeneration)
+    require(!keepIncompleteMarker || !completesAccountRegistration) {
+      "A transition cannot both retain the incomplete marker and complete registration"
     }
 
+    var ownership: TransitionOwnership? = null
     try {
+      // Store ownership before leaving NonCancellable. withContext has a prompt cancellation guarantee when
+      // dispatching back to the caller; cancellation there must still reach cleanup with the acquired token.
+      withContext(NonCancellable + Dispatchers.IO) {
+        ownership = beginTransition(hasIncompleteMarker, persistIncompleteMarker, expectedGeneration)
+      }
+      val token = checkNotNull(ownership)
       val result = block()
       if (keepIncompleteMarker) {
-        finishTransition(token, readyAfter = false)
+        finishTransition(token, readyAfter = false, completesInvalidation = false)
       } else {
         val canStartPushWork = readyAfter()
-        withContext(NonCancellable + Dispatchers.IO) { persistIncompleteMarker(false) }
-        finishTransition(token, canStartPushWork)
+        val preserveInheritedMarker = token.inheritedIncompleteMarker && !completesAccountRegistration
+        val incompleteFullRegistration = completesAccountRegistration && !canStartPushWork
+        if (preserveInheritedMarker || incompleteFullRegistration) {
+          finishTransition(token, readyAfter = false, completesInvalidation = false)
+        } else {
+          withContext(NonCancellable + Dispatchers.IO) { persistIncompleteMarker(false) }
+          finishTransition(token, canStartPushWork, completesInvalidation || completesAccountRegistration)
+        }
       }
       return result
     } catch (failure: Throwable) {
-      failTransition(token)
+      ownership?.let(::failTransition)
       throw failure
     } finally {
-      transitionWriter.release()
+      if (ownership != null) transitionWriter.release()
     }
   }
 
   private fun beginTransition(
+    hasIncompleteMarker: () -> Boolean,
     persistIncompleteMarker: (Boolean) -> Unit,
     expectedGeneration: Long?,
-  ): Long {
+  ): TransitionOwnership {
     transitionWriter.acquire()
-    var token: Long? = null
+    var token: TransitionOwnership? = null
     try {
+      val inheritedIncompleteMarker = hasIncompleteMarker()
       val drain = synchronized(monitor) {
         if (expectedGeneration != null && generation != expectedGeneration) {
           throw StaleLifecycleGenerationException()
@@ -138,7 +179,7 @@ object UnifiedPushLifecycle {
         initialized = true
         ready = false
         transitionGeneration = next
-        token = next
+        token = TransitionOwnership(next, inheritedIncompleteMarker)
         if (leaseCount == 0) null else CountDownLatch(1).also { drainSignal = it }
       }
 
@@ -152,17 +193,18 @@ object UnifiedPushLifecycle {
     }
   }
 
-  private fun finishTransition(token: Long, readyAfter: Boolean) {
+  private fun finishTransition(token: TransitionOwnership, readyAfter: Boolean, completesInvalidation: Boolean) {
     synchronized(monitor) {
-      check(transitionGeneration == token) { "UnifiedPush lifecycle transition ownership changed" }
+      check(transitionGeneration == token.generation) { "UnifiedPush lifecycle transition ownership changed" }
+      if (completesInvalidation && readyAfter) invalidationPending = false
       transitionGeneration = null
-      ready = readyAfter
+      ready = readyAfter && !invalidationPending
     }
   }
 
-  private fun failTransition(token: Long) {
+  private fun failTransition(token: TransitionOwnership) {
     synchronized(monitor) {
-      if (transitionGeneration == token) {
+      if (transitionGeneration == token.generation) {
         transitionGeneration = null
         ready = false
       }
@@ -194,6 +236,7 @@ object UnifiedPushLifecycle {
       initialized = true
       ready = initiallyReady
       generation = 1
+      invalidationPending = false
       drainSignal = null
     }
   }

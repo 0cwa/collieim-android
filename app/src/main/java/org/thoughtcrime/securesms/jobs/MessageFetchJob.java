@@ -10,6 +10,7 @@ import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.Job;
+import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.impl.NetworkConstraint;
 import org.thoughtcrime.securesms.messages.WebSocketDrainer;
 import org.thoughtcrime.securesms.notifications.NotificationChannels;
@@ -17,6 +18,9 @@ import org.thoughtcrime.securesms.service.GenericForegroundService;
 import org.signal.core.util.AppForegroundObserver;
 import org.signal.core.util.UnableToStartException;
 import org.signal.network.exceptions.PushNetworkException;
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition;
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.FetchAuthorization;
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -29,23 +33,57 @@ public final class MessageFetchJob extends BaseJob {
   public static final String KEY = "PushNotificationReceiveJob";
 
   private static final String TAG = Log.tag(MessageFetchJob.class);
+  private static final String EXTRA_UP_AUTHORIZED = "up_fetch_authorized";
+  private static final String EXTRA_UP_PROCESS = "up_fetch_process";
+  private static final String EXTRA_UP_GENERATION = "up_fetch_generation";
+  private static final String EXTRA_UP_ACCOUNT = "up_fetch_account";
+  private static final String EXTRA_UP_LOCAL_DEVICE = "up_fetch_local_device";
+  private static final String EXTRA_UP_PUSH_DEVICE = "up_fetch_push_device";
+  private static final String EXTRA_UP_INSTANCE = "up_fetch_instance";
+
+  private final FetchAuthorization fetchAuthorization;
+  private final boolean invalidFetchAuthorization;
 
   public MessageFetchJob() {
-    this(new Job.Parameters.Builder()
-             .addConstraint(NetworkConstraint.KEY)
-             .setQueue("__notification_received")
-             .setMaxAttempts(3)
-             .setMaxInstancesForFactory(1)
-             .build());
+    this(defaultParameters(), null, false);
   }
 
   private MessageFetchJob(Job.Parameters parameters) {
+    this(parameters, null, false);
+  }
+
+  private MessageFetchJob(Job.Parameters parameters, FetchAuthorization authorization, boolean invalidAuthorization) {
     super(parameters);
+    this.fetchAuthorization = authorization;
+    this.invalidFetchAuthorization = invalidAuthorization;
+  }
+
+  public static MessageFetchJob forUnifiedPush(FetchAuthorization authorization) {
+    return new MessageFetchJob(defaultParameters(), authorization, false);
+  }
+
+  private static Job.Parameters defaultParameters() {
+    return new Job.Parameters.Builder()
+        .addConstraint(NetworkConstraint.KEY)
+        .setQueue("__notification_received")
+        .setMaxAttempts(3)
+        .setMaxInstancesForFactory(1)
+        .build();
   }
 
   @Override
   public @Nullable byte[] serialize() {
-    return null;
+    if (fetchAuthorization == null && !invalidFetchAuthorization) return null;
+    JsonJobData.Builder data = new JsonJobData.Builder().putBoolean(EXTRA_UP_AUTHORIZED, true);
+    if (fetchAuthorization != null) {
+      data.putString(EXTRA_UP_PROCESS, fetchAuthorization.getProcessInstanceId())
+          .putLong(EXTRA_UP_GENERATION, fetchAuthorization.getGeneration())
+          .putString(EXTRA_UP_ACCOUNT, fetchAuthorization.getAccountId())
+          .putInt(EXTRA_UP_LOCAL_DEVICE, fetchAuthorization.getLocalDeviceId())
+          .putInt(EXTRA_UP_PUSH_DEVICE, fetchAuthorization.getPushDeviceId())
+          .putString(EXTRA_UP_INSTANCE, fetchAuthorization.getInstance());
+    }
+    return data.serialize();
   }
 
   @Override
@@ -55,16 +93,31 @@ public final class MessageFetchJob extends BaseJob {
 
   @Override
   public void onRun() throws IOException {
-    boolean success;
-
-    try (ForegroundServiceController controller = ForegroundServiceController.create(context)) {
-      success = controller.awaitResult();
+    if (invalidFetchAuthorization) {
+      Log.w(TAG, "Dropping malformed UnifiedPush fetch authorization.");
+      return;
     }
 
-    if (success) {
-      Log.i(TAG, "Successfully pulled messages.");
-    } else {
-      throw new PushNetworkException("Failed to pull messages.");
+    UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> lease =
+        fetchAuthorization == null ? null : UnifiedPushAccountTransition.acquireFetchLease(fetchAuthorization);
+    if (fetchAuthorization != null && lease == null) {
+      Log.i(TAG, "Dropping UnifiedPush fallback after its account context changed.");
+      return;
+    }
+
+    boolean success;
+    try {
+      try (ForegroundServiceController controller = ForegroundServiceController.create(context)) {
+        success = controller.awaitResult();
+      }
+
+      if (success) {
+        Log.i(TAG, "Successfully pulled messages.");
+      } else {
+        throw new PushNetworkException("Failed to pull messages.");
+      }
+    } finally {
+      if (lease != null) lease.close();
     }
   }
 
@@ -167,7 +220,25 @@ public final class MessageFetchJob extends BaseJob {
   public static final class Factory implements Job.Factory<MessageFetchJob> {
     @Override
     public @NonNull MessageFetchJob create(@NonNull Parameters parameters, @Nullable byte[] serializedData) {
-      return new MessageFetchJob(parameters);
+      JsonJobData data = JsonJobData.deserialize(serializedData);
+      if (!data.getBooleanOrDefault(EXTRA_UP_AUTHORIZED, false)) {
+        return new MessageFetchJob(parameters);
+      }
+
+      if (!data.hasString(EXTRA_UP_PROCESS) || !data.hasLong(EXTRA_UP_GENERATION) ||
+          !data.hasString(EXTRA_UP_ACCOUNT) || !data.hasInt(EXTRA_UP_LOCAL_DEVICE) ||
+          !data.hasInt(EXTRA_UP_PUSH_DEVICE) || !data.hasString(EXTRA_UP_INSTANCE)) {
+        return new MessageFetchJob(parameters, null, true);
+      }
+
+      FetchAuthorization authorization = new FetchAuthorization(
+          data.getString(EXTRA_UP_PROCESS),
+          data.getLong(EXTRA_UP_GENERATION),
+          data.getString(EXTRA_UP_ACCOUNT),
+          data.getInt(EXTRA_UP_LOCAL_DEVICE),
+          data.getInt(EXTRA_UP_PUSH_DEVICE),
+          data.getString(EXTRA_UP_INSTANCE));
+      return new MessageFetchJob(parameters, authorization, false);
     }
   }
 }

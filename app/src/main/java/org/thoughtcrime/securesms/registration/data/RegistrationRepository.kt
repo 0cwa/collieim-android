@@ -164,7 +164,7 @@ object RegistrationRepository {
    */
   @JvmStatic
   suspend fun registerAccountLocally(context: Context, data: LocalRegistrationMetadata) = withContext(Dispatchers.IO) {
-    UnifiedPushAccountTransition.withTransition {
+    UnifiedPushAccountTransition.withTransition(completesAccountRegistration = true) {
     Log.v(TAG, "registerAccountLocally()")
     val linkedDeviceInfo = data.linkedDeviceInfo
     if (linkedDeviceInfo != null) {
@@ -474,12 +474,10 @@ object RegistrationRepository {
 
       RegisterAccountResult.from(result)
     }
-    return@withContext if (SignalStore.account.isRegistered) {
-      UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = register)
-    } else {
-      // A new, unregistered account has no live UnifiedPush credential context to drain or invalidate.
-      register()
-    }
+    // Identity keys are read by the request and can be replaced by restore/re-registration paths. Serialize
+    // this branch even for a first registration; no live push lease exists yet, but another identity writer
+    // must not overlap its key generation and network request.
+    return@withContext UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = register)
   }
 
   @WorkerThread

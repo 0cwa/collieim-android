@@ -81,18 +81,20 @@ class UnifiedPushRefreshJob private constructor(
       return
     }
 
+    var currentLease = lease
     try {
-      validateMollySocketDevice(lease)
+      val validatedLease = validateMollySocketDevice(currentLease)
+      currentLease = validatedLease
 
-      val newStatus = checkRegistrationStatus(lease)
+      val newStatus = checkRegistrationStatus(currentLease)
       if (currentStatus == newStatus) {
         Log.d(TAG, "Registration status unchanged.")
       } else {
         Log.d(TAG, "Updated registration status: $newStatus")
-        UnifiedPushLifecycle.withCurrentLease(lease) { SignalStore.unifiedpush.registrationStatus = newStatus }
+        UnifiedPushLifecycle.withCurrentLease(currentLease) { SignalStore.unifiedpush.registrationStatus = newStatus }
       }
 
-      if (UnifiedPushLifecycle.isCurrentGeneration(lease.generation)) {
+      if (UnifiedPushLifecycle.isCurrentGeneration(currentLease.generation)) {
         when (newStatus) {
           RegistrationStatus.REGISTERED -> UnifiedPushNotificationBuilder(context).clearAlerts(clearRegistrationFailure = !SignalStore.unifiedpush.registrationFailed)
           RegistrationStatus.FORBIDDEN_ENDPOINT -> UnifiedPushNotificationBuilder(context).setNotificationMollySocketForbiddenEndpoint()
@@ -105,7 +107,7 @@ class UnifiedPushRefreshJob private constructor(
       Log.e(TAG, "Error checking registration status", t)
 
       if (currentStatus != RegistrationStatus.REGISTERED) {
-        UnifiedPushLifecycle.withCurrentLease(lease) { SignalStore.unifiedpush.registrationStatus = RegistrationStatus.UNKNOWN }
+        UnifiedPushLifecycle.withCurrentLease(currentLease) { SignalStore.unifiedpush.registrationStatus = RegistrationStatus.UNKNOWN }
       }
 
       // Re-throw the exception as IOException for retry
@@ -114,6 +116,7 @@ class UnifiedPushRefreshJob private constructor(
         else -> throw IOException(t)
       }
     } finally {
+      currentLease.close()
       AppDependencies.resetNetwork(restartMessageObserver = true)
       EventBus.default.post(PushServiceEvent)
     }
@@ -197,30 +200,41 @@ class UnifiedPushRefreshJob private constructor(
   }
 
   @Throws(IOException::class)
-  private fun validateMollySocketDevice(lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>) {
-    val device = lease.snapshot.pushDevice ?: return
+  private fun validateMollySocketDevice(
+    lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>,
+  ): UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext> {
+    val device = lease.snapshot.pushDevice ?: return lease
     val vapidSynced = SignalStore.unifiedpush.vapidKeySynced
+    var cleared = false
 
+    var clearGeneration: Long? = null
     when (MollySocketRepository.getDeviceStatus(device)) {
       LinkStatus.LINKED -> {
         if (!vapidSynced) {
           Log.w(TAG, "VAPID key mismatch, will remove previous linked $device.")
-          removeAndClearDevice(device, lease)
+          clearGeneration = removeAndClearDevice(device, lease)
+          cleared = true
         }
       }
 
       LinkStatus.NOT_LINKED -> {
         Log.w(TAG, "$device no longer linked, will be recreated.")
-        clearDevice(device, lease)
+        clearGeneration = clearDevice(device, lease)
+        cleared = true
       }
 
       LinkStatus.UNKNOWN -> {
         if (!vapidSynced) {
           throw IOException("VAPID key mismatch, but cannot determine $device link status.")
         }
-        return // Optimistically assume the device is linked
+        return lease // Optimistically assume the device is linked
       }
     }
+
+    if (!cleared) return lease
+    val generation = clearGeneration ?: throw IOException("UnifiedPush account context changed while validating the relay device")
+    return UnifiedPushAccountTransition.acquireLease(generation)
+      ?: throw IOException("UnifiedPush account context changed while validating the relay device")
   }
 
   @Throws(IOException::class)
@@ -234,8 +248,8 @@ class UnifiedPushRefreshJob private constructor(
     Log.d(TAG, "Cleaning up non-air-gapped $device...")
 
     when (MollySocketRepository.getDeviceStatus(device)) {
-      LinkStatus.LINKED -> removeAndClearDevice(device, lease)
-      LinkStatus.NOT_LINKED -> clearDevice(device, lease)
+      LinkStatus.LINKED -> if (removeAndClearDevice(device, lease) == null) throw IOException("UnifiedPush account context changed during cleanup")
+      LinkStatus.NOT_LINKED -> if (clearDevice(device, lease) == null) throw IOException("UnifiedPush account context changed during cleanup")
       LinkStatus.UNKNOWN -> {
         throw IOException("Cannot determine $device link status during cleanup.")
       }
@@ -243,22 +257,45 @@ class UnifiedPushRefreshJob private constructor(
   }
 
   @Throws(IOException::class)
-  private fun removeAndClearDevice(device: MollySocketDevice, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>) {
+  private fun removeAndClearDevice(device: MollySocketDevice, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): Long? {
     MollySocketRepository.removeDevice(device)
-    clearDevice(device, lease)
+    return clearDevice(device, lease)
   }
 
-  private fun clearDevice(device: MollySocketDevice, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>) {
-    UnifiedPushLifecycle.withLeasedContext(lease) {
+  /**
+   * Close admission before dropping this job's lease, then enter the serialized transition with the
+   * generation observed at invalidation. If another transition won the writer first, this one fails
+   * stale instead of waiting for a transition that is itself draining our lease.
+   */
+  private fun clearDevice(device: MollySocketDevice, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): Long? {
+    val expectedGeneration = synchronized(UnifiedPushLifecycle.monitor) {
+      if (!UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.currentGeneration() != lease.generation ||
+        !UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) || SignalStore.unifiedpush.device != device) {
+        null
+      } else {
+        UnifiedPushLifecycle.invalidateLocked()
+        UnifiedPushLifecycle.currentGeneration()
+      }
+    }
+    lease.close()
+    if (expectedGeneration == null) return null
+
+    var cleared = false
+    UnifiedPushAccountTransition.withTransitionBlocking(
+      expectedGeneration = expectedGeneration,
+      completesInvalidation = true,
+    ) {
       synchronized(UnifiedPushLifecycle.monitor) {
         if (UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) && SignalStore.unifiedpush.device == device) {
           SignalStore.unifiedpush.device = null
           // Stop dispatching a frame addressed to the removed device while retaining keys, replay, import sequence,
           // and every pending import identity that an old file can still satisfy.
           SignalStore.unifiedpush.mutateControl { it.copy(update = null) }
+          cleared = true
         }
       }
     }
+    return if (cleared) UnifiedPushLifecycle.currentGeneration() else null
   }
 
   override fun onFailure() = Unit

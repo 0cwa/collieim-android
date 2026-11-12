@@ -26,16 +26,20 @@ class ResettableLazy<T>(
   private var value: Any? = UNINITIALIZED
 
   operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-    if (value === UNINITIALIZED) {
-      synchronized(this) {
-        if (value === UNINITIALIZED) {
-          value = initializer()
-        }
-      }
+    val initializedValue = value
+    if (initializedValue !== UNINITIALIZED) {
+      @Suppress("UNCHECKED_CAST")
+      return initializedValue as T
     }
 
-    @Suppress("UNCHECKED_CAST")
-    return value as T
+    return synchronized(this) {
+      if (value === UNINITIALIZED) {
+        value = initializer()
+      }
+
+      @Suppress("UNCHECKED_CAST")
+      value as T
+    }
   }
 
   @Synchronized

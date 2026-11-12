@@ -11,10 +11,14 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
+import io.mockk.mockkObject
 import io.mockk.unmockkConstructor
+import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.After
 import org.junit.Before
@@ -45,6 +49,7 @@ import im.molly.unifiedpush.model.RegistrationStatus
 import im.molly.unifiedpush.control.ControlUpdate
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import io.mockk.spyk
 import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.KeyValueStore
@@ -88,6 +93,7 @@ class UnifiedPushReceiverTest {
   private var failed = false
   private var retryScheduled = false
   private var accountIdentityId: String? = null
+  private var lockedPushStateMocked = false
 
   @Before
   fun setUp() {
@@ -107,11 +113,17 @@ class UnifiedPushReceiverTest {
     mockkConstructor(UnifiedPushNotificationBuilder::class)
     every { anyConstructed<UnifiedPushNotificationBuilder>().setNotificationRegistrationFailed() } returns Unit
     every { anyConstructed<UnifiedPushNotificationBuilder>().clearRegistrationFailed() } returns Unit
+    context.getSystemService(NotificationManager::class.java).cancelAll()
   }
 
   @After
   fun tearDown() {
     accountIdentityId = null
+    if (lockedPushStateMocked) {
+      unmockkObject(LockedPushState)
+      unmockkStatic(LockedPushState::class)
+      lockedPushStateMocked = false
+    }
     unmockkConstructor(UnifiedPushNotificationBuilder::class)
     unmockkStatic(KeyCachingService::class)
     unmockkStatic(NotificationChannels::class)
@@ -131,6 +143,8 @@ class UnifiedPushReceiverTest {
 
   @Test
   fun `successful unchanged endpoint resets failure and permits a later retry`() {
+    fakeAccount()
+    mockPendingEndpointStorage()
     val receiver = UnifiedPushReceiver()
     val endpoint = mockk<PushEndpoint>()
     every { endpoint.url } returns "https://example.org/push"
@@ -138,6 +152,7 @@ class UnifiedPushReceiverTest {
     every { values.endpoint } returns endpoint.url
     receiver.onRegistrationFailed(context, FailedReason.NETWORK, "instance")
     receiver.onNewEndpoint(context, endpoint, "instance")
+    awaitLifecycleReady()
     org.junit.Assert.assertFalse(failed)
     org.junit.Assert.assertFalse(retryScheduled)
     receiver.onRegistrationFailed(context, FailedReason.NETWORK, "instance")
@@ -148,6 +163,7 @@ class UnifiedPushReceiverTest {
 
   @Test
   fun `new endpoint stores one coherent connector tuple for enrollment export`() {
+    mockPendingEndpointStorage()
     val receiver = UnifiedPushReceiver()
     every { values.endpoint } returns null
     every { values.endpoint = any() } returns Unit
@@ -156,11 +172,13 @@ class UnifiedPushReceiverTest {
 
     receiver.onNewEndpoint(context, endpoint, "default")
 
-    verify { values.setEndpointRegistration("https://example.org/push", "pub-key", "auth-secret", "default") }
+    verify(timeout = 3000) { values.setEndpointRegistration("https://example.org/push", "pub-key", "auth-secret", "default") }
   }
 
   @Test
   fun `unregistering clears the stored connector keys`() {
+    fakeAccount()
+    mockPendingEndpointStorage()
     mockkStatic(UnifiedPush::class)
     try {
       every { UnifiedPush.forceRemoveDistributor(any()) } returns Unit
@@ -169,7 +187,8 @@ class UnifiedPushReceiverTest {
 
       UnifiedPushReceiver().onUnregistered(context, "default")
 
-      verify { values.setEndpointRegistration(null, null, null, null) }
+      verify(timeout = 3000) { values.setEndpointRegistration(null, null, null, null) }
+      awaitLifecycleReady()
     } finally {
       unmockkStatic(UnifiedPush::class)
     }
@@ -182,12 +201,8 @@ class UnifiedPushReceiverTest {
     mockkStatic(UnifiedPush::class)
     every { UnifiedPush.forceRemoveDistributor(context) } returns Unit
     mockkStatic(PushFetchHandler::class)
-    every { PushFetchHandler.handleReceivedNotification(any(), any()) } returns Unit
-    mockkStatic(LockedPushState::class)
-    val pending = AtomicReference<LockedPushState.Endpoint?>()
-    every { LockedPushState.savePending(context, any<LockedPushState.Endpoint>()) } answers { pending.set(secondArg()) }
-    every { LockedPushState.takePending(context) } answers { pending.getAndSet(null) }
-    every { LockedPushState.setEncryptedEnrollment(context, any<Boolean>()) } returns Unit
+    every { PushFetchHandler.handleReceivedNotification(any(), any(), any()) } returns Unit
+    val pending = mockPendingEndpointStorage()
     val transitionStarted = CountDownLatch(1)
     val finishTransition = CountDownLatch(1)
     val transitionFinished = CountDownLatch(1)
@@ -213,7 +228,7 @@ class UnifiedPushReceiverTest {
     try {
       assertTrue(transitionStarted.await(5, TimeUnit.SECONDS))
       UnifiedPushReceiver().onMessage(context, urgent(), "default")
-      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any(), any()) }
 
       val endpoint = PushEndpoint("https://example.org/new", PublicKeySet("new-pub", "new-auth"))
       UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
@@ -225,6 +240,8 @@ class UnifiedPushReceiverTest {
       assertEquals(null, transitionFailure.get())
       UnifiedPushReceiver.applyPendingEndpoint(context)
 
+      verify(timeout = 3000) { values.setEndpointRegistration(null, null, null, null) }
+      awaitLifecycleReady()
       assertEquals(null, values.endpoint)
       assertEquals(null, values.endpointP256dh)
       assertEquals(null, values.endpointAuth)
@@ -233,7 +250,53 @@ class UnifiedPushReceiverTest {
       finishTransition.countDown()
       unmockkStatic(UnifiedPush::class)
       unmockkStatic(PushFetchHandler::class)
-      unmockkStatic(LockedPushState::class)
+    }
+  }
+
+  @Test
+  fun `queued endpoint application preserves pending tuple when the app locks before it runs`() {
+    fakeAccount()
+    val pending = LockedPushState.Endpoint("https://push.example.invalid/pending", "p", "a", "default")
+    val lockChecked = CountDownLatch(1)
+    mockPendingEndpointStorage(pending)
+    mockkStatic(KeyCachingService::class)
+    every { KeyCachingService.isLocked() } answers { lockChecked.countDown(); true }
+
+    try {
+      UnifiedPushReceiver.applyPendingEndpoint(context)
+
+      assertTrue("the queued callback must inspect lock state", lockChecked.await(5, TimeUnit.SECONDS))
+      verify(exactly = 0) { LockedPushState.peekPending(context) }
+      verify(exactly = 0) { LockedPushState.clearPending(context) }
+      verify(exactly = 0) { values.setEndpointRegistration(any(), any(), any(), any()) }
+    } finally {
+    }
+  }
+
+  @Test
+  fun `unregister invalidates accepted work and waits for its lease before clearing the route`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/current"
+    val pending = mockPendingEndpointStorage()
+    mockkStatic(UnifiedPush::class)
+    every { UnifiedPush.forceRemoveDistributor(context) } returns Unit
+    val lease = UnifiedPushAccountTransition.acquireLease()!!
+    val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
+
+    try {
+      UnifiedPushReceiver().onUnregistered(context, "default")
+
+      assertFalse(UnifiedPushLifecycle.isCurrentGeneration(lease.generation))
+      assertNull(UnifiedPushAccountTransition.acquireFetchLease(authorization))
+      verify(exactly = 0) { values.setEndpointRegistration(null, null, null, null) }
+
+      lease.close()
+      verify(timeout = 3000) { values.setEndpointRegistration(null, null, null, null) }
+      awaitLifecycleReady()
+      assertEquals(null, pending.get())
+    } finally {
+      lease.close()
+      unmockkStatic(UnifiedPush::class)
     }
   }
 
@@ -248,6 +311,8 @@ class UnifiedPushReceiverTest {
 
   @Test
   fun `endpoint recovery clears only the registration failure notification`() {
+    fakeAccount()
+    mockPendingEndpointStorage()
     unmockkConstructor(UnifiedPushNotificationBuilder::class)
     val manager = context.getSystemService(NotificationManager::class.java)
     val receiver = UnifiedPushReceiver()
@@ -259,6 +324,12 @@ class UnifiedPushReceiverTest {
     receiver.onRegistrationFailed(context, FailedReason.NETWORK, "instance")
     UnifiedPushNotificationBuilder(context).setNotificationMollySocketForbiddenUuid()
     receiver.onNewEndpoint(context, endpoint, "instance")
+    awaitLifecycleReady()
+    awaitCondition("only the unrelated notification should remain") {
+      val current = shadowOf(manager).allNotifications
+      current.size == 1 && current.single().extras.getCharSequence(Notification.EXTRA_TEXT).toString() ==
+        context.getString(R.string.UnifiedPushNotificationBuilder__mollysocket_forbidden_uuid)
+    }
 
     val notifications = shadowOf(manager).allNotifications
     org.junit.Assert.assertEquals(1, notifications.size)
@@ -334,7 +405,7 @@ class UnifiedPushReceiverTest {
     every { values.registrationStatus } returns RegistrationStatus.REGISTERED
     every { SignalStore.account.isRegistered } returns true
     mockkStatic(PushFetchHandler::class)
-    every { PushFetchHandler.handleReceivedNotification(any(), any()) } returns Unit
+    every { PushFetchHandler.handleReceivedNotification(any(), any(), any()) } returns Unit
     clearMocks(values, answers = false, recordedCalls = true)
     block()
   }
@@ -348,8 +419,37 @@ class UnifiedPushReceiverTest {
   private fun urgent(decrypted: Boolean = true) = PushMessage("""{"urgent":true}""".toByteArray(), decrypted)
 
   private fun fetches(count: Int) {
-    Thread.sleep(400)
-    verify(exactly = count) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+    if (count == 0) {
+      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any(), any()) }
+    } else {
+      verify(timeout = 3000, exactly = count) { PushFetchHandler.handleReceivedNotification(any(), any(), any()) }
+    }
+  }
+
+  /** Tests the endpoint handoff independently of Android Keystore availability in Robolectric. */
+  private fun mockPendingEndpointStorage(initial: LockedPushState.Endpoint? = null): AtomicReference<LockedPushState.Endpoint?> {
+    if (!lockedPushStateMocked) {
+      mockkStatic(LockedPushState::class)
+      mockkObject(LockedPushState)
+      lockedPushStateMocked = true
+    }
+    return AtomicReference(initial).also { pending ->
+      every { LockedPushState.savePending(any(), any()) } answers { pending.set(secondArg()) }
+      every { LockedPushState.peekPending(any()) } answers { pending.get() }
+      every { LockedPushState.clearPending(any()) } answers { pending.set(null) }
+    }
+  }
+
+  private fun awaitLifecycleReady() {
+    val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+    while (!UnifiedPushLifecycle.isReady() && System.nanoTime() < deadline) Thread.yield()
+    assertTrue("pending endpoint transition did not finish", UnifiedPushLifecycle.isReady())
+  }
+
+  private fun awaitCondition(description: String, condition: () -> Boolean) {
+    val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
+    while (!condition() && System.nanoTime() < deadline) Thread.yield()
+    assertTrue(description, condition())
   }
 
   @Test
@@ -357,7 +457,7 @@ class UnifiedPushReceiverTest {
     enrollment(active = 1, pending = 0) {
       val receiver = UnifiedPushReceiver()
       receiver.onMessage(context, PushMessage(wake(), true), "default")
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
       receiver.onMessage(context, PushMessage(wake(), true), "default")
       fetches(1)
       verify(exactly = 1) { values.mutateControl(any(), any()) }
@@ -380,7 +480,7 @@ class UnifiedPushReceiverTest {
       val receiver = UnifiedPushReceiver()
       val accepted = wake()
       receiver.onMessage(context, PushMessage(accepted, true), "default")
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
       val controlBefore = values.controlState
       org.junit.Assert.assertNotNull(values.replayState)
 
@@ -416,7 +516,7 @@ class UnifiedPushReceiverTest {
     enrollment(active = 1, pending = 0) {
       val receiver = UnifiedPushReceiver()
       receiver.onMessage(context, PushMessage(wake(id = "22222222-2222-4222-8222-222222222222"), true), "default")
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
       val acceptedReplay = EncryptedPush.ReplayState.parse(values.replayState)!!
       val highWater = acceptedReplay.clockHighWater
 
@@ -425,18 +525,113 @@ class UnifiedPushReceiverTest {
       org.junit.Assert.assertTrue(values.controlStateRead is ControlStateRead.Current)
       values.replayState = null
 
+      for (mode in listOf(ExportMode.NEW_INTENT, ExportMode.RECOVERY)) {
+        val failure = runCatching {
+          EnrollmentExporter.exportWithEpochAtTime(
+            context = context,
+            serverEpoch = 0,
+            mode = mode,
+            nowSeconds = highWater - 1,
+            isDistributorActive = { true },
+          )
+        }.exceptionOrNull()
+
+        org.junit.Assert.assertEquals("$mode must refuse a lower-clock bootstrap", "state_unavailable", (failure as? EnrollmentFile.Invalid)?.code)
+        org.junit.Assert.assertEquals(ControlState(), values.controlState)
+        org.junit.Assert.assertNull(values.replayState)
+        val directory = checkNotNull(context.getExternalFilesDir(null))
+        org.junit.Assert.assertFalse(java.io.File(directory, EnrollmentExporter.FILE_NAME).exists())
+        org.junit.Assert.assertFalse(java.io.File(directory, "${EnrollmentExporter.FILE_NAME}.tmp").exists())
+      }
+    }
+  }
+
+  @Test
+  @Config(sdk = [35])
+  fun `rerender refuses missing replay below accepted clock while candidate remains`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/synthetic-endpoint"
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+
+    enrollment(active = 1, pending = 0) {
+      val intent = EnrollmentExporter.exportWithEpochAtTime(
+        context = context,
+        serverEpoch = 1,
+        mode = ExportMode.NEW_INTENT,
+        nowSeconds = System.currentTimeMillis() / 1000,
+        isDistributorActive = { true },
+      )
+      val receiver = UnifiedPushReceiver()
+      receiver.onMessage(
+        context,
+        PushMessage(wake(id = "33333333-3333-4333-8333-333333333333"), true),
+        "default",
+      )
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
+
+      val before = values.controlState
+      org.junit.Assert.assertTrue(before.intents.single { it.requestId == intent.requestId }.eligible)
+      val highWater = EncryptedPush.ReplayState.parse(values.replayState)!!.clockHighWater
+      values.replayState = null
+
       val failure = runCatching {
         EnrollmentExporter.exportWithEpochAtTime(
           context = context,
-          serverEpoch = 0,
-          mode = ExportMode.NEW_INTENT,
+          serverEpoch = null,
+          mode = ExportMode.RERENDER,
+          requestId = intent.requestId,
           nowSeconds = highWater - 1,
           isDistributorActive = { true },
         )
       }.exceptionOrNull()
 
       org.junit.Assert.assertEquals("state_unavailable", (failure as? EnrollmentFile.Invalid)?.code)
-      org.junit.Assert.assertEquals(ControlState(), values.controlState)
+      org.junit.Assert.assertEquals(before, values.controlState)
+      org.junit.Assert.assertNull(values.replayState)
+      val directory = checkNotNull(context.getExternalFilesDir(null))
+      org.junit.Assert.assertFalse(java.io.File(directory, EnrollmentExporter.FILE_NAME).exists())
+      org.junit.Assert.assertFalse(java.io.File(directory, "${EnrollmentExporter.FILE_NAME}.tmp").exists())
+    }
+  }
+
+  @Test
+  @Config(sdk = [35])
+  fun `recovery refuses missing replay below accepted clock after reset`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/synthetic-endpoint"
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+
+    enrollment(active = 1, pending = 0) {
+      val receiver = UnifiedPushReceiver()
+      receiver.onMessage(
+        context,
+        PushMessage(wake(id = "44444444-4444-4444-8444-444444444444"), true),
+        "default",
+      )
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
+      val acceptedReplay = EncryptedPush.ReplayState.parse(values.replayState)!!
+      val highWater = acceptedReplay.clockHighWater
+
+      values.clearControl()
+      org.junit.Assert.assertEquals(acceptedReplay.serialize(), values.replayState)
+      values.replayState = null
+      org.junit.Assert.assertTrue(values.controlStateRead is ControlStateRead.Current)
+      val resetState = values.controlState
+
+      val failure = runCatching {
+        EnrollmentExporter.exportWithEpochAtTime(
+          context = context,
+          serverEpoch = 0,
+          mode = ExportMode.RECOVERY,
+          nowSeconds = highWater - 1,
+          isDistributorActive = { true },
+        )
+      }.exceptionOrNull()
+
+      org.junit.Assert.assertEquals("state_unavailable", (failure as? EnrollmentFile.Invalid)?.code)
+      org.junit.Assert.assertEquals(resetState, values.controlState)
       org.junit.Assert.assertNull(values.replayState)
       val directory = checkNotNull(context.getExternalFilesDir(null))
       org.junit.Assert.assertFalse(java.io.File(directory, EnrollmentExporter.FILE_NAME).exists())
@@ -454,7 +649,7 @@ class UnifiedPushReceiverTest {
     persistent.nextWriteFailure = IllegalStateException("synthetic replay write failure")
     every { SignalStore.unifiedpush } returns durableValues
     mockkStatic(PushFetchHandler::class)
-    every { PushFetchHandler.handleReceivedNotification(any(), any()) } returns Unit
+    every { PushFetchHandler.handleReceivedNotification(any(), any(), any()) } returns Unit
 
     val controlBefore = durableValues.controlState
     val replayBefore = durableValues.replayState
@@ -462,7 +657,7 @@ class UnifiedPushReceiverTest {
 
     org.junit.Assert.assertEquals(controlBefore, durableValues.controlState)
     org.junit.Assert.assertEquals(replayBefore, durableValues.replayState)
-    verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+    verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any(), any()) }
   }
 
   @Test
@@ -522,7 +717,7 @@ class UnifiedPushReceiverTest {
   fun `stock enrollment still fetches on a plaintext wake`() {
     enrollment(active = 0, pending = 0) {
       UnifiedPushReceiver().onMessage(context, urgent(), "default")
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
     }
   }
 
@@ -562,7 +757,7 @@ class UnifiedPushReceiverTest {
       UnifiedPushReceiver().onMessage(context, urgent(), "default")
 
       fetches(0)
-      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any(), any()) }
     }
   }
 
@@ -571,7 +766,7 @@ class UnifiedPushReceiverTest {
     enrollment(active = 0, pending = 1) {
       val receiver = UnifiedPushReceiver()
       receiver.onMessage(context, urgent(), "default")
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
       receiver.onMessage(context, PushMessage("""{"test":true}""".toByteArray(), true), "default")
       org.junit.Assert.assertEquals(0L, active)
       org.junit.Assert.assertEquals(1L, pending)
@@ -585,7 +780,7 @@ class UnifiedPushReceiverTest {
     enrollment(active = 0, pending = 0, state = { it.copy(intents = listOf(candidate), importSequence = 1, highestEpoch = 1) }) {
       val receiver = UnifiedPushReceiver()
       receiver.onMessage(context, PushMessage(v3Event(candidate, "11111111-1111-4111-8111-111111111111", "wake"), true), "default")
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
       org.junit.Assert.assertEquals(1L, active)
       org.junit.Assert.assertEquals(0L, pending)
       org.junit.Assert.assertEquals(candidate.requestId, values.controlState.activeImportId)
@@ -663,7 +858,7 @@ class UnifiedPushReceiverTest {
     enrollment(active = 1, pending = 2) {
       val receiver = UnifiedPushReceiver()
       receiver.onMessage(context, PushMessage(wake(epoch = 1), true), "default")
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
       verify(exactly = 1) { values.mutateControl(any(), any()) }
       org.junit.Assert.assertEquals(1L, active)
       receiver.onMessage(context, urgent(), "default")
@@ -781,7 +976,7 @@ class UnifiedPushReceiverTest {
       UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
       fetches(0)
       UnifiedPushReceiver().onMessage(context, PushMessage(wake(version = 2), true), "default")
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
     }
   }
 
@@ -791,7 +986,7 @@ class UnifiedPushReceiverTest {
       UnifiedPushReceiver().onMessage(context, PushMessage(wake(version = 2), true), "default")
       fetches(0)
       UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
-      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true) }
+      verify(timeout = 3000, exactly = 1) { PushFetchHandler.handleReceivedNotification(any(), true, any()) }
     }
   }
 
@@ -815,15 +1010,18 @@ class UnifiedPushReceiverTest {
   @Test
   fun `a new endpoint on an imported keyed enrollment stores an update and queues the send`() {
     fakeAccount()
+    mockPendingEndpointStorage()
     values.endpoint = "https://push.example.invalid/old"
     enrollment(active = 3, pending = 0, key = fixtureKey, state = { it.copy(highestEpoch = 3, serverTarget = oldTarget) }) {
       UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://push.example.invalid/new", PublicKeySet(fixtureP256dh, fixtureAuth)), "default")
+      awaitLifecycleReady()
 
-      val update = values.controlState.update!!
+      awaitCondition("endpoint reconciliation should build its update",) { values.controlState.update != null }
+      val update = checkNotNull(values.controlState.update)
       org.junit.Assert.assertEquals(4L, update.epoch)
       org.junit.Assert.assertEquals("https://push.example.invalid/new", update.endpoint)
       org.junit.Assert.assertEquals(4L, values.controlState.highestEpoch)
-      controlJobAdds(1)
+      verify(timeout = 3000, exactly = 1) { AppDependencies.jobManager.add(match { it is UnifiedPushControlJob }) }
       verify(exactly = 1) { AppDependencies.jobManager.cancelAllInQueue(UnifiedPushControlJob.KEY) }
     }
   }
@@ -831,15 +1029,18 @@ class UnifiedPushReceiverTest {
   @Test
   fun `a new endpoint without a control key or before the server proved the enrollment sends nothing`() {
     fakeAccount()
+    mockPendingEndpointStorage()
     values.endpoint = "https://push.example.invalid/old"
     val endpoint = PushEndpoint("https://push.example.invalid/new", PublicKeySet(fixtureP256dh, fixtureAuth))
     enrollment(active = 3, pending = 0, key = null) {
       UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
+      awaitLifecycleReady()
       controlJobAdds(0)
     }
     values.endpoint = "https://push.example.invalid/old"
     enrollment(active = 0, pending = 1, key = null, state = { it.copy(legacyPending = LegacyPending(fixtureKey, 1, null)) }) {
       UnifiedPushReceiver().onNewEndpoint(context, endpoint, "default")
+      awaitLifecycleReady()
       controlJobAdds(0)
     }
   }

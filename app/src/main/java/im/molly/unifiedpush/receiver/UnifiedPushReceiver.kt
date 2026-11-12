@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.receiver
 
 import android.content.Context
+import android.os.Looper
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.EndpointUpdates
@@ -30,6 +31,7 @@ import org.unifiedpush.android.connector.MessagingReceiver
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PushEndpoint
 import org.unifiedpush.android.connector.data.PushMessage
+import kotlinx.coroutines.runBlocking
 
 class UnifiedPushReceiver : MessagingReceiver() {
 
@@ -39,15 +41,40 @@ class UnifiedPushReceiver : MessagingReceiver() {
     /** Applies an endpoint that arrived while the app was locked. Called after unlock. */
     @JvmStatic
     fun applyPendingEndpoint(context: Context) {
-      val receiver = UnifiedPushReceiver()
-      val effects = synchronized(UnifiedPushLifecycle.monitor) {
-        if (!UnifiedPushLifecycle.isReadyLocked()) return
-        LockedPushState.takePending(context)?.let(receiver::applyEndpointLocked)
+      if (Looper.myLooper() == Looper.getMainLooper()) {
+        SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
+        return
       }
-      effects?.let { receiver.publishEndpointEffects(context, it) }
+      val receiver = UnifiedPushReceiver()
+      val shouldApply = synchronized(UnifiedPushLifecycle.monitor) {
+        // Check the lock before inspecting or consuming the sealed endpoint. A callback queued before
+        // the app locked must leave the saved endpoint untouched for a later unlock path.
+        if (KeyCachingService.isLocked()) return
+        if (!UnifiedPushLifecycle.isReadyLocked() && !UnifiedPushLifecycle.hasPendingInvalidationLocked()) return
+        LockedPushState.peekPending(context) != null
+      }
+      if (shouldApply) {
+        val effects = runBlocking {
+          UnifiedPushAccountTransition.withTransition(
+            completesInvalidation = true,
+            readyAfter = { UnifiedPushAccountTransition.hasCoherentRegisteredContext() && !KeyCachingService.isLocked() },
+          ) {
+            synchronized(UnifiedPushLifecycle.monitor) {
+              if (KeyCachingService.isLocked()) {
+                null
+              } else {
+                LockedPushState.peekPending(context)?.let { pending ->
+                  receiver.applyEndpointLocked(pending).also { LockedPushState.clearPending(context) }
+                }
+              }
+            }
+          }
+        }
+        effects?.let { receiver.publishEndpointEffects(context, it) }
+      }
       // Now that the app can read its state: make sure the server holds the current endpoint, and send an update
       // that was built but never confirmed again.
-      EndpointReconciler.reconcile(resume = true)
+      if (UnifiedPushLifecycle.isReady()) EndpointReconciler.reconcile(resume = true)
     }
 
     /** Called when the app comes to the foreground, where the job's attempts may have run out. */
@@ -65,16 +92,13 @@ class UnifiedPushReceiver : MessagingReceiver() {
   override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
     Log.i(TAG, "onNewEndpoint($instance)")
     val received = LockedPushState.Endpoint(endpoint.url, endpoint.pubKeySet?.pubKey, endpoint.pubKeySet?.auth, instance)
-    val effects = synchronized(UnifiedPushLifecycle.monitor) {
-      if (appLocked || !UnifiedPushLifecycle.isReadyLocked()) {
-        // Keep the whole tuple sealed until stored account state is readable and its transition has completed.
-        LockedPushState.savePending(context, received)
-        return
-      }
-      LockedPushState.takePending(context)
-      applyEndpointLocked(received)
+    val schedule = synchronized(UnifiedPushLifecycle.monitor) {
+      // Store first; the worker consumes it only after closing admission and draining old sends.
+      LockedPushState.savePending(context, received)
+      if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
+      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
     }
-    publishEndpointEffects(context, effects)
+    if (schedule) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
   }
 
   private data class EndpointEffects(val failed: Boolean, val changed: Boolean, val airGapped: Boolean)
@@ -130,16 +154,13 @@ class UnifiedPushReceiver : MessagingReceiver() {
     // called when this application is unregistered from receiving push messages
     // isPushAvailable becomes false => The websocket starts
     Log.i(TAG, "onUnregistered($instance)")
-    UnifiedPush.forceRemoveDistributor(context)
-    LockedPushState.takePending(context)
-    val effects = synchronized(UnifiedPushLifecycle.monitor) {
-      if (appLocked || !UnifiedPushLifecycle.isReadyLocked()) {
-        LockedPushState.savePending(context, LockedPushState.Endpoint(null, null, null, instance))
-        return
-      }
-      applyEndpointLocked(LockedPushState.Endpoint(null, null, null, instance))
+    val schedule = synchronized(UnifiedPushLifecycle.monitor) {
+      LockedPushState.savePending(context, LockedPushState.Endpoint(null, null, null, instance))
+      if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
+      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
     }
-    publishEndpointEffects(context, effects)
+    UnifiedPush.forceRemoveDistributor(context)
+    if (schedule) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
   }
 
   override fun onMessage(context: Context, message: PushMessage, instance: String) {
@@ -338,22 +359,20 @@ class UnifiedPushReceiver : MessagingReceiver() {
   }
 
   private fun startFetch(context: Context, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): Boolean {
-    val enqueued = UnifiedPushLifecycle.withCurrentLease(lease) {
+    UnifiedPushLifecycle.withCurrentLease(lease) {
       if (SignalStore.account.isRegistered && SignalStore.unifiedpush.enabled) {
         Log.d(TAG, "New message")
+        val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
         executor.enqueue {
-          try {
-            if (UnifiedPushLifecycle.isCurrentGeneration(lease.generation)) {
-              PushFetchHandler.handleReceivedNotification(context, true)
-            }
-          } finally {
-            lease.close()
+          if (UnifiedPushLifecycle.isCurrentGeneration(authorization.generation)) {
+            PushFetchHandler.handleReceivedNotification(context, true, authorization)
           }
         }
-        true
-      } else false
+      }
     }
-    return enqueued == true
+    // The fetch manager reacquires its own lease when the queued work starts. This receiver's
+    // short acceptance lease always closes when onMessage returns.
+    return false
   }
 
   private fun updateLastReceivedTime(timestamp: Long) {

@@ -143,6 +143,7 @@ import org.thoughtcrime.securesms.jobs.Svr2MirrorJob
 import org.thoughtcrime.securesms.jobs.UploadAttachmentToArchiveJob
 import org.thoughtcrime.securesms.keyvalue.BackupValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import org.thoughtcrime.securesms.keyvalue.protos.ArchiveUploadProgressState
 import org.thoughtcrime.securesms.logsubmit.SubmitDebugLogRepository
 import org.thoughtcrime.securesms.net.SignalNetwork
@@ -1116,7 +1117,11 @@ object BackupRepository {
     }
 
     return frameReader.use { reader ->
-      import(reader, selfData, backupMode = BackupMode.LOCAL, cancellationSignal = { false })
+      // Restored identity data is only staged here. Keep push unavailable until the local registration
+      // commit explicitly verifies and publishes the restored account context.
+      UnifiedPushAccountTransition.withTransitionBlocking(keepIncompleteMarker = true) {
+        import(reader, selfData, backupMode = BackupMode.LOCAL, cancellationSignal = { false })
+      }
     }
   }
 

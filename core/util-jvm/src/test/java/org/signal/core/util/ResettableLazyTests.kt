@@ -134,4 +134,48 @@ class ResettableLazyTests {
     assertEquals(0, firstValue.get())
     assertEquals(1, holder.value)
   }
+
+  @Test
+  fun `concurrent reset never returns the uninitialized sentinel`() {
+    val lazyDelegate = resettableLazy { 7 }
+    val holder = object {
+      val value by lazyDelegate
+    }
+    val start = CountDownLatch(1)
+    val done = CountDownLatch(5)
+    val failure = AtomicReference<Throwable?>()
+
+    repeat(4) {
+      Thread {
+        try {
+          check(start.await(5, TimeUnit.SECONDS))
+          repeat(100_000) {
+            if (holder.value != 7) error("unexpected initialized value")
+          }
+        } catch (t: Throwable) {
+          failure.compareAndSet(null, t)
+        } finally {
+          done.countDown()
+        }
+      }.start()
+    }
+
+    Thread {
+      try {
+        check(start.await(5, TimeUnit.SECONDS))
+        repeat(100_000) {
+          lazyDelegate.reset()
+          check(holder.value == 7)
+        }
+      } catch (t: Throwable) {
+        failure.compareAndSet(null, t)
+      } finally {
+        done.countDown()
+      }
+    }.start()
+
+    start.countDown()
+    assertTrue("all readers and the resetter must finish", done.await(10, TimeUnit.SECONDS))
+    assertEquals(null, failure.get())
+  }
 }

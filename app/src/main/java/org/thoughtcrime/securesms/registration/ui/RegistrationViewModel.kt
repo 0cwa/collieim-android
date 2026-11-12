@@ -1095,12 +1095,10 @@ class RegistrationViewModel : ViewModel() {
           }
         }
       }
-      if (SignalStore.account.isRegistered) {
-        UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = restoreKeys)
-      } else {
-        // Initial registration has no prior credentialed push context; its local commit remains transition-gated.
-        restoreKeys()
-      }
+      // Backup keys can replace identity material while a registration commit is in flight, including when
+      // the current store still reports unregistered. Serialize both paths and keep push unavailable until
+      // the later full registration commit acknowledges a coherent account.
+      UnifiedPushAccountTransition.withTransition(keepIncompleteMarker = true, block = restoreKeys)
 
       val masterKey = accountEntropyPool.deriveMasterKey()
       setRecoveryPassword(masterKey.deriveRegistrationRecoveryPassword())

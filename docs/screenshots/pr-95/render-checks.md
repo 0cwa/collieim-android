@@ -179,3 +179,103 @@ communityActions {"main":[{"weight":"600","size":"15.6px","color":"rgb(183, 197,
 ready {"width":320,"height":1500,"usable":320,"fonts":"loaded","images":[true],"overflow":false,"dark":false}
 communityActions {"main":[{"weight":"600","size":"15.6px","color":"rgb(90, 64, 51)","underline":"underline"},{"weight":"600","size":"15.6px","color":"rgb(90, 64, 51)","underline":"underline"}],"help":[{"weight":"500","size":"16px","color":"rgb(47, 79, 58)","underline":"underline"},{"weight":"500","size":"16px","color":"rgb(47, 79, 58)","underline":"underline"}],"introLink":"https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests"}
 ```
+
+## Current ongoing-conversation hero selection
+
+Image source commit d754358d1afac77eb84c260a7383cfe0688e38ee; HTML/CSS unchanged from eb9e7c2376d78222dc0a86926f33084b26d96879. First fully readable native message text is373px, bubble container355px. The partial historical text at250px is not counted. Prior fully readable text was1003px. Existing front-image geometry determines the measured browser coordinates below. No CSS/layout/copy changed.
+
+### desktop-light.png
+
+```text
+ready {"width":1280,"height":800,"usable":1280,"fonts":"loaded","images":[true,true,true,true],"overflow":false,"dark":false}
+heroTypography {"font":"58.88px","lineHeight":"63.5904px","lineCount":4,"lines":["Private messages on","the Signal network.","Stronger protection","on your phone."]}
+heroGaps {"headerToTitle":64,"titleToBody":28,"bodyToActions":34,"actionsToFacts":30,"factsToStage":-504.03125,"ctaRowGap":-50}
+heroPositions {"headlineTop":153.71875,"headlineBottom":415.09375,"bodyTop":443.09375,"bodyBottom":531.78125,"ctaTop":565.78125,"ctaBottom":615.78125,"factsTop":645.78125,"factsBottom":669.546875,"stageTop":165.515625,"frontImageTop":206.46875,"frontImageHeight":410.3125,"chatNameY":238.38194444444446,"firstMessageTextY":277.3236400462963,"firstFullyReadableBubbleY":273.90436921296293}
+wideGeometry [{"q":".hero h1","x":100,"y":153.71875,"w":533.390625,"h":261.375,"font":"58.88px"},{"q":".lede","x":100,"y":443.09375,"w":533.390625,"h":88.6875,"font":"17.92px"},{"q":".hero .actions","x":100,"y":565.78125,"w":533.390625,"h":50,"font":"17px"},{"q":".stage","x":697.390625,"y":165.515625,"w":482.59375,"h":492.234375,"font":"17px"},{"q":".p-front img","x":836.109375,"y":206.46875,"w":205.15625,"h":410.3125,"font":"17px"}]
+batchGuards {"factRows":1,"factCount":2,"factFont":"14.4px","heroTargets":[{"w":121,"h":50},{"w":236,"h":50}],"upcomingLead":"18px","upcomingDetail":"16px"}
+position {"scrollY":0,"section":89.71875,"getY":3559.328125,"background":"rgb(249, 251, 244)"}
+```
+
+### desktop-dark.png
+
+```text
+ready {"width":1280,"height":800,"usable":1280,"fonts":"loaded","images":[true,true,true,true],"overflow":false,"dark":true}
+heroTypography {"font":"58.88px","lineHeight":"63.5904px","lineCount":4,"lines":["Private messages on","the Signal network.","Stronger protection","on your phone."]}
+heroGaps {"headerToTitle":64,"titleToBody":28,"bodyToActions":34,"actionsToFacts":30,"factsToStage":-504.03125,"ctaRowGap":-50}
+heroPositions {"headlineTop":153.71875,"headlineBottom":415.09375,"bodyTop":443.09375,"bodyBottom":531.78125,"ctaTop":565.78125,"ctaBottom":615.78125,"factsTop":645.78125,"factsBottom":669.546875,"stageTop":165.515625,"frontImageTop":206.46875,"frontImageHeight":410.3125,"chatNameY":238.38194444444446,"firstMessageTextY":277.3236400462963,"firstFullyReadableBubbleY":273.90436921296293}
+wideGeometry [{"q":".hero h1","x":100,"y":153.71875,"w":533.390625,"h":261.375,"font":"58.88px"},{"q":".lede","x":100,"y":443.09375,"w":533.390625,"h":88.6875,"font":"17.92px"},{"q":".hero .actions","x":100,"y":565.78125,"w":533.390625,"h":50,"font":"17px"},{"q":".stage","x":697.390625,"y":165.515625,"w":482.59375,"h":492.234375,"font":"17px"},{"q":".p-front img","x":836.109375,"y":206.46875,"w":205.15625,"h":410.3125,"font":"17px"}]
+batchGuards {"factRows":1,"factCount":2,"factFont":"14.4px","heroTargets":[{"w":121,"h":50},{"w":236,"h":50}],"upcomingLead":"18px","upcomingDetail":"16px"}
+position {"scrollY":0,"section":89.71875,"getY":3559.328125,"background":"rgb(36, 19, 13)"}
+```
+
+### page-top-mobile-light.png
+
+```text
+ready {"width":390,"height":844,"usable":390,"fonts":"loaded","images":[true,true,true,true],"overflow":false,"dark":false}
+heroTypography {"font":"32px","lineHeight":"34.56px","lineCount":4,"lines":["Private messages on","the Signal network.","Stronger protection","on your phone."]}
+heroGaps {"headerToTitle":20,"titleToBody":20,"bodyToActions":24,"actionsToFacts":20,"factsToStage":16,"ctaRowGap":12}
+heroPositions {"headlineTop":76,"headlineBottom":218.015625,"bodyTop":238.015625,"bodyBottom":343.578125,"ctaTop":367.578125,"ctaBottom":473.578125,"factsTop":493.578125,"factsBottom":517.34375,"stageTop":533.34375,"frontImageTop":562.828125,"frontImageHeight":306.1875,"chatNameY":586.6427083333333,"firstMessageTextY":615.7021701388888,"firstFullyReadableBubbleY":613.1506076388889}
+wideGeometry [{"q":".hero h1","x":16,"y":76,"w":358,"h":142.015625,"font":"32px"},{"q":".lede","x":16,"y":238.015625,"w":358,"h":105.5625,"font":"16px"},{"q":".hero .actions","x":16,"y":367.578125,"w":358,"h":106,"font":"16px"},{"q":".stage","x":16,"y":533.34375,"w":358,"h":365.15625,"font":"16px"},{"q":".p-front img","x":118.453125,"y":562.828125,"w":153.09375,"h":306.1875,"font":"16px"}]
+batchGuards {"factRows":1,"factCount":2,"factFont":"14.4px","heroTargets":[{"w":358,"h":50},{"w":358,"h":44}],"upcomingLead":"18px","upcomingDetail":"16px"}
+position {"scrollY":0,"section":56,"getY":4632.078125,"background":"rgb(249, 251, 244)"}
+```
+
+### page-top-narrow-light.png
+
+```text
+ready {"width":320,"height":844,"usable":320,"fonts":"loaded","images":[true,true,true,true],"overflow":false,"dark":false}
+heroTypography {"font":"30px","lineHeight":"32.4px","lineCount":4,"lines":["Private messages on","the Signal network.","Stronger protection","on your phone."]}
+heroGaps {"headerToTitle":20,"titleToBody":20,"bodyToActions":24,"actionsToFacts":20,"factsToStage":16,"ctaRowGap":12}
+heroPositions {"headlineTop":76,"headlineBottom":209.15625,"bodyTop":229.15625,"bodyBottom":361.109375,"ctaTop":385.109375,"ctaBottom":491.109375,"factsTop":511.109375,"factsBottom":566.640625,"stageTop":582.640625,"frontImageTop":607.921875,"frontImageHeight":243.1875,"chatNameY":626.8364583333333,"firstMessageTextY":649.9167534722222,"firstFullyReadableBubbleY":647.8901909722222}
+wideGeometry [{"q":".hero h1","x":16,"y":76,"w":288,"h":133.15625,"font":"30px"},{"q":".lede","x":16,"y":229.15625,"w":288,"h":131.953125,"font":"16px"},{"q":".hero .actions","x":16,"y":385.109375,"w":288,"h":106,"font":"16px"},{"q":".stage","x":16,"y":582.640625,"w":288,"h":293.75,"font":"16px"},{"q":".p-front img","x":99.203125,"y":607.921875,"w":121.59375,"h":243.1875,"font":"16px"}]
+batchGuards {"factRows":2,"factCount":2,"factFont":"14.4px","heroTargets":[{"w":288,"h":50},{"w":288,"h":44}],"upcomingLead":"18px","upcomingDetail":"16px"}
+position {"scrollY":0,"section":56,"getY":5043.671875,"background":"rgb(249, 251, 244)"}
+```
+
+### page-top-tablet-light.png
+
+```text
+ready {"width":768,"height":1024,"usable":768,"fonts":"loaded","images":[true,true,true,true],"overflow":false,"dark":false}
+heroTypography {"font":"36.8px","lineHeight":"39.744px","lineCount":2,"lines":["Private messages on the Signal network.","Stronger protection on your phone."]}
+heroGaps {"headerToTitle":38.390625,"titleToBody":28,"bodyToActions":34,"actionsToFacts":30,"factsToStage":38.390625,"ctaRowGap":-50}
+heroPositions {"headlineTop":94.390625,"headlineBottom":178.265625,"bodyTop":206.265625,"bodyBottom":290.40625,"ctaTop":324.40625,"ctaBottom":374.40625,"factsTop":404.40625,"factsBottom":428.171875,"stageTop":466.5625,"frontImageTop":504.953125,"frontImageHeight":372,"chatNameY":533.8864583333333,"firstMessageTextY":569.1920138888889,"firstFullyReadableBubbleY":566.0920138888889}
+wideGeometry [{"q":".hero h1","x":30.71875,"y":94.390625,"w":706.5625,"h":83.875,"font":"36.8px"},{"q":".lede","x":30.71875,"y":206.265625,"w":544,"h":84.140625,"font":"17px"},{"q":".hero .actions","x":30.71875,"y":324.40625,"w":706.5625,"h":50,"font":"17px"},{"q":".stage","x":164,"y":466.5625,"w":440,"h":448.796875,"font":"17px"},{"q":".p-front img","x":291,"y":504.953125,"w":186,"h":372,"font":"17px"}]
+batchGuards {"factRows":1,"factCount":2,"factFont":"14.4px","heroTargets":[{"w":121,"h":50},{"w":236,"h":50}],"upcomingLead":"18px","upcomingDetail":"16px"}
+position {"scrollY":0,"section":56,"getY":4258.046875,"background":"rgb(249, 251, 244)"}
+```
+
+### mobile-light.png
+
+```text
+ready {"width":390,"height":844,"usable":390,"fonts":"loaded","images":[true,true,true,true],"overflow":false,"dark":false}
+heroTypography {"font":"32px","lineHeight":"34.56px","lineCount":4,"lines":["Private messages on","the Signal network.","Stronger protection","on your phone."]}
+heroGaps {"headerToTitle":-433,"titleToBody":20,"bodyToActions":24,"actionsToFacts":20,"factsToStage":16,"ctaRowGap":12}
+heroPositions {"headlineTop":-377,"headlineBottom":-234.984375,"bodyTop":-214.984375,"bodyBottom":-109.421875,"ctaTop":-85.421875,"ctaBottom":20.578125,"factsTop":40.578125,"factsBottom":64.34375,"stageTop":80.34375,"frontImageTop":109.828125,"frontImageHeight":306.1875,"chatNameY":133.64270833333333,"firstMessageTextY":162.7021701388889,"firstFullyReadableBubbleY":160.15060763888889}
+wideGeometry [{"q":".hero h1","x":16,"y":-377,"w":358,"h":142.015625,"font":"32px"},{"q":".lede","x":16,"y":-214.984375,"w":358,"h":105.5625,"font":"16px"},{"q":".hero .actions","x":16,"y":-85.421875,"w":358,"h":106,"font":"16px"},{"q":".stage","x":16,"y":80.34375,"w":358,"h":365.15625,"font":"16px"},{"q":".p-front img","x":118.453125,"y":109.828125,"w":153.09375,"h":306.1875,"font":"16px"}]
+batchGuards {"factRows":1,"factCount":2,"factFont":"14.4px","heroTargets":[{"w":358,"h":50},{"w":358,"h":44}],"upcomingLead":"18px","upcomingDetail":"16px"}
+position {"scrollY":452,"section":80.34375,"getY":4632.078125,"background":"rgb(249, 251, 244)"}
+```
+
+### mobile-dark.png
+
+```text
+ready {"width":390,"height":844,"usable":390,"fonts":"loaded","images":[true,true,true,true],"overflow":false,"dark":true}
+heroTypography {"font":"32px","lineHeight":"34.56px","lineCount":4,"lines":["Private messages on","the Signal network.","Stronger protection","on your phone."]}
+heroGaps {"headerToTitle":-433,"titleToBody":20,"bodyToActions":24,"actionsToFacts":20,"factsToStage":16,"ctaRowGap":12}
+heroPositions {"headlineTop":-377,"headlineBottom":-234.984375,"bodyTop":-214.984375,"bodyBottom":-109.421875,"ctaTop":-85.421875,"ctaBottom":20.578125,"factsTop":40.578125,"factsBottom":64.34375,"stageTop":80.34375,"frontImageTop":109.828125,"frontImageHeight":306.1875,"chatNameY":133.64270833333333,"firstMessageTextY":162.7021701388889,"firstFullyReadableBubbleY":160.15060763888889}
+wideGeometry [{"q":".hero h1","x":16,"y":-377,"w":358,"h":142.015625,"font":"32px"},{"q":".lede","x":16,"y":-214.984375,"w":358,"h":105.5625,"font":"16px"},{"q":".hero .actions","x":16,"y":-85.421875,"w":358,"h":106,"font":"16px"},{"q":".stage","x":16,"y":80.34375,"w":358,"h":365.15625,"font":"16px"},{"q":".p-front img","x":118.453125,"y":109.828125,"w":153.09375,"h":306.1875,"font":"16px"}]
+batchGuards {"factRows":1,"factCount":2,"factFont":"14.4px","heroTargets":[{"w":358,"h":50},{"w":358,"h":44}],"upcomingLead":"18px","upcomingDetail":"16px"}
+position {"scrollY":452,"section":80.34375,"getY":4632.078125,"background":"rgb(36, 19, 13)"}
+```
+
+### hero-narrow-light.png
+
+```text
+ready {"width":320,"height":844,"usable":320,"fonts":"loaded","images":[true,true,true,true],"overflow":false,"dark":false}
+heroTypography {"font":"30px","lineHeight":"32.4px","lineCount":4,"lines":["Private messages on","the Signal network.","Stronger protection","on your phone."]}
+heroGaps {"headerToTitle":-483,"titleToBody":20,"bodyToActions":24,"actionsToFacts":20,"factsToStage":16,"ctaRowGap":12}
+heroPositions {"headlineTop":-427,"headlineBottom":-293.84375,"bodyTop":-273.84375,"bodyBottom":-141.890625,"ctaTop":-117.890625,"ctaBottom":-11.890625,"factsTop":8.109375,"factsBottom":63.640625,"stageTop":79.640625,"frontImageTop":104.921875,"frontImageHeight":243.1875,"chatNameY":123.83645833333333,"firstMessageTextY":146.91675347222224,"firstFullyReadableBubbleY":144.89019097222223}
+wideGeometry [{"q":".hero h1","x":16,"y":-427,"w":288,"h":133.15625,"font":"30px"},{"q":".lede","x":16,"y":-273.84375,"w":288,"h":131.953125,"font":"16px"},{"q":".hero .actions","x":16,"y":-117.890625,"w":288,"h":106,"font":"16px"},{"q":".stage","x":16,"y":79.640625,"w":288,"h":293.75,"font":"16px"},{"q":".p-front img","x":99.203125,"y":104.921875,"w":121.59375,"h":243.1875,"font":"16px"}]
+batchGuards {"factRows":2,"factCount":2,"factFont":"14.4px","heroTargets":[{"w":288,"h":50},{"w":288,"h":44}],"upcomingLead":"18px","upcomingDetail":"16px"}
+position {"scrollY":502,"section":79.640625,"getY":5043.671875,"background":"rgb(249, 251, 244)"}
+```

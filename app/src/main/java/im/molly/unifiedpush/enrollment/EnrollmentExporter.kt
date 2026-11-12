@@ -47,6 +47,7 @@ object EnrollmentExporter {
    */
   @JvmStatic
   @JvmOverloads
+  @Synchronized
   fun exportWithEpoch(context: Context, serverEpoch: Long?, isDistributorActive: () -> Boolean = UnifiedPushDistributor::checkIfActive): Export {
     val dir = context.getExternalFilesDir(null)
     val temp = dir?.let { File(it, TEMP_NAME) }
@@ -107,11 +108,12 @@ object EnrollmentExporter {
     if (values.replayState == null) {
       values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
     }
-    return Export(target, epoch, before.highestEpoch)
+    return Export(target, epoch, store.read().highestEpoch)
   }
 
   /** Deletes the export file and its temporary file now, on the calling thread. */
   @JvmStatic
+  @Synchronized
   fun removeFiles(context: Context) {
     val dir = context.getExternalFilesDir(null) ?: return
     File(dir, FILE_NAME).delete()
@@ -122,9 +124,11 @@ object EnrollmentExporter {
   @JvmStatic
   fun deleteStale(context: Context) {
     SignalExecutors.BOUNDED.execute {
-      val dir = context.getExternalFilesDir(null) ?: return@execute
-      File(dir, FILE_NAME).delete()
-      File(dir, TEMP_NAME).delete()
+      synchronized(EnrollmentExporter) {
+        val dir = context.getExternalFilesDir(null) ?: return@synchronized
+        File(dir, FILE_NAME).delete()
+        File(dir, TEMP_NAME).delete()
+      }
     }
   }
 }

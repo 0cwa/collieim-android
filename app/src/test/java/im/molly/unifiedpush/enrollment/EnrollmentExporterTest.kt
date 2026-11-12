@@ -10,6 +10,8 @@ import android.content.Context
 import com.fasterxml.jackson.databind.ObjectMapper
 import im.molly.unifiedpush.model.MollySocketDevice
 import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -34,6 +36,7 @@ import java.io.File
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
+import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
@@ -98,5 +101,40 @@ class EnrollmentExporterTest {
     assertEquals(5L, values.controlState.pendingEpoch)
     assertEquals(json["control_key"].asText(), values.controlState.pendingKey)
     assertTrue(exports.all { it.file == target && it.epoch == 5L && it.highestUsed == 8L && it.collides })
+  }
+
+  @Test
+  fun `export warning reads the highest epoch after the file is published`() {
+    val renderEntered = CountDownLatch(1)
+    val allowRender = CountDownLatch(1)
+    val pool = Executors.newSingleThreadExecutor()
+    var export: Future<EnrollmentExporter.Export>? = null
+    mockkObject(EnrollmentFile)
+    try {
+      every { EnrollmentFile.newControlKey() } answers { callOriginal() }
+      every { EnrollmentFile.canonicalKey(any(), any()) } answers { callOriginal() }
+      every { EnrollmentFile.render(any()) } answers {
+        renderEntered.countDown()
+        if (!allowRender.await(5, TimeUnit.SECONDS)) throw AssertionError("render was not released")
+        callOriginal()
+      }
+
+      export = pool.submit<EnrollmentExporter.Export> {
+        EnrollmentExporter.exportWithEpoch(context, 4) { true }
+      }
+      assertTrue("export reached rendering after recording state", renderEntered.await(5, TimeUnit.SECONDS))
+      values.mutateControl { it.copy(highestEpoch = 9) }
+      allowRender.countDown()
+
+      val result = export.get(5, TimeUnit.SECONDS)
+      assertEquals(9L, result.highestUsed)
+      assertTrue(result.collides)
+      assertEquals(9L, values.controlState.highestEpoch)
+    } finally {
+      allowRender.countDown()
+      export?.cancel(true)
+      pool.shutdownNow()
+      unmockkObject(EnrollmentFile)
+    }
   }
 }

@@ -147,8 +147,8 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
       val message = try {
         val serverEpoch = serverEpochText.trim().takeIf { it.isNotEmpty() }?.let { it.toLongOrNull() ?: throw EnrollmentFile.Invalid("invalid_epoch") }
         val export = EnrollmentExporter.exportWithEpoch(app, serverEpoch)
-        if (export.raised) {
-          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_raised, export.file.absolutePath, export.epoch, export.entered)
+        if (export.collides) {
+          app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done_collides, export.file.absolutePath, export.epoch, export.highestUsed)
         } else {
           app.getString(R.string.UnifiedPushSettingsFragment__export_enrollment_done, export.file.absolutePath)
         }

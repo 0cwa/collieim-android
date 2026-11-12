@@ -148,8 +148,18 @@ object EndpointUpdates {
   }
 
   /**
-   * The epoch an export gets: one above what the operator read from the server, and above every epoch this phone put
-   * into an update. Exports themselves do not raise the mark, so exporting twice without an import reuses the epoch.
+   * The epoch an export gets: exactly one above what the operator read from the server (1 if not enrolled), because
+   * a private import must be the server's epoch + 1 and nothing else. Epochs this phone allocated to updates that never
+   * reached the server do not count: raising the epoch for them would produce a file the server refuses.
    */
-  fun exportEpoch(entered: Long?, state: ControlState): Long = maxOf(EnrollmentFile.nextEpoch(entered), state.highestEpoch + 1)
+  fun exportEpoch(entered: Long?): Long = EnrollmentFile.nextEpoch(entered)
+
+  /**
+   * True when the export's [epoch] is at or below one this phone already put into an update, so that update may be
+   * waiting (it is in flight, or lost) at the very epoch the import will claim. Whichever reaches the server first
+   * wins: if the import does, its first event promotes the new key and the update under the old key is dropped and
+   * rebuilt above [ControlState.highestEpoch]; if the update does, its confirmation retires the export. The operator
+   * should know, because the loser is refused.
+   */
+  fun exportCollides(epoch: Long, state: ControlState): Boolean = epoch <= state.highestEpoch
 }

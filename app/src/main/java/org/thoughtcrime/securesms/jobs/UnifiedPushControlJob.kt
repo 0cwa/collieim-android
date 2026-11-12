@@ -36,7 +36,12 @@ class UnifiedPushControlJob private constructor(parameters: Parameters) : BaseJo
 
   override fun getFactoryKey(): String = KEY
 
-  override fun onFailure() = Unit
+  override fun onFailure() {
+    // Job cancellation means enqueue() already scheduled a replacement. A terminal retry/lifespan
+    // failure is different: keep the durable update moving through another bounded job lifecycle.
+    if (isCanceled()) return
+    if (UnifiedPushControlStore(SignalStore.unifiedpush).read().update != null) enqueue()
+  }
 
   override fun onShouldRetry(e: Exception): Boolean = true
 

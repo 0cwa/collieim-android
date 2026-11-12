@@ -30,6 +30,12 @@ class UnifiedPushValuesControlTest {
   fun setUp() = Log.initialize(SystemOutLogger())
 
 
+  private class Counting(private val inner: org.signal.storage.keyvalue.KeyValuePersistentStorage) : org.signal.storage.keyvalue.KeyValuePersistentStorage {
+    @Volatile var writes = 0
+    override fun writeDataSet(dataSet: KeyValueDataSet, removes: Collection<String>) { writes++; inner.writeDataSet(dataSet, removes) }
+    override fun getDataSet() = inner.getDataSet()
+  }
+
   private fun values(initial: KeyValueDataSet = KeyValueDataSet()) =
     UnifiedPushValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(initial)))
 
@@ -98,5 +104,19 @@ class UnifiedPushValuesControlTest {
     pool.shutdown()
     assertTrue(pool.awaitTermination(60, TimeUnit.SECONDS))
     assertEquals(threads * perThread.toLong(), values.controlState.highestEpoch)
+  }
+
+  @Test
+  fun `a mutation that changes nothing writes nothing, unless it carries the replay state`() {
+    val storage = Counting(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()))
+    val values = UnifiedPushValues(KeyValueStore(storage))
+    values.mutateControl { it.copy(activeEpoch = 1) }
+    assertEquals(1, storage.writes)
+    values.mutateControl { it }
+    values.mutateControl { it.copy(activeEpoch = 1) }
+    assertEquals("nothing changed", 1, storage.writes)
+    values.mutateControl("replay") { it }
+    assertEquals("a replay write is a write", 2, storage.writes)
+    assertEquals("replay", values.replayState)
   }
 }

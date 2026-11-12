@@ -1,0 +1,110 @@
+package org.thoughtcrime.securesms
+
+import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.test.core.app.ActivityScenario
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Rule
+import org.junit.Test
+import org.signal.core.database.update
+import org.thoughtcrime.securesms.database.MessageTable
+import org.thoughtcrime.securesms.database.MessageType
+import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.mms.IncomingMessage
+import org.thoughtcrime.securesms.mms.OutgoingMessage
+import org.thoughtcrime.securesms.net.Networking
+import org.thoughtcrime.securesms.profiles.ProfileName
+import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.testing.OfflineDemoRule
+
+/** Temporary capture fixture. Fictional local data; no messages are sent to a server. */
+class OfflineConversationCaptureTest {
+  @get:Rule val harness = OfflineDemoRule(othersCount = 1)
+
+  @Test fun seedOfflineDemo() {
+    assertFalse("Network must be disabled before message insertion", Networking.isEnabled)
+    val recipientId = harness.others.single()
+    SignalDatabase.recipients.setNicknameAndNote(recipientId, ProfileName.fromParts("Alex", ""), "")
+    val recipient = Recipient.resolved(recipientId)
+    val threadId = SignalDatabase.threads.getOrCreateThreadIdFor(recipient)
+    val start = System.currentTimeMillis() - 8 * 60_000L
+    val messages = listOf(
+      true to "Are we still meeting by the river?",
+      false to "Yes! I'll be there at 10.",
+      true to "Perfect. I'll bring coffee.",
+      false to "I'll bring the pastries.",
+      true to "See you soon!",
+      false to "On my way."
+    )
+    messages.forEachIndexed { index, (incoming, body) ->
+      val time = start + index * 60_000L
+      val messageId = if (incoming) {
+        SignalDatabase.messages.insertMessageInbox(IncomingMessage(type = MessageType.NORMAL, from = recipientId, sentTimeMillis = time, serverTimeMillis = time, receivedTimeMillis = time, body = body), threadId).get().messageId
+      } else {
+        val result = SignalDatabase.messages.insertMessageOutbox(OutgoingMessage.text(threadRecipient = recipient, body = body, expiresIn = 0, sentTimeMillis = time), threadId)
+        SignalDatabase.messages.markAsSent(result.messageId, true)
+        result.messageId
+      }
+      // Outbox insertion uses wall-clock receipt time; align only this fictional fixture's ordering.
+      SignalDatabase.rawDatabase.update(MessageTable.TABLE_NAME)
+        .values(MessageTable.DATE_RECEIVED to time)
+        .where("${MessageTable.ID} = ?", messageId)
+        .run()
+      assertEquals(time, SignalDatabase.messages.getMessageRecord(messageId).dateReceived)
+    }
+    SignalDatabase.threads.setRead(threadId)
+    SignalStore.settings.isScreenSecurityEnabled = false
+    AppDependencies.networkManager.setNetworkEnabled(false)
+    SignalStore.blockUntilAllWritesFinished()
+    assertFalse(Networking.isEnabled)
+    assertFalse(SignalStore.settings.isScreenSecurityEnabled)
+    assertEquals(0, SignalDatabase.messages.getUnreadCount(threadId))
+    println("OFFLINE_DEMO_READY recipient=${recipientId.serialize()} thread=$threadId stagedMessages=${messages.size}")
+  }
+}
+
+/** Separate fixture intentionally has no registration rule, so restoration never reseeds data. */
+class OfflineDemoSecurityRestoreTest {
+  /** Original centering assertions without SignalActivityRule's networking/registration side effects. */
+  @Test fun databaseEncryptionScreenClearsStatusBarAndCentersContent() {
+    AppDependencies.networkManager.setNetworkEnabled(false)
+    assertFalse(Networking.isEnabled)
+    ActivityScenario.launch(PassphraseCreateActivity::class.java).use { scenario ->
+      InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+      scenario.onActivity { activity ->
+        val title = activity.findViewById<View>(R.id.blurb)
+        val button = activity.findViewById<View>(R.id.no_button)
+        val bars = ViewCompat.getRootWindowInsets(title)!!.getInsets(WindowInsetsCompat.Type.systemBars())
+        val titleLocation = IntArray(2).also { title.getLocationOnScreen(it) }
+        val buttonLocation = IntArray(2).also { button.getLocationOnScreen(it) }
+        val bottom = buttonLocation[1] + button.height
+        val above = titleLocation[1] - bars.top
+        val below = activity.window.decorView.height - bars.bottom - bottom
+        val density = activity.resources.displayMetrics.density
+        assertTrue(titleLocation[1] >= bars.top)
+        assertTrue("Screen must have free space for centering, not skip", below >= 20 * density)
+        assertTrue("Not centered: above=$above below=$below", kotlin.math.abs(above - below) <= 2 * density)
+        assertFalse(Networking.isEnabled)
+        println("OFFLINE_ENCRYPTION_GEOMETRY width=${activity.window.decorView.width} height=${activity.window.decorView.height} titleTop=${titleLocation[1]} buttonBottom=$bottom barsTop=${bars.top} barsBottom=${bars.bottom} above=$above below=$below")
+      }
+    }
+  }
+
+  @Test fun disableOnlyForCapture() {
+    SignalStore.settings.isScreenSecurityEnabled = false
+    SignalStore.blockUntilAllWritesFinished()
+    assertFalse(SignalStore.settings.isScreenSecurityEnabled)
+  }
+
+  @Test fun restoreAfterCapture() {
+    SignalStore.settings.isScreenSecurityEnabled = true
+    SignalStore.blockUntilAllWritesFinished()
+    assertTrue(SignalStore.settings.isScreenSecurityEnabled)
+  }
+}

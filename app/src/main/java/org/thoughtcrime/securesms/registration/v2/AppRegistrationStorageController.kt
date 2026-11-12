@@ -271,38 +271,47 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
   private suspend fun commitRegistrationDataWhileOperationLocked() {
     val data = readInProgressRegistrationDataWhileOperationLocked()
     val accountData = data.accountData
+    val shouldCommitAccountData = !data.accountDataCommitted && accountData != null && accountData.isComplete()
+    val hasAccountEntropyPool = data.accountEntropyPool.isNotEmpty()
 
-    val masterKey: MasterKey? = applyAccountEntropyPool(data)
+    suspend fun applyCommitChanges() {
+      val masterKey = applyAccountEntropyPoolForCommit(data)
 
-    // We only want to apply account data a single time
-    val svrStateUpdated = if (!data.accountDataCommitted && accountData != null && accountData.isComplete()) {
-      applyAccountDataForCommit(accountData, data.pin, data.registrationLockEnabled, masterKey)
-      updateInProgressRegistrationDataWhileOperationLocked { accountDataCommitted = true }
-      true
-    } else {
-      false
-    }
-
-    // Handle PIN/master key
-    if (data.pin.isNotEmpty() && masterKey != null && accountData?.linkedDeviceData == null) {
-      // We call this same function in applyAccountData, so just avoiding double-calls
-      if (!svrStateUpdated) {
-        SvrRepository.onRegistrationComplete(
-          masterKey = masterKey,
-          userPin = data.pin,
-          hasPinToRestore = true,
-          setRegistrationLockEnabled = data.registrationLockEnabled,
-          restoredAEP = data.accountEntropyPool.isNotEmpty()
-        )
+      // We only want to apply account data a single time
+      if (shouldCommitAccountData) {
+        applyAccountDataForCommit(checkNotNull(accountData), data.pin, data.registrationLockEnabled, masterKey)
+        updateInProgressRegistrationDataWhileOperationLocked { accountDataCommitted = true }
       }
-    } else if (data.pinOptedOut && accountData?.linkedDeviceData == null) {
-      Log.i(TAG, "[commitRegistrationData] User opted out of creating a PIN. Applying opt-out.")
-      SvrRepository.optOutOfPin(rotateAep = false)
+
+      // Handle PIN/master key
+      if (data.pin.isNotEmpty() && masterKey != null && accountData?.linkedDeviceData == null) {
+        // We call this same function in applyAccountData, so just avoiding double-calls
+        if (!shouldCommitAccountData) {
+          SvrRepository.onRegistrationComplete(
+            masterKey = masterKey,
+            userPin = data.pin,
+            hasPinToRestore = true,
+            setRegistrationLockEnabled = data.registrationLockEnabled,
+            restoredAEP = data.accountEntropyPool.isNotEmpty()
+          )
+        }
+      } else if (data.pinOptedOut && accountData?.linkedDeviceData == null) {
+        Log.i(TAG, "[commitRegistrationData] User opted out of creating a PIN. Applying opt-out.")
+        SvrRepository.optOutOfPin(rotateAep = false)
+      }
+
+      // This must be set last, as SvrRepository.onRegistrationComplete will have cleared the initial-restore key after recognizing the AEP-derived master key as our own.
+      if (data.masterKeyForInitialDataRestore.size > 0) {
+        SignalStore.svr.masterKeyForInitialDataRestore = MasterKey(data.masterKeyForInitialDataRestore.toByteArray())
+      }
     }
 
-    // This must be set last, as SvrRepository.onRegistrationComplete will have  cleared the initial-restore key after recognizing the AEP-derived master key as our own.
-    if (data.masterKeyForInitialDataRestore.size > 0) {
-      SignalStore.svr.masterKeyForInitialDataRestore = MasterKey(data.masterKeyForInitialDataRestore.toByteArray())
+    if (shouldCommitAccountData || hasAccountEntropyPool) {
+      UnifiedPushAccountTransition.withTransition(completesAccountRegistration = shouldCommitAccountData) {
+        applyCommitChanges()
+      }
+    } else {
+      applyCommitChanges()
     }
 
     RegistrationUtil.maybeMarkRegistrationComplete()
@@ -414,8 +423,10 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
           val committedAccountData = inProgressData.accountData
           if (inProgressData.accountDataCommitted && committedAccountData != null) {
             Log.i(TAG, "V1 restore ran after an account was committed. Re-applying committed account data.")
-            val masterKey = applyAccountEntropyPool(inProgressData)
-            applyAccountData(committedAccountData, pin = inProgressData.pin, registrationLockEnabled = inProgressData.registrationLockEnabled, masterKey = masterKey)
+            UnifiedPushAccountTransition.withTransition(completesAccountRegistration = true) {
+              val masterKey = applyAccountEntropyPool(inProgressData)
+              applyAccountDataInTransition(committedAccountData, pin = inProgressData.pin, registrationLockEnabled = inProgressData.registrationLockEnabled, masterKey = masterKey)
+            }
           }
         }
 
@@ -500,8 +511,10 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
             // The entered recovery key decrypted the backup the user chose to restore, so it always becomes the
             // account's AEP -- even if the backup was made by a different account.
             withRegistrationDataOperationLock {
-              adoptAccountEntropyPool(aep)
-              updateInProgressRegistrationDataWhileOperationLocked { this.accountEntropyPool = aep.value }
+              UnifiedPushAccountTransition.withTransition {
+                adoptAccountEntropyPool(aep)
+                updateInProgressRegistrationDataWhileOperationLocked { this.accountEntropyPool = aep.value }
+              }
             }
 
             // Re-enable new-style local backups pointing at the restored location, so the user keeps getting backups.
@@ -749,8 +762,12 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
   @VisibleForTesting
   internal var applyAccountDataForCommit: suspend (AccountData, String, Boolean, MasterKey?) -> Unit =
     { accountData, pin, registrationLockEnabled, masterKey ->
-      applyAccountData(accountData, pin, registrationLockEnabled, masterKey)
+      applyAccountDataInTransition(accountData, pin, registrationLockEnabled, masterKey)
     }
+
+  /** Replaces only the native AEP effect in tests; lifecycle entry, durable marker and lock stay production code. */
+  @VisibleForTesting
+  internal var applyAccountEntropyPoolForCommit: (RegistrationData) -> MasterKey? = ::applyAccountEntropyPool
 
   /**
    * Makes [aep] the account's AEP. Clears any dependent data, like SVRB state.
@@ -779,8 +796,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
    * post-registration V1 backup restore, which clobbers parts of [SignalStore.account] and re-applies this frozen
    * data to heal them.
    */
-  private suspend fun applyAccountData(accountData: AccountData, pin: String, registrationLockEnabled: Boolean, masterKey: MasterKey?) {
-    UnifiedPushAccountTransition.withTransition(completesAccountRegistration = true) {
+  private suspend fun applyAccountDataInTransition(accountData: AccountData, pin: String, registrationLockEnabled: Boolean, masterKey: MasterKey?) {
     Log.i(TAG, "[applyAccountData] Registering account locally.")
 
     SignalStore.account.registrationId = accountData.aciRegistrationId
@@ -913,7 +929,6 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
     }
 
     accountData.linkedDeviceData?.readReceipts?.let { SignalStore.settings.isReadReceiptsEnabled = it }
-    }
   }
 
   private fun getOrCreateProfileKey(aci: ACI?): ProfileKey {

@@ -77,6 +77,14 @@ a:hover{text-decoration-thickness:2px}
 .button.quiet{color:var(--ink);border:1px solid var(--ink)}
 .button.quiet:hover{background:var(--card)}
 
+/* The header sits outside hero overflow so narrow-screen navigation persists. */
+.site-header{position:relative;z-index:10;background:var(--hero);color:var(--mist)}
+.site-header a{color:inherit}
+.menu-toggle,.mobile-get{display:none}
+.menu-toggle{align-items:center;gap:6px;min-height:44px;border:0;background:transparent;color:inherit;font:500 1rem/1.2 Manrope,sans-serif;cursor:pointer;padding:8px}
+.menu-toggle .ico{width:16px;height:16px}
+.menu-toggle[aria-expanded="true"] .ico{transform:rotate(180deg)}
+
 /* ---------- hero ---------- */
 .hero-wrap{position:relative;color:var(--mist);background:var(--hero);
   overflow:hidden;padding-bottom:clamp(56px,8vw,104px)}
@@ -230,14 +238,24 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .grid>.card:last-child{grid-column:span 2}
   .links{grid-template-columns:1fr}
   .links{gap:0}
-  .top nav a:not(.nav-get):not(.nav-community){display:none}
-  .top nav{gap:14px}
+  html{scroll-padding-top:0}
+  main>section{scroll-margin-top:56px}
+  .site-header{position:sticky;top:0}
+  .top{position:relative;height:56px;padding-block:0;gap:12px}
+  .menu-toggle{display:inline-flex;margin-left:auto}
+  .mobile-get{display:inline-flex;align-items:center;justify-content:center;min-height:40px;font-weight:500;text-decoration:none;white-space:nowrap}
+  .top nav{display:none;position:absolute;top:100%;inset-inline:var(--gutter);flex-direction:column;align-items:stretch;gap:0;padding:8px;background:var(--hero);border:1px solid var(--rule);border-radius:12px;box-shadow:0 12px 24px -12px rgba(0,0,0,.6)}
+  .top nav.is-open{display:flex}
+  .top nav a{display:block;padding:12px;min-height:44px}
+  .top nav .nav-get{margin-top:4px;text-align:center;padding:12px}
 }
 @media (max-width:600px){
   .top{gap:12px}
   .top .brand{font-size:1.15rem;gap:8px}
   .top .brand img{width:32px;height:32px}
-  .top nav{gap:10px;font-size:.85rem}
+  .top nav{font-size:1rem}
+  .menu-toggle{font-size:.9rem}
+  .mobile-get{font-size:.85rem}
   .top nav a{white-space:nowrap}
   .top .nav-get{padding:9px 12px}
   body{font-size:1rem}

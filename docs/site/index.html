@@ -43,21 +43,25 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
 </svg>
 <a class="skip" href="#main">Skip to content</a>
 
-<div class="hero-wrap">
+<div class="site-header">
   <header class="top shell">
     <a class="brand" href="./" aria-label="Collie home">
       <img src="assets/collie-icon.svg" alt="" width="40" height="40">
       <span>Collie</span>
     </a>
-    <nav aria-label="Main">
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="section-menu">Menu <svg class="ico" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    <nav id="section-menu" aria-label="Main">
       <a href="#features">Features</a>
       <a href="#about">About Collie</a>
       <a href="#upcoming">Upcoming features</a>
       <a class="nav-community" href="#community">Community</a>
       <a class="nav-get" href="#get">Get Collie</a>
     </nav>
+    <a class="nav-get mobile-get" href="#get">Get Collie</a>
   </header>
+</div>
 
+<div class="hero-wrap">
   <section class="hero shell" aria-labelledby="hero-title">
     <div class="hero-copy">
       <h1 id="hero-title">Private messages on the Signal&nbsp;network. <span>Stronger protection on your&nbsp;phone.</span></h1>
@@ -194,7 +198,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
             <h3>Obtainium <span class="tag">Recommended</span></h3>
             <p>Installs from our GitHub releases and keeps Collie up to date.</p>
           </div>
-          <a class="button primary" href="https://collie.im/obtainium/">Add to Obtainium</a>
+          <a class="button primary" href="obtainium/">Add to Obtainium</a>
         </li>
         <li>
           <div>
@@ -239,5 +243,33 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
   </div>
   <div class="shell"><p class="foot-legal">Collie is independent of Signal and Molly. Signal's <a href="https://signal.org/legal/">Terms and Privacy Policy</a> apply when you use its service.</p></div>
 </footer>
+<script>
+(() => {
+  const toggle = document.querySelector('.menu-toggle');
+  const menu = document.querySelector('#section-menu');
+  const close = () => {
+    toggle.setAttribute('aria-expanded', 'false');
+    menu.classList.remove('is-open');
+  };
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    menu.classList.toggle('is-open', open);
+  });
+  menu.addEventListener('click', event => {
+    if (event.target.closest('a')) close();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+      close();
+      toggle.focus();
+    }
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.site-header')) close();
+  });
+  matchMedia('(min-width: 861px)').addEventListener('change', close);
+})();
+</script>
 </body>
 </html>

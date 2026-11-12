@@ -27,11 +27,14 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
+      discussions: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Build the page with the latest release
+      - name: Check website generation
+        run: python3 -m unittest discover -s tooling/site -p 'test_*.py' -v
+      - name: Build the page with the latest release and upcoming features
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python3 tooling/site/build.py --out _site

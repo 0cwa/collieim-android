@@ -8,7 +8,7 @@ deploys it to GitHub Pages at https://collie.im.
 
 ```sh
 python3 tooling/site/build.py --out /path/to/out              # uses the latest GitHub release
-python3 tooling/site/build.py --out /path/to/out --tag v8.35.1-3-rc2   # offline
+python3 tooling/site/build.py --out /path/to/out --tag v8.35.1-3-rc2 --roadmap-json /path/to/discussions.json  # offline
 cd /path/to/out && python3 -m http.server 8000
 ```
 
@@ -55,3 +55,22 @@ Pull requests only build. The APK button always points at
 | `assets/collie-icon.svg`, `collie-foreground.svg` | `docs/assets/` unchanged |
 | `assets/og.png` | `docs/assets/collie-feature-graphic.svg` rendered at 1200 px wide with `rsvg-convert` |
 | `assets/screens/*.webp` | `fastlane/metadata/android/en-US/images/phoneScreenshots/` 3, 4 and 6, resized to 540 px wide with `cwebp -q 82` |
+
+## Upcoming features
+
+The page is generated from the repository's **Upcoming/Planned Features**
+Discussion category (`upcoming-planned-features`). Maintain titles and plans in
+those discussions. Moving a discussion into or out of that category adds or
+removes it on the next build. Discussions labelled `priority` appear first.
+Feature requests in other categories do not appear as promised work.
+
+The daily build reads GitHub's Discussions API with `discussions: read`. A failed
+API request fails the build and leaves the last deployed site intact. Local
+builds use `GITHUB_TOKEN` (or `GH_TOKEN`), or `--roadmap-json` for an offline JSON
+array of discussion nodes with `number`, `title`, `category.slug`, and optional
+`labels.nodes` fields. Titles are escaped before rendering. The site links to the
+source discussions and makes clear that planned features are not yet available.
+
+Run `python3 -m unittest discover -s tooling/site -p 'test_*.py' -v` to check
+category filtering, priority ordering, title escaping, API pagination/failures,
+output-directory safety and the built page.

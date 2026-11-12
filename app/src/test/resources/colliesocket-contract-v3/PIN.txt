@@ -1,3 +1,3 @@
-CollieSocket v3 contract pin: 3d23fb4a2757c391b9b6f4cec482bac480eaf859.
-Source tree: e32a122fa351c1a31b6a448ab023a101f6f95de2.
+CollieSocket v3 contract pin: 9751c1effba7c94f49474febd941ca7fe3ba31cc.
+Source tree: fc88c12cddc75f5f6a66191763da57a3f44dd7f8.
 Every copied artifact is checked against copy-manifest.json.

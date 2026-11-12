@@ -16,7 +16,7 @@ object EnrollmentFile {
 
   const val V2_CONTRACT_COMMIT = "371a744b2b15ead17cf50000e59cc7d347574b7c"
   /** Canonical source revision for the pinned v3 contract artifacts in test resources. */
-  const val V3_CONTRACT_COMMIT = "3d23fb4a2757c391b9b6f4cec482bac480eaf859"
+  const val V3_CONTRACT_COMMIT = "9751c1effba7c94f49474febd941ca7fe3ba31cc"
 
   class Invalid(val code: String) : Exception(code)
 

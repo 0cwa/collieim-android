@@ -1,19 +1,19 @@
 # Current website review evidence
 
-Current chat image/provenance source is signed d754358d1afac77eb84c260a7383cfe0688e38ee; HTML/CSS remains signed eb9e7c2376d78222dc0a86926f33084b26d96879. Original encryption/lock provenance remains b3b4857fe6ebc0338f732cd9129c8b1bc94880f0. Review the containing evidence commit as one stable candidate. No rating is supplied by the implementation owner.
+Current chat image/provenance source is signed d754358d1afac77eb84c260a7383cfe0688e38ee; Current CSS is signed531cc156584569c8b40cdec2bbadbfbcf71dae9b; HTML/copy remains eb9e7c2376d78222dc0a86926f33084b26d96879. The only current CSS change adds bottom space below the phones; the original symmetric arc geometry is unchanged. Original encryption/lock provenance remains b3b4857fe6ebc0338f732cd9129c8b1bc94880f0. Review the containing evidence commit as one stable candidate. No rating is supplied by the implementation owner.
 
 ## Current views
 
-All paths below are in this directory. All eight hero/page-top/phone-montage views are freshly rendered with the accepted fuller-thread photo. Community views retain eb9e7c source; features/Upcoming/downloads and phone introductions retain e532bde source appearance, which this image-only selection does not change. Current helper/readiness/geometry logs are in render-checks.md. Historical menu/Obtainium source-render support and separate actual native Obtainium installation proof retain their explicit provenance below.
+All paths below are in this directory. Desktop hero light/dark,390 transition light/dark,320 transition and768 page top are freshly rendered after the divider clearance fix. Initial320/390 page-top appearance is unchanged because the boundary remains below those844px crops. Community views retain eb9e7c source; features/Upcoming/downloads/introductions retain unchanged e532bde component appearance. Their document positions shift with the extra64px(phone)/80px(wider) hero space. No decoration is implemented. Exact matched before/after measurements and current strip/anchor checks are in divider-clearance.md.
 
 | View | File | Actual iframe CSS viewport / PNG dimensions |
 | --- | --- | --- |
-| Desktop hero | [light](desktop-light.png) · [dark](desktop-dark.png) |1280×800|
+| Desktop hero | [light](desktop-light.png) · [dark](desktop-dark.png) |1280×960|
 | Phone hero, scrolled to phones | [light](mobile-light.png) · [dark](mobile-dark.png) |390×844|
 | Narrow hero/curve | [hero-narrow-light.png](hero-narrow-light.png) |320×844|
 | Actual phone page top | [page-top-mobile-light.png](page-top-mobile-light.png) |390×844, scrollY 0|
 | Actual narrow page top | [page-top-narrow-light.png](page-top-narrow-light.png) |320×844, scrollY 0|
-| Actual tablet page top | [page-top-tablet-light.png](page-top-tablet-light.png) |768×1024, scrollY 0|
+| Actual tablet page top | [page-top-tablet-light.png](page-top-tablet-light.png) |768×1200, scrollY 0|
 | Features | [desktop](features-desktop-light.png) · [tablet](features-tablet-light.png) |1280×1000 /768×1300|
 | Phone features | [390](features-mobile-light.png) · [320](features-narrow-light.png) |390×1100 /320×1300|
 | Upcoming plans | [desktop light](upcoming-desktop-light.png) · [phone dark](upcoming-mobile-dark.png) · [narrow light](upcoming-narrow-light.png) |1280×900 /390×1100 /320×1250|
@@ -75,6 +75,10 @@ Headline and lede wording, weight/line-height ratio, orange second sentence, nat
 Y is document CSS pixels at scrollY 0 in the accurate overlay-scrollbar renderer, using actual front-image geometry and matching native UI text bounds. Fixed phone gaps: header→headline 20px, headline→lede 20, lede→buttons 24, button rows 12, buttons→facts 20, facts→stage 16. Lede is 16px/26.4px. Focus-ring CSS is unchanged. At 768 and 1280, measured headline, lede, actions, stage and front-image rectangles/fonts are exactly identical to the prior candidate; only the third fact is deliberately absent.
 
 At 390 the Get panel grows 859.52→881.52px, exactly 22px, from the prerequisite's 20px line plus 2px margin. Existing card copy/Recommended/primary styles/handoff are unchanged; no extra auto-update promise. All six feature descriptions, community, legal line and planned disclaimer/list/URLs are byte-identical. The current pass preserves this phone hero/download behavior and all native assets, metadata, local main and native proof. It changes supporting text weight, roadmap disclosure, desktop lead balance and desktop section spacing only.
+
+## Current symmetric divider fix
+
+The existing symmetric arc width, height, curvature,3px stroke and lateral position are unchanged. Only hero bottom padding adds64px below600px and80px above600px. Matched320/390/768/1280 montage-bottom→center-apex clearances change21.48/21.07/22.55/44.31→85.48/85.07/102.55/124.31px. Hero title/lede/CTA/photo geometry is unchanged; intro moves down by the same64/80px. Every narrow section heading clears the56px header. Full-width40px light strips below the arc remain exactly249/251/244RGB: no shadow spill. [Exact current evidence](divider-clearance.md). No contour or other decoration accompanies this change.
 
 ## Verified focused changes and measurements
 

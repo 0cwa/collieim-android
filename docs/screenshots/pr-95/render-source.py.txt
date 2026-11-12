@@ -1,0 +1,18 @@
+from pathlib import Path
+import base64,html,mimetypes,re,sys,subprocess
+root=Path('/home/x/agent-scratch/collieim-android/pr-screenshots/site')
+w,h,section=int(sys.argv[1]),int(sys.argv[2]),sys.argv[3]
+def data(p):
+ p=root/p
+ return 'data:'+ (mimetypes.guess_type(str(p))[0] or 'application/octet-stream')+';base64,'+base64.b64encode(p.read_bytes()).decode()
+s=(root/'index.html').read_text()
+css=subprocess.check_output(['git','show','c2a7b7c647de24fa50185f84b29fe141aaa6d931:docs/site/assets/site.css'],text=True) if len(sys.argv)>4 else (root/'assets/site.css').read_text()
+css=re.sub(r'url\(([^)]+)\)',lambda m:'url('+data('assets/'+m[1])+')',css)
+s=s.replace('<link rel="stylesheet" href="assets/site.css">','<style>'+css+'</style>')
+s=re.sub(r'<link rel="preload"[^>]+>','',s)
+s=re.sub(r'(src=")([^"#]+)(")',lambda m:m[1]+data(m[2])+m[3] if not m[2].startswith(('http','data:')) else m[0],s)
+selector={'hero':'.hero-wrap','phones':'.stage','footer':'.foot'}.get(section,'#'+section)
+script='''<script>document.fonts.ready.then(async()=>{document.documentElement.style.scrollBehavior='auto';document.getAnimations().forEach(a=>a.finish());if('SELECTOR'==='.hero-wrap'){scrollTo(0,0)}else{document.querySelector('SELECTOR').scrollIntoView({behavior:'instant'});if('SELECTOR'==='.stage')scrollTo(0,scrollY-80)};const visible=Array.from(document.images).filter(i=>i.getBoundingClientRect().bottom>0&&i.getBoundingClientRect().top<innerHeight);await Promise.all(visible.map(i=>i.decode().catch(()=>{})));console.log('ready',JSON.stringify({width:innerWidth,height:innerHeight,usable:document.documentElement.clientWidth,fonts:document.fonts.status,images:visible.map(i=>i.complete&&i.naturalWidth>0),overflow:document.documentElement.scrollWidth>innerWidth,dark:matchMedia('(prefers-color-scheme:dark)').matches}));console.log('position',JSON.stringify({scrollY,section:document.querySelector('SELECTOR').getBoundingClientRect().top,getY:document.querySelector('#get').getBoundingClientRect().top+scrollY,background:getComputedStyle(document.body).backgroundColor}));})</script>'''.replace('SELECTOR',selector)
+s=s.replace('</body>',script+'</body>')
+outer=f'<!doctype html><html><head><style>html,body{{margin:0;padding:0;height:{h}px;overflow:hidden}}</style></head><body><iframe title="Exact Collie build" style="width:{w}px;height:{h}px;border:0;display:block" srcdoc="'+html.escape(s,quote=True)+'"></iframe></body></html>'
+Path('/home/x/agent-scratch/collieim-android/pr-screenshots/exact-render.html').write_text(outer)

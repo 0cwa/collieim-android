@@ -54,7 +54,7 @@ Pull requests only build. The APK button always points at
 | `assets/fonts/manrope.ttf`, `sora.ttf` and their `OFL.txt` | google/fonts at commit `b31870aff700ab7a1d74fa0c6887d95beb9e0037`, the same files repo.collie.im pins |
 | `assets/collie-icon.svg`, `collie-foreground.svg` | `docs/assets/` unchanged |
 | `assets/og.png` | `docs/assets/collie-feature-graphic.svg` rendered at 1200 px wide with `rsvg-convert` |
-| `assets/screens/conversation.webp` | Native API35 offline demo with fictional Alex/six messages, now Fastlane 1.png; 1080×2160 resized to 540×1080 with `cwebp -q 82`; [capture provenance](../screenshots/pr-95/conversation-capture.md) |
+| `assets/screens/conversation.webp` | Native API35 offline demo with fictional Alex/fourteen-message ongoing thread, now Fastlane 1.png; 1080×2160 resized to 540×1080 with `cwebp -q 82`; [capture provenance](../screenshots/pr-95/conversation-capture.md) |
 | `assets/screens/encryption.webp` | Original corrected 1080×2400 API35 capture in immutable `555fff83a6b7e8f5b8de89f522859f250a166b5f`, resized to 540×1200; current Fastlane 3.png is a separate native 1080×2160 capture for its 2:1 limit |
 | `assets/screens/locked.webp`, `proxy.webp` | Existing Fastlane locked (formerly 4.png, now 2.png) and proxy (6.png) captures, resized to 540 px wide with `cwebp -q 82`; proxy retained but no longer a hero phone |
 

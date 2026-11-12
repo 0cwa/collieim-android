@@ -1,3 +1,5 @@
+> Current chat selection: [ongoing-conversation-capture.md](ongoing-conversation-capture.md) supersedes this six-message conversation image with a genuine fourteen-message latest-thread capture. This earlier record remains the valid encryption provenance and historical six-message/chat build record. Its original helper/UI dump are preserved at immutable ae8af5670c7a03dd77041a3dfba54a0085e01c0c; the current helper and chat-native-ui.xml now represent the fuller thread. No original encryption/lock asset changed.
+
 # Offline native capture provenance
 
 - Dedicated AVD: collieim-offline-api35, emulator-5562, API 35 Pixel 6; guest remained offline.

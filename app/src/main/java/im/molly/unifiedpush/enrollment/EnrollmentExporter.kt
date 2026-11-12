@@ -53,6 +53,7 @@ object EnrollmentExporter {
 
     val intent: ImportIntent
     val contents: String
+    val replayIfAbsent = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
     when (mode) {
       ExportMode.RERENDER -> {
         val savedId = requestId ?: throw EnrollmentFile.Invalid("intent_unavailable")
@@ -60,6 +61,7 @@ object EnrollmentExporter {
           ?: throw EnrollmentFile.Invalid("intent_unavailable")
         intent = saved
         contents = EnrollmentFile.render(saved.toInput())
+        store.ensureReplayStateIfAbsent(replayIfAbsent)
       }
       ExportMode.NEW_INTENT, ExportMode.RECOVERY -> {
         if (requestId != null) throw EnrollmentFile.Invalid("invalid_enrollment")
@@ -76,7 +78,7 @@ object EnrollmentExporter {
         val exported = Target(endpoint, EnrollmentFile.canonicalKey(p256dh, 65), EnrollmentFile.canonicalKey(auth, 16))
         val activeNow = mode == ExportMode.RECOVERY
         var rendered: String? = null
-        intent = EndpointUpdates.recordIntent(store, fullRecovery = activeNow) { old, sequence ->
+        intent = EndpointUpdates.recordIntent(store, fullRecovery = activeNow, replayIfAbsent = replayIfAbsent) { old, sequence ->
           if (epoch <= old.activeEpoch && !activeNow) throw EnrollmentFile.Invalid("recovery_ack_required")
 
           // A matching epoch alone is not enough to reuse a candidate key: the intent may belong to a different
@@ -134,9 +136,6 @@ object EnrollmentExporter {
       temp.delete()
     }
 
-    if (values.replayState == null) {
-      values.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000, emptyList()).serialize()
-    }
     return Export(output, intent.epoch, store.read().highestEpoch, intent.requestId)
   }
 

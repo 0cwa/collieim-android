@@ -10,6 +10,7 @@ import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.control.UnifiedPushControlStore
 import im.molly.unifiedpush.enrollment.ControlKeyId
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
@@ -24,6 +25,7 @@ import org.signal.storage.keyvalue.KeyValuePersistentStorage
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
+import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -98,6 +100,40 @@ class UnifiedPushValuesControlTest {
   }
 
   @Test
+  fun `legacy active epoch supplies the high water mark for an ordinary no-op wake mutation`() {
+    val storage = SnapshotKeyValuePersistentStorage(
+      KeyValueDataSet().apply { putLong("up.enrollment.epoch", 7); putLong("up.enrollment.pendingEpoch", 0) },
+    )
+    val values = UnifiedPushValues(KeyValueStore(storage, java.util.concurrent.Executor { it.run() }))
+
+    val migrated = UnifiedPushControlStore(values).mutate("replay-after-legacy-wake") { it }
+
+    assertEquals(7, migrated.activeEpoch)
+    assertEquals(7, migrated.highestEpoch)
+    assertNull(migrated.activeImportId)
+    assertEquals("replay-after-legacy-wake", values.replayState)
+    assertEquals(7, values.controlState.highestEpoch)
+    assertTrue(storage.getDataSet().containsKey("up.control.state"))
+    assertFalse(storage.getDataSet().containsKey("up.enrollment.epoch"))
+    val restored = UnifiedPushValues(KeyValueStore(storage, java.util.concurrent.Executor { it.run() }))
+    assertEquals(7, restored.controlState.highestEpoch)
+    assertNull(restored.controlState.activeImportId)
+  }
+
+  @Test
+  fun `legacy fallback rejects out of range active and pending epochs`() {
+    val tooHigh = 9007199254740992L
+    val badActive = values(KeyValueDataSet().apply { putLong("up.enrollment.epoch", tooHigh) })
+    assertEquals(ControlStateRead.Corrupt, badActive.controlStateRead)
+
+    val badPending = values(KeyValueDataSet().apply { putLong("up.enrollment.pendingEpoch", tooHigh) })
+    assertEquals(ControlStateRead.Corrupt, badPending.controlStateRead)
+
+    val oldRecord = """{"key":null,"pendingKey":null,"pendingEpoch":$tooHigh,"pendingTarget":null,"activeEpoch":0,"highestEpoch":0,"update":null,"serverTarget":null}"""
+    assertEquals(ControlStateRead.Corrupt, ControlState.parse(oldRecord))
+  }
+
+  @Test
   fun `recognized old singleton preserves active key and unconfirmed pending export without inventing identity`() {
     val oldRecord = """{"key":"$key","pendingKey":null,"pendingEpoch":0,"pendingTarget":null,"activeEpoch":3,"highestEpoch":3,"update":null,"serverTarget":null}"""
     val values = values(KeyValueDataSet().apply { putString("up.control.state", oldRecord) })
@@ -157,6 +193,33 @@ class UnifiedPushValuesControlTest {
     assertEquals(1, state.importSequence)
     assertEquals(1, state.intents.single().sequence)
     assertEquals(1, state.intents.single().epoch)
+  }
+
+  @Test
+  fun `v3 active identity requires a positive epoch and compatibility setter cannot clear it`() {
+    val state = ControlState(
+      key = key,
+      activeKeyId = ControlKeyId.derive(key, account, 2, instance),
+      activeImportId = "22222222-2222-4222-8222-222222222222",
+      activeImportSeq = 1,
+      activeAccountId = account,
+      activeDeviceId = 2,
+      activeInstance = instance,
+      activeEpoch = 1,
+      highestEpoch = 1,
+      importSequence = 1,
+    )
+    assertTrue(ControlState.parse(state.serialize()) is ControlStateRead.Current)
+    assertEquals(ControlStateRead.Corrupt, ControlState.parse(state.serialize().replace("\"active_epoch\":1", "\"active_epoch\":0")))
+
+    val values = values()
+    values.mutateControl { state }
+    assertThrows(IllegalArgumentException::class.java) { values.enrollmentEpoch = 0 }
+    assertEquals(1, values.enrollmentEpoch)
+
+    values.clearControl()
+    values.enrollmentEpoch = 0
+    assertEquals(0, values.enrollmentEpoch)
   }
 
   @Test

@@ -12,6 +12,7 @@ import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import org.signal.core.util.eventbus.EventBus
+import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.events.PushServiceEvent
 import org.thoughtcrime.securesms.gcm.FcmFetchManager
@@ -176,35 +177,40 @@ class UnifiedPushReceiver : MessagingReceiver() {
       }
     }
     var effect = EndpointUpdates.Effect.NONE
-    val outcome = synchronized(replayLock) {
-      val now = System.currentTimeMillis() / 1000
-      val state = EncryptedPush.ReplayState.parse(values.replayState)
-      if (state == null) {
-        Log.w(TAG, "Replay state unavailable. Encrypted push dropped.")
-        return false
-      }
-      EncryptedPush.decide(
-        content = message.content,
-        decrypted = message.decrypted,
-        now = now,
-        locked = { appLocked },
-        activeInstance = values.endpointInstance ?: "default",
-        acceptedEpochs = EndpointUpdates.acceptedEpochs(snapshot),
-        state = state,
-        versionsForEpoch = { epoch -> EndpointUpdates.versionsForEpoch(snapshot, epoch) },
-        identityMatches = { event ->
-          EndpointUpdates.identityMatches(snapshot, event, if (event.version == 3) currentRegistration.value else null)
-        },
-      ).also {
-        if (it.decision.accepted) {
-          // Committed to disk with replay state before any effect. A matching v3 import identity binds the exact
-          // intent; a `subscription_updated` event must match the already active identity.
-          val event = it.event!!
-          val registration = if (event.version == 3) currentRegistration.value else null
-          effect = EndpointUpdates.accepted(controlStore, it.state.serialize(), event, registration)
-          if (effect == EndpointUpdates.Effect.PROMOTED) LockedPushState.setEncryptedEnrollment(context, true)
+    val outcome = try {
+      synchronized(replayLock) {
+        val now = System.currentTimeMillis() / 1000
+        val state = EncryptedPush.ReplayState.parse(values.replayState)
+        if (state == null) {
+          Log.w(TAG, "Replay state unavailable. Encrypted push dropped.")
+          return false
+        }
+        EncryptedPush.decide(
+          content = message.content,
+          decrypted = message.decrypted,
+          now = now,
+          locked = { appLocked },
+          activeInstance = values.endpointInstance ?: "default",
+          acceptedEpochs = EndpointUpdates.acceptedEpochs(snapshot),
+          state = state,
+          versionsForEpoch = { epoch -> EndpointUpdates.versionsForEpoch(snapshot, epoch) },
+          identityMatches = { event ->
+            EndpointUpdates.identityMatches(snapshot, event, if (event.version == 3) currentRegistration.value else null)
+          },
+        ).also {
+          if (it.decision.accepted) {
+            // Committed to disk with replay state before any effect. A matching v3 import identity binds the exact
+            // intent; a `subscription_updated` event must match the already active identity.
+            val event = it.event!!
+            val registration = if (event.version == 3) currentRegistration.value else null
+            effect = EndpointUpdates.accepted(controlStore, it.state.serialize(), event, registration)
+            if (effect == EndpointUpdates.Effect.PROMOTED) LockedPushState.setEncryptedEnrollment(context, true)
+          }
         }
       }
+    } catch (e: KeyValuePersistenceException) {
+      Log.w(TAG, "Encrypted push state persistence was not acknowledged. Push dropped.", e)
+      return false
     }
     if (effect == EndpointUpdates.Effect.REJECTED) return false
     // The endpoint may have changed since the update or the export was built: converge on the current one.

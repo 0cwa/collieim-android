@@ -12,10 +12,16 @@ import org.junit.Test
 class EndpointUpdatesTest {
   private class Memory(initial: ControlState) : ControlStore {
     var state = initial
+    var replay: String? = null
     override fun read() = state
     override fun mutate(replay: String?, block: (ControlState) -> ControlState): ControlState {
+      if (replay != null) this.replay = replay
       state = block(state)
       return state
+    }
+    override fun mutateWithReplayIfAbsent(replayIfAbsent: String, block: (ControlState) -> ControlState): ControlState {
+      if (replay == null) replay = replayIfAbsent
+      return mutate(block = block)
     }
   }
 

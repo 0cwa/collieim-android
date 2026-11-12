@@ -54,9 +54,17 @@ object EndpointUpdates {
    * and count toward the cap; only a higher confirmed sequence retires them. [create] must only construct the
    * candidate and must not publish anything.
    */
-  fun recordIntent(store: ControlStore, fullRecovery: Boolean, create: (ControlState, Long) -> ImportIntent): ImportIntent {
+  fun recordIntent(
+    store: ControlStore,
+    fullRecovery: Boolean,
+    replayIfAbsent: String? = null,
+    create: (ControlState, Long) -> ImportIntent,
+  ): ImportIntent {
     var created: ImportIntent? = null
-    store.mutate { old ->
+    val mutate: ((ControlState) -> ControlState) -> ControlState = { block ->
+      if (replayIfAbsent == null) store.mutate(block = block) else store.mutateWithReplayIfAbsent(replayIfAbsent, block)
+    }
+    mutate { old ->
       if (old.pendingIntentCount >= ControlState.MAX_PENDING_INTENTS) throw EnrollmentFile.Invalid("pending_limit")
       if (old.importSequence >= ControlState.MAX_IMPORT_SEQUENCE) throw EnrollmentFile.Invalid("sequence_exhausted")
       val sequence = old.importSequence + 1

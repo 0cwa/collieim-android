@@ -33,6 +33,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_ENROLLMENT_EPOCH = "up.enrollment.epoch"
     private const val UNIFIEDPUSH_PENDING_EPOCH = "up.enrollment.pendingEpoch"
     private const val UNIFIEDPUSH_REPLAY_STATE = "up.enrollment.replay"
+    private const val MAX_ENROLLMENT_EPOCH = 9007199254740991L
     private const val UNIFIEDPUSH_STATUS_CODE = "up.enrollment.statusCode"
     private const val UNIFIEDPUSH_CONTROL_STATE = "up.control.state"
     private val controlLock = Any()
@@ -91,7 +92,12 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
    */
   var enrollmentEpoch: Long
     get() = controlState.activeEpoch
-    set(value) { mutateControl { it.copy(activeEpoch = value, highestEpoch = maxOf(it.highestEpoch, value)) } }
+    set(value) {
+      mutateControl {
+        if (it.activeImportId != null && value < 1) throw IllegalArgumentException("An active v3 enrollment needs a positive epoch")
+        it.copy(activeEpoch = value, highestEpoch = maxOf(it.highestEpoch, value))
+      }
+    }
 
   /** Compatibility view for a pending candidate or migrated unknown export. */
   var pendingEnrollmentEpoch: Long
@@ -116,11 +122,12 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
         val active = getLong(UNIFIEDPUSH_ENROLLMENT_EPOCH, 0)
         val pending = getLong(UNIFIEDPUSH_PENDING_EPOCH, 0)
         when {
-          active < 0 || pending < 0 -> ControlStateRead.Corrupt
+          active !in 0L..MAX_ENROLLMENT_EPOCH || pending !in 0L..MAX_ENROLLMENT_EPOCH -> ControlStateRead.Corrupt
           active == 0L && pending == 0L -> ControlStateRead.Absent
           else -> ControlStateRead.Legacy(
             ControlState(
               activeEpoch = active,
+              highestEpoch = maxOf(active, pending),
               legacyPending = pending.takeIf { it > 0 }?.let { im.molly.unifiedpush.control.LegacyPending(null, it, null) },
             )
           )
@@ -143,6 +150,15 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
    * [replay], the encrypted-push replay state, when given. Returns the state that was written.
    */
   fun mutateControl(replay: String? = null, block: (ControlState) -> ControlState): ControlState {
+    return mutateControl(replay, replayIfAbsent = null, block)
+  }
+
+  /** Commits [replayIfAbsent] with the state change only when replay has not been initialized yet. */
+  fun mutateControlWithReplayIfAbsent(replayIfAbsent: String, block: (ControlState) -> ControlState): ControlState {
+    return mutateControl(replay = null, replayIfAbsent = replayIfAbsent, block = block)
+  }
+
+  private fun mutateControl(replay: String?, replayIfAbsent: String?, block: (ControlState) -> ControlState): ControlState {
     synchronized(controlLock) {
       val loaded = controlStateRead
       val old = loaded.stateOrNull ?: throw CorruptControlStateException()
@@ -151,11 +167,13 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
         throw IllegalArgumentException("Invalid Unified Push control state")
       }
       val migration = loaded is ControlStateRead.Legacy
-      if (next == old && replay == null && !migration) return old
+      val missingReplay = replayIfAbsent != null && getString(UNIFIEDPUSH_REPLAY_STATE, null) == null
+      if (next == old && replay == null && !missingReplay && !migration) return old
       val write = store.beginWrite().putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
       if (migration) write.remove(UNIFIEDPUSH_ENROLLMENT_EPOCH).remove(UNIFIEDPUSH_PENDING_EPOCH)
       if (replay != null) write.putString(UNIFIEDPUSH_REPLAY_STATE, replay)
-      write.commit()
+      else if (missingReplay) write.putString(UNIFIEDPUSH_REPLAY_STATE, replayIfAbsent)
+      write.commitAndWaitForPersistence()
       return next
     }
   }
@@ -197,7 +215,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       .putString(UNIFIEDPUSH_CONTROL_STATE, next.serialize())
       .remove(UNIFIEDPUSH_ENROLLMENT_EPOCH)
       .remove(UNIFIEDPUSH_PENDING_EPOCH)
-      .commit()
+      .commitAndWaitForPersistence()
     true
   }
 
@@ -213,7 +231,7 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       .putString(UNIFIEDPUSH_CONTROL_STATE, ControlState().serialize())
       .remove(UNIFIEDPUSH_ENROLLMENT_EPOCH)
       .remove(UNIFIEDPUSH_PENDING_EPOCH)
-      .commit()
+      .commitAndWaitForPersistence()
   }
 
   /** Last generic status code the server reported in an accepted encrypted push status event. */

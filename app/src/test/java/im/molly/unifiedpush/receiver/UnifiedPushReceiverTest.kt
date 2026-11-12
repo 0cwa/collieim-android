@@ -14,6 +14,7 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkConstructor
 import io.mockk.unmockkStatic
 import io.mockk.verify
+import org.junit.Assert.assertEquals
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -46,6 +47,7 @@ import io.mockk.spyk
 import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
+import org.thoughtcrime.securesms.testutil.SnapshotKeyValuePersistentStorage
 import im.molly.unifiedpush.control.ControlState
 import im.molly.unifiedpush.control.ControlStateRead
 import im.molly.unifiedpush.control.EndpointUpdates
@@ -55,6 +57,7 @@ import im.molly.unifiedpush.control.Target
 import im.molly.unifiedpush.enrollment.ControlKeyId
 import org.thoughtcrime.securesms.jobs.UnifiedPushControlJob
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
+import java.util.concurrent.Executor
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class, sdk = [28])
@@ -287,6 +290,26 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `failed receiver replay persistence leaves cache unchanged and starts no wake effect`() {
+    val persistent = SnapshotKeyValuePersistentStorage()
+    val durableValues = UnifiedPushValues(KeyValueStore(persistent, Executor { it.run() }))
+    durableValues.mutateControl { it.copy(activeEpoch = 1, highestEpoch = 1) }
+    durableValues.replayState = EncryptedPush.ReplayState(System.currentTimeMillis() / 1000 - 1, emptyList()).serialize()
+    persistent.nextWriteFailure = IllegalStateException("synthetic replay write failure")
+    every { SignalStore.unifiedpush } returns durableValues
+    mockkStatic(PushFetchHandler::class)
+    every { PushFetchHandler.handleReceivedNotification(any(), any()) } returns Unit
+
+    val controlBefore = durableValues.controlState
+    val replayBefore = durableValues.replayState
+    UnifiedPushReceiver().onMessage(context, PushMessage(wake(), true), "default")
+
+    org.junit.Assert.assertEquals(controlBefore, durableValues.controlState)
+    org.junit.Assert.assertEquals(replayBefore, durableValues.replayState)
+    verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any()) }
+  }
+
+  @Test
   fun `active enrollment refuses plaintext wakes, undecrypted pushes and other epochs without any effect`() {
     enrollment(active = 1, pending = 0) {
       val before = replay
@@ -356,6 +379,34 @@ class UnifiedPushReceiverTest {
 
       fetches(0)
       verify(exactly = 0) { values.mutateControl(any(), any()) }
+    }
+  }
+
+  @Test
+  fun `v3 identity with zero active epoch is corrupt and never dispatches a plaintext wake`() {
+    enrollment(active = 0, pending = 0) {
+      val account = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+      val valid = ControlState(
+        key = fixtureKey,
+        activeKeyId = ControlKeyId.derive(fixtureKey, account, 2, "default"),
+        activeImportId = "22222222-2222-4222-8222-222222222222",
+        activeImportSeq = 1,
+        activeAccountId = account,
+        activeDeviceId = 2,
+        activeInstance = "default",
+        activeEpoch = 1,
+        highestEpoch = 1,
+        importSequence = 1,
+      )
+      values.store.beginWrite()
+        .putString("up.control.state", valid.serialize().replace("\"active_epoch\":1", "\"active_epoch\":0"))
+        .commit()
+      assertEquals(ControlStateRead.Corrupt, values.controlStateRead)
+
+      UnifiedPushReceiver().onMessage(context, urgent(), "default")
+
+      fetches(0)
+      verify(exactly = 0) { PushFetchHandler.handleReceivedNotification(any(), any()) }
     }
   }
 

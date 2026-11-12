@@ -195,6 +195,7 @@ data class ControlState(
       val pendingEpoch = requiredLong(root, "pendingEpoch")
       val pendingKey = nullableText(root, "pendingKey")
       val pendingTarget = target(root["pendingTarget"])
+      require(pendingEpoch <= MAX_EPOCH)
       require((pendingEpoch == 0L) == (pendingKey == null && pendingTarget == null) || pendingEpoch > 0)
       val updateText = nullableText(root, "update")
       return ControlState(
@@ -244,6 +245,7 @@ data class ControlState(
       require((state.activeImportId == null) == (state.activeDeviceId == null))
       require((state.activeImportId == null) == (state.activeInstance == null))
       require(state.activeImportId == null || UUID_V4.matches(state.activeImportId))
+      require(state.activeImportId == null || state.activeEpoch >= 1)
       require(state.activeKeyId == null || ControlKeyId.isCanonical(state.activeKeyId))
       require(state.key == null || state.key == EnrollmentFile.canonicalKey(state.key, 32))
       if (state.activeImportId != null) {

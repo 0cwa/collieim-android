@@ -12,7 +12,9 @@ import org.signal.core.util.ThreadUtil
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.logging.Log
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executor
+import java.util.concurrent.FutureTask
 
 /**
  * A replacement for [android.content.SharedPreferences] that stores key-value pairs in our
@@ -145,6 +147,60 @@ class KeyValueStore @VisibleForTesting constructor(
     executor.execute { storage.writeDataSet(newDataSet, removes) }
   }
 
+  /**
+   * Writes a batch without publishing it to the cache until the backing storage reports its result. The cache is
+   * refreshed after the queued write, including after failure, so an acknowledged read cannot observe a failed
+   * optimistic value. The store monitor keeps later batches behind this transaction while it waits.
+   */
+  @Synchronized
+  private fun writeAndWaitForPersistence(newDataSet: KeyValueDataSet, removes: Collection<String>) {
+    val task = FutureTask<Unit> { storage.writeDataSet(newDataSet, removes) }
+    try {
+      executor.execute(task)
+    } catch (e: RuntimeException) {
+      refreshCacheAfterPersistentWrite()?.let(e::addSuppressed)
+      throw KeyValuePersistenceException(e)
+    }
+
+    var interrupted = false
+    var writeFailure: Throwable? = null
+    while (true) {
+      try {
+        task.get()
+        break
+      } catch (e: InterruptedException) {
+        interrupted = true
+      } catch (e: ExecutionException) {
+        writeFailure = e.cause ?: e
+        break
+      }
+    }
+
+    val refreshFailure = refreshCacheAfterPersistentWrite()
+    if (refreshFailure != null) {
+      writeFailure?.let { it.addSuppressed(refreshFailure) } ?: run { writeFailure = refreshFailure }
+    }
+
+    if (Thread.currentThread().isInterrupted) interrupted = true
+    if (interrupted) {
+      Thread.currentThread().interrupt()
+      val interruption = InterruptedException("Interrupted while waiting for key-value persistence")
+      writeFailure?.let(interruption::addSuppressed)
+      throw KeyValuePersistenceException(interruption)
+    }
+    if (writeFailure != null) throw KeyValuePersistenceException(writeFailure)
+  }
+
+  private fun refreshCacheAfterPersistentWrite(): Throwable? {
+    return try {
+      dataSet = storage.getDataSet()
+      null
+    } catch (e: RuntimeException) {
+      dataSet = null
+      e
+    }
+  }
+
   private fun loadedDataSet(): KeyValueDataSet {
     return dataSet ?: storage.getDataSet().also { dataSet = it }
   }
@@ -201,6 +257,15 @@ class KeyValueStore @VisibleForTesting constructor(
     fun commit() {
       apply()
       blockUntilAllWritesFinished()
+    }
+
+    /** Waits for this batch's actual storage result and throws if persistence fails or the wait is interrupted. */
+    @WorkerThread
+    fun commitAndWaitForPersistence() {
+      for (key in removes) {
+        check(!dataSet.containsKey(key)) { "Tried to remove a key while also setting it!" }
+      }
+      writeAndWaitForPersistence(dataSet, removes)
     }
   }
 

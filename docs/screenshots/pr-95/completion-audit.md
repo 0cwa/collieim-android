@@ -1,6 +1,6 @@
 # Completion audit for the current website candidate
 
-This is a factual requirement audit, not a design rating. Source and current images are packaged in the containing commit; native image provenance is unchanged from the separately pushed correction.
+This is a factual requirement audit, not a design rating. Source and current images are packaged in the containing commit; native image provenance distinguishes the original website encryption capture from the new native 2:1 Fastlane captures.
 
 | Requirement | Evidence/current state |
 | --- | --- |
@@ -10,13 +10,13 @@ This is a factual requirement audit, not a design rating. Source and current ima
 | Exact notification link and emphasis | Required sentence/UnifiedPush anchor remain unchanged. Feature now describes alerts/connection plainly; precise trusted MollySocket requirement is at Upcoming. Selective emphasis/underlined links remain. |
 | Discussion-generated plans | Existing category only; eight plans in the supplied snapshot, label-priority first, separate badge, explicit planned disclaimer. Daily workflow uses 06:17 UTC and read permissions. Discussion106 wording was checked against the public source; URL unchanged. |
 | Installation options | Obtainium/F-Droid share primary styling; Recommended appears only once; manual APK remains secondary. Website's actual CTA reaches its local handoff; README retains absolute Collie URL. GitHub update source, manual collie.im/#get fallback and tested nested-JSON filter are unchanged. |
-| Fresh native screenshot | Fastlane PNG and website WebP share the new 06:53 API 35 capture. Matching-APK centering test passed unskipped; actual title/button geometry gives equal 450px clearance. Security preference restoration passed and subsequent window SECURE flag was verified. No fabricated chat image. |
-| Actual hero/current pixels | Encryption stays in front, lock left, proxy right. Browser loads the new WebP hash. Current native hashes match signed 555fff83a6b7 and local-main signed bf7e38610090. |
-| Brand/live workflow | Solid hero; no CSS radial gradients. Fonts/palette/order unchanged. Existing localhost:8879 server retained. Impeccable 4.1.1 was present and used; no install/download. |
+| Fresh native screenshots | Genuine offline Alex/six-message chat and corrected encryption captured at native 1080×2160. Seed/centering/durable restore each passed 1 test, no skip; encryption geometry 336/337px with title below bars. Cold production PID 6443/task 18 showed SECURE. Website encryption retains original 1080×2400 source/540×1200 derivative and 450/450px geometry. Distinct hashes/viewports are documented; no fabricated UI. |
+| Actual hero/current pixels | Genuine conversation front, original corrected encryption left, locked screen right. Natural image ratios preserve front header/composer; rear title/controls are partially overlapped, never claimed fully unobscured. Chat PNG 28ade62d…/WebP b94444ee…; new Fastlane encryption b85f15db…; original website encryption 6862fbc6…. |
+| Brand/live workflow | Solid hero; no CSS radial gradients. Fonts/palette/section order unchanged; selected real hero screens updated. Existing localhost:8879 server retained. Impeccable 4.1.1 was present and used; no install/download. |
 | Narrow navigation | 56px persistent header, native button/ARIA state, existing section links and Escape/outside/link closing. Prior successful keyboard/anchor evidence is distinguished from later degraded input transport in README. |
-| Validation | 14 website tests passed; no overflow at actual 320/390/768/1280. Current intro/features, hero, roadmap, community and downloads/footer use exact built-source browser renders with verified fonts/images/media/viewport; latest affected groups/page tops are fresh, unchanged components retain explicit 2917 provenance. Exported button/bark RGB matches source. Supporting older live captures retain original provenance. Selected contrast scope only; no whole-site AA assertion. |
-| Local main |Only the two immutable image blobs were committed as bf7e386100905d5c5c03bb2f22cff480c647ebe4. Main was not pushed; unrelated .local/ and tools/ were preserved. |
-| Cleanup |Dedicated emulator-5562/AVD, temporary app tests and 47 generated build/cache directories removed. Emulator-5554 was untouched. Shared SDK/JDK/dependency caches and requested preview server retained. |
+| Validation | 14 website tests and Fastlane metadata validator passed; no overflow at actual 320/390/768/1280. Current intro/features, hero, roadmap, community and downloads/footer use exact built-source browser renders with verified fonts/images/media/viewport; latest affected groups/page tops are fresh, unchanged components retain explicit 2917 provenance. Exported button/bark RGB matches source. Supporting older live captures retain original provenance. Selected contrast scope only; no whole-site AA assertion. |
+| Local main | Original website WebP stays unchanged; only new native 2:1 Fastlane 3.png updated in signed a156e045212300b65bc1846bde39f9928fbad3d3. No main push. Unrelated staged/untracked state, including .local/ and tools/, preserved. |
+| Cleanup |Dedicated emulator-5562/AVD, temporary app tests and 47 generated build/cache directories removed. Unrelated emulators 5554/5580 were untouched. Shared SDK/JDK/dependency caches and requested preview server retained. |
 
 ## Verified review findings
 
@@ -26,9 +26,9 @@ This is a factual requirement audit, not a design rating. Source and current ima
 | Featured heading orphan | Valid, high | text-wrap:balance yields Locked when / you step away at 320/390/768/1280;320 wrap unchanged, no card/facts change. |
 | Desktop lead body cap | Valid, high | Above 860px body 460 to 640.66px; card remains 408px; text-to-card-edge 51.66px. |
 | Community primary hierarchy | Valid, high | Titles 22px vs help 16.8px, icons 40px; lighter Help, unchanged copy/links. |
-| Phone curve shadow spill | Valid, high | Full-width 40px bands are uniformly 249/251/244 at 390/320; desktop hero unchanged. |
-| Phone secondary cards are too tall | Valid, high | Below600 only: five visible list items with inline40px icons and aligned body text. Live390 region978 to614.73px; encryption lead unchanged. Wider feature PNGs are byte-identical to baseline. |
-| Phone introduction competes with features | Valid, high | Heading24px against32px features (75%); disclosure remains visible. |
+| Phone curve shadow spill | Valid, high | Phone-only curve stacking fixes shadow spill; this image pass changes no CSS. New hero source renders show the actual current photos. |
+| Phone secondary cards are too tall | Valid, high | Below 600 only: five visible list items with inline 40px icons and aligned body text. Live 390 region 978 to 614.73px; encryption lead unchanged. The later localized notification copy/balanced heading intentionally update feature pixels; card geometry remains. |
+| Phone introduction competes with features | Valid, high | Heading 24px against 32px features (75%); disclosure remains visible. |
 | Phone feature facts repeat the paragraph | Valid, high | Hidden with their divider only at widths up to 600px; desktop remains. |
 | Phone roadmap spacing is too generous | Valid, high | Margins changed from 18/32px to 12/22px without changing either paragraph. |
 | Disclosure chevron is detached from its label | Valid, high | Flex alignment now starts at the label with an 8px gap; native summary retained. |
@@ -38,12 +38,12 @@ This is a factual requirement audit, not a design rating. Source and current ima
 
 ## PR102 proof remains separate
 
-PR102 head is signed 614ed0f18d5301496fa1f86a756e64cb07e4910b. Its code matches the tested 5660b3934dea8855530fb32ab6e10f12754a54c5; only eight PNGs and capture notes were added afterward. The recorded run reports OK (6 tests): five native UI methods and one link method, no skips. Six portrait captures are 1080 × 2400 and two landscape captures 2400 × 1080. All eight full-SHA images and reproduction notes are attached to the PR description. Battery-restriction prompting alongside the notes and the short large-text landscape reading area remain explicitly documented; this website pass does not claim to resolve them.
+Recorded PR102 proof commit is signed 614ed0f18d5301496fa1f86a756e64cb07e4910b. Its code matches the tested 5660b3934dea8855530fb32ab6e10f12754a54c5; only eight PNGs and capture notes were added afterward. The recorded run reports OK (6 tests): five native UI methods and one link method, no skips. Six portrait captures are 1080 × 2400 and two landscape captures 2400 × 1080. All eight full-SHA images and reproduction notes are attached to the PR description. Battery-restriction prompting alongside the notes and the short large-text landscape reading area remain explicitly documented; this website pass does not claim to resolve them.
 
 ## Remaining completion steps outside this frozen review packet
 
-- Independent design approval is not claimed. Authentic everyday-messaging imagery remains absent; optional offline capture awaits explicit user disk-WARN approval.
-- PR95 contains the fresh native asset correction 555fff83a6b7e8f5b8de89f522859f250a166b5f. Its description uses immutable published candidate images, 14-test scope and selected contrast evidence; no blanket all-text AA claim is supported.
+- Independent design approval is not claimed. Authentic everyday-messaging imagery is now present and the new stable candidate is ready for independent review. No prior grades or desired score are supplied here.
+- PR95 publication uses immutable candidate images, 14-test/metadata scope and selected contrast evidence. Native records distinguish original 2400 website pixels from current 2160 Fastlane captures. No whole-site AA claim is supported.
 - Public deployment and actual Obtainium app installation/import have not been performed in this website lane. The local CTA/handoff was read end to end. No default-branch push, merge or production deployment occurred.
 
 The footer disclaimer is byte-for-byte unchanged from the consolidation base. No source, screenshot or documentation updates should be made while this candidate is being scored.

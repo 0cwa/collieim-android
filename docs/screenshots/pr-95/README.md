@@ -1,182 +1,78 @@
-# Current Collie website review set
+# Current website review evidence
 
-Implementation source is signed `b7b32031a75c23ec63a4bd62780e473beda4e245`; review the containing evidence commit as one candidate. Fresh native assets remain in `555fff83a6b7e8f5b8de89f522859f250a166b5f`. No score is supplied by the implementation owner.
+Implementation source is signed 0456fa475b76111a94c52949e2381f13a2ed8108; native assets/provenance are signed b3b4857fe6ebc0338f732cd9129c8b1bc94880f0. Review the containing evidence commit as one stable candidate. No rating is supplied by the implementation owner.
 
-## Current affected views
+## Current views
 
-| View | Screenshot | Actual iframe CSS viewport / PNG dimensions |
+All paths below are in this directory. The eight hero/page-top views are freshly rendered after adding the genuine chat. Unchanged component views retain their original source provenance: feature/Upcoming views from b7b32031a75c, community from 4a954f19b0b0, downloads/footer from 2917bdc27ad5. Their component source/appearance is unchanged by this image-only hero pass; their document offsets are reported separately.
+
+| View | File | Actual iframe CSS viewport / PNG dimensions |
 | --- | --- | --- |
-| Phone features | [features-mobile-light.png](features-mobile-light.png) | 390 × 1100 |
-| Phone introduction | [about-mobile.png](about-mobile.png) | 390 × 844 |
-| Narrow features | [features-narrow-light.png](features-narrow-light.png) | 320 × 1300 |
-| Narrow introduction | [about-narrow-light.png](about-narrow-light.png) | 320 × 844 |
-| Desktop features | [features-desktop-light.png](features-desktop-light.png) | 1280 × 1000 |
-| Unchanged tablet features | [features-tablet-light.png](features-tablet-light.png) | 768 × 1300 |
+| Desktop hero | [light](desktop-light.png) · [dark](desktop-dark.png) |1280×800|
+| Phone hero, scrolled to phones | [light](mobile-light.png) · [dark](mobile-dark.png) |390×844|
+| Narrow hero/curve | [hero-narrow-light.png](hero-narrow-light.png) |320×844|
+| Actual phone page top | [page-top-mobile-light.png](page-top-mobile-light.png) |390×844, scrollY0|
+| Actual narrow page top | [page-top-narrow-light.png](page-top-narrow-light.png) |320×844, scrollY0|
+| Actual tablet page top | [page-top-tablet-light.png](page-top-tablet-light.png) |768×1024, scrollY0|
+| Features | [desktop](features-desktop-light.png) · [tablet](features-tablet-light.png) |1280×1000 /768×1300|
+| Phone features | [390](features-mobile-light.png) · [320](features-narrow-light.png) |390×1100 /320×1300|
+| Upcoming plans | [desktop light](upcoming-desktop-light.png) · [phone dark](upcoming-mobile-dark.png) |1280×900 /390×1100|
+| Community/help | [desktop light](community-desktop-light.png) · [phone dark](community-mobile-dark.png) · [narrow light](community-narrow-light.png) |1280×900 /390×1300 /320×1500|
+| Downloads/footer | [desktop light](downloads-footer-desktop-light.png) · [dark](downloads-footer-desktop-dark.png) |1280×1100|
+| Phone downloads | [light](downloads-mobile-light.png) · [dark](downloads-mobile-dark.png) |390×1100|
+| Phone footer | [light](footer-mobile-light.png) · [dark](footer-mobile-dark.png) |390×844|
 
-These six are actual browser renders of the existing build HTML, CSS, embedded original fonts and image bytes in a fixed-size iframe via T3 `html_preview`. They are **source renders**, not live-tab screenshots. Only resource URLs are embedded; a capture script waits for fonts and scrolls to the requested existing section. No page layout, content, colors or assets are reconstructed or changed. Visible images reported loaded, fonts reported loaded, and actual iframe widths matched all four requested widths. This renderer uses overlay scrollbars and DPR 1; its usable width equals its viewport width. The last live T3 browser reserved 15px for a scrollbar and used DPR 2. Both measurements are reported separately below. The four current feature views are freshly rendered after the localized notification wording and balanced heading changes; card bounds/facts remain unchanged. Intro-only appearance is unchanged, but any old lead-heading pixels at the bottom of about-mobile.png/about-narrow-light.png are superseded by these feature views.
+These are actual browser renders of the existing static build HTML/CSS with original font/image bytes embedded in fixed-size iframes through T3 html_preview. They are source renders, not live-tab screenshots. Only resource URLs are embedded; the helper waits for fonts/visible images, scrolls to the existing section and finishes native CSS animations. No content/layout reconstruction or recoloring. Native overlay scrollbars, DPR 1: usable width equals actual innerWidth. Every current hero view reported its requested width, loaded fonts/images, expected light/dark media and no overflow. Phone montage views use stage top 80px to clear the 56px sticky header; page-top views are explicitly scrollY0.
 
-## Current remaining key views
+[render-source.py.txt](render-source.py.txt) preserves the exact rendering helper. It reads the existing build, not a mockup. The conversation's natural 540×1080 image renders 205.156×410.312px at 1280 and 153.094×306.188px at 390, preserving its ratio and complete header/composer without stretching or cropping. The rear encryption image remains 540×1200, likewise preserving its natural ratio.
 
-| View | Screenshot | Actual iframe CSS viewport / PNG dimensions |
-| --- | --- | --- |
-| Phone page top | [page-top-mobile-light.png](page-top-mobile-light.png) | 390 × 844, scrollY0 |
-| Narrow page top | [page-top-narrow-light.png](page-top-narrow-light.png) | 320 × 844, scrollY0 |
-| Narrow hero phones/curve | [hero-narrow-light.png](hero-narrow-light.png) | 320 × 844 |
-| Narrow community | [community-narrow-light.png](community-narrow-light.png) | 320 × 1500 |
-| Hero | [desktop-light.png](desktop-light.png) | 1280 × 800 |
-| Hero phones | [mobile-light.png](mobile-light.png) | 390 × 844 |
-| Upcoming plans | [upcoming-desktop-light.png](upcoming-desktop-light.png) | 1280 × 900 |
-| Dark phone plans | [upcoming-mobile-dark.png](upcoming-mobile-dark.png) | 390 × 1100 |
-| Community and help | [community-desktop-light.png](community-desktop-light.png) | 1280 × 900 |
-| Dark phone community and help | [community-mobile-dark.png](community-mobile-dark.png) | 390 × 1300 |
-| Downloads/footer | [light](downloads-footer-desktop-light.png) · [dark](downloads-footer-desktop-dark.png) | 1280 × 1100 |
-| Phone downloads | [light](downloads-mobile-light.png) · [dark](downloads-mobile-dark.png) | 390 × 1100 |
-| Phone footer | [light](footer-mobile-light.png) · [dark](footer-mobile-dark.png) | 390 × 844 |
+Earlier raw browser exports shifted orange into pink, including in their PNG pixels. This source-render path preserves actual source RGB: desktop primary 242/152/43 (#F2982B) and bark 36/19/13 (#24130D), measured with ffmpeg rgb24 crop/od. No source colors were changed to compensate. Older supporting live captures (menu, narrow header, desktop introduction, Obtainium) retain c2a7b7c647de24fa50185f84b29fe141aaa6d931 provenance. Their component source is unchanged; about-mobile/about-narrow retain valid intro composition but their partial old feature-heading pixels are superseded by current feature views. community-narrow-dark.png is historical and superseded by the current community views. Use the table above for current hero/palette/feature judgments. Live T3 snapshot/input transport later timed out across callers and disconnected; no failed call is claimed as a pass.
 
-These key views use the same exact-source renderer, native overlay-scrollbar environment and DPR 1 as the six affected views. CSS animations are finished through their native animation API before capture, showing their actual final state. The phone hero is scrolled with the stage top 80px below the viewport top to keep all cases visible beneath the 56px sticky header. Every capture reports the requested actual width, loaded fonts and visible images, expected light/dark media and no horizontal overflow. Built CSS bytes exactly match signed production source.
+## Audience and retained requirements
 
-Exported hero pixels match source colors without recoloring: at (120,590), inside the primary button, RGB 242/152/43 is source #F2982B; at (20,100), bark RGB 36/19/13 is source #24130D. These were sampled from the 1280×800 PNG using `ffmpeg -vf 'format=rgb24,crop=1:1:X:Y' -frames:v 1 -f rawvideo - | od -An -tu1`. Current key review views therefore need no pink/orange capture caveat. Contrast checks below remain computed-CSS measurements with their original scope.
+Collie is an Android messenger for ordinary Signal users. Copy is largely approved; people skim, so reading priority, grouping, hierarchy and actionable labels matter. The hero now shows familiar messaging first, backed by on-device protection. Preserve the Collie bark/lichen/orange palette, self-hosted Manrope/Sora and logo-derived dashed ring. Decorative radial-gradient blobs were rejected and removed.
 
-Exact capture-helper source is retained in [render-source.py.txt](render-source.py.txt). It reads the existing static build, embeds original resources, wraps it in a fixed-size iframe and logs readiness/position evidence. Invocation was `python3 render-exact.py WIDTH HEIGHT SECTION`, followed by T3 `html_preview` with the resulting exact-render.html path, matching width and light/dark appearance. PNG data was saved directly without processing. Sections are existing IDs, or hero/phones/footer for their existing class selectors.
+Immediately below the hero, one introduction consolidates Signal compatibility and Signal/Molly foundations. The benefit leads, provenance is quieter, and Source and security details is an optional native disclosure. Side by side, package-name and one-account/two-app explanations remain absent from that introduction; installation verification still names the package. The legal footer disclaimer remains byte-identical.
 
-Current feature views at 320/390/768/1280 and Upcoming views at 1280/light and 390/dark are freshly rendered from signed b7b32031a75c. Other source renders retain 94dbe9f6f2eb or 2917bdc27ad5 provenance and their component source is unchanged. Historical same-byte comparisons described below apply before the final localized copy/heading changes. Current feature views are authoritative for the notification text and heading wraps.
+Matrix chat and GitHub Discussions forum are prominent, with distinct chat/thread-list icons, 40px icon boxes and 22px titles against 16.8px lighter Help subheads. Bug reporting/donations retain a separate Help the project group. Actions remain underlined, with selective bold/italic emphasis.
 
-Supporting older live captures retain c2a7b7c647de24fa50185f84b29fe141aaa6d931 provenance. Menu, narrow header, desktop introduction, dark desktop hero and Obtainium appearance remain unchanged. **mobile-dark.png and community-narrow-dark.png are historical and superseded** by current mobile-light.png, hero-narrow-light.png, community-mobile-dark.png and community-narrow-light.png; do not use them to judge current curve/hierarchy. Older live exports can shift orange into pink. Current key source renders preserve source colors. Live screenshot/recording transport timed out across callers and reported an unavailable automation host. No browser was installed and no system security policy changed.
+Plans are generated from the existing upcoming-planned-features category during daily builds, priority-labelled discussions first with a separate label-derived Priority badge. The supplied snapshot has ten discussions/eight plans. The planned-work disclaimer is explicit; URLs remain unchanged. Discussion 106's title “Send a text with its own timer” was checked against its source: holding Send applies a one-time timer to one text; no duration/start/view-once claim was invented.
 
-## Latest verified review fixes
+Notifications now says “Get message alerts without Google's push service. Collie can keep its own connection open, or use UnifiedPush with a server you trust.” The UnifiedPush anchor is unchanged. Exact required link text remains “Why it matters and why we're working on making it easy.” → #upcoming. That target's existing explanation replaces the vague “but setup still takes extra steps” with “but currently needs a trusted MollySocket server.” Planned disclaimer/list/URLs are unchanged. Source verification used IncomingMessageObserver, ApplicationContext and MollySocketRepository; this is consumer wording for real behavior, not removal of the trusted-server requirement.
 
-| Finding | Disposition and measured evidence | Focused change |
-| --- | --- | --- |
-| Desktop lead body leaves a blank right region | Valid; card 714.66×408, body capped 460px, facts 640.66px. Blank interior strip 180.66px, or 217.66px including padding; 40% estimate was high. | Above 860px body now shares facts width 640.66px. Card stays 408px high; longest text line ends 51.66px from card edge. No phone/tablet feature change. |
-| Matrix/forum do not sufficiently outrank help subheads | Valid; titles 18.4px vs help 16.8px (1.095×), icons 28px. | Titles 22px (1.31× help), icons 40px without shrink; Help weight 400. Copy and underlined links preserved. |
-| Phone shadow spills onto cream | Valid; old 390 center y465 RGB 208/210/204 and y480 RGB 236/238/231. | Phone-only curve stacking paints cream above shadows. Full-width40px strips now uniformly RGB 249/251/244: 390 y487–526, 320 y417–456, after antialiased edge. Desktop hero PNG unchanged. |
+Obtainium and F-Droid repository share primary styling; only Obtainium gets Recommended. Manual APK remains secondary. Website uses relative obtainium/ so the actual localhost CTA reaches the handoff; README uses https://collie.im/obtainium/. GitHub remains the APK update source and https://collie.im/#get the manual fallback. The verified nested-JSON APK filter was not altered. Actual app import/install through Obtainium was not performed.
 
-The notification action retains its existing spacing. The compact row now says: “Get message alerts without Google's push service. Collie can keep its own connection open, or use UnifiedPush with a server you trust.” The UnifiedPush anchor and exact requested why sentence/link are unchanged. Source verification: IncomingMessageObserver.kt documents keeping the incoming-message WebSocket open; ApplicationContext.java switches WebSocket/UnifiedPush; MollySocketRepository.kt connects to the configured server.
+## Genuine native images and composition
 
-The existing Upcoming sentence changed narrowly from “UnifiedPush lets you choose who delivers your notifications, but setup still takes extra steps.” to “UnifiedPush lets you choose who delivers your notifications, but currently needs a trusted MollySocket server.” The planned disclaimer, list generation and URLs are byte-identical. The technical setup fact is available at the same why-link target, without naming MollySocket in the compact feature row.
+The montage uses **conversation front, corrected encryption left, locked screen right**. The technical proxy image is retained in source/Fastlane but no longer fronts this ordinary-user story. No CSS redesign was needed. Rear overlap covers portions of the encryption title/controls; the lock glyph/centered setup remain recognizable, and the full native image is available separately. There is no claim that every rear control is unobscured.
 
-The heading balances as “Locked when” / “you step away” at all four checked widths. At320 this preserves the earlier wrap. No card/facts/padding changes. Fourteen tests and diffcheck pass; every render reports actual width, loaded fonts/visible images and no overflow. The 320 five-item region is 24px taller from the localized wording; 390 remains 566.69px. No native run occurred; authentic offline demo imagery awaits explicit disk-WARN approval.
+The chat is real API 35 app UI with fictional offline Alex/six messages inserted by a temporary fixture. Header, bubbles, avatar and composer are app-rendered, not fabricated/composited pixels. The native 1080×2160 PNG is Fastlane 1.png, SHA256 28ade62dd49c45047c283ce232f14b7dedf0e36d788e85825dfa6d1fea4a2688. conversation.webp is its 540×1080 q82 resize, SHA256 b94444eeab129ef45a453dd19c73b7ad181bed0d9d636623cdb30c3a81ea5b54. No personal account or service traffic: guest airplane mode on, data/Wi-Fi off, no active default network; fixture networking disabled before registration and checked afterward.
 
-## Product requirements to preserve
+Fastlane 3.png is a **separate new native 1080×2160 encryption capture**, SHA256 b85f15db028af21b96692d4baa431496e19ccc7304e11cd4612046ee0245f5da. Its title y451, last button bottom 1760 and system insets 115/63 give 336/337px free space. Offline no-registration centering passed 1 collected test with no skip. Durable restoration passed 1 test, followed by cold production PID 6443/task 18 with WMS SECURE. A temporary setter-only restoration initially failed that real-window proof; waiting for SignalStore writes fixed the fixture. No production Android change is included.
 
-Collie is an Android messenger for ordinary Signal users. Explain familiar messaging and extra protection on the phone; do not pitch readable patches as a benefit to everyone. Existing factual copy is mostly approved. People skim, so grouping, type hierarchy, emphasis and actionable labels should communicate the story before paragraph reading. Preserve the bark, lichen and orange identity, Manrope and Sora, real screenshots and the logo-derived dashed ring. Decorative radial-gradient blobs were explicitly rejected and removed.
+The website encryption remains the original corrected 540×1200 WebP, SHA256 6862fbc60d5eb744ec9ba441bdec5ba4e064f3674343d5909760a19180bb0848. Its original 1080×2400 PNG and 450/450px geometry remain preserved at immutable 555fff83a6b7e8f5b8de89f522859f250a166b5f. Do not confuse those original website pixels with the distinct 2:1 Fastlane capture; hashes/dimensions differ honestly. The unchanged validator and official Izzy 2:1 rule required a native viewport capture, not cropping/padding or weakening policy.
 
-The introduction immediately below the hero consolidates Signal compatibility and Signal/Molly foundations. A text-only rearrangement and a competing provenance card did not satisfy the request for informational clarity. The current open composition puts its topic heading on the left, benefit first on the right, then quieter foundations and one optional source/security disclosure. Mobile follows that DOM order. Do not reintroduce Side by side, package-name, or one-account/two-app explanations. The legal disclaimer stays unchanged in the footer.
+Fastlane first three are chat/lock/encryption. Existing privacy moves to 4.png; 5–9 remain; settings-overview.png preserves old 1.png byte-for-byte. No other screenshot was discarded. Local main received only the new 3.png in signed a156e045212300b65bc1846bde39f9928fbad3d3, preserving the original website WebP and unrelated files; main was not pushed.
 
-Matrix chat and the GitHub Discussions forum remain prominent entry points, with different chat-bubble and thread-list icons. Their actions are underlined. Bug reports and donations remain in the separate Help the project group. Keep selective bold and italic emphasis. The notifications card must retain the exact link text “Why it matters and why we're working on making it easy.” pointing to `#upcoming`.
+See [conversation-capture.md](conversation-capture.md) for exact commands, matching APK/helper hashes, UI dumps and security proof, and [encryption-capture.md](encryption-capture.md) for the original viewport record. Use only offline-demo-security.kt.txt for future fixture reproduction; historical pre-flush snapshots are provenance-only and clearly superseded.
 
-Plans come from the existing `upcoming-planned-features` Discussions category, refreshed by daily builds, with label-priority items first. They must remain clearly labelled planned rather than shipped. The checked snapshot has ten discussions, eight in that category; no roadmap items were invented. Obtainium and the F-Droid repository have equal primary styling, with Recommended only on Obtainium. Manual APK download remains secondary. README uses the absolute Collie-hosted handoff; the website uses relative `obtainium/` so clicking the real CTA stays on the live build before publication. On the published domain it reaches the same destination. Preserve GitHub as the update source and `https://collie.im/#get` as the manual fallback. The verified nested-JSON APK filter is unchanged.
+## Layout and validation evidence
 
-## Changes in this candidate
+Below 600px, the encryption lead is followed by five visible compact feature items: 40px icon beside title, body aligned under title and hairline separators. No hidden descriptions or new padding. Heading balances “Locked when” / “you step away” at 320/390/768/1280; 320 wrap is unchanged. Desktop body/facts share 640.66px, card remains 714.66×408 and longest body line ends 51.66px from its edge.
 
-The roadmap renderer maps stable discussion numbers to concise display titles. Unknown titles retain their wording after removing editorial prefixes such as High Priority or bracketed tags. Escaping happens after display-title selection. A separate Priority badge comes only from the label, never title text. All eight discussion URLs are unchanged. Priority title weight is 600; ordinary plan titles are 500. The two-column grid reads across rows; mobile uses one column. The italic planned-work disclaimer is unchanged; the notification introduction now names the current trusted MollySocket requirement as described above. The gap from the roadmap follow-up links to the community heading is now 64 CSS px.
+Current overlay-scrollbar measurements:
 
-Only below 600px, the five secondary feature cards now form a compact list: 40px icons sit beside titles, body text aligns beneath titles, and the existing rule color separates items. Their card backgrounds, outlines, radii and inner padding are removed. Every word and link is retained. The encryption lead is unchanged. The intro heading is 24px against the 32px feature heading (75%), with the source/security disclosure visible in both introduction captures. The compact-list change remains phone-only; the latest separate desktop explanation reflow is described above.
-
-The lead feature retains its desktop two-column/two-row position and featured surface. Its 40px icon sits beside the heading; the approved explanation remains. Three short facts restate that explanation: Passphrase you choose; Locks after a set time; Stays encrypted if lost or stolen. A hairline separates the facts, and their row sits at the bottom. Smaller cards use one deliberate icon-to-heading gap rather than stacked padding and automatic margins. At phone widths up to 600px, the repeated facts and their divider are hidden; the approved paragraph already says the same thing. Wider screens retain the three facts. Phone spacing from the upcoming introduction to the italic note is 12px, and from that note to the list is 22px. No wording in either paragraph changed.
-
-The narrow header is now a page-level sibling of the hero, so hero overflow cannot prevent persistent navigation. At 860px and below it is 56px high and sticky, with brand, Menu and Get Collie. Menu exposes the existing five section links in desktop order. Enter opens it; Escape closes it and returns focus; choosing a link or clicking outside closes it. Anchored sections have 56px scroll margin. Below 360px the wordmark is 16px rather than 18.4px, adding breathing room while retaining the 56px header, logo and Get Collie. At 320px the wordmark-to-Menu text gap is 19.16px, compared with 12.30px before this refinement. The desktop header keeps its existing behavior. There is no menu animation to suppress in reduced-motion mode; existing reduced-motion rules also disable smooth scrolling and hero motion.
-
-The featured heading uses `text-wrap:balance` with the existing 17ch cap, without changing font size or card geometry.
-
-The source/security disclosure keeps its native underlined, focusable 44px summary. Its chevron now follows the label with an 8px gap rather than sitting at the far edge.
-
-The display title for [Discussion 106](https://github.com/0cwa/collieim-android/discussions/106) is “Send a text with its own timer”. The discussion describes holding Send to apply a one-time timer to an individual text. It does not specify duration choices, timer start conditions or view-once media. The link remains unchanged, and an assertion in the existing mapping test covers the concise title.
-
-## Relevant implementation excerpts
-
-```html
-<div class="site-header">
-  <header class="top shell">
-    <!-- Existing brand -->
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="section-menu">Menu <!-- SVG chevron --></button>
-    <nav id="section-menu" aria-label="Main">
-      <!-- Features, About Collie, Upcoming features, Community, Get Collie -->
-    </nav>
-    <a class="nav-get mobile-get" href="#get">Get Collie</a>
-  </header>
-</div>
-<!-- The hero starts after this page-level header. -->
-```
-
-```css
-.feature-head{display:flex;align-items:flex-start;gap:16px}
-.feature-head h3{max-width:17ch}
-.feature-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:auto;padding-top:20px;border-top:1px solid var(--rule);font-size:.9rem;line-height:1.5;font-weight:500}
-.plan-badge{flex:none;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--bark);font:600 .75rem/1.5 Manrope,sans-serif}
-@media(max-width:860px){
-  html{scroll-padding-top:0}
-  main>section{scroll-margin-top:56px}
-  .site-header{position:sticky;top:0}
-  .top{position:relative;height:56px;padding-block:0;gap:12px}
-  .top nav{display:none}
-  .top nav.is-open{display:flex}
-}
-@media(max-width:600px){
-  .feature-facts{display:none}
-  .intro h2{font-size:1.5rem;line-height:1.25}
-  .card:not(.featured){position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;margin-top:0;padding:0;border:0;border-radius:0;background:none}
-  .card.featured + .card{margin-top:8px}
-  .card:not(.featured)::before{content:"";position:absolute;inset-inline:0;top:-6px;border-top:1px solid var(--rule)}
-  .card:not(.featured) .ico{grid-column:1;grid-row:1/span 2;width:40px;height:40px;margin:0}
-  .card:not(.featured) h3{grid-column:2;grid-row:1;min-width:0;font-size:1.0625rem;line-height:1.35;font-weight:400}
-  .card:not(.featured) p{grid-column:2;grid-row:2;min-width:0}
-  .card:not(.featured) a[href="#upcoming"]{display:inline-block;min-height:24px;line-height:24px}
-  .upcoming-status{margin-top:12px}
-  .roadmap-list{margin-top:22px}
-}
-@media(max-width:359px){.top .brand{font-size:1rem}}
-.intro .technical-details summary{justify-content:flex-start;gap:8px}
-```
-
-The full narrow-menu rule positions the solid panel immediately below the header; it is not a fixed overlay. JavaScript updates `aria-expanded` and the `is-open` class together. Escape invokes the same close function and calls `toggle.focus()`.
-
-```python
-priority = is_priority(node)
-item_class = ' class="priority-plan"' if priority else ""
-badge = '<span class="plan-badge">Priority</span>' if priority else ""
-title = html.escape(display_roadmap_title(node))
-items.append(f'<li{item_class}>{badge}<a href="https://github.com/{repo}/discussions/{int(node["number"])}">{title}</a></li>')
-```
-
-## Measured browser checks
-
-The following live-T3 table predates the latest community typography change and is retained as historical geometry evidence, not a fresh measurement of downloads positions. Current source-render measurements follow it.
-
-| Actual CSS width | Horizontal overflow | Header | Downloads start, CSS px |
+| Width / usable width | Five-item region | Downloads document Y | Overflow |
 | --- | --- | --- | --- |
-| 320 | none; document width 305 | 56px sticky | 5437.09 |
-| 390 | none; document width 375 | 56px sticky | 4865.26 |
-| 768 | none; document width 753 | 56px sticky | 4214.27 |
-| 1280 | none; document width 1265 | 90px normal | 3684.98 |
+|320 /320|685.63px|5337.80px|none|
+|390 /390|566.69px|4785.45px|none|
+|768 /768|644px|4197.83px|none|
+|1280 /1280|668px|3689.45px|none|
 
-These live checks used actual `innerWidth`. At 390px, the five-item region shrank from 978px to 614.73px; at 320px, from 1150px to 732.62px. This counts first secondary item top through last item bottom, including gaps. The encryption lead remains exactly 279.73px at 390 and 306.93px at 320. Every title and body starts at x68, to the right of the icon at x16; wrapped titles never flow below the icon. The notification action measures 291×48px at 390 and 221×48px at 320. All six card rectangles match the previous source exactly at 768 and 1280.
+The 390 compact region is unchanged by the final notification wording; 320 uses one extra 24px text line. Hero imagery does not alter downstream layout. Phone intro heading is 24px against 32px features (75%). Notification action is 306×48px at 390 and 236×48px at 320, above 24px. Earlier live T3 reserved 15px for a scrollbar: its390 region 614.73px was measured against real 978px baseline; that environment is distinct, not substituted for current source-render widths.
 
-The source-render environment has no reserved scrollbar. At widths 320/390/768/1280, usable widths are likewise 320/390/768/1280, with no horizontal overflow and loaded fonts. Five-item heights are 685.63/566.69/644/668px; downloads start at 5337.80/4785.45/4197.83/3689.45px. This is an explicit environment difference, not a replacement for live measurements. Intro/feature headings are 24/32px on phones, 32/32px at 768, and 44/48px at 1280. Current feature PNGs show the localized copy and balanced title; card bounds/facts remain unchanged. The 320 notification copy uses one additional 24px line. The intro disclosure is visible in both phone introduction renders.
+The56px page-level sticky narrow header retains Menu/Get Collie and all five section links. Prior native Tab→Menu, Enter/Escape, outside/link closing and heading-clearance checks apply to unchanged navigation source; heading tops were 88–134px with header bottom 56px. Later timed-out pointer/key transport did not reach DOM and is not new successful interaction evidence. Native source disclosure is focusable/underlined, 44px high with 8px chevron gap. Previous cream-strip checks remain valid: full-width 40px bands after the curve were exactly 249/251/244 at 390/320. No CSS changed in this image pass.
 
-Native keyboard Tab from the brand reached Menu, Enter changed `aria-expanded` to true, and Escape restored false with focus on Menu. Outside-click closing passed. Each of the five actual menu links was clicked at both 390px and 768px. Every menu closed, and all headings landed below the header: heading tops ranged from 88.01px to 134.22px, with the header bottom at 56px. These position checks used automatic scrolling in the owned test tab to avoid measuring a smooth-scroll midpoint; source motion rules were unchanged. That Menu keyboard evidence applies to the unchanged navigation markup and JavaScript. In this scoped pass, the native summary was focusable and DOM activation opened and closed it. Later pointer transport timed out, and an instrumented Enter attempt produced no DOM keydown or keyup events; no fresh trusted-keyboard or pointer result is claimed from those failed transport calls.
+Fourteen website tests pass (category/priority/title mapping/escaping/API failures/pagination/safe paths/Obtainium), the Fastlane metadata validator passes, and git diff --check passes. Native seed, offline centering and durable restore each collected/passed 1 test. Selected computed-CSS contrast evidence only: light badge 14.20/menu 15.69/facts 14.20; dark badge 14.20/menu 16.55/facts 8.01. No whole-site AA claim. The Impeccable detector used its limited fallback because parser modules are absent; no full automated audit is claimed. Impeccable 4.1.1 was already installed for Codex and used; no installation/download.
 
-Selected computed CSS contrast ratios were measured with the WCAG sRGB luminance formula. Light mode: badge 14.20:1, menu links 15.69:1, lead facts 14.20:1. Dark mode: badge 14.20:1, menu links 16.55:1, lead facts 8.01:1. These are checks of the new elements, not a whole-site automated contrast audit. Appearance and viewport readings were taken after fresh navigation; stale per-element media values were not treated as source defects. The Impeccable detector used a degraded regex fallback because parser modules are unavailable. Its retained warning is the existing 3px curved hero boundary; no clean automated audit is claimed.
-
-Clicking Add to Obtainium originally left localhost for the undeployed absolute route and showed GitHub Pages' not-found page. After making the website link relative, clicking that same CTA opened `http://localhost:8879/obtainium/`; the page text, Open Obtainium URI, download link and manual homepage fallback were read. Actual Obtainium installation/import on a phone was not performed.
-
-## Fresh native image evidence
-
-The [Fastlane PNG](../../../fastlane/metadata/android/en-US/images/phoneScreenshots/3.png) and [website WebP](../../site/assets/screens/encryption.webp) now come from the same newly captured API 35 screen. The old branch Fastlane image was visibly stale: its title overlapped the camera area and its content sat high. Merely moving an existing image to the front did not correct that file. See [encryption-capture.md](encryption-capture.md) for commands, source, hashes and security restoration.
-
-The fresh PNG is 1080×2400; WebP is 540×1200. In the actual user-visible screen, the title's view begins at y578, well below the 128px status-bar inset. The final button ends at y1887, above the 63px navigation inset. Therefore free space is exactly 450px above and below. Title, lock circle, body and both controls are visibly centered and unobscured. The browser's loaded `currentSrc` and no-store fetch match the new WebP hash. Encryption remains the foreground hero phone, lock is left and proxy is right. No conversation image was fabricated.
-
-## Validation and reproduction
-
-```sh
-python3 tooling/site/build.py --out /home/x/agent-scratch/collieim-android/pr-screenshots/site --tag v8.35.1-3-rc2 --roadmap-json /home/x/agent-scratch/collieim-android/pr-screenshots/roadmap-nodes.json
-python3 -m unittest discover -s tooling/site -p test_build.py
-```
-
-Fourteen website tests pass, including five added checks for stable mappings, prefix cleaning, mapped-title escaping, unknown-title preservation and label-only badges. Existing category, ordering, injection, pagination, failure, safe-path and Obtainium checks remain. `git diff --check` passes. The actual native centering method passed without skip, and the screen-security restoration fixture passed. Temporary app test helpers, generated Android build directories, the dedicated emulator and its AVD were removed after evidence collection. The live Python preview remains running by request.
-
-## Remaining review questions
-
-Mobile hero length remains deliberately outside this pass: its copy appears before the phones, so the fresh image is below the first fold on narrow screens. Community remains lower in the page but has hero and persistent-menu entry points. Desktop/tablet six-card topology is unchanged; phones retain the featured card followed by five visible list items. The notification feature now uses plain connection/trusted-server wording; the exact server requirement is in Upcoming. No real conversation capture was supplied. Review these as honest remaining design tradeoffs; do not infer approval from passing tests or from this implementation note.
-
-Impeccable 4.1.1 was already installed for Codex under `~/.agents/skills/impeccable`. Its context, layout and craft-floor guidance was used. Canonical documentation confirms that path and `$impeccable`; nothing was installed or downloaded. Source, imagery and validation limits are recorded for independent review at the containing commit.
+Remaining design tradeoffs are visible in the images: long mobile hero before the full phones, a large genuine native profile header in the demo chat, rear-screen overlap and the technical setup detail in Upcoming. No independent approval is implied by passing checks. The requested localhost:8879 server/shared caches remain; temporary Android test sources, 47 generated build/cache directories and owned AVD/runtime were removed after exact proof was saved. Unrelated emulators/worktrees and user files were untouched.

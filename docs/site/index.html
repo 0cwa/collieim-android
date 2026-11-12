@@ -20,7 +20,7 @@
 </head>
 <body>
 <!--
-THESIS: Signal's network, with a phone that keeps its mouth shut. Refuses the stock hero-plus-icon-grid: the hero shows the app's own lock, encryption and Tor screens, and the build story is drawn as the real patch stack.
+THESIS: Signal's network, with a phone that keeps its mouth shut. Refuses the stock hero-plus-icon-grid: the hero shows the app's own lock, encryption and Tor screens, and the story connects familiar messaging with privacy on the phone.
 OWN-WORLD: Bark Black and Redwood fields with Golden orange actions; lichen text on bark; Lichen Mist cards, Soft Lichen for the one featured card and the download block; Forest band for the build story. The logo's dashed speech ring recurs as the signature line. Sora 200-300 headings, Manrope 300-400 body.
 STORY: A Signal user learns Collie talks to the same contacts, sees what it adds on the phone, trusts it because every change is a readable patch, and installs it.
 FIRST VIEWPORT: Dark hero. Left: headline, one paragraph, Get Collie (golden) and View source. Right: three phones fanned inside a dashed ring.
@@ -34,6 +34,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
   <symbol id="i-fresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/><path d="M12 8.5V12l2.5 1.5"/></symbol>
   <symbol id="i-devices" viewBox="0 0 24 24"><rect x="3" y="4.5" width="12.5" height="16" rx="2"/><rect x="15.5" y="9" width="5.5" height="11.5" rx="1.5"/><path d="M8 17.5h2.5"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M12 4a8 8 0 0 1 0 16c-1.4 0-2.7-.3-3.8-.9L4 20l1-4A8 8 0 0 1 12 4z"/><path d="M8.5 11h7M8.5 14h4.5"/></symbol>
+  <symbol id="i-forum" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 9h8M9 15h6"/><circle cx="6.5" cy="9" r=".5"/><circle cx="6.5" cy="15" r=".5"/></symbol>
   <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13.5 6.5L19 12l-5.5 5.5"/></symbol>
@@ -49,8 +50,8 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
     </a>
     <nav aria-label="Main">
       <a href="#features">Features</a>
-      <a href="#open">How it's built</a>
-      <a href="https://github.com/0cwa/collieim-android">Source</a>
+      <a href="#open">About Collie</a>
+      <a class="nav-community" href="#community">Community</a>
       <a class="nav-get" href="#get">Get Collie</a>
     </nav>
   </header>
@@ -61,7 +62,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
       <p class="lede">Collie is a free, open-source Android messenger. Message and call your Signal contacts as you always have, while Collie keeps a tighter hold on what's stored on your device.</p>
       <div class="actions">
         <a class="button primary" href="#get">Get Collie</a>
-        <a class="button ghost" href="https://github.com/0cwa/collieim-android">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="button ghost" href="#community">Meet the community <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </div>
       <ul class="facts" aria-label="At a glance">
         <li>Free and open source</li>
@@ -124,20 +125,23 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
   <section id="open" class="open" aria-labelledby="open-title">
     <div class="shell open-inner">
       <div class="open-copy">
-        <h2 id="open-title">Every change is a patch you can&nbsp;read</h2>
-        <p>Each Collie release starts from Signal's source, adds Molly's protections, then applies Collie's own changes as separate patches. Anyone can see exactly what we changed, and security updates can ship quickly.</p>
-        <ul class="ticks">
-          <li>One APK, fully open source, with no proprietary libraries.</li>
-          <li>Licensed <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE">AGPL-3.0</a>.</li>
-          <li>We contribute work back to Molly, for example <a href="https://github.com/mollyim/mollyim-android/pull/852">#852</a> and <a href="https://github.com/mollyim/mollyim-android/pull/853">#853</a>.</li>
-          <li>Release engineering and signing details are <a href="https://github.com/0cwa/collie-release-engineering">public</a>.</li>
-        </ul>
-        <p class="note">Collie's native libraries have not yet been independently reproduced.</p>
+        <h2 id="open-title">Built on Signal and Molly</h2>
+        <p>Collie combines familiar Signal messaging with extra privacy protections from Molly and features developed for Collie. You stay connected to your Signal contacts, with more control over your messages on your phone.</p>
+        <p>Collie is free and open source. Its code is public, so people with the expertise to inspect it can see how it works.</p>
+        <details class="technical-details">
+          <summary>Source and security details</summary>
+          <ul class="ticks">
+            <li>One APK, with no proprietary libraries, licensed <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE">AGPL-3.0</a>.</li>
+            <li><a href="https://github.com/0cwa/collieim-android">Browse the source code</a> or read the <a href="https://github.com/0cwa/collie-release-engineering">release engineering and signing details</a>.</li>
+            <li>We contribute work back to Molly, for example <a href="https://github.com/mollyim/mollyim-android/pull/852">#852</a> and <a href="https://github.com/mollyim/mollyim-android/pull/853">#853</a>.</li>
+          </ul>
+          <p class="note">Collie's native libraries have not yet been independently reproduced.</p>
+        </details>
       </div>
-      <div class="stack" role="img" aria-label="Layers of a Collie release: Signal's source at the base, Molly's protections on top, Collie's patches on top of those">
-        <div class="layer l-collie"><span class="name">Collie patches</span><span class="what">new features, kept as readable patches</span></div>
-        <div class="layer l-molly"><span class="name">Molly protections</span><span class="what">encryption at rest, locking, Tor, UnifiedPush</span></div>
-        <div class="layer l-signal"><span class="name">Signal</span><span class="what">messaging, calls and the Signal network</span></div>
+      <div class="stack" role="img" aria-label="Collie brings together Signal messaging, Molly privacy protections and features developed for Collie">
+        <div class="layer l-collie"><span class="name">Collie</span><span class="what">more choice and control over your privacy</span></div>
+        <div class="layer l-molly"><span class="name">Molly</span><span class="what">extra protection for messages on your phone</span></div>
+        <div class="layer l-signal"><span class="name">Signal</span><span class="what">message and call your Signal contacts</span></div>
       </div>
     </div>
   </section>
@@ -159,6 +163,17 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
       </div>
     </div>
     <p class="fine">Collie is independent of Signal and Molly. Signal's <a href="https://signal.org/legal/">Terms and Privacy Policy</a> apply when you use its service.</p>
+  </section>
+
+  <section id="community" class="community shell" aria-labelledby="community-title">
+    <h2 id="community-title">Help shape Collie</h2>
+    <p class="community-intro">You don't need to be a developer to join in. Ask a question, suggest a feature, or tell us what would make Collie better for you.</p>
+    <ul class="links">
+      <li><a href="https://matrix.to/#/#collieim:worldethicaldataforum.org"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span><strong>Chat with us on Matrix</strong> Join the community group for help, everyday conversation and release news. <span class="community-action">Join the Matrix group →</span></span></a></li>
+      <li><a href="https://github.com/0cwa/collieim-android/discussions"><svg class="ico" aria-hidden="true"><use href="#i-forum"/></svg><span><strong>Visit the Collie forum</strong> GitHub Discussions is our forum for questions, feature requests and conversations you can come back to. <span class="community-action">Browse discussions and suggest a feature →</span></span></a></li>
+    </ul>
+    <p class="community-more">Found a bug? <a href="https://github.com/0cwa/collieim-android/issues">Report a bug on GitHub</a>.</p>
+    <p class="community-more"><a href="https://liberapay.com/Collie/">Support Collie</a> — Donations speed up development, including work toward a desktop client.</p>
   </section>
 
   <section id="get" class="get-wrap shell" aria-labelledby="get-title">
@@ -198,14 +213,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
     </div>
   </section>
 
-  <section class="community shell" aria-labelledby="community-title">
-    <h2 id="community-title">Join in</h2>
-    <ul class="links">
-      <li><a href="https://matrix.to/#/#collieim:worldethicaldataforum.org"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span><strong>Matrix room</strong> Questions, ideas and release news</span></a></li>
-      <li><a href="https://github.com/0cwa/collieim-android/issues"><svg class="ico" aria-hidden="true"><use href="#i-code"/></svg><span><strong>GitHub</strong> Report a bug, request a feature, star the repo</span></a></li>
-      <li><a href="https://liberapay.com/Collie/"><svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg><span><strong>Support Collie</strong> Donations speed up development, including work toward a desktop client</span></a></li>
-    </ul>
-  </section>
+
 </main>
 
 <footer class="foot">
@@ -216,6 +224,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
     </a>
     <ul>
       <li><a href="https://github.com/0cwa/collieim-android">Source</a></li>
+      <li><a href="https://github.com/0cwa/collieim-android/discussions">Forum &amp; feature requests</a></li>
       <li><a href="https://github.com/0cwa/collieim-android/releases">Releases</a></li>
       <li><a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE">AGPL-3.0</a></li>
       <li><a href="assets/fonts/manrope-OFL.txt">Manrope licence</a></li>

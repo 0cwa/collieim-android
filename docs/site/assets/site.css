@@ -137,7 +137,7 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .also{margin-top:28px;color:var(--ink-2);max-width:70ch}
 .also strong{color:var(--ink)}
 
-/* ---------- open / patch stack ---------- */
+/* ---------- about Collie ---------- */
 .open{background:var(--forest);color:var(--mist);padding-block:clamp(72px,9vw,128px)}
 .open a{color:var(--mist)}
 .open-inner{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(40px,6vw,96px);align-items:center}
@@ -182,13 +182,20 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 
 /* ---------- community ---------- */
 .community{padding-block:clamp(56px,7vw,96px) clamp(72px,9vw,120px)}
-.links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:32px}
+.links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:32px}
 .links a{display:flex;gap:16px;align-items:flex-start;padding:20px 4px;border-top:1px solid var(--rule);text-decoration:none;color:var(--ink)}
 .links a .ico{width:28px;height:28px;color:var(--icon);margin-top:2px;transition:transform .25s var(--ease)}
 .links a:hover .ico{transform:translateX(3px)}
 .links a:hover strong{text-decoration:underline;text-underline-offset:.22em}
 .links span{display:grid;gap:4px;color:var(--ink-2);font-size:.975rem}
 .links strong{font:300 1.15rem/1.3 Sora,sans-serif;color:var(--ink)}
+
+.community-intro{max-width:60ch;margin-top:20px;color:var(--ink-2);font-size:1.125rem}
+.community-action{margin-top:10px;color:var(--ink);font-weight:600}
+.community-more{margin-top:24px;color:var(--ink-2);max-width:65ch}
+.technical-details{margin-top:28px}
+.technical-details summary{cursor:pointer;text-decoration:underline;text-underline-offset:.22em}
+.technical-details .ticks{margin-top:20px}
 
 /* ---------- footer ---------- */
 .foot{background:var(--bark);color:var(--mist);padding-block:36px 44px}
@@ -215,9 +222,16 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .cols,.links{grid-template-columns:1fr}
   .cols{gap:28px}
   .links{gap:0}
-  .top nav a:not(.nav-get){display:none}
+  .top nav a:not(.nav-get):not(.nav-community){display:none}
+  .top nav{gap:14px}
 }
 @media (max-width:600px){
+  .top{gap:12px}
+  .top .brand{font-size:1.15rem;gap:8px}
+  .top .brand img{width:32px;height:32px}
+  .top nav{gap:10px;font-size:.85rem}
+  .top nav a{white-space:nowrap}
+  .top .nav-get{padding:9px 12px}
   body{font-size:1rem}
   .grid{grid-template-columns:1fr}
   .card.featured,.grid>.card:last-child{grid-column:auto}

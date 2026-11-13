@@ -1,5 +1,8 @@
 # Current website review evidence
 
+**Current SVG-background appearance:** [background implementation, renders and fitting evidence](backgrounds/README.md) · [comparison board](backgrounds/comparison.html). Source40027033 adds the selected flowing landscape and lower Collie murals without moving foreground content. The older views below predate these backgrounds; use them for retained component/native/runtime evidence rather than current background appearance.
+
+
 Current chat image/provenance source is signed d754358d1afac77eb84c260a7383cfe0688e38ee; Current CSS is signed531cc156584569c8b40cdec2bbadbfbcf71dae9b; HTML/copy remains eb9e7c2376d78222dc0a86926f33084b26d96879. The only current CSS change adds bottom space below the phones; the original symmetric arc geometry is unchanged. Original encryption/lock provenance remains b3b4857fe6ebc0338f732cd9129c8b1bc94880f0. Review the containing evidence commit as one stable candidate. No rating is supplied by the implementation owner.
 
 ## Current views

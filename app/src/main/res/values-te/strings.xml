@@ -3718,7 +3718,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">AI assistant apps like Gemini can scan your Signal content. To prevent this, screen security has been enabled. This will also disable screenshots.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">జెమిని వంటి AI అసిస్టెంట్ యాప్ లు మీ Collie కంటెంట్ ను స్కాన్ చేయగలవు. దీనిని నిరోధించడానికి స్క్రీన్ భద్రత ప్రారంభించబడింది. దీనివల్ల స్క్రీన్ షాట్ లు తీసుకోవడం కూడా నిలిపివేయబడుతుంది.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">స్క్రీన్ భద్రత ప్రారంభించబడింది</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3726,7 +3726,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">స్క్రీన్ భద్రతను ఆపివేయాలా?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">If turned off, this may allow AI assistants such as Google Gemini to scan Signal content and use it for features that may not be private.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">దీన్ని ఆఫ్ చేస్తే, Google Gemini వంటి AI అసిస్టెంట్లు Collie కంటెంట్‌ను స్కాన్ చేసి, గోప్యంగా ఉండకపోవచ్చని భావించే విలక్షణతల కోసం దాన్ని ఉపయోగించవచ్చు.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">తీసివేయు</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -5291,7 +5291,7 @@
 
     <!-- AvatarColorGrid -->
     <!-- Accessibility label for one of the colors an avatar can be drawn in. %1$d is the color\'s position in the list, %2$d is how many colors there are. -->
-    <string name="AvatarColorGrid__color_d_of_d">Color %1$d of %2$d</string>
+    <string name="AvatarColorGrid__color_d_of_d">%2$d రంగులలో %1$d రంగు</string>
 
     <!-- Displayed in the toolbar when externally sharing text to multiple recipients -->
     <string name="ShareInterstitialActivity__share">పంచుకోండి</string>

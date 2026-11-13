@@ -144,6 +144,63 @@ class UnifiedPushRefreshJobTest {
   }
 
   @Test
+  fun `renamed relay is unlinked before its credentials are cleared`() {
+    coEvery { LinkDeviceRepository.loadDevices() } returns listOf(
+      Device(id = device.deviceId, name = "Renamed relay", createdMillis = null, lastSeenMillis = 0, registrationId = 1)
+    )
+    coEvery { LinkDeviceRepository.removeDevice(device.deviceId) } answers {
+      assertSame("the credential must remain tracked until the server acknowledges unlink", device, storedDevice)
+      assertSame(retainedUpdate, controlState.update)
+      true
+    }
+
+    assertNull(runCleanup())
+
+    assertNull(storedDevice)
+    assertNull(controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+    coVerify(exactly = 1) { LinkDeviceRepository.removeDevice(device.deviceId) }
+  }
+
+  @Test
+  fun `unreadable relay name cannot bypass unlink and failed removal remains retryable`() {
+    // LinkDeviceRepository exposes encoded fallback names when the name cannot be decrypted.
+    coEvery { LinkDeviceRepository.loadDevices() } returns listOf(
+      Device(id = device.deviceId, name = "AQID", createdMillis = null, lastSeenMillis = 0, registrationId = 1)
+    )
+    coEvery { LinkDeviceRepository.removeDevice(device.deviceId) } returns false
+
+    val failure = runCleanup()
+
+    assertTrue(failure is IOException)
+    assertTrue(UnifiedPushRefreshJob().onShouldRetry(failure as IOException))
+    assertSame(device, storedDevice)
+    assertSame(retainedUpdate, controlState.update)
+    verify(exactly = 0) { unifiedPush.device = any() }
+    coVerify(exactly = 1) { LinkDeviceRepository.removeDevice(device.deviceId) }
+
+    coEvery { LinkDeviceRepository.removeDevice(device.deviceId) } returns true
+
+    assertNull(runCleanup())
+    assertNull(storedDevice)
+    assertNull(controlState.update)
+    coVerify(exactly = 2) { LinkDeviceRepository.removeDevice(device.deviceId) }
+  }
+
+  @Test
+  fun `a different device with the relay name is not revoked`() {
+    coEvery { LinkDeviceRepository.loadDevices() } returns listOf(
+      Device(id = device.deviceId + 1, name = "MollySocket", createdMillis = null, lastSeenMillis = 0, registrationId = 1)
+    )
+
+    assertNull(runCleanup())
+
+    assertNull(storedDevice)
+    coVerify(exactly = 0) { LinkDeviceRepository.removeDevice(any()) }
+  }
+
+  @Test
   fun `refresh continuation cannot acquire the generation of a competing transition`() {
     val lease = UnifiedPushAccountTransition.acquireLease()!!
     val job = UnifiedPushRefreshJob()

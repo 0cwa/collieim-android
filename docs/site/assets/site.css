@@ -255,11 +255,11 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .links{gap:0}
   .community{padding-bottom:40px}
   html{scroll-padding-top:0}
-  main>section{scroll-margin-top:56px}
+  main>section{scroll-margin-top:var(--header-clearance,calc(3.5rem + 8px))}
   .site-header{position:sticky;top:0}
-  .top{position:relative;height:56px;padding-block:0;gap:12px}
-  .menu-toggle{display:inline-flex;margin-left:auto}
-  .mobile-get{display:inline-flex;align-items:center;justify-content:center;min-height:40px;font-weight:500;text-decoration:none;white-space:nowrap}
+  .top{position:relative;min-height:3.5rem;height:auto;padding-block:6px;gap:12px;flex-wrap:wrap;row-gap:4px}
+  .menu-toggle{display:inline-flex;margin-left:auto;min-height:44px}
+  .mobile-get{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding-block:6px;font-weight:500;text-decoration:none;white-space:nowrap}
   .top nav{display:none;position:absolute;top:100%;inset-inline:var(--gutter);flex-direction:column;align-items:stretch;gap:0;padding:8px;background:var(--hero);border:1px solid var(--rule);border-radius:12px;box-shadow:0 12px 24px -12px rgba(0,0,0,.6)}
   .top nav.is-open{display:flex}
   .top nav a{display:block;padding:12px;min-height:44px}
@@ -272,7 +272,7 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .hero h1{font-size:2rem}
   .hero .lede{margin-top:20px;font-size:1rem}
   .hero .actions{flex-direction:column;align-items:stretch;gap:12px;margin-top:24px}
-  .hero .actions .button{width:100%}
+  .hero .actions .button{width:100%;white-space:normal;text-align:center}
   .hero .actions .button.ghost{min-height:44px;padding-block:10px}
   .hero .facts{margin-top:20px}
   .top{gap:12px}
@@ -288,20 +288,30 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .card.featured,.grid>.card:last-child{grid-column:auto}
   .card,.card.featured{min-height:0}
   .features{padding-bottom:40px}
-  .grid{gap:12px;margin-top:28px}
-  .card,.card.featured{padding:16px}
-  .card{gap:10px}
-  .card .ico{margin-bottom:6px}
-  .card.featured{gap:16px}
-  .feature-head{align-items:flex-start;gap:12px}
   .intro h2{font-size:1.5rem;line-height:1.25}
-  .card:not(.featured){position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;margin-top:0;padding:0;border:0;border-radius:0;background:none}
-  .card.featured + .card{margin-top:8px}
-  .card:not(.featured)::before{content:"";position:absolute;inset-inline:0;top:-6px;border-top:1px solid var(--rule)}
-  .card:not(.featured) .ico{grid-column:1;grid-row:1/span 2;width:40px;height:40px;margin:0}
-  .card:not(.featured) h3{grid-column:2;grid-row:1;min-width:0;font-size:1.0625rem;line-height:1.35;font-weight:400}
-  .card:not(.featured) p{grid-column:2;grid-row:2;min-width:0}
-  .card:not(.featured) a[href="#upcoming"]{display:inline-block;min-height:24px;line-height:24px}
+  /* Phones: one lead panel, then a single aligned list. Icons hang in a
+     narrow gutter so every title, body, link and rule shares one text edge. */
+  .grid{gap:0;margin-top:24px}
+  .card.featured{display:block;padding:20px;margin-bottom:8px}
+  .card.featured .feature-head{display:block}
+  .card.featured .ico.big{width:32px;height:32px;margin:0 0 12px}
+  .card.featured h3{max-width:none;font-size:1.5rem;line-height:1.25}
+  .card.featured p{margin-top:10px;font-size:1rem;line-height:1.6}
+  .card:not(.featured){display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:14px;row-gap:4px;margin:0;padding:0;border:0;border-radius:0;background:none}
+  .card:not(.featured) .ico{grid-column:1;grid-row:1;width:24px;height:24px;margin:18px 0 0}
+  .card:not(.featured) h3,.card:not(.featured) p{grid-column:2;min-width:0}
+  .card:not(.featured) h3{grid-row:1;padding-top:16px;border-top:1px solid var(--rule);font-size:1.125rem;line-height:1.4;font-weight:400}
+  .card:not(.featured) p{grid-row:2;padding-bottom:16px;line-height:1.55}
+  .card.featured + .card h3{border-top:0}
+  .card:not(.featured) a[href="#upcoming"]{display:table;margin-top:6px;min-height:24px;line-height:24px}
+  .also{position:relative;margin-top:0;padding:16px 0 0 38px;font-size:1rem;line-height:1.55}
+  .also::before{content:"";position:absolute;top:0;left:38px;right:0;border-top:1px solid var(--rule)}
+  .also .ico{display:block;position:absolute;left:0;top:18px;width:24px;height:24px;color:var(--icon)}
+  .also strong{font-weight:600}
+  /* Community rows keep their icons but give the reading column more width. */
+  .links li,.community-donations{gap:14px;padding-inline:0}
+  .links .ico,.community-donations .ico{width:28px;height:28px;margin-top:2px}
+  .donation-actions{flex-direction:column;align-items:flex-start;gap:8px}
   .upcoming-intro{margin-top:16px}
   .upcoming-status{margin-top:12px;line-height:1.5}
   .roadmap-list{margin-top:14px}

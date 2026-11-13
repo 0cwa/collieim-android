@@ -223,6 +223,12 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
 (() => {
   const toggle = document.querySelector('.menu-toggle');
   const menu = document.querySelector('#section-menu');
+  const header = document.querySelector('.site-header');
+  const updateHeaderClearance = () => {
+    document.documentElement.style.setProperty('--header-clearance', `${header.getBoundingClientRect().height + 8}px`);
+  };
+  new ResizeObserver(updateHeaderClearance).observe(header);
+  updateHeaderClearance();
   const close = () => {
     toggle.setAttribute('aria-expanded', 'false');
     menu.classList.remove('is-open');

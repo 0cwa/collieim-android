@@ -284,14 +284,7 @@ class MediaThemeRuntimeTest {
       return activity.findViewById<SubsamplingScaleImageView>(UiComponentsR.id.subsampling_image_view)?.isImageLoaded == true
     }
     val video = findVideoPlayer(activity) ?: return false
-    if (video.duration <= 0) return false
-    if (pausedVideo !== video) {
-      // Keep the real one-second fixture on a decoded frame instead of its end/replay screen.
-      video.pause()
-      video.setPlaybackPosition(500L)
-      pausedVideo = video
-    }
-    return video.controlView?.player?.playbackState == Player.STATE_READY
+    return video.duration > 0 && video.controlView?.player?.playbackState == Player.STATE_READY
   }
 
   private fun mediaIntent(sample: Sample, activityClass: Class<out Activity>): Intent {
@@ -386,7 +379,11 @@ class MediaThemeRuntimeTest {
       if (composeContent) compose.waitForIdle()
       instrumentation.waitForIdleSync()
       var points = emptyList<PatternPoint>()
-      instrumentation.runOnMainSync { points = fixturePoints(activity, sample) }
+      var sampledVideo: VideoPlayer? = null
+      instrumentation.runOnMainSync {
+        if (sample == Sample.VIDEO) sampledVideo = findVideoPlayer(activity)
+        points = fixturePoints(activity, sample)
+      }
       val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
       val pixels = points.map { point ->
         if (point.x in 0 until bitmap.width && point.y in 0 until bitmap.height) bitmap.getPixel(point.x, point.y) else Color.TRANSPARENT
@@ -400,7 +397,25 @@ class MediaThemeRuntimeTest {
           channel == points[index].dominantChannel || channels[channel] <= 64
         }
       }
-      if (fixtureVisible) return bitmap
+      if (fixtureVisible) {
+        var pausedCurrentVideo = sample != Sample.VIDEO
+        if (sample == Sample.VIDEO) {
+          instrumentation.runOnMainSync {
+            val video = findVideoPlayer(activity)
+            if (video != null && video === sampledVideo) {
+              if (pausedVideo !== video) {
+                // Freeze only after this surface has displayed the fixture. Every frame is identical.
+                video.pause()
+                pausedVideo = video
+              } else {
+                pausedCurrentVideo = true
+              }
+            }
+          }
+        }
+        // Re-capture after pausing so the saved screenshot still proves the frame is visible.
+        if (pausedCurrentVideo) return bitmap
+      }
       if (SystemClock.uptimeMillis() >= deadline) {
         try {
           saveScreenshot(bitmap, "$name-frame-failure")

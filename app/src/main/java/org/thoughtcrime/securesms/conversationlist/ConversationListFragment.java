@@ -62,6 +62,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.signal.core.models.recipients.RecipientId;
 import org.signal.core.ui.BottomSheetUtil;
+import org.signal.core.ui.ViewModelFactory;
 import org.signal.core.ui.WindowSizeClassExtensionsKt;
 import org.signal.core.ui.compose.Snackbars;
 import org.signal.core.ui.util.ThemeUtil;
@@ -145,6 +146,8 @@ import org.thoughtcrime.securesms.main.MainSnackbarHostKey;
 import org.thoughtcrime.securesms.main.MainToolbarMode;
 import org.thoughtcrime.securesms.main.MainToolbarViewModel;
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder;
+import org.thoughtcrime.securesms.main.updates.CollieReleaseNotes;
+import org.thoughtcrime.securesms.main.updates.UpdateNoticeViewModel;
 import org.thoughtcrime.securesms.notifications.MarkReadReceiver;
 import org.thoughtcrime.securesms.profiles.manage.username.UsernameEditFragment;
 import org.thoughtcrime.securesms.ratelimit.RecaptchaProofBottomSheetFragment;
@@ -787,13 +790,18 @@ public class ConversationListFragment extends MainFragment implements Conversati
   }
 
   private void initializeBanners() {
+    UpdateNoticeViewModel updateNoticeViewModel = new ViewModelProvider(
+        requireActivity(),
+        new ViewModelFactory<>(extras -> new UpdateNoticeViewModel(SignalStore.updateNotices(), CollieReleaseNotes.ID))
+    ).get(UpdateNoticeViewModel.class);
+
     List<Banner<?>> bannerRepositories = List.of(
         new DeprecatedSdkBanner(),
         new DeprecatedBuildBanner(),
         new UnauthorizedBanner(requireContext()),
         new ServiceOutageBanner(requireContext()),
         new OutdatedBuildBanner(),
-        new DozeBanner(requireContext()),
+        new DozeBanner(requireContext(), updateNoticeViewModel.getExpanded()),
         new CdsTemporaryErrorBanner(getChildFragmentManager()),
         new CdsPermanentErrorBanner(getChildFragmentManager()),
         new UsernameOutOfSyncBanner((usernameSyncState) -> {

@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.signal.core.ui.compose.DayNightPreviews
@@ -27,7 +29,10 @@ import org.thoughtcrime.securesms.banner.ui.compose.Importance
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.util.PowerManagerCompat
 
-class DozeBanner(private val context: Context) : Banner<Unit>() {
+class DozeBanner @JvmOverloads constructor(
+  private val context: Context,
+  private val suppressed: StateFlow<Boolean>? = null
+) : Banner<Unit>() {
 
   override val enabled: Boolean
     get() = !SignalStore.account.fcmEnabled && !SignalStore.uiHints.hasPromptedOptimizeDoze() && !ServiceUtil.getPowerManager(context).isIgnoringBatteryOptimizations(context.packageName)
@@ -42,11 +47,16 @@ class DozeBanner(private val context: Context) : Banner<Unit>() {
 
   @Composable
   override fun DisplayBanner(model: Unit, contentPadding: PaddingValues) {
+    val hideForCurrentPresentation = suppressed?.collectAsStateWithLifecycle()?.value == true
     val batteryOptLauncher = rememberLauncherForActivityResult(
       contract = ActivityResultContracts.StartActivityForResult()
     ) { _ ->
       markAsPrompted()
     }
+
+    // Temporarily make room for reading without acknowledging the battery prompt. Keeping this
+    // local to Doze leaves the manager's other banners and their priority unchanged.
+    if (hideForCurrentPresentation) return
 
     Banner(
       contentPadding = contentPadding,

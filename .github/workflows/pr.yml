@@ -122,7 +122,8 @@ jobs:
           ./gradlew --no-daemon --continue \
             -PcollieHostJniDir=build/host-tests/resources \
             :app:testProdWebsiteDebugUnitTest testDebugUnitTest \
-            :core:util-jvm:test :lib:libsignal-service:test
+            :core:util-jvm:test :lib:libsignal-service:test \
+            :core:network:test :lib:network:test :fast-lint:test :lintchecks:test
       - name: Require all unit tasks and security regression suites
         if: ${{ !cancelled() }}
         run: python3 .github/scripts/check-unit-test-results.py --json-output build/ci/unit-test-results.json

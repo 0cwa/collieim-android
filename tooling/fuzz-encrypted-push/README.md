@@ -7,20 +7,20 @@ stubs.
 Run deterministic fixtures and saved crash inputs with:
 
 ```sh
-./gradlew :fuzz-encrypted-push:test --no-configuration-cache
+./gradlew :fuzz-encrypted-push:test --no-daemon --no-configuration-cache --max-workers=1 -Dorg.gradle.jvmargs=-Xmx1g
 ```
 
 Run the bounded Jazzer discovery target with:
 
 ```sh
-./gradlew :fuzz-encrypted-push:jazzerFuzz --no-configuration-cache
+./gradlew :fuzz-encrypted-push:jazzerFuzz --no-daemon --no-configuration-cache --max-workers=1 -Dorg.gradle.jvmargs=-Xmx1g
 ```
 
 The incoming event parser and receiver `decide` function receive at most 4096 bytes, use a fixed clock and permit
 protocol versions 1 through 3. The target checks accepted valid events, replay rejection, and unchanged state for
 invalid events. It has a 60 second discovery limit. Six pinned v3 event fixtures are explicit initial seeds. Both
-workflow jobs run in a container capped at 4 GiB memory with swap disabled and two CPUs; the Gradle fuzz worker
-heap is capped at 1 GiB. Track
+workflow jobs run in a container capped at 4 GiB memory with swap disabled and two CPUs; Gradle uses one worker and
+a 1 GiB daemon heap, and each JVM test worker heap is capped at 1 GiB. Track
 minimized regression crashes in `src/test/resources/im/molly/unifiedpush/receiver/EncryptedPushFuzzTestInputs/`; when
 that directory is absent, Jazzer writes new crashes in the module working directory, which CI preserves as an artifact. The separate
 `.cifuzz-corpus/` directory is disposable rolling discovery data, capped in CI to 512 files and 16 MiB.

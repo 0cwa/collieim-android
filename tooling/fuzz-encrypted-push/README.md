@@ -29,6 +29,12 @@ contract pin, JDK, engine version, command, and bounds in the uploaded run evide
 not gate release publication.
 
 `ControlFrame.build` constructs an outgoing authenticated control frame. Its deterministic fixed nonce test verifies
-production frame construction and identity checks; the Android production sources expose no incoming control-frame
-decryption seam, so this module makes no inbound decryption coverage claim. State transition scenarios stay in the
-existing Android JUnit4 test suite and use `EndpointUpdates` with its in-memory store.
+repeatable frame construction, header identity, and size for that nonce. It does not independently decrypt the
+output, verify ciphertext or authentication-tag correctness, or test tamper rejection. The Android production sources
+expose no incoming control-frame decryption seam, so this module makes no inbound decryption coverage claim.
+
+The arbitrary-byte target uses the production `EncryptedPush.parse` result to choose its decision context
+(`activeInstance` and `acceptedEpochs`) and leaves `identityMatches` at its production default of `true`. This checks
+parser/decision consistency, malformed-input handling, and replay behavior; it is not an independent schema oracle or
+enrollment-identity policy proof. State transition scenarios stay in the existing Android JUnit4 test suite and use
+`EndpointUpdates` with its in-memory store.

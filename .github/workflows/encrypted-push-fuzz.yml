@@ -37,6 +37,8 @@ jobs:
           apt-get update
           apt-get install --yes --no-install-recommends curl git tar unzip zstd
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
@@ -46,7 +48,6 @@ jobs:
         run: ./gradlew :fuzz-encrypted-push:test --no-daemon --max-workers=2 -Dorg.gradle.jvmargs=-Xmx2g
 
   discovery:
-    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     container:
       image: ubuntu:24.04
@@ -56,8 +57,10 @@ jobs:
       - name: Install tools required by pinned actions
         run: |
           apt-get update
-          apt-get install --yes --no-install-recommends curl git tar unzip zstd
+          apt-get install --yes --no-install-recommends curl git python3 tar unzip zstd
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
@@ -100,4 +103,5 @@ jobs:
             tooling/fuzz-encrypted-push/build/reports/tests/**
             tooling/fuzz-encrypted-push/build/fuzz-evidence/**
           if-no-files-found: warn
+          include-hidden-files: true
           retention-days: 30

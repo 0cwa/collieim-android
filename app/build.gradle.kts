@@ -18,8 +18,8 @@ plugins {
 val staticIps = Properties().apply { file("static-ips.properties").reader().use { load(it) } }
 staticIps.stringPropertyNames().forEach { rootProject.extra[it] = staticIps.getProperty(it) }
 
-val canonicalVersionCode = 1777
-val canonicalVersionName = "8.35.1"
+val canonicalVersionCode = 1778
+val canonicalVersionName = "8.35.2"
 val currentHotfixVersion = 0
 val maxHotfixVersions = 100
 val mollyRevision = 1
@@ -645,7 +645,7 @@ fun getLastCommitTimestamp(): String = providers.gradleProperty("collieBuildTime
 
 fun getGitHash(): String = providers.gradleProperty("collieBuildRevision").get()
 
-fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").getOrElse("8.35.1-1-port-unvalidated")
+fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").getOrElse("${canonicalVersionName}-${mollyRevision}-port-unvalidated")
 
 // Publication migration gate: remove only with reviewed public native inputs and
 // direct-source acceptance. The legacy operator route is retained in engineering.

@@ -1,3 +1,5 @@
+**Superseded mural integration:** use [the faithful canonical asset and current native proof](../canonical/README.md). The resting scenes, block reading surfaces and32-region metric below are historical. Unchanged landscape evidence remains useful.
+
 # Final flowing landscape and resting Collie composition
 
 Production source: signed **ccfc2ec3976b077b7d5c47bee29a2a179b6a3487**. The containing evidence commit freezes these images with that source. [Foreground ON/OFF comparison](resting-comparison.html) · [whole page and isolated canvases](standalone-comparison.html) · [registered full-drawing/reference comparison](reference/registered-comparison.html).

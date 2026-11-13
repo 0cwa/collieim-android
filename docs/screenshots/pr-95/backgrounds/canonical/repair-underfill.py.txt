@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Repair original semantic fills inside an accepted-ink enclosure; never edit ink."""
+from pathlib import Path
+import xml.etree.ElementTree as E
+import subprocess,collections,hashlib,json,copy,re
+import struct,zlib,os
+def png_write(path, width, height, channels, pixels):
+    def chunk(kind, data):
+        return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data) & 0xffffffff)
+    rows = bytearray()
+    stride = width * channels
+    for y in range(height):
+        rows.append(0)
+        rows.extend(pixels[y * stride:(y + 1) * stride])
+    color_type = {1: 0, 3: 2, 4: 6}[channels]
+    blob = b'\x89PNG\r\n\x1a\n'
+    blob += chunk(b'IHDR', struct.pack('>2I5B', width, height, 8, color_type, 0, 0, 0))
+    blob += chunk(b'IDAT', zlib.compress(bytes(rows), 6))
+    blob += chunk(b'IEND', b'')
+    path.write_bytes(blob)
+
+
+R=Path(__file__).resolve().parent
+SOURCE=R/'underfill-baseline.svg.txt';DEST=R/'collie-mural-enclosed.svg'
+POT=Path(os.environ.get('POTRACE','potrace'))
+NS='http://www.w3.org/2000/svg';E.register_namespace('',NS)
+W,H=770,350;FILL=['head-fill','chest-fill','orange-space-fill'];INK=['mural-olive-ground-and-collie','mural-orange-lobe','mural-olive-cheek-mark','mural-eye-dot']
+base=E.fromstring(SOURCE.read_bytes())
+def render(root):
+ root=copy.deepcopy(root);root.set('viewBox','0 1000 770 350')
+ png=subprocess.check_output(['rsvg-convert','-w',str(W),'-h',str(H)],input=E.tostring(root))
+ return subprocess.check_output(['ffmpeg','-v','error','-i','pipe:0','-f','rawvideo','-pix_fmt','rgba','-'],input=png)
+def layer(ids):
+ root=copy.deepcopy(base)
+ for child in list(root):
+  if child.tag not in [f'{{{NS}}}defs',f'{{{NS}}}title',f'{{{NS}}}desc'] and child.get('id') not in ids:root.remove(child)
+ return root
+raw=render(base);iraw=render(layer(INK));fillraw=[render(layer([name])) for name in FILL]
+alpha=bytearray(raw[4*i+3] for i in range(W*H));ink=bytearray(iraw[4*i+3]>0 for i in range(W*H))
+def neighbors(k,diagonal=False):
+ x,y=k%W,k//W
+ for yy in range(max(0,y-1),min(H,y+2)):
+  for xx in range(max(0,x-1),min(W,x+2)):
+   if xx==x and yy==y:continue
+   if diagonal or xx==x or yy==y:yield yy*W+xx
+
+def flood(mask,start,seen=None,diagonal=False):
+ if seen is None:seen=bytearray(W*H)
+ q=[start];seen[start]=1;pts=[];edge=False
+ while q:
+  k=q.pop();pts.append(k);x,y=k%W,k//W;edge|=x in (0,W-1) or y in (0,H-1)
+  for j in neighbors(k,diagonal):
+   if mask[j] and not seen[j]:seen[j]=1;q.append(j)
+ return pts,edge
+zero=bytearray(a==0 for a in alpha);seen=bytearray(W*H);enclosed=[]
+for i in range(W*H):
+ if zero[i] and not seen[i]:
+  pts,edge=flood(zero,i,seen,True)
+  if not edge:enclosed.append(pts)
+enclosed.sort(key=len,reverse=True);negative=bytearray(W*H)
+assert len(enclosed[0])==13579,len(enclosed[0])
+for i in enclosed[0]:negative[i]=1
+free=bytearray(not x for x in ink);basin,_=flood(free,(1090-1000)*W+625)
+envelope=bytearray(ink)
+for i in basin:envelope[i]=1
+masks=[bytearray(d[4*i+3]>0 for i in range(W*H)) for d in fillraw]
+# Close small FINAL-composite holes, not an unrelated source-colour threshold.
+assign=[]
+for pts in enclosed[1:]:
+ counts=[sum(m[j] for i in pts for j in neighbors(i,True)) for m in masks]
+ chosen=max(range(3),key=lambda n:counts[n]);assign.append({'area':len(pts),'layer':FILL[chosen]})
+ for i in pts:masks[chosen][i]=1
+# Solid overlap beneath ink; preserve the exact original intentional opening.
+for n,m in enumerate(masks):
+ expanded=bytearray(m)
+ for i,on in enumerate(m):
+  if not on:continue
+  x,y=i%W,i//W
+  for yy in range(max(0,y-2),min(H,y+3)):
+   for xx in range(max(0,x-2),min(W,x+3)):
+    j=yy*W+xx
+    if envelope[j] and not negative[j]:expanded[j]=1
+ masks[n]=bytearray(v and envelope[i] and not negative[i] for i,v in enumerate(expanded))
+# Trace only repaired fills. Original accepted ink/eye XML remains untouched.
+new=copy.deepcopy(base)
+for name,mask in zip(FILL,masks):
+ pbm=R/f'enclosed-{name}.pbm';trace=R/f'enclosed-{name}.svg'
+ pbm.write_text('P1\n770 350\n'+'\n'.join(' '.join(map(str,mask[y*W:(y+1)*W])) for y in range(H)))
+ subprocess.run([str(POT),'--svg','--opttolerance','0.15','--alphamax','1','--turdsize','0','-o',str(trace),str(pbm)],check=True)
+ traced=E.parse(trace).getroot();g=next(x for x in new if x.get('id')==name)
+ for child in list(g):g.remove(child)
+ for path in traced.iter(f'{{{NS}}}path'):g.append(copy.deepcopy(path))
+ g.set('data-source','original semantic fill; repaired inside accepted-ink basin; 2px underlap; intentional opening preserved')
+ pbm.unlink();trace.unlink()
+for ident in INK:
+ a=next(x for x in base if x.get('id')==ident);b=next(x for x in new if x.get('id')==ident)
+ assert E.tostring(a)==E.tostring(b),ident
+DEST.write_bytes(E.tostring(new,encoding='utf-8',xml_declaration=True))
+out=render(new)
+def comp(bg):
+ b=bytearray(W*H*3)
+ for i in range(W*H):
+  x,y=i%W,i//W;c=bg(x,y);a=out[4*i+3]
+  for k in range(3):b[3*i+k]=(out[4*i+k]*a+c[k]*(255-a)+127)//255
+ return b
+png_write(R/'enclosed-bark.png',W,H,3,comp(lambda x,y:(36,19,13)))
+png_write(R/'enclosed-paper.png',W,H,3,comp(lambda x,y:(249,251,244)))
+png_write(R/'enclosed-checker.png',W,H,3,comp(lambda x,y:(70,70,70) if ((x//12+y//12)%2) else (170,170,170)))
+png_write(R/'enclosed-registered.png',W,H,4,out)
+report={'baselineSHA':hashlib.sha256(SOURCE.read_bytes()).hexdigest(),'candidateSHA':hashlib.sha256(DEST.read_bytes()).hexdigest(),'inkAndEyeUnchanged':True,'basinPixels':len(basin),'preservedNegativePixels':sum(negative),'originalSmallHoles':assign,'negativeAlphaChanged':sum(out[4*i+3]!=0 for i,v in enumerate(negative) if v)}
+(R/'enclosed-topology.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

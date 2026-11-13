@@ -1,0 +1,102 @@
+{
+  "baselineSHA": "932b01d69e343dc563341dd75474f9209af5087aef05f1a3ae324166be28e1ff",
+  "candidateSHA": "f5f041c9feb0d6275fd3d0ade6f4a383da52e256850ec8713bf0bdcf00e6c159",
+  "inkAndEyeUnchanged": true,
+  "basinPixels": 44888,
+  "preservedNegativePixels": 13579,
+  "originalSmallHoles": [
+    {
+      "area": 128,
+      "layer": "head-fill"
+    },
+    {
+      "area": 81,
+      "layer": "head-fill"
+    },
+    {
+      "area": 22,
+      "layer": "head-fill"
+    },
+    {
+      "area": 8,
+      "layer": "head-fill"
+    },
+    {
+      "area": 8,
+      "layer": "chest-fill"
+    },
+    {
+      "area": 6,
+      "layer": "head-fill"
+    },
+    {
+      "area": 5,
+      "layer": "head-fill"
+    },
+    {
+      "area": 5,
+      "layer": "orange-space-fill"
+    },
+    {
+      "area": 4,
+      "layer": "head-fill"
+    },
+    {
+      "area": 4,
+      "layer": "head-fill"
+    },
+    {
+      "area": 4,
+      "layer": "chest-fill"
+    },
+    {
+      "area": 4,
+      "layer": "chest-fill"
+    },
+    {
+      "area": 3,
+      "layer": "head-fill"
+    },
+    {
+      "area": 2,
+      "layer": "head-fill"
+    },
+    {
+      "area": 2,
+      "layer": "head-fill"
+    },
+    {
+      "area": 2,
+      "layer": "head-fill"
+    },
+    {
+      "area": 2,
+      "layer": "chest-fill"
+    },
+    {
+      "area": 2,
+      "layer": "chest-fill"
+    },
+    {
+      "area": 1,
+      "layer": "head-fill"
+    },
+    {
+      "area": 1,
+      "layer": "head-fill"
+    },
+    {
+      "area": 1,
+      "layer": "chest-fill"
+    },
+    {
+      "area": 1,
+      "layer": "chest-fill"
+    },
+    {
+      "area": 1,
+      "layer": "orange-space-fill"
+    }
+  ],
+  "negativeAlphaChanged": 107
+}

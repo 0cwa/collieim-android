@@ -40,6 +40,8 @@ Collie builds on the work of [Molly](https://github.com/mollyim-android), suppor
 
 Use the Obtainium link above to stay updated.  Our apk `collie.apk` is on the [Releases page](https://github.com/0cwa/collieim-android/releases)  All APK files in the latest release contain the same Collie app; the older names are available for existing Obtainium filters. All are FOSS and all use the package `im.collie.app` and can be installed alongside Signal or Molly.  Our custom F-Droid repository, [repo.collie.im](https://repo.collie.im/), distributes the same signed APK; add it from there by link, F-Droid link or QR code.
 
+Direct APK installations can also check for recommended releases in **Settings → App updates**. Collie checks its signed repository through your configured app connection and notifies you when a newer compatible release is available. Opening the official release page uses your browser and its connection settings; you choose when to download and install. See [how update checks are verified](docs/APP-UPDATES.md).
+
 _[Throw the dog a bone? 🐶🦴](https://liberapay.com/Collie)_ - It helps me speed up development - I want to work on a desktop client too.
 
 ## Features

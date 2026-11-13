@@ -19,8 +19,8 @@ sealed interface AppUpdatesSettingsEvent {
   /** The user flipped the periodic update checks toggle. */
   data class AutoUpdateToggled(val enabled: Boolean) : AppUpdatesSettingsEvent
 
-  /** The user changed whether beta releases are included. */
-  data class IncludeBetaToggled(val enabled: Boolean) : AppUpdatesSettingsEvent
+  /** The user chose to open the official release page in their browser. */
+  data object ViewReleaseClicked : AppUpdatesSettingsEvent
 
   /** The user tapped the row to check for updates. */
   data object CheckForUpdatesClicked : AppUpdatesSettingsEvent

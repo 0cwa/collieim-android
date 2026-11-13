@@ -344,7 +344,7 @@ public final class Megaphones {
     return new Megaphone.Builder(Event.ENABLE_APP_UPDATES, Megaphone.Style.BASIC)
         .setTitle(R.string.EnableAppUpdatesMegaphone_check_for_updates_automatically)
         .setImage(R.drawable.ic_avatar_celebration)
-        .setBody(R.string.EnableAppUpdatesMegaphone_molly_can_periodically_check_for_new_releases_and_ask_you_to_install_them)
+        .setBody(R.string.CollieUpdates__checks_megaphone)
         .setActionButton(R.string.EnableAppUpdatesMegaphone_check_for_updates, (megaphone, listener) -> {
           TextSecurePreferences.setUpdateApkEnabled(context, true);
           ApkUpdateRefreshListener.scheduleIfAllowed(context);
@@ -458,7 +458,7 @@ public final class Megaphones {
   }
 
   private static boolean shouldShowEnableAppUpdatesMegaphone(@NonNull Context context) {
-    return BuildConfig.MANAGE_MOLLY_UPDATES &&
+    return BuildConfig.MANAGE_COLLIE_UPDATES &&
            !TextSecurePreferences.isUpdateApkEnabled(context) &&
            VersionTracker.getDaysSinceFirstInstalled(context) > 0;
   }

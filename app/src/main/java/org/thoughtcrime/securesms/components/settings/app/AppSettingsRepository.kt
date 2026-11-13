@@ -60,7 +60,7 @@ object AppSettingsRepository {
 
   fun showPayments(): Boolean = false
 
-  fun showAppUpdates(): Boolean = BuildConfig.MANAGE_MOLLY_UPDATES
+  fun showAppUpdates(): Boolean = BuildConfig.MANAGE_COLLIE_UPDATES
 
   /** A quick guess at whether the user can manage donations in the app, before [canManageDonations] has an answer. */
   fun likelyCanManageDonations(): Boolean = SignalStore.inAppPayments.isLikelyASustainer() || InAppDonations.hasAtLeastOnePaymentMethodAvailable()

@@ -19,15 +19,18 @@ import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateNotifications
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener
+import org.thoughtcrime.securesms.apkupdate.CollieUpdateIndex
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ApkUpdateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import kotlin.time.Duration.Companion.milliseconds
 
 class AppUpdatesSettingsViewModel(
   private val parentEventEmitter: (AppSettingsNavigationEvent) -> Unit,
-  private val isAutoUpdateSupported: Boolean = BuildConfig.MANAGE_MOLLY_UPDATES
+  private val isAutoUpdateSupported: Boolean = BuildConfig.MANAGE_COLLIE_UPDATES,
+  private val openRelease: (String) -> Unit = { CommunicationActions.openBrowserLink(AppDependencies.application, it) }
 ) : EventDrivenViewModel<AppUpdatesSettingsEvent>(TAG) {
 
   companion object {
@@ -48,16 +51,15 @@ class AppUpdatesSettingsViewModel(
           TextSecurePreferences.setUpdateApkEnabled(application, event.enabled)
           if (event.enabled) {
             checkForUpdates()
+          } else {
+            ApkUpdateNotifications.dismissUpdatePrompt(application)
           }
           refresh()
         }
       }
-      is AppUpdatesSettingsEvent.IncludeBetaToggled -> {
+      AppUpdatesSettingsEvent.ViewReleaseClicked -> {
         if (isAutoUpdateSupported) {
-          TextSecurePreferences.setUpdateApkIncludeBetaEnabled(application, event.enabled)
-          ApkUpdateNotifications.dismissInstallPrompt(application)
-          checkForUpdates()
-          refresh()
+          readState().availableVersionName?.let { openRelease(CollieUpdateIndex.releasePage(it)) }
         }
       }
       AppUpdatesSettingsEvent.CheckForUpdatesClicked -> {
@@ -82,7 +84,10 @@ class AppUpdatesSettingsViewModel(
       lastCheckedTime = SignalStore.apkUpdate.lastSuccessfulCheck.milliseconds,
       autoUpdateEnabled = TextSecurePreferences.isUpdateApkEnabled(application),
       isAutoUpdateSupported = isAutoUpdateSupported,
-      includeBetaEnabled = TextSecurePreferences.isUpdateApkIncludeBetaEnabled(application),
+      lastCheckFailed = SignalStore.apkUpdate.lastCheckFailed,
+      availableVersionName = SignalStore.apkUpdate.availableVersionName?.takeIf {
+        SignalStore.apkUpdate.availableVersionCode > ApkInfo.versionCode && runCatching { CollieUpdateIndex.releasePage(it) }.isSuccess
+      },
       versionName = ApkInfo.versionName
     )
   }

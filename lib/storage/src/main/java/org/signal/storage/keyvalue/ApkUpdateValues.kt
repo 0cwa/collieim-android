@@ -16,6 +16,11 @@ class ApkUpdateValues(store: KeyValueStore, context: Context) : SignalStoreValue
     private const val DIGEST = "apk_update.digest"
     private const val LAST_SUCCESSFUL_CHECK = "apk_update.last_successful_check"
     private const val REFRESH_TIME = "apk_update.refresh_time"
+    private const val INDEX_TIMESTAMP = "apk_update.index_timestamp"
+    private const val AVAILABLE_VERSION_CODE = "apk_update.available_version_code"
+    private const val AVAILABLE_VERSION_NAME = "apk_update.available_version_name"
+    private const val LAST_NOTIFIED_VERSION = "apk_update.last_notified_version"
+    private const val LAST_CHECK_FAILED = "apk_update.last_check_failed"
   }
 
   init {
@@ -41,6 +46,20 @@ class ApkUpdateValues(store: KeyValueStore, context: Context) : SignalStoreValue
   val downloadId: Long by longValue(DOWNLOAD_ID, -2)
   val digest: ByteArray? get() = store.getBlob(DIGEST, null)
   var lastSuccessfulCheck: Long by longValue(LAST_SUCCESSFUL_CHECK, 0)
+
+  val lastIndexTimestamp: Long by longValue(INDEX_TIMESTAMP, 0)
+  val availableVersionCode: Long by longValue(AVAILABLE_VERSION_CODE, 0)
+  val availableVersionName: String? by stringValue(AVAILABLE_VERSION_NAME, null)
+  var lastNotifiedVersionCode: Long by longValue(LAST_NOTIFIED_VERSION, 0)
+  var lastCheckFailed: Boolean by booleanValue(LAST_CHECK_FAILED, false)
+
+  fun setAvailableUpdate(timestamp: Long, versionCode: Long, versionName: String?) {
+    store.beginWrite()
+      .putLong(INDEX_TIMESTAMP, timestamp)
+      .putLong(AVAILABLE_VERSION_CODE, versionCode)
+      .putString(AVAILABLE_VERSION_NAME, versionName)
+      .commit()
+  }
 
   fun setDownloadAttributes(id: Long, digest: ByteArray?) {
     Log.d(TAG, "Saving download attributes. id: $id")

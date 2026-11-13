@@ -11,12 +11,14 @@ import androidx.lifecycle.Lifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.lifecycle.ViewModelProvider
 import im.molly.unifiedpush.health.PushHealth
+import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.model.RegistrationStatus
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
 import org.signal.core.util.eventbus.ThreadMode
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.components.settings.DSLConfiguration
 import org.thoughtcrime.securesms.components.settings.DSLSettingsFragment
 import org.thoughtcrime.securesms.components.settings.DSLSettingsIcon
@@ -35,6 +37,10 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
         viewModel.setMollySocket(mollySocket)
       }
     }
+
+  private val pickDistributor = registerForActivityResult(UnifiedPushDefaultDistributorLinkActivity.Contract(useDefault = false)) {
+    if (!KeyCachingService.isLocked()) viewModel.refresh()
+  }
 
   override fun bindAdapter(adapter: MappingAdapter) {
     val factory = UnifiedPushSettingsViewModel.Factory(requireActivity().application)
@@ -202,13 +208,10 @@ class UnifiedPushSettingsFragment : DSLSettingsFragment(R.string.NotificationDel
           summary = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__none_available)
         )
       } else {
-        radioListPref(
+        clickPref(
           title = DSLSettingsText.from(R.string.UnifiedPushSettingsFragment__distributor_app),
-          listItems = state.distributors.map { it.name }.toTypedArray(),
-          selected = state.selected,
-          onSelected = {
-            viewModel.setUnifiedPushDistributor(state.distributors[it].applicationId)
-          },
+          summary = DSLSettingsText.from(state.distributors.getOrNull(state.selected)?.name ?: ""),
+          onClick = { pickDistributor.launch() },
         )
       }
 

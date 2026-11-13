@@ -3,6 +3,7 @@ package im.molly.unifiedpush.receiver
 import android.content.Context
 import android.os.Looper
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
+import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.CorruptControlStateException
@@ -38,6 +39,55 @@ class UnifiedPushReceiver : MessagingReceiver() {
   companion object {
     private val TAG = Log.tag(UnifiedPushReceiver::class.java)
 
+    // IDs active in this process have not completed their SDK save. A persisted ID absent here
+    // is recoverable after a crash: register whichever provider the SDK actually retained.
+    private val activeSelections = mutableSetOf<String>()
+
+    /** Records the latest route event under the lifecycle monitor. Null means persistence failed. */
+    internal fun recordEndpointLocked(context: Context, endpoint: LockedPushState.Endpoint, invalidateOnFailure: Boolean = false, selectionId: String? = null): Boolean? {
+      check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+      val saved = if (selectionId == null) LockedPushState.trySavePending(context, endpoint)
+      else LockedPushState.trySaveSelection(context, endpoint, selectionId)
+      if (!saved && !invalidateOnFailure) return null
+      if (saved && selectionId != null) activeSelections.add(selectionId)
+      if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
+      if (!saved) return null
+      return !KeyCachingService.isLocked() && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
+    }
+
+    /** Finish a selection without allowing an older result to clear a newer intent. */
+    internal fun finishSelection(context: Context, id: String): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+      try {
+        LockedPushState.markRegistrationReady(context, id)
+      } finally {
+        activeSelections.remove(id)
+      }
+    }
+
+    private fun enqueuePendingRegistration(context: Context) {
+      val intent = synchronized(UnifiedPushLifecycle.monitor) {
+        if (KeyCachingService.isLocked() || !UnifiedPushLifecycle.isReadyLocked() || LockedPushState.hasPending(context)) return
+        val pending = LockedPushState.pendingRegistration(context) ?: return
+        if (!pending.ready && pending.id in activeSelections) return
+        pending
+      }
+      // Do not invoke the connector's destructive getter here. If SDK save failed or the process
+      // died midway, the current snapshot is the provider a retry must register.
+      if (UnifiedPushDistributor.savedDistributorSnapshot(context) == null || KeyCachingService.isLocked()) return
+      val lease = UnifiedPushAccountTransition.acquireLease() ?: return
+      try {
+        val current = synchronized(UnifiedPushLifecycle.monitor) {
+          !KeyCachingService.isLocked() && UnifiedPushLifecycle.isCurrentGeneration(lease.generation) &&
+            LockedPushState.pendingRegistration(context)?.id == intent.id
+        }
+        if (!current) return
+        AppDependencies.jobManager.add(UnifiedPushRefreshJob())
+        synchronized(UnifiedPushLifecycle.monitor) { LockedPushState.clearRegistrationIfCurrent(context, intent.id) }
+      } finally {
+        lease.close()
+      }
+    }
+
     /** Applies an endpoint that arrived while the app was locked. Called after unlock. */
     @JvmStatic
     fun applyPendingEndpoint(context: Context) {
@@ -48,7 +98,10 @@ class UnifiedPushReceiver : MessagingReceiver() {
       commitPendingEndpoint(context)?.let { publishPendingEndpointEffects(context, it) }
       // Now that the app can read its state: make sure the server holds the current endpoint, and send an update
       // that was built but never confirmed again.
-      if (UnifiedPushLifecycle.isReady()) EndpointReconciler.reconcile(resume = true)
+      if (UnifiedPushLifecycle.isReady()) {
+        EndpointReconciler.reconcile(resume = true)
+        enqueuePendingRegistration(context)
+      }
     }
 
     /** Commits the pending connector tuple and its generation under the lifecycle transition. */
@@ -112,11 +165,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
     val received = LockedPushState.Endpoint(endpoint.url, endpoint.pubKeySet?.pubKey, endpoint.pubKeySet?.auth, instance)
     val schedule = synchronized(UnifiedPushLifecycle.monitor) {
       // Store first; the worker consumes it only after closing admission and draining old sends.
-      LockedPushState.savePending(context, received)
-      if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
-      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
+      recordEndpointLocked(context, received, invalidateOnFailure = true)
     }
-    if (schedule) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
+    if (schedule == true) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
   }
 
   internal data class EndpointEffects(val failed: Boolean, val changed: Boolean, val airGapped: Boolean)
@@ -174,12 +225,10 @@ class UnifiedPushReceiver : MessagingReceiver() {
     // isPushAvailable becomes false => The websocket starts
     Log.i(TAG, "onUnregistered($instance)")
     val schedule = synchronized(UnifiedPushLifecycle.monitor) {
-      LockedPushState.savePending(context, LockedPushState.Endpoint(null, null, null, instance))
-      if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
-      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
+      recordEndpointLocked(context, LockedPushState.Endpoint(null, null, null, instance), invalidateOnFailure = true)
     }
     UnifiedPush.forceRemoveDistributor(context)
-    if (schedule) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
+    if (schedule == true) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
   }
 
   override fun onMessage(context: Context, message: PushMessage, instance: String) {

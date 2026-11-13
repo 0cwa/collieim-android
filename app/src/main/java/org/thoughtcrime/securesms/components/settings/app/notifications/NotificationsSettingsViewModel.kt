@@ -6,7 +6,6 @@ import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.components.settings.app.notifications.updateMollySocket
 import im.molly.unifiedpush.model.MollySocket
 import kotlinx.coroutines.Dispatchers
@@ -150,10 +149,6 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
     ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices()
     AppDependencies.resetNetwork(true)
     refresh()
-  }
-
-  fun selectFirstDistributor() {
-    UnifiedPushDistributor.selectFirstDistributor()
   }
 
   fun initializeMollySocket(mollySocket: MollySocket) {

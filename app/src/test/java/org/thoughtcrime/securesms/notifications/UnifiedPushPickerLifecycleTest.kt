@@ -49,9 +49,9 @@ class UnifiedPushPickerLifecycleTest {
     subscription.dispose()
     val recreated = Robolectric.buildActivity(Host::class.java).create(state).start().resume()
     val host = recreated.get()
-    if (resultFirst) host.onActivityResult(started.requestCode, Activity.RESULT_CANCELED, null)
+    if (resultFirst) shadowOf(host).receiveResult(started.intent, Activity.RESULT_CANCELED, null)
     val replay = checks.subscribe { host.replayPrompt() }
-    if (!resultFirst) host.onActivityResult(started.requestCode, Activity.RESULT_CANCELED, null)
+    if (!resultFirst) shadowOf(host).receiveResult(started.intent, Activity.RESULT_CANCELED, null)
     assertNull(shadowOf(host).nextStartedActivityForResult)
     replay.dispose()
     recreated.pause().stop().destroy()

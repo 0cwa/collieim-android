@@ -17,7 +17,6 @@ import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocket
-import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
 import org.signal.core.util.concurrent.SignalExecutors
 import kotlinx.coroutines.launch
@@ -117,15 +116,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     pushTestStartedAt = System.currentTimeMillis()
     UnifiedPushHealthJob.enqueue(manual = true)
     refresh()
-  }
-
-  fun setUnifiedPushDistributor(distributor: String) {
-    synchronized(UnifiedPushLifecycle.monitor) {
-      SignalStore.unifiedpush.endpoint = null
-      UnifiedPushDistributor.saveDistributor(application, distributor)
-    }
-    refresh()
-    updateRegistration()
   }
 
   fun retryRegistration() {

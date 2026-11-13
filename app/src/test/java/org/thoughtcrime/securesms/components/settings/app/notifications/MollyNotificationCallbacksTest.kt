@@ -159,12 +159,11 @@ class MollyNotificationCallbacksTest {
     returnDistributorResult(true)
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
-    verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
   @Test
-  fun `missing distributor selects fallback before opening settings`() {
+  fun `missing distributor opens settings without selecting an unrelated fallback`() {
     allowSelection()
     allowCompletion()
     confirmScannedRelay()
@@ -172,19 +171,18 @@ class MollyNotificationCallbacksTest {
 
     io.mockk.coVerifyOrder {
       viewModel.completeMollySocketSetup(refEq(authorization), any())
-      viewModel.selectFirstDistributor()
       router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings)
     }
   }
 
   @Test
-  fun `cancelled distributor link retains the guarded fallback behavior`() {
+  fun `cancelled distributor link opens settings without selecting an unrelated fallback`() {
     allowSelection()
     allowCompletion()
     confirmScannedRelay()
     returnDistributorResult(null)
 
-    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 0) { results.distributorLauncher.launch(Unit, null) }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
@@ -195,7 +193,6 @@ class MollyNotificationCallbacksTest {
     returnDistributorResult(false)
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
-    verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 0) { router.navigateTo(any()) }
   }
 
@@ -204,7 +201,6 @@ class MollyNotificationCallbacksTest {
     returnDistributorResult(false)
 
     coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
-    verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 0) { router.navigateTo(any()) }
   }
 
@@ -217,14 +213,12 @@ class MollyNotificationCallbacksTest {
     returnDistributorResult(false)
 
     coVerify(exactly = 0) { viewModel.completeMollySocketSetup(any(), any()) }
-    verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 0) { router.navigateTo(any()) }
 
     controller.resume()
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
-    verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
@@ -243,7 +237,6 @@ class MollyNotificationCallbacksTest {
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
-    verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 0) { router.navigateTo(any()) }
   }
 
@@ -256,7 +249,6 @@ class MollyNotificationCallbacksTest {
     returnDistributorResult(false)
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(any(), any()) }
-    verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
@@ -276,7 +268,6 @@ class MollyNotificationCallbacksTest {
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
-    verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
@@ -295,7 +286,6 @@ class MollyNotificationCallbacksTest {
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
-    verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
@@ -313,7 +303,6 @@ class MollyNotificationCallbacksTest {
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 2) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
-    verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
@@ -343,7 +332,6 @@ class MollyNotificationCallbacksTest {
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 2) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
-    verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
@@ -366,7 +354,6 @@ class MollyNotificationCallbacksTest {
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
-    verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 

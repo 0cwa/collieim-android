@@ -21,6 +21,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
@@ -78,7 +79,7 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import im.molly.unifiedpush.UnifiedPushDistributor
+import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import org.signal.appsettings.twofactorverify.TwoFactorVerifyMethod
 import org.signal.core.ui.BottomSheetUtil
 import org.signal.core.ui.NavigationType
@@ -165,6 +166,7 @@ import org.thoughtcrime.securesms.megaphone.Megaphone
 import org.thoughtcrime.securesms.megaphone.MegaphoneActionController
 import org.thoughtcrime.securesms.megaphone.Megaphones
 import org.thoughtcrime.securesms.net.DeviceTransferBlockingInterceptor
+import org.thoughtcrime.securesms.notifications.UnifiedPushPickerLaunchGuard
 import org.thoughtcrime.securesms.notifications.VitalsViewModel
 import org.thoughtcrime.securesms.notifications.profiles.NotificationProfile
 import org.thoughtcrime.securesms.notifications.profiles.NotificationProfiles
@@ -198,6 +200,7 @@ class MainActivity :
   companion object {
     private val TAG = Log.tag(MainActivity::class)
 
+    private const val KEY_PUSH_PICKER_OUTSTANDING = "PUSH_PICKER_OUTSTANDING"
     private const val KEY_STARTING_TAB = "STARTING_TAB"
     private const val KEY_EXIT_DETAIL = "EXIT_DETAIL"
 
@@ -246,6 +249,11 @@ class MainActivity :
     VitalsViewModel(application)
   }
 
+  private val pushPickerLaunchGuard = UnifiedPushPickerLaunchGuard()
+  private val pickUnifiedPushDistributor = registerForActivityResult(UnifiedPushDefaultDistributorLinkActivity.Contract(useDefault = false)) {
+    pushPickerLaunchGuard.onResult()
+  }
+
   private val openSettings: ActivityResultLauncher<Intent> = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
   private val toolbarViewModel: MainToolbarViewModel by viewModels()
@@ -284,6 +292,7 @@ class MainActivity :
 
     AppStartup.getInstance().onCriticalRenderEventStart()
 
+    pushPickerLaunchGuard.restore(savedInstanceState?.getBoolean(KEY_PUSH_PICKER_OUTSTANDING) == true)
     super.onCreate(savedInstanceState, ready)
     navigator = MainNavigator(this, mainNavigationViewModel)
 
@@ -887,11 +896,25 @@ class MainActivity :
     handleQuickRestoreIntent(intent)
   }
 
+  override fun onSaveInstanceState(outState: Bundle) {
+    outState.putBoolean(KEY_PUSH_PICKER_OUTSTANDING, pushPickerLaunchGuard.outstanding)
+    super.onSaveInstanceState(outState)
+  }
+
   @SuppressLint("NewApi")
   private fun presentVitalsState(state: VitalsViewModel.State) {
     when (state) {
       VitalsViewModel.State.NONE -> Unit
-      VitalsViewModel.State.PROMPT_UNIFIEDPUSH_SELECT_DISTRIBUTOR_DIALOG -> UnifiedPushDistributor.showSelectDistributorDialog(this)
+      VitalsViewModel.State.PROMPT_UNIFIEDPUSH_SELECT_DISTRIBUTOR_DIALOG -> {
+        if (pushPickerLaunchGuard.tryLaunch()) {
+          try {
+            pickUnifiedPushDistributor.launch()
+          } catch (e: RuntimeException) {
+            pushPickerLaunchGuard.onResult()
+            throw e
+          }
+        }
+      }
       VitalsViewModel.State.PROMPT_SPECIFIC_BATTERY_SAVER_DIALOG -> DeviceSpecificNotificationBottomSheet.show(supportFragmentManager)
       VitalsViewModel.State.PROMPT_GENERAL_BATTERY_SAVER_DIALOG -> PromptBatterySaverDialogFragment.show(supportFragmentManager)
     }

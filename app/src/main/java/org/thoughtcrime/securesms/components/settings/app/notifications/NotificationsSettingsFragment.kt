@@ -210,7 +210,7 @@ open class DefaultNotificationsSettingsCallbacks(
   )
 
   private val linkDefaultDistributorLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
-    contract = UnifiedPushDefaultDistributorLinkActivity.Contract(),
+    contract = UnifiedPushDefaultDistributorLinkActivity.Contract(useDefault = true),
     callback = { success ->
       val authorization = viewModel.pendingMollySocketSetup
       if (authorization != null) {
@@ -258,7 +258,7 @@ open class DefaultNotificationsSettingsCallbacks(
         if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && viewModel.pendingMollySocketResult.value === pending) {
           viewModel.pendingMollySocketResult.value = null
           viewModel.pendingMollySocketSetup = null
-          if (pending.success != true) viewModel.selectFirstDistributor()
+          // The system picker already let the user choose; never substitute an unrelated distributor on failure.
           onNavigationUnifiedPushSettings()
         }
       }

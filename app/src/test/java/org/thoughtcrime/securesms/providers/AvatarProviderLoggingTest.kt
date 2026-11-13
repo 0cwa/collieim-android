@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.providers
 
+import android.app.Application
 import android.content.pm.ProviderInfo
 import android.net.Uri
 import io.mockk.every
@@ -36,7 +37,7 @@ import org.thoughtcrime.securesms.service.KeyCachingService
 import java.lang.reflect.Field
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, application = Application::class)
 class AvatarProviderLoggingTest {
   private val logFields: List<Field> = listOf("activeLogger", "initializedLogger", "internalCheck", "alwaysRedact")
     .map { Log::class.java.getDeclaredField(it).apply { isAccessible = true } }

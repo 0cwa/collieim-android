@@ -153,7 +153,9 @@ object MollySocketRepository {
 
   private fun MollySocketDevice.isLinked(): Boolean? {
     return runBlocking { LinkDeviceRepository.loadDevices() }?.any {
-      it.id == deviceId && it.name == DEVICE_NAME
+      // A linked device can change its own name, and an unreadable name has a fallback value.
+      // Neither means its credential was revoked: keep tracking it until its ID is gone.
+      it.id == deviceId
     }
   }
 

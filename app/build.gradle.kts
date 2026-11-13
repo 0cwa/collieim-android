@@ -108,6 +108,7 @@ android {
       // MOLLY: Reduce memory pressure by limiting the number of test classes per runner
       all { task ->
         task.forkEvery = 64
+        task.maxHeapSize = "1g"
       }
     }
   }

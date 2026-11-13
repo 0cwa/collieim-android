@@ -1,3 +1,5 @@
+**Final production composition:** [current native ON/OFF, semantic visibility and checks](final/README.md). The earlier fit/refinement below precedes the final resting composition.
+
 **Superseded fit evidence:** [current registered refinement and interactive comparison](refinement/README.md). The original fixed-alpha method below was insufficient; its renders precede the measured corrections.
 
 # Implemented flowing landscape and lower Collie murals

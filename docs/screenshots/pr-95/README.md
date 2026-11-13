@@ -1,3 +1,5 @@
+**Current final artwork:** [uncovered resting composition, native images and checks](backgrounds/final/README.md). Production sourceccfc2ec3 preserves all foreground geometry. Earlier galleries below are retained historical/component/native proof.
+
 # Current website review evidence
 
 **Current registered SVG refinement:** [interactive comparison and current renders](backgrounds/refinement/README.md). Source888d1383 corrects measured band/contour mismatches while retaining all foreground geometry.

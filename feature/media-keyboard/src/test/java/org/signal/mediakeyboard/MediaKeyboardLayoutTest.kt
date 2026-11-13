@@ -7,8 +7,8 @@ package org.signal.mediakeyboard
 
 import androidx.compose.runtime.CompositionLocalProvider
 import io.mockk.every
-import io.mockk.mockkObject
-import io.mockk.unmockkObject
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.After
@@ -36,14 +36,14 @@ class MediaKeyboardLayoutTest : SignalLayoutStressTest() {
   @Before
   fun setUp() {
     RemoteConfig.initDependencies(FakeRemoteConfigDependencies())
-    mockkObject(RemoteConfig)
+    mockkStatic(RemoteConfig::class)
     every { RemoteConfig.gifSearchAvailable } returns true
     every { RemoteConfig.internalUser } returns false
   }
 
   @After
   fun tearDown() {
-    unmockkObject(RemoteConfig)
+    unmockkStatic(RemoteConfig::class)
   }
 
   @Test

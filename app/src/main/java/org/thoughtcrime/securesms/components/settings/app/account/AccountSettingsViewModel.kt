@@ -6,7 +6,6 @@
 package org.thoughtcrime.securesms.components.settings.app.account
 
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +23,7 @@ import org.signal.appsettings.account.AccountSettingsState.LoadState
 import org.signal.appsettings.account.AccountSettingsState.SignalLogin
 import org.signal.appsettings.account.TwoFactorMethod
 import org.signal.core.ui.compose.EventDrivenViewModel
+import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.net.MfaKeyKind
 import org.signal.libsignal.net.RequestResult
@@ -265,7 +265,7 @@ class AccountSettingsViewModel(
 
   private suspend fun refresh() {
     val isPhoneNumberless = accountRepository.isPhoneNumberless()
-    val showDonationManagement = withContext(Dispatchers.IO) { AppSettingsRepository.shouldShowManageDonations() }
+    val showDonationManagement = withContext(SignalDispatchers.IO) { AppSettingsRepository.shouldShowManageDonations() }
 
     _state.update {
       it.copy(

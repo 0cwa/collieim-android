@@ -45,6 +45,10 @@ allprojects {
   }
 }
 
+// The production client JAR has no desktop JNI. Keep the separately built Linux
+// library on host test classpaths only, so it can never become an APK input.
+val hostJniDirectory = providers.gradleProperty("collieHostJniDir").orNull?.let { file(it) }
+
 abstract class ConcurrencyConstraintService : BuildService<BuildServiceParameters.None>
 
 fun limiter(name: String, max: Int) =
@@ -66,6 +70,18 @@ gradle.projectsEvaluated {
   }
 
   allprojects {
+    hostJniDirectory?.let { directory ->
+      val library = directory.resolve("libsignal_jni_testing_amd64.so")
+      tasks.withType<Test>().configureEach {
+        classpath = files(directory) + classpath
+        doFirst {
+          check(library.isFile) {
+            "Missing host libsignal JNI. Run python3 tooling/host-tests/build_libsignal.py first."
+          }
+        }
+      }
+    }
+
     tasks.named { it.startsWith("lint") && it.contains("Analyze") }.configureEach {
       usesService(lintLimiter)
       mustRunAfter(kotlinCompiles)

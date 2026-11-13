@@ -17,8 +17,8 @@ import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.unmockkObject
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -64,7 +64,7 @@ class StickerPageViewModelTest {
     every { repository.allowStickerAnimation } returns true
     every { repository.observeStickerPacks() } returns packsFlow
     RemoteConfig.initDependencies(FakeRemoteConfigDependencies())
-    mockkObject(RemoteConfig)
+    mockkStatic(RemoteConfig::class)
     every { RemoteConfig.internalUser } returns false
 
     actions = mutableListOf()
@@ -74,7 +74,7 @@ class StickerPageViewModelTest {
   @After
   fun tearDown() {
     collectorScope.cancel()
-    unmockkObject(RemoteConfig)
+    unmockkStatic(RemoteConfig::class)
     Dispatchers.resetMain()
   }
 

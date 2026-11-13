@@ -4,6 +4,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      scope:
+        description: Run the focused ThreadTable worker memory diagnostic
+        type: choice
+        required: true
+        default: full
+        options:
+          - full
+          - thread-table-oom
 permissions:
   contents: read
 concurrency:
@@ -35,6 +44,7 @@ jobs:
           exit $missing
 
   fastlane-metadata:
+    if: github.event_name != 'workflow_dispatch' || inputs.scope != 'thread-table-oom'
     name: Fastlane metadata
     runs-on: ubuntu-24.04
     steps:
@@ -44,6 +54,7 @@ jobs:
       - run: python3 tooling/fastlane/check_metadata.py
 
   fast-lint:
+    if: github.event_name != 'workflow_dispatch' || inputs.scope != 'thread-table-oom'
     name: Fast lint
     runs-on: ubuntu-24.04
     steps:
@@ -77,6 +88,7 @@ jobs:
           if [ -s "$RUNNER_TEMP/new.txt" ]; then cat "$RUNNER_TEMP/new.txt"; exit 1; fi
 
   unit-tests:
+    if: github.event_name != 'workflow_dispatch' || inputs.scope != 'thread-table-oom'
     name: Unit tests
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -138,7 +150,126 @@ jobs:
             build/ci
           if-no-files-found: error
 
+  thread-table-oom-diagnostic:
+    name: ThreadTableTest worker heap diagnostic
+    if: github.event_name == 'workflow_dispatch' && inputs.scope == 'thread-table-oom'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 450147ec46e24996962c8814c8692df37904fcbb
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record exact source identity
+        run: |
+          test "$(git rev-parse HEAD)" = 450147ec46e24996962c8814c8692df37904fcbb
+          mkdir -p "$RUNNER_TEMP/thread-table-diagnostic"
+          git rev-parse HEAD > "$RUNNER_TEMP/thread-table-diagnostic/source-commit.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/thread-table-diagnostic/source-tree.txt"
+          git rev-parse HEAD:app > "$RUNNER_TEMP/thread-table-diagnostic/app-tree.txt"
+          git diff --quiet HEAD -- app core feature lib tooling build-logic buildSrc gradle
+      - name: Capture runner memory before tests
+        run: |
+          { date -u; uname -a; nproc; free -h; cat /proc/meminfo;
+            for f in /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.events; do
+              if [ -r "$f" ]; then echo "--- $f"; cat "$f"; fi
+            done;
+          } > "$RUNNER_TEMP/thread-table-diagnostic/runner-memory-before.txt"
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+      - name: Cache test-only libsignal JNI
+        id: host-jni-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            build/host-tests/resources
+            build/host-tests/receipt.json
+          key: host-libsignal-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('build-inputs/native-lock.json', 'build-inputs/engineering.json', 'build-inputs/host-test-inputs.json', 'tooling/host-tests/build_libsignal.py') }}
+      - name: Build pinned Linux JNI for tests
+        if: steps.host-jni-cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes clang libclang-dev cmake make protobuf-compiler libprotobuf-dev binutils
+          rust_version=$(python3 -c 'import json; print(json.load(open("build-inputs/native-lock.json"))["toolchain_reference"]["rust_version"])')
+          rustup toolchain install "$rust_version" --profile minimal
+          python3 tooling/host-tests/build_libsignal.py
+      - name: Verify test-only libsignal JNI
+        run: python3 tooling/host-tests/build_libsignal.py --verify-only
+      - name: Compile a test-worker Runtime heap probe
+        run: |
+          mkdir -p "$RUNNER_TEMP/thread-table-diagnostic/classes"
+          cat > "$RUNNER_TEMP/thread-table-diagnostic/HeapProbe.java" <<'EOF'
+          import java.lang.instrument.Instrumentation;
+          public final class HeapProbe {
+            public static void premain(String args, Instrumentation instrumentation) {
+              Runtime runtime = Runtime.getRuntime();
+              System.err.println("DIAGNOSTIC_RUNTIME_MAX_MEMORY_BYTES=" + runtime.maxMemory());
+              System.err.println("DIAGNOSTIC_RUNTIME_TOTAL_MEMORY_BYTES=" + runtime.totalMemory());
+              System.err.println("DIAGNOSTIC_RUNTIME_FREE_MEMORY_BYTES=" + runtime.freeMemory());
+              System.err.println("DIAGNOSTIC_RUNTIME_AVAILABLE_PROCESSORS=" + runtime.availableProcessors());
+            }
+          }
+          EOF
+          javac --release 21 -d "$RUNNER_TEMP/thread-table-diagnostic/classes" "$RUNNER_TEMP/thread-table-diagnostic/HeapProbe.java"
+          printf 'Manifest-Version: 1.0\nPremain-Class: HeapProbe\n' > "$RUNNER_TEMP/thread-table-diagnostic/manifest.mf"
+          jar cfm "$RUNNER_TEMP/thread-table-diagnostic/heap-probe.jar" "$RUNNER_TEMP/thread-table-diagnostic/manifest.mf" -C "$RUNNER_TEMP/thread-table-diagnostic/classes" .
+      - name: Configure test-worker heap diagnostics
+        run: |
+          cat > "$RUNNER_TEMP/thread-table-diagnostic.init.gradle" <<'EOF'
+          gradle.projectsEvaluated {
+            gradle.rootProject.allprojects.each { project ->
+              project.tasks.withType(org.gradle.api.tasks.testing.Test).matching {
+                it.path == ':app:testProdWebsiteDebugUnitTest'
+              }.all { task ->
+                task.doFirst {
+                  println("DIAGNOSTIC_TEST_TASK path=${task.path} maxHeapSize=${task.maxHeapSize} maxParallelForks=${task.maxParallelForks} forkEvery=${task.forkEvery}")
+                }
+                task.jvmArgs("-javaagent:${System.getenv('RUNNER_TEMP')}/thread-table-diagnostic/heap-probe.jar", '-XX:+PrintCommandLineFlags', '-XshowSettings:vm')
+                task.testLogging.showStandardStreams = true
+              }
+            }
+          }
+          EOF
+      - name: Run only ThreadTableTest_pinned with worker launch details
+        id: focused
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --no-configuration-cache --max-workers=1 --info \
+            -I "$RUNNER_TEMP/thread-table-diagnostic.init.gradle" \
+            -PcollieHostJniDir=build/host-tests/resources \
+            :app:testProdWebsiteDebugUnitTest \
+            --tests org.thoughtcrime.securesms.database.ThreadTableTest_pinned \
+            2>&1 | tee "$RUNNER_TEMP/thread-table-diagnostic/gradle-focused.log"
+      - name: Capture runner memory after tests
+        if: always()
+        run: |
+          { date -u; uname -a; nproc; free -h; cat /proc/meminfo;
+            for f in /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.events; do
+              if [ -r "$f" ]; then echo "--- $f"; cat "$f"; fi
+            done;
+          } > "$RUNNER_TEMP/thread-table-diagnostic/runner-memory-after.txt"
+      - name: Keep focused test and heap evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: thread-table-oom-diagnostic-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/thread-table-diagnostic
+            app/build/test-results/testProdWebsiteDebugUnitTest/TEST-org.thoughtcrime.securesms.database.ThreadTableTest_pinned.xml
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve failed focused-test status
+        if: steps.focused.outcome == 'failure'
+        run: exit 1
+
   production-build:
+    if: github.event_name != 'workflow_dispatch' || inputs.scope != 'thread-table-oom'
     name: Unsigned production build
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -164,7 +295,7 @@ jobs:
 
   security-readiness:
     name: Security readiness
-    if: ${{ always() }}
+    if: ${{ always() && (github.event_name != 'workflow_dispatch' || inputs.scope != 'thread-table-oom') }}
     needs: [unit-tests, production-build]
     runs-on: ubuntu-24.04
     steps:

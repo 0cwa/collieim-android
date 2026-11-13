@@ -32,10 +32,10 @@ object AppUpdatesSettingsTestTags {
   const val SCROLLER = "scroller"
   const val ROW_AUTO_UPDATE = "row-auto-update"
   const val ROW_CHECK_FOR_UPDATES = "row-check-for-updates"
-  const val ROW_INCLUDE_BETA = "row-include-beta"
+  const val ROW_RELEASE = "row-release"
 }
 
-/** Settings for Molly updates, or app-store guidance for externally managed builds. */
+/** Settings for Collie updates, or app-store guidance for externally managed builds. */
 @Composable
 fun AppUpdatesSettingsScreen(
   state: AppUpdatesSettingsState,
@@ -83,21 +83,32 @@ fun AppUpdatesSettingsScreen(
         item {
           Rows.ToggleRow(
             checked = state.autoUpdateEnabled,
-            text = stringResource(R.string.preferences__autoupdate_molly),
-            label = stringResource(R.string.preferences__periodically_check_for_new_releases_and_ask_to_install_them),
+            text = stringResource(R.string.CollieUpdates__check_automatically),
+            label = stringResource(R.string.CollieUpdates__check_automatically_summary),
             onCheckChanged = { onEvent(AppUpdatesSettingsEvent.AutoUpdateToggled(it)) },
             modifier = Modifier.testTag(AppUpdatesSettingsTestTags.ROW_AUTO_UPDATE)
           )
         }
 
         item {
-          Rows.ToggleRow(
-            checked = state.includeBetaEnabled,
-            text = stringResource(R.string.preferences__include_beta_updates),
-            label = stringResource(R.string.preferences__beta_versions_are_intended_for_testing_purposes_and_may_contain_bugs),
-            onCheckChanged = { onEvent(AppUpdatesSettingsEvent.IncludeBetaToggled(it)) },
-            modifier = Modifier.testTag(AppUpdatesSettingsTestTags.ROW_INCLUDE_BETA)
-          )
+          Rows.TextRow(text = stringResource(R.string.CollieUpdates__browser_handoff))
+        }
+
+        if (state.availableVersionName != null) {
+          item {
+            Rows.TextRow(
+              text = stringResource(R.string.CollieUpdates__view_release, state.availableVersionName),
+              label = stringResource(R.string.CollieUpdates__open_official_release),
+              onClick = { onEvent(AppUpdatesSettingsEvent.ViewReleaseClicked) },
+              modifier = Modifier.testTag(AppUpdatesSettingsTestTags.ROW_RELEASE)
+            )
+          }
+        }
+
+        if (state.lastCheckFailed) {
+          item {
+            Rows.TextRow(text = stringResource(R.string.CollieUpdates__check_failed))
+          }
         }
 
         item {
@@ -136,7 +147,7 @@ private fun AppUpdatesSettingsScreenPreview() {
       lastCheckedTime = System.currentTimeMillis().milliseconds,
       autoUpdateEnabled = true,
       isAutoUpdateSupported = true,
-      includeBetaEnabled = true,
+      availableVersionName = "8.35.2",
       versionName = "8.33.2"
     ),
     onEvent = {}

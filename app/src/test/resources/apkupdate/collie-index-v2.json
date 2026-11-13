@@ -1,0 +1,373 @@
+{
+  "repo": {
+    "name": {
+      "en-US": "Collie"
+    },
+    "description": {
+      "en-US": "Collie's own F-Droid repository: the same signed APKs as our GitHub releases."
+    },
+    "icon": {
+      "en-US": {
+        "name": "/icons/collie-icon.png",
+        "sha256": "2de99e7312b406437d6aee1125ec28d21bcb04fb3fe8eff24fc7fa38f950d3b4",
+        "size": 57929
+      }
+    },
+    "address": "https://repo.collie.im/fdroid/repo",
+    "timestamp": 1794370488000,
+    "categories": {
+      "Internet": {
+        "name": {
+          "en-US": "Internet"
+        }
+      }
+    }
+  },
+  "packages": {
+    "im.collie.app": {
+      "metadata": {
+        "added": 1794370487000,
+        "categories": [
+          "Internet"
+        ],
+        "changelog": "https://github.com/0cwa/collieim-android/releases",
+        "issueTracker": "https://github.com/0cwa/collieim-android/issues",
+        "lastUpdated": 1794370487000,
+        "license": "AGPL-3.0-only",
+        "sourceCode": "https://github.com/0cwa/collieim-android",
+        "webSite": "https://github.com/0cwa/collieim-android",
+        "featureGraphic": {
+          "en-US": {
+            "name": "/im.collie.app/en-US/featureGraphic_Md2sWeTI6RA1aifJKORYJKDg4NdG5cOtXLXbrSD5ci0=.png",
+            "sha256": "31ddac59e4c8e910356a27c928e45824a0e0e0d746e5c3ad5cb5dbad20f9722d",
+            "size": 63974
+          }
+        },
+        "screenshots": {
+          "phone": {
+            "en-US": [
+              {
+                "name": "/im.collie.app/en-US/phoneScreenshots/1.png",
+                "sha256": "72a2a0c5c044b4f2febe96fd61583cdb322b77df60f8ac00b0fddf184ff32c53",
+                "size": 95271
+              },
+              {
+                "name": "/im.collie.app/en-US/phoneScreenshots/2.png",
+                "sha256": "0010cfe1544297d6a8438bdc5a4bb8c37f1136b8edd6e1d233b580118cce24a2",
+                "size": 172619
+              },
+              {
+                "name": "/im.collie.app/en-US/phoneScreenshots/3.png",
+                "sha256": "96c710018ece4a8ba776136ede02bbffd93b993135e6b76b92d18bcbfa979518",
+                "size": 130272
+              },
+              {
+                "name": "/im.collie.app/en-US/phoneScreenshots/4.png",
+                "sha256": "3fee391118f983795365e173020e1fd998899a84614f452db5c643679f875328",
+                "size": 36106
+              },
+              {
+                "name": "/im.collie.app/en-US/phoneScreenshots/5.png",
+                "sha256": "50862bb674910ddcd508a4769be20ce92456c24886f740a1758de22bc8dd461f",
+                "size": 163410
+              },
+              {
+                "name": "/im.collie.app/en-US/phoneScreenshots/6.png",
+                "sha256": "4b43575fa71dae4283e063aea54314fe8e616c1253ecbf94f909a52b733c91a3",
+                "size": 42483
+              },
+              {
+                "name": "/im.collie.app/en-US/phoneScreenshots/7.png",
+                "sha256": "0232a86469a7e0b7adadbd8ed57ac5c5bb2e3d8b6da1b07d4d6c62e4df5cee74",
+                "size": 77309
+              },
+              {
+                "name": "/im.collie.app/en-US/phoneScreenshots/8.png",
+                "sha256": "60e209038b057dcbe9dcf50f2aca23a43c54632a15e04e76580c2d42c4258eb7",
+                "size": 93013
+              },
+              {
+                "name": "/im.collie.app/en-US/phoneScreenshots/9.png",
+                "sha256": "a5aa9079ff632af3c44948e49caeca5359318c001ebf8ebe2f851779b043b295",
+                "size": 172162
+              }
+            ]
+          }
+        },
+        "authorName": "Collie",
+        "liberapay": "Collie",
+        "name": {
+          "en-US": "Collie"
+        },
+        "summary": {
+          "en-US": "Featureful, community-oriented, security-focused fork of Signal"
+        },
+        "description": {
+          "en-US": "<p>Collie is a free and open-source messenger for the Signal network. Talk to your Signal contacts with the same end-to-end encrypted messages and calls, with stronger protection for the data stored on your phone.</p><p>Collie is built on Signal and Molly. It keeps Molly's protections and develops new features independently.</p><p><b>Why Collie over Molly</b></p><ul><li><b>Closer to current Signal:</b> Collie follows newer Signal releases, so you get recent features and fixes sooner.</li><li><b>One fully open-source app:</b> a single APK with no proprietary libraries.</li><li><b>Auditable by design:</b> patch-based releases show exactly what we change, while letting security updates ship fast.</li><li><b>Message history on new devices:</b> linking a device can offer to transfer your existing messages, when your primary device supports it.</li><li><b>Network control from the start:</b> reach proxy settings during registration and directly from Privacy.</li><li><b>Clearer UnifiedPush recovery:</b> a failed registration is shown to you and retried within limits. (UnifiedPush for linked devices will be a future new feature developed by Collie.)</li><li>Installs alongside Signal or Molly, and we contribute work back to Molly.</li></ul><p><b>Protections from Molly</b></p><ul><li>Passphrase encryption for the local message database, with automatic locking</li><li>Clearing sensitive data from memory, and optional debug logging</li><li>Linked devices, including Android tablets</li><li>Blocking messages and calls from unknown contacts</li><li>Disappearing call history and scheduled local backups</li><li>SOCKS proxy and Tor support</li><li>WebSocket and UnifiedPush as alternatives to Google's push service</li></ul><p>If you use UnifiedPush, only use a MollySocket server you trust with your whole account and its metadata. Run your own, and do not use a public one.</p><p>Collie connects to Signal's servers, and Signal's Terms and Privacy Policy apply. Collie is independent of Signal and Molly. Native libraries have not yet been independently reproduced.</p>\n"
+        },
+        "icon": {
+          "en-US": {
+            "name": "/im.collie.app/en-US/icon_KlP6nlNUCoEJz0KoCB8ffIOiPTn-wGnT5-FMRWod1BA=.png",
+            "sha256": "2a53fa9e53540a8109cf42a8081f1f7c83a23d39fec069d3e7e14c456a1dd410",
+            "size": 55323
+          }
+        },
+        "preferredSigner": "f8cc0c0c052e5635c26fcd293c2b0af3e87d61ff7f2df3602a9af6e91f73c826"
+      },
+      "versions": {
+        "0a7ad16221a421c6b78b4446f699227d12b3ad6988484577731e3ebc271b1de0": {
+          "added": 1794370487000,
+          "file": {
+            "name": "/im.collie.app_177705.apk",
+            "sha256": "0a7ad16221a421c6b78b4446f699227d12b3ad6988484577731e3ebc271b1de0",
+            "size": 97103942
+          },
+          "manifest": {
+            "nativecode": [
+              "arm64-v8a",
+              "armeabi-v7a",
+              "x86_64"
+            ],
+            "versionName": "8.35.1-3-rc2",
+            "versionCode": 177705,
+            "usesSdk": {
+              "minSdkVersion": 27,
+              "targetSdkVersion": 36
+            },
+            "signer": {
+              "sha256": [
+                "f8cc0c0c052e5635c26fcd293c2b0af3e87d61ff7f2df3602a9af6e91f73c826"
+              ]
+            },
+            "usesPermission": [
+              {
+                "name": "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"
+              },
+              {
+                "name": "android.permission.REQUEST_INSTALL_PACKAGES"
+              },
+              {
+                "name": "im.collie.app.ACCESS_SECRETS"
+              },
+              {
+                "name": "android.permission.ACCESS_COARSE_LOCATION"
+              },
+              {
+                "name": "android.permission.ACCESS_FINE_LOCATION"
+              },
+              {
+                "name": "android.permission.ACCESS_NETWORK_STATE"
+              },
+              {
+                "name": "android.permission.ACCESS_NOTIFICATION_POLICY"
+              },
+              {
+                "name": "android.permission.ACCESS_WIFI_STATE"
+              },
+              {
+                "name": "android.permission.AUTHENTICATE_ACCOUNTS"
+              },
+              {
+                "name": "android.permission.BLUETOOTH"
+              },
+              {
+                "name": "android.permission.CAMERA"
+              },
+              {
+                "name": "android.permission.CHANGE_NETWORK_STATE"
+              },
+              {
+                "name": "android.permission.CHANGE_WIFI_STATE"
+              },
+              {
+                "name": "android.permission.FOREGROUND_SERVICE"
+              },
+              {
+                "name": "android.permission.FOREGROUND_SERVICE_CAMERA"
+              },
+              {
+                "name": "android.permission.FOREGROUND_SERVICE_DATA_SYNC"
+              },
+              {
+                "name": "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+              },
+              {
+                "name": "android.permission.FOREGROUND_SERVICE_MICROPHONE"
+              },
+              {
+                "name": "android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"
+              },
+              {
+                "name": "android.permission.FOREGROUND_SERVICE_PHONE_CALL"
+              },
+              {
+                "name": "android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING"
+              },
+              {
+                "name": "android.permission.INSTALL_SHORTCUT"
+              },
+              {
+                "name": "android.permission.INTERNET"
+              },
+              {
+                "name": "android.permission.MANAGE_OWN_CALLS"
+              },
+              {
+                "name": "android.permission.MODIFY_AUDIO_SETTINGS"
+              },
+              {
+                "name": "android.permission.NEARBY_WIFI_DEVICES"
+              },
+              {
+                "name": "android.permission.POST_NOTIFICATIONS"
+              },
+              {
+                "name": "android.permission.RAISED_THREAD_PRIORITY"
+              },
+              {
+                "name": "android.permission.READ_CALL_STATE"
+              },
+              {
+                "name": "android.permission.READ_CONTACTS"
+              },
+              {
+                "name": "android.permission.READ_EXTERNAL_STORAGE",
+                "maxSdkVersion": 32
+              },
+              {
+                "name": "android.permission.READ_MEDIA_IMAGES"
+              },
+              {
+                "name": "android.permission.READ_MEDIA_VIDEO"
+              },
+              {
+                "name": "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
+              },
+              {
+                "name": "android.permission.READ_PHONE_NUMBERS"
+              },
+              {
+                "name": "android.permission.READ_PHONE_STATE"
+              },
+              {
+                "name": "android.permission.READ_PROFILE"
+              },
+              {
+                "name": "android.permission.READ_SYNC_SETTINGS"
+              },
+              {
+                "name": "android.permission.RECEIVE_BOOT_COMPLETED"
+              },
+              {
+                "name": "android.permission.RECORD_AUDIO"
+              },
+              {
+                "name": "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+              },
+              {
+                "name": "android.permission.SCHEDULE_EXACT_ALARM"
+              },
+              {
+                "name": "android.permission.USE_BIOMETRIC"
+              },
+              {
+                "name": "android.permission.USE_CREDENTIALS"
+              },
+              {
+                "name": "android.permission.USE_EXACT_ALARM"
+              },
+              {
+                "name": "android.permission.USE_FULL_SCREEN_INTENT"
+              },
+              {
+                "name": "android.permission.VIBRATE"
+              },
+              {
+                "name": "android.permission.WAKE_LOCK"
+              },
+              {
+                "name": "android.permission.WRITE_CONTACTS"
+              },
+              {
+                "name": "android.permission.WRITE_EXTERNAL_STORAGE",
+                "maxSdkVersion": 28
+              },
+              {
+                "name": "android.permission.WRITE_SYNC_SETTINGS"
+              },
+              {
+                "name": "com.android.launcher.permission.INSTALL_SHORTCUT"
+              },
+              {
+                "name": "android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"
+              },
+              {
+                "name": "android.permission.USE_FINGERPRINT"
+              },
+              {
+                "name": "android.permission.BLUETOOTH_CONNECT"
+              },
+              {
+                "name": "im.collie.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+              },
+              {
+                "name": "com.google.android.c2dm.permission.RECEIVE"
+              },
+              {
+                "name": "com.sec.android.provider.badge.permission.READ"
+              },
+              {
+                "name": "com.sec.android.provider.badge.permission.WRITE"
+              },
+              {
+                "name": "com.htc.launcher.permission.READ_SETTINGS"
+              },
+              {
+                "name": "com.htc.launcher.permission.UPDATE_SHORTCUT"
+              },
+              {
+                "name": "com.sonyericsson.home.permission.BROADCAST_BADGE"
+              },
+              {
+                "name": "com.sonymobile.home.permission.PROVIDER_INSERT_BADGE"
+              },
+              {
+                "name": "com.anddoes.launcher.permission.UPDATE_COUNT"
+              },
+              {
+                "name": "com.majeur.launcher.permission.UPDATE_BADGE"
+              },
+              {
+                "name": "com.huawei.android.launcher.permission.CHANGE_BADGE"
+              },
+              {
+                "name": "com.huawei.android.launcher.permission.READ_SETTINGS"
+              },
+              {
+                "name": "com.huawei.android.launcher.permission.WRITE_SETTINGS"
+              },
+              {
+                "name": "android.permission.READ_APP_BADGE"
+              },
+              {
+                "name": "com.oppo.launcher.permission.READ_SETTINGS"
+              },
+              {
+                "name": "com.oppo.launcher.permission.WRITE_SETTINGS"
+              },
+              {
+                "name": "me.everything.badger.permission.BADGE_COUNT_READ"
+              },
+              {
+                "name": "me.everything.badger.permission.BADGE_COUNT_WRITE"
+              }
+            ]
+          },
+          "whatsNew": {
+            "en-US": "Stories is back in Settings and no longer crashes. The password prompt no longer draws under the action bar. Translations now say Collie instead of Molly.\n"
+          }
+        }
+      }
+    }
+  }
+}

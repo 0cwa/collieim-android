@@ -33,7 +33,7 @@ public class ApkUpdateRefreshListener extends PersistentAlarmManagerListener {
   protected long onAlarm(Context context, long scheduledTime) {
     Log.i(TAG, "onAlarm...");
 
-    if (scheduledTime != 0 && BuildConfig.MANAGE_MOLLY_UPDATES) {
+    if (BuildConfig.MANAGE_COLLIE_UPDATES && TextSecurePreferences.isUpdateApkEnabled(context)) {
       Log.i(TAG, "Queueing APK update job...");
       AppDependencies.getJobManager().add(new ApkUpdateJob());
     }
@@ -45,7 +45,7 @@ public class ApkUpdateRefreshListener extends PersistentAlarmManagerListener {
   }
 
   public static void scheduleIfAllowed(Context context) {
-    if (BuildConfig.MANAGE_MOLLY_UPDATES) {
+    if (BuildConfig.MANAGE_COLLIE_UPDATES && TextSecurePreferences.isUpdateApkEnabled(context)) {
       new ApkUpdateRefreshListener().onReceive(context, getScheduleIntent());
     }
   }

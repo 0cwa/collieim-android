@@ -232,4 +232,12 @@
     <string name="UnifiedPushSettingsFragment__control_state_recovery_title">Reset local enrollment state?</string>
     <string name="UnifiedPushSettingsFragment__control_state_recovery_message">First remove this account\'s enrollment from the server. Resetting local state clears the saved control key and enrollment history. If the server row remains, a new export may be refused; use the normal enrollment flow after removal.</string>
     <string name="UnifiedPushSettingsFragment__control_state_recovery_confirm">I removed the server enrollment</string>
+    <string name="CollieUpdates__check_automatically">Check for Collie updates</string>
+    <string name="CollieUpdates__check_automatically_summary">Notify me when a new recommended release is available</string>
+    <string name="CollieUpdates__browser_handoff">Updates open on Collie’s official GitHub page in your browser. Your browser uses its own connection settings. Android checks the app’s signature when you install an update.</string>
+    <string name="CollieUpdates__view_release">Collie %1$s is available</string>
+    <string name="CollieUpdates__open_official_release">View the official release in your browser</string>
+    <string name="CollieUpdates__check_failed">The last update check failed. Try again when you can connect.</string>
+    <string name="CollieUpdates__available_notification">Collie %1$s is available. Tap to view the official release in your browser.</string>
+    <string name="CollieUpdates__checks_megaphone">Collie can notify you when a new release is available. You choose when to open the official release page.</string>
 </resources>

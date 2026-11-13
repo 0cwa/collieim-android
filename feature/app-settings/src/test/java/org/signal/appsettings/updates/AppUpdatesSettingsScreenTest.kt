@@ -10,6 +10,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import assertk.assertThat
@@ -69,6 +71,7 @@ class AppUpdatesSettingsScreenTest {
   fun `clicking check for updates emits CheckForUpdatesClicked`() {
     setContent(createState(autoUpdateEnabled = true))
 
+    scrollTo(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES)
     composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES).performClick()
 
     assertThat(events).contains(AppUpdatesSettingsEvent.CheckForUpdatesClicked)
@@ -78,6 +81,7 @@ class AppUpdatesSettingsScreenTest {
   fun `check for updates says never when no check has succeeded`() {
     setContent(createState(lastCheckedTime = Duration.ZERO))
 
+    scrollTo(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES)
     composeTestRule.onNodeWithText("Last checked: Never").assertIsDisplayed()
   }
 
@@ -85,6 +89,7 @@ class AppUpdatesSettingsScreenTest {
   fun `check for updates shows when the last check succeeded`() {
     setContent(createState(lastCheckedTime = 1_700_000_000_000L.milliseconds))
 
+    scrollTo(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES)
     composeTestRule.onNodeWithText("Last checked: Never").assertDoesNotExist()
     composeTestRule.onNodeWithText("2023", substring = true).assertIsDisplayed()
   }
@@ -93,16 +98,18 @@ class AppUpdatesSettingsScreenTest {
   fun `manual check is disabled when periodic update checks are off`() {
     setContent(createState(autoUpdateEnabled = false))
 
+    scrollTo(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES)
     composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_CHECK_FOR_UPDATES).assertIsNotEnabled()
   }
 
   @Test
-  fun `clicking beta updates emits the selected channel`() {
-    setContent(createState())
+  fun `clicking a verified available release requests the official page`() {
+    setContent(createState().copy(availableVersionName = "8.35.2"))
 
-    composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_INCLUDE_BETA).performClick()
+    scrollTo(AppUpdatesSettingsTestTags.ROW_RELEASE)
+    composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_RELEASE).performClick()
 
-    assertThat(events).contains(AppUpdatesSettingsEvent.IncludeBetaToggled(true))
+    assertThat(events).contains(AppUpdatesSettingsEvent.ViewReleaseClicked)
   }
 
   @Test
@@ -110,6 +117,10 @@ class AppUpdatesSettingsScreenTest {
     setContent(createState())
 
     assertThat(events).containsExactly(AppUpdatesSettingsEvent.ScreenResumed)
+  }
+
+  private fun scrollTo(tag: String) {
+    composeTestRule.onNodeWithTag(AppUpdatesSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(tag))
   }
 
   private fun setContent(state: AppUpdatesSettingsState) {

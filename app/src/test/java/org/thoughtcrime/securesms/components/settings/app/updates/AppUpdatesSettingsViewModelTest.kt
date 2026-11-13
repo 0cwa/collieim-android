@@ -70,7 +70,7 @@ class AppUpdatesSettingsViewModelTest {
 
   private val apkUpdateValues = mockk<ApkUpdateValues>(relaxUnitFun = true)
   private var updatesEnabled = false
-  private var includeBeta = false
+  private val openedReleases = mutableListOf<String>()
 
   @Before
   fun setUp() {
@@ -79,14 +79,15 @@ class AppUpdatesSettingsViewModelTest {
     mockkObject(SignalStore)
     every { SignalStore.apkUpdate } returns apkUpdateValues
     every { apkUpdateValues.lastSuccessfulCheck } returns LAST_SUCCESSFUL_CHECK
+    every { apkUpdateValues.lastCheckFailed } returns false
+    every { apkUpdateValues.availableVersionCode } returns 0L
+    every { apkUpdateValues.availableVersionName } returns null
     mockkStatic(TextSecurePreferences::class, ApkUpdateRefreshListener::class)
     mockkObject(ApkUpdateNotifications)
     every { TextSecurePreferences.isUpdateApkEnabled(any()) } answers { updatesEnabled }
     every { TextSecurePreferences.setUpdateApkEnabled(any(), any()) } answers { updatesEnabled = secondArg() }
-    every { TextSecurePreferences.isUpdateApkIncludeBetaEnabled(any()) } answers { includeBeta }
-    every { TextSecurePreferences.setUpdateApkIncludeBetaEnabled(any(), any()) } answers { includeBeta = secondArg() }
     every { ApkUpdateRefreshListener.scheduleIfAllowed(any()) } just Runs
-    every { ApkUpdateNotifications.dismissInstallPrompt(any()) } just Runs
+    every { ApkUpdateNotifications.dismissUpdatePrompt(any()) } just Runs
   }
 
   @After
@@ -170,15 +171,35 @@ class AppUpdatesSettingsViewModelTest {
   }
 
   @Test
-  fun `beta selection clears an old install prompt and checks the selected channel`() = runTest(testDispatcher) {
+  fun `newer verified release opens only the official release page`() = runTest(testDispatcher) {
+    every { apkUpdateValues.availableVersionCode } returns ApkInfo.versionCode.toLong() + 1
+    every { apkUpdateValues.availableVersionName } returns "8.35.2"
     val viewModel = createViewModel()
 
-    viewModel.onEvent(AppUpdatesSettingsEvent.IncludeBetaToggled(true))
+    viewModel.onEvent(AppUpdatesSettingsEvent.ViewReleaseClicked)
 
-    verify { TextSecurePreferences.setUpdateApkIncludeBetaEnabled(any(), true) }
-    verify { ApkUpdateNotifications.dismissInstallPrompt(any()) }
-    verify(exactly = 1) { AppDependencies.jobManager.add(ofType<ApkUpdateJob>()) }
-    assertThat(viewModel.state.value.includeBetaEnabled).isTrue()
+    assertThat(viewModel.state.value.availableVersionName).isEqualTo("8.35.2")
+    assertThat(openedReleases).containsExactly("https://github.com/0cwa/collieim-android/releases/tag/v8.35.2")
+  }
+
+  @Test
+  fun `already installed and invalid stored releases cannot be opened`() = runTest(testDispatcher) {
+    every { apkUpdateValues.availableVersionCode } returns ApkInfo.versionCode.toLong()
+    every { apkUpdateValues.availableVersionName } returns "8.35.2"
+    val viewModel = createViewModel()
+    viewModel.onEvent(AppUpdatesSettingsEvent.ViewReleaseClicked)
+    every { apkUpdateValues.availableVersionCode } returns ApkInfo.versionCode.toLong() + 1
+    every { apkUpdateValues.availableVersionName } returns "8.35.2/../../other"
+    viewModel.onEvent(AppUpdatesSettingsEvent.ViewReleaseClicked)
+    assertThat(openedReleases).isEmpty()
+  }
+
+  @Test
+  fun `failed check stays visible without replacing the last success time`() = runTest(testDispatcher) {
+    every { apkUpdateValues.lastCheckFailed } returns true
+    val viewModel = createViewModel()
+    assertThat(viewModel.state.value.lastCheckFailed).isTrue()
+    assertThat(viewModel.state.value.lastCheckedTime).isEqualTo(LAST_SUCCESSFUL_CHECK.milliseconds)
   }
 
   @Test
@@ -186,11 +207,10 @@ class AppUpdatesSettingsViewModelTest {
     val viewModel = createViewModel(isAutoUpdateSupported = false)
 
     viewModel.onEvent(AppUpdatesSettingsEvent.AutoUpdateToggled(true))
-    viewModel.onEvent(AppUpdatesSettingsEvent.IncludeBetaToggled(true))
+    viewModel.onEvent(AppUpdatesSettingsEvent.ViewReleaseClicked)
     viewModel.onEvent(AppUpdatesSettingsEvent.CheckForUpdatesClicked)
 
     verify(exactly = 0) { TextSecurePreferences.setUpdateApkEnabled(any(), any()) }
-    verify(exactly = 0) { TextSecurePreferences.setUpdateApkIncludeBetaEnabled(any(), any()) }
     verify(exactly = 0) { AppDependencies.jobManager.add(ofType<ApkUpdateJob>()) }
   }
 
@@ -213,6 +233,6 @@ class AppUpdatesSettingsViewModelTest {
   }
 
   private fun createViewModel(isAutoUpdateSupported: Boolean = true): AppUpdatesSettingsViewModel {
-    return AppUpdatesSettingsViewModel(parentEventEmitter = { navigationEvents += it }, isAutoUpdateSupported = isAutoUpdateSupported)
+    return AppUpdatesSettingsViewModel(parentEventEmitter = { navigationEvents += it }, isAutoUpdateSupported = isAutoUpdateSupported, openRelease = { openedReleases += it })
   }
 }

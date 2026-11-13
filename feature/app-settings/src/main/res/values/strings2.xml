@@ -15,4 +15,11 @@
     <string name="HelpSettingsFragment_for_updates_please_check_your_app_store">For updates, please check your app store. This version does not include an in-app updater.</string>
     <string name="EnableAppUpdatesMegaphone_check_for_updates">Check for updates</string>
     <string name="AppUpdatesSettingsFragment__last_checked_s">Last checked: %s</string>
+    <string name="CollieUpdates__check_automatically">Check for Collie updates</string>
+    <string name="CollieUpdates__check_automatically_summary">Notify me when a new recommended release is available</string>
+    <string name="CollieUpdates__browser_handoff">Updates open on Collie’s official GitHub page in your browser. Your browser uses its own connection settings. Android checks the app’s signature when you install an update.</string>
+    <string name="CollieUpdates__view_release">Collie %1$s is available</string>
+    <string name="CollieUpdates__open_official_release">View the official release in your browser</string>
+    <string name="CollieUpdates__check_failed">The last update check failed. Try again when you can connect.</string>
+    <string name="CollieUpdates__available_notification">Collie %1$s is available. Tap to view the official release in your browser.</string>
 </resources>

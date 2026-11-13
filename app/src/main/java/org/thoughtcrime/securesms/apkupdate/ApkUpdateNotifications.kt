@@ -5,6 +5,7 @@
 
 package org.thoughtcrime.securesms.apkupdate
 
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -13,82 +14,45 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import org.signal.core.util.PendingIntentFlags
 import org.signal.core.util.ServiceUtil
-import org.signal.core.util.logging.Log
-import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.notifications.NotificationIds
 
 object ApkUpdateNotifications {
-
-  val TAG = Log.tag(ApkUpdateNotifications::class.java)
-
-  /**
-   * Shows a notification to prompt the user to install the app update. Only shown when silently auto-updating is not possible or are disabled by the user.
-   * Note: This is an 'ongoing' notification (i.e. not-user dismissable) and never dismissed programatically. This is because the act of installing the APK
-   * will dismiss it for us.
-   */
-  fun showInstallPrompt(context: Context, uri: Uri) {
-    ServiceUtil.getNotificationManager(context).cancel(NotificationIds.APK_UPDATE_FAILED_INSTALL)
-
-    // MOLLY: Use legacy install method until LaunchActivityFromNotification is fixed
+  /** A user action opens only the official release page. No APK is downloaded or installed here. */
+  fun showUpdateAvailable(context: Context, versionName: String): Boolean {
+    val manager = ServiceUtil.getNotificationManager(context)
+    val channel = manager.getNotificationChannel(NotificationChannels.getInstance().APP_UPDATES)
+    if (!manager.areNotificationsEnabled() || channel == null || channel.importance == NotificationManager.IMPORTANCE_NONE) return false
     val pendingIntent = PendingIntent.getActivity(
       context,
       0,
-      Intent(Intent.ACTION_INSTALL_PACKAGE).setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION).setData(uri),
+      Intent(Intent.ACTION_VIEW, Uri.parse(CollieUpdateIndex.releasePage(versionName))),
       PendingIntentFlags.immutable()
     )
-
     val notification = NotificationCompat.Builder(context, NotificationChannels.getInstance().APP_UPDATES)
-      .setOngoing(true)
       .setContentTitle(context.getString(R.string.ApkUpdateNotifications_prompt_install_title))
-      .setContentText(context.getString(R.string.ApkUpdateNotifications_prompt_install_body))
+      .setContentText(context.getString(R.string.CollieUpdates__available_notification, versionName))
       .setSmallIcon(R.drawable.ic_notification)
       .setColor(ContextCompat.getColor(context, R.color.notification_background_ultramarine))
-      .setPriority(NotificationCompat.PRIORITY_HIGH)
+      .setPriority(NotificationCompat.PRIORITY_DEFAULT)
       .setCategory(NotificationCompat.CATEGORY_REMINDER)
       .setContentIntent(pendingIntent)
-      .build()
-
-    ServiceUtil.getNotificationManager(context).notify(NotificationIds.APK_UPDATE_PROMPT_INSTALL, notification)
-  }
-
-  fun dismissInstallPrompt(context: Context) {
-    Log.d(TAG, "Dismissing install prompt.")
-    ServiceUtil.getNotificationManager(context).cancel(NotificationIds.APK_UPDATE_PROMPT_INSTALL)
-  }
-
-  fun showInstallFailed(context: Context, reason: FailureReason) {
-    Log.d(TAG, "Showing failed notification. Reason: $reason")
-    ServiceUtil.getNotificationManager(context).cancel(NotificationIds.APK_UPDATE_PROMPT_INSTALL)
-
-    val pendingIntent = PendingIntent.getActivity(
-      context,
-      0,
-      Intent(context, MainActivity::class.java),
-      PendingIntentFlags.immutable()
-    )
-
-    val notification = NotificationCompat.Builder(context, NotificationChannels.getInstance().APP_UPDATES)
-      .setContentTitle(context.getString(R.string.ApkUpdateNotifications_failed_general_title))
-      .setContentText(context.getString(R.string.ApkUpdateNotifications_failed_general_body))
-      .setSmallIcon(R.drawable.ic_notification)
-      .setColor(ContextCompat.getColor(context, R.color.notification_background_ultramarine))
-      .setContentIntent(pendingIntent)
       .setAutoCancel(true)
+      .setOnlyAlertOnce(true)
       .build()
-
-    ServiceUtil.getNotificationManager(context).notify(NotificationIds.APK_UPDATE_FAILED_INSTALL, notification)
+    return try {
+      manager.notify(NotificationIds.APK_UPDATE_PROMPT_INSTALL, notification)
+      true
+    } catch (_: SecurityException) {
+      // Notification permission can change between the check and the post. Keep the candidate
+      // available in settings and allow a later check to notify after permission is restored.
+      false
+    }
   }
 
-  enum class FailureReason {
-    UNKNOWN,
-    ABORTED,
-    BLOCKED,
-    INCOMPATIBLE,
-    INVALID,
-    CONFLICT,
-    STORAGE,
-    TIMEOUT
+  fun dismissUpdatePrompt(context: Context) {
+    ServiceUtil.getNotificationManager(context).cancel(NotificationIds.APK_UPDATE_PROMPT_INSTALL)
+    ServiceUtil.getNotificationManager(context).cancel(NotificationIds.APK_UPDATE_FAILED_INSTALL)
   }
 }

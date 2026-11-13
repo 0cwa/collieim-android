@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.signal.core.util.Hex;
 import org.whispersystems.signalservice.api.util.OptionalUtil;
 
 import java.util.Optional;
@@ -20,7 +19,7 @@ import kotlin.Pair;
  */
 public class StickerUrl {
 
-  private static final Pattern STICKER_URL_PATTERN = Pattern.compile("^https://signal\\.art/addstickers/#pack_id=(.*)&pack_key=(.*)$");
+  private static final Pattern STICKER_URL_PATTERN = Pattern.compile("^https://signal\\.art/addstickers/#pack_id=([0-9a-fA-F]++)&pack_key=([0-9a-fA-F]++)$");
 
   public static Optional<Pair<String, String>> parseExternalUri(@Nullable Uri uri) {
     if (uri == null) return Optional.empty();
@@ -71,11 +70,15 @@ public class StickerUrl {
   }
 
   private static boolean isValidHex(String value) {
-    try {
-      Hex.fromStringCondensed(value);
-      return true;
-    } catch (Exception e) {
-      return false;
+    if (value.isEmpty() || (value.length() & 1) != 0) return false;
+
+    for (int i = 0; i < value.length(); i++) {
+      char c = value.charAt(i);
+      if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))) {
+        return false;
+      }
     }
+
+    return true;
   }
 }

@@ -1,1 +1,189 @@
-{"schema": 1, "reviews": []}
+{
+  "schema": 1,
+  "reviews": [
+    {
+      "rule": "java/static-initialization-vector",
+      "level": "warning",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "A [static initialization vector](1) should not be used for encryption.",
+      "category": "/language:java-kotlin/",
+      "tool_version": "2.27.4",
+      "source_sha256": "59c65d537624a5dfe4c5b0e4d78bad5732d12adf22dc79781de96fba230d035b",
+      "id": "finding-03",
+      "disposition": "false-positive",
+      "reason": "The source uses 32 bytes from SecureRandom and derives the AES-CTR key as HMAC-SHA256(masterKey, random); the zero counter IV is paired with a per-file derived key, so the finding does not establish reuse of the same key/IV across files. This review only rebuts the static-IV claim; unauthenticated CTR integrity remains a separate concern.",
+      "language": "java-kotlin",
+      "location": {
+        "uri": "app/src/main/java/org/thoughtcrime/securesms/glide/cache/EncryptedCoder.java",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 48,
+        "start_column": 71,
+        "end_line": null,
+        "end_column": 94
+      }
+    },
+    {
+      "rule": "java/static-initialization-vector",
+      "level": "warning",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "A [static initialization vector](1) should not be used for encryption.",
+      "category": "/language:java-kotlin/",
+      "tool_version": "2.27.4",
+      "source_sha256": "59c65d537624a5dfe4c5b0e4d78bad5732d12adf22dc79781de96fba230d035b",
+      "id": "finding-04",
+      "disposition": "false-positive",
+      "reason": "This is the matching AES-CTR read path: it reads the file-specific 32-byte random value and derives the same HMAC-SHA256 key before initializing with the zero IV. The fixed IV is required to recover that file-specific stream; it does not establish repeated key/IV use across files. This does not dismiss the separate lack of ciphertext authentication.",
+      "language": "java-kotlin",
+      "location": {
+        "uri": "app/src/main/java/org/thoughtcrime/securesms/glide/cache/EncryptedCoder.java",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 87,
+        "start_column": 71,
+        "end_line": null,
+        "end_column": 94
+      }
+    },
+    {
+      "rule": "java/static-initialization-vector",
+      "level": "warning",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "A [static initialization vector](1) should not be used for encryption.",
+      "category": "/language:java-kotlin/",
+      "tool_version": "2.27.4",
+      "source_sha256": "ca3e6ceb3e7e79a85288bb348220f1c82c0d3126c59f316ef0ced4b74b8a4ff7",
+      "id": "finding-06",
+      "disposition": "false-positive",
+      "reason": "createFor generates 32 bytes with SecureRandom and derives the AES-CTR key as HMAC-SHA256(attachmentSecret.modernKey, random); the zero IV is paired with that per-part key. The matching ModernDecryptingPartInputStream reads the same random header and derives the same key. This rebuts only same-key/static-IV reuse; unauthenticated CTR malleability remains a separate concern.",
+      "language": "java-kotlin",
+      "location": {
+        "uri": "core/util/src/main/java/org/signal/core/util/crypto/ModernEncryptingPartOutputStream.java",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 51,
+        "start_column": 71,
+        "end_line": null,
+        "end_column": 94
+      }
+    },
+    {
+      "rule": "java/weak-cryptographic-algorithm",
+      "level": "warning",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "Cryptographic algorithm [AES/CBC/PKCS5Padding](1) is insecure. CBC mode with PKCS#5 or PKCS#7 padding is vulnerable to padding oracle attacks. Consider using GCM instead.",
+      "category": "/language:java-kotlin/",
+      "tool_version": "2.27.4",
+      "source_sha256": "b103334b5d1fd0dc5cbd30ca2f5eb442d082d30cfff41163df8052eb33fe2975",
+      "id": "finding-08",
+      "disposition": "false-positive",
+      "reason": "All decrypt callers enter MasterCipher.decrypt, which verifies HMAC-SHA256 over the IV+ciphertext using the separate MAC key and constant-time MessageDigest.isEqual before getDecryptingCipher or doFinal is reached. The reported CBC padding-oracle pathway therefore lacks unauthenticated ciphertext access. This is specific to the reported oracle claim, not a general endorsement of CBC.",
+      "language": "java-kotlin",
+      "location": {
+        "uri": "app/src/main/java/org/thoughtcrime/securesms/crypto/MasterCipher.java",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 174,
+        "start_column": 30,
+        "end_line": null,
+        "end_column": 72
+      }
+    },
+    {
+      "rule": "java/weak-cryptographic-algorithm",
+      "level": "warning",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "Cryptographic algorithm [AES/CBC/PKCS5Padding](1) is insecure. CBC mode with PKCS#5 or PKCS#7 padding is vulnerable to padding oracle attacks. Consider using GCM instead.",
+      "category": "/language:java-kotlin/",
+      "tool_version": "2.27.4",
+      "source_sha256": "b103334b5d1fd0dc5cbd30ca2f5eb442d082d30cfff41163df8052eb33fe2975",
+      "id": "finding-09",
+      "disposition": "false-positive",
+      "reason": "The encryption path obtains a provider-generated IV, encrypts with AES-CBC, then appends HMAC-SHA256 over IV+ciphertext. MasterSecret carries distinct encryption and MAC keys. The reported padding-oracle weakness does not follow from this authenticated encryption path; this does not claim CBC is an AEAD.",
+      "language": "java-kotlin",
+      "location": {
+        "uri": "app/src/main/java/org/thoughtcrime/securesms/crypto/MasterCipher.java",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 182,
+        "start_column": 21,
+        "end_line": null,
+        "end_column": 63
+      }
+    },
+    {
+      "rule": "java/weak-cryptographic-algorithm",
+      "level": "warning",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "Cryptographic algorithm [AES/CBC/PKCS5Padding](1) is insecure. CBC mode with PKCS#5 or PKCS#7 padding is vulnerable to padding oracle attacks. Consider using GCM instead.",
+      "category": "/language:java-kotlin/",
+      "tool_version": "2.27.4",
+      "source_sha256": "6022f933af99eec2c53b15ecffb20e335fffbad6d18bd3e3481ecf782a68b5bd",
+      "id": "finding-14",
+      "disposition": "false-positive",
+      "reason": "Provisioning encryption derives 64 bytes with HKDF and splits them into distinct AES and HMAC keys; the CBC provider supplies the IV, which is included in the ciphertext, and HMAC covers the protocol version plus IV+ciphertext. The paired receive implementation authenticates before decrypting, so this finding does not establish a padding oracle for the provisioning format.",
+      "language": "java-kotlin",
+      "location": {
+        "uri": "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/crypto/PrimaryProvisioningCipher.java",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 84,
+        "start_column": 23,
+        "end_line": null,
+        "end_column": 65
+      }
+    },
+    {
+      "rule": "java/weak-cryptographic-algorithm",
+      "level": "warning",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "Cryptographic algorithm [AES/CBC/PKCS5Padding](1) is insecure. CBC mode with PKCS#5 or PKCS#7 padding is vulnerable to padding oracle attacks. Consider using GCM instead.",
+      "category": "/language:java-kotlin/",
+      "tool_version": "2.27.4",
+      "source_sha256": "6022f933af99eec2c53b15ecffb20e335fffbad6d18bd3e3481ecf782a68b5bd",
+      "id": "finding-15",
+      "disposition": "false-positive",
+      "reason": "The paired provisioning decrypt path calls verifyMac on version+IV+ciphertext and compares with MessageDigest.isEqual before calling this CBC doFinal. The MAC and AES keys are independently split from HKDF output. Unauthenticated padding-oracle input is rejected first; this review does not recommend changing the wire format.",
+      "language": "java-kotlin",
+      "location": {
+        "uri": "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/crypto/PrimaryProvisioningCipher.java",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 133,
+        "start_column": 23,
+        "end_line": null,
+        "end_column": 65
+      }
+    },
+    {
+      "rule": "java/weak-cryptographic-algorithm",
+      "level": "warning",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "Cryptographic algorithm [AES/CBC/PKCS5Padding](1) is insecure. CBC mode with PKCS#5 or PKCS#7 padding is vulnerable to padding oracle attacks. Consider using GCM instead.",
+      "category": "/language:java-kotlin/",
+      "tool_version": "2.27.4",
+      "source_sha256": "21cf390e33fdc75f07adc5505bb3216619809644aef359847a951093b7ac222a",
+      "id": "finding-16",
+      "disposition": "false-positive",
+      "reason": "The receive path derives separate cipher and MAC keys, authenticates version+IV+ciphertext using HMAC-SHA256 and MessageDigest.isEqual, and only then calls this CBC doFinal. The matching PrimaryProvisioningCipher creates that authenticated format, and SecondaryProvisioningCipherTest exercises round-trip interoperability. The reported unauthenticated padding-oracle pathway is not present.",
+      "language": "java-kotlin",
+      "location": {
+        "uri": "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/crypto/SecondaryProvisioningCipher.kt",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 134,
+        "start_column": 25,
+        "end_line": null,
+        "end_column": 60
+      }
+    }
+  ]
+}

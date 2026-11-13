@@ -581,13 +581,13 @@ internal fun calculateCollisionNameHash(names: Collection<String>): String {
   }
 
   return try {
-    val digest = MessageDigest.getInstance("MD5")
+    val digest = MessageDigest.getInstance("SHA-256")
     names.sorted().forEach { name ->
       val bytes = name.encodeToByteArray()
       digest.update(ByteBuffer.allocate(Int.SIZE_BYTES).putInt(bytes.size).array())
       digest.update(bytes)
     }
-    Hex.toStringCondensed(digest.digest())
+    "sha256:" + Hex.toStringCondensed(digest.digest())
   } catch (e: NoSuchAlgorithmException) {
     ""
   }

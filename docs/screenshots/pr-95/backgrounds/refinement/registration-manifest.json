@@ -1,0 +1,1382 @@
+{
+  "registration": "Identity: crop pixels and vector viewBox units are1:1. No inferred global transform.",
+  "regions": {
+    "hero": {
+      "w": 1024,
+      "h": 516,
+      "reference": "../background-a-flowing.png",
+      "crop": [
+        0,
+        0,
+        1024,
+        516
+      ],
+      "before": "hero-fit-before-recheck.svg",
+      "after": "hero-fit.svg",
+      "production": "hero top-right identity; lower-left retains independently documented +24px clearance adaptation"
+    },
+    "features": {
+      "w": 1024,
+      "h": 580,
+      "reference": "../background-a-flowing.png",
+      "crop": [
+        0,
+        500,
+        1024,
+        580
+      ],
+      "before": "features-fit-before-recheck.svg",
+      "after": "features-fit.svg",
+      "production": "arch ribbons \u2192 landscape-page.svg translate(80,370), right sweep translate(0,370); page background then scales with its1024\u00d73072 viewBox"
+    },
+    "collie": {
+      "w": 800,
+      "h": 360,
+      "reference": "../background-c-collie-mural.png",
+      "crop": [
+        0,
+        1000,
+        800,
+        360
+      ],
+      "before": "collie-fit-before-recheck.svg",
+      "after": "collie-fit.svg",
+      "production": "path coordinates unchanged; production viewBox800\u00d7300 intentionally crops lower empty area; existing responsive CSS placement unchanged"
+    }
+  },
+  "mask": "Only listed x/window/edge samples count. All other pixels excluded, including AI phones/cards/text, tonal shading and orange mane. Color threshold in measure-fit.py; no whole-image pixel error.",
+  "samples": [
+    {
+      "region": "hero",
+      "boundary": "upper lichen top",
+      "x": 660,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 93,
+      "before": 92,
+      "after": 93,
+      "beforeOffset": -1,
+      "afterOffset": 0
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen bottom",
+      "x": 660,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 97,
+      "before": 105,
+      "after": 97,
+      "beforeOffset": 8,
+      "afterOffset": 0
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen top",
+      "x": 700,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 79,
+      "before": 77,
+      "after": 78,
+      "beforeOffset": -2,
+      "afterOffset": -1
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen bottom",
+      "x": 700,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 88,
+      "before": 96,
+      "after": 86,
+      "beforeOffset": 8,
+      "afterOffset": -2
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen top",
+      "x": 750,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 71,
+      "before": 69,
+      "after": 68,
+      "beforeOffset": -2,
+      "afterOffset": -3
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen bottom",
+      "x": 750,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 86,
+      "before": 85,
+      "after": 85,
+      "beforeOffset": -1,
+      "afterOffset": -1
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen top",
+      "x": 800,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 70,
+      "before": 73,
+      "after": 70,
+      "beforeOffset": 3,
+      "afterOffset": 0
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen bottom",
+      "x": 800,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 92,
+      "before": 80,
+      "after": 91,
+      "beforeOffset": -12,
+      "afterOffset": -1
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen top",
+      "x": 850,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 76,
+      "before": 81,
+      "after": 76,
+      "beforeOffset": 5,
+      "afterOffset": 0
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen bottom",
+      "x": 850,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 102,
+      "before": 87,
+      "after": 101,
+      "beforeOffset": -15,
+      "afterOffset": -1
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen top",
+      "x": 900,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 84,
+      "before": 86,
+      "after": 83,
+      "beforeOffset": 2,
+      "afterOffset": -1
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen bottom",
+      "x": 900,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 111,
+      "before": 100,
+      "after": 110,
+      "beforeOffset": -11,
+      "afterOffset": -1
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen top",
+      "x": 950,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 83,
+      "before": 86,
+      "after": 83,
+      "beforeOffset": 3,
+      "afterOffset": 0
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen bottom",
+      "x": 950,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 112,
+      "before": 111,
+      "after": 111,
+      "beforeOffset": -1,
+      "afterOffset": -1
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen top",
+      "x": 1000,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 68,
+      "before": 72,
+      "after": 70,
+      "beforeOffset": 4,
+      "afterOffset": 2
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen bottom",
+      "x": 1000,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 100,
+      "before": 115,
+      "after": 98,
+      "beforeOffset": 15,
+      "afterOffset": -2
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen top",
+      "x": 1020,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 56,
+      "before": 59,
+      "after": 58,
+      "beforeOffset": 3,
+      "afterOffset": 2
+    },
+    {
+      "region": "hero",
+      "boundary": "upper lichen bottom",
+      "x": 1020,
+      "window": [
+        45,
+        125
+      ],
+      "reference": 90,
+      "before": 113,
+      "after": 88,
+      "beforeOffset": 23,
+      "afterOffset": -2
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen top",
+      "x": 0,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 475,
+      "before": 476,
+      "after": 476,
+      "beforeOffset": 1,
+      "afterOffset": 1
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen bottom",
+      "x": 0,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 507,
+      "before": 513,
+      "after": 507,
+      "beforeOffset": 6,
+      "afterOffset": 0
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen top",
+      "x": 50,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 468,
+      "before": 469,
+      "after": 469,
+      "beforeOffset": 1,
+      "afterOffset": 1
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen bottom",
+      "x": 50,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 497,
+      "before": 500,
+      "after": 498,
+      "beforeOffset": 3,
+      "afterOffset": 1
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen top",
+      "x": 100,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 464,
+      "before": 465,
+      "after": 465,
+      "beforeOffset": 1,
+      "afterOffset": 1
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen bottom",
+      "x": 100,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 489,
+      "before": 490,
+      "after": 489,
+      "beforeOffset": 1,
+      "afterOffset": 0
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen top",
+      "x": 150,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 464,
+      "before": 464,
+      "after": 464,
+      "beforeOffset": 0,
+      "afterOffset": 0
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen bottom",
+      "x": 150,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 482,
+      "before": 481,
+      "after": 481,
+      "beforeOffset": -1,
+      "afterOffset": -1
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen top",
+      "x": 200,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 463,
+      "before": 463,
+      "after": 463,
+      "beforeOffset": 0,
+      "afterOffset": 0
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen bottom",
+      "x": 200,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 475,
+      "before": 474,
+      "after": 473,
+      "beforeOffset": -1,
+      "afterOffset": -2
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen top",
+      "x": 250,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 459,
+      "before": 461,
+      "after": 461,
+      "beforeOffset": 2,
+      "afterOffset": 2
+    },
+    {
+      "region": "hero",
+      "boundary": "left lichen bottom",
+      "x": 250,
+      "window": [
+        430,
+        516
+      ],
+      "reference": 465,
+      "before": 469,
+      "after": 467,
+      "beforeOffset": 4,
+      "afterOffset": 2
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 350,
+      "window": [
+        0,
+        64
+      ],
+      "reference": 48,
+      "before": null,
+      "after": 47,
+      "beforeOffset": null,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 350,
+      "window": [
+        0,
+        64
+      ],
+      "reference": 57,
+      "before": null,
+      "after": 54,
+      "beforeOffset": null,
+      "afterOffset": -3
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 400,
+      "window": [
+        0,
+        64
+      ],
+      "reference": 19,
+      "before": null,
+      "after": 17,
+      "beforeOffset": null,
+      "afterOffset": -2
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 400,
+      "window": [
+        0,
+        64
+      ],
+      "reference": 37,
+      "before": null,
+      "after": 38,
+      "beforeOffset": null,
+      "afterOffset": 1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 450,
+      "window": [
+        0,
+        64
+      ],
+      "reference": 3,
+      "before": 43,
+      "after": 0,
+      "beforeOffset": 40,
+      "afterOffset": -3
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 450,
+      "window": [
+        0,
+        64
+      ],
+      "reference": 24,
+      "before": 50,
+      "after": 25,
+      "beforeOffset": 26,
+      "afterOffset": 1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 600,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 7,
+      "before": 0,
+      "after": 8,
+      "beforeOffset": -7,
+      "afterOffset": 1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 600,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 23,
+      "before": 16,
+      "after": 21,
+      "beforeOffset": -7,
+      "afterOffset": -2
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 650,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 20,
+      "before": 0,
+      "after": 21,
+      "beforeOffset": -20,
+      "afterOffset": 1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 650,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 32,
+      "before": 12,
+      "after": 31,
+      "beforeOffset": -20,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 700,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 35,
+      "before": 5,
+      "after": 35,
+      "beforeOffset": -30,
+      "afterOffset": 0
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 700,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 44,
+      "before": 15,
+      "after": 44,
+      "beforeOffset": -29,
+      "afterOffset": 0
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 750,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 50,
+      "before": 21,
+      "after": 50,
+      "beforeOffset": -29,
+      "afterOffset": 0
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 750,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 61,
+      "before": 24,
+      "after": 60,
+      "beforeOffset": -37,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 800,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 65,
+      "before": null,
+      "after": 64,
+      "beforeOffset": null,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 800,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 78,
+      "before": null,
+      "after": 76,
+      "beforeOffset": null,
+      "afterOffset": -2
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 850,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 78,
+      "before": null,
+      "after": 78,
+      "beforeOffset": null,
+      "afterOffset": 0
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 850,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 95,
+      "before": null,
+      "after": 93,
+      "beforeOffset": null,
+      "afterOffset": -2
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 900,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 88,
+      "before": null,
+      "after": 89,
+      "beforeOffset": null,
+      "afterOffset": 1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 900,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 109,
+      "before": null,
+      "after": 108,
+      "beforeOffset": null,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 950,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 96,
+      "before": null,
+      "after": 97,
+      "beforeOffset": null,
+      "afterOffset": 1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 950,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 120,
+      "before": null,
+      "after": 119,
+      "beforeOffset": null,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 1000,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 100,
+      "before": 71,
+      "after": 101,
+      "beforeOffset": -29,
+      "afterOffset": 1
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 1000,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 127,
+      "before": 92,
+      "after": 127,
+      "beforeOffset": -35,
+      "afterOffset": 0
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch top",
+      "x": 1020,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 101,
+      "before": 62,
+      "after": 101,
+      "beforeOffset": -39,
+      "afterOffset": 0
+    },
+    {
+      "region": "features",
+      "boundary": "feature arch bottom",
+      "x": 1020,
+      "window": [
+        0,
+        145
+      ],
+      "reference": 129,
+      "before": 93,
+      "after": 128,
+      "beforeOffset": -36,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "right sweep top",
+      "x": 900,
+      "window": [
+        240,
+        440
+      ],
+      "reference": 307,
+      "before": 395,
+      "after": 308,
+      "beforeOffset": 88,
+      "afterOffset": 1
+    },
+    {
+      "region": "features",
+      "boundary": "right sweep bottom",
+      "x": 900,
+      "window": [
+        240,
+        440
+      ],
+      "reference": 415,
+      "before": 439,
+      "after": 414,
+      "beforeOffset": 24,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "right sweep top",
+      "x": 950,
+      "window": [
+        240,
+        440
+      ],
+      "reference": 280,
+      "before": 349,
+      "after": 279,
+      "beforeOffset": 69,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "right sweep bottom",
+      "x": 950,
+      "window": [
+        240,
+        440
+      ],
+      "reference": 387,
+      "before": 439,
+      "after": 385,
+      "beforeOffset": 52,
+      "afterOffset": -2
+    },
+    {
+      "region": "features",
+      "boundary": "right sweep top",
+      "x": 1000,
+      "window": [
+        240,
+        440
+      ],
+      "reference": 263,
+      "before": 313,
+      "after": 262,
+      "beforeOffset": 50,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "right sweep bottom",
+      "x": 1000,
+      "window": [
+        240,
+        440
+      ],
+      "reference": 367,
+      "before": 427,
+      "after": 366,
+      "beforeOffset": 60,
+      "afterOffset": -1
+    },
+    {
+      "region": "features",
+      "boundary": "right sweep top",
+      "x": 1020,
+      "window": [
+        240,
+        440
+      ],
+      "reference": 259,
+      "before": 302,
+      "after": 259,
+      "beforeOffset": 43,
+      "afterOffset": 0
+    },
+    {
+      "region": "features",
+      "boundary": "right sweep bottom",
+      "x": 1020,
+      "window": [
+        240,
+        440
+      ],
+      "reference": 362,
+      "before": 412,
+      "after": 361,
+      "beforeOffset": 50,
+      "afterOffset": -1
+    },
+    {
+      "region": "collie",
+      "boundary": "crest/head center",
+      "x": 570,
+      "window": [
+        42,
+        76
+      ],
+      "reference": 66.0,
+      "before": 54.0,
+      "after": 65.0,
+      "beforeOffset": -12.0,
+      "afterOffset": -1.0
+    },
+    {
+      "region": "collie",
+      "boundary": "crest/head center",
+      "x": 600,
+      "window": [
+        10,
+        40
+      ],
+      "reference": 30.0,
+      "before": 19.0,
+      "after": 32.5,
+      "beforeOffset": -11.0,
+      "afterOffset": 2.5
+    },
+    {
+      "region": "collie",
+      "boundary": "crest/head center",
+      "x": 620,
+      "window": [
+        0,
+        27
+      ],
+      "reference": 15.0,
+      "before": 9.0,
+      "after": 15.5,
+      "beforeOffset": -6.0,
+      "afterOffset": 0.5
+    },
+    {
+      "region": "collie",
+      "boundary": "crest/head center",
+      "x": 640,
+      "window": [
+        0,
+        22
+      ],
+      "reference": 12.0,
+      "before": 10.5,
+      "after": 10.0,
+      "beforeOffset": -1.5,
+      "afterOffset": -2.0
+    },
+    {
+      "region": "collie",
+      "boundary": "crest/head center",
+      "x": 660,
+      "window": [
+        0,
+        28
+      ],
+      "reference": 17.5,
+      "before": null,
+      "after": 18.5,
+      "beforeOffset": null,
+      "afterOffset": 1.0
+    },
+    {
+      "region": "collie",
+      "boundary": "crest/head center",
+      "x": 680,
+      "window": [
+        45,
+        68
+      ],
+      "reference": 58.0,
+      "before": 55.5,
+      "after": 55.5,
+      "beforeOffset": -2.5,
+      "afterOffset": -2.5
+    },
+    {
+      "region": "collie",
+      "boundary": "crest/head center",
+      "x": 700,
+      "window": [
+        60,
+        80
+      ],
+      "reference": 71.0,
+      "before": 73.5,
+      "after": 73.5,
+      "beforeOffset": 2.5,
+      "afterOffset": 2.5
+    },
+    {
+      "region": "collie",
+      "boundary": "crest/head center",
+      "x": 720,
+      "window": [
+        65,
+        86
+      ],
+      "reference": 74.5,
+      "before": 77.0,
+      "after": 77.0,
+      "beforeOffset": 2.5,
+      "afterOffset": 2.5
+    },
+    {
+      "region": "collie",
+      "boundary": "crest/head center",
+      "x": 740,
+      "window": [
+        70,
+        97
+      ],
+      "reference": 83.5,
+      "before": 85.0,
+      "after": 85.0,
+      "beforeOffset": 1.5,
+      "afterOffset": 1.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 680,
+      "window": [
+        125,
+        151
+      ],
+      "reference": 134.5,
+      "before": 139.0,
+      "after": 134.0,
+      "beforeOffset": 4.5,
+      "afterOffset": -0.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 700,
+      "window": [
+        97,
+        115
+      ],
+      "reference": 106.0,
+      "before": 105.0,
+      "after": 105.0,
+      "beforeOffset": -1.0,
+      "afterOffset": -1.0
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 720,
+      "window": [
+        95,
+        112
+      ],
+      "reference": 103.0,
+      "before": 102.5,
+      "after": 102.5,
+      "beforeOffset": -0.5,
+      "afterOffset": -0.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 740,
+      "window": [
+        75,
+        97
+      ],
+      "reference": 83.5,
+      "before": 85.0,
+      "after": 85.0,
+      "beforeOffset": 1.5,
+      "afterOffset": 1.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 500,
+      "window": [
+        245,
+        265
+      ],
+      "reference": 254.5,
+      "before": 255.0,
+      "after": 256.0,
+      "beforeOffset": 0.5,
+      "afterOffset": 1.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 540,
+      "window": [
+        240,
+        261
+      ],
+      "reference": 252.5,
+      "before": 245.5,
+      "after": 250.0,
+      "beforeOffset": -7.0,
+      "afterOffset": -2.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 570,
+      "window": [
+        232,
+        254
+      ],
+      "reference": 243.0,
+      "before": 239.5,
+      "after": 243.5,
+      "beforeOffset": -3.5,
+      "afterOffset": 0.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 600,
+      "window": [
+        230,
+        247
+      ],
+      "reference": 237.5,
+      "before": 237.5,
+      "after": 238.0,
+      "beforeOffset": 0.0,
+      "afterOffset": 0.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 640,
+      "window": [
+        230,
+        253
+      ],
+      "reference": 240.5,
+      "before": 241.5,
+      "after": 241.5,
+      "beforeOffset": 1.0,
+      "afterOffset": 1.0
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 700,
+      "window": [
+        253,
+        275
+      ],
+      "reference": 264.5,
+      "before": 264.5,
+      "after": 264.5,
+      "beforeOffset": 0.0,
+      "afterOffset": 0.0
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 740,
+      "window": [
+        258,
+        280
+      ],
+      "reference": 271.5,
+      "before": 270.5,
+      "after": 270.5,
+      "beforeOffset": -1.0,
+      "afterOffset": -1.0
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 760,
+      "window": [
+        247,
+        272
+      ],
+      "reference": 260.5,
+      "before": 259.0,
+      "after": 259.0,
+      "beforeOffset": -1.5,
+      "afterOffset": -1.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 50,
+      "window": [
+        270,
+        300
+      ],
+      "reference": 286.0,
+      "before": 285.0,
+      "after": 282.0,
+      "beforeOffset": -1.0,
+      "afterOffset": -4.0
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 100,
+      "window": [
+        265,
+        295
+      ],
+      "reference": 277.5,
+      "before": 288.5,
+      "after": 277.5,
+      "beforeOffset": 11.0,
+      "afterOffset": 0.0
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 150,
+      "window": [
+        274,
+        299
+      ],
+      "reference": 283.5,
+      "before": 285.5,
+      "after": 282.5,
+      "beforeOffset": 2.0,
+      "afterOffset": -1.0
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 200,
+      "window": [
+        267,
+        295
+      ],
+      "reference": 281.5,
+      "before": 277.5,
+      "after": 277.5,
+      "beforeOffset": -4.0,
+      "afterOffset": -4.0
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 250,
+      "window": [
+        247,
+        276
+      ],
+      "reference": 262.0,
+      "before": 259.5,
+      "after": 259.5,
+      "beforeOffset": -2.5,
+      "afterOffset": -2.5
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 300,
+      "window": [
+        235,
+        263
+      ],
+      "reference": 247.5,
+      "before": 246.5,
+      "after": 246.5,
+      "beforeOffset": -1.0,
+      "afterOffset": -1.0
+    },
+    {
+      "region": "collie",
+      "boundary": "muzzle/body/paw/tail center",
+      "x": 400,
+      "window": [
+        243,
+        265
+      ],
+      "reference": 253.5,
+      "before": 253.0,
+      "after": 253.0,
+      "beforeOffset": -0.5,
+      "afterOffset": -0.5
+    }
+  ],
+  "summary": {
+    "hero": {
+      "before": {
+        "samples": 30,
+        "medianAbsolute": 2.5,
+        "meanAbsolute": 4.67,
+        "maxAbsolute": 23
+      },
+      "after": {
+        "samples": 30,
+        "medianAbsolute": 1.0,
+        "meanAbsolute": 1.03,
+        "maxAbsolute": 3
+      }
+    },
+    "features": {
+      "before": {
+        "samples": 22,
+        "medianAbsolute": 35.5,
+        "meanAbsolute": 37.27,
+        "maxAbsolute": 88
+      },
+      "after": {
+        "samples": 34,
+        "medianAbsolute": 1.0,
+        "meanAbsolute": 1.06,
+        "maxAbsolute": 3
+      }
+    },
+    "collie": {
+      "before": {
+        "samples": 27,
+        "medianAbsolute": 1.5,
+        "meanAbsolute": 3.09,
+        "maxAbsolute": 12.0
+      },
+      "after": {
+        "samples": 28,
+        "medianAbsolute": 1.0,
+        "meanAbsolute": 1.46,
+        "maxAbsolute": 4.0
+      }
+    }
+  }
+}

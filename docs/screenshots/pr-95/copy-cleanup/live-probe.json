@@ -1,0 +1,20 @@
+{
+  "actualCssViewport": 427,
+  "note": "Requested390 in T3; measured427/usable411, so responsive screenshot claims use exact-source iframe captures instead. Browser interaction probe is reported at actual measured width.",
+  "menuWhy": {
+    "anchorCloses": true,
+    "details": 0,
+    "escapeCloses": true,
+    "focusReturned": true,
+    "headerBottom": 55.99607467651367,
+    "headingTop": 111.99214935302734,
+    "menuOpened": true,
+    "overflow": false,
+    "upcomingVisible": "block",
+    "usable": 411,
+    "whyHash": "#upcoming",
+    "whyText": "Why it matters and why we're working on making it easy.",
+    "width": 427
+  },
+  "obtainium": "Actual homepage CTA clicked and reached http://localhost:8879/obtainium/. Normal Open Obtainium anchor contains unchanged generated URI; fallback https://collie.im/#get preserved. No native install rerun."
+}

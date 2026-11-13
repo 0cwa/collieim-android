@@ -21,6 +21,7 @@ import org.thoughtcrime.securesms.crypto.ProfileKeyUtil
 import org.thoughtcrime.securesms.database.IdentityTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.net.Networking
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.NotificationChannels
 import org.thoughtcrime.securesms.profiles.ProfileName
@@ -43,7 +44,11 @@ import java.util.UUID
  *
  * To use: `@get:Rule val harness = SignalActivityRule()`
  */
-class SignalActivityRule(private val othersCount: Int = 4, private val createGroup: Boolean = false) : ExternalResource() {
+class SignalActivityRule(
+  private val othersCount: Int = 4,
+  private val createGroup: Boolean = false,
+  private val networkEnabled: Boolean = true,
+) : ExternalResource() {
 
   val application: Application = AppDependencies.application
   private val TEST_E164 = "+15555550101"
@@ -82,8 +87,9 @@ class SignalActivityRule(private val othersCount: Int = 4, private val createGro
 
   private fun setupSelf(): Recipient {
     // Local registration can start the foreground message service.
+    AppDependencies.networkManager.setNetworkEnabled(networkEnabled)
+    check(Networking.isEnabled == networkEnabled) { "Signal network state did not match the test rule" }
     NotificationChannels.getInstance()
-    AppDependencies.networkManager.setNetworkEnabled(true)
 
     SecurePreferenceManager.getSecurePreferences(application).edit().putBoolean("pref_prompted_push_registration", true).commit()
     // MOLLY: Test runner SignalTestRunner initializes MasterSecret
@@ -116,6 +122,9 @@ class SignalActivityRule(private val othersCount: Int = 4, private val createGro
       val localRegistrationData = LocalRegistrationMetadataUtil.createLocalRegistrationMetadata(SignalStore.account.aciIdentityKey, SignalStore.account.pniIdentityKey, registrationData, remoteResult, false)
       RegistrationRepository.registerAccountLocally(application, localRegistrationData)
     }
+    // registerAccountLocally restarts the network object graph. Reapply the test's setting after that transition too.
+    AppDependencies.networkManager.setNetworkEnabled(networkEnabled)
+    check(Networking.isEnabled == networkEnabled) { "Signal network state changed during synthetic registration" }
 
     SignalStore.svr.optOut()
     RegistrationUtil.maybeMarkRegistrationComplete()

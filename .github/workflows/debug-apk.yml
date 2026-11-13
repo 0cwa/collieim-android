@@ -1,6 +1,10 @@
 name: Debug APK (optional)
 on:
   pull_request:
+    paths-ignore:
+      - docs/**
+      - README.md
+      - .github/codeql/**
   workflow_dispatch:
 permissions:
   contents: read

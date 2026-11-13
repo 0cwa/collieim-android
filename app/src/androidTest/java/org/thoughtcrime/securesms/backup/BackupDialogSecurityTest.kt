@@ -28,6 +28,7 @@ import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testing.SignalActivityRule
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
@@ -48,10 +49,11 @@ class BackupDialogSecurityTest {
   private fun checkDialog(secure: Boolean) {
     previousSecurity = SignalStore.settings.isScreenSecurityEnabled
     SignalStore.settings.isScreenSecurityEnabled = secure
-    assertEquals("Expected screen-security policy", secure, CoreUiDependencies.isScreenSecurityEnabled)
+    val policySecure = CoreUiDependencies.isScreenSecurityEnabled
+    val activitySecure = AtomicBoolean()
     ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use { scenario ->
       scenario.onActivity { activity ->
-        assertEquals("Activity secure flag", secure, activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE != 0)
+        activitySecure.set(activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE != 0)
         BackupDialog.showEnableBackupDialog(activity, null, null) { }
       }
 
@@ -63,28 +65,39 @@ class BackupDialogSecurityTest {
         override fun perform(uiController: UiController, view: View) {
           val rect = Rect()
           check(view.hasWindowFocus() && view.getGlobalVisibleRect(rect))
+          val rootLocation = IntArray(2)
+          view.rootView.getLocationOnScreen(rootLocation)
+          rect.offset(rootLocation[0], rootLocation[1])
           bounds.set(rect)
           flags.set((view.rootView.layoutParams as WindowManager.LayoutParams).flags)
         }
       })
-      val bitmap = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+      val dialogSecure = flags.get() and WindowManager.LayoutParams.FLAG_SECURE != 0
+      println("BACKUP_DIALOG_FLAGS expected=$secure policy=$policySecure activity=${activitySecure.get()} dialog=$dialogSecure")
+      val bitmap = requireNotNull(instrumentation.uiAutomation.takeScreenshot()) { "Unable to capture device screen" }
+      val rect = bounds.get()
+      var nonBlack = 0
       try {
-        val rect = bounds.get()
-        var nonBlack = 0
+        check(rect.left >= 0 && rect.top >= 0 && rect.right <= bitmap.width && rect.bottom <= bitmap.height && !rect.isEmpty) {
+          "Passphrase view bounds are outside the screenshot"
+        }
         for (y in rect.top until rect.bottom) {
           for (x in rect.left until rect.right) {
             if (bitmap.getPixel(x, y) and 0x00ffffff != 0) nonBlack++
           }
         }
-        if (secure) {
-          assertEquals("Secure dialog pixels must be redacted", 0, nonBlack)
-        } else {
-          assertTrue("Dialog must be visible when screen security is disabled", nonBlack > 0)
-        }
       } finally {
         bitmap.recycle()
       }
-      assertEquals("Dialog secure flag", secure, flags.get() and WindowManager.LayoutParams.FLAG_SECURE != 0)
+      println("BACKUP_DIALOG_PIXELS expected=$secure nonBlack=$nonBlack pixels=${rect.width() * rect.height()}")
+      assertEquals("Expected screen-security policy", secure, policySecure)
+      assertEquals("Activity secure flag", secure, activitySecure.get())
+      assertEquals("Dialog secure flag", secure, dialogSecure)
+      if (secure) {
+        assertEquals("Secure dialog pixels must be redacted", 0, nonBlack)
+      } else {
+        assertTrue("Dialog must be visible when screen security is disabled", nonBlack > 0)
+      }
     }
   }
 }

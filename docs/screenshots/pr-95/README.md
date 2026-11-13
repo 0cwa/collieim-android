@@ -1,3 +1,5 @@
+**Final A landscape refinement:** [registered forest correction and current feature views](backgrounds/a-refinement/README.md). Canonical mural evidence below remains unchanged.
+
 **Current final artwork:** [one faithful canonical mural, native light/dark ON/OFF views and checks](backgrounds/canonical/README.md). Source e8e9f8b0 retains foreground geometry and uses the same independent SVG at every width. Earlier resting redraws and visibility metrics below are historical.
 
 # Current website review evidence

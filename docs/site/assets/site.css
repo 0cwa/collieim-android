@@ -91,18 +91,14 @@ main{background-image:url(art/landscape-page.svg);background-size:100% 100%;back
 @media(max-width:960px){.hero-wrap{background-image:url(art/landscape-hero-mobile.svg)}}
 @media(max-width:600px){main{background-image:url(art/landscape-page-mobile.svg)}}
 
-/* Lower Collie mural: profile in desktop whitespace, resting frieze in the
-   existing narrow Help-to-download gap. These layers never enter layout. */
-.community,.get-wrap{position:relative;isolation:isolate}
-.community::before,.get-wrap::before{content:"";position:absolute;z-index:-1;pointer-events:none;background-image:url(art/collie-lower.svg);background-repeat:no-repeat}
-.community::before{top:20px;right:calc(var(--gutter) + 96px);width:240px;height:180px;background-size:400px 180px;background-position:right top}
-.get-wrap::before{display:none}
-@media(max-width:960px){
-  .community::before{display:none}
-  .get-wrap::before{display:block;top:-40px;left:var(--gutter);right:var(--gutter);height:88px;background-size:auto 100%;background-position:center bottom}
-}
-@media(max-width:860px){.get-wrap::before{top:-64px;height:104px}}
-@media(max-width:600px){.get-wrap::before{background-image:url(art/collie-frieze.svg);background-size:100% 100%;background-position:right bottom}}
+/* Artwork stays independent of foreground flow. The zero-height transition
+   host anchors its complete ribbon to the actual gap after Upcoming. */
+.section-landscape{position:relative;height:0;pointer-events:none;isolation:isolate}
+.section-landscape::before{content:"";position:absolute;left:0;right:0;top:-20px;height:40px;z-index:-1;background:url(art/landscape-transition.svg) 0 0/100% 100% no-repeat}
+.community{position:relative;isolation:isolate}
+.community::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:-20px;right:0;width:1100px;height:495px;opacity:.24;background:url(art/collie-lower.svg) right top/100% 100% no-repeat}
+@media(max-width:960px){.community::before{top:auto;bottom:-60px;width:1000px;height:450px;opacity:.22}}
+@media(max-width:600px){.community::before{width:760px;height:342px;opacity:.22}}
 
 /* ---------- hero ---------- */
 .hero-wrap{--hero-bottom-clearance:80px;position:relative;color:var(--mist);background-color:var(--hero);

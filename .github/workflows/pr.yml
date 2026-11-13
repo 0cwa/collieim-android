@@ -87,6 +87,13 @@ jobs:
       - uses: ./.github/actions/disk-cleanup
       - name: Check host-test tooling
         run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/host-tests -p 'test_*.py'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12.14'
+      - name: Install pinned screenshot decoder
+        run: |
+          printf '%s\n' 'Pillow==13.0.0 --hash=sha256:42d63be3af4f9b951b199b0a9d23365d37ab14687e6d77b74940432c8515c4ca' > "$RUNNER_TEMP/png-requirements.txt"
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r "$RUNNER_TEMP/png-requirements.txt"
       - name: Check CI result gates
         run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/ci -p 'test_*.py'
       - name: Record the tested source

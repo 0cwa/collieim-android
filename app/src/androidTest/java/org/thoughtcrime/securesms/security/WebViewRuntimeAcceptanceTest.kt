@@ -47,10 +47,8 @@ import org.thoughtcrime.securesms.SignalInstrumentationApplicationContext
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsFragmentDirections
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.paypal.PayPalConfirmationDialogFragment
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.paypal.PayPalConfirmationDialogFragmentArgs
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.paypal.PayPalConfirmationResult
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.stripe.Stripe3DSDialogFragment
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.stripe.Stripe3DSDialogFragmentArgs
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -157,7 +155,7 @@ class WebViewRuntimeAcceptanceTest {
       scenario.onActivity { activity ->
         activity.supportFragmentManager.setFragmentResultListener(PayPalConfirmationDialogFragment.REQUEST_KEY, activity) { _, bundle -> result.set(bundle) }
         val fragment = PayPalConfirmationDialogFragment().apply {
-          arguments = PayPalConfirmationDialogFragmentArgs(Uri.parse("about:blank")).toBundle()
+          arguments = Bundle().apply { putParcelable("uri", Uri.parse("about:blank")) }
         }
         fragment.showNow(activity.supportFragmentManager, "paypal-test")
         web = fragment.requireView().findViewById(R.id.web_view)
@@ -184,7 +182,11 @@ class WebViewRuntimeAcceptanceTest {
       scenario.onActivity { activity ->
         activity.supportFragmentManager.setFragmentResultListener(Stripe3DSDialogFragment.REQUEST_KEY, activity) { _, bundle -> result.set(bundle) }
         val fragment = Stripe3DSDialogFragment().apply {
-          arguments = Stripe3DSDialogFragmentArgs(Uri.parse("about:blank"), Uri.parse("https://return.invalid/complete"), payment).toBundle()
+          arguments = Bundle().apply {
+            putParcelable("uri", Uri.parse("about:blank"))
+            putParcelable("return_uri", Uri.parse("https://return.invalid/complete"))
+            putParcelable("waiting_for_auth_payment", payment)
+          }
         }
         fragment.showNow(activity.supportFragmentManager, "stripe-test")
         web = fragment.requireView().findViewById(R.id.web_view)

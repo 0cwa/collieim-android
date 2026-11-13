@@ -1,5 +1,6 @@
 package org.thoughtcrime.securesms.testing.incomingmessageobserver
 
+import android.os.SystemClock
 import okio.ByteString.Companion.toByteString
 import org.junit.Assume
 import org.junit.rules.ExternalResource
@@ -9,6 +10,7 @@ import org.signal.benchmark.setup.OtherClient
 import org.signal.benchmark.setup.TestUsers
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
+import org.signal.libsignal.protocol.SignalProtocolAddress
 import org.signal.network.websocket.WebSocketRequestMessage
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.IncomingMessageObserverInstrumentationApplicationContext
@@ -96,7 +98,21 @@ class IncomingMessageObserverRule(
       client.encrypt(Generator.encryptedTextMessage(System.currentTimeMillis()))
     }
     deliverEnvelopes(handshakeEnvelopes)
+    awaitPeerSessions()
     peers.forEach { it.completeSession() }
+  }
+
+  private fun awaitPeerSessions() {
+    val addresses = peers.map { SignalProtocolAddress(it.serviceId.toString(), 1) }
+    val deadline = SystemClock.elapsedRealtime() + drainTimeout.inWholeMilliseconds
+    while (true) {
+      val missing = addresses.filterNot { AppDependencies.protocolStore.aci().containsSession(it) }
+      if (missing.isEmpty()) return
+      check(SystemClock.elapsedRealtime() < deadline) {
+        "Timed out waiting for incoming handshake sessions: $missing"
+      }
+      Thread.sleep(50)
+    }
   }
 
   fun deliver(builder: DeliveryBuilder.() -> Unit) {

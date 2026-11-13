@@ -29,3 +29,122 @@ jobs:
           path: app/build/outputs/apk/prodWebsite/debug/*.apk
           retention-days: 7
           if-no-files-found: error
+
+  archive-shard:
+    if: github.event_name == 'workflow_dispatch'
+    name: Archive shard on Android 15
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - name: Record source and build matching APKs
+        id: build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/archive-diagnostic
+          git rev-parse HEAD HEAD^{tree} > build/archive-diagnostic/source.txt
+          cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+          ./gradlew --no-daemon --console=plain \
+            :app:assembleProdWebsiteDebug :app:assembleProdWebsiteDebugAndroidTest \
+            2>&1 | tee build/archive-diagnostic/build.log
+          sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+            app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > build/archive-diagnostic/apk-before.txt
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Prepare the instrumented run
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/reuse-archive-apks.gradle" <<'GRADLE'
+          def packageTasks = [':app:packageProdWebsiteDebug', ':app:packageProdWebsiteDebugAndroidTest']
+          if (gradle.parent == null) {
+            gradle.beforeProject { project ->
+              project.tasks.configureEach { task ->
+                if (packageTasks.contains(task.path)) {
+                  task.onlyIf('reuse the previously built and hashed APK') { false }
+                }
+              }
+            }
+            gradle.taskGraph.whenReady { graph ->
+              packageTasks.each { path ->
+                if (!graph.hasTask(path)) throw new GradleException("Missing APK packaging task: $path")
+              }
+            }
+          }
+          GRADLE
+          cat > "$RUNNER_TEMP/run-archive-shard.sh" <<'SH'
+          set -euo pipefail
+          evidence=build/archive-diagnostic
+          monitor_pid=
+          collect() {
+            status=$?
+            trap - EXIT
+            if [[ -n "$monitor_pid" ]]; then kill "$monitor_pid" 2>/dev/null || true; wait "$monitor_pid" 2>/dev/null || true; fi
+            printf '%s\n' "$status" > "$evidence/exit-code.txt"
+            timeout 15s adb logcat -b all -d -t 12000 -v threadtime > "$evidence/logcat.txt" 2>&1 || true
+            timeout 10s adb devices -l > "$evidence/adb-devices-after.txt" 2>&1 || true
+            sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+              app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > "$evidence/apk-after.txt" || true
+            exit "$status"
+          }
+          trap collect EXIT
+          timeout 10s adb shell getprop ro.build.version.sdk | tr -d '\r' > "$evidence/device-api.txt"
+          test "$(cat "$evidence/device-api.txt")" = 35
+          timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
+          timeout 10s adb logcat -c
+          (
+            for ((i=0; i<1080; i++)); do
+              date -u +%FT%TZ
+              timeout 5s adb devices -l || true
+              ps -eo pid,ppid,stat,comm | awk 'NR == 1 || $4 ~ /^(adb|emulator|qemu)/' || true
+              sleep 5
+            done
+          ) > "$evidence/liveness.txt" 2>&1 &
+          monitor_pid=$!
+          ./gradlew --no-daemon --console=plain \
+            :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
+            :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-archive-apks.gradle" \
+            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.backup.v2.ArchiveImportExportTests#shard1' \
+            2>&1 | tee "$evidence/connected.log"
+          SH
+      - name: Run shard through Gradle and Android Test Orchestrator
+        id: device
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7_pro
+          ram-size: 2048M
+          cores: 2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash "$RUNNER_TEMP/run-archive-shard.sh"
+      - name: Require the selected passing shard and matching APKs
+        if: always() && !cancelled()
+        env:
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          DEVICE_OUTCOME: ${{ steps.device.outcome }}
+        run: python3 .github/scripts/check-archive-device-results.py
+      - name: Preserve diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: archive-shard-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/archive-diagnostic
+            app/build/reports/androidTests
+            app/build/outputs/androidTest-results
+          retention-days: 14
+          if-no-files-found: error

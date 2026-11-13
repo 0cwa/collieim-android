@@ -1,8 +1,11 @@
 package org.thoughtcrime.securesms.providers
 
+import android.app.AppOpsManager
 import android.app.Application
+import android.content.Context
 import android.content.pm.ProviderInfo
 import android.net.Uri
+import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -128,6 +131,9 @@ class AvatarProviderLoggingTest {
   private fun createProvider(): AvatarProvider {
     val appContext = mockk<ApplicationContext>(relaxed = true)
     every { appContext.applicationContext } returns appContext
+    val appOpsManager = ApplicationProvider.getApplicationContext<Application>()
+      .getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+    every { appContext.getSystemService(Context.APP_OPS_SERVICE) } returns appOpsManager
 
     return AvatarProvider().apply {
       attachInfo(

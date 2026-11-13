@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="400 0 400 320" aria-hidden="true" focusable="false"><style>svg{pointer-events:none}.line{fill:none;stroke:#687E59;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}.solid{fill:#687E59}.exposed{opacity:.56}.overlap{opacity:.22}.accent{fill:#F2982B;opacity:.56}@media(prefers-color-scheme:dark){.line{stroke:#B7C597}.solid{fill:#B7C597}}</style>
+<path class="line exposed" d="M692 70C681 53 672 46 643 40L645 31L662 19C632 -2 612 21 594 40C580 60 565 74 543 77M615 48C624 33 636 28 645 31"/>
+<path class="line overlap" d="M670 117C677 102 706 109 726 101C738 97 744 86 741 80C728 76 708 80 692 70M619 113C628 91 638 85 650 82"/>
+<circle class="solid overlap" cx="665" cy="70" r="4.8"/><path class="solid overlap" d="M731 78C738 76 744 78 742 84C740 91 736 92 733 88Z"/>
+<path class="line overlap" d="M670 117C703 130 740 140 739 162C738 200 675 220 602 238"/>
+<path class="solid exposed" d="M606 65C584 83 563 84 543 77C565 90 600 87 606 65Z"/>
+<path class="solid overlap" d="M600 98C577 122 548 126 527 112C550 109 576 107 600 98Z"/>
+<path class="solid overlap" d="M569 100C539 115 520 130 507 140C523 113 544 105 569 100Z"/>
+<path class="solid overlap" d="M605 112C573 135 545 151 515 141C551 129 575 122 605 112Z"/>
+<path class="line exposed" d="M425 251C411 263 414 272 436 271C461 272 474 263 488 258M437 267C435 261 440 256 448 252"/>
+<path class="line exposed" d="M488 258C526 255 564 245 602 238"/>
+<path transform="translate(0 -40)" class="accent" d="M474 335C499 270 549 251 603 241C559 249 525 274 506 297C534 277 559 270 581 268C552 278 535 295 521 308C566 274 608 280 650 299C686 318 711 325 736 318C718 332 704 336 680 333C716 337 744 321 769 299C756 333 725 347 691 347C646 350 607 325 562 311C533 303 503 309 474 335Z"/>
+</svg>

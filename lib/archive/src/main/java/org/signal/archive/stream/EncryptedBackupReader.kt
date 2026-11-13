@@ -13,7 +13,6 @@ import org.signal.core.models.ServiceId.ACI
 import org.signal.core.models.backup.BackupId
 import org.signal.core.models.backup.MessageBackupKey
 import org.signal.core.util.logging.Log
-import org.signal.core.util.readFully
 import org.signal.core.util.readNBytesOrThrow
 import org.signal.core.util.readVarInt32
 import org.signal.core.util.stream.LimitedInputStream
@@ -24,6 +23,7 @@ import java.io.ByteArrayOutputStream
 import java.io.EOFException
 import java.io.IOException
 import java.io.InputStream
+import java.io.OutputStream
 import java.security.MessageDigest
 import java.util.zip.GZIPInputStream
 import javax.crypto.Cipher
@@ -144,6 +144,32 @@ class EncryptedBackupReader private constructor(
       return stream.readNBytesOrThrow(metadataLength)
     }
 
+    /** Copies the authenticated, decompressed backup bytes without parsing or re-encoding frames.
+     * [dataStream] must reopen the same immutable backup positioned at its IV, after any prefix.
+     * [encryptedLength] includes the IV, ciphertext, and trailing MAC, but excludes the prefix.
+     */
+    fun copyAuthenticatedPlaintext(
+      aesKey: ByteArray,
+      macKey: ByteArray,
+      encryptedLength: Long,
+      dataStream: () -> InputStream,
+      outputStream: OutputStream
+    ) {
+      val ivLength = 16
+      if (encryptedLength < ivLength + 16 + MAC_SIZE) throw IOException("Invalid encrypted backup length")
+
+      dataStream().use { validateMac(macKey, encryptedLength, it) }
+      dataStream().use { encrypted ->
+        val iv = encrypted.readNBytesOrThrow(ivLength)
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding").apply {
+          init(Cipher.DECRYPT_MODE, SecretKeySpec(aesKey, "AES"), IvParameterSpec(iv))
+        }
+        GZIPInputStream(
+          CipherInputStream(LimitedInputStream(encrypted, encryptedLength - ivLength - MAC_SIZE), cipher)
+        ).use { plaintext -> plaintext.copyTo(outputStream) }
+      }
+    }
+
     private fun validateMac(macKey: ByteArray, streamLength: Long, dataStream: InputStream) {
       val mac = Mac.getInstance("HmacSHA256").apply {
         init(SecretKeySpec(macKey, "HmacSHA256"))
@@ -154,7 +180,10 @@ class EncryptedBackupReader private constructor(
         mac = mac
       )
 
-      macStream.readFully(false)
+      val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+      while (macStream.read(buffer) != -1) {
+        // Reading updates the MAC; discard each chunk instead of buffering the backup.
+      }
 
       val calculatedMac = macStream.mac.doFinal()
       val expectedMac = dataStream.readNBytesOrThrow(MAC_SIZE)

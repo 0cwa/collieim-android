@@ -1,3 +1,5 @@
+**Superseded fit evidence:** [current registered refinement and interactive comparison](refinement/README.md). The original fixed-alpha method below was insufficient; its renders precede the measured corrections.
+
 # Implemented flowing landscape and lower Collie murals
 
 Current production source: signed `40027033fabf87a374658d226393168c364193f6`; flowing-landscape checkpoint: signed `2699aa2d12709fc0a590d480ae10ff7f59fe8851`. [Comparison board](comparison.html) includes actual desktop/mobile renders, selected A/C raster references and same-coordinate fitting overlays. References are image-generated proposals; production backgrounds are hand-authored SVG, never raster substitutes.

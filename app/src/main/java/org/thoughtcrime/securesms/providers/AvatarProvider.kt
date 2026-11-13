@@ -19,7 +19,6 @@ import org.signal.core.util.PartAuthorityUris
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.contentproviders.BaseContentProvider
 import org.signal.core.util.crypto.AttachmentSecretProvider
-import org.signal.core.util.logging.AndroidLogger
 import org.signal.core.util.logging.Log
 import org.signal.remoteconfig.RemoteConfig
 import org.signal.storage.database.DatabaseSecretProvider
@@ -86,8 +85,6 @@ class AvatarProvider : BaseContentProvider() {
     )
 
     SignalStore.init(application)
-
-    Log.initialize(AndroidLogger)
 
     if (!AppDependencies.isInitialized) {
       Log.i(TAG, "Initializing AppDependencies.")

@@ -99,6 +99,7 @@ import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.service.LocalBackupListener
 import org.thoughtcrime.securesms.service.RotateSignedPreKeyListener
 import org.thoughtcrime.securesms.util.BackupUtil
+import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.whispersystems.signalservice.api.link.TransferArchiveResponse
 import org.whispersystems.signalservice.api.push.UsernameLinkComponents
 import java.io.File
@@ -431,6 +432,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
         }
 
         reenableLegacyLocalBackups(rootUri, passphrase)
+        TextSecurePreferences.onPostBackupRestore(context)
 
         trySend(readRestoredLocalBackupState(includePreRegistrationKeys = true))
         Log.d(TAG, "V1 restore complete.")

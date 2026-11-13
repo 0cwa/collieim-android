@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat;
 import org.signal.core.util.logging.Log;
 import org.thoughtcrime.securesms.BuildConfig;
 import org.thoughtcrime.securesms.R;
+import org.thoughtcrime.securesms.ScreenLockController;
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener;
 import org.thoughtcrime.securesms.backup.proto.SharedPreference;
 import org.thoughtcrime.securesms.keyvalue.SettingsValues;
@@ -175,6 +176,34 @@ public class TextSecurePreferences {
 
   private static final String[] longPreferencesToBackupMolly = {PASSPHRASE_LOCK_TIMEOUT};
 
+  /** Only portable settings exported by Molly may be remapped from another application's file. */
+  public static boolean isRestorableMollyPreference(@NonNull SharedPreference preference) {
+    int valueCount = (preference.value_ != null ? 1 : 0) +
+                     (preference.booleanValue != null ? 1 : 0) +
+                     (preference.integerValue != null ? 1 : 0) +
+                     (preference.longValue != null ? 1 : 0) +
+                     (preference.isStringSetValue == Boolean.TRUE ? 1 : 0);
+
+    if (valueCount != 1 || (preference.isStringSetValue != Boolean.TRUE && !preference.stringSetValue.isEmpty())) {
+      return false;
+    }
+
+    if (Arrays.asList(booleanPreferencesToBackupMolly).contains(preference.key)) {
+      return preference.booleanValue != null;
+    }
+
+    if (Arrays.asList(stringSetPreferencesToBackupMolly).contains(preference.key)) {
+      return preference.isStringSetValue == Boolean.TRUE;
+    }
+
+    if (Arrays.asList(longPreferencesToBackupMolly).contains(preference.key)) {
+      // Historical Molly versions encoded the timeout as uint32; current versions use int64.
+      return preference.integerValue != null || (preference.longValue != null && preference.longValue >= 0);
+    }
+
+    return false;
+  }
+
   public static long getPreferencesToSaveToBackupCount(@NonNull Context context) {
     return getPreferencesToSaveToBackup(context).size();
   }
@@ -218,6 +247,10 @@ public class TextSecurePreferences {
   }
 
   public static void onPostBackupRestore(@NonNull Context context) {
+    // The process was started with the pre-restore preferences. Apply the restored lock without
+    // requiring a restart or treating the ongoing restore as a successful biometric unlock.
+    ScreenLockController.enableAutoLock(isBiometricScreenLockEnabled(context));
+
     if (NotificationChannels.supported()) {
       NotificationChannels.getInstance().updateMessageVibrate(SignalStore.settings().isMessageVibrateEnabled());
     }

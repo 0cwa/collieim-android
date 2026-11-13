@@ -128,6 +128,7 @@ include(":feature:media-viewer")
 include(":screener")
 include(":lintchecks")
 include(":fast-lint")
+include(":fuzz-encrypted-push")
 
 // Stable Gradle project IDs backed by grouped source directories.
 project(":core-gms").projectDir = file("core/gms")
@@ -139,5 +140,6 @@ project(":core-gms:tasks").projectDir = file("core/gms/tasks")
 project(":screener").projectDir = file("tooling/screener")
 project(":lintchecks").projectDir = file("tooling/lintchecks")
 project(":fast-lint").projectDir = file("tooling/fast-lint")
+project(":fuzz-encrypted-push").projectDir = file("tooling/fuzz-encrypted-push")
 
 rootProject.name = "Molly"

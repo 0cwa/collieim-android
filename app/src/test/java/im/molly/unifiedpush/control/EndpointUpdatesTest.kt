@@ -4,15 +4,43 @@ import im.molly.unifiedpush.enrollment.ControlKeyId
 import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import im.molly.unifiedpush.receiver.EncryptedPush
+import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.util.Random
 
 class EndpointUpdatesTest {
+  private val runtimeFixture by lazy {
+    ObjectMapper().readTree(javaClass.getResourceAsStream("/colliesocket-contract-v3/fixtures/runtime-cases-v3.json"))
+  }
+  private val runtimeCases by lazy { runtimeFixture.get("cases").associateBy { it.get("id").asText() } }
+
+  /** Every pinned runtime vector is deliberately classified; additions to the contract fail closed here. */
+  private val runtimeCaseClassification = mapOf(
+    "stale-sequence-unseen-request-id" to "phone: delayed lower sequence cannot roll back",
+    "equal-sequence-nonidentical" to "phone: equal sequence cannot replace exact intent",
+    "same-epoch-different-key" to "server-only: enrollment epoch conflict for a different control key",
+    "conflicting-repeated-request-id" to "server-only: request receipt digest conflict",
+    "reaffirm-same-epoch-fresh-id" to "server-only: server row generation and outbox transaction",
+    "delayed-old-same-epoch-event" to "phone: delayed event for superseded import",
+    "old-file-recorded-reimport-after-newer-same-epoch" to "server-only: historical receipt lookup",
+    "old-file-unseen-reimport-after-newer-same-epoch" to "server-only: selected-account receipt ledger",
+    "legacy-unknown-intent" to "phone: v2 cannot bind an unknown legacy intent",
+    "explicit-lower-epoch-recovery" to "phone: explicit lower-epoch recovery promotes exact identity",
+    "lost-status-later-wake" to "phone: matching wake promotes pending import",
+    "ordinary-lower-epoch-before-later-candidate" to "phone: lower epoch candidate remains eligible",
+    "cap-refusal-rerender-restart" to "phone: pending cap and sequence floor retained",
+    "rerender-existing-no-slot" to "phone: existing persisted intent is not duplicated",
+    "restart-retains-pending-intents" to "phone: restart retains pending records",
+    "unknown-legacy-migration" to "phone: epoch-only v3 mismatch does not bind legacy intent",
+  )
+
   private class Memory(initial: ControlState) : ControlStore {
     var state = initial
     var replay: String? = null
@@ -42,6 +70,16 @@ class EndpointUpdatesTest {
 
   private fun key(bytes: ByteArray) = java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(bytes)
   private fun id(n: Int) = "00000000-0000-4000-8000-%012d".format(n)
+  private fun fixtureId(value: String): String = when (value) {
+    "A" -> id(100)
+    "B" -> id(101)
+    else -> value
+  }
+  private fun fixtureKey(value: String): String = when (value) {
+    "K0", "K1" -> keyA
+    "K2" -> keyB
+    else -> error("Unknown synthetic fixture key label: $value")
+  }
   private fun intent(
     requestId: String,
     sequence: Long,
@@ -88,6 +126,274 @@ class EndpointUpdatesTest {
     importSequence = intent.sequence,
     serverTarget = intent.target,
   )
+
+  @Test
+  fun `every runtime contract case maps to production behavior or explicit server exclusion`() {
+    assertEquals(1, runtimeFixture.get("fixture_version").asInt())
+    assertTrue(runtimeFixture.get("synthetic_only").asBoolean())
+    assertEquals("duplicate fixture IDs are invalid", runtimeFixture.get("cases").size(), runtimeCases.size)
+    assertEquals(runtimeCaseClassification.keys, runtimeCases.keys)
+    for ((caseId, classification) in runtimeCaseClassification) {
+      val fixture = runtimeCases.getValue(caseId)
+      when {
+        classification.startsWith("server-only:") -> {
+          assertTrue("$caseId must remain explicitly server-only", classification.startsWith("server-only: "))
+          when (caseId) {
+            "same-epoch-different-key" -> {
+              assertEquals("reject", fixture.get("expected").asText())
+              assertEquals("epoch_conflict", fixture.get("expected_error").asText())
+              assertFalse(fixture.get("row_mutation").asBoolean())
+            }
+            "conflicting-repeated-request-id" -> {
+              assertEquals("reject", fixture.get("expected").asText())
+              assertEquals("idempotency_conflict", fixture.get("expected_error").asText())
+              assertFalse(fixture.get("row_mutation").asBoolean())
+            }
+            "reaffirm-same-epoch-fresh-id" -> {
+              assertEquals("accept", fixture.get("expected").asText())
+              assertTrue(fixture.get("confirmation_queued_atomically").asBoolean())
+            }
+            "old-file-recorded-reimport-after-newer-same-epoch" -> {
+              assertEquals("saved_historical_receipt", fixture.get("expected").asText())
+              assertFalse(fixture.get("historical_receipt_is_current_confirmation").asBoolean())
+            }
+            "old-file-unseen-reimport-after-newer-same-epoch" -> {
+              assertEquals("reject", fixture.get("expected").asText())
+              assertEquals("epoch_conflict", fixture.get("expected_error").asText())
+              assertFalse(fixture.get("row_mutation").asBoolean())
+            }
+            else -> error("Unmapped server-only runtime case: $caseId")
+          }
+        }
+        else -> when (caseId) {
+          "stale-sequence-unseen-request-id" -> {
+            val retained = fixture.get("retained")
+            val incoming = fixture.get("incoming")
+            val old = intent(
+              fixtureId(retained.get("import_id").asText()),
+              retained.get("import_seq").asLong(), retained.get("epoch").asLong(), fixtureKey(retained.get("key_id").asText()),
+            )
+            val candidate = intent(
+              fixtureId(incoming.get("import_id").asText()),
+              incoming.get("import_seq").asLong(), incoming.get("epoch").asLong(), fixtureKey(incoming.get("key_id").asText()),
+            )
+            val store = Memory(active(old).copy(intents = listOf(candidate), importSequence = retained.get("import_seq").asLong()))
+            val before = store.state
+            assertEquals(EndpointUpdates.Effect.REJECTED, accept(store, caseId, event(candidate)))
+            assertEquals(before, store.state)
+          }
+          "equal-sequence-nonidentical" -> {
+            val retained = fixture.get("retained")
+            val incoming = fixture.get("incoming")
+            val old = intent(
+              fixtureId(retained.get("import_id").asText()), retained.get("import_seq").asLong(),
+              retained.get("epoch").asLong(), fixtureKey(retained.get("key_id").asText()),
+            )
+            val candidate = intent(
+              fixtureId(incoming.get("import_id").asText()), incoming.get("import_seq").asLong(),
+              incoming.get("epoch").asLong(), fixtureKey(incoming.get("key_id").asText()),
+            )
+            val store = Memory(active(old).copy(intents = listOf(candidate), importSequence = retained.get("import_seq").asLong()))
+            val before = store.state
+            assertEquals(EndpointUpdates.Effect.REJECTED, accept(store, caseId, event(candidate)))
+            assertEquals(before, store.state)
+          }
+          "delayed-old-same-epoch-event" -> {
+            val retained = fixture.get("retained")
+            val incoming = fixture.get("incoming")
+            val newer = intent(
+              fixtureId(retained.get("import_id").asText()), retained.get("import_seq").asLong(),
+              retained.get("epoch").asLong(), fixtureKey(retained.get("key_id").asText()),
+            )
+            val old = intent(
+              fixtureId(incoming.get("import_id").asText()), incoming.get("import_seq").asLong(),
+              incoming.get("epoch").asLong(), fixtureKey(incoming.get("key_id").asText()), eligible = false,
+            )
+            val store = Memory(active(newer).copy(intents = listOf(old), importSequence = retained.get("import_seq").asLong()))
+            val before = store.state
+            assertEquals(EndpointUpdates.Effect.REJECTED, accept(store, caseId, event(old)))
+            assertEquals(before, store.state)
+          }
+          "legacy-unknown-intent", "unknown-legacy-migration" -> {
+            val retained = fixture.get("retained")
+            val incoming = fixture.get("incoming")
+            if (caseId == "legacy-unknown-intent") assertEquals("UNKNOWN", retained.get("intent").asText())
+            if (caseId == "unknown-legacy-migration") {
+              assertTrue(incoming.get("matches_epoch_only").asBoolean())
+              assertFalse(incoming.get("matches_import_id").asBoolean())
+            }
+            val activeKey = fixtureKey(retained.get("active_key").asText())
+            val eventEpoch = incoming.get("epoch")?.asLong() ?: 5L
+            val store = Memory(ControlState(
+              key = activeKey,
+              activeEpoch = eventEpoch,
+              highestEpoch = eventEpoch,
+              legacyPending = LegacyPending(activeKey, eventEpoch, target),
+            ))
+            val eventIdentity = intent(id(106), 1, eventEpoch, activeKey)
+            val legacyEvent = event(
+              eventIdentity,
+              version = incoming.get("event_version").asInt(),
+              requestId = id(107),
+              kind = if (incoming.get("event_version").asInt() == 2) EncryptedPush.Kind.WAKE else EncryptedPush.Kind.STATUS,
+              code = if (incoming.get("event_version").asInt() == 2) null else EncryptedPush.CODE_ENROLLMENT_IMPORTED,
+            )
+            val expectedEffect = if (caseId == "legacy-unknown-intent") EndpointUpdates.Effect.NONE else EndpointUpdates.Effect.REJECTED
+            val before = store.state
+            assertEquals(expectedEffect, accept(store, caseId, legacyEvent))
+            assertEquals(before, store.state)
+            assertEquals(activeKey, store.state.key)
+            assertNotNull(store.state.legacyPending)
+            assertTrue(store.state.intents.isEmpty())
+          }
+          "explicit-lower-epoch-recovery" -> {
+            val retained = fixture.get("retained")
+            val incoming = fixture.get("incoming")
+            val from = intent(id(108), retained.get("active_intent_seq").asLong(), retained.get("remembered_epoch").asLong(), keyA)
+            val recovery = intent(
+              id(109), incoming.get("import_seq").asLong(), incoming.get("resulting_export_epoch").asLong(),
+              keyB, recovery = incoming.get("explicit_recovery_acknowledged").asBoolean(),
+            )
+            val store = Memory(active(from).copy(
+              intents = listOf(recovery), importSequence = incoming.get("import_seq").asLong(),
+              highestEpoch = retained.get("remembered_epoch").asLong(),
+            ))
+            assertEquals(EndpointUpdates.Effect.PROMOTED, accept(store, caseId, event(recovery)))
+            assertEquals(incoming.get("resulting_export_epoch").asLong(), store.state.activeEpoch)
+          }
+          "lost-status-later-wake" -> {
+            val retained = fixture.get("retained")
+            val incoming = fixture.get("incoming")
+            val pending = intent(
+              fixtureId(retained.get("pending_import_id").asText()), 1, retained.get("epoch").asLong(),
+              fixtureKey(retained.get("key_id").asText()),
+            )
+            val store = Memory(ControlState(intents = listOf(pending), importSequence = 1, highestEpoch = retained.get("epoch").asLong()))
+            val kind = when (incoming.get("event_kind").asText()) {
+              "wake" -> EncryptedPush.Kind.WAKE
+              else -> error("Unmapped phone runtime event kind: ${incoming.get("event_kind").asText()}")
+            }
+            val wake = event(
+              pending, requestId = fixtureId(incoming.get("import_id").asText()),
+              epoch = incoming.get("epoch").asLong(), kind = kind, code = null,
+            )
+            assertEquals(EndpointUpdates.Effect.PROMOTED, accept(store, caseId, wake))
+            assertEquals(pending.requestId, store.state.activeImportId)
+          }
+          "ordinary-lower-epoch-before-later-candidate" -> {
+            val retained = fixture.get("retained")
+            val incoming = fixture.get("incoming")
+            assertTrue(incoming.get("is_next_server_epoch").asBoolean())
+            val earlier = intent(
+              id(111), retained.get("candidate_seq").asLong(), retained.get("candidate_target_epoch").asLong(),
+              keyB, eligible = retained.get("eligible").asBoolean(),
+            )
+            val later = intent(
+              id(112), incoming.get("import_seq").asLong() + 1, incoming.get("epoch").asLong() + 1, keyC,
+            )
+            val store = Memory(ControlState(
+              intents = listOf(earlier, later), importSequence = incoming.get("import_seq").asLong() + 1,
+              highestEpoch = incoming.get("epoch").asLong() + 1,
+            ))
+            assertEquals(EndpointUpdates.Effect.PROMOTED, accept(store, caseId, event(earlier)))
+            assertEquals(earlier.requestId, store.state.activeImportId)
+          }
+          "cap-refusal-rerender-restart" -> {
+            val retained = fixture.get("retained")
+            val count = retained.get("pending_count").asInt()
+            val floor = retained.get("sequence_floor").asLong()
+            val records = (floor - count + 1..floor).map { sequence ->
+              intent(id(120 + sequence.toInt()), sequence, sequence - (floor - count), keyB)
+            }
+            val store = Memory(ControlState(intents = records, importSequence = floor, highestEpoch = floor + 1))
+            val before = store.state
+            val failure = runCatching {
+              EndpointUpdates.recordIntent(store, false) { _, seq -> intent(id(140), seq, floor + 2, keyC) }
+            }.exceptionOrNull()
+            assertEquals("pending_limit", (failure as EnrollmentFile.Invalid).code)
+            assertEquals(before, store.state)
+            assertEquals(floor, store.state.importSequence)
+          }
+          "rerender-existing-no-slot" -> {
+            val retained = fixture.get("retained")
+            val incoming = fixture.get("incoming")
+            val floor = retained.get("import_seq").asLong()
+            val pending = (floor - retained.get("pending_count").asInt() + 1..floor).map { sequence ->
+              val requestId = if (sequence == floor) fixtureId(retained.get("import_id").asText()) else id(150 + sequence.toInt())
+              intent(requestId, sequence, 6, keyA)
+            }
+            val store = Memory(ControlState(intents = pending, importSequence = floor, highestEpoch = 6))
+            assertEquals(retained.get("pending_count").asInt(), store.state.pendingIntentCount)
+            val before = store.state
+            val restored = (ControlState.parse(before.serialize()) as ControlStateRead.Current).state
+            assertEquals(before, restored)
+            assertEquals(floor, restored.importSequence)
+            assertFalse(incoming.get("new_id").asBoolean())
+            assertFalse(incoming.get("new_sequence").asBoolean())
+            val existing = restored.intents.single { it.requestId == fixtureId(retained.get("import_id").asText()) }
+            val afterExistingPublication = Memory(restored)
+            assertEquals(EndpointUpdates.Effect.PROMOTED, accept(afterExistingPublication, caseId, event(existing)))
+            assertEquals(floor, afterExistingPublication.state.importSequence)
+            assertEquals(existing.requestId, afterExistingPublication.state.activeImportId)
+          }
+          "restart-retains-pending-intents" -> {
+            val retained = fixture.get("retained")
+            assertTrue(fixture.get("incoming").get("restart").asBoolean())
+            val count = retained.get("pending_count").asInt()
+            val floor = retained.get("sequence_floor").asLong()
+            val pending = (floor - count + 1..floor).map { sequence ->
+              intent(id(150 + sequence.toInt()), sequence, sequence - (floor - count), keyB)
+            }
+            val store = Memory(ControlState(intents = pending, importSequence = floor, highestEpoch = floor - count + 1))
+            val restored = (ControlState.parse(store.state.serialize()) as ControlStateRead.Current).state
+            assertEquals(pending, restored.intents)
+            assertEquals(count, restored.pendingIntentCount)
+            assertEquals(floor, restored.importSequence)
+          }
+          else -> error("Unmapped phone runtime case: $caseId")
+        }
+      }
+    }
+  }
+
+  @Test
+  fun `seeded short import sequences preserve exact promotion and the retained sequence floor`() {
+    val random = Random(0x43534f434b45544cL)
+    repeat(48) { run ->
+      val store = Memory(ControlState())
+      val generated = (1..ControlState.MAX_PENDING_INTENTS).map { index ->
+        val sequence = (index + 1).toLong()
+        val candidateKey = listOf(keyA, keyB, keyC)[random.nextInt(3)]
+        val candidateEpoch = 1L + random.nextInt(7)
+        EndpointUpdates.recordIntent(store, fullRecovery = random.nextBoolean()) { _, allocated ->
+          intent(id(1000 + run * 10 + index), allocated, candidateEpoch, candidateKey, recovery = true)
+        }
+      }
+
+      val newest = generated.last()
+      val wrongIdentity = event(newest, requestId = id(9000 + run))
+      val beforeWrongIdentity = store.state
+      assertEquals(EndpointUpdates.Effect.REJECTED, accept(store, "seed-$run-wrong-identity", wrongIdentity))
+      assertEquals("a mismatched import identity cannot mutate pending state", beforeWrongIdentity, store.state)
+
+      assertEquals(EndpointUpdates.Effect.PROMOTED, accept(store, "seed-$run-newest", event(newest)))
+      assertEquals(newest.requestId, store.state.activeImportId)
+      assertEquals(newest.sequence, store.state.activeImportSeq)
+      assertEquals(newest.sequence, store.state.importSequence)
+
+      val acceptedState = store.state
+      assertEquals(EndpointUpdates.Effect.NONE, accept(store, "seed-$run-replay", event(newest)))
+      assertEquals("replayed active confirmation is state-idempotent", acceptedState, store.state)
+
+      val stale = generated.first()
+      assertEquals(EndpointUpdates.Effect.REJECTED, accept(store, "seed-$run-stale", event(stale)))
+      assertEquals("rejected stale sequence cannot change durable state", acceptedState, store.state)
+      val restored = (ControlState.parse(store.state.serialize()) as ControlStateRead.Current).state
+      assertEquals(newest.sequence, restored.importSequence)
+      assertEquals(newest.requestId, restored.activeImportId)
+      assertTrue(restored.intents.all { it.sequence > restored.activeImportSeq })
+    }
+  }
 
   private fun event(
     intent: ImportIntent,
@@ -208,6 +514,25 @@ class EndpointUpdatesTest {
     assertEquals(EndpointUpdates.Effect.PROMOTED, accept(store, "new", event(candidate)))
     assertEquals(candidate.requestId, store.state.activeImportId)
     assertEquals(3, store.state.activeEpoch)
+  }
+
+  @Test
+  fun `ordinary lower epoch candidate cannot cross the active epoch guard`() {
+    val activeIntent = intent(id(118), sequence = 8, epoch = 9, controlKey = keyA)
+    val ordinary = intent(id(119), sequence = 9, epoch = 6, controlKey = keyB)
+    val recovery = intent(id(120), sequence = 10, epoch = 6, controlKey = keyC, recovery = true)
+    val store = Memory(active(activeIntent).copy(
+      intents = listOf(ordinary, recovery), importSequence = 10, highestEpoch = 9,
+    ))
+
+    val beforeOrdinaryEvent = store.state
+    assertFalse(matches(store.state, event(ordinary)))
+    assertEquals(EndpointUpdates.Effect.REJECTED, accept(store, "ordinary-lower-epoch", event(ordinary)))
+    assertEquals(beforeOrdinaryEvent, store.state)
+
+    assertEquals(EndpointUpdates.Effect.PROMOTED, accept(store, "authorized-lower-epoch", event(recovery)))
+    assertEquals(recovery.requestId, store.state.activeImportId)
+    assertEquals(6, store.state.activeEpoch)
   }
 
   @Test

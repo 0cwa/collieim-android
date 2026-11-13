@@ -11,3 +11,4 @@ signing.properties
 .kotlin
 /tooling/reproducible-builds/certs
 /tooling/reproducible-builds/outputs
+/tooling/fuzz-encrypted-push/.cifuzz-corpus/

@@ -54,10 +54,10 @@ class AvatarProviderLoggingTest {
     mockkStatic(PartAuthorityUris::class)
     every { PartAuthorityUris.init(any()) } just Runs
 
-    mockkObject(SqlCipherLibraryLoader)
+    mockkStatic(SqlCipherLibraryLoader::class)
     every { SqlCipherLibraryLoader.load() } just Runs
 
-    mockkObject(DatabaseSecretProvider)
+    mockkStatic(DatabaseSecretProvider::class)
     every { DatabaseSecretProvider.getOrCreateDatabaseSecret(any()) } returns mockk<DatabaseSecret>(relaxed = true)
 
     mockkStatic(AttachmentSecretProvider::class)
@@ -72,7 +72,7 @@ class AvatarProviderLoggingTest {
     mockkObject(SignalStore.Companion)
     every { SignalStore.init(any()) } just Runs
 
-    mockkObject(AppDependencies)
+    mockkStatic(AppDependencies::class)
     every { AppDependencies.isInitialized } returns true
   }
 
@@ -80,12 +80,12 @@ class AvatarProviderLoggingTest {
   fun tearDown() {
     unmockkStatic(KeyCachingService::class)
     unmockkStatic(PartAuthorityUris::class)
-    unmockkObject(SqlCipherLibraryLoader)
-    unmockkObject(DatabaseSecretProvider)
+    unmockkStatic(SqlCipherLibraryLoader::class)
+    unmockkStatic(DatabaseSecretProvider::class)
     unmockkStatic(AttachmentSecretProvider::class)
     unmockkObject(SignalDatabase.Companion)
     unmockkObject(SignalStore.Companion)
-    unmockkObject(AppDependencies)
+    unmockkStatic(AppDependencies::class)
 
     logFields.zip(previousLogState).forEach { (field, value) -> field.set(Log, value) }
   }

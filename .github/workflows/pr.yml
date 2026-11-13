@@ -4,6 +4,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      scope:
+        description: Select normal checks or the full app OOM diagnostic
+        type: choice
+        required: true
+        default: full
+        options:
+          - full
+          - full-app-oom-diagnostic
 permissions:
   contents: read
 concurrency:
@@ -35,6 +44,7 @@ jobs:
           exit $missing
 
   fastlane-metadata:
+    if: github.event_name != 'workflow_dispatch' || inputs.scope != 'full-app-oom-diagnostic'
     name: Fastlane metadata
     runs-on: ubuntu-24.04
     steps:
@@ -44,6 +54,7 @@ jobs:
       - run: python3 tooling/fastlane/check_metadata.py
 
   fast-lint:
+    if: github.event_name != 'workflow_dispatch' || inputs.scope != 'full-app-oom-diagnostic'
     name: Fast lint
     runs-on: ubuntu-24.04
     steps:
@@ -77,6 +88,7 @@ jobs:
           if [ -s "$RUNNER_TEMP/new.txt" ]; then cat "$RUNNER_TEMP/new.txt"; exit 1; fi
 
   unit-tests:
+    if: github.event_name != 'workflow_dispatch' || inputs.scope != 'full-app-oom-diagnostic'
     name: Unit tests
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -138,7 +150,278 @@ jobs:
             build/ci
           if-no-files-found: error
 
+  full-app-oom-diagnostic:
+    name: Full app unit worker heap telemetry
+    if: github.event_name == 'workflow_dispatch' && inputs.scope == 'full-app-oom-diagnostic'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      SOURCE_SHA: 450147ec46e24996962c8814c8692df37904fcbb
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: 450147ec46e24996962c8814c8692df37904fcbb
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify and record exact app source
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet HEAD -- app core feature lib tooling build-logic buildSrc gradle
+          mkdir -p "$RUNNER_TEMP/threadtable-full/telemetry" "$RUNNER_TEMP/threadtable-full/results"
+          git rev-parse HEAD > "$RUNNER_TEMP/threadtable-full/source-commit.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/threadtable-full/source-tree.txt"
+          git rev-parse HEAD:app > "$RUNNER_TEMP/threadtable-full/app-tree.txt"
+      - name: Capture runner memory before tests
+        run: |
+          { date -u; uname -a; nproc; free -h; cat /proc/meminfo;
+            for f in /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.events; do
+              if [ -r "$f" ]; then echo "--- $f"; cat "$f"; fi
+            done;
+          } > "$RUNNER_TEMP/threadtable-full/runner-memory-before.txt"
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+      - name: Cache test-only libsignal JNI
+        id: host-jni-cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: |
+            build/host-tests/resources
+            build/host-tests/receipt.json
+          key: host-libsignal-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('build-inputs/native-lock.json', 'build-inputs/engineering.json', 'build-inputs/host-test-inputs.json', 'tooling/host-tests/build_libsignal.py') }}
+      - name: Build pinned Linux JNI for tests
+        if: steps.host-jni-cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes clang libclang-dev cmake make protobuf-compiler libprotobuf-dev binutils
+          rust_version=$(python3 -c 'import json; print(json.load(open("build-inputs/native-lock.json"))["toolchain_reference"]["rust_version"])')
+          rustup toolchain install "$rust_version" --profile minimal
+          python3 tooling/host-tests/build_libsignal.py
+      - name: Verify test-only libsignal JNI
+        run: python3 tooling/host-tests/build_libsignal.py --verify-only
+      - name: Compile worker heap and classloader telemetry agent
+        run: |
+          mkdir -p "$RUNNER_TEMP/threadtable-full/classes"
+          cat > "$RUNNER_TEMP/threadtable-full/HeapTelemetryAgent.java" <<'JAVA'
+          import java.io.File;
+          import java.io.FileOutputStream;
+          import java.io.PrintWriter;
+          import java.lang.instrument.ClassFileTransformer;
+          import java.lang.instrument.Instrumentation;
+          import java.lang.management.ClassLoadingMXBean;
+          import java.lang.management.GarbageCollectorMXBean;
+          import java.lang.management.ManagementFactory;
+          import java.lang.management.MemoryMXBean;
+          import java.lang.management.MemoryPoolMXBean;
+          import java.lang.management.MemoryUsage;
+          import java.lang.management.ThreadMXBean;
+          import java.nio.file.Files;
+          import java.nio.file.Path;
+          import java.nio.file.Paths;
+          import java.security.ProtectionDomain;
+          import java.time.Instant;
+          import java.util.Map;
+          import java.util.TreeMap;
+          import java.util.WeakHashMap;
+          import java.util.concurrent.Executors;
+          import java.util.concurrent.ScheduledExecutorService;
+          import java.util.concurrent.TimeUnit;
+          import java.util.concurrent.atomic.AtomicLong;
+
+          public final class HeapTelemetryAgent {
+            private static final Map<ClassLoader, String> LOADERS = new WeakHashMap<>();
+            private static final AtomicLong SEQUENCE = new AtomicLong();
+
+            public static void premain(String directory, Instrumentation instrumentation) throws Exception {
+              Path dir = Paths.get(directory);
+              Files.createDirectories(dir);
+              long pid = ProcessHandle.current().pid();
+              PrintWriter out = new PrintWriter(new FileOutputStream(dir.resolve("worker-" + pid + ".txt").toFile(), true), true);
+              instrumentation.addTransformer(new ClassFileTransformer() {
+                @Override
+                public byte[] transform(ClassLoader loader, String className, Class<?> redefining,
+                                        ProtectionDomain domain, byte[] bytes) {
+                  if (loader != null) {
+                    synchronized (LOADERS) { LOADERS.put(loader, loader.getClass().getName()); }
+                  }
+                  return null;
+                }
+              });
+              ScheduledExecutorService sampler = Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread thread = new Thread(r, "threadtable-oom-telemetry");
+                thread.setDaemon(true);
+                return thread;
+              });
+              Runnable sample = () -> {
+                try { emit(out, pid); }
+                catch (Throwable error) { out.println("DIAG_SAMPLE_ERROR ts=" + Instant.now() + " type=" + error.getClass().getName()); }
+              };
+              sample.run();
+              sampler.scheduleAtFixedRate(sample, 10, 10, TimeUnit.SECONDS);
+              Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                sampler.shutdownNow();
+                out.close();
+              }, "threadtable-oom-telemetry-shutdown"));
+            }
+
+            private static void emit(PrintWriter out, long pid) {
+              Runtime runtime = Runtime.getRuntime();
+              MemoryMXBean memory = ManagementFactory.getMemoryMXBean();
+              MemoryUsage heap = memory.getHeapMemoryUsage();
+              ClassLoadingMXBean classes = ManagementFactory.getClassLoadingMXBean();
+              ThreadMXBean threads = ManagementFactory.getThreadMXBean();
+              StringBuilder gc = new StringBuilder();
+              for (GarbageCollectorMXBean bean : ManagementFactory.getGarbageCollectorMXBeans()) {
+                if (gc.length() > 0) gc.append(';');
+                gc.append(clean(bean.getName())).append(':').append(bean.getCollectionCount()).append('/').append(bean.getCollectionTime());
+              }
+              StringBuilder pools = new StringBuilder();
+              for (MemoryPoolMXBean bean : ManagementFactory.getMemoryPoolMXBeans()) {
+                MemoryUsage usage = bean.getUsage();
+                if (usage == null) continue;
+                if (pools.length() > 0) pools.append(';');
+                pools.append(clean(bean.getName())).append(':').append(usage.getUsed()).append('/').append(usage.getCommitted()).append('/').append(usage.getMax());
+              }
+              TreeMap<String, Integer> loaders = new TreeMap<>();
+              synchronized (LOADERS) {
+                for (String name : LOADERS.values()) loaders.merge(name, 1, Integer::sum);
+              }
+              out.println("DIAG_SAMPLE seq=" + SEQUENCE.incrementAndGet()
+                + " ts=" + Instant.now() + " pid=" + pid
+                + " heapUsed=" + heap.getUsed() + " heapCommitted=" + heap.getCommitted() + " heapMax=" + heap.getMax()
+                + " runtimeTotal=" + runtime.totalMemory() + " runtimeFree=" + runtime.freeMemory()
+                + " gc=" + gc + " pools=" + pools
+                + " classesCurrent=" + classes.getLoadedClassCount() + " classesTotal=" + classes.getTotalLoadedClassCount()
+                + " classesUnloaded=" + classes.getUnloadedClassCount() + " classLoaders=" + loaders.size() + ":" + loaders
+                + " liveThreads=" + threads.getThreadCount() + " daemonThreads=" + threads.getDaemonThreadCount()
+                + " peakThreads=" + threads.getPeakThreadCount());
+            }
+
+            private static String clean(String value) { return value.replaceAll("[\\t\\r\\n ]+", "_"); }
+          }
+          JAVA
+          javac --release 21 -d "$RUNNER_TEMP/threadtable-full/classes" "$RUNNER_TEMP/threadtable-full/HeapTelemetryAgent.java"
+          printf 'Manifest-Version: 1.0\nPremain-Class: HeapTelemetryAgent\n' > "$RUNNER_TEMP/threadtable-full/manifest.mf"
+          jar cfm "$RUNNER_TEMP/threadtable-full/heap-telemetry.jar" "$RUNNER_TEMP/threadtable-full/manifest.mf" -C "$RUNNER_TEMP/threadtable-full/classes" .
+      - name: Configure test class timeline and worker telemetry
+        run: |
+          cat > "$RUNNER_TEMP/threadtable-full/diagnostic.init.gradle" <<'GRADLE'
+          gradle.projectsEvaluated {
+            gradle.rootProject.allprojects.each { project ->
+              project.tasks.withType(org.gradle.api.tasks.testing.Test).matching {
+                it.path == ':app:testProdWebsiteDebugUnitTest'
+              }.all { task ->
+                def diagDir = new File(System.getenv('RUNNER_TEMP'), 'threadtable-full')
+                def timeline = new File(diagDir, 'test-timeline.tsv')
+                def activeWorkerPid = new java.util.concurrent.atomic.AtomicReference('unknown')
+                def clean = { value -> String.valueOf(value ?: '').replaceAll('[\\t\\r\\n]+', ' ') }
+                def record = { event, descriptor, pid, detail ->
+                  timeline.parentFile.mkdirs()
+                  timeline.append("${java.time.Instant.now()}\t${event}\t${pid}\t${clean(descriptor.className)}\t${clean(descriptor.name)}\t${clean(detail)}\n", 'UTF-8')
+                }
+                def findWorkerPid = {
+                  try {
+                    def worker = java.lang.ProcessHandle.current().descendants().filter { process ->
+                      process.info().commandLine().orElse('').contains('org.gradle.process.internal.worker.GradleWorkerMain')
+                    }.findFirst()
+                    worker.isPresent() ? String.valueOf(worker.get().pid()) : 'unknown'
+                  } catch (Throwable ignored) { 'unknown' }
+                }
+                task.maxHeapSize = '1g'
+                task.doFirst {
+                  new File(diagDir, 'task-config.txt').text = "path=${task.path} maxHeapSize=${task.maxHeapSize} maxParallelForks=${task.maxParallelForks} forkEvery=${task.forkEvery}\n"
+                  println("DIAG_TASK path=${task.path} maxHeapSize=${task.maxHeapSize} maxParallelForks=${task.maxParallelForks} forkEvery=${task.forkEvery}; no heap/GC settings overridden")
+                }
+                task.jvmArgs("-javaagent:${diagDir}/heap-telemetry.jar=${diagDir}/telemetry")
+                task.testLogging.events = [org.gradle.api.tasks.testing.logging.TestLogEvent.STARTED,
+                                           org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
+                                           org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED]
+                task.testLogging.showStandardStreams = false
+                task.addTestListener(new org.gradle.api.tasks.testing.TestListener() {
+                  void beforeSuite(org.gradle.api.tasks.testing.TestDescriptor descriptor) {
+                    if (descriptor.className != null) {
+                      String pid = findWorkerPid.call()
+                      activeWorkerPid.set(pid)
+                      record.call('SUITE_START', descriptor, pid, '')
+                    }
+                  }
+                  void afterSuite(org.gradle.api.tasks.testing.TestDescriptor descriptor, org.gradle.api.tasks.testing.TestResult result) {
+                    if (descriptor.className != null) record.call('SUITE_END', descriptor, activeWorkerPid.get(), result.resultType)
+                  }
+                  void beforeTest(org.gradle.api.tasks.testing.TestDescriptor descriptor) {
+                    if (activeWorkerPid.get() == 'unknown') activeWorkerPid.set(findWorkerPid.call())
+                    record.call('TEST_START', descriptor, activeWorkerPid.get(), '')
+                  }
+                  void afterTest(org.gradle.api.tasks.testing.TestDescriptor descriptor, org.gradle.api.tasks.testing.TestResult result) {
+                    record.call('TEST_END', descriptor, activeWorkerPid.get(), result.resultType + ':' + (result.endTime - result.startTime) + 'ms')
+                  }
+                })
+              }
+            }
+          }
+          GRADLE
+      - name: Run the full app unit task with diagnostic telemetry
+        id: full-app-test
+        continue-on-error: true
+        shell: bash
+        run: |
+          ./gradlew --no-daemon --continue --no-configuration-cache --max-workers=1 --info \
+            -I "$RUNNER_TEMP/threadtable-full/diagnostic.init.gradle" \
+            -PcollieHostJniDir=build/host-tests/resources \
+            :app:testProdWebsiteDebugUnitTest --rerun
+      - name: Capture runner memory after tests
+        if: always()
+        run: |
+          { date -u; uname -a; nproc; free -h; cat /proc/meminfo;
+            for f in /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.events; do
+              if [ -r "$f" ]; then echo "--- $f"; cat "$f"; fi
+            done;
+          } > "$RUNNER_TEMP/threadtable-full/runner-memory-after.txt"
+      - name: Summarize app XML and preserve target suites
+        if: always()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, xml.etree.ElementTree as ET
+          root = Path('app/build/test-results/testProdWebsiteDebugUnitTest')
+          files = list(root.glob('TEST-*.xml'))
+          totals = {'suites': 0, 'tests': 0, 'failures': 0, 'errors': 0, 'skipped': 0, 'malformed': []}
+          for path in files:
+              try:
+                  suite = ET.parse(path).getroot()
+              except ET.ParseError as error:
+                  totals['malformed'].append({'file': path.name, 'error': str(error)})
+                  continue
+              totals['suites'] += 1
+              for key in ('tests', 'failures', 'errors', 'skipped'):
+                  totals[key] += int(suite.get(key, '0'))
+          out = Path(__import__('os').environ['RUNNER_TEMP']) / 'threadtable-full'
+          (out / 'app-junit-summary.json').write_text(json.dumps(totals, indent=2) + '\\n')
+          target = out / 'results'
+          target.mkdir(parents=True, exist_ok=True)
+          for name in ('ThreadTableTest_mutedThreadIds', 'ThreadTableTest_pinned'):
+              source = root / f'TEST-org.thoughtcrime.securesms.database.{name}.xml'
+              if source.exists(): (target / source.name).write_bytes(source.read_bytes())
+          print(json.dumps(totals, sort_keys=True))
+          if totals['tests'] == 0: raise SystemExit('Full app unit task produced no test cases')
+          PY
+      - name: Keep compact telemetry and failing test suites
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: threadtable-app-full-oom-diagnostic-${{ github.run_id }}
+          path: ${{ runner.temp }}/threadtable-full
+          retention-days: 7
+          if-no-files-found: error
+      - name: Preserve the app test task result
+        if: steps.full-app-test.outcome == 'failure'
+        run: exit 1
+
   production-build:
+    if: github.event_name != 'workflow_dispatch' || inputs.scope != 'full-app-oom-diagnostic'
     name: Unsigned production build
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -164,7 +447,7 @@ jobs:
 
   security-readiness:
     name: Security readiness
-    if: ${{ always() }}
+    if: ${{ always() && (github.event_name != 'workflow_dispatch' || inputs.scope != 'full-app-oom-diagnostic') }}
     needs: [unit-tests, production-build]
     runs-on: ubuntu-24.04
     steps:

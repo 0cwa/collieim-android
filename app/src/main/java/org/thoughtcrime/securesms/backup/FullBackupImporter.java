@@ -355,6 +355,19 @@ public class FullBackupImporter extends FullBackupBase {
       SecurePreferenceManager.getSecurePreferencesName()
   );
 
+  // Molly and Molly-FOSS share im.molly.app. Keep these exact identities rather than accepting
+  // arbitrary package prefixes; an alias must not let a backup replace local credentials or keys.
+  private static final Set<String> historicalSharedPreferencesFileNames = new HashSet<>(Arrays.asList(
+      "im.molly.app",
+      "im.molly.app_preferences",
+      "im.molly.app.staging",
+      "im.molly.app.staging_preferences",
+      "im.collie.app",
+      "im.collie.app_preferences",
+      "im.collie.app.staging",
+      "im.collie.app.staging_preferences"
+  ));
+
   @SuppressLint("ApplySharedPref")
   @VisibleForTesting
   static void processPreference(@NonNull Context context, SharedPreference preference) {
@@ -369,6 +382,11 @@ public class FullBackupImporter extends FullBackupBase {
   {
     SharedPreferences preferences;
 
+    if (preference.file_ == null || preference.key == null) {
+      Log.w(TAG, "Skipping preference without a file or key");
+      return;
+    }
+
     // Identity keys were moved from shared prefs into SignalStore. Need to handle importing backups made before the migration.
     if ("SecureSMS-Preferences".equals(preference.file_)) {
       if ("pref_identity_public_v3".equals(preference.key) && preference.value_ != null) {
@@ -380,7 +398,15 @@ public class FullBackupImporter extends FullBackupBase {
       return;
     }
 
-    if (defaultSharedPreferencesFileNames.contains(preference.file_)) {
+    boolean isDefaultFile = defaultSharedPreferencesFileNames.contains(preference.file_);
+    boolean isHistoricalFile = historicalSharedPreferencesFileNames.contains(preference.file_);
+
+    if (isHistoricalFile && !isDefaultFile && !TextSecurePreferences.isRestorableMollyPreference(preference)) {
+      Log.i(TAG, "Skipping unsupported historical preference");
+      return;
+    }
+
+    if (isDefaultFile || isHistoricalFile) {
       preferences = SecurePreferenceManager.getSecurePreferences(context);
     } else {
       preferences = EncryptedPreferences.create(context, preference.file_);
@@ -403,7 +429,7 @@ public class FullBackupImporter extends FullBackupBase {
       }
     }
 
-    if (defaultSharedPreferencesFileNames.contains(preference.file_)) {
+    if (isDefaultFile) {
       KeyValueDataSet legacySetting = SignalStore.settings().legacySharedPreferenceToKeyValue(preference);
       if (legacySetting != null) {
         storage.writeDataSet(legacySetting, Collections.emptyList());

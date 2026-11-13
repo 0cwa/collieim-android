@@ -63,6 +63,7 @@ object ScreenLockController {
   @JvmStatic
   fun enableAutoLock(enabled: Boolean) {
     Log.d(TAG, "Auto-lock ${if (enabled) "enabled" else "disabled"}")
+    graceTimeElapsed = 0
     autoLock = enabled
     lockScreenAtStart = enabled
   }

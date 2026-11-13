@@ -242,7 +242,6 @@ class IncomingMessageObserverConnectivityTest {
 
   @Test fun `claimed registration settles before publication and current callback may finish afterward`() {
     putObserverInBackgroundIdle()
-    update(ConnectivityState.ONLINE)
     val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
     val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
     val admission = checkNotNull(UnifiedPushAccountTransition.registerFetchAdmission(lease, authorization))
@@ -269,6 +268,8 @@ class IncomingMessageObserverConnectivityTest {
         UnifiedPushAccountTransition.finishFetchAdmission(admission)
         observer.updateReceiveLoopToken()
       }
+      // Keep the observer offline until the blocking registration stub and owner are ready.
+      update(ConnectivityState.ONLINE)
       observer.notifyUnifiedPushFetchStateChanged()
       Assert.assertTrue("observer did not reach the actual token-registration seam", registrationEntered.await(5, TimeUnit.SECONDS))
 

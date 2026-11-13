@@ -1,0 +1,44 @@
+{
+  "regions": {
+    "features": {
+      "w": 1024,
+      "h": 580,
+      "reference": "../../line-concepts/background-a-flowing.png",
+      "crop": [
+        0,
+        500,
+        1024,
+        580
+      ],
+      "before": "features-before.svg",
+      "after": "features-after.svg",
+      "production": "Reference pixels equal authoring units. Foreground masks/tonal shading are excluded. Card/inset-covered continuations are inferred; production scaling/placement is separate."
+    },
+    "collie": {
+      "w": 800,
+      "h": 400,
+      "reference": "../../line-concepts/background-c-collie-mural.png",
+      "crop": [
+        0,
+        1000,
+        800,
+        400
+      ],
+      "before": "collie-before.svg",
+      "after": "collie-after.svg",
+      "production": "Reference pixels equal authoring units. Foreground masks/tonal shading are excluded. Card/inset-covered continuations are inferred; production scaling/placement is separate."
+    }
+  },
+  "samples": [],
+  "summary": {
+    "features": {
+      "before": {},
+      "after": {}
+    },
+    "collie": {
+      "before": {},
+      "after": {}
+    }
+  },
+  "registration": "Identity crop coordinates; no global alignment optimization. Compare all visible contours, not a whole-image pixel score."
+}

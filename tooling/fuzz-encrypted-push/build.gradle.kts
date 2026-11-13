@@ -38,6 +38,7 @@ tasks.test {
 tasks.register<Test>("jazzerFuzz") {
   group = "verification"
   description = "Runs the production encrypted push parser with bounded Jazzer discovery."
+  doNotTrackState("Each invocation performs fresh fuzz discovery")
   dependsOn(tasks.testClasses)
   testClassesDirs = sourceSets.test.get().output.classesDirs
   classpath = sourceSets.test.get().runtimeClasspath

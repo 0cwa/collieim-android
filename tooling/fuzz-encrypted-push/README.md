@@ -7,13 +7,13 @@ stubs.
 Run deterministic fixtures and saved crash inputs with:
 
 ```sh
-./gradlew :fuzz-encrypted-push:test
+./gradlew :fuzz-encrypted-push:test --no-configuration-cache
 ```
 
 Run the bounded Jazzer discovery target with:
 
 ```sh
-./gradlew :fuzz-encrypted-push:jazzerFuzz
+./gradlew :fuzz-encrypted-push:jazzerFuzz --no-configuration-cache
 ```
 
 The incoming event parser and receiver `decide` function receive at most 4096 bytes, use a fixed clock and permit

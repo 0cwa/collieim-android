@@ -46,7 +46,7 @@ jobs:
           java-version: "21"
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - name: Replay deterministic tests and saved findings
-        run: ./gradlew :fuzz-encrypted-push:test --no-daemon --max-workers=2 -Dorg.gradle.jvmargs=-Xmx2g
+        run: ./gradlew :fuzz-encrypted-push:test --no-daemon --no-configuration-cache --max-workers=2 -Dorg.gradle.jvmargs=-Xmx2g
 
   discovery:
     runs-on: ubuntu-latest
@@ -81,14 +81,14 @@ jobs:
             echo "contract_pin=9751c1effba7c94f49474febd941ca7fe3ba31cc"
             echo "jazzer=0.30.0"
             echo "jdk=21"
-            echo "command=./gradlew :fuzz-encrypted-push:jazzerFuzz --no-daemon --max-workers=2 -Dorg.gradle.jvmargs=-Xmx2g"
+            echo "command=./gradlew :fuzz-encrypted-push:jazzerFuzz --no-daemon --no-configuration-cache --max-workers=2 -Dorg.gradle.jvmargs=-Xmx2g"
             echo "fuzz_duration_per_target=60s"
             echo "input_byte_limit=4096"
             echo "job_memory_limit=4g"
             echo "job_cpu_limit=2"
           } > tooling/fuzz-encrypted-push/build/fuzz-evidence/run-metadata.txt
       - name: Run bounded discovery
-        run: ./gradlew :fuzz-encrypted-push:jazzerFuzz --no-daemon --max-workers=2 -Dorg.gradle.jvmargs=-Xmx2g
+        run: ./gradlew :fuzz-encrypted-push:jazzerFuzz --no-daemon --no-configuration-cache --max-workers=2 -Dorg.gradle.jvmargs=-Xmx2g
       - name: Bound the separate rolling discovery cache
         if: always()
         run: python3 tooling/fuzz-encrypted-push/cap_corpus.py tooling/fuzz-encrypted-push/.cifuzz-corpus

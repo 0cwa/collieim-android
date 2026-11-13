@@ -97,12 +97,13 @@ main{background-image:url(art/landscape-page.svg);background-size:100% 100%;back
 .section-landscape::before{content:"";position:absolute;left:0;right:0;top:-20px;height:40px;z-index:-1;background:url(art/landscape-transition.svg) 0 0/100% 100% no-repeat}
 .community{position:relative;isolation:isolate}
 .mural-landscape{position:relative;height:0;pointer-events:none;isolation:isolate}
-.mural-landscape::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:44px;right:0;width:1100px;height:495px;background:url(art/collie-lower.svg) right top/100% 100% no-repeat}
-.community::before{display:none;content:"";position:absolute;z-index:-1;pointer-events:none;right:0;background:url(art/collie-narrow.svg) right top/100% 100% no-repeat}
+.mural-landscape::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:30px;right:0;width:1280px;height:180px;background:url(art/collie-scene-desktop.svg) right top/auto 100% no-repeat}
+.community::before{display:none;content:"";position:absolute;z-index:-1;pointer-events:none;right:0;background:url(art/collie-scene-narrow.svg) right top/auto 100% no-repeat}
 /* Solid reading surfaces follow the existing foreground; no spacing changes. */
 .community .links a,.community .help-options p{background-color:var(--page)}
-@media(max-width:960px){.mural-landscape{display:none}.community::before{display:block;top:auto;bottom:-40px;width:400px;height:320px}}
-@media(max-width:600px){.community::before{width:min(320px,100%);height:auto;aspect-ratio:5/4}.features{background-image:url(art/landscape-feature-edge.svg);background-size:100% 100%;background-repeat:no-repeat}}
+@media(max-width:1100px){.mural-landscape{display:none}.community::before{display:block;top:auto;bottom:-32px;left:0;right:0;height:96px}}
+@media(min-width:961px) and (max-width:1100px){.community::before{bottom:-40px}}
+@media(max-width:600px){.features{background-image:url(art/landscape-feature-edge.svg);background-size:100% 100%;background-repeat:no-repeat}}
 
 /* ---------- hero ---------- */
 .hero-wrap{--hero-bottom-clearance:80px;position:relative;color:var(--mist);background-color:var(--hero);

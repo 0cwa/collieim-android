@@ -18,8 +18,12 @@ import im.molly.unifiedpush.model.MollySocketDevice
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExternalResource
+import org.junit.rules.RuleChain
+import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.Networking
@@ -39,8 +43,16 @@ import java.util.UUID
 @RunWith(AndroidJUnit4::class)
 class NtfyV3PhysicalChainTest {
 
+  private val harness = SignalActivityRule(othersCount = 0, networkEnabled = false)
+
   @get:Rule
-  val harness = SignalActivityRule(othersCount = 0, networkEnabled = false)
+  val isolatedHarness: TestRule = RuleChain.outerRule(object : ExternalResource() {
+    override fun before() {
+      assumeTrue("Physical push proof requires the isolated app", context.packageName == "im.collie.app.imo")
+      val runId = InstrumentationRegistry.getArguments().getString("phoneproof_run_id")
+      assumeTrue("Physical push proof requires an explicit run ID", runId?.matches(Regex("[0-9a-f]{32}")) == true)
+    }
+  }).around(harness)
 
   private val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
   private val values get() = SignalStore.unifiedpush

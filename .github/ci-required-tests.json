@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "required_tasks": [
+    "app:testProdWebsiteDebugUnitTest",
+    "core:database:testDebugUnitTest",
+    "core:ui:testDebugUnitTest",
+    "core:util:testDebugUnitTest",
+    "core:util-jvm:test",
+    "feature:app-settings:testDebugUnitTest",
+    "feature:camera:testDebugUnitTest",
+    "feature:chat-settings:testDebugUnitTest",
+    "feature:media-keyboard:testDebugUnitTest",
+    "feature:media-send:testDebugUnitTest",
+    "feature:media-viewer:testDebugUnitTest",
+    "feature:registration:testDebugUnitTest",
+    "lib:apng:testDebugUnitTest",
+    "lib:device-transfer:testDebugUnitTest",
+    "lib:donations:testDebugUnitTest",
+    "lib:emoji:testDebugUnitTest",
+    "lib:image-editor:testDebugUnitTest",
+    "lib:libsignal-service:test",
+    "lib:paging:testDebugUnitTest",
+    "lib:password-manager:testDebugUnitTest",
+    "lib:remote-config:testDebugUnitTest",
+    "lib:storage:testDebugUnitTest",
+    "lib:ui-components:testDebugUnitTest",
+    "tooling:screener:testDebugUnitTest"
+  ],
+  "security_suites": [
+    {
+      "task": "core:util-jvm:test",
+      "class": "org.signal.core.util.ResettableLazyTests",
+      "min_executed": 6
+    },
+    {
+      "task": "lib:libsignal-service:test",
+      "class": "org.whispersystems.signalservice.api.messages.ControlMessageListTest",
+      "min_executed": 5
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.crypto.storage.SignalBaseIdentityKeyStoreTest",
+      "min_executed": 3
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.service.KeyCachingServiceTest",
+      "min_executed": 5
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.backup.MollyBackupPreferencesTest",
+      "min_executed": 6
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "im.molly.unifiedpush.lifecycle.UnifiedPushLifecycleTest",
+      "min_executed": 6
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "im.molly.unifiedpush.receiver.UnifiedPushReceiverTest",
+      "min_executed": 43
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "im.molly.unifiedpush.receiver.EncryptedPushContractTest",
+      "min_executed": 7
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "im.molly.unifiedpush.receiver.EncryptedPushV2Test",
+      "min_executed": 6
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "im.molly.unifiedpush.enrollment.EncryptedPushV3ContractTest",
+      "min_executed": 6
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "im.molly.unifiedpush.enrollment.EnrollmentExporterPersistenceTest",
+      "min_executed": 11
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "im.molly.unifiedpush.enrollment.EnrollmentExporterTest",
+      "min_executed": 10
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "im.molly.unifiedpush.enrollment.EnrollmentFileTest",
+      "min_executed": 14
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "im.molly.unifiedpush.enrollment.ControlKeyIdTest",
+      "min_executed": 3
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.jobs.UnifiedPushRefreshJobTest",
+      "min_executed": 7
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.jobs.UnifiedPushControlJobTest",
+      "min_executed": 5
+    },
+    {
+      "task": "app:testProdWebsiteDebugUnitTest",
+      "class": "org.thoughtcrime.securesms.keyvalue.UnifiedPushValuesControlTest",
+      "min_executed": 16
+    }
+  ]
+}

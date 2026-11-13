@@ -65,6 +65,7 @@ class PayPalConfirmationDialogFragment : DialogFragment(R.layout.donation_webvie
     val client = PayPalWebClient()
     viewLifecycleOwner.lifecycle.addObserver(client)
     binding.webView.webViewClient = client
+    binding.webView.settings.allowContentAccess = false
     binding.webView.settings.javaScriptEnabled = true
     binding.webView.settings.domStorageEnabled = true
     binding.webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE

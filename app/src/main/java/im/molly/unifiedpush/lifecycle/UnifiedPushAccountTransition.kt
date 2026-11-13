@@ -4,6 +4,8 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.UnifiedPushValues
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Callable
 import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -97,6 +99,39 @@ object UnifiedPushAccountTransition {
   /** Acquires the account and route atomically before any asynchronous push work starts. */
   fun acquireLease(expectedGeneration: Long? = null): UnifiedPushLifecycle.Lease<AccountContext>? =
     UnifiedPushLifecycle.acquireLease(expectedGeneration, ::captureContextLocked)
+
+  /**
+   * Removes a user-selected linked device. When it is the locally saved relay, serialize the remote
+   * removal with UnifiedPush work and clear that exact saved relay only after the server confirms removal.
+   */
+  suspend fun removeLinkedDeviceAndClearRelayIfMatching(
+    deviceId: Int,
+    removeDevice: suspend (Int) -> Boolean,
+  ): Boolean {
+    val mightBeSavedRelay = synchronized(UnifiedPushLifecycle.monitor) {
+      SignalStore.unifiedpush.device?.deviceId == deviceId
+    }
+    if (!mightBeSavedRelay) return removeDevice(deviceId)
+
+    return withContext(NonCancellable) {
+      withTransition {
+        val context = synchronized(UnifiedPushLifecycle.monitor) { captureContextLocked() }
+        val savedRelay = context?.pushDevice?.takeIf { it.deviceId == deviceId }
+        val removed = removeDevice(deviceId)
+
+        if (removed && context != null && savedRelay != null) {
+          synchronized(UnifiedPushLifecycle.monitor) {
+            if (accountAndLocalDeviceMatchLocked(context) && SignalStore.unifiedpush.device == savedRelay) {
+              SignalStore.unifiedpush.device = null
+              SignalStore.unifiedpush.mutateControl { it.copy(update = null) }
+            }
+          }
+        }
+
+        removed
+      }
+    }
+  }
 
   fun fetchAuthorization(lease: UnifiedPushLifecycle.Lease<AccountContext>): FetchAuthorization =
     FetchAuthorization(

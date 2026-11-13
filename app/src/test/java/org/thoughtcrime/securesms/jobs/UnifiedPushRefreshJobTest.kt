@@ -25,13 +25,20 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.After
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -198,6 +205,109 @@ class UnifiedPushRefreshJobTest {
 
     assertNull(storedDevice)
     coVerify(exactly = 0) { LinkDeviceRepository.removeDevice(any()) }
+  }
+
+  @Test
+  fun `manual unlink clears the matching relay only after server removal succeeds`() = runBlocking {
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) { id ->
+      assertEquals(device.deviceId, id)
+      assertSame(device, storedDevice)
+      assertSame(retainedUpdate, controlState.update)
+      true
+    }
+
+    assertTrue(removed)
+    assertNull(storedDevice)
+    assertNull(controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+  }
+
+  @Test
+  fun `manual unlink failure retains the matching relay and control update`() = runBlocking {
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) { id ->
+      assertEquals(device.deviceId, id)
+      false
+    }
+
+    assertFalse(removed)
+    assertSame(device, storedDevice)
+    assertSame(retainedUpdate, controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+  }
+
+  @Test
+  fun `manual unlink of an unrelated ID leaves saved relay credentials intact`() = runBlocking {
+    val unrelatedDeviceId = device.deviceId + 1
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(unrelatedDeviceId) { id ->
+      assertEquals(unrelatedDeviceId, id)
+      true
+    }
+
+    assertTrue(removed)
+    assertSame(device, storedDevice)
+    assertSame(retainedUpdate, controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+  }
+
+  @Test
+  fun `manual unlink does not clear a replacement relay with the same ID`() = runBlocking {
+    val replacement = MollySocketDevice(deviceId = device.deviceId, password = "replacement-relay-credential")
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) {
+      storedDevice = replacement
+      true
+    }
+
+    assertTrue(removed)
+    assertSame(replacement, storedDevice)
+    assertSame(retainedUpdate, controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+  }
+
+  @Test
+  fun `manual unlink finishes local transition after caller cancellation during lease drain`() = runBlocking {
+    val lease = UnifiedPushAccountTransition.acquireLease()!!
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val transitionStarted = CountDownLatch(1)
+    val serverRemovalStarted = CountDownLatch(1)
+    every { unifiedPush.setIncompleteAccountTransition(any()) } answers {
+      transitionMarker = firstArg()
+      if (transitionMarker) transitionStarted.countDown()
+    }
+
+    val removal = scope.launch {
+      UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) {
+        serverRemovalStarted.countDown()
+        true
+      }
+    }
+
+    try {
+      assertTrue(transitionStarted.await(5, TimeUnit.SECONDS))
+      assertEquals("server removal must wait for the active push lease", 1L, serverRemovalStarted.count)
+
+      removal.cancel()
+      lease.close()
+      withTimeout(5_000) { removal.join() }
+
+      assertTrue(removal.isCancelled)
+      assertEquals(0L, serverRemovalStarted.count)
+      assertFalse(transitionMarker)
+      assertTrue(UnifiedPushLifecycle.isReady())
+      assertNull(storedDevice)
+      assertNull(controlState.update)
+
+      val nextLease = UnifiedPushAccountTransition.acquireLease()
+      assertNotNull("a later push operation must be able to acquire a lease", nextLease)
+      nextLease!!.close()
+    } finally {
+      lease.close()
+      scope.cancel()
+      withTimeout(5_000) { removal.join() }
+    }
   }
 
   @Test

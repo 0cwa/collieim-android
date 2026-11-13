@@ -241,7 +241,14 @@ android {
       abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
     }
 
-    testInstrumentationRunner = if (providers.gradleProperty("imoTests").isPresent) {
+    val isolatedPushTests = providers.gradleProperty("isolatedPushTests").isPresent
+    val imoTests = providers.gradleProperty("imoTests").isPresent
+    require(!isolatedPushTests || imoTests) {
+      "isolatedPushTests requires imoTests so the isolated runner and package remain test-only"
+    }
+    testInstrumentationRunner = if (isolatedPushTests) {
+      "org.thoughtcrime.securesms.testing.SignalTestRunner"
+    } else if (imoTests) {
       "org.thoughtcrime.securesms.testing.incomingmessageobserver.IncomingMessageObserverTestRunner"
     } else {
       "org.thoughtcrime.securesms.testing.SignalTestRunner"

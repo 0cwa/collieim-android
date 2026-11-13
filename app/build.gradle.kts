@@ -109,6 +109,7 @@ android {
       all { task ->
         task.forkEvery = 64
         task.maxHeapSize = "1g"
+        task.maxParallelForks = providers.gradleProperty("collieUnitTestForks").orNull?.toInt() ?: 1
       }
     }
   }

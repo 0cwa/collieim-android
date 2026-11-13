@@ -121,6 +121,7 @@ jobs:
       - run: |
           ./gradlew --no-daemon --continue \
             -PcollieHostJniDir=build/host-tests/resources \
+            -PcollieUnitTestForks=2 \
             :app:testProdWebsiteDebugUnitTest testDebugUnitTest \
             :core:util-jvm:test :lib:libsignal-service:test \
             :core:network:test :lib:network:test :fast-lint:test :lintchecks:test

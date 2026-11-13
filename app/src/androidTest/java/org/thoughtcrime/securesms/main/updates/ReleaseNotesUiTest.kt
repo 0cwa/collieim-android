@@ -12,14 +12,20 @@ import android.os.ParcelFileDescriptor
 import android.provider.Settings
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -34,6 +40,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.signal.core.util.ServiceUtil
 import org.thoughtcrime.securesms.MainActivity
 import org.thoughtcrime.securesms.MainNavigator
 import org.thoughtcrime.securesms.R
@@ -85,7 +92,7 @@ class ReleaseNotesUiTest {
       assertExpandedControls()
       saveScreenshot(scenario, "02-light-expanded.png")
 
-      compose.onNodeWithTag(UpdateNoticeTags.SUPPORT).performScrollTo().assertIsDisplayed()
+      visibleAction(UpdateNoticeTags.SUPPORT)
       saveScreenshot(scenario, "03-light-support.png")
       compose.onNodeWithTag(UpdateNoticeTags.MINIMIZE).performClick()
       awaitTag(UpdateNoticeTags.COLLAPSED)
@@ -101,7 +108,7 @@ class ReleaseNotesUiTest {
       awaitTag(UpdateNoticeTags.COLLAPSED)
 
       compose.onNodeWithTag(UpdateNoticeTags.COLLAPSED).performClick()
-      compose.onNodeWithTag(UpdateNoticeTags.DISMISS).performClick()
+      visibleAction(UpdateNoticeTags.DISMISS).performClick()
       compose.onNodeWithTag(UpdateNoticeTags.NOTICE).assertDoesNotExist()
       assertTrue(SignalStore.updateNotices.isDismissed(CollieReleaseNotes.ID))
 
@@ -157,6 +164,45 @@ class ReleaseNotesUiTest {
   }
 
   @Test
+  fun readingNotesTemporarilyHidesTheBatteryPromptWithoutAcknowledgingIt() = withFixture("light") {
+    val oldFcmEnabled = SignalStore.account.fcmEnabled
+    val oldPromptedDoze = SignalStore.uiHints.hasPromptedOptimizeDoze()
+    val powerManager = spyk(ServiceUtil.getPowerManager(context))
+    every { powerManager.isIgnoringBatteryOptimizations(context.packageName) } returns false
+    val bannerText = context.getString(R.string.DozeReminder_allow_molly_to_deliver_timely_notifications)
+
+    try {
+      SignalStore.account.fcmEnabled = false
+      SignalStore.uiHints.setHasPromptedOptimizeDoze(false)
+      mockkStatic(ServiceUtil::class) {
+        every { ServiceUtil.getPowerManager(any()) } returns powerManager
+        harness.launchActivity<MainActivity>().use {
+          awaitTag(UpdateNoticeTags.COLLAPSED)
+          awaitText(bannerText)
+
+          compose.onNodeWithTag(UpdateNoticeTags.COLLAPSED).performClick()
+          assertExpandedControls()
+          compose.waitUntil(timeoutMillis = 15_000) {
+            compose.onAllNodes(hasText(bannerText)).fetchSemanticsNodes().isEmpty()
+          }
+          compose.onNodeWithText(bannerText).assertDoesNotExist()
+          assertFalse("Reading notes must not acknowledge the battery prompt", SignalStore.uiHints.hasPromptedOptimizeDoze())
+
+          compose.onNodeWithTag(UpdateNoticeTags.MINIMIZE).performClick()
+          awaitTag(UpdateNoticeTags.COLLAPSED)
+          awaitText(bannerText)
+          assertFalse("Minimizing must restore the prompt without changing its saved choice", SignalStore.uiHints.hasPromptedOptimizeDoze())
+        }
+      }
+    } finally {
+      restoreEverySetting(
+        { SignalStore.account.fcmEnabled = oldFcmEnabled },
+        { SignalStore.uiHints.setHasPromptedOptimizeDoze(oldPromptedDoze) }
+      )
+    }
+  }
+
+  @Test
   fun darkNotesRenderInTheRealChatsScreen() = withFixture("dark") {
     harness.launchActivity<MainActivity>().use { scenario ->
       awaitTag(UpdateNoticeTags.COLLAPSED)
@@ -167,7 +213,7 @@ class ReleaseNotesUiTest {
   }
 
   @Test
-  fun largeTextKeepsMinimizeAndGotItReachableWhileTheBodyScrolls() = withFixture("light", fontScale = 1.5f) {
+  fun largeTextKeepsExitControlsReachableWhileTheBodyScrolls() = withFixture("light", fontScale = 1.5f) {
     harness.launchActivity<MainActivity>().use { scenario ->
       awaitTag(UpdateNoticeTags.COLLAPSED)
       scenario.onActivity { assertEquals(1.5f, it.resources.configuration.fontScale, 0.01f) }
@@ -175,7 +221,7 @@ class ReleaseNotesUiTest {
       assertExpandedControls()
       saveScreenshot(scenario, "05-large-text-expanded.png")
 
-      compose.onNodeWithTag(UpdateNoticeTags.SUPPORT).performScrollTo().assertIsDisplayed()
+      visibleAction(UpdateNoticeTags.SUPPORT)
       assertExpandedControls()
       saveScreenshot(scenario, "06-large-text-support.png")
       compose.onNodeWithTag(UpdateNoticeTags.MINIMIZE).performClick()
@@ -204,12 +250,13 @@ class ReleaseNotesUiTest {
         awaitTag(UpdateNoticeTags.EXPANDED)
         compose.onNodeWithTag(UpdateNoticeTags.MINIMIZE).assertIsDisplayed()
         assertChatActionsAccessible(scenario)
+        assertReadingAreaFitsTouchTarget(scenario)
         saveScreenshot(scenario, "07-landscape-large-text.png")
 
-        compose.onNodeWithTag(UpdateNoticeTags.SUPPORT).performScrollTo().assertIsDisplayed()
-        // The short-window layout puts Got it inside the scrollable body to preserve reading space.
-        compose.onNodeWithTag(UpdateNoticeTags.DISMISS).performScrollTo().assertIsDisplayed()
-        compose.onNodeWithTag(UpdateNoticeTags.MINIMIZE).assertIsDisplayed()
+        visibleAction(UpdateNoticeTags.SUPPORT)
+        // Compact actions are near the beginning of the body; both fixed exits remain reachable.
+        visibleAction(UpdateNoticeTags.DISMISS)
+        assertExpandedControls()
         assertChatActionsAccessible(scenario)
         saveScreenshot(scenario, "08-landscape-large-text-actions.png")
         compose.onNodeWithTag(UpdateNoticeTags.DISMISS).performClick()
@@ -239,10 +286,39 @@ class ReleaseNotesUiTest {
     )
   }
 
+  private fun assertReadingAreaFitsTouchTarget(scenario: ActivityScenario<MainActivity>) {
+    var density = 1f
+    scenario.onActivity { density = it.resources.displayMetrics.density }
+    val bounds = compose.onNodeWithTag(UpdateNoticeTags.CONTENT).assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+    assertTrue("The reading area must fit a complete 48 dp action, got $bounds", bounds.height + 1f >= 48f * density)
+  }
+
   private fun assertExpandedControls() {
     awaitTag(UpdateNoticeTags.EXPANDED)
     compose.onNodeWithTag(UpdateNoticeTags.MINIMIZE).assertIsDisplayed()
-    compose.onNodeWithTag(UpdateNoticeTags.DISMISS).assertIsDisplayed()
+    compose.onNodeWithTag(UpdateNoticeTags.CLOSE).assertIsDisplayed()
+  }
+
+  private fun visibleAction(tag: String): SemanticsNodeInteraction {
+    val action = compose.onNodeWithTag(tag)
+    if (!action.isDisplayed()) {
+      compose.onNodeWithTag(UpdateNoticeTags.CONTENT).performScrollToNode(hasTestTag(tag))
+    }
+    if (compose.onNode(hasTestTag(tag) and hasAnyAncestor(hasTestTag(UpdateNoticeTags.CONTENT))).isDisplayed()) {
+      // Bring the button itself fully into view when its lazy item wraps onto several rows.
+      action.performScrollTo()
+    }
+    val density = context.resources.displayMetrics.density
+    val fullHeight = action.getUnclippedBoundsInRoot().height.value * density
+    assertTrue("$tag must be completely visible", action.fetchSemanticsNode().boundsInRoot.height + 1f >= fullHeight)
+    return action.assertIsDisplayed()
+  }
+
+  private fun awaitText(text: String) {
+    compose.waitUntil(timeoutMillis = 15_000) {
+      compose.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
+    }
+    compose.onNodeWithText(text).assertIsDisplayed()
   }
 
   private fun awaitTag(tag: String) {

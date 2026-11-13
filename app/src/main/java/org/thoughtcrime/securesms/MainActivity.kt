@@ -622,8 +622,8 @@ class MainActivity :
         BoxWithConstraints(modifier = Modifier.weight(1f)) {
           val compactNoticeActions = showNotice && navigationType == NavigationType.BAR && maxHeight < 320.dp
           val reservedListHeight = if (navigationType == NavigationType.BAR) {
-            // Short windows use one row of camera/compose controls instead of squeezing the stack.
-            (maxHeight * 0.5f).coerceAtMost(if (compactNoticeActions) 96.dp else 160.dp)
+            // The compact controls need 56 dp plus 16 dp padding above and below the row.
+            (maxHeight * 0.5f).coerceAtMost(if (compactNoticeActions) 88.dp else 160.dp)
           } else {
             (maxHeight * 0.25f).coerceAtMost(96.dp)
           }

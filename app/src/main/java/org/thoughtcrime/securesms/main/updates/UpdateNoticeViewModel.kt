@@ -5,9 +5,13 @@
 package org.thoughtcrime.securesms.main.updates
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import org.thoughtcrime.securesms.keyvalue.UpdateNoticeValues
 
 /**
@@ -33,6 +37,11 @@ class UpdateNoticeViewModel(
     if (values.isDismissed(noticeId)) Presentation.DISMISSED else Presentation.MINIMIZED
   )
   val presentation: StateFlow<Presentation> = internalPresentation.asStateFlow()
+
+  /** Presentation-only signal for adjacent optional prompts; never records their dismissal. */
+  val expanded: StateFlow<Boolean> = presentation
+    .map { it == Presentation.EXPANDED }
+    .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
   fun expand() {
     internalPresentation.value = Presentation.EXPANDED

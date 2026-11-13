@@ -11,10 +11,10 @@
     <string name="CollieUpdates__minimize_description">Minimize update details</string>
     <string name="CollieUpdates__dismiss_description">Dismiss update details</string>
     <string name="CollieUpdates__full_release_notes">Full release notes</string>
-    <string name="CollieUpdates__support_message">Collie is free and open source. If you’d like to help, support its development.</string>
     <string name="CollieUpdates__support_collie">Support Collie</string>
+    <string name="CollieUpdates__reopen_hint">Find these notes again in the Chats menu under What’s new.</string>
     <string name="CollieUpdates__read_when_ready_title">Read when you’re ready</string>
     <string name="CollieUpdates__read_when_ready_body">Open release notes from the small entry above your chats.</string>
     <string name="CollieUpdates__keep_chats_clear_title">Keep your conversations clear</string>
-    <string name="CollieUpdates__keep_chats_clear_body">Minimize to save them for later, or choose Got it to put them away.</string>
+    <string name="CollieUpdates__keep_chats_clear_body">Minimize to keep the notes handy, or choose Got it to put them away.</string>
 </resources>

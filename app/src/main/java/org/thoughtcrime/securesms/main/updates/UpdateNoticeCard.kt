@@ -10,6 +10,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +20,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -55,9 +60,12 @@ object UpdateNoticeTags {
   const val EXPANDED = "update_notice_expanded"
   const val MINIMIZE = "update_notice_minimize"
   const val DISMISS = "update_notice_dismiss"
+  const val CLOSE = "update_notice_close"
   const val READ_MORE = "update_notice_read_more"
   const val SUPPORT = "update_notice_support"
   const val CONTENT = "update_notice_content"
+  const val ACTIONS = "update_notice_actions"
+  const val REOPEN_HINT = "update_notice_reopen_hint"
 }
 
 /**
@@ -65,8 +73,9 @@ object UpdateNoticeTags {
  *
  * The caller owns eligibility and persistence. This presentation has no timers, notifications,
  * network access or version policy, so an update reminder can reuse the same interaction later.
- * Minimize always stays visible. On a short or large-text window, the dismissal action scrolls
- * with the body rather than squeezing the notes between two fixed control rows.
+ * Minimize and close always stay visible. Long editions are composed lazily inside the height cap.
+ * On short or large-text windows, the action group is near the start of the content instead of taking
+ * away reading space or making people scroll through every highlight to reach it.
  */
 @Composable
 fun UpdateNoticeCard(
@@ -82,8 +91,12 @@ fun UpdateNoticeCard(
   modifier: Modifier = Modifier,
   maxExpandedHeight: Dp = 440.dp,
   compactTitle: String = stringResource(R.string.CollieUpdates__whats_new),
-  readMoreLabel: String = stringResource(R.string.CollieUpdates__full_release_notes)
+  readMoreLabel: String = stringResource(R.string.CollieUpdates__full_release_notes),
+  reopenHint: String? = null
 ) {
+  // Keep the reader's place across minimizing and expanding the card.
+  val listState = rememberLazyListState()
+
   Surface(
     shape = MaterialTheme.shapes.large,
     color = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -104,7 +117,9 @@ fun UpdateNoticeCard(
         onReadMore = onReadMore,
         onSupport = onSupport,
         readMoreLabel = readMoreLabel,
-        maxHeight = maxExpandedHeight
+        reopenHint = reopenHint,
+        maxHeight = maxExpandedHeight,
+        listState = listState
       )
     } else {
       CollapsedNotice(compactTitle, subtitle, onExpand, onDismiss)
@@ -182,11 +197,13 @@ private fun ExpandedNotice(
   onReadMore: () -> Unit,
   onSupport: (() -> Unit)?,
   readMoreLabel: String,
-  maxHeight: Dp
+  reopenHint: String?,
+  maxHeight: Dp,
+  listState: LazyListState
 ) {
   val expandedDescription = stringResource(R.string.CollieUpdates__expanded)
   val minimizeDescription = stringResource(R.string.CollieUpdates__minimize_description)
-  val scrollDismissAction = maxHeight < 180.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)
+  val scrollActions = maxHeight < 320.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)
 
   Column(
     modifier = Modifier
@@ -223,32 +240,69 @@ private fun ExpandedNotice(
           modifier = Modifier.size(20.dp)
         )
       }
+
+      IconButtons.IconButton(
+        onClick = onDismiss,
+        size = 48.dp,
+        modifier = Modifier.testTag(UpdateNoticeTags.CLOSE)
+      ) {
+        Icon(
+          painter = painterResource(R.drawable.ic_x_20),
+          contentDescription = stringResource(R.string.CollieUpdates__dismiss_description),
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.size(20.dp)
+        )
+      }
     }
 
-    Column(
+    LazyColumn(
+      state = listState,
+      contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
       verticalArrangement = Arrangement.spacedBy(16.dp),
       modifier = Modifier
         .weight(1f, fill = false)
-        .verticalScroll(rememberScrollState())
         .testTag(UpdateNoticeTags.CONTENT)
-        .padding(horizontal = 16.dp)
     ) {
-      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-          text = title,
-          style = MaterialTheme.typography.titleLarge,
-          modifier = Modifier.semantics { heading() }
-        )
-        Text(
-          text = subtitle,
-          style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+      item(key = "introduction", contentType = "introduction") {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+          Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.semantics { heading() }
+          )
+          Text(
+            text = subtitle,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+        }
       }
 
-      highlights.forEach { highlight ->
+      if (scrollActions) {
+        item(key = "actions", contentType = "actions") {
+          NoticeActions(onReadMore, onSupport, onDismiss, readMoreLabel)
+        }
+      }
+
+      if (reopenHint != null) {
+        item(key = "reopen_hint", contentType = "reopen_hint") {
+          Text(
+            text = reopenHint,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+              .testTag(UpdateNoticeTags.REOPEN_HINT)
+          )
+        }
+      }
+
+      itemsIndexed(highlights, key = { index, _ -> "highlight-$index" }, contentType = { _, _ -> "highlight" }) { _, highlight ->
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-          Text(text = highlight.title, style = MaterialTheme.typography.titleSmall)
+          Text(
+            text = highlight.title,
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.semantics { heading() }
+          )
           Text(
             text = highlight.description,
             style = MaterialTheme.typography.bodyMedium,
@@ -256,68 +310,71 @@ private fun ExpandedNotice(
           )
         }
       }
+    }
 
+    if (!scrollActions) {
+      HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+      NoticeActions(
+        onReadMore = onReadMore,
+        onSupport = onSupport,
+        onDismiss = onDismiss,
+        readMoreLabel = readMoreLabel,
+        modifier = Modifier
+          .padding(horizontal = 8.dp, vertical = 4.dp)
+      )
+    }
+  }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun NoticeActions(
+  onReadMore: () -> Unit,
+  onSupport: (() -> Unit)?,
+  onDismiss: () -> Unit,
+  readMoreLabel: String,
+  modifier: Modifier = Modifier
+) {
+  FlowRow(
+    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+    modifier = modifier
+      .fillMaxWidth()
+      .testTag(UpdateNoticeTags.ACTIONS)
+  ) {
+    TextButton(
+      onClick = onReadMore,
+      modifier = Modifier
+        .heightIn(min = 48.dp)
+        .testTag(UpdateNoticeTags.READ_MORE)
+    ) {
+      Text(readMoreLabel)
+      Spacer(Modifier.width(6.dp))
+      Icon(
+        painter = painterResource(R.drawable.symbol_arrow_upright_compact_16),
+        contentDescription = null,
+        modifier = Modifier.size(16.dp)
+      )
+    }
+
+    if (onSupport != null) {
       TextButton(
-        onClick = onReadMore,
+        onClick = onSupport,
         modifier = Modifier
           .heightIn(min = 48.dp)
-          .testTag(UpdateNoticeTags.READ_MORE)
+          .testTag(UpdateNoticeTags.SUPPORT)
       ) {
-        Text(readMoreLabel)
-        Spacer(Modifier.width(6.dp))
         Icon(
-          painter = painterResource(R.drawable.symbol_arrow_upright_compact_16),
+          painter = painterResource(R.drawable.symbol_heart_24),
           contentDescription = null,
-          modifier = Modifier.size(16.dp)
+          modifier = Modifier.size(18.dp)
         )
-      }
-
-      if (onSupport != null) {
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-          Text(
-            text = stringResource(R.string.CollieUpdates__support_message),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-          )
-          TextButton(
-            onClick = onSupport,
-            modifier = Modifier
-              .heightIn(min = 48.dp)
-              .testTag(UpdateNoticeTags.SUPPORT)
-          ) {
-            Icon(
-              painter = painterResource(R.drawable.symbol_heart_24),
-              contentDescription = null,
-              modifier = Modifier.size(18.dp)
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.CollieUpdates__support_collie))
-          }
-        }
-      }
-
-      if (scrollDismissAction) {
-        DismissNoticeButton(
-          onDismiss = onDismiss,
-          modifier = Modifier
-            .align(Alignment.End)
-            .padding(bottom = 8.dp)
-        )
+        Spacer(Modifier.width(8.dp))
+        Text(stringResource(R.string.CollieUpdates__support_collie))
       }
     }
 
-    if (!scrollDismissAction) {
-      Box(
-        contentAlignment = Alignment.CenterEnd,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp, vertical = 8.dp)
-      ) {
-        DismissNoticeButton(onDismiss)
-      }
-    }
+    DismissNoticeButton(onDismiss)
   }
 }
 

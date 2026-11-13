@@ -1,5 +1,13 @@
 # Release notes captures
 
+## Capture status after the 2026-11-13 follow-up
+
+The images below are historical captures from before the long-edition layout and support-button changes. They do not show the current action group, reopening hint, fixed close control, or temporary battery-banner suppression.
+
+Fresh API 35 screenshots and native execution remain pending. The follow-up environment had no emulator acceleration, and neither software-emulator configuration completed Android boot. Run the matching app and test APKs on a ready API 35 device using the command below before merging, and replace these captures after reviewing the current layouts.
+
+## Historical API 35 run
+
 API 35, Pixel 6 emulator, 1080 × 2400 portrait and 2400 × 1080 landscape.
 App and instrumentation APKs were assembled together from `5660b3934dea8855530fb32ab6e10f12754a54c5`:
 

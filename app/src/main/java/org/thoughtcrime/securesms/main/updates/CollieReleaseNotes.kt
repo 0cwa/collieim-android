@@ -52,6 +52,7 @@ fun CollieReleaseNotesCard(
     onDismiss = onDismiss,
     onReadMore = { CommunicationActions.openBrowserLink(context, CollieReleaseNotes.RELEASES_URL) },
     onSupport = { CommunicationActions.openBrowserLink(context, supportUrl) },
-    maxExpandedHeight = maxExpandedHeight
+    maxExpandedHeight = maxExpandedHeight,
+    reopenHint = stringResource(R.string.CollieUpdates__reopen_hint)
   )
 }

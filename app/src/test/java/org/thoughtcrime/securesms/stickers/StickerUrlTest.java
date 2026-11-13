@@ -1,16 +1,19 @@
 package org.thoughtcrime.securesms.stickers;
 
+import android.app.Application;
 import android.net.Uri;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE, application = Application.class)
 public class StickerUrlTest {
   private static final String PREFIX = "https://signal.art/addstickers/#pack_id=";
 

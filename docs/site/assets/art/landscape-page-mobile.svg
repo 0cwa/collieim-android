@@ -1,9 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 4800" preserveAspectRatio="none" aria-hidden="true" focusable="false">
 <style>svg{pointer-events:none}@media(prefers-color-scheme:dark){.pale{fill:#2F4F3A}.deep{fill:#3C1207}.warm{fill:#4C1A0B}.gold{fill:#6F270F}}</style>
 <path class="pale" fill="#B7C597" d="M0 440C120 360 260 460 390 420V460C260 500 120 400 0 480Z"/>
-<path class="gold" fill="#F2982B" d="M300 480C334 448 359 436 390 436V470C358 472 337 486 300 500Z"/>
+<path class="gold" fill="#F2982B" d="M0 485C130 405 260 500 390 460V470C260 510 130 415 0 490Z"/>
 <path class="pale" fill="#B7C597" d="M0 1610C138 1570 235 1690 390 1618V1670C242 1740 139 1620 0 1650Z"/>
-<path class="gold" fill="#F2982B" d="M300 1690C343 1658 366 1650 390 1652V1685C360 1678 335 1700 300 1710Z"/>
+<path class="gold" fill="#F2982B" d="M0 1680C140 1600 260 1750 390 1670V1684C260 1764 140 1614 0 1690Z"/>
 <path class="pale" fill="#B7C597" d="M0 2550C134 2484 260 2640 390 2550V2600C259 2690 136 2540 0 2595Z"/>
-<path class="gold" fill="#F2982B" d="M330 2630C355 2596 375 2590 390 2590V2616C368 2610 353 2638 330 2650Z"/>
+<path class="gold" fill="#F2982B" d="M0 2608C130 2542 260 2697 390 2620V2630C260 2707 130 2552 0 2614Z"/>
+<path class="pale" fill="#B7C597" d="M0 4270C100 4210 260 4370 390 4275V4320C260 4415 100 4255 0 4315Z"/>
 </svg>

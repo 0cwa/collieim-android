@@ -95,13 +95,14 @@ main{background-image:url(art/landscape-page.svg);background-size:100% 100%;back
    existing narrow Help-to-download gap. These layers never enter layout. */
 .community,.get-wrap{position:relative;isolation:isolate}
 .community::before,.get-wrap::before{content:"";position:absolute;z-index:-1;pointer-events:none;background-image:url(art/collie-lower.svg);background-repeat:no-repeat}
-.community::before{top:20px;right:calc(var(--gutter) + 96px);width:240px;height:180px;background-size:480px 180px;background-position:right top}
+.community::before{top:20px;right:calc(var(--gutter) + 96px);width:240px;height:180px;background-size:400px 180px;background-position:right top}
 .get-wrap::before{display:none}
 @media(max-width:960px){
   .community::before{display:none}
   .get-wrap::before{display:block;top:-40px;left:var(--gutter);right:var(--gutter);height:88px;background-size:auto 100%;background-position:center bottom}
 }
 @media(max-width:860px){.get-wrap::before{top:-64px;height:104px}}
+@media(max-width:600px){.get-wrap::before{background-image:url(art/collie-frieze.svg);background-size:100% 100%;background-position:right bottom}}
 
 /* ---------- hero ---------- */
 .hero-wrap{--hero-bottom-clearance:80px;position:relative;color:var(--mist);background-color:var(--hero);

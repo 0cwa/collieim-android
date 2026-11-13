@@ -65,6 +65,14 @@ class UnifiedPushReceiver : MessagingReceiver() {
       return !KeyCachingService.isLocked() && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
     }
 
+    /** A same-provider retry resolves a failed or interrupted write, but not an active selection. */
+    internal fun selectionNeedsRecoveryLocked(context: Context): Boolean {
+      check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+      if (UnifiedPushLifecycle.isEndpointPersistenceBlockedLocked()) return true
+      val pending = LockedPushState.pendingRegistration(context)
+      return LockedPushState.hasUncertainWrite(context) && (pending == null || pending.id !in activeSelections)
+    }
+
     /** Finish a selection without allowing an older result to clear a newer intent. */
     internal fun finishSelection(context: Context, id: String): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
       try {

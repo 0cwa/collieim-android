@@ -204,6 +204,53 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `failure before initialization stays fenced when the first marker write fails`() {
+    fakeAccount()
+    mockPendingEndpointStorage()
+    every { LockedPushState.beginEndpointWrite(any()) } returns false
+    UnifiedPushLifecycle.resetForTests(initiallyReady = false, initiallyInitialized = false)
+    UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://example.org/new", null), "default")
+    UnifiedPushLifecycle.initialize(incompleteTransition = false, legacyContextIsCoherent = true, endpointWriteUncertain = false)
+    assertFalse(UnifiedPushLifecycle.isReady())
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+  }
+
+  @Test
+  fun `startup snapshot and receiver write are serialized`() {
+    fakeAccount()
+    mockPendingEndpointStorage()
+    every { LockedPushState.beginEndpointWrite(any()) } returns false
+    val snapshotEntered = CountDownLatch(1)
+    val releaseSnapshot = CountDownLatch(1)
+    every { LockedPushState.hasUncertainWrite(any()) } answers {
+      snapshotEntered.countDown()
+      check(releaseSnapshot.await(5, TimeUnit.SECONDS))
+      false
+    }
+    UnifiedPushLifecycle.resetForTests(initiallyReady = false, initiallyInitialized = false)
+    assertTrue(UnifiedPushAccountTransition.hasCoherentRegisteredContext())
+    val startupFailure = AtomicReference<Throwable?>(null)
+    val receiverFailure = AtomicReference<Throwable?>(null)
+    val startup = Thread { try { UnifiedPushAccountTransition.initializeFromSignalStore() } catch (t: Throwable) { startupFailure.set(t) } }
+    val receiver = Thread { try { UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://example.org/new", null), "default") } catch (t: Throwable) { receiverFailure.set(t) } }
+    startup.start()
+    try {
+      assertTrue(snapshotEntered.await(5, TimeUnit.SECONDS))
+      receiver.start()
+      awaitCondition("receiver should wait for startup snapshot") { receiver.state == Thread.State.BLOCKED }
+    } finally {
+      releaseSnapshot.countDown()
+      startup.join(5000)
+      receiver.join(5000)
+    }
+    assertFalse(startup.isAlive)
+    assertFalse(receiver.isAlive)
+    assertNull(startupFailure.get())
+    assertNull(receiverFailure.get())
+    assertFalse(UnifiedPushLifecycle.isReady())
+  }
+
+  @Test
   fun `failed newer endpoint keeps a draining older worker from applying or reopening`() {
     fakeAccount()
     val pending = mockPendingEndpointStorage(LockedPushState.Endpoint("https://example.org/old", null, null, "default"))

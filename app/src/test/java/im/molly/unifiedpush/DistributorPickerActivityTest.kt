@@ -64,6 +64,7 @@ class DistributorPickerActivityTest {
     every { LockedPushState.beginEndpointWrite(any()) } returns true
     every { LockedPushState.finishEndpointWrite(any()) } returns true
     every { LockedPushState.pendingRegistration(any()) } answers { registration }
+    every { LockedPushState.hasUncertainWrite(any()) } returns false
     every { LockedPushState.clearRegistrationIfCurrent(any(), any()) } answers { registration = null; true }
     every { LockedPushState.trySavePending(any(), any()) } answers { pending = secondArg(); true }
     every { LockedPushState.trySaveSelection(any(), any(), any()) } answers { pending = secondArg(); registration = LockedPushState.PendingRegistration(thirdArg(), false); true }
@@ -157,6 +158,20 @@ class DistributorPickerActivityTest {
     assertEquals(context.packageName, saved)
     assertNull(shadowOf(activity).resultIntent)
     verify(exactly = 1) { LockedPushState.markRegistrationReady(any(), any()) }
+  }
+
+  @Test fun `same saved distributor recovers an interrupted selection`() {
+    addResolver()
+    every { UnifiedPush.getDistributors(any()) } returns listOf(context.packageName)
+    saved = context.packageName
+    registration = LockedPushState.PendingRegistration("crashed", false)
+    every { LockedPushState.hasUncertainWrite(any()) } returns true
+    val activity = launch(useDefault = false)
+    val started = shadowOf(activity).nextStartedActivityForResult
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, resultIntent())
+    verify(exactly = 1) { LockedPushState.clearRegistrationIfCurrent(any(), "crashed") }
+    verify(exactly = 1) { UnifiedPush.saveDistributor(activity, context.packageName) }
+    assertEquals(LockedPushState.Endpoint(null, null, null, "default"), pending)
   }
 
   @Test fun `same distributor is a no-op`() {

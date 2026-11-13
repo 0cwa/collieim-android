@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 0cwa/collie-release-engineering
-          ref: 9b7803d1a1b699ad705a1110f94ded2c3016fa08
+          ref: 20d46e0c2d072a06c6088233cd8e4badbdb6f475
           path: policy
           sparse-checkout: tools/codeql
           persist-credentials: false

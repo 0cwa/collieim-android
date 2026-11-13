@@ -65,7 +65,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
   <section class="hero shell" aria-labelledby="hero-title">
     <div class="hero-copy">
       <h1 id="hero-title">Private messages on the Signal&nbsp;network. <span>Stronger protection on your&nbsp;phone.</span></h1>
-      <p class="lede">Collie is a free, open-source Android messenger. Message and call <strong>your Signal contacts</strong> as you always have, while Collie keeps a tighter hold on what's stored on your device.</p>
+      <p class="lede">Collie is an Android app for messaging and calling <strong>your Signal contacts</strong>.</p>
       <div class="actions">
         <a class="button primary" href="#get">Get Collie</a>
         <a class="button ghost" href="#community">Meet the community <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
@@ -86,23 +86,10 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
 
 <main id="main">
   <section id="about" class="intro shell" aria-labelledby="about-title">
-    <h2 id="about-title">Talk to anyone on Signal</h2>
+    <h2 id="about-title">Built on <a href="https://signal.org/">Signal</a> and <a href="https://molly.im/">Molly</a></h2>
     <div class="intro-body">
-      <p class="statement">Message and call <strong>your Signal contacts</strong> over the same end-to-end encrypted network, with more protection for the messages on your phone.</p>
-      <div class="intro-source">
-        <h3>Built on <a href="https://signal.org/">Signal</a> and <a href="https://molly.im/">Molly</a></h3>
-        <p>Collie keeps Molly's privacy protections, follows newer Signal releases, and adds features of its own.</p>
-      </div>
-    <details class="technical-details">
-      <summary>Source and security details<svg class="ico" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
-      <p class="source-explanation">Collie's code is public, so people with the expertise to inspect it can see how it works.</p>
-      <ul class="ticks">
-        <li>One APK, with no proprietary libraries, licensed <a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE">AGPL-3.0</a>.</li>
-        <li><a href="https://github.com/0cwa/collieim-android">Browse the source code</a> or read the <a href="https://github.com/0cwa/collie-release-engineering">release engineering and signing details</a>.</li>
-        <li>We contribute work back to Molly, for example <a href="https://github.com/mollyim/mollyim-android/pull/852">#852</a> and <a href="https://github.com/mollyim/mollyim-android/pull/853">#853</a>.</li>
-      </ul>
-      <p class="note">Collie's native libraries have not yet been independently reproduced.</p>
-    </details>
+      <p class="statement">Collie keeps Molly’s privacy protections and uses Signal’s end-to-end encrypted network, so you can reach everyone you already talk to on Signal.</p>
+      <p class="source-link"><a href="https://github.com/0cwa/collieim-android#security">Source and security →</a></p>
     </div>
   </section>
 
@@ -114,55 +101,46 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
           <svg class="ico big" aria-hidden="true"><use href="#i-lock"/></svg>
           <h3>Locked when you step away</h3>
         </div>
-        <p>Encrypt your message database with <strong>a passphrase you choose</strong>. Collie locks itself after a set time, and a lost or stolen phone keeps your conversations encrypted until the passphrase is entered.</p>
-        <ul class="feature-facts" aria-label="Database protection">
-          <li>Passphrase you choose</li>
-          <li>Locks after a set time</li>
-          <li>Stays encrypted if lost or stolen</li>
-        </ul>
+        <p>Encrypt the messages stored on your phone with <strong>a passphrase you choose</strong>. Collie locks after a set time, so a lost or stolen phone keeps your conversations encrypted.</p>
       </article>
       <article class="card">
         <svg class="ico" aria-hidden="true"><use href="#i-memory"/></svg>
         <h3>Less left behind</h3>
-        <p>Sensitive data is cleared from memory, and debug logging can be switched off entirely.</p>
+        <p>Clears sensitive data from memory. Debug logging can be turned off.</p>
       </article>
       <article class="card">
         <svg class="ico" aria-hidden="true"><use href="#i-route"/></svg>
         <h3>Choose your route</h3>
-        <p>Connect through Tor via Orbot or a SOCKS proxy, set up before you even register.</p>
+        <p>Connect through Tor with Orbot or a SOCKS proxy, even before you register.</p>
       </article>
       <article class="card">
         <svg class="ico" aria-hidden="true"><use href="#i-bell"/></svg>
         <h3>Notifications without Google</h3>
-        <p>Get message alerts without Google's push service. Collie can keep its own connection open, or use <a href="https://unifiedpush.org/">UnifiedPush</a> with a server you trust. <a href="#upcoming" data-upcoming-explanation>Why it matters and why we're working on making it easy.</a></p>
+        <p>Get alerts through Collie’s own connection, or through <a href="https://unifiedpush.org/">UnifiedPush</a> with a server you run or trust. <a href="#upcoming">Why it matters and why we're working on making it easy.</a></p>
       </article>
       <article class="card">
         <svg class="ico" aria-hidden="true"><use href="#i-fresh"/></svg>
         <h3>Close to current Signal</h3>
-        <p>Collie follows newer Signal releases, so recent features and fixes reach you sooner.</p>
+        <p>Get features and fixes from newer Signal releases.</p>
       </article>
       <article class="card">
         <svg class="ico" aria-hidden="true"><use href="#i-devices"/></svg>
         <h3>Your history on new devices</h3>
-        <p>Link a phone or Android tablet and bring your existing messages along, when your main phone supports it.</p>
+        <p>Bring your messages to a linked phone or Android tablet, when your main phone supports it.</p>
       </article>
     </div>
-    <p class="also"><strong>Also included:</strong> blocking messages and calls from unknown contacts, disappearing call history, and scheduled local backups.</p>
+    <p class="also"><strong>Also included:</strong> Blocking unknown contacts, disappearing call history and scheduled local backups.</p>
   </section>
 
 
   <section id="upcoming" class="upcoming shell" aria-labelledby="upcoming-title">
     <h2 id="upcoming-title">Upcoming features</h2>
-    <p class="upcoming-intro">Notifications should work on phones without Google services, too.</p>
-    <details class="upcoming-detail" id="notification-details" open>
-      <summary>UnifiedPush lets you <strong>choose who delivers your notifications</strong>, but currently needs a trusted MollySocket server.</summary>
-      <p>We're working on making it easier and bringing these notifications to linked phones, alongside the other plans below.</p>
-    </details>
-    <p class="upcoming-status"><em>Planned work, not features you can use yet. Plans can change; each discussion tracks the latest progress.</em></p>
+    <p class="upcoming-intro">Phones without Google services need another way to get notifications. UnifiedPush is one, but today it needs a MollySocket server you run or trust with your account and metadata. We’re making setup easier and bringing it to linked phones.</p>
+    <p class="upcoming-status"><em>These are plans, not features you can use yet.</em></p>
     <ul class="roadmap-list">
       {{UPCOMING_FEATURES}}
     </ul>
-    <p class="upcoming-more"><a href="https://github.com/0cwa/collieim-android/discussions/categories/upcoming-planned-features">Follow all upcoming features</a> · <a href="https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests">Suggest a feature</a></p>
+    <p class="upcoming-more"><a href="https://github.com/0cwa/collieim-android/discussions/categories/upcoming-planned-features">Follow all plans</a> · <a href="https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests">Suggest a feature</a></p>
   </section>
 
   <div class="section-landscape" aria-hidden="true"></div>
@@ -170,23 +148,21 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
 
   <section id="community" class="community shell" aria-labelledby="community-title">
     <h2 id="community-title">Help shape Collie</h2>
-    <p class="community-intro">Everyone's welcome. Ask a question, <a href="https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests"><strong>suggest a feature</strong></a>, or tell us what would make Collie better for you.</p>
+    <p class="community-intro">Ask a question, <a href="https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests"><strong>suggest a feature</strong></a> or join the conversation.</p>
     <ul class="links">
-      <li><a href="https://matrix.to/#/#collieim:worldethicaldataforum.org"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span><strong>Chat with us on Matrix</strong> Join the community group for help, everyday conversation and release news. <span class="community-action">Join the Matrix group →</span></span></a></li>
-      <li><a href="https://github.com/0cwa/collieim-android/discussions"><svg class="ico" aria-hidden="true"><use href="#i-forum"/></svg><span><strong>Visit the Collie forum</strong> GitHub Discussions is our forum for questions, feature requests and conversations you can come back to. <span class="community-action">Browse discussions and suggest a feature →</span></span></a></li>
+      <li><a href="https://matrix.to/#/#collieim:worldethicaldataforum.org"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span><strong>Chat on Matrix</strong> Get help, chat with the community and hear release news. <span class="community-action">Join the Matrix group →</span></span></a></li>
+      <li><a href="https://github.com/0cwa/collieim-android/discussions"><svg class="ico" aria-hidden="true"><use href="#i-forum"/></svg><span><strong>Collie forum</strong> Questions and feature requests on GitHub Discussions. <span class="community-action">Browse the forum →</span></span></a></li>
     </ul>
     <div class="community-help" aria-labelledby="help-title">
       <h3 id="help-title">Help the project</h3>
       <div class="help-options">
         <div>
-          <h4>Something isn't working?</h4>
-          <p>A clear bug report helps us find and fix the problem. Tell us what happened and which version you're using.</p>
-          <a href="https://github.com/0cwa/collieim-android/issues">Report a bug on GitHub <span aria-hidden="true">→</span></a>
+          <p>Found a problem? Tell us what happened and which version you’re using.</p>
+          <a href="https://github.com/0cwa/collieim-android/issues">Report a bug <span aria-hidden="true">→</span></a>
         </div>
         <div>
-          <h4>Help Collie grow</h4>
-          <p>Donations support development, including work toward a desktop client.</p>
-          <a href="https://liberapay.com/Collie/">Support Collie on Liberapay <span aria-hidden="true">→</span></a>
+          <p>Donations fund development, including work toward a desktop client.</p>
+          <a href="https://liberapay.com/Collie/">Donate on Liberapay <span aria-hidden="true">→</span></a>
         </div>
       </div>
     </div>
@@ -202,7 +178,7 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
         <li>
           <div>
             <h3>Obtainium <span class="tag">Recommended</span></h3>
-            <p>Installs from our GitHub releases and keeps Collie up to date.</p>
+            <p>Installs from our GitHub releases and keeps Collie updated.</p>
             <p class="install-prerequisite">Needs the Obtainium app.</p>
           </div>
           <a class="button primary" href="obtainium/">Add to Obtainium</a>
@@ -210,19 +186,19 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
         <li>
           <div>
             <h3>F-Droid repository</h3>
-            <p>Add Collie's own repository to F-Droid or a compatible client. Same signed APK.</p>
+            <p>Add Collie’s repository to F-Droid or a compatible app.</p>
           </div>
           <a class="button primary" href="https://repo.collie.im/">Open repo.collie.im</a>
         </li>
         <li>
           <div>
             <h3>Direct download</h3>
-            <p>The <code>collie.apk</code> file from GitHub. You update it yourself.</p>
+            <p>The APK from GitHub. You update it yourself.</p>
           </div>
           <a class="button quiet" href="{{APK_URL}}"><svg class="ico" aria-hidden="true"><use href="#i-down"/></svg> Download APK</a>
         </li>
       </ol>
-      <p class="verify">Check before you install: package <code>im.collie.app</code>, <a href="https://repo.collie.im/#verification">signing certificate</a>.</p>
+      <p class="verify"><a href="https://repo.collie.im/#verification">Verify the download</a></p>
       <div class="get-art" aria-hidden="true">
         <svg class="ring" viewBox="0 0 400 400"><circle cx="200" cy="200" r="186"/></svg>
         <img src="assets/collie-foreground.svg" alt="" width="1254" height="1254" loading="lazy">
@@ -252,13 +228,6 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
 </footer>
 <script>
 (() => {
-  const explanation = document.querySelector('#notification-details');
-  if (matchMedia('(max-width: 600px)').matches && location.hash !== '#upcoming') {
-    explanation.open = false;
-  }
-  document.querySelector('[data-upcoming-explanation]').addEventListener('click', () => {
-    explanation.open = true;
-  });
   const toggle = document.querySelector('.menu-toggle');
   const menu = document.querySelector('#section-menu');
   const close = () => {

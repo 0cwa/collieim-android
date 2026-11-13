@@ -50,7 +50,7 @@
     {
       "task": "app:testProdWebsiteDebugUnitTest",
       "class": "org.thoughtcrime.securesms.backup.MollyBackupPreferencesTest",
-      "min_executed": 6
+      "min_executed": 12
     },
     {
       "task": "app:testProdWebsiteDebugUnitTest",

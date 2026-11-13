@@ -1,0 +1,28 @@
+**Superseded mural integration:** use [the faithful canonical asset and current native proof](../canonical/README.md). The resting scenes, block reading surfaces and32-region metric below are historical. Unchanged landscape evidence remains useful.
+
+# Final flowing landscape and resting Collie composition
+
+Production source: signed **ccfc2ec3976b077b7d5c47bee29a2a179b6a3487**. The containing evidence commit freezes these images with that source. [Foreground ON/OFF comparison](resting-comparison.html) · [whole page and isolated canvases](standalone-comparison.html) · [registered full-drawing/reference comparison](reference/registered-comparison.html).
+
+## What is current
+
+The selected A flowing landscape and lower-C line art are implemented as native SVGs. The accurate full drawings remain preserved. Production scenes explicitly recompose the same recognizable head, eye, muzzle, neck and forepaw into empty space; no source-copy rearrangement or invented anatomy. The head proportions are unchanged. The native paw is translated into a resting pose; the ruff's three lobes are compressed into a flowing band beneath it. This is production composition, not a claim that AI-occluded pixels were measurable.
+
+At320/390/768, the actual last-action→Get-card gap is112px. A96px-high scene leaves8px above/below, with a full-width flowing ground line. Its visible face is about96px wide. At1280, a180px-high composition places essential features right of the intro and above the forum; its broad line flows through the empty strip below intro text. All eight essential-feature rectangles (head, ear, eye, muzzle, neck, forearm, paw, mane) have **identical foreground-ON/OFF pixels at all four widths**:32 visibility checks, no reading-surface amputation. `resting-semantic.json`, `resting-visibility-check.json` and `check-resting-visibility.py` preserve the transforms, bounds and pixel comparison. The tiny mobile return fragment is gone: isolated edge-art rows1000–1199 contain zero non-page pixels; the complete smooth continuation stays off-screen.
+
+Earlier verified corrections remain: continuous uncovered landscape fields, correct left forest/lichen order, real outer/inner orange lobes, long tapered locks, open back, upper phone hero ribbon, smooth forest/edge tangents, and shared joins painted once. The outer lobe source tip is≈(603,241), inner≈(581,268); they are distinct. Single-group compositing caps alpha at143/255; prior doubled joins reached206. Foreground reading surfaces are actual existing paragraph/link blocks with page-color backgrounds and no extra padding. They disappear in foreground-off mode. Local Help body/title/link checks at320/390/768 in light/dark found minimum8.752:1 light /9.750:1 dark, not a full-site contrast audit.
+
+## Actual evidence and limits
+
+- `composition-on/off-320.png`:320×6441;390:390×5946;768:768×5267;1280:1280×4651. These reach the full page bottom. They are **native top/lower source-render stitches**, not single captures. Every overlap has zero RGB differences; only duplicate rows are discarded (`composition-capture-manifest.json`).
+- `resting-community-on/off-{320,390,768}.png`: native1500px-high section views.1280 pair is1150px high.390 dark pair is1500px high. Use these to judge recognition with foreground present.
+- Ten `*-isolated.png` files expose complete native SVG canvases. `collie-lower`/`collie-narrow` preserve the full earlier drawing/portrait; `collie-scene-desktop`/`collie-scene-narrow` are the actual production recompositions.
+- Original selected A/C references are reused from the parent directory; no duplicated raster copy. Reference crops are A hero(0,0,1024,516), A features(0,500,1024,580), C detail(0,1000,800,400). Original C crop registration was verified with zero differing RGB channels. Card/inset-covered continuations remain inferred. Flat SVG colors replace AI shading.
+
+T3 live-tab preview reported unavailable. These are actual browser renders of unchanged built HTML/CSS with original fonts/native image bytes embedded, DPR1/native overlay scrollbars; no reconstructed layout or recoloring. Fonts/images loaded and requested CSS widths equal usable widths. Source-render background-only mode uses visibility:hidden on foreground containers, including their reading surfaces; it does not alter SVG/background layers. `standalone-geometry.json` records these states. The requested localhost8879 build is current.
+
+## Checks and reproduction
+
+All132 foreground rectangles (33 each at320/390/768/1280) exactly match the original baseline; no horizontal overflow. **27 site/output-safety tests passed**, all ten background SVGs parsed/rasterized, and diffcheck passed. The supplied output-deletion guard is separate signed commit0fd5f00903a1ef75717b4395be8b9c43df824716; actual external scratch build succeeded. Native images/Fastlane, Obtainium configuration, approved copy, fonts, existing symmetric hero divider and all foreground positions remain unchanged in this artwork pass. Main is untouched.
+
+Build with `python3 tooling/site/build.py --out ~/agent-scratch/collieim-android/site-preview --tag v8.35.1-3-rc2 --roadmap-json <discussion-snapshot.json>`. SVGs rasterize with existing `rsvg-convert`; visibility checks use Python standard library and ffmpeg. From repository root, `build-resting-compositions.py` regenerates the two production SVGs from the preserved portrait. These HTML boards use portable local images; the T3-preview versions use static absolute paths in task scratch for automatic inlining. No new dependency or heavyweight runtime was installed.

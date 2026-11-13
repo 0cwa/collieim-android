@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="516" viewBox="0 0 1024 516">
+<path fill="none" d="M608 123C734 38 803 74 890 81C955 90 1001 74 1024 55L1024 87C931 146 837 86 744 86C699 81 653 98 608 123Z" stroke="#F000CC" stroke-width="1.5" opacity="1" />
+<path fill="none" d="M744 86C837 86 931 146 1024 87L1024 130C931 160 837 100 744 89Z" stroke="#F000CC" stroke-width="1.5" opacity="1" />
+<path fill="none" d="M744 89C837 100 931 160 1024 130L1024 165C918 159 842 105 744 89Z" stroke="#F000CC" stroke-width="1.5" opacity="1" />
+<path fill="none" d="M0 516C225 496 311 433 434 374C591 292 813 281 1024 278L1024 516Z" stroke="#F000CC" stroke-width="1.5" opacity="1" />
+<path fill="none" d="M0 476C153 449 237 482 355 436C469 384 506 310 602 276C816 260 876 325 1024 278L1024 307C842 342 789 302 649 317C506 353 473 417 378 461C231 462 151 483 0 508Z" stroke="#F000CC" stroke-width="1.5" opacity="1" />
+<path fill="none" d="M0 516C176 505 279 490 392 436C534 350 598 370 745 407C874 449 901 410 1024 376L1024 516Z" stroke="#F000CC" stroke-width="1.5" opacity="1" />
+<path fill="none" d="M0 516C176 505 279 490 392 436C534 350 598 370 745 407C874 449 901 410 1024 376L1024 409C902 443 881 480 746 440C589 395 525 391 401 457C286 511 177 523 0 516Z" stroke="#F000CC" stroke-width="1.5" opacity="1" />
+</svg>

@@ -1,0 +1,323 @@
+[
+  {
+    "width": 320,
+    "dark": false,
+    "measurements": [
+      {
+        "color": [
+          90,
+          64,
+          51
+        ],
+        "pixels": 478,
+        "minimum": 9.086,
+        "at": [
+          18,
+          4765
+        ],
+        "actualBackground": [
+          249,
+          251,
+          244
+        ],
+        "below4_5": 0
+      },
+      {
+        "color": [
+          36,
+          19,
+          13
+        ],
+        "pixels": 317,
+        "minimum": 17.15,
+        "at": [
+          17,
+          4735
+        ],
+        "actualBackground": [
+          249,
+          251,
+          244
+        ],
+        "below4_5": 0
+      },
+      {
+        "color": [
+          47,
+          79,
+          58
+        ],
+        "pixels": 711,
+        "minimum": 8.752,
+        "at": [
+          16,
+          4872
+        ],
+        "actualBackground": [
+          249,
+          251,
+          244
+        ],
+        "below4_5": 0
+      }
+    ]
+  },
+  {
+    "width": 320,
+    "dark": true,
+    "measurements": [
+      {
+        "color": [
+          183,
+          197,
+          151
+        ],
+        "pixels": 1131,
+        "minimum": 9.75,
+        "at": [
+          16,
+          4872
+        ],
+        "actualBackground": [
+          36,
+          19,
+          13
+        ],
+        "below4_5": 0
+      },
+      {
+        "color": [
+          237,
+          242,
+          228
+        ],
+        "pixels": 317,
+        "minimum": 15.692,
+        "at": [
+          17,
+          4735
+        ],
+        "actualBackground": [
+          36,
+          19,
+          13
+        ],
+        "below4_5": 0
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "dark": false,
+    "measurements": [
+      {
+        "color": [
+          90,
+          64,
+          51
+        ],
+        "pixels": 478,
+        "minimum": 9.086,
+        "at": [
+          18,
+          4354
+        ],
+        "actualBackground": [
+          249,
+          251,
+          244
+        ],
+        "below4_5": 0
+      },
+      {
+        "color": [
+          36,
+          19,
+          13
+        ],
+        "pixels": 317,
+        "minimum": 17.15,
+        "at": [
+          17,
+          4323
+        ],
+        "actualBackground": [
+          249,
+          251,
+          244
+        ],
+        "below4_5": 0
+      },
+      {
+        "color": [
+          47,
+          79,
+          58
+        ],
+        "pixels": 711,
+        "minimum": 8.752,
+        "at": [
+          16,
+          4460
+        ],
+        "actualBackground": [
+          249,
+          251,
+          244
+        ],
+        "below4_5": 0
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "dark": true,
+    "measurements": [
+      {
+        "color": [
+          183,
+          197,
+          151
+        ],
+        "pixels": 1131,
+        "minimum": 9.75,
+        "at": [
+          16,
+          4460
+        ],
+        "actualBackground": [
+          36,
+          19,
+          13
+        ],
+        "below4_5": 0
+      },
+      {
+        "color": [
+          237,
+          242,
+          228
+        ],
+        "pixels": 317,
+        "minimum": 15.692,
+        "at": [
+          17,
+          4323
+        ],
+        "actualBackground": [
+          36,
+          19,
+          13
+        ],
+        "below4_5": 0
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "dark": false,
+    "measurements": [
+      {
+        "color": [
+          90,
+          64,
+          51
+        ],
+        "pixels": 770,
+        "minimum": 9.086,
+        "at": [
+          32,
+          4154
+        ],
+        "actualBackground": [
+          249,
+          251,
+          244
+        ],
+        "below4_5": 0
+      },
+      {
+        "color": [
+          36,
+          19,
+          13
+        ],
+        "pixels": 317,
+        "minimum": 17.15,
+        "at": [
+          32,
+          4119
+        ],
+        "actualBackground": [
+          249,
+          251,
+          244
+        ],
+        "below4_5": 0
+      },
+      {
+        "color": [
+          47,
+          79,
+          58
+        ],
+        "pixels": 883,
+        "minimum": 8.752,
+        "at": [
+          31,
+          4262
+        ],
+        "actualBackground": [
+          249,
+          251,
+          244
+        ],
+        "below4_5": 0
+      }
+    ]
+  },
+  {
+    "width": 768,
+    "dark": true,
+    "measurements": [
+      {
+        "color": [
+          183,
+          197,
+          151
+        ],
+        "pixels": 1562,
+        "minimum": 9.75,
+        "at": [
+          31,
+          4262
+        ],
+        "actualBackground": [
+          36,
+          19,
+          13
+        ],
+        "below4_5": 0
+      },
+      {
+        "color": [
+          237,
+          242,
+          228
+        ],
+        "pixels": 317,
+        "minimum": 15.692,
+        "at": [
+          32,
+          4119
+        ],
+        "actualBackground": [
+          36,
+          19,
+          13
+        ],
+        "below4_5": 0
+      }
+    ]
+  }
+]

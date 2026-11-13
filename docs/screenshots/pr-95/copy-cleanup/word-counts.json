@@ -1,0 +1,99 @@
+{
+  "scope": "Rendered text in hero, About, Features, Upcoming, Community and Get; excludes navigation/footer and initially closed disclosure bodies. Whitespace-delimited tokens with letters/digits; defaults at each viewport. No claim about total source words.",
+  "measurements": [
+    {
+      "width": 1280,
+      "before": {
+        "width": 1280,
+        "usable": 1280,
+        "words": {
+          ".hero": 53,
+          "#about": 50,
+          "#features": 180,
+          "#upcoming": 102,
+          "#community": 114,
+          ".get": 67
+        },
+        "total": 566,
+        "headingCounts": [
+          1,
+          5,
+          11,
+          2
+        ],
+        "contentDisclosures": 2,
+        "handoffWords": null
+      },
+      "after": {
+        "width": 1280,
+        "usable": 1280,
+        "words": {
+          ".hero": 36,
+          "#about": 30,
+          "#features": 141,
+          "#upcoming": 90,
+          "#community": 72,
+          ".get": 55
+        },
+        "total": 424,
+        "headingCounts": [
+          1,
+          5,
+          10,
+          0
+        ],
+        "contentDisclosures": 0,
+        "handoffWords": null
+      },
+      "removed": 142,
+      "reductionPercent": 25.1
+    },
+    {
+      "width": 390,
+      "before": {
+        "width": 390,
+        "usable": 390,
+        "words": {
+          ".hero": 53,
+          "#about": 50,
+          "#features": 166,
+          "#upcoming": 84,
+          "#community": 114,
+          ".get": 67
+        },
+        "total": 534,
+        "headingCounts": [
+          1,
+          5,
+          11,
+          2
+        ],
+        "contentDisclosures": 2,
+        "handoffWords": null
+      },
+      "after": {
+        "width": 390,
+        "usable": 390,
+        "words": {
+          ".hero": 36,
+          "#about": 30,
+          "#features": 141,
+          "#upcoming": 90,
+          "#community": 72,
+          ".get": 55
+        },
+        "total": 424,
+        "headingCounts": [
+          1,
+          5,
+          10,
+          0
+        ],
+        "contentDisclosures": 0,
+        "handoffWords": null
+      },
+      "removed": 110,
+      "reductionPercent": 20.6
+    }
+  ]
+}

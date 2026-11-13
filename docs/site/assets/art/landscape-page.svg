@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 3072" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+<style>svg{pointer-events:none}@media(prefers-color-scheme:dark){.pale{fill:#2F4F3A}.deep{fill:#3C1207}.warm{fill:#4C1A0B}.gold{fill:#6F270F}}</style>
+<path class="pale" fill="#B7C597" transform="translate(80 370)" d="M327 65C401 2 476 -15 550 -2C708 25 866 103 1024 101L1024 130C866 123 708 23 550 18C476 16 401 34 327 65Z"/>
+<path class="gold" fill="#F2982B" transform="translate(80 370)" d="M432 65C480 36 527 29 575 28C725 28 874 137 1024 140L1024 197C874 176 725 25 575 37C527 34 480 48 432 65Z"/>
+<path class="deep" fill="#2F4F3A" transform="translate(0 370)" d="M0 110C240 280 480 784 735 550C831 462 928 378 1024 362L1024 591C920 674.2 835 619 720 615C570 609.7826087 400 570 310 555C200 536.6666667 90 355 0 200Z"/>
+<path class="pale" fill="#B7C597" transform="translate(0 370)" d="M0 165C240 300 480 800 735 475C831 354 928 265 1024 258L1024 362C928 378 831 462 735 550C480 784 240 400 0 238Z"/>
+
+<path class="gold" fill="#F2982B" d="M0 1150C300 1150 480 1190 680 1155S900 1080 1024 1100V1130C810 1160 710 1210 480 1185S180 1170 0 1175Z"/>
+<path class="pale" fill="#B7C597" d="M0 2770C260 2680 620 2900 1024 2730V2780C620 2950 260 2730 0 2820Z"/>
+</svg>

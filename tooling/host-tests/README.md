@@ -26,7 +26,8 @@ rustup toolchain install 1.98.1 --profile minimal
 python3 tooling/host-tests/build_libsignal.py
 ./gradlew --no-daemon --continue \
   -PcollieHostJniDir=build/host-tests/resources \
-  :app:testProdWebsiteDebugUnitTest testDebugUnitTest
+  :app:testProdWebsiteDebugUnitTest testDebugUnitTest \
+  :core:util-jvm:test :lib:libsignal-service:test
 ```
 
 The script reads the exact Rust version from the native lock and verifies it
@@ -35,6 +36,9 @@ compiles libsignal. Later builds reuse the generated checkout and Cargo
 outputs under `build/host-tests/libsignal`. Use `--work-dir <directory>` to
 select another location, and pass its `resources` subdirectory to Gradle.
 Memory-constrained local builds can set `CARGO_BUILD_JOBS=1`.
+The two explicit `:test` tasks cover JVM-only modules, including resettable-state
+concurrency and per-device control-message routing. They are not selected by
+Android's `testDebugUnitTest` task name.
 `--prepare-only` verifies the source and patches without compiling Rust.
 `--verify-only` checks cached resources and their receipt against the current
 source pins without Rust or network access; it still needs `ldd` and `nm`.
@@ -50,6 +54,10 @@ at `build/host-tests/receipt.json` records the staged bytes' SHA-256 and source
 pins. Gradle adds the directory only to host
 `Test` tasks. No Android dependency, APK resource, or production native artifact
 is replaced.
+
+With `collieHostJniDir` set, Gradle runs the test tasks again instead of reusing
+cached or up-to-date test results. Compilation can still use its normal caches.
+This keeps each candidate's CI evidence tied to actual test execution.
 
 Source verification runs before and after compilation. If the source pins
 change or a generated checkout is modified, remove the generated
@@ -76,3 +84,6 @@ native resources. They also check that stripping preserves the original output
 and rejects an invalid stripped library before replacing a staged resource.
 Passing these checks does not replace running the JVM suite
 with a non-zero test count.
+
+The required module and security-suite inventory and the repository activation
+steps are in [Security CI readiness](../../docs/SECURITY-CI-READINESS.md).

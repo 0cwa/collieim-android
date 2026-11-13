@@ -15,6 +15,7 @@ on:
         required: true
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: release-${{ inputs.tag }}
 env:
@@ -41,6 +42,19 @@ jobs:
           [ "$(git cat-file -t "$TAG")" = tag ] || { echo "::error::$TAG is not an annotated tag"; exit 1; }
           cp .github/release-signers "$RUNNER_TEMP/release-signers"
           git -c gpg.ssh.allowedSignersFile="$RUNNER_TEMP/release-signers" verify-tag "$TAG"
+      - name: Exact tag commit passed tests and the production build
+        run: |
+          source_commit=$(git rev-parse "$TAG^{commit}")
+          python3 tooling/ci/verify_release_readiness.py \
+            --repository "$GH_REPO" --sha "$source_commit" \
+            --report "$RUNNER_TEMP/release-ci-evidence.json"
+      - name: Retain the exact-commit CI evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-ci-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/release-ci-evidence.json
+          retention-days: 30
+          if-no-files-found: error
       - name: Tag source declares this version
         id: version
         run: |

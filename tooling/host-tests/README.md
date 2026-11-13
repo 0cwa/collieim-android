@@ -26,8 +26,7 @@ rustup toolchain install 1.98.1 --profile minimal
 python3 tooling/host-tests/build_libsignal.py
 ./gradlew --no-daemon --continue \
   -PcollieHostJniDir=build/host-tests/resources \
-  :app:testProdWebsiteDebugUnitTest testDebugUnitTest \
-  :core:util-jvm:test :lib:libsignal-service:test
+  :app:testProdWebsiteDebugUnitTest testDebugUnitTest
 ```
 
 The script reads the exact Rust version from the native lock and verifies it
@@ -36,9 +35,6 @@ compiles libsignal. Later builds reuse the generated checkout and Cargo
 outputs under `build/host-tests/libsignal`. Use `--work-dir <directory>` to
 select another location, and pass its `resources` subdirectory to Gradle.
 Memory-constrained local builds can set `CARGO_BUILD_JOBS=1`.
-The two explicit `:test` tasks cover JVM-only modules, including resettable-state
-concurrency and per-device control-message routing. They are not selected by
-Android's `testDebugUnitTest` task name.
 `--prepare-only` verifies the source and patches without compiling Rust.
 `--verify-only` checks cached resources and their receipt against the current
 source pins without Rust or network access; it still needs `ldd` and `nm`.
@@ -54,10 +50,6 @@ at `build/host-tests/receipt.json` records the staged bytes' SHA-256 and source
 pins. Gradle adds the directory only to host
 `Test` tasks. No Android dependency, APK resource, or production native artifact
 is replaced.
-
-With `collieHostJniDir` set, Gradle runs the test tasks again instead of reusing
-cached or up-to-date test results. Compilation can still use its normal caches.
-This keeps each candidate's CI evidence tied to actual test execution.
 
 Source verification runs before and after compilation. If the source pins
 change or a generated checkout is modified, remove the generated
@@ -87,3 +79,35 @@ with a non-zero test count.
 
 The required module and security-suite inventory and the repository activation
 steps are in [Security CI readiness](../../docs/SECURITY-CI-READINESS.md).
+
+## Temporary security-stack validation
+
+This support branch validates a pinned app commit without changing its production
+sources. It is separate from the app changes and does not establish a full-suite
+or release result. The full unit and production readiness jobs run on the pinned app branch.
+
+The `Security stack JVM validation` job runs the backup-preference and relay
+revocation classes, three updater classes, the update-settings Compose screen
+class, and the upstream `FiatMoneyTest`. Every expected class must be present with
+actual passing testcases; a missing class, empty run, failure, error, or skip fails
+the gate. The Gradle tasks are explicitly rerun, so cached test results do not
+substitute for execution.
+
+Before publishing this validation branch, set `FINAL_APP_SHA` in `pr.yml` to the
+full final app commit and put these support changes on top of that commit. The
+source check rejects every difference outside its explicit support-file list.
+The root Gradle file must match the app exactly, or match after removing the two
+reviewed test-only JNI additions. It checks tracked and untracked working files before and
+after tests. The resulting receipt, native build receipt, Gradle log, and JUnit
+reports are retained on both success and failure.
+
+The separate API 35 job builds the app and its instrumentation APK together,
+checks that both APK hashes remain identical after execution, and requires both
+named `CollieUpdateSettingsTest` methods and both screenshots. It keeps the
+device API/fingerprint, reports, screenshots, and logs for inspection. Set its
+`FINAL_APP_SHA` in `debug-apk.yml` to the same app revision before publishing.
+Passing this job does not substitute for visually reviewing its screenshots.
+
+The device-evidence gate fully decodes both PNG captures with Pillow 13.0.0.
+Install that version before running the offline validation tests; CI pins the
+Python 3.12 wheel hash and rejects incomplete captures.

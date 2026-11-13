@@ -1,20 +1,38 @@
-name: Debug APK (optional)
+name: Security update validation (API 35)
+# Temporary validation support; keep this workflow separate from the app fixes.
 on:
   pull_request:
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: debug-apk-${{ github.ref }}
+  group: security-update-api35-${{ github.ref }}
   cancel-in-progress: true
+env:
+  FINAL_APP_SHA: a54c2cabec41e9710fe70d2915f2e8f2847fd561
+  DEVICE_TEST_CLASS: org.thoughtcrime.securesms.apkupdate.CollieUpdateSettingsTest
 jobs:
-  debug-apk:
-    name: Debug APK
+  update-device:
+    name: Collie updater on Android 15
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12.14'
+      - name: Install pinned PNG decoder
+        run: |
+          printf '%s\n' 'Pillow==13.0.0 --hash=sha256:42d63be3af4f9b951b199b0a9d23365d37ab14687e6d77b74940432c8515c4ca' > "$RUNNER_TEMP/png-requirements.txt"
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r "$RUNNER_TEMP/png-requirements.txt"
+      - name: Verify pinned app production source
+        run: |
+          git fetch --no-tags --depth=1 origin "$FINAL_APP_SHA"
+          python3 .github/scripts/verify-security-stack-source.py "$FINAL_APP_SHA"
+          mkdir -p build/security-validation/device/screenshots
       - uses: ./.github/actions/disk-cleanup
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
@@ -22,10 +40,104 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
-      - run: ./gradlew --no-daemon :app:assembleProdWebsiteDebug
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - name: Build matching app and instrumentation APKs
+        id: build
+        shell: bash
+        run: |
+          ./gradlew --no-daemon --console=plain \
+            :app:assembleProdWebsiteDebug :app:assembleProdWebsiteDebugAndroidTest \
+            2>&1 | tee build/security-validation/device/build.log
+          sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+            app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk \
+            > build/security-validation/device/apk-sha256.before.txt
+      - name: Enable KVM for the Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Prepare focused emulator run and evidence collection
+        run: |
+          cat > "$RUNNER_TEMP/reuse-security-apks.gradle" <<'GRADLE'
+          def packageTasks = [':app:packageProdWebsiteDebug', ':app:packageProdWebsiteDebugAndroidTest']
+          // Initialization scripts also run for included builds such as build-logic.
+          if (gradle.parent == null) {
+            gradle.beforeProject { project ->
+              project.tasks.configureEach { task ->
+                if (packageTasks.contains(task.path)) {
+                  task.onlyIf('reuse the previously built and hashed APK') { false }
+                }
+              }
+            }
+            gradle.taskGraph.whenReady { graph ->
+              packageTasks.each { path ->
+                if (!graph.hasTask(path)) throw new GradleException("Missing APK packaging task: $path")
+              }
+            }
+          }
+          GRADLE
+          cat > "$RUNNER_TEMP/run-security-update-tests.sh" <<'SH'
+          set -euo pipefail
+          evidence=build/security-validation/device
+          collect_evidence() {
+            test_status=$?
+            printf '%s\n' "$test_status" > "$evidence/exit-code.txt"
+            adb logcat -d > "$evidence/logcat.txt" || true
+            mkdir -p "$evidence/screenshots/app-files"
+            for capture in collie-updates-available.png collie-updates-failed.png; do
+              adb pull "/sdcard/Android/data/im.collie.app/files/$capture" "$evidence/screenshots/app-files/$capture" || true
+            done
+            adb pull /sdcard/Android/media/im.collie.app/additional_test_output "$evidence/screenshots/additional-output" || true
+            sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+              app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk \
+              > "$evidence/apk-sha256.after.txt" || true
+            exit "$test_status"
+          }
+          trap collect_evidence EXIT
+          test "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" = 35
+          adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
+          adb shell getprop ro.build.version.sdk > "$evidence/device-api.txt"
+          adb logcat -c
+          # Install the APK pair assembled and hashed above; do not repackage it here.
+          ./gradlew --no-daemon --console=plain \
+            :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
+            :app:connectedProdWebsiteDebugAndroidTest \
+            -I "$RUNNER_TEMP/reuse-security-apks.gradle" \
+            -Pandroid.testInstrumentationRunnerArguments.collieTestStopLauncher=true \
+            -Pandroid.testInstrumentationRunnerArguments.class="$DEVICE_TEST_CLASS" \
+            -Pandroid.testInstrumentationRunnerArguments.clearPackageData=false \
+            2>&1 | tee "$evidence/connected-tests.log"
+          SH
+      - name: Exercise updater verification and the real settings screen
+        id: device
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
-          name: collie-debug-${{ github.event.pull_request.head.sha || github.sha }}
-          path: app/build/outputs/apk/prodWebsite/debug/*.apk
-          retention-days: 7
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7_pro
+          ram-size: 2048M
+          cores: 2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash "$RUNNER_TEMP/run-security-update-tests.sh"
+      - name: Require both methods, both screenshots, and matching APKs
+        if: always() && !cancelled()
+        env:
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          DEVICE_OUTCOME: ${{ steps.device.outcome }}
+        run: python3 .github/scripts/check-security-device-results.py
+      - name: Recheck pinned source after device tests
+        if: always() && !cancelled()
+        run: python3 .github/scripts/verify-security-stack-source.py "$FINAL_APP_SHA"
+      - name: Keep source, APK identities, reports, and screenshots
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: security-stack-api35-${{ github.run_id }}
+          path: |
+            build/security-validation
+            app/build/reports/androidTests
+            app/build/outputs/androidTest-results
+            app/build/outputs/connected_android_test_additional_output
+          retention-days: 14
           if-no-files-found: error

@@ -87,9 +87,9 @@ a:hover{text-decoration-thickness:2px}
 
 /* Decorative SVG backgrounds have no DOM/focus or pointer targets. */
 .hero-wrap{background-image:url(art/landscape-hero.svg);background-size:100% 100%;background-repeat:no-repeat}
-main{background-image:url(art/landscape-page.svg);background-size:100% 100%;background-repeat:no-repeat}
+#main{background-image:url(art/landscape-page.svg);background-size:100% 100%;background-position:center -80px;background-repeat:no-repeat}
 @media(max-width:960px){.hero-wrap{background-image:url(art/landscape-hero-mobile.svg)}}
-@media(max-width:600px){main{background-image:url(art/landscape-page-mobile.svg)}}
+@media(max-width:600px){#main{background-image:url(art/landscape-page-mobile.svg);background-position:center -96px}}
 
 /* Artwork stays independent of foreground flow. The zero-height transition
    host anchors its complete ribbon to the actual gap after Upcoming. */
@@ -151,17 +151,9 @@ body{isolation:isolate}
 .intro::after{content:"";position:absolute;bottom:0;inset-inline:var(--gutter);border-bottom:1px solid var(--rule)}
 .intro h2{max-width:15ch;font-size:clamp(2rem,3.7vw,2.75rem);line-height:1.15}
 .intro .statement{max-width:48ch;font-size:clamp(1.125rem,1.5vw,1.25rem);line-height:1.6}
-.intro-source{margin-top:28px;color:var(--ink-2)}
-.intro-source h3{font:500 1rem/1.5 Manrope,sans-serif;letter-spacing:0;color:var(--ink)}
-.intro-source h3 a{color:inherit}
-.intro-source p{margin-top:8px;font-size:1rem;line-height:1.6;max-width:54ch}
-.intro .technical-details{margin-top:20px}
-.intro .technical-details summary{display:flex;align-items:center;justify-content:flex-start;gap:8px;list-style:none;min-height:44px;font-size:.95rem;line-height:1.5;color:var(--link)}
-.intro summary::-webkit-details-marker{display:none}
-.intro summary .ico{width:18px;height:18px;transition:transform .2s}
-.intro details[open] summary .ico{transform:rotate(180deg)}
-.source-explanation{margin-top:16px;color:var(--ink-2);font-size:.95rem;line-height:1.6}
-@media (max-width:760px){.card.featured{padding:20px 24px}.intro{grid-template-columns:1fr;gap:24px}.intro h2{max-width:20ch}.intro-source{margin-top:24px}}
+.source-link{margin-top:20px;font-size:.95rem}
+.intro h2 a{color:inherit}
+@media (max-width:760px){.card.featured{padding:20px 24px}.intro{grid-template-columns:1fr;gap:24px}.intro h2{max-width:20ch}}
 
 /* ---------- features ---------- */
 h2{font:200 clamp(2rem,4vw,3rem)/1.12 Sora,sans-serif;letter-spacing:-.035em;text-wrap:balance}
@@ -178,17 +170,9 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .card.featured .ico.big{width:40px;height:40px;margin:0}
 .card.featured h3{font-size:clamp(1.6rem,2.6vw,2.1rem);font-weight:200;letter-spacing:-.03em}
 .card.featured p{font-size:1.0625rem;max-width:46ch;color:var(--ink);line-height:1.6}
-@media (min-width:861px){.card.featured p{max-width:none}.card.featured{justify-content:center}.feature-facts{margin-top:0}}
-.feature-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:0;padding-top:20px;border-top:1px solid var(--rule);font-size:.9rem;line-height:1.5;font-weight:500}
+@media (min-width:861px){.card.featured p{max-width:none}.card.featured{justify-content:center}}
 .also{margin-top:28px;color:var(--ink-2);max-width:70ch}
 .also strong{color:var(--ink)}
-
-/* ---------- source details ---------- */
-.technical-details{max-width:70ch}
-.ticks{margin-top:20px;display:grid;gap:12px}
-.ticks li{position:relative;padding-left:26px}
-.ticks li::before{content:"";position:absolute;left:2px;top:.45em;width:10px;height:6px;border-left:2px solid var(--icon);border-bottom:2px solid var(--icon);transform:rotate(-45deg)}
-.technical-details .note{margin-top:20px;font-size:.9rem;color:var(--ink-2)}
 
 /* ---------- get ---------- */
 .get-wrap{padding-block:clamp(40px,5vw,64px)}
@@ -210,10 +194,6 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 /* ---------- upcoming features ---------- */
 .upcoming{padding-block:clamp(56px,7vw,96px) 32px}
 .upcoming-intro{max-width:54ch;margin-top:24px;color:var(--ink);font-size:1.125rem;font-weight:400;line-height:1.5}
-.upcoming-detail{max-width:66ch;margin-top:12px;color:var(--ink-2);font-size:1rem;font-weight:400}
-.upcoming-detail summary{cursor:pointer;min-height:44px;text-decoration:underline;text-underline-offset:.22em}
-.upcoming-detail p{margin-top:8px}
-@media (min-width:861px){.upcoming-detail{max-width:none}}
 .upcoming-status{max-width:70ch;margin-top:18px;color:var(--ink-2);font-size:.95rem}
 .roadmap-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px;margin-top:32px}
 .roadmap-list li{display:flex;align-items:baseline;gap:10px;border-top:1px solid var(--rule);padding-block:18px}
@@ -239,13 +219,9 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .community-help{margin-top:56px;padding-top:32px;border-top:1px solid var(--rule)}
 .community-help h3{font-size:1.25rem}
 .help-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 48px;margin-top:24px}
-.help-options h4{font:400 1.05rem/1.4 Manrope,sans-serif;color:var(--ink)}
 .help-options p{color:var(--ink-2);margin-top:8px;max-width:48ch;font-weight:400}
 .help-options a{display:inline-block;margin-top:18px;font-weight:500}
 @media (max-width:600px){.help-options{grid-template-columns:1fr;gap:32px}.community-help{margin-top:40px}}
-.technical-details{margin-top:28px}
-.technical-details summary{cursor:pointer;text-decoration:underline;text-underline-offset:.22em}
-.technical-details .ticks{margin-top:20px}
 
 /* ---------- footer ---------- */
 .foot{background:var(--bark);color:var(--mist);padding-block:36px 44px}
@@ -319,7 +295,6 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .card .ico{margin-bottom:6px}
   .card.featured{gap:16px}
   .feature-head{align-items:flex-start;gap:12px}
-  .feature-facts{display:none}
   .intro h2{font-size:1.5rem;line-height:1.25}
   .card:not(.featured){position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;margin-top:0;padding:0;border:0;border-radius:0;background:none}
   .card.featured + .card{margin-top:8px}
@@ -329,7 +304,6 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .card:not(.featured) p{grid-column:2;grid-row:2;min-width:0}
   .card:not(.featured) a[href="#upcoming"]{display:inline-block;min-height:24px;line-height:24px}
   .upcoming-intro{margin-top:16px}
-  .upcoming-detail{margin-top:8px;line-height:1.5}
   .upcoming-status{margin-top:12px;line-height:1.5}
   .roadmap-list{margin-top:14px}
   .actions .button{flex:1 1 auto}

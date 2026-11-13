@@ -99,7 +99,7 @@ a:hover{text-decoration-thickness:2px}
 .mural-landscape{position:relative;height:0;pointer-events:none;isolation:isolate}
 /* One unchanged canonical drawing, painted at its native 770:341 ratio. */
 .mural-landscape::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:16px;left:0;width:100%;aspect-ratio:770/341;background:url(art/collie-mural.svg) 0 0/100% 100% no-repeat}
-.community::before{display:block;top:48px;content:"";position:absolute;z-index:-1;pointer-events:none;left:calc((100vw - 100%)/-2);width:100vw;aspect-ratio:770/341;background:url(art/collie-mural.svg) 0 0/100% 100% no-repeat}
+.community::before{display:block;top:auto;bottom:0;content:"";position:absolute;z-index:-1;pointer-events:none;left:calc((100vw - 100%)/-2);width:100vw;aspect-ratio:770/341;background:url(art/collie-mural.svg) 0 0/100% 100% no-repeat}
 /* Paint-only theme presentation; the canonical SVG stays unchanged. */
 html{background:var(--page)}
 body{isolation:isolate}
@@ -107,15 +107,6 @@ body{isolation:isolate}
 .mural-landscape::before,.community::before{opacity:.65}
 @media(prefers-color-scheme:dark){.mural-landscape::before,.community::before{background-image:url(art/collie-mural-dark.svg);opacity:.3}}
 .mural-landscape{display:none}
-@media(max-width:1100px){.community::before{top:128px}}
-@media(max-width:600px){.community::before{top:140px}}
-@media(max-width:360px){
-  .community::before{display:none}
-  .community-donations{position:relative}
-  .community-donations::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:70px;right:-16px;width:100vw;aspect-ratio:770/341;background:url(art/collie-mural.svg) 0 0/100% 100% no-repeat;opacity:.65}
-}
-@media(max-width:360px) and (prefers-color-scheme:dark){.community-donations::before{background-image:url(art/collie-mural-dark.svg);opacity:.3}}
-@media(max-width:600px){.features{background-image:url(art/landscape-feature-edge.svg);background-size:100% 100%;background-repeat:no-repeat}}
 
 /* ---------- hero ---------- */
 .hero-wrap{--hero-bottom-clearance:80px;position:relative;color:var(--mist);background-color:var(--hero);
@@ -335,3 +326,39 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .button{border:1px solid ButtonText}
   .card{border:1px solid CanvasText}
 }
+
+/* Mobile bands keep their source contours, but follow section gaps instead of
+   stretching with the combined height of every text section. */
+@media(max-width:600px){
+  #main{background-image:none}
+  .intro::before,.features::after,.get-wrap::before{content:"";position:absolute;pointer-events:none;z-index:-1;left:calc((100vw - 100%)/-2);width:100vw;background-image:url(art/landscape-page-mobile.svg);background-repeat:no-repeat}
+  .intro{padding-bottom:calc(100vw * .2153846 + 24px)}
+  .intro::before{bottom:0;height:calc(100vw * .2153846);background-size:100% calc(100vw * 12.3076923);background-position:center calc(100vw * -1.0435897)}
+  .features{position:relative;padding-bottom:calc(100vw * .2820513 + 24px)}
+  .features::after{bottom:0;height:calc(100vw * .2820513);background-size:100% calc(100vw * 12.3076923);background-position:center calc(100vw * -4.1025641)}
+  .get-wrap{position:relative}
+  .get-wrap::before{bottom:0;height:calc(100vw * .2512821);background-size:100% calc(100vw * 12.3076923);background-position:center calc(100vw * -10.9102564)}
+}
+
+/* Reserve the canonical mural's real lower ink footprint, not a page-Y guess. */
+@media(min-width:601px){
+  .community .links,.community-donations{max-width:min(560px,calc(50vw - var(--gutter)))}
+  .community .links{grid-template-columns:1fr;gap:0}
+  .community{padding-bottom:calc(100vw * .13896104 + 36px)}
+}
+@media(max-width:600px){.community{padding-bottom:calc(100vw * .44285714 + 16px)}}
+@media(min-width:861px){.also{max-width:none}}
+
+/* Wider screens: the same unchanged landscape SVG, painted at one fixed
+   vertical scale in three section-anchored regions. The orange band gets its
+   own reserved gap below Features instead of drifting with total page height. */
+@media(min-width:601px){
+  #main{position:relative;background-image:none;--lk:1.09px}
+  #main::before,.features::after,.get-wrap::before{content:"";position:absolute;pointer-events:none;z-index:-1;left:calc((100vw - 100%)/-2);width:100vw;background:url(art/landscape-page.svg) no-repeat;background-size:100% calc(3072 * var(--lk))}
+  #main::before{top:0;left:0;width:100%;height:calc(1045 * var(--lk) - 80px);background-position:center -80px}
+  .features,.get-wrap{position:relative}
+  .features{padding-bottom:calc(110 * var(--lk) + 40px)}
+  .features::after{bottom:0;height:calc(110 * var(--lk));background-position:center calc(-1088 * var(--lk))}
+  .get-wrap::before{top:calc(50% - 145 * var(--lk));height:calc(290 * var(--lk));background-position:center calc(-2670 * var(--lk))}
+}
+body{overflow-x:clip}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 3072" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+<style>svg{pointer-events:none}@media(prefers-color-scheme:dark){.pale{fill:#2F4F3A}.deep{fill:#3C1207}.warm{fill:#4C1A0B}.gold{fill:#6F270F}}</style>
+<path class="pale" fill="#B7C597" d="M440 420C600 310 720 380 850 430S970 448 1024 430V464C850 464 690 370 570 390S500 430 440 420Z"/>
+<path class="gold" fill="#F2982B" d="M500 430C700 310 850 460 1024 470V504C830 496 700 340 500 430Z"/>
+<path class="pale" fill="#B7C597" d="M1024 670C900 730 880 840 660 900C830 905 955 838 1024 780Z"/>
+<path class="deep" fill="#2F4F3A" d="M1024 700C960 742 919 790 850 830C940 840 1000 810 1024 780Z"/>
+<path class="gold" fill="#F2982B" d="M0 1150C300 1150 480 1190 680 1155S900 1080 1024 1100V1130C810 1160 710 1210 480 1185S180 1170 0 1175Z"/>
+<path class="pale" fill="#B7C597" d="M0 1770C256 1710 453 1850 704 1780S924 1720 1024 1750V1790C840 1750 790 1880 560 1830S200 1774 0 1805Z"/>
+<path class="gold" fill="#F2982B" d="M850 1830C905 1820 960 1775 1024 1750V1800C969 1810 914 1840 850 1830Z"/>
+</svg>

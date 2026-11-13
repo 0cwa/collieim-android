@@ -85,8 +85,14 @@ a:hover{text-decoration-thickness:2px}
 .menu-toggle .ico{width:16px;height:16px}
 .menu-toggle[aria-expanded="true"] .ico{transform:rotate(180deg)}
 
+/* Decorative SVG backgrounds have no DOM/focus or pointer targets. */
+.hero-wrap{background-image:url(art/landscape-hero.svg);background-size:100% 100%;background-repeat:no-repeat}
+main{background-image:url(art/landscape-page.svg);background-size:100% 100%;background-repeat:no-repeat}
+@media(max-width:960px){.hero-wrap{background-image:url(art/landscape-hero-mobile.svg)}}
+@media(max-width:600px){main{background-image:url(art/landscape-page-mobile.svg)}}
+
 /* ---------- hero ---------- */
-.hero-wrap{--hero-bottom-clearance:80px;position:relative;color:var(--mist);background:var(--hero);
+.hero-wrap{--hero-bottom-clearance:80px;position:relative;color:var(--mist);background-color:var(--hero);
   overflow:hidden;padding-bottom:calc(clamp(56px,8vw,104px) + var(--hero-bottom-clearance))}
 .hero-wrap::after{content:"";position:absolute;left:-5%;right:-5%;bottom:-1px;height:clamp(40px,6vw,88px);background:var(--page);border-top:3px solid var(--collie);border-radius:50% 50% 0 0/100% 100% 0 0}
 .hero-wrap a{color:inherit}

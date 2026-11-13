@@ -51,7 +51,7 @@ class AvatarProviderLoggingTest {
     mockkStatic(KeyCachingService::class)
     every { KeyCachingService.isLocked() } returns false
 
-    mockkObject(PartAuthorityUris)
+    mockkStatic(PartAuthorityUris::class)
     every { PartAuthorityUris.init(any()) } just Runs
 
     mockkObject(SqlCipherLibraryLoader)
@@ -79,7 +79,7 @@ class AvatarProviderLoggingTest {
   @After
   fun tearDown() {
     unmockkStatic(KeyCachingService::class)
-    unmockkObject(PartAuthorityUris)
+    unmockkStatic(PartAuthorityUris::class)
     unmockkObject(SqlCipherLibraryLoader)
     unmockkObject(DatabaseSecretProvider)
     unmockkStatic(AttachmentSecretProvider::class)

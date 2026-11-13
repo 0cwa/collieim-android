@@ -242,69 +242,85 @@ class IncomingMessageObserverConnectivityTest {
 
   @Test fun `claimed registration settles before publication and current callback may finish afterward`() {
     putObserverInBackgroundIdle()
-    update(ConnectivityState.ONLINE)
-    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
-    val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
-    val admission = checkNotNull(UnifiedPushAccountTransition.registerFetchAdmission(lease, authorization))
-
-    val registrationEntered = CountDownLatch(1)
-    val finishRegistration = CountDownLatch(1)
-    val finishAdmittedCallback = CountDownLatch(1)
-    val events = java.util.Collections.synchronizedList(mutableListOf<String>())
-    every { auth.registerKeepAliveToken("MessageRetrieval") } answers {
-      registrationEntered.countDown()
-      check(finishRegistration.await(5, TimeUnit.SECONDS))
-      events += "token-registration-settled"
-      auth.connect()
+    val observerParked = CountDownLatch(1)
+    val resumeObserver = CountDownLatch(1)
+    observer.beforeConnectionWaitForTesting = {
+      observerParked.countDown()
+      resumeObserver.await()
     }
-
-    val executor = Executors.newFixedThreadPool(3)
+    observer.notifyUnifiedPushFetchStateChanged()
     try {
-      val fetchOwner = executor.submit {
-        check(admission.awaitHandoff(5_000))
-        events += "lease-closed"
-        lease.close()
-        check(finishAdmittedCallback.await(5, TimeUnit.SECONDS))
-        events += "admitted-callback-finished"
-        UnifiedPushAccountTransition.finishFetchAdmission(admission)
-        observer.updateReceiveLoopToken()
-      }
-      observer.notifyUnifiedPushFetchStateChanged()
-      Assert.assertTrue("observer did not reach the actual token-registration seam", registrationEntered.await(5, TimeUnit.SECONDS))
+      Assert.assertTrue("observer did not park before test setup", observerParked.await(5, TimeUnit.SECONDS))
+      update(ConnectivityState.ONLINE)
+      val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+      val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
+      val admission = checkNotNull(UnifiedPushAccountTransition.registerFetchAdmission(lease, authorization))
 
-      val markerPersisted = CountDownLatch(1)
-      val transitionBody = CountDownLatch(1)
-      val transition = executor.submit {
-        kotlinx.coroutines.runBlocking {
-          UnifiedPushLifecycle.withTransition(
-            persistIncompleteMarker = { if (it) markerPersisted.countDown() },
-            readyAfter = { true },
-          ) {
-            events += "identity-publication"
-            transitionBody.countDown()
+      val registrationEntered = CountDownLatch(1)
+      val finishRegistration = CountDownLatch(1)
+      val finishAdmittedCallback = CountDownLatch(1)
+      val events = java.util.Collections.synchronizedList(mutableListOf<String>())
+      every { auth.registerKeepAliveToken("MessageRetrieval") } answers {
+        registrationEntered.countDown()
+        check(finishRegistration.await(5, TimeUnit.SECONDS))
+        events += "token-registration-settled"
+        auth.connect()
+      }
+
+      val executor = Executors.newFixedThreadPool(3)
+      try {
+        val fetchOwner = executor.submit {
+          check(admission.awaitHandoff(5_000))
+          events += "lease-closed"
+          lease.close()
+          check(finishAdmittedCallback.await(5, TimeUnit.SECONDS))
+          events += "admitted-callback-finished"
+          UnifiedPushAccountTransition.finishFetchAdmission(admission)
+          observer.updateReceiveLoopToken()
+        }
+        observer.beforeConnectionWaitForTesting = null
+        resumeObserver.countDown()
+        observer.notifyUnifiedPushFetchStateChanged()
+        Assert.assertTrue("observer did not reach the actual token-registration seam", registrationEntered.await(5, TimeUnit.SECONDS))
+
+        val markerPersisted = CountDownLatch(1)
+        val transitionBody = CountDownLatch(1)
+        val transition = executor.submit {
+          kotlinx.coroutines.runBlocking {
+            UnifiedPushLifecycle.withTransition(
+              persistIncompleteMarker = { if (it) markerPersisted.countDown() },
+              readyAfter = { true },
+            ) {
+              events += "identity-publication"
+              transitionBody.countDown()
+            }
           }
         }
+
+        Assert.assertTrue("transition did not begin while registration was blocked", markerPersisted.await(5, TimeUnit.SECONDS))
+        Assert.assertEquals("publication overtook the claimed token registration", 1L, transitionBody.count)
+        finishRegistration.countDown()
+        Assert.assertTrue("observer did not complete the claimed handoff", admission.awaitHandoff(5_000))
+        Assert.assertEquals(UnifiedPushLifecycle.FetchAdmissionState.ADMITTED, admission.state)
+        Assert.assertTrue("publication did not follow lease release", transitionBody.await(5, TimeUnit.SECONDS))
+        Assert.assertEquals("callback must still be in flight after publication", 1L, finishAdmittedCallback.count)
+
+        finishAdmittedCallback.countDown()
+        fetchOwner.get(5, TimeUnit.SECONDS)
+        transition.get(5, TimeUnit.SECONDS)
+        Assert.assertTrue(events.indexOf("token-registration-settled") < events.indexOf("lease-closed"))
+        Assert.assertTrue(events.indexOf("lease-closed") < events.indexOf("identity-publication"))
+        Assert.assertTrue(events.indexOf("identity-publication") < events.indexOf("admitted-callback-finished"))
+        verify(atLeast = 1) { auth.removeKeepAliveToken("MessageRetrieval") }
+      } finally {
+        finishRegistration.countDown()
+        finishAdmittedCallback.countDown()
+        executor.shutdownNow()
       }
-
-      Assert.assertTrue("transition did not begin while registration was blocked", markerPersisted.await(5, TimeUnit.SECONDS))
-      Assert.assertEquals("publication overtook the claimed token registration", 1L, transitionBody.count)
-      finishRegistration.countDown()
-      Assert.assertTrue("observer did not complete the claimed handoff", admission.awaitHandoff(5_000))
-      Assert.assertEquals(UnifiedPushLifecycle.FetchAdmissionState.ADMITTED, admission.state)
-      Assert.assertTrue("publication did not follow lease release", transitionBody.await(5, TimeUnit.SECONDS))
-      Assert.assertEquals("callback must still be in flight after publication", 1L, finishAdmittedCallback.count)
-
-      finishAdmittedCallback.countDown()
-      fetchOwner.get(5, TimeUnit.SECONDS)
-      transition.get(5, TimeUnit.SECONDS)
-      Assert.assertTrue(events.indexOf("token-registration-settled") < events.indexOf("lease-closed"))
-      Assert.assertTrue(events.indexOf("lease-closed") < events.indexOf("identity-publication"))
-      Assert.assertTrue(events.indexOf("identity-publication") < events.indexOf("admitted-callback-finished"))
-      verify(atLeast = 1) { auth.removeKeepAliveToken("MessageRetrieval") }
     } finally {
-      finishRegistration.countDown()
-      finishAdmittedCallback.countDown()
-      executor.shutdownNow()
+      observer.beforeConnectionWaitForTesting = null
+      resumeObserver.countDown()
+      observer.notifyUnifiedPushFetchStateChanged()
     }
   }
 

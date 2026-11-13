@@ -171,6 +171,7 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 @media (min-width:861px){.card.featured p{max-width:none}.card.featured{justify-content:center}}
 .also{margin-top:28px;color:var(--ink-2);max-width:70ch}
 .also strong{color:var(--ink)}
+.also .ico{display:none}
 
 /* ---------- get ---------- */
 .get-wrap{padding-block:clamp(40px,5vw,64px)}
@@ -215,10 +216,12 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .links .secondary-action{margin-top:4px;font-weight:500}
 .community-intro{max-width:60ch;margin-top:20px;color:var(--ink-2);font-size:1.125rem}
 .community-action{margin-top:10px;color:var(--link);font-weight:600;text-decoration:underline;text-underline-offset:.22em}
-.community-donations{margin-top:40px;padding-top:28px;padding-left:60px;border-top:1px solid var(--rule);font-weight:500}
-.community-donations h3{font-size:1.25rem}
-.donation-actions{display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:20px}
-.community-donations a{display:inline-block;min-height:24px}
+/* Donate shares the Matrix/forum row grammar: icon column, Sora title, actions. */
+.community-donations{display:flex;gap:16px;align-items:flex-start;margin-top:0;padding:20px 4px 0;border-top:1px solid var(--rule)}
+.community-donations .ico{width:40px;height:40px;flex:none;color:var(--icon);margin-top:2px}
+.community-donations h3{font:300 1.375rem/1.3 Sora,sans-serif;color:var(--ink)}
+.donation-actions{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:6px}
+.community-donations a{display:inline-block;min-height:24px;font-weight:600}
 .community-donations .nowrap{white-space:nowrap}
 
 /* ---------- footer ---------- */
@@ -242,9 +245,9 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 
 /* ---------- responsive ---------- */
 @media (max-width:960px){
-  .hero{grid-template-columns:1fr}
+  .hero{grid-template-columns:minmax(0,1fr)}
   .stage{width:min(100%,440px)}
-  .get{grid-template-columns:1fr}
+  .get{grid-template-columns:minmax(0,1fr)}
   .get-art{display:none}
 }
 @media (max-width:860px){
@@ -317,7 +320,9 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .roadmap-list{margin-top:14px}
   .actions .button{flex:1 1 auto}
   .ways li{flex-direction:column;align-items:stretch}
-  .ways .button{min-width:0;width:100%}
+  .ways .button{min-width:0;width:100%;white-space:normal;text-align:center}
+  /* Enlarged text: long non-breaking phrases wrap instead of widening the page. */
+  h1,h2,h3{overflow-wrap:break-word}
   .phone{border-radius:24px;padding:4px}
   .phone img{border-radius:20px}
   .get{border-radius:24px}

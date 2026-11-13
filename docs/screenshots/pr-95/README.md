@@ -1,3 +1,5 @@
+**Current dark mural:** [monochrome theme adaptation and unchanged-light proof](dark-mural/README.md). Full-colour canonical and copy/background evidence below remain retained snapshots.
+
 **Current copy cleanup:** [reviewed wording, hierarchy, native views and scoped checks](copy-cleanup/README.md). Background/canonical asset proofs below remain unchanged.
 
 **Final A landscape refinement:** [registered forest correction and current feature views](backgrounds/a-refinement/README.md). Canonical mural evidence below remains unchanged.

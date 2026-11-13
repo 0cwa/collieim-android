@@ -156,7 +156,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
-      DIAG_DIR: ${{ runner.temp }}/threadtable-full
       SOURCE_SHA: 450147ec46e24996962c8814c8692df37904fcbb
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -168,17 +167,17 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --quiet HEAD -- app core feature lib tooling build-logic buildSrc gradle
-          mkdir -p "$DIAG_DIR/telemetry" "$DIAG_DIR/results"
-          git rev-parse HEAD > "$DIAG_DIR/source-commit.txt"
-          git rev-parse HEAD^{tree} > "$DIAG_DIR/source-tree.txt"
-          git rev-parse HEAD:app > "$DIAG_DIR/app-tree.txt"
+          mkdir -p "$RUNNER_TEMP/threadtable-full/telemetry" "$RUNNER_TEMP/threadtable-full/results"
+          git rev-parse HEAD > "$RUNNER_TEMP/threadtable-full/source-commit.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/threadtable-full/source-tree.txt"
+          git rev-parse HEAD:app > "$RUNNER_TEMP/threadtable-full/app-tree.txt"
       - name: Capture runner memory before tests
         run: |
           { date -u; uname -a; nproc; free -h; cat /proc/meminfo;
             for f in /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.events; do
               if [ -r "$f" ]; then echo "--- $f"; cat "$f"; fi
             done;
-          } > "$DIAG_DIR/runner-memory-before.txt"
+          } > "$RUNNER_TEMP/threadtable-full/runner-memory-before.txt"
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
@@ -205,8 +204,8 @@ jobs:
         run: python3 tooling/host-tests/build_libsignal.py --verify-only
       - name: Compile worker heap and classloader telemetry agent
         run: |
-          mkdir -p "$DIAG_DIR/classes"
-          cat > "$DIAG_DIR/HeapTelemetryAgent.java" <<'JAVA'
+          mkdir -p "$RUNNER_TEMP/threadtable-full/classes"
+          cat > "$RUNNER_TEMP/threadtable-full/HeapTelemetryAgent.java" <<'JAVA'
           import java.io.File;
           import java.io.FileOutputStream;
           import java.io.PrintWriter;
@@ -304,18 +303,19 @@ jobs:
             private static String clean(String value) { return value.replaceAll("[\\t\\r\\n ]+", "_"); }
           }
           JAVA
-          javac --release 21 -d "$DIAG_DIR/classes" "$DIAG_DIR/HeapTelemetryAgent.java"
-          printf 'Manifest-Version: 1.0\nPremain-Class: HeapTelemetryAgent\n' > "$DIAG_DIR/manifest.mf"
-          jar cfm "$DIAG_DIR/heap-telemetry.jar" "$DIAG_DIR/manifest.mf" -C "$DIAG_DIR/classes" .
+          javac --release 21 -d "$RUNNER_TEMP/threadtable-full/classes" "$RUNNER_TEMP/threadtable-full/HeapTelemetryAgent.java"
+          printf 'Manifest-Version: 1.0\nPremain-Class: HeapTelemetryAgent\n' > "$RUNNER_TEMP/threadtable-full/manifest.mf"
+          jar cfm "$RUNNER_TEMP/threadtable-full/heap-telemetry.jar" "$RUNNER_TEMP/threadtable-full/manifest.mf" -C "$RUNNER_TEMP/threadtable-full/classes" .
       - name: Configure test class timeline and worker telemetry
         run: |
-          cat > "$DIAG_DIR/diagnostic.init.gradle" <<'GRADLE'
+          cat > "$RUNNER_TEMP/threadtable-full/diagnostic.init.gradle" <<'GRADLE'
           gradle.projectsEvaluated {
             gradle.rootProject.allprojects.each { project ->
               project.tasks.withType(org.gradle.api.tasks.testing.Test).matching {
                 it.path == ':app:testProdWebsiteDebugUnitTest'
               }.all { task ->
-                def timeline = new File(System.getenv('DIAG_DIR'), 'test-timeline.tsv')
+                def diagDir = new File(System.getenv('RUNNER_TEMP'), 'threadtable-full')
+                def timeline = new File(diagDir, 'test-timeline.tsv')
                 def activeWorkerPid = new java.util.concurrent.atomic.AtomicReference('unknown')
                 def clean = { value -> String.valueOf(value ?: '').replaceAll('[\\t\\r\\n]+', ' ') }
                 def record = { event, descriptor, pid, detail ->
@@ -331,10 +331,10 @@ jobs:
                   } catch (Throwable ignored) { 'unknown' }
                 }
                 task.doFirst {
-                  new File(System.getenv('DIAG_DIR'), 'task-config.txt').text = "path=${task.path} maxHeapSize=${task.maxHeapSize} maxParallelForks=${task.maxParallelForks} forkEvery=${task.forkEvery}\n"
+                  new File(diagDir, 'task-config.txt').text = "path=${task.path} maxHeapSize=${task.maxHeapSize} maxParallelForks=${task.maxParallelForks} forkEvery=${task.forkEvery}\n"
                   println("DIAG_TASK path=${task.path} maxHeapSize=${task.maxHeapSize} maxParallelForks=${task.maxParallelForks} forkEvery=${task.forkEvery}; no heap/GC settings overridden")
                 }
-                task.jvmArgs("-javaagent:${System.getenv('DIAG_DIR')}/heap-telemetry.jar=${System.getenv('DIAG_DIR')}/telemetry")
+                task.jvmArgs("-javaagent:${diagDir}/heap-telemetry.jar=${diagDir}/telemetry")
                 task.testLogging.events = [org.gradle.api.tasks.testing.logging.TestLogEvent.STARTED,
                                            org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
                                            org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED]
@@ -368,7 +368,7 @@ jobs:
         shell: bash
         run: |
           ./gradlew --no-daemon --continue --no-configuration-cache --max-workers=1 --info \
-            -I "$DIAG_DIR/diagnostic.init.gradle" \
+            -I "$RUNNER_TEMP/threadtable-full/diagnostic.init.gradle" \
             -PcollieHostJniDir=build/host-tests/resources \
             :app:testProdWebsiteDebugUnitTest --rerun
       - name: Capture runner memory after tests
@@ -378,7 +378,7 @@ jobs:
             for f in /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.events; do
               if [ -r "$f" ]; then echo "--- $f"; cat "$f"; fi
             done;
-          } > "$DIAG_DIR/runner-memory-after.txt"
+          } > "$RUNNER_TEMP/threadtable-full/runner-memory-after.txt"
       - name: Summarize app XML and preserve target suites
         if: always()
         run: |
@@ -397,7 +397,7 @@ jobs:
               totals['suites'] += 1
               for key in ('tests', 'failures', 'errors', 'skipped'):
                   totals[key] += int(suite.get(key, '0'))
-          out = Path(__import__('os').environ['DIAG_DIR'])
+          out = Path(__import__('os').environ['RUNNER_TEMP']) / 'threadtable-full'
           (out / 'app-junit-summary.json').write_text(json.dumps(totals, indent=2) + '\\n')
           target = out / 'results'
           target.mkdir(parents=True, exist_ok=True)

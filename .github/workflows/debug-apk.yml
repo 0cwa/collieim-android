@@ -9,7 +9,7 @@ concurrency:
   group: security-update-api35-${{ github.ref }}
   cancel-in-progress: true
 env:
-  FINAL_APP_SHA: 296a661c5f76f74f435ced2c4354be1271a049f4
+  FINAL_APP_SHA: 02f2fc026ff5eab58e130dc2c1a2eeebd0d0058d
   DEVICE_TEST_CLASS: org.thoughtcrime.securesms.apkupdate.CollieUpdateSettingsTest
 jobs:
   update-device:

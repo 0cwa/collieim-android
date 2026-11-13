@@ -82,7 +82,7 @@ jobs:
     timeout-minutes: 90
     env:
       # Validation-only branch: production sources must match this exact app commit.
-      FINAL_APP_SHA: 296a661c5f76f74f435ced2c4354be1271a049f4
+      FINAL_APP_SHA: 02f2fc026ff5eab58e130dc2c1a2eeebd0d0058d
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

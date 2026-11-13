@@ -11,6 +11,8 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 
+private const val TAG = "EncryptedBackupSnapshot"
+
 /** Stages one encrypted provider stream so authentication and decryption see the same bytes. */
 internal fun <T> withEncryptedBackupSnapshot(
   snapshot: File,
@@ -37,6 +39,6 @@ internal fun <T> withEncryptedBackupSnapshot(
     }
     return action(snapshot)
   } finally {
-    if (!snapshot.delete()) Log.w("EncryptedBackupSnapshot", "Unable to delete encrypted backup snapshot")
+    if (!snapshot.delete()) Log.w(TAG, "Unable to delete encrypted backup snapshot")
   }
 }

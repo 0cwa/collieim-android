@@ -2,6 +2,10 @@ name: Security update validation (API 35)
 # Temporary validation support; keep this workflow separate from the app fixes.
 on:
   pull_request:
+    paths-ignore:
+      - docs/**
+      - README.md
+      - .github/codeql/**
   workflow_dispatch:
 permissions:
   contents: read
@@ -9,7 +13,7 @@ concurrency:
   group: security-update-api35-${{ github.ref }}
   cancel-in-progress: true
 env:
-  FINAL_APP_SHA: 02f2fc026ff5eab58e130dc2c1a2eeebd0d0058d
+  FINAL_APP_SHA: 76003d491c3213b0f56cc9892c1e3830fad63b97
   DEVICE_TEST_CLASS: org.thoughtcrime.securesms.apkupdate.CollieUpdateSettingsTest
 jobs:
   update-device:

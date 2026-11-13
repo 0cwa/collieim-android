@@ -3,6 +3,7 @@
   "required_tasks": [
     "app:testProdWebsiteDebugUnitTest",
     "core:database:testDebugUnitTest",
+    "core:network:test",
     "core:ui:testDebugUnitTest",
     "core:util:testDebugUnitTest",
     "core:util-jvm:test",
@@ -19,11 +20,14 @@
     "lib:emoji:testDebugUnitTest",
     "lib:image-editor:testDebugUnitTest",
     "lib:libsignal-service:test",
+    "lib:network:test",
     "lib:paging:testDebugUnitTest",
     "lib:password-manager:testDebugUnitTest",
     "lib:remote-config:testDebugUnitTest",
     "lib:storage:testDebugUnitTest",
     "lib:ui-components:testDebugUnitTest",
+    "tooling:fast-lint:test",
+    "tooling:lintchecks:test",
     "tooling:screener:testDebugUnitTest"
   ],
   "security_suites": [
@@ -50,7 +54,7 @@
     {
       "task": "app:testProdWebsiteDebugUnitTest",
       "class": "org.thoughtcrime.securesms.backup.MollyBackupPreferencesTest",
-      "min_executed": 6
+      "min_executed": 12
     },
     {
       "task": "app:testProdWebsiteDebugUnitTest",

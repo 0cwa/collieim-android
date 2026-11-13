@@ -61,7 +61,11 @@ class ResultGateTests(unittest.TestCase):
     def test_plain_jvm_task_reports_are_required_and_collected(self):
         paths = []
         for task, name in (("core:util-jvm:test", "example.ResettableStateTest"),
-                           ("lib:libsignal-service:test", "example.ControlMessageTest")):
+                           ("lib:libsignal-service:test", "example.ControlMessageTest"),
+                           ("core:network:test", "example.CoreNetworkTest"),
+                           ("lib:network:test", "example.NetworkTest"),
+                           ("tooling:fast-lint:test", "example.FastLintTest"),
+                           ("tooling:lintchecks:test", "example.LintChecksTest")):
             self.policy["required_tasks"].append(task)
             self.policy["security_suites"].append({"task": task, "class": name, "min_executed": 1})
             paths.append(self.report(task, name, [None]))
@@ -69,8 +73,11 @@ class ResultGateTests(unittest.TestCase):
         self.assertTrue(result["passed"])
         self.assertEqual(result["tasks"]["core:util-jvm:test"]["tests"], 1)
         self.assertEqual(result["tasks"]["lib:libsignal-service:test"]["tests"], 1)
-        paths[-1].unlink()
-        self.assertFalse(self.check()["passed"])
+        for path in paths:
+            data = path.read_bytes()
+            path.unlink()
+            self.assertFalse(self.check()["passed"])
+            path.write_bytes(data)
 
     def test_missing_security_suite_is_rejected_even_when_app_is_nonempty(self):
         self.security.unlink()

@@ -20,7 +20,7 @@
         android:layout_gravity="bottom"
         android:alpha="0"
         android:animateLayoutChanges="false"
-        android:background="@color/media_preview_bar_background"
+        android:background="?attr/media_preview_bar_background"
         android:gravity="bottom"
         android:orientation="vertical"
         android:visibility="invisible"
@@ -53,7 +53,7 @@
         android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/media_preview_bar_background"
+        android:background="?attr/media_preview_bar_background"
         app:elevation="0dp">
 
         <View

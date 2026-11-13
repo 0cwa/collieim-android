@@ -24,28 +24,39 @@ public class DynamicTheme {
   private static final String TAG = Log.tag(DynamicTheme.class);
 
   private static int globalNightModeConfiguration;
+  private static boolean globalDynamicColors;
 
   private int onCreateNightModeConfiguration;
+  private @StyleRes int onCreateTheme;
 
   private static final int regularTheme = R.style.Signal_DayNight;
   private static final int dynamicTheme = R.style.Theme_Molly_Dynamic;
 
   public void onCreate(@NonNull Activity activity) {
-    int previousGlobalConfiguration = globalNightModeConfiguration;
+    int     previousGlobalConfiguration = globalNightModeConfiguration;
+    boolean previousGlobalDynamicColors = globalDynamicColors;
 
     onCreateNightModeConfiguration = ConfigurationUtil.getNightModeConfiguration(activity);
+    onCreateTheme                  = getTheme(activity);
     globalNightModeConfiguration   = onCreateNightModeConfiguration;
+    globalDynamicColors            = useDynamicColors(activity);
 
-    activity.setTheme(getTheme(activity));
+    activity.setTheme(onCreateTheme);
 
-    if (previousGlobalConfiguration != globalNightModeConfiguration) {
-      Log.d(TAG, "Previous night mode has changed previous: " + previousGlobalConfiguration + " now: " + globalNightModeConfiguration);
+    if (previousGlobalConfiguration != globalNightModeConfiguration || previousGlobalDynamicColors != globalDynamicColors) {
+      Log.d(TAG, "Night mode or dynamic colors changed. Clearing cached layouts.");
       CachedInflater.from(activity).clear();
     }
   }
 
   public void onResume(@NonNull Activity activity) {
-    if (onCreateNightModeConfiguration != ConfigurationUtil.getNightModeConfiguration(activity)) {
+    if (onCreateTheme != getTheme(activity)) {
+      // Changing palettes does not change uiMode, so AppCompat will not recreate a retained activity.
+      // Rebuild its view and Compose hierarchies with the selected theme when returning from Settings.
+      Log.d(TAG, "Theme changed since creation. Recreating activity.");
+      CachedInflater.from(activity).clear();
+      activity.recreate();
+    } else if (onCreateNightModeConfiguration != ConfigurationUtil.getNightModeConfiguration(activity)) {
       Log.d(TAG, "Create configuration different from current previous: " + onCreateNightModeConfiguration + " now: " + ConfigurationUtil.getNightModeConfiguration(activity));
       CachedInflater.from(activity).clear();
     }

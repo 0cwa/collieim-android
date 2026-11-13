@@ -65,6 +65,7 @@ import org.thoughtcrime.securesms.mediapreview.RecycledBitmapGuardDrawable
 import org.thoughtcrime.securesms.mediasend.MediaSendLauncher
 import org.thoughtcrime.securesms.mms.PartAuthority
 import org.thoughtcrime.securesms.sharing.v2.ShareActivity
+import org.thoughtcrime.securesms.util.DynamicMediaViewerTheme
 import org.thoughtcrime.securesms.util.SaveAttachmentUtil
 import org.thoughtcrime.securesms.util.WindowUtil
 import kotlin.math.roundToInt
@@ -81,6 +82,7 @@ class MediaViewerActivity : PassphraseRequiredActivity(), VoiceNoteMediaControll
   private val args by lazy { MediaIntentFactory.requireArguments(intent.extras!!) }
   private val viewModel: MediaViewerViewModel by viewModels { MediaViewerViewModel.Factory(args, hasSharedElementTransition) }
   private val dismissState = DragToDismissState()
+  private val dynamicTheme = DynamicMediaViewerTheme()
 
   private lateinit var transitionImageView: ImageView
   private lateinit var backgroundScrim: View
@@ -89,6 +91,16 @@ class MediaViewerActivity : PassphraseRequiredActivity(), VoiceNoteMediaControll
 
   private var hdrHeadroomAnimator: ValueAnimator? = null
   private var currentHdrHeadroom: Float = SDR_HDR_HEADROOM
+
+  override fun onPreCreate() {
+    super.onPreCreate()
+    dynamicTheme.onCreate(this)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    dynamicTheme.onResume(this)
+  }
 
   override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
     hasSharedElementTransition = MediaPreviewCache.drawable != null && !args.skipSharedElementTransition

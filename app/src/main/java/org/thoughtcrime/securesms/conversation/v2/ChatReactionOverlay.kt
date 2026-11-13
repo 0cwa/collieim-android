@@ -57,11 +57,11 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.signal.core.ui.compose.navigationBarsCompat
 import org.signal.core.ui.compose.theme.SignalTheme
+import org.signal.core.ui.compose.theme.colorAttribute
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.conversation.ConversationItem
 import org.thoughtcrime.securesms.conversation.ReactionOverlayPlacement
 import org.thoughtcrime.securesms.conversation.ReactionScrubber
-import org.signal.core.ui.R as CoreUiR
 
 const val REACTION_EMOJI_COUNT = 7
 
@@ -277,7 +277,7 @@ fun ChatReactionOverlay(
         .onGloballyPositioned { controller.onPlaced(placement) }
         .graphicsLayer { alpha = shade.value }
         .background(colorResource(R.color.reactions_screen_light_shade_color))
-        .background(colorResource(R.color.reactions_screen_dark_shade_color))
+        .background(colorAttribute(R.attr.reactions_overlay_shade_color))
     )
 
     Image(
@@ -405,7 +405,7 @@ private fun ReactionEmoji(
           .requiredSize(SELECTION_INDICATOR_SIZE)
           .graphicsLayer { alpha = indicatorAlpha }
           .background(
-            color = colorResource(CoreUiR.color.signal_colorSurfaceVariant_16_no_alpha),
+            color = colorAttribute(R.attr.reactions_overlay_selected_emoji_background),
             shape = CircleShape
           )
       )

@@ -661,7 +661,7 @@ public class NotificationChannels {
 
     notificationManager.createNotificationChannels(Arrays.asList(messages, calls, failures, backups, lockedStatus, other, voiceNotes, joinEvents, background, callStatus, appAlerts, additionalMessageNotifications, newLinkedDevice, unreadReminders));
 
-    if (BuildConfig.MANAGE_MOLLY_UPDATES) {
+    if (BuildConfig.MANAGE_COLLIE_UPDATES) {
       NotificationChannel appUpdates = new NotificationChannel(APP_UPDATES, context.getString(R.string.NotificationChannel_app_updates), NotificationManager.IMPORTANCE_DEFAULT);
       notificationManager.createNotificationChannel(appUpdates);
     } else {

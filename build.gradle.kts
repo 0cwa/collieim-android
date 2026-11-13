@@ -74,6 +74,10 @@ gradle.projectsEvaluated {
       val library = directory.resolve("libsignal_jni_testing_amd64.so")
       tasks.withType<Test>().configureEach {
         classpath = files(directory) + classpath
+        // Security CI requires tests to execute on this candidate. Compilation
+        // may use its normal caches, but stored test results cannot satisfy it.
+        outputs.upToDateWhen { false }
+        outputs.cacheIf { false }
         doFirst {
           check(library.isFile) {
             "Missing host libsignal JNI. Run python3 tooling/host-tests/build_libsignal.py first."

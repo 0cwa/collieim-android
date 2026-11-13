@@ -65,6 +65,8 @@
         <item name="filled_tonal_icon_button_container_color">@color/dynamic_surface_container_highest_light</item>
         <item name="filled_tonal_icon_button_icon_color">@color/dynamic_on_surface_variant_light</item>
         <item name="context_menu_container_color">@color/dynamic_surface_container_light</item>
+        <item name="reactions_overlay_shade_color">@color/reactions_overlay_shade_dynamic_light</item>
+        <item name="reactions_overlay_selected_emoji_background">@color/dynamic_surface_container_highest_light</item>
         <item name="navbar_active_indicator_color">@color/dynamic_secondary_container_light</item>
         <item name="navbar_container_color">@color/dynamic_surface_container_high_light</item>
 
@@ -137,6 +139,8 @@
         <item name="filled_tonal_icon_button_container_color">@color/dynamic_surface_container_highest_dark</item>
         <item name="filled_tonal_icon_button_icon_color">@color/dynamic_on_surface_variant_dark</item>
         <item name="context_menu_container_color">@color/dynamic_surface_container_high_dark</item>
+        <item name="reactions_overlay_shade_color">@color/reactions_overlay_shade_dynamic_dark</item>
+        <item name="reactions_overlay_selected_emoji_background">@color/dynamic_surface_container_highest_dark</item>
         <item name="navbar_active_indicator_color">@color/dynamic_secondary_container_dark</item>
         <item name="navbar_container_color">@color/dynamic_surface_container_high_dark</item>
 
@@ -196,9 +200,16 @@
     </style>
 
     <style name="Theme.Molly.Dynamic.MediaPreview" parent="Theme.Molly.Dynamic.BaseNoActionBar.Dark">
-        <item name="android:windowBackground">@color/signal_dark_colorNeutral</item>
-        <item name="android:statusBarColor">@color/signal_dark_colorNeutral</item>
-        <item name="android:navigationBarColor">@color/signal_dark_colorNeutral</item>
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="media_preview_background">?attr/colorSurface</item>
+        <item name="media_preview_bar_background">@color/media_preview_bar_background_dynamic</item>
+    </style>
+
+    <style name="Theme.Molly.Dynamic.NoActionBar.MediaViewer" parent="Theme.Molly.Dynamic.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
 </resources>

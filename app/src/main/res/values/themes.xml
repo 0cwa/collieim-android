@@ -44,6 +44,8 @@
         <item name="android:windowBackground">@color/signal_dark_colorNeutral</item>
         <item name="android:statusBarColor">@color/signal_dark_colorNeutral</item>
         <item name="android:navigationBarColor">@color/signal_dark_colorNeutral</item>
+        <item name="media_preview_background">@color/signal_dark_colorNeutral</item>
+        <item name="media_preview_bar_background">@color/media_preview_bar_background</item>
     </style>
 
     <style name="TextSecure.MediaPreview" parent="@style/TextSecure.BaseMediaPreview">
@@ -271,6 +273,8 @@
         <item name="filled_tonal_icon_button_icon_color">@color/molly_on_surface_light</item>
 
         <item name="context_menu_container_color">@color/molly_surface_container_light</item>
+        <item name="reactions_overlay_shade_color">@color/reactions_screen_dark_shade_color</item>
+        <item name="reactions_overlay_selected_emoji_background">@color/signal_colorSurfaceVariant_16_no_alpha</item>
 
         <item name="navbar_active_indicator_color">@color/molly_secondary_container_light</item>
         <item name="navbar_container_color">@color/molly_secondary_fixed</item>
@@ -441,6 +445,8 @@
         <item name="filled_tonal_icon_button_icon_color">@color/molly_on_surface_dark</item>
 
         <item name="context_menu_container_color">@color/molly_surface_container_high_dark</item>
+        <item name="reactions_overlay_shade_color">@color/reactions_screen_dark_shade_color</item>
+        <item name="reactions_overlay_selected_emoji_background">@color/signal_colorSurfaceVariant_16_no_alpha</item>
 
         <item name="navbar_active_indicator_color">@color/molly_secondary_container_dark</item>
         <item name="navbar_container_color">@color/molly_surface_container_dark</item>

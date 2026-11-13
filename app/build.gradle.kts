@@ -191,7 +191,7 @@ android {
     buildConfigField("String", "SIGNAL_CANONICAL_VERSION_NAME", "\"$canonicalVersionName\"")
     buildConfigField("String", "BACKUP_BASE_NAME", "\"$baseAppFileName\"")
     buildConfigField("boolean", "FORCE_INTERNAL_USER_FLAG", forceInternalUserFlag)
-    buildConfigField("String", "FDROID_UPDATE_URL", "\"https://molly.im/fdroid/repo\"")
+    buildConfigField("String", "FDROID_UPDATE_URL", "\"https://repo.collie.im/fdroid/repo\"")
 
     vectorDrawables.useSupportLibrary = true
 
@@ -297,13 +297,13 @@ android {
   productFlavors {
     create("store") {
       dimension = "distribution"
-      buildConfigField("boolean", "MANAGE_MOLLY_UPDATES", "false")
+      buildConfigField("boolean", "MANAGE_COLLIE_UPDATES", "false")
     }
 
     create("website") {
       dimension = "distribution"
-      // Collie releases do not use Molly's F-Droid repository for updates.
-      buildConfigField("boolean", "MANAGE_MOLLY_UPDATES", "false")
+      // Authenticated release notifications; downloads remain user initiated.
+      buildConfigField("boolean", "MANAGE_COLLIE_UPDATES", "true")
       isDefault = true
     }
 

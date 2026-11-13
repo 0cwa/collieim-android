@@ -123,10 +123,29 @@ def latest_release(repo: str) -> str:
     return release["tag_name"]
 
 
+def validate_output(out: Path) -> Path:
+    """Only replace disposable directories, never source or checkout files."""
+    requested = Path(os.path.abspath(out))
+    resolved = out.resolve()
+    root = ROOT.resolve()
+    sources = (Path(os.path.abspath(SOURCE)), SOURCE.resolve())
+    # Keep these lexical: resolving an allowlisted symlink could bless its target.
+    disposable = (root / "_site", root / "build")
+    for destination in (requested, resolved):
+        for source in sources:
+            if destination == source or destination in source.parents or source in destination.parents:
+                raise SystemExit("output directory must not contain or be inside the website source")
+        if destination == root or destination in root.parents:
+            raise SystemExit("output directory must not contain the repository")
+        if root in destination.parents and not any(
+            destination == directory or directory in destination.parents for directory in disposable
+        ):
+            raise SystemExit("output inside the repository must be in _site or build")
+    return resolved
+
+
 def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None) -> None:
-    out = out.resolve()
-    if out == SOURCE.resolve() or out in SOURCE.resolve().parents:
-        raise SystemExit("output directory must not contain the website source")
+    out = validate_output(out)
     if not TAG_RE.match(tag):
         raise SystemExit(f"unexpected release tag: {tag!r}")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
@@ -172,7 +191,7 @@ def main() -> int:
     ap.add_argument("--roadmap-json", type=Path, help="offline JSON array of discussion nodes (number, title, category.slug, labels.nodes)")
     args = ap.parse_args()
     roadmap = json.loads(args.roadmap_json.read_text(encoding="utf-8")) if args.roadmap_json else None
-    build(args.out.resolve(), args.tag or latest_release(args.repo), args.repo, roadmap)
+    build(args.out, args.tag or latest_release(args.repo), args.repo, roadmap)
     return 0
 
 

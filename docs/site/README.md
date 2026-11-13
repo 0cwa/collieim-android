@@ -16,6 +16,13 @@ The build copies this folder (except Markdown files), fills `{{RELEASE_TAG}}` an
 `{{APK_URL}}` in `index.html`, and fails if a placeholder or a local file is
 missing. No Python packages are needed.
 
+The output directory is replaced on each build, so use a disposable location.
+Inside this checkout, only `_site`, `build`, and their subdirectories are allowed;
+external output directories such as `~/agent-scratch/collieim-android/site-preview` are also supported. The
+builder rejects the website source, its parents and descendants, and other
+checkout paths before removing or copying files. Both the requested path and its
+symlink-resolved destination must pass these checks.
+
 ## When it deploys
 
 - Every push to `main` that changes `docs/site/`, `tooling/site/` or the workflow.

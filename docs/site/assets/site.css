@@ -99,15 +99,16 @@ a:hover{text-decoration-thickness:2px}
 .mural-landscape{position:relative;height:0;pointer-events:none;isolation:isolate}
 /* One unchanged canonical drawing, painted at its native 770:341 ratio. */
 .mural-landscape::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:16px;left:0;width:100%;aspect-ratio:770/341;background:url(art/collie-mural.svg) 0 0/100% 100% no-repeat}
-.community::before{display:none;content:"";position:absolute;z-index:-1;pointer-events:none;left:calc((100vw - 100%)/-2);width:100vw;aspect-ratio:770/341;background:url(art/collie-mural.svg) 0 0/100% 100% no-repeat}
+.community::before{display:block;top:48px;content:"";position:absolute;z-index:-1;pointer-events:none;left:calc((100vw - 100%)/-2);width:100vw;aspect-ratio:770/341;background:url(art/collie-mural.svg) 0 0/100% 100% no-repeat}
 /* Paint-only theme presentation; the canonical SVG stays unchanged. */
 html{background:var(--page)}
 body{isolation:isolate}
 .community,.mural-landscape{isolation:auto}
 .mural-landscape::before,.community::before{opacity:.65}
 @media(prefers-color-scheme:dark){.mural-landscape::before,.community::before{background-image:url(art/collie-mural-dark.svg);opacity:.3}}
-@media(max-width:1100px){.mural-landscape{display:none}.community::before{display:block;top:calc(100% - 72px)}}
-@media(min-width:601px) and (max-width:1100px){.community::before{top:calc(100% - 100px)}}
+.mural-landscape{display:none}
+@media(max-width:1100px){.community::before{top:128px}}
+@media(max-width:600px){.community::before{top:140px}}
 @media(max-width:600px){.features{background-image:url(art/landscape-feature-edge.svg);background-size:100% 100%;background-repeat:no-repeat}}
 
 /* ---------- hero ---------- */
@@ -217,8 +218,9 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .community-intro{max-width:60ch;margin-top:20px;color:var(--ink-2);font-size:1.125rem}
 .community-action{margin-top:10px;color:var(--link);font-weight:600;text-decoration:underline;text-underline-offset:.22em}
 .community-help{margin-top:56px;padding-top:32px;border-top:1px solid var(--rule)}
-.community-help h3{font-size:1.25rem}
-.help-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 48px;margin-top:24px}
+.community-help h3{font-size:1.25rem;padding-left:60px}
+.help-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 16px;margin-top:24px}
+.help-options>div{padding-inline:60px 4px}
 .help-options p{color:var(--ink-2);margin-top:8px;max-width:48ch;font-weight:400}
 .help-options a{display:inline-block;margin-top:18px;font-weight:500}
 @media (max-width:600px){.help-options{grid-template-columns:1fr;gap:32px}.community-help{margin-top:40px}}
@@ -255,6 +257,7 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .grid>.card:last-child{grid-column:span 2}
   .links{grid-template-columns:1fr}
   .links{gap:0}
+  .help-options{grid-template-columns:1fr}
   html{scroll-padding-top:0}
   main>section{scroll-margin-top:56px}
   .site-header{position:sticky;top:0}

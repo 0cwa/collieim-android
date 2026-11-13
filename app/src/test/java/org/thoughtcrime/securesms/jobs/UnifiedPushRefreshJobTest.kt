@@ -28,6 +28,7 @@ import io.mockk.verify
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -265,6 +266,60 @@ class UnifiedPushRefreshJobTest {
     assertSame(retainedUpdate, controlState.update)
     assertEquals("retained-control-key", controlState.key)
     assertEquals(7L, controlState.importSequence)
+  }
+
+  @Test
+  fun `manual unlink rejects a changed account after waiting for transition admission`() = runBlocking {
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val transitionEntered = CountDownLatch(1)
+    val releaseTransition = CountDownLatch(1)
+    val selectionCaptured = CountDownLatch(1)
+    val selectedAccount = mockk<ServiceId.ACI>()
+    val replacementAccount = mockk<ServiceId.ACI>()
+    every { selectedAccount.toString() } answers {
+      selectionCaptured.countDown()
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    }
+    every { replacementAccount.toString() } returns "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+    every { signalStore.account.aci } returns selectedAccount
+    var removalCalls = 0
+
+    val transition = scope.launch {
+      UnifiedPushAccountTransition.withTransition {
+        transitionEntered.countDown()
+        check(releaseTransition.await(5, TimeUnit.SECONDS))
+        synchronized(UnifiedPushLifecycle.monitor) {
+          every { signalStore.account.aci } returns replacementAccount
+        }
+      }
+    }
+    val removal = scope.async {
+      check(transitionEntered.await(5, TimeUnit.SECONDS))
+      UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) {
+        removalCalls++
+        true
+      }
+    }
+
+    try {
+      assertTrue("selection must be captured while transition admission is blocked", selectionCaptured.await(5, TimeUnit.SECONDS))
+      releaseTransition.countDown()
+
+      assertFalse(withTimeout(5_000) { removal.await() })
+      withTimeout(5_000) { transition.join() }
+      assertEquals(0, removalCalls)
+      assertSame(device, storedDevice)
+      assertSame(retainedUpdate, controlState.update)
+      assertFalse(transitionMarker)
+      assertTrue(UnifiedPushLifecycle.isReady())
+    } finally {
+      releaseTransition.countDown()
+      scope.cancel()
+      withTimeout(5_000) {
+        transition.join()
+        removal.join()
+      }
+    }
   }
 
   @Test

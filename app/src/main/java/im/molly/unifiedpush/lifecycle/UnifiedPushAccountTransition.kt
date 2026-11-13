@@ -108,18 +108,22 @@ object UnifiedPushAccountTransition {
     deviceId: Int,
     removeDevice: suspend (Int) -> Boolean,
   ): Boolean {
-    val mightBeSavedRelay = synchronized(UnifiedPushLifecycle.monitor) {
-      SignalStore.unifiedpush.device?.deviceId == deviceId
+    val (mightBeSavedRelay, context) = synchronized(UnifiedPushLifecycle.monitor) {
+      (SignalStore.unifiedpush.device?.deviceId == deviceId) to captureContextLocked()
     }
     if (!mightBeSavedRelay) return removeDevice(deviceId)
+    val savedRelay = context?.pushDevice ?: return false
 
     return withContext(NonCancellable) {
       withTransition {
-        val context = synchronized(UnifiedPushLifecycle.monitor) { captureContextLocked() }
-        val savedRelay = context?.pushDevice?.takeIf { it.deviceId == deviceId }
+        val stillSelected = synchronized(UnifiedPushLifecycle.monitor) {
+          accountAndLocalDeviceMatchLocked(context) && SignalStore.unifiedpush.device == savedRelay
+        }
+        if (!stillSelected) return@withTransition false
+
         val removed = removeDevice(deviceId)
 
-        if (removed && context != null && savedRelay != null) {
+        if (removed) {
           synchronized(UnifiedPushLifecycle.monitor) {
             if (accountAndLocalDeviceMatchLocked(context) && SignalStore.unifiedpush.device == savedRelay) {
               SignalStore.unifiedpush.device = null

@@ -101,13 +101,17 @@ class UnifiedPushDefaultDistributorLinkActivity : AppCompatActivity() {
       return
     }
     val previous = UnifiedPushDistributor.savedDistributorSnapshot(this)
-    if (previous == distributor) {
+    val selectionId = UUID.randomUUID().toString()
+    val (noChange, schedule) = synchronized(UnifiedPushLifecycle.monitor) {
+      if (previous == distributor && !UnifiedPushReceiver.selectionNeedsRecoveryLocked(this)) {
+        true to null
+      } else {
+        false to UnifiedPushReceiver.recordEndpointLocked(this, LockedPushState.Endpoint(null, null, null, INSTANCE_DEFAULT), selectionId = selectionId)
+      }
+    }
+    if (noChange) {
       finishWithoutLink()
       return
-    }
-    val selectionId = UUID.randomUUID().toString()
-    val schedule = synchronized(UnifiedPushLifecycle.monitor) {
-      UnifiedPushReceiver.recordEndpointLocked(this, LockedPushState.Endpoint(null, null, null, INSTANCE_DEFAULT), selectionId = selectionId)
     }
     if (schedule == null) {
       Log.w(TAG, "Could not persist distributor change.")

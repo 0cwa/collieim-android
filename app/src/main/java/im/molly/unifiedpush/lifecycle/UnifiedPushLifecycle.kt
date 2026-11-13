@@ -108,9 +108,9 @@ object UnifiedPushLifecycle {
       check(leaseCount == 0 && transitionGeneration == null) { "Cannot initialize UnifiedPush lifecycle while work is active" }
       initialized = true
       generation = nextGeneration(generation)
-      invalidationPending = endpointWriteUncertain
-      endpointPersistenceBlocked = endpointWriteUncertain
-      ready = !incompleteTransition && legacyContextIsCoherent && !endpointPersistenceBlocked
+      endpointPersistenceBlocked = endpointPersistenceBlocked || endpointWriteUncertain
+      invalidationPending = invalidationPending || endpointPersistenceBlocked
+      ready = !incompleteTransition && legacyContextIsCoherent && !endpointPersistenceBlocked && !invalidationPending
     }
   }
 
@@ -443,10 +443,10 @@ object UnifiedPushLifecycle {
   }
 
   @VisibleForTesting
-  fun resetForTests(initiallyReady: Boolean = true) {
+  fun resetForTests(initiallyReady: Boolean = true, initiallyInitialized: Boolean = true) {
     synchronized(monitor) {
       check(leaseCount == 0 && transitionGeneration == null)
-      initialized = true
+      initialized = initiallyInitialized
       ready = initiallyReady
       generation = 1
       endpointPersistenceBlocked = false

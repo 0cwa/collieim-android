@@ -45,11 +45,14 @@ object UnifiedPushAccountTransition {
   fun initializeFromSignalStore() {
     val values = SignalStore.unifiedpush
     val marker = values.hasIncompleteAccountTransition
-    UnifiedPushLifecycle.initialize(
-      incompleteTransition = marker,
-      legacyContextIsCoherent = !marker && hasCoherentRegisteredContext(),
-      endpointWriteUncertain = LockedPushState.hasUncertainWrite(AppDependencies.application),
-    )
+    synchronized(UnifiedPushLifecycle.monitor) {
+      // Receiver writes use this same monitor. Keep their live barrier and the preference snapshot ordered.
+      UnifiedPushLifecycle.initialize(
+        incompleteTransition = marker,
+        legacyContextIsCoherent = !marker && hasCoherentRegisteredContext(),
+        endpointWriteUncertain = LockedPushState.hasUncertainWrite(AppDependencies.application),
+      )
+    }
   }
 
   suspend fun <T> withTransition(

@@ -23,6 +23,7 @@ import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -94,7 +95,7 @@ class DistributorPickerActivityTest {
     val activity = launch(useDefault = false)
     val started = shadowOf(activity).nextStartedActivityForResult
     assertEquals(Intent.ACTION_CHOOSER, started.intent.action)
-    activity.onActivityResult(started.requestCode, Activity.RESULT_CANCELED, resultIntent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_CANCELED, resultIntent())
     assertNull(pending)
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
@@ -104,7 +105,7 @@ class DistributorPickerActivityTest {
     every { UnifiedPush.getDistributors(any()) } returns listOf("org.example.other")
     val activity = launch(useDefault = false)
     val started = shadowOf(activity).nextStartedActivityForResult
-    activity.onActivityResult(started.requestCode, Activity.RESULT_OK, resultIntent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, resultIntent())
     assertNull(pending)
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
@@ -114,7 +115,7 @@ class DistributorPickerActivityTest {
     every { UnifiedPush.getDistributors(any()) } returnsMany listOf(listOf(context.packageName), emptyList())
     val activity = launch(useDefault = false)
     val started = shadowOf(activity).nextStartedActivityForResult
-    activity.onActivityResult(started.requestCode, Activity.RESULT_OK, resultIntent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, resultIntent())
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
 
@@ -128,7 +129,7 @@ class DistributorPickerActivityTest {
     }
     val activity = launch(useDefault = false)
     val started = shadowOf(activity).nextStartedActivityForResult
-    activity.onActivityResult(started.requestCode, Activity.RESULT_OK, resultIntent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, resultIntent())
     assertEquals(LockedPushState.Endpoint("https://push.example.invalid/new", "p", "a", "default"), pending)
   }
 
@@ -138,7 +139,7 @@ class DistributorPickerActivityTest {
     every { LockedPushState.trySaveSelection(any(), any(), any()) } returns false
     val activity = launch(useDefault = false)
     val started = shadowOf(activity).nextStartedActivityForResult
-    activity.onActivityResult(started.requestCode, Activity.RESULT_OK, resultIntent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, resultIntent())
     assertEquals("org.example.old", saved)
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
@@ -152,7 +153,7 @@ class DistributorPickerActivityTest {
     }
     val activity = launch(useDefault = false)
     val started = shadowOf(activity).nextStartedActivityForResult
-    activity.onActivityResult(started.requestCode, Activity.RESULT_OK, resultIntent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, resultIntent())
     assertEquals(context.packageName, saved)
     assertNull(shadowOf(activity).resultIntent)
     verify(exactly = 1) { LockedPushState.markRegistrationReady(any(), any()) }
@@ -164,7 +165,7 @@ class DistributorPickerActivityTest {
     every { UnifiedPush.getDistributors(any()) } returns listOf(context.packageName)
     val activity = launch(useDefault = false)
     val started = shadowOf(activity).nextStartedActivityForResult
-    activity.onActivityResult(started.requestCode, Activity.RESULT_OK, resultIntent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, resultIntent())
     assertNull(pending)
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
@@ -175,7 +176,7 @@ class DistributorPickerActivityTest {
     val activity = launch(useDefault = true)
     val started = shadowOf(activity).nextStartedActivityForResult
     assertEquals(Intent.ACTION_VIEW, started.intent.action)
-    activity.onActivityResult(started.requestCode, Activity.RESULT_CANCELED, null)
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_CANCELED, null)
     assertNull(pending)
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
@@ -186,7 +187,7 @@ class DistributorPickerActivityTest {
     val activity = launch(useDefault = true)
     val started = shadowOf(activity).nextStartedActivityForResult
     assertEquals(Intent.ACTION_VIEW, started.intent.action)
-    activity.onActivityResult(started.requestCode, Activity.RESULT_OK, resultIntent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, resultIntent())
     assertEquals(context.packageName, saved)
     assertEquals(LockedPushState.Endpoint(null, null, null, "default"), pending)
   }
@@ -196,7 +197,7 @@ class DistributorPickerActivityTest {
     every { UnifiedPush.getDistributors(any()) } returns listOf(context.packageName)
     val activity = launch(useDefault = false)
     val started = shadowOf(activity).nextStartedActivityForResult
-    activity.onActivityResult(started.requestCode, Activity.RESULT_OK, Intent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, Intent())
     assertNull(pending)
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
@@ -235,7 +236,7 @@ class DistributorPickerActivityTest {
     second.get().setTheme(androidx.appcompat.R.style.Theme_AppCompat)
     val restored = second.create(state).start().resume().get()
     assertNull(shadowOf(restored).nextStartedActivityForResult)
-    restored.onActivityResult(started.requestCode, Activity.RESULT_CANCELED, null)
+    shadowOf(restored).receiveResult(started.intent, Activity.RESULT_CANCELED, null)
     assertTrue(restored.isFinishing)
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
@@ -262,7 +263,7 @@ class DistributorPickerActivityTest {
     every { UnifiedPush.getDistributors(any()) } returns listOf(context.packageName)
     val activity = launch(useDefault = true)
     val started = shadowOf(activity).nextStartedActivityForResult
-    activity.onActivityResult(started.requestCode + 1, Activity.RESULT_OK, resultIntent())
+    assertFalse(activity.activityResultRegistry.dispatchResult(started.requestCode + 1, Activity.RESULT_OK, resultIntent()))
     assertNull(pending)
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
@@ -277,7 +278,7 @@ class DistributorPickerActivityTest {
     val activity = launch(useDefault = false)
     val started = shadowOf(activity).nextStartedActivityForResult
     assertEquals(Intent.ACTION_CHOOSER, started.intent.action)
-    activity.onActivityResult(started.requestCode, Activity.RESULT_OK, resultIntent())
+    shadowOf(activity).receiveResult(started.intent, Activity.RESULT_OK, resultIntent())
     verify(exactly = 1) { UnifiedPush.saveDistributor(activity, context.packageName) }
   }
 

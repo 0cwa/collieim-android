@@ -46,6 +46,7 @@ class DistributorPickerActivityTest {
   private val context: Context get() = ApplicationProvider.getApplicationContext()
   private var saved: String? = null
   private var pending: LockedPushState.Endpoint? = null
+  private var registration: LockedPushState.PendingRegistration? = null
 
   @Before fun setup() {
     Log.initialize(SystemOutLogger())
@@ -54,12 +55,17 @@ class DistributorPickerActivityTest {
     UnifiedPushLifecycle.resetForTests()
     saved = "org.example.old"
     pending = null
+    registration = null
     every { KeyCachingService.isLocked() } returns true
     every { UnifiedPush.getDistributors(any()) } returns emptyList()
     every { UnifiedPushDistributor.savedDistributorSnapshot(any()) } answers { saved }
     every { UnifiedPush.saveDistributor(any(), any()) } answers { saved = secondArg() }
+    every { LockedPushState.beginEndpointWrite(any()) } returns true
+    every { LockedPushState.finishEndpointWrite(any()) } returns true
+    every { LockedPushState.pendingRegistration(any()) } answers { registration }
+    every { LockedPushState.clearRegistrationIfCurrent(any(), any()) } answers { registration = null; true }
     every { LockedPushState.trySavePending(any(), any()) } answers { pending = secondArg(); true }
-    every { LockedPushState.trySaveSelection(any(), any(), any()) } answers { pending = secondArg(); true }
+    every { LockedPushState.trySaveSelection(any(), any(), any()) } answers { pending = secondArg(); registration = LockedPushState.PendingRegistration(thirdArg(), false); true }
     every { LockedPushState.markRegistrationReady(any(), any()) } returns true
   }
 
@@ -212,6 +218,25 @@ class DistributorPickerActivityTest {
     val dialog = ShadowDialog.getLatestDialog() as AlertDialog
     dialog.cancel()
     assertNull(pending)
+    verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
+  }
+
+  @Test fun `external picker cancellation is routed after activity recreation without relaunch`() {
+    addResolver()
+    every { UnifiedPush.getDistributors(any()) } returns listOf(context.packageName)
+    val intent = UnifiedPushDefaultDistributorLinkActivity.Contract(false).createIntent(context, Unit)
+    val first = Robolectric.buildActivity(UnifiedPushDefaultDistributorLinkActivity::class.java, intent)
+    first.get().setTheme(androidx.appcompat.R.style.Theme_AppCompat)
+    val original = first.create().start().resume().get()
+    val started = shadowOf(original).nextStartedActivityForResult
+    val state = Bundle()
+    first.saveInstanceState(state).pause().stop().destroy()
+    val second = Robolectric.buildActivity(UnifiedPushDefaultDistributorLinkActivity::class.java, intent)
+    second.get().setTheme(androidx.appcompat.R.style.Theme_AppCompat)
+    val restored = second.create(state).start().resume().get()
+    assertNull(shadowOf(restored).nextStartedActivityForResult)
+    restored.onActivityResult(started.requestCode, Activity.RESULT_CANCELED, null)
+    assertTrue(restored.isFinishing)
     verify(exactly = 0) { UnifiedPush.saveDistributor(any(), any()) }
   }
 

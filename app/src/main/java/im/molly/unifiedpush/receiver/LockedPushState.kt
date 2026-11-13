@@ -17,6 +17,7 @@ object LockedPushState {
   private const val PENDING = "pending_endpoint"
   private const val REGISTRATION_ID = "pending_registration_id"
   private const val REGISTRATION_READY = "pending_registration_ready"
+  private const val WRITE_IN_PROGRESS = "endpoint_write_in_progress"
   private const val PUSH_ARRIVED = "last_push_arrived"
   private const val SEPARATOR = '\n'
 
@@ -49,6 +50,27 @@ object LockedPushState {
   @JvmStatic
   fun savePending(context: Context, endpoint: Endpoint) {
     trySavePending(context, endpoint)
+  }
+
+  /** A write-ahead fence makes interrupted or uncertain writes fail closed after restart. */
+  fun beginEndpointWrite(context: Context): Boolean = try {
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(WRITE_IN_PROGRESS, true).commit()
+  } catch (e: Throwable) {
+    Log.w(TAG, "Could not fence endpoint write.", e)
+    false
+  }
+
+  fun finishEndpointWrite(context: Context): Boolean = try {
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(WRITE_IN_PROGRESS).commit()
+  } catch (e: Throwable) {
+    Log.w(TAG, "Could not finish endpoint write.", e)
+    false
+  }
+
+  fun hasUncertainWrite(context: Context): Boolean {
+    val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    return prefs.getBoolean(WRITE_IN_PROGRESS, false) ||
+      (prefs.getString(REGISTRATION_ID, null) != null && !prefs.getBoolean(REGISTRATION_READY, false))
   }
 
   /** Returns false if sealing or durable persistence fails. */

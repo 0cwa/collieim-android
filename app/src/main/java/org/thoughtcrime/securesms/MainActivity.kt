@@ -196,6 +196,7 @@ class MainActivity :
     private val TAG = Log.tag(MainActivity::class)
 
     private const val KEY_PUSH_PICKER_OUTSTANDING = "PUSH_PICKER_OUTSTANDING"
+    private const val KEY_PUSH_PICKER_PROMPT_HANDLED = "PUSH_PICKER_PROMPT_HANDLED"
     private const val KEY_STARTING_TAB = "STARTING_TAB"
     private const val KEY_DETAIL_LOCATION = "DETAIL_LOCATION"
     private const val KEY_EXIT_DETAIL = "EXIT_DETAIL"
@@ -281,7 +282,10 @@ class MainActivity :
 
     AppStartup.getInstance().onCriticalRenderEventStart()
 
-    pushPickerLaunchGuard.restore(savedInstanceState?.getBoolean(KEY_PUSH_PICKER_OUTSTANDING) == true)
+    pushPickerLaunchGuard.restore(
+      savedInstanceState?.getBoolean(KEY_PUSH_PICKER_OUTSTANDING) == true,
+      savedInstanceState?.getBoolean(KEY_PUSH_PICKER_PROMPT_HANDLED) == true,
+    )
     super.onCreate(savedInstanceState, ready)
     navigator = MainNavigator(this, mainNavigationViewModel)
 
@@ -862,11 +866,13 @@ class MainActivity :
 
   override fun onSaveInstanceState(outState: Bundle) {
     outState.putBoolean(KEY_PUSH_PICKER_OUTSTANDING, pushPickerLaunchGuard.outstanding)
+    outState.putBoolean(KEY_PUSH_PICKER_PROMPT_HANDLED, pushPickerLaunchGuard.promptHandled)
     super.onSaveInstanceState(outState)
   }
 
   @SuppressLint("NewApi")
   private fun presentVitalsState(state: VitalsViewModel.State) {
+    if (state != VitalsViewModel.State.PROMPT_UNIFIEDPUSH_SELECT_DISTRIBUTOR_DIALOG) pushPickerLaunchGuard.onOtherVitalsState()
     when (state) {
       VitalsViewModel.State.NONE -> Unit
       VitalsViewModel.State.PROMPT_UNIFIEDPUSH_SELECT_DISTRIBUTOR_DIALOG -> {

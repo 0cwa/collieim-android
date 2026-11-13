@@ -2,6 +2,8 @@ package im.molly.unifiedpush.receiver
 
 import android.app.Application
 import android.content.Context
+import android.content.ContextWrapper
+import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.mockk
@@ -60,4 +62,37 @@ class LockedPushSelectionIntentTest {
     assertFalse(LockedPushState.trySaveSelection(context, tombstone, "first"))
     assertNull(LockedPushState.pendingRegistration(context))
   }
+  @Test fun `failed commit can mutate preferences and remains fenced`() {
+    val real = context.getSharedPreferences("collie_locked_push", Context.MODE_PRIVATE)
+    var commitCount = 0
+    val fakePrefs = object : SharedPreferences by real {
+      override fun edit(): SharedPreferences.Editor {
+        val editor = real.edit()
+        return object : SharedPreferences.Editor by editor {
+          override fun putString(key: String?, value: String?): SharedPreferences.Editor {
+            editor.putString(key, value); return this
+          }
+          override fun putBoolean(key: String?, value: Boolean): SharedPreferences.Editor {
+            editor.putBoolean(key, value); return this
+          }
+          override fun remove(key: String?): SharedPreferences.Editor {
+            editor.remove(key); return this
+          }
+          override fun commit(): Boolean {
+            val written = editor.commit()
+            commitCount++
+            return written && commitCount != 2
+          }
+        }
+      }
+    }
+    val fakeContext = object : ContextWrapper(context) {
+      override fun getSharedPreferences(name: String?, mode: Int): SharedPreferences = fakePrefs
+    }
+    assertTrue(LockedPushState.beginEndpointWrite(fakeContext))
+    assertFalse(LockedPushState.trySaveSelection(fakeContext, tombstone, "rejected"))
+    assertEquals(LockedPushState.PendingRegistration("rejected", false), LockedPushState.pendingRegistration(fakeContext))
+    assertTrue(LockedPushState.hasUncertainWrite(fakeContext))
+  }
+
 }

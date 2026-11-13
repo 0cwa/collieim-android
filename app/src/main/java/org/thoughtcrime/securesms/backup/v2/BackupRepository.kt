@@ -1194,19 +1194,22 @@ object BackupRepository {
     backupKey: MessageBackupKey?,
     cancellationSignal: () -> Boolean = { false }
   ): ImportResult {
-    val frameReader = if (backupKey == null) {
-      PlainTextBackupReader(inputStreamFactory(), length)
-    } else {
+    if (backupKey == null) {
+      return PlainTextBackupReader(inputStreamFactory(), length).use { reader ->
+        import(reader, selfData, backupMode = BackupMode.REMOTE, cancellationSignal = cancellationSignal)
+      }
+    }
+
+    val snapshot = AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(AppDependencies.application)
+    return withEncryptedBackupSnapshot(snapshot, length, inputStreamFactory) { file ->
       EncryptedBackupReader.createForLocalOrLinking(
         key = backupKey,
         aci = selfData.aci,
         length = length,
-        dataStream = inputStreamFactory
-      )
-    }
-
-    return frameReader.use { reader ->
-      import(reader, selfData, backupMode = BackupMode.REMOTE, cancellationSignal = cancellationSignal)
+        dataStream = file::inputStream
+      ).use { reader ->
+        import(reader, selfData, backupMode = BackupMode.REMOTE, cancellationSignal = cancellationSignal)
+      }
     }
   }
 

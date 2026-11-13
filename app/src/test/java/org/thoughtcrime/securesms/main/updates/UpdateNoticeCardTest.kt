@@ -29,6 +29,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.height
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -37,11 +38,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 import org.signal.core.ui.CoreUiDependenciesRule
 import org.signal.core.ui.compose.theme.SignalTheme
 
 @RunWith(RobolectricTestRunner::class)
 @Config(application = Application::class, qualifiers = "w600dp-h900dp-mdpi")
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 class UpdateNoticeCardTest {
 
   @get:Rule
@@ -92,19 +95,19 @@ class UpdateNoticeCardTest {
       compose.onNodeWithTag(UpdateNoticeTags.CONTENT).getUnclippedBoundsInRoot().height >= 48.dp
     )
 
-    listOf(UpdateNoticeTags.READ_MORE, UpdateNoticeTags.SUPPORT, UpdateNoticeTags.DISMISS).forEach { tag ->
+    val actionPositions = listOf(UpdateNoticeTags.READ_MORE, UpdateNoticeTags.SUPPORT, UpdateNoticeTags.DISMISS).associateWith { tag ->
       visibleAction(tag)
       val scrollRange = compose.onNodeWithTag(UpdateNoticeTags.CONTENT)
         .fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange]
-      assertTrue("$tag must not be buried after the release notes", scrollRange.value() < scrollRange.maxValue() / 10f)
       assertExitControlsVisible()
+      scrollRange.value()
     }
 
     val actions = compose.onNodeWithTag(UpdateNoticeTags.ACTIONS).getUnclippedBoundsInRoot()
     val buttonBounds = listOf(UpdateNoticeTags.READ_MORE, UpdateNoticeTags.SUPPORT, UpdateNoticeTags.DISMISS).map { tag ->
       compose.onNodeWithTag(tag).getUnclippedBoundsInRoot()
     }
-    assertTrue("Large labels must wrap onto multiple rows", actions.height > 96.dp)
+    assertTrue("Large labels must wrap onto multiple rows: actions=$actions, buttons=$buttonBounds", actions.height > 96.dp)
     buttonBounds.forEach { bounds ->
       assertTrue("An action must fit within the card width", bounds.left >= actions.left && bounds.right <= actions.right)
       assertTrue("Actions must retain a 48 dp touch target", bounds.height >= 48.dp)
@@ -114,6 +117,16 @@ class UpdateNoticeCardTest {
         "Wrapped actions must not overlap",
         first.right <= second.left || second.right <= first.left || first.bottom <= second.top || second.bottom <= first.top
       )
+    }
+
+    // Lazy-list range estimates vary with measured item heights. Compare content order instead of
+    // assuming a percentage of that range corresponds to a fixed reading distance.
+    compose.onNodeWithTag(UpdateNoticeTags.CONTENT).performScrollToNode(hasText(highlights.first().title))
+    compose.onNodeWithText(highlights.first().title).performScrollTo().assertIsDisplayed()
+    val firstHighlightPosition = compose.onNodeWithTag(UpdateNoticeTags.CONTENT)
+      .fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+    actionPositions.forEach { (tag, position) ->
+      assertTrue("$tag must be reachable before the first highlight: $position > $firstHighlightPosition", position <= firstHighlightPosition)
     }
 
     compose.onNodeWithTag(UpdateNoticeTags.CONTENT).performScrollToNode(hasText(highlights.last().title))

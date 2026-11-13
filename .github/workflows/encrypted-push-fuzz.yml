@@ -3,6 +3,7 @@ name: Encrypted push JVM fuzzing
 on:
   pull_request:
     paths:
+      - ".github/workflows/encrypted-push-fuzz.yml"
       - "app/src/main/java/im/molly/unifiedpush/enrollment/ControlKeyId.kt"
       - "app/src/main/java/im/molly/unifiedpush/enrollment/EnrollmentFile.kt"
       - "app/src/main/java/im/molly/unifiedpush/control/ControlFrame.kt"

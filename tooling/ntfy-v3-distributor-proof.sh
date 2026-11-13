@@ -4,7 +4,9 @@
 set -euo pipefail
 umask 077
 
-: "${SERIAL:?set to the emulator/device serial}"
+: "${RUN_ID:?set to the fresh 32-character lowercase hex instrumentation run ID}"
+[[ "$RUN_ID" =~ ^[0-9a-f]{32}$ ]] || { echo "Invalid RUN_ID" >&2; exit 2; }
+: "${SERIAL:?set to the device serial}"
 : "${PHONE_USER_ID:?set to the isolated app Android user ID}"
 : "${PHONE_FILES:?set to /data/user/$PHONE_USER_ID/im.collie.app.imo/files}"
 : "${OUT:?set to a new private run directory}"
@@ -95,7 +97,12 @@ wait_ntfy_receipt() {
 }
 
 # Owner starts the app test. This runner only copies its exact synthetic export/markers.
-wait_phone_file phone.ready
+printf '%s\n' "$RUN_ID" > "$OUT/expected-ready"
+deadline=$((SECONDS + 180))
+while ! pull_phone_file phone.ready 2>"$OUT/adb-pull.err" || ! cmp -s "$OUT/expected-ready" "$OUT/phone.ready"; do
+  (( SECONDS < deadline )) || { echo "Timed out waiting for fresh phone.ready" >&2; exit 1; }
+  sleep 2
+done
 pull_phone_file phone.context-state.txt
 pull_phone_file colliesocket-enrollment.json
 "${ADB[@]}" logcat -T 1 --uid="$APP_UID" -v time > "$OUT/app-uid-live.log" 2> "$OUT/app-logcat.err" &

@@ -8,6 +8,7 @@ package im.molly.unifiedpush.receiver
 import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import im.molly.unifiedpush.control.ControlReset
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.enrollment.EnrollmentExporter
 import im.molly.unifiedpush.enrollment.ExportMode
@@ -92,11 +93,13 @@ class NtfyV3PhysicalChainTest {
       "colliesocket-enrollment.json", "state-valid.txt", "state-after-tamper.txt", "state-after-replay.txt")
       .forEach { file(it).delete() }
 
+    val runId = requireNotNull(InstrumentationRegistry.getArguments().getString("phoneproof_run_id"))
+    require(runId.matches(Regex("[0-9a-f]{32}")))
+    ControlReset.discard(context)
     values.device = MollySocketDevice(deviceId = 2, password = "SYNTHETIC-NOT-A-SIGNAL-CREDENTIAL")
     values.enabled = true
     values.enrollmentEpoch = 0
     values.pendingEnrollmentEpoch = 0
-    values.replayState = null
     values.lastReceivedTime = 0
     values.setEndpointRegistration(null, null, null, null)
     LockedPushState.setEncryptedEnrollment(context, false)
@@ -157,7 +160,7 @@ class NtfyV3PhysicalChainTest {
     assertTrue("Synthetic account context was not coherent before publication", coherentContext)
     assertTrue("Exported import intent did not match the pending receiver intent", intentMatchesExport)
     assertTrue("Pending receiver intent did not match the current account and relay context", contextMatchesIntent)
-    write("phone.ready", "ready\n")
+    write("phone.ready", "$runId\n")
 
     waitFor("host enrollment import") { file("host.imported").exists() }
     waitFor("v3 enrollment confirmation") { values.enrollmentEpoch == 1L && values.controlState.activeImportId != null }

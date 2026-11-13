@@ -1,6 +1,6 @@
 # One faithful independent Collie mural
 
-Current source: `e8e9f8b05dc889785a325011c37c43d736db2b5f`. This replaces the earlier compact resting redraws and block reading surfaces. The only production Collie asset is [collie-mural.svg](../../../../site/assets/art/collie-mural.svg), SHA256 `f5f041c9feb0d6275fd3d0ade6f4a383da52e256850ec8713bf0bdcf00e6c159`. Its native viewBox is `0 1008 770 341`; no paths, proportions or colours vary across viewports.
+Current source: `e8e9f8b05dc889785a325011c37c43d736db2b5f`. This replaces the earlier compact resting redraws and block reading surfaces. The faithful full-colour canonical asset is [collie-mural.svg](../../../../site/assets/art/collie-mural.svg), SHA256 `f5f041c9feb0d6275fd3d0ade6f4a383da52e256850ec8713bf0bdcf00e6c159`. Its native viewBox is `0 1008 770 341`; no paths, proportions or colours vary across viewports.
 
 The selected raster is [full C](../background-c-collie-mural.png). [Source](registered-source.png), [50% overlay](registered-overlay.png) and [side-by-side](registered-pair.png) share a 770×350 frame at source origin(0,1000). The standalone SVG is770×341 at origin(0,1008), displayed independently, never stretched into the comparison frame. Artwork hidden by the original phone is not invented.
 
@@ -15,7 +15,7 @@ Each file below is a 900px-high browser render of the exact built HTML/CSS with 
 | 768 | [ON](768-on-light.png) | [ON](768-on-dark.png) | [OFF](768-off-light.png) | [OFF](768-off-dark.png) |
 | 1280 | [ON](1280-on-light.png) | [ON](1280-on-dark.png) | [OFF](1280-off-light.png) | [OFF](1280-off-dark.png) |
 
-Raw artwork is source-matched and full-strength. Website presentation uses 0.65 opacity in light mode and full-opacity soft-light over the painted bark backdrop in dark mode. There are no glyph halos or rectangular reading mats. Foreground text/fonts/layout, phone imagery and symmetric hero divider remain unchanged. The recognizable face is exposed; natural lower-body occlusion is not claimed to be complete semantic-feature visibility. The old 32-region visibility metric is superseded.
+Raw artwork is source-matched and full-strength. Light website presentation remains at0.65opacity. The dark website now uses a[separate monochrome theme adaptation](../../dark-mural/README.md), preserving this canonical asset unchanged. There are no glyph halos or rectangular reading mats. Foreground text/fonts/layout, phone imagery and symmetric hero divider remain unchanged. The recognizable face is exposed; natural lower-body occlusion is not claimed to be complete semantic-feature visibility. The old 32-region visibility metric is superseded.
 
 ## Underfill topology
 

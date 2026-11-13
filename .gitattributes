@@ -8,4 +8,5 @@
 /core/*/src/main/res/values-*/strings.xml merge=theirs
 /feature/*/src/main/res/values-*/strings.xml merge=theirs
 /lib/*/src/main/res/values-*/strings.xml merge=theirs
+/tooling/fuzz-encrypted-push/src/test/resources/** binary
 /gradle/verification-metadata.xml merge=union

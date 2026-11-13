@@ -25,13 +25,21 @@ import io.mockk.mockkStatic
 import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.junit.After
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -141,6 +149,220 @@ class UnifiedPushRefreshJobTest {
     assertNull(controlState.update)
     verify(exactly = 1) { unifiedPush.device = null }
     coVerify(exactly = 1) { LinkDeviceRepository.removeDevice(device.deviceId) }
+  }
+
+  @Test
+  fun `renamed relay is unlinked before its credentials are cleared`() {
+    coEvery { LinkDeviceRepository.loadDevices() } returns listOf(
+      Device(id = device.deviceId, name = "Renamed relay", createdMillis = null, lastSeenMillis = 0, registrationId = 1)
+    )
+    coEvery { LinkDeviceRepository.removeDevice(device.deviceId) } answers {
+      assertSame("the credential must remain tracked until the server acknowledges unlink", device, storedDevice)
+      assertSame(retainedUpdate, controlState.update)
+      true
+    }
+
+    assertNull(runCleanup())
+
+    assertNull(storedDevice)
+    assertNull(controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+    coVerify(exactly = 1) { LinkDeviceRepository.removeDevice(device.deviceId) }
+  }
+
+  @Test
+  fun `unreadable relay name cannot bypass unlink and failed removal remains retryable`() {
+    // LinkDeviceRepository exposes encoded fallback names when the name cannot be decrypted.
+    coEvery { LinkDeviceRepository.loadDevices() } returns listOf(
+      Device(id = device.deviceId, name = "AQID", createdMillis = null, lastSeenMillis = 0, registrationId = 1)
+    )
+    coEvery { LinkDeviceRepository.removeDevice(device.deviceId) } returns false
+
+    val failure = runCleanup()
+
+    assertTrue(failure is IOException)
+    assertTrue(UnifiedPushRefreshJob().onShouldRetry(failure as IOException))
+    assertSame(device, storedDevice)
+    assertSame(retainedUpdate, controlState.update)
+    verify(exactly = 0) { unifiedPush.device = any() }
+    coVerify(exactly = 1) { LinkDeviceRepository.removeDevice(device.deviceId) }
+
+    coEvery { LinkDeviceRepository.removeDevice(device.deviceId) } returns true
+
+    assertNull(runCleanup())
+    assertNull(storedDevice)
+    assertNull(controlState.update)
+    coVerify(exactly = 2) { LinkDeviceRepository.removeDevice(device.deviceId) }
+  }
+
+  @Test
+  fun `a different device with the relay name is not revoked`() {
+    coEvery { LinkDeviceRepository.loadDevices() } returns listOf(
+      Device(id = device.deviceId + 1, name = "MollySocket", createdMillis = null, lastSeenMillis = 0, registrationId = 1)
+    )
+
+    assertNull(runCleanup())
+
+    assertNull(storedDevice)
+    coVerify(exactly = 0) { LinkDeviceRepository.removeDevice(any()) }
+  }
+
+  @Test
+  fun `manual unlink clears the matching relay only after server removal succeeds`() = runBlocking {
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) { id ->
+      assertEquals(device.deviceId, id)
+      assertSame(device, storedDevice)
+      assertSame(retainedUpdate, controlState.update)
+      true
+    }
+
+    assertTrue(removed)
+    assertNull(storedDevice)
+    assertNull(controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+  }
+
+  @Test
+  fun `manual unlink failure retains the matching relay and control update`() = runBlocking {
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) { id ->
+      assertEquals(device.deviceId, id)
+      false
+    }
+
+    assertFalse(removed)
+    assertSame(device, storedDevice)
+    assertSame(retainedUpdate, controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+  }
+
+  @Test
+  fun `manual unlink of an unrelated ID leaves saved relay credentials intact`() = runBlocking {
+    val unrelatedDeviceId = device.deviceId + 1
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(unrelatedDeviceId) { id ->
+      assertEquals(unrelatedDeviceId, id)
+      true
+    }
+
+    assertTrue(removed)
+    assertSame(device, storedDevice)
+    assertSame(retainedUpdate, controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+  }
+
+  @Test
+  fun `manual unlink does not clear a replacement relay with the same ID`() = runBlocking {
+    val replacement = MollySocketDevice(deviceId = device.deviceId, password = "replacement-relay-credential")
+    val removed = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) {
+      storedDevice = replacement
+      true
+    }
+
+    assertTrue(removed)
+    assertSame(replacement, storedDevice)
+    assertSame(retainedUpdate, controlState.update)
+    assertEquals("retained-control-key", controlState.key)
+    assertEquals(7L, controlState.importSequence)
+  }
+
+  @Test
+  fun `manual unlink rejects a changed account after waiting for transition admission`() = runBlocking {
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val transitionEntered = CountDownLatch(1)
+    val releaseTransition = CountDownLatch(1)
+    val selectionCaptured = CountDownLatch(1)
+    val selectedAccount = mockk<ServiceId.ACI>()
+    val replacementAccount = mockk<ServiceId.ACI>()
+    every { selectedAccount.toString() } answers {
+      selectionCaptured.countDown()
+      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    }
+    every { replacementAccount.toString() } returns "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+    every { signalStore.account.aci } returns selectedAccount
+    var removalCalls = 0
+
+    val transition = scope.launch {
+      UnifiedPushAccountTransition.withTransition {
+        transitionEntered.countDown()
+        check(releaseTransition.await(5, TimeUnit.SECONDS))
+        synchronized(UnifiedPushLifecycle.monitor) {
+          every { signalStore.account.aci } returns replacementAccount
+        }
+      }
+    }
+    val removal = scope.async {
+      check(transitionEntered.await(5, TimeUnit.SECONDS))
+      UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) {
+        removalCalls++
+        true
+      }
+    }
+
+    try {
+      assertTrue("selection must be captured while transition admission is blocked", selectionCaptured.await(5, TimeUnit.SECONDS))
+      releaseTransition.countDown()
+
+      assertFalse(withTimeout(5_000) { removal.await() })
+      withTimeout(5_000) { transition.join() }
+      assertEquals(0, removalCalls)
+      assertSame(device, storedDevice)
+      assertSame(retainedUpdate, controlState.update)
+      assertFalse(transitionMarker)
+      assertTrue(UnifiedPushLifecycle.isReady())
+    } finally {
+      releaseTransition.countDown()
+      scope.cancel()
+      withTimeout(5_000) {
+        transition.join()
+        removal.join()
+      }
+    }
+  }
+
+  @Test
+  fun `manual unlink finishes local transition after caller cancellation during lease drain`() = runBlocking {
+    val lease = UnifiedPushAccountTransition.acquireLease()!!
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    val transitionStarted = CountDownLatch(1)
+    val serverRemovalStarted = CountDownLatch(1)
+    every { unifiedPush.setIncompleteAccountTransition(any()) } answers {
+      transitionMarker = firstArg()
+      if (transitionMarker) transitionStarted.countDown()
+    }
+
+    val removal = scope.launch {
+      UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(device.deviceId) {
+        serverRemovalStarted.countDown()
+        true
+      }
+    }
+
+    try {
+      assertTrue(transitionStarted.await(5, TimeUnit.SECONDS))
+      assertEquals("server removal must wait for the active push lease", 1L, serverRemovalStarted.count)
+
+      removal.cancel()
+      lease.close()
+      withTimeout(5_000) { removal.join() }
+
+      assertTrue(removal.isCancelled)
+      assertEquals(0L, serverRemovalStarted.count)
+      assertFalse(transitionMarker)
+      assertTrue(UnifiedPushLifecycle.isReady())
+      assertNull(storedDevice)
+      assertNull(controlState.update)
+
+      val nextLease = UnifiedPushAccountTransition.acquireLease()
+      assertNotNull("a later push operation must be able to acquire a lease", nextLease)
+      nextLease!!.close()
+    } finally {
+      lease.close()
+      scope.cancel()
+      withTimeout(5_000) { removal.join() }
+    }
   }
 
   @Test

@@ -3,6 +3,7 @@ package org.thoughtcrime.securesms.linkdevice
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -86,7 +87,10 @@ class LinkDeviceViewModel : ViewModel() {
     viewModelScope.launch(Dispatchers.IO) {
       _state.update { it.copy(dialogState = DialogState.Unlinking) }
 
-      val success = LinkDeviceRepository.removeDevice(device.id)
+      val success = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(
+        device.id,
+        LinkDeviceRepository::removeDevice,
+      )
       if (success) {
         loadDevices()
         _state.update {
@@ -464,7 +468,10 @@ class LinkDeviceViewModel : ViewModel() {
       LinkDeviceRepository.sendTransferArchiveError(dialogState.deviceId, dialogState.deviceRegistrationId, TransferArchiveError.RELINK_REQUESTED)
 
       Log.i(TAG, "Need to unlink device first...")
-      val success = LinkDeviceRepository.removeDevice(dialogState.deviceId)
+      val success = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(
+        dialogState.deviceId,
+        LinkDeviceRepository::removeDevice,
+      )
       if (!success) {
         Log.w(TAG, "Failed to remove device! We did our best. Continuing.")
       }
@@ -485,7 +492,10 @@ class LinkDeviceViewModel : ViewModel() {
     Log.i(TAG, "Cancelling sync and removing linked device")
     val dialogState = _state.value.dialogState
     if (dialogState is DialogState.SyncingMessages) {
-      val success = LinkDeviceRepository.removeDevice(dialogState.deviceId)
+      val success = UnifiedPushAccountTransition.removeLinkedDeviceAndClearRelayIfMatching(
+        dialogState.deviceId,
+        LinkDeviceRepository::removeDevice,
+      )
       if (success) {
         Log.i(TAG, "Removing device after cancelling sync")
         _state.update {

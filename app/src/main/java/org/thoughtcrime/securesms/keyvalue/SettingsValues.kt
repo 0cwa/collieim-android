@@ -41,6 +41,7 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     private val TAG = Log.tag(SettingsValues::class.java)
 
     const val LINK_PREVIEWS = "settings.link_previews"
+    const val WEB_LINK_PREVIEW_IMAGES = "settings.web_link_preview_images"
     const val KEEP_MESSAGES_DURATION = "settings.keep_messages_duration"
 
     const val PREFER_SYSTEM_CONTACT_PHOTOS = "settings.prefer.system.contact.photos"
@@ -149,6 +150,7 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
   override val keysToIncludeInBackup: List<String>
     get() = listOf(
     LINK_PREVIEWS,
+    WEB_LINK_PREVIEW_IMAGES,
     KEEP_MESSAGES_DURATION,
     PREFER_SYSTEM_CONTACT_PHOTOS,
     CALL_DATA_MODE,
@@ -194,6 +196,8 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
     get() = configurationSettingChanged
 
   var isLinkPreviewsEnabled: Boolean by booleanValue(LINK_PREVIEWS, false)
+
+  var isWebLinkPreviewImagesEnabled: Boolean by booleanValue(WEB_LINK_PREVIEW_IMAGES, true)
 
   var isAutoplayStickersAndGifsEnabled: Boolean by booleanValue(AUTOPLAY_STICKERS_AND_GIFS, true)
 

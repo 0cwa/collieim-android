@@ -50,6 +50,8 @@ class AppSettingsActivity : NavGraphHostActivity() {
           .setStartCategoryIndex(appSettingsRoute.startCategoryIndex)
         AppSettingsRoute.DataAndStorageRoute.Proxy -> AppSettingsFragmentDirections.actionDirectToNetworkPreferenceFragment()
         AppSettingsRoute.NotificationsRoute.Notifications -> AppSettingsFragmentDirections.actionDirectToNotificationsSettingsFragment()
+        AppSettingsRoute.NotificationsRoute.UnifiedPushSettings -> AppSettingsFragmentDirections.actionDirectToUnifiedPushFragment()
+        AppSettingsRoute.AppUpdates -> AppSettingsFragmentDirections.actionDirectToAppUpdatesSettingsFragment()
         is AppSettingsRoute.NotificationsRoute.PlayServicesProblem -> AppSettingsFragmentDirections.actionDirectToNotificationsSettingsFragment()
           .setPlayServicesErrorCode(appSettingsRoute.errorCode)
         AppSettingsRoute.ChangeNumberRoute.Start -> AppSettingsFragmentDirections.actionDirectToChangeNumberFragment()
@@ -142,6 +144,12 @@ class AppSettingsActivity : NavGraphHostActivity() {
         .putExtra(ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)
         .putExtra(START_ROUTE, AppSettingsRoute.NotificationsRoute.PlayServicesProblem(errorCode = errorCode))
     }
+
+    @JvmStatic
+    fun unifiedPush(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.NotificationsRoute.UnifiedPushSettings)
+
+    @JvmStatic
+    fun appUpdates(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.AppUpdates)
 
     @JvmStatic
     fun changeNumber(context: Context): Intent = getIntentForStartLocation(context, AppSettingsRoute.ChangeNumberRoute.Start)

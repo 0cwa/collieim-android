@@ -88,7 +88,8 @@ class InAppPaymentKeepAliveJobTest {
 
   @Test
   fun `a persisted donation renewal job performs no network requests`() {
-    InAppPaymentKeepAliveJob.create(InAppPaymentSubscriberRecord.Type.DONATION).onRun()
+    val result = InAppPaymentKeepAliveJob.create(InAppPaymentSubscriberRecord.Type.DONATION).run()
+    assertThat(result.isSuccess).isTrue()
     verify(exactly = 0) { AppDependencies.donationsService.putSubscription(any()) }
     verify(exactly = 0) { AppDependencies.donationsService.getSubscription(any()) }
   }

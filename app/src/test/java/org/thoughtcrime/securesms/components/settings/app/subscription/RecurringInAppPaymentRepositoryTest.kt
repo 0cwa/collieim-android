@@ -63,7 +63,6 @@ class RecurringInAppPaymentRepositoryTest {
 
     every { AppDependencies.donationsService.putSubscription(any()) } returns ServiceResponse.forResult(EmptyResponse.INSTANCE, 200, "")
     every { AppDependencies.donationsService.createSubscriber(any()) } returns ServiceResponse.forResult(EmptyResponse.INSTANCE, 200, "")
-    every { AppDependencies.donationsService.updateSubscriptionLevel(any(), any(), any(), any(), any()) } returns ServiceResponse.forResult(EmptyResponse.INSTANCE, 200, "")
   }
 
   @After

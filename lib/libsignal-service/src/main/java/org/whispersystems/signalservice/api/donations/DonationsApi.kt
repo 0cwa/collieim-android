@@ -96,15 +96,6 @@ class DonationsApi(private val authWebSocket: SignalWebSocket.AuthenticatedWebSo
   }
 
   /**
-   * Updates the current subscription to the given level and currency.
-   * - 200: Success
-   */
-  fun updateSubscriptionLevel(subscriberId: SubscriberId, level: String, currencyCode: String, idempotencyKey: String): NetworkResult<Unit> {
-    val request = WebSocketRequestMessage.put("/v1/subscription/${subscriberId.serialize()}/level/${level.urlEncode()}/${currencyCode.urlEncode()}/$idempotencyKey", "")
-    return NetworkResult.fromWebSocketRequest(unauthWebSocket, request)
-  }
-
-  /**
    * POST /v1/subscription/[subscriberId]/receipt_credentials
    */
   fun submitReceiptCredentials(subscriberId: SubscriberId, receiptCredentialRequest: ReceiptCredentialRequest): NetworkResult<ReceiptCredentialResponse> {

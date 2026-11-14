@@ -121,39 +121,6 @@ public class DonationsService {
     }
   }
 
-  /**
-   * Updates the current subscription to the given level and currency. The idempotency key should be a randomly generated 16-byte value that's
-   * url-safe-base64-encoded by the client for each user-operation. That is, if the user is updating from level 500 to level 1000 and the client has to retry
-   * the request, the idempotency key should remain the same. However, if the user updates from level 500 to level 1000, then updates from level 1000 to
-   * level 500, then updates from level 500 to level 1000 again all three of these operations should have separate idempotency keys. Think of this value as an
-   * indicator of user-intention. It should be the same for retries, but any new user-intention to update the subscription should produce a unique value.
-   *
-   * @param subscriberId   The subscriber ID for the user changing their subscription level
-   * @param level          The new level to subscribe to
-   * @param currencyCode   The currencyCode the user is using for payment
-   * @param idempotencyKey url-safe-base64-encoded random 16-byte value (see description)
-   * @param lock           A lock to lock on to avoid a situation where this subscription update happens *as* we are trying to get a credential receipt.
-   */
-  public ServiceResponse<EmptyResponse> updateSubscriptionLevel(SubscriberId subscriberId,
-                                                                String level,
-                                                                String currencyCode,
-                                                                String idempotencyKey,
-                                                                Lock lock
-  )
-  {
-    return wrapInServiceResponse(() -> {
-      lock.lock();
-
-      try {
-        NetworkResultUtil.toIAPBasicLegacy(donationsApi.updateSubscriptionLevel(subscriberId, level, currencyCode, idempotencyKey));
-      } finally {
-        lock.unlock();
-      }
-
-      return new Pair<>(EmptyResponse.INSTANCE, 200);
-    });
-  }
-
   public ServiceResponse<EmptyResponse> linkGooglePlayBillingPurchaseTokenToSubscriberId(SubscriberId subscriberId, String purchaseToken, Lock lock) {
     return wrapInServiceResponse(() -> {
       lock.lock();

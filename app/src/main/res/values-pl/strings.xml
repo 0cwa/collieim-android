@@ -159,45 +159,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">Karta kredytowa lub debetowa</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">Podaj dane karty. Signal nie gromadzi ani nie przechowuje Twoich danych osobowych.</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">Numer karty</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">MM/RR</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">Nieprawidłowy numer karty</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">Karta jest nieważna</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">Kod jest za krótki</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">Kod jest za długi</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">Nieprawidłowy kod</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">Nieprawidłowy miesiąc</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">Musisz podać rok</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">Nieprawidłowy rok</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">Wpłać %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">Wpłacaj %1$s co miesiąc</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">Wpłacaj %1$s co miesiąc</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">Jednorazowo %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Darowizna oczekuje na realizację</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Darowizna jest przetwarzana</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Zablokować i opuścić grupę %1$s?</string>
@@ -261,7 +242,6 @@
     <string name="CallInfoView__before_joining_a_call">Zanim dołączysz do rozmowy, wyświetlą Ci się tylko imiona osób, które masz w kontaktach telefonu, osób, z którymi jesteś w jakiejś grupie, lub osób, z którymi zdarzyło Ci się wymienić wiadomości prywatne. Wszystkie imiona oraz zdjęcia wyświetlą się, gdy dołączysz do rozmowy.</string>
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">Rozumiem</string>
-
 
     <string name="CameraContacts__menu_search">Wyszukaj</string>
 
@@ -479,7 +459,6 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Aby rozpocząć połączenie, zezwól aplikacji Collie na dostęp do mikrofonu.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Aby rozpocząć połączenie, Collie potrzebuje dostępu do mikrofonu.</string>
-
 
     <string name="ConversationActivity_join">Dołącz</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -937,7 +916,6 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">Ustaw porę tworzenia kopii zapasowej</string>
 
-
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">Użycie ustawień niestandardowych: %1$s</string>
     <string name="CustomDefaultPreference_using_default">Użycie ustawień domyślnych: %1$s</string>
@@ -1194,7 +1172,6 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">Wyświetl</string>
 
-
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">Podczas pobierania GIF-a w pełnej rozdzielczości wystąpił błąd</string>
 
@@ -1345,7 +1322,6 @@
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">Możliwe, że nie dochodzą do Ciebie wiadomości. Przesłać dziennik debugowania?</string>
 
-
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">Optymalizacja baterii może powodować opóźnienia w powiadomieniach</string>
     <!-- Message explaining that battery saver may delay notifications -->
@@ -1482,7 +1458,6 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">Coś poszło nie tak z kodem QR i linkiem do udostępniania Twojej nazwy użytkownika. Przestały działać. Utwórz nowy link, aby udostępniać go innym.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">Napraw teraz</string>
-
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">Brak wspólnych grup</string>
@@ -2529,7 +2504,6 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">Wyświetl</string>
 
-
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">Opuścić rękę?</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -3084,7 +3058,6 @@
         <item quantity="many">%1$d Twoich kontaktów korzysta z aplikacji Signal!</item>
         <item quantity="other">%1$d Twojego kontaktu korzysta z aplikacji Signal!</item>
     </plurals>
-
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">To nie jest poprawny format kodu do weryfikacji numeru bezpieczeństwa. Spróbuj zeskanować kod ponownie.</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">Udostępnij numer bezpieczeństwa przez…</string>
@@ -3916,7 +3889,6 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">Nie udało się niczego znaleźć</string>
 
-
     <!-- arrays.xml -->
     <string name="arrays__use_default">Użyj domyślnych</string>
     <string name="arrays__use_custom">Użyj własnych</string>
@@ -3930,10 +3902,6 @@
     <string name="arrays__settings_default">Ustawienia domyślne</string>
     <string name="arrays__enabled">Włączone</string>
     <string name="arrays__disabled">Wyłączone</string>
-
-
-
-
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3961,7 +3929,6 @@
     <string name="preferences__led_color_unknown">Nieznany</string>
     <string name="preferences__silent">Wyciszony</string>
     <string name="preferences__advanced">Zaawansowane</string>
-    <string name="preferences__donate_to_signal">Wesprzyj Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Prywatność</string>
     <!-- Preference label for stories -->
@@ -4014,12 +3981,10 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">Gdy ta opcja jest włączona, Collie w miarę możliwości automatycznie weryfikuje szyfrowanie czatów prywatnych.</string>
 
-
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
-
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">Wszystkie transakcje</string>
@@ -4086,7 +4051,6 @@
     <string name="PaymentsHomeFragment__cancel">Anuluj</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">Zaktualizuj teraz</string>
-
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -4213,7 +4177,6 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal</string>
 
-
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%1$s o godz. %2$s</string>
 
@@ -4305,7 +4268,6 @@
     <string name="conversation_list_item_view__contact_photo_image">Zdjęcie kontaktu</string>
     <string name="conversation_list_item_view__archived">Archiwum</string>
 
-
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">Nowy czat</string>
     <string name="conversation_list_fragment__open_camera_description">Otwórz aparat</string>
@@ -4316,7 +4278,6 @@
     <string name="conversation_list_fragment__no_chats_to_display">Brak czatów</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">Ustawienia folderu</string>
-
 
     <!-- conversation_secure_verified -->
 
@@ -4400,7 +4361,6 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">Zapisz</string>
     <string name="media_preview__edit_title">Edytuj</string>
-
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4788,7 +4748,6 @@
     <string name="GroupRecipientListItem_deny_description">Odrzuć</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">Podaj rolę w grupie</string>
-
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">Stare a nowe grupy</string>
@@ -5342,7 +5301,6 @@
     <string name="ExpireTimerSettingsFragment__custom_time">Własny czas</string>
     <string name="ExpireTimerSettingsFragment__save">Zapisz</string>
 
-
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">Auto</string>
@@ -5397,7 +5355,6 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">Wyszukaj w GIPHY</string>
-
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5547,7 +5504,6 @@
     <string name="VoiceNotePlayerView__play_voice_message">Odtwórz wiadomość głosową</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">Przejdź do wiadomości głosowej</string>
 
-
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">Podgląd awatara</string>
     <string name="AvatarPickerFragment__camera">Aparat</string>
@@ -5655,8 +5611,6 @@
 
     <string name="BadgesOverviewFragment__featured_badge">Wyświetlana odznaka</string>
 
-
-
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">Wpłać darowiznę</string>
     <!-- Title of a page in the bottom sheet. Placeholder is a user\'s short-name -->
@@ -5668,13 +5622,7 @@
 
     <string name="ImageView__badge">Odznaka</string>
 
-    <string name="SubscribeFragment__cancel_subscription">Anuluj darowiznę cykliczną</string>
-    <string name="SubscribeFragment__confirm_cancellation">Potwierdziasz anulowanie?</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">Nie zostaną już od Ciebie pobrane żadne środki. Odznaka zniknie z Twojego profilu z końcem okresu rozliczeniowego.</string>
-    <string name="SubscribeFragment__not_now">Nie teraz</string>
-    <string name="SubscribeFragment__confirm">Potwierdź</string>
     <string name="SubscribeFragment__update_subscription">Zmień darowiznę cykliczną</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Darowizna cykliczna została anulowana.</string>
     <string name="SubscribeFragment__update_subscription_question">Zmienić darowiznę cykliczną?</string>
     <string name="SubscribeFragment__update">Zmień</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Dziś zostanie od Ciebie pobrana pełna kwota darowizny cyklicznej (%1$s). Kolejne darowizny będą pobierane co miesiąc.</string>
@@ -5686,66 +5634,38 @@
     <string name="Subscription__expires_s">Wygasa %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Jako niezależna organizacja non profit stawiamy na poufność wiadomości i połączeń. Bez reklam, bez śledzenia, bez inwigilacji. Wpłać darowiznę i wesprzyj Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">W zamian za darowiznę otrzymasz specjalną odznakę w swoim profilu</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Twoja prywatność jest naszą misją</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal to organizacja non profit</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Dziękujemy Ci za wsparcie!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Zdobywasz odznakę darczyńcy Signal. Pokaż ją w profilu i pochwal się udzielonym przez siebie wsparciem.</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Możesz też</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">wspierać nas co miesiąc.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Pokaż w profilu</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Dodaj odznakę do profilu</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Kontynuuj</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Kiedy masz więcej niż jedną odznakę, możesz zdecydować, którą chcesz pokazać w swoim profilu.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Wesprzyj Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">Więcej</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">Moje wsparcie</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">Potwierdzenia darowizn</string>
-    <string name="ManageDonationsFragment__badges">Odznaki</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">Częste pytania darczyńców</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Inne metody wsparcia</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Wpłać darowiznę w imieniu znajomego</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">Nie udało się potwierdzić darowizny</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Nie udało się potwierdzić Twojej darowizny %1$s miesięcznie. Zatwierdź płatność metodą iDEAL | Wero w swojej aplikacji bankowej.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Nie udało się potwierdzić Twojej jednorazowej darowizny %1$s. Zatwierdź płatność metodą iDEAL | Wero w swojej aplikacji bankowej.</string>
 
-    <string name="Boost__enter_custom_amount">Podaj inną kwotę</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Minimalna kwota darowizny to %1$s</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s miesięcznie</string>
-    <string name="MySupportPreference__renews_s">Odnowi się %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">Przetwarzanie transakcji…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">Nie udało się dodać odznaki. %1$s</string>
-    <string name="MySupportPreference__please_contact_support">Skontaktuj się z pomocą techniczną.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Płatność oczekuje na realizację</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Twój przelew bankowy %1$s jest w trakcie realizacji. Może to potrwać od 1 do 14 dni roboczych.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">Dowiedz się więcej</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">Sprawdzanie darowizny cyklicznej…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Zaktualizuj Collie</string>
@@ -5782,11 +5702,9 @@
     <string name="Subscription__get_a_s_badge">Zdobądź odznakę %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">Przetwarzanie darowizny…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">Cyklicznie %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5805,11 +5723,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Błąd przetwarzania darowizny</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">Dowiedz się więcej</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Błąd przetwarzania darowizny. %1$s</string>
     <string name="DonationsErrors__your_payment">Nie udało się przetworzyć darowizny, a płatność nie została pobrana. Spróbuj ponownie.</string>
     <string name="DonationsErrors__still_processing">Jeszcze trwa przetwarzanie</string>
     <string name="DonationsErrors__couldnt_add_badge">Nie udało się dodać odznaki</string>
@@ -5827,8 +5742,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Darowizna została przetworzona, ale nie udało się wysłać informującej o niej wiadomości. Skontaktuj się z pomocą techniczną.</string>
     <string name="DonationsErrors__your_badge_could_not">Nie udało się dodać odznaki do Twojego profilu, ale płatność mogła zostać pobrana. Skontaktuj się z pomocą techniczną.</string>
     <string name="DonationsErrors__your_payment_is_still">Darowizna jest jeszcze przetwarzana. W zależności od połączenia może to potrwać kilka minut.</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">Nie udało się anulować darowizny cyklicznej</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Aby anulować darowiznę cykliczną, musisz mieć połączenie z internetem.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Twoje urządzenie nie obsługuje darowizn w aplikacji, więc nie możesz otrzymać odznaki. Jeśli chcesz wesprzeć Signal, możesz to zrobić na naszej stronie internetowej.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Błąd sieci. Sprawdź połączenie z internetem i spróbuj ponownie.</string>
     <string name="NetworkFailure__retry">Spróbuj ponownie</string>
@@ -5837,7 +5750,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Nie można wpłacać darowizn w imieniu tej osoby, dopóki nie zaktualizuje ona aplikacji Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Nie udało się przetworzyć Twojej darowizny metodą iDEAL | Wero. Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">%1$s, wpłacam w Twoim imieniu darowiznę</string>
@@ -5851,7 +5763,6 @@
     <string name="GiftMessageView__redeeming">Odbieranie…</string>
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">Odebrano</string>
-
 
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.</string>
@@ -5960,7 +5871,6 @@
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">Powiadamiaj o wszystkich wzmiankach</string>
 
-
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">Utwórz profil, aby otrzymywać powiadomienia i połączenia tylko od wybranych przez siebie osób i grup.</string>
     <!-- Header shown above list of all notification profiles -->
@@ -6048,33 +5958,19 @@
     <string name="ReleaseNotes__keep_up_to_date">Bądź na bieżąco z newsami i aktualizacjami</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">Wszystkie transakcje</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">Wszystkie</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">Cykliczne</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">Jednorazowo</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">W imieniu znajomego</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">Darowizna w imieniu znajomego</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">Rodzaj darowizny</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">Data wpłaty</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">Udostępnij potwierdzenie</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">Jeśli aplikacja Signal została zainstalowana ponownie, wcześniejsze potwierdzenia darowizn nie są dostępne.</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">Potwierdzenie darowizny</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">Kwota</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Dziękujemy za wsparcie aplikacji Signal. Twoja darowizna wspomaga rozwój otwartoźródłowej technologii, która zapewnia prywatność, chroni wolność słowa i umożliwia bezpieczną komunikację milionom osób na całym świecie. Jeśli mieszkasz w Stanach Zjednoczonych, zachowaj to potwierdzenie, aby uwzględnić darowiznę w zeznaniu podatkowym. Signal Technology Foundation jest organizacją non profit zwolnioną z podatku w USA na podstawie zapisu 501c3 Internal Revenue Code (Kodeksu Podatkowego). Nasz federalny numer identyfikacji podatkowej to 82-4506840. W zamian za tę darowiznę Signal nie przekazał żadnych towarów ani nie świadczył żadnych usług.</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">Brak potwierdzeń</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6755,27 +6651,17 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Jesteśmy non profit</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Kontynuuj</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Wpłać darowiznę i wesprzyj nasz prywatny komunikator. To właśnie dzięki darowiznom aplikacja Signal pozostaje niezależna i nie wyświetla reklam.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">Darowizna oczekuje na realizację</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Realizacja przelewu bankowego może potrwać od 1 do 14 dni roboczych. Zanim zmienisz swoją darowiznę cykliczną, poczekaj, aż ta płatność zostanie zrealizowana.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Realizacja przelewu bankowego może potrwać od 1 do 14 dni roboczych. Zanim wpłacisz kolejną darowiznę, poczekaj, aż ta płatność zostanie zrealizowana.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Twoja darowizna jest jeszcze przetwarzana. W zależności od połączenia z internetem może to potrwać kilka minut. Zanim wprowadzisz zmiany w darowiźnie cyklicznej, poczekaj, aż ta płatność zostanie zrealizowana.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Twoja darowizna jest jeszcze przetwarzana. W zależności od połączenia z internetem może to potrwać kilka minut. Zanim wpłacisz kolejną darowiznę, poczekaj, aż ta płatność zostanie zrealizowana.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Twoja darowizna metodą iDEAL | Wero jest jeszcze przetwarzana. Zanim przekażesz kolejną darowiznę, zatwierdź płatność w swojej aplikacji bankowej.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">Zbyt duża kwota darowizny</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Przelewem bankowym możesz przekazać maksymalnie %1$s. Podaj inną kwotę lub wybierz inną metodę płatności.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Co miesiąc</string>
@@ -6784,11 +6670,8 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Przekazuj %1$s miesięcznie na rzecz aplikacji Signal</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Zdobądź odznakę %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Wpłać %1$s i wesprzyj Signal</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Zdobądź odznakę %1$s na %2$d dzień</item>
@@ -6797,118 +6680,69 @@
         <item quantity="other">Zdobądź odznakę %1$s na %2$d dnia</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">Przelew bankowy</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Karta kredytowa lub debetowa</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Wpłać darowiznę w imieniu znajomego</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Wyjść z aplikacji Signal, aby zatwierdzić darowiznę?</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Gdy zatwierdzisz płatność, wróć do aplikacji Signal, aby dokończyć przekazywanie darowizny.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Przekierujemy Cię teraz do serwisu %1$s. Gdy zatwierdzisz płatność, wróć do aplikacji Signal, aby dokończyć przekazywanie darowizny.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">Przelew bankowy</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">Darowizny wpłacane na rzecz aplikacji Signal są przetwarzane przez Stripe. Signal nie gromadzi ani nie przechowuje danych osobowych. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">Dowiedz się więcej</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">Potwierdź</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">Czytaj dalej</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">Nie udało się wczytać zlecenia</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Podaj dane konta bankowego i adres e-mail. Stripe będzie wysyłać na ten adres powiadomienia dotyczące darowizny. %1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">Dowiedz się więcej</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">Imię i nazwisko na koncie bankowym</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">E-mail</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">Gdzie szukać danych konta</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">Wpłacaj %1$s co miesiąc</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">Wpłać %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN jest za krótki</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN jest za długi</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Nieobsługiwany kod kraju IBAN</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">Nieprawidłowy IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">Co najmniej 3 znaki</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">Nieprawidłowy adres e-mail</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Wpisz swoje imię i nazwisko oraz adres e-mail. Stripe będzie wysyłać na ten adres powiadomienia dotyczące darowizny. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Wpisz dane do przelewu. Signal nie gromadzi ani nie przechowuje Twoich danych osobowych. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">Dowiedz się więcej</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">Imię i nazwisko na koncie bankowym</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">E-mail</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Potwierdź darowiznę metodą iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Aby skonfigurować darowiznę cykliczną, przejdź dalej i potwierdź w banku obciążenie konta kwotą 0,01 euro. Zostanie ona automatycznie zwrócona, a procedura ta pozwoli na pobieranie z Twojego konta %1$s miesięcznie.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">Kontynuuj</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Gdzie znaleźć dane konta bankowego</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">Poszukaj swojego numeru IBAN w górnej części wyciągu bankowego. Numer IBAN składa się z maksymalnie 34 znaków. Podane przez Ciebie imię i nazwisko muszą być takie same jak na Twoim koncie bankowym. Aby otrzymać więcej informacji, skontaktuj się ze swoim bankiem.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Darowizna oczekuje na realizację</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Twoja comiesięczna darowizna jest w trakcie realizacji. Odznaka %1$s pojawi się w Twoim profilu, gdy otrzymamy darowiznę</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Twoja jednorazowa darowizna jest w trakcie realizacji. Odznaka %1$s pojawi się w Twoim profilu, gdy otrzymamy darowiznę</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Realizacja przelewu bankowego może potrwać od 1 do 14 dni roboczych. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">Dowiedz się więcej</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">Gotowe</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Nie udało się przetworzyć darowizny</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">Wystąpił problem z przetworzeniem przelewu bankowego. Środki nie zostały pobrane. Użyj innej metody płatności lub skontaktuj się ze swoim bankiem, aby otrzymać więcej informacji.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">Spróbuj ponownie</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">Nie teraz</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Darowizna przekazana</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Otrzymaliśmy Twój przelew. Możesz wyświetlić w swoim profilu tę odznakę, aby pochwalić się udzielonym nam wsparciem.</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">Anulowanie…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Zbyt wiele kontaktów do przetworzenia</string>
@@ -6942,11 +6776,6 @@
     <string name="PaymentMessageView_s_sent_you">%1$s wysyła Ci</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Twoje dane są poufne</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signal nie gromadzi ani nie przechowuje Twoich danych osobowych potrzebnych do wpłacenia darowizny.</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Do przetwarzania darowizn używamy systemu płatności Stripe. Nie zapisujemy, nie przechowujemy ani nie mamy dostępu do żadnych danych, które przekazujesz.</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal nie wiąże ani nie może powiązać darowizny z Twoim kontem Signal.</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">Dziękujemy Ci za wsparcie!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6961,8 +6790,6 @@
     <string name="GroupStoryEducationSheet__next">Dalej</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">Wpłać darowiznę</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">Płatność</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7002,7 +6829,6 @@
     <string name="TextFormatting_spoiler">Spoiler</string>
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">Wyczyść formatowanie</string>
-
 
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
@@ -7246,7 +7072,6 @@
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">Zeskanuj ten kod QR swoim telefonem, aby rozpocząć ze mną czat w aplikacji Signal.</string>
 
-
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->
     <string name="PendingParticipantsView__would_like_to_join">Prosi o dołączenie…</string>
@@ -7420,15 +7245,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Zezwól na powiadomienia pełnoekranowe</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">Comiesięczna darowizna anulowana</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">Twoja comiesięczna darowizna została anulowana. %1$s\n\nOdznaka nie wyświetla się już w Twoim profilu.%2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">Dowiedz się więcej</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">Ponów darowiznę cykliczną</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">Nie teraz</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7702,7 +7522,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

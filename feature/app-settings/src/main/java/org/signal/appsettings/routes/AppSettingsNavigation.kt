@@ -109,7 +109,7 @@ fun AppSettingsNavigation(
   val entryProvider = remember(router, isSplitPane, home, detailEntries) {
     entryProvider {
       listEntry<AppSettingsHomeRoute> {
-        val selectedRoute by router.selectedRoute.collectAsStateWithLifecycle()
+        val selectedRoute = router.selectedRoute.collectAsStateWithLifecycle().value
         home(selectedRoute.takeIf { isSplitPane })
       }
       detailEntries()

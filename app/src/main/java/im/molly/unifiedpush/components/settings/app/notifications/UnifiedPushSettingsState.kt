@@ -1,6 +1,7 @@
 package im.molly.unifiedpush.components.settings.app.notifications
 
 import im.molly.unifiedpush.health.PushHealth
+import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.RegistrationStatus
 
@@ -28,6 +29,7 @@ data class UnifiedPushSettingsState(
   val savedExports: List<SavedExport> = emptyList(),
   val pendingExportCount: Int = 0,
   val hasLegacyPendingExport: Boolean = false,
+  val relayDisclosure: RelayDisclosure.Snapshot? = null,
 ) {
   val serverParameters: String?
     get() {

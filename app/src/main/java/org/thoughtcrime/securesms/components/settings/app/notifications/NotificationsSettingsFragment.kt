@@ -49,6 +49,8 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrScannerActivity
+import im.molly.unifiedpush.components.settings.app.notifications.RelayDisclosureDialogs
+import im.molly.unifiedpush.enrollment.RelayDisclosure
 import kotlinx.coroutines.launch
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
@@ -162,6 +164,9 @@ open class DefaultNotificationsSettingsCallbacks(
     private val TAG = Log.tag(DefaultNotificationsSettingsCallbacks::class)
   }
 
+  private var scanDisclosure: RelayDisclosure.Snapshot? = null
+  private var setupAuthorization: RelayDisclosure.RefreshAuthorization? = null
+
   interface ActivityResultRegisterer {
     fun <I, O> registerForActivityResult(
       contract: ActivityResultContract<I, O>,
@@ -205,16 +210,22 @@ open class DefaultNotificationsSettingsCallbacks(
   private val linkDefaultDistributorLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
     contract = UnifiedPushDefaultDistributorLinkActivity.Contract(),
     callback = { success ->
-      if (success != true) {
-        // If there are no distributors or
-        // if there are multiple distributors installed, but none of them follow the last
-        // specifications,
-        // we try to fall back to the first we found.
-        viewModel.selectFirstDistributor()
-      }
-      activity.lifecycleScope.launch {
-        activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
-          onNavigationUnifiedPushSettings()
+      val authorization = setupAuthorization
+      setupAuthorization = null
+      if (authorization != null) {
+        activity.lifecycleScope.launch {
+          activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+            // Activity results may arrive before onResume. Check authorization after that lifecycle wait.
+            viewModel.completeMollySocketSetup(authorization) {
+              if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                if (success != true) {
+                  // Preserve fallback for distributors that do not implement the default-picker contract.
+                  viewModel.selectFirstDistributor()
+                }
+                onNavigationUnifiedPushSettings()
+              }
+            }
+          }
         }
       }
     }
@@ -223,10 +234,21 @@ open class DefaultNotificationsSettingsCallbacks(
   private val qrScanLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
     contract = MollySocketQrScannerActivity.Contract(),
     callback = { mollySocket ->
+      val disclosure = scanDisclosure
+      scanDisclosure = null
       if (mollySocket != null) {
-        viewModel.initializeMollySocket(mollySocket)
-        viewModel.setPreferredNotificationMethod(NotificationDeliveryMethod.UNIFIEDPUSH)
-        linkDefaultDistributorLauncher.launch()
+        if (disclosure == null) {
+          RelayDisclosureDialogs.showStaleAction(activity)
+        } else {
+          RelayDisclosureDialogs.showRelay(activity, mollySocket) {
+            viewModel.initializeMollySocket(mollySocket, disclosure) { authorization ->
+              if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                setupAuthorization = authorization
+                linkDefaultDistributorLauncher.launch()
+              }
+            }
+          }
+        }
       }
     }
   )
@@ -346,17 +368,25 @@ open class DefaultNotificationsSettingsCallbacks(
     }
   }
 
-  override fun onNotificationMethodChanged(fromToMethods: Pair<NotificationDeliveryMethod, NotificationDeliveryMethod>) {
+  override fun onNotificationMethodChanged(
+    fromToMethods: Pair<NotificationDeliveryMethod, NotificationDeliveryMethod>,
+    disclosure: RelayDisclosure.Snapshot?,
+  ) {
     val (previousMethod, method) = fromToMethods
     when (method) {
       NotificationDeliveryMethod.FCM -> viewModel.setPreferredNotificationMethod(method)
       NotificationDeliveryMethod.WEBSOCKET -> viewModel.setPreferredNotificationMethod(method)
       NotificationDeliveryMethod.UNIFIEDPUSH -> {
         if (method != previousMethod) {
+          if (disclosure == null) {
+            RelayDisclosureDialogs.showStaleAction(activity)
+            return
+          }
           MaterialAlertDialogBuilder(activity)
             .setTitle(R.string.NotificationsSettingsFragment__mollysocket_server)
             .setMessage(R.string.NotificationsSettingsFragment__to_use_unifiedpush_you_need_access_to_a_mollysocket_server)
             .setPositiveButton(R.string.AddLinkDeviceFragment__scan_qr_code) { _, _ ->
+              scanDisclosure = disclosure
               qrScanLauncher.launch()
             }
             .setNegativeButton(android.R.string.cancel, null)
@@ -438,7 +468,10 @@ interface NotificationsSettingsCallbacks {
   fun onNavigationProfilesClick() = Unit
   fun setNotifyWhenContactJoinsSignal(enabled: Boolean) = Unit
   fun setNotifyNewActivityWhileLocked(enabled: Boolean, isSupported: Boolean) = Unit
-  fun onNotificationMethodChanged(fromToMethods: Pair<NotificationDeliveryMethod, NotificationDeliveryMethod>) = Unit
+  fun onNotificationMethodChanged(
+    fromToMethods: Pair<NotificationDeliveryMethod, NotificationDeliveryMethod>,
+    disclosure: RelayDisclosure.Snapshot? = null,
+  ) = Unit
   fun onNavigationUnifiedPushSettings() = Unit
   fun onPlayServicesError(errorCode: Int) = Unit
   fun onMutedClicked() = Unit
@@ -808,7 +841,8 @@ fun NotificationsSettingsScreen(
           },
           onSelected = { selected ->
             callbacks.onNotificationMethodChanged(
-              state.preferredNotificationMethod to NotificationDeliveryMethod.deserialize(selected)
+              state.preferredNotificationMethod to NotificationDeliveryMethod.deserialize(selected),
+              state.relayDisclosure,
             )
           },
         )

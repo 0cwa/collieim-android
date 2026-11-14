@@ -14,8 +14,11 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.test.core.app.ApplicationProvider
 import com.google.android.gms.common.ConnectionResult
+import im.molly.unifiedpush.enrollment.RelayDisclosure
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertSame
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,7 +49,7 @@ class MollyNotificationsSettingsScreenTest {
   fun `choosing FCM reports transition and UnifiedPush configuration stays disabled`() {
     var transition: Pair<NotificationDeliveryMethod, NotificationDeliveryMethod>? = null
     val callbacks = object : NotificationsSettingsCallbacks {
-      override fun onNotificationMethodChanged(fromToMethods: Pair<NotificationDeliveryMethod, NotificationDeliveryMethod>) {
+      override fun onNotificationMethodChanged(fromToMethods: Pair<NotificationDeliveryMethod, NotificationDeliveryMethod>, disclosure: RelayDisclosure.Snapshot?) {
         transition = fromToMethods
       }
     }
@@ -57,6 +60,23 @@ class MollyNotificationsSettingsScreenTest {
     compose.onNodeWithText(text(R.string.NotificationsSettingsFragment__delivery_service)).performClick()
     compose.onNodeWithText(text(NotificationDeliveryMethod.FCM.stringId)).performClick()
     compose.runOnIdle { assertEquals(NotificationDeliveryMethod.WEBSOCKET to NotificationDeliveryMethod.FCM, transition) }
+  }
+
+  @Test
+  fun `choosing UnifiedPush carries the authorization attached to the rendered screen`() {
+    val disclosure = mockk<RelayDisclosure.Snapshot>()
+    var selectedDisclosure: RelayDisclosure.Snapshot? = null
+    val callbacks = object : NotificationsSettingsCallbacks {
+      override fun onNotificationMethodChanged(fromToMethods: Pair<NotificationDeliveryMethod, NotificationDeliveryMethod>, disclosure: RelayDisclosure.Snapshot?) {
+        assertEquals(NotificationDeliveryMethod.WEBSOCKET to NotificationDeliveryMethod.UNIFIEDPUSH, fromToMethods)
+        selectedDisclosure = disclosure
+      }
+    }
+    show(state().copy(relayDisclosure = disclosure), callbacks)
+    scrollTo(R.string.NotificationsSettingsFragment__delivery_service)
+    compose.onNodeWithText(text(R.string.NotificationsSettingsFragment__delivery_service)).performClick()
+    compose.onNodeWithText(text(NotificationDeliveryMethod.UNIFIEDPUSH.stringId)).performClick()
+    compose.runOnIdle { assertSame(disclosure, selectedDisclosure) }
   }
 
   @Test

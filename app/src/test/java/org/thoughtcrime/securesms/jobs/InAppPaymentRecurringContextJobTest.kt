@@ -276,13 +276,14 @@ class InAppPaymentRecurringContextJobTest {
   }
 
   @Test
-  fun `Given no available subscription, when I run, then I expect retry`() {
+  fun `Given no available backup subscription, when I run, then I fail without requesting credentials`() {
     val iap = insertInAppPayment()
     val job = InAppPaymentRecurringContextJob.create(iap)
     inAppPaymentsTestRule.initializeActiveSubscriptionMock(activeSubscription = ActiveSubscription(null, null))
 
     val result = job.run()
-    assertThat(result.isRetry).isTrue()
+    assertThat(result.isFailure).isTrue()
+    verify(exactly = 0) { AppDependencies.donationsService.submitReceiptCredentialRequestSync(any(), any()) }
   }
 
   @Test

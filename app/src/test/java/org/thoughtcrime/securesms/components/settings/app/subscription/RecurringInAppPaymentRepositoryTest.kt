@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.components.settings.app.subscription
 
 import android.app.Application
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEqualTo
 import io.mockk.every
 import io.mockk.mockk
@@ -82,8 +83,8 @@ class RecurringInAppPaymentRepositoryTest {
 
     val newSubscriber = ref.get()
 
-    assertThat(newSubscriber).isNotEqualTo(initialSubscriber)
-    verify { AppDependencies.donationsService.createSubscriber(any()) }
+    assertThat(newSubscriber?.subscriberId).isEqualTo(initialSubscriber.subscriberId)
+    verify(exactly = 1) { AppDependencies.donationsService.createSubscriber(initialSubscriber.subscriberId) }
     verify(inverse = true) { AppDependencies.donationsService.putSubscription(any()) }
   }
 
@@ -99,7 +100,7 @@ class RecurringInAppPaymentRepositoryTest {
 
     val newSubscriber = ref.get()
 
-    assertThat(newSubscriber).isNotEqualTo(initialSubscriber)
+    assertThat(newSubscriber?.subscriberId).isNotEqualTo(initialSubscriber.subscriberId)
     verify { AppDependencies.donationsService.createSubscriber(any()) }
     verify(inverse = true) { AppDependencies.donationsService.putSubscription(any()) }
   }

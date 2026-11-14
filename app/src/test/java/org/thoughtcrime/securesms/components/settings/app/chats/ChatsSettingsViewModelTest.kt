@@ -62,6 +62,7 @@ class ChatsSettingsViewModelTest {
     mockkObject(ChatsSettingsRepository)
 
     every { ChatsSettingsRepository.isLinkPreviewsEnabled() } returns true
+    every { ChatsSettingsRepository.isWebLinkPreviewImagesEnabled() } returns true
     every { ChatsSettingsRepository.isAutoplayStickersAndGifsEnabled() } returns true
     every { ChatsSettingsRepository.isPreferSystemContactPhotos() } returns false
     every { ChatsSettingsRepository.isKeepMutedChatsArchived() } returns false
@@ -74,6 +75,7 @@ class ChatsSettingsViewModelTest {
     every { ChatsSettingsRepository.isPlaintextExportEnabled() } returns true
     every { ChatsSettingsRepository.observePlaintextExportProgress() } returns plaintextExportProgress
     every { ChatsSettingsRepository.setLinkPreviewsEnabled(any()) } just Runs
+    every { ChatsSettingsRepository.setWebLinkPreviewImagesEnabled(any()) } just Runs
     every { ChatsSettingsRepository.setAutoplayStickersAndGifsEnabled(any()) } just Runs
     every { ChatsSettingsRepository.setPreferSystemContactPhotos(any()) } just Runs
     every { ChatsSettingsRepository.setKeepMutedChatsArchived(any()) } just Runs
@@ -95,6 +97,7 @@ class ChatsSettingsViewModelTest {
     val state = viewModel.state.value
 
     assertThat(state.generateLinkPreviews).isTrue()
+    assertThat(state.webLinkPreviewImagesEnabled).isTrue()
     assertThat(state.shouldAutoplayStickersAndGifs).isTrue()
     assertThat(state.useAddressBook).isFalse()
     assertThat(state.isPlaintextExportEnabled).isTrue()
@@ -121,6 +124,42 @@ class ChatsSettingsViewModelTest {
 
     assertThat(viewModel.state.value.generateLinkPreviews).isFalse()
     verify { ChatsSettingsRepository.setLinkPreviewsEnabled(false) }
+  }
+
+  @Test
+  fun `a saved text-only choice is loaded while link previews remain enabled`() = runTest(testDispatcher) {
+    every { ChatsSettingsRepository.isWebLinkPreviewImagesEnabled() } returns false
+
+    val viewModel = createViewModel()
+
+    assertThat(viewModel.state.value.webLinkPreviewImagesEnabled).isFalse()
+    assertThat(viewModel.state.value.generateLinkPreviews).isTrue()
+  }
+
+  @Test
+  fun `WebLinkPreviewImagesChanged updates only the local image choice`() = runTest(testDispatcher) {
+    val viewModel = createViewModel()
+
+    viewModel.onEvent(ChatsSettingsEvents.WebLinkPreviewImagesChanged(false))
+
+    assertThat(viewModel.state.value.webLinkPreviewImagesEnabled).isFalse()
+    assertThat(viewModel.state.value.generateLinkPreviews).isTrue()
+    verify { ChatsSettingsRepository.setWebLinkPreviewImagesEnabled(false) }
+    verify(exactly = 0) { ChatsSettingsRepository.setLinkPreviewsEnabled(any()) }
+  }
+
+  @Test
+  fun `turning link previews off and on preserves the saved image choice`() = runTest(testDispatcher) {
+    every { ChatsSettingsRepository.isWebLinkPreviewImagesEnabled() } returns false
+    val viewModel = createViewModel()
+
+    viewModel.onEvent(ChatsSettingsEvents.GenerateLinkPreviewsChanged(false))
+    assertThat(viewModel.state.value.webLinkPreviewImagesEnabled).isFalse()
+
+    viewModel.onEvent(ChatsSettingsEvents.GenerateLinkPreviewsChanged(true))
+    assertThat(viewModel.state.value.generateLinkPreviews).isTrue()
+    assertThat(viewModel.state.value.webLinkPreviewImagesEnabled).isFalse()
+    verify(exactly = 0) { ChatsSettingsRepository.setWebLinkPreviewImagesEnabled(any()) }
   }
 
   @Test

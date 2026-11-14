@@ -364,6 +364,10 @@
     <string name="ChatsSettingsFragment__unlock_to_export_chat_history">Unlock to export chat history</string>
     <string name="preferences__display_contact_photos_from_your_address_book_if_available">Prefer contact photos from your address book if available</string>
     <string name="preferences__generate_link_previews">Generate link previews</string>
+    <!-- Title of the toggle below Generate link previews; controls images in previews of ordinary webpages. -->
+    <string name="ChatsSettingsScreen__web_link_preview_images">Web link preview images</string>
+    <!-- Turning this off skips webpage preview images but still retrieves webpage titles and descriptions. Special Signal link cards are unchanged. -->
+    <string name="ChatsSettingsScreen__web_link_preview_images_summary">Include images in previews from websites. Pages are still fetched for titles and descriptions when this is off.</string>
     <!-- Preference menu item description for a toggle switch for preserving the archived state of muted chats. -->
     <string name="preferences__muted_chats_that_are_archived_will_remain_archived">Muted chats that are archived will remain archived when a new message arrives.</string>
     <!-- Preference menu item title for a toggle switch for preserving the archived state of muted chats. -->

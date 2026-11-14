@@ -7,6 +7,10 @@ package org.thoughtcrime.securesms.util
 
 import android.app.Application
 import android.content.Intent
+import io.mockk.every
+import io.mockk.mockk
+import org.thoughtcrime.securesms.recipients.Recipient
+import java.util.Optional
 import androidx.core.net.MailTo
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -20,6 +24,24 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
 class CommunicationActionsTest {
+
+  @Test
+  fun `email-only recipient has no dial intent`() {
+    val recipient = mockk<Recipient>()
+    every { recipient.resolve() } returns recipient
+    every { recipient.e164 } returns Optional.empty()
+    assertNull(CommunicationActions.buildInsecureCallIntent(recipient))
+  }
+
+  @Test
+  fun `phone recipient has a dial intent`() {
+    val recipient = mockk<Recipient>()
+    every { recipient.resolve() } returns recipient
+    every { recipient.e164 } returns Optional.of("+12025550123")
+    val intent = CommunicationActions.buildInsecureCallIntent(recipient)!!
+    assertEquals(Intent.ACTION_DIAL, intent.action)
+    assertEquals("tel:+12025550123", intent.data.toString())
+  }
 
   @Test
   fun givenSubjectAndBody_whenBuilt_thenUriAndExtrasArePopulated() {

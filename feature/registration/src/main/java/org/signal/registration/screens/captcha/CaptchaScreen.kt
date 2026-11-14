@@ -70,6 +70,7 @@ fun CaptchaScreen(
               ViewGroup.LayoutParams.MATCH_PARENT,
               ViewGroup.LayoutParams.MATCH_PARENT
             )
+            settings.allowContentAccess = false
             settings.javaScriptEnabled = true
             clearCache(true)
 

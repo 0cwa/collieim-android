@@ -80,6 +80,7 @@ public class ShareInterstitialActivity extends PassphraseRequiredActivity {
   protected void onResume() {
     super.onResume();
     dynamicTheme.onResume(this);
+    linkPreviewViewModel.refreshImagePreference();
   }
 
   private void initializeViewModels(@NonNull MultiShareArgs args) {

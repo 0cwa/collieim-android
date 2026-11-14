@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
+import org.thoughtcrime.securesms.linkpreview.LinkPreviewImagePolicy;
 import org.thoughtcrime.securesms.sharing.MultiShareArgs;
 import org.thoughtcrime.securesms.sharing.MultiShareSender;
 import org.thoughtcrime.securesms.util.DefaultValueLiveData;
@@ -61,7 +62,7 @@ private final MultiShareArgs                      args;
   }
 
   void send(@NonNull Consumer<MultiShareSender.MultiShareSendResultCollection> resultsConsumer) {
-    LinkPreview linkPreview = this.linkPreview;
+    LinkPreview linkPreview = LinkPreviewImagePolicy.sanitize(this.linkPreview);
     String      draftText   = this.draftText.getValue();
 
     MultiShareArgs.Builder builder = args.buildUpon()

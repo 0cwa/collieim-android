@@ -100,6 +100,10 @@ public class LinkPreviewRepository {
                                   .build();
   }
 
+  LinkPreviewRepository(@NonNull OkHttpClient client) {
+    this.client = client;
+  }
+
   public @NonNull Single<Result<LinkPreview, Error>> getLinkPreview(@NonNull String url) {
     return Single.<Result<LinkPreview, Error>>create(emitter -> {
       RequestController controller = getLinkPreview(AppDependencies.getApplication(),
@@ -148,6 +152,21 @@ public class LinkPreviewRepository {
       metadataController = fetchCallLinkPreview(context, url, callback);
     } else {
       metadataController = fetchMetadata(url, metadata -> {
+        if (compositeController.isCanceled()) {
+          return;
+        }
+
+        // Decide before requesting or decoding an image. The setting is local to this device.
+        if (!SignalStore.settings().isWebLinkPreviewImagesEnabled()) {
+          LinkPreview preview = LinkPreviewImagePolicy.sanitize(new LinkPreview(url, metadata.getTitle().orElse(""), metadata.getDescription().orElse(""), metadata.getDate(), Optional.empty()), false);
+          if (preview == null) {
+            callback.onError(Error.PREVIEW_NOT_AVAILABLE);
+          } else {
+            callback.onSuccess(preview);
+          }
+          return;
+        }
+
         if (metadata.isEmpty()) {
           callback.onError(Error.PREVIEW_NOT_AVAILABLE);
           return;
@@ -159,10 +178,17 @@ public class LinkPreviewRepository {
         }
 
         RequestController imageController = fetchThumbnail(metadata.getImageUrl().get(), attachment -> {
-          if (!metadata.getTitle().isPresent() && !attachment.isPresent()) {
+          if (compositeController.isCanceled()) {
+            return;
+          }
+
+          boolean     includeImages = SignalStore.settings().isWebLinkPreviewImagesEnabled();
+          LinkPreview preview       = LinkPreviewImagePolicy.sanitize(new LinkPreview(url, metadata.getTitle().orElse(""), metadata.getDescription().orElse(""), metadata.getDate(), attachment), includeImages);
+
+          if (preview == null || (includeImages && !metadata.getTitle().isPresent() && !attachment.isPresent())) {
             callback.onError(Error.PREVIEW_NOT_AVAILABLE);
           } else {
-            callback.onSuccess(new LinkPreview(url, metadata.getTitle().orElse(""), metadata.getDescription().orElse(""), metadata.getDate(), attachment));
+            callback.onSuccess(preview);
           }
         });
 
@@ -186,48 +212,50 @@ public class LinkPreviewRepository {
 
       @Override
       public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-        if (!response.isSuccessful()) {
-          Log.w(TAG, "Non-successful response. Code: " + response.code());
-          callback.accept(Metadata.empty());
-          return;
-        } else if (response.body() == null) {
-          Log.w(TAG, "No response body.");
-          callback.accept(Metadata.empty());
-          return;
+        try (response) {
+          if (!response.isSuccessful()) {
+            Log.w(TAG, "Non-successful response. Code: " + response.code());
+            callback.accept(Metadata.empty());
+            return;
+          } else if (response.body() == null) {
+            Log.w(TAG, "No response body.");
+            callback.accept(Metadata.empty());
+            return;
+          }
+
+          if (MediaUtil.isImageType(response.header("Content-Type"))) {
+            // We've been linked directly to an image.
+            okhttp3.HttpUrl imageUrl = response.request().url();
+            // The best we can do for a title is the filename in the URL itself,
+            // but that's no worse than the body of the message.
+            List<String> requestedUrlPathSegments = imageUrl.pathSegments();
+            String       filename                 = requestedUrlPathSegments.get(requestedUrlPathSegments.size() - 1);
+            callback.accept(new Metadata(Optional.of(filename), Optional.empty(), 0, Optional.of(imageUrl.toString())));
+            return;
+          }
+
+          String body;
+          try {
+            body = OkHttpUtil.readAsString(response.body(), FAILSAFE_MAX_TEXT_SIZE);
+          } catch (IOException e) {
+            Log.w(TAG, "Failed to read body", e);
+            callback.accept(Metadata.empty());
+            return;
+          }
+
+          OpenGraph        openGraph   = LinkPreviewUtil.parseOpenGraphFields(body);
+          Optional<String> title       = openGraph.getTitle();
+          Optional<String> description = openGraph.getDescription();
+          Optional<String> imageUrl    = openGraph.getImageUrl();
+          long             date        = openGraph.getDate();
+
+          if (imageUrl.isPresent() && !LinkUtil.isValidPreviewUrl(imageUrl.get())) {
+            Log.i(TAG, "Image URL was invalid or for a non-whitelisted domain. Skipping.");
+            imageUrl = Optional.empty();
+          }
+
+          callback.accept(new Metadata(title, description, date, imageUrl));
         }
-
-        if (MediaUtil.isImageType(response.header("Content-Type"))) {
-          // We've been linked directly to an image.
-          okhttp3.HttpUrl imageUrl = response.request().url();
-          // The best we can do for a title is the filename in the URL itself,
-          // but that's no worse than the body of the message.
-          List<String> requestedUrlPathSegments = imageUrl.pathSegments();
-          String       filename                 = requestedUrlPathSegments.get(requestedUrlPathSegments.size() - 1);
-          callback.accept(new Metadata(Optional.of(filename), Optional.empty(), 0, Optional.of(imageUrl.toString())));
-          return;
-        }
-
-        String body;
-        try {
-          body = OkHttpUtil.readAsString(response.body(), FAILSAFE_MAX_TEXT_SIZE);
-        } catch (IOException e) {
-          Log.w(TAG, "Failed to read body", e);
-          callback.accept(Metadata.empty());
-          return;
-        }
-
-        OpenGraph        openGraph   = LinkPreviewUtil.parseOpenGraphFields(body);
-        Optional<String> title       = openGraph.getTitle();
-        Optional<String> description = openGraph.getDescription();
-        Optional<String> imageUrl    = openGraph.getImageUrl();
-        long             date        = openGraph.getDate();
-
-        if (imageUrl.isPresent() && !LinkUtil.isValidPreviewUrl(imageUrl.get())) {
-          Log.i(TAG, "Image URL was invalid or for a non-whitelisted domain. Skipping.");
-          imageUrl = Optional.empty();
-        }
-
-        callback.accept(new Metadata(title, description, date, imageUrl));
       }
     });
 
@@ -239,8 +267,13 @@ public class LinkPreviewRepository {
     CallRequestController controller = new CallRequestController(call);
 
     SignalExecutors.UNBOUNDED.execute(() -> {
+      if (!SignalStore.settings().isWebLinkPreviewImagesEnabled()) {
+        callback.accept(Optional.empty());
+        return;
+      }
+
       try (Response response = call.execute()) {
-        if (!response.isSuccessful() || response.body() == null) {
+        if (!response.isSuccessful() || response.body() == null || !SignalStore.settings().isWebLinkPreviewImagesEnabled()) {
           callback.accept(Optional.empty());
           return;
         }
@@ -248,7 +281,12 @@ public class LinkPreviewRepository {
         InputStream bodyStream = response.body().byteStream();
         controller.setStream(bodyStream);
 
-        byte[]                           data        = OkHttpUtil.readAsBytes(bodyStream, FAILSAFE_MAX_IMAGE_SIZE);
+        byte[] data = OkHttpUtil.readAsBytes(bodyStream, FAILSAFE_MAX_IMAGE_SIZE);
+        if (!SignalStore.settings().isWebLinkPreviewImagesEnabled()) {
+          callback.accept(Optional.empty());
+          return;
+        }
+
         Bitmap                           bitmap      = BitmapFactory.decodeByteArray(data, 0, data.length);
         Optional<Attachment>             thumbnail   = Optional.empty();
         PushMediaConstraints.MediaConfig mediaConfig = PushMediaConstraints.MediaConfig.getDefault(AppDependencies.getApplication());

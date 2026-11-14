@@ -137,6 +137,15 @@ public class LinkPreview implements Parcelable {
     return attachmentId;
   }
 
+  /** Returns a text-only copy without decoding or otherwise changing the stored text fields. */
+  public @NonNull LinkPreview withoutThumbnail() {
+    if (!thumbnail.isPresent() && attachmentId == null) {
+      return this;
+    }
+
+    return new LinkPreview(url, title, description, date, Optional.empty());
+  }
+
   private static @NonNull String truncate(@NonNull String value) {
     return value.length() > MAX_FIELD_LENGTH ? value.substring(0, MAX_FIELD_LENGTH) : value;
   }

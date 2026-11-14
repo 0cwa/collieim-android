@@ -237,6 +237,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">知道了</string>
 
+
     <string name="CameraContacts__menu_search">搜索</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -447,6 +448,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">如要发起通话，请允许 Collie 访问您的麦克风。</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Collie 需要麦克风访问权限以发起通话。</string>
+
 
     <string name="ConversationActivity_join">加入</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -844,6 +846,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">设置备份时间</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">使用定制：%1$s</string>
     <string name="CustomDefaultPreference_using_default">使用默认：%1$s</string>
@@ -1088,6 +1091,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">查看</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">获取原始分辨率的 GIF 图片时出错</string>
 
@@ -1204,6 +1208,7 @@
     <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie 遇到了一个问题。要提交调试日志吗？</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">您可能收不到消息。要提交调试日志吗？</string>
+
 
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">通知可能会因为电池优化而延迟</string>
@@ -1329,6 +1334,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">您的二维码和用户名链接出问题了，链接已经失效。请创建一个新链接以便分享给其他用户。</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">立刻解决</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">无共同群组</string>
@@ -2264,6 +2270,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">查看</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">要放下吗？</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -2767,6 +2774,7 @@
     <plurals name="UserNotificationMigrationJob_d_contacts_are_on_signal">
         <item quantity="other">%1$d 个联系人在使用 Signal！</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">扫描二维码所获的安全码格式有误，请重新扫描。</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">安全码分享方式…</string>
@@ -3553,6 +3561,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">未找到结果</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">使用默认</string>
     <string name="arrays__use_custom">使用自定义</string>
@@ -3566,6 +3575,10 @@
     <string name="arrays__settings_default">默认设置</string>
     <string name="arrays__enabled">启用</string>
     <string name="arrays__disabled">禁用</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3642,10 +3655,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">如果启用此功能，Collie 会尝试自动验证一对一聊天加密。</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">全部活动</string>
@@ -3712,6 +3727,7 @@
     <string name="PaymentsHomeFragment__cancel">取消</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">现在升级</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -3838,6 +3854,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal</string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%1$s 于 %2$s</string>
 
@@ -3926,6 +3943,7 @@
     <string name="conversation_list_item_view__contact_photo_image">联系人图片</string>
     <string name="conversation_list_item_view__archived">已存档</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">新聊天</string>
     <string name="conversation_list_fragment__open_camera_description">打开相机</string>
@@ -3936,6 +3954,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">没有可显示的聊天</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">文件夹设置</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4016,6 +4035,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">保存</string>
     <string name="media_preview__edit_title">编辑</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4382,6 +4402,7 @@
     <string name="GroupRecipientListItem_deny_description">拒绝</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">添加成员标签</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">新旧版群组对比</string>
@@ -4890,6 +4911,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">自定义时间</string>
     <string name="ExpireTimerSettingsFragment__save">保存</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">自动</string>
@@ -4938,6 +4960,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">搜索 GIPHY</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5081,6 +5104,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">播放语音消息</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">前往语音消息</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">头像预览</string>
     <string name="AvatarPickerFragment__camera">相机</string>
@@ -5175,6 +5199,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">您将会丢失对这张照片所做的任何更改。</string>
 
     <string name="BadgesOverviewFragment__featured_badge">精选徽章</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">捐款</string>
@@ -5329,6 +5355,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">已领取</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">请尝试另一种付款方式或联系您的银行了解详情。</string>
     <!-- PayPal decline code for payment declined -->
@@ -5435,6 +5462,7 @@
     <string name="AddAllowedMembers__allow_all_calls">允许所有来电</string>
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">被提及时均通知</string>
+
 
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">创建通知配置，仅接收/接听您感兴趣的用户和群组的通知和通话。</string>
@@ -6326,6 +6354,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">清除格式</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">小时</string>
@@ -6558,6 +6587,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">找不到此用户。</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">如要在 Signal 上与我聊天，请扫描此二维码吧。</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

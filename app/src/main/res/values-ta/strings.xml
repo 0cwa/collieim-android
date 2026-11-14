@@ -239,6 +239,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">அறிந்துகொண்டேன்</string>
 
+
     <string name="CameraContacts__menu_search">தேடல்</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -451,6 +452,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">அழைப்பைத் தொடங்க, உங்கள் மைக்ரோஃபோனை அணுக சிக்னலை அனுமதிக்கவும்.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">அழைப்பைத் தொடங்க, சிக்னலுக்கு மைக்ரோஃபோன் அணுகல் தேவை.</string>
+
 
     <string name="ConversationActivity_join">சேரவும்</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -868,6 +870,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">பேக்கப் நேரத்தை அமைக்கவும்</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">பயன்படுத்தப்படும் வழக்கம் : %1$s</string>
     <string name="CustomDefaultPreference_using_default">பயன்படுத்தப்படும் இயல்புநிலை: %1$s</string>
@@ -1116,6 +1119,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">காண்க</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">முழு தெளிவுத்திறன் GIF ஐ மீட்டெடுக்கும்போது பிழை</string>
 
@@ -1243,6 +1247,7 @@
     <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie இல் சிக்கல் ஏற்பட்டது. பிழைத்திருத்தப் பதிவு சமர்ப்பிப்பா?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">நீங்கள் செய்திகளைப் பெறாமல் இருக்கலாம். பிழைத்திருத்தப் பதிவு சமர்ப்பிப்பதா?</string>
+
 
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">பேட்டரி மேம்படுத்தல்கள் காரணமாக அறிவிப்புகள் தாமதமாகலாம்</string>
@@ -1372,6 +1377,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">உங்கள் QR குறியீடு மற்றும் பயனர் பெயர் இணைப்பில் ஏதோ தவறு நடந்துவிட்டது, அது இனி செல்லுபடியாகாது. மற்றவர்களுடன் பகிர புதிய இணைப்பை உருவாக்கவும்.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">இப்பொழுதே சரிபார்</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">பொதுவான குழுக்கள் எதுவும் இல்லை</string>
@@ -2344,6 +2350,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">காண்க</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">உங்கள் கையைத் தாழ்த்துகிறீர்களா?</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -2864,6 +2871,7 @@
         <item quantity="one">%1$d தொடர்பு Signal-இல் உள்ளார்!</item>
         <item quantity="other">%1$d தொடர்புகள் Signal-இல் உள்ளார்கள்!</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">ஸ்கேன் செய்யப்பட்ட QR குறியீடு சரியாக வடிவமைக்கப்பட்ட பாதுகாப்பு எண் சரிபார்ப்புக் குறியீடு அல்ல. மீண்டும் ஸ்கேன் செய்ய முயற்சிக்கவும்.</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">வழியாக பாதுகாப்பு எண்ணைப் பகிரவும் …</string>
@@ -3665,6 +3673,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">இல்லை முடிவுகள் கிடைத்தன</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">இயல்புநிலை பயன்படுத்தவும்</string>
     <string name="arrays__use_custom">விருப்பம் பயன்படுத்தவும்</string>
@@ -3678,6 +3687,10 @@
     <string name="arrays__settings_default">அமைப்புகள் இயல்புநிலை</string>
     <string name="arrays__enabled">செயல்படுத்தப்பட்டது</string>
     <string name="arrays__disabled">முடக்கப்பட்டது</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3755,10 +3768,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">இது செயல்படுத்தப்படும்போது, 1:1 அரட்டைகளின் மறைகுறியாக்கத்தைத் தானாகச் சரிபார்க்க சிக்னல் முயற்சிக்கும்.</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">அனைத்து செயல்பாடுகளும்</string>
@@ -3825,6 +3840,7 @@
     <string name="PaymentsHomeFragment__cancel">ரத்து</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">இப்பொழுது மேம்படுத்து</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -3951,6 +3967,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal</string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%1$s இல் %2$s</string>
 
@@ -4040,6 +4057,7 @@
     <string name="conversation_list_item_view__contact_photo_image">தொடர்பின் புகைப்படம்</string>
     <string name="conversation_list_item_view__archived">பெட்டகப்படுத்தப்பட்டது</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">புதிய சாட்</string>
     <string name="conversation_list_fragment__open_camera_description">புகைப்படக்கருவியை திறக்கவும்</string>
@@ -4050,6 +4068,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">காண்பிப்பதற்கான சாட்ஸ் ஏதும் இல்லை</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">கோப்புறை அமைப்புகள்</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4131,6 +4150,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">சேமி</string>
     <string name="media_preview__edit_title">தொகு</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4500,6 +4520,7 @@
     <string name="GroupRecipientListItem_deny_description">மறுக்க</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">உறுப்பினரின் பதவி நிலையைச் சேர்</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">பழைய மரபு vs புதிய குழுக்கள்</string>
@@ -5023,6 +5044,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">விருப்ப நேரம்</string>
     <string name="ExpireTimerSettingsFragment__save">சேமி</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">ஆட்டோ</string>
@@ -5073,6 +5095,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">GIPHY ஐத் தேடுங்கள்</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5218,6 +5241,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">குரல் செய்தியை இயக்கவும்</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">குரல் செய்திக்கு செல்லவும்</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">அவதார் முன்னோட்டம்</string>
     <string name="AvatarPickerFragment__camera">புகைப்பட கருவி</string>
@@ -5316,6 +5340,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">இந்தப் புகைப்படத்தில் நீங்கள் செய்த மாற்றங்களை இழப்பீர்கள்.</string>
 
     <string name="BadgesOverviewFragment__featured_badge">சிறப்பு பேட்ஜ்</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">நன்கொடையளிக்கவும்</string>
@@ -5470,6 +5496,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">மீட்டெடுக்கப்பட்டது</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">மற்றொரு கட்டண முறையை முயற்சிக்கவும் அல்லது மேலும் தகவலுக்கு உங்கள் வங்கியைத் தொடர்பு கொள்ளவும்.</string>
     <!-- PayPal decline code for payment declined -->
@@ -5576,6 +5603,7 @@
     <string name="AddAllowedMembers__allow_all_calls">அனைத்து அழைப்புகளையும் அனுமதிக்கவும்</string>
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">அனைத்து குறிப்பிடல்களுக்கும் தெரிவிக்கவும்</string>
+
 
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">நீங்கள் கேட்க விரும்பும் நபர்கள் மற்றும் குழுக்களிடமிருந்து மட்டும் அறிவிப்புகள் மற்றும் அழைப்புகளைப் பெற சுயவிவரத்தை உருவாக்கவும்.</string>
@@ -6490,6 +6518,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">வடிவமைப்பை அழிக்கவும்</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">ம</string>
@@ -6725,6 +6754,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">இந்த பயனரைக் கண்டறிய முடியவில்லை.</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">என்னுடன் சிக்னலில் சாட் செய்ய இந்த QR குறியீட்டை உங்கள் ஃபோன் மூலம் ஸ்கேன் செய்யவும்.</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

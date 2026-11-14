@@ -237,6 +237,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">ရပြီ</string>
 
+
     <string name="CameraContacts__menu_search">ရှာရန်</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -447,6 +448,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">ခေါ်ဆိုမှုစတင်ရန် Collie ကို သင့်မိုက်ခရိုဖုန်း အသုံးပြုခွင့်ပေးပါ။</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">ခေါ်ဆိုမှုတစ်ခုစတင်ရန် Collie သည် မိုက်ခရိုဖုန်းအသုံးပြုခွင့် လိုအပ်ပါသည်။</string>
+
 
     <string name="ConversationActivity_join">ပူးပေါင်း</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -844,6 +846,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">ဘက်ခ်အပ်လုပ်ချိန် သတ်မှတ်ခြင်း</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">အထူးပြုသုံး %1$s</string>
     <string name="CustomDefaultPreference_using_default">မူရင်းကိုသုံး %1$s</string>
@@ -1088,6 +1091,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">ကြည့်မည်။</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">GIF ပုံ၏ မူရင်းအရည်အသွေးကို ပြသရန်အခက်အခဲရှိ</string>
 
@@ -1204,6 +1208,7 @@
     <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie တွင် ပြဿနာတစ်ခု ဖြစ်ပေါ်နေပါသည်။ ပြစ်ချက်မှတ်တမ်း ပေးပို့မည်လား။</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">သင်သည် မက်ဆေ့ချ်များ လက်ခံရရှိမည်မဟုတ်ပါ။ ပြစ်ချက်မှတ်တမ်း ပေးပို့မည်လား။</string>
+
 
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">ဘက်ထရီ အကောင်းဆုံးချိန်ညှိမှုများကြောင့် အသိပေးချက်များ နှောင့်နှေးနိုင်ပါသည်</string>
@@ -1329,6 +1334,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">သင်၏ QR ကုဒ်နှင့် သုံးစွဲသူအမည် လင့်ခ်တွင် တစ်စုံတစ်ခု မှားယွင်းနေပါသည်၊ ၎င်းသည် မှန်ကန်ခြင်းမရှိတော့ပါ။ အခြားသူများနှင့် မျှဝေပေးရန် လင့်ခ်အသစ်တစ်ခု ဖန်တီးပါ။</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">ယခု ဖြေရှင်းရန်</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">တူညီသော အဖွဲ့များ မရှိပါ</string>
@@ -2264,6 +2270,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">ကြည့်မယ်</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">လက်ပြန်ချမည်လား။</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -2767,6 +2774,7 @@
     <plurals name="UserNotificationMigrationJob_d_contacts_are_on_signal">
         <item quantity="other">အဆက်အသွယ် %1$d ဦးသည် Signal ပေါ်ရှိပါသည်!</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">စကန်ဖတ်ထားသော QR ကုဒ်သည် မှန်ကန်သော လုံခြုံရေးနံပါတ်ပုံစံမဟုတ်သဖြင့် ထပ်မံ စကန်ဖတ်လိုက်ပါ။</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">… မှတဆင့် လုံခြုံရေးနံပါတ်ကို မျှဝေမယ်</string>
@@ -3553,6 +3561,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">ရလဒ်များ ရှာမတွေ့ပါ</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">မူလကို သုံးပါ</string>
     <string name="arrays__use_custom">အထူးပြုကိုသုံးသည်</string>
@@ -3566,6 +3575,10 @@
     <string name="arrays__settings_default">အပြင်အဆင်များကို မူလသို့</string>
     <string name="arrays__enabled">လုပ်ဆောင်နိုင်သည်</string>
     <string name="arrays__disabled">မလုပ်ဆောင်နိုင်ပါ</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3642,10 +3655,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">ဖွင့်ထားသည့်အခါ Collie သည် 1:1 chats များ၏ ကုဒ်ပြောင်းဝှက်ခြင်းကို အလိုအလျောက် အတည်ပြုရန် ကြိုးစားပါလိမ့်မည်။</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">လှုပ်ရှားမှုများအားလုံး</string>
@@ -3712,6 +3727,7 @@
     <string name="PaymentsHomeFragment__cancel">မလုပ်တော့ပါ</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">ယခု Update လုပ်ပါ။</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -3838,6 +3854,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal</string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%1$s ကို %2$s ဖြင့်</string>
 
@@ -3926,6 +3943,7 @@
     <string name="conversation_list_item_view__contact_photo_image">အဆက်အသွယ်၏ ရုပ်ပုံ</string>
     <string name="conversation_list_item_view__archived">မှတ်တမ်းသိမ်းပြီး</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">ချက်(တ်)အသစ်</string>
     <string name="conversation_list_fragment__open_camera_description">ကင်မရာဖွင့်ပါ</string>
@@ -3936,6 +3954,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">ပြသရန် ချက်(တ်)မရှိပါ</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">ဖိုင်တွဲ ဆက်တင်</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4016,6 +4035,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">သိမ်းထားပါ။</string>
     <string name="media_preview__edit_title">ပြင်မယ်</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4382,6 +4402,7 @@
     <string name="GroupRecipientListItem_deny_description">ငြင်းပယ်မယ်</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">အဖွဲ့ဝင်အမှတ်တံဆိပ် ထည့်သွင်းရန်</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">အဖွဲ့အသစ်များ နှင့် အမွေအဖွဲ့များ</string>
@@ -4890,6 +4911,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">စိတ်ကြိုက် အချိန်</string>
     <string name="ExpireTimerSettingsFragment__save">သိမ်းမယ်</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">အောတို</string>
@@ -4938,6 +4960,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">GIPHY ရှာရန်</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5081,6 +5104,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">အသံ မက်ဆေ့ချ်ကို ဖွင့်ရန်</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">အသံမက်ဆေ့ချ်သို့ သွားရန်</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">Avatar ကြိုကြည့်ရန်</string>
     <string name="AvatarPickerFragment__camera">ကင်မရာ</string>
@@ -5175,6 +5199,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">ဤဓာတ်ပုံတွင် ပြုလုပ်ထားသည့် ပြောင်းလဲမှုများ ပျောက်သွားပါမည်။</string>
 
     <string name="BadgesOverviewFragment__featured_badge">အသားပေးထားသည့် ဘဲ့ဂျ်</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">လှူဒါန်းရန်</string>
@@ -5329,6 +5355,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">လဲလှယ်ပြီး</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">အခြားသော ငွေပေးချေနည်းကို သုံးကြည့်ပါ သို့မဟုတ် နောက်ထပ်အချက်အလက်များအတွက် သင့်ဘဏ်ကို ဆက်သွယ်ပါ။</string>
     <!-- PayPal decline code for payment declined -->
@@ -5435,6 +5462,7 @@
     <string name="AddAllowedMembers__allow_all_calls">ကောလ်အားလုံး ခွင့်ပြုရန်</string>
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">မန်းရှင်းခေါ်မှုများအားလုံးအတွက် အသိပေးရန်</string>
+
 
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">သင်သိရှိလိုသော သူများနှင့် အဖွဲ့များထံမှသာ အသိပေးချက်များနှင့် ခေါ်ဆိုမှုများ လက်ခံရန် ပရိုဖိုင် ဖန်တီးပါ။</string>
@@ -6326,6 +6354,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">ပုံစံချခြင်းကို ဖယ်ရှားရန်</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">h</string>
@@ -6558,6 +6587,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">ဤသုံးစွဲသူကို ရှာမတွေ့နိုင်ပါ။</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">ကျွန်ုပ်နှင့် Signal တွင် ချက်(တ်)ရန်အတွက် ဤ QR ကုဒ်ကို သင့်ဖုန်းဖြင့် စကန်ဖတ်ပါ။</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

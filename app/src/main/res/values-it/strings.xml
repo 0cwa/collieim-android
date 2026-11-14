@@ -239,6 +239,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">Capito</string>
 
+
     <string name="CameraContacts__menu_search">Cerca</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -451,6 +452,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Per iniziare una chiamata, consenti a Collie di accedere al tuo microfono.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Collie deve accedere al tuo microfono per poter iniziare una chiamata.</string>
+
 
     <string name="ConversationActivity_join">Unisciti</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -868,6 +870,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">Imposta orario per il backup</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">Utilizzo personalizzato: %1$s</string>
     <string name="CustomDefaultPreference_using_default">Utilizzo predefinito: %1$s</string>
@@ -1116,6 +1119,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">Mostra</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">Errore nel prelevare la GIF in risoluzione massima</string>
 
@@ -1243,6 +1247,7 @@
     <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie ha riscontrato un problema. Vuoi inviarci un log di debug?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">Potresti non ricevere alcuni messaggi. Vuoi inviarci un log di debug?</string>
+
 
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">Le notifiche potrebbero subire un rallentamento per via dell\'ottimizzazione della batteria</string>
@@ -1372,6 +1377,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">Si è verificato un errore con il tuo codice QR e link del nome utente: ora non sono più validi. Crea un nuovo link per condividerlo con altre persone.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">Risolvi ora</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">Nessun gruppo in comune</string>
@@ -2344,6 +2350,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">Mostra</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">Vuoi abbassare la mano?</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -2864,6 +2871,7 @@
         <item quantity="one">%1$d contatto è su Signal!</item>
         <item quantity="other">%1$d contatti sono su Signal!</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">Il codice QR scansionato non è valido per la verifica di sicurezza. Riprova a scansionarlo.</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">Condividi codice di sicurezza tramite…</string>
@@ -3665,6 +3673,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">Nessun risultato trovato</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">Usa predefinito</string>
     <string name="arrays__use_custom">Usa personalizzato</string>
@@ -3678,6 +3687,10 @@
     <string name="arrays__settings_default">Impostazioni di default</string>
     <string name="arrays__enabled">Attivato</string>
     <string name="arrays__disabled">Disattivato</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3755,10 +3768,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">Quando attivi questa opzione, Collie proverà a verificare in automatico la crittografia delle tue chat individuali.</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">Tutte le attività</string>
@@ -3825,6 +3840,7 @@
     <string name="PaymentsHomeFragment__cancel">Annulla</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">Aggiorna ora</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -3951,6 +3967,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal</string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%1$s alle %2$s</string>
 
@@ -4040,6 +4057,7 @@
     <string name="conversation_list_item_view__contact_photo_image">Foto del contatto</string>
     <string name="conversation_list_item_view__archived">Archiviate</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">Nuova chat</string>
     <string name="conversation_list_fragment__open_camera_description">Apri Fotocamera</string>
@@ -4050,6 +4068,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">Nessuna chat da mostrare</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">Impostazioni cartella</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4131,6 +4150,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">Salva</string>
     <string name="media_preview__edit_title">Modifica</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4504,6 +4524,7 @@
     <string name="GroupRecipientListItem_deny_description">Rifiuta</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">Aggiungi un ruolo dell\'utente</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">Gruppi Legacy vs. Nuovi</string>
@@ -5027,6 +5048,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">Tempo personalizzato</string>
     <string name="ExpireTimerSettingsFragment__save">Salva</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">Base</string>
@@ -5077,6 +5099,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">Cerca GIPHY</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5222,6 +5245,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">Riproduci messaggio vocale</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">Vai al messaggio vocale</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">Anteprima avatar</string>
     <string name="AvatarPickerFragment__camera">Fotocamera</string>
@@ -5320,6 +5344,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">Perderai tutte le modifiche che hai fatto a questa foto.</string>
 
     <string name="BadgesOverviewFragment__featured_badge">Badge in evidenza</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">Dona</string>
@@ -5474,6 +5500,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">Riscattato</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">Prova un altro metodo di pagamento o contatta la tua banca per maggiori informazioni.</string>
     <!-- PayPal decline code for payment declined -->
@@ -5580,6 +5607,7 @@
     <string name="AddAllowedMembers__allow_all_calls">Consenti tutte le chiamate</string>
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">Notifica per tutte le menzioni</string>
+
 
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">Crea un profilo per ricevere notifiche e chiamate solo dalle persone e dai gruppi che vuoi sentire.</string>
@@ -6494,6 +6522,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">Annulla formattazione</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">h</string>
@@ -6729,6 +6758,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">Non è stato possibile trovare questo utente.</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">Scansiona questo codice QR con il tuo telefono per chattare con me su Signal.</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

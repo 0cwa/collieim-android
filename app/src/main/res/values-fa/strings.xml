@@ -235,6 +235,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">فهمیدم</string>
 
+
     <string name="CameraContacts__menu_search">جستجو</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -447,6 +448,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">برای شروع تماس، به سیگنال اجازۀ دسترسی به میکروفون را بدهید.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">سیگنال برای شروع تماس باید به میکروفون دسترسی داشته باشد.</string>
+
 
     <string name="ConversationActivity_join">پیوستن</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -864,6 +866,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">تنظیم زمان پشتیبان‌گیری</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">استفاده از سفارشی: %1$s</string>
     <string name="CustomDefaultPreference_using_default">استفاده از پیش‌فرض: %1$s</string>
@@ -1112,6 +1115,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">مشاهده</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">خطا در هنگام بازیابی کامل گیف با کیفیت کامل</string>
 
@@ -1239,6 +1243,7 @@
     <string name="PromptLogsSlowNotificationsDialog__title_crash">سیگنال با مشکلی روبرو شد. گزارش عیب‌یابی ارسال شود؟</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">ممکن است پیامی دریافت نکنید. گزارش اشکال‌زدایی ارسال شود؟</string>
+
 
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">اعلان‌ها ممکن است به‌دلیل بهینه‌سازی باتری تأخیر داشته باشند</string>
@@ -1368,6 +1373,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">خطایی در مورد کد QR و پیوند نام کاربری شما رخ داد و دیگر معتبر نیست. پیوند جدیدی ایجاد کنید تا با دیگران به اشتراک بگذارید.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">اکنون اصلاح شود</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">هیچ گروه مشترکی وجود ندارد</string>
@@ -2340,6 +2346,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">مشاهده</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">دستتان را پایین می‌آورید؟</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -2860,6 +2867,7 @@
         <item quantity="one">%1$d مخاطب در سیگنال هست!</item>
         <item quantity="other">%1$d مخاطب در سیگنال هستند!</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">کد QR اسکن شده، یک کد وارسی شمارهٔ ایمنی است که بدرستی قالب‌بندی نشده است. لطفاً دوباره اسکن کنید.</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">اشتراک‌گذاری شمارهٔ ایمنی از طریق…</string>
@@ -3649,6 +3657,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">هیچ نتیجه‌ای پیدا نشد</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">استفاده از پیش‌فرض سیستم</string>
     <string name="arrays__use_custom">استفاده از سفارشی</string>
@@ -3662,6 +3671,10 @@
     <string name="arrays__settings_default">تنظیمات پیش‌فرض سیستم</string>
     <string name="arrays__enabled">فعال</string>
     <string name="arrays__disabled">غیرفعال</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3737,10 +3750,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">در صورت فعال بودن، سیگنال تلاش می‌کند رمزگذاری گفتگوهای فرد به فرد را به‌صورت خودکار تأیید کند.</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">همهٔ فعالیت‌ها</string>
@@ -3807,6 +3822,7 @@
     <string name="PaymentsHomeFragment__cancel">لغو</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">همین حالا به‌روزرسانی کن</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -3933,6 +3949,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">سیگنال</string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%1$s در %2$s</string>
 
@@ -4022,6 +4039,7 @@
     <string name="conversation_list_item_view__contact_photo_image">تصویر مخاطب</string>
     <string name="conversation_list_item_view__archived">بایگانی شده</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">گفتگوی جدید</string>
     <string name="conversation_list_fragment__open_camera_description">باز کردن دوربین</string>
@@ -4032,6 +4050,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">گفتگویی برای نمایش وجود ندارد</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">تنظیمات پوشه</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4113,6 +4132,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">ذخیره</string>
     <string name="media_preview__edit_title">ویرایش</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4482,6 +4502,7 @@
     <string name="GroupRecipientListItem_deny_description">رد کردن</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">افزودن برچسب عضو</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">گروه‌های قدیمی در مقابل گروه‌های جدید</string>
@@ -5005,6 +5026,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">زمان سفارشی</string>
     <string name="ExpireTimerSettingsFragment__save">ذخیره</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">خودکار</string>
@@ -5055,6 +5077,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">جستجوی GIPHY</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5200,6 +5223,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">پخش پیام صوتی</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">رفتن به پیام صوتی</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">پیش‌نمایش آواتار</string>
     <string name="AvatarPickerFragment__camera">دوربین</string>
@@ -5298,6 +5322,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">شما هر تغییری که روی این عکس انجام داده‌اید را از دست خواهید داد.</string>
 
     <string name="BadgesOverviewFragment__featured_badge">نشان ویژه</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">اهدای کمک مالی</string>
@@ -5452,6 +5478,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">آزادسازی‌شده</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">یک روش پرداختی دیگر را امتحان کنید یا با بانک خود برای اطلاعات بیشتر تماس بگیرید.</string>
     <!-- PayPal decline code for payment declined -->
@@ -5559,6 +5586,7 @@
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">اعلان برای همۀ اشاره‌ها</string>
 
+
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">یک پروفایل برای دریافت اعلان‌ها و تماس‌ها فقط از افراد و گروه‌هایی که می‌خواهید از آن‌ها بشنوید ایجاد کنید.</string>
     <!-- Header shown above list of all notification profiles -->
@@ -5632,6 +5660,7 @@
     <string name="NotificationProfileSelection__view_settings">مشاهدهٔ تنظیمات</string>
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">روشن تا %1$s</string>
+
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">این گفتگوی رسمی و انحصاری سیگنال است</string>
@@ -6465,6 +6494,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">پاک کردن قالب‌بندی</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">ساعت</string>
@@ -6700,6 +6730,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">این کاربر پیدا نشد.</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">برای گفتگو با من در سیگنال، این کد QR را با تلفن خود اسکن کنید.</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

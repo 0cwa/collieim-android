@@ -237,6 +237,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">بىلدىم</string>
 
+
     <string name="CameraContacts__menu_search">ئىزدە</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -447,6 +448,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">چاقىرىق باشلاش ئۈچۈن Collie نىڭ مىكروفوننى ئىشلىتىشىگە ئىجازەت قىلىڭ.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">چاقىرىق باشلاش ئۈچۈن Collie مىكروفوننى ئىشلىتىدۇ.</string>
+
 
     <string name="ConversationActivity_join">قوشۇل</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -844,6 +846,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">زاپاسلاش ۋاقتىنى تەڭشەش</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">خاسلاشتۇرۇلغاننى ئىشلەتكىنى: %1$s</string>
     <string name="CustomDefaultPreference_using_default">سۈكۈتتىكىنى ئىشلەتكىنى: %1$s</string>
@@ -1088,6 +1091,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">كۆرسەت</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">تولۇق ئېنىقلىقتىكى GIF نى ئېلىۋاتقاندا مەسىلە چىقتى</string>
 
@@ -1204,6 +1208,7 @@
     <string name="PromptLogsSlowNotificationsDialog__title_crash">سىگنال بىر مەسىلە تېپىپ چىقتى. خاتالىق خاتىرىسىنى يوللامسىز؟</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">ئۇچۇر تاپشۇرۇۋالالمايۋاتقان بولۇشىڭىز مۇمكىن. كاشىلا ھەل قىلىش خاتىرىسىنى يوللامسىز؟</string>
+
 
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">باتارىيە ئەلالاشتۇرۇلۇش تۈپەيلىدىن، ئۇقتۇرۇشلا كېچىكتۈرۈلىشى مۇمكىن</string>
@@ -1329,6 +1334,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">QR كودىڭىز ۋە ئىشلەتكۈچى نامى ئۇلانمىڭىزدا مەسىلە كۆرۈلگەن بولۇپ، ئۇلار ئەمدى ئىناۋەتسىز. باشقىلار بىلەن ئورتاقلىشىش ئۈچۈن يېڭى ئۇلانما قۇرۇڭ.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">دەرھال ئوڭشاش</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">ئورتاق گۇرۇپپا يوق</string>
@@ -2264,6 +2270,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">كۆرسەت</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">قولىڭىزنى چۈشۈرەمسىز؟</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -2767,6 +2774,7 @@
     <plurals name="UserNotificationMigrationJob_d_contacts_are_on_signal">
         <item quantity="other">%1$d ئالاقىداش Signal ئىشلىتىدۇ!</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">سايىلەنگەن QR كودى توغرا فورماتتىكى بىخەتەرلىك نومۇرى توغرىلاش كودى ئەمەس. قايتا سايىلەپ سىناڭ.</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">بىخەتەرلىك نومۇر ھەمبەھىر…</string>
@@ -3553,6 +3561,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">ھېچقانداق نەتىجە تېپىلمىدى</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">كۆڭۈلدىكىنى ئىشلىتىش</string>
     <string name="arrays__use_custom">ئىختىيارىي ئىشلىتىش</string>
@@ -3566,6 +3575,10 @@
     <string name="arrays__settings_default">كۆڭۈلدىكى تەڭشەك</string>
     <string name="arrays__enabled">ئوچۇق</string>
     <string name="arrays__disabled">تاقالغان</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3642,10 +3655,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">قوزغىتىلغاندا، Collie، ئىككى كىشى ئوتتۇرىسىدىكى(1:1) سۆھبەتلىرىنىڭ شىفىرلىنىشىنى ئاپتوماتىك دەلىللەشنى سىنايدۇ.</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">ھەممە پائالىيەت</string>
@@ -3712,6 +3727,7 @@
     <string name="PaymentsHomeFragment__cancel">ۋاز كەچ</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">ھازىر يېڭىلاڭ</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -3838,6 +3854,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal </string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">‫%1$s %2$s دە</string>
 
@@ -3926,6 +3943,7 @@
     <string name="conversation_list_item_view__contact_photo_image">ئالاقەداش فوتو رەسىمى</string>
     <string name="conversation_list_item_view__archived">ئارخىپلاشتۇرۇلدى</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">يېڭى پاراڭ</string>
     <string name="conversation_list_fragment__open_camera_description">كامېرا ئاچ</string>
@@ -3936,6 +3954,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">كۆرسىتىدىغان پاراڭلار يوق</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">ھۆججەت قىسقۇچ تەڭشىكى</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4016,6 +4035,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">ساقلا</string>
     <string name="media_preview__edit_title">تەھرىر</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4382,6 +4402,7 @@
     <string name="GroupRecipientListItem_deny_description">رەت قىلىش</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">ئەزا بەلگىسى قوشۇش</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">كونا ۋە يېڭى گۇرۇپپىلارنىڭ سېلىشتۇرمىسى</string>
@@ -4890,6 +4911,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">ئىختىيارىچە ۋاقىت</string>
     <string name="ExpireTimerSettingsFragment__save">ساقلا</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">Auto</string>
@@ -4938,6 +4960,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">‫GIPHY ئىزدە</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5081,6 +5104,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">ئۈن ئۇچۇر قوي</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">ئۈن ئۇچۇرىغا يېتەكلە</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">سىمانى ئالدىن كۆر</string>
     <string name="AvatarPickerFragment__camera">كامېرا</string>
@@ -5175,6 +5199,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">رەسىمگە قىلغان ھەرقانداق ئۆزگەرتىشلىرىڭىز يوق بولىدۇ.</string>
 
     <string name="BadgesOverviewFragment__featured_badge">تاللانغان ئىزناك</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">ئىئانە قىلىڭ</string>
@@ -5329,6 +5355,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">نەقلەشتۈرۈلگەن</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">باشقا پۇل تۆلەش ئۇسۇلىنى سىناپ بېقىڭ ياكى تەپسىلاتى ئۈچۈن بانكا بىلەن ئالاقىلىشىڭ.</string>
     <!-- PayPal decline code for payment declined -->
@@ -5436,6 +5463,7 @@
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">بارلىق تىلغا ئېلىشلار ئۇقتۇرۇلسۇن</string>
 
+
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">پەقەت سىز خەۋەردار بولماقچى بولغان كىشىلەر ۋە گۇرۇپپىلاردىنلا ئۇقتۇرۇش ۋە تېلېفون قوبۇل قىلىدىغان ئارخىپ قۇرۇڭ.</string>
     <!-- Header shown above list of all notification profiles -->
@@ -5509,6 +5537,7 @@
     <string name="NotificationProfileSelection__view_settings">تەڭشەكنى كۆرۈش</string>
     <!-- Descriptor text indicating how long a profile will be on when there is a time component associated with it -->
     <string name="NotificationProfileSelection__on_until_s">%1$s گىچە ئوچۇق</string>
+
 
     <!-- Text description in Signal Release channel details explaining that it is the only chat from Signal -->
     <string name="ReleaseNotes__this_is_official_chat">بۇ رەسمىي ۋە پەقەت Signal دىن كەلگەن سۆھبەت</string>
@@ -6319,6 +6348,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">فورماتلاشنى تازىلاش</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">سائەت</string>
@@ -6551,6 +6581,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">بۇ ئىشلەتكۈچى تېپىلالمىدى.</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">Signal دا مەن بىلەن پاراڭلىشىش ئۈچۈن تېلېفونىڭىز بىلەن بۇ QR كودنى سىكاننېرلاڭ.</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

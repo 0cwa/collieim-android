@@ -239,6 +239,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">ಅರ್ಥವಾಯಿತು</string>
 
+
     <string name="CameraContacts__menu_search">ಹುಡುಕಿ</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -451,6 +452,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">ಕರೆಯನ್ನು ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್‌ಗೆ Collie ಆಕ್ಸೆಸ್‍ ಅನ್ನು ಅನುಮತಿಸಿ.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">ಕರೆಯನ್ನು ಪ್ರಾರಂಭಿಸಲು Collie ಗೆ ಮೈಕ್ರೊಫೋನ್ ಆಕ್ಸೆಸ್‍ನ ಅಗತ್ಯವಿದೆ.</string>
+
 
     <string name="ConversationActivity_join">ಸೇರು</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -868,6 +870,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">ಬ್ಯಾಕಪ್ ಸಮಯವನ್ನು ಸೆಟ್ ಮಾಡಿ</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">ಕಸ್ಟಂ ಬಳಸಲಾಗುತ್ತಿದೆ: %1$s</string>
     <string name="CustomDefaultPreference_using_default">ಪೂರ್ವನಿಯೋಜಿತ ಬಳಕೆ: %1$s</string>
@@ -1116,6 +1119,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">ತೋರಿಸು</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">ಪೂರ್ಣ ರೆಸಲ್ಯೂಶನ್ GIF ಅನ್ನು ಹಿಂಪಡೆಯುವಾಗ ದೋಷ</string>
 
@@ -1243,6 +1247,7 @@
     <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie ಸಮಸ್ಯೆಯೊಂದನ್ನು ಎದುರಿಸಿದೆ. ಡೀಬಗ್ ಲಾಗ್ ಸಲ್ಲಿಸಬೇಕೆ?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">ನೀವು ಮೆಸೇಜ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸದೇ ಇರಬಹುದು. ಡೀಬಗ್ ಲಾಗ್ ಸಲ್ಲಿಸಬೇಕೆ?</string>
+
 
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">ಬ್ಯಾಟರಿ ಆಪ್ಟಿಮೈಸೇಶನ್‌ನಿಂದಾಗಿ ಅಧಿಸೂಚನೆಗಳು ವಿಳಂಬಗೊಳ್ಳಬಹುದು</string>
@@ -1372,6 +1377,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">ನಿಮ್ಮ QR ಕೋಡ್ ಮತ್ತು ಯೂಸರ್‌ನೇಮ್ ಲಿಂಕ್‌ನಲ್ಲಿ ಏನೋ ತಪ್ಪಾಗಿದೆ, ಅದು ಇನ್ನು ಮುಂದೆ ಮಾನ್ಯವಾಗಿರುವುದಿಲ್ಲ. ಇತರರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲು ಹೊಸ ಲಿಂಕ್ ರಚಿಸಿ.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">ಈಗಲೇ ಸರಿಪಡಿಸಿ</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">ನೀವಿಬ್ಬರೂ ಒಂದೇ ಗುಂಪುಗಳಲ್ಲಿಲ್ಲ</string>
@@ -2344,6 +2350,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">ತೋರಿಸು</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">ನಿಮ್ಮ ಕೈಯನ್ನು ಕೆಳಗಿಳಿಸಬೇಕೇ?</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -2864,6 +2871,7 @@
         <item quantity="one">%1$d ಸಂಪರ್ಕಗಳು Signal ನಲ್ಲಿವೆ!</item>
         <item quantity="other">%1$d ಸಂಪರ್ಕಗಳು Signal ನಲ್ಲಿವೆ!</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ ಕ್ಯುಆರ್‌ ಕೋಡ್ ಸರಿಯಾಗಿ ಫಾರ್ಮ್ಯಾಟ್ ಆಗಿಲ್ಲದ ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆ ದೃಢೀಕರಣ ಕೋಡ್ ಆಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">ಇದರ ಮೂಲಕ ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆ ಹಂಚಿಕೊಳ್ಳಿ…</string>
@@ -3665,6 +3673,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">ಯಾವುದೇ ಫಲಿತಾಂಶ ಕಂಡುಬಂದಿಲ್ಲ</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">ಡೀಫಾಲ್ಟ್ ಬಳಸಿ</string>
     <string name="arrays__use_custom">ಕಸ್ಟಮ್ ಬಳಸಿ</string>
@@ -3678,6 +3687,10 @@
     <string name="arrays__settings_default">ಸೆಟ್ಟಿಂಗ್‌‌ಗಳು ಡೀಫಾಲ್ಟ್</string>
     <string name="arrays__enabled">ಸಕ್ರಿಯಗೊಳಿಸು</string>
     <string name="arrays__disabled">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸು</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3755,10 +3768,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">ಸಕ್ರಿಯಗೊಳಿಸಿದಾಗ, Collie 1:1 ಚಾಟ್‌ಗಳ ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ದೃಢೀಕರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತದೆ.</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">ಎಲ್ಲ ಚಟುವಟಿಕೆ</string>
@@ -3825,6 +3840,7 @@
     <string name="PaymentsHomeFragment__cancel">ರದ್ದುಮಾಡಿ</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">ಈಗ ನವೀಕರಿಸಿ</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -3951,6 +3967,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal</string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%2$s ರಲ್ಲಿ %1$s</string>
 
@@ -4040,6 +4057,7 @@
     <string name="conversation_list_item_view__contact_photo_image">ಸಂಪರ್ಕದ ಫೋಟೊ ಇಮೇಜ್</string>
     <string name="conversation_list_item_view__archived">ಆರ್ಕೈವ್ ಮಾಡಲಾಗಿದೆ</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">ಹೊಸ ಚಾಟ್</string>
     <string name="conversation_list_fragment__open_camera_description">ಕ್ಯಾಮರಾ ತೆರೆಯಿರಿ</string>
@@ -4050,6 +4068,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">ತೋರಿಸಲು ಯಾವುದೇ ಚಾಟ್ ಗಳು ಇಲ್ಲ</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">ಫೋಲ್ಡರ್ ಸೆಟ್ಟಿಂಗ್ ಗಳು</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4131,6 +4150,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">ಉಳಿಸಿ</string>
     <string name="media_preview__edit_title">ತಿದ್ದಿ</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4504,6 +4524,7 @@
     <string name="GroupRecipientListItem_deny_description">ನಿರಾಕರಿಸಿ</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">ಸದಸ್ಯರ ಲೇಬಲ್ ಸೇರಿಸಿ</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">ಹಳೆಯ vs. ಹೊಸ ಗುಂಪುಗಳು</string>
@@ -5027,6 +5048,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">ಕಸ್ಟಮ್ ಸಮಯ</string>
     <string name="ExpireTimerSettingsFragment__save">ಉಳಿಸಿ</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">ಸ್ವಯಂ</string>
@@ -5077,6 +5099,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">ಜಿಫಿ ಹುಡುಕಾಟ</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5222,6 +5245,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">ಧ್ವನಿ ಸಂದೇಶವನ್ನು ಆಲಿಸಿ</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">ಧ್ವನಿ ಸಂದೇಶಕ್ಕೆ ಹೋಗಿ</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">ಅವತಾರ ಹೀಗೆ ಕಾಣಿಸುವುದು</string>
     <string name="AvatarPickerFragment__camera">ಕ್ಯಾಮರಾ</string>
@@ -5320,6 +5344,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">ಈ ಫೊಟೋಕ್ಕೆ ನೀವು ಮಾಡಿದ ಯಾವುದೇ ಬದಲಾವಣೆಗಳನ್ನು ನೀವು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ.</string>
 
     <string name="BadgesOverviewFragment__featured_badge">ವೈಶಿಷ್ಟ್ಯಗೊಳಿಸಿದ ಬ್ಯಾಡ್ಜ್</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">ದೇಣಿಗೆ ನೀಡಿ</string>
@@ -5474,6 +5500,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">ರೀಡೀಮ್ ಮಾಡಲಾಗಿದೆ</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">ಇನ್ನೊಂದು ಪಾವತಿ ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</string>
     <!-- PayPal decline code for payment declined -->
@@ -5580,6 +5607,7 @@
     <string name="AddAllowedMembers__allow_all_calls">ಎಲ್ಲಾ ಕರೆಗಳನ್ನು ಅನುಮತಿಸಿ</string>
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">ಎಲ್ಲಾ ಉಲ್ಲೇಖಗಳನ್ನು ತಿಳಿಸಿ</string>
+
 
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">ನೀವು ಯಾರಿಂದ ಕೇಳಲು ಬಯಸುತ್ತೀರೋ ಆ ಜನರು ಮತ್ತು ಗ್ರೂಪ್‌ಗಳಿಂದ ಮಾತ್ರ ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಕರೆಗಳನ್ನು ಸ್ವೀಕರಿಸಲು ಪ್ರೊಫೈಲ್ ರಚಿಸಿ.</string>
@@ -6494,6 +6522,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ಅನ್ನು ತೆರವುಗೊಳಿಸಿ</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">h</string>
@@ -6729,6 +6758,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">ಈ ಬಳಕೆದಾರರು ಕಂಡುಬಂದಿಲ್ಲ.</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">Signal ನಲ್ಲಿ ನನ್ನೊಂದಿಗೆ ಚಾಟ್ ಮಾಡಲು ನಿಮ್ಮ ಫೋನ್‌ ಮೂಲಕ ಈ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

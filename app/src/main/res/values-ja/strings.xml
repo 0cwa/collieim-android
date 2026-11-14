@@ -237,6 +237,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">わかりました</string>
 
+
     <string name="CameraContacts__menu_search">検索</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -447,6 +448,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">通話を開始するには、Collieにマイクへのアクセスを許可してください。</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Collieは、通話を開始するためにマイクへのアクセスが必要です。</string>
+
 
     <string name="ConversationActivity_join">参加</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -844,6 +846,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">バックアップする時間を設定する</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">カスタマイズ: %1$s</string>
     <string name="CustomDefaultPreference_using_default">既定を使用: %1$s</string>
@@ -1088,6 +1091,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">表示</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">高解像度GIFファイルの取得中にエラーが発生しました</string>
 
@@ -1204,6 +1208,7 @@
     <string name="PromptLogsSlowNotificationsDialog__title_crash">Collieに問題が発生しました。 デバッグログを送信しますか？</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">メッセージを受信できない可能性があります。デバッグログを送信しますか？</string>
+
 
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">バッテリーの最適化のために通知が遅れることがあります</string>
@@ -1329,6 +1334,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">QRコードとユーザーネームのリンクに問題が発生したため、無効になりました。新しいリンクを作成して他のユーザーと共有してください。</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">今すぐ修正</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">共通のグループ なし</string>
@@ -2264,6 +2270,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">表示する</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">手をおろしますか？</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -2767,6 +2774,7 @@
     <plurals name="UserNotificationMigrationJob_d_contacts_are_on_signal">
         <item quantity="other">%1$d件の連絡先がSignalを使用しています！</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">読み取ったQRコードは正しい形式の安全番号認証コードではありません。もう一度読み取って下さい。</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">次の方法で安全番号を共有する…</string>
@@ -3553,6 +3561,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">検索結果はありません</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">既定を使う</string>
     <string name="arrays__use_custom">カスタムを使う</string>
@@ -3566,6 +3575,10 @@
     <string name="arrays__settings_default">既定の設定</string>
     <string name="arrays__enabled">有効</string>
     <string name="arrays__disabled">無効</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3642,10 +3655,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">有効にすると、Collieは1対1のチャットの暗号化を自動的に確認します。</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">すべてのアクティビティ</string>
@@ -3712,6 +3727,7 @@
     <string name="PaymentsHomeFragment__cancel">キャンセル</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">アップデートする</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -3838,6 +3854,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal</string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%1$s (%2$s現在)</string>
 
@@ -3926,6 +3943,7 @@
     <string name="conversation_list_item_view__contact_photo_image">連絡先の画像</string>
     <string name="conversation_list_item_view__archived">アーカイブ済み</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">新しいチャット</string>
     <string name="conversation_list_fragment__open_camera_description">カメラを開く</string>
@@ -3936,6 +3954,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">表示するチャットがありません</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">フォルダを設定する</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4016,6 +4035,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">保存</string>
     <string name="media_preview__edit_title">編集</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4382,6 +4402,7 @@
     <string name="GroupRecipientListItem_deny_description">拒否する</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">メンバーラベルを追加</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">レガシーグループと新グループ</string>
@@ -4890,6 +4911,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">カスタム時間</string>
     <string name="ExpireTimerSettingsFragment__save">保存</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">自動</string>
@@ -4938,6 +4960,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">GIPHYを検索</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5081,6 +5104,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">音声メッセージを再生</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">音声メッセージへ</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">アバターのプレビュー</string>
     <string name="AvatarPickerFragment__camera">カメラ</string>
@@ -5175,6 +5199,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">この写真に加えた変更はすべて失われます。</string>
 
     <string name="BadgesOverviewFragment__featured_badge">表示するバッジ</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">寄付する</string>
@@ -5329,6 +5355,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">交換</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">別の決済方法をお試しいただくか、取引先の銀行にお問い合わせください。</string>
     <!-- PayPal decline code for payment declined -->
@@ -5435,6 +5462,7 @@
     <string name="AddAllowedMembers__allow_all_calls">すべての通話を許可する</string>
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">すべてのメンションを通知する</string>
+
 
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">プロファイルを作成すると、通知や通話着信を受け取りたい相手やグループを限定できます。</string>
@@ -6326,6 +6354,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">書式設定のクリア</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">時間</string>
@@ -6558,6 +6587,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">このユーザーは見つかりませんでした。</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">このQRコードをお使いの携帯電話でスキャンして、Signalで私とチャットしましょう。</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

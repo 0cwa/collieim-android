@@ -245,6 +245,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">Tuigim</string>
 
+
     <string name="CameraContacts__menu_search">Cuardaigh</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -463,6 +464,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">Chun tosú ar ghlao, tabhair cead rochtana ar do mhicreafón do Collie.</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">Teastaíonn rochtain ar an micreafón ó Collie chun tosú ar ghlao.</string>
+
 
     <string name="ConversationActivity_join">Téigh le</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -940,6 +942,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">Socraigh am cúltacaithe</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">Ag baint feidhme as saincheapú: %1$s</string>
     <string name="CustomDefaultPreference_using_default">Ag baint feidhme as an réamhshocrú: %1$s</string>
@@ -1200,6 +1203,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">Amharc</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">Tharla earráid le linn GIF ar thaifeach lán-ardghléine a aisghabháil</string>
 
@@ -1361,6 +1365,7 @@
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">Seans nach bhfuil tú ag fáil teachtaireachtaí. Cuir isteach loga dífhabhtaithe?</string>
 
+
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">D\'fhéadfaí go mbeadh moill ar fhógraí mar gheall ar bharrfheabhsú ceallra</string>
     <!-- Message explaining that battery saver may delay notifications -->
@@ -1501,6 +1506,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">Bhí fadhb le do chód QR agus nasc d\'ainm úsáideora, níl sé bailí a thuilleadh. Cruthaigh nasc nua lena chomhroinnt le daoine eile.</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">Deisigh anois</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">No groups in common</string>
@@ -2584,6 +2590,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">AMHARC</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">Ísligh do lámh?</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -3155,6 +3162,7 @@
         <item quantity="many">Tá %1$d dteagmhálaí ar Signal!</item>
         <item quantity="other">Tá %1$d teagmhálaí ar Signal!</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">Ní uimhir shábhála bailí é an QR code. Le do thoil, bain triail as an QR code a scanadh arís.</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">Comhroinn do uimhir shábhála le …</string>
@@ -4001,6 +4009,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">Gan toradh</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">Bain feidhm as an réamhshocrú</string>
     <string name="arrays__use_custom">Bain feidhm as saincheapú</string>
@@ -4014,6 +4023,10 @@
     <string name="arrays__settings_default">Réamhshocruithe</string>
     <string name="arrays__enabled">Cumasaithe</string>
     <string name="arrays__disabled">Díchumasaithe</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -4094,10 +4107,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">Agus é cumasaithe, déanfaidh Collie iarracht criptiú comhráite 1:1 a fhíorú go huathoibríoch.</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">Gach gníomhaíocht</string>
@@ -4164,6 +4179,7 @@
     <string name="PaymentsHomeFragment__cancel">Cuir ar ceal</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">Nuashonraigh anois</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -4290,6 +4306,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal</string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%1$s at %2$s</string>
 
@@ -4382,6 +4399,7 @@
     <string name="conversation_list_item_view__contact_photo_image">Íomha ghrianghraif den teagmhálaí</string>
     <string name="conversation_list_item_view__archived">Curtha sa chartlann</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">Comhrá nua</string>
     <string name="conversation_list_fragment__open_camera_description">Oscail an Grianghrafadán</string>
@@ -4392,6 +4410,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">Níl aon chomhrá le taispeáint</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">Socruithe an fhillteáin</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4476,6 +4495,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">Cuir i dtaisce é</string>
     <string name="media_preview__edit_title">Eagar</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4870,6 +4890,7 @@
     <string name="GroupRecipientListItem_deny_description">Diúltaigh dó</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">Cuir lipéad baill leis</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">Grúpaí Oidhreachta vs. Grúpaí Nua</string>
@@ -5438,6 +5459,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">Custom Time</string>
     <string name="ExpireTimerSettingsFragment__save">Sábháil</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">Uath</string>
@@ -5494,6 +5516,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">Cuardaigh GIPHY</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5645,6 +5668,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">Seinn glórphost</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">Déan nascleanúint chuig glórphost</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">Réamhamharc ar abhatár</string>
     <string name="AvatarPickerFragment__camera">Ceamara</string>
@@ -5755,6 +5779,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">Caillfidh tú aon athruithe a rinne tú ar an ngrianghraf seo.</string>
 
     <string name="BadgesOverviewFragment__featured_badge">Suaitheantas faoi thrácht</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">Tabhair airgead</string>
@@ -5909,6 +5935,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">Fuascailte</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">Try another payment method or contact your bank for more information.</string>
     <!-- PayPal decline code for payment declined -->
@@ -6015,6 +6042,7 @@
     <string name="AddAllowedMembers__allow_all_calls">Ceadaigh gach glao</string>
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">Cuir in iúl do gach trácht</string>
+
 
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">Cruthaigh próifíl chun fógraí agus glaonna a fháil ó na daoine agus na grúpaí amháin ar mhian leat cloisteáil uathu.</string>
@@ -6998,6 +7026,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">Glan formáidiú</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">u</string>
@@ -7242,6 +7271,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">Níorbh fhéidir an t-úsáideoir seo a aimsiú.</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">Scan an cód QR seo le do ghuthán chun comhrá a dhéanamh liom ar Signal.</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

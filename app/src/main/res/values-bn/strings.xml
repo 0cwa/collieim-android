@@ -239,6 +239,7 @@
     <!-- Unknown people row info dialog action to close the dialog -->
     <string name="CallInfoView__got_it">বুঝতে পেরেছি</string>
 
+
     <string name="CameraContacts__menu_search">খুঁজুন</string>
 
     <!-- Censorship Circumvention Megaphone -->
@@ -451,6 +452,7 @@
     <string name="ConversationActivity__to_call_signal_needs_access_to_your_microphone">কল শুরু করতে, আপনার মাইক্রোফোনে Collie-কে অ্যাক্সেসের অনুমতি দিন।</string>
     <!-- Toast text explaining Signal\'s need for microphone access for a voice call -->
     <string name="ConversationActivity_signal_needs_microphone_access_voice_call">কল শুরু করতে Collie-এর মাইক্রোফোনে অ্যাক্সেসের প্রয়োজন।</string>
+
 
     <string name="ConversationActivity_join">যোগদান করুন</string>
     <!-- Button text for an active group call but the call is currently full and unjoinable -->
@@ -868,6 +870,7 @@
     <!-- Title of dialog shown when picking the time to perform a chat backup -->
     <string name="BackupsPreferenceFragment__set_backup_time">ব্যাকআপ সময় সেট করুন</string>
 
+
     <!-- CustomDefaultPreference -->
     <string name="CustomDefaultPreference_using_custom">প্রথা ব্যবহৃত : %1$s</string>
     <string name="CustomDefaultPreference_using_default">ডিফল্ট ব্যবহৃত: %1$s</string>
@@ -1116,6 +1119,7 @@
     </plurals>
     <string name="PendingGroupJoinRequestsReminder_view">দেখান</string>
 
+
     <!-- GiphyActivity -->
     <string name="GiphyActivity_error_while_retrieving_full_resolution_gif">সম্পূর্ণ রেজোলিউশনে GIF পুনরুদ্ধার করার সময় ত্রুটি</string>
 
@@ -1243,6 +1247,7 @@
     <string name="PromptLogsSlowNotificationsDialog__title_crash">Collie একটি সমস্যার সম্মুখীন হয়েছে। ডিবাগ লগ জমা দেবেন?</string>
     <!-- Title for dialog asking user to submit logs for a situation where they\'re not able to connect to the signal service -->
     <string name="PromptLogsSlowNotificationsDialog__title_connectivity_warning">আপনি মেসেজ নাও পেতে পারেন। ডিবাগ লগ জমা দেবেন?</string>
+
 
     <!-- Title for dialog asking user to submit logs for debugging slow notification issues -->
     <string name="PromptBatterySaverBottomSheet__title">ব্যাটারি অপ্টিমাইজেশনের কারণে বিজ্ঞপ্তি আসতে দেরি হতে পারে</string>
@@ -1372,6 +1377,7 @@
     <string name="UsernameOutOfSyncReminder__link_corrupt">আপনার QR কোড এবং ব্যবহারকারীর নামের লিংকে কিছু ভুল হয়েছে, এটি আর কার্যকর নয়। অন্যদের সাথে শেয়ার করার জন্য একটি নতুন লিংক তৈরি করুন।</string>
     <!-- Action text to navigate user to manually fix the issue with their username -->
     <string name="UsernameOutOfSyncReminder__fix_now">এখনই ঠিক করুন</string>
+
 
     <!-- ManageRecipientActivity -->
     <string name="ManageRecipientActivity_no_groups_in_common">একই রকমের কোন গ্রুপ নেই</string>
@@ -2344,6 +2350,7 @@
     <!-- A button to take you to a list of participants with raised hands -->
     <string name="CallOverflowPopupWindow__view">দেখুন</string>
 
+
     <!-- A notification to the user that their hand is raised but they are currently speaking -->
     <string name="CallRaiseHandSnackbar__lower_your_hand">হাত নামবেন?</string>
     <!-- A notification to the user that they successfully raised their hand. The placeholder string is CallParticipant__you, or CallParticipant__you_on_another_device -->
@@ -2864,6 +2871,7 @@
         <item quantity="one">%1$d টি কন্ট্যাক্ট Signal ব্যবহার করছে!</item>
         <item quantity="other">%1$d জন কন্ট্যাক্ট Signal ব্যবহার করছেন!</item>
     </plurals>
+
 
     <string name="VerifyIdentityActivity_the_scanned_qr_code_is_not_a_correctly_formatted_safety_number">স্ক্যান করা কিউআর কোডটি সঠিকভাবে ফর্ম্যাট করা নিরাপত্তা নাম্বার যাচাইকরণ কোড নয়। আবার স্ক্যান করার চেষ্টা করুন।</string>
     <string name="VerifyIdentityActivity_share_safety_number_via">যার মাধ্যমে নিরাপত্তা নম্বর শেয়ার করতে চান…</string>
@@ -3665,6 +3673,7 @@
     <!-- ReactWithAnyEmojiBottomSheetDialogFragment -->
     <string name="ReactWithAnyEmojiBottomSheetDialogFragment__no_results_found">কোনও ফলাফল পাওয়া যায়নি</string>
 
+
     <!-- arrays.xml -->
     <string name="arrays__use_default">ডিফল্ট ব্যবহার করুন</string>
     <string name="arrays__use_custom">কাস্টম ব্যবহার করুন</string>
@@ -3678,6 +3687,10 @@
     <string name="arrays__settings_default">সেটিংস ডিফল্ট</string>
     <string name="arrays__enabled">সক্রিয়</string>
     <string name="arrays__disabled">নিষ্ক্রিয়</string>
+
+
+
+
 
     <!-- plurals.xml -->
     <plurals name="hours_ago">
@@ -3755,10 +3768,12 @@
     <!-- Preference summary for automatic key verification -->
     <string name="preferences_automatic_key_verification_body">সক্রিয় করা হলে, Collie 1:1 চ্যাটের এনক্রিপশন স্বয়ংক্রিয়ভাবে যাচাই করার চেষ্টা করবে।</string>
 
+
     <!-- Internal only preferences -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_preferences" translatable="false">Internal Preferences</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_details" translatable="false">Internal Details</string> -->
   <!-- Removed by excludeNonTranslatables <string name="preferences__internal_stories_dialog_launcher" translatable="false">Stories dialog launcher</string> -->
+
 
     <!-- Payments -->
     <string name="PaymentsActivityFragment__all_activity">সমস্ত ক্রিয়াকলাপ</string>
@@ -3825,6 +3840,7 @@
     <string name="PaymentsHomeFragment__cancel">বাতিল করুন</string>
     <!-- Alert dialog button to update now -->
     <string name="PaymentsHomeFragment__update_now">আপডেট করুন</string>
+
 
     <!-- PaymentsSecuritySetupFragment -->
     <!-- Toolbar title -->
@@ -3951,6 +3967,7 @@
     <!-- Biometric/Device authentication prompt title -->
     <string name="BiometricDeviceAuthentication__signal">Signal</string>
 
+
     <!-- CurrencyAmountFormatter_s_at_s -->
     <string name="CurrencyAmountFormatter_s_at_s">%2$s-তে %1$s</string>
 
@@ -4040,6 +4057,7 @@
     <string name="conversation_list_item_view__contact_photo_image">পরিচিতির ফটো ইমেজ</string>
     <string name="conversation_list_item_view__archived">আর্কাইভ করা</string>
 
+
     <!-- conversation_list_fragment -->
     <string name="conversation_list_fragment__fab_content_description">নতুন চ্যাট</string>
     <string name="conversation_list_fragment__open_camera_description">ক্যামেরা চালু করুন</string>
@@ -4050,6 +4068,7 @@
     <string name="conversation_list_fragment__no_chats_to_display">দেখানোর মতো কোনো চ্যাট নেই</string>
     <!-- Button text that will open up chat folder settings -->
     <string name="conversation_list_fragment__folder_settings">ফোল্ডার সেটিংস</string>
+
 
     <!-- conversation_secure_verified -->
 
@@ -4131,6 +4150,7 @@
     <!-- media_preview -->
     <string name="media_preview__save_title">সংরক্ষণ</string>
     <string name="media_preview__edit_title">সম্পাদনা</string>
+
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -4504,6 +4524,7 @@
     <string name="GroupRecipientListItem_deny_description">প্রত্যাখ্যান</string>
     <!-- Placeholder shown in the group member list when the user has not yet set a member label. -->
     <string name="GroupRecipientListItem__add_member_label">সদস্য লেবেল যোগ করুন</string>
+
 
     <!-- GroupsLearnMoreBottomSheetDialogFragment -->
     <string name="GroupsLearnMore_legacy_vs_new_groups">লিগ্যাসি বনাম নতুন গ্রুপ</string>
@@ -5027,6 +5048,7 @@
     <string name="ExpireTimerSettingsFragment__custom_time">কাস্টম সময়</string>
     <string name="ExpireTimerSettingsFragment__save">সংরক্ষন</string>
 
+
     <!-- ChatColorSelectionFragment -->
     <!-- Text shown on a circle button to indicate the app will automatically select a color for conversation bubbles for this chat. -->
     <string name="ChatColorSelectionFragment__auto">অটো</string>
@@ -5077,6 +5099,7 @@
 
     <!-- KeyboardPagerFragment -->
     <string name="KeyboardPagerFragment_search_giphy">GIPHY খুঁজুন</string>
+
 
     <!-- ConversationSettingsFragment -->
     <!-- Dialog title displayed when non-admin tries to add a story to an audience group -->
@@ -5222,6 +5245,7 @@
     <string name="VoiceNotePlayerView__play_voice_message">মৌখিক বার্তা শুনাও</string>
     <string name="VoiceNotePlayerView__navigate_to_voice_message">মৌখিক বার্তা চালনা করো</string>
 
+
     <!-- AvatarPickerFragment -->
     <string name="AvatarPickerFragment__avatar_preview">অবতারের পূর্বরূপ</string>
     <string name="AvatarPickerFragment__camera">ক্যামেরা</string>
@@ -5320,6 +5344,8 @@
     <string name="MediaReviewImagePageFragment__youll_lose_any_changes">আপনি এই ফটোতে করা যেকোনো পরিবর্তন হারাবেন।</string>
 
     <string name="BadgesOverviewFragment__featured_badge">ফিচারকৃত ব্যাজ</string>
+
+
 
     <!-- Displayed on primary button in the bottom sheet as a call-to-action to launch into the donation flow -->
     <string name="ViewBadgeBottomSheetDialogFragment__donate_now">ডোনেট করুন</string>
@@ -5474,6 +5500,7 @@
     <!-- Gift badge redeemed label -->
     <string name="GiftMessageView__redeemed">ফিরে পাওয়া গেছে</string>
 
+
     <!-- Stripe decline code generic_failure -->
     <string name="DeclineCode__try_another_payment_method_or_contact_your_bank">অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।</string>
     <!-- PayPal decline code for payment declined -->
@@ -5580,6 +5607,7 @@
     <string name="AddAllowedMembers__allow_all_calls">সকল কল অনুমোদন করুন</string>
     <!-- List preference to toggle that allows mentions through the notification profile during create flow -->
     <string name="AddAllowedMembers__notify_for_all_mentions">সকল উল্লেখ অবহিত করুন</string>
+
 
     <!-- Notification profiles home fragment, shown when no profiles have been created yet -->
     <string name="NotificationProfilesFragment__create_a_profile_to_receive_notifications_and_calls_only_from_the_people_and_groups_you_want_to_hear_from">আপনি যে সকল ব্যক্তি এবং গ্ৰুপের কথা শুনতে চান শুধু তাদের কাছ থেকে নোটিফিকেশন ও কল পেতে একটি প্রোফাইল তৈরি করুন৷</string>
@@ -6494,6 +6522,7 @@
     <!-- Popup menu label for clearing applied formatting -->
     <string name="TextFormatting_clear_formatting">ফরম্যাটিং পরিষ্কার করুন</string>
 
+
     <!-- Time duration picker -->
     <!-- Shown in a time duration picker for selecting duration in hours and minutes, label shown after the user input value for hour, e.g., 12h -->
     <string name="TimeDurationPickerDialog_single_letter_hour_abbreviation">ঘণ্টা</string>
@@ -6729,6 +6758,7 @@
     <string name="UsernameLinkSettings_qr_result_not_found_no_username">এই ব্যবহারকারীকে খুঁজে পাওয়া যায়নি।</string>
     <!-- Shown on the generated username qr code image to explain how to use it. -->
     <string name="UsernameLinkSettings_scan_this_qr_code">Signal-এ আমার সাথে চ্যাট করতে আপনার ফোন দিয়ে এই QR কোডটি স্ক্যান করুন।</string>
+
 
     <!-- PendingParticipantsView -->
     <!-- Displayed in the popup card when a remote user attempts to join a call link -->

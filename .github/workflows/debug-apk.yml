@@ -33,3 +33,122 @@ jobs:
           path: app/build/outputs/apk/prodWebsite/debug/*.apk
           retention-days: 7
           if-no-files-found: error
+
+  navigation-validation:
+    if: github.event_name == 'workflow_dispatch'
+    name: Navigation host and API 35 validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      - name: Record source and prepare Gradle
+        run: |
+          mkdir -p build/navigation-validation
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD HEAD^{tree} > build/navigation-validation/source.txt
+          cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+      - name: Run eight Robolectric navigation cases
+        id: host
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew --no-daemon --console=plain :feature:app-settings:testDebugUnitTest --rerun \
+            --tests org.signal.appsettings.routes.AppSettingsNavigationTest \
+            2>&1 | tee build/navigation-validation/host.log
+      - name: Build matching app and test APKs
+        id: build
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew --no-daemon --console=plain :app:assembleProdWebsiteDebug :app:assembleProdWebsiteDebugAndroidTest \
+            2>&1 | tee build/navigation-validation/build.log
+          sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+            app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > build/navigation-validation/apk-before.txt
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Prepare device test
+        run: |
+          cat > "$RUNNER_TEMP/reuse-navigation-apks.gradle" <<'GRADLE'
+          def packageTasks = [':app:packageProdWebsiteDebug', ':app:packageProdWebsiteDebugAndroidTest']
+          if (gradle.parent == null) {
+            gradle.beforeProject { project ->
+              project.tasks.configureEach { task ->
+                if (packageTasks.contains(task.path)) {
+                  task.onlyIf('reuse the previously built and hashed APK') { false }
+                }
+              }
+            }
+            gradle.taskGraph.whenReady { graph ->
+              packageTasks.each { path ->
+                if (!graph.hasTask(path)) throw new GradleException("Missing APK packaging task: $path")
+              }
+            }
+          }
+          GRADLE
+          cat > "$RUNNER_TEMP/run-navigation-device.sh" <<'SH'
+          set -euo pipefail
+          evidence=build/navigation-validation
+          collect() {
+            status=$?
+            trap - EXIT
+            printf '%s\n' "$status" > "$evidence/exit-code.txt"
+            timeout 15s adb logcat -b all -d -t 12000 -v threadtime > "$evidence/logcat.txt" 2>&1 || true
+            sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
+              app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > "$evidence/apk-after.txt" || true
+            exit "$status"
+          }
+          trap collect EXIT
+          timeout 10s adb shell getprop ro.build.version.sdk | tr -d '\r' > "$evidence/device-api.txt"
+          test "$(cat "$evidence/device-api.txt")" = 35
+          timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
+          timeout 10s adb logcat -c
+          ./gradlew --no-daemon --console=plain \
+            :app:packageProdWebsiteDebug :app:packageProdWebsiteDebugAndroidTest \
+            :app:connectedProdWebsiteDebugAndroidTest -I "$RUNNER_TEMP/reuse-navigation-apks.gradle" \
+            '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest' \
+            2>&1 | tee "$evidence/connected.log"
+          SH
+      - name: Run selected-route test on API 35
+        id: device
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 10
+          ram-size: 2048M
+          cores: 2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash "$RUNNER_TEMP/run-navigation-device.sh"
+      - name: Require host and device results
+        if: always() && !cancelled()
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+          HOST_OUTCOME: ${{ steps.host.outcome }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          DEVICE_OUTCOME: ${{ steps.device.outcome }}
+        run: python3 .github/scripts/check-navigation-results.py
+      - name: Keep navigation evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: navigation-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/navigation-validation
+            feature/app-settings/build/test-results/testDebugUnitTest
+            app/build/outputs/androidTest-results
+            app/build/reports/androidTests
+          retention-days: 14
+          if-no-files-found: error

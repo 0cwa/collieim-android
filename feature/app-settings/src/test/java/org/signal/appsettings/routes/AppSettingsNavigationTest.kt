@@ -7,6 +7,9 @@ package org.signal.appsettings.routes
 
 import android.app.Application
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.SavedStateHandle
 import assertk.assertThat
@@ -112,13 +115,30 @@ class AppSettingsNavigationTest {
     assertThat(closed).isEqualTo(0)
   }
 
-  private fun setContent(defaultDetailRoute: AppSettingsRoute) {
+  @Test
+  @Config(qualifiers = "w800dp-h700dp")
+  fun `home selection follows a replaced section`() {
+    setContent(defaultDetailRoute = AppSettingsRoute.ChatsRoute.Chats) { selected ->
+      Text(if (selected == AppSettingsRoute.ChatsRoute.Chats) "selected chats" else if (selected == AppSettingsRoute.AppearanceRoute.Appearance) "selected appearance" else "no selection")
+    }
+    composeTestRule.waitUntil(10_000) { router.selectedRoute.value == AppSettingsRoute.ChatsRoute.Chats }
+    composeTestRule.onNodeWithText("selected chats").assertIsDisplayed()
+
+    composeTestRule.runOnIdle {
+      router.onEvent(AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.AppearanceRoute.Appearance, replacesDetail = true))
+    }
+    composeTestRule.waitForIdle()
+    composeTestRule.waitUntil(10_000) { router.selectedRoute.value == AppSettingsRoute.AppearanceRoute.Appearance }
+    composeTestRule.onNodeWithText("selected appearance").assertIsDisplayed()
+  }
+
+  private fun setContent(defaultDetailRoute: AppSettingsRoute, home: @Composable (AppSettingsRoute?) -> Unit = { Text("Home") }) {
     composeTestRule.setContent {
       SignalTheme(incognitoKeyboardEnabled = false) {
         AppSettingsNavigation(
           router = router,
           onClose = { closed++ },
-          home = { Text("Home") },
+          home = home,
           defaultDetailRoute = defaultDetailRoute,
           tryLaunchActivity = { route ->
             (route == AppSettingsRoute.Payments).also { if (it) launched += route }

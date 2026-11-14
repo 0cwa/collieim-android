@@ -33,3 +33,90 @@ jobs:
           path: app/build/outputs/apk/prodWebsite/debug/*.apk
           retention-days: 7
           if-no-files-found: error
+  debug-viewer-boundary:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
+      - name: Build exact app and instrumentation APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/viewer-proof
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD HEAD^{tree} > build/viewer-proof/source.txt
+          cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+          ./gradlew --no-daemon --console=plain :app:assembleProdWebsiteDebug :app:assembleProdWebsiteDebugAndroidTest 2>&1 | tee build/viewer-proof/build.log
+          app=(app/build/outputs/apk/prodWebsite/debug/*.apk)
+          tests=(app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk)
+          test "${#app[@]}" = 1 && test -f "${app[0]}"
+          test "${#tests[@]}" = 1 && test -f "${tests[0]}"
+          sha256sum "${app[0]}" "${tests[0]}" > build/viewer-proof/apks.txt
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest print "${app[0]}" > build/viewer-proof/app-manifest.xml
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest print "${tests[0]}" > build/viewer-proof/test-manifest.xml
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Prepare offline device script
+        shell: bash
+        run: |
+          cat > "$RUNNER_TEMP/viewer-proof.sh" <<'SH'
+          set -euo pipefail
+          evidence=build/viewer-proof
+          collect() {
+            status=$?
+            trap - EXIT
+            echo "$status" > "$evidence/exit-code.txt"
+            adb shell dumpsys connectivity > "$evidence/connectivity-after.txt" || true
+            adb logcat -d -t 5000 > "$evidence/logcat.txt" || true
+            sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > "$evidence/apks-after.txt" || true
+            exit "$status"
+          }
+          trap collect EXIT
+          adb shell getprop ro.build.version.sdk | tr -d '\r' > "$evidence/api.txt"
+          test "$(cat "$evidence/api.txt")" = 35
+          adb shell getprop ro.build.fingerprint > "$evidence/fingerprint.txt"
+          adb shell dumpsys webviewupdate > "$evidence/provider.txt"
+          adb shell cmd connectivity airplane-mode enable
+          adb shell svc wifi disable
+          adb shell svc data disable
+          adb shell dumpsys connectivity > "$evidence/connectivity-before.txt"
+          grep -q 'Active default network: none' "$evidence/connectivity-before.txt"
+          adb install -r app/build/outputs/apk/prodWebsite/debug/*.apk
+          adb install -r app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk
+          adb shell am instrument -w -r -e class org.thoughtcrime.securesms.security.DebugViewerBoundaryTest im.collie.app.test/org.thoughtcrime.securesms.testing.SignalTestRunner | tee "$evidence/instrumentation.txt"
+          grep -Eq '^OK \(1 test\)' "$evidence/instrumentation.txt"
+          grep -q 'INSTRUMENTATION_CODE: -1' "$evidence/instrumentation.txt"
+          cmp "$evidence/apks.txt" <(sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk)
+          SH
+      - name: Run focused offline Android 15 viewer test
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7_pro
+          ram-size: 2048M
+          cores: 2
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash "$RUNNER_TEMP/viewer-proof.sh"
+      - name: Keep viewer test evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: viewer-proof-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/viewer-proof
+          if-no-files-found: error
+          retention-days: 7

@@ -170,6 +170,7 @@ jobs:
             mkdir -p "build/shards/$shard"
             tar -xf "build/shard-artifacts/unit-test-shard-$shard-${{ github.run_id }}/results.tar" -C "build/shards/$shard"
             mkdir -p "build/shards/$shard"/{app,core,feature,lib,tooling}
+            (cd "build/shards/$shard" && find app core feature lib tooling -path '*/build/test-results/*/TEST-*.xml' -type f -exec cp --parents -t "$GITHUB_WORKSPACE" {} +)
           done
           mkdir -p build/ci
           mkdir -p build/host-tests
@@ -177,9 +178,6 @@ jobs:
           cp .github/ci-required-tests.json build/ci/ci-required-tests.json
           git rev-parse HEAD > build/ci/source-commit.txt
           git rev-parse HEAD^{tree} > build/ci/source-tree.txt
-          for shard in app-0 app-1 modules; do
-            (cd "build/shards/$shard" && find app core feature lib tooling -path '*/build/test-results/*/TEST-*.xml' -type f -exec cp --parents -t "$GITHUB_WORKSPACE" {} +)
-          done
           for shard in app-0 app-1 modules; do
             cmp "build/shards/$shard/build/ci/source-commit.txt" build/ci/source-commit.txt
             cmp "build/shards/$shard/build/ci/source-tree.txt" build/ci/source-tree.txt

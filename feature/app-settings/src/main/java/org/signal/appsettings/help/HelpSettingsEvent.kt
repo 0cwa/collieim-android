@@ -24,6 +24,9 @@ sealed interface HelpSettingsEvent {
   /** The user tapped the contact us row. */
   data object ContactUsClicked : HelpSettingsEvent
 
+  /** The user tapped the What's new row. */
+  data object WhatsNewClicked : HelpSettingsEvent
+
   /** The user long-pressed the version row. */
   data object VersionLongClicked : HelpSettingsEvent
 

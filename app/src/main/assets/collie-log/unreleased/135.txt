@@ -1,0 +1,3 @@
+topic: privacy
+pr: 135
+Your backup passphrase can't be captured in screenshots.

@@ -1,0 +1,14 @@
+version: 8.35.1-3-rc1
+date: 2026-11-10
+
+topic: settings
+Settings are easier to find: network comes first in Privacy and chat export last in Chats.
+
+topic: look
+Collie artwork in the status bar and on the locked startup screen.
+
+topic: push
+Push counts as ready only for the push provider you chose, not an old one.
+
+topic: settings
+A contact's settings show up while linked-device details are still loading.

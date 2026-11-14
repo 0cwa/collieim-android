@@ -58,6 +58,9 @@ class HelpSettingsScreenTest {
   fun `clicking contact us emits ContactUsClicked`() = assertClickEmits(HelpSettingsTestTags.ROW_CONTACT_US, HelpSettingsEvent.ContactUsClicked)
 
   @Test
+  fun `clicking What's new emits WhatsNewClicked`() = assertClickEmits(HelpSettingsTestTags.ROW_WHATS_NEW, HelpSettingsEvent.WhatsNewClicked)
+
+  @Test
   fun `clicking debug log emits DebugLogClicked`() = assertClickEmits(HelpSettingsTestTags.ROW_DEBUG_LOG, HelpSettingsEvent.DebugLogClicked)
 
   @Test

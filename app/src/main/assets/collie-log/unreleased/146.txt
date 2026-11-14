@@ -1,0 +1,3 @@
+topic: privacy
+pr: 146
+Group searches stay out of diagnostic logs.

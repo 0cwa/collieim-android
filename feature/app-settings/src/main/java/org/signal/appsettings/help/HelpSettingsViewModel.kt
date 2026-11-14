@@ -44,6 +44,7 @@ class HelpSettingsViewModel(
       HelpSettingsEvent.SupportCenterClicked -> _actions.send(HelpSettingsAction.OpenSupportCenter)
       HelpSettingsEvent.ContactUsClicked -> _actions.send(HelpSettingsAction.NavigateToContactUs)
       HelpSettingsEvent.VersionLongClicked -> _actions.send(HelpSettingsAction.CopyVersionToClipboard(_state.value.versionName))
+      HelpSettingsEvent.WhatsNewClicked -> _actions.send(HelpSettingsAction.OpenWhatsNew)
       HelpSettingsEvent.DebugLogClicked -> if (_state.value.logEnabled) _actions.send(HelpSettingsAction.NavigateToDebugLog)
       HelpSettingsEvent.LicensesClicked -> _actions.send(HelpSettingsAction.NavigateToLicenses)
       HelpSettingsEvent.TermsAndPrivacyPolicyClicked -> _actions.send(HelpSettingsAction.OpenTermsAndPrivacyPolicy)

@@ -1,0 +1,3 @@
+topic: push
+pr: 96
+Collie notices when push stops working. Settings has a Test my push button.

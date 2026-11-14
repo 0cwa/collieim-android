@@ -1,0 +1,3 @@
+topic: devices
+pr: 110
+A removed relay device stays removed, even if it was renamed.

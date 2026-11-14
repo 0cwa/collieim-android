@@ -43,4 +43,4 @@ The notes ship inside the APK. No network request is made to show them.
 3. Use `CollieReleaseNotes.action` only when people must do something after updating, for example re-select a push app. It shows as a banner until they act or dismiss it. Leave it `null` for feature news.
 4. New installs never see "Updated": `CollieSetupValues.onFirstEverAppLaunch` marks the bundled notes as seen.
 
-What's new is always reachable from the Chats menu.
+What's new is always reachable from the Chats menu and from Settings → Help. Its second tab is the [project log](PROJECT-LOG.md).

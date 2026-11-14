@@ -24,6 +24,8 @@ import org.signal.core.ui.compose.ComposeFragment
 import org.signal.core.ui.viewModel
 import org.signal.core.util.Util
 import org.thoughtcrime.securesms.R
+import org.thoughtcrime.securesms.main.setup.WhatsNewDialogFragment
+import org.thoughtcrime.securesms.main.setup.WhatsNewTab
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 import org.signal.appsettings.R as AppSettingsR
@@ -72,6 +74,7 @@ class HelpSettingsFragment : ComposeFragment() {
         Util.copyToClipboard(requireContext(), action.versionName)
         Toast.makeText(requireContext(), AppSettingsR.string.HelpSettingsFragment__copied_to_clipboard, Toast.LENGTH_SHORT).show()
       }
+      HelpSettingsAction.OpenWhatsNew -> WhatsNewDialogFragment.show(parentFragmentManager, WhatsNewTab.PROJECT_LOG)
       HelpSettingsAction.NavigateToDebugLog -> findNavController().safeNavigate(R.id.action_helpSettingsFragment_to_submitDebugLogActivity)
       HelpSettingsAction.NavigateToLicenses -> findNavController().safeNavigate(R.id.action_helpSettingsFragment_to_licenseFragment)
       HelpSettingsAction.OpenTermsAndPrivacyPolicy -> CommunicationActions.openBrowserLink(requireContext(), getString(R.string.terms_and_privacy_policy_url))

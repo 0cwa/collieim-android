@@ -1,0 +1,8 @@
+version: 8.35.1-2-rc1
+date: 2026-11-09
+
+topic: push
+UnifiedPush with MollySocket works again, so notification setup can finish.
+
+topic: updates
+Each release records the source, build and signing checks behind every APK.

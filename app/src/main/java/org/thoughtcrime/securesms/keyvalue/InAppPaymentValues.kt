@@ -45,6 +45,27 @@ class InAppPaymentValues internal constructor(store: KeyValueStore) : SignalStor
   companion object {
     private val TAG = Log.tag(InAppPaymentValues::class.java)
 
+    // Keep historical record decoding stable after removing the payment gateway.
+    private val LEGACY_DONATION_CURRENCY_CODES = setOf(
+      "USD", "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS",
+      "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BIF",
+      "BMD", "BND", "BOB", "BRL", "BSD", "BWP", "BZD", "CAD",
+      "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CVE", "CZK",
+      "DJF", "DKK", "DOP", "DZD", "EGP", "ETB", "EUR", "FJD",
+      "FKP", "GBP", "GEL", "GIP", "GMD", "GNF", "GTQ", "GYD",
+      "HKD", "HNL", "HRK", "HTG", "HUF", "IDR", "ILS", "INR",
+      "ISK", "JMD", "JPY", "KES", "KGS", "KHR", "KMF", "KRW",
+      "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "MAD",
+      "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRO", "MUR",
+      "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO",
+      "NOK", "NPR", "NZD", "PAB", "PEN", "PGK", "PHP", "PKR",
+      "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR",
+      "SBD", "SCR", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD",
+      "STD", "SZL", "THB", "TJS", "TOP", "TRY", "TTD", "TWD",
+      "TZS", "UAH", "UGX", "UYU", "UZS", "VND", "VUV", "WST",
+      "XAF", "XCD", "XOF", "XPF", "YER", "ZAR", "ZMW"
+    )
+
     private const val KEY_DONATION_SUBSCRIPTION_CURRENCY_CODE = "donation.currency.code"
     private const val KEY_CURRENCY_CODE_ONE_TIME = "donation.currency.code.boost"
     private const val KEY_SUBSCRIBER_ID_PREFIX = "donation.subscriber.id."
@@ -161,7 +182,7 @@ class InAppPaymentValues internal constructor(store: KeyValueStore) : SignalStor
       CurrencyUtil.getCurrencyByCurrencyCode(currencyCode)
     }
 
-    return if (currency != null) {
+    return if (currency != null && LEGACY_DONATION_CURRENCY_CODES.contains(currency.currencyCode.uppercase(Locale.ROOT))) {
       currency
     } else {
       Currency.getInstance("USD")

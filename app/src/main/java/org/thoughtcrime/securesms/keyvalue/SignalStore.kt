@@ -63,6 +63,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
   val apkUpdateValues = ApkUpdateValues(store, context)
   val backupValues = BackupValues(store, context)
   val unifiedPushValues = UnifiedPushValues(store)
+  val collieSetupValues = CollieSetupValues(store)
   val labsValues = LabsValues(store) { RemoteConfig.internalUser }
 
   companion object {
@@ -110,6 +111,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
       apkUpdate.onFirstEverAppLaunch()
       backup.onFirstEverAppLaunch()
       unifiedpush.onFirstEverAppLaunch()
+      collieSetup.onFirstEverAppLaunch()
       labs.onFirstEverAppLaunch()
     }
 
@@ -144,6 +146,7 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
           apkUpdate.keysToIncludeInBackup +
           backup.keysToIncludeInBackup +
           unifiedpush.keysToIncludeInBackup +
+          collieSetup.keysToIncludeInBackup +
           labs.keysToIncludeInBackup
       }
 
@@ -309,6 +312,11 @@ class SignalStore(context: Application, private val store: KeyValueStore) {
     @get:JvmName("unifiedpush")
     val unifiedpush: UnifiedPushValues
       get() = instance!!.unifiedPushValues
+
+    @JvmStatic
+    @get:JvmName("collieSetup")
+    val collieSetup: CollieSetupValues
+      get() = instance!!.collieSetupValues
 
     @JvmStatic
     @get:JvmName("labs")

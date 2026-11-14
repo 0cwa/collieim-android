@@ -490,6 +490,13 @@ class SettingsValues internal constructor(store: KeyValueStore, private val cont
       putInteger(FORCE_WEBSOCKET_MODE, value.serialize())
     }
 
+  /** The person picked the delivery method in effect, rather than getting it as a default. */
+  val hasChosenNotificationMethod: Boolean
+    get() {
+      val effective = preferredNotificationMethod
+      return store.containsKey(MOLLY_NOTIFICATION_METHOD) && getString(MOLLY_NOTIFICATION_METHOD, null) == effective.serialize()
+    }
+
   var preferredNotificationMethod: NotificationDeliveryMethod
     get() {
       val method = if (store.containsKey(MOLLY_NOTIFICATION_METHOD)) {

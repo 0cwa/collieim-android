@@ -151,6 +151,14 @@ class ResultGateTests(unittest.TestCase):
         with self.assertRaises(ET.ParseError):
             self.check()
 
+    def test_duplicate_shard_names_are_rejected(self):
+        first = self.root / "one" / "shard"
+        second = self.root / "two" / "shard"
+        first.mkdir(parents=True)
+        second.mkdir(parents=True)
+        with self.assertRaisesRegex(ValueError, "Duplicate shard root name"):
+            gate.check_results(self.root, self.policy, [first, second])
+
     def test_policy_rejects_duplicate_tasks_or_unreviewed_security_tasks(self):
         path = self.root / "policy.json"
         self.policy["required_tasks"].append(self.app)

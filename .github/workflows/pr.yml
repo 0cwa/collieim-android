@@ -173,6 +173,7 @@ jobs:
           mkdir -p build/ci
           mkdir -p build/host-tests
           cp build/shards/modules/build/host-tests/receipt.json build/host-tests/receipt.json
+          cp .github/ci-required-tests.json build/ci/ci-required-tests.json
           git rev-parse HEAD > build/ci/source-commit.txt
           git rev-parse HEAD^{tree} > build/ci/source-tree.txt
           python3 .github/scripts/check-unit-test-results.py \
@@ -191,7 +192,6 @@ jobs:
             build/shards
             build/ci
             build/host-tests/receipt.json
-            .github/ci-required-tests.json
             **/build/test-results/**/*.xml
           if-no-files-found: error
 

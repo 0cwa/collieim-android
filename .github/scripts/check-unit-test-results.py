@@ -44,6 +44,8 @@ def check_results(root, policy, shard_roots=None):
     roots = shard_roots or [root]
     shard_counts = {}
     for root in roots:
+        if root.name in shard_counts:
+            raise ValueError(f"Duplicate shard root name: {root.name}")
         before = sum(values[0] - values[3] for values in counts.values())
         for group in ("app", "core", "feature", "lib", "tooling"):
             for path in sorted((root / group).glob("**/build/test-results/**/TEST-*.xml")):

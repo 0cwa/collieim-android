@@ -395,7 +395,10 @@ public class CommunicationActions {
 
   private static void startInsecureCallInternal(@NonNull CallContext callContext, @NonNull Recipient recipient) {
     try {
-      Intent dialIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + recipient.requireSmsAddress()));
+      Intent dialIntent = buildInsecureCallIntent(recipient);
+      if (dialIntent == null) {
+        throw new ActivityNotFoundException("Recipient has no phone number");
+      }
       callContext.startActivity(dialIntent);
     } catch (ActivityNotFoundException anfe) {
       Log.w(TAG, anfe);
@@ -403,6 +406,12 @@ public class CommunicationActions {
                               callContext.getContext().getString(R.string.ConversationActivity_calls_not_supported),
                               callContext.getContext().getString(R.string.ConversationActivity_this_device_does_not_appear_to_support_dial_actions));
     }
+  }
+
+  @VisibleForTesting
+  static @Nullable Intent buildInsecureCallIntent(@NonNull Recipient recipient) {
+    String number = recipient.resolve().getE164().orElse(null);
+    return number == null || number.trim().isEmpty() ? null : new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + number));
   }
 
   /**

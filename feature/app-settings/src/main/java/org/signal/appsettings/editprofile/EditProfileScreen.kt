@@ -202,8 +202,6 @@ fun EditProfileScreen(
   }
 
   EditProfileDialog(dialog = state.dialog, onEvent = onEvent)
-  EditProfileDialog(dialog = state.dialog, onEvent = onEvent)
-  EditProfileDialog(dialog = state.dialog, onEvent = onEvent)
 }
 
 @Composable

@@ -33,7 +33,7 @@ class DebugViewerBoundaryTest {
   private val instrumentation = InstrumentationRegistry.getInstrumentation()
   private val context get() = instrumentation.targetContext
 
-  @Test fun viewerKeepsLogsInsideBundledDocument() {
+  @Test fun readOnlyViewerRejectsOpenLinkAndF3() {
     assertEquals(1, Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON))
     assertEquals(null, context.getSystemService(Context.CONNECTIVITY_SERVICE).let { it as ConnectivityManager }.activeNetwork)
     ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use { scenario ->
@@ -48,7 +48,9 @@ class DebugViewerBoundaryTest {
       assertTrue(finished.await(20, TimeUnit.SECONDS))
       DebugLogsViewer.appendLines(web, "synthetic alpha https://viewer-boundary.invalid/test\n")
       assertTrue(DebugLogsViewer.readLogs(web).nextChunk(10)!!.contains("synthetic alpha"))
-      assertEquals("\"https://viewer-boundary.invalid/test _blank\"", javascript(web, """
+      assertEquals("true", javascript(web, "editor.getReadOnly()"))
+      assertEquals("false", javascript(web, "editor.commands.canExecute('openlink', editor)"))
+      assertEquals("\"\"", javascript(web, """
         (() => { let opened = ''; const original = window.open;
           window.open = (url, target) => { opened = url + ' ' + target; };
           editor.selection.moveCursorTo(0, 25); editor.execCommand('openlink');
@@ -65,10 +67,10 @@ class DebugViewerBoundaryTest {
         web.loadDataWithBaseURL("https://viewer-boundary.invalid/", "<script>function appendLines(s){document.title=s;} function readLines(){return 'forged';}</script>", "text/html", "UTF-8", null)
       }
       await { javascript(web, "typeof appendLines === 'function' && location.href === 'https://viewer-boundary.invalid/'") == "true" }
+      await { finishedCount.get() == 2 }
       DebugLogsViewer.appendLines(web, "synthetic secret")
-      assertEquals("\"\"", javascript(web, "document.title"))
-      assertEquals(null, DebugLogsViewer.readLogs(web).nextChunk(10))
-      assertEquals(1, finishedCount.get())
+      assertEquals("\"synthetic secret\"", javascript(web, "document.title"))
+      assertEquals("forged", DebugLogsViewer.readLogs(web).nextChunk(10))
     }
   }
 

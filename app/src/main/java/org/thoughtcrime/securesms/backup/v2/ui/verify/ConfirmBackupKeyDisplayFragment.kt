@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.backup.v2.ui.verify
 
 import android.app.Activity.RESULT_OK
 import androidx.compose.runtime.Composable
+import org.thoughtcrime.securesms.components.settings.app.collie.BackupKeyAuthenticationGate
 import org.signal.core.ui.compose.ComposeFragment
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsKeyVerifyScreen
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -13,6 +14,11 @@ class ConfirmBackupKeyDisplayFragment : ComposeFragment() {
 
   @Composable
   override fun FragmentContent() {
+    BackupKeyAuthenticationGate { ProtectedContent() }
+  }
+
+  @Composable
+  private fun ProtectedContent() {
     MessageBackupsKeyVerifyScreen(
       backupKey = SignalStore.account.accountEntropyPool.displayValue,
       onNavigationClick = {

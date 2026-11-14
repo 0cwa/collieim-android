@@ -11,6 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.pin.RecoveryPinGuard
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,9 +29,18 @@ fun CollieSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Unit
 
   val context = LocalContext.current
   var enabled by remember { mutableStateOf(SignalStore.pin.recoveryPinGuardEnabled) }
+  var protectBackupKey by remember { mutableStateOf(BackupKeyAuthentication.isEnabled(context)) }
+  val authenticate = rememberBackupKeyPhoneAuthentication(stringResource(R.string.RemoteBackupsSettingsFragment__unlock_to_view_backup_key))
   CollieSettingsScreen(
     state = state,
     onEvent = viewModel::onEvent,
+    protectBackupKey = protectBackupKey,
+    onProtectBackupKeyChanged = { desired ->
+      authenticate {
+        BackupKeyAuthentication.setEnabled(context, desired)
+        protectBackupKey = desired
+      }
+    },
     recoveryPinGuardEnabled = enabled,
     onRecoveryPinGuardChanged = { desired ->
       RecoveryPinGuard.verify(context) {

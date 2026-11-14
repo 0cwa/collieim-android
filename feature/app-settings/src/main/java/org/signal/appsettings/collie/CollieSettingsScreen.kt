@@ -42,6 +42,8 @@ fun CollieSettingsScreen(
   state: LabsSettingsState,
   onEvent: (LabsSettingsEvent) -> Unit,
   modifier: Modifier = Modifier,
+  protectBackupKey: Boolean = false,
+  onProtectBackupKeyChanged: (Boolean) -> Unit = {},
   recoveryPinGuardEnabled: Boolean = false,
   onRecoveryPinGuardChanged: (Boolean) -> Unit = {}
 ) {
@@ -68,6 +70,15 @@ fun CollieSettingsScreen(
           label = stringResource(R.string.CollieSettings__recovery_pin_guard_description),
           onCheckChanged = onRecoveryPinGuardChanged,
           modifier = Modifier.testTag(CollieSettingsTestTags.ROW_RECOVERY_PIN_GUARD)
+        )
+      }
+
+      item {
+        Rows.ToggleRow(
+          checked = protectBackupKey,
+          text = stringResource(R.string.CollieSettings__protect_backup_key),
+          label = stringResource(R.string.CollieSettings__protect_backup_key_description),
+          onCheckChanged = onProtectBackupKeyChanged
         )
       }
 

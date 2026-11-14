@@ -7,6 +7,7 @@ package org.thoughtcrime.securesms.security
 import android.content.Context
 import android.net.ConnectivityManager
 import android.provider.Settings
+import android.os.SystemClock
 import android.webkit.WebView
 import android.view.KeyEvent
 import android.widget.FrameLayout
@@ -59,6 +60,9 @@ class DebugViewerBoundaryTest {
       instrumentation.runOnMainSync { web.requestFocus() }
       javascript(web, "editor.focus(); editor.selection.moveCursorTo(0, 25);")
       instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_F3)
+      val now = SystemClock.uptimeMillis()
+      instrumentation.sendKeySync(KeyEvent(now, now, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_F3, 0, KeyEvent.META_CTRL_ON))
+      instrumentation.sendKeySync(KeyEvent(now, now + 1, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_F3, 0, KeyEvent.META_CTRL_ON))
       Thread.sleep(3000)
       assertEquals("F3 navigated away from the bundled viewer", "\"file:///android_asset/debuglogs-viewer.html\"", javascript(web, "location.href"))
       // A programmatic replacement deliberately bypasses WebViewClient navigation handling.

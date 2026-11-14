@@ -8,7 +8,6 @@ import io.reactivex.rxjava3.subjects.Subject
 import org.signal.core.models.badges.Badge
 import org.signal.core.util.logging.Log
 import org.signal.donations.PaymentSourceType
-import org.signal.donations.StripeApi
 import org.signal.network.util.JsonUtil
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
@@ -20,7 +19,6 @@ import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
 import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository.toPaymentMethodType
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.stripe.Stripe3DSData
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.BadgeList
@@ -163,7 +161,7 @@ class InAppPaymentValues internal constructor(store: KeyValueStore) : SignalStor
       CurrencyUtil.getCurrencyByCurrencyCode(currencyCode)
     }
 
-    return if (currency != null && StripeApi.Validation.supportedCurrencyCodes.contains(currency.currencyCode.uppercase(Locale.ROOT))) {
+    return if (currency != null) {
       currency
     } else {
       Currency.getInstance("USD")
@@ -500,38 +498,6 @@ class InAppPaymentValues internal constructor(store: KeyValueStore) : SignalStor
     synchronized(this) {
       this._pendingOneTimeDonation = pendingOneTimeDonation
       pendingOneTimeDonationPublisher.onNext(Optional.ofNullable(pendingOneTimeDonation))
-    }
-  }
-
-  fun consumePending3DSData(): Stripe3DSData? {
-    synchronized(this) {
-      val data = getBlob(PENDING_3DS_DATA, null)?.let {
-        Stripe3DSData.fromProtoBytes(it)
-      }
-
-      remove(PENDING_3DS_DATA)
-      return data
-    }
-  }
-
-  fun consumeVerifiedSubscription3DSData(): Stripe3DSData? {
-    synchronized(this) {
-      val data = getBlob(VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA, null)?.let {
-        Stripe3DSData.fromProtoBytes(it)
-      }
-
-      setVerifiedSubscription3DSData(null)
-      return data
-    }
-  }
-
-  fun setVerifiedSubscription3DSData(stripe3DSData: Stripe3DSData?) {
-    synchronized(this) {
-      if (stripe3DSData != null) {
-        putBlob(VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA, stripe3DSData.toProtoBytes())
-      } else {
-        remove(VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA)
-      }
     }
   }
 

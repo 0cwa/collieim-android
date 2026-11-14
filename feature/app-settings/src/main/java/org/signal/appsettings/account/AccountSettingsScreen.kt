@@ -115,7 +115,6 @@ object AccountSettingsTestTags {
 fun AccountSettingsScreen(
   state: AccountSettingsState,
   onEvent: (AccountSettingsEvent) -> Unit,
-  donationManagementLabel: String? = null
 ) {
   Scaffolds.Settings(
     title = stringResource(R.string.AccountSettingsFragment__account),
@@ -319,17 +318,6 @@ fun AccountSettingsScreen(
             },
             onClick = { onEvent(AccountSettingsEvent.PaymentsClicked) },
             modifier = Modifier.testTag(AccountSettingsTestTags.ROW_PAYMENTS)
-          )
-        }
-      }
-
-      if (state.showDonationManagement && donationManagementLabel != null) {
-        item {
-          Rows.TextRow(
-            text = donationManagementLabel,
-            icon = SignalIcons.Heart.painter,
-            onClick = { onEvent(AccountSettingsEvent.ManageDonationsClicked) },
-            modifier = Modifier.testTag(AccountSettingsTestTags.ROW_MANAGE_DONATIONS)
           )
         }
       }

@@ -44,9 +44,6 @@ sealed interface EditProfileEvent {
   /** The user tapped the badges row. */
   data object BadgesClicked : EditProfileEvent
 
-  /** The user tapped the button in [EditProfileState.Dialog.BecomeASustainer]. */
-  data object BecomeASustainerClicked : EditProfileEvent
-
   /** The user tapped the username row. */
   data object UsernameClicked : EditProfileEvent
 

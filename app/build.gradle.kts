@@ -109,6 +109,13 @@ android {
       all { task ->
         task.forkEvery = 64
         task.maxHeapSize = "1g"
+        providers.gradleProperty("collieAppTestShard").orNull?.toInt()?.let { shard ->
+          require(shard in 0..1)
+          task.include { element ->
+            val className = element.relativePath.pathString.substringBefore('$').removeSuffix(".class")
+            element.isDirectory || Math.floorMod(className.hashCode(), 2) == shard
+          }
+        }
       }
     }
   }

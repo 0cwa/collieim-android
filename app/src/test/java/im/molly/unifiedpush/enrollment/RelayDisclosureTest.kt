@@ -18,13 +18,13 @@ import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -243,7 +243,7 @@ class RelayDisclosureTest {
     assertEquals(1, continued)
   }
 
-  @Test fun `setup continuation waits for an in-flight endpoint transition and runs once afterward`() = runTest {
+  @Test fun `setup continuation waits for an in-flight endpoint transition and runs once afterward`() = runBlocking {
     val authorization = checkNotNull(RelayDisclosure.selectRelay(capture(), proposed))
     val entered = CompletableDeferred<Unit>()
     val release = CompletableDeferred<Unit>()
@@ -254,23 +254,24 @@ class RelayDisclosureTest {
         values.endpoint = "https://push.example.invalid/renewed"
       }
     }
-    entered.await()
     var effects = 0
-    val completion = async { RelayDisclosure.completeSelection(authorization) { effects++ } }
     try {
-      runCurrent()
-      advanceTimeBy(100)
-      runCurrent()
+      withTimeout(5000) { entered.await() }
+      // Run the first readiness check before asserting, without racing virtual time against Default/IO.
+      val completion = async(start = CoroutineStart.UNDISPATCHED) {
+        RelayDisclosure.completeSelection(authorization) { effects++ }
+      }
       assertFalse(completion.isCompleted)
       assertEquals(0, effects)
+      release.complete(Unit)
+      withTimeout(5000) {
+        transition.join()
+        assertTrue(completion.await())
+      }
+      assertEquals(1, effects)
     } finally {
       release.complete(Unit)
     }
-    transition.join()
-    advanceTimeBy(50)
-    runCurrent()
-    assertTrue(completion.await())
-    assertEquals(1, effects)
   }
 
   @Test fun `setup continuation expires without an effect when lifecycle does not become ready`() = runTest {
@@ -383,13 +384,22 @@ class RelayDisclosureTest {
     assertEquals(sequence, values.controlState.importSequence)
   }
 
-  @Test fun `replaced or forgotten saved intent cannot be authorized by an older dialog`() {
+  @Test fun `superseded or forgotten saved intent cannot be authorized by an older dialog`() {
     val first = export(capture())
     val snapshot = capture()
-    values.mutateControl { old -> old.copy(intents = old.intents.map { it.copy(password = "replacement") }) }
+    val replacement = export(capture(), ExportMode.RECOVERY)
+    val bytes = replacement.file.readBytes()
+    val sequence = values.controlState.importSequence
+    assertFalse(values.controlState.intents.single { it.requestId == first.requestId }.eligible)
     assertEquals("disclosure_changed", refused { export(snapshot, ExportMode.RERENDER, first.requestId) })
-    values.mutateControl { it.copy(intents = emptyList()) }
-    assertEquals("disclosure_changed", refused { export(snapshot, ExportMode.RERENDER, first.requestId) })
+    assertEquals(bytes.toList(), replacement.file.readBytes().toList())
+    assertEquals(sequence, values.controlState.importSequence)
+
+    val replacementSnapshot = capture()
+    assertTrue(EnrollmentExporter.forgetIntent(replacement.requestId))
+    assertEquals("disclosure_changed", refused { export(replacementSnapshot, ExportMode.RERENDER, replacement.requestId) })
+    assertEquals(bytes.toList(), replacement.file.readBytes().toList())
+    assertEquals(sequence, values.controlState.importSequence)
   }
 
   @Test fun `saved intent from another account is refused even when present on the new screen`() {
@@ -400,11 +410,23 @@ class RelayDisclosureTest {
 
   @Test fun `recovery export still uses the existing v3 sequence and recovery semantics`() {
     val first = export(capture())
+    val before = values.controlState
     val recovered = export(capture(), ExportMode.RECOVERY)
+    val after = values.controlState
+    val recovery = after.intents.single { it.requestId == recovered.requestId }
     assertEquals(first.epoch, recovered.epoch)
-    assertEquals(2L, values.controlState.importSequence)
-    assertTrue(values.controlState.intents.last().recovery)
-    assertEquals(1L, values.controlState.activeEpoch)
+    assertFalse(first.requestId == recovered.requestId)
+    assertEquals(before.importSequence + 1, after.importSequence)
+    assertEquals(after.importSequence, recovery.sequence)
+    assertTrue(recovery.recovery)
+    assertTrue(recovery.eligible)
+    assertEquals(before.intents.single().controlKey, recovery.controlKey)
+    assertEquals(before.intents.single().keyId, recovery.keyId)
+    // Export only saves a candidate; a matching authenticated receipt activates it.
+    assertEquals(before.key, after.key)
+    assertEquals(before.activeEpoch, after.activeEpoch)
+    assertEquals(before.activeImportId, after.activeImportId)
+    assertEquals(before.activeImportSeq, after.activeImportSeq)
   }
 
   @Test fun `snapshots and queued authorization do not print credentials`() = runBlocking {

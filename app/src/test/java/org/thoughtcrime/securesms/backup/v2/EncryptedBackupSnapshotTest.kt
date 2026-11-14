@@ -6,6 +6,7 @@
 package org.thoughtcrime.securesms.backup.v2
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
 import org.junit.Rule
@@ -19,6 +20,9 @@ import org.signal.archive.stream.EncryptedBackupWriter
 import org.signal.core.models.ServiceId.ACI
 import org.signal.core.models.backup.MessageBackupKey
 import org.signal.core.util.Util
+import org.whispersystems.signalservice.api.crypto.AttachmentCipherInputStream
+import org.whispersystems.signalservice.api.crypto.AttachmentCipherOutputStream
+import java.security.MessageDigest
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -49,6 +53,33 @@ class EncryptedBackupSnapshotTest {
       }
     }
     assertEquals(listOf("authenticated"), names)
+    assertEquals(1, opens)
+    assertFalse(snapshot.exists())
+  }
+
+  @Test
+  fun `snapshot binds attachment verification and decryption to one provider read`() {
+    val key = ByteArray(64) { it.toByte() }
+    val plaintext = ByteArray(128) { it.toByte() }
+    val output = ByteArrayOutputStream()
+    AttachmentCipherOutputStream(key, ByteArray(16), output).use { it.write(plaintext) }
+    val encrypted = output.toByteArray()
+    val altered = encrypted.copyOf().apply { this[0] = (this[0].toInt() xor 1).toByte() }
+    val check = AttachmentCipherInputStream.IntegrityCheck.forPlaintextHash(MessageDigest.getInstance("SHA-256").digest(plaintext))
+    var opens = 0
+    val provider = AttachmentCipherInputStream.StreamSupplier { if (++opens == 1) encrypted.inputStream() else altered.inputStream() }
+
+    AttachmentCipherInputStream.createForAttachment(provider, encrypted.size.toLong(), plaintext.size.toLong(), key, check, null, 0).use { stream ->
+      assertEquals(plaintext[0].toInt() xor 1, stream.read())
+    }
+    assertEquals(2, opens)
+
+    opens = 0
+    val snapshot = File(temporary.root, "attachment.enc")
+    val restored = withEncryptedBackupSnapshot(snapshot, encrypted.size.toLong(), { provider.openStream() }) { file ->
+      AttachmentCipherInputStream.createForAttachment(file, plaintext.size.toLong(), key, check, null, 0).use { it.readBytes() }
+    }
+    assertArrayEquals(plaintext, restored)
     assertEquals(1, opens)
     assertFalse(snapshot.exists())
   }

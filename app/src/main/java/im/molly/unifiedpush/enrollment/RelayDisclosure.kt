@@ -130,17 +130,19 @@ object RelayDisclosure {
     return false
   }
 
-  /** Keep exporter → lifecycle lock ordering, and reject before deleting files or allocating an import sequence. */
+  /** Match the exporter's static Class → instance → lifecycle order before checking or publishing anything. */
   fun <T> exportIfCurrent(snapshot: Snapshot?, mode: ExportMode, requestId: String?, action: () -> T): T =
-    synchronized(EnrollmentExporter) {
-      synchronized(UnifiedPushLifecycle.monitor) {
-        if (snapshot == null || !matchesLocked(snapshot, requireReadyGeneration = true)) throw EnrollmentFile.Invalid("disclosure_changed")
-        if (mode == ExportMode.RERENDER) {
-          val saved = snapshot.intents.firstOrNull { it.requestId == requestId && it.eligible }
-          val current = SignalStore.unifiedpush.controlStateRead.stateOrNull?.intents?.firstOrNull { it.requestId == requestId }
-          if (saved == null || saved != current || saved.accountId != snapshot.account.accountId) throw EnrollmentFile.Invalid("disclosure_changed")
+    synchronized(EnrollmentExporter::class.java) {
+      synchronized(EnrollmentExporter) {
+        synchronized(UnifiedPushLifecycle.monitor) {
+          if (snapshot == null || !matchesLocked(snapshot, requireReadyGeneration = true)) throw EnrollmentFile.Invalid("disclosure_changed")
+          if (mode == ExportMode.RERENDER) {
+            val saved = snapshot.intents.firstOrNull { it.requestId == requestId && it.eligible }
+            val current = SignalStore.unifiedpush.controlStateRead.stateOrNull?.intents?.firstOrNull { it.requestId == requestId }
+            if (saved == null || saved != current || saved.accountId != snapshot.account.accountId) throw EnrollmentFile.Invalid("disclosure_changed")
+          }
+          action()
         }
-        action()
       }
     }
 

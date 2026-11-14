@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.groups.v2.processing
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.net.Uri
 import assertk.assertThat
 import assertk.assertions.any
 import assertk.assertions.contains
@@ -62,8 +63,10 @@ import org.thoughtcrime.securesms.groups.GroupsV2Authorization
 import org.thoughtcrime.securesms.groups.v2.ProfileKeySet
 import org.thoughtcrime.securesms.groups.v2.processing.GroupsV2StateProcessor.ProfileAndMessageHelper
 import org.thoughtcrime.securesms.jobmanager.JobManager
+import org.thoughtcrime.securesms.jobs.AvatarGroupsV2DownloadJob
 import org.thoughtcrime.securesms.jobs.ConversationShortcutUpdateJob
 import org.thoughtcrime.securesms.jobs.DirectoryRefreshJob
+import org.thoughtcrime.securesms.jobs.LeaveGroupV2Job
 import org.thoughtcrime.securesms.jobs.RequestGroupV2InfoJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.logging.CustomSignalProtocolLogger
@@ -1808,5 +1811,96 @@ class GroupsV2StateProcessorTest {
 
     verify { recipientTable.isProfileSharing(groupId) }
     verify(exactly = 0) { recipientTable.setProfileSharing(any(), any()) }
+  }
+
+  @Test
+  fun `when a blocked system contact approves our join request, then do not enable profile sharing or leave`() {
+    applyGroupAddition(
+      Recipient(id = RecipientId.from(200), isBlocked = true, contactUri = Uri.parse("content://contacts/200"))
+    )
+
+    verify(exactly = 0) { recipientTable.setProfileSharing(any(), any()) }
+    verify(exactly = 0) { jobManager.add(any()) }
+  }
+
+  @Test
+  fun `when a blocked profile-sharing contact approves our join request, then do not enable group profile sharing or leave`() {
+    applyGroupAddition(
+      Recipient(id = RecipientId.from(200), isBlocked = true, isProfileSharing = true)
+    )
+
+    verify(exactly = 0) { recipientTable.setProfileSharing(any(), any()) }
+    verify(exactly = 0) { jobManager.add(any()) }
+  }
+
+  @Test
+  fun `when an unblocked system contact approves our join request, then enable profile sharing and fetch the avatar`() {
+    applyGroupAddition(
+      Recipient(id = RecipientId.from(200), contactUri = Uri.parse("content://contacts/200"))
+    )
+
+    verify(exactly = 1) { recipientTable.setProfileSharing(RecipientId.from(100), true) }
+    verify(exactly = 1) { jobManager.add(ofType(AvatarGroupsV2DownloadJob::class)) }
+    verify(exactly = 0) { jobManager.add(ofType(LeaveGroupV2Job::class)) }
+  }
+
+  @Test
+  fun `when an unblocked profile-sharing contact approves our join request, then enable group profile sharing`() {
+    applyGroupAddition(
+      Recipient(id = RecipientId.from(200), isProfileSharing = true)
+    )
+
+    verify(exactly = 1) { recipientTable.setProfileSharing(RecipientId.from(100), true) }
+    verify(exactly = 1) { jobManager.add(ofType(AvatarGroupsV2DownloadJob::class)) }
+    verify(exactly = 0) { jobManager.add(ofType(LeaveGroupV2Job::class)) }
+  }
+
+  @Test
+  fun `when a hidden contact approves our join request, then do not enable profile sharing`() {
+    applyGroupAddition(
+      Recipient(id = RecipientId.from(200), isProfileSharing = true, hiddenState = Recipient.HiddenState.HIDDEN)
+    )
+
+    verify(exactly = 0) { recipientTable.setProfileSharing(any(), any()) }
+    verify(exactly = 0) { jobManager.add(any()) }
+  }
+
+  @Test
+  fun `when a blocked contact adds us without a join request, then still leave without enabling profile sharing`() {
+    applyGroupAddition(
+      Recipient(id = RecipientId.from(200), isBlocked = true, isProfileSharing = true),
+      requestedToJoin = false
+    )
+
+    verify(exactly = 0) { recipientTable.setProfileSharing(any(), any()) }
+    verify(exactly = 1) { jobManager.add(ofType(LeaveGroupV2Job::class)) }
+    verify(exactly = 0) { jobManager.add(ofType(AvatarGroupsV2DownloadJob::class)) }
+  }
+
+  private fun applyGroupAddition(addedBy: Recipient, requestedToJoin: Boolean = true) {
+    val previousGroupState = DecryptedGroup(
+      revision = 0,
+      members = others,
+      requestingMembers = if (requestedToJoin) listOf(requestingMember(selfAci)) else emptyList()
+    )
+    val newLocalState = DecryptedGroup(
+      revision = 1,
+      members = listOf(member(otherAci), member(selfAci, joinedAt = 1)),
+      avatar = "group-avatar"
+    )
+    val change = DecryptedGroupChange(revision = 1, editorServiceIdBytes = otherAci.toByteString())
+
+    mockkObject(Recipient)
+    mockkStatic(Recipient::class)
+    every { Recipient.externalPush(otherAci) } returns addedBy
+    every { Recipient.externalGroupExact(groupId) } returns Recipient(id = RecipientId.from(100))
+    justRun { recipientTable.setProfileSharing(any(), any()) }
+    justRun { jobManager.add(any()) }
+
+    profileAndMessageHelper.setProfileSharing(
+      GroupStateDiff(previousGroupState, newLocalState, change),
+      newLocalState,
+      needsAvatarFetch = true
+    )
   }
 }

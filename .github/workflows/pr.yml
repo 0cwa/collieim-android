@@ -76,8 +76,12 @@ jobs:
           echo "Findings: $(wc -l < "$RUNNER_TEMP/all.txt") total, $(wc -l < "$RUNNER_TEMP/new.txt") in changed files"
           if [ -s "$RUNNER_TEMP/new.txt" ]; then cat "$RUNNER_TEMP/new.txt"; exit 1; fi
 
-  unit-tests:
-    name: Unit tests
+  unit-test-shards:
+    name: Unit tests (${{ matrix.shard }})
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [app-0, app-1, modules]
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
@@ -118,25 +122,81 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
-      - run: |
-          ./gradlew --no-daemon --continue \
-            -PcollieHostJniDir=build/host-tests/resources \
-            :app:testProdWebsiteDebugUnitTest testDebugUnitTest \
-            :core:util-jvm:test :lib:libsignal-service:test \
-            :core:network:test :lib:network:test :fast-lint:test :lintchecks:test
-      - name: Require all unit tasks and security regression suites
+      - name: Run unit test shard
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          if [ "$SHARD" = modules ]; then
+            ./gradlew --no-daemon --continue -PcollieHostJniDir=build/host-tests/resources \
+              testDebugUnitTest :core:util-jvm:test :lib:libsignal-service:test \
+              :core:network:test :lib:network:test :fast-lint:test :lintchecks:test
+          else
+            ./gradlew --no-daemon --continue -PcollieHostJniDir=build/host-tests/resources \
+              -PcollieAppTestShard="${SHARD#app-}" :app:testProdWebsiteDebugUnitTest
+          fi
+      - name: Package shard results
         if: ${{ !cancelled() }}
-        run: python3 .github/scripts/check-unit-test-results.py --json-output build/ci/unit-test-results.json
-      - name: Keep unit test results and native build receipt
+        run: |
+          find app core feature lib tooling \( -path '*/build/test-results/*/TEST-*.xml' -o -path '*/build/reports/tests/*' \) -type f -print0 > "$RUNNER_TEMP/results-list"
+          printf '%s\0' build/host-tests/receipt.json build/ci/source-commit.txt build/ci/source-tree.txt >> "$RUNNER_TEMP/results-list"
+          tar --null -T "$RUNNER_TEMP/results-list" -cf "$RUNNER_TEMP/results.tar"
+      - name: Keep shard results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unit-test-shard-${{ matrix.shard }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/results.tar
+          if-no-files-found: error
+
+  unit-tests:
+    name: Unit tests
+    if: ${{ always() }}
+    needs: [unit-test-shards]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: unit-test-shard-*-${{ github.run_id }}
+          path: build/shard-artifacts
+      - name: Combine and verify all unit test results
+        env:
+          SHARD_RESULT: ${{ needs.unit-test-shards.result }}
+        run: |
+          for shard in app-0 app-1 modules; do
+            mkdir -p "build/shards/$shard"
+            tar -xf "build/shard-artifacts/unit-test-shard-$shard-${{ github.run_id }}/results.tar" -C "build/shards/$shard"
+            mkdir -p "build/shards/$shard"/{app,core,feature,lib,tooling}
+            (cd "build/shards/$shard" && find app core feature lib tooling -path '*/build/test-results/*/TEST-*.xml' -type f -exec cp --parents -t "$GITHUB_WORKSPACE" {} +)
+          done
+          mkdir -p build/ci
+          mkdir -p build/host-tests
+          cp build/shards/modules/build/host-tests/receipt.json build/host-tests/receipt.json
+          cp .github/ci-required-tests.json build/ci/ci-required-tests.json
+          git rev-parse HEAD > build/ci/source-commit.txt
+          git rev-parse HEAD^{tree} > build/ci/source-tree.txt
+          for shard in app-0 app-1 modules; do
+            cmp "build/shards/$shard/build/ci/source-commit.txt" build/ci/source-commit.txt
+            cmp "build/shards/$shard/build/ci/source-tree.txt" build/ci/source-tree.txt
+          done
+          python3 .github/scripts/check-unit-test-results.py \
+            --shard-root build/shards/app-0 --shard-root build/shards/app-1 \
+            --shard-root build/shards/modules --json-output build/ci/unit-test-results.json
+          test "$SHARD_RESULT" = success
+      - name: Keep combined unit test results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: unit-test-reports-${{ github.run_id }}
           path: |
-            **/build/reports/tests
-            **/build/test-results
-            build/host-tests/receipt.json
+            build/shards
             build/ci
+            build/host-tests/receipt.json
+            **/build/test-results/**/*.xml
+            !build/shards/**/build/test-results/**
           if-no-files-found: error
 
   production-build:

@@ -56,6 +56,26 @@ class PhoneAuthenticationAttemptTest {
   }
 
   @Test
+  fun drainedCredentialMarkerDoesNotReturnAfterLaterProcessDeath() {
+    val retained = PhoneAuthenticationAttempt()
+    retained.initialize(false)
+    assertTrue(retained.start {})
+    retained.onCredentialLaunched()
+    assertTrue(retained.credentialOutstanding)
+    retained.detach()
+    retained.finish(false)
+
+    // Restoration replays a previously saved marker; composition saves authoritative state.
+    retained.initialize(true)
+    val resavedMarker = retained.credentialOutstanding
+    assertFalse(resavedMarker)
+
+    val afterProcessDeath = PhoneAuthenticationAttempt()
+    afterProcessDeath.initialize(resavedMarker)
+    assertTrue(afterProcessDeath.start {})
+  }
+
+  @Test
   fun retainedAttemptDoesNotReinstateAnAlreadyDrainedCredential() {
     val attempt = PhoneAuthenticationAttempt()
     attempt.initialize(false)

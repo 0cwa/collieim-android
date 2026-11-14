@@ -36,6 +36,8 @@ fun rememberBackupKeyPhoneAuthentication(title: String): ((() -> Unit) -> Unit) 
   var credentialOutstanding by rememberSaveable { mutableStateOf(false) }
   val attempt: PhoneAuthenticationAttempt = viewModel()
   attempt.initialize(credentialOutstanding)
+  // A retained attempt may have drained before this saved marker was restored.
+  credentialOutstanding = attempt.credentialOutstanding
   fun finish(success: Boolean) = attempt.finish(success)
   val credentialLauncher = rememberLauncherForActivityResult(BiometricDeviceLockContract()) { result ->
     credentialOutstanding = false
@@ -66,6 +68,7 @@ fun rememberBackupKeyPhoneAuthentication(title: String): ((() -> Unit) -> Unit) 
     if (attempt.start(onAuthenticated)) {
       try {
         if (!authentication.authenticate(context, true) {
+            attempt.onCredentialLaunched()
             credentialOutstanding = true
             credentialLauncher.launch(title)
           }
@@ -82,12 +85,15 @@ fun rememberBackupKeyPhoneAuthentication(title: String): ((() -> Unit) -> Unit) 
 internal class PhoneAuthenticationAttempt : ViewModel() {
   var pending: Boolean = false
     private set
+  var credentialOutstanding by mutableStateOf(false)
+    private set
   private var initialized = false
   private var action: (() -> Unit)? = null
 
-  fun initialize(credentialOutstanding: Boolean) {
+  fun initialize(savedCredentialOutstanding: Boolean) {
     if (!initialized) {
-      pending = credentialOutstanding
+      credentialOutstanding = savedCredentialOutstanding
+      pending = savedCredentialOutstanding
       initialized = true
     }
   }
@@ -99,10 +105,16 @@ internal class PhoneAuthenticationAttempt : ViewModel() {
     return true
   }
 
+  fun onCredentialLaunched() {
+    check(pending)
+    credentialOutstanding = true
+  }
+
   fun finish(success: Boolean) {
     val authenticatedAction = if (success) action else null
     action = null
     pending = false
+    credentialOutstanding = false
     authenticatedAction?.invoke()
   }
 

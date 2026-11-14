@@ -1,2 +1,3 @@
 topic: settings
+pr: 156
 What’s new has a Project log of every change, also under Settings, Help.

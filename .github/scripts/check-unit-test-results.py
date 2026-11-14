@@ -43,10 +43,11 @@ def check_results(root, policy, shard_roots=None):
     skipped_cases = []
     roots = shard_roots or [root]
     shard_counts = {}
+    shard_totals = {}
     for root in roots:
         if root.name in shard_counts:
             raise ValueError(f"Duplicate shard root name: {root.name}")
-        before = sum(values[0] - values[3] for values in counts.values())
+        shard_total = [0, 0, 0, 0]
         for group in ("app", "core", "feature", "lib", "tooling"):
             for path in sorted((root / group).glob("**/build/test-results/**/TEST-*.xml")):
                 suite = ET.parse(path).getroot()
@@ -69,10 +70,12 @@ def check_results(root, policy, shard_roots=None):
                     raise ValueError(f"Duplicate JUnit suite: {task} {key[1]}")
                 suites[key] = values
                 counts[task] = [a + b for a, b in zip(counts[task], values)]
+                shard_total = [a + b for a, b in zip(shard_total, values)]
                 skipped_cases.extend({"task": task, "class": key[1], "name": case.get("name", "")}
                                      for case in cases if case.find("skipped") is not None)
 
-        shard_counts[root.name] = sum(values[0] - values[3] for values in counts.values()) - before
+        shard_counts[root.name] = shard_total[0] - shard_total[3]
+        shard_totals[root.name] = dict(zip(FIELDS, shard_total))
 
     total = [sum(values[index] for values in counts.values()) for index in range(4)]
     lines = ["## Unit test results", "", "| Task | Executed | Failed | Errors | Skipped |",
@@ -86,7 +89,10 @@ def check_results(root, policy, shard_roots=None):
         for name, count in shard_counts.items():
             if count <= 0:
                 problems.append(f"Shard has no executed tests: {name}")
-        lines.extend(["", "## Shard counts", "", *[f"- {name}: {count} executed" for name, count in shard_counts.items()]])
+        lines.extend(["", "## Shard counts", "", "| Shard | Collected | Executed | Skipped |",
+                      "| --- | ---: | ---: | ---: |"])
+        for name, values in shard_totals.items():
+            lines.append(f"| `{name}` | {values['tests']} | {shard_counts[name]} | {values['skipped']} |")
     for task in policy["required_tasks"]:
         values = counts.get(task, [0, 0, 0, 0])
         if values[0] - values[3] <= 0:
@@ -117,7 +123,8 @@ def check_results(root, policy, shard_roots=None):
 
     return {"schema": 1, "passed": not problems, "problems": problems,
             "tasks": {task: dict(zip(FIELDS, values)) for task, values in sorted(counts.items())},
-            "total": dict(zip(FIELDS, total)), "skipped_cases": skipped_cases, "shards": shard_counts if shard_roots else {}}
+            "total": dict(zip(FIELDS, total)), "skipped_cases": skipped_cases,
+            "shards": shard_counts if shard_roots else {}, "shard_totals": shard_totals if shard_roots else {}}
 
 
 def main():

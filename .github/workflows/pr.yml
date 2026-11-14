@@ -138,7 +138,7 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           find app core feature lib tooling \( -path '*/build/test-results/*/TEST-*.xml' -o -path '*/build/reports/tests/*' \) -type f -print0 > "$RUNNER_TEMP/results-list"
-          printf '%s\0' build/host-tests/receipt.json >> "$RUNNER_TEMP/results-list"
+          printf '%s\0' build/host-tests/receipt.json build/ci/source-commit.txt build/ci/source-tree.txt >> "$RUNNER_TEMP/results-list"
           tar --null -T "$RUNNER_TEMP/results-list" -cf "$RUNNER_TEMP/results.tar"
       - name: Keep shard results
         if: ${{ !cancelled() }}
@@ -153,6 +153,7 @@ jobs:
     if: ${{ always() }}
     needs: [unit-test-shards]
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -176,6 +177,10 @@ jobs:
           cp .github/ci-required-tests.json build/ci/ci-required-tests.json
           git rev-parse HEAD > build/ci/source-commit.txt
           git rev-parse HEAD^{tree} > build/ci/source-tree.txt
+          for shard in app-0 app-1 modules; do
+            cmp "build/shards/$shard/build/ci/source-commit.txt" build/ci/source-commit.txt
+            cmp "build/shards/$shard/build/ci/source-tree.txt" build/ci/source-tree.txt
+          done
           python3 .github/scripts/check-unit-test-results.py \
             --shard-root build/shards/app-0 --shard-root build/shards/app-1 \
             --shard-root build/shards/modules --json-output build/ci/unit-test-results.json
@@ -193,6 +198,7 @@ jobs:
             build/ci
             build/host-tests/receipt.json
             **/build/test-results/**/*.xml
+            !build/shards/**/build/test-results/**
           if-no-files-found: error
 
   production-build:

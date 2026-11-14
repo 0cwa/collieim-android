@@ -117,6 +117,7 @@ class ResultGateTests(unittest.TestCase):
         self.assertFalse(self.check()["passed"])
 
     def test_shards_must_each_execute_tests_and_cannot_duplicate_suites(self):
+        self.report(self.library, "example.StorageTest", [None, "skipped"])
         first, second = self.root / "first", self.root / "second"
         first.mkdir()
         second.mkdir()
@@ -126,6 +127,9 @@ class ResultGateTests(unittest.TestCase):
             result = gate.check_results(self.root, self.policy, [first, second])
         self.assertTrue(result["passed"])
         self.assertEqual(result["shards"], {"first": 2, "second": 1})
+        self.assertEqual(result["shard_totals"], {
+            "first": {"tests": 2, "failures": 0, "errors": 0, "skipped": 0},
+            "second": {"tests": 2, "failures": 0, "errors": 0, "skipped": 1}})
         shutil.rmtree(second / "lib")
         with redirect_stdout(io.StringIO()):
             result = gate.check_results(self.root, self.policy, [first, second])

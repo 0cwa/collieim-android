@@ -112,7 +112,8 @@ android {
         providers.gradleProperty("collieAppTestShard").orNull?.toInt()?.let { shard ->
           require(shard in 0..1)
           task.include { element ->
-            element.isDirectory || Math.floorMod(element.relativePath.pathString.substringBefore('$').hashCode(), 2) == shard
+            val className = element.relativePath.pathString.substringBefore('$').removeSuffix(".class")
+            element.isDirectory || Math.floorMod(className.hashCode(), 2) == shard
           }
         }
       }

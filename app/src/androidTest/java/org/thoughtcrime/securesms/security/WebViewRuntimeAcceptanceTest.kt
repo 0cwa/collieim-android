@@ -52,6 +52,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.ratelimit.RecaptchaProofActivity
 import org.thoughtcrime.securesms.registration.ui.captcha.CaptchaFragment
 import org.thoughtcrime.securesms.testing.SignalActivityRule
+import org.thoughtcrime.securesms.testing.SignalTestRunner
 import org.thoughtcrime.securesms.testing.endpoints.EndpointResponse
 import org.thoughtcrime.securesms.testing.endpoints.EndpointTransport
 import org.thoughtcrime.securesms.testing.endpoints.MockEndpoints
@@ -71,6 +72,7 @@ class WebViewRuntimeAcceptanceTest {
   private val html = """<html><body><h1 id="marker">Synthetic WebView page</h1><script>document.title='fixture-ready';</script><a id="callback" href="signalcaptcha://synthetic-token">Continue</a></body></html>"""
 
   @Before fun setup() {
+    (instrumentation as SignalTestRunner).enforceWebViewOffline("test-before-assertions")
     check(context.applicationContext is SignalInstrumentationApplicationContext) { "Use the normal SignalTestRunner, not -PimoTests" }
     assertEquals("Airplane mode must be enabled before app startup", 1, Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON))
     assertFalse("Wi-Fi must be disabled before app startup", context.getSystemService(WifiManager::class.java).isWifiEnabled)

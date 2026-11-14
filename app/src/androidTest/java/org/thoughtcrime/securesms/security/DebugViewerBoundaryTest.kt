@@ -58,12 +58,14 @@ class DebugViewerBoundaryTest {
           window.open = original; return opened; })()
       """.trimIndent()))
       instrumentation.runOnMainSync { web.requestFocus() }
-      javascript(web, "editor.focus(); editor.selection.moveCursorTo(0, 25);")
+      javascript(web, "window.__observedKeys = []; document.addEventListener('keydown', e => window.__observedKeys.push([e.key, e.ctrlKey]), true); editor.focus(); editor.selection.moveCursorTo(0, 25);")
       instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_F3)
       val now = SystemClock.uptimeMillis()
       instrumentation.sendKeySync(KeyEvent(now, now, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_F3, 0, KeyEvent.META_CTRL_ON))
       instrumentation.sendKeySync(KeyEvent(now, now + 1, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_F3, 0, KeyEvent.META_CTRL_ON))
       Thread.sleep(3000)
+      assertEquals("WebView did not receive F3", "true", javascript(web, "window.__observedKeys.some(k => k[0] === 'F3' && !k[1])"))
+      assertEquals("WebView did not receive Ctrl+F3", "true", javascript(web, "window.__observedKeys.some(k => k[0] === 'F3' && k[1])"))
       assertEquals("F3 navigated away from the bundled viewer", "\"file:///android_asset/debuglogs-viewer.html\"", javascript(web, "location.href"))
       // A programmatic replacement deliberately bypasses WebViewClient navigation handling.
       // It tests the separate log-delivery guard, not reachability from the bundled editor.

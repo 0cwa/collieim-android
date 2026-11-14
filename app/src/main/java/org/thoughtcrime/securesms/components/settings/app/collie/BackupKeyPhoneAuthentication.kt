@@ -10,13 +10,17 @@ import androidx.biometric.BiometricPrompt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.Saver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.findFragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.signal.core.ui.biometrics.BiometricDeviceAuthentication
 import org.signal.core.ui.biometrics.BiometricDeviceLockContract
 
@@ -27,12 +31,14 @@ fun rememberBackupKeyPhoneAuthentication(title: String): ((() -> Unit) -> Unit) 
   val view = LocalView.current
   val fragment = remember(view) { runCatching { view.findFragment<androidx.fragment.app.Fragment>() }.getOrNull() }
   val activity = fragment?.requireActivity() ?: (context as FragmentActivity)
-  val attempt = rememberSaveable(saver = Saver(
-    save = { it.pending },
-    restore = { PhoneAuthenticationAttempt(it) }
-  )) { PhoneAuthenticationAttempt(false) }
+  // Only the device-credential activity is expected to return a restored Activity Result.
+  // The biometric pending state is retained across configuration changes, not process death.
+  var credentialOutstanding by rememberSaveable { mutableStateOf(false) }
+  val attempt: PhoneAuthenticationAttempt = viewModel()
+  attempt.initialize(credentialOutstanding)
   fun finish(success: Boolean) = attempt.finish(success)
   val credentialLauncher = rememberLauncherForActivityResult(BiometricDeviceLockContract()) { result ->
+    credentialOutstanding = false
     finish(result == BiometricDeviceAuthentication.AUTHENTICATED)
   }
   val prompt = remember(activity, fragment) {
@@ -52,43 +58,55 @@ fun rememberBackupKeyPhoneAuthentication(title: String): ((() -> Unit) -> Unit) 
   }
   DisposableEffect(authentication) {
     onDispose {
-      attempt.dispose()
+      attempt.detach()
       authentication.cancelAuthentication()
     }
   }
   return { onAuthenticated ->
     if (attempt.start(onAuthenticated)) {
       try {
-        if (!authentication.authenticate(context, true) { credentialLauncher.launch(title) }) finish(false)
+        if (!authentication.authenticate(context, true) {
+            credentialOutstanding = true
+            credentialLauncher.launch(title)
+          }
+        ) finish(false)
       } catch (_: RuntimeException) {
+        credentialOutstanding = false
         finish(false)
       }
     }
   }
 }
 
-/** Only the instance that initiated a prompt may run its callback. */
-internal class PhoneAuthenticationAttempt(var pending: Boolean) {
+/** Retained during configuration changes, but never retains the originating screen's action after detachment. */
+internal class PhoneAuthenticationAttempt : ViewModel() {
+  var pending: Boolean = false
+    private set
+  private var initialized = false
   private var action: (() -> Unit)? = null
-  private var disposed = false
+
+  fun initialize(credentialOutstanding: Boolean) {
+    if (!initialized) {
+      pending = credentialOutstanding
+      initialized = true
+    }
+  }
 
   fun start(onAuthenticated: () -> Unit): Boolean {
-    if (pending || disposed) return false
+    if (pending) return false
     pending = true
     action = onAuthenticated
     return true
   }
 
   fun finish(success: Boolean) {
-    if (disposed) return
     val authenticatedAction = if (success) action else null
     action = null
     pending = false
     authenticatedAction?.invoke()
   }
 
-  fun dispose() {
-    disposed = true
+  fun detach() {
     action = null
   }
 }

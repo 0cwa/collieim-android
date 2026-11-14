@@ -7,31 +7,62 @@ import org.junit.Test
 
 class PhoneAuthenticationAttemptTest {
   @Test
-  fun recreatedScreenDiscardsOldResultBeforeAllowingNewPrompt() {
+  fun cancellationBetweenDisposalAndReattachmentDrainsRetainedAttempt() {
     var disclosures = 0
-    val old = PhoneAuthenticationAttempt(false)
-    assertTrue(old.start { disclosures++ })
-    val restored = PhoneAuthenticationAttempt(old.pending)
-    old.dispose()
-    assertFalse(restored.start { disclosures++ })
-    old.finish(true)
-    assertEquals(0, disclosures)
-    restored.finish(true)
-    assertEquals(0, disclosures)
-    assertTrue(restored.start { disclosures++ })
-    restored.finish(true)
+    val attempt = PhoneAuthenticationAttempt()
+    attempt.initialize(false)
+    assertTrue(attempt.start { disclosures++ })
+    attempt.detach()
+    attempt.finish(false)
+    attempt.initialize(false)
+    assertTrue(attempt.start { disclosures++ })
+    attempt.finish(true)
     assertEquals(1, disclosures)
   }
 
   @Test
-  fun cancellationDoesNotRunActionAndAllowsRetry() {
-    var changes = 0
-    val attempt = PhoneAuthenticationAttempt(false)
-    assertTrue(attempt.start { changes++ })
-    attempt.finish(false)
-    assertEquals(0, changes)
-    assertTrue(attempt.start { changes++ })
+  fun resultAfterReattachmentCannotAuthorizeReplacement() {
+    var disclosures = 0
+    val attempt = PhoneAuthenticationAttempt()
+    attempt.initialize(false)
+    assertTrue(attempt.start { disclosures++ })
+    attempt.detach()
+    attempt.initialize(false)
+    assertFalse(attempt.start { disclosures++ })
     attempt.finish(true)
+    assertEquals(0, disclosures)
+    assertTrue(attempt.start { disclosures++ })
+    attempt.finish(true)
+    assertEquals(1, disclosures)
+  }
+
+  @Test
+  fun processRecreationWaitsForRestoredCredentialResultButNotBiometricPrompt() {
+    var changes = 0
+    val restoredCredential = PhoneAuthenticationAttempt()
+    restoredCredential.initialize(true)
+    assertFalse(restoredCredential.start { changes++ })
+    restoredCredential.finish(true)
+    assertEquals(0, changes)
+    assertTrue(restoredCredential.start { changes++ })
+    restoredCredential.finish(true)
     assertEquals(1, changes)
+
+    val afterBiometricProcessDeath = PhoneAuthenticationAttempt()
+    afterBiometricProcessDeath.initialize(false)
+    assertTrue(afterBiometricProcessDeath.start { changes++ })
+    afterBiometricProcessDeath.finish(false)
+    assertEquals(1, changes)
+  }
+
+  @Test
+  fun retainedAttemptDoesNotReinstateAnAlreadyDrainedCredential() {
+    val attempt = PhoneAuthenticationAttempt()
+    attempt.initialize(false)
+    assertTrue(attempt.start {})
+    attempt.detach()
+    attempt.finish(false)
+    attempt.initialize(true)
+    assertTrue(attempt.start {})
   }
 }

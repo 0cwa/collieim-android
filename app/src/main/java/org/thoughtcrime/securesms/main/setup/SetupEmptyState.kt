@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.theme.SignalTheme
 import org.signal.core.util.requireFragmentActivity
 import org.thoughtcrime.securesms.R
@@ -42,11 +44,14 @@ object SetupEmptyState {
       setContent {
         SignalTheme {
           val activity = context.requireFragmentActivity()
-          EmptyChats(
-            onItemClick = { SetupActions.openItem(activity, it) },
-            onMessageFriend = { activity.startActivity(NewConversationActivity.createIntent(activity)) },
-            onHide = { SetupStatusRepository.hideRemaining() }
-          )
+          // The list item has no Surface behind it, so give text the theme's colour explicitly (dark theme included).
+          CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+            EmptyChats(
+              onItemClick = { SetupActions.openItem(activity, it) },
+              onMessageFriend = { activity.startActivity(NewConversationActivity.createIntent(activity)) },
+              onHide = { SetupStatusRepository.hideRemaining() }
+            )
+          }
         }
       }
     }
@@ -102,7 +107,8 @@ private fun EmptyChats(
       modifier = Modifier.padding(vertical = 8.dp)
     )
 
-    Buttons.LargeTonal(onClick = onMessageFriend) {
+    // The same calm tone as the compose button, which this repeats for people who have not found it yet.
+    FilledTonalButton(onClick = onMessageFriend) {
       Text(text = stringResource(R.string.CollieSetup__message_a_friend))
     }
     TextButton(onClick = onHide) {

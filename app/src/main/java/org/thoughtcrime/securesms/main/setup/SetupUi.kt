@@ -285,12 +285,19 @@ private fun SetupItemRow(
 @Composable
 private fun StatusMark(status: ItemStatus) {
   when (status) {
-    ItemStatus.DONE -> Icon(
-      imageVector = SignalIcons.CheckCircle.imageVector,
-      contentDescription = null,
-      tint = MaterialTheme.colorScheme.primary,
-      modifier = Modifier.size(24.dp)
-    )
+    ItemStatus.DONE -> Box(
+      contentAlignment = Alignment.Center,
+      modifier = Modifier
+        .size(24.dp)
+        .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
+    ) {
+      Icon(
+        imageVector = SignalIcons.Check.imageVector,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onPrimary,
+        modifier = Modifier.size(16.dp)
+      )
+    }
     ItemStatus.SKIPPED -> Icon(
       imageVector = SignalIcons.MinusCircle.imageVector,
       contentDescription = null,

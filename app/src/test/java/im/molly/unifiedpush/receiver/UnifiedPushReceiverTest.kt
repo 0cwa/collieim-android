@@ -176,12 +176,286 @@ class UnifiedPushReceiverTest {
   }
 
   @Test
+  fun `received endpoint invalidates the live generation even if pending persistence fails`() {
+    fakeAccount()
+    mockPendingEndpointStorage()
+    every { LockedPushState.trySavePending(any(), any()) } returns false
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+    try {
+      UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://push.example.invalid/new", null), "default")
+      assertFalse(UnifiedPushLifecycle.isCurrentGeneration(lease.generation))
+    } finally {
+      lease.close()
+    }
+  }
+
+  @Test
+  fun `failed pending route persistence closes admission`() {
+    val pending = mockPendingEndpointStorage()
+    every { LockedPushState.trySavePending(any(), any()) } returns false
+    val generation = UnifiedPushLifecycle.currentGeneration()
+    val schedule = synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushReceiver.recordEndpointLocked(context, LockedPushState.Endpoint(null, null, null, "default"))
+    }
+    assertNull(schedule)
+    assertTrue(UnifiedPushLifecycle.currentGeneration() > generation)
+    assertFalse(UnifiedPushLifecycle.isReady())
+    assertNull(pending.get())
+  }
+
+  @Test
+  fun `failure before initialization stays fenced when the first marker write fails`() {
+    fakeAccount()
+    mockPendingEndpointStorage()
+    every { LockedPushState.beginEndpointWrite(any()) } returns false
+    UnifiedPushLifecycle.resetForTests(initiallyReady = false, initiallyInitialized = false)
+    UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://example.org/new", null), "default")
+    UnifiedPushLifecycle.initialize(incompleteTransition = false, legacyContextIsCoherent = true, endpointWriteUncertain = false)
+    assertFalse(UnifiedPushLifecycle.isReady())
+    assertNull(UnifiedPushAccountTransition.acquireLease())
+  }
+
+  @Test
+  fun `startup snapshot and receiver write are serialized`() {
+    fakeAccount()
+    mockPendingEndpointStorage()
+    every { LockedPushState.beginEndpointWrite(any()) } returns false
+    val snapshotEntered = CountDownLatch(1)
+    val releaseSnapshot = CountDownLatch(1)
+    every { LockedPushState.hasUncertainWrite(any()) } answers {
+      snapshotEntered.countDown()
+      check(releaseSnapshot.await(5, TimeUnit.SECONDS))
+      false
+    }
+    UnifiedPushLifecycle.resetForTests(initiallyReady = false, initiallyInitialized = false)
+    assertTrue(UnifiedPushAccountTransition.hasCoherentRegisteredContext())
+    val startupFailure = AtomicReference<Throwable?>(null)
+    val receiverFailure = AtomicReference<Throwable?>(null)
+    val startup = Thread { try { UnifiedPushAccountTransition.initializeFromSignalStore() } catch (t: Throwable) { startupFailure.set(t) } }
+    val receiver = Thread { try { UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://example.org/new", null), "default") } catch (t: Throwable) { receiverFailure.set(t) } }
+    startup.start()
+    try {
+      assertTrue(snapshotEntered.await(5, TimeUnit.SECONDS))
+      receiver.start()
+      awaitCondition("receiver should wait for startup snapshot") { receiver.state == Thread.State.BLOCKED }
+    } finally {
+      releaseSnapshot.countDown()
+      startup.join(5000)
+      receiver.join(5000)
+    }
+    assertFalse(startup.isAlive)
+    assertFalse(receiver.isAlive)
+    assertNull(startupFailure.get())
+    assertNull(receiverFailure.get())
+    assertFalse(UnifiedPushLifecycle.isReady())
+  }
+
+  @Test
+  fun `failed newer endpoint keeps a draining older worker from applying or reopening`() {
+    fakeAccount()
+    val pending = mockPendingEndpointStorage(LockedPushState.Endpoint("https://example.org/old", null, null, "default"))
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+    val done = CountDownLatch(1)
+    val failure = AtomicReference<Throwable?>(null)
+    val worker = Thread {
+      try { UnifiedPushReceiver.commitPendingEndpoint(context) } catch (t: Throwable) { failure.set(t) } finally { done.countDown() }
+    }
+    worker.start()
+    try {
+      awaitCondition("old transition did not start") { !UnifiedPushLifecycle.isReady() }
+      every { LockedPushState.trySavePending(any(), any()) } returns false
+      UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://example.org/new", null), "default")
+      lease.close()
+      assertTrue(done.await(5, TimeUnit.SECONDS))
+      assertNull(failure.get())
+      assertFalse(UnifiedPushLifecycle.isReady())
+      assertEquals("https://example.org/old", pending.get()?.url)
+      verify(exactly = 0) { values.setEndpointRegistration(any(), any(), any(), any()) }
+    } finally {
+      lease.close()
+      worker.join(5000)
+    }
+  }
+
+  @Test
+  fun `failed selection that mutates visible memory remains fenced until a newer event`() {
+    fakeAccount()
+    val pending = mockPendingEndpointStorage()
+    val registration = AtomicReference<LockedPushState.PendingRegistration?>(null)
+    every { LockedPushState.pendingRegistration(any()) } answers { registration.get() }
+    every { LockedPushState.trySaveSelection(any(), any(), any()) } answers {
+      pending.set(secondArg())
+      registration.set(LockedPushState.PendingRegistration(thirdArg(), false))
+      false // Like SharedPreferences.commit(false), visible memory was already mutated.
+    }
+    every { LockedPushState.clearRegistrationIfCurrent(any(), any()) } answers { registration.set(null); true }
+    val selected = synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushReceiver.recordEndpointLocked(context, LockedPushState.Endpoint(null, null, null, "default"), selectionId = "rejected")
+    }
+    assertNull(selected)
+    assertFalse(UnifiedPushLifecycle.isReady())
+    UnifiedPushReceiver.commitPendingEndpoint(context)
+    assertEquals("rejected", registration.get()?.id)
+    verify(exactly = 0) { values.setEndpointRegistration(any(), any(), any(), any()) }
+    verify(exactly = 0) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
+
+    val newer = LockedPushState.Endpoint("https://example.org/new", null, null, "default")
+    synchronized(UnifiedPushLifecycle.monitor) { UnifiedPushReceiver.recordEndpointLocked(context, newer) }
+    assertNull(registration.get())
+    assertEquals(newer, pending.get())
+  }
+
+  @Test
+  fun `switch while locked defers route clearing and keeps a newer endpoint event`() {
+    val pending = mockPendingEndpointStorage()
+    every { KeyCachingService.isLocked() } returns true
+
+    val schedule = synchronized(UnifiedPushLifecycle.monitor) {
+      UnifiedPushReceiver.recordEndpointLocked(context, LockedPushState.Endpoint(null, null, null, "default"))
+    }
+    assertEquals(false, schedule)
+    assertEquals(LockedPushState.Endpoint(null, null, null, "default"), pending.get())
+    verify(exactly = 0) { values.setEndpointRegistration(any(), any(), any(), any()) }
+
+    UnifiedPushReceiver().onNewEndpoint(context, PushEndpoint("https://push.example.invalid/new", PublicKeySet("p", "a")), "default")
+    assertEquals(LockedPushState.Endpoint("https://push.example.invalid/new", "p", "a", "default"), pending.get())
+    verify(exactly = 0) { values.setEndpointRegistration(any(), any(), any(), any()) }
+  }
+
+  @Test
+  fun `worker may clear tombstone before SDK save without losing registration intent`() {
+    fakeAccount()
+    values.setEndpointRegistration("https://push.example.invalid/old", "old-key", "old-auth", "default")
+    val pending = mockPendingEndpointStorage()
+    val registration = AtomicReference<LockedPushState.PendingRegistration?>(null)
+    every { LockedPushState.trySaveSelection(any(), any(), any()) } answers {
+      pending.set(secondArg())
+      registration.set(LockedPushState.PendingRegistration(thirdArg(), false))
+      true
+    }
+    every { LockedPushState.pendingRegistration(any()) } answers { registration.get() }
+    every { LockedPushState.markRegistrationReady(any(), any()) } answers {
+      registration.set(LockedPushState.PendingRegistration(secondArg(), true)); true
+    }
+    every { LockedPushState.clearRegistrationIfCurrent(any(), any()) } answers {
+      if (registration.get()?.id == secondArg<String>()) { registration.set(null); true } else false
+    }
+    mockkObject(UnifiedPushDistributor)
+    every { UnifiedPushDistributor.savedDistributorSnapshot(any()) } returns "org.example.new"
+    try {
+      val schedule = synchronized(UnifiedPushLifecycle.monitor) {
+        UnifiedPushReceiver.recordEndpointLocked(context, LockedPushState.Endpoint(null, null, null, "default"), selectionId = "selection")
+      }
+      assertEquals(true, schedule)
+      UnifiedPushReceiver.applyPendingEndpoint(context)
+      verify(timeout = 3000) { values.setEndpointRegistration(null, null, null, null) }
+      awaitLifecycleReady()
+      verify(exactly = 0) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
+      assertEquals(LockedPushState.PendingRegistration("selection", false), registration.get())
+
+      assertTrue(UnifiedPushReceiver.finishSelection(context, "selection"))
+      UnifiedPushReceiver.applyPendingEndpoint(context)
+      verify(timeout = 3000, atLeast = 1) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
+      awaitCondition("registration intent should clear after enqueue") { registration.get() == null }
+    } finally {
+      unmockkObject(UnifiedPushDistributor)
+    }
+  }
+
+  @Test
+  fun `older enqueue worker cannot clear a newer selection intent`() {
+    fakeAccount()
+    val pending = mockPendingEndpointStorage()
+    val registration = AtomicReference<LockedPushState.PendingRegistration?>(null)
+    val clearAttempted = CountDownLatch(1)
+    every { LockedPushState.trySaveSelection(any(), any(), any()) } answers {
+      pending.set(secondArg()); registration.set(LockedPushState.PendingRegistration(thirdArg(), false)); true
+    }
+    every { LockedPushState.pendingRegistration(any()) } answers { registration.get() }
+    every { LockedPushState.markRegistrationReady(any(), any()) } answers {
+      val id = secondArg<String>()
+      if (registration.get()?.id == id) { registration.set(LockedPushState.PendingRegistration(id, true)); true } else false
+    }
+    every { LockedPushState.clearRegistrationIfCurrent(any(), any()) } answers {
+      val cleared = if (registration.get()?.id == secondArg<String>()) { registration.set(null); true } else false
+      clearAttempted.countDown()
+      cleared
+    }
+    mockkObject(UnifiedPushDistributor)
+    every { UnifiedPushDistributor.savedDistributorSnapshot(any()) } returns "org.example.provider"
+    val entered = CountDownLatch(1)
+    val release = CountDownLatch(1)
+    val finished = CountDownLatch(1)
+    every { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) } answers {
+      entered.countDown(); check(release.await(5, TimeUnit.SECONDS)); finished.countDown()
+    }
+    try {
+      synchronized(UnifiedPushLifecycle.monitor) {
+        UnifiedPushReceiver.recordEndpointLocked(context, LockedPushState.Endpoint(null, null, null, "default"), selectionId = "first")
+      }
+      assertTrue(UnifiedPushReceiver.finishSelection(context, "first"))
+      UnifiedPushReceiver.applyPendingEndpoint(context)
+      assertTrue("first worker did not reach enqueue", entered.await(5, TimeUnit.SECONDS))
+      synchronized(UnifiedPushLifecycle.monitor) {
+        UnifiedPushReceiver.recordEndpointLocked(context, LockedPushState.Endpoint(null, null, null, "default"), selectionId = "second")
+      }
+      assertTrue(UnifiedPushReceiver.finishSelection(context, "second"))
+      release.countDown()
+      assertTrue(finished.await(5, TimeUnit.SECONDS))
+      assertTrue("old worker did not attempt its conditional clear", clearAttempted.await(5, TimeUnit.SECONDS))
+      assertEquals(LockedPushState.PendingRegistration("second", true), registration.get())
+    } finally {
+      release.countDown()
+      unmockkObject(UnifiedPushDistributor)
+    }
+  }
+
+  @Test
+  fun `unlock clears pending switch and registers the unacknowledged provider`() {
+    fakeAccount()
+    values.setEndpointRegistration("https://push.example.invalid/old", "old-key", "old-auth", "default")
+    mockPendingEndpointStorage(LockedPushState.Endpoint(null, null, null, "default"))
+    val registration = AtomicReference<LockedPushState.PendingRegistration?>(LockedPushState.PendingRegistration("selection", true))
+    every { LockedPushState.pendingRegistration(any()) } answers { registration.get() }
+    every { LockedPushState.clearRegistrationIfCurrent(any(), any()) } answers { registration.set(null); true }
+    mockkObject(UnifiedPushDistributor)
+    every { UnifiedPushDistributor.savedDistributorSnapshot(any()) } returns "org.example.new"
+    try {
+      UnifiedPushReceiver.applyPendingEndpoint(context)
+      verify(timeout = 3000) { values.setEndpointRegistration(null, null, null, null) }
+      verify(timeout = 3000, atLeast = 1) { AppDependencies.jobManager.add(any<UnifiedPushRefreshJob>()) }
+      awaitLifecycleReady()
+    } finally {
+      unmockkObject(UnifiedPushDistributor)
+    }
+  }
+
+  @Test
+  fun `switch invalidates active work before scheduling route cleanup`() {
+    fakeAccount()
+    val pending = mockPendingEndpointStorage()
+    val lease = checkNotNull(UnifiedPushAccountTransition.acquireLease())
+    try {
+      val schedule = synchronized(UnifiedPushLifecycle.monitor) {
+        UnifiedPushReceiver.recordEndpointLocked(context, LockedPushState.Endpoint(null, null, null, "default"))
+      }
+      assertEquals(true, schedule)
+      assertFalse(UnifiedPushLifecycle.isCurrentGeneration(lease.generation))
+      assertEquals(LockedPushState.Endpoint(null, null, null, "default"), pending.get())
+      verify(exactly = 0) { values.setEndpointRegistration(any(), any(), any(), any()) }
+    } finally {
+      lease.close()
+    }
+  }
+
+  @Test
   fun `unregistering clears the stored connector keys`() {
     fakeAccount()
     mockPendingEndpointStorage()
     mockkStatic(UnifiedPush::class)
     try {
       every { UnifiedPush.forceRemoveDistributor(any()) } returns Unit
+      every { UnifiedPush.getSavedDistributor(any()) } returns null
       every { values.endpoint } returns "https://example.org/push"
       every { values.endpoint = any() } returns Unit
 
@@ -233,6 +507,7 @@ class UnifiedPushReceiverTest {
     values.endpoint = "https://example.org/old"
     mockkStatic(UnifiedPush::class)
     every { UnifiedPush.forceRemoveDistributor(context) } returns Unit
+    every { UnifiedPush.getSavedDistributor(any()) } returns null
     mockkStatic(PushFetchHandler::class)
     every { PushFetchHandler.handleReceivedNotification(any(), any(), any()) } returns Unit
     val pending = mockPendingEndpointStorage()
@@ -313,6 +588,7 @@ class UnifiedPushReceiverTest {
     val pending = mockPendingEndpointStorage()
     mockkStatic(UnifiedPush::class)
     every { UnifiedPush.forceRemoveDistributor(context) } returns Unit
+    every { UnifiedPush.getSavedDistributor(any()) } returns null
     val lease = UnifiedPushAccountTransition.acquireLease()!!
     val authorization = UnifiedPushAccountTransition.fetchAuthorization(lease)
 
@@ -467,7 +743,12 @@ class UnifiedPushReceiverTest {
       lockedPushStateMocked = true
     }
     return AtomicReference(initial).also { pending ->
+      every { LockedPushState.beginEndpointWrite(any()) } returns true
+      every { LockedPushState.finishEndpointWrite(any()) } returns true
       every { LockedPushState.savePending(any(), any()) } answers { pending.set(secondArg()) }
+      every { LockedPushState.trySavePending(any(), any()) } answers { pending.set(secondArg()); true }
+      every { LockedPushState.pendingRegistration(any()) } returns null
+      every { LockedPushState.hasPending(any()) } answers { pending.get() != null }
       every { LockedPushState.peekPending(any()) } answers { pending.get() }
       every { LockedPushState.clearPending(any()) } answers { pending.set(null) }
     }

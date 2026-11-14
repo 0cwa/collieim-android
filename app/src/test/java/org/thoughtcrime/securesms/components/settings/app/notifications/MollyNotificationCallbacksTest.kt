@@ -61,25 +61,24 @@ class MollyNotificationCallbacksTest {
     results.distributorResult.onActivityResult(true)
     shadowOf(android.os.Looper.getMainLooper()).idle()
 
-    verify(exactly = 0) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
   @Test
-  fun `missing distributor selects fallback before opening settings`() {
+  fun `missing distributor opens settings without selecting an unrelated fallback`() {
     results.distributorResult.onActivityResult(false)
     shadowOf(android.os.Looper.getMainLooper()).idle()
 
-    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 0) { results.distributorLauncher.launch(Unit, null) }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 
   @Test
-  fun `cancelled distributor link also selects fallback`() {
+  fun `cancelled distributor link opens settings without selecting an unrelated fallback`() {
     results.distributorResult.onActivityResult(null)
     shadowOf(android.os.Looper.getMainLooper()).idle()
 
-    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 0) { results.distributorLauncher.launch(Unit, null) }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 

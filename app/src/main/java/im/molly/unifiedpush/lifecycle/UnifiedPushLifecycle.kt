@@ -32,6 +32,8 @@ object UnifiedPushLifecycle {
   private val pendingFetchAdmissions = LinkedHashSet<FetchAdmission>()
   private val activeFetchAdmissions = LinkedHashSet<FetchAdmission>()
 
+  private var endpointPersistenceBlocked = false
+
   private data class TransitionOwnership(
     val generation: Long,
     val inheritedIncompleteMarker: Boolean,
@@ -101,13 +103,14 @@ object UnifiedPushLifecycle {
 
   /** Called after SignalStore initialization and before startup jobs or push work can run. */
   @JvmStatic
-  fun initialize(incompleteTransition: Boolean, legacyContextIsCoherent: Boolean) {
+  fun initialize(incompleteTransition: Boolean, legacyContextIsCoherent: Boolean, endpointWriteUncertain: Boolean = false) {
     synchronized(monitor) {
       check(leaseCount == 0 && transitionGeneration == null) { "Cannot initialize UnifiedPush lifecycle while work is active" }
       initialized = true
       generation = nextGeneration(generation)
-      invalidationPending = false
-      ready = !incompleteTransition && legacyContextIsCoherent
+      endpointPersistenceBlocked = endpointPersistenceBlocked || endpointWriteUncertain
+      invalidationPending = invalidationPending || endpointPersistenceBlocked
+      ready = !incompleteTransition && legacyContextIsCoherent && !endpointPersistenceBlocked && !invalidationPending
     }
   }
 
@@ -254,6 +257,18 @@ object UnifiedPushLifecycle {
     revokeFetchAdmissionsForTransitionLocked()
   }
 
+  /** Keeps every transition closed until a newer endpoint has been persisted successfully. */
+  fun setEndpointPersistenceBlockedLocked(blocked: Boolean) {
+    check(Thread.holdsLock(monitor))
+    endpointPersistenceBlocked = blocked
+    if (blocked) invalidateLocked()
+  }
+
+  fun isEndpointPersistenceBlockedLocked(): Boolean {
+    check(Thread.holdsLock(monitor))
+    return endpointPersistenceBlocked
+  }
+
   fun hasPendingInvalidationLocked(): Boolean {
     check(Thread.holdsLock(monitor))
     return invalidationPending
@@ -394,9 +409,9 @@ object UnifiedPushLifecycle {
   private fun finishTransition(token: TransitionOwnership, readyAfter: Boolean, completesInvalidation: Boolean) {
     synchronized(monitor) {
       check(transitionGeneration == token.generation) { "UnifiedPush lifecycle transition ownership changed" }
-      if (completesInvalidation && readyAfter) invalidationPending = false
+      if (completesInvalidation && readyAfter && !endpointPersistenceBlocked) invalidationPending = false
       transitionGeneration = null
-      ready = readyAfter && !invalidationPending
+      ready = readyAfter && !invalidationPending && !endpointPersistenceBlocked
     }
   }
 
@@ -428,12 +443,13 @@ object UnifiedPushLifecycle {
   }
 
   @VisibleForTesting
-  fun resetForTests(initiallyReady: Boolean = true) {
+  fun resetForTests(initiallyReady: Boolean = true, initiallyInitialized: Boolean = true) {
     synchronized(monitor) {
       check(leaseCount == 0 && transitionGeneration == null)
-      initialized = true
+      initialized = initiallyInitialized
       ready = initiallyReady
       generation = 1
+      endpointPersistenceBlocked = false
       invalidationPending = false
       drainSignal = null
       pendingFetchAdmissions.clear()

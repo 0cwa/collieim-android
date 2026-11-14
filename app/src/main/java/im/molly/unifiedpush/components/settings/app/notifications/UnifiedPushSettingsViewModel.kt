@@ -14,7 +14,6 @@ import im.molly.unifiedpush.enrollment.EnrollmentFile
 import im.molly.unifiedpush.enrollment.ExportMode
 import im.molly.unifiedpush.health.PushHealth
 import im.molly.unifiedpush.model.MollySocket
-import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.storage.keyvalue.KeyValuePersistenceException
@@ -110,13 +109,6 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
     pushTestStartedAt = System.currentTimeMillis()
     UnifiedPushHealthJob.enqueue(manual = true)
     refresh()
-  }
-
-  fun setUnifiedPushDistributor(distributor: String) {
-    SignalStore.unifiedpush.endpoint = null
-    UnifiedPushDistributor.saveDistributor(application, distributor)
-    refresh()
-    updateRegistration()
   }
 
   fun retryRegistration() {

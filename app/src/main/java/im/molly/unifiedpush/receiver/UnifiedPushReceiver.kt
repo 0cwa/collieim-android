@@ -3,6 +3,7 @@ package im.molly.unifiedpush.receiver
 import android.content.Context
 import android.os.Looper
 import im.molly.unifiedpush.UnifiedPushNotificationBuilder
+import im.molly.unifiedpush.UnifiedPushDistributor
 import im.molly.unifiedpush.control.EndpointReconciler
 import im.molly.unifiedpush.control.EndpointUpdates
 import im.molly.unifiedpush.control.CorruptControlStateException
@@ -38,6 +39,77 @@ class UnifiedPushReceiver : MessagingReceiver() {
   companion object {
     private val TAG = Log.tag(UnifiedPushReceiver::class.java)
 
+    // IDs active in this process have not completed their SDK save. An unready ID after a crash
+    // remains fenced until a later successfully persisted event or selection resolves it.
+    private val activeSelections = mutableSetOf<String>()
+
+    /** Records the latest route event under the lifecycle monitor. Null means persistence failed. */
+    internal fun recordEndpointLocked(context: Context, endpoint: LockedPushState.Endpoint, selectionId: String? = null): Boolean? {
+      check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+      fun failClosed(): Boolean? {
+        UnifiedPushLifecycle.setEndpointPersistenceBlockedLocked(true)
+        return null
+      }
+      if (!LockedPushState.beginEndpointWrite(context)) return failClosed()
+      // An inactive unready selection could have failed or crashed before the SDK save. A later
+      // endpoint event resolves it; never interpret the abandoned marker as an accepted selection.
+      val pending = LockedPushState.pendingRegistration(context)
+      if (pending != null && !pending.ready && pending.id !in activeSelections &&
+        !LockedPushState.clearRegistrationIfCurrent(context, pending.id)) return failClosed()
+      val saved = if (selectionId == null) LockedPushState.trySavePending(context, endpoint)
+      else LockedPushState.trySaveSelection(context, endpoint, selectionId)
+      if (!saved || !LockedPushState.finishEndpointWrite(context)) return failClosed()
+      if (selectionId != null) activeSelections.add(selectionId)
+      UnifiedPushLifecycle.setEndpointPersistenceBlockedLocked(false)
+      if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
+      return !KeyCachingService.isLocked() && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
+    }
+
+    /** A same-provider retry resolves a failed or interrupted write, but not an active selection. */
+    internal fun selectionNeedsRecoveryLocked(context: Context): Boolean {
+      check(Thread.holdsLock(UnifiedPushLifecycle.monitor))
+      if (UnifiedPushLifecycle.isEndpointPersistenceBlockedLocked()) return true
+      val pending = LockedPushState.pendingRegistration(context)
+      return LockedPushState.hasUncertainWrite(context) && (pending == null || pending.id !in activeSelections)
+    }
+
+    /** Finish a selection without allowing an older result to clear a newer intent. */
+    internal fun finishSelection(context: Context, id: String): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+      try {
+        if (UnifiedPushLifecycle.isEndpointPersistenceBlockedLocked() || LockedPushState.pendingRegistration(context)?.id != id) return@synchronized false
+        val finished = LockedPushState.beginEndpointWrite(context) &&
+          LockedPushState.markRegistrationReady(context, id) && LockedPushState.finishEndpointWrite(context)
+        if (!finished) UnifiedPushLifecycle.setEndpointPersistenceBlockedLocked(true)
+        finished
+      } finally {
+        activeSelections.remove(id)
+      }
+    }
+
+    private fun enqueuePendingRegistration(context: Context) {
+      val intent = synchronized(UnifiedPushLifecycle.monitor) {
+        if (KeyCachingService.isLocked() || !UnifiedPushLifecycle.isReadyLocked() || LockedPushState.hasPending(context)) return
+        val pending = LockedPushState.pendingRegistration(context) ?: return
+        if (!pending.ready) return
+        pending
+      }
+      // Do not invoke the connector's destructive getter here. If SDK save failed or the process
+      // died midway, the current snapshot is the provider a retry must register.
+      if (UnifiedPushDistributor.savedDistributorSnapshot(context) == null || KeyCachingService.isLocked()) return
+      val lease = UnifiedPushAccountTransition.acquireLease() ?: return
+      try {
+        val current = synchronized(UnifiedPushLifecycle.monitor) {
+          !KeyCachingService.isLocked() && UnifiedPushLifecycle.isCurrentGeneration(lease.generation) &&
+            LockedPushState.pendingRegistration(context)?.id == intent.id
+        }
+        if (!current) return
+        AppDependencies.jobManager.add(UnifiedPushRefreshJob())
+        synchronized(UnifiedPushLifecycle.monitor) { LockedPushState.clearRegistrationIfCurrent(context, intent.id) }
+      } finally {
+        lease.close()
+      }
+    }
+
     /** Applies an endpoint that arrived while the app was locked. Called after unlock. */
     @JvmStatic
     fun applyPendingEndpoint(context: Context) {
@@ -48,7 +120,10 @@ class UnifiedPushReceiver : MessagingReceiver() {
       commitPendingEndpoint(context)?.let { publishPendingEndpointEffects(context, it) }
       // Now that the app can read its state: make sure the server holds the current endpoint, and send an update
       // that was built but never confirmed again.
-      if (UnifiedPushLifecycle.isReady()) EndpointReconciler.reconcile(resume = true)
+      if (UnifiedPushLifecycle.isReady()) {
+        EndpointReconciler.reconcile(resume = true)
+        enqueuePendingRegistration(context)
+      }
     }
 
     /** Commits the pending connector tuple and its generation under the lifecycle transition. */
@@ -57,7 +132,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
       val shouldApply = synchronized(UnifiedPushLifecycle.monitor) {
         // Check the lock before inspecting or consuming the sealed endpoint. A callback queued before
         // the app locked must leave the saved endpoint untouched for a later unlock path.
-        if (KeyCachingService.isLocked()) return null
+        if (KeyCachingService.isLocked() || UnifiedPushLifecycle.isEndpointPersistenceBlockedLocked()) return null
         if (!UnifiedPushLifecycle.isReadyLocked() && !UnifiedPushLifecycle.hasPendingInvalidationLocked()) return null
         LockedPushState.peekPending(context) != null
       }
@@ -69,7 +144,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
           readyAfter = { UnifiedPushAccountTransition.hasCoherentRegisteredContext() && !KeyCachingService.isLocked() },
         ) {
           synchronized(UnifiedPushLifecycle.monitor) {
-            if (KeyCachingService.isLocked()) {
+            if (KeyCachingService.isLocked() || UnifiedPushLifecycle.isEndpointPersistenceBlockedLocked()) {
               null
             } else {
               LockedPushState.peekPending(context)?.let { pending ->
@@ -112,11 +187,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
     val received = LockedPushState.Endpoint(endpoint.url, endpoint.pubKeySet?.pubKey, endpoint.pubKeySet?.auth, instance)
     val schedule = synchronized(UnifiedPushLifecycle.monitor) {
       // Store first; the worker consumes it only after closing admission and draining old sends.
-      LockedPushState.savePending(context, received)
-      if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
-      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
+      recordEndpointLocked(context, received)
     }
-    if (schedule) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
+    if (schedule == true) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
   }
 
   internal data class EndpointEffects(val failed: Boolean, val changed: Boolean, val airGapped: Boolean)
@@ -174,12 +247,10 @@ class UnifiedPushReceiver : MessagingReceiver() {
     // isPushAvailable becomes false => The websocket starts
     Log.i(TAG, "onUnregistered($instance)")
     val schedule = synchronized(UnifiedPushLifecycle.monitor) {
-      LockedPushState.savePending(context, LockedPushState.Endpoint(null, null, null, instance))
-      if (UnifiedPushLifecycle.isReadyLocked()) UnifiedPushLifecycle.invalidateLocked()
-      !appLocked && (UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.hasPendingInvalidationLocked())
+      recordEndpointLocked(context, LockedPushState.Endpoint(null, null, null, instance))
     }
     UnifiedPush.forceRemoveDistributor(context)
-    if (schedule) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
+    if (schedule == true) SignalExecutors.BOUNDED.execute { applyPendingEndpoint(context) }
   }
 
   override fun onMessage(context: Context, message: PushMessage, instance: String) {

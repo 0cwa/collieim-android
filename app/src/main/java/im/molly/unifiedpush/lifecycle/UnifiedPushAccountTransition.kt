@@ -10,6 +10,7 @@ import java.util.concurrent.Callable
 import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import im.molly.unifiedpush.receiver.UnifiedPushReceiver
+import im.molly.unifiedpush.receiver.LockedPushState
 
 /** SignalStore-facing setup for the dependency-free lifecycle coordinator. */
 object UnifiedPushAccountTransition {
@@ -44,10 +45,14 @@ object UnifiedPushAccountTransition {
   fun initializeFromSignalStore() {
     val values = SignalStore.unifiedpush
     val marker = values.hasIncompleteAccountTransition
-    UnifiedPushLifecycle.initialize(
-      incompleteTransition = marker,
-      legacyContextIsCoherent = !marker && hasCoherentRegisteredContext(),
-    )
+    synchronized(UnifiedPushLifecycle.monitor) {
+      // Receiver writes use this same monitor. Keep their live barrier and the preference snapshot ordered.
+      UnifiedPushLifecycle.initialize(
+        incompleteTransition = marker,
+        legacyContextIsCoherent = !marker && hasCoherentRegisteredContext(),
+        endpointWriteUncertain = LockedPushState.hasUncertainWrite(AppDependencies.application),
+      )
+    }
   }
 
   suspend fun <T> withTransition(

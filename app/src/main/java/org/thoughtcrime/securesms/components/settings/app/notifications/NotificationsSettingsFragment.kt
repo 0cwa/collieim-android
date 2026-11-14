@@ -203,15 +203,8 @@ open class DefaultNotificationsSettingsCallbacks(
   )
 
   private val linkDefaultDistributorLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
-    contract = UnifiedPushDefaultDistributorLinkActivity.Contract(),
-    callback = { success ->
-      if (success != true) {
-        // If there are no distributors or
-        // if there are multiple distributors installed, but none of them follow the last
-        // specifications,
-        // we try to fall back to the first we found.
-        viewModel.selectFirstDistributor()
-      }
+    contract = UnifiedPushDefaultDistributorLinkActivity.Contract(useDefault = true),
+    callback = { _ ->
       activity.lifecycleScope.launch {
         activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
           onNavigationUnifiedPushSettings()

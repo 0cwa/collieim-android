@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   debug-apk:
+    if: github.event_name != 'workflow_dispatch'
     name: Debug APK
     runs-on: ubuntu-24.04
     steps:
@@ -91,7 +92,11 @@ jobs:
           adb shell cmd connectivity airplane-mode enable
           adb shell svc wifi disable
           adb shell svc data disable
-          adb shell dumpsys connectivity > "$evidence/connectivity-before.txt"
+          for i in {1..30}; do
+            adb shell dumpsys connectivity > "$evidence/connectivity-before.txt"
+            if grep -q 'Active default network: none' "$evidence/connectivity-before.txt"; then break; fi
+            sleep 1
+          done
           grep -q 'Active default network: none' "$evidence/connectivity-before.txt"
           adb install -r app/build/outputs/apk/prodWebsite/debug/*.apk
           adb install -r app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk

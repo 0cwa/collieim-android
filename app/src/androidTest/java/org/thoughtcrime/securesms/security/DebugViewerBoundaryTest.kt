@@ -8,6 +8,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.provider.Settings
 import android.webkit.WebView
+import android.view.KeyEvent
 import android.widget.FrameLayout
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -53,6 +54,11 @@ class DebugViewerBoundaryTest {
           editor.selection.moveCursorTo(0, 25); editor.execCommand('openlink');
           window.open = original; return opened; })()
       """.trimIndent()))
+      instrumentation.runOnMainSync { web.requestFocus() }
+      javascript(web, "editor.focus(); editor.selection.moveCursorTo(0, 25);")
+      instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_F3)
+      Thread.sleep(3000)
+      assertEquals("F3 navigated away from the bundled viewer", "\"file:///android_asset/debuglogs-viewer.html\"", javascript(web, "location.href"))
       // A programmatic replacement deliberately bypasses WebViewClient navigation handling.
       // It tests the separate log-delivery guard, not reachability from the bundled editor.
       instrumentation.runOnMainSync {

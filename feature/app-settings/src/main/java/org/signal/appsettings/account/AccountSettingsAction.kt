@@ -22,8 +22,6 @@ sealed interface AccountSettingsAction {
   /** Open Payments. */
   data object NavigateToPayments : AccountSettingsAction
 
-  /** Open existing donation management. */
-
   /** Open the flow for creating a PIN for the first time. */
   data object LaunchCreatePinFlow : AccountSettingsAction
 

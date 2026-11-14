@@ -22,6 +22,7 @@ import androidx.core.content.FileProvider
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import org.thoughtcrime.securesms.components.NavGraphHostActivity
+import org.signal.appsettings.routes.AppSettingsRoute
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -96,7 +97,7 @@ class WebViewRuntimeAcceptanceTest {
     val token = AtomicReference<String>()
     LegacyCaptcha.token.set(token)
     try {
-      ActivityScenario.launch<NavGraphHostActivity>(Intent(context, NavGraphHostActivity::class.java).putExtra(NavGraphHostActivity.ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number)).use { scenario ->
+      ActivityScenario.launch<AppSettingsActivity>(Intent(context, AppSettingsActivity::class.java).putExtra(NavGraphHostActivity.ARG_NAV_GRAPH, R.navigation.app_settings_with_change_number).putExtra("app.settings.args.START_ROUTE", AppSettingsRoute.Empty)).use { scenario ->
         lateinit var web: WebView
         lateinit var before: String
         scenario.onActivity { activity ->

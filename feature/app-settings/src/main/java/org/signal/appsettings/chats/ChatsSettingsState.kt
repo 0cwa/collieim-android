@@ -21,7 +21,8 @@ data class ChatsSettingsState(
   val plaintextExportProgress: BackupCreationProgress = BackupCreationProgress.Idle,
   val chatExportState: ChatExportState = ChatExportState.None,
   val includeMediaInExport: Boolean = false,
-  val shouldAutoplayStickersAndGifs: Boolean = false
+  val shouldAutoplayStickersAndGifs: Boolean = false,
+  val webLinkPreviewImagesEnabled: Boolean = true
 ) {
   fun isRegisteredAndUpToDate(): Boolean {
     return !userUnregistered && !clientDeprecated

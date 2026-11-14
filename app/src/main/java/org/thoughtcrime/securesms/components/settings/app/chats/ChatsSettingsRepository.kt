@@ -30,6 +30,13 @@ object ChatsSettingsRepository {
     syncLinkPreviewsState()
   }
 
+  fun isWebLinkPreviewImagesEnabled(): Boolean = SignalStore.settings.isWebLinkPreviewImagesEnabled
+
+  fun setWebLinkPreviewImagesEnabled(enabled: Boolean) {
+    // This local preference is not part of Signal's multidevice configuration.
+    SignalStore.settings.isWebLinkPreviewImagesEnabled = enabled
+  }
+
   fun isAutoplayStickersAndGifsEnabled(): Boolean = SignalStore.settings.isAutoplayStickersAndGifsEnabled
 
   fun setAutoplayStickersAndGifsEnabled(enabled: Boolean) {

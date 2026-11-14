@@ -9,8 +9,12 @@ import android.app.Application
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -66,9 +70,54 @@ class ChatsSettingsScreenTest {
   }
 
   @Test
+  fun givenWebPreviewImagesOn_whenToggleClicked_thenIExpectImagesOffEvent() {
+    setContent(createState(webLinkPreviewImagesEnabled = true))
+
+    composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES)
+      .assertIsEnabled()
+      .performClick()
+
+    assertThat(events).contains(ChatsSettingsEvents.WebLinkPreviewImagesChanged(false))
+    assertThat(events).doesNotContain(ChatsSettingsEvents.GenerateLinkPreviewsChanged(false))
+  }
+
+  @Test
+  fun givenWebPreviewImagesOff_whenToggleClicked_thenIExpectImagesOnEvent() {
+    setContent(createState(webLinkPreviewImagesEnabled = false))
+
+    composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES).performClick()
+
+    assertThat(events).contains(ChatsSettingsEvents.WebLinkPreviewImagesChanged(true))
+  }
+
+  @Test
+  fun givenLinkPreviewsOff_thenImageChoiceIsDisabledAndRetained() {
+    setContent(createState(generateLinkPreviews = false, webLinkPreviewImagesEnabled = true))
+
+    composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES)
+      .assertIsNotEnabled()
+      .performClick()
+    composeTestRule.onNode(
+      isToggleable() and hasAnyAncestor(hasTestTag(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES)),
+      useUnmergedTree = true
+    ).assertIsOn()
+
+    assertThat(events).doesNotContain(ChatsSettingsEvents.WebLinkPreviewImagesChanged(false))
+  }
+
+  @Test
+  fun webPreviewImageDescriptionExplainsThatPagesAreStillFetched() {
+    setContent(createState())
+
+    composeTestRule.onNodeWithText(context.getString(R.string.ChatsSettingsScreen__web_link_preview_images)).assertIsDisplayed()
+    composeTestRule.onNodeWithText(context.getString(R.string.ChatsSettingsScreen__web_link_preview_images_summary)).assertIsDisplayed()
+  }
+
+  @Test
   fun givenAutoplayOff_whenToggleClicked_thenIExpectAutoplayOnEvent() {
     setContent(createState(shouldAutoplayStickersAndGifs = false))
 
+    scrollTo(ChatsSettingsTestTags.ROW_AUTOPLAY_STICKERS_AND_GIFS)
     composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_AUTOPLAY_STICKERS_AND_GIFS).performClick()
 
     assertThat(events).contains(ChatsSettingsEvents.AutoplayStickersAndGifsChanged(true))
@@ -78,6 +127,7 @@ class ChatsSettingsScreenTest {
   fun givenAddressBookPhotosOff_whenToggleClicked_thenIExpectAddressBookPhotosOnEvent() {
     setContent(createState(useAddressBook = false))
 
+    scrollTo(ChatsSettingsTestTags.ROW_USE_ADDRESS_BOOK)
     composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_USE_ADDRESS_BOOK).performClick()
 
     assertThat(events).contains(ChatsSettingsEvents.UseAddressBookChanged(true))
@@ -87,6 +137,7 @@ class ChatsSettingsScreenTest {
   fun givenKeepMutedChatsArchivedOff_whenToggleClicked_thenIExpectKeepMutedChatsArchivedOnEvent() {
     setContent(createState(keepMutedChatsArchived = false))
 
+    scrollTo(ChatsSettingsTestTags.ROW_KEEP_MUTED_CHATS_ARCHIVED)
     composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_KEEP_MUTED_CHATS_ARCHIVED).performClick()
 
     assertThat(events).contains(ChatsSettingsEvents.KeepMutedChatsArchivedChanged(true))
@@ -197,7 +248,10 @@ class ChatsSettingsScreenTest {
     setContent(createState(userUnregistered = true))
 
     composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_GENERATE_LINK_PREVIEWS).assertIsNotEnabled()
+    composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES).assertIsNotEnabled()
+    scrollTo(ChatsSettingsTestTags.ROW_USE_ADDRESS_BOOK)
     composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_USE_ADDRESS_BOOK).assertIsNotEnabled()
+    scrollTo(ChatsSettingsTestTags.ROW_KEEP_MUTED_CHATS_ARCHIVED)
     composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_KEEP_MUTED_CHATS_ARCHIVED).assertIsNotEnabled()
   }
 
@@ -206,8 +260,10 @@ class ChatsSettingsScreenTest {
     setContent(createState(clientDeprecated = true, generateLinkPreviews = true))
 
     composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_GENERATE_LINK_PREVIEWS).performClick()
+    composeTestRule.onNodeWithTag(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES).assertIsNotEnabled().performClick()
 
     assertThat(events).doesNotContain(ChatsSettingsEvents.GenerateLinkPreviewsChanged(false))
+    assertThat(events).doesNotContain(ChatsSettingsEvents.WebLinkPreviewImagesChanged(false))
   }
 
   @Test
@@ -300,7 +356,8 @@ class ChatsSettingsScreenTest {
     isPlaintextExportEnabled: Boolean = true,
     plaintextExportProgress: BackupCreationProgress = BackupCreationProgress.Idle,
     chatExportState: ChatExportState = ChatExportState.None,
-    shouldAutoplayStickersAndGifs: Boolean = false
+    shouldAutoplayStickersAndGifs: Boolean = false,
+    webLinkPreviewImagesEnabled: Boolean = true
   ): ChatsSettingsState {
     return ChatsSettingsState(
       generateLinkPreviews = generateLinkPreviews,
@@ -315,7 +372,8 @@ class ChatsSettingsScreenTest {
       isPlaintextExportEnabled = isPlaintextExportEnabled,
       plaintextExportProgress = plaintextExportProgress,
       chatExportState = chatExportState,
-      shouldAutoplayStickersAndGifs = shouldAutoplayStickersAndGifs
+      shouldAutoplayStickersAndGifs = shouldAutoplayStickersAndGifs,
+      webLinkPreviewImagesEnabled = webLinkPreviewImagesEnabled
     )
   }
 }

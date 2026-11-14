@@ -35,6 +35,7 @@ import org.signal.core.ui.compose.Texts
 object ChatsSettingsTestTags {
   const val SCROLLER = "scroller"
   const val ROW_GENERATE_LINK_PREVIEWS = "row-generate-link-previews"
+  const val ROW_WEB_LINK_PREVIEW_IMAGES = "row-web-link-preview-images"
   const val ROW_AUTOPLAY_STICKERS_AND_GIFS = "row-autoplay-stickers-and-gifs"
   const val ROW_USE_ADDRESS_BOOK = "row-use-address-book"
   const val ROW_KEEP_MUTED_CHATS_ARCHIVED = "row-keep-muted-chats-archived"
@@ -91,6 +92,17 @@ fun ChatsSettingsScreen(
           enabled = state.isRegisteredAndUpToDate(),
           checked = state.generateLinkPreviews,
           onCheckChanged = { onEvent(ChatsSettingsEvents.GenerateLinkPreviewsChanged(it)) }
+        )
+      }
+
+      item {
+        Rows.ToggleRow(
+          modifier = Modifier.testTag(ChatsSettingsTestTags.ROW_WEB_LINK_PREVIEW_IMAGES),
+          text = stringResource(R.string.ChatsSettingsScreen__web_link_preview_images),
+          label = stringResource(R.string.ChatsSettingsScreen__web_link_preview_images_summary),
+          enabled = state.isRegisteredAndUpToDate() && state.generateLinkPreviews,
+          checked = state.webLinkPreviewImagesEnabled,
+          onCheckChanged = { onEvent(ChatsSettingsEvents.WebLinkPreviewImagesChanged(it)) }
         )
       }
 

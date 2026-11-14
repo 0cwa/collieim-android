@@ -4,6 +4,7 @@ from contextlib import redirect_stdout
 import importlib.util
 import io
 import json
+import shutil
 from pathlib import Path
 import tempfile
 import unittest
@@ -114,6 +115,24 @@ class ResultGateTests(unittest.TestCase):
         self.security.unlink()
         self.other.unlink()
         self.assertFalse(self.check()["passed"])
+
+    def test_shards_must_each_execute_tests_and_cannot_duplicate_suites(self):
+        first, second = self.root / "first", self.root / "second"
+        first.mkdir()
+        second.mkdir()
+        shutil.move(str(self.root / "app"), first)
+        shutil.move(str(self.root / "lib"), second)
+        with redirect_stdout(io.StringIO()):
+            result = gate.check_results(self.root, self.policy, [first, second])
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["shards"], {"first": 2, "second": 1})
+        shutil.rmtree(second / "lib")
+        with redirect_stdout(io.StringIO()):
+            result = gate.check_results(self.root, self.policy, [first, second])
+        self.assertIn("Shard has no executed tests: second", result["problems"])
+        shutil.copytree(first / "app", second / "app")
+        with self.assertRaisesRegex(ValueError, "Duplicate JUnit suite"):
+            gate.check_results(self.root, self.policy, [first, second])
 
     def test_forged_summary_cannot_hide_a_failed_testcase(self):
         self.report(self.app, "example.SecurityTest", [None, "failure"])

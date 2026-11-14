@@ -109,7 +109,12 @@ android {
       all { task ->
         task.forkEvery = 64
         task.maxHeapSize = "1g"
-        task.maxParallelForks = providers.gradleProperty("collieUnitTestForks").orNull?.toInt() ?: 1
+        providers.gradleProperty("collieAppTestShard").orNull?.toInt()?.let { shard ->
+          require(shard in 0..1)
+          task.include { element ->
+            element.isDirectory || Math.floorMod(element.relativePath.pathString.substringBefore('$').hashCode(), 2) == shard
+          }
+        }
       }
     }
   }

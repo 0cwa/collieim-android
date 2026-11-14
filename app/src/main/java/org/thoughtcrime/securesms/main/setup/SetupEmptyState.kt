@@ -83,7 +83,7 @@ private fun EmptyChats(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = Modifier
       .fillMaxWidth()
-      .padding(top = 24.dp, bottom = 96.dp)
+      .padding(top = 24.dp, bottom = 8.dp)
   ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(6.dp),

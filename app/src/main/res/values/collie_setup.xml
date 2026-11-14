@@ -44,7 +44,6 @@
     <string name="CollieSetup__skipped_description">Skipped</string>
 
     <string name="CollieSetup__notifications_title">Notifications</string>
-    <string name="CollieSetup__notifications_done">Allowed</string>
     <string name="CollieSetup__notifications_todo">Turn them on so you see new messages.</string>
 
     <string name="CollieSetup__delivery_title">How messages reach you</string>
@@ -56,22 +55,19 @@
     <string name="CollieSetup__delivery_websocket_todo">Collie stays connected now. UnifiedPush can save battery.</string>
 
     <string name="CollieSetup__battery_title">Background use</string>
-    <string name="CollieSetup__battery_done">Collie can run in the background</string>
     <string name="CollieSetup__battery_todo">Needed while Collie stays connected</string>
     <string name="CollieSetup__battery_skipped">Not allowed. Messages may arrive late.</string>
 
     <string name="CollieSetup__updates_title">Update checks</string>
-    <string name="CollieSetup__updates_done">On</string>
     <string name="CollieSetup__updates_done_checked">On · checked %1$s</string>
     <string name="CollieSetup__updates_available">Collie %1$s is available</string>
     <string name="CollieSetup__updates_todo">Get told when a new version is out.</string>
 
     <string name="CollieSetup__backups_title">Backups</string>
-    <string name="CollieSetup__backups_done">On</string>
-    <string name="CollieSetup__backups_todo">Keep an encrypted copy of your messages on this phone.</string>
+    <string name="CollieSetup__backups_todo">Keep an encrypted copy on this phone.</string>
 
     <string name="CollieSetup__empty_title">Before your first chat</string>
-    <string name="CollieSetup__empty_body">A few minutes now means you won’t miss messages later.</string>
+    <string name="CollieSetup__empty_body">So you don’t miss any messages.</string>
     <string name="CollieSetup__message_a_friend">Message a friend</string>
 
     <!-- Chats overflow menu -->

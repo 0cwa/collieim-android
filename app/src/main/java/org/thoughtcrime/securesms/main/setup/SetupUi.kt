@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
@@ -41,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import im.molly.unifiedpush.health.PushHealth
 import org.signal.core.ui.compose.SignalIcons
 import org.thoughtcrime.securesms.R
@@ -254,31 +255,41 @@ private fun SetupItemRow(
     }
   )
 
+  val titleStyle = MaterialTheme.typography.bodyLarge
+  // The mark and chevron sit on the title's first line, so they stay put when large text wraps the row onto more lines.
+  val firstLine = max(with(LocalDensity.current) { titleStyle.lineHeight.toDp() }, 24.dp)
+  val description = descriptionOf(row, details)
+
   Row(
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = Alignment.Top,
     modifier = Modifier
       .fillMaxWidth()
-      .heightIn(min = 64.dp)
       .clickable(role = Role.Button, onClick = onClick)
       .semantics(mergeDescendants = true) { stateDescription = stateText }
-      .padding(horizontal = horizontalPadding, vertical = 10.dp)
+      .padding(horizontal = horizontalPadding, vertical = 12.dp)
   ) {
-    StatusMark(row.status)
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.height(firstLine)) {
+      StatusMark(row.status)
+    }
     Spacer(modifier = Modifier.width(16.dp))
     Column(modifier = Modifier.weight(1f)) {
-      Text(text = stringResource(titleOf(row.item)), style = MaterialTheme.typography.bodyLarge)
-      Text(
-        text = descriptionOf(row, details),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-      )
+      Text(text = stringResource(titleOf(row.item)), style = titleStyle)
+      if (description != null) {
+        Text(
+          text = description,
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+      }
     }
     Spacer(modifier = Modifier.width(8.dp))
-    Icon(
-      imageVector = SignalIcons.ChevronRight.imageVector,
-      contentDescription = null,
-      tint = MaterialTheme.colorScheme.onSurfaceVariant
-    )
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.height(firstLine)) {
+      Icon(
+        imageVector = SignalIcons.ChevronRight.imageVector,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onSurfaceVariant
+      )
+    }
   }
 }
 
@@ -321,11 +332,12 @@ private fun titleOf(item: SetupItem): Int = when (item) {
   SetupItem.BACKUPS -> R.string.CollieSetup__backups_title
 }
 
+/** Done rows only get a description when it says more than the check mark does, such as which push method is in use. */
 @Composable
-private fun descriptionOf(row: SetupRow, details: SetupStatusRepository.Details): String {
+private fun descriptionOf(row: SetupRow, details: SetupStatusRepository.Details): String? {
   val done = row.status == ItemStatus.DONE
   return when (row.item) {
-    SetupItem.NOTIFICATIONS -> stringResource(if (done) R.string.CollieSetup__notifications_done else R.string.CollieSetup__notifications_todo)
+    SetupItem.NOTIFICATIONS -> if (done) null else stringResource(R.string.CollieSetup__notifications_todo)
     SetupItem.DELIVERY -> when (details.delivery) {
       Delivery.GOOGLE -> stringResource(R.string.CollieSetup__delivery_google)
       Delivery.UNIFIEDPUSH -> when {
@@ -337,20 +349,18 @@ private fun descriptionOf(row: SetupRow, details: SetupStatusRepository.Details)
       }
       Delivery.WEBSOCKET -> stringResource(if (done) R.string.CollieSetup__delivery_websocket else R.string.CollieSetup__delivery_websocket_todo)
     }
-    SetupItem.BATTERY -> stringResource(
-      when (row.status) {
-        ItemStatus.DONE -> R.string.CollieSetup__battery_done
-        ItemStatus.TODO -> R.string.CollieSetup__battery_todo
-        ItemStatus.SKIPPED -> R.string.CollieSetup__battery_skipped
-      }
-    )
+    SetupItem.BATTERY -> when (row.status) {
+      ItemStatus.DONE -> null
+      ItemStatus.TODO -> stringResource(R.string.CollieSetup__battery_todo)
+      ItemStatus.SKIPPED -> stringResource(R.string.CollieSetup__battery_skipped)
+    }
     SetupItem.UPDATE_CHECKS -> when {
       details.availableUpdateName != null -> stringResource(R.string.CollieSetup__updates_available, details.availableUpdateName)
       !done -> stringResource(R.string.CollieSetup__updates_todo)
       details.lastUpdateCheckMs > 0 -> stringResource(R.string.CollieSetup__updates_done_checked, relativeTime(details.lastUpdateCheckMs))
-      else -> stringResource(R.string.CollieSetup__updates_done)
+      else -> null
     }
-    SetupItem.BACKUPS -> stringResource(if (done) R.string.CollieSetup__backups_done else R.string.CollieSetup__backups_todo)
+    SetupItem.BACKUPS -> if (done) null else stringResource(R.string.CollieSetup__backups_todo)
   }
 }
 

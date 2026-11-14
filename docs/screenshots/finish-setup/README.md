@@ -20,6 +20,6 @@ Result: `OK (4 tests)`. The test turns screen security off only while it capture
 | [03-light-updated.png](03-light-updated.png) | "Updated · See what's new" outranking setup |
 | [04-light-whats-new.png](04-light-whats-new.png) | What's new, opened from the status line |
 | [05-dark-push-app-missing.png](05-dark-push-app-missing.png) | Dark theme: UnifiedPush on with no push app installed, so a red status line and the problem banner |
-| [06-large-text-updated.png](06-large-text-updated.png) | Font scale 2.0: the status line switches to the shorter "See what's new" instead of being cut off |
+| [06-large-text-updated.png](06-large-text-updated.png) | Android text size set to 200%, the largest setting, on purpose: the status line switches to the shorter "See what's new" instead of being cut off, and the checklist marks stay on each title's first line |
 
-The test account keeps message notifications off inside Collie, which counts as the person's choice, so Notifications shows as allowed.
+The test account keeps message notifications off inside Collie, which counts as the person's choice, so Notifications shows as done.

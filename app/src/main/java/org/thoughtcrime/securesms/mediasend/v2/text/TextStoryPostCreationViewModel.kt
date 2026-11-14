@@ -29,10 +29,12 @@ import org.thoughtcrime.securesms.fonts.TextFont
 import org.thoughtcrime.securesms.fonts.TextToScript
 import org.thoughtcrime.securesms.fonts.TypefaceCache
 import org.thoughtcrime.securesms.linkpreview.LinkPreview
+import org.thoughtcrime.securesms.linkpreview.LinkPreviewImagePolicy
 import org.thoughtcrime.securesms.linkpreview.LinkPreviewUtil
 import org.thoughtcrime.securesms.mediasend.v2.text.send.TextStoryPostSendRepository
 import org.thoughtcrime.securesms.mediasend.v2.text.send.TextStoryPostSendResult
 import org.thoughtcrime.securesms.util.rx.RxStore
+import java.util.Optional
 
 class TextStoryPostCreationViewModel(
   savedStateHandle: SavedStateHandle,
@@ -125,10 +127,14 @@ class TextStoryPostCreationViewModel(
   }
 
   fun send(contacts: Set<ContactSearchKey>, linkPreview: LinkPreview?): Single<TextStoryPostSendResult> {
+    // A link-only story still needs its URL when disabling images removes an image-only card.
+    val preview = LinkPreviewImagePolicy.sanitize(linkPreview)
+      ?: linkPreview?.let { LinkPreview(it.url, it.url, "", 0L, Optional.empty()) }
+
     return repository.send(
       contacts,
       store.state,
-      linkPreview,
+      preview,
       identityChangesSince
     )
   }

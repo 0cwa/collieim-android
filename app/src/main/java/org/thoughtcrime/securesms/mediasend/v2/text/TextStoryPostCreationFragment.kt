@@ -172,6 +172,7 @@ class TextStoryPostCreationFragment : Fragment(R.layout.stories_text_post_creati
 
   override fun onResume() {
     super.onResume()
+    linkPreviewViewModel.refreshImagePreference()
     binding.storyTextPost.enableCreationMode()
   }
 

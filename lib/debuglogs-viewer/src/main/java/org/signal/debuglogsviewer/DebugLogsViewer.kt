@@ -22,6 +22,7 @@ object DebugLogsViewer {
   @JvmStatic
   fun initWebView(webview: WebView, context: Context, onFinished: Runnable) {
     webview.settings.apply {
+      allowContentAccess = false
       javaScriptEnabled = true
       builtInZoomControls = true
       displayZoomControls = false

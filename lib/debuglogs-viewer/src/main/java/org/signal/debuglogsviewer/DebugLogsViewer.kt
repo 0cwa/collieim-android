@@ -8,6 +8,7 @@ package org.signal.debuglogsviewer
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
+import android.webkit.WebResourceRequest
 import android.webkit.ValueCallback
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -19,6 +20,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.function.Consumer
 
 object DebugLogsViewer {
+  private const val VIEWER_URL = "file:///android_asset/debuglogs-viewer.html"
   @JvmStatic
   fun initWebView(webview: WebView, context: Context, onFinished: Runnable) {
     webview.settings.apply {
@@ -32,16 +34,21 @@ object DebugLogsViewer {
     webview.setBackgroundColor(Color.TRANSPARENT)
     webview.background = null
 
-    webview.loadUrl("file:///android_asset/debuglogs-viewer.html")
-
     webview.webViewClient = object : WebViewClient() {
+      override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean = true
+
+      @Deprecated("Deprecated in Android")
+      override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean = true
+
       override fun onPageFinished(view: WebView?, url: String?) {
+        if (url != VIEWER_URL || view?.url != VIEWER_URL) return
         if (context.isDarkTheme) {
           webview.evaluateJavascript("document.body.classList.add('dark');", null)
         }
         onFinished.run()
       }
     }
+    webview.loadUrl(VIEWER_URL)
   }
 
   @JvmStatic
@@ -50,7 +57,7 @@ object DebugLogsViewer {
     val escaped = JSONObject.quote(lines)
     val latch = CountDownLatch(1)
     ThreadUtil.runOnMain {
-      webview.evaluateJavascript("appendLines($escaped)") { latch.countDown() }
+      webview.evaluateJavascript("if (location.href === '$VIEWER_URL') { appendLines($escaped); }") { latch.countDown() }
     }
     latch.await()
   }
@@ -62,7 +69,7 @@ object DebugLogsViewer {
       val latch = CountDownLatch(1)
       var result: String? = null
       ThreadUtil.runOnMain {
-        webview.evaluateJavascript("readLines($position, $size)") { value ->
+        webview.evaluateJavascript("location.href === '$VIEWER_URL' ? readLines($position, $size) : '<<END OF INPUT>>'") { value ->
           // Annoying, string returns from javascript land are always encoded as JSON strings (wrapped in quotes, various strings escaped, etc)
           val parsed = JSONArray("[$value]").getString(0)
           result = parsed.takeUnless { it == "<<END OF INPUT>>" }

@@ -178,15 +178,15 @@ jobs:
           git rev-parse HEAD > build/ci/source-commit.txt
           git rev-parse HEAD^{tree} > build/ci/source-tree.txt
           for shard in app-0 app-1 modules; do
+            (cd "build/shards/$shard" && find app core feature lib tooling -path '*/build/test-results/*/TEST-*.xml' -type f -exec cp --parents -t "$GITHUB_WORKSPACE" {} +)
+          done
+          for shard in app-0 app-1 modules; do
             cmp "build/shards/$shard/build/ci/source-commit.txt" build/ci/source-commit.txt
             cmp "build/shards/$shard/build/ci/source-tree.txt" build/ci/source-tree.txt
           done
           python3 .github/scripts/check-unit-test-results.py \
             --shard-root build/shards/app-0 --shard-root build/shards/app-1 \
             --shard-root build/shards/modules --json-output build/ci/unit-test-results.json
-          for shard in app-0 app-1 modules; do
-            (cd "build/shards/$shard" && find app core feature lib tooling -path '*/build/test-results/*/TEST-*.xml' -type f -exec cp --parents -t "$GITHUB_WORKSPACE" {} +)
-          done
           test "$SHARD_RESULT" = success
       - name: Keep combined unit test results
         if: ${{ !cancelled() }}

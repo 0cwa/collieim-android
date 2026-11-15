@@ -1662,7 +1662,7 @@ object BackupRepository {
       plaintextSize = attachment.size,
       mediaName = attachment.requireMediaName()
     )
-      .map { archiveCdn -> SignalDatabase.attachments.setArchiveCdn(attachmentId = attachment.attachmentId, archiveCdn = archiveCdn) }
+      .map { archiveCdn -> SignalDatabase.attachments.setArchiveCdnForIdentity(attachment.dataHash!!, attachment.remoteKey!!, archiveCdn) }
       .also { Log.i(TAG, "archiveMediaResult: ${it.describe()}") }
   }
 

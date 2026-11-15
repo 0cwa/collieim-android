@@ -514,7 +514,7 @@ class AttachmentTable(
       current.info?.thumbnailRestoreState == candidate.info?.thumbnailRestoreState && current.info?.metadataId == candidate.info?.metadataId
   }
 
-  /** Stable submission ownership excludes only transfer state, which onAdded itself changes. */
+  /** Submission ownership excludes transfer state and derived visual/waveform metadata. */
   fun uploadOwnerToken(candidate: UploadCandidate): String = uploadOwnerToken(candidate, false)
 
   private fun uploadOwnerToken(candidate: UploadCandidate, projectKeyToNull: Boolean): String {

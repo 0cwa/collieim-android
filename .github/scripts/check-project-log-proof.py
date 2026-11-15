@@ -45,7 +45,7 @@ def apk_hashes(path):
     return hashes
 
 
-def decode_png(path, browser_body=False):
+def decode_png(path, title_bounds=None):
     """Decode the RGB/RGBA PNGs produced by Android and reject blank captures."""
     data = path.read_bytes()
     if not data.startswith(b"\x89PNG\r\n\x1a\n"):
@@ -87,6 +87,11 @@ def decode_png(path, browser_body=False):
     width, height, channels = dimensions
     if min(width, height) < 50:
         raise ValueError(f"undersized screenshot: {path.name}")
+    sample_left, top, sample_right, bottom = title_bounds or (0, 0, width, height)
+    if not (0 <= sample_left < sample_right <= width and 0 <= top < bottom <= height) or (title_bounds and min(sample_right - sample_left, bottom - top) < 8):
+        raise ValueError("invalid browser title bounds")
+    x_step = max(1, (sample_right - sample_left) // 80) if title_bounds else 8
+    y_step = max(1, (bottom - top) // 20) if title_bounds else 8
     stride = width * channels
     try:
         raw = zlib.decompress(image_data)
@@ -124,8 +129,8 @@ def decode_png(path, browser_body=False):
             else:
                 raise ValueError(f"invalid PNG filter: {path.name}")
             current[index] = (value + predictor) & 0xFF
-        if y % 8 == 0 and (not browser_body or height // 5 <= y < height * 9 // 10):
-            for x in range(0, width, 8):
+        if top <= y < bottom and (y - top) % y_step == 0:
+            for x in range(sample_left, sample_right, x_step):
                 pixel = x * channels
                 for channel in range(3):
                     component = current[pixel + channel]
@@ -135,7 +140,7 @@ def decode_png(path, browser_body=False):
         previous = current
 
     if not samples or max(squares[i] / samples - (sums[i] / samples) ** 2 for i in range(3)) < 1:
-        raise ValueError(f"blank {'browser content' if browser_body else 'screenshot'}: {path.name}")
+        raise ValueError(f"blank {'browser title' if title_bounds else 'screenshot'}: {path.name}")
 
 
 def check(root, build_outcome, device_outcome, expected_sha):
@@ -191,15 +196,19 @@ def check(root, build_outcome, device_outcome, expected_sha):
     screenshot_paths = list((evidence / "screenshots").rglob("*.png"))
     if len(screenshot_paths) != len(SCREENSHOTS) or {path.name for path in screenshot_paths} != SCREENSHOTS:
         raise ValueError("missing, duplicate, or unexpected Project log screenshots")
-    for path in screenshot_paths:
-        decode_png(path, browser_body=path.name == "07-light-pr156-browser.png")
-
     handoff = {}
     for line in (evidence / "screenshots/browser-handoff.txt").read_text().splitlines():
         key, value = line.split("=", 1)
         if key in handoff:
             raise ValueError("duplicate browser handoff evidence field")
         handoff[key] = value
+    bounds = handoff.get("title_bounds", "")
+    if not re.fullmatch(r"[0-9]+,[0-9]+,[0-9]+,[0-9]+", bounds):
+        raise ValueError("missing or malformed browser title bounds")
+    title_bounds = tuple(int(value) for value in bounds.split(","))
+    for path in screenshot_paths:
+        decode_png(path, title_bounds=title_bounds if path.name == "07-light-pr156-browser.png" else None)
+
     address = handoff.get("address", "")
     observed_url = urlsplit(address if "://" in address else "https://" + address)
     expected_url = urlsplit(TARGET_URL)

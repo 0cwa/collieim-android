@@ -7,6 +7,7 @@ package org.thoughtcrime.securesms.main.setup
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
 import android.provider.MediaStore
 import android.view.WindowManager
@@ -154,8 +155,8 @@ class ProjectLogScreenshotTest {
       )
       val browserPackage = requireNotNull(device.currentPackageName) { "No foreground package after the PR156 page rendered" }
       assertTrue("The PR156 handoff must leave Collie", browserPackage != context.packageName)
-      val address = saveBrowserScreenshot(device, browserPackage, renderedTitle, targetUrl)
-      saveTextEvidence("browser-handoff.txt", "url=$targetUrl\nbrowser=$browserPackage\nrendered_title=$renderedTitle\nrendered_pr=#156\naddress=$address\n")
+      val (address, titleBounds) = saveBrowserScreenshot(device, browserPackage, renderedTitle, targetUrl)
+      saveTextEvidence("browser-handoff.txt", "url=$targetUrl\nbrowser=$browserPackage\nrendered_title=$renderedTitle\nrendered_pr=#156\naddress=$address\ntitle_bounds=${titleBounds.left},${titleBounds.top},${titleBounds.right},${titleBounds.bottom}\n")
     }
   }
 
@@ -174,13 +175,14 @@ class ProjectLogScreenshotTest {
     return address
   }
 
-  private fun browserBodySample(bitmap: Bitmap): IntArray {
-    val xs = (0 until bitmap.width step maxOf(1, bitmap.width / 80)).toList()
-    val ys = (bitmap.height / 5 until bitmap.height * 9 / 10 step maxOf(1, bitmap.height / 80)).toList()
+  private fun browserTitleSample(bitmap: Bitmap, bounds: Rect): IntArray {
+    if (bounds.width() < 8 || bounds.height() < 8 || bounds.left < 0 || bounds.top < 0 || bounds.right > bitmap.width || bounds.bottom > bitmap.height) return IntArray(0)
+    val xs = (bounds.left until bounds.right step maxOf(1, bounds.width() / 80)).toList()
+    val ys = (bounds.top until bounds.bottom step maxOf(1, bounds.height() / 20)).toList()
     return IntArray(xs.size * ys.size) { index -> bitmap.getPixel(xs[index % xs.size], ys[index / xs.size]) and 0x00F0F0F0 }
   }
 
-  private fun browserBodyHasContent(sample: IntArray): Boolean {
+  private fun browserTitleHasContent(sample: IntArray): Boolean {
     if (sample.isEmpty()) return false
     return (0..2).any { channel ->
       val shift = channel * 8
@@ -189,33 +191,37 @@ class ProjectLogScreenshotTest {
     }
   }
 
-  private fun saveBrowserScreenshot(device: UiDevice, browserPackage: String, title: String, targetUrl: String): String {
+  private fun saveBrowserScreenshot(device: UiDevice, browserPackage: String, title: String, targetUrl: String): Pair<String, Rect> {
     val deadline = android.os.SystemClock.uptimeMillis() + 30_000
     var previous: IntArray? = null
+    var previousBounds: Rect? = null
     android.util.Log.i("ProjectLogScreenshotTest", "Starting browser capture at ${android.os.SystemClock.uptimeMillis()}")
     while (android.os.SystemClock.uptimeMillis() < deadline) {
       verifyBrowserPage(device, browserPackage, title, targetUrl)
+      val titleBounds = device.findObject(By.textContains(title))?.visibleBounds ?: Rect()
       val screenshot = instrumentation.uiAutomation.takeScreenshot() ?: error("Browser screenshot was unavailable")
       try {
-        val sample = browserBodySample(screenshot)
-        val contentful = browserBodyHasContent(sample)
-        if (contentful && previous?.contentEquals(sample) == true) {
+        val sample = browserTitleSample(screenshot, titleBounds)
+        val contentful = browserTitleHasContent(sample)
+        if (contentful && titleBounds == previousBounds && previous?.contentEquals(sample) == true) {
           val address = verifyBrowserPage(device, browserPackage, title, targetUrl)
           if (android.os.SystemClock.uptimeMillis() >= deadline) break
+          if (device.findObject(By.textContains(title))?.visibleBounds != titleBounds) continue
           writeMediaStoreFile("07-light-pr156-browser.png", "image/png") { output ->
             assertTrue("Could not save browser capture", screenshot.compress(Bitmap.CompressFormat.PNG, 100, requireNotNull(output)))
           }
           android.util.Log.i("ProjectLogScreenshotTest", "Saved browser capture at ${android.os.SystemClock.uptimeMillis()}")
-          return address
+          return address to titleBounds
         }
         previous = if (contentful) sample else null
+        previousBounds = if (contentful) titleBounds else null
       } finally {
         screenshot.recycle()
       }
       val remaining = deadline - android.os.SystemClock.uptimeMillis()
       if (remaining > 0) android.os.SystemClock.sleep(minOf(250L, remaining))
     }
-    throw AssertionError("Browser page body did not become nonblank and stable within 30 seconds")
+    throw AssertionError("Browser PR title did not become nonblank and stable within 30 seconds")
   }
 
   private fun isClickable(): SemanticsMatcher = SemanticsMatcher.keyIsDefined(SemanticsActions.OnClick)

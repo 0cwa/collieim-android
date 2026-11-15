@@ -12,7 +12,7 @@ CHECKER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CHECKER)
 
 
-def png(width=80, height=80, blank=False, toolbar_only=False):
+def png(width=80, height=80, blank=False, toolbar_only=False, header_only=False):
     signature = b"\x89PNG\r\n\x1a\n"
 
     def chunk(kind, payload):
@@ -24,7 +24,7 @@ def png(width=80, height=80, blank=False, toolbar_only=False):
         pixels.append(0)
         for x in range(width):
             color = (0, 0, 0) if blank else (x * 3 % 256, y * 3 % 256, (x + y) * 2 % 256)
-            if toolbar_only and y >= height // 5:
+            if (toolbar_only and y >= height // 5) or (header_only and y >= height // 3):
                 color = (255, 255, 255)
             pixels.extend((*color, 255))
     header = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
@@ -57,7 +57,7 @@ def evidence(root):
     for name in CHECKER.SCREENSHOTS:
         (screenshots / name).write_bytes(png())
     (screenshots / "browser-handoff.txt").write_text(
-        f"url={CHECKER.TARGET_URL}\nbrowser=com.android.chrome\nrendered_title={CHECKER.TARGET_TITLE}\nrendered_pr=#156\naddress=github.com/0cwa/collieim-android/pull/156\n"
+        f"url={CHECKER.TARGET_URL}\nbrowser=com.android.chrome\nrendered_title={CHECKER.TARGET_TITLE}\nrendered_pr=#156\naddress=github.com/0cwa/collieim-android/pull/156\ntitle_bounds=8,40,72,64\n"
     )
     return sha, proof, screenshots, results
 
@@ -119,8 +119,22 @@ class ProjectLogProofCheckerTest(unittest.TestCase):
 
     def test_rejects_toolbar_over_blank_browser_body(self):
         (self.screenshots / "07-light-pr156-browser.png").write_bytes(png(toolbar_only=True))
-        with self.assertRaisesRegex(ValueError, "blank browser content"):
+        with self.assertRaisesRegex(ValueError, "blank browser title"):
             self.check()
+
+    def test_rejects_repository_header_over_blank_pr_title(self):
+        (self.screenshots / "07-light-pr156-browser.png").write_bytes(png(header_only=True))
+        with self.assertRaisesRegex(ValueError, "blank browser title"):
+            self.check()
+
+    def test_rejects_missing_or_invalid_title_bounds(self):
+        handoff = self.screenshots / "browser-handoff.txt"
+        original = handoff.read_text()
+        for bounds in ("", "8,40,8,64", "8,40,81,64", "8,40,72,41", "-1,40,72,64"):
+            with self.subTest(bounds=bounds):
+                handoff.write_text(original.replace("8,40,72,64", bounds))
+                with self.assertRaisesRegex(ValueError, "title bounds"):
+                    self.check()
 
     def test_rejects_corrupt_screenshot(self):
         (self.screenshots / "07-light-pr156-browser.png").write_bytes(b"not a png")

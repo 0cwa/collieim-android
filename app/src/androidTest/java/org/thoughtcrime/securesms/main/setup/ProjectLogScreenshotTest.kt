@@ -218,17 +218,22 @@ class ProjectLogScreenshotTest {
   }
 
   private fun continueBrowserWithoutAccount(device: UiDevice) {
-    // Chrome's first-run screen can offer this explicit no-account path. Do not sign in or enable sync.
-    val noAccount = device.wait(Until.findObject(By.text("Use without an account")), 3_000)
-    if (noAccount != null) {
-      noAccount.click()
-      device.waitForIdle()
+    // Chrome can show these accountless first-run choices after its initial loading screen.
+    val deadline = android.os.SystemClock.uptimeMillis() + 60_000
+    val addressBar = By.res("com.android.chrome", "url_bar")
+    while (android.os.SystemClock.uptimeMillis() < deadline) {
+      val browserReady = device.hasObject(addressBar)
+      if (android.os.SystemClock.uptimeMillis() >= deadline) break
+      if (browserReady) return
+      for (label in listOf("Use without an account", "No thanks")) {
+        val remaining = deadline - android.os.SystemClock.uptimeMillis()
+        if (remaining <= 0) break
+        val choice = device.wait(Until.findObject(By.text(label)), minOf(remaining, 1_000L))
+        if (android.os.SystemClock.uptimeMillis() >= deadline) break
+        choice?.click()
+      }
     }
-    val noThanks = device.wait(Until.findObject(By.text("No thanks")), 3_000)
-    if (noThanks != null) {
-      noThanks.click()
-      device.waitForIdle()
-    }
+    throw AssertionError("Chrome onboarding did not reach browser content within 60 seconds")
   }
 
   private fun withFixture(theme: String, block: () -> Unit) {

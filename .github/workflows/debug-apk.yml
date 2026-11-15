@@ -251,6 +251,7 @@ jobs:
             printf '%s\n' "$status" > "$evidence/exit-code.txt"
             timeout 15s adb logcat -b all -d -t 12000 -v threadtime > "$evidence/logcat.txt" 2>&1 || true
             timeout 10s adb shell dumpsys connectivity > "$evidence/connectivity-after.txt" 2>&1 || true
+            timeout 10s adb shell cmd wifi status > "$evidence/wifi-after.txt" 2>&1 || true
             mkdir -p "$evidence/screenshots"
             timeout 30s adb pull /sdcard/Download/collie-webview-acceptance/. "$evidence/screenshots/" || true
             sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
@@ -263,13 +264,15 @@ jobs:
           timeout 10s adb shell getprop ro.build.fingerprint > "$evidence/device-fingerprint.txt"
           timeout 10s adb shell dumpsys webviewupdate > "$evidence/webview-provider.txt"
           timeout 10s adb shell cmd connectivity airplane-mode enable
-          timeout 10s adb shell svc wifi disable
+          timeout 10s adb shell cmd wifi set-wifi-enabled disabled
           test "$(timeout 10s adb shell settings get global airplane_mode_on | tr -d '\r')" = 1
           for i in {1..30}; do
+            timeout 10s adb shell cmd wifi status | tr -d '\r' > "$evidence/wifi-before.txt"
             timeout 10s adb shell dumpsys connectivity > "$evidence/connectivity-before.txt"
-            if grep -q 'Active default network: none' "$evidence/connectivity-before.txt"; then break; fi
+            if grep -Fxq 'Wifi is disabled' "$evidence/wifi-before.txt" && grep -q 'Active default network: none' "$evidence/connectivity-before.txt"; then break; fi
             sleep 1
           done
+          grep -Fxq 'Wifi is disabled' "$evidence/wifi-before.txt"
           grep -q 'Active default network: none' "$evidence/connectivity-before.txt"
           timeout 10s adb logcat -c
           ./gradlew --no-daemon --console=plain \

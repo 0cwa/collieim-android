@@ -6,7 +6,6 @@ package org.thoughtcrime.securesms.main.setup
 
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
@@ -136,18 +135,11 @@ class ProjectLogScreenshotTest {
       saveScreenshot(scenario, "06-light-pr156-entry.png")
 
       val targetUrl = "https://github.com/0cwa/collieim-android/pull/156"
-      val targetIntent = Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl))
-      val browserPackage = requireNotNull(
-        context.packageManager.resolveActivity(targetIntent, android.content.pm.PackageManager.MATCH_DEFAULT_ONLY)
-          ?.activityInfo?.packageName
-      ) { "No external browser resolves the PR156 URL" }
-      assertTrue("The PR156 handoff must leave Collie", browserPackage != context.packageName)
-
       compose.onNode(hasText(entry, substring = true) and isClickable()).performClick()
       val device = UiDevice.getInstance(instrumentation)
       assertTrue(
-        "The resolved external browser did not open: $browserPackage",
-        device.wait(Until.hasObject(By.pkg(browserPackage)), 30_000)
+        "The PR156 handoff did not leave Collie",
+        device.wait(Until.gone(By.pkg(context.packageName)), 30_000)
       )
       continueBrowserWithoutAccount(device)
 
@@ -160,6 +152,8 @@ class ProjectLogScreenshotTest {
         "The browser page did not render the PR156 number",
         device.wait(Until.hasObject(By.textContains("#156")), 15_000)
       )
+      val browserPackage = requireNotNull(device.currentPackageName) { "No foreground package after the PR156 page rendered" }
+      assertTrue("The PR156 handoff must leave Collie", browserPackage != context.packageName)
       val addressBar = device.wait(Until.findObject(By.res(browserPackage, "url_bar")), 10_000)
       assertNotNull("Could not inspect the external browser URL", addressBar)
       val address = addressBar?.text.orEmpty()

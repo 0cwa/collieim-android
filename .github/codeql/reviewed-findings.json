@@ -56,7 +56,7 @@
         "core/util/src/main/java/org/signal/core/util/PendingIntentFlags.kt": "32460a9c65ffa70f29c230f6faa0808e28d20fb65738987707b1bbac64bae1a9",
         "app/src/main/java/org/thoughtcrime/securesms/apkupdate/CollieUpdateIndex.kt": "5694bab355006f5b1ccfa6802a55d7acb20e144a029bf8e4ddc7f00fa9fa0165"
       },
-      "context_sha256": "4548b99c34d15738d043b4e39964269a4249580f38e70ee24773b51d21b9b7d0"
+      "context_sha256": "8e3c48ddbea86110bc5e6963500775c6d47d7c050c32823f47663cade196b5bb"
     },
     {
       "rule": "java/android/implicit-pendingintents",
@@ -84,7 +84,7 @@
         "core/util/src/main/java/org/signal/core/util/PendingIntentFlags.kt": "32460a9c65ffa70f29c230f6faa0808e28d20fb65738987707b1bbac64bae1a9",
         "app/src/main/java/org/thoughtcrime/securesms/apkupdate/CollieUpdateIndex.kt": "5694bab355006f5b1ccfa6802a55d7acb20e144a029bf8e4ddc7f00fa9fa0165"
       },
-      "context_sha256": "23ecec5e85e5c641fea4e36960484ed545a1605f2d5081a612b7c946747c0c9e"
+      "context_sha256": "61b950f94876da0a37f4f79fe07f6bea1778ece572aa2b404b3157a0b5a95106"
     },
     {
       "rule": "java/weak-cryptographic-algorithm",
@@ -111,7 +111,7 @@
       "reviewed_sources": {
         "app/src/main/java/org/thoughtcrime/securesms/crypto/MasterSecret.java": "02f401aa7433d257ac8fd4d20b20bf6c763c52ac9fb34db330df2dd97eadc617"
       },
-      "context_sha256": "5b93e24b0869f0ea585893058d52b3fcc2ca4c0d6bc3c91aa9517821a50efffa"
+      "context_sha256": "a782b39f688ef8b503c38eb56830d01172aa0c39c867c62e76cd51a9011e7f3c"
     },
     {
       "rule": "java/weak-cryptographic-algorithm",
@@ -138,7 +138,7 @@
       "reviewed_sources": {
         "app/src/main/java/org/thoughtcrime/securesms/crypto/MasterSecret.java": "02f401aa7433d257ac8fd4d20b20bf6c763c52ac9fb34db330df2dd97eadc617"
       },
-      "context_sha256": "3014218bc843930ba85d76d6bad44c08b97a466e5893cde7183459353b51c83b"
+      "context_sha256": "3c26dccc58e46f0d9a25a518ed06a3353fb5cf7de668f628f19a1cb4976a5c9c"
     },
     {
       "rule": "java/weak-cryptographic-algorithm",
@@ -176,7 +176,7 @@
         "build-inputs/native-lock.json": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
         "core/util-jvm/src/main/java/org/signal/core/models/backup/MessageBackupKey.kt": "375db8178ed5f6a0936932b557033d00f51a55cd504c6f56adcc89dc9591ffb1"
       },
-      "context_sha256": "be7ad81a1b56ab97ecd33223838d80b0bd4044810060622ba0ed680d3fd54883"
+      "context_sha256": "b4633d874428e207573554cfe665d44fe6deb10d26b7498d95660761121b072c"
     },
     {
       "rule": "java/weak-cryptographic-algorithm",
@@ -214,7 +214,7 @@
         "build-inputs/native-lock.json": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
         "core/util-jvm/src/main/java/org/signal/core/models/backup/MessageBackupKey.kt": "375db8178ed5f6a0936932b557033d00f51a55cd504c6f56adcc89dc9591ffb1"
       },
-      "context_sha256": "921c74dc332e278114f03d3db2264388e87256b0f753413f05b5debabbee0c4c"
+      "context_sha256": "17f6f8082e31df74ee7034d2cee3acf733476406065f957e15353c4047bf479e"
     },
     {
       "rule": "java/weak-cryptographic-algorithm",
@@ -252,7 +252,7 @@
         "build-inputs/native-lock.json": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
         "core/util-jvm/src/main/java/org/signal/core/models/backup/MessageBackupKey.kt": "375db8178ed5f6a0936932b557033d00f51a55cd504c6f56adcc89dc9591ffb1"
       },
-      "context_sha256": "7d09df39be62576b324274a627455e864c6cfaaf7a6d37ababfb2dadf9ddeaa3"
+      "context_sha256": "d7a7fb8a40d0c6cc2798ecae68ba1844c8fe1e6c3f2346a2cb0ce0b302c7e22a"
     },
     {
       "rule": "java/weak-cryptographic-algorithm",
@@ -304,7 +304,7 @@
         "gradle/libs.versions.toml": "01f5cdafc39efd577fd8da6017644049b85ec7ae72b57c038e008cfee349ea62",
         "build.gradle.kts": "31fe7ec05365461f2695551ec200cf6cfd928d698679200a4094a1da643df35e"
       },
-      "context_sha256": "a1bf66e411b17a7e5b79c711340c1cdba800ccf2c151a3d3300511842f523fea"
+      "context_sha256": "83e4ad7be987e48dac1c71305451a0eaedea7dd937bc13386c4638c52c9101a5"
     },
     {
       "rule": "java/weak-cryptographic-algorithm",
@@ -332,7 +332,7 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/crypto/SecondaryProvisioningCipher.kt": "21cf390e33fdc75f07adc5505bb3216619809644aef359847a951093b7ac222a",
         "lib/libsignal-service/src/test/java/org/whispersystems/signalservice/internal/crypto/SecondaryProvisioningCipherTest.kt": "414b655303b106b9ee91664b7db7fd55d8060ebd31f79a799546f0f8aa5fe848"
       },
-      "context_sha256": "245313213b3866c59c42c649ab7b308be57db61a955a2bdbd12b61bfc7167386"
+      "context_sha256": "b2b83fcef52c2734e988d845ac3fec4416ef75089a49bad687d030689a682f4c"
     },
     {
       "rule": "java/weak-cryptographic-algorithm",
@@ -360,7 +360,7 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/crypto/SecondaryProvisioningCipher.kt": "21cf390e33fdc75f07adc5505bb3216619809644aef359847a951093b7ac222a",
         "lib/libsignal-service/src/test/java/org/whispersystems/signalservice/internal/crypto/SecondaryProvisioningCipherTest.kt": "414b655303b106b9ee91664b7db7fd55d8060ebd31f79a799546f0f8aa5fe848"
       },
-      "context_sha256": "42282645feb4a8221663b21e17e24a2d111d706ef750b45a5195591f8f9b87de"
+      "context_sha256": "3b6aa3f146a862b83697494a82a319d58294daf8255d5583dedeca6e4a64e6b9"
     },
     {
       "rule": "java/weak-cryptographic-algorithm",
@@ -388,7 +388,7 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/crypto/PrimaryProvisioningCipher.java": "6022f933af99eec2c53b15ecffb20e335fffbad6d18bd3e3481ecf782a68b5bd",
         "lib/libsignal-service/src/test/java/org/whispersystems/signalservice/internal/crypto/SecondaryProvisioningCipherTest.kt": "414b655303b106b9ee91664b7db7fd55d8060ebd31f79a799546f0f8aa5fe848"
       },
-      "context_sha256": "7ba8e9e6b8170b99df2438a7e0d41c167756b0738a04f8dca686159ea35b1384"
+      "context_sha256": "c66239c770294a1499b5b8cb71b5453a01566319d23360be673ca286aefe965f"
     },
     {
       "rule": "java/static-initialization-vector",
@@ -413,7 +413,7 @@
         "end_column": 94
       },
       "reviewed_sources": {},
-      "context_sha256": "d611e85f3b1219048418f639913307e96904c5174623aba71c6c734eb07b2d19"
+      "context_sha256": "488fb199dbeeedc5d8de66f87ee6663f95ee8c42d2e0f04859456adf6c6f29b6"
     },
     {
       "rule": "java/static-initialization-vector",
@@ -438,7 +438,7 @@
         "end_column": 94
       },
       "reviewed_sources": {},
-      "context_sha256": "18aaa0d1ce8321a90ec4468458d8b9a7f8bf8f8935ca28f8ba3b1f7a64beff2e"
+      "context_sha256": "72408ab780fa286dbff2067df3707941d4df717199ef6110bf0a3dcea863cc1b"
     },
     {
       "rule": "java/static-initialization-vector",
@@ -467,7 +467,7 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/crypto/ProfileCipher.java": "b0ac8183e9dff375435d3157c0b2f68d8a2a3920d10aafabc6285e98ba332a78",
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/crypto/ProfileCipherOutputStream.java": "6ca13cab0a4d8bd620851419bab988a18668f54d87ac3adc9a6eefba9d350aaa"
       },
-      "context_sha256": "b6839b76e400ecfa8783f0f965dd67e4c439e709c716fc405a9edb075dd043c0"
+      "context_sha256": "fb645dfa1ee1cf4fd468bb2467c5f18d8e524629c5fca19ed4501cf19bfdfdc7"
     },
     {
       "rule": "java/static-initialization-vector",
@@ -494,7 +494,7 @@
       "reviewed_sources": {
         "core/util/src/main/java/org/signal/core/util/crypto/ModernDecryptingPartInputStream.java": "a0265e55ed2cd37da88fcffa58a14888198263f0f43cbee30e8d692192aeabe8"
       },
-      "context_sha256": "3cd00da240cc906fc22670e07373888d59c4e447431d0149da27076128778a5e"
+      "context_sha256": "7cd008e103dac58ef5045cdbe8e733fede596f7b43c454c4bfdb7b4e53b677cc"
     },
     {
       "rule": "java/improper-intent-verification",
@@ -522,7 +522,7 @@
         "app/src/main/AndroidManifest.xml": "bed5cf1fc1e61249388ac6b588c69797795e70707aec321bfc3e0546a1bc71b5",
         "app/src/website/AndroidManifest.xml": "619613466b82e0c9c85dec7e879486726dbeb727e04cd223978dc3c91e421bf3"
       },
-      "context_sha256": "aa93579c1d7606e7783064b09eb05e2ee7054facf8e33b3bfe2844590cc94882"
+      "context_sha256": "89776701e2433119284aad4e363817418d499de1c03b354eea68fb5276c0a000"
     },
     {
       "rule": "java/android/insecure-local-authentication",
@@ -741,7 +741,7 @@
       "reviewed_sources": {
         "lib/password-manager/src/main/java/org/signal/passwordmanager/SignalCredentialManager.kt": "d8299bb72a9bea18d74a172b047e1478a12425f9111c36d4b85f4dafa3c3d58b"
       },
-      "context_sha256": "072e74c64164d035bcd75f0a924022d6d8a80584d2d906e21ad1e29ecc22d0f2"
+      "context_sha256": "3af06a502e007acd8a75841b11a3ec51b1835c622e7fb10c6768f07411d7fe93"
     },
     {
       "rule": "java/android/sensitive-communication",
@@ -768,7 +768,7 @@
       "reviewed_sources": {
         "lib/password-manager/src/main/java/org/signal/passwordmanager/SignalCredentialManager.kt": "d8299bb72a9bea18d74a172b047e1478a12425f9111c36d4b85f4dafa3c3d58b"
       },
-      "context_sha256": "6a0810839781c6dd528340138d1032a5136585fd11cee1eb9303f5bdb62d517d"
+      "context_sha256": "6ce55fe2d731ee12d58d80a066ee9a2e4c0641fc18ceb2fd99b2fe70c084c906"
     },
     {
       "rule": "java/android/sensitive-communication",
@@ -795,7 +795,7 @@
       "reviewed_sources": {
         "lib/password-manager/src/main/java/org/signal/passwordmanager/SignalCredentialManager.kt": "d8299bb72a9bea18d74a172b047e1478a12425f9111c36d4b85f4dafa3c3d58b"
       },
-      "context_sha256": "3ba54ac22732859c870d7e6ef38d8eace46436487eaf7983d87b1a137488d997"
+      "context_sha256": "ea79b7a478f91093791d065eb895c66c469a6553a24ffb25c403e72d30a07288"
     },
     {
       "rule": "java/sensitive-log",
@@ -831,7 +831,7 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/websocket/SignalWebSocket.kt": "55428644621ef981b238a2dd3181fce8f8828680f7ec7e403607e7ceae5c93eb",
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/websocket/LibSignalChatConnection.kt": "54ecba258afd35bf3f265c48ad8c26b07d02fc65bbccd1f623162427fb2a4989"
       },
-      "context_sha256": "46f85167eddf54d4368a459b20ce8f86699cf998d8188f8deb608d88a2c15e7f"
+      "context_sha256": "870d25fc8fc80267db8b1ae9a28fc50ee497b09f0117cb20bd96bfcd47a1e01d"
     },
     {
       "rule": "java/sensitive-log",
@@ -884,7 +884,7 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/registration/RestoreMethodBody.kt": "2e5c1f70892101f39f3f52d153c32a60a325961dff73d84458294074e5665463",
         "lib/network/src/main/java/org/signal/network/api/ProvisioningApi.kt": "0f62d32692e0b82aa959ab20669ee0d16dc3134bbf607f25115e78a39802f61c"
       },
-      "context_sha256": "3e858c5afcae9fa3a20e9f00eb21366bbd4e066ec4f131b7113032d26a89ed47"
+      "context_sha256": "250423384029b352e6550bfab960cde3cf4286ec012ccaa9db60000a72ea0be1"
     },
     {
       "rule": "java/sensitive-log",
@@ -937,7 +937,7 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/registration/RestoreMethodBody.kt": "2e5c1f70892101f39f3f52d153c32a60a325961dff73d84458294074e5665463",
         "lib/network/src/main/java/org/signal/network/api/ProvisioningApi.kt": "0f62d32692e0b82aa959ab20669ee0d16dc3134bbf607f25115e78a39802f61c"
       },
-      "context_sha256": "daef401fe7d1d2566e105be6e4e1e74fcd8d6b43947fd75fb7517adfbd973b13"
+      "context_sha256": "fb7dd0b59c4166de0bc0558a3d398a94634e32aebbfcd08074ac693a6b50aa3a"
     },
     {
       "rule": "java/sensitive-log",
@@ -990,7 +990,7 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/registration/RestoreMethodBody.kt": "2e5c1f70892101f39f3f52d153c32a60a325961dff73d84458294074e5665463",
         "lib/network/src/main/java/org/signal/network/api/ProvisioningApi.kt": "0f62d32692e0b82aa959ab20669ee0d16dc3134bbf607f25115e78a39802f61c"
       },
-      "context_sha256": "eb05917ddc03b31b491ad831a6cd38ddc85d66839672239b17f5a8dc8b69614b"
+      "context_sha256": "ddc1557385e17795d35ea2afc1d5500067d44bb46eb2ca08dadce5b0c9d06fcd"
     },
     {
       "rule": "java/potentially-weak-cryptographic-algorithm",
@@ -1022,7 +1022,7 @@
         "gradle/libs.versions.toml": "01f5cdafc39efd577fd8da6017644049b85ec7ae72b57c038e008cfee349ea62",
         "gradle/verification-metadata.xml": "2342cfddbfc3a150c204dee2a1738d924b9f4d69f621e2cebd77dc6e5f61c568"
       },
-      "context_sha256": "35477029959faa4b1cbe69db866b73c91f3f390d23b0149ecb889ede107f5d95"
+      "context_sha256": "c4970ec7ee840b67dc53f6d356a63e22a23dc9e7f2ef6db674dbfe28b46b3450"
     },
     {
       "rule": "java/android/websettings-allow-content-access",
@@ -1119,7 +1119,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/preferences/BackupsPreferenceFragment.java": "5a2c1a2950f8c11174323519692bea09b1ff9d94fa969943feb7a541c8f79c94",
         "feature/app-settings/src/main/java/org/signal/appsettings/managestorage/ManageStorageSettingsScreen.kt": "d586b499712c399c1efdfb689b367368327ff91f07d42361af230b18c515c33c"
       },
-      "context_sha256": "72c6ca5b367009d8c08a5544738f4e5c26a809f7ba0e59f628044acfae305c96"
+      "context_sha256": "cb573f2b057d42d023d4fc1d9cb6ce19e8d138b9c641d0c2177d9680cd59e9b0"
     },
     {
       "rule": "java/android/sensitive-text",
@@ -1157,7 +1157,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/preferences/BackupsPreferenceFragment.java": "5a2c1a2950f8c11174323519692bea09b1ff9d94fa969943feb7a541c8f79c94",
         "feature/app-settings/src/main/java/org/signal/appsettings/managestorage/ManageStorageSettingsScreen.kt": "d586b499712c399c1efdfb689b367368327ff91f07d42361af230b18c515c33c"
       },
-      "context_sha256": "8a9c17deab85c76cf83921e721c56b4860e577be24f77018a3d0d988739f22b9"
+      "context_sha256": "cb0d112a33373da2b21f93e26b57d72b84139cf591e364fcf312dbe499e84889"
     },
     {
       "rule": "java/android/sensitive-text",
@@ -1195,7 +1195,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/preferences/BackupsPreferenceFragment.java": "5a2c1a2950f8c11174323519692bea09b1ff9d94fa969943feb7a541c8f79c94",
         "feature/app-settings/src/main/java/org/signal/appsettings/managestorage/ManageStorageSettingsScreen.kt": "d586b499712c399c1efdfb689b367368327ff91f07d42361af230b18c515c33c"
       },
-      "context_sha256": "0fa8044bd59502604095145b98fb6ff29c1369e15b48bb254e15a0cb6699b8b9"
+      "context_sha256": "6dbc26bbb4b9eb292a810185cb6f4423cd695183d1e4f0b7f6d269896199320c"
     },
     {
       "rule": "java/android/sensitive-text",
@@ -1233,7 +1233,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/preferences/BackupsPreferenceFragment.java": "5a2c1a2950f8c11174323519692bea09b1ff9d94fa969943feb7a541c8f79c94",
         "feature/app-settings/src/main/java/org/signal/appsettings/managestorage/ManageStorageSettingsScreen.kt": "d586b499712c399c1efdfb689b367368327ff91f07d42361af230b18c515c33c"
       },
-      "context_sha256": "cc1e5c18e1b925d00018d98feef6bc7970f024c5de0da673f5a943a93caf5dd4"
+      "context_sha256": "2311f6379927f7850cae0f168e399ddef23f88d861e8fde7de6f96b723825e9e"
     },
     {
       "rule": "java/android/sensitive-text",
@@ -1271,7 +1271,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/preferences/BackupsPreferenceFragment.java": "5a2c1a2950f8c11174323519692bea09b1ff9d94fa969943feb7a541c8f79c94",
         "feature/app-settings/src/main/java/org/signal/appsettings/managestorage/ManageStorageSettingsScreen.kt": "d586b499712c399c1efdfb689b367368327ff91f07d42361af230b18c515c33c"
       },
-      "context_sha256": "600cf5d326599e6c76350ab359e05a9573c325e33ee47d3f65a74f7a6201c145"
+      "context_sha256": "8bcb42fa229ebe582eab978e52446a318bd82f0d30d523789f8626da47302dec"
     },
     {
       "rule": "java/android/sensitive-text",
@@ -1309,7 +1309,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/preferences/BackupsPreferenceFragment.java": "5a2c1a2950f8c11174323519692bea09b1ff9d94fa969943feb7a541c8f79c94",
         "feature/app-settings/src/main/java/org/signal/appsettings/managestorage/ManageStorageSettingsScreen.kt": "d586b499712c399c1efdfb689b367368327ff91f07d42361af230b18c515c33c"
       },
-      "context_sha256": "2c769803e7d537f5f4ab14d09466e5139f782664771c7ee11edc4923d6949e56"
+      "context_sha256": "ce42b5ee17fd04005f245ac199e75fb826ac983a3334443185002419e56457f6"
     },
     {
       "rule": "java/unsafe-cert-trust",
@@ -1476,7 +1476,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/util/ConversationUtil.java": "df12ddaec31fdf5a0a89dcffc2f2f5ef03e7e61f569b1f8937d4a285ec84f1a9",
         "core/util/src/main/java/org/signal/core/models/recipients/RecipientId.kt": "b3722f9f70854202d733eb6762b93885eb93358099ea4829fb739779dec16d89"
       },
-      "context_sha256": "ee80a7f5ee75931c81d3a0a17aa07f849ec6596f34ce2602fb3ea69143ce73ab"
+      "context_sha256": "42eb6e5a6451bc32afca7b6df530087a83d91ed6596eebf2a27d02146dba8f46"
     },
     {
       "rule": "java/android/websettings-javascript-enabled",
@@ -1623,7 +1623,7 @@
         "end_column": 33
       },
       "reviewed_sources": {},
-      "context_sha256": "bd40b568728692a9bdab7de7bd11143370c0c539f2ef4ff03abe53a5c530431f"
+      "context_sha256": "1e35dc22cd3526e3bcfd6e3ec778e3bf1741834e7dcd2e014181fafc82ea9110"
     }
   ]
 }

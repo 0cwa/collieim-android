@@ -154,7 +154,7 @@ object QuickRegistrationRepository {
 
     if (restoreMethodToken != null) {
       withContext(Dispatchers.IO) {
-        Log.d(TAG, "Setting restore method ***${restoreMethodToken.takeLast(4)}: $restoreMethod")
+        Log.d(TAG, "Setting restore method: $restoreMethod")
         var retries = 3
         var result: NetworkResult<Unit>? = null
         while (retries-- > 0 && result !is NetworkResult.Success) {
@@ -183,7 +183,7 @@ object QuickRegistrationRepository {
     var retries = 5
     var result: NetworkResult<RestoreMethod>? = null
 
-    Log.d(TAG, "Waiting for restore method with token: ***${restoreMethodToken.takeLast(4)}")
+    Log.d(TAG, "Waiting for restore method")
     while (retries-- > 0 && result !is NetworkResult.Success && coroutineContext.isActive) {
       Log.d(TAG, "Waiting, remaining tries: $retries")
       result = SignalNetwork.provisioningApi.waitForRestoreMethod(restoreMethodToken)

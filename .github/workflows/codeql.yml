@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 0cwa/collie-release-engineering
-          ref: bebfda4acfa543c9ca8f152464d90736023b4769
+          ref: 2c51a32c7c687bb76e8a9a23563647d42dcc4463
           path: policy
           sparse-checkout: tools/codeql
           persist-credentials: false
@@ -103,7 +103,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 0cwa/collie-release-engineering
-          ref: bebfda4acfa543c9ca8f152464d90736023b4769
+          ref: 2c51a32c7c687bb76e8a9a23563647d42dcc4463
           path: policy
           sparse-checkout: tools/codeql
           persist-credentials: false
@@ -234,7 +234,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 0cwa/collie-release-engineering
-          ref: bebfda4acfa543c9ca8f152464d90736023b4769
+          ref: 2c51a32c7c687bb76e8a9a23563647d42dcc4463
           path: policy
           sparse-checkout: tools/codeql
           persist-credentials: false

@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 0cwa/collie-release-engineering
-          ref: 2c51a32c7c687bb76e8a9a23563647d42dcc4463
+          ref: c2bfee7348dca4ebfdf16aac14732f373e20c5a0
           path: policy
           sparse-checkout: tools/codeql
           persist-credentials: false
@@ -49,6 +49,10 @@ jobs:
           mkdir -p "$RUNNER_TEMP/codeql-evidence"
           git rev-parse HEAD HEAD^{tree} | tee "$RUNNER_TEMP/codeql-evidence/source.txt"
           printf '%s\n' 'Actions workflow analysis only. See the separate Java/Kotlin job for application coverage; native dependency source analysis is not run.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Record the exact configuration used by CodeQL init
+        run: |
+          set -euo pipefail
+          sha256sum trusted-policy/.github/codeql/codeql-config.yml | cut -d ' ' -f 1 > "$RUNNER_TEMP/codeql-evidence/config-sha256.txt"
       - uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           tools: linked
@@ -71,6 +75,7 @@ jobs:
           path: |
             ${{ runner.temp }}/codeql-sarif
             ${{ runner.temp }}/codeql-evidence/source.txt
+            ${{ runner.temp }}/codeql-evidence/config-sha256.txt
           if-no-files-found: error
           retention-days: 14
   application-analysis:
@@ -103,7 +108,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 0cwa/collie-release-engineering
-          ref: 2c51a32c7c687bb76e8a9a23563647d42dcc4463
+          ref: c2bfee7348dca4ebfdf16aac14732f373e20c5a0
           path: policy
           sparse-checkout: tools/codeql
           persist-credentials: false
@@ -127,6 +132,10 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - run: cp tooling/gradle.properties.docker "$HOME/.gradle/gradle.properties"
+      - name: Record the exact configuration used by CodeQL init
+        run: |
+          set -euo pipefail
+          sha256sum trusted-policy/.github/codeql/codeql-config.yml | cut -d ' ' -f 1 > "$RUNNER_TEMP/codeql-evidence/config-sha256.txt"
       - uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         id: codeql-init
         with:
@@ -193,6 +202,7 @@ jobs:
             ${{ runner.temp }}/codeql-evidence/extracted.csv
             ${{ runner.temp }}/codeql-evidence/review-context.json
             ${{ runner.temp }}/codeql-evidence/source.txt
+            ${{ runner.temp }}/codeql-evidence/config-sha256.txt
             ${{ runner.temp }}/codeql-evidence/codeql-version.txt
             ${{ runner.temp }}/codeql-evidence/qlpacks.json
           if-no-files-found: error
@@ -234,7 +244,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 0cwa/collie-release-engineering
-          ref: 2c51a32c7c687bb76e8a9a23563647d42dcc4463
+          ref: c2bfee7348dca4ebfdf16aac14732f373e20c5a0
           path: policy
           sparse-checkout: tools/codeql
           persist-credentials: false
@@ -302,6 +312,7 @@ jobs:
           SARIF_DIR: ${{ matrix.sarif }}
           CODEQL_ANALYSIS_ROOT: ${{ needs.application-analysis.outputs.checkout-root }}
         run: |
+          set -euo pipefail
           mkdir -p "$RUNNER_TEMP/audit"
           review_file=trusted-policy/.github/codeql/reviewed-findings.json
           if [[ ! -f "$review_file" ]]; then
@@ -309,6 +320,18 @@ jobs:
             printf '%s\n' '{"schema":1,"reviews":[]}' > "$review_file"
           fi
           args=()
+          catalog=trusted-policy/.github/codeql/review-snapshots.json
+          if [[ -e "$catalog" || -L "$catalog" ]]; then
+            # Only the trusted base may supply the catalog, config and manifests.
+            # The receipt comes from the analysis step immediately before init.
+            config_hash=$(cat "$RUNNER_TEMP/analysis/codeql-evidence/config-sha256.txt")
+            [[ "$config_hash" =~ ^[0-9a-f]{64}$ ]]
+            review_file=.github/codeql/reviewed-findings.json
+            args+=(--review-catalog .github/codeql/review-snapshots.json
+                   --trusted-policy-root trusted-policy
+                   --analysis-config .github/codeql/codeql-config.yml
+                   --analysis-config-sha256 "$config_hash")
+          fi
           if [[ "$LANGUAGE" == java-kotlin ]]; then
             python3 - "$RUNNER_TEMP/analysis/codeql-evidence/compiler-inputs.jsonl" "$RUNNER_TEMP/audit/compiler-inputs.jsonl" <<'PY'
           import json

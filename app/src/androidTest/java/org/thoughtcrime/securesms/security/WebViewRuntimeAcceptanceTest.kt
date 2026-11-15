@@ -5,6 +5,7 @@
 package org.thoughtcrime.securesms.security
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -13,19 +14,18 @@ import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.provider.Settings
 import android.os.Bundle
-import android.view.View
+import android.os.Environment
+import android.provider.MediaStore
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.core.view.descendants
 import androidx.navigation.Navigation
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import org.hamcrest.Matcher
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -42,10 +42,10 @@ import org.signal.donations.StripeIntentAccessor
 import org.signal.registration.screens.captcha.CaptchaScreen
 import org.signal.registration.screens.captcha.CaptchaScreenEvents
 import org.signal.registration.screens.captcha.CaptchaState
+import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.SignalInstrumentationApplicationContext
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
-import org.thoughtcrime.securesms.components.settings.app.AppSettingsFragmentDirections
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.paypal.PayPalConfirmationDialogFragment
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.paypal.PayPalConfirmationResult
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.stripe.Stripe3DSDialogFragment
@@ -55,11 +55,12 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.ratelimit.RecaptchaProofActivity
 import org.thoughtcrime.securesms.registration.ui.captcha.CaptchaFragment
 import org.thoughtcrime.securesms.testing.SignalActivityRule
+import org.thoughtcrime.securesms.testing.RawFlag
+import org.thoughtcrime.securesms.testing.RemoteConfigForTest
 import org.thoughtcrime.securesms.testing.endpoints.EndpointResponse
 import org.thoughtcrime.securesms.testing.endpoints.EndpointTransport
 import org.thoughtcrime.securesms.testing.endpoints.MockEndpoints
 import org.thoughtcrime.securesms.testing.endpoints.put
-import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -67,9 +68,9 @@ import kotlin.time.Duration.Companion.milliseconds
 
 /** Offline synthetic pages exercise the real WebView clients; no vendor request or payment is made. */
 @RunWith(AndroidJUnit4::class)
+@RemoteConfigForTest(rawFlags = [RawFlag(RemoteConfig.APP_SETTINGS_NAVIGATION_KEY, "false")])
 class WebViewRuntimeAcceptanceTest {
   @get:Rule(order = 0) val harness = SignalActivityRule(othersCount = 0)
-  @get:Rule(order = 1) val compose = createComposeRule()
   private val instrumentation = InstrumentationRegistry.getInstrumentation()
   private val context get() = instrumentation.targetContext
   private val html = """<html><body><h1 id="marker">Synthetic WebView page</h1><script>document.title='fixture-ready';</script><a id="callback" href="signalcaptcha://synthetic-token">Continue</a></body></html>"""
@@ -90,11 +91,15 @@ class WebViewRuntimeAcceptanceTest {
   @Test fun composeCaptchaEmitsSyntheticToken() {
     val event = AtomicReference<CaptchaScreenEvents>()
     val dataUrl = "data:text/html;charset=utf-8," + Uri.encode(html)
-    compose.setContent { SignalTheme { CaptchaScreen(CaptchaState(captchaUrl = dataUrl), onEvent = { event.set(it) }) } }
-    val web = findDisplayedWebView()
-    assertFixture(web, "compose-captcha")
-    clickCallback(web)
-    await { event.get() == CaptchaScreenEvents.CaptchaCompleted("synthetic-token") }
+    ActivityScenario.launch<ComponentActivity>(Intent(context, ComponentActivity::class.java)).use { scenario ->
+      scenario.onActivity { activity ->
+        activity.setContent { SignalTheme { CaptchaScreen(CaptchaState(captchaUrl = dataUrl), onEvent = { event.set(it) }) } }
+      }
+      val web = findDisplayedWebView(scenario)
+      assertFixture(web, "compose-captcha")
+      clickCallback(web)
+      await { event.get() == CaptchaScreenEvents.CaptchaCompleted("synthetic-token") }
+    }
   }
 
   @Test fun legacyCaptchaEmitsTokenAndNavigatesUp() {
@@ -103,11 +108,10 @@ class WebViewRuntimeAcceptanceTest {
     try {
       ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use { scenario ->
         lateinit var web: WebView
-        lateinit var before: String
         scenario.onActivity { activity ->
           val nav = Navigation.findNavController(activity, R.id.nav_host_fragment)
-          nav.navigate(AppSettingsFragmentDirections.actionDirectToChatsSettingsFragment())
-          before = nav.currentDestination!!.id.toString()
+          nav.navigate(R.id.action_appSettingsFragment_to_chatsSettingsFragment)
+          assertEquals(R.id.appSettingsFragment, nav.previousBackStackEntry?.destination?.id)
           val fragment = LegacyCaptcha()
           activity.supportFragmentManager.beginTransaction().add(android.R.id.content, fragment, "legacy-test").commitNow()
           Navigation.setViewNavController(fragment.requireView(), nav)
@@ -118,7 +122,7 @@ class WebViewRuntimeAcceptanceTest {
         clickCallback(web)
         await { token.get() == "synthetic-token" }
         scenario.onActivity { activity ->
-          assertTrue("captcha callback should navigate up", Navigation.findNavController(activity, R.id.nav_host_fragment).currentDestination!!.id.toString() != before)
+          assertEquals("captcha callback should navigate up", R.id.appSettingsFragment, Navigation.findNavController(activity, R.id.nav_host_fragment).currentDestination?.id)
         }
       }
     } finally { LegacyCaptcha.token.set(null) }
@@ -227,14 +231,16 @@ class WebViewRuntimeAcceptanceTest {
     }
   }
 
-  private fun findDisplayedWebView(): WebView {
+  private fun findDisplayedWebView(scenario: ActivityScenario<ComponentActivity>): WebView {
     val found = AtomicReference<WebView>()
-    onView(isAssignableFrom(WebView::class.java)).perform(object : ViewAction {
-      override fun getConstraints(): Matcher<View> = isAssignableFrom(WebView::class.java)
-      override fun getDescription(): String = "find the production captcha WebView"
-      override fun perform(uiController: UiController, view: View) { found.set(view as WebView) }
-    })
-    return found.get()
+    await {
+      scenario.onActivity { activity ->
+        found.set((activity.window.decorView as ViewGroup).descendants.filterIsInstance<WebView>()
+          .firstOrNull { it.isShown && it.width > 0 && it.height > 0 })
+      }
+      found.get() != null
+    }
+    return checkNotNull(found.get())
   }
 
   private fun loadFixture(web: WebView) {
@@ -272,13 +278,37 @@ class WebViewRuntimeAcceptanceTest {
   }
 
   private fun screenshot(web: WebView, name: String) {
+    val ready = CountDownLatch(1)
+    instrumentation.runOnMainSync {
+      web.postVisualStateCallback(0, object : WebView.VisualStateCallback() {
+        override fun onComplete(requestId: Long) { ready.countDown() }
+      })
+    }
+    assertTrue("WebView visual state did not become ready", ready.await(20, TimeUnit.SECONDS))
     instrumentation.runOnMainSync {
       assertTrue("WebView has no rendered size", web.width > 0 && web.height > 0)
       val bitmap = Bitmap.createBitmap(web.width, web.height, Bitmap.Config.ARGB_8888)
       web.draw(Canvas(bitmap))
-      val dir = File(context.externalMediaDirs.first(), "webview-acceptance").apply { mkdirs() }
-      File(dir, "$name.png").outputStream().use { assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)) }
-      bitmap.recycle()
+      try {
+        // Orchestrator clears app data after each case; keep only synthetic screenshots in shared storage.
+        val resolver = context.contentResolver
+        val relativePath = "${Environment.DIRECTORY_DOWNLOADS}/collie-webview-acceptance/"
+        resolver.delete(
+          MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+          "${MediaStore.MediaColumns.DISPLAY_NAME} = ? AND ${MediaStore.MediaColumns.RELATIVE_PATH} = ?",
+          arrayOf("$name.png", relativePath)
+        )
+        val uri = checkNotNull(resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, ContentValues().apply {
+          put(MediaStore.MediaColumns.DISPLAY_NAME, "$name.png")
+          put(MediaStore.MediaColumns.MIME_TYPE, "image/png")
+          put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath)
+          put(MediaStore.MediaColumns.IS_PENDING, 1)
+        }))
+        checkNotNull(resolver.openOutputStream(uri)).use { assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)) }
+        resolver.update(uri, ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }, null, null)
+      } finally {
+        bitmap.recycle()
+      }
     }
   }
 

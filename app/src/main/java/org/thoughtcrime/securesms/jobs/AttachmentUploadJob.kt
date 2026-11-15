@@ -169,29 +169,27 @@ class AttachmentUploadJob private constructor(
       throw NotPushRegisteredException()
     }
 
-    SignalDatabase.attachments.createRemoteKeyIfNecessary(attachmentId)
-
-    var candidate = SignalDatabase.attachments.getUploadCandidate(attachmentId) ?: throw InvalidAttachmentException("Cannot find the specified attachment.")
+    // A dependency may explicitly hand off the transformed source owner. On
+    // retries, use the serialized owner refreshed after our own guarded writes.
+    val expectedOwner = if (runAttempt == 0 && inputData != null) inputData!!.toString(Charsets.UTF_8) else ownerIdentity
+    ownerIdentity = null
+    val current = SignalDatabase.attachments.getUploadCandidate(attachmentId) ?: throw InvalidAttachmentException("Cannot find the specified attachment.")
+    if (expectedOwner != null && SignalDatabase.attachments.uploadOwnerToken(current) == expectedOwner) ownerIdentity = expectedOwner
+    validateUploadSize(current.attachment)
+    // A recent remote object can be completed by exact candidate CAS even when
+    // ownership was lost; no failure callback may act on that newer row.
+    if (reuseRecentUpload(current, requireComplete = true)) return
+    if (expectedOwner == null || !expectedOwner.startsWith("attachment-owner-v2:")) throw IOException("Upload has no valid owner")
+    var candidate = SignalDatabase.attachments.prepareUploadIfOwned(attachmentId, expectedOwner) ?: throw IOException("Attachment changed before upload began")
     val databaseAttachment = candidate.attachment
     attemptedSource = candidate.info
     ownerIdentity = SignalDatabase.attachments.uploadOwnerToken(candidate)
     candidate.info?.let { owner = it.file.absolutePath to it.random }
 
-    if (MediaUtil.isLongTextType(databaseAttachment.contentType) && databaseAttachment.size > MessageUtil.MAX_TOTAL_BODY_SIZE_BYTES) {
-      throw UndeliverableMessageException("Long text attachment is too long! Max size: ${MessageUtil.MAX_TOTAL_BODY_SIZE_BYTES} bytes, Actual size: ${databaseAttachment.size} bytes.")
-    }
-
+    validateUploadSize(databaseAttachment)
     val timeSinceUpload = System.currentTimeMillis() - databaseAttachment.uploadTimestamp
-    if (timeSinceUpload < UPLOAD_REUSE_THRESHOLD && !TextUtils.isEmpty(databaseAttachment.remoteLocation)) {
-      Log.i(TAG, "[$attachmentId] We can re-use an already-uploaded file. It was uploaded $timeSinceUpload ms (${timeSinceUpload.milliseconds.inRoundedDays()} days) ago. Skipping.")
-      if (!SignalDatabase.attachments.markUploadedIfUnchanged(candidate)) throw IOException("Attachment changed before upload reuse")
-      if (SignalStore.account.isPrimaryDevice && BackupRepository.shouldCopyAttachmentToArchive(databaseAttachment.attachmentId, databaseAttachment.mmsId)) {
-        Log.i(TAG, "[$attachmentId] The re-used file was not copied to the archive. Copying now.")
-        AppDependencies.jobManager.add(CopyAttachmentToArchiveJob(attachmentId))
-      }
-      if (snapshot != null) releaseSnapshot(snapshots())
-      return
-    } else if (databaseAttachment.uploadTimestamp > 0) {
+    if (reuseRecentUpload(candidate)) return
+    if (databaseAttachment.uploadTimestamp > 0) {
       Log.i(TAG, "[$attachmentId] This file was previously-uploaded, but too long ago to be re-used. Age: $timeSinceUpload ms (${timeSinceUpload.milliseconds.inRoundedDays()} days)")
       if (databaseAttachment.archiveTransferState != AttachmentTable.ArchiveTransferState.NONE &&
         databaseAttachment.archiveTransferState != AttachmentTable.ArchiveTransferState.FINISHED &&
@@ -371,6 +369,30 @@ class AttachmentUploadJob private constructor(
       }
       is CdnApi.UploadError.RateLimited -> RetryLaterException(error.retryAfter?.toJavaDuration() ?: defaultBackoff().milliseconds.toJavaDuration())
     }
+  }
+
+  private fun validateUploadSize(attachment: DatabaseAttachment) {
+    if (MediaUtil.isLongTextType(attachment.contentType) && attachment.size > MessageUtil.MAX_TOTAL_BODY_SIZE_BYTES) {
+      throw UndeliverableMessageException("Long text attachment is too long! Max size: ${MessageUtil.MAX_TOTAL_BODY_SIZE_BYTES} bytes, Actual size: ${attachment.size} bytes.")
+    }
+  }
+
+  private fun reuseRecentUpload(candidate: AttachmentTable.UploadCandidate, requireComplete: Boolean = false): Boolean {
+    val attachment = candidate.attachment
+    val age = System.currentTimeMillis() - attachment.uploadTimestamp
+    if (age >= UPLOAD_REUSE_THRESHOLD || TextUtils.isEmpty(attachment.remoteLocation)) return false
+    if (requireComplete) {
+      val key = attachment.remoteKey ?: return false
+      val validKey = try { Base64.decode(key).size == 64 } catch (_: IOException) { false } catch (_: IllegalArgumentException) { false }
+      if (!validKey || attachment.remoteDigest?.size != 32) return false
+    }
+    Log.i(TAG, "[$attachmentId] Reusing an upload from $age ms ago.")
+    if (!SignalDatabase.attachments.markUploadedIfUnchanged(candidate)) throw IOException("Attachment changed before upload reuse")
+    if (SignalStore.account.isPrimaryDevice && BackupRepository.shouldCopyAttachmentToArchive(attachment.attachmentId, attachment.mmsId)) {
+      AppDependencies.jobManager.add(CopyAttachmentToArchiveJob(attachmentId))
+    }
+    if (snapshot != null) releaseSnapshot(snapshots())
+    return true
   }
 
   private fun getAttachmentNotificationIfNeeded(attachment: Attachment): AttachmentProgressService.Controller? {

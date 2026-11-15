@@ -68,6 +68,8 @@ class UploadAttachmentToArchiveJob private constructor(
 ) : CoroutineJob(parameters) {
   private var attemptedCandidate: AttachmentTable.UploadCandidate? = null
   private var progressToken: String? = null
+  private var ownerIdentity: String? = null
+  private var progressHandedOff = false
 
   companion object {
     private val TAG = Log.tag(UploadAttachmentToArchiveJob::class)
@@ -113,7 +115,9 @@ class UploadAttachmentToArchiveJob private constructor(
     snapshotDigest = snapshot?.digest,
     snapshotSourcePath = snapshot?.sourcePath,
     snapshotSourceRandom = snapshot?.sourceRandom?.toByteString(),
-    snapshotPlaintextDigest = snapshot?.plaintextDigest
+    snapshotPlaintextDigest = snapshot?.plaintextDigest,
+    ownerIdentity = ownerIdentity,
+    progressToken = progressToken
   ).encode()
 
   override fun getFactoryKey(): String = KEY
@@ -130,10 +134,11 @@ class UploadAttachmentToArchiveJob private constructor(
   }
 
   override suspend fun doRun(): Result {
+    progressHandedOff = false
     val result = runUpload()
     if (!result.isRetry) {
       releaseSnapshot()
-      if (result.isFailure || isCanceled) finishOwnedProgress()
+      if (!progressHandedOff || isCanceled) finishOwnedProgress()
     }
     return result
   }
@@ -165,6 +170,7 @@ class UploadAttachmentToArchiveJob private constructor(
 
     val captured = candidate!!
     attemptedCandidate = captured
+    ownerIdentity = SignalDatabase.attachments.uploadOwnerToken(captured)
     val mediaIdLog: String = if (RemoteConfig.internalUser && attachment.remoteKey != null && attachment.dataHash != null) {
       val mediaId = MediaName.fromPlaintextHashAndRemoteKey(attachment.dataHash.decodeBase64()!!, attachment.remoteKey.decodeBase64()!!).toMediaId(SignalStore.backup.mediaRootBackupKey)
       "[$mediaId]"
@@ -191,7 +197,8 @@ class UploadAttachmentToArchiveJob private constructor(
 
     if (attachment.archiveTransferState == AttachmentTable.ArchiveTransferState.COPY_PENDING) {
       Log.i(TAG, "[$attachmentId]$mediaIdLog Already marked as pending transfer. Enqueueing a copy job just in case.")
-      AppDependencies.jobManager.add(CopyAttachmentToArchiveJob(attachment.attachmentId))
+      AppDependencies.jobManager.add(CopyAttachmentToArchiveJob(attachment.attachmentId, progressToken))
+      progressHandedOff = true
       return Result.success()
     }
 
@@ -254,6 +261,10 @@ class UploadAttachmentToArchiveJob private constructor(
       snapshots.delete(snapshot)
       snapshot = null
       val repaired = SignalDatabase.attachments.repairUploadLengthIfCandidateUnchanged(captured, e.actualLength)
+      if (repaired != null) {
+        attemptedCandidate = repaired
+        ownerIdentity = SignalDatabase.attachments.uploadOwnerToken(repaired)
+      }
       if (repaired != null && e.actualLength == 0L) {
         val marked = ArchiveDatabaseExecutor.runBlocking { SignalDatabase.attachments.setArchiveStateIfCandidateUnchanged(repaired, AttachmentTable.ArchiveTransferState.PERMANENT_FAILURE) }
         return if (marked) Result.failure() else Result.retry(defaultBackoff())
@@ -376,8 +387,12 @@ class UploadAttachmentToArchiveJob private constructor(
                 .use { it.readLength() }
               if (actualLength != attachment.size) {
                 Log.w(TAG, "[$attachmentId]$mediaIdLog Length was incorrect! Will update. Previous: ${attachment.size}, Newly-Calculated: $actualLength", result.networkError)
-                ArchiveDatabaseExecutor.runBlocking {
+                val repaired = ArchiveDatabaseExecutor.runBlocking {
                   SignalDatabase.attachments.repairUploadLengthIfCandidateUnchanged(captured, actualLength)
+                }
+                if (repaired != null) {
+                  attemptedCandidate = repaired
+                  ownerIdentity = SignalDatabase.attachments.uploadOwnerToken(repaired)
                 }
                 uploadSpec = null
                 releaseSnapshot()
@@ -432,6 +447,7 @@ class UploadAttachmentToArchiveJob private constructor(
 
     if (!isCanceled) {
       AppDependencies.jobManager.add(CopyAttachmentToArchiveJob(attachment.attachmentId, progressToken))
+      progressHandedOff = true
     } else {
       Log.d(TAG, "[$attachmentId]$mediaIdLog Job was canceled. Skipping copy job.")
     }
@@ -453,7 +469,11 @@ class UploadAttachmentToArchiveJob private constructor(
     releaseSnapshot()
     val candidate = attemptedCandidate
     val state = if (isCanceled) AttachmentTable.ArchiveTransferState.NONE else AttachmentTable.ArchiveTransferState.TEMPORARY_FAILURE
-    if (candidate != null) ArchiveDatabaseExecutor.runBlocking { SignalDatabase.attachments.setArchiveStateIfCandidateUnchanged(candidate, state) }
+    if (candidate != null) {
+      ArchiveDatabaseExecutor.runBlocking { SignalDatabase.attachments.setArchiveStateIfCandidateUnchanged(candidate, state) }
+    } else {
+      ownerIdentity?.let { owner -> ArchiveDatabaseExecutor.runBlocking { SignalDatabase.attachments.setArchiveStateIfOwnerMatches(attachmentId, owner, state) } }
+    }
     finishOwnedProgress()
   }
 
@@ -472,7 +492,10 @@ class UploadAttachmentToArchiveJob private constructor(
           AttachmentUploadSnapshot.Identity(data.snapshotId, data.snapshotLength, data.snapshotDigest, data.snapshotSourcePath, data.snapshotSourceRandom.toByteArray(), data.snapshotPlaintextDigest) else null,
         canReuseUpload = data.canReuseUpload == true,
         parameters = parameters
-      )
+      ).also {
+        it.ownerIdentity = data.ownerIdentity
+        it.progressToken = data.progressToken
+      }
     }
   }
 }

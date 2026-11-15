@@ -66,6 +66,7 @@ public final class AttachmentCompressionJob extends BaseJob {
 
   private static final String KEY_ATTACHMENT_ID = "row_id";
   private static final String KEY_MMS           = "mms";
+  private static final String KEY_OWNER         = "owner_v2";
   private static final String KEY_MMS_SUBSCRIPTION_ID = "mms_subscription_id";
 
   private static final class StaleVersionException extends IOException {
@@ -73,6 +74,8 @@ public final class AttachmentCompressionJob extends BaseJob {
   }
 
   private AttachmentTable.DataFileInfo attemptedSource;
+  private @Nullable String ownerIdentity;
+  private boolean captureOwner = true;
   private final AttachmentId attachmentId;
   private final boolean      mms;
   private final int          mmsSubscriptionId;
@@ -116,7 +119,13 @@ public final class AttachmentCompressionJob extends BaseJob {
 
   @Override
   public @Nullable byte[] serialize() {
+    if (captureOwner) {
+      AttachmentTable.UploadCandidate candidate = SignalDatabase.attachments().getUploadCandidate(attachmentId);
+      ownerIdentity = candidate != null ? SignalDatabase.attachments().uploadOwnerToken(candidate) : null;
+      captureOwner = false;
+    }
     return new JsonJobData.Builder().putLong(KEY_ATTACHMENT_ID, attachmentId.id)
+                                    .putString(KEY_OWNER, ownerIdentity)
                                     .putBoolean(KEY_MMS, mms)
                                     .putInt(KEY_MMS_SUBSCRIPTION_ID, mmsSubscriptionId)
                                     .serialize();
@@ -143,8 +152,7 @@ public final class AttachmentCompressionJob extends BaseJob {
 
     if (pending) {
       Log.i(TAG, "onAdded() Marking attachment progress as 'started'");
-      AttachmentTable.DataFileInfo source = database.getDataFileInfo(attachmentId);
-      if (source != null) database.markTransferStartedIfOwned(attachmentId, source.getFile().getAbsolutePath(), source.getRandom());
+      if (ownerIdentity != null) database.markTransferStateIfOwnerMatches(attachmentId, ownerIdentity, AttachmentTable.TRANSFER_PROGRESS_STARTED);
     }
   }
 
@@ -155,6 +163,7 @@ public final class AttachmentCompressionJob extends BaseJob {
     AttachmentTable database = SignalDatabase.attachments();
     AttachmentTable.UploadCandidate captured = database.getUploadCandidate(attachmentId);
     if (captured == null) throw new UndeliverableMessageException("Cannot find the specified attachment.");
+    if (ownerIdentity == null || !ownerIdentity.equals(database.uploadOwnerToken(captured))) throw new StaleVersionException();
     DatabaseAttachment databaseAttachment = captured.getAttachment();
 
     TransformProperties transformProperties = databaseAttachment.transformProperties;
@@ -166,6 +175,7 @@ public final class AttachmentCompressionJob extends BaseJob {
 
     if (transformProperties.shouldSkipTransform()) {
       Log.i(TAG, "Skipping at the direction of the TransformProperties.");
+      setOutputData(ownerIdentity.getBytes(java.nio.charset.StandardCharsets.UTF_8));
       return;
     }
 
@@ -175,6 +185,7 @@ public final class AttachmentCompressionJob extends BaseJob {
     MediaConstraints mediaConstraints = new PushMediaConstraints(SentMediaQuality.fromCode(transformProperties.sentMediaQuality));
 
     compress(database, mediaConstraints, databaseAttachment, source);
+    setOutputData(Objects.requireNonNull(ownerIdentity).getBytes(java.nio.charset.StandardCharsets.UTF_8));
   }
 
   @Override
@@ -186,7 +197,7 @@ public final class AttachmentCompressionJob extends BaseJob {
       return;
     }
 
-    if (attemptedSource != null) database.markTransferFailedIfSourceUnchanged(attachmentId, attemptedSource);
+    if (ownerIdentity != null) database.markTransferStateIfOwnerMatches(attachmentId, ownerIdentity, AttachmentTable.TRANSFER_PROGRESS_FAILED);
   }
 
   @Override
@@ -212,11 +223,13 @@ public final class AttachmentCompressionJob extends BaseJob {
       } else if (constraints.canResize(attachment.contentType)) {
         Log.i(TAG, "Compressing image.");
         try (MediaStream converted = compressImage(context, attachment, attachmentDatabase.inputStreamFactoryFor(source), constraints)) {
-          if (!attachmentDatabase.updateAttachmentData(attachment, converted, source, false)) throw new StaleVersionException();
+          ownerIdentity = attachmentDatabase.updateAttachmentDataIfOwned(attachment, converted, source, false, Objects.requireNonNull(ownerIdentity), Long.MAX_VALUE);
+          if (ownerIdentity == null) throw new StaleVersionException();
         }
       } else if (isConstraintsSatisfied(context, attachment, constraints)) {
         Log.i(TAG, "Not compressing.");
-        if (!attachmentDatabase.markAttachmentAsTransformedIfUnchanged(attachmentId, source, false)) throw new StaleVersionException();
+        ownerIdentity = attachmentDatabase.markAttachmentAsTransformedIfOwned(attachmentId, source, false, ownerIdentity);
+        if (ownerIdentity == null) throw new StaleVersionException();
       } else {
         throw new UndeliverableMessageException("Size constraints could not be met!");
       }
@@ -231,7 +244,7 @@ public final class AttachmentCompressionJob extends BaseJob {
     }
   }
 
-  private static @NonNull DatabaseAttachment transcodeVideoIfNeededToDatabase(@NonNull Context context,
+  private @NonNull DatabaseAttachment transcodeVideoIfNeededToDatabase(@NonNull Context context,
                                                                               @NonNull AttachmentTable attachmentDatabase,
                                                                               @NonNull DatabaseAttachment attachment,
                                                                               @NonNull AttachmentTable.DataFileInfo source,
@@ -253,7 +266,8 @@ public final class AttachmentCompressionJob extends BaseJob {
       if (transformProperties != null && transformProperties.getVideoEdited()) {
         throw new UndeliverableMessageException("Video edited, but transcode is not available");
       }
-      if (!attachmentDatabase.markAttachmentAsTransformedIfUnchanged(attachment.attachmentId, source, false)) throw new StaleVersionException();
+      ownerIdentity = markUnchangedVideoIfValid(attachmentDatabase, attachment, source, isConstraintsSatisfied(context, attachment, constraints), Objects.requireNonNull(ownerIdentity));
+      if (ownerIdentity == null) throw new StaleVersionException();
       return attachment;
     }
 
@@ -327,7 +341,8 @@ public final class AttachmentCompressionJob extends BaseJob {
 
             final long plaintextLength = ModernEncryptingPartOutputStream.getPlaintextLength(file.length());
             try (MediaStream mediaStream = new MediaStream(postProcessor.processWithMdatLength(plaintextLength, mdatLength), MimeTypes.VIDEO_MP4, 0, 0, true)) {
-              if (!attachmentDatabase.updateAttachmentData(attachment, mediaStream, source, true)) throw new StaleVersionException();
+              ownerIdentity = attachmentDatabase.updateAttachmentDataIfOwned(attachment, mediaStream, source, true, Objects.requireNonNull(ownerIdentity), Math.min(constraints.getVideoMaxSize(), constraints.getMaxAttachmentSize()));
+              if (ownerIdentity == null) throw new StaleVersionException();
               faststart = true;
             } catch (VideoPostProcessingException e) {
               Log.w(TAG, "Exception thrown during post processing.", e);
@@ -341,7 +356,8 @@ public final class AttachmentCompressionJob extends BaseJob {
 
             if (!faststart) {
               try (MediaStream mediaStream = new MediaStream(ModernDecryptingPartInputStream.createFor(attachmentSecret, file, 0), MimeTypes.VIDEO_MP4, 0, 0, false)) {
-                if (!attachmentDatabase.updateAttachmentData(attachment, mediaStream, source, false)) throw new StaleVersionException();
+                ownerIdentity = attachmentDatabase.updateAttachmentDataIfOwned(attachment, mediaStream, source, false, Objects.requireNonNull(ownerIdentity), Math.min(constraints.getVideoMaxSize(), constraints.getMaxAttachmentSize()));
+                if (ownerIdentity == null) throw new StaleVersionException();
               }
             }
           } finally {
@@ -395,8 +411,21 @@ public final class AttachmentCompressionJob extends BaseJob {
         throw e;
       }
     }
-    if (!attachmentDatabase.markAttachmentAsTransformedIfUnchanged(attachment.attachmentId, source, false)) throw new StaleVersionException();
+    ownerIdentity = markUnchangedVideoIfValid(attachmentDatabase, attachment, source, isConstraintsSatisfied(context, attachment, constraints), Objects.requireNonNull(ownerIdentity));
+    if (ownerIdentity == null) throw new StaleVersionException();
     return attachment;
+  }
+
+  @androidx.annotation.VisibleForTesting
+  public static @Nullable String markUnchangedVideoIfValid(@NonNull AttachmentTable database,
+                                                @NonNull DatabaseAttachment attachment,
+                                                @NonNull AttachmentTable.DataFileInfo source,
+                                                boolean constraintsSatisfied,
+                                                @NonNull String owner)
+      throws UndeliverableMessageException
+  {
+    if (!constraintsSatisfied) throw new UndeliverableMessageException("Size constraints could not be met on video!");
+    return database.markAttachmentAsTransformedIfOwned(attachment.attachmentId, source, false, owner);
   }
 
   private static boolean isConstraintsSatisfied(@NonNull Context context,
@@ -475,10 +504,13 @@ public final class AttachmentCompressionJob extends BaseJob {
     public @NonNull AttachmentCompressionJob create(@NonNull Parameters parameters, @Nullable byte[] serializedData) {
       JsonJobData data = JsonJobData.deserialize(serializedData);
 
-      return new AttachmentCompressionJob(parameters,
+      AttachmentCompressionJob job = new AttachmentCompressionJob(parameters,
                                           new AttachmentId(data.getLong(KEY_ATTACHMENT_ID)),
                                           data.getBoolean(KEY_MMS),
                                           data.getInt(KEY_MMS_SUBSCRIPTION_ID));
+      job.ownerIdentity = data.getStringOrDefault(KEY_OWNER, null);
+      job.captureOwner = false;
+      return job;
     }
   }
 }

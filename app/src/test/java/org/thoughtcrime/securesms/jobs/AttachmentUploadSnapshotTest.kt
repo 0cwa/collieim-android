@@ -103,6 +103,17 @@ class AttachmentUploadSnapshotTest {
     assertEquals(queued, AttachmentUploadJobData.ADAPTER.decode(queuedJob.serialize()))
   }
 
+  @Test fun zeroLengthSourceReportsEmptyForTerminalJobCheck() {
+    val store = snapshots()
+    try {
+      store.prepare(null, null, 0, "source", byteArrayOf(1), { ByteArrayInputStream(byteArrayOf()) }, { false })
+      throw AssertionError("Expected empty source rejection")
+    } catch (e: AttachmentUploadSnapshot.LengthMismatch) {
+      assertEquals(0L, e.actualLength)
+    }
+    assertTrue(folder.root.listFiles()!!.isEmpty())
+  }
+
   @Test fun actualJobCleanupRemovesSnapshotAndClearsSerializedIdentity() {
     val snapshots = snapshots()
     val identity = snapshots.create(3, "source", byteArrayOf(1)) { ByteArrayInputStream(byteArrayOf(1, 2, 3)) }
@@ -141,7 +152,7 @@ class AttachmentUploadSnapshotTest {
   }
 
   @Test fun actualArchiveJobFactoryPreservesSpecAndSnapshotIdentity() {
-    val original = UploadAttachmentToArchiveJobData(attachmentId = 7, uploadSpec = ResumableUpload(), canReuseUpload = true, snapshotId = "01234567-89ab-4def-8abc-0123456789ab", snapshotLength = 3, snapshotDigest = "digest", snapshotSourcePath = "source", snapshotSourceRandom = okio.ByteString.of(1), snapshotPlaintextDigest = "plain")
+    val original = UploadAttachmentToArchiveJobData(attachmentId = 7, uploadSpec = ResumableUpload(), canReuseUpload = true, snapshotId = "01234567-89ab-4def-8abc-0123456789ab", snapshotLength = 3, snapshotDigest = "digest", snapshotSourcePath = "source", snapshotSourceRandom = okio.ByteString.of(1), snapshotPlaintextDigest = "plain", ownerIdentity = "attachment-owner-v2:example", progressToken = "progress")
     val job = UploadAttachmentToArchiveJob.Factory().create(Job.Parameters.Builder().build(), original.encode())
     assertEquals(original, UploadAttachmentToArchiveJobData.ADAPTER.decode(job.serialize()))
     val legacy = UploadAttachmentToArchiveJobData(attachmentId = 7, uploadSpec = ResumableUpload(), canReuseUpload = true)

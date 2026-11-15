@@ -23,6 +23,7 @@ import org.signal.core.util.stream.LimitedInputStream
 import org.thoughtcrime.securesms.attachments.Cdn
 import org.thoughtcrime.securesms.attachments.PointerAttachment
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.jobs.BackfillDigestsForDataFileJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.mms.MediaStream
 import org.thoughtcrime.securesms.mms.OutgoingMessage
@@ -576,8 +577,231 @@ class AttachmentTableTest_deduping {
   }
 
   /**
-   * Suite of tests around the migration where we hash all of the attachments and potentially dedupe them.
+   * Suite of tests around attachment file deduplication and migration backfills.
    */
+  @Test
+  fun backfillMissingRemoteKeys_preservesExistingRemoteAndArchiveIdentities() {
+    test {
+      val liveRemote = insertWithData(DATA_A)
+      val archivedWithoutTransitPointer = insertWithData(DATA_A)
+      val missingKey = insertWithData(DATA_A)
+      upload(liveRemote)
+
+      val liveKey = ByteArray(64) { 1 }
+      val liveDigest = byteArrayOf(2, 3, 4)
+      val liveIncrementalDigest = byteArrayOf(9, 10)
+      val archivedKey = ByteArray(64) { 5 }
+      val archivedDigest = byteArrayOf(6, 7, 8)
+      val archivedIncrementalDigest = byteArrayOf(11, 12)
+
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to Base64.encodeWithPadding(liveKey),
+          AttachmentTable.REMOTE_LOCATION to "live-location",
+          AttachmentTable.REMOTE_DIGEST to liveDigest,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST to liveIncrementalDigest,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 1024,
+          AttachmentTable.CDN_NUMBER to Cdn.CDN_3.serialize(),
+          AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.FINISHED.value,
+          AttachmentTable.ARCHIVE_CDN to Cdn.CDN_3.cdnNumber,
+          AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.FINISHED.value
+        )
+        .where("${AttachmentTable.ID} = ?", liveRemote.id)
+        .run()
+
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to Base64.encodeWithPadding(archivedKey),
+          AttachmentTable.REMOTE_LOCATION to null,
+          AttachmentTable.REMOTE_DIGEST to archivedDigest,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST to archivedIncrementalDigest,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 512,
+          AttachmentTable.CDN_NUMBER to Cdn.CDN_2.serialize(),
+          AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.FINISHED.value,
+          AttachmentTable.ARCHIVE_CDN to Cdn.CDN_2.cdnNumber,
+          AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.TEMPORARY_FAILURE.value
+        )
+        .where("${AttachmentTable.ID} = ?", archivedWithoutTransitPointer.id)
+        .run()
+
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to null,
+          AttachmentTable.REMOTE_LOCATION to null,
+          AttachmentTable.REMOTE_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 0,
+          AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value,
+          AttachmentTable.ARCHIVE_CDN to null,
+          AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value
+        )
+        .where("${AttachmentTable.ID} = ?", missingKey.id)
+        .run()
+
+      val liveBefore = SignalDatabase.attachments.getAttachment(liveRemote)!!
+      val archivedBefore = SignalDatabase.attachments.getAttachment(archivedWithoutTransitPointer)!!
+
+      BackfillDigestsForDataFileJob(dataFile(liveRemote).absolutePath).run()
+
+      val liveAfter = SignalDatabase.attachments.getAttachment(liveRemote)!!
+      val archivedAfter = SignalDatabase.attachments.getAttachment(archivedWithoutTransitPointer)!!
+      val missingAfter = SignalDatabase.attachments.getAttachment(missingKey)!!
+
+      assertEquals(Base64.encodeWithPadding(liveKey), liveAfter.remoteKey)
+      assertEquals("live-location", liveAfter.remoteLocation)
+      assertArrayEquals(liveDigest, liveAfter.remoteDigest!!)
+      assertArrayEquals(liveBefore.incrementalDigest!!, liveAfter.incrementalDigest!!)
+      assertEquals(liveBefore.incrementalMacChunkSize, liveAfter.incrementalMacChunkSize)
+      assertEquals(liveBefore.cdn, liveAfter.cdn)
+      assertEquals(liveBefore.uploadTimestamp, liveAfter.uploadTimestamp)
+      assertEquals(AttachmentTable.ArchiveTransferState.FINISHED, liveAfter.archiveTransferState)
+      assertEquals(Cdn.CDN_3.cdnNumber, liveAfter.archiveCdn)
+      assertEquals(liveBefore.archiveThumbnailTransferState, liveAfter.archiveThumbnailTransferState)
+
+      assertEquals(Base64.encodeWithPadding(archivedKey), archivedAfter.remoteKey)
+      assertNull(archivedAfter.remoteLocation)
+      assertArrayEquals(archivedDigest, archivedAfter.remoteDigest!!)
+      assertArrayEquals(archivedBefore.incrementalDigest!!, archivedAfter.incrementalDigest!!)
+      assertEquals(archivedBefore.incrementalMacChunkSize, archivedAfter.incrementalMacChunkSize)
+      assertEquals(archivedBefore.cdn, archivedAfter.cdn)
+      assertEquals(archivedBefore.uploadTimestamp, archivedAfter.uploadTimestamp)
+      assertEquals(AttachmentTable.ArchiveTransferState.FINISHED, archivedAfter.archiveTransferState)
+      assertEquals(Cdn.CDN_2.cdnNumber, archivedAfter.archiveCdn)
+      assertEquals(archivedBefore.archiveThumbnailTransferState, archivedAfter.archiveThumbnailTransferState)
+      assertNotEquals(liveAfter.remoteKey, archivedAfter.remoteKey)
+
+      assertEquals(liveAfter.remoteKey, missingAfter.remoteKey)
+      assertEquals(liveAfter.remoteLocation, missingAfter.remoteLocation)
+      assertArrayEquals(liveDigest, missingAfter.remoteDigest!!)
+      assertEquals(liveAfter.archiveTransferState, missingAfter.archiveTransferState)
+    }
+  }
+
+  @Test
+  fun backfillMissingRemoteKeys_adoptsArchiveOnlyKeyWithoutChangingItsSource() {
+    test {
+      val archived = insertWithData(DATA_A)
+      val missingKey = insertWithData(DATA_A)
+      upload(archived)
+
+      val archiveKey = ByteArray(64) { 13 }
+      val archiveDigest = byteArrayOf(14, 15, 16)
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to Base64.encodeWithPadding(archiveKey),
+          AttachmentTable.REMOTE_LOCATION to null,
+          AttachmentTable.REMOTE_DIGEST to archiveDigest,
+          AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.FINISHED.value,
+          AttachmentTable.ARCHIVE_CDN to Cdn.CDN_2.cdnNumber,
+          AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.FINISHED.value
+        )
+        .where("${AttachmentTable.ID} = ?", archived.id)
+        .run()
+
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to null,
+          AttachmentTable.REMOTE_LOCATION to null,
+          AttachmentTable.REMOTE_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 0,
+          AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value,
+          AttachmentTable.ARCHIVE_CDN to null,
+          AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value
+        )
+        .where("${AttachmentTable.ID} = ?", missingKey.id)
+        .run()
+
+      val archiveBefore = SignalDatabase.attachments.getAttachment(archived)!!
+      BackfillDigestsForDataFileJob(dataFile(archived).absolutePath).run()
+
+      val archiveAfter = SignalDatabase.attachments.getAttachment(archived)!!
+      val missingAfter = SignalDatabase.attachments.getAttachment(missingKey)!!
+      assertEquals(archiveBefore.remoteKey, archiveAfter.remoteKey)
+      assertEquals(archiveBefore.remoteLocation, archiveAfter.remoteLocation)
+      assertArrayEquals(archiveBefore.remoteDigest!!, archiveAfter.remoteDigest!!)
+      assertArrayEquals(archiveBefore.incrementalDigest!!, archiveAfter.incrementalDigest!!)
+      assertEquals(archiveBefore.incrementalMacChunkSize, archiveAfter.incrementalMacChunkSize)
+      assertEquals(archiveBefore.cdn, archiveAfter.cdn)
+      assertEquals(archiveBefore.uploadTimestamp, archiveAfter.uploadTimestamp)
+      assertEquals(archiveBefore.archiveTransferState, archiveAfter.archiveTransferState)
+      assertEquals(archiveBefore.archiveCdn, archiveAfter.archiveCdn)
+      assertEquals(archiveBefore.archiveThumbnailTransferState, archiveAfter.archiveThumbnailTransferState)
+      assertEquals(Base64.encodeWithPadding(archiveKey), missingAfter.remoteKey)
+      assertNull(missingAfter.remoteLocation)
+      assertNull(missingAfter.remoteDigest)
+      assertEquals(AttachmentTable.ArchiveTransferState.NONE, missingAfter.archiveTransferState)
+    }
+  }
+
+  @Test
+  fun backfillMissingRemoteKeys_generatesOneSharedKeyWithoutInventingDigest() {
+    test {
+      val id1 = insertWithData(DATA_A)
+      val id2 = insertWithData(DATA_A)
+      assertDataFilesAreTheSame(id1, id2)
+      val dataFile = dataFile(id1).absolutePath
+
+      listOf(id1, id2).forEach { id ->
+        SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+          .values(
+            AttachmentTable.TRANSFER_STATE to AttachmentTable.TRANSFER_PROGRESS_DONE,
+            AttachmentTable.REMOTE_KEY to null,
+            AttachmentTable.REMOTE_LOCATION to null,
+            AttachmentTable.REMOTE_DIGEST to null,
+            AttachmentTable.REMOTE_INCREMENTAL_DIGEST to null,
+            AttachmentTable.REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 0,
+            AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value,
+            AttachmentTable.ARCHIVE_CDN to null,
+            AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value
+          )
+          .where("${AttachmentTable.ID} = ?", id.id)
+          .run()
+      }
+
+      BackfillDigestsForDataFileJob(dataFile).run()
+
+      val attachment1 = SignalDatabase.attachments.getAttachment(id1)!!
+      val attachment2 = SignalDatabase.attachments.getAttachment(id2)!!
+      assertNotNull(attachment1.remoteKey)
+      assertEquals(attachment1.remoteKey, attachment2.remoteKey)
+      assertNull(attachment1.remoteLocation)
+      assertNull(attachment2.remoteLocation)
+      assertNull(attachment1.remoteDigest)
+      assertNull(attachment2.remoteDigest)
+    }
+  }
+
+  @Test
+  fun backfillMissingRemoteKeys_skipsKeylessRowsWithExistingRemoteIdentity() {
+    test {
+      val id = insertWithData(DATA_A)
+      val dataFile = dataFile(id).absolutePath
+      val digest = byteArrayOf(9, 8, 7)
+
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.TRANSFER_STATE to AttachmentTable.TRANSFER_PROGRESS_DONE,
+          AttachmentTable.REMOTE_KEY to null,
+          AttachmentTable.REMOTE_LOCATION to "keyless-live-location",
+          AttachmentTable.REMOTE_DIGEST to digest,
+          AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.FINISHED.value,
+          AttachmentTable.ARCHIVE_CDN to Cdn.CDN_3.cdnNumber
+        )
+        .where("${AttachmentTable.ID} = ?", id.id)
+        .run()
+
+      BackfillDigestsForDataFileJob(dataFile).run()
+
+      val after = SignalDatabase.attachments.getAttachment(id)!!
+      assertNull(after.remoteKey)
+      assertEquals("keyless-live-location", after.remoteLocation)
+      assertArrayEquals(digest, after.remoteDigest!!)
+      assertEquals(AttachmentTable.ArchiveTransferState.FINISHED, after.archiveTransferState)
+      assertEquals(Cdn.CDN_3.cdnNumber, after.archiveCdn)
+    }
+  }
+
   @Test
   fun migration() {
     // Verifying that getUnhashedDataFile only returns if there's actually missing hashes

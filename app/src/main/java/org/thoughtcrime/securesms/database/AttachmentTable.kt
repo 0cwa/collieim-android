@@ -574,15 +574,36 @@ class AttachmentTable(
       }
   }
 
-  fun getMostRecentValidAttachmentUsingDataFile(dataFile: String): DatabaseAttachment? {
-    return readableDatabase
-      .select(*PROJECTION)
-      .from(TABLE_NAME)
-      .where("$DATA_FILE = ? AND $TRANSFER_STATE = $TRANSFER_PROGRESS_DONE", dataFile)
-      .orderBy("$ID DESC")
-      .limit(1)
-      .run()
-      .readToSingleObject { it.readAttachment() }
+  /**
+   * Backfills only rows with no remote or archive identity. Existing keys can refer to different live or archived media even when rows share a data file.
+   * [createRemoteKeyIfNecessary] fills each missing key from a same-file attachment when possible, or generates one key shared by the eligible keyless rows.
+   */
+  fun backfillMissingRemoteKeysForDataFile(dataFile: String) {
+    writableDatabase.withinTransaction {
+      val missingKeyAttachments = readableDatabase
+        .select(ID)
+        .from(TABLE_NAME)
+        .where(
+          """
+          $DATA_FILE = ? AND
+          $TRANSFER_STATE = $TRANSFER_PROGRESS_DONE AND
+          ($REMOTE_KEY IS NULL OR LENGTH($REMOTE_KEY) = 0) AND
+          ($REMOTE_LOCATION IS NULL OR LENGTH($REMOTE_LOCATION) = 0) AND
+          $REMOTE_DIGEST IS NULL AND
+          ($REMOTE_INCREMENTAL_DIGEST IS NULL OR LENGTH($REMOTE_INCREMENTAL_DIGEST) = 0) AND
+          $REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE = 0 AND
+          $ARCHIVE_TRANSFER_STATE = ${ArchiveTransferState.NONE.value} AND
+          $ARCHIVE_CDN IS NULL AND
+          $ARCHIVE_THUMBNAIL_TRANSFER_STATE = ${ArchiveTransferState.NONE.value}
+          """.trimIndent(),
+          dataFile
+        )
+        .orderBy("$ID ASC")
+        .run()
+        .readToList { AttachmentId(it.requireLong(ID)) }
+
+      missingKeyAttachments.forEach { createRemoteKeyIfNecessary(it) }
+    }
   }
 
   fun hasAttachment(id: AttachmentId): Boolean {
@@ -2474,8 +2495,7 @@ class AttachmentTable(
   }
 
   /**
-   * A query for a specific migration. Retrieves attachments that we'd need to create a new digest for.
-   * This is basically all attachments that have data and are finished downloading.
+   * A query for a specific migration. Retrieves data files shared by multiple attachments that are finished downloading.
    */
   fun getDataFilesWithMultipleValidAttachments(): List<String> {
     return readableDatabase
@@ -2496,20 +2516,6 @@ class AttachmentTable(
       )
       .run()
       .readToList { it.requireNonNullString(DATA_FILE) }
-  }
-
-  /**
-   * As part of the digest backfill process, this updates the (key, digest) tuple for all attachments that share a data file (and are done downloading).
-   */
-  fun updateRemoteKeyAndDigestByDataFile(dataFile: String, key: ByteArray, digest: ByteArray) {
-    writableDatabase
-      .update(TABLE_NAME)
-      .values(
-        REMOTE_KEY to Base64.encodeWithPadding(key),
-        REMOTE_DIGEST to digest
-      )
-      .where("$DATA_FILE = ? AND $TRANSFER_STATE = $TRANSFER_PROGRESS_DONE", dataFile)
-      .run()
   }
 
   /**

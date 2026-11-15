@@ -5,24 +5,14 @@
 
 package org.thoughtcrime.securesms.jobs
 
-import org.signal.core.database.withinTransaction
-import org.signal.core.util.Base64
-import org.signal.core.util.Util
-import org.signal.core.util.copyTo
 import org.signal.core.util.logging.Log
-import org.signal.core.util.stream.NullOutputStream
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobs.protos.BackfillDigestsForDataFileJobData
-import org.whispersystems.signalservice.api.crypto.AttachmentCipherOutputStream
-import org.whispersystems.signalservice.internal.crypto.PaddingInputStream
-import java.io.IOException
 
 /**
- * This goes through all attachments that share a data file and recalcuates their digests, ensuring that all instances share the same (key/iv/digest).
- *
- * This job needs to be careful to (1) minimize time in the transaction, and (2) never write partial results to disk, i.e. only write the full (key/iv/digest)
- * tuple together all at once (partial writes could poison the db, preventing us from retrying properly in the event of a crash or transient error).
+ * Backfills missing remote keys for attachments that share a data file. Existing keys can identify different live or archived media and are left unchanged.
+ * A remote digest is only valid for the exact ciphertext and IV produced by an upload, so this job does not synthesize or update digests.
  */
 class BackfillDigestsForDataFileJob private constructor(
   private val dataFile: String,
@@ -51,42 +41,12 @@ class BackfillDigestsForDataFileJob private constructor(
   override fun getFactoryKey(): String = KEY
 
   override fun run(): Result {
-    val (originalKey, decryptingStream) = SignalDatabase.writableDatabase.withinTransaction {
-      val attachment = SignalDatabase.attachments.getMostRecentValidAttachmentUsingDataFile(dataFile)
-      if (attachment == null) {
-        Log.w(TAG, "No attachments using file $dataFile exist anymore! Skipping.")
-        return Result.failure()
-      }
-
-      val stream = try {
-        SignalDatabase.attachments.getAttachmentStream(attachment.attachmentId, offset = 0)
-      } catch (e: IOException) {
-        Log.w(TAG, "Could not open a stream for ${attachment.attachmentId}. Assuming that the file no longer exists. Skipping.", e)
-        return Result.failure()
-      }
-
-      // In order to match the exact digest calculation, we need to use the same padding that we would use when uploading the attachment.
-      Pair(attachment.remoteKey?.let { Base64.decode(it) }, PaddingInputStream(stream, attachment.size))
-    }
-
-    val key = originalKey ?: Util.getSecretBytes(64)
-
-    val cipherOutputStream = AttachmentCipherOutputStream(key, iv = null, NullOutputStream)
-    decryptingStream.copyTo(cipherOutputStream)
-
-    val digest = cipherOutputStream.transmittedDigest
-
-    SignalDatabase.attachments.updateRemoteKeyAndDigestByDataFile(
-      dataFile = dataFile,
-      key = key,
-      digest = digest
-    )
-
+    SignalDatabase.attachments.backfillMissingRemoteKeysForDataFile(dataFile)
     return Result.success()
   }
 
   override fun onFailure() {
-    Log.w(TAG, "Failed to backfill digest for file $dataFile!")
+    Log.w(TAG, "Failed to backfill remote keys for file $dataFile!")
   }
 
   class Factory : Job.Factory<BackfillDigestsForDataFileJob> {

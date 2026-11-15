@@ -170,7 +170,11 @@
         "app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt": "f7c86c4982ae172ed8eb104318c33f99a7cee7d1bc6ac753538cf8641a9a5346",
         "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/backup/InternalBackupPlaygroundViewModel.kt": "69d7fba92d1cb68c7c1ff9ddc076d5aa949eb80b9a30663a364dba34c1cc74d5",
         "app/src/test/java/org/thoughtcrime/securesms/backup/v2/stream/AuthenticatedPlaintextExportTest.kt": "1e82bcd6707c86d9dc4fabd5ac06145bd8ad46b83ade9696379ee6b7886a73d9",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreLocalAttachmentJob.kt": "7a2f2bee40db1f4daeae2df42cbfdcad3cb5e26f134e345ffda5e875aa93278d"
+        "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreLocalAttachmentJob.kt": "7a2f2bee40db1f4daeae2df42cbfdcad3cb5e26f134e345ffda5e875aa93278d",
+        "build.gradle.kts": "31fe7ec05365461f2695551ec200cf6cfd928d698679200a4094a1da643df35e",
+        "gradle/libs.versions.toml": "01f5cdafc39efd577fd8da6017644049b85ec7ae72b57c038e008cfee349ea62",
+        "build-inputs/native-lock.json": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
+        "core/util-jvm/src/main/java/org/signal/core/models/backup/MessageBackupKey.kt": "375db8178ed5f6a0936932b557033d00f51a55cd504c6f56adcc89dc9591ffb1"
       },
       "context_sha256": "be7ad81a1b56ab97ecd33223838d80b0bd4044810060622ba0ed680d3fd54883"
     },
@@ -204,7 +208,11 @@
         "app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt": "f7c86c4982ae172ed8eb104318c33f99a7cee7d1bc6ac753538cf8641a9a5346",
         "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/backup/InternalBackupPlaygroundViewModel.kt": "69d7fba92d1cb68c7c1ff9ddc076d5aa949eb80b9a30663a364dba34c1cc74d5",
         "app/src/test/java/org/thoughtcrime/securesms/backup/v2/stream/AuthenticatedPlaintextExportTest.kt": "1e82bcd6707c86d9dc4fabd5ac06145bd8ad46b83ade9696379ee6b7886a73d9",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreLocalAttachmentJob.kt": "7a2f2bee40db1f4daeae2df42cbfdcad3cb5e26f134e345ffda5e875aa93278d"
+        "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreLocalAttachmentJob.kt": "7a2f2bee40db1f4daeae2df42cbfdcad3cb5e26f134e345ffda5e875aa93278d",
+        "build.gradle.kts": "31fe7ec05365461f2695551ec200cf6cfd928d698679200a4094a1da643df35e",
+        "gradle/libs.versions.toml": "01f5cdafc39efd577fd8da6017644049b85ec7ae72b57c038e008cfee349ea62",
+        "build-inputs/native-lock.json": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
+        "core/util-jvm/src/main/java/org/signal/core/models/backup/MessageBackupKey.kt": "375db8178ed5f6a0936932b557033d00f51a55cd504c6f56adcc89dc9591ffb1"
       },
       "context_sha256": "921c74dc332e278114f03d3db2264388e87256b0f753413f05b5debabbee0c4c"
     },
@@ -238,7 +246,11 @@
         "app/src/main/java/org/thoughtcrime/securesms/backup/v2/BackupRepository.kt": "f7c86c4982ae172ed8eb104318c33f99a7cee7d1bc6ac753538cf8641a9a5346",
         "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/internal/backup/InternalBackupPlaygroundViewModel.kt": "69d7fba92d1cb68c7c1ff9ddc076d5aa949eb80b9a30663a364dba34c1cc74d5",
         "app/src/test/java/org/thoughtcrime/securesms/backup/v2/stream/AuthenticatedPlaintextExportTest.kt": "1e82bcd6707c86d9dc4fabd5ac06145bd8ad46b83ade9696379ee6b7886a73d9",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreLocalAttachmentJob.kt": "7a2f2bee40db1f4daeae2df42cbfdcad3cb5e26f134e345ffda5e875aa93278d"
+        "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreLocalAttachmentJob.kt": "7a2f2bee40db1f4daeae2df42cbfdcad3cb5e26f134e345ffda5e875aa93278d",
+        "build.gradle.kts": "31fe7ec05365461f2695551ec200cf6cfd928d698679200a4094a1da643df35e",
+        "gradle/libs.versions.toml": "01f5cdafc39efd577fd8da6017644049b85ec7ae72b57c038e008cfee349ea62",
+        "build-inputs/native-lock.json": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
+        "core/util-jvm/src/main/java/org/signal/core/models/backup/MessageBackupKey.kt": "375db8178ed5f6a0936932b557033d00f51a55cd504c6f56adcc89dc9591ffb1"
       },
       "context_sha256": "7d09df39be62576b324274a627455e864c6cfaaf7a6d37ababfb2dadf9ddeaa3"
     },
@@ -1083,7 +1095,7 @@
       "source_sha256": "48234914f3c49de04298dad60597ed1ee900a71871a416ddf62339724f8a389d",
       "id": "bundle-08",
       "disposition": "intentional-use",
-      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display according to the app lock and screen-security preference; the user may disable screen security. This review is limited to this display.",
+      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display; Window.initializeScreenshotSecurity conditionally applies FLAG_SECURE using CoreUiDependencies.isScreenSecurityEnabled. This review is limited to this display.",
       "language": "java-kotlin",
       "location": {
         "uri": "app/src/main/java/org/thoughtcrime/securesms/backup/BackupDialog.java",
@@ -1121,7 +1133,7 @@
       "source_sha256": "48234914f3c49de04298dad60597ed1ee900a71871a416ddf62339724f8a389d",
       "id": "bundle-09",
       "disposition": "intentional-use",
-      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display according to the app lock and screen-security preference; the user may disable screen security. This review is limited to this display.",
+      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display; Window.initializeScreenshotSecurity conditionally applies FLAG_SECURE using CoreUiDependencies.isScreenSecurityEnabled. This review is limited to this display.",
       "language": "java-kotlin",
       "location": {
         "uri": "app/src/main/java/org/thoughtcrime/securesms/backup/BackupDialog.java",
@@ -1159,7 +1171,7 @@
       "source_sha256": "48234914f3c49de04298dad60597ed1ee900a71871a416ddf62339724f8a389d",
       "id": "bundle-10",
       "disposition": "intentional-use",
-      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display according to the app lock and screen-security preference; the user may disable screen security. This review is limited to this display.",
+      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display; Window.initializeScreenshotSecurity conditionally applies FLAG_SECURE using CoreUiDependencies.isScreenSecurityEnabled. This review is limited to this display.",
       "language": "java-kotlin",
       "location": {
         "uri": "app/src/main/java/org/thoughtcrime/securesms/backup/BackupDialog.java",
@@ -1197,7 +1209,7 @@
       "source_sha256": "48234914f3c49de04298dad60597ed1ee900a71871a416ddf62339724f8a389d",
       "id": "bundle-11",
       "disposition": "intentional-use",
-      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display according to the app lock and screen-security preference; the user may disable screen security. This review is limited to this display.",
+      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display; Window.initializeScreenshotSecurity conditionally applies FLAG_SECURE using CoreUiDependencies.isScreenSecurityEnabled. This review is limited to this display.",
       "language": "java-kotlin",
       "location": {
         "uri": "app/src/main/java/org/thoughtcrime/securesms/backup/BackupDialog.java",
@@ -1235,7 +1247,7 @@
       "source_sha256": "48234914f3c49de04298dad60597ed1ee900a71871a416ddf62339724f8a389d",
       "id": "bundle-12",
       "disposition": "intentional-use",
-      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display according to the app lock and screen-security preference; the user may disable screen security. This review is limited to this display.",
+      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display; Window.initializeScreenshotSecurity conditionally applies FLAG_SECURE using CoreUiDependencies.isScreenSecurityEnabled. This review is limited to this display.",
       "language": "java-kotlin",
       "location": {
         "uri": "app/src/main/java/org/thoughtcrime/securesms/backup/BackupDialog.java",
@@ -1273,7 +1285,7 @@
       "source_sha256": "48234914f3c49de04298dad60597ed1ee900a71871a416ddf62339724f8a389d",
       "id": "bundle-13",
       "disposition": "intentional-use",
-      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display according to the app lock and screen-security preference; the user may disable screen security. This review is limited to this display.",
+      "reason": "The backup passphrase is deliberately displayed to the user for recording. Screenshot security is initialized on the dialog window before display; Window.initializeScreenshotSecurity conditionally applies FLAG_SECURE using CoreUiDependencies.isScreenSecurityEnabled. This review is limited to this display.",
       "language": "java-kotlin",
       "location": {
         "uri": "app/src/main/java/org/thoughtcrime/securesms/backup/BackupDialog.java",

@@ -12,7 +12,7 @@ CHECKER = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CHECKER)
 
 
-def png(width=80, height=80, blank=False):
+def png(width=80, height=80, blank=False, toolbar_only=False):
     signature = b"\x89PNG\r\n\x1a\n"
 
     def chunk(kind, payload):
@@ -24,6 +24,8 @@ def png(width=80, height=80, blank=False):
         pixels.append(0)
         for x in range(width):
             color = (0, 0, 0) if blank else (x * 3 % 256, y * 3 % 256, (x + y) * 2 % 256)
+            if toolbar_only and y >= height // 5:
+                color = (255, 255, 255)
             pixels.extend((*color, 255))
     header = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
     return signature + chunk(b"IHDR", header) + chunk(b"IDAT", zlib.compress(pixels)) + chunk(b"IEND", b"")
@@ -112,7 +114,12 @@ class ProjectLogProofCheckerTest(unittest.TestCase):
 
     def test_rejects_blank_screenshot(self):
         (self.screenshots / "07-light-pr156-browser.png").write_bytes(png(blank=True))
-        with self.assertRaisesRegex(ValueError, "blank screenshot"):
+        with self.assertRaisesRegex(ValueError, "blank"):
+            self.check()
+
+    def test_rejects_toolbar_over_blank_browser_body(self):
+        (self.screenshots / "07-light-pr156-browser.png").write_bytes(png(toolbar_only=True))
+        with self.assertRaisesRegex(ValueError, "blank browser content"):
             self.check()
 
     def test_rejects_corrupt_screenshot(self):

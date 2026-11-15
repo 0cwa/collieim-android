@@ -154,18 +154,68 @@ class ProjectLogScreenshotTest {
       )
       val browserPackage = requireNotNull(device.currentPackageName) { "No foreground package after the PR156 page rendered" }
       assertTrue("The PR156 handoff must leave Collie", browserPackage != context.packageName)
-      val addressBar = device.wait(Until.findObject(By.res(browserPackage, "url_bar")), 10_000)
-      assertNotNull("Could not inspect the external browser URL", addressBar)
-      val address = addressBar?.text.orEmpty()
-      val observedUrl = Uri.parse(if (address.contains("://")) address else "https://$address")
-      val expectedUrl = Uri.parse(targetUrl)
-      assertEquals("Unexpected browser URL scheme: $address", expectedUrl.scheme, observedUrl.scheme)
-      assertEquals("Unexpected browser URL host: $address", expectedUrl.host, observedUrl.host)
-      assertEquals("Unexpected browser repository or PR: $address", expectedUrl.path, observedUrl.path?.trimEnd('/'))
-
+      val address = saveBrowserScreenshot(device, browserPackage, renderedTitle, targetUrl)
       saveTextEvidence("browser-handoff.txt", "url=$targetUrl\nbrowser=$browserPackage\nrendered_title=$renderedTitle\nrendered_pr=#156\naddress=$address\n")
-      saveScreenshot("07-light-pr156-browser.png")
     }
+  }
+
+  private fun verifyBrowserPage(device: UiDevice, browserPackage: String, title: String, targetUrl: String): String {
+    assertEquals("The browser must remain foreground", browserPackage, device.currentPackageName)
+    assertTrue("The PR156 title must remain visible", device.hasObject(By.textContains(title)))
+    assertTrue("The PR156 number must remain visible", device.hasObject(By.textContains("#156")))
+    val addressBar = device.findObject(By.res(browserPackage, "url_bar"))
+    assertNotNull("Could not inspect the external browser URL", addressBar)
+    val address = addressBar?.text.orEmpty()
+    val observedUrl = Uri.parse(if (address.contains("://")) address else "https://$address")
+    val expectedUrl = Uri.parse(targetUrl)
+    assertEquals("Unexpected browser URL scheme: $address", expectedUrl.scheme, observedUrl.scheme)
+    assertEquals("Unexpected browser URL host: $address", expectedUrl.host, observedUrl.host)
+    assertEquals("Unexpected browser repository or PR: $address", expectedUrl.path, observedUrl.path?.trimEnd('/'))
+    return address
+  }
+
+  private fun browserBodySample(bitmap: Bitmap): IntArray {
+    val xs = (0 until bitmap.width step maxOf(1, bitmap.width / 80)).toList()
+    val ys = (bitmap.height / 5 until bitmap.height * 9 / 10 step maxOf(1, bitmap.height / 80)).toList()
+    return IntArray(xs.size * ys.size) { index -> bitmap.getPixel(xs[index % xs.size], ys[index / xs.size]) and 0x00F0F0F0 }
+  }
+
+  private fun browserBodyHasContent(sample: IntArray): Boolean {
+    if (sample.isEmpty()) return false
+    return (0..2).any { channel ->
+      val shift = channel * 8
+      val mean = sample.sumOf { (it ushr shift) and 255 }.toDouble() / sample.size
+      sample.sumOf { val delta = ((it ushr shift) and 255) - mean; delta * delta } / sample.size >= 1.0
+    }
+  }
+
+  private fun saveBrowserScreenshot(device: UiDevice, browserPackage: String, title: String, targetUrl: String): String {
+    val deadline = android.os.SystemClock.uptimeMillis() + 30_000
+    var previous: IntArray? = null
+    android.util.Log.i("ProjectLogScreenshotTest", "Starting browser capture at ${android.os.SystemClock.uptimeMillis()}")
+    while (android.os.SystemClock.uptimeMillis() < deadline) {
+      verifyBrowserPage(device, browserPackage, title, targetUrl)
+      val screenshot = instrumentation.uiAutomation.takeScreenshot() ?: error("Browser screenshot was unavailable")
+      try {
+        val sample = browserBodySample(screenshot)
+        val contentful = browserBodyHasContent(sample)
+        if (contentful && previous?.contentEquals(sample) == true) {
+          val address = verifyBrowserPage(device, browserPackage, title, targetUrl)
+          if (android.os.SystemClock.uptimeMillis() >= deadline) break
+          writeMediaStoreFile("07-light-pr156-browser.png", "image/png") { output ->
+            assertTrue("Could not save browser capture", screenshot.compress(Bitmap.CompressFormat.PNG, 100, requireNotNull(output)))
+          }
+          android.util.Log.i("ProjectLogScreenshotTest", "Saved browser capture at ${android.os.SystemClock.uptimeMillis()}")
+          return address
+        }
+        previous = if (contentful) sample else null
+      } finally {
+        screenshot.recycle()
+      }
+      val remaining = deadline - android.os.SystemClock.uptimeMillis()
+      if (remaining > 0) android.os.SystemClock.sleep(minOf(250L, remaining))
+    }
+    throw AssertionError("Browser page body did not become nonblank and stable within 30 seconds")
   }
 
   private fun isClickable(): SemanticsMatcher = SemanticsMatcher.keyIsDefined(SemanticsActions.OnClick)

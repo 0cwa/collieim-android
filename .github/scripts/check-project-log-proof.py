@@ -45,7 +45,7 @@ def apk_hashes(path):
     return hashes
 
 
-def decode_png(path):
+def decode_png(path, browser_body=False):
     """Decode the RGB/RGBA PNGs produced by Android and reject blank captures."""
     data = path.read_bytes()
     if not data.startswith(b"\x89PNG\r\n\x1a\n"):
@@ -100,7 +100,7 @@ def decode_png(path):
     squares = [0, 0, 0]
     samples = 0
     position = 0
-    for _ in range(height):
+    for y in range(height):
         filter_type = raw[position]
         scanline = raw[position + 1:position + 1 + stride]
         position += stride + 1
@@ -124,7 +124,7 @@ def decode_png(path):
             else:
                 raise ValueError(f"invalid PNG filter: {path.name}")
             current[index] = (value + predictor) & 0xFF
-        if _ % 8 == 0:
+        if y % 8 == 0 and (not browser_body or height // 5 <= y < height * 9 // 10):
             for x in range(0, width, 8):
                 pixel = x * channels
                 for channel in range(3):
@@ -135,7 +135,7 @@ def decode_png(path):
         previous = current
 
     if not samples or max(squares[i] / samples - (sums[i] / samples) ** 2 for i in range(3)) < 1:
-        raise ValueError(f"blank screenshot: {path.name}")
+        raise ValueError(f"blank {'browser content' if browser_body else 'screenshot'}: {path.name}")
 
 
 def check(root, build_outcome, device_outcome, expected_sha):
@@ -192,7 +192,7 @@ def check(root, build_outcome, device_outcome, expected_sha):
     if len(screenshot_paths) != len(SCREENSHOTS) or {path.name for path in screenshot_paths} != SCREENSHOTS:
         raise ValueError("missing, duplicate, or unexpected Project log screenshots")
     for path in screenshot_paths:
-        decode_png(path)
+        decode_png(path, browser_body=path.name == "07-light-pr156-browser.png")
 
     handoff = {}
     for line in (evidence / "screenshots/browser-handoff.txt").read_text().splitlines():

@@ -803,6 +803,173 @@ class AttachmentTableTest_deduping {
   }
 
   @Test
+  fun backfillMissingRemoteKeys_preservesTargetThumbnailWhenDonorHasNone() {
+    test {
+      val donor = insertWithData(DATA_A)
+      val target = insertWithData(DATA_A)
+      upload(donor)
+      assertDataFilesAreTheSame(donor, target)
+
+      val targetOnlyKey = ByteArray(64) { 21 }
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to Base64.encodeWithPadding(targetOnlyKey),
+          AttachmentTable.REMOTE_LOCATION to null,
+          AttachmentTable.REMOTE_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 0,
+          AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value,
+          AttachmentTable.ARCHIVE_CDN to null,
+          AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value,
+          AttachmentTable.THUMBNAIL_FILE to null,
+          AttachmentTable.THUMBNAIL_RANDOM to null,
+          AttachmentTable.THUMBNAIL_RESTORE_STATE to AttachmentTable.ThumbnailRestoreState.NONE.value
+        )
+        .where("${AttachmentTable.ID} = ?", target.id)
+        .run()
+
+      val targetBeforeThumbnail = SignalDatabase.attachments.getAttachment(target)!!
+      assertNotNull(targetBeforeThumbnail.dataHash)
+      assertNotNull(targetBeforeThumbnail.remoteKey)
+      SignalDatabase.attachments.finalizeAttachmentThumbnailAfterUpload(
+        attachmentId = target,
+        attachmentPlaintextHash = targetBeforeThumbnail.dataHash!!,
+        attachmentRemoteKey = targetBeforeThumbnail.remoteKey!!,
+        data = DATA_A
+      )
+
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.THUMBNAIL_FILE to null,
+          AttachmentTable.THUMBNAIL_RANDOM to null,
+          AttachmentTable.THUMBNAIL_RESTORE_STATE to AttachmentTable.ThumbnailRestoreState.NONE.value
+        )
+        .where("${AttachmentTable.ID} = ?", donor.id)
+        .run()
+
+      val donorBefore = SignalDatabase.attachments.getDataFileInfo(donor)!!
+      val targetBefore = SignalDatabase.attachments.getDataFileInfo(target)!!
+      assertNull(donorBefore.thumbnailFile)
+      assertNull(donorBefore.thumbnailRandom)
+      assertNotNull(targetBefore.thumbnailFile)
+      assertNotNull(targetBefore.thumbnailRandom)
+      assertTrue(File(targetBefore.thumbnailFile!!).exists())
+
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to null,
+          AttachmentTable.REMOTE_LOCATION to null,
+          AttachmentTable.REMOTE_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 0,
+          AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value,
+          AttachmentTable.ARCHIVE_CDN to null,
+          AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value
+        )
+        .where("${AttachmentTable.ID} = ?", target.id)
+        .run()
+
+      BackfillDigestsForDataFileJob(dataFile(donor).absolutePath).run()
+
+      val donorAfter = SignalDatabase.attachments.getAttachment(donor)!!
+      val targetAfter = SignalDatabase.attachments.getAttachment(target)!!
+      val targetThumbnailAfter = SignalDatabase.attachments.getDataFileInfo(target)!!
+      assertEquals(donorAfter.remoteKey, targetAfter.remoteKey)
+      assertEquals(donorAfter.remoteLocation, targetAfter.remoteLocation)
+      assertArrayEquals(donorAfter.remoteDigest!!, targetAfter.remoteDigest!!)
+      assertEquals(targetBefore.thumbnailFile, targetThumbnailAfter.thumbnailFile)
+      assertArrayEquals(targetBefore.thumbnailRandom!!, targetThumbnailAfter.thumbnailRandom!!)
+      assertEquals(targetBefore.thumbnailRestoreState, targetThumbnailAfter.thumbnailRestoreState)
+    }
+  }
+
+  @Test
+  fun createRemoteKeyIfNecessary_preservesTargetThumbnailWhenDonorHasNone() {
+    test {
+      val donor = insertWithData(DATA_A)
+      val target = insertWithData(DATA_A)
+      val targetThumbnailBefore = prepareKeylessTargetWithThumbnail(donor, target)
+
+      SignalDatabase.attachments.createRemoteKeyIfNecessary(target)
+
+      val donorAfter = SignalDatabase.attachments.getAttachment(donor)!!
+      val targetAfter = SignalDatabase.attachments.getAttachment(target)!!
+      val targetThumbnailAfter = SignalDatabase.attachments.getDataFileInfo(target)!!
+      assertNull(SignalDatabase.attachments.getDataFileInfo(donor)!!.thumbnailFile)
+      assertEquals(donorAfter.remoteKey, targetAfter.remoteKey)
+      assertEquals(donorAfter.remoteLocation, targetAfter.remoteLocation)
+      assertArrayEquals(donorAfter.remoteDigest!!, targetAfter.remoteDigest!!)
+      assertEquals(targetThumbnailBefore.thumbnailFile, targetThumbnailAfter.thumbnailFile)
+      assertArrayEquals(targetThumbnailBefore.thumbnailRandom!!, targetThumbnailAfter.thumbnailRandom!!)
+      assertEquals(targetThumbnailBefore.thumbnailRestoreState, targetThumbnailAfter.thumbnailRestoreState)
+    }
+  }
+
+  @Test
+  fun createRemoteKeyIfNecessary_copiesDonorThumbnailToEmptyTarget() {
+    test {
+      val donor = insertWithData(DATA_A)
+      val target = insertWithData(DATA_A)
+      val donorThumbnailBefore = prepareKeylessTargetWithoutThumbnailWithDonorThumbnail(donor, target)
+
+      SignalDatabase.attachments.createRemoteKeyIfNecessary(target)
+
+      val donorAfter = SignalDatabase.attachments.getAttachment(donor)!!
+      val targetAfter = SignalDatabase.attachments.getAttachment(target)!!
+      val targetThumbnailAfter = SignalDatabase.attachments.getDataFileInfo(target)!!
+      assertEquals(donorAfter.remoteKey, targetAfter.remoteKey)
+      assertEquals(donorAfter.remoteLocation, targetAfter.remoteLocation)
+      assertArrayEquals(donorAfter.remoteDigest!!, targetAfter.remoteDigest!!)
+      assertEquals(donorThumbnailBefore.thumbnailFile, targetThumbnailAfter.thumbnailFile)
+      assertArrayEquals(donorThumbnailBefore.thumbnailRandom!!, targetThumbnailAfter.thumbnailRandom!!)
+      assertEquals(donorThumbnailBefore.thumbnailRestoreState, targetThumbnailAfter.thumbnailRestoreState)
+    }
+  }
+
+  @Test
+  fun createRemoteKeyForAttachmentsThatNeedArchiveUpload_preservesTargetThumbnailWhenDonorHasNone() {
+    test {
+      val donor = insertWithData(DATA_A)
+      val target = insertWithData(DATA_A)
+      val targetThumbnailBefore = prepareKeylessTargetWithThumbnail(donor, target)
+
+      SignalDatabase.attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload()
+
+      val donorAfter = SignalDatabase.attachments.getAttachment(donor)!!
+      val targetAfter = SignalDatabase.attachments.getAttachment(target)!!
+      val targetThumbnailAfter = SignalDatabase.attachments.getDataFileInfo(target)!!
+      assertNull(SignalDatabase.attachments.getDataFileInfo(donor)!!.thumbnailFile)
+      assertEquals(donorAfter.remoteKey, targetAfter.remoteKey)
+      assertEquals(donorAfter.remoteLocation, targetAfter.remoteLocation)
+      assertArrayEquals(donorAfter.remoteDigest!!, targetAfter.remoteDigest!!)
+      assertEquals(targetThumbnailBefore.thumbnailFile, targetThumbnailAfter.thumbnailFile)
+      assertArrayEquals(targetThumbnailBefore.thumbnailRandom!!, targetThumbnailAfter.thumbnailRandom!!)
+      assertEquals(targetThumbnailBefore.thumbnailRestoreState, targetThumbnailAfter.thumbnailRestoreState)
+    }
+  }
+
+  @Test
+  fun createRemoteKeyForAttachmentsThatNeedArchiveUpload_copiesDonorThumbnailToEmptyTarget() {
+    test {
+      val donor = insertWithData(DATA_A)
+      val target = insertWithData(DATA_A)
+      val donorThumbnailBefore = prepareKeylessTargetWithoutThumbnailWithDonorThumbnail(donor, target)
+
+      SignalDatabase.attachments.createRemoteKeyForAttachmentsThatNeedArchiveUpload()
+
+      val donorAfter = SignalDatabase.attachments.getAttachment(donor)!!
+      val targetAfter = SignalDatabase.attachments.getAttachment(target)!!
+      val targetThumbnailAfter = SignalDatabase.attachments.getDataFileInfo(target)!!
+      assertEquals(donorAfter.remoteKey, targetAfter.remoteKey)
+      assertEquals(donorAfter.remoteLocation, targetAfter.remoteLocation)
+      assertArrayEquals(donorAfter.remoteDigest!!, targetAfter.remoteDigest!!)
+      assertEquals(donorThumbnailBefore.thumbnailFile, targetThumbnailAfter.thumbnailFile)
+      assertArrayEquals(donorThumbnailBefore.thumbnailRandom!!, targetThumbnailAfter.thumbnailRandom!!)
+      assertEquals(donorThumbnailBefore.thumbnailRestoreState, targetThumbnailAfter.thumbnailRestoreState)
+    }
+  }
+
+  @Test
   fun migration() {
     // Verifying that getUnhashedDataFile only returns if there's actually missing hashes
     test {
@@ -1016,6 +1183,92 @@ class AttachmentTableTest_deduping {
         attachmentId = attachmentId,
         archiveCdn = Cdn.CDN_3.cdnNumber
       )
+    }
+
+    fun prepareKeylessTargetWithThumbnail(donor: AttachmentId, target: AttachmentId): AttachmentTable.DataFileInfo {
+      upload(donor)
+      assertDataFilesAreTheSame(donor, target)
+
+      val targetOnlyKey = ByteArray(64) { 21 }
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to Base64.encodeWithPadding(targetOnlyKey),
+          AttachmentTable.THUMBNAIL_FILE to null,
+          AttachmentTable.THUMBNAIL_RANDOM to null,
+          AttachmentTable.THUMBNAIL_RESTORE_STATE to AttachmentTable.ThumbnailRestoreState.NONE.value
+        )
+        .where("${AttachmentTable.ID} = ?", target.id)
+        .run()
+
+      val targetBeforeThumbnail = SignalDatabase.attachments.getAttachment(target)!!
+      SignalDatabase.attachments.finalizeAttachmentThumbnailAfterUpload(
+        attachmentId = target,
+        attachmentPlaintextHash = targetBeforeThumbnail.dataHash!!,
+        attachmentRemoteKey = targetBeforeThumbnail.remoteKey!!,
+        data = DATA_A
+      )
+
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.THUMBNAIL_FILE to null,
+          AttachmentTable.THUMBNAIL_RANDOM to null,
+          AttachmentTable.THUMBNAIL_RESTORE_STATE to AttachmentTable.ThumbnailRestoreState.NONE.value
+        )
+        .where("${AttachmentTable.ID} = ?", donor.id)
+        .run()
+
+      val targetThumbnailBefore = SignalDatabase.attachments.getDataFileInfo(target)!!
+      assertNotNull(targetThumbnailBefore.thumbnailFile)
+      assertNotNull(targetThumbnailBefore.thumbnailRandom)
+      assertTrue(File(targetThumbnailBefore.thumbnailFile!!).exists())
+      clearRemoteIdentity(target)
+      return targetThumbnailBefore
+    }
+
+    fun prepareKeylessTargetWithoutThumbnailWithDonorThumbnail(donor: AttachmentId, target: AttachmentId): AttachmentTable.DataFileInfo {
+      upload(donor)
+      assertDataFilesAreTheSame(donor, target)
+
+      val donorBeforeThumbnail = SignalDatabase.attachments.getAttachment(donor)!!
+      SignalDatabase.attachments.finalizeAttachmentThumbnailAfterUpload(
+        attachmentId = donor,
+        attachmentPlaintextHash = donorBeforeThumbnail.dataHash!!,
+        attachmentRemoteKey = donorBeforeThumbnail.remoteKey!!,
+        data = DATA_A
+      )
+
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.THUMBNAIL_FILE to null,
+          AttachmentTable.THUMBNAIL_RANDOM to null,
+          AttachmentTable.THUMBNAIL_RESTORE_STATE to AttachmentTable.ThumbnailRestoreState.NONE.value
+        )
+        .where("${AttachmentTable.ID} = ?", target.id)
+        .run()
+
+      val donorThumbnailBefore = SignalDatabase.attachments.getDataFileInfo(donor)!!
+      assertNotNull(donorThumbnailBefore.thumbnailFile)
+      assertNotNull(donorThumbnailBefore.thumbnailRandom)
+      assertTrue(File(donorThumbnailBefore.thumbnailFile!!).exists())
+      clearRemoteIdentity(target)
+      return donorThumbnailBefore
+    }
+
+    private fun clearRemoteIdentity(attachmentId: AttachmentId) {
+      SignalDatabase.attachments.writableDatabase.update(AttachmentTable.TABLE_NAME)
+        .values(
+          AttachmentTable.REMOTE_KEY to null,
+          AttachmentTable.REMOTE_LOCATION to null,
+          AttachmentTable.REMOTE_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST to null,
+          AttachmentTable.REMOTE_INCREMENTAL_DIGEST_CHUNK_SIZE to 0,
+          AttachmentTable.UPLOAD_TIMESTAMP to 0,
+          AttachmentTable.ARCHIVE_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value,
+          AttachmentTable.ARCHIVE_CDN to null,
+          AttachmentTable.ARCHIVE_THUMBNAIL_TRANSFER_STATE to AttachmentTable.ArchiveTransferState.NONE.value
+        )
+        .where("${AttachmentTable.ID} = ?", attachmentId.id)
+        .run()
     }
 
     fun download(attachmentId: AttachmentId, data: ByteArray, properPadding: Boolean = true) {

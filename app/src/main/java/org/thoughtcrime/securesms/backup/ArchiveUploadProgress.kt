@@ -227,10 +227,27 @@ object ArchiveUploadProgress {
     }
   }
 
-  fun onAttachmentStarted(attachmentId: AttachmentId, sizeBytes: Long) {
+  @Synchronized
+  fun onAttachmentStarted(attachmentId: AttachmentId, sizeBytes: Long): String {
     SignalLocalMetrics.ArchiveAttachmentUpload.start(attachmentId)
-    attachmentProgress[attachmentId] = AttachmentProgressDetails(startTimeMs = System.currentTimeMillis(), totalBytes = sizeBytes)
+    val token = java.util.UUID.randomUUID().toString()
+    attachmentProgress[attachmentId] = AttachmentProgressDetails(startTimeMs = System.currentTimeMillis(), totalBytes = sizeBytes, token = token)
     _progress.tryEmit(Unit)
+    return token
+  }
+
+  @Synchronized
+  fun onAttachmentProgressIfOwned(attachmentId: AttachmentId, token: String, bytesUploaded: Long) {
+    if (attachmentProgress[attachmentId]?.token != token) return
+    attachmentProgress[attachmentId]?.bytesUploaded = bytesUploaded
+    _progress.tryEmit(Unit)
+  }
+
+  @Synchronized
+  fun onAttachmentFinishedIfOwned(attachmentId: AttachmentId, token: String): Boolean {
+    if (attachmentProgress[attachmentId]?.token != token) return false
+    onAttachmentFinished(attachmentId)
+    return true
   }
 
   fun onAttachmentProgress(attachmentId: AttachmentId, bytesUploaded: Long) {
@@ -238,6 +255,7 @@ object ArchiveUploadProgress {
     _progress.tryEmit(Unit)
   }
 
+  @Synchronized
   fun onAttachmentFinished(attachmentId: AttachmentId) {
     SignalLocalMetrics.ArchiveAttachmentUpload.end(attachmentId)
     debugTotalAttachments.incrementAndGet()
@@ -376,7 +394,8 @@ object ArchiveUploadProgress {
   private class AttachmentProgressDetails(
     val startTimeMs: Long = 0,
     val totalBytes: Long = 0,
-    var bytesUploaded: Long = 0
+    var bytesUploaded: Long = 0,
+    val token: String? = null
   ) {
     override fun toString(): String {
       if (startTimeMs == 0L || totalBytes == 0L) {

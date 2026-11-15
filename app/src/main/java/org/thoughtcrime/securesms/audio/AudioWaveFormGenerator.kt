@@ -46,8 +46,12 @@ object AudioWaveFormGenerator {
    */
   @WorkerThread
   @Throws(IOException::class)
-  fun generateWaveForm(context: Context, uri: Uri): AudioFileInfo {
-    DecryptableUriMediaInput.createForUri(context, uri).use { dataSource ->
+  fun generateWaveForm(context: Context, uri: Uri): AudioFileInfo = generateWaveForm(DecryptableUriMediaInput.createForUri(context, uri))
+
+  @WorkerThread
+  @Throws(IOException::class)
+  fun generateWaveForm(input: org.thoughtcrime.securesms.video.interfaces.MediaInput): AudioFileInfo {
+    input.use { dataSource ->
       val extractor = dataSource.createExtractor()
 
       if (extractor.trackCount == 0) {

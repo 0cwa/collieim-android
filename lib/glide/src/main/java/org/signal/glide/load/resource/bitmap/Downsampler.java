@@ -326,8 +326,12 @@ public final class Downsampler {
               callbacks);
       return BitmapResource.obtain(result, bitmapPool);
     } finally {
-      releaseOptions(bitmapFactoryOptions);
-      byteArrayPool.put(bytesForOptions);
+      try {
+        imageReader.cleanup();
+      } finally {
+        releaseOptions(bitmapFactoryOptions);
+        byteArrayPool.put(bytesForOptions);
+      }
     }
   }
 

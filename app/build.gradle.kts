@@ -621,6 +621,7 @@ dependencies {
   androidTestImplementation(testLibs.androidx.test.core)
   androidTestImplementation(testLibs.androidx.test.core.ktx)
   androidTestImplementation(testLibs.androidx.test.ext.junit.ktx)
+  androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
   androidTestImplementation(testLibs.assertk)
   androidTestImplementation(testLibs.mockk.android)
   androidTestImplementation(testLibs.diff.utils)

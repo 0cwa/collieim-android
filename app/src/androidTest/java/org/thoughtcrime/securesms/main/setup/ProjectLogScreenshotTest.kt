@@ -4,8 +4,12 @@
 
 package org.thoughtcrime.securesms.main.setup
 
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.semantics.SemanticsActions
@@ -18,6 +22,9 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
@@ -26,6 +33,7 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.spyk
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -45,10 +53,12 @@ import org.thoughtcrime.securesms.testing.SignalActivityRule
 import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
+import java.io.PrintWriter
+import java.io.StringWriter
 
 /**
  * Writes API 35 screenshots of What's new with its two tabs and of Settings → Help → What's new to external files
- * under project-log-proof. Install the app and test APKs from the same build before running it.
+ * under Downloads/project-log-proof. Install the app and test APKs from the same build before running it.
  */
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = 35, maxSdkVersion = 35)
@@ -107,6 +117,67 @@ class ProjectLogScreenshotTest {
     }
   }
 
+  @Test
+  fun projectLogDisclosureOpensPr156InTheExternalBrowser() = withFixture("light") {
+    SignalStore.collieSetup.notesSeenId = null
+    harness.launchActivity<MainActivity>().use { scenario ->
+      awaitText(context.getString(R.string.CollieStatus__updated_long))
+      compose.onNode(hasText(context.getString(R.string.CollieStatus__updated_long)) and isClickable()).performClick()
+      awaitText(context.getString(R.string.CollieWhatsNew__heading))
+      compose.onNode(hasText(context.getString(R.string.CollieWhatsNew__tab_project_log)) and isClickable()).performClick()
+      awaitText(context.getString(R.string.CollieLog__this_build))
+
+      val log = compose.onAllNodes(hasScrollAction())
+        .filterToOne(hasAnyDescendant(hasText(context.getString(R.string.CollieLog__intro))))
+      val disclosure = context.getString(R.string.CollieLog__links_note)
+      val entry = "What’s new has a Project log of every change, also under Settings, Help."
+      log.performScrollToNode(hasText(disclosure))
+      awaitText(disclosure)
+      saveScreenshot(scenario, "05-light-pr156-disclosure.png")
+
+      log.performScrollToNode(hasText(entry, substring = true))
+      awaitText(entry, substring = true)
+      saveScreenshot(scenario, "06-light-pr156-entry.png")
+
+      val targetUrl = "https://github.com/0cwa/collieim-android/pull/156"
+      val targetIntent = Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl))
+      val browserPackage = requireNotNull(
+        context.packageManager.resolveActivity(targetIntent, android.content.pm.PackageManager.MATCH_DEFAULT_ONLY)
+          ?.activityInfo?.packageName
+      ) { "No external browser resolves the PR156 URL" }
+      assertTrue("The PR156 handoff must leave Collie", browserPackage != context.packageName)
+
+      compose.onNode(hasText(entry, substring = true) and isClickable()).performClick()
+      val device = UiDevice.getInstance(instrumentation)
+      assertTrue(
+        "The resolved external browser did not open: $browserPackage",
+        device.wait(Until.hasObject(By.pkg(browserPackage)), 30_000)
+      )
+      continueBrowserWithoutAccount(device)
+
+      val renderedTitle = "Add a project log to What's new, and What's new to Settings"
+      assertTrue(
+        "The external browser did not render the public PR156 page",
+        device.wait(Until.hasObject(By.textContains(renderedTitle)), 90_000)
+      )
+      assertTrue(
+        "The browser page did not render the PR156 number",
+        device.wait(Until.hasObject(By.textContains("#156")), 15_000)
+      )
+      val addressBar = device.wait(Until.findObject(By.res(browserPackage, "url_bar")), 10_000)
+      assertNotNull("Could not inspect the external browser URL", addressBar)
+      val address = addressBar?.text.orEmpty()
+      val observedUrl = Uri.parse(if (address.contains("://")) address else "https://$address")
+      val expectedUrl = Uri.parse(targetUrl)
+      assertEquals("Unexpected browser URL scheme: $address", expectedUrl.scheme, observedUrl.scheme)
+      assertEquals("Unexpected browser URL host: $address", expectedUrl.host, observedUrl.host)
+      assertEquals("Unexpected browser repository or PR: $address", expectedUrl.path, observedUrl.path?.trimEnd('/'))
+
+      saveTextEvidence("browser-handoff.txt", "url=$targetUrl\nbrowser=$browserPackage\nrendered_title=$renderedTitle\nrendered_pr=#156\naddress=$address\n")
+      saveScreenshot("07-light-pr156-browser.png")
+    }
+  }
+
   private fun isClickable(): SemanticsMatcher = SemanticsMatcher.keyIsDefined(SemanticsActions.OnClick)
 
   private fun awaitText(text: String, substring: Boolean = false) {
@@ -122,15 +193,51 @@ class ProjectLogScreenshotTest {
       assertEquals("Screen security must be off only for this fixture", 0, activity.window.attributes.flags and WindowManager.LayoutParams.FLAG_SECURE)
     }
 
+    saveScreenshot(name)
+  }
+
+  private fun saveScreenshot(name: String) {
+    Thread.sleep(500)
     val screenshot = instrumentation.uiAutomation.takeScreenshot() ?: error("Screenshot was unavailable")
     try {
-      val directory = File(context.getExternalFilesDir(null), "project-log-proof")
-      assertTrue("Could not create the screenshot directory", directory.exists() || directory.mkdirs())
-      File(directory, name).outputStream().use { output ->
+      writeMediaStoreFile(name, "image/png") { output ->
+        requireNotNull(output) { "Could not open $name" }
         assertTrue("Could not save $name", screenshot.compress(Bitmap.CompressFormat.PNG, 100, output))
       }
     } finally {
       screenshot.recycle()
+    }
+  }
+
+  private fun saveTextEvidence(name: String, contents: String) {
+    writeMediaStoreFile(name, "text/plain") { output ->
+      requireNotNull(output) { "Could not open $name" }
+      output.write(contents.toByteArray(Charsets.UTF_8))
+    }
+  }
+
+  private fun writeMediaStoreFile(name: String, mimeType: String, write: (java.io.OutputStream?) -> Unit) {
+    val values = ContentValues().apply {
+      put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+      put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+      put(MediaStore.MediaColumns.RELATIVE_PATH, "Download/project-log-proof")
+    }
+    val resolver = context.contentResolver
+    val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: error("Could not create $name")
+    resolver.openOutputStream(uri).use(write)
+  }
+
+  private fun continueBrowserWithoutAccount(device: UiDevice) {
+    // Chrome's first-run screen can offer this explicit no-account path. Do not sign in or enable sync.
+    val noAccount = device.wait(Until.findObject(By.text("Use without an account")), 3_000)
+    if (noAccount != null) {
+      noAccount.click()
+      device.waitForIdle()
+    }
+    val noThanks = device.wait(Until.findObject(By.text("No thanks")), 3_000)
+    if (noThanks != null) {
+      noThanks.click()
+      device.waitForIdle()
     }
   }
 
@@ -153,6 +260,9 @@ class ProjectLogScreenshotTest {
       ScreenLockController.enableAutoLock(false)
       ScreenLockController.lockScreenAtStart = false
       withoutMegaphones(block)
+    } catch (failure: Throwable) {
+      captureFailureContext(failure)
+      throw failure
     } finally {
       restoreEverySetting(
         { commitThemePreferences(oldTheme, oldDynamicColors, oldBiometricLock) },
@@ -165,6 +275,21 @@ class ProjectLogScreenshotTest {
         { SignalStore.collieSetup.notesPendingSince = oldPendingSince }
       )
     }
+  }
+
+  private fun captureFailureContext(failure: Throwable) {
+    val details = StringWriter().also { failure.printStackTrace(PrintWriter(it)) }
+    val hierarchy = File(context.cacheDir, "project-log-failure-window.xml")
+    runCatching {
+      UiDevice.getInstance(instrumentation).dumpWindowHierarchy(hierarchy)
+      details.append("\nAccessibility window hierarchy:\n").append(hierarchy.readText())
+    }.onFailure { details.append("\nCould not capture window hierarchy: ").append(it.toString()) }
+    runCatching {
+      val semantics = compose.onAllNodes(SemanticsMatcher("all semantics nodes") { true }, useUnmergedTree = true).fetchSemanticsNodes()
+      details.append("\nCompose semantics nodes:\n").append(semantics.joinToString("\n"))
+    }.onFailure { details.append("\nCould not capture Compose semantics: ").append(it.toString()) }
+    android.util.Log.e("ProjectLogScreenshotTest", "Instrumented project-log flow failed", failure)
+    runCatching { saveTextEvidence("failure-context-${System.currentTimeMillis()}.txt", details.toString()) }
   }
 
   /** Keeps unrelated bottom prompts out of the captures without touching their saved schedules. */

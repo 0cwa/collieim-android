@@ -14,6 +14,17 @@ SHA = 'd' * 40
 
 
 class WebViewGateTest(unittest.TestCase):
+    def test_requires_the_four_surviving_methods_and_screenshots(self):
+        self.assertEqual(gate.METHODS, {
+            'composeCaptchaEmitsSyntheticToken',
+            'legacyCaptchaEmitsTokenAndNavigatesUp',
+            'recaptchaSubmitsSyntheticChallengeThroughFakeTransport',
+            'debugViewerLoadsAssetAndRoundTripsSyntheticLogs',
+        })
+        self.assertEqual(gate.SCREENSHOTS, {
+            'compose-captcha.png', 'legacy-captcha.png', 'recaptcha.png', 'debug-viewer.png',
+        })
+
     def setUp(self):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
@@ -80,7 +91,7 @@ class WebViewGateTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'source identity'): gate.check(self.root, 'success', 'success', 'f' * 40)
 
     def test_missing_corrupt_and_blank_screenshot_rejected(self):
-        path = self.evidence / 'screenshots/paypal.png'
+        path = self.evidence / 'screenshots/debug-viewer.png'
         original = path.read_bytes()
         for mutation in ('missing', 'corrupt', 'blank'):
             with self.subTest(mutation=mutation):

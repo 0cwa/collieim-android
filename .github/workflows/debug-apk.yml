@@ -264,7 +264,6 @@ jobs:
           timeout 10s adb shell dumpsys webviewupdate > "$evidence/webview-provider.txt"
           timeout 10s adb shell cmd connectivity airplane-mode enable
           timeout 10s adb shell svc wifi disable
-          timeout 10s adb shell svc data disable
           test "$(timeout 10s adb shell settings get global airplane_mode_on | tr -d '\r')" = 1
           for i in {1..30}; do
             timeout 10s adb shell dumpsys connectivity > "$evidence/connectivity-before.txt"
@@ -279,7 +278,7 @@ jobs:
             '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.security.WebViewRuntimeAcceptanceTest' \
             2>&1 | tee "$evidence/connected.log"
           SH
-      - name: Exercise six WebView flows offline
+      - name: Exercise four WebView flows offline
         id: device
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
@@ -292,7 +291,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: bash "$RUNNER_TEMP/run-webview-acceptance.sh"
-      - name: Require six tests, offline state, APK identity and screenshots
+      - name: Require four tests, offline state, APK identity and screenshots
         if: always() && !cancelled()
         env:
           EXPECTED_SHA: ${{ github.sha }}

@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -105,7 +106,7 @@ private fun ProjectLogList(
 
   LazyColumn(
     contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
-    modifier = modifier
+    modifier = modifier.testTag("project-log-list")
   ) {
     item {
       Text(

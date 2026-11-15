@@ -14,9 +14,6 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.filterToOne
-import androidx.compose.ui.test.hasAnyDescendant
-import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
@@ -109,7 +106,7 @@ class ProjectLogScreenshotTest {
 
       // Collapse this build's changes and open the oldest release, so both header states show.
       compose.onNode(hasText(context.getString(R.string.CollieLog__this_build)) and isClickable()).performClick()
-      val log = compose.onAllNodes(hasScrollAction()).filterToOne(hasAnyDescendant(hasText(context.getString(R.string.CollieLog__intro))))
+      val log = compose.onNode(hasTestTag("project-log-list"))
       log.performScrollToNode(hasText("8.33.2-1 RC1"))
       compose.onNode(hasText("8.33.2-1 RC1") and isClickable()).performClick()
       log.performScrollToNode(hasText("The first signed Collie test build", substring = true))
@@ -127,8 +124,7 @@ class ProjectLogScreenshotTest {
       compose.onNode(hasText(context.getString(R.string.CollieWhatsNew__tab_project_log)) and isClickable()).performClick()
       awaitText(context.getString(R.string.CollieLog__this_build))
 
-      val log = compose.onAllNodes(hasScrollAction())
-        .filterToOne(hasAnyDescendant(hasText(context.getString(R.string.CollieLog__intro))))
+      val log = compose.onNode(hasTestTag("project-log-list"))
       val disclosure = context.getString(R.string.CollieLog__links_note)
       val entry = "What’s new has a Project log of every change, also under Settings, Help."
       log.performScrollToNode(hasText(disclosure))

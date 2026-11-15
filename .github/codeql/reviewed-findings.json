@@ -288,7 +288,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/jobs/MultiDeviceContactSyncJob.kt": "5c4615e9d92de039471d9db72b8232a641754fd167056e88552cfb91558ac2e5",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreAttachmentJob.kt": "ef41b4233ad7a8943a1f185d0f5a2e6382ed3c0b3372b70108fcca6df1866314",
         "app/src/main/java/org/thoughtcrime/securesms/backup/v2/local/ArchiveFileSystem.kt": "ed3418f39b61f74bf8a43935db4b580d28d010736ec4a79c2ca5509a3bc517b3",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/CopyAttachmentToArchiveJob.kt": "7aedfe33b5d5de779d9f99b0e3af15a65d7fa391473ae2b21192df0bce1dd974",
+        "app/src/main/java/org/thoughtcrime/securesms/jobs/CopyAttachmentToArchiveJob.kt": "2c13bc80b0d9136bf6254a7d57ad4d0bc4104f3d221b4585ed4e7fc60ffe8b80",
         "app/src/test/java/org/thoughtcrime/securesms/backup/v2/EncryptedBackupSnapshotTest.kt": "c58c1670b3be176e83663b6433a03066d7e5007249ca11b1a016c431027e8f44",
         "app/src/test/java/org/thoughtcrime/securesms/backup/v2/local/ArchiveFileSystemTest.kt": "f9837b57e5a5f39baac0126b8d4c732a6f5eb34e83c5e8fb6dbdaaab7cb65c2a",
         "lib/libsignal-service/src/test/java/org/whispersystems/signalservice/api/crypto/AttachmentCipherTest.kt": "692d7d6b6d0526412bc9becae37cf74670f4d848298466b5fe3f80ce27684d85",
@@ -297,7 +297,7 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/crypto/IncrementalMacAdditionalValidationsInputStream.kt": "76de838472e1350abcf4d9be855d09d0031b358d666483fbae14343e22eb3a01",
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/crypto/MacValidatingInputStream.kt": "e6e8ae472e7531867e9a64dd5db358560600ee24d54ec6dde7eea301a631131e",
         "core/util-jvm/src/main/java/org/signal/core/util/stream/TrimmingInputStream.kt": "8ec7aef0c8d0e7fc48a62515c7c70d79ee416c2762dbe2fef2eaaebea98ea680",
-        "app/src/main/java/org/thoughtcrime/securesms/database/AttachmentTable.kt": "14805c5cc9b9761328d5d41765e4692714df4ff78d16698cbc8973852474152f",
+        "app/src/main/java/org/thoughtcrime/securesms/database/AttachmentTable.kt": "6fcc3c5f8b34e3497b5db6d869ba339620643b4271e55bbfda8cd56bdcde95bc",
         "build-inputs/native-lock.json": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
         "build-inputs/native-publication.json": "b88197b390284a7f340f1b2a786167592961ff8f57857a8bf72ac7747f704a26",
         "gradle/verification-metadata.xml": "2342cfddbfc3a150c204dee2a1738d924b9f4d69f621e2cebd77dc6e5f61c568",
@@ -522,7 +522,10 @@
         "app/src/main/AndroidManifest.xml": "bed5cf1fc1e61249388ac6b588c69797795e70707aec321bfc3e0546a1bc71b5",
         "app/src/website/AndroidManifest.xml": "619613466b82e0c9c85dec7e879486726dbeb727e04cd223978dc3c91e421bf3"
       },
-      "context_sha256": "89776701e2433119284aad4e363817418d499de1c03b354eea68fb5276c0a000"
+      "context_sha256": [
+        "89776701e2433119284aad4e363817418d499de1c03b354eea68fb5276c0a000",
+        "8541cba9075d0dd70786506e0d56af31b04c7f8519e25bf83785f60cfd1a932b"
+      ]
     },
     {
       "rule": "java/android/insecure-local-authentication",
@@ -937,7 +940,10 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/registration/RestoreMethodBody.kt": "2e5c1f70892101f39f3f52d153c32a60a325961dff73d84458294074e5665463",
         "lib/network/src/main/java/org/signal/network/api/ProvisioningApi.kt": "0f62d32692e0b82aa959ab20669ee0d16dc3134bbf607f25115e78a39802f61c"
       },
-      "context_sha256": "fb7dd0b59c4166de0bc0558a3d398a94634e32aebbfcd08074ac693a6b50aa3a"
+      "context_sha256": [
+        "fb7dd0b59c4166de0bc0558a3d398a94634e32aebbfcd08074ac693a6b50aa3a",
+        "babaf417a92b90fab096825dfbeb4c42622d3869082caabec992e5fd344707ae"
+      ]
     },
     {
       "rule": "java/sensitive-log",
@@ -1652,7 +1658,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/backup/v2/EncryptedBackupSnapshot.kt": "4397f01c9709e615e724d3c1f2f4949ded0ef28428d343e89e0bb02fabfbb1be",
         "app/src/main/java/org/thoughtcrime/securesms/backup/v2/local/ArchiveFileSystem.kt": "ed3418f39b61f74bf8a43935db4b580d28d010736ec4a79c2ca5509a3bc517b3",
         "app/src/main/java/org/thoughtcrime/securesms/backup/v2/local/LocalArchiver.kt": "ef34b1dd1800510bed6f0ed5785d8b1c155095c9162ce3fbd6268aae570aa414",
-        "app/src/main/java/org/thoughtcrime/securesms/database/AttachmentTable.kt": "14805c5cc9b9761328d5d41765e4692714df4ff78d16698cbc8973852474152f",
+        "app/src/main/java/org/thoughtcrime/securesms/database/AttachmentTable.kt": "6fcc3c5f8b34e3497b5db6d869ba339620643b4271e55bbfda8cd56bdcde95bc",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/ArchiveThumbnailUploadJob.kt": "e63d333c1c16aa7e576a19de2a30d9d72145e7ff4df5be404579947a6b017dd9",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentCompressionJob.java": "3f14e69a73326799cf7578a9f7b2575525772586aeb771d81c1f389efc1dea08",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentDownloadJob.kt": "31bdb75344d0922c125de4de5215462781eb71901f7951cdcd497c631784028f",
@@ -1660,7 +1666,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentUploadSnapshot.kt": "f820c05413c59344dcf4b73410fe5169db634e121ec2a8078d2f09b0180637fa",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/AvatarGroupsV1DownloadJob.java": "a613c9a480d5cb4e1fc9c0f1686fa5baddb92669bd43f3b69bf2535f855ee156",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/BackfillDigestsForDataFileJob.kt": "e15a7abfa32a1adbdddb0ffe722111771df5f161ad0c7d9125899ef8ca82704f",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/CopyAttachmentToArchiveJob.kt": "7aedfe33b5d5de779d9f99b0e3af15a65d7fa391473ae2b21192df0bce1dd974",
+        "app/src/main/java/org/thoughtcrime/securesms/jobs/CopyAttachmentToArchiveJob.kt": "2c13bc80b0d9136bf6254a7d57ad4d0bc4104f3d221b4585ed4e7fc60ffe8b80",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/MultiDeviceContactSyncJob.kt": "5c4615e9d92de039471d9db72b8232a641754fd167056e88552cfb91558ac2e5",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/MultiDeviceContactUpdateJob.kt": "5263ba67ca8c96072628fabc4e707d32a237df16933de7a3ddf65539cf4c1b7f",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/MultiDeviceProfileKeyUpdateJob.kt": "178ea30a25b5a33cfbdc871487cd8d45bcda4e1a519c7a93f5ef38bd670732d3",
@@ -1668,9 +1674,9 @@
         "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreAttachmentJob.kt": "ef41b4233ad7a8943a1f185d0f5a2e6382ed3c0b3372b70108fcca6df1866314",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreAttachmentThumbnailJob.kt": "c1d64648b6d29bd1cf3c1a3ec4206d4f1cc858b687e71a38b4a419502b3513d9",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/RestoreLocalAttachmentJob.kt": "7a2f2bee40db1f4daeae2df42cbfdcad3cb5e26f134e345ffda5e875aa93278d",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/UploadAttachmentToArchiveJob.kt": "55773fa4c5cf1b526e974297f1973069fb6c99276abf4f296ad7012cffbe71fc",
+        "app/src/main/java/org/thoughtcrime/securesms/jobs/UploadAttachmentToArchiveJob.kt": "6b0d10c446f7218f534902f90bb2a0a42a1a08eb3d08f3bf9f612104ccbde8e1",
         "app/src/main/java/org/thoughtcrime/securesms/video/exo/PartDataSource.java": "15e7e9c6b27ba8a22ff1595451c249eb803e654ee6942500077d0b90c53635b6",
-        "app/src/main/protowire/JobData.proto": "be07aafbf57a3269a34bcee205bf66958b43fb7a26a380ea7031a0e3525df1bc",
+        "app/src/main/protowire/JobData.proto": "7aa7ec7f5de8bfc32502b00a3515159c28679bf7f3103d6be9498b8d791a3ca7",
         "app/src/test/java/org/thoughtcrime/securesms/backup/v2/EncryptedBackupSnapshotTest.kt": "c58c1670b3be176e83663b6433a03066d7e5007249ca11b1a016c431027e8f44",
         "app/src/test/java/org/thoughtcrime/securesms/backup/v2/local/ArchiveFileSystemTest.kt": "f9837b57e5a5f39baac0126b8d4c732a6f5eb34e83c5e8fb6dbdaaab7cb65c2a",
         "build-inputs/native-lock.json": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
@@ -1689,7 +1695,8 @@
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/PushServiceSocket.java": "f6791fdb919309126368ee59c681e9594e3703fa1ed4be8c68acc1221f86a568",
         "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/push/http/AttachmentCipherOutputStreamFactory.kt": "d9664c4083e7db4c777d09b6700068af5f5b3504e45eed6ac09a25c61d8ab513",
         "lib/libsignal-service/src/test/java/org/whispersystems/signalservice/api/crypto/AttachmentCipherTest.kt": "692d7d6b6d0526412bc9becae37cf74670f4d848298466b5fe3f80ce27684d85",
-        "lib/network/src/main/java/org/signal/network/service/CdnService.kt": "307fe559f6c08dab8b234a8c669580bfeb76f04a1522f403a09fce7febd0c246"
+        "lib/network/src/main/java/org/signal/network/service/CdnService.kt": "307fe559f6c08dab8b234a8c669580bfeb76f04a1522f403a09fce7febd0c246",
+        "app/src/main/java/org/thoughtcrime/securesms/backup/ArchiveUploadProgress.kt": "04cfd415bfc1e547f221e792ed017520f60728f180b7dca60a3e22412bdfdbb5"
       },
       "context_sha256": "9eb495b43089d6010c500d073e5d978d110ae9b01c2b8a008653d29696175131"
     }

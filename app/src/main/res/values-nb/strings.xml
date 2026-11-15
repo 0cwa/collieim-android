@@ -159,45 +159,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">Kredittkort eller debetkort</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">Skriv inn kortinformasjonen din. Signal samler ikke inn eller lagrer personopplysningene dine.</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">Kortnummer</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">MM/ÅÅ</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">CVC-kode</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">Ugyldig kortnummer</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">Kortet er utløpt</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">Koden er for kort</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">Koden er for lang</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">Ugyldig kode</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">Ugyldig måned</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">Angi årstall</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">Ugyldig år</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">Gi %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">Gi %1$s/måned</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">Gi %1$s per måned</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">Engangsbeløp på %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Pengegaven venter</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Pengegaven behandles</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Vil du blokkere og forlate %1$s?</string>
@@ -3735,7 +3716,6 @@
     <string name="preferences__led_color_unknown">Ukjent</string>
     <string name="preferences__silent">Stille</string>
     <string name="preferences__advanced">Avansert</string>
-    <string name="preferences__donate_to_signal">Gi penger til Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Personvern</string>
     <!-- Preference label for stories -->
@@ -5378,13 +5358,7 @@
 
     <string name="ImageView__badge">Merke</string>
 
-    <string name="SubscribeFragment__cancel_subscription">Avslutt abonnementet</string>
-    <string name="SubscribeFragment__confirm_cancellation">Vil du bekrefte avslutningen?</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">Betalingen trekkes ikke igjen. Merket fjernes fra profilen din ved utløpt faktureringsperiode.</string>
-    <string name="SubscribeFragment__not_now">Ikke nå</string>
-    <string name="SubscribeFragment__confirm">Bekreft</string>
     <string name="SubscribeFragment__update_subscription">Oppdater abonnementet</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Abonnementet ditt er avsluttet.</string>
     <string name="SubscribeFragment__update_subscription_question">Vil du oppdatere abonnementet?</string>
     <string name="SubscribeFragment__update">Oppdater</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Hele prisen for abonnementet (%1$s) trekkes i dag. Abonnementet ditt fornyes månedlig.</string>
@@ -5396,66 +5370,38 @@
     <string name="Subscription__expires_s">Utløper %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Signal er en uavhengig, ideell organisasjon som tilbyr private chatter og samtaler. Ingen annonser, ingen sporing, ingen overvåking. Vil du støtte Signal med en pengegave?</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Du får et merke i profilen din når du gir penger</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Personvernet ditt er hovedfokuset vårt</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal er en ideell organisasjon.</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Takk for støtten!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Du har fått et givermerke fra Signal! Vis det frem i profilen din for å vise at du støtter Signal.</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Du kan også</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">bli en månedlig støttespiller.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Vis på profilen</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Vis frem som utvalgt merke</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Fortsett</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Når du har mer enn ett merke, kan du velge ett som vises frem på profilen din.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Gi penger til Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">Mer</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">Mine bidrag</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">Kvitteringer for pengebeløp</string>
-    <string name="ManageDonationsFragment__badges">Merker</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">Vanlige spørsmål om pengegaver</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Andre måter å bidra på</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Gi penger for en venn</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">Pengegaven kunne ikke bekreftes</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Pengegaven din på %1$s per måned kunne ikke bekreftes. Godkjenn betalingen via iDEAL | Wero i nettbanken din.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Engangsbeløpet på %1$s kunne ikke bekreftes. Godkjenn betalingen via iDEAL | Wero i nettbanken din.</string>
 
-    <string name="Boost__enter_custom_amount">Angi tilpasset beløp</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Minimumsbeløpet du kan gi, er %1$s</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s per måned</string>
-    <string name="MySupportPreference__renews_s">Fornyes %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">Transaksjonen behandles …</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">Kunne ikke legge til merket. %1$s</string>
-    <string name="MySupportPreference__please_contact_support">Ta kontakt med kundestøtten vår.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Betalingen behandles</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Overføringen av %1$s behandles. Bankoverføringer har en behandlingstid på 1 til 14 virkedager.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">Les mer</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">Sjekker abonnementet …</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Oppdater Collie</string>
@@ -5492,11 +5438,9 @@
     <string name="Subscription__get_a_s_badge">Få et %1$s-merke</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">Behandler pengegaven …</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">%1$d i måneden</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5515,11 +5459,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Betalingen av pengegaven kunne ikke gjennomføres</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">Prøv en annen betalingsmåte, eller ta kontakt med banken din for å få mer informasjon.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">Les mer</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Betalingen av pengegaven kunne ikke gjennomføres. %1$s</string>
     <string name="DonationsErrors__your_payment">Betalingen av pengegaven kunne ikke behandles, og kontoen din har ikke blitt belastet. Prøv igjen.</string>
     <string name="DonationsErrors__still_processing">Under behandling</string>
     <string name="DonationsErrors__couldnt_add_badge">Kunne ikke legge til merket</string>
@@ -5537,8 +5478,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Betalingen av pengegaven gikk gjennom, men Signal kunne ikke sende den tilhørende meldingen. Ta kontakt med brukerstøtten vår.</string>
     <string name="DonationsErrors__your_badge_could_not">Merket kunne ikke legges til i kontoen din, men du kan ha blitt belastet. Ta kontakt med brukerstøtten vår.</string>
     <string name="DonationsErrors__your_payment_is_still">Betalingen av pengegaven er fremdeles under behandling. Dette kan ta et par minutter, avhengig av internettilkoblingen.</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">Kunne ikke avslutte abonnementet</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Du må være koblet til internett for å kunne avslutte abonnementet.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Enheten din har ikke støtte for donasjoner i appen, så det er ikke mulig å abonnere og få et merke. Men du kan støtte Signal ved å gi oss en pengegave på nettstedet vårt.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Nettverksfeil. Sjekk internettilkoblingen din og prøv igjen.</string>
     <string name="NetworkFailure__retry">Prøv på nytt</string>
@@ -5547,7 +5486,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Denne brukeren må oppgradere Signal-appen for å kunne motta pengegaver.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Pengegaven kunne ikke behandles i iDEAL | Wero. Prøv en annen betalingsmåte, eller ta kontakt med banken din for å få mer informasjon.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Pengegave på vegne av %1$s</string>
@@ -5758,33 +5696,19 @@
     <string name="ReleaseNotes__keep_up_to_date">Hold deg oppdatert på nyheter og utgavemerknader</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">All aktivitet</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">Alle</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">Månedlig</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">Engangsbeløp</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">På vegne av en venn</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">Pengegave for en venn</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">Type pengebeløp</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">Betalingsdato</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">Del kvittering</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">Kvitteringer for tidligere pengebeløp vil ikke være tilgjengelig hvis du har installert Signal-appen på nytt.</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">Kvittering for pengebeløp</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">Beløp</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Takk for at du støtter Signal. Bidraget ditt hjelper oss med å utvikle åpen kildekode-teknologi for personvern som muliggjør fri og trygg kommunikasjon for millioner av mennesker over hele verden. Hvis du er bosatt i USA, må du ta vare på denne kvitteringen til skatteoppgjøret ditt. Signal Technology Foundation er en ideell organisasjon som er fritatt skatt i USA under avsnitt 501c3 i den amerikanske skatteloven. Vårt nasjonale skattenummer er 82-4506840. Signal har ikke levert noen varer eller tjenester som vederlag for bidraget ditt.</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">Ingen kvitteringer</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6423,27 +6347,17 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Stolt ideell organisasjon</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Fortsett</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Gi en pengegave for å støtte private samtaler. Bidra til at Signal kan være uavhengig og annonsefri.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">Pengegave under behandling</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Bankoverføringer har en behandlingstid på 1 til 14 virkedager. Du kan oppdatere abonnementet ditt når betalingen er gjennomført.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Bankoverføringer har en behandlingstid på 1 til 14 virkedager. Du kan gi flere pengegaver når denne betalingen er gjennomført.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Betalingen av pengegaven er fremdeles under behandling. Dette kan ta et par minutter, avhengig av internettilkoblingen. Du kan oppdatere abonnementet ditt når betalingen er gjennomført.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Betalingen av pengegaven er fremdeles under behandling. Dette kan ta et par minutter, avhengig av internettilkoblingen. Du kan gi flere pengegaver når denne betalingen er gjennomført.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Pengegaven er under behandling i iDEAL | Wero. Godkjenn betalingen via nettbanken din før du gir en ny pengegave.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">Beløpet er for stort</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Du kan gi opptil %1$s via bankoverføring. Prøv med et annet beløp eller en annen betalingsmåte.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Månedlig</string>
@@ -6452,129 +6366,77 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Gi %1$s per måned til Signal</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Få et %1$s-merke</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Gi %1$s til Signal</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Få et %1$s-merke i %2$d dag</item>
         <item quantity="other">Få et %1$s-merke i %2$d dager</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">Bankoverføring</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Kredittkort eller debetkort</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Gi penger for en venn</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Vil du forlate Signal for å bekrefte betalingen av pengegaven?</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Når betalingen er bekreftet, kan du gå tilbake til Signal for å gi pengegaven.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Du sendes videre til %1$s. Når betalingen er bekreftet, kan du gå tilbake til Signal for å gi pengegaven.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">Bankoverføring</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">Stripe behandler pengegavene som gis til Signal. Signal samler ikke inn og lagrer ikke personopplysningene dine. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">Les mer</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">Godkjenn</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">Les mer</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">Kunne ikke laste inn forespørselen</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Skriv inn bankinformasjonen og e-postadressen din. Stripe sender oppdateringer om pengegaven din til denne e-postadressen. %1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">Les mer</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">Navn på bankkonto</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">E-post</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">Finn bankopplysninger</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">Gi %1$s/måned</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">Gi %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN-nummeret er for kort</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN-nummeret er for langt</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Landskoden støttes ikke</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">Ugyldig IBAN-nummer</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">Minst tre tegn</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">Ugyldig e-postadresse</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Skriv inn navnet eller e-posten din. Stripe sender oppdateringer om pengegaven din til denne e-postadressen. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Angi bankinformasjonen din. Signal samler ikke inn og lagrer ikke personopplysningene dine. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">Les mer</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">Navn på bankkonto</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">E-post</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Bekreft pengegaven med iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">For å legge inn den gjentakende pengegaven trykker du på «Fortsett» for å bekrefte at 0,01 EUR trekkes fra bankkontoen din. Dette beløpet refunderes automatisk og sikrer at pengegaven på %1$s per måned kan trekkes fra kontoen din.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">Fortsett</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Finn bankopplysningene dine</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">Du finner IBAN-nummeret øverst på kontoutskriften din. IBAN-nummeret består av opptil 34 tegn. Skriv inn hele navnet som kontoen din er registrert på. Ta kontakt med banken for å få mer informasjon.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Pengegaven venter</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Det månedlige pengebeløpet behandles. Du kan vise frem %1$s-merket på profilen din når vi har mottatt pengegaven.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Engangsbeløpet behandles. Du kan vise frem %1$s-merket på profilen din når vi har mottatt pengegaven.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Bankoverføringer har en behandlingstid på 1 til 14 virkedager. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">Les mer</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">Ferdig</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Pengegaven kunne ikke behandles</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">Vi kunne ikke behandle bankoverføringen. Ingenting har blitt trukket fra kontoen. Prøv en annen betalingsmåte, eller ta kontakt med banken din for å få mer informasjon.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">Prøv igjen</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">Ikke nå</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Pengegaven ble mottatt</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Bankoverføringen ble mottatt. Du kan vise frem dette merket på profilen din for å vise din støtte.</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">Avbryter …</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">For mange kontakter ble behandlet</string>
@@ -6606,11 +6468,6 @@
     <string name="PaymentMessageView_s_sent_you">%1$s sendte deg</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Informasjonen din holdes privat</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Signal lagrer ikke personopplysningene dine når du gir et pengebeløp.</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Betalingstjenesten Stripe behandler pengebeløpet du gir oss. Vi får ikke tilgang til eller lagrer eller oppbevarer ikke noen av opplysningene du gir til Stripe.</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal vil ikke, og kan ikke, knytte pengebeløpet til Signal-kontoen din.</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">Takk for støtten!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6625,8 +6482,6 @@
     <string name="GroupStoryEducationSheet__next">Neste</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">Gi penger</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">Betaling</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7074,15 +6929,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Slå på varsler i fullskjerm</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">Det månedlige pengebeløpet er stoppet</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">Den månedlige pengegaven har blitt stoppet. %1$s\n\n Merket fjernes fra profilen din. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">Les mer</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">Forny abonnementet</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">Ikke nå</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7350,7 +7200,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

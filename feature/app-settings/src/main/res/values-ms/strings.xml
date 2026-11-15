@@ -682,7 +682,6 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">Tidak dapat menebus langganan sandaran anda</string>
     <!-- App settings row that opens donations -->
-    <string name="AppSettingsScreen__donate_to_signal">Derma kepada Signal</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">Keutamaan Dalaman</string>
     <!-- App settings row that opens linked devices -->
@@ -926,11 +925,8 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">Tutup</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__get_badges">Dapatkan lencana untuk profil anda dengan menyokong Signal.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal adalah organisasi bukan untung tanpa pengiklan atau pelabur, hanya disokong oleh orang ramai seperti anda.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
-    <string name="EditProfileScreen__become_a_sustainer">Jadilah seorang Sustainer</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->

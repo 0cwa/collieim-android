@@ -153,15 +153,6 @@ class EditProfileScreenTest {
     assertThat(events).contains(EditProfileEvent.DeleteUsernameConfirmed)
   }
 
-  @Test
-  fun givenTheBecomeASustainerSheet_whenIClickTheButton_thenIExpectBecomeASustainerClickedEvent() {
-    setContent(populated.copy(dialog = EditProfileState.Dialog.BecomeASustainer))
-
-    composeTestRule.onNodeWithTag(EditProfileTestTags.BUTTON_BECOME_A_SUSTAINER).performClick()
-
-    assertThat(events).contains(EditProfileEvent.BecomeASustainerClicked)
-  }
-
   private fun scrollTo(testTag: String) {
     composeTestRule.onNodeWithTag(EditProfileTestTags.LIST).performScrollToNode(hasTestTag(testTag))
   }

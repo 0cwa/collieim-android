@@ -159,45 +159,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">Πιστωτική ή χρεωστική κάρτα</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">Πρόσθεσε τα στοιχεία της κάρτας σου. Το Signal δεν συλλέγει ούτε αποθηκεύει τα προσωπικά στοιχεία σου.</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">Αριθμός κάρτας</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">ΜΜ/ΕΕ</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">Μη έγκυρος αριθμός κάρτας</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">Η κάρτα έχει λήξει</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">Ο κωδικός είναι πολύ μικρός</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">Ο κωδικός είναι πολύ μεγάλος</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">Μη έγκυρος κωδικός</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">Μη έγκυρος μήνας</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">Απαιτείται έτος</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">Μη έγκυρο έτος</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">Δωρεά %1$s</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">Δωρεά %1$s/μήνα</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">Δωρεά %1$s/μήνα</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">Μία φορά %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Η δωρεά εκκρεμεί</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Γίνεται επεξεργασία της δωρεάς</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">Αποκλεισμός και αποχώρηση από %1$s;</string>
@@ -3735,7 +3716,6 @@
     <string name="preferences__led_color_unknown">Άγνωστο</string>
     <string name="preferences__silent">Σε σίγαση</string>
     <string name="preferences__advanced">Για προχωρημένους</string>
-    <string name="preferences__donate_to_signal">Κάνε μια δωρεά στο Molly</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Ιδιωτικότητα</string>
     <!-- Preference label for stories -->
@@ -5378,13 +5358,7 @@
 
     <string name="ImageView__badge">Σήμα</string>
 
-    <string name="SubscribeFragment__cancel_subscription">Ακύρωση συνδρομής</string>
-    <string name="SubscribeFragment__confirm_cancellation">Επιβεβαίωση ακύρωσης;</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">Δεν θα χρεωθείς ξανά. Το σήμα σου θα αφαιρεθεί από το προφίλ σου στο τέλος της περιόδου για την οποία έχεις χρεωθεί.</string>
-    <string name="SubscribeFragment__not_now">Όχι τώρα</string>
-    <string name="SubscribeFragment__confirm">Επιβεβαίωση</string>
     <string name="SubscribeFragment__update_subscription">Ανανέωση συνδρομής</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Η συνδρομή σου ακυρώθηκε.</string>
     <string name="SubscribeFragment__update_subscription_question">Ανανέωση συνδρομής;</string>
     <string name="SubscribeFragment__update">Ενημέρωση</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Θα χρεωθείς το πλήρες ποσό (%1$s) της τιμής νέας συνδρομής σήμερα. Η συνδρομή σου θα ανανεώνεται μηνιαία.</string>
@@ -5396,66 +5370,38 @@
     <string name="Subscription__expires_s">Λήγει στις %1$s</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Ως ανεξάρτητος μη κερδοσκοπικός οργανισμός, το Signal έχει δεσμευτεί για ιδιωτικά μηνύματα και κλήσεις. Χωρίς διαφημίσεις, παρακολούθηση, επιτήρηση. Κάνε σήμερα μια δωρεά για να στηρίξεις το Signal.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Απόκτησε ένα προαιρετικό σήμα στο προφίλ σου όταν κάνεις δωρεά</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Η ιδιωτικότητά σου είναι η αποστολή μας</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Το Signal είναι ένας μη κερδοσκοπικός οργανισμός.</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Ευχαριστούμε για την υποστήριξη!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Κέρδισες σήμα δωρεάς από το Signal! Πρόσθεσέ το στο προφίλ σου για να δείξεις την υποστήριξή σου.</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Μπορείς επίσης</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">Να γίνεις μηνιαίος υποστηρικτής/τρια.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Εμφάνιση στο προφίλ</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Να γίνει το βασικό σήμα</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Συνέχεια</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Όταν έχεις πάνω από ένα σήματα, μπορείς να επιλέξεις ποιο μπορούν να δουν τα άλλα άτομα στο προφίλ σου.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Κάνε μια δωρεά στο Signal</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">Περισσότερα</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">Η υποστήριξή μου</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">Αποδείξεις δωρεών</string>
-    <string name="ManageDonationsFragment__badges">Σήματα</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">Συχνές ερωτήσεις για δωρεές</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Άλλοι τρόποι δωρεάς</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Κάνε δωρεά για έναν φίλο ή φίλη</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">Δεν ήταν δυνατή η επιβεβαίωση της δωρεάς</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Δεν ήταν δυνατή η επιβεβαίωση της δωρεάς σου για %1$s/μήνα. Έλεγξε την τραπεζική σου εφαρμογή για να εγκρίνεις την πληρωμή σου στην iDEAL | Wero.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Δεν ήταν δυνατή η επιβεβαίωση της μεμονωμένης δωρεάς σου των %1$s . Έλεγξε την τραπεζική σου εφαρμογή για να εγκρίνεις την πληρωμή σου στην iDEAL | Wero.</string>
 
-    <string name="Boost__enter_custom_amount">Εισαγωγή προσαρμοσμένου ποσού</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">Το ελάχιστο ποσό που μπορείς να κάνεις δωρεά είναι %1$s</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s/μήνα</string>
-    <string name="MySupportPreference__renews_s">Ανανεώνεται %1$s</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">Επεξεργασία συναλλαγής…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">Αδυναμία προσθήκης σήματος. %1$s</string>
-    <string name="MySupportPreference__please_contact_support">Παρακαλώ επικοινώνησε με την υποστήριξη.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Η πληρωμή εκκρεμεί</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">Η τραπεζική μεταφορά %1$s εκκρεμεί. Οι τραπεζικές μεταφορές χρειάζονται 1 με 14 εργάσιμες ημέρες για να ολοκληρωθούν.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">Μάθε περισσότερα</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">Έλεγχος συνδρομής…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Αναβάθμιση του Collie</string>
@@ -5492,11 +5438,9 @@
     <string name="Subscription__get_a_s_badge">Πάρε ένα σήμα %1$s</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">Επεξεργασία δωρεάς…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">Επαναλαμβανόμενο %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5515,11 +5459,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Σφάλμα κατά την επεξεργασία της δωρεάς</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">Δοκίμασε άλλο τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">Μάθε περισσότερα</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Σφάλμα κατά την επεξεργασία της δωρεάς. %1$s</string>
     <string name="DonationsErrors__your_payment">Δεν ήταν δυνατή η επεξεργασία της δωρεάς σου και δεν έχεις χρεωθεί. Δοκίμασε ξανά.</string>
     <string name="DonationsErrors__still_processing">Ακόμα επεξεργάζεται</string>
     <string name="DonationsErrors__couldnt_add_badge">Αδυναμία προσθήκης σήματος</string>
@@ -5537,8 +5478,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Έγινε επεξεργασία της δωρεάς σου από τη Signal, αλλά δεν καταφέραμε να στείλουμε το μήνυμα της δωρεάς. Επικοινώνησε με την υποστήριξη.</string>
     <string name="DonationsErrors__your_badge_could_not">Το σήμα σου δεν ήταν δυνατό να προστεθεί στον λογαριασμό σου, αλλά ενδέχεται να έχεις χρεωθεί. Επικοινώνησε με την υποστήριξη.</string>
     <string name="DonationsErrors__your_payment_is_still">Η δωρεά σου είναι ακόμη σε επεξεργασία. Μπορεί να διαρκέσει μερικά λεπτά, ανάλογα με τη σύνδεσή σου.</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">Αποτυχία ακύρωσης συνδρομής</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Πρέπει να υπάρχει σύνδεση στο διαδίκτυο για την ακύρωση της συνδρομής.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Η συσκευή σου δεν υποστηρίζει δωρεές μέσω εφαρμογής, οπότε δεν μπορείς να γίνεις συνδρομητής για να λάβεις σήμα. Μπορείς όμως να υποστηρίξεις το Signal κάνοντας μια δωρεά στην ιστοσελίδα μας.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Σφάλμα δικτύου. Έλεγξε τη σύνδεσή σου και ξαναπροσπάθησε.</string>
     <string name="NetworkFailure__retry">Επανάληψη</string>
@@ -5547,7 +5486,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Ο χρήστης δεν μπορεί να λάβει δωρεές μέχρι να αναβαθμίσει τη Signal.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">Δεν ήταν δυνατή η επεξεργασία της δωρεάς σου στην iDEAL | Wero. Δοκίμασε άλλο τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">Δωρεά εκ μέρους του χρήστη %1$s</string>
@@ -5758,33 +5696,19 @@
     <string name="ReleaseNotes__keep_up_to_date">Μην χάσεις ξανά τα νέα και τις σημειώσεις έκδοσης</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">Όλη η δραστηριότητα</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">Όλοι/ες</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">Επαναλαμβανόμενη</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">Μια φορά</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">Για ένα φιλαράκι</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">Δωρεά για φίλους</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">Τύπος δωρεάς</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">Ημερομηνία πληρωμής</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">Διαμοιρασμός απόδειξης</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">Αν έχεις επανεγκαταστήσει το Signal, οι αποδείξεις από προηγούμενες δωρεές δεν θα είναι διαθέσιμες.</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">Απόδειξη δωρεάς</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">Ποσό</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Σε ευχαριστούμε που στηρίζεις το Signal. Η συνεισφορά σου βοηθά στην ανάπτυξη της τεχνολογίας απορρήτου ανοιχτού κώδικα, που προστατεύει την ελευθερία της έκφρασης και δίνει τη δυνατότητα ασφαλών διεθνών επικοινωνιών για εκατομμύρια ανθρώπους σε όλο τον κόσμο. Αν είσαι κάτοικος των Ηνωμένων Πολιτειών, παρακαλούμε κράτα αυτή την απόδειξη για τα φορολογικά σου αρχεία. Το Signal Technology Foundation είναι ένας μη κερδοσκοπικός οργανισμός στις Ηνωμένες Πολιτείες, που έχει φοροαπαλλαγή σύμφωνα με την ενότητα 501c3 του Internal Revenue Code. Το Federal Tax ID μας είναι 82-4506840. Το Signal δεν παρείχε κανένα αγαθό ή υπηρεσία ως αντάλλαγμα για αυτή τη συνεισφορά.</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">Χωρίς παραλήπτες</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6423,27 +6347,17 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Με υπερηφάνεια, μη κερδοσκοπικός οργανισμός</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Συνέχεια</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Κάνε μια δωρεά για να υποστηρίξεις την ιδιωτική ανταλλαγή μηνυμάτων. Βοήθησε να διατηρήσουμε το Signal ανεξάρτητο και χωρίς διαφημίσεις.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">Μια δωρεά σου εκκρεμεί</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Οι τραπεζικές μεταφορές χρειάζονται 1 με 14 εργάσιμες ημέρες για να διεκπεραιωθούν. Περίμενε μέχρι να ολοκληρωθεί αυτή η πληρωμή προτού ενημερώσεις τη συνδρομή σου.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Οι τραπεζικές μεταφορές χρειάζονται 1 με 14 εργάσιμες ημέρες για να διεκπεραιωθούν. Περίμενε μέχρι να ολοκληρωθεί αυτή η πληρωμή προτού κάνεις άλλη δωρεά.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Η δωρεά σου είναι ακόμη σε επεξεργασία. Μπορεί να διαρκέσει μερικά λεπτά, ανάλογα με τη σύνδεσή σου. Περίμενε μέχρι να ολοκληρωθεί αυτή η πληρωμή προτού ενημερώσεις τη συνδρομή σου.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Η δωρεά σου είναι ακόμη σε επεξεργασία. Μπορεί να διαρκέσει μερικά λεπτά, ανάλογα με τη σύνδεσή σου. Περίμενε μέχρι να ολοκληρωθεί αυτή η πληρωμή προτού κάνεις άλλη δωρεά.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">Η δωρεά σου iDEAL | Wero βρίσκεται ακόμη υπό επεξεργασία. Έλεγξε την τραπεζική σου εφαρμογή για να εγκρίνεις την πληρωμή σου πριν κάνεις άλλη δωρεά.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">Το ποσό της δωρεάς είναι πολύ υψηλό</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Μπορείς να στείλεις έως και %1$s μέσω τραπεζικής μεταφοράς. Δοκίμασε διαφορετικό ποσό ή διαφορετικό τρόπο πληρωμής.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Μηνιαία</string>
@@ -6452,129 +6366,77 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Κάνε μια δωρεά %1$s/μήνα στο Signal</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Πάρε ένα σήμα %1$s</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Κάνε μια δωρεά %1$s στο Signal</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">Πάρε ένα σήμα %1$s για %2$d μέρα</item>
         <item quantity="other">Πάρε ένα σήμα %1$s για %2$d μέρες</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">Τραπεζική μεταφορά</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Πιστωτική ή χρεωστική κάρτα</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Κάνε δωρεά για έναν φίλο ή φίλη</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Αποχώρηση από το Signal για επιβεβαίωση δωρεάς;</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Μόλις επιβεβαιωθεί, έλα πάλι στο Signal για να ολοκληρώσεις την επεξεργασία της δωρεάς σου.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">Θα μεταβείς στο %1$s. Μόλις επιβεβαιωθεί, έλα πάλι στο Signal για να ολοκληρώσεις την επεξεργασία της δωρεάς σου.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">Τραπεζική μεταφορά</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">Η Stripe επεξεργάζεται τις δωρεές που γίνονται στο Signal. Το Signal δεν συλλέγει ούτε αποθηκεύει τα προσωπικά στοιχεία σου. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">Μάθε περισσότερα</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">Αποδοχή</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">Δες περισσότερα</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">Αποτυχία φόρτωσης εντολής</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Γράψε τα τραπεζικά στοιχεία και το email σου. Η Stripe χρησιμοποιεί αυτό το email για να σου στέλνει ενημερώσεις σχετικά με τη δωρεά σου. %1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">Μάθε περισσότερα</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">Όνομα σε τραπεζικό λογαριασμό</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">Email</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">Εύρεση στοιχείων λογαριασμού</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">Δωρεά %1$s/μήνα</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">Δωρεά %1$s</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">Το IBAN είναι πολύ μικρό</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">Το IBAN είναι πολύ μεγάλο</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">Ο κωδικός χώρας IBAN δεν υποστηρίζεται</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">Μη έγκυρο IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">Τουλάχιστον 3 χαρακτήρες</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">Μη έγκυρη διεύθυνση e-mail</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Συμπλήρωσε το όνομά σου και το email σου. Η Stripe χρησιμοποιεί αυτό το email για να σου στέλνει ενημερώσεις σχετικά με τη δωρεά σου. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Γράψε τα τραπεζικά σου στοιχεία. Το Signal δεν συλλέγει ούτε αποθηκεύει τα προσωπικά στοιχεία σου. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">Μάθε περισσότερα</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">Όνομα σε τραπεζικό λογαριασμό</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">Email</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">Επιβεβαίωσε τη δωρεά σου με την iDEAL | Wero</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Για να ρυθμίσεις την επαναλαμβανόμενη δωρεά σου, πάτα \"Συνέχεια\" για να επιβεβαιώσεις μια χρέωση 0,01 € στην τράπεζά σου. Το ποσό θα επιστραφεί αυτόματα και θα επιτρέψει τη χρέωση της δωρεάς σου για %1$s/μήνα από τον λογαριασμό σου.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">Συνέχεια</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Βρες τα στοιχεία του λογαριασμού σου</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">Αναζήτησε το ΙΒΑΝ στο επάνω μέρος του τραπεζικού λογαριασμού σου. Οι αριθμοί IBAN περιέχουν έως 34 χαρακτήρες. Το όνομα που γράφεις θα πρέπει να ταιριάζει με το πλήρες όνομά σου στον τραπεζικό σου λογαριασμό. Επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Η δωρεά εκκρεμεί</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Η μηνιαία δωρεά σου εκκρεμεί. Θα μπορείς να εμφανίσεις το σήμα %1$s στο προφίλ σου όταν λάβουμε τη δωρεά σου.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Η μεμονωμένη δωρεά σου εκκρεμεί. Θα μπορείς να εμφανίσεις το σήμα %1$s στο προφίλ σου όταν λάβουμε τη δωρεά σου.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Οι τραπεζικές μεταφορές χρειάζονται 1 με 14 εργάσιμες ημέρες για να διεκπεραιωθούν. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">Μάθε περισσότερα</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">Τέλος</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Δεν ήταν δυνατή η επεξεργασία της δωρεάς</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">Αντιμετωπίζουμε πρόβλημα με την επεξεργασία της τραπεζικής σου μεταφοράς. Δεν έχεις χρεωθεί. Δοκίμασε άλλο τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">Ξαναπροσπάθησε</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">Όχι τώρα</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Η δωρεά ολοκληρώθηκε</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Λάβαμε την τραπεζική σου μεταφορά. Μπορείς να επιλέξεις να εμφανίζεται αυτό το σήμα στο προφίλ σου για να δείξεις την υποστήριξή σου.</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">Ακύρωση…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Έγινε επεξεργασία πάρα πολλών επαφών</string>
@@ -6606,11 +6468,6 @@
     <string name="PaymentMessageView_s_sent_you">Ο χρήστης %1$s σου έστειλε</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Τα στοιχεία σου είναι ιδιωτικά</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Το Signal δεν συλλέγει ούτε αποθηκεύει τα προσωπικά στοιχεία σου όταν κάνεις δωρεά.</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Χρησιμοποιούμε τη Stripe για την επεξεργασία πληρωμών, ώστε να λαμβάνουμε τις δωρεές μας. Δεν επεξεργαζόμαστε ούτε αποθηκεύουμε κανένα από τα στοιχεία που της παρέχεις.</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Το Signal δεν μπορεί να συνδέσει τη δωρεά με τον λογαριασμό σου στο Signal.</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">Ευχαριστούμε για την υποστήριξή σου!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6625,8 +6482,6 @@
     <string name="GroupStoryEducationSheet__next">Επόμενο</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">Δωρεά</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">Πληρωμή</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7074,15 +6929,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Να επιτρέπονται οι ειδοποιήσεις σε πλήρη οθόνη</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">Η μηνιαία δωρεά ακυρώθηκε</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">Η τρέχουσα μηνιαία δωρεά σου ακυρώθηκε. %1$s\n\nΤο σήμα σου δεν εμφανίζεται πλέον στο προφίλ σου. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">Μάθε περισσότερα</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">Ανανέωση συνδρομής</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">Όχι τώρα</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7350,7 +7200,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

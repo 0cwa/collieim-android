@@ -77,7 +77,6 @@ class AccountSettingsViewModelTest {
   fun setUp() {
     Dispatchers.setMain(testDispatcher)
     mockkObject(AppSettingsRepository)
-    every { AppSettingsRepository.shouldShowManageDonations() } returns false
 
     every { repository.hasPin() } returns true
     every { repository.hasRestoredAep() } returns false

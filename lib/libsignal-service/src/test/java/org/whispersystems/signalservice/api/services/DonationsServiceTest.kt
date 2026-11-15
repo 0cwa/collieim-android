@@ -14,7 +14,6 @@ import org.signal.network.rest.RestStatusCodeError
 import org.whispersystems.signalservice.api.donations.DonationPermitProvider
 import org.whispersystems.signalservice.api.donations.DonationsApi
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
-import org.whispersystems.signalservice.api.subscriptions.StripeClientSecret
 import org.whispersystems.signalservice.api.subscriptions.SubscriberId
 
 class DonationsServiceTest {
@@ -54,25 +53,6 @@ class DonationsServiceTest {
     verify { donationsApi.getSubscription(subscriberId) }
     assertEquals(403, response.status)
     assertFalse(response.result.isPresent)
-  }
-
-  @Test
-  fun givenAPermitProvider_whenICreateDonationIntent_thenTheProvidersPermitIsForwarded() {
-    every { donationsApi.createStripeOneTimePaymentIntent(any(), any(), any(), any(), any()) } returns NetworkResult.Success(mockk<StripeClientSecret>())
-
-    serviceWithPermit("permit-x").createDonationIntentWithAmount("500", "USD", 1, "CARD")
-
-    verify { donationsApi.createStripeOneTimePaymentIntent("USD", "CARD", 500, 1, "permit-x") }
-  }
-
-  @Test
-  fun givenAPermitProvider_whenICreateStripeSubscriptionPaymentMethod_thenTheProvidersPermitIsForwarded() {
-    val subscriberId = SubscriberId.generate()
-    every { donationsApi.createStripeSubscriptionPaymentMethod(any(), any(), any()) } returns NetworkResult.Success(mockk<StripeClientSecret>())
-
-    serviceWithPermit("permit-x").createStripeSubscriptionPaymentMethod(subscriberId, "CARD")
-
-    verify { donationsApi.createStripeSubscriptionPaymentMethod(subscriberId, "CARD", "permit-x") }
   }
 
   @Test

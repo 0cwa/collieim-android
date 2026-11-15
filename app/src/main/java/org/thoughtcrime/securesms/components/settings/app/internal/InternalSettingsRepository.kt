@@ -3,7 +3,6 @@ package org.thoughtcrime.securesms.components.settings.app.internal
 import android.content.Context
 import org.json.JSONObject
 import org.signal.core.util.concurrent.SignalExecutors
-import org.signal.donations.InAppPaymentType
 import org.signal.emoji.EmojiFiles
 import org.thoughtcrime.securesms.database.MessageTable
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -16,7 +15,6 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.AttachmentDownloadJob
 import org.thoughtcrime.securesms.jobs.CreateReleaseChannelJob
 import org.thoughtcrime.securesms.jobs.FetchRemoteMegaphoneImageJob
-import org.thoughtcrime.securesms.jobs.InAppPaymentRecurringContextJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.v2.ConversationId
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -31,15 +29,6 @@ class InternalSettingsRepository(context: Context) {
   fun getEmojiVersionInfo(consumer: (EmojiFiles.Version?) -> Unit) {
     SignalExecutors.BOUNDED.execute {
       consumer(EmojiFiles.Version.readVersion(context))
-    }
-  }
-
-  fun enqueueSubscriptionRedemption() {
-    SignalExecutors.BOUNDED.execute {
-      val latest = SignalDatabase.inAppPayments.getByLatestEndOfPeriod(InAppPaymentType.RECURRING_DONATION)
-      if (latest != null) {
-        InAppPaymentRecurringContextJob.createJobChain(latest).enqueue()
-      }
     }
   }
 

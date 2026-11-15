@@ -693,7 +693,6 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">تعذّر استرداد اشتراك النسخ الاحتياطية الخاص بحسابك</string>
     <!-- App settings row that opens donations -->
-    <string name="AppSettingsScreen__donate_to_signal">التبرُّع لسيجنال</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">التفضيلات الداخلية</string>
     <!-- App settings row that opens linked devices -->
@@ -947,11 +946,8 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">إغلاق</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__get_badges">احصل على شارات لحسابك الشخصي عن طريق دعم سيجنال.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__signal_is_a_non_profit">سيجنال تطبيق غير ربحي بلا إعلانات أو مستثمرين، ويدعمه فقط أشخاص مثلك.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
-    <string name="EditProfileScreen__become_a_sustainer">كُن من الداعمين</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->

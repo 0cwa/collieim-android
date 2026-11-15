@@ -63,13 +63,6 @@ class InAppPaymentsTestRule : ExternalResource() {
     mockkObject(InAppPaymentsRepository)
     every { InAppPaymentsRepository.scheduleSyncForAccountRecordChange() } returns Unit
 
-    mockkObject(InAppDonations)
-    every { InAppDonations.isPayPalAvailable() } returns true
-    every { InAppDonations.isGooglePayAvailable() } returns true
-    every { InAppDonations.isSEPADebitAvailable(any()) } returns true
-    every { InAppDonations.isCreditCardAvailable() } returns true
-    every { InAppDonations.isIDEALAvailable(any()) } returns true
-
     mockkObject(SignalDatabase.Companion)
     every { SignalDatabase.Companion.donationReceipts } returns mockk {
       every { SignalDatabase.Companion.donationReceipts.addReceipt(any()) } returns Unit
@@ -115,7 +108,7 @@ class InAppPaymentsTestRule : ExternalResource() {
 
   override fun after() {
     unmockkStatic(RemoteConfig::class, InAppPaymentsRepository::class)
-    unmockkObject(InAppDonations, SignalDatabase.Companion, SignalStore.Companion)
+    unmockkObject(SignalDatabase.Companion, SignalStore.Companion)
   }
 
   /**

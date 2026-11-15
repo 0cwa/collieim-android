@@ -685,7 +685,6 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">اشتراک نسخه‌های پشتیبان شما آزادسازی نشد</string>
     <!-- App settings row that opens donations -->
-    <string name="AppSettingsScreen__donate_to_signal">اهدای کمک مالی به سیگنال</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">ترجیحات داخلی</string>
     <!-- App settings row that opens linked devices -->
@@ -931,11 +930,8 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">بستن</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__get_badges">با حمایت از سیگنال، نشان‌هایی برای نمایه‌تان دریافت کنید.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__signal_is_a_non_profit">سیگنال یک سازمان غیرانتفاعی بدون تبلیغ‌کنندگان و سرمایه‌گذاران است که از سوی افرادی مانند شما حمایت می‌شود.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
-    <string name="EditProfileScreen__become_a_sustainer">به یک حامی تبدیل شوید</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->

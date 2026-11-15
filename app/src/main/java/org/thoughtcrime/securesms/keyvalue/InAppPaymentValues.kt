@@ -8,7 +8,6 @@ import io.reactivex.rxjava3.subjects.Subject
 import org.signal.core.models.badges.Badge
 import org.signal.core.util.logging.Log
 import org.signal.donations.PaymentSourceType
-import org.signal.donations.StripeApi
 import org.signal.network.util.JsonUtil
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.SignalStoreValues
@@ -20,7 +19,6 @@ import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
 import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository.toPaymentMethodType
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.stripe.Stripe3DSData
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.BadgeList
@@ -46,6 +44,27 @@ class InAppPaymentValues internal constructor(store: KeyValueStore) : SignalStor
 
   companion object {
     private val TAG = Log.tag(InAppPaymentValues::class.java)
+
+    // Keep historical record decoding stable after removing the payment gateway.
+    private val LEGACY_DONATION_CURRENCY_CODES = setOf(
+      "USD", "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS",
+      "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BIF",
+      "BMD", "BND", "BOB", "BRL", "BSD", "BWP", "BZD", "CAD",
+      "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CVE", "CZK",
+      "DJF", "DKK", "DOP", "DZD", "EGP", "ETB", "EUR", "FJD",
+      "FKP", "GBP", "GEL", "GIP", "GMD", "GNF", "GTQ", "GYD",
+      "HKD", "HNL", "HRK", "HTG", "HUF", "IDR", "ILS", "INR",
+      "ISK", "JMD", "JPY", "KES", "KGS", "KHR", "KMF", "KRW",
+      "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "MAD",
+      "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRO", "MUR",
+      "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO",
+      "NOK", "NPR", "NZD", "PAB", "PEN", "PGK", "PHP", "PKR",
+      "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR",
+      "SBD", "SCR", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD",
+      "STD", "SZL", "THB", "TJS", "TOP", "TRY", "TTD", "TWD",
+      "TZS", "UAH", "UGX", "UYU", "UZS", "VND", "VUV", "WST",
+      "XAF", "XCD", "XOF", "XPF", "YER", "ZAR", "ZMW"
+    )
 
     private const val KEY_DONATION_SUBSCRIPTION_CURRENCY_CODE = "donation.currency.code"
     private const val KEY_CURRENCY_CODE_ONE_TIME = "donation.currency.code.boost"
@@ -163,7 +182,7 @@ class InAppPaymentValues internal constructor(store: KeyValueStore) : SignalStor
       CurrencyUtil.getCurrencyByCurrencyCode(currencyCode)
     }
 
-    return if (currency != null && StripeApi.Validation.supportedCurrencyCodes.contains(currency.currencyCode.uppercase(Locale.ROOT))) {
+    return if (currency != null && LEGACY_DONATION_CURRENCY_CODES.contains(currency.currencyCode.uppercase(Locale.ROOT))) {
       currency
     } else {
       Currency.getInstance("USD")
@@ -500,38 +519,6 @@ class InAppPaymentValues internal constructor(store: KeyValueStore) : SignalStor
     synchronized(this) {
       this._pendingOneTimeDonation = pendingOneTimeDonation
       pendingOneTimeDonationPublisher.onNext(Optional.ofNullable(pendingOneTimeDonation))
-    }
-  }
-
-  fun consumePending3DSData(): Stripe3DSData? {
-    synchronized(this) {
-      val data = getBlob(PENDING_3DS_DATA, null)?.let {
-        Stripe3DSData.fromProtoBytes(it)
-      }
-
-      remove(PENDING_3DS_DATA)
-      return data
-    }
-  }
-
-  fun consumeVerifiedSubscription3DSData(): Stripe3DSData? {
-    synchronized(this) {
-      val data = getBlob(VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA, null)?.let {
-        Stripe3DSData.fromProtoBytes(it)
-      }
-
-      setVerifiedSubscription3DSData(null)
-      return data
-    }
-  }
-
-  fun setVerifiedSubscription3DSData(stripe3DSData: Stripe3DSData?) {
-    synchronized(this) {
-      if (stripe3DSData != null) {
-        putBlob(VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA, stripe3DSData.toProtoBytes())
-      } else {
-        remove(VERIFIED_IDEAL_SUBSCRIPTION_3DS_DATA)
-      }
     }
   }
 

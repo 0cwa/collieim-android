@@ -159,45 +159,26 @@
 
     <!-- CreditCardFragment -->
     <!-- Title of fragment -->
-    <string name="CreditCardFragment__credit_or_debit_card">Kredi veya banka kartı</string>
     <!-- Explanation of how to fill in the form and a note about pii, displayed above the credit card text fields -->
-    <string name="CreditCardFragment__enter_your_card_details">Kart bilgilerini gir. Signal, kişisel bilgilerini toplamaz veya saklamaz.</string>
     <!-- Displayed as a hint in the card number text field -->
-    <string name="CreditCardFragment__card_number">Kart numarası</string>
     <!-- Displayed as a hint in the card expiry text field -->
-    <string name="CreditCardFragment__mm_yy">AA/YY</string>
     <!-- Displayed as a hint in the card cvv text field -->
-    <string name="CreditCardFragment__cvv">CVV</string>
     <!-- Error displayed under the card number text field when there is an invalid card number entered -->
-    <string name="CreditCardFragment__invalid_card_number">Geçersiz kart numarası</string>
     <!-- Error displayed under the card expiry text field when the card is expired -->
-    <string name="CreditCardFragment__card_has_expired">Kartın süresi doldu</string>
     <!-- Error displayed under the card cvv text field when the cvv is too short -->
-    <string name="CreditCardFragment__code_is_too_short">Kod çok kısa</string>
     <!-- Error displayed under the card cvv text field when the cvv is too long -->
-    <string name="CreditCardFragment__code_is_too_long">Kod çok uzun</string>
     <!-- Error displayed under the card cvv text field when the cvv is invalid -->
-    <string name="CreditCardFragment__invalid_code">Geçersiz kod</string>
     <!-- Error displayed under the card expiry text field when the expiry month is invalid -->
-    <string name="CreditCardFragment__invalid_month">Geçersiz ay</string>
     <!-- Error displayed under the card expiry text field when the expiry is missing the year -->
-    <string name="CreditCardFragment__year_required">Yıl bilgisi gerekli</string>
     <!-- Error displayed under the card expiry text field when the expiry year is invalid -->
-    <string name="CreditCardFragment__invalid_year">Geçersiz yıl</string>
     <!-- Button label to confirm credit card input and proceed with one-time payment -->
-    <string name="CreditCardFragment__donate_s">%1$s bağış yap</string>
     <!-- Button label to confirm credit card input and proceed with subscription payment -->
-    <string name="CreditCardFragment__donate_s_month">Ayda %1$s bağış yap</string>
     <!-- Button label to confirm credit card input and proceed with backups payment. Placeholder is formatted price. -->
-    <string name="CreditCardFragment__pay_s_month">Ayda %1$s bağış yap</string>
 
     <!-- OneTimeDonationPreference -->
     <!-- Preference title with placeholder for amount. -->
-    <string name="OneTimeDonationPreference__one_time_s">Tek seferlik %1$s</string>
     <!-- Preference subtitle when donation is pending -->
-    <string name="OneTimeDonationPreference__donation_pending">Bağış bekleniyor</string>
     <!-- Preference subtitle when donation is processing -->
-    <string name="OneTimeDonationPreference__donation_processing">Bağış işleniyor</string>
 
     <!-- BlockUnblockDialog -->
     <string name="BlockUnblockDialog_block_and_leave_s">%1$s grubundan ayrıl ve engelle?</string>
@@ -3735,7 +3716,6 @@
     <string name="preferences__led_color_unknown">Bilinmeyen</string>
     <string name="preferences__silent">Sessiz</string>
     <string name="preferences__advanced">Gelişmiş</string>
-    <string name="preferences__donate_to_signal">Molly\'e Bağış Yap</string>
     <!-- Preference label for making one-time donations to Signal -->
     <string name="preferences__privacy">Gizlilik</string>
     <!-- Preference label for stories -->
@@ -5378,13 +5358,7 @@
 
     <string name="ImageView__badge">Rozet</string>
 
-    <string name="SubscribeFragment__cancel_subscription">Aboneliği iptal et</string>
-    <string name="SubscribeFragment__confirm_cancellation">İptal edilsin mi?</string>
-    <string name="SubscribeFragment__you_wont_be_charged_again">Bir daha faturalandırılmayacaksın. Rozetin fatura döneminin sonunda profilinden kaldırılacaktır.</string>
-    <string name="SubscribeFragment__not_now">Şimdi değil</string>
-    <string name="SubscribeFragment__confirm">Onayla</string>
     <string name="SubscribeFragment__update_subscription">Aboneliği Güncelle</string>
-    <string name="SubscribeFragment__your_subscription_has_been_cancelled">Aboneliğin iptal edildi.</string>
     <string name="SubscribeFragment__update_subscription_question">Abonelik güncellensin mi?</string>
     <string name="SubscribeFragment__update">Güncelle</string>
     <string name="SubscribeFragment__you_will_be_charged_the_full_amount_s_of">Bugün yeni abonelik ücretinin tam tutarıyla (%1$s) ücretlendirileceksin. Aboneliğin aylık olarak yenilenecek.</string>
@@ -5396,66 +5370,38 @@
     <string name="Subscription__expires_s">%1$s tarihinde sona eriyor</string>
 
     <!-- Title of learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_different">Kâr amacı gütmeyen, bağımsız bir kuruluş olarak Signal özel mesajlaşma ve aramalara önem verir. Reklam yok, takip yok, gözetleme yok. Signal\'ı desteklemek için bugün bağış yap.</string>
     <!-- Second small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__donate_and_get_badge">Bağış yaptığında profilinde isteğe bağlı bir rozet al</string>
     <!-- Third small text blurb on learn more sheet -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__your_privacy_is_our_mission">Gizliliğin görevimizdir</string>
     <!-- Fourth small text blurb on learn more sheet. Non-English translations should use "Signal is a nonprofit." instead, dropping the 501c3 reference. -->
-    <string name="SubscribeLearnMoreBottomSheetDialogFragment__signal_is_a_501c3">Signal kâr amacı gütmeyen bir kuruluştur.</string>
 
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__thanks_for_your_support">Desteğiniz için teşekkürler!</string>
     <!-- Subtext underneath the dialog title on the thanks sheet -->
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__youve_earned_a_donor_badge">Signal\'den bir bağışçı rozeti kazandın! Desteğini göstermek için rozeti profilinde sergile.</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__you_can_also">Aynı zamanda</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__become_a_montly_sustainer">aylık bir Destekçi ol.</string>
     <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__display_on_profile">Profilde Göster</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__make_featured_badge">Öne çıkarılan rozet seç</string>
-    <string name="SubscribeThanksForYourSupportBottomSheetDialogFragment__continue">Devam Et</string>
     <string name="ThanksForYourSupportBottomSheetFragment__when_you_have_more">Birden fazla rozetin olduğunda, profilinde başkalarının görmesi için birini seçebilirsin.</string>
 
     <!-- Button label for creating a donation -->
     <string name="ManageDonationsFragment__donate_to_signal">Signal\'e Bağış Yap</string>
     <!-- Heading for more area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__more">Daha fazla</string>
     <!-- Heading for receipts area of manage subscriptions page -->
     <!-- Heading for my subscription area of manage subscriptions page -->
-    <string name="ManageDonationsFragment__my_support">Desteğim</string>
     <!-- Label for Donation Receipts button -->
-    <string name="ManageDonationsFragment__donation_receipts">Bağış makbuzları</string>
-    <string name="ManageDonationsFragment__badges">Rozetler</string>
     <!-- Label that externally links to Signal Donor FAQ page -->
-    <string name="ManageDonationsFragment__subscription_faq">Bağışçılar için SSS</string>
     <!-- Preference heading for other ways to donate -->
     <string name="ManageDonationsFragment__other_ways_to_give">Vermenin diğer yolları</string>
     <!-- Preference label to launch badge gifting -->
     <string name="ManageDonationsFragment__donate_for_a_friend">Bir arkadaşın için bağış yap</string>
     <!-- Dialog title shown when a donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet -->
-    <string name="ManageDonationsFragment__couldnt_confirm_donation">Bağış onaylanamadı</string>
     <!-- Dialog message shown when a monthly donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_monthly_s_donation_couldnt_be_confirmed_ideal_wero">Aylık %1$s tutarındaki bağışın onaylanamadı. iDEAL | Wero ödemeni onaylamak için bankacılık uygulamanı kontrol et.</string>
     <!-- Dialog message shown when a one-time donation requires verifying/confirmation outside of the app and the user hasn\'t done that yet, placeholder is money amount -->
-    <string name="ManageDonationsFragment__your_one_time_s_donation_couldnt_be_confirmed_ideal_wero">Tek seferlik %1$s bağışın onaylanamadı. iDEAL | Wero ödemeni onaylamak için bankacılık uygulamanı kontrol et.</string>
 
-    <string name="Boost__enter_custom_amount">Farklı Bir Miktar Gir</string>
     <!-- Error label when the amount is smaller than what we can accept -->
-    <string name="Boost__the_minimum_amount_you_can_donate_is_s">En az %1$s miktarında bağış yapabilirsin</string>
 
-    <string name="MySupportPreference__s_per_month">%1$s/ay</string>
-    <string name="MySupportPreference__renews_s">%1$s tarihinde yenilenir</string>
     <!-- Subtitle shown when processing a donation transaction -->
-    <string name="MySupportPreference__processing_transaction">İşlem gerçekleştiriliyor…</string>
     <!-- Displayed on "My Support" screen when user badge failed to be added to their account -->
-    <string name="MySupportPreference__couldnt_add_badge_s">Rozet eklenemedi. %1$s</string>
-    <string name="MySupportPreference__please_contact_support">Lütfen destek ekibiyle iletişime geç.</string>
     <!-- Displayed as a subtitle on a row in the Manage Donations screen when payment for a donation is pending -->
-    <string name="MySupportPreference__payment_pending">Ödeme bekleniyor</string>
     <!-- Displayed as a dialog message when clicking on a donation row that is pending. Placeholder is a formatted fiat amount -->
-    <string name="MySupportPreference__your_bank_transfer_of_s">%1$s tutarındaki banka transferin beklemede. Banka transferlerinin tamamlanması 1 ila 14 iş günü sürebilir.  </string>
     <!-- Displayed in the pending help dialog, used to launch user to more details about bank transfers -->
-    <string name="MySupportPreference__learn_more">Daha fazlasını öğren</string>
     <!-- Displayed when a subscription refresh is being performed -->
-    <string name="MySupportPreference__checking_subscription">Abonelik kontrol ediliyor…</string>
 
     <!-- Title of dialog telling user they need to update signal as it expired -->
     <string name="UpdateSignalExpiredDialog__title">Collie\'i Güncelle</string>
@@ -5492,11 +5438,9 @@
     <string name="Subscription__get_a_s_badge">Bir %1$s rozeti al</string>
 
     <!-- *PaymentInProgressFragment strings -->
-    <string name="InAppPaymentInProgressFragment__processing_donation">Bağış işleniyor…</string>
 
     <!--InAppDonations -->
     <!-- Label displayed in google play and on receipts for recurring subscriptions. Placeholder is level -->
-    <string name="InAppDonations__recurring_d">Yinelenen %1$d</string>
 
     <!-- InAppPaymentErrors -->
     <!-- Displayed as a title in a dialog or notification when a payment failure happens. -->
@@ -5515,11 +5459,8 @@
     <!-- Displayed in notification when user payment fails to process on Stripe -->
     <string name="DonationsErrors__error_processing_payment">Bağış işlenirken hata oluştu</string>
     <!-- Displayed on manage donations screen as a dialog message when payment method failed -->
-    <string name="DonationsErrors__try_another_payment_method">Başka bir ödeme yöntemi deneyin veya daha fazla bilgi için bankanızla iletişime geçin.</string>
     <!-- Displayed on manage donations screen error dialogs as an action label -->
-    <string name="DonationsErrors__learn_more">Daha fazlasını öğren</string>
     <!-- Displayed on "My Support" screen when user subscription payment method failed. -->
-    <string name="DonationsErrors__error_processing_payment_s">Bağış işlenirken hata oluştu. %1$s</string>
     <string name="DonationsErrors__your_payment">Bağışın işlenemedi ve ödeme alınmadı. Lütfen tekrar dene.</string>
     <string name="DonationsErrors__still_processing">İşlem sürüyor</string>
     <string name="DonationsErrors__couldnt_add_badge">Rozet eklenemedi</string>
@@ -5537,8 +5478,6 @@
     <string name="DonationsErrors__your_payment_was_processed_but">Bağışın işleme alındı fakat Signal bağış mesajını gönderemedi. Lütfen destek ekibiyle iletişime geç.</string>
     <string name="DonationsErrors__your_badge_could_not">Rozetin hesabına eklenemedi fakat ücret ödenmiş olabilir. Lütfen destek ekibiyle iletişime geç.</string>
     <string name="DonationsErrors__your_payment_is_still">Bağışın hâlâ işleniyor. Bağlantına bağlı olarak bu birkaç dakika sürebilir.</string>
-    <string name="DonationsErrors__failed_to_cancel_subscription">Abonelik iptal edilemedi</string>
-    <string name="DonationsErrors__subscription_cancellation_requires_an_internet_connection">Abonelik iptali için internet bağlantısı gerekir.</string>
     <string name="ViewBadgeBottomSheetDialogFragment__your_device_doesn_t_support">Cihazın uygulama içi bağışları desteklemiyor bu yüzden rozet kazanmak için abone olamazsın. Web sitemiz üzerinden bağış yaparak Signal\'e destek olmaya devam edebilirsin.</string>
     <string name="NetworkFailure__network_error_check_your_connection_and_try_again">Ağ hatası. Bağlantınızı kontrol edip tekrar deneyin.</string>
     <string name="NetworkFailure__retry">Tekrar dene</string>
@@ -5547,7 +5486,6 @@
     <!-- Displayed as a dialog message when the selected recipient for a gift doesn\'t support gifting -->
     <string name="DonationsErrors__this_user_cant_receive_donations_until">Bu kullanıcı, Signal sürümünü yükseltene kadar bağış alamaz.</string>
     <!-- Displayed as a dialog message when the user encounters an error during an iDEAL donation -->
-    <string name="DonationsErrors__your_ideal_wero_couldnt_be_processed">iDEAL | Wero bağışın işlenemedi. Başka bir ödeme yöntemi dene veya daha fazla bilgi için bankanla iletişime geç.</string>
 
     <!-- Gift message view title -->
     <string name="GiftMessageView__donation_on_behalf_of_s">%1$s adına bağış</string>
@@ -5758,33 +5696,19 @@
     <string name="ReleaseNotes__keep_up_to_date">Haberler ve sürüm notları ile güncel bilgilere eriş</string>
 
     <!-- Donation receipts activity title -->
-    <string name="DonationReceiptListFragment__all_activity">Tüm faaliyet</string>
     <!-- Donation receipts all tab label -->
-    <string name="DonationReceiptListFragment__all">Tümü</string>
     <!-- Donation receipts recurring tab label -->
-    <string name="DonationReceiptListFragment__recurring">Yinelenen</string>
     <!-- Donation receipts one-time tab label -->
-    <string name="DonationReceiptListFragment__one_time">Tek Seferlik</string>
     <!-- Donation receipts gift tab -->
-    <string name="DonationReceiptListFragment__for_a_friend">Bir arkadaş için</string>
     <!-- Donation receipts gift tab label -->
-    <string name="DonationReceiptListFragment__donation_for_a_friend">Arkadaşın için bağış</string>
     <!-- Donation receipts donation type heading -->
-    <string name="DonationReceiptDetailsFragment__donation_type">Bağış türü</string>
     <!-- Donation receipts date paid heading -->
-    <string name="DonationReceiptDetailsFragment__date_paid">Ödeme tarihi</string>
     <!-- Donation receipts share PNG -->
-    <string name="DonationReceiptDetailsFragment__share_receipt">Makbuzu paylaş</string>
     <!-- Donation receipts list end note -->
-    <string name="DonationReceiptListFragment__if_you_have">Signal\'i yeniden yüklediysen, önceki bağışların makbuzları mevcut olmayacaktır.</string>
     <!-- Donation receipts document title -->
-    <string name="DonationReceiptDetailsFragment__donation_receipt">Bağış makbuzu</string>
     <!-- Donation receipts amount title -->
-    <string name="DonationReceiptDetailsFragment__amount">Tutar</string>
     <!-- Donation receipts thanks -->
-    <string name="DonationReceiptDetailsFragment__thank_you_for_supporting" tools:ignore="TypographyDashes">Signal\'ı desteklediğin için teşekkürler. Katkın açık kaynak gizlilik teknolojisi aracılığıyla, ifade özgürlüğünü koruma ve dünya çapında milyonlarca kişi için güvenli küresel iletişim sağlama misyonunu desteklemeye yardımcı olur. Amerika Birleşik Devletleri\'nde ikamet ediyorsan, lütfen bu makbuzu vergi kayıtların için sakla. Signal Technology Foundation, Amerika Birleşik Devletleri\'nde İç Gelir Yasası\'nın 501c3 numaralı bölümü kapsamında vergiden muaf, kâr amacı gütmeyen bir kuruluştur. Federal Vergi Kimlik Numaramız 82-4506840\'tır. Signal bu katkı karşılığında herhangi bir mal veya hizmet sağlamamıştır.</string>
     <!-- Donation reciepts screen empty state title -->
-    <string name="DonationReceiptListFragment__no_receipts">Alıcı yok</string>
 
     <!-- region "Stories Tab" -->
 
@@ -6423,27 +6347,17 @@
 
     <!-- DonateToSignalFragment -->
     <!-- Title below avatar -->
-    <string name="DonateToSignalFragment__privacy_over_profit">Gururla Kâr Amacı Gütmeyen</string>
     <!-- Continue button label -->
     <string name="DonateToSignalFragment__continue">Devam Et</string>
     <!-- Description below title -->
-    <string name="DonateToSignalFragment__private_messaging">Özel mesajlaşmayı desteklemek için bağış yap. Signal\'ı bağımsız ve reklamsız tut.</string>
     <!-- Dialog title when a user tries to donate while they already have a pending donation. -->
-    <string name="DonateToSignalFragment__you_have_a_donation_pending">Bekleyen bir bağışın var</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_monthly">Banka transferlerinin işleme alınması 1 ila 14 iş günü sürebilir. Lütfen aboneliğini güncellemeden önce bu ödemenin tamamlanmasını bekle.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__bank_transfers_usually_take_1_business_day_to_process_onetime">Banka transferlerinin işleme alınması 1 ila 14 iş günü sürebilir. Lütfen başka bir bağışta bulunmadan önce bu ödemenin tamamlanmasını bekle.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending monthly donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_monthly">Bağışın hâlâ işleniyor. Bağlantına bağlı olarak bu birkaç dakika sürebilir. Lütfen aboneliğini güncellemeden önce bu ödemenin tamamlanmasını bekle.</string>
     <!-- Dialog body when a user tries to donate while they already have a pending one time donation. -->
-    <string name="DonateToSignalFragment__your_payment_is_still_being_processed_onetime">Bağışın hâlâ işleniyor. Bağlantına bağlı olarak bu birkaç dakika sürebilir. Lütfen başka bir bağışta bulunmadan önce bu ödemenin tamamlanmasını bekle.</string>
     <!-- Dialog body when a user opens the manage donations main screen and they have a pending iDEAL donation -->
-    <string name="DonateToSignalFragment__your_ideal_wero_payment_is_still_processing">iDEAL | Wero bağışın halen işleniyor. Başka bir bağış yapmadan önce, ödemeni onaylamak için bankacılık uygulamanı kontrol et.</string>
     <!-- Dialog title shown when a user tries to donate an amount higher than is allowed for a given payment method. -->
-    <string name="DonateToSignal__donation_amount_too_high">Bağış miktarı çok yüksek</string>
     <!-- Dialog body shown when a user tries to donate an amount higher than is allowed for a given payment method, place holder is the maximum -->
-    <string name="DonateToSignalFragment__you_can_send_up_to_s_via_bank_transfer">Banka transferi yoluyla en fazla %1$s gönderebilirsin. Farklı bir tutar veya farklı bir ödeme yöntemi dene.</string>
 
     <!-- Donation pill toggle monthly text -->
     <string name="DonationPillToggle__monthly">Aylık</string>
@@ -6452,129 +6366,77 @@
 
     <!-- GatewaySelectorBottomSheet -->
     <!-- Sheet title when subscribing -->
-    <string name="GatewaySelectorBottomSheet__donate_s_month_to_signal">Signal\'e ayda %1$s bağış yap</string>
     <!-- Sheet summary when subscribing -->
-    <string name="GatewaySelectorBottomSheet__get_a_s_badge">Bir %1$s rozeti al</string>
     <!-- Sheet title when giving a one-time donation -->
-    <string name="GatewaySelectorBottomSheet__donate_s_to_signal">Signal\'e %1$s bağış yap</string>
     <!-- Sheet summary when giving a one-time donation -->
     <plurals name="GatewaySelectorBottomSheet__get_a_s_badge_for_d_days">
         <item quantity="one">%2$d gün boyunca %1$s rozeti kazan</item>
         <item quantity="other">%2$d gün boyunca %1$s rozeti kazan</item>
     </plurals>
     <!-- Button label for paying with a bank transfer -->
-    <string name="GatewaySelectorBottomSheet__bank_transfer">Banka transferi</string>
     <!-- Button label for paying with a credit card -->
-    <string name="GatewaySelectorBottomSheet__credit_or_debit_card">Kredi veya banka kartı</string>
     <!-- Sheet summary when giving donating for a friend -->
-    <string name="GatewaySelectorBottomSheet__donate_for_a_friend">Bir arkadaşın için bağış yap</string>
     <!-- Button label for paying with iDEAL -->
-    <string name="GatewaySelectorBottomSheet__ideal_wero">iDEAL | Wero</string>
 
     <!-- Dialog title for launching external intent -->
-    <string name="ExternalNavigationHelper__leave_signal_to_confirm_payment">Bağışı onaylamak için Signal\'den ayrılmak istiyor musun?</string>
-    <string name="ExternalNavigationHelper__once_this_payment_is_confirmed">Onaylandıktan sonra, bağışının işlenmesini tamamlamak için Signal\'e dön.</string>
     <!-- Dialog message shown when leaving Signal to complete a donation in an external app. Placeholder is the resolved app name (e.g. a banking app). -->
-    <string name="ExternalNavigationHelper__once_payment_confirmed_in_app">%1$s uygulamasına yönlendirileceksin. Onaylandıktan sonra, bağışının işlenmesini tamamlamak için Signal\'a dön.</string>
 
     <!-- BankTransferMandateFragment -->
     <!-- Title of screen displaying the bank transfer mandate -->
-    <string name="BankTransferMandateFragment__bank_transfer">Banka Transferi</string>
     <!-- Subtitle of screen displaying the bank transfer mandate, placeholder is \'Learn more\' -->
-    <string name="BankTransferMandateFragment__stripe_processes_donations">Stripe, Signal\'e yapılan bağışları işler. Signal, kişisel bilgilerini toplamaz veya saklamaz. %1$s</string>
     <!-- Subtitle learn more of screen displaying bank transfer mandate -->
-    <string name="BankTransferMandateFragment__learn_more">Daha fazlasını öğren</string>
     <!-- Button label to continue with transfer -->
-    <string name="BankTransferMandateFragment__agree">Kabul et</string>
     <!-- Button label to read more of the bank mandate that is currently off screen -->
-    <string name="BankTransferMandateFragment__read_more">Devamını oku</string>
     <!-- Text displayed when mandate load fails -->
-    <string name="BankTransferMandateFragment__failed_to_load_mandate">Talimat yüklenemedi</string>
 
     <!-- BankTransferDetailsFragment -->
     <!-- Subtext explaining how email is used. Placeholder is \'Learn more\' -->
-    <string name="BankTransferDetailsFragment__enter_your_bank_details">Banka bilgilerini ve e-postanı gir. Stripe, sana bağışınla ilgili güncellemeleri göndermek için bu e-postayı kullanır. %1$s</string>
     <!-- Subtext learn more link text -->
-    <string name="BankTransferDetailsFragment__learn_more">Daha fazlasını öğren</string>
     <!-- Text field label for name on bank account -->
-    <string name="BankTransferDetailsFragment__name_on_bank_account">Banka hesabındaki isim</string>
     <!-- Text field label for IBAN -->
-    <string name="BankTransferDetailsFragment__iban">IBAN</string>
     <!-- Text field label for email -->
-    <string name="BankTransferDetailsFragment__email">Eposta</string>
     <!-- Text label for button to show user how to find their IBAN -->
-    <string name="BankTransferDetailsFragment__find_account_info">Hesap bilgileri bul</string>
     <!-- Donate button label for monthly subscription -->
-    <string name="BankTransferDetailsFragment__donate_s_month">Ayda %1$s bağış yap</string>
     <!-- Donate button label for one-time -->
-    <string name="BankTransferDetailsFragment__donate_s">%1$s bağış yap</string>
     <!-- Error label for IBAN field when number is too short -->
-    <string name="BankTransferDetailsFragment__iban_is_too_short">IBAN çok kısa</string>
     <!-- Error label for IBAN field when number is too long -->
-    <string name="BankTransferDetailsFragment__iban_is_too_long">IBAN çok uzun</string>
     <!-- Error label for IBAN field when country is not supported -->
-    <string name="BankTransferDetailsFragment__iban_country_code_is_not_supported">IBAN ülke kodu desteklenmiyor</string>
     <!-- Error label for IBAN field when number is invalid -->
-    <string name="BankTransferDetailsFragment__invalid_iban">Geçersiz IBAN</string>
     <!-- Error label for name field when name is not at least three characters long (Stripe API enforced minimum) -->
-    <string name="BankTransferDetailsFragment__minimum_3_characters">Minimum 3 karakter</string>
     <!-- Error label for email field when email is not valid -->
-    <string name="BankTransferDetailsFragment__invalid_email_address">Geçersiz e-posta adresi</string>
 
     <!-- IdealTransferDetailsFragment -->
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank">Adını ve e-postanı gir. Stripe, sana bağışınla ilgili güncellemeleri göndermek için bu e-postayı kullanır. %1$s</string>
     <!-- Subtitle of the screen, displayed below the toolbar. Placeholder is for \'learn more\' -->
-    <string name="IdealTransferDetailsFragment__enter_your_bank_details_one_time">Banka bilgilerini gir. Signal, kişisel bilgilerini toplamaz veya saklamaz. %1$s</string>
     <!-- Subtitle learn-more button displayed inline with the subtitle text -->
-    <string name="IdealTransferDetailsFragment__learn_more">Daha fazlasını öğren</string>
     <!-- Hint label for text entry box for name on bank account -->
-    <string name="IdealTransferDetailsFragment__name_on_bank_account">Banka hesabındaki isim</string>
     <!-- Hint label for text entry box for email -->
-    <string name="IdealTransferDetailsFragment__email">Eposta</string>
     <!-- Dialog title shown when using iDEAL payment for setting up a monthly donation -->
-    <string name="IdealTransferDetailsFragment__confirm_your_donation_with_ideal_wero">iDEAL | Wero ile bağışını onayla</string>
     <!-- Dialog warning shown when using iDEAL payment for setting up a monthly donation. Placeholder is donation amount.Z -->
-    <string name="IdealTransferDetailsFragment__to_setup_your_recurring_donation">Yinelenen bağışını ayarlamak için bankanın keseceği 0,01 €\'luk ücreti onaylamak üzere devam düğmesine dokun. Bu tutar otomatik olarak iade edilecek ve %1$s/ay bağışının hesabından çekilmesini sağlayacaktır.</string>
     <!-- Dialog button shown when using iDEAL payment for setting up a monthly donation to continue with the donation -->
-    <string name="IdealTransferDetailsFragment__continue">Devam et</string>
 
     <!-- IdealTransferDetailsBankSelectionDialogFragment -->
 
     <!-- Title of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__find_your_account_information">Hesap bilgilerini bul</string>
     <!-- Body of bottom sheet for finding account information -->
-    <string name="FindAccountInfoSheet__look_for_your_iban_at">Banka ekstrenin üst kısmında IBAN numaranı ara. IBAN numaraları en fazla 34 karakterden oluşur. Girdiğin ad, banka hesabındaki tam adınla eşleşmelidir. Daha fazla bilgi için bankanla iletişime geçebilirsin.</string>
 
     <!-- Title of donation pending sheet displayed after making a bank transfer -->
-    <string name="DonationPendingBottomSheet__donation_pending">Bağış bekleniyor</string>
     <!-- Top text block of donation pending sheet displayed after subscribing via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_monthly_donation_is_pending">Aylık bağışın beklemede. Bağışın alındığında, profilinde %1$s rozetini görüntüleyebileceksin.</string>
     <!-- Top text block of donation pending sheet displayed after one-time donation via a bank transfer. Placeholder is the badge name. -->
-    <string name="DonationPendingBottomSheet__your_one_time_donation_is_pending">Tek seferlik bağışın beklemede. Bağışın alındığında, profilinde %1$s rozetini görüntüleyebileceksin.</string>
     <!-- Bottom text block of donation pending sheet displayed after donating via a bank transfer. Placeholder is for learn more. -->
-    <string name="DonationPendingBottomSheet__bank_transfers_usually_take">Banka transferlerinin işleme alınması 1 ila 14 iş günü sürebilir. %1$s</string>
     <!-- Learn more text for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__learn_more">Daha fazlasını öğren</string>
     <!-- Confirmation button for donation pending sheet displayed after donating via a bank transfer. -->
-    <string name="DonationPendingBottomSheet__done">Tamam</string>
 
     <!-- Title of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__donation_couldnt_be_processed">Bağış işlenemedi</string>
     <!-- Text block of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__were_having_trouble">Banka transferini işleme alırken sorun yaşıyoruz. Ödemen alınamadı. Başka bir ödeme yöntemi dene veya daha fazla bilgi için bankanla iletişime geç.</string>
     <!-- Button label for retry button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__try_again">Tekrar dene</string>
     <!-- Button label for not now button of donation error sheet displayed after making a bank transfer that fails -->
-    <string name="DonationErrorBottomSheet__not_now">Şimdi değil</string>
 
     <!-- Title of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
-    <string name="DonationCompletedBottomSheet__donation_complete">Bağış Tamamlandı</string>
     <!-- Text block of \'Donation Complete\' sheet displayed after a bank transfer completes and the badge is redeemed -->
     <string name="DonationCompleteBottomSheet__your_bank_transfer_was_received">Banka transferin alındı. Desteğini göstermek için bu rozeti profilinde sergilemeyi seçebilirsin.</string>
 
     <!-- StripePaymentInProgressFragment -->
-    <string name="StripePaymentInProgressFragment__cancelling">İptal ediliyor…</string>
 
     <!-- The title of a bottom sheet dialog that tells the user we temporarily can\'t process their contacts. -->
     <string name="CdsTemporaryErrorBottomSheet_title">Çok fazla kişi işlendi</string>
@@ -6606,11 +6468,6 @@
     <string name="PaymentMessageView_s_sent_you">%1$s adlı kişi sana gönderdi</string>
 
     <!-- YourInformationIsPrivateBottomSheet -->
-    <string name="YourInformationIsPrivateBottomSheet__your_information_is_private">Bilgilerin gizlidir</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_collect">Bağış yaptığında, Signal kişisel bilgilerini toplamaz veya saklamaz.</string>
-    <string name="YourInformationIsPrivateBottomSheet__we_use_stripe">Bağışlarını almak için ödeme işlemcimiz olarak Stripe\'ı kullanıyoruz. Onlara sağladığın bilgilerin hiçbirine erişmiyor, bilgileri saklamıyor veya kaydetmiyoruz.</string>
-    <string name="YourInformationIsPrivateBottomSheet__signal_does_not_and_cannot">Signal, bağışını ve buna dair bilgileri Signal hesabına bağlamaz ve bağlayamaz.</string>
-    <string name="YourInformationIsPrivateBottomSheet__thank_you">Desteğin için teşekkürler!</string>
 
     <!-- GroupStoryEducationSheet -->
     <!-- Displayed as the title of the education bottom sheet -->
@@ -6625,8 +6482,6 @@
     <string name="GroupStoryEducationSheet__next">İleri</string>
 
     <!-- PaypalCompleteOrderBottomSheet -->
-    <string name="PaypalCompleteOrderBottomSheet__donate">Bağış yap</string>
-    <string name="PaypalCompleteOrderBottomSheet__payment">Ödeme</string>
 
     <!-- ChatFilter -->
     <!-- Displayed in a pill at the top of the chat list when it is filtered by unread messages -->
@@ -7074,15 +6929,10 @@
     <string name="GrantFullScreenIntentPermission_bottomsheet_step2">2. %1$s Tam ekran bildirimlerine izin ver</string>
 
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, title for dialog -->
-    <string name="MonthlyDonationCanceled__title">Aylık bağış iptal edildi</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, body for dialog. First placeholder is a payment related error message. Second placeholder is \'learn more\' -->
-    <string name="MonthlyDonationCanceled__message">Yinelenen aylık bağışın iptal edildi. %1$s\n\nRozetin artık profilinde görünmeyecek. %2$s</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, learn more used in placeholder for body for dialog. -->
-    <string name="MonthlyDonationCanceled__learn_more">Daha fazlasını öğren</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, primary button to renew subscription with new data -->
-    <string name="MonthlyDonationCanceled__renew_button">Aboneliği yenile</string>
     <!-- Bottom sheet dialog shown when a monthly donation fails to renew, second button to dismiss the dialog entirely -->
-    <string name="MonthlyDonationCanceled__not_now_button">Şimdi değil</string>
 
     <!-- FindByActivity -->
     <!-- Title of activity when finding by username -->
@@ -7350,7 +7200,6 @@
 
     <!-- BackupsTypeSettingsFragment -->
     <!-- Displayed as the user\'s payment method as a label in a preference row -->
-    <string name="BackupsTypeSettingsFragment__paypal">PayPal</string>
 
     <!-- GooglePlayServicesAvailability -->
     <!-- Dialog title when Google Play services are missing from the device -->

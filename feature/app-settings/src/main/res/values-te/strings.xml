@@ -684,7 +684,6 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">మీ బ్యాకప్ల సబ్స్క్రిప్షన్‌ను రీడీమ్ చేయడం సాధ్యపడలేదు</string>
     <!-- App settings row that opens donations -->
-    <string name="AppSettingsScreen__donate_to_signal">Signal కు విరాళం ఇవ్వండి</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">అంతర్గత ప్రాధాన్యతలు</string>
     <!-- App settings row that opens linked devices -->
@@ -930,11 +929,8 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">మూసివెయ్యి</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__get_badges">Signal కు మద్దతు అందించడం ద్వారా మీ ప్రొఫైల్ కొరకు బ్యాడ్జీలను పొందండి.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal ఎలాంటి ప్రకటనదారులు లేదా పెట్టుబడిదారులు లేని లాభాపేక్ష లేని సంస్థ, కేవలం మీలాంటి వ్యక్తులు మాత్రమే మద్దతు అందిస్తున్నారు.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
-    <string name="EditProfileScreen__become_a_sustainer">విరాళకర్త అవ్వండి</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->

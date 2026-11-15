@@ -684,7 +684,6 @@
     <!-- Warning row in app settings shown when the user\'s backups subscription was already redeemed -->
     <string name="AppSettingsScreen__couldnt_redeem_your_backups_subscription">તમારું બેકઅપ સબ્સ્ક્રિપ્શન રિડીમ કરી શકાયું નથી</string>
     <!-- App settings row that opens donations -->
-    <string name="AppSettingsScreen__donate_to_signal">Signal માટે ફાળો આપો</string>
     <!-- App settings row that opens internal-only preferences -->
     <string name="AppSettingsScreen__internal_preferences">આંતરિક પસંદગીઓ</string>
     <!-- App settings row that opens linked devices -->
@@ -930,11 +929,8 @@
     <!-- Content description for the button that closes the tip about your username link -->
     <string name="EditProfileScreen__close_tip">બંધ કરો</string>
     <!-- Title of the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__get_badges">Signalને સમર્થન આપીને તમારી પ્રોફાઇલ માટે બૅજ મેળવો.</string>
     <!-- Explanation in the sheet shown when someone without badges taps Badges on their profile -->
-    <string name="BecomeASustainerFragment__signal_is_a_non_profit">Signal એક બિનલાભકારી છે જેમાં કોઈ જાહેરાતકારો કે રોકાણકારો નથી, અને તે ફક્ત તમારા જેવા લોકો દ્વારા જ સમર્થિત છે.</string>
     <!-- Button in the sheet shown when someone without badges taps Badges on their profile, which opens monthly donations -->
-    <string name="EditProfileScreen__become_a_sustainer">સસ્ટેનર બનો</string>
 
     <!-- BadgesOverviewScreen -->
     <!-- Title of the screen listing the badges you\'ve unlocked -->

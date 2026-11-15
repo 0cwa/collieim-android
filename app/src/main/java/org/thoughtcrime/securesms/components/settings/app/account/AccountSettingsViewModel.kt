@@ -23,12 +23,10 @@ import org.signal.appsettings.account.AccountSettingsState.LoadState
 import org.signal.appsettings.account.AccountSettingsState.SignalLogin
 import org.signal.appsettings.account.TwoFactorMethod
 import org.signal.core.ui.compose.EventDrivenViewModel
-import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.net.MfaKeyKind
 import org.signal.libsignal.net.RequestResult
 import org.signal.network.service.TwoFactorMethodService
-import org.thoughtcrime.securesms.lock.v2.PinKeyboardType
 import org.thoughtcrime.securesms.lock.v2.SvrConstants
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.signal.network.service.TwoFactorMethodService.TwoFactorMethod as ServiceTwoFactorMethod
@@ -81,11 +79,6 @@ class AccountSettingsViewModel(
       AccountSettingsEvent.PaymentsClicked -> {
         if (_state.value.isPrimaryDevice && _state.value.showPayments) {
           _actions.send(AccountSettingsAction.NavigateToPayments)
-        }
-      }
-      AccountSettingsEvent.ManageDonationsClicked -> {
-        if (_state.value.showDonationManagement) {
-          _actions.send(AccountSettingsAction.NavigateToManageDonations)
         }
       }
       AccountSettingsEvent.ModifyPinClicked -> {
@@ -265,7 +258,6 @@ class AccountSettingsViewModel(
 
   private suspend fun refresh() {
     val isPhoneNumberless = accountRepository.isPhoneNumberless()
-    val showDonationManagement = withContext(SignalDispatchers.IO) { AppSettingsRepository.shouldShowManageDonations() }
 
     _state.update {
       it.copy(
@@ -276,7 +268,6 @@ class AccountSettingsViewModel(
         userUnregistered = accountRepository.isUserUnregistered(),
         clientDeprecated = accountRepository.isClientDeprecated(),
         canOpenLinkedDevices = accountRepository.canOpenLinkedDevices(),
-        showDonationManagement = showDonationManagement,
         isPhoneNumberless = isPhoneNumberless,
         // Held onto across refreshes so a resume doesn't drop the list back to its loading state.
         signalLogin = if (isPhoneNumberless) it.signalLogin ?: SignalLogin(maxTotpApps = accountRepository.getMaxTotpApps(), maxTwoFactorMethods = accountRepository.getMaxTwoFactorMethods()) else null

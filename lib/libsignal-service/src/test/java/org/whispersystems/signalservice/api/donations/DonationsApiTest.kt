@@ -44,24 +44,6 @@ class DonationsApiTest {
     assertThat(request.captured.headers.any { it.startsWith("Donation-Permit") }).isFalse()
   }
 
-  @Test
-  fun `createStripeSubscriptionPaymentMethod attaches the Donation-Permit header when a permit is provided`() {
-    val request = captureRequest()
-
-    api.createStripeSubscriptionPaymentMethod(SubscriberId.generate(), "CARD", "permit-xyz")
-
-    assertThat(request.captured.headers).contains("Donation-Permit:permit-xyz")
-  }
-
-  @Test
-  fun `createStripeOneTimePaymentIntent attaches the Donation-Permit header when a permit is provided`() {
-    val request = captureRequest()
-
-    api.createStripeOneTimePaymentIntent("USD", "CARD", 500, 1, "permit-123")
-
-    assertThat(request.captured.headers).contains("Donation-Permit:permit-123")
-  }
-
   private fun captureRequest(): CapturingSlot<WebSocketRequestMessage> {
     val slot = slot<WebSocketRequestMessage>()
     every { unauthWebSocket.request(capture(slot), any<Duration>()) } returns Single.just(WebsocketResponse(200, "{}", emptyMap(), false))

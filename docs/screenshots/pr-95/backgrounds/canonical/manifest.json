@@ -1,0 +1,49 @@
+{
+  "sourceCommit": "e8e9f8b05dc889785a325011c37c43d736db2b5f",
+  "canonicalSHA256": "f5f041c9feb0d6275fd3d0ade6f4a383da52e256850ec8713bf0bdcf00e6c159",
+  "nativeViewBox": [
+    0,
+    1008,
+    770,
+    341
+  ],
+  "registeredFrame": [
+    0,
+    1000,
+    770,
+    350
+  ],
+  "files": {
+    "320-on-light.png": "4774464777662e1a0a50c16a688e9d3a1636937a907920262a914bcc2e3c10af",
+    "320-on-dark.png": "e5ef6a147e5cd146b8c0b96329aad6d5ee91d5954222385ed2ee74c9570d479d",
+    "320-off-light.png": "d7e5ba6ecddcb8e79cbd828d927609a62e526e6a8a1bb2a018764d8ccc8da850",
+    "320-off-dark.png": "f596e0704d7e4a3ef813fdc546f9dcbce9f22c58946b2c81a4fce2c176a0d6ab",
+    "390-on-light.png": "037c42b6c1a073dda1a06ba835fae613b2c6e30dca83bab6739c72b3cfad0533",
+    "390-on-dark.png": "15d9f6ba4fc2a09dca4821b82e8b9773a0ef9ca39d3c388bfdb07bb887c5a85c",
+    "390-off-light.png": "2793bab73c3ee61ae59c242966cbb811d765271923bc2dff49b9982d1e041f4c",
+    "390-off-dark.png": "facf063f7a02db2e6959b87eb22c0ccc3ca000c6adcac0402670e310ae7efbe0",
+    "768-on-light.png": "9c23d47e914f914efd30a72637c02ef22a4a0678082162b21b966dadf4b94559",
+    "768-on-dark.png": "7078c1e3fea15d2f4499a38ca1ecf43e00449675b97c5090efff7e17fd21a996",
+    "768-off-light.png": "46af1d95666093a106718b326cddc1f0acab9d36d5c95c88a83fdbe00cea1c31",
+    "768-off-dark.png": "8d343ba065f99cae5e5971aacca5ddb3a236039cc246ca0dde3c4fbf6c63a69a",
+    "1280-on-light.png": "928b372b8d23eda13a3c3018f518721881fce22a3c2ab5a50403734e2dce9482",
+    "1280-on-dark.png": "a33cfddd38c52e6d0f146d3fd5d5c014f903d6215a64579396c3f21cc4cb2ee9",
+    "1280-off-light.png": "315c427317c84ed3b8c05e85c11ff006befa9d0c15f232253b64e9d976328e8d",
+    "1280-off-dark.png": "d7b3e1b34999a7ac1b82ebece5c129155af800469db4110990052bade9c12858",
+    "registered-source.png": "618f305d9ad4a65ad5b90e438d503959f6b343644262c188362a9bef5239b464",
+    "registered-overlay.png": "6d86678dce793fd404bdd3230149c7ed37e8da8702dc836186c1441a7f4e1a92",
+    "registered-pair.png": "f569d3a8c1d9fc4145da02ee803e49f056aa80d5d6f5a65dd9520342cf69520c",
+    "standalone-bark.png": "9e640e9ab8aa9b5ad2d93df23aa9391e0b04a35fae3a155f920352909d843f62",
+    "standalone-checker.png": "f5b10adae21a80f609df474308ab8b523bd795c99b7c67df6af5da3dd28f91a1",
+    "standalone-paper.png": "2c8b768cda50d2b44e2072cedd1a7a21307f9e7789cee7b0825dfa45afb41759",
+    "foreground-geometry.json": "7b9a0775921cca4036a4cbed5bd5052566d07f16f3a3b06f31312268ef81c48b",
+    "local-text-contrast.json": "19bb6e59de80ec178897b2f9499def3636b5f209761c2354ddb97393cbf98758",
+    "underfill-construction.json": "d40dbf6b45716700672c18a51abb09487d05b988442dac52302486c8bc54add3",
+    "underfill-boundary.json": "884fdb545b6489b5c9eebbc7c6c6d0af7e58234690aba27020fbe7ec8ba5bfe4",
+    "underfill-baseline.svg.txt": "932b01d69e343dc563341dd75474f9209af5087aef05f1a3ae324166be28e1ff",
+    "repair-underfill.py.txt": "899e2807750f25b8b02434f8062b230102759ab45d7703327e5a8751b792ba61",
+    "source-fit-notes.md": "b92e98913ea1090ba85e6779524dfbb93d7f41b1e84e1a286fa740e09d2c16d3",
+    "README.md": "1f778081c6f8bad2967463682313b74c6b8c1c199b183507030847109ced8a75",
+    "comparison.html": "89da6a9d60b86f3daaec2471cab983e42ea24d45d0569ea6e5f30a25ce6924ad"
+  }
+}

@@ -31,7 +31,7 @@ object AndroidLogger : Log.Logger() {
 
   override fun clear() {
     runCatching {
-      Runtime.getRuntime().exec("logcat -c")
+      Runtime.getRuntime().exec("/system/bin/logcat -c")
     }
   }
 
@@ -39,7 +39,7 @@ object AndroidLogger : Log.Logger() {
   @get:WorkerThread
   val logcatDump: CharSequence?
     get() = runCatching {
-      val process = Runtime.getRuntime().exec("logcat -d")
+      val process = Runtime.getRuntime().exec("/system/bin/logcat -d")
       val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
       val log = StringBuilder()
       val separator = System.lineSeparator()

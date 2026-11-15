@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.ParcelFileDescriptor
+import android.os.Process
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.hasTestTag
@@ -15,11 +16,14 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.navigation.fragment.NavHostFragment
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import im.molly.app.base.ApkInfo
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotSame
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -28,16 +32,19 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.signal.appsettings.updates.AppUpdatesSettingsTestTags
 import org.signal.core.util.eventbus.EventBus
+import org.signal.core.ui.util.ThemeUtil
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.AppSettingsActivity
 import org.thoughtcrime.securesms.events.ApkUpdateEvent
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.testing.DisableAnimationsRule
 import org.thoughtcrime.securesms.testing.SignalActivityRule
+import org.thoughtcrime.securesms.util.DynamicTheme
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicReference
+import org.signal.core.ui.R as CoreUiR
 
 @RunWith(AndroidJUnit4::class)
 class CollieUpdateSettingsTest {
@@ -79,6 +86,8 @@ class CollieUpdateSettingsTest {
   @Test
   fun updateSettingsShowTheReleaseAndOpenOnlyTheOfficialPage() {
     val values = SignalStore.apkUpdate
+    val previousTheme = SignalStore.settings.theme
+    val previousDynamicColors = SignalStore.settings.isDynamicColorsEnabled
     val previousSecurity = TextSecurePreferences.isScreenSecurityEnabled(context)
     val previousEnabled = TextSecurePreferences.isUpdateApkEnabled(context)
     val previousTimestamp = values.lastIndexTimestamp
@@ -103,6 +112,9 @@ class CollieUpdateSettingsTest {
     values.lastCheckFailed = false
     values.lastSuccessfulCheck = System.currentTimeMillis()
     try {
+      assertTrue("Dynamic colors must be available on the test device", DynamicTheme.isDynamicColorsAvailable())
+      instrumentation.runOnMainSync { SignalStore.settings.setTheme(previousTheme, false) }
+      val processId = Process.myPid()
       ActivityScenario.launch<AppSettingsActivity>(AppSettingsActivity.home(context)).use { scenario ->
         scenario.onActivity { activity ->
           val host = activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -111,6 +123,33 @@ class CollieUpdateSettingsTest {
         scrollTo(AppUpdatesSettingsTestTags.ROW_RELEASE)
         compose.onNodeWithText("Collie 8.35.3 is available").assertIsDisplayed()
         capture("collie-updates-available.png")
+
+        var originalActivity: AppSettingsActivity? = null
+        scenario.onActivity { activity ->
+          originalActivity = activity
+          assertFalse(ThemeUtil.getThemedBoolean(activity, CoreUiR.attr.dynamic_colors))
+        }
+        scenario.moveToState(Lifecycle.State.CREATED)
+        instrumentation.runOnMainSync { SignalStore.settings.setTheme(previousTheme, true) }
+        scenario.moveToState(Lifecycle.State.RESUMED)
+        var recreatedActivity: AppSettingsActivity? = null
+        compose.waitUntil(10_000) {
+          scenario.onActivity { activity ->
+            if (activity !== originalActivity && ThemeUtil.getThemedBoolean(activity, CoreUiR.attr.dynamic_colors)) {
+              recreatedActivity = activity
+            }
+          }
+          recreatedActivity != null
+        }
+        assertNotSame(originalActivity, recreatedActivity)
+        assertEquals(processId, Process.myPid())
+        scenario.onActivity { activity ->
+          val host = activity.supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+          assertEquals(R.id.appUpdatesFragment, host.navController.currentDestination?.id)
+          assertTrue(ThemeUtil.getThemedBoolean(activity, CoreUiR.attr.dynamic_colors))
+        }
+        scrollTo(AppUpdatesSettingsTestTags.ROW_RELEASE)
+        compose.onNodeWithText("Collie 8.35.3 is available").assertIsDisplayed()
         compose.onNodeWithTag(AppUpdatesSettingsTestTags.ROW_RELEASE).performClick()
         compose.waitUntil(5000) { opened.get() != null }
         assertEquals("https://github.com/0cwa/collieim-android/releases/tag/v8.35.3", opened.get().dataString)
@@ -129,6 +168,7 @@ class CollieUpdateSettingsTest {
         capture("collie-updates-failed.png")
       }
     } finally {
+      instrumentation.runOnMainSync { SignalStore.settings.setTheme(previousTheme, previousDynamicColors) }
       instrumentation.removeMonitor(monitor)
       values.setAvailableUpdate(previousTimestamp, previousCode, previousName)
       values.lastCheckFailed = previousFailed

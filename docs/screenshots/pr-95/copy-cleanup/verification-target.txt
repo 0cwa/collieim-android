@@ -1,0 +1,6 @@
+Checked2026-11-13: https://repo.collie.im/#verification
+Actual section id=verification
+Package: im.collie.app
+Displayed label: APK signing SHA256
+Displayed value: F8:CC:0C:0C:05:2E:56:35:C2:6F:CD:29:3C:2B:0A:F3:E8:7D:61:FF:7F:2D:F3:60:2A:9A:F6:E9:1F:73:C8:26
+The Verify the download link retains this existing target.

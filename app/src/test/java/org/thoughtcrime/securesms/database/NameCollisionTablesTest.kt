@@ -105,6 +105,53 @@ class NameCollisionTablesTest {
   }
 
   @Test
+  fun givenDismissedCollision_whenNameMembershipChangesButConcatenationDoesNot_thenCollisionReappears() {
+    recipients.setProfileName(alice, ProfileName.fromParts("a", ""))
+    recipients.setProfileName(bob, ProfileName.fromParts("a", ""))
+    recipients.setProfileName(charlie, ProfileName.fromParts("aa", ""))
+    SignalDatabase.nameCollisions.handleIndividualNameCollision(alice)
+    SignalDatabase.nameCollisions.markCollisionsForThreadRecipientDismissed(alice)
+
+    setProfileNameAndCheckCollision(alice, ProfileName.fromParts("aa", ""))
+
+    assertThat(SignalDatabase.nameCollisions.getCollisionsForThreadRecipientId(alice)).hasSize(2)
+  }
+
+  @Test
+  fun collisionNameHashSortsNamesAndFramesUtf8Bytes() {
+    val priorNames = listOf("a", "a", "aa")
+    val reorderedNames = listOf("aa", "a", "a")
+    val changedNames = listOf("aa", "aa")
+    val priorUnicodeNames = listOf("é", "é", "éé")
+    val changedUnicodeNames = listOf("éé", "éé")
+
+    assertThat(calculateCollisionNameHash(priorNames)).isEqualTo(calculateCollisionNameHash(reorderedNames))
+    assertThat(calculateCollisionNameHash(priorNames) == calculateCollisionNameHash(changedNames)).isEqualTo(false)
+    assertThat(calculateCollisionNameHash(priorUnicodeNames) == calculateCollisionNameHash(changedUnicodeNames)).isEqualTo(false)
+  }
+
+  @Test
+  fun collisionNameHashUsesVersionedSha256() {
+    assertThat(calculateCollisionNameHash(listOf("b", "a"))).isEqualTo("sha256:16275ef0f5d0eb9dd9e0a53277549fda5c886358a6872df23c797b13e11455bc")
+    assertThat(calculateCollisionNameHash(emptyList())).isEqualTo("")
+  }
+
+  @Test
+  fun givenLegacyDismissedHash_whenCollisionIsUpdated_thenWarningReappears() {
+    setProfileNameAndCheckCollision(alice, ProfileName.fromParts("Bob", "Android"))
+    setProfileNameAndCheckCollision(bob, ProfileName.fromParts("Bob", "Android"))
+    SignalDatabase.nameCollisions.markCollisionsForThreadRecipientDismissed(alice)
+    SignalDatabase.writableDatabase.execSQL("UPDATE name_collision SET hash = ?", arrayOf("7c713870699c7b91d2b319f88b7e1e8d"))
+
+    setProfileNameAndCheckCollision(bob, ProfileName.fromParts("Bob", "Android"))
+    assertThat(SignalDatabase.nameCollisions.getCollisionsForThreadRecipientId(alice)).hasSize(2)
+
+    SignalDatabase.nameCollisions.markCollisionsForThreadRecipientDismissed(alice)
+    setProfileNameAndCheckCollision(bob, ProfileName.fromParts("Bob", "Android"))
+    assertThat(SignalDatabase.nameCollisions.getCollisionsForThreadRecipientId(alice)).hasSize(0)
+  }
+
+  @Test
   fun givenADismissedNameCollisionForAlice_whenIGetNameCollisionsForAlice_thenIExpectNoNameCollisions() {
     setProfileNameAndCheckCollision(alice, ProfileName.fromParts("Bob", "Android"))
     setProfileNameAndCheckCollision(bob, ProfileName.fromParts("Bob", "Android"))

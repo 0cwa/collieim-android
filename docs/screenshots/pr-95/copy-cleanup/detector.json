@@ -1,0 +1,12 @@
+[
+  {
+    "antipattern": "border-accent-on-rounded",
+    "name": "Border accent on rounded element",
+    "description": "Thick accent border on a rounded card — the border clashes with the rounded corners. Remove the border or the border-radius.",
+    "severity": "warning",
+    "category": "slop",
+    "file": "/var/home/x/.t3/worktrees/collieim-android/t3-8a19ba93-ea9e338747ed1c78/docs/site/assets/site.css",
+    "line": 116,
+    "snippet": "border-top:3px solid"
+  }
+]

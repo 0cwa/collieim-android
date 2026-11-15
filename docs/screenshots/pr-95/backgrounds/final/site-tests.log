@@ -1,0 +1,23 @@
+...........................
+----------------------------------------------------------------------
+Ran 27 tests in 0.121s
+
+OK
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmp21tv6s0w/out for v1.2
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/checkout/_site for v1.2
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/checkout/_site for v1.3
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/checkout/_site/preview/nested for v1.2
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/checkout/_site/preview/nested for v1.3
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/checkout/build for v1.2
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/checkout/build for v1.3
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/checkout/build/site/nested for v1.2
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/checkout/build/site/nested for v1.3
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/out for v1.2
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/out for v1.3
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/external/nested/out for v1.2
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmppkzl8x8y/external/nested/out for v1.3
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmpmvwgyrud/checkout/_site for v1.2
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmpmvwgyrud/checkout/_site for v1.3
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmpmvwgyrud/external-output for v1.2
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmpmvwgyrud/external-output for v1.3
+built /var/home/x/agent-scratch/collieim-android/pr-screenshots/test-fixtures/tmpst8g8vld/out for v1.2

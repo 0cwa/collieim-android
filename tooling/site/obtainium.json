@@ -1,0 +1,7 @@
+{
+  "id": "im.collie.app",
+  "url": "https://github.com/0cwa/collieim-android",
+  "author": "0cwa",
+  "name": "Collie",
+  "additionalSettings": "{\"includePrereleases\":false,\"apkFilterRegEx\":\"^collie\\\\.apk$\"}"
+}

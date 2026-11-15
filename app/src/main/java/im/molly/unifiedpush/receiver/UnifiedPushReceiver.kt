@@ -288,6 +288,9 @@ class UnifiedPushReceiver : MessagingReceiver() {
         EndpointUpdates.identityMatches(snapshot, event, if (event.version == 3) currentRegistration else null)
       },
     )
+    if (!outcome.decision.accepted) {
+      Log.d(TAG, "Encrypted push: ${outcome.decision}")
+    }
     if (outcome.decision.accepted) {
       // Replay and intent promotion share one acknowledged write before any effect starts.
       val event = outcome.event!!

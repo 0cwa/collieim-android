@@ -1,0 +1,19 @@
+{
+  "scope": "Actual core pixels of lichen body/link text in desktop Community footprint x98..1181,y140..609, compared with same-frame text-hidden background. Not a full-site audit.",
+  "corePixels": 2472,
+  "minimumContrast": 4.821,
+  "point": [
+    112,
+    504
+  ],
+  "foreground": [
+    182,
+    196,
+    150
+  ],
+  "background": [
+    80,
+    73,
+    55
+  ]
+}

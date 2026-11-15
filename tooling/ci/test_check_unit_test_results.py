@@ -4,6 +4,7 @@ from contextlib import redirect_stdout
 import importlib.util
 import io
 import json
+import shutil
 from pathlib import Path
 import tempfile
 import unittest
@@ -61,7 +62,11 @@ class ResultGateTests(unittest.TestCase):
     def test_plain_jvm_task_reports_are_required_and_collected(self):
         paths = []
         for task, name in (("core:util-jvm:test", "example.ResettableStateTest"),
-                           ("lib:libsignal-service:test", "example.ControlMessageTest")):
+                           ("lib:libsignal-service:test", "example.ControlMessageTest"),
+                           ("core:network:test", "example.CoreNetworkTest"),
+                           ("lib:network:test", "example.NetworkTest"),
+                           ("tooling:fast-lint:test", "example.FastLintTest"),
+                           ("tooling:lintchecks:test", "example.LintChecksTest")):
             self.policy["required_tasks"].append(task)
             self.policy["security_suites"].append({"task": task, "class": name, "min_executed": 1})
             paths.append(self.report(task, name, [None]))
@@ -69,8 +74,11 @@ class ResultGateTests(unittest.TestCase):
         self.assertTrue(result["passed"])
         self.assertEqual(result["tasks"]["core:util-jvm:test"]["tests"], 1)
         self.assertEqual(result["tasks"]["lib:libsignal-service:test"]["tests"], 1)
-        paths[-1].unlink()
-        self.assertFalse(self.check()["passed"])
+        for path in paths:
+            data = path.read_bytes()
+            path.unlink()
+            self.assertFalse(self.check()["passed"])
+            path.write_bytes(data)
 
     def test_missing_security_suite_is_rejected_even_when_app_is_nonempty(self):
         self.security.unlink()
@@ -108,6 +116,28 @@ class ResultGateTests(unittest.TestCase):
         self.other.unlink()
         self.assertFalse(self.check()["passed"])
 
+    def test_shards_must_each_execute_tests_and_cannot_duplicate_suites(self):
+        self.report(self.library, "example.StorageTest", [None, "skipped"])
+        first, second = self.root / "first", self.root / "second"
+        first.mkdir()
+        second.mkdir()
+        shutil.move(str(self.root / "app"), first)
+        shutil.move(str(self.root / "lib"), second)
+        with redirect_stdout(io.StringIO()):
+            result = gate.check_results(self.root, self.policy, [first, second])
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["shards"], {"first": 2, "second": 1})
+        self.assertEqual(result["shard_totals"], {
+            "first": {"tests": 2, "failures": 0, "errors": 0, "skipped": 0},
+            "second": {"tests": 2, "failures": 0, "errors": 0, "skipped": 1}})
+        shutil.rmtree(second / "lib")
+        with redirect_stdout(io.StringIO()):
+            result = gate.check_results(self.root, self.policy, [first, second])
+        self.assertIn("Shard has no executed tests: second", result["problems"])
+        shutil.copytree(first / "app", second / "app")
+        with self.assertRaisesRegex(ValueError, "Duplicate JUnit suite"):
+            gate.check_results(self.root, self.policy, [first, second])
+
     def test_forged_summary_cannot_hide_a_failed_testcase(self):
         self.report(self.app, "example.SecurityTest", [None, "failure"])
         self.security.write_text(self.security.read_text().replace('failures="1"', 'failures="0"'))
@@ -124,6 +154,14 @@ class ResultGateTests(unittest.TestCase):
         self.security.write_text("<testsuite")
         with self.assertRaises(ET.ParseError):
             self.check()
+
+    def test_duplicate_shard_names_are_rejected(self):
+        first = self.root / "one" / "shard"
+        second = self.root / "two" / "shard"
+        first.mkdir(parents=True)
+        second.mkdir(parents=True)
+        with self.assertRaisesRegex(ValueError, "Duplicate shard root name"):
+            gate.check_results(self.root, self.policy, [first, second])
 
     def test_policy_rejects_duplicate_tasks_or_unreviewed_security_tasks(self):
         path = self.root / "policy.json"

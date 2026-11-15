@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collie: private messaging on the Signal network</title>
+<meta name="description" content="Collie is a free, open-source Android messenger for the Signal network. Same contacts, same end-to-end encryption, with stronger protection for the data on your phone.">
+<meta name="theme-color" content="#24130D">
+<link rel="canonical" href="https://collie.im/">
+<link rel="icon" href="assets/collie-icon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://collie.im/">
+<meta property="og:title" content="Collie: private messaging on the Signal network">
+<meta property="og:description" content="A free, open-source Android messenger for the Signal network, with stronger protection for the data on your phone.">
+<meta property="og:image" content="https://collie.im/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="assets/fonts/manrope.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="assets/fonts/sora.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<!--
+THESIS: Signal's network, with a phone that keeps its mouth shut. The hero shows the app's actual conversation, encryption and locked screens, connecting familiar messaging with privacy on the phone.
+OWN-WORLD: Bark Black and Redwood fields with Golden orange actions; lichen text on bark; Lichen Mist cards, Soft Lichen for the one featured card and the download block; Forest band for the build story. The logo's dashed speech ring recurs as the signature line. Sora 200-300 headings, Manrope 300-400 body.
+STORY: A Signal user learns Collie talks to the same contacts, sees what it adds on the phone, understands its Signal and Molly foundations, and installs it.
+FIRST VIEWPORT: Dark hero. Left: headline, one paragraph, Get Collie (golden) and View source. Right: three phones fanned inside a dashed ring.
+FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no roll.
+-->
+<svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></symbol>
+  <symbol id="i-memory" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9.5 3v3M14.5 3v3M9.5 18v3M14.5 18v3M3 9.5h3M3 14.5h3M18 9.5h3M18 14.5h3"/><path d="M9.5 14.5l5-5"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="5.5" cy="18.5" r="2"/><circle cx="18.5" cy="5.5" r="2"/><path d="M7.5 18.5h7a3.5 3.5 0 0 0 0-7h-5a3.5 3.5 0 0 1 0-7h7"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 21h4"/></symbol>
+  <symbol id="i-fresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4.5v4h-4"/><path d="M12 8.5V12l2.5 1.5"/></symbol>
+  <symbol id="i-devices" viewBox="0 0 24 24"><rect x="3" y="4.5" width="12.5" height="16" rx="2"/><rect x="15.5" y="9" width="5.5" height="11.5" rx="1.5"/><path d="M8 17.5h2.5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M12 4a8 8 0 0 1 0 16c-1.4 0-2.7-.3-3.8-.9L4 20l1-4A8 8 0 0 1 12 4z"/><path d="M8.5 11h7M8.5 14h4.5"/></symbol>
+  <symbol id="i-forum" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 9h8M9 15h6"/><circle cx="6.5" cy="9" r=".5"/><circle cx="6.5" cy="15" r=".5"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/><path d="M8 9.6a1.9 1.9 0 0 1 1.7-1.3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8.5v7M8.5 12h7"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13.5 6.5L19 12l-5.5 5.5"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M6.5 10.5L12 16l5.5-5.5M5 20h14"/></symbol>
+</svg>
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="site-header">
+  <header class="top shell">
+    <a class="brand" href="./" aria-label="Collie home">
+      <img src="assets/collie-icon.svg" alt="" width="40" height="40">
+      <span>Collie</span>
+    </a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="section-menu">Menu <svg class="ico" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+    <nav id="section-menu" aria-label="Main">
+      <a href="#features">Features</a>
+      <a href="#about">About Collie</a>
+      <a href="#upcoming">Upcoming features</a>
+      <a class="nav-community" href="#community">Community</a>
+      <a class="nav-get" href="#get">Get Collie</a>
+    </nav>
+    <a class="nav-get mobile-get" href="#get">Get Collie</a>
+  </header>
+</div>
+
+<div class="hero-wrap">
+  <section class="hero shell" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <h1 id="hero-title">Private messages on the Signal&nbsp;network. <span>Stronger protection on your&nbsp;phone.</span></h1>
+      <p class="lede">Collie is an Android app for messaging and calling <strong>your Signal contacts</strong>.</p>
+      <div class="actions">
+        <a class="button primary" href="#get">Get Collie</a>
+        <a class="button ghost" href="#community">Meet the community <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+      <ul class="facts" aria-label="At a glance">
+        <li>Free and open source</li>
+        <li>Android 8.1 or newer</li>
+      </ul>
+    </div>
+    <figure class="stage" aria-label="Collie screens: a conversation in front, database encryption setup on the left and the locked app on the right">
+      <svg class="ring" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="186"/></svg>
+      <div class="phone p-left"><img src="assets/screens/encryption.webp" alt="Centered database encryption setup offering to turn on a passphrase" width="540" height="1200" loading="eager"></div>
+      <div class="phone p-right"><img src="assets/screens/locked.webp" alt="Collie is locked: enter passphrase to unlock" width="540" height="1080" loading="eager"></div>
+      <div class="phone p-front"><img src="assets/screens/conversation.webp" alt="A Collie conversation with Alex about meeting for coffee" width="540" height="1080" loading="eager"></div>
+    </figure>
+  </section>
+</div>
+
+<main id="main">
+  <section id="about" class="intro shell" aria-labelledby="about-title">
+    <h2 id="about-title">Built on <a href="https://signal.org/">Signal</a> and <a href="https://molly.im/">Molly</a></h2>
+    <div class="intro-body">
+      <p class="statement">Collie keeps Molly’s privacy protections and uses Signal’s end-to-end encrypted network to message your Signal contacts.</p>
+      <p class="source-link"><a href="https://github.com/0cwa/collieim-android#security">Source and security →</a></p>
+    </div>
+  </section>
+
+  <section id="features" class="features shell" aria-labelledby="features-title">
+    <h2 id="features-title">What Collie adds</h2>
+    <div class="grid">
+      <article class="card featured">
+        <div class="feature-head">
+          <svg class="ico big" aria-hidden="true"><use href="#i-lock"/></svg>
+          <h3>Locked when you step away</h3>
+        </div>
+        <p>Encrypt the messages stored on your phone with <strong>a passphrase you choose</strong>. Collie locks after a set time, so a lost or stolen phone keeps your conversations encrypted.</p>
+      </article>
+      <article class="card">
+        <svg class="ico" aria-hidden="true"><use href="#i-memory"/></svg>
+        <h3>Less left behind</h3>
+        <p>Clears sensitive data from memory. Debug logging can be turned off.</p>
+      </article>
+      <article class="card">
+        <svg class="ico" aria-hidden="true"><use href="#i-route"/></svg>
+        <h3>Choose your route</h3>
+        <p>Connect through Tor with Orbot or a SOCKS proxy before you register.</p>
+      </article>
+      <article class="card">
+        <svg class="ico" aria-hidden="true"><use href="#i-bell"/></svg>
+        <h3>Notifications without Google</h3>
+        <p>Get alerts without Google through Collie’s own connection or <a href="https://unifiedpush.org/">UnifiedPush</a>. <a href="#upcoming">Why it matters and what’s next</a></p>
+      </article>
+      <article class="card">
+        <svg class="ico" aria-hidden="true"><use href="#i-fresh"/></svg>
+        <h3>Close to current Signal</h3>
+        <p>Get features and fixes from newer Signal releases.</p>
+      </article>
+      <article class="card">
+        <svg class="ico" aria-hidden="true"><use href="#i-devices"/></svg>
+        <h3>Your history on new devices</h3>
+        <p>Bring your messages to a linked phone or Android tablet, when your main phone supports it.</p>
+      </article>
+    </div>
+    <p class="also"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg><strong>Also included:</strong> Blocking unknown contacts, disappearing call history and scheduled local backups.</p>
+  </section>
+
+
+  <section id="upcoming" class="upcoming shell" aria-labelledby="upcoming-title">
+    <h2 id="upcoming-title">Upcoming features</h2>
+    <p class="upcoming-intro">UnifiedPush needs a MollySocket server you run or trust with your account and metadata. We’re simplifying setup and adding support for linked phones.</p>
+    <ul class="roadmap-list">
+      {{UPCOMING_FEATURES}}
+    </ul>
+    <p class="upcoming-more"><a href="https://github.com/0cwa/collieim-android/discussions/categories/upcoming-planned-features">Follow all plans</a> · <a href="https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests">Suggest a feature</a></p>
+  </section>
+
+  <div class="section-landscape" aria-hidden="true"></div>
+  <div class="mural-landscape" aria-hidden="true"></div>
+
+  <section id="community" class="community shell" aria-labelledby="community-title">
+    <h2 id="community-title">Help shape Collie</h2>
+    <p class="community-intro">Ask a question, <a href="https://github.com/0cwa/collieim-android/discussions/categories/ideas-requests"><strong>suggest a feature</strong></a> or join the conversation.</p>
+    <ul class="links">
+      <li><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><div class="community-copy"><strong>Chat on Matrix</strong><p>Get help, chat with the community and hear release news.</p><a class="community-action" href="https://matrix.to/#/#collieim:worldethicaldataforum.org">Join the Matrix group →</a></div></li>
+      <li><svg class="ico" aria-hidden="true"><use href="#i-forum"/></svg><div class="community-copy"><strong>Collie forum</strong><p>Questions and feature requests on GitHub Discussions.</p><a class="community-action" href="https://github.com/0cwa/collieim-android/discussions">Browse the forum →</a><a class="community-action secondary-action" href="https://github.com/0cwa/collieim-android/issues">Report a bug →</a></div></li>
+    </ul>
+    <div class="community-donations" aria-labelledby="donate-title">
+      <svg class="ico" aria-hidden="true"><use href="#i-heart"/></svg>
+      <div class="community-copy">
+        <h3 id="donate-title">Donate</h3>
+        <div class="donation-actions">
+          <a href="https://github.com/sponsors/0cwa">Donate on GitHub <span class="nowrap">Sponsors →</span></a>
+          <a href="https://liberapay.com/Collie/">Donate on Liberapay →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="get" class="get-wrap shell" aria-labelledby="get-title">
+    <div class="get">
+      <div class="get-head">
+        <h2 id="get-title">Get Collie</h2>
+        <p>Android 8.1 or newer. Latest release <a href="https://github.com/0cwa/collieim-android/releases/tag/{{RELEASE_TAG}}">{{RELEASE_TAG}}</a>.</p>
+      </div>
+      <ol class="ways">
+        <li>
+          <div>
+            <h3>Obtainium <span class="tag">Recommended</span></h3>
+            <p>Installs from our GitHub releases and keeps Collie updated.</p>
+            <p class="install-prerequisite">Needs the Obtainium app.</p>
+          </div>
+          <a class="button primary" href="obtainium/">Add to Obtainium</a>
+        </li>
+        <li>
+          <div>
+            <h3>F-Droid repository</h3>
+            <p>Add Collie’s repository to F-Droid or a compatible app.</p>
+          </div>
+          <a class="button primary" href="https://repo.collie.im/">Open repo.collie.im</a>
+        </li>
+        <li>
+          <div>
+            <h3>Direct download</h3>
+            <p>The APK from GitHub. You update it yourself.</p>
+          </div>
+          <a class="button quiet" href="{{APK_URL}}"><svg class="ico" aria-hidden="true"><use href="#i-down"/></svg> Download APK</a>
+        </li>
+      </ol>
+      <p class="verify"><a href="https://repo.collie.im/#verification">Verify the download</a></p>
+      <div class="get-art" aria-hidden="true">
+        <svg class="ring" viewBox="0 0 400 400"><circle cx="200" cy="200" r="186"/></svg>
+        <img src="assets/collie-foreground.svg" alt="" width="1254" height="1254" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+
+</main>
+
+<footer class="foot">
+  <div class="shell foot-inner">
+    <a class="brand" href="./" aria-label="Collie home">
+      <img src="assets/collie-icon.svg" alt="" width="32" height="32">
+      <span>Collie</span>
+    </a>
+    <ul>
+      <li><a href="https://github.com/0cwa/collieim-android">Source</a></li>
+      <li><a href="https://github.com/0cwa/collieim-android/discussions">Forum &amp; feature requests</a></li>
+      <li><a href="https://github.com/0cwa/collieim-android/releases">Releases</a></li>
+      <li><a href="https://github.com/0cwa/collieim-android/blob/main/LICENSE">AGPL-3.0</a></li>
+      <li><a href="assets/fonts/manrope-OFL.txt">Manrope licence</a></li>
+      <li><a href="assets/fonts/sora-OFL.txt">Sora licence</a></li>
+    </ul>
+  </div>
+  <div class="shell"><p class="foot-legal">Collie is independent of Signal and Molly. Signal's <a href="https://signal.org/legal/">Terms and Privacy Policy</a> apply when you use its service.</p></div>
+</footer>
+<script>
+(() => {
+  const toggle = document.querySelector('.menu-toggle');
+  const menu = document.querySelector('#section-menu');
+  const header = document.querySelector('.site-header');
+  const updateHeaderClearance = () => {
+    document.documentElement.style.setProperty('--header-clearance', `${header.getBoundingClientRect().height + 8}px`);
+  };
+  new ResizeObserver(updateHeaderClearance).observe(header);
+  updateHeaderClearance();
+  const close = () => {
+    toggle.setAttribute('aria-expanded', 'false');
+    menu.classList.remove('is-open');
+  };
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(open));
+    menu.classList.toggle('is-open', open);
+  });
+  menu.addEventListener('click', event => {
+    if (event.target.closest('a')) close();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+      close();
+      toggle.focus();
+    }
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.site-header')) close();
+  });
+  matchMedia('(min-width: 861px)').addEventListener('change', close);
+})();
+</script>
+</body>
+</html>

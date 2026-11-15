@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add Collie to Obtainium</title>
+<meta name="description" content="Install and update Collie with Obtainium, or get Collie manually from its home page.">
+<link rel="canonical" href="https://collie.im/obtainium/">
+<link rel="icon" href="../assets/collie-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+.install-shell{max-width:680px;margin:64px auto;padding-inline:24px}
+.install-shell h1{font:250 clamp(2rem,6vw,3rem)/1.15 Sora,sans-serif;margin-top:40px;text-wrap:balance}
+.install-shell p{margin-top:24px;max-width:58ch;color:var(--ink-2)}
+.install-shell .actions{margin-top:28px}
+.install-help{margin-top:40px;padding-top:24px;border-top:1px solid var(--rule)}
+.install-help h2{font-size:1.4rem}
+</style>
+</head>
+<body>
+<main class="install-shell">
+  <a class="brand" href="https://collie.im/" aria-label="Collie home"><img src="../assets/collie-icon.svg" alt="" width="40" height="40"><span>Collie</span></a>
+  <h1>Add Collie to Obtainium</h1>
+  <p>Install and update Collie from GitHub releases.</p>
+  <div class="actions"><a id="open-obtainium" class="button primary" href="{{OBTAINIUM_URL}}">Open Obtainium</a></div>
+  <p>If the app doesn’t open, tap <strong>Open Obtainium</strong> and allow your browser to continue.</p>
+  <section class="install-help" aria-labelledby="manual-title">
+    <h2 id="manual-title">Need Obtainium?</h2>
+    <p><a href="https://obtainium.imranr.dev/">Download Obtainium</a>, then return here to add Collie.</p>
+    <p>Or <a href="https://collie.im/#get">download Collie manually</a>.</p>
+  </section>
+</main>
+<script>if (/Android/i.test(navigator.userAgent)) { window.addEventListener('load', () => { window.location.href = document.getElementById('open-obtainium').href; }); }</script>
+</body>
+</html>

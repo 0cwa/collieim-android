@@ -11,8 +11,10 @@ import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import io.mockk.every
 import okio.ByteString.Companion.toByteString
 import org.junit.Rule
+import org.junit.Before
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
@@ -26,7 +28,10 @@ import org.signal.archive.stream.EncryptedBackupWriter
 import org.signal.core.models.backup.BackupId
 import org.signal.core.models.backup.MessageBackupKey
 import org.signal.core.util.Util
+import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
 import java.io.ByteArrayOutputStream
+import java.io.File
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -38,7 +43,17 @@ class LocalArchiverTest {
   @get:Rule
   val temporaryFolder = TemporaryFolder()
 
+  @get:Rule
+  val dependencies = MockAppDependenciesRule()
+
   private val context: Context = ApplicationProvider.getApplicationContext()
+
+  @Before
+  fun setUp() {
+    every { AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(any()) } answers {
+      File(temporaryFolder.newFolder(), "snapshot")
+    }
+  }
 
   @Test
   fun `canDecryptMainArchive returns true for valid key`() {

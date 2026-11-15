@@ -36,6 +36,7 @@ import org.thoughtcrime.securesms.groups.GroupId.V2
 import org.thoughtcrime.securesms.profiles.spoofing.ReviewRecipient
 import org.thoughtcrime.securesms.recipients.Recipient
 import java.io.IOException
+import java.nio.ByteBuffer
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.Optional
@@ -477,18 +478,7 @@ class NameCollisionTables(
   }
 
   private fun calculateHash(collisionRecipients: Set<ReviewRecipient>): String {
-    if (collisionRecipients.isEmpty()) {
-      return ""
-    }
-
-    return try {
-      val digest = MessageDigest.getInstance("MD5")
-      val names = collisionRecipients.map { it.recipient.getDisplayName(context) }.sorted()
-      names.forEach { digest.update(it.encodeToByteArray()) }
-      Hex.toStringCondensed(digest.digest())
-    } catch (e: NoSuchAlgorithmException) {
-      ""
-    }
+    return calculateCollisionNameHash(collisionRecipients.map { it.recipient.getDisplayName(context) })
   }
 
   /**
@@ -582,4 +572,23 @@ class NameCollisionTables(
     val dismissed: Boolean,
     val hash: String
   )
+}
+
+/** Hashes sorted display names with UTF-8 byte lengths to preserve name boundaries. */
+internal fun calculateCollisionNameHash(names: Collection<String>): String {
+  if (names.isEmpty()) {
+    return ""
+  }
+
+  return try {
+    val digest = MessageDigest.getInstance("SHA-256")
+    names.sorted().forEach { name ->
+      val bytes = name.encodeToByteArray()
+      digest.update(ByteBuffer.allocate(Int.SIZE_BYTES).putInt(bytes.size).array())
+      digest.update(bytes)
+    }
+    "sha256:" + Hex.toStringCondensed(digest.digest())
+  } catch (e: NoSuchAlgorithmException) {
+    ""
+  }
 }

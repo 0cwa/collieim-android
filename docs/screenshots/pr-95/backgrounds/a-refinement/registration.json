@@ -1,0 +1,33 @@
+{
+  "heroUpper": {
+    "sourceCrop": [
+      0,
+      0,
+      1024,
+      516
+    ],
+    "svgViewBox": [
+      0,
+      0,
+      1024,
+      516
+    ],
+    "paths": "first three current landscape-hero paths; identity source coordinates"
+  },
+  "features": {
+    "sourceCrop": [
+      0,
+      480,
+      1024,
+      650
+    ],
+    "svgViewBox": [
+      0,
+      -20,
+      1024,
+      650
+    ],
+    "mapping": "sourceX=authoringX; sourceY=500+authoringY; remove production translate(80,370)/translate(0,370)"
+  },
+  "limits": "Only exposed corresponding contours are measured. Card/phone-covered continuations are inferred; the symmetric hero divider and intentional production offsets are not fitting targets."
+}

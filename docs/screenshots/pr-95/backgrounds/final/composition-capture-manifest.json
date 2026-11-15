@@ -1,0 +1,146 @@
+[
+  {
+    "width": 320,
+    "height": 6441,
+    "foreground": "on",
+    "topViewport": [
+      320,
+      4000
+    ],
+    "bottomViewport": [
+      320,
+      3000
+    ],
+    "bottomScrollY": 3441,
+    "discardedDuplicateRows": 559,
+    "overlapChannelDifferences": 0,
+    "overlapChannels": 440640,
+    "composition": "composition-on-320.png"
+  },
+  {
+    "width": 320,
+    "height": 6441,
+    "foreground": "off",
+    "topViewport": [
+      320,
+      4000
+    ],
+    "bottomViewport": [
+      320,
+      3000
+    ],
+    "bottomScrollY": 3441,
+    "discardedDuplicateRows": 559,
+    "overlapChannelDifferences": 0,
+    "overlapChannels": 440640,
+    "composition": "composition-off-320.png"
+  },
+  {
+    "width": 390,
+    "height": 5946,
+    "foreground": "on",
+    "topViewport": [
+      390,
+      4000
+    ],
+    "bottomViewport": [
+      390,
+      3000
+    ],
+    "bottomScrollY": 2946,
+    "discardedDuplicateRows": 1054,
+    "overlapChannelDifferences": 0,
+    "overlapChannels": 1116180,
+    "composition": "composition-on-390.png"
+  },
+  {
+    "width": 390,
+    "height": 5946,
+    "foreground": "off",
+    "topViewport": [
+      390,
+      4000
+    ],
+    "bottomViewport": [
+      390,
+      3000
+    ],
+    "bottomScrollY": 2946,
+    "discardedDuplicateRows": 1054,
+    "overlapChannelDifferences": 0,
+    "overlapChannels": 1116180,
+    "composition": "composition-off-390.png"
+  },
+  {
+    "width": 768,
+    "height": 5267,
+    "foreground": "on",
+    "topViewport": [
+      768,
+      4000
+    ],
+    "bottomViewport": [
+      768,
+      3000
+    ],
+    "bottomScrollY": 2267,
+    "discardedDuplicateRows": 1733,
+    "overlapChannelDifferences": 0,
+    "overlapChannels": 3762432,
+    "composition": "composition-on-768.png"
+  },
+  {
+    "width": 768,
+    "height": 5267,
+    "foreground": "off",
+    "topViewport": [
+      768,
+      4000
+    ],
+    "bottomViewport": [
+      768,
+      3000
+    ],
+    "bottomScrollY": 2267,
+    "discardedDuplicateRows": 1733,
+    "overlapChannelDifferences": 0,
+    "overlapChannels": 3762432,
+    "composition": "composition-off-768.png"
+  },
+  {
+    "width": 1280,
+    "height": 4651,
+    "foreground": "on",
+    "topViewport": [
+      1280,
+      4000
+    ],
+    "bottomViewport": [
+      1280,
+      3000
+    ],
+    "bottomScrollY": 1651,
+    "discardedDuplicateRows": 2349,
+    "overlapChannelDifferences": 0,
+    "overlapChannels": 8636160,
+    "composition": "composition-on-1280.png"
+  },
+  {
+    "width": 1280,
+    "height": 4651,
+    "foreground": "off",
+    "topViewport": [
+      1280,
+      4000
+    ],
+    "bottomViewport": [
+      1280,
+      3000
+    ],
+    "bottomScrollY": 1651,
+    "discardedDuplicateRows": 2349,
+    "overlapChannelDifferences": 0,
+    "overlapChannels": 8636160,
+    "composition": "composition-off-1280.png"
+  }
+]

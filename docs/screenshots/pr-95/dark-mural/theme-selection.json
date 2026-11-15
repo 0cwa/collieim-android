@@ -1,0 +1,34 @@
+[
+  {
+    "width": 1280,
+    "theme": "light",
+    "computed": [
+      "artTheme {\"darkMedia\":false,\"asset\":\"canonical-colour\",\"opacity\":\"0.65\",\"blend\":\"normal\"}",
+      "ready {\"fonts\":\"loaded\",\"images\":[true],\"overflow\":false,\"scrollY\":2657,\"dark\":false,\"mainChildren\":7}"
+    ]
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "computed": [
+      "artTheme {\"darkMedia\":true,\"asset\":\"dark-adaptation\",\"opacity\":\"0.3\",\"blend\":\"normal\"}",
+      "ready {\"fonts\":\"loaded\",\"images\":[true],\"overflow\":false,\"scrollY\":2657,\"dark\":true,\"mainChildren\":7}"
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "computed": [
+      "artTheme {\"darkMedia\":false,\"asset\":\"canonical-colour\",\"opacity\":\"0.65\",\"blend\":\"normal\"}",
+      "ready {\"fonts\":\"loaded\",\"images\":[true],\"overflow\":false,\"scrollY\":3223,\"dark\":false,\"mainChildren\":7}"
+    ]
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "computed": [
+      "artTheme {\"darkMedia\":true,\"asset\":\"dark-adaptation\",\"opacity\":\"0.3\",\"blend\":\"normal\"}",
+      "ready {\"fonts\":\"loaded\",\"images\":[true],\"overflow\":false,\"scrollY\":3223,\"dark\":true,\"mainChildren\":7}"
+    ]
+  }
+]

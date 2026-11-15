@@ -1,0 +1,23 @@
+{
+  "tests": 27,
+  "testRun": "27 passed once in0.141s",
+  "renderedFrames": 20,
+  "widths": [
+    320,
+    390,
+    768,
+    1280
+  ],
+  "overflow": false,
+  "allFontsVisibleImagesReady": true,
+  "immutableAssetFiles": 18,
+  "allAssetHashesUnchanged": true,
+  "muralSHA256": "f5f041c9feb0d6275fd3d0ade6f4a383da52e256850ec8713bf0bdcf00e6c159",
+  "obtainiumJSONSHA256": "910af818231d6dc3f3ac867323734adeaec3c9f88af424e2db1db4273106cb1a",
+  "dividerRuleUnchanged": true,
+  "legalLineUnchanged": true,
+  "contentDisclosures": 0,
+  "helpH4": 0,
+  "roadmapItems": 8,
+  "detector": "Limited regex fallback; only pinned unchanged3px symmetric-divider warning. No full computed-contrast audit."
+}

@@ -18,8 +18,8 @@ plugins {
 val staticIps = Properties().apply { file("static-ips.properties").reader().use { load(it) } }
 staticIps.stringPropertyNames().forEach { rootProject.extra[it] = staticIps.getProperty(it) }
 
-val canonicalVersionCode = 1777
-val canonicalVersionName = "8.35.1"
+val canonicalVersionCode = 1778
+val canonicalVersionName = "8.35.2"
 val currentHotfixVersion = 0
 val maxHotfixVersions = 100
 val mollyRevision = 1
@@ -108,6 +108,14 @@ android {
       // MOLLY: Reduce memory pressure by limiting the number of test classes per runner
       all { task ->
         task.forkEvery = 64
+        task.maxHeapSize = "1g"
+        providers.gradleProperty("collieAppTestShard").orNull?.toInt()?.let { shard ->
+          require(shard in 0..1)
+          task.include { element ->
+            val className = element.relativePath.pathString.substringBefore('$').removeSuffix(".class")
+            element.isDirectory || Math.floorMod(className.hashCode(), 2) == shard
+          }
+        }
       }
     }
   }
@@ -241,7 +249,14 @@ android {
       abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
     }
 
-    testInstrumentationRunner = if (providers.gradleProperty("imoTests").isPresent) {
+    val isolatedPushTests = providers.gradleProperty("isolatedPushTests").isPresent
+    val imoTests = providers.gradleProperty("imoTests").isPresent
+    require(!isolatedPushTests || imoTests) {
+      "isolatedPushTests requires imoTests so the isolated runner and package remain test-only"
+    }
+    testInstrumentationRunner = if (isolatedPushTests) {
+      "org.thoughtcrime.securesms.testing.SignalTestRunner"
+    } else if (imoTests) {
       "org.thoughtcrime.securesms.testing.incomingmessageobserver.IncomingMessageObserverTestRunner"
     } else {
       "org.thoughtcrime.securesms.testing.SignalTestRunner"
@@ -638,7 +653,7 @@ fun getLastCommitTimestamp(): String = providers.gradleProperty("collieBuildTime
 
 fun getGitHash(): String = providers.gradleProperty("collieBuildRevision").get()
 
-fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").getOrElse("8.35.1-1-port-unvalidated")
+fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").getOrElse("${canonicalVersionName}-${mollyRevision}-port-unvalidated")
 
 // Publication migration gate: remove only with reviewed public native inputs and
 // direct-source acceptance. The legacy operator route is retained in engineering.

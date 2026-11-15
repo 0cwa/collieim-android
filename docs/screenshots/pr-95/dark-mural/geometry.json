@@ -1,0 +1,33 @@
+{
+  "canonicalSHA256": "f5f041c9feb0d6275fd3d0ade6f4a383da52e256850ec8713bf0bdcf00e6c159",
+  "darkSHA256": "a2491f5582668952b0270692f47739427fec644fd8e53befd144e1dc780e47fa",
+  "viewBox": "0 1008 770 341",
+  "fill": "#B7C597",
+  "inkGroups": [
+    {
+      "id": "mural-olive-ground-and-collie",
+      "geometryUnchanged": true
+    },
+    {
+      "id": "mural-orange-lobe",
+      "geometryUnchanged": true
+    },
+    {
+      "id": "mural-olive-cheek-mark",
+      "geometryUnchanged": true
+    },
+    {
+      "id": "mural-eye-dot",
+      "geometryUnchanged": true
+    }
+  ],
+  "underfillsRemoved": [
+    "head-fill",
+    "chest-fill",
+    "orange-space-fill"
+  ],
+  "gradients": 0,
+  "websiteDarkOpacity": 0.3,
+  "compositing": "normal",
+  "themeSelection": "Automatic prefers-color-scheme only; no explicit theme switch exists."
+}

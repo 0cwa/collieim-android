@@ -1,0 +1,32 @@
+[
+  {
+    "asset": "collie-lower",
+    "results": [
+      {
+        "phase": "before",
+        "maxAlpha": 206,
+        "pixelsAboveSingle56Percent": 217
+      },
+      {
+        "phase": "after",
+        "maxAlpha": 143,
+        "pixelsAboveSingle56Percent": 0
+      }
+    ]
+  },
+  {
+    "asset": "collie-narrow",
+    "results": [
+      {
+        "phase": "before",
+        "maxAlpha": 206,
+        "pixelsAboveSingle56Percent": 528
+      },
+      {
+        "phase": "after",
+        "maxAlpha": 143,
+        "pixelsAboveSingle56Percent": 0
+      }
+    ]
+  }
+]

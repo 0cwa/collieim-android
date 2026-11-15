@@ -3718,7 +3718,7 @@
     </plurals>
 
     <!-- Bottom sheet message shown after an assistant app requested the contents of the screen, explaining that screenshots were automatically disabled -->
-    <string name="AssistantScreenSecurityBottomSheet__body">AI assistant apps like Gemini can scan your Signal content. To prevent this, screen security has been enabled. This will also disable screenshots.</string>
+    <string name="AssistantScreenSecurityBottomSheet__body">Gemini പോലുള്ള AI അസിസ്റ്റന്റ് ആപ്പുകൾക്ക് നിങ്ങളുടെ Collie-ലെ ഉള്ളടക്കങ്ങൾ സ്കാൻ ചെയ്യാൻ കഴിയും. ഇത് തടയാൻ സ്ക്രീൻ സുരക്ഷ പ്രവർത്തനക്ഷമമാക്കിയിട്ടുണ്ട്. ഇത് സ്ക്രീൻഷോട്ടുകൾ എടുക്കുന്നതും തടയും.</string>
     <!-- Bottom sheet title shown after an assistant app requested the contents of the screen and screen security was automatically turned on -->
     <string name="AssistantScreenSecurityBottomSheet__title">സ്‌ക്രീൻ സുരക്ഷ പ്രവർത്തനക്ഷമമാക്കി</string>
     <!-- Bottom sheet button that turns screen security back off -->
@@ -3726,7 +3726,7 @@
     <!-- Title of the dialog confirming that the user wants to turn off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__title">സ്‌ക്രീൻ സുരക്ഷ ഓഫ് ചെയ്യണോ?</string>
     <!-- Body of the dialog confirming that the user wants to turn off screen security -->
-    <string name="AssistantScreenSecurityTurnOffDialog__body">If turned off, this may allow AI assistants such as Google Gemini to scan Signal content and use it for features that may not be private.</string>
+    <string name="AssistantScreenSecurityTurnOffDialog__body">ഇത് ഓഫാക്കിയാൽ, Google Gemini പോലുള്ള AI അസിസ്റ്റന്റുകൾക്ക് Collie-ലെ ഉള്ളടക്കങ്ങൾ സ്കാൻ ചെയ്യാനും സ്വകാര്യമല്ലാത്ത ഫീച്ചറുകൾക്കായി അവ ഉപയോഗിക്കാനും അനുമതി ലഭിച്ചേക്കാം.</string>
     <!-- Dialog button that confirms turning off screen security -->
     <string name="AssistantScreenSecurityTurnOffDialog__turn_off">ഓഫ് ചെയ്യുക</string>
     <!-- Snackbar shown after the user turns off screen security -->
@@ -5291,7 +5291,7 @@
 
     <!-- AvatarColorGrid -->
     <!-- Accessibility label for one of the colors an avatar can be drawn in. %1$d is the color\'s position in the list, %2$d is how many colors there are. -->
-    <string name="AvatarColorGrid__color_d_of_d">Color %1$d of %2$d</string>
+    <string name="AvatarColorGrid__color_d_of_d">നിറം %2$d-ൽ %1$d</string>
 
     <!-- Displayed in the toolbar when externally sharing text to multiple recipients -->
     <string name="ShareInterstitialActivity__share">പങ്കിടുക</string>

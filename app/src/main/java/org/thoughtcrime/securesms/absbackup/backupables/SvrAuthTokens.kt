@@ -7,7 +7,9 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import java.io.IOException
 
 /**
- * This backs up the not-secret KBS Auth tokens, which can be combined with a PIN to prove ownership of a phone number in order to complete the registration process.
+ * This backup item exports SVR2 credentials, not the PIN or master key. Valid credentials
+ * authorize querying, deleting, or replacing the SVR2 recovery record without the existing PIN.
+ * Preserving this selected export is intentional for recovery compatibility.
  */
 object SvrAuthTokens : AndroidBackupItem {
   private const val TAG = "KbsAuthTokens"

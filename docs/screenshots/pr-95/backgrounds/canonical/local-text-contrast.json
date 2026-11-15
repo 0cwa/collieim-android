@@ -1,0 +1,162 @@
+[
+  {
+    "theme": "light",
+    "region": "forum body",
+    "corePixels": 249,
+    "minimumContrast": 4.972,
+    "point": [
+      1117,
+      308
+    ],
+    "paintedTextRgb": [
+      91,
+      65,
+      51
+    ],
+    "backgroundRgb": [
+      187,
+      192,
+      163
+    ]
+  },
+  {
+    "theme": "light",
+    "region": "forum link",
+    "corePixels": 778,
+    "minimumContrast": 4.972,
+    "point": [
+      1017,
+      367
+    ],
+    "paintedTextRgb": [
+      91,
+      65,
+      51
+    ],
+    "backgroundRgb": [
+      187,
+      192,
+      163
+    ]
+  },
+  {
+    "theme": "light",
+    "region": "donation body",
+    "corePixels": 361,
+    "minimumContrast": 4.749,
+    "point": [
+      1051,
+      583
+    ],
+    "paintedTextRgb": [
+      91,
+      65,
+      51
+    ],
+    "backgroundRgb": [
+      227,
+      175,
+      122
+    ]
+  },
+  {
+    "theme": "light",
+    "region": "Help heading",
+    "corePixels": 172,
+    "minimumContrast": 10.117,
+    "point": [
+      247,
+      500
+    ],
+    "paintedTextRgb": [
+      36,
+      19,
+      13
+    ],
+    "backgroundRgb": [
+      192,
+      198,
+      167
+    ]
+  },
+  {
+    "theme": "dark",
+    "region": "forum body",
+    "corePixels": 243,
+    "minimumContrast": 5.448,
+    "point": [
+      899,
+      306
+    ],
+    "paintedTextRgb": [
+      182,
+      196,
+      150
+    ],
+    "backgroundRgb": [
+      93,
+      57,
+      38
+    ]
+  },
+  {
+    "theme": "dark",
+    "region": "forum link",
+    "corePixels": 758,
+    "minimumContrast": 5.454,
+    "point": [
+      849,
+      369
+    ],
+    "paintedTextRgb": [
+      183,
+      197,
+      151
+    ],
+    "backgroundRgb": [
+      93,
+      58,
+      38
+    ]
+  },
+  {
+    "theme": "dark",
+    "region": "donation body",
+    "corePixels": 334,
+    "minimumContrast": 7.904,
+    "point": [
+      1048,
+      583
+    ],
+    "paintedTextRgb": [
+      182,
+      196,
+      150
+    ],
+    "backgroundRgb": [
+      77,
+      22,
+      6
+    ]
+  },
+  {
+    "theme": "dark",
+    "region": "Help heading",
+    "corePixels": 172,
+    "minimumContrast": 13.168,
+    "point": [
+      141,
+      500
+    ],
+    "paintedTextRgb": [
+      236,
+      241,
+      227
+    ],
+    "backgroundRgb": [
+      53,
+      34,
+      14
+    ]
+  }
+]

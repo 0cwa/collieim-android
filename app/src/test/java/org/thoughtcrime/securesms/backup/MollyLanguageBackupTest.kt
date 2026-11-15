@@ -107,10 +107,10 @@ class MollyLanguageBackupTest {
       every { AppDependencies.application } returns context
       val method = FullBackupExporter::class.java.getDeclaredMethod(
         "exportKeyValues", BackupFrameOutputStream::class.java, List::class.java,
-        Int::class.javaPrimitiveType, Long::class.javaPrimitiveType, FullBackupExporter.BackupCancellationSignal::class.java
+        Long::class.javaPrimitiveType, Long::class.javaPrimitiveType, FullBackupExporter.BackupCancellationSignal::class.java
       )
       method.isAccessible = true
-      method.invoke(null, output, listOf(SettingsValues.LANGUAGE), 0, 1L, FullBackupExporter.BackupCancellationSignal { false })
+      method.invoke(null, output, listOf(SettingsValues.LANGUAGE), 0L, 1L, FullBackupExporter.BackupCancellationSignal { false })
       return if (frame.isCaptured) frame.captured.stringValue else preference
     } finally {
       unmockkObject(KeyValueDatabase.Companion)

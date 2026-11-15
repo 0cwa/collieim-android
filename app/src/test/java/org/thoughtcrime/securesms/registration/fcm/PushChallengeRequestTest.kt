@@ -16,11 +16,16 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.thoughtcrime.securesms.testutil.EmptyLogger
+import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.isAbsent
+import org.thoughtcrime.securesms.testutil.LogRecorder
 import org.whispersystems.signalservice.api.SignalServiceAccountManager
 import java.io.IOException
 import java.util.Optional
@@ -67,6 +72,30 @@ class PushChallengeRequestTest {
     confirmVerified(signal)
 
     assertThat(challenge).isPresent().isEqualTo("CHALLENGE")
+  }
+
+  @Test
+  fun pushChallengeBlocking_returns_challenge_without_logging_it() {
+    val proof = "synthetic-push-proof-7c6d4e"
+    val logger = LogRecorder()
+    Log.initialize(logger)
+    try {
+      val signal = mockk<SignalServiceAccountManager> {
+        every { requestRegistrationPushChallenge("session ID", "token") } answers {
+          PushChallengeRequest.postChallengeResponse(proof)
+        }
+      }
+
+      val challenge = PushChallengeRequest.getPushChallengeBlocking(signal, "session ID", Optional.of("token"), 500L)
+
+      assertThat(challenge).isPresent().isEqualTo(proof)
+      val entries = logger.verbose + logger.debug + logger.information + logger.warnings + logger.errors + logger.wtf
+      assertTrue(logger.information.any { it.message.matches(Regex("Received a push challenge in [0-9]+ ms")) })
+      assertFalse(entries.any { it.message.contains(proof) || it.throwable?.toString()?.contains(proof) == true })
+      verify { signal.requestRegistrationPushChallenge("session ID", "token") }
+    } finally {
+      Log.initialize(EmptyLogger())
+    }
   }
 
   @Test

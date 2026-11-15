@@ -155,7 +155,7 @@ public class FullBackupExporter extends FullBackupBase {
       throws IOException
   {
     BackupFrameOutputStream outputStream          = new BackupFrameOutputStream(fileOutputStream, passphrase);
-    int                     count                 = 0;
+    long                    count                 = 0;
     long                    estimatedCountOutside;
 
     try {
@@ -395,12 +395,13 @@ public class FullBackupExporter extends FullBackupBase {
            !isEmojiFtsSecretTable;
   }
 
-  private static int exportTable(@NonNull String table,
+  @VisibleForTesting
+  static long exportTable(@NonNull String table,
                                  @NonNull SQLiteDatabase input,
                                  @NonNull BackupFrameOutputStream outputStream,
                                  @Nullable Predicate<Cursor> predicate,
                                  @Nullable PostProcessor postProcess,
-                                 int count,
+                                 long count,
                                  long estimatedCount,
                                  @NonNull BackupCancellationSignal cancellationSignal)
       throws IOException
@@ -458,10 +459,10 @@ public class FullBackupExporter extends FullBackupBase {
     return count;
   }
 
-  private static int exportAttachment(@NonNull AttachmentSecret attachmentSecret,
+  private static long exportAttachment(@NonNull AttachmentSecret attachmentSecret,
                                       @NonNull Cursor cursor,
                                       @NonNull BackupFrameOutputStream outputStream,
-                                      int count,
+                                      long count,
                                       long estimatedCount)
       throws IOException
   {
@@ -493,10 +494,10 @@ public class FullBackupExporter extends FullBackupBase {
     return count;
   }
 
-  private static int exportSticker(@NonNull AttachmentSecret attachmentSecret,
+  private static long exportSticker(@NonNull AttachmentSecret attachmentSecret,
                                    @NonNull Cursor cursor,
                                    @NonNull BackupFrameOutputStream outputStream,
-                                   int count,
+                                   long count,
                                    long estimatedCount)
       throws IOException
   {
@@ -543,9 +544,9 @@ public class FullBackupExporter extends FullBackupBase {
     return ModernDecryptingPartInputStream.createFor(attachmentSecret, random, new File(data), 0);
   }
 
-  private static int exportKeyValues(@NonNull BackupFrameOutputStream outputStream,
+  private static long exportKeyValues(@NonNull BackupFrameOutputStream outputStream,
                                      @NonNull List<String> keysToIncludeInBackup,
-                                     int count,
+                                     long count,
                                      long estimatedCount,
                                      BackupCancellationSignal cancellationSignal) throws IOException
   {
@@ -669,7 +670,7 @@ public class FullBackupExporter extends FullBackupBase {
   }
 
   public interface PostProcessor {
-    int postProcess(@NonNull Cursor cursor, int count) throws IOException;
+    long postProcess(@NonNull Cursor cursor, long count) throws IOException;
   }
 
   public interface BackupCancellationSignal {

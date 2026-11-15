@@ -1,0 +1,359 @@
+[
+  {
+    "width": 320,
+    "essentialFeaturesUnoccluded": true,
+    "features": [
+      {
+        "feature": "head",
+        "differingChannels": 0,
+        "bounds": [
+          195.19999999999993,
+          5046.0756249999995,
+          99.84,
+          55.199999999999996
+        ]
+      },
+      {
+        "feature": "ear",
+        "differingChannels": 0,
+        "bounds": [
+          219.19999999999993,
+          5046.0756249999995,
+          37.44,
+          23.52
+        ]
+      },
+      {
+        "feature": "eye",
+        "differingChannels": 0,
+        "bounds": [
+          252.79999999999995,
+          5074.875625,
+          4.8,
+          4.8
+        ]
+      },
+      {
+        "feature": "muzzle",
+        "differingChannels": 0,
+        "bounds": [
+          256.15999999999997,
+          5079.675625,
+          38.879999999999995,
+          21.599999999999998
+        ]
+      },
+      {
+        "feature": "neck",
+        "differingChannels": 0,
+        "bounds": [
+          223.51999999999998,
+          5098.395625,
+          35.519999999999996,
+          11.04
+        ]
+      },
+      {
+        "feature": "forearm",
+        "differingChannels": 0,
+        "bounds": [
+          168.79999999999995,
+          5102.715625,
+          57.599999999999994,
+          12.48
+        ]
+      },
+      {
+        "feature": "paw",
+        "differingChannels": 0,
+        "bounds": [
+          131.84000000000003,
+          5108.955625,
+          39.839999999999996,
+          13.92
+        ]
+      },
+      {
+        "feature": "mane",
+        "differingChannels": 0,
+        "bounds": [
+          179.36,
+          5074.875625,
+          48.48,
+          38.4
+        ]
+      }
+    ],
+    "sceneMargins": {
+      "afterAction": 8.004,
+      "beforeGet": 7.996
+    }
+  },
+  {
+    "width": 390,
+    "essentialFeaturesUnoccluded": true,
+    "features": [
+      {
+        "feature": "head",
+        "differingChannels": 0,
+        "bounds": [
+          265.19999999999993,
+          4634.475624999999,
+          99.84,
+          55.199999999999996
+        ]
+      },
+      {
+        "feature": "ear",
+        "differingChannels": 0,
+        "bounds": [
+          289.19999999999993,
+          4634.475624999999,
+          37.44,
+          23.52
+        ]
+      },
+      {
+        "feature": "eye",
+        "differingChannels": 0,
+        "bounds": [
+          322.79999999999995,
+          4663.275624999999,
+          4.8,
+          4.8
+        ]
+      },
+      {
+        "feature": "muzzle",
+        "differingChannels": 0,
+        "bounds": [
+          326.15999999999997,
+          4668.0756249999995,
+          38.879999999999995,
+          21.599999999999998
+        ]
+      },
+      {
+        "feature": "neck",
+        "differingChannels": 0,
+        "bounds": [
+          293.52,
+          4686.795625,
+          35.519999999999996,
+          11.04
+        ]
+      },
+      {
+        "feature": "forearm",
+        "differingChannels": 0,
+        "bounds": [
+          238.79999999999995,
+          4691.115624999999,
+          57.599999999999994,
+          12.48
+        ]
+      },
+      {
+        "feature": "paw",
+        "differingChannels": 0,
+        "bounds": [
+          201.84000000000003,
+          4697.355624999999,
+          39.839999999999996,
+          13.92
+        ]
+      },
+      {
+        "feature": "mane",
+        "differingChannels": 0,
+        "bounds": [
+          249.36,
+          4663.275624999999,
+          48.48,
+          38.4
+        ]
+      }
+    ],
+    "sceneMargins": {
+      "afterAction": 7.997,
+      "beforeGet": 8.003
+    }
+  },
+  {
+    "width": 768,
+    "essentialFeaturesUnoccluded": true,
+    "features": [
+      {
+        "feature": "head",
+        "differingChannels": 0,
+        "bounds": [
+          643.1999999999999,
+          4276.447375,
+          99.84,
+          55.199999999999996
+        ]
+      },
+      {
+        "feature": "ear",
+        "differingChannels": 0,
+        "bounds": [
+          667.1999999999999,
+          4276.447375,
+          37.44,
+          23.52
+        ]
+      },
+      {
+        "feature": "eye",
+        "differingChannels": 0,
+        "bounds": [
+          700.8,
+          4305.247375,
+          4.8,
+          4.8
+        ]
+      },
+      {
+        "feature": "muzzle",
+        "differingChannels": 0,
+        "bounds": [
+          704.16,
+          4310.047375,
+          38.879999999999995,
+          21.599999999999998
+        ]
+      },
+      {
+        "feature": "neck",
+        "differingChannels": 0,
+        "bounds": [
+          671.52,
+          4328.767375,
+          35.519999999999996,
+          11.04
+        ]
+      },
+      {
+        "feature": "forearm",
+        "differingChannels": 0,
+        "bounds": [
+          616.8,
+          4333.087375,
+          57.599999999999994,
+          12.48
+        ]
+      },
+      {
+        "feature": "paw",
+        "differingChannels": 0,
+        "bounds": [
+          579.84,
+          4339.327375,
+          39.839999999999996,
+          13.92
+        ]
+      },
+      {
+        "feature": "mane",
+        "differingChannels": 0,
+        "bounds": [
+          627.36,
+          4305.247375,
+          48.48,
+          38.4
+        ]
+      }
+    ],
+    "sceneMargins": {
+      "afterAction": 8.001,
+      "beforeGet": 7.999
+    }
+  },
+  {
+    "width": 1280,
+    "essentialFeaturesUnoccluded": true,
+    "features": [
+      {
+        "feature": "head",
+        "differingChannels": 0,
+        "bounds": [
+          1046,
+          2975.296875,
+          187.20000000000002,
+          103.5
+        ]
+      },
+      {
+        "feature": "ear",
+        "differingChannels": 0,
+        "bounds": [
+          1091,
+          2975.296875,
+          70.2,
+          44.1
+        ]
+      },
+      {
+        "feature": "eye",
+        "differingChannels": 0,
+        "bounds": [
+          1154,
+          3029.296875,
+          9,
+          9
+        ]
+      },
+      {
+        "feature": "muzzle",
+        "differingChannels": 0,
+        "bounds": [
+          1160.3,
+          3038.296875,
+          72.9,
+          40.5
+        ]
+      },
+      {
+        "feature": "neck",
+        "differingChannels": 0,
+        "bounds": [
+          1099.1,
+          3073.396875,
+          66.60000000000001,
+          20.7
+        ]
+      },
+      {
+        "feature": "forearm",
+        "differingChannels": 0,
+        "bounds": [
+          996.5,
+          3081.496875,
+          108,
+          23.400000000000002
+        ]
+      },
+      {
+        "feature": "paw",
+        "differingChannels": 0,
+        "bounds": [
+          927.2,
+          3093.196875,
+          74.7,
+          26.1
+        ]
+      },
+      {
+        "feature": "mane",
+        "differingChannels": 0,
+        "bounds": [
+          1016.3000000000001,
+          3029.296875,
+          90.9,
+          72
+        ]
+      }
+    ],
+    "sceneMargins": null
+  }
+]

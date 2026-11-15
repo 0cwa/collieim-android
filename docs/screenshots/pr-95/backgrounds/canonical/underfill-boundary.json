@@ -1,0 +1,50 @@
+{
+  "oldOpeningPixels": 13579,
+  "openingPixelsStillAlpha0": 13472,
+  "boundaryAAPixels": 107,
+  "boundaryAlphaRange": [
+    1,
+    252
+  ],
+  "maximumBoundaryDistancePixels": 1,
+  "newEnclosedAlpha0Components": [
+    [
+      13471,
+      [
+        422,
+        1069,
+        733,
+        1263
+      ]
+    ],
+    [
+      1,
+      [
+        566,
+        1183,
+        566,
+        1183
+      ]
+    ]
+  ],
+  "underfillNodes": {
+    "head-fill": {
+      "paths": 1,
+      "cubicSegments": 92,
+      "lineSegments": 4,
+      "closedSubpaths": 9
+    },
+    "chest-fill": {
+      "paths": 2,
+      "cubicSegments": 26,
+      "lineSegments": 6,
+      "closedSubpaths": 2
+    },
+    "orange-space-fill": {
+      "paths": 1,
+      "cubicSegments": 40,
+      "lineSegments": 4,
+      "closedSubpaths": 3
+    }
+  }
+}

@@ -1,4 +1,7 @@
-# Preparing the security CI gate
+# Historical security CI gate preparation
+
+This is a historical preparation record, not current contributor or release policy.
+For current policy see the [development cycle](https://github.com/0cwa/collie-release-engineering/blob/main/docs/DEVELOPMENT-CYCLE.md) and [RELEASING.md](RELEASING.md).
 
 Status: implementation prepared for review; repository rules remain unchanged.
 The native provenance work must retain its own evidence and acceptance decision.

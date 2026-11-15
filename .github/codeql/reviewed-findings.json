@@ -303,45 +303,6 @@
       "message": "Cryptographic algorithm [AES/CBC/PKCS5Padding](1) is insecure. CBC mode with PKCS#5 or PKCS#7 padding is vulnerable to padding oracle attacks. Consider using GCM instead.",
       "category": "/language:java-kotlin/",
       "tool_version": "2.27.4",
-      "source_sha256": "f6876eae581a9c5d3abf80666b982050a554171020cc63d723e2b6488ef708a4",
-      "id": "provisional-AttachmentCipherOutputStream.kt-33",
-      "disposition": "false-positive",
-      "reason": "The legacy writer authenticates IV and ciphertext with a distinct HMAC key; reviewed callers use fresh generated IVs or explicit IVs for the existing resumable/checksum protocol. This is scoped to the reviewed writer and callers, does not claim CBC is AEAD, and does not establish safety for unreviewed uses.",
-      "language": "java-kotlin",
-      "location": {
-        "uri": "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/crypto/AttachmentCipherOutputStream.kt",
-        "uri_base_id": "%SRCROOT%",
-        "start_line": 33,
-        "start_column": 39,
-        "end_line": null,
-        "end_column": 74
-      },
-      "reviewed_sources": {
-        "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/crypto/AttachmentCipherInputStream.kt": "3936261037eb45d44828795094fa86e5c681cf21b6004172d7c9b8ca4f4a2930",
-        "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/crypto/AttachmentCipherStreamUtil.kt": "25c608c2c0acbde3918477f8f77a60060edc2acf5972f22d572e4b73ff7732ed",
-        "app/src/main/java/org/thoughtcrime/securesms/backup/v2/local/LocalArchiver.kt": "ef34b1dd1800510bed6f0ed5785d8b1c155095c9162ce3fbd6268aae570aa414",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/BackfillDigestsForDataFileJob.kt": "483a1b402fc7c69704daf2a469b347901511118a6ef34b70468e30d135131a34",
-        "lib/network/src/main/java/org/signal/network/service/CdnService.kt": "307fe559f6c08dab8b234a8c669580bfeb76f04a1522f403a09fce7febd0c246",
-        "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/api/SignalServiceMessageSender.java": "7190e18d2bddf2f2f3dea12209a5a82c3921ea1b15ef37db41bf9c5491d42a1e",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/PushSendJob.kt": "552c1c73edd9f3e1cda5802d49dc86d73eb3c0768586ee6d41af503a78e39469",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentUploadJob.kt": "3d879ce484e9f86951799b44f04f30d08a3b50d1e59109087df01b8078a9188e",
-        "build-inputs/native-lock.json": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
-        "build-inputs/native-publication.json": "b88197b390284a7f340f1b2a786167592961ff8f57857a8bf72ac7747f704a26",
-        "gradle/verification-metadata.xml": "2342cfddbfc3a150c204dee2a1738d924b9f4d69f621e2cebd77dc6e5f61c568",
-        "gradle/libs.versions.toml": "01f5cdafc39efd577fd8da6017644049b85ec7ae72b57c038e008cfee349ea62",
-        "build.gradle.kts": "31fe7ec05365461f2695551ec200cf6cfd928d698679200a4094a1da643df35e"
-      },
-      "context_sha256": "f97861b11e6bc188ae85d1d7ac8d21f350d9d337d244e9046a3b634f6accb312"
-    },
-    {
-      "rule": "java/weak-cryptographic-algorithm",
-      "level": "warning",
-      "security_severity": "7.5",
-      "query_kind": "path-problem",
-      "query_precision": "high",
-      "message": "Cryptographic algorithm [AES/CBC/PKCS5Padding](1) is insecure. CBC mode with PKCS#5 or PKCS#7 padding is vulnerable to padding oracle attacks. Consider using GCM instead.",
-      "category": "/language:java-kotlin/",
-      "tool_version": "2.27.4",
       "source_sha256": "6022f933af99eec2c53b15ecffb20e335fffbad6d18bd3e3481ecf782a68b5bd",
       "id": "finding-14",
       "disposition": "false-positive",
@@ -1031,7 +992,7 @@
       "source_sha256": "00e652473ac5310cd36e0ac07d27fc5c27d63fa8360311a62d8a63edc634c45e",
       "id": "provisional-AndroidUtilsLight.java-33",
       "disposition": "intentional-use",
-      "reason": "The deprecated public compatibility API returns the required 20-byte SHA-1 signing-certificate digest. No active checked-in caller was found; this preserves compatibility and does not endorse SHA-1 generally.",
+      "reason": "Firebase Installations serializes this signing-certificate digest as uppercase hexadecimal in X-Android-Cert. The Android API-key header contract requires a 20-byte SHA-1 certificate fingerprint, so replacing it with SHA-256 would change the required compatibility identifier. The declared local module and dependency configuration binds the reviewed consumer wiring. This fingerprint identifies the application certificate; it does not prove possession of its signing key or endorse SHA-1 for other uses.",
       "language": "java-kotlin",
       "location": {
         "uri": "core/gms/base/src/main/java/com/google/android/gms/common/util/AndroidUtilsLight.java",
@@ -1041,7 +1002,14 @@
         "end_line": null,
         "end_column": 64
       },
-      "reviewed_sources": {},
+      "reviewed_sources": {
+        "core/gms/base/build.gradle.kts": "f1ca4f6c47440b32532624ed77de3f125111c4ee2a16aabf6d471bcc195231e5",
+        "core/gms/cloud-messaging/build.gradle.kts": "f1ac9659f36d0eb91141cbf46c648baa79e58bd1878e158a3669011a57a9b4e2",
+        "settings.gradle.kts": "c29fd8fddda8c1d04310bf4a384fe9f9a523c3d018e1376eeb8100c8e7fcde92",
+        "app/build.gradle.kts": "49ee1aecd80e4ac674a94acf2f05b254a0cdf4a7f6e36160a82cb98e8c8e48f2",
+        "gradle/libs.versions.toml": "01f5cdafc39efd577fd8da6017644049b85ec7ae72b57c038e008cfee349ea62",
+        "gradle/verification-metadata.xml": "2342cfddbfc3a150c204dee2a1738d924b9f4d69f621e2cebd77dc6e5f61c568"
+      },
       "context_sha256": "35477029959faa4b1cbe69db866b73c91f3f390d23b0149ecb889ede107f5d95"
     },
     {
@@ -1432,7 +1400,15 @@
         "end_line": null,
         "end_column": 61
       },
-      "reviewed_sources": {}
+      "reviewed_sources": {
+        "app/build.gradle.kts": "49ee1aecd80e4ac674a94acf2f05b254a0cdf4a7f6e36160a82cb98e8c8e48f2",
+        "app/src/main/java/org/thoughtcrime/securesms/dependencies/ApplicationDependencyProvider.java": "945b23192d9db2cc1da09ae1b6796650f15c407091ffcf98151d42894729e11c",
+        "app/src/main/java/org/thoughtcrime/securesms/net/LinkPreviewRedirectValidationInterceptor.kt": "ca922bd03e8d5acd970cdf768628d170301c9c0aae9179836774670ea6c5d024",
+        "app/src/main/java/org/thoughtcrime/securesms/util/LinkUtil.kt": "bfacf4c494b75d5197b7fa8c55ecf41d85f46ad8e8172d28d0f535fa5eb78e8b",
+        "gradle/libs.versions.toml": "01f5cdafc39efd577fd8da6017644049b85ec7ae72b57c038e008cfee349ea62",
+        "lib/libsignal-service/build.gradle.kts": "9b0877dd7d46f4d7d992ba6b988bd8a7278a96eb6917b0c13bd29e06e76d5298",
+        "lib/libsignal-service/src/main/java/org/whispersystems/signalservice/internal/util/BlacklistingTrustManager.java": "bc1ce83c8da7aa3cdb1212150f583e0e4ecae6cbb46cf51460e6708930ebe541"
+      }
     },
     {
       "rule": "java/android/missing-certificate-pinning",

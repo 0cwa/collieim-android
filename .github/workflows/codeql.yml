@@ -168,6 +168,21 @@ jobs:
           python3 policy/tools/codeql/export_context.py \
             --sarif "$RUNNER_TEMP/codeql-java-sarif" --source-root "$GITHUB_WORKSPACE" \
             --language java-kotlin --output "$RUNNER_TEMP/codeql-evidence/review-context.json"
+      # These build outputs are referenced by SARIF contexts.  They are data,
+      # not executable gate code; the pinned checker hashes their exact bytes.
+      - name: Preserve generated sources referenced by findings
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: codeql-generated-sources
+          path: |
+            app/build/generated/data_binding_base_class_source_out/prodWebsiteDebug/out/org/thoughtcrime/securesms/databinding/DonationWebviewFragmentBinding.java
+            app/build/generated/data_binding_base_class_source_out/prodWebsiteDebug/out/org/thoughtcrime/securesms/databinding/FragmentRegistrationCaptchaBinding.java
+            app/build/generated/data_binding_base_class_source_out/prodWebsiteDebug/out/org/thoughtcrime/securesms/databinding/SubmitDebugLogActivityBinding.java
+            app/build/intermediates/merged_manifest/prodWebsiteDebug/processProdWebsiteDebugMainManifest/AndroidManifest.xml
+            app/build/intermediates/merged_manifests/prodWebsiteDebug/processProdWebsiteDebugManifest/AndroidManifest.xml
+            app/build/intermediates/packaged_manifests/prodWebsiteDebug/processProdWebsiteDebugManifestForPackage/AndroidManifest.xml
+          if-no-files-found: error
+          retention-days: 14
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: always() && !cancelled()
         with:
@@ -227,6 +242,60 @@ jobs:
         with:
           name: ${{ matrix.artifact }}
           path: ${{ runner.temp }}/analysis
+      - name: Restore generated sources as analysis data
+        if: matrix.language == 'java-kotlin'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: codeql-generated-sources
+          path: ${{ runner.temp }}/generated-sources
+      - name: Copy only expected generated sources into the data checkout
+        if: matrix.language == 'java-kotlin'
+        env:
+          GENERATED_ROOT: ${{ runner.temp }}/generated-sources
+        run: |
+          python3 - <<'PYTHON'
+          import os
+          from pathlib import Path
+
+          checkout = Path('source').resolve(strict=True)
+          app = checkout / 'app'
+          if app.is_symlink() or not app.is_dir() or app.resolve() != app:
+              raise ValueError('unsafe app checkout')
+          build = app / 'build'
+          if os.path.lexists(build):
+              raise ValueError('generated source target already exists')
+          build.mkdir()
+          root_path = Path(os.environ['GENERATED_ROOT'])
+          if root_path.is_symlink():
+              raise ValueError('generated evidence root is a symlink')
+          root = root_path.resolve(strict=True)
+          files = [
+              ('generated/data_binding_base_class_source_out/prodWebsiteDebug/out/org/thoughtcrime/securesms/databinding/DonationWebviewFragmentBinding.java', False),
+              ('generated/data_binding_base_class_source_out/prodWebsiteDebug/out/org/thoughtcrime/securesms/databinding/FragmentRegistrationCaptchaBinding.java', True),
+              ('generated/data_binding_base_class_source_out/prodWebsiteDebug/out/org/thoughtcrime/securesms/databinding/SubmitDebugLogActivityBinding.java', True),
+              ('intermediates/merged_manifest/prodWebsiteDebug/processProdWebsiteDebugMainManifest/AndroidManifest.xml', True),
+              ('intermediates/merged_manifests/prodWebsiteDebug/processProdWebsiteDebugManifest/AndroidManifest.xml', True),
+              ('intermediates/packaged_manifests/prodWebsiteDebug/processProdWebsiteDebugManifestForPackage/AndroidManifest.xml', True),
+          ]
+          for relative, required in files:
+              source = root / relative
+              if not os.path.lexists(source) and not required:
+                  continue
+              for component in (source, *source.relative_to(root).parents):
+                  candidate = component if component.is_absolute() else root / component
+                  if candidate.is_symlink():
+                      raise ValueError(f'symlink in generated evidence: {relative}')
+              if not source.is_file() or not source.resolve().is_relative_to(root):
+                  raise ValueError(f'missing or unsafe generated evidence: {relative}')
+              if source.stat().st_size > 16 * 1024 * 1024:
+                  raise ValueError(f'oversized generated evidence: {relative}')
+              data = source.read_bytes()
+              if len(data) > 16 * 1024 * 1024:
+                  raise ValueError(f'oversized generated evidence: {relative}')
+              target = build / relative
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(data)
+          PYTHON
       - name: Apply findings and extraction gate
         env:
           LANGUAGE: ${{ matrix.language }}

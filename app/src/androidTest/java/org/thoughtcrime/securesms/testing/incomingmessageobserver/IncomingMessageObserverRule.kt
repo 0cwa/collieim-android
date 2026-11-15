@@ -81,6 +81,9 @@ class IncomingMessageObserverRule(
     self = TestUsers.setupSelf()
     TestUsers.setupTestClients(peerCount)
     peers = Harness.otherClients.take(peerCount)
+    // setupSelf re-registers the app and archives its sessions; the shared fake peers
+    // must also start fresh so their next messages contain pre-key handshakes.
+    peers.forEach { it.resetSession() }
 
     val app = AppDependencies.application as IncomingMessageObserverInstrumentationApplicationContext
     app.beginJobLoopForTests()

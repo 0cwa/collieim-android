@@ -320,6 +320,13 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/disk-cleanup
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12.14'
+      - name: Install pinned screenshot decoder
+        run: |
+          printf '%s\n' 'Pillow==13.0.0 --hash=sha256:42d63be3af4f9b951b199b0a9d23365d37ab14687e6d77b74940432c8515c4ca' > "$RUNNER_TEMP/png-requirements.txt"
+          python3 -m pip install --disable-pip-version-check --only-binary=:all: --require-hashes -r "$RUNNER_TEMP/png-requirements.txt"
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
@@ -346,8 +353,13 @@ jobs:
           set -euo pipefail
           ./gradlew --no-daemon --console=plain :app:assembleProdWebsiteDebug :app:assembleProdWebsiteDebugAndroidTest \
             2>&1 | tee build/navigation-validation/build.log
-          sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
-            app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > build/navigation-validation/apk-before.txt
+          app_apks=(app/build/outputs/apk/prodWebsite/debug/*.apk)
+          test_apks=(app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk)
+          test "${#app_apks[@]}" = 1 && test -f "${app_apks[0]}"
+          test "${#test_apks[@]}" = 1 && test -f "${test_apks[0]}"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest print "${app_apks[0]}" > build/navigation-validation/app-manifest.xml
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" manifest print "${test_apks[0]}" > build/navigation-validation/test-manifest.xml
+          sha256sum "${app_apks[0]}" "${test_apks[0]}" > build/navigation-validation/apk-before.txt
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -380,6 +392,8 @@ jobs:
             trap - EXIT
             printf '%s\n' "$status" > "$evidence/exit-code.txt"
             timeout 15s adb logcat -b all -d -t 12000 -v threadtime > "$evidence/logcat.txt" 2>&1 || true
+            mkdir -p "$evidence/screenshots"
+            timeout 30s adb pull /sdcard/Download/collie-settings-navigation/. "$evidence/screenshots/" || true
             sha256sum app/build/outputs/apk/prodWebsite/debug/*.apk \
               app/build/outputs/apk/androidTest/prodWebsite/debug/*.apk > "$evidence/apk-after.txt" || true
             exit "$status"
@@ -395,7 +409,7 @@ jobs:
             '-Pandroid.testInstrumentationRunnerArguments.class=org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest' \
             2>&1 | tee "$evidence/connected.log"
           SH
-      - name: Run selected-route test on API 35
+      - name: Run navigation tests on API 35
         id: device
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
@@ -408,7 +422,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           script: bash "$RUNNER_TEMP/run-navigation-device.sh"
-      - name: Require host and device results
+      - name: Require host and device results, matching APKs and screenshots
         if: always() && !cancelled()
         env:
           EXPECTED_SHA: ${{ github.sha }}

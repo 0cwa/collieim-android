@@ -6,6 +6,8 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
+from PIL import Image, ImageStat
+
 HOST_CLASS = 'org.signal.appsettings.routes.AppSettingsNavigationTest'
 HOST_METHODS = {
     'a split-pane window opens the default detail',
@@ -18,7 +20,12 @@ HOST_METHODS = {
     'home selection follows a replaced section',
 }
 DEVICE_CLASS = 'org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest'
-DEVICE_METHODS = {'splitPaneHomeSelectionFollowsSectionChange'}
+DEVICE_METHODS = {
+    'splitPaneHomeSelectionFollowsSectionChange',
+    'settingsHomeOpensAppearanceAndReturnsHome',
+}
+SCREENSHOTS = {'settings-home.png', 'appearance-settings.png'}
+ANDROID = '{http://schemas.android.com/apk/res/android}'
 
 
 def require_cases(directory, classname, expected):
@@ -63,11 +70,30 @@ def check(root, host_outcome, build_outcome, device_outcome, expected_sha):
         raise ValueError('device is not API 35')
     if not (evidence / 'device-fingerprint.txt').read_text().strip():
         raise ValueError('missing device fingerprint')
+    app = ET.parse(evidence / 'app-manifest.xml').getroot()
+    test = ET.parse(evidence / 'test-manifest.xml').getroot()
+    runners = test.findall('instrumentation')
+    if app.get('package') != 'im.collie.app' or test.get('package') != 'im.collie.app.test' or len(runners) != 1 or runners[0].get(ANDROID + 'name') != 'org.thoughtcrime.securesms.testing.SignalTestRunner' or runners[0].get(ANDROID + 'targetPackage') != 'im.collie.app':
+        raise ValueError('wrong APK package or instrumentation runner')
     if hashes(evidence / 'apk-before.txt') != hashes(evidence / 'apk-after.txt'):
         raise ValueError('APK pair changed during execution')
+    app_apk = 'app/build/outputs/apk/prodWebsite/debug/app-prod-website-debug.apk'
+    test_apk = 'app/build/outputs/apk/androidTest/prodWebsite/debug/app-prod-website-debug-androidTest.apk'
+    if set(hashes(evidence / 'apk-before.txt')) != {app_apk, test_apk}:
+        raise ValueError('expected matching prodWebsite app and Android test APKs')
     require_cases(root / 'feature/app-settings/build/test-results/testDebugUnitTest', HOST_CLASS, HOST_METHODS)
     require_cases(root / 'app/build/outputs/androidTest-results', DEVICE_CLASS, DEVICE_METHODS)
-    print('Passed eight host navigation cases and one API 35 device case with matching APKs')
+    screenshot_paths = list((evidence / 'screenshots').rglob('*.png'))
+    if len(screenshot_paths) != len(SCREENSHOTS) or {path.name for path in screenshot_paths} != SCREENSHOTS:
+        raise ValueError('missing, duplicate or unexpected Settings screenshots')
+    for path in screenshot_paths:
+        with Image.open(path, formats=['PNG']) as image:
+            image.verify()
+        with Image.open(path, formats=['PNG']) as image:
+            image.load()
+            if min(image.size) < 50 or max(ImageStat.Stat(image.convert('RGB')).var) < 1:
+                raise ValueError(f'blank or undersized Settings screenshot: {path.name}')
+    print('Passed eight host navigation cases and two API 35 device cases with matching APKs and decoded Settings screenshots')
 
 
 if __name__ == '__main__':

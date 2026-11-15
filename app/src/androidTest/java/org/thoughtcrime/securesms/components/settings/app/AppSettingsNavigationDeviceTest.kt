@@ -19,6 +19,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
@@ -34,11 +35,13 @@ import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.appsettings.routes.AppSettingsRouter
 import org.signal.core.ui.compose.split.detailEntry
 import org.signal.core.ui.compose.theme.SignalTheme
+import org.signal.core.ui.isSplitPane
 import org.signal.remoteconfig.RemoteConfig
 import org.thoughtcrime.securesms.testing.RawFlag
 import org.thoughtcrime.securesms.testing.RemoteConfigForTest
 import org.thoughtcrime.securesms.testing.SignalActivityRule
 import androidx.test.espresso.Espresso.pressBack
+import androidx.test.espresso.Espresso.pressBackUnconditionally
 import org.junit.Assert.assertTrue
 import java.util.concurrent.atomic.AtomicBoolean
 import org.junit.Assert.assertEquals
@@ -81,7 +84,7 @@ class AppSettingsNavigationDeviceTest {
   }
 
   @Test
-  fun settingsHomeOpensAppearanceAndReturnsHome() {
+  fun settingsHomeOpensAppearanceAndBackMatchesLayout() {
     assertTrue("The navigation feature must be enabled for this test", RemoteConfig.useAppSettingsNavigation)
     val context = harness.context
     val intent = AppSettingsActivity.home(context)
@@ -90,13 +93,20 @@ class AppSettingsNavigationDeviceTest {
     ActivityScenario.launch<AppSettingsNavigationActivity>(intent).use { scenario ->
       awaitNode(AppSettingsTestTags.ROW_APPEARANCE)
 
+      val splitPane = AtomicBoolean()
+      scenario.onActivity { splitPane.set(it.resources.isSplitPane()) }
       withScreenSecurityTemporarilyDisabled(scenario) {
         captureScreenshot(scenario, "settings-home")
         compose.onNodeWithTag(AppSettingsTestTags.SCROLLER).performScrollToNode(hasTestTag(AppSettingsTestTags.ROW_APPEARANCE))
         compose.onNodeWithTag(AppSettingsTestTags.ROW_APPEARANCE).performClick()
         awaitNode(AppearanceSettingsTestTags.ROW_THEME)
         captureScreenshot(scenario, "appearance-settings")
+      }
 
+      if (splitPane.get()) {
+        pressBackUnconditionally()
+        compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
+      } else {
         pressBack()
         compose.waitUntil(10_000) {
           compose.onAllNodesWithTag(AppearanceSettingsTestTags.ROW_THEME)

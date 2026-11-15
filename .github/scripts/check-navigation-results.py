@@ -22,7 +22,7 @@ HOST_METHODS = {
 DEVICE_CLASS = 'org.thoughtcrime.securesms.components.settings.app.AppSettingsNavigationDeviceTest'
 DEVICE_METHODS = {
     'splitPaneHomeSelectionFollowsSectionChange',
-    'settingsHomeOpensAppearanceAndReturnsHome',
+    'settingsHomeOpensAppearanceAndBackMatchesLayout',
 }
 SCREENSHOTS = {'settings-home.png', 'appearance-settings.png'}
 ANDROID = '{http://schemas.android.com/apk/res/android}'

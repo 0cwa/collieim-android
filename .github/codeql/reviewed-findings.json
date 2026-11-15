@@ -1663,7 +1663,7 @@
         "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentCompressionJob.java": "3f14e69a73326799cf7578a9f7b2575525772586aeb771d81c1f389efc1dea08",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentDownloadJob.kt": "31bdb75344d0922c125de4de5215462781eb71901f7951cdcd497c631784028f",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentUploadJob.kt": "894fec9da630f7d1ecfe1bcfd81f7b23a30ab5abe83f6ce532ee1ae4d2b5efa0",
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentUploadSnapshot.kt": "f820c05413c59344dcf4b73410fe5169db634e121ec2a8078d2f09b0180637fa",
+        "app/src/main/java/org/thoughtcrime/securesms/jobs/AttachmentUploadSnapshot.kt": "9a01e298b8f1d03b3e1a2fb3acce56abe8140c4770be882550e84a5ff5b57b98",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/AvatarGroupsV1DownloadJob.java": "a613c9a480d5cb4e1fc9c0f1686fa5baddb92669bd43f3b69bf2535f855ee156",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/BackfillDigestsForDataFileJob.kt": "e15a7abfa32a1adbdddb0ffe722111771df5f161ad0c7d9125899ef8ca82704f",
         "app/src/main/java/org/thoughtcrime/securesms/jobs/CopyAttachmentToArchiveJob.kt": "2c13bc80b0d9136bf6254a7d57ad4d0bc4104f3d221b4585ed4e7fc60ffe8b80",

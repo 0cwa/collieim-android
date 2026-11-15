@@ -27,6 +27,7 @@ abstract class CaptchaFragment : LoggingFragment(R.layout.fragment_registration_
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     SystemWindowInsetsSetter.attach(view, viewLifecycleOwner)
+    binding.registrationCaptchaWebView.settings.allowContentAccess = false
     binding.registrationCaptchaWebView.settings.javaScriptEnabled = true
     binding.registrationCaptchaWebView.clearCache(true)
 

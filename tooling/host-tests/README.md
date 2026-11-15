@@ -85,5 +85,6 @@ and rejects an invalid stripped library before replacing a staged resource.
 Passing these checks does not replace running the JVM suite
 with a non-zero test count.
 
-The required module and security-suite inventory and the repository activation
-steps are in [Security CI readiness](../../docs/SECURITY-CI-READINESS.md).
+The earlier security-suite inventory and proposed activation steps are recorded in
+[Security CI readiness](../../docs/SECURITY-CI-READINESS.md); that document is historical.
+See the [development cycle](https://github.com/0cwa/collie-release-engineering/blob/main/docs/DEVELOPMENT-CYCLE.md) for current policy.

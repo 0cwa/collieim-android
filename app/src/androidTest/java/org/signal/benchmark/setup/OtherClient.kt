@@ -65,6 +65,11 @@ class OtherClient(val serviceId: ServiceId, val e164: String, val identityKeyPai
     }
   }
 
+  /** Forget the previous handshake when the app re-registers and archives its sessions. */
+  fun resetSession() {
+    aciStore.deleteSession(getAliceProtocolAddress())
+  }
+
   /** Inspired by SignalServiceMessageSender#getEncryptedMessage */
   fun encrypt(envelopeContent: EnvelopeContent): Envelope {
     return encrypt(envelopeContent, envelopeContent.content.get().dataMessage!!.timestamp!!)
@@ -214,7 +219,9 @@ class OtherClient(val serviceId: ServiceId, val e164: String, val identityKeyPai
     override fun containsPreKey(preKeyId: Int): Boolean = throw UnsupportedOperationException()
     override fun removePreKey(preKeyId: Int) = throw UnsupportedOperationException()
     override fun loadExistingSessions(addresses: MutableList<SignalProtocolAddress>?): MutableList<SessionRecord> = throw UnsupportedOperationException()
-    override fun deleteSession(address: SignalProtocolAddress?) = throw UnsupportedOperationException()
+    override fun deleteSession(address: SignalProtocolAddress?) {
+      aliceSessionRecord = null
+    }
     override fun deleteAllSessions(name: String?) = throw UnsupportedOperationException()
     override fun loadSignedPreKey(signedPreKeyId: Int): SignedPreKeyRecord = throw UnsupportedOperationException()
     override fun loadSignedPreKeys(): MutableList<SignedPreKeyRecord> = throw UnsupportedOperationException()

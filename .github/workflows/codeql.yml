@@ -163,6 +163,11 @@ jobs:
             --output="$RUNNER_TEMP/codeql-evidence/compiled-files.bqrs" "$pack/collie-compiled-files.ql"
           "$CODEQL_PATH" bqrs decode --format=csv --no-titles \
             --output="$RUNNER_TEMP/codeql-evidence/extracted.csv" "$RUNNER_TEMP/codeql-evidence/compiled-files.bqrs"
+      - name: Export exact finding context for review integration
+        run: |
+          python3 policy/tools/codeql/export_context.py \
+            --sarif "$RUNNER_TEMP/codeql-java-sarif" --source-root "$GITHUB_WORKSPACE" \
+            --language java-kotlin --output "$RUNNER_TEMP/codeql-evidence/review-context.json"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: always() && !cancelled()
         with:
@@ -171,6 +176,10 @@ jobs:
             ${{ runner.temp }}/codeql-java-sarif
             ${{ runner.temp }}/codeql-evidence/compiler-inputs.jsonl
             ${{ runner.temp }}/codeql-evidence/extracted.csv
+            ${{ runner.temp }}/codeql-evidence/review-context.json
+            ${{ runner.temp }}/codeql-evidence/source.txt
+            ${{ runner.temp }}/codeql-evidence/codeql-version.txt
+            ${{ runner.temp }}/codeql-evidence/qlpacks.json
           if-no-files-found: error
           retention-days: 14
   findings-gate:

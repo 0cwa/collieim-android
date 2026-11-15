@@ -1,11 +1,11 @@
 # Collie agent notes
 
 - Workflow: `0cwa/collie-release-engineering` `docs/DEVELOPMENT-CYCLE.md`. Change app code directly in ordinary PRs.
-- Every non-merge commit carries one `Layer: <feature>` trailer (lowercase, hyphens), e.g. `Layer: settings`.
+- Every non-merge commit carries one `Layer: <feature>` trailer (lowercase, hyphens), e.g. `Layer: settings`. Sign commits and confirm that GitHub verifies their signatures before landing.
 - Signal and Molly upgrades: follow that file's "Upstream upgrades" section. Never `git merge` an upstream tag.
 - Add nothing to the repo root; put new files under `docs/`, `tooling/` or `.github/`.
 - Releases: `docs/RELEASING.md`. Build and publish the APK first. Tooling changes go in separate PRs and never delay a release.
-- UI changes: open the changed screen on an API 35 emulator and screenshot it before merging. The screen security setting (FLAG_SECURE) blanks screenshots; turn it off for the test and back on after.
+- For changes to screens, navigation, UI behavior, or user-facing feature flows, capture relevant screenshots from the actual running app on an API 35 emulator before merging. Show before and after and affected states when useful to explain the change; choose evidence appropriate to the change, without requiring a fixed matrix. Link the retained screenshots in the PR description so reviewers can inspect them. Screen security (FLAG_SECURE) blanks screenshots: turn it off for the capture and restore it afterward. Use relevant tests or runtime evidence for changes without a UI effect.
 - Instrumentation: install the app and test APKs from the same build. A run that collected 0 tests failed.
 - Put new UI only where the request says. If it doesn't say, ask.
 - Ported upstream changes keep their original author (`git am`, or a `Co-authored-by:` trailer).

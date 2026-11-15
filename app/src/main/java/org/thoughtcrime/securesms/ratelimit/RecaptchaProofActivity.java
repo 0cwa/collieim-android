@@ -65,6 +65,7 @@ public class RecaptchaProofActivity extends PassphraseRequiredActivity {
     });
 
     WebView webView = findViewById(R.id.recaptcha_webview);
+    webView.getSettings().setAllowContentAccess(false);
     webView.getSettings().setJavaScriptEnabled(true);
     webView.clearCache(true);
     webView.setBackgroundColor(Color.TRANSPARENT);

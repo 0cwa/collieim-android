@@ -84,6 +84,7 @@ class Stripe3DSDialogFragment : DialogFragment(R.layout.donation_webview_fragmen
     )
 
     binding.webView.webViewClient = Stripe3DSWebClient()
+    binding.webView.settings.allowContentAccess = false
     binding.webView.settings.javaScriptEnabled = true
     binding.webView.settings.domStorageEnabled = true
     binding.webView.settings.cacheMode = WebSettings.LOAD_NO_CACHE

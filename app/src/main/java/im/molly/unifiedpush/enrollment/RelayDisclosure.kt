@@ -131,6 +131,10 @@ object RelayDisclosure {
       values.vapidPublicKey == authorization.vapid && SignalStore.settings.preferredNotificationMethod == authorization.deliveryMethod
   }
 
+  fun isCurrentAuthorization(authorization: RefreshAuthorization): Boolean = synchronized(UnifiedPushLifecycle.monitor) {
+    matchesRefreshLocked(authorization)
+  }
+
   /** A short, cancellable UI continuation; the caller executes this on Main and keeps the effect in [action]. */
   suspend fun completeSelection(authorization: RefreshAuthorization, action: () -> Unit): Boolean {
     val caller = currentCoroutineContext()

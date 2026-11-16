@@ -40,6 +40,8 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
 
   // Kept only in memory across configuration changes; the result is still revalidated before use.
   internal var pendingMollySocketSetup: RelayDisclosure.RefreshAuthorization? = null
+  internal data class PendingMollySocketResult(val authorization: RelayDisclosure.RefreshAuthorization, val success: Boolean?)
+  internal var pendingMollySocketResult: PendingMollySocketResult? = null
 
   companion object {
     private val TAG = Log.tag(NotificationsSettingsViewModel::class)
@@ -189,12 +191,11 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
     }
   }
 
-  fun completeMollySocketSetup(authorization: RelayDisclosure.RefreshAuthorization, onCurrent: () -> Unit) {
-    viewModelScope.launch {
-      if (!RelayDisclosure.completeSelection(authorization, onCurrent)) showStaleDisclosure()
-      refresh()
-    }
-  }
+  suspend fun completeMollySocketSetup(authorization: RelayDisclosure.RefreshAuthorization, onCurrent: () -> Unit): Boolean =
+    RelayDisclosure.completeSelection(authorization, onCurrent)
+
+  fun isCurrentMollySocketSetup(authorization: RelayDisclosure.RefreshAuthorization): Boolean =
+    RelayDisclosure.isCurrentAuthorization(authorization)
 
   private fun showStaleDisclosure() {
     Toast.makeText(AppDependencies.application, R.string.UnifiedPushSettingsFragment__disclosure_stale, Toast.LENGTH_LONG).show()

@@ -210,22 +210,9 @@ open class DefaultNotificationsSettingsCallbacks(
     contract = UnifiedPushDefaultDistributorLinkActivity.Contract(),
     callback = { success ->
       val authorization = viewModel.pendingMollySocketSetup
-      viewModel.pendingMollySocketSetup = null
       if (authorization != null) {
-        activity.lifecycleScope.launch {
-          activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
-            // Activity results may arrive before onResume. Check authorization after that lifecycle wait.
-            viewModel.completeMollySocketSetup(authorization) {
-              if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                if (success != true) {
-                  // Preserve fallback for distributors that do not implement the default-picker contract.
-                  viewModel.selectFirstDistributor()
-                }
-                onNavigationUnifiedPushSettings()
-              }
-            }
-          }
-        }
+        viewModel.pendingMollySocketResult = NotificationsSettingsViewModel.PendingMollySocketResult(authorization, success)
+        resumePendingMollySocketResult()
       }
     }
   )
@@ -251,6 +238,38 @@ open class DefaultNotificationsSettingsCallbacks(
       }
     }
   )
+
+  init {
+    resumePendingMollySocketResult()
+  }
+
+  private fun resumePendingMollySocketResult() {
+    val pending = viewModel.pendingMollySocketResult ?: return
+    activity.lifecycleScope.launch {
+      while (viewModel.pendingMollySocketResult === pending) {
+        activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) { }
+        val completed = viewModel.completeMollySocketSetup(pending.authorization) {
+          if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && viewModel.pendingMollySocketResult === pending) {
+            viewModel.pendingMollySocketResult = null
+            viewModel.pendingMollySocketSetup = null
+            if (pending.success != true) viewModel.selectFirstDistributor()
+            onNavigationUnifiedPushSettings()
+          }
+        }
+        if (completed && viewModel.pendingMollySocketResult !== pending) return@launch
+        if (!completed && !viewModel.isCurrentMollySocketSetup(pending.authorization)) {
+          activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+            if (viewModel.pendingMollySocketResult === pending) {
+              viewModel.pendingMollySocketResult = null
+              viewModel.pendingMollySocketSetup = null
+              RelayDisclosureDialogs.showStaleAction(activity)
+            }
+          }
+          return@launch
+        }
+      }
+    }
+  }
 
   override fun onTurnOnNotificationsActionClick() {
     TurnOnNotificationsBottomSheet.turnOnSystemNotificationsFragment(activity).show(activity.supportFragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG)

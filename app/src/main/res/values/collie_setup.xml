@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Status line under "Collie" in the Chats toolbar. Each line has shorter fallbacks that are used when the longer one does not fit; it is never cut off. -->
+    <string name="CollieStatus__setup_long">Finish setup · %1$d left</string>
+    <string name="CollieStatus__setup_short">Finish setup</string>
+    <string name="CollieStatus__setup_tiny">Setup</string>
+    <string name="CollieStatus__updated_long">Updated · See what’s new</string>
+    <string name="CollieStatus__updated_short">See what’s new</string>
+    <string name="CollieStatus__updated_tiny">What’s new</string>
+    <string name="CollieStatus__notifications_off_long">Notifications are turned off</string>
+    <string name="CollieStatus__notifications_off_short">Notifications off</string>
+    <string name="CollieStatus__push_app_missing_long">Push app isn’t available</string>
+    <string name="CollieStatus__push_app_missing_short">Push app missing</string>
+    <string name="CollieStatus__messages_delayed_long">Messages may arrive late</string>
+    <string name="CollieStatus__messages_delayed_short">Messages delayed</string>
+    <string name="CollieStatus__push_failing_long">Push isn’t working</string>
+    <string name="CollieStatus__push_failing_short">Push failing</string>
+    <string name="CollieStatus__release_action_long">Action needed after update</string>
+    <string name="CollieStatus__release_action_short">Action needed</string>
+
+    <!-- Banner above the chats, only for problems that stop messages from arriving on time. -->
+    <string name="CollieProblem__notifications_off_title">Notifications are turned off</string>
+    <string name="CollieProblem__notifications_off_body">You won’t see new messages until you turn them on.</string>
+    <string name="CollieProblem__notifications_off_action">Turn on</string>
+    <string name="CollieProblem__push_app_missing_title">Your push app isn’t available</string>
+    <string name="CollieProblem__push_app_missing_body">Collie can’t get pushes through it. Choose a push app again, or keep Collie connected instead.</string>
+    <string name="CollieProblem__push_app_missing_action">Fix</string>
+    <string name="CollieProblem__messages_delayed_title">Messages are arriving late</string>
+    <string name="CollieProblem__messages_delayed_body">Android is limiting Collie in the background. Allow it to run so messages arrive on time.</string>
+    <string name="CollieProblem__messages_delayed_action">Allow</string>
+    <string name="CollieProblem__push_failing_title">Push isn’t working</string>
+    <string name="CollieProblem__push_failing_body">Collie switched to its own connection so messages still arrive. This uses more battery.</string>
+    <string name="CollieProblem__push_failing_action">Check push</string>
+
+    <!-- Finish setup sheet and the checklist on an empty Chats list -->
+    <string name="CollieSetup__title">Finish setup</string>
+    <string name="CollieSetup__progress">%1$d of %2$d done</string>
+    <string name="CollieSetup__hide">Hide for now</string>
+    <string name="CollieSetup__hide_hint">Find setup again in the Chats menu.</string>
+    <string name="CollieSetup__whats_new">What’s new</string>
+    <string name="CollieSetup__support">Support Collie</string>
+    <string name="CollieSetup__done_description">Done</string>
+    <string name="CollieSetup__todo_description">Not done yet</string>
+    <string name="CollieSetup__skipped_description">Skipped</string>
+
+    <string name="CollieSetup__notifications_title">Notifications</string>
+    <string name="CollieSetup__notifications_todo">Turn them on so you see new messages.</string>
+
+    <string name="CollieSetup__delivery_title">How messages reach you</string>
+    <string name="CollieSetup__delivery_google">Google push</string>
+    <string name="CollieSetup__delivery_unifiedpush">UnifiedPush</string>
+    <string name="CollieSetup__delivery_unifiedpush_tested">UnifiedPush · test passed %1$s</string>
+    <string name="CollieSetup__delivery_unifiedpush_todo">UnifiedPush isn’t working yet.</string>
+    <string name="CollieSetup__delivery_websocket">Collie stays connected</string>
+    <string name="CollieSetup__delivery_websocket_todo">Collie stays connected now. UnifiedPush can save battery.</string>
+
+    <string name="CollieSetup__battery_title">Background use</string>
+    <string name="CollieSetup__battery_todo">Needed while Collie stays connected</string>
+    <string name="CollieSetup__battery_skipped">Not allowed. Messages may arrive late.</string>
+
+    <string name="CollieSetup__updates_title">Update checks</string>
+    <string name="CollieSetup__updates_done_checked">On · checked %1$s</string>
+    <string name="CollieSetup__updates_available">Collie %1$s is available</string>
+    <string name="CollieSetup__updates_todo">Get told when a new version is out.</string>
+
+    <string name="CollieSetup__backups_title">Backups</string>
+    <string name="CollieSetup__backups_todo">Keep an encrypted copy on this phone.</string>
+
+    <string name="CollieSetup__empty_title">Before your first chat</string>
+    <string name="CollieSetup__empty_body">So you don’t miss any messages.</string>
+    <string name="CollieSetup__message_a_friend">Message a friend</string>
+
+    <!-- Chats overflow menu -->
+    <string name="CollieMenu__finish_setup">Finish setup</string>
+    <string name="CollieMenu__whats_new">What’s new</string>
+
+    <!-- What's new screen -->
+    <string name="CollieWhatsNew__title">What’s new</string>
+    <string name="CollieWhatsNew__heading">What’s new in Collie</string>
+    <string name="CollieWhatsNew__installed_version">Installed version %1$s</string>
+    <string name="CollieWhatsNew__full_release_notes">Full release notes</string>
+    <string name="CollieWhatsNew__got_it">Got it</string>
+
+    <!-- Highlights of the bundled edition. Each claim must be true for the release that ships it (see docs/FINISH-SETUP.md). -->
+    <string name="CollieWhatsNew__setup_title">One place to finish setup</string>
+    <string name="CollieWhatsNew__setup_body">A short line under “Collie” tells you when something needs attention. Tap it to see what’s left.</string>
+    <string name="CollieWhatsNew__push_health_title">Collie notices when push stops working</string>
+    <string name="CollieWhatsNew__push_health_body">If pushes stop arriving, Collie switches to its own connection and tells you. You can test your push setup in Notifications settings.</string>
+    <string name="CollieWhatsNew__updates_title">Update notices for website installs</string>
+    <string name="CollieWhatsNew__updates_body">If you installed Collie from its website, it checks signed release information and tells you when a new version is out.</string>
+    <string name="CollieWhatsNew__backups_title">Safer restores</string>
+    <string name="CollieWhatsNew__backups_body">Restoring refuses backups that were changed, and restoring a Molly backup keeps your security settings.</string>
+    <string name="CollieWhatsNew__signal_title">Based on Signal 8.35.2</string>
+    <string name="CollieWhatsNew__signal_body">Includes the latest fixes from Signal.</string>
+</resources>

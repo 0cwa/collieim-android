@@ -24,6 +24,7 @@ import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.calls.log.CallLogFilter
 import org.thoughtcrime.securesms.conversationlist.model.ConversationFilter
 import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.main.setup.StatusLine
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 
@@ -50,6 +51,13 @@ class MainToolbarViewModel : ViewModel() {
         isOutOfRemoteStorageSpace = BackupRepository.shouldDisplayOutOfRemoteStorageSpaceUx(),
         hasPassphrase = TextSecurePreferences.isPassphraseLockEnabled(AppDependencies.application)
       )
+    }
+  }
+
+  /** COLLIE: what the Chats status line says, and whether the menu offers Finish setup. */
+  fun setSetupStatus(statusLine: StatusLine, hasSetupItems: Boolean) {
+    internalStateFlow.update {
+      it.copy(statusLine = statusLine, hasSetupItems = hasSetupItems)
     }
   }
 

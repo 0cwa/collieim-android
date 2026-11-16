@@ -158,6 +158,8 @@ import org.thoughtcrime.securesms.main.MainToolbarState
 import org.thoughtcrime.securesms.main.MainToolbarViewModel
 import org.thoughtcrime.securesms.main.Material3OnScrollHelperBinder
 import org.thoughtcrime.securesms.main.rememberDecoratedDetailEntries
+import org.thoughtcrime.securesms.main.setup.SetupActions
+import org.thoughtcrime.securesms.main.setup.SetupStatusRepository
 import org.thoughtcrime.securesms.mediasend.MediaSendLauncher
 import org.thoughtcrime.securesms.megaphone.Megaphone
 import org.thoughtcrime.securesms.megaphone.MegaphoneActionController
@@ -291,6 +293,14 @@ class MainActivity :
                 mainBottomChromeCallback.onCameraClick(MainListRoute.Stories)
               }
             }
+          }
+        }
+      }
+
+      launch {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+          SetupStatusRepository.snapshot.collect { snapshot ->
+            toolbarViewModel.setSetupStatus(snapshot.state.statusLine, snapshot.state.remaining.isNotEmpty())
           }
         }
       }
@@ -685,6 +695,7 @@ class MainActivity :
     dynamicTheme.onResume(this)
 
     toolbarViewModel.refresh()
+    SetupStatusRepository.refresh()
 
     if (SignalStore.misc.shouldShowLinkedDevicesReminder) {
       SignalStore.misc.shouldShowLinkedDevicesReminder = false
@@ -1009,6 +1020,18 @@ class MainActivity :
 
     override fun onSettingsClick() {
       openSettings.launch(AppSettingsActivity.home(this@MainActivity))
+    }
+
+    override fun onStatusLineClick() {
+      SetupActions.onStatusLineClick(this@MainActivity, toolbarViewModel.state.value.statusLine)
+    }
+
+    override fun onFinishSetupClick() {
+      SetupActions.showSetup(this@MainActivity)
+    }
+
+    override fun onWhatsNewClick() {
+      SetupActions.showWhatsNew(this@MainActivity)
     }
 
     override fun onNotificationProfileClick() {

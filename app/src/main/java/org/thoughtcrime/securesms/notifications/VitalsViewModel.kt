@@ -7,13 +7,11 @@ package org.thoughtcrime.securesms.notifications
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import im.molly.unifiedpush.UnifiedPushDistributor
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.notifications.DeviceSpecificNotificationConfig.ShowCondition
 import java.util.concurrent.TimeUnit
 
@@ -44,9 +42,8 @@ class VitalsViewModel(private val context: Application) : AndroidViewModel(conte
 
   private fun checkHeuristics(): Single<State> {
     return Single.fromCallable {
-      if (SignalStore.unifiedpush.enabled && !UnifiedPushDistributor.checkIfActive()) {
-        return@fromCallable State.PROMPT_UNIFIEDPUSH_SELECT_DISTRIBUTOR_DIALOG
-      }
+      // COLLIE: a missing push app, and late messages on a restricted battery, are shown by the status line and the
+      // problem banner on Chats (main/setup). Only the phone-specific guide below still opens on its own.
 
       val deviceSpecificCondition = SlowNotificationHeuristics.getDeviceSpecificShowCondition()
 
@@ -63,10 +60,6 @@ class VitalsViewModel(private val context: Application) : AndroidViewModel(conte
 
       if (deviceSpecificCondition == ShowCondition.HAS_SLOW_NOTIFICATIONS && shouldShowDeviceSpecificDialog && havingDelayedNotifications) {
         return@fromCallable State.PROMPT_SPECIFIC_BATTERY_SAVER_DIALOG
-      }
-
-      if (havingDelayedNotifications && SlowNotificationHeuristics.shouldPromptBatterySaver() && SlowNotificationHeuristics.isBatteryOptimizationsOn()) {
-        return@fromCallable State.PROMPT_GENERAL_BATTERY_SAVER_DIALOG
       }
 
       return@fromCallable State.NONE

@@ -140,6 +140,23 @@ class CollieUpdateIndexTest {
   }
 
   @Test
+  fun `stable and beta indexes cannot cross channels`() {
+    val stable = CollieUpdateIndex.Channel.STABLE
+    val beta = CollieUpdateIndex.Channel.BETA
+    val betaIndex = metadata().replace(stable.repositoryUrl, beta.repositoryUrl)
+      .replace(stable.packageName, beta.packageName)
+      .replace(stable.apkCertificate, beta.apkCertificate)
+    fun read(json: String, channel: CollieUpdateIndex.Channel) =
+      CollieUpdateIndex.parseVerifiedIndex(json.toByteArray(), 1794370488000, 177704, 35, setOf("arm64-v8a"), channel)
+    assertEquals(177705L, read(betaIndex, beta).update!!.versionCode)
+    assertThrows(IOException::class.java) { read(betaIndex, stable) }
+    assertThrows(IOException::class.java) { read(metadata(), beta) }
+    assertThrows(IOException::class.java) { read(betaIndex.replace(beta.apkCertificate, stable.apkCertificate), beta) }
+    assertEquals("https://github.com/0cwa/collieim-android/releases/tag/trailblazer-v8.35.1-3-rc2", CollieUpdateIndex.releasePage("8.35.1-3-rc2", beta))
+    assertNull(CollieUpdateIndex.channelFor("im.collie.app.unknown"))
+  }
+
+  @Test
   fun `APK signer hash and filename must match policy`() {
     for (modified in listOf(
       metadata().replace(CollieUpdateIndex.APK_CERTIFICATE, "00".repeat(32)),

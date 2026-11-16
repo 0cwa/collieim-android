@@ -47,12 +47,13 @@ class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(paramet
 
   @Throws(IOException::class)
   public override fun onRun() {
-    if (!BuildConfig.MANAGE_COLLIE_UPDATES || BuildConfig.APPLICATION_ID != CollieUpdateIndex.PACKAGE_NAME) return
+    if (!BuildConfig.MANAGE_COLLIE_UPDATES) return
+    val channel = CollieUpdateIndex.channelFor(BuildConfig.APPLICATION_ID) ?: return
     if (!TextSecurePreferences.isUpdateApkEnabled(context)) return
 
     val values = SignalStore.apkUpdate
     val client = newClient()
-    val entryRequest = Request.Builder().url("${CollieUpdateIndex.REPOSITORY_URL}/entry.jar").build()
+    val entryRequest = Request.Builder().url("${channel.repositoryUrl}/entry.jar").build()
     val index = client.newCall(entryRequest).execute().use { response ->
       val body = response.body
       if (!response.isSuccessful || body == null || body.contentLength() > CollieUpdateIndex.MAX_ARCHIVE_BYTES) {
@@ -61,13 +62,13 @@ class ApkUpdateJob private constructor(parameters: Parameters) : BaseJob(paramet
       body.byteStream().use { CollieUpdateIndex.readEntry(it, context.cacheDir, values.lastIndexTimestamp) }
     }
     if (!TextSecurePreferences.isUpdateApkEnabled(context)) return
-    val indexRequest = Request.Builder().url("${CollieUpdateIndex.REPOSITORY_URL}/index-v2.json").build()
+    val indexRequest = Request.Builder().url("${channel.repositoryUrl}/index-v2.json").build()
     val result = client.newCall(indexRequest).execute().use { response ->
       val body = response.body
       if (!response.isSuccessful || body == null || body.contentLength() > index.size) {
         throw IOException("Failed to fetch Collie update index")
       }
-      body.byteStream().use { CollieUpdateIndex.readIndex(it, index, BuildConfig.VERSION_CODE.toLong(), Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS.toSet()) }
+      body.byteStream().use { CollieUpdateIndex.readIndex(it, index, BuildConfig.VERSION_CODE.toLong(), Build.VERSION.SDK_INT, Build.SUPPORTED_ABIS.toSet(), channel) }
     }
 
     // Do not publish a result after the user has disabled checks while the request was running.

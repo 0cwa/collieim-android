@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import org.signal.core.util.Hex
 import org.signal.core.util.JsonUtils
+import org.thoughtcrime.securesms.BuildConfig
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -20,6 +21,12 @@ internal object CollieUpdateIndex {
   const val PACKAGE_NAME = "im.collie.app"
   const val REPOSITORY_CERTIFICATE = "b0c5dcbac2b65ada4e8f641910097fb0bf86a5f7255319584d453c2932f5233c"
   const val APK_CERTIFICATE = "f8cc0c0c052e5635c26fcd293c2b0af3e87d61ff7f2df3602a9af6e91f73c826"
+  internal enum class Channel(val packageName: String, val repositoryUrl: String, val apkCertificate: String, val tagPrefix: String) {
+    STABLE(PACKAGE_NAME, REPOSITORY_URL, APK_CERTIFICATE, "v"),
+    BETA("im.collie.app.trailblazer", "https://repo.collie.im/fdroid/beta/repo", "a515c03498bce8852b835544910b09ccc11a3abbed23e826e9c62c002680fe98", "trailblazer-v")
+  }
+
+  internal fun channelFor(packageName: String): Channel? = Channel.entries.singleOrNull { it.packageName == packageName }
   const val MAX_ARCHIVE_BYTES = 2 * 1024 * 1024
   const val MAX_EXPANDED_BYTES = 4 * 1024 * 1024
   private const val INDEX_ENTRY = "entry.json"
@@ -37,17 +44,17 @@ internal object CollieUpdateIndex {
     return parseVerifiedEntry(verifyArchive(input, cacheDirectory), lastTimestamp)
   }
 
-  fun readIndex(input: InputStream, index: Index, currentVersionCode: Long, deviceSdk: Int, supportedAbis: Set<String>): Result {
+  fun readIndex(input: InputStream, index: Index, currentVersionCode: Long, deviceSdk: Int, supportedAbis: Set<String>, channel: Channel = Channel.STABLE): Result {
     val bytes = readBounded(input, index.size)
     if (bytes.size != index.size || !MessageDigest.isEqual(sha256(bytes), Hex.fromStringCondensed(index.sha256))) {
       throw IOException("Update index does not match its signed digest and size")
     }
-    return parseVerifiedIndex(bytes, index.timestamp, currentVersionCode, deviceSdk, supportedAbis)
+    return parseVerifiedIndex(bytes, index.timestamp, currentVersionCode, deviceSdk, supportedAbis, channel)
   }
 
-  fun releasePage(versionName: String): String {
+  fun releasePage(versionName: String, channel: Channel = channelFor(BuildConfig.APPLICATION_ID) ?: Channel.STABLE): String {
     require(versionName.length <= 80 && VERSION_NAME.matches(versionName)) { "Invalid Collie release version" }
-    return "https://github.com/0cwa/collieim-android/releases/tag/v$versionName"
+    return "https://github.com/0cwa/collieim-android/releases/tag/${channel.tagPrefix}$versionName"
   }
 
   internal fun verifyArchive(input: InputStream, cacheDirectory: File, certificate: String = REPOSITORY_CERTIFICATE): ByteArray {
@@ -112,14 +119,14 @@ internal object CollieUpdateIndex {
   }
 
   /** Only called after the signed entry's digest and size have authenticated the bytes. */
-  internal fun parseVerifiedIndex(json: ByteArray, timestamp: Long, currentVersionCode: Long, deviceSdk: Int, supportedAbis: Set<String>): Result {
+  internal fun parseVerifiedIndex(json: ByteArray, timestamp: Long, currentVersionCode: Long, deviceSdk: Int, supportedAbis: Set<String>, channel: Channel = Channel.STABLE): Result {
     val root = parseJson(json)
     val repo = root.path("repo")
-    if (repo.path("address").asText() != REPOSITORY_URL || positiveLong(repo.path("timestamp")) != timestamp) {
+    if (repo.path("address").asText() != channel.repositoryUrl || positiveLong(repo.path("timestamp")) != timestamp) {
       throw IOException("Wrong update repository generation")
     }
-    val app = root.path("packages").path(PACKAGE_NAME)
-    if (!app.path("metadata").path("preferredSigner").asText().equals(APK_CERTIFICATE, ignoreCase = true)) {
+    val app = root.path("packages").path(channel.packageName)
+    if (!app.path("metadata").path("preferredSigner").asText().equals(channel.apkCertificate, ignoreCase = true)) {
       throw IOException("Missing Collie package or wrong preferred signer")
     }
     val entries = app.path("versions")
@@ -133,9 +140,9 @@ internal object CollieUpdateIndex {
       val file = entry.path("file")
       val signers = manifest.path("signer").path("sha256")
       if (!HEX_DIGEST.matches(hash) || file.path("sha256").asText() != hash ||
-        file.path("name").asText() != "/${PACKAGE_NAME}_$code.apk" ||
-        !signers.isArray || signers.size() != 1 || !signers[0].asText().equals(APK_CERTIFICATE, ignoreCase = true) ||
-        (manifest.has("packageName") && manifest.path("packageName").asText() != PACKAGE_NAME)
+        file.path("name").asText() != "/${channel.packageName}_$code.apk" ||
+        !signers.isArray || signers.size() != 1 || !signers[0].asText().equals(channel.apkCertificate, ignoreCase = true) ||
+        (manifest.has("packageName") && manifest.path("packageName").asText() != channel.packageName)
       ) {
         throw IOException("Invalid Collie package identity")
       }

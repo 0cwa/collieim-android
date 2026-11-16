@@ -136,7 +136,7 @@ class EnrollmentExportTest {
     assertTrue(file.exists())
 
     im.molly.unifiedpush.components.settings.app.notifications.UnifiedPushSettingsViewModel(context.applicationContext as android.app.Application)
-      .exportEnrollment(context, "99999999999999999999", ExportMode.NEW_INTENT)
+      .exportEnrollment(context, "99999999999999999999", ExportMode.NEW_INTENT, disclosure = checkNotNull(RelayDisclosure.capture(context)))
 
     val deadline = System.currentTimeMillis() + 5000
     while (file.exists() && System.currentTimeMillis() < deadline) Thread.sleep(50)

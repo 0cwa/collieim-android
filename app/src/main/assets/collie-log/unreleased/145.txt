@@ -1,0 +1,3 @@
+topic: backups
+pr: 145
+Restoring a backup checks that every message and file is the one that was saved.

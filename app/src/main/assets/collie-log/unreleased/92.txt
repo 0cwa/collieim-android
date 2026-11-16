@@ -1,0 +1,3 @@
+topic: push
+pr: 92
+Encrypted push can be set up from an enrollment file, and pushes that fail to decrypt are ignored.

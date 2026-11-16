@@ -37,6 +37,7 @@ object HelpSettingsTestTags {
   const val ROW_CONTACT_US = "row-contact-us"
   const val ROW_VERSION = "row-version"
   const val ROW_APP_UPDATES = "row-app-updates"
+  const val ROW_WHATS_NEW = "row-whats-new"
   const val ROW_DEBUG_LOG = "row-debug-log"
   const val ROW_LICENSES = "row-licenses"
   const val ROW_TERMS_AND_PRIVACY_POLICY = "row-terms-and-privacy-policy"
@@ -98,6 +99,15 @@ fun HelpSettingsScreen(
           onClick = { onEvent(HelpSettingsEvent.VersionClicked) },
           onLongClick = { onEvent(HelpSettingsEvent.VersionLongClicked) },
           modifier = Modifier.testTag(HelpSettingsTestTags.ROW_VERSION)
+        )
+      }
+
+      item {
+        Rows.TextRow(
+          text = stringResource(R.string.HelpSettingsFragment__whats_new),
+          label = stringResource(R.string.HelpSettingsFragment__whats_new_label),
+          onClick = { onEvent(HelpSettingsEvent.WhatsNewClicked) },
+          modifier = Modifier.testTag(HelpSettingsTestTags.ROW_WHATS_NEW)
         )
       }
 

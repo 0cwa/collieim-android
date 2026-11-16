@@ -61,6 +61,9 @@ class HelpSettingsViewModelTest {
   fun `VersionLongClicked copies the version name`() = assertEventEmits(HelpSettingsEvent.VersionLongClicked, HelpSettingsAction.CopyVersionToClipboard(VERSION_NAME))
 
   @Test
+  fun `WhatsNewClicked opens What's new`() = assertEventEmits(HelpSettingsEvent.WhatsNewClicked, HelpSettingsAction.OpenWhatsNew)
+
+  @Test
   fun `DebugLogClicked navigates to the debug log`() = assertEventEmits(HelpSettingsEvent.DebugLogClicked, HelpSettingsAction.NavigateToDebugLog)
 
   @Test

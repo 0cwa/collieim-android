@@ -1,0 +1,3 @@
+topic: fixes
+pr: 86
+Network settings and Database encryption no longer sit under the status bar.

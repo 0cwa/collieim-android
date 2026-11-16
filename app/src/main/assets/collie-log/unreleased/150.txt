@@ -1,0 +1,3 @@
+topic: setup
+pr: 150
+A line under Collie says when something needs attention, and new accounts get a short setup list.

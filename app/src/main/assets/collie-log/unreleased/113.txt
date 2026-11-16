@@ -1,0 +1,3 @@
+topic: updates
+pr: 113
+Direct downloads tell you when a verified Collie update is out.

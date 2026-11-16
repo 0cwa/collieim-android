@@ -29,6 +29,9 @@ sealed interface HelpSettingsAction {
   /** Copy [versionName] to the clipboard and tell the user it was copied. */
   data class CopyVersionToClipboard(val versionName: String) : HelpSettingsAction
 
+  /** Open What's new on its project log, the list of every change by release. */
+  data object OpenWhatsNew : HelpSettingsAction
+
   /** Open the debug log submission screen. */
   data object NavigateToDebugLog : HelpSettingsAction
 

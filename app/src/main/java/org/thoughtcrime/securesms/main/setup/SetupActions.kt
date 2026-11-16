@@ -64,6 +64,11 @@ object SetupActions {
     CommunicationActions.openBrowserLink(activity, CollieReleaseNotes.RELEASES_URL)
   }
 
+  /** Opens a pull request in the browser. The browser makes its own connection, outside Collie's proxy. */
+  fun openPullRequest(activity: FragmentActivity, number: Int) {
+    CommunicationActions.openBrowserLink(activity, ProjectLog.PR_URL + number)
+  }
+
   fun openSupport(activity: FragmentActivity) {
     CommunicationActions.openBrowserLink(activity, activity.getString(R.string.donate_collie_url))
   }

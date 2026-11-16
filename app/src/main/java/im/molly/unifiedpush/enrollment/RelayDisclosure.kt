@@ -16,7 +16,9 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SettingsValues.NotificationDeliveryMethod
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.service.KeyCachingService
+import org.signal.core.util.concurrent.SignalDispatchers
 import org.unifiedpush.android.connector.UnifiedPush
+import kotlin.coroutines.CoroutineContext
 
 /** Binds a user-confirmed disclosure to the account and configuration that the screen actually displayed. */
 object RelayDisclosure {
@@ -74,9 +76,15 @@ object RelayDisclosure {
     snapshot: Snapshot?,
     relay: MollySocket,
     deliveryMethod: NotificationDeliveryMethod? = null,
+  ): RefreshAuthorization? = selectRelay(snapshot, relay, deliveryMethod, currentCoroutineContext())
+
+  private suspend fun selectRelay(
+    snapshot: Snapshot?,
+    relay: MollySocket,
+    deliveryMethod: NotificationDeliveryMethod?,
+    caller: CoroutineContext,
   ): RefreshAuthorization? {
     if (snapshot == null || !runIfCurrent(snapshot) {}) return null
-    val caller = currentCoroutineContext()
     // Once admitted, even a cancelled screen must finish the transition and clear its incomplete marker.
     return withContext(NonCancellable) {
       try {
@@ -94,6 +102,20 @@ object RelayDisclosure {
       } catch (_: UnifiedPushLifecycle.StaleLifecycleGenerationException) {
         null
       }
+    }
+  }
+
+  /** Once a selection commits, finish its guarded scheduling even if its screen is destroyed. */
+  suspend fun selectRelayAndComplete(
+    snapshot: Snapshot?,
+    relay: MollySocket,
+    deliveryMethod: NotificationDeliveryMethod? = null,
+    onCurrent: (RefreshAuthorization) -> Unit,
+  ): Boolean {
+    val caller = currentCoroutineContext()
+    return withContext(NonCancellable) {
+      val authorization = withContext(SignalDispatchers.IO) { selectRelay(snapshot, relay, deliveryMethod, caller) }
+      authorization != null && completeSelection(authorization) { onCurrent(authorization) }
     }
   }
 

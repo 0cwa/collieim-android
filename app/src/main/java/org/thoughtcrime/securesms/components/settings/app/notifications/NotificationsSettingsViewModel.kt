@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import android.widget.Toast
 import org.signal.core.util.concurrent.SignalDispatchers
 import org.signal.core.util.logging.Log
@@ -174,10 +173,7 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
     onSelected: (RelayDisclosure.RefreshAuthorization) -> Unit,
   ) {
     viewModelScope.launch {
-      val authorization = withContext(SignalDispatchers.IO) {
-        RelayDisclosure.selectRelay(disclosure, mollySocket, NotificationDeliveryMethod.UNIFIEDPUSH)
-      }
-      if (authorization == null || !RelayDisclosure.completeSelection(authorization) {
+      if (!RelayDisclosure.selectRelayAndComplete(disclosure, mollySocket, NotificationDeliveryMethod.UNIFIEDPUSH) { authorization ->
           TextSecurePreferences.setPromptedOptimizeDoze(AppDependencies.application, false)
           ApplicationContext.getInstance(AppDependencies.application).updatePushNotificationServices(UnifiedPushRefreshJob(authorization))
           AppDependencies.resetNetwork(true)

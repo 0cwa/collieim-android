@@ -1,0 +1,3 @@
+#!/bin/sh
+# Collie Layer trailer hooks: validate the final message before a commit exists.
+exec python3 "$(dirname "$0")/collie_check_layer_trailers.py" message "$1"

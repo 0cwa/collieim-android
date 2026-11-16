@@ -41,6 +41,7 @@ public final class NewDeviceServerTask implements ServerTask {
     Log.i(TAG, "Starting backup restore.");
 
     EventBus.Subscription subscription = EventBus.getDefault().subscribe(BackupEvent.class, this::onBackupEvent);
+    boolean restored = false;
     try {
       DataRestoreConstraint.setRestoringData(true);
       SQLiteDatabase database = SignalDatabase.getBackupDatabase();
@@ -61,6 +62,7 @@ public final class NewDeviceServerTask implements ServerTask {
       AppInitialization.onPostBackupRestore(context);
 
       Log.i(TAG, "Backup restore complete.");
+      restored = true;
     } catch (FullBackupImporter.DatabaseDowngradeException e) {
       Log.w(TAG, "Failed due to the backup being from a newer version of Signal.", e);
       EventBus.getDefault().post(new NewDeviceRestoreStatus(0, NewDeviceRestoreStatus.State.FAILURE_VERSION_DOWNGRADE));
@@ -78,7 +80,9 @@ public final class NewDeviceServerTask implements ServerTask {
     long end = System.currentTimeMillis();
     Log.i(TAG, "Receive took: " + (end - start));
 
-    EventBus.getDefault().post(new NewDeviceRestoreStatus(0, NewDeviceRestoreStatus.State.RESTORE_COMPLETE));
+    if (restored) {
+      EventBus.getDefault().post(new NewDeviceRestoreStatus(0, NewDeviceRestoreStatus.State.RESTORE_COMPLETE));
+    }
   }
 
   private void onBackupEvent(@NonNull BackupEvent event) {

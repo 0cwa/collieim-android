@@ -20,6 +20,7 @@ import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrS
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import im.molly.unifiedpush.model.MollySocket
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.MutableStateFlow
 import io.mockk.every
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -28,6 +29,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,13 +56,12 @@ class MollyNotificationCallbacksTest {
   private val disclosure = mockk<RelayDisclosure.Snapshot>()
   private val authorization = mockk<RelayDisclosure.RefreshAuthorization>()
   private var pendingSetup: RelayDisclosure.RefreshAuthorization? = null
-  private var pendingResult: NotificationsSettingsViewModel.PendingMollySocketResult? = null
+  private val pendingResult = MutableStateFlow<NotificationsSettingsViewModel.PendingMollySocketResult?>(null)
   private val socket = MollySocket.WebServer("v".repeat(87), "https://push.example.org/relay")
 
   @Before
   fun setUp() {
-    every { viewModel.pendingMollySocketResult } answers { pendingResult }
-    every { viewModel.pendingMollySocketResult = any() } answers { pendingResult = firstArg() }
+    every { viewModel.pendingMollySocketResult } returns pendingResult
     every { viewModel.pendingMollySocketSetup } answers { pendingSetup }
     every { viewModel.pendingMollySocketSetup = any() } answers { pendingSetup = firstArg() }
     controller = Robolectric.buildActivity(FragmentActivity::class.java)
@@ -318,21 +319,53 @@ class MollyNotificationCallbacksTest {
 
   @Test
   fun `replaced fragment view cannot consume a suspended distributor result`() {
+    controller.recreate()
+    activity = controller.get()
+    activity.setTheme(R.style.Theme_Molly_Material3_Light)
     val first = TestFragment()
     activity.supportFragmentManager.beginTransaction().add(android.R.id.content, first).commitNow()
     callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results, first.viewLifecycleOwner)
     allowSelection()
-    coEvery { viewModel.completeMollySocketSetup(any(), any()) } coAnswers { awaitCancellation() }
+    var cancelled = false
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } coAnswers {
+      try { awaitCancellation() } finally { cancelled = true }
+    }
     confirmScannedRelay()
     returnDistributorResult(false)
 
     val second = TestFragment()
     activity.supportFragmentManager.beginTransaction().replace(android.R.id.content, second).commitNow()
+    shadowOf(Looper.getMainLooper()).idle()
+    assertTrue("old view completion must be cancelled", cancelled)
+    assertNotNull("pending result must survive replacement", pendingResult.value)
     allowCompletion()
     callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults(), second.viewLifecycleOwner)
     shadowOf(Looper.getMainLooper()).idle()
 
     coVerify(exactly = 2) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `picker result delivered after the same fragment recreates its view reaches the new owner`() {
+    controller.recreate()
+    activity = controller.get()
+    activity.setTheme(R.style.Theme_Molly_Material3_Light)
+    val fragment = TestFragment()
+    activity.supportFragmentManager.beginTransaction().add(android.R.id.content, fragment).commitNow()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results, fragment.viewLifecycleOwner)
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+
+    activity.supportFragmentManager.beginTransaction().detach(fragment).commitNow()
+    activity.supportFragmentManager.beginTransaction().attach(fragment).commitNow()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults(), fragment.viewLifecycleOwner)
+    results.distributorResult.onActivityResult(false)
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
     verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }

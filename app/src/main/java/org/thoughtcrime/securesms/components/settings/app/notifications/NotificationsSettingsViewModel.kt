@@ -41,7 +41,7 @@ class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
   // Kept only in memory across configuration changes; the result is still revalidated before use.
   internal var pendingMollySocketSetup: RelayDisclosure.RefreshAuthorization? = null
   internal data class PendingMollySocketResult(val authorization: RelayDisclosure.RefreshAuthorization, val success: Boolean?)
-  internal var pendingMollySocketResult: PendingMollySocketResult? = null
+  internal val pendingMollySocketResult = MutableStateFlow<PendingMollySocketResult?>(null)
 
   companion object {
     private val TAG = Log.tag(NotificationsSettingsViewModel::class)

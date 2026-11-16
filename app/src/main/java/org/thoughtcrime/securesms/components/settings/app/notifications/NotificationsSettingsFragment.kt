@@ -53,6 +53,7 @@ import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrS
 import im.molly.unifiedpush.components.settings.app.notifications.RelayDisclosureDialogs
 import im.molly.unifiedpush.enrollment.RelayDisclosure
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.eventbus.RestartableSubscription
 import org.signal.core.util.eventbus.ThreadMode
@@ -213,8 +214,7 @@ open class DefaultNotificationsSettingsCallbacks(
     callback = { success ->
       val authorization = viewModel.pendingMollySocketSetup
       if (authorization != null) {
-        viewModel.pendingMollySocketResult = NotificationsSettingsViewModel.PendingMollySocketResult(authorization, success)
-        resumePendingMollySocketResult()
+        viewModel.pendingMollySocketResult.value = NotificationsSettingsViewModel.PendingMollySocketResult(authorization, success)
       }
     }
   )
@@ -242,37 +242,39 @@ open class DefaultNotificationsSettingsCallbacks(
   )
 
   init {
-    resumePendingMollySocketResult()
-  }
-
-  private fun resumePendingMollySocketResult() {
-    val pending = viewModel.pendingMollySocketResult ?: return
     owner.lifecycleScope.launch {
-      while (viewModel.pendingMollySocketResult === pending) {
-        owner.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) { }
-        val completed = viewModel.completeMollySocketSetup(pending.authorization) {
-          if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && viewModel.pendingMollySocketResult === pending) {
-            viewModel.pendingMollySocketResult = null
-            viewModel.pendingMollySocketSetup = null
-            if (pending.success != true) viewModel.selectFirstDistributor()
-            onNavigationUnifiedPushSettings()
-          }
-        }
-        if (completed && viewModel.pendingMollySocketResult !== pending) return@launch
-        if (!completed && !viewModel.isCurrentMollySocketSetup(pending.authorization)) {
-          owner.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
-            if (viewModel.pendingMollySocketResult === pending) {
-              viewModel.pendingMollySocketResult = null
-              viewModel.pendingMollySocketSetup = null
-              RelayDisclosureDialogs.showStaleAction(activity)
-            }
-          }
-          return@launch
+      owner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.pendingMollySocketResult.collectLatest { pending ->
+          if (pending != null) resumePendingMollySocketResult(pending)
         }
       }
     }
   }
 
+  private suspend fun resumePendingMollySocketResult(pending: NotificationsSettingsViewModel.PendingMollySocketResult) {
+    while (viewModel.pendingMollySocketResult.value === pending) {
+      owner.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) { }
+      val completed = viewModel.completeMollySocketSetup(pending.authorization) {
+        if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && viewModel.pendingMollySocketResult.value === pending) {
+          viewModel.pendingMollySocketResult.value = null
+          viewModel.pendingMollySocketSetup = null
+          if (pending.success != true) viewModel.selectFirstDistributor()
+          onNavigationUnifiedPushSettings()
+        }
+      }
+      if (completed && viewModel.pendingMollySocketResult.value !== pending) return
+      if (!completed && !viewModel.isCurrentMollySocketSetup(pending.authorization)) {
+        owner.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+          if (viewModel.pendingMollySocketResult.value === pending) {
+            viewModel.pendingMollySocketResult.value = null
+            viewModel.pendingMollySocketSetup = null
+            RelayDisclosureDialogs.showStaleAction(activity)
+          }
+        }
+        return
+      }
+    }
+  }
   override fun onTurnOnNotificationsActionClick() {
     TurnOnNotificationsBottomSheet.turnOnSystemNotificationsFragment(activity).show(activity.supportFragmentManager, BottomSheetUtil.STANDARD_BOTTOM_SHEET_FRAGMENT_TAG)
   }

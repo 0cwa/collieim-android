@@ -80,6 +80,23 @@ class LayerTrailerTests(unittest.TestCase):
         self.assertEqual(self.git("show", "-s", "--format=%B").stdout.strip(), GOOD.strip())
         self.assertIn("checked 1 non-merge commits", self.check_range().stdout)
 
+    def test_base_checker_validates_head_without_checker(self):
+        checker_path = self.repo / "tooling/git-hooks/collie_check_layer_trailers.py"
+        checker_path.parent.mkdir(parents=True)
+        checker_path.write_bytes(CHECKER.read_bytes())
+        self.git("add", str(checker_path))
+        self.commit("Add checker\n\nLayer: tooling")
+        base = self.git("rev-parse", "HEAD").stdout.strip()
+        self.git("rm", str(checker_path))
+        self.commit(GOOD)
+        extracted = self.root / "trusted-checker.py"
+        extracted.write_text(self.git("show", f"{base}:tooling/git-hooks/collie_check_layer_trailers.py").stdout)
+        self.assertIn("checked 1 non-merge commits", self.run_command(sys.executable, str(extracted), "range", base, "HEAD").stdout)
+        self.commit(BROKEN)
+        rejected = self.run_command(sys.executable, str(extracted), "range", base, "HEAD", check=False)
+        self.assertNotEqual(rejected.returncode, 0)
+        self.assertIn("needs exactly one", rejected.stderr)
+
     def test_missing_duplicate_and_invalid_layers_are_rejected(self):
         self.install()
         for trailers in ("", "Layer: website\nLayer: website", "Layer: Website", "Layer: two words", "Layer: ../site", "Layer:"):

@@ -10,7 +10,14 @@
 #        COLLIE_BUILD_HOME           host only: persistent Gradle home (default
 #                                    ~/.cache/collie-build/gradle). Dependencies are seeded
 #                                    read-only from ~/.gradle/caches, so nothing is re-downloaded.
+#        COLLIE_BUILD_EDITION=stable|beta   stable (default), or the TrailBlazer Beta package.
 set -euo pipefail
+
+case "${COLLIE_BUILD_EDITION:-stable}" in
+  stable) task=:app:assembleProdWebsiteRelease; apk_dir=app/build/outputs/apk/prodWebsite/release ;;
+  beta)   task=:app:assembleProdWebsiteBeta; apk_dir=app/build/outputs/apk/prodWebsite/beta ;;
+  *) echo "build-release: COLLIE_BUILD_EDITION must be stable or beta" >&2; exit 1 ;;
+esac
 
 out=$(realpath -m "${1:?usage: build-release.sh <output-dir>}")
 root=$(git rev-parse --show-toplevel)
@@ -41,8 +48,8 @@ if [ "${BUILD_MODE:-container}" = host ]; then
   cache_flag=--no-build-cache; [ "${COLLIE_BUILD_CACHE:-0}" = 1 ] && cache_flag=--build-cache
   env JAVA_HOME="$jdk" ANDROID_HOME="$sdk" ANDROID_SDK_ROOT="$sdk" ANDROID_NDK_HOME="$sdk/ndk/$ndk" \
       GRADLE_USER_HOME="$home" GRADLE_RO_DEP_CACHE="$HOME/.gradle/caches" \
-      ./gradlew --no-daemon "$cache_flag" :app:assembleProdWebsiteRelease
-  cp app/build/outputs/apk/prodWebsite/release/*.apk "$out/"
+      ./gradlew --no-daemon "$cache_flag" "$task"
+  cp "$apk_dir"/*.apk "$out/"
 else
   engine=${CONTAINER:-docker}
   image="collie-builder:${commit:0:12}"
@@ -51,9 +58,9 @@ else
   "$engine" build "${ignore[@]}" -f "$dockerfile" --target builder -t "$image" .
   "$engine" run --rm -v "$out:/out" --entrypoint sh "$image" -c '
     set -eu
-    ./gradlew --no-daemon :app:assembleProdWebsiteRelease
-    cp app/build/outputs/apk/prodWebsite/release/*.apk /out/
-  '
+    ./gradlew --no-daemon "$1"
+    cp "$2"/*.apk /out/
+  ' sh "$task" "$apk_dir"
 fi
 echo "commit $commit"
 sha256sum "$out"/*.apk

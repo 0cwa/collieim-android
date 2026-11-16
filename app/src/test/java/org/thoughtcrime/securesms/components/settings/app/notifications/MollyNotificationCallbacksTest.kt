@@ -2,12 +2,18 @@ package org.thoughtcrime.securesms.components.settings.app.notifications
 
 import android.app.Application
 import android.os.Looper
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import im.molly.unifiedpush.UnifiedPushDefaultDistributorLinkActivity
 import im.molly.unifiedpush.components.settings.app.notifications.MollySocketQrScannerActivity
@@ -308,6 +314,31 @@ class MollyNotificationCallbacksTest {
     coVerify(exactly = 2) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
     verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `replaced fragment view cannot consume a suspended distributor result`() {
+    val first = TestFragment()
+    activity.supportFragmentManager.beginTransaction().add(android.R.id.content, first).commitNow()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, results, first.viewLifecycleOwner)
+    allowSelection()
+    coEvery { viewModel.completeMollySocketSetup(any(), any()) } coAnswers { awaitCancellation() }
+    confirmScannedRelay()
+    returnDistributorResult(false)
+
+    val second = TestFragment()
+    activity.supportFragmentManager.beginTransaction().replace(android.R.id.content, second).commitNow()
+    allowCompletion()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, RecordingResults(), second.viewLifecycleOwner)
+    shadowOf(Looper.getMainLooper()).idle()
+
+    coVerify(exactly = 2) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  class TestFragment : Fragment() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = FrameLayout(requireContext())
   }
 
   private fun returnDistributorResult(result: Boolean?) {

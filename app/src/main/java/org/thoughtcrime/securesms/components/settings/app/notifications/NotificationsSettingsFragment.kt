@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -100,7 +101,7 @@ class NotificationsSettingsFragment : ComposeFragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    callbacks = DefaultNotificationsSettingsCallbacks(requireActivity(), viewModel, appSettingsRouter, DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer.ForFragment(this))
+    callbacks = DefaultNotificationsSettingsCallbacks(requireActivity(), viewModel, appSettingsRouter, DefaultNotificationsSettingsCallbacks.ActivityResultRegisterer.ForFragment(this), viewLifecycleOwner)
 
     viewLifecycleOwner.lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -157,7 +158,8 @@ open class DefaultNotificationsSettingsCallbacks(
   val activity: FragmentActivity,
   val viewModel: NotificationsSettingsViewModel,
   val appSettingsRouter: AppSettingsRouter,
-  activityResultRegisterer: ActivityResultRegisterer = ActivityResultRegisterer.ForActivity(activity)
+  activityResultRegisterer: ActivityResultRegisterer = ActivityResultRegisterer.ForActivity(activity),
+  private val owner: LifecycleOwner = activity,
 ) : NotificationsSettingsCallbacks {
 
   companion object {
@@ -228,7 +230,7 @@ open class DefaultNotificationsSettingsCallbacks(
         } else {
           RelayDisclosureDialogs.showRelay(activity, mollySocket) {
             viewModel.initializeMollySocket(mollySocket, disclosure) { authorization ->
-              if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+              if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
                 viewModel.pendingMollySocketSetup = authorization
                 linkDefaultDistributorLauncher.launch()
               }
@@ -245,11 +247,11 @@ open class DefaultNotificationsSettingsCallbacks(
 
   private fun resumePendingMollySocketResult() {
     val pending = viewModel.pendingMollySocketResult ?: return
-    activity.lifecycleScope.launch {
+    owner.lifecycleScope.launch {
       while (viewModel.pendingMollySocketResult === pending) {
-        activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) { }
+        owner.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) { }
         val completed = viewModel.completeMollySocketSetup(pending.authorization) {
-          if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && viewModel.pendingMollySocketResult === pending) {
+          if (owner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && viewModel.pendingMollySocketResult === pending) {
             viewModel.pendingMollySocketResult = null
             viewModel.pendingMollySocketSetup = null
             if (pending.success != true) viewModel.selectFirstDistributor()
@@ -258,7 +260,7 @@ open class DefaultNotificationsSettingsCallbacks(
         }
         if (completed && viewModel.pendingMollySocketResult !== pending) return@launch
         if (!completed && !viewModel.isCurrentMollySocketSetup(pending.authorization)) {
-          activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
+          owner.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
             if (viewModel.pendingMollySocketResult === pending) {
               viewModel.pendingMollySocketResult = null
               viewModel.pendingMollySocketSetup = null

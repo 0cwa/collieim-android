@@ -1,0 +1,123 @@
+name: TrailBlazer Beta readiness evidence
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_sha256:
+        description: Independently approved SHA256 of the complete release-evidence bundle
+        type: string
+        required: true
+      engineering_asset_id:
+        description: Approved release-evidence asset ID in the fixed engineering repository
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  readiness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check dispatch and approved inputs
+        env:
+          BUNDLE_SHA256: ${{ inputs.bundle_sha256 }}
+          ENGINEERING_ASSET_ID: ${{ inputs.engineering_asset_id }}
+        shell: bash
+        run: |
+          test "$GITHUB_REPOSITORY" = 0cwa/collieim-android
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/trailblazer-beta
+          [[ "$BUNDLE_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$ENGINEERING_ASSET_ID" =~ ^[1-9][0-9]*$ ]]
+      - name: Check out the reviewed release verifier
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: 0cwa/collie-release-engineering
+          ref: e99456b0b61b13b189b7df4bba31b856bf78e324
+          path: trusted-engineering
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the pinned verifier checkout
+        run: test "$(git -C "$GITHUB_WORKSPACE/trusted-engineering" rev-parse HEAD)" = e99456b0b61b13b189b7df4bba31b856bf78e324
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12.14'
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21.0.13+9'
+      - name: Install the pinned verifier dependencies
+        env:
+          PIP_CONFIG_FILE: /dev/null
+          PIP_DISABLE_PIP_VERSION_CHECK: '1'
+          PYTHONNOUSERSITE: '1'
+        run: |
+          unset PYTHONPATH PYTHONHOME
+          python -I -m venv "$RUNNER_TEMP/trailblazer-verifier-venv"
+          umask 077
+          build_requirements=$(mktemp "$RUNNER_TEMP/trailblazer-build-requirements.XXXXXX")
+          trap 'rm -f -- "$build_requirements"' EXIT
+          cat > "$build_requirements" <<'EOF'
+          setuptools==80.9.0 --hash=sha256:062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922
+          babel==2.17.0 --hash=sha256:4d0b53093fdfb4b21c92b5213dba5a1b23885afa8383709427046b21c366e5f2
+          EOF
+          "$RUNNER_TEMP/trailblazer-verifier-venv/bin/python" -I -m pip install --only-binary=:all: --no-deps --require-hashes -r "$build_requirements"
+          "$RUNNER_TEMP/trailblazer-verifier-venv/bin/python" -I -m pip install --no-build-isolation --no-deps --require-hashes -r "$GITHUB_WORKSPACE/trusted-engineering/distribution/requirements.txt"
+          "$RUNNER_TEMP/trailblazer-verifier-venv/bin/python" -I -m pip check
+          "$RUNNER_TEMP/trailblazer-verifier-venv/bin/python" -I -c 'import importlib.metadata as m, pathlib, sys; import fdroidserver.common, fdroidserver.index; p = pathlib.Path(sys.prefix).resolve(); assert m.version("fdroidserver") == "2.4.5"; assert all(pathlib.Path(x.__file__).resolve().is_relative_to(p) for x in (fdroidserver.common, fdroidserver.index))'
+      - name: Verify evidence and emit readiness
+        id: emit
+        env:
+          BUNDLE_SHA256: ${{ inputs.bundle_sha256 }}
+          ENGINEERING_ASSET_ID: ${{ inputs.engineering_asset_id }}
+          GH_TOKEN: ${{ github.token }}
+          GH_HOST: github.com
+          GH_PROMPT_DISABLED: '1'
+          PYTHONNOUSERSITE: '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME
+          umask 077
+          private_scratch=$(mktemp -d "$RUNNER_TEMP/trailblazer-evidence.XXXXXX")
+          output_dir=$(mktemp -d "$RUNNER_TEMP/trailblazer-readiness.XXXXXX")
+          trap 'rm -rf -- "$private_scratch"' EXIT
+          tools_dir="$ANDROID_HOME/build-tools/36.0.0"
+          test -x "$tools_dir/aapt"
+          test -x "$tools_dir/apksigner"
+          grep -Eq '^Pkg\.Revision[[:space:]]*=[[:space:]]*36\.0\.0[[:space:]]*$' "$tools_dir/source.properties"
+          gh_path=$(command -v gh)
+          case "$gh_path" in /usr/bin/gh|/usr/local/bin/gh) ;; *) exit 1 ;; esac
+          export PATH="$JAVA_HOME/bin:${gh_path%/*}:/usr/bin:/bin"
+          cd "$private_scratch"
+          "$RUNNER_TEMP/trailblazer-verifier-venv/bin/python" -s "$GITHUB_WORKSPACE/trusted-engineering/distribution/beta_evidence.py" emit-readiness \
+            --bundle-sha256 "$BUNDLE_SHA256" \
+            --engineering-asset-id "$ENGINEERING_ASSET_ID" \
+            --readiness-run-id "$GITHUB_RUN_ID" \
+            --readiness-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --output "$output_dir/trailblazer-beta-readiness.json" \
+            --scratch "$private_scratch" \
+            --aapt "$tools_dir/aapt" \
+            --apksigner "$tools_dir/apksigner"
+          test -f "$output_dir/trailblazer-beta-readiness.json"
+          echo "output_file=$output_dir/trailblazer-beta-readiness.json" >> "$GITHUB_OUTPUT"
+      - name: Upload the single readiness record
+        id: upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: trailblazer-beta-readiness-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.emit.outputs.output_file }}
+          retention-days: 14
+          if-no-files-found: error
+      - name: Record artifact identity
+        env:
+          ARTIFACT_ID: ${{ steps.upload.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.upload.outputs.artifact-digest }}
+        shell: bash
+        run: |
+          [[ "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]
+          [[ "$ARTIFACT_DIGEST" =~ ^(sha256:)?[0-9a-f]{64}$ ]]
+          printf 'Source: `%s`\nRun: `%s`, attempt `%s`\nArtifact ID: `%s`\nArtifact SHA256: `%s`\n' \
+            "$GITHUB_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$ARTIFACT_ID" "$ARTIFACT_DIGEST" >> "$GITHUB_STEP_SUMMARY"

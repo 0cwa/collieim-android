@@ -150,6 +150,9 @@ class UnifiedPushReceiverTest {
     every { endpoint.url } returns "https://example.org/push"
     every { endpoint.pubKeySet } returns null
     every { values.endpoint } returns endpoint.url
+    every { values.endpointP256dh } returns null
+    every { values.endpointAuth } returns null
+    every { values.endpointInstance } returns "instance"
     receiver.onRegistrationFailed(context, FailedReason.NETWORK, "instance")
     receiver.onNewEndpoint(context, endpoint, "instance")
     awaitLifecycleReady()
@@ -225,6 +228,21 @@ class UnifiedPushReceiverTest {
 
     assertTrue("the replacement account's failure remains visible", failed)
     verify(exactly = 0) { anyConstructed<UnifiedPushNotificationBuilder>().clearRegistrationFailed() }
+  }
+
+  @Test
+  fun `air gapped endpoint key rotation at the same URL is treated as a change`() {
+    fakeAccount()
+    values.endpoint = "https://push.example.invalid/same"
+    values.endpointP256dh = fixtureP256dh
+    values.endpointAuth = fixtureAuth
+    every { values.airGapped } returns true
+    values.lastReceivedTime = 1234L
+    mockPendingEndpointStorage(LockedPushState.Endpoint(values.endpoint, fixtureP256dh, "rotated-auth", "default"))
+
+    val result = checkNotNull(UnifiedPushReceiver.commitPendingEndpoint(context))
+    assertTrue(checkNotNull(result.value).changed)
+    assertEquals(0L, values.lastReceivedTime)
   }
 
   @Test

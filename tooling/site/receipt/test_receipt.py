@@ -3,6 +3,7 @@ import copy
 import json
 import unittest
 import render
+import metrics
 
 
 class ReceiptTests(unittest.TestCase):
@@ -15,7 +16,7 @@ class ReceiptTests(unittest.TestCase):
             page = render.render(data, layout)
             self.assertIn('How this release was built', page)
             self.assertIn(data['source'], page)
-            self.assertEqual(page.count('<article>'), 3)
+            self.assertEqual(page.count('<article>'), 4)
             self.assertIn('<details>', page)
 
     def test_duplicate_ids_and_wrong_source_are_rejected(self):
@@ -38,6 +39,12 @@ class ReceiptTests(unittest.TestCase):
         bad['features'].pop()
         with self.assertRaises(ValueError):
             render.validate(bad)
+
+    def test_metrics_are_replayable_and_separate_test_files(self):
+        change = '1a0c18c32c5286e9061839cd37d96e432888fd05'
+        counts = metrics.change_metrics(change)
+        self.assertEqual(counts['tests'], [92, 3])
+        self.assertEqual(counts, metrics.change_metrics(change))
         bad = copy.deepcopy(self.data)
         bad['features'][0]['source_blob'] = '0' * 40
         with self.assertRaises(ValueError):

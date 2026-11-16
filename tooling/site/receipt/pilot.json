@@ -18,7 +18,7 @@
       "id": "push-readiness",
       "title": "Background connection setting",
       "summary": "The setting reflects whether push is available for the selected provider.",
-      "origin": "Adapted from a Molly push patch.",
+      "origin": "Adapted by 0cwa from Miha Zupan's Molly patch.",
       "change": "06f42fec565a0b12461c9fe1a67075c22e13a0d7",
       "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/data/DataAndStorageSettingsRepository.kt",
       "upstream": "https://github.com/MihaZupan/mollyim-android/blob/735d54df2b5dc71694039e5f8daeb60fa4a6d85b/patches/push.patch",
@@ -29,17 +29,29 @@
       "id": "recipient-update-order",
       "title": "Recipient settings before device lookup",
       "summary": "Recipient settings are updated before linked-device lookup.",
-      "origin": "Collie implementation.",
+      "origin": "Adapted by 0cwa from Miha Zupan's Molly patch.",
       "change": "1a0c18c32c5286e9061839cd37d96e432888fd05",
       "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsViewModel.kt",
-      "upstream": null,
+      "upstream": "https://github.com/MihaZupan/mollyim-android/blob/735d54df2b5dc71694039e5f8daeb60fa4a6d85b/patches/theme.patch",
       "limit": "This describes a specific ordering change, not overall reliability.",
       "source_blob": "95aa57482acaaa0e265dad63612b81a0734de333"
+    },
+    {
+      "id": "stories-settings-navigation",
+      "title": "Stories settings navigation",
+      "summary": "The Stories entry is available from the main Settings screen.",
+      "origin": "Restored by 0cwa in Collie.",
+      "change": "451aea2f27bcce179844ff3e9f8a4f0484c012fc",
+      "path": "feature/app-settings/src/main/java/org/signal/appsettings/home/AppSettingsScreen.kt",
+      "upstream": null,
+      "limit": "The release tree contains the entry; this pilot has not run the navigation test.",
+      "source_blob": "5f083bc8983abb2159fbfbd0e86bddd82e59f45e"
     }
   ],
   "feature_ids": [
     "contact-badges",
     "push-readiness",
-    "recipient-update-order"
+    "recipient-update-order",
+    "stories-settings-navigation"
   ]
 }

@@ -16,6 +16,8 @@ REPO = 'https://github.com/0cwa/collieim-android'
 def validate(data):
     if data.get('version') != 1 or not re.fullmatch(r'[0-9a-f]{40}', data.get('source', '')):
         raise ValueError('Unsupported receipt version or source')
+    if not re.fullmatch(r'v[0-9][0-9A-Za-z.-]*', data.get('release', '')):
+        raise ValueError('Invalid release tag')
     source = data['source']
     tag_commit = subprocess.check_output(['git', 'rev-parse', '--verify', data['release'] + '^{commit}'], cwd=ROOT, text=True).strip()
     if tag_commit != source:

@@ -37,6 +37,7 @@ val languagesForBuildConfigProvider = languagesProvider.map { languages ->
 val selectableVariants = listOf(
   "prodWebsiteDebug",
   "prodWebsiteRelease",
+  "prodWebsiteBeta",
   "prodStoreDebug",
   "prodStoreRelease",
   "prodWebsiteInstrumentation",
@@ -305,6 +306,17 @@ android {
       signingConfig = signingConfigs.findByName("ci")
       proguardFiles(*buildTypes["debug"].proguardFiles.toTypedArray())
     }
+
+    create("beta") {
+      initWith(getByName("release"))
+      matchingFallbacks += "release"
+      applicationIdSuffix = ".trailblazer"
+      resValue("string", "app_name", "Collie TrailBlazer")
+      resValue("string", "package_name", "$basePackageId.trailblazer")
+      buildConfigField("String", "BACKUP_BASE_NAME", "\"Collie-TrailBlazer\"")
+      buildConfigField("String", "FDROID_UPDATE_URL", "\"https://repo.collie.im/fdroid/beta/repo\"")
+      buildConfigField("boolean", "MANAGE_COLLIE_UPDATES", "true")
+    }
   }
 
   productFlavors {
@@ -394,6 +406,10 @@ androidComponents {
 
   // Include the test-only library on non-release builds.
   onVariants(selector().withBuildType("release")) { variant ->
+    variant.packaging.jniLibs.excludes.add("**/libsignal_jni_testing.so")
+    variant.androidResources.ignoreAssetsPatterns.add("libsignal-testing.md")
+  }
+  onVariants(selector().withBuildType("beta")) { variant ->
     variant.packaging.jniLibs.excludes.add("**/libsignal_jni_testing.so")
     variant.androidResources.ignoreAssetsPatterns.add("libsignal-testing.md")
   }

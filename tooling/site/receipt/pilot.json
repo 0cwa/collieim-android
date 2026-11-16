@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "release": "v8.35.1-3-rc2",
+  "source": "cc55c02bef64b2980c5f384a6a04f52ffb7bef92",
+  "features": [
+    {
+      "id": "contact-badges",
+      "title": "Contact badges",
+      "summary": "Contact settings show recipient badges with accessible names.",
+      "origin": "Restored from Molly 8.19.2-4 with compatibility work.",
+      "change": "73e1bb04bba7b11e24b44c4d8855cd0a2ad393e0",
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt",
+      "upstream": "https://github.com/0cwa/mollyim-android/commit/c9b1814e1d4692c5d4ca0e3abc80008faa2a1db3",
+      "limit": "The restoration commit also includes other changes; ancestry does not prove every line is unchanged.",
+      "source_blob": "9ac39e6b4762fef1e0a8e2a05031927ccdc2a696"
+    },
+    {
+      "id": "push-readiness",
+      "title": "Background connection setting",
+      "summary": "The setting reflects whether push is available for the selected provider.",
+      "origin": "Adapted from a Molly push patch.",
+      "change": "06f42fec565a0b12461c9fe1a67075c22e13a0d7",
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/data/DataAndStorageSettingsRepository.kt",
+      "upstream": "https://github.com/MihaZupan/mollyim-android/blob/735d54df2b5dc71694039e5f8daeb60fa4a6d85b/patches/push.patch",
+      "limit": "The cited adaptation concerns the setting, not the entire push system.",
+      "source_blob": "312b26548d58259347f4bec3ab4ff4db90197f9d"
+    },
+    {
+      "id": "recipient-update-order",
+      "title": "Recipient settings before device lookup",
+      "summary": "Recipient settings are updated before linked-device lookup.",
+      "origin": "Collie implementation.",
+      "change": "1a0c18c32c5286e9061839cd37d96e432888fd05",
+      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsViewModel.kt",
+      "upstream": null,
+      "limit": "This describes a specific ordering change, not overall reliability.",
+      "source_blob": "95aa57482acaaa0e265dad63612b81a0734de333"
+    }
+  ],
+  "feature_ids": [
+    "contact-badges",
+    "push-readiness",
+    "recipient-update-order"
+  ]
+}

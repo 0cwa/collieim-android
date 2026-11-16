@@ -165,7 +165,6 @@ open class DefaultNotificationsSettingsCallbacks(
   }
 
   private var scanDisclosure: RelayDisclosure.Snapshot? = null
-  private var setupAuthorization: RelayDisclosure.RefreshAuthorization? = null
 
   interface ActivityResultRegisterer {
     fun <I, O> registerForActivityResult(
@@ -210,8 +209,8 @@ open class DefaultNotificationsSettingsCallbacks(
   private val linkDefaultDistributorLauncher: ActivityResultLauncher<Unit> = activityResultRegisterer.registerForActivityResult(
     contract = UnifiedPushDefaultDistributorLinkActivity.Contract(),
     callback = { success ->
-      val authorization = setupAuthorization
-      setupAuthorization = null
+      val authorization = viewModel.pendingMollySocketSetup
+      viewModel.pendingMollySocketSetup = null
       if (authorization != null) {
         activity.lifecycleScope.launch {
           activity.lifecycle.withStateAtLeast(Lifecycle.State.RESUMED) {
@@ -243,7 +242,7 @@ open class DefaultNotificationsSettingsCallbacks(
           RelayDisclosureDialogs.showRelay(activity, mollySocket) {
             viewModel.initializeMollySocket(mollySocket, disclosure) { authorization ->
               if (activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                setupAuthorization = authorization
+                viewModel.pendingMollySocketSetup = authorization
                 linkDefaultDistributorLauncher.launch()
               }
             }

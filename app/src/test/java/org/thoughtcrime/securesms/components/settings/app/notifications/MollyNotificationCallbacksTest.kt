@@ -44,10 +44,13 @@ class MollyNotificationCallbacksTest {
   private val results = RecordingResults()
   private val disclosure = mockk<RelayDisclosure.Snapshot>()
   private val authorization = mockk<RelayDisclosure.RefreshAuthorization>()
+  private var pendingSetup: RelayDisclosure.RefreshAuthorization? = null
   private val socket = MollySocket.WebServer("v".repeat(87), "https://push.example.org/relay")
 
   @Before
   fun setUp() {
+    every { viewModel.pendingMollySocketSetup } answers { pendingSetup }
+    every { viewModel.pendingMollySocketSetup = any() } answers { pendingSetup = firstArg() }
     controller = Robolectric.buildActivity(FragmentActivity::class.java)
     activity = controller.get()
     activity.setTheme(R.style.Theme_Molly_Material3_Light)
@@ -241,6 +244,26 @@ class MollyNotificationCallbacksTest {
 
     verify(exactly = 1) { viewModel.completeMollySocketSetup(any(), any()) }
     verify(exactly = 0) { viewModel.selectFirstDistributor() }
+    verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
+  }
+
+  @Test
+  fun `distributor result survives activity recreation and remains single use`() {
+    allowSelection()
+    allowCompletion()
+    confirmScannedRelay()
+
+    controller.recreate()
+    activity = controller.get()
+    val recreatedResults = RecordingResults()
+    callbacks = DefaultNotificationsSettingsCallbacks(activity, viewModel, router, recreatedResults)
+    recreatedResults.distributorResult.onActivityResult(false)
+    shadowOf(Looper.getMainLooper()).idle()
+    recreatedResults.distributorResult.onActivityResult(false)
+    shadowOf(Looper.getMainLooper()).idle()
+
+    verify(exactly = 1) { viewModel.completeMollySocketSetup(refEq(authorization), any()) }
+    verify(exactly = 1) { viewModel.selectFirstDistributor() }
     verify(exactly = 1) { router.navigateTo(AppSettingsRoute.NotificationsRoute.UnifiedPushSettings) }
   }
 

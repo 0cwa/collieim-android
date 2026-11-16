@@ -37,6 +37,9 @@ import org.thoughtcrime.securesms.util.TextSecurePreferences
 
 class NotificationsSettingsViewModel : ViewModel(), RecipientForeverObserver {
 
+  // Kept only in memory across configuration changes; the result is still revalidated before use.
+  internal var pendingMollySocketSetup: RelayDisclosure.RefreshAuthorization? = null
+
   companion object {
     private val TAG = Log.tag(NotificationsSettingsViewModel::class)
   }

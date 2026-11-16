@@ -234,11 +234,13 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .crypto-donate summary .ico{width:16px;height:16px;transition:transform .2s var(--ease)}
 .crypto-donate[open] summary .ico{transform:rotate(180deg)}
 .crypto-panel{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 20px;align-items:start;margin-top:14px;padding:16px;border:1px solid var(--card-line);border-radius:16px;background:var(--card);color:var(--ink-2)}
-.crypto-donate .qr-thumb{position:relative;display:block;min-height:0;border-radius:10px;background:#fff;box-shadow:0 0 0 1px var(--card-line);transition:transform .2s var(--ease)}
-.crypto-donate .qr-thumb:hover{transform:translateY(-1px)}
+/* The enlarge cue sits under the code, never on it or its quiet zone. */
+.crypto-donate .qr-thumb{display:grid;justify-items:center;gap:6px;min-height:0;text-decoration:none}
 .qr-thumb img,.qr-dialog img{height:auto;background:#fff;image-rendering:pixelated}
-.qr-thumb img{border-radius:10px}
-.qr-zoom{position:absolute;right:-8px;bottom:-8px;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--gold-2);color:var(--bark);box-shadow:0 4px 10px -4px rgba(36,19,13,.6)}
+.qr-thumb img{border-radius:10px;box-shadow:0 0 0 1px var(--card-line);transition:transform .2s var(--ease)}
+.qr-thumb:hover img{transform:translateY(-1px)}
+.qr-zoom{display:inline-flex;align-items:center;gap:6px;min-height:24px;color:var(--link);font-size:.875rem;font-weight:600;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}
+.qr-thumb:hover .qr-zoom{text-decoration-thickness:2px}
 .qr-zoom .ico{width:16px;height:16px}
 .crypto-label{color:var(--ink);font-weight:500;font-size:.95rem}
 .address-row{display:flex;align-items:flex-start;gap:8px;margin-top:6px}
@@ -264,7 +266,7 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .qr-dialog h3{text-align:center}
 .qr-dialog img{width:min(100%,62vh);border-radius:12px}
 .qr-dialog .address{width:100%;flex:none}
-@media (forced-colors:active){.crypto-donate .address,.qr-dialog .address,.copy-button{border-color:CanvasText}.qr-zoom{border:1px solid CanvasText}}
+@media (forced-colors:active){.crypto-donate .address,.qr-dialog .address,.copy-button{border-color:CanvasText}}
 
 /* ---------- footer ---------- */
 .foot{background:var(--bark);color:var(--mist);padding-block:36px 44px}

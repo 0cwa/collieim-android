@@ -386,6 +386,22 @@ class DonationTest(unittest.TestCase):
                 dark = qr.get_module(x - build.QR_BORDER, y - build.QR_BORDER)
                 self.assertEqual(0 if dark else 255, rows[y * build.QR_SCALE + half][x * build.QR_SCALE + half])
 
+    def test_recipient_name_goes_into_the_link_and_the_qr_code(self):
+        out = self.build_with(self.monero(recipient_name='Collie Team'))
+        page = (out / 'index.html').read_text()
+        uri = f'monero:{TEST_ADDRESS}?recipient_name=Collie%20Team'
+        self.assertIn(f'href="{uri}"', page)
+        self.assertIn(f'data-copy-text="{TEST_ADDRESS}"', page)  # Copy gives the bare address
+        width, rows = png_pixels((out / build.DONATION_QR).read_bytes())
+        qr = build.QrCode.encode_text(uri, build.QrCode.Ecc.MEDIUM)
+        modules = qr.get_size() + 2 * build.QR_BORDER
+        self.assertEqual(modules * build.QR_SCALE, width)
+        half = build.QR_SCALE // 2
+        for y in range(modules):
+            for x in range(modules):
+                dark = qr.get_module(x - build.QR_BORDER, y - build.QR_BORDER)
+                self.assertEqual(0 if dark else 255, rows[y * build.QR_SCALE + half][x * build.QR_SCALE + half])
+
     def test_malformed_addresses_and_unknown_currencies_fail_the_build(self):
         for donation in (
             self.monero(TEST_ADDRESS[:-1]),
@@ -393,6 +409,7 @@ class DonationTest(unittest.TestCase):
             self.monero(TEST_ADDRESS[:-1] + 'l'),
             self.monero(uri_scheme='bitcoin'),
             self.monero(name='<b>Monero</b>'),
+            self.monero(recipient_name='Collie&amount=5'),
         ):
             with self.subTest(donation=donation), self.assertRaises(SystemExit):
                 self.build_with(donation, '<p>x</p>')

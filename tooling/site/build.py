@@ -69,7 +69,14 @@ def load_donation(path: Path) -> dict | None:
     for key in ("name", "ticker"):
         if not re.fullmatch(r"[A-Za-z0-9 ]{1,24}", donation.get(key, "")):
             raise SystemExit(f"donation {key} must be 1-24 letters, digits or spaces")
-    return {"name": donation["name"], "ticker": donation["ticker"], "address": address, "uri": f"{scheme}:{address}"}
+    uri = f"{scheme}:{address}"
+    # Optional label the sender's wallet shows; it is not part of the transaction.
+    recipient = donation.get("recipient_name", "")
+    if recipient:
+        if not re.fullmatch(r"[A-Za-z0-9 ]{1,32}", recipient):
+            raise SystemExit("donation recipient_name must be 1-32 letters, digits or spaces")
+        uri += "?recipient_name=" + quote(recipient)
+    return {"name": donation["name"], "ticker": donation["ticker"], "address": address, "uri": uri}
 
 
 def qr_png(text: str) -> tuple[bytes, int]:
@@ -234,7 +241,7 @@ def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None, don
             "DONATION_TICKER": donation["ticker"],
             "DONATION_ADDRESS": donation["address"],
             "DONATION_ADDRESS_HTML": render_address(donation["address"]),
-            "DONATION_URI": donation["uri"],
+            "DONATION_URI": html.escape(donation["uri"]),
             "DONATION_QR": DONATION_QR.as_posix(),
             "DONATION_QR_THUMB": str(modules * 3),
             "DONATION_QR_LARGE": str(modules * 8),

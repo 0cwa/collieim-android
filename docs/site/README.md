@@ -92,6 +92,10 @@ The Donate row can offer one cryptocurrency, set in `tooling/site/donation.json`
 the page and draws the QR code from that same address, so the text, the link
 and the code cannot disagree. With an empty `address` the build leaves the whole
 block out (everything between `<!-- donation:start -->` and `<!-- donation:end -->`).
+The optional `recipient_name` is added to the link and the QR code
+(`?recipient_name=Collie`) so the sender's wallet can label the payment; it is
+not written into the transaction and does not change the fee. Copy still gives
+the bare address.
 
 To set or change the address, copy it from the receiving wallet into
 `address`, build, then scan the QR code on the built page with a wallet and

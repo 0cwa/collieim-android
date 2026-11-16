@@ -298,6 +298,19 @@ class ObtainiumTest(unittest.TestCase):
         self.assertRegex('collie.apk', settings['apkFilterRegEx'])
         self.assertIsNone(re.fullmatch(settings['apkFilterRegEx'], 'collie-fcm.apk'))
         self.assertFalse(settings['includePrereleases'])
+        self.assertTrue(settings['fallbackToOlderReleases'])
+
+    def test_trailblazer_filters_release_and_package_asset(self):
+        import re
+        config = json.loads(Path(build.__file__).with_name('obtainium-trailblazer.json').read_text())
+        settings = json.loads(config['additionalSettings'])
+        self.assertEqual('im.collie.app.trailblazer', config['id'])
+        self.assertTrue(settings['includePrereleases'])
+        self.assertTrue(settings['fallbackToOlderReleases'])
+        self.assertIsNotNone(re.fullmatch(settings['filterReleaseTitlesByRegEx'], 'Collie TrailBlazer Beta 8.35.2-1'))
+        self.assertIsNone(re.fullmatch(settings['filterReleaseTitlesByRegEx'], 'Collie 8.35.2-1'))
+        self.assertIsNotNone(re.fullmatch(settings['apkFilterRegEx'], 'trailblazer-beta.apk'))
+        self.assertIsNone(re.fullmatch(settings['apkFilterRegEx'], 'collie.apk'))
 
     def test_handoff_keeps_github_updates_and_collie_homepage_separate(self):
         import re

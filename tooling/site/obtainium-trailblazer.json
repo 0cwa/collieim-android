@@ -1,0 +1,7 @@
+{
+  "id": "im.collie.app.trailblazer",
+  "url": "https://github.com/0cwa/collieim-android",
+  "author": "0cwa",
+  "name": "Collie TrailBlazer",
+  "additionalSettings": "{\"includePrereleases\":true,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"^Collie TrailBlazer Beta [0-9][A-Za-z0-9.+-]*$\",\"apkFilterRegEx\":\"^trailblazer-beta\\\\.apk$\"}"
+}

@@ -3,5 +3,5 @@
   "url": "https://github.com/0cwa/collieim-android",
   "author": "0cwa",
   "name": "Collie",
-  "additionalSettings": "{\"includePrereleases\":false,\"apkFilterRegEx\":\"^collie\\\\.apk$\"}"
+  "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"apkFilterRegEx\":\"^collie\\\\.apk$\"}"
 }

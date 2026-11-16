@@ -63,6 +63,7 @@ Pull requests only build. The APK button always points at
 | `assets/og.png` | `docs/assets/collie-feature-graphic.svg` rendered at 1200 px wide with `rsvg-convert` |
 | `assets/screens/conversation.webp` | Native API35 offline demo with fictional Alex/fourteen-message ongoing thread, now Fastlane 1.png; 1080×2160 resized to 540×1080 with `cwebp -q 82`; [capture provenance](../screenshots/pr-95/conversation-capture.md) |
 | `assets/screens/encryption.webp` | Original corrected 1080×2400 API35 capture in immutable `555fff83a6b7e8f5b8de89f522859f250a166b5f`, resized to 540×1200; current Fastlane 3.png is a separate native 1080×2160 capture for its 2:1 limit |
+| `tooling/site/qrcodegen.py` | Project Nayuki's QR Code generator, Python, tag `v1.8.0`, unchanged (MIT, licence in the file header); SHA-256 `b089855caf16185c61421ea4927c1b213cf9468940d71fa8ab11ef83662dcc84` |
 | `assets/screens/locked.webp`, `proxy.webp` | Existing Fastlane locked (formerly 4.png, now 2.png) and proxy (6.png) captures, resized to 540 px wide with `cwebp -q 82`; proxy retained but no longer a hero phone |
 
 ## Upcoming features
@@ -83,6 +84,27 @@ source discussions and makes clear that planned features are not yet available.
 Run `python3 -m unittest discover -s tooling/site -p 'test_*.py' -v` to check
 category filtering, priority ordering, title escaping, API pagination/failures,
 output-directory safety and the built page.
+
+## Crypto donation
+
+The Donate row can offer one cryptocurrency, set in `tooling/site/donation.json`
+(currently Monero). The build fills the name, address and `monero:` link into
+the page and draws the QR code from that same address, so the text, the link
+and the code cannot disagree. With an empty `address` the build leaves the whole
+block out (everything between `<!-- donation:start -->` and `<!-- donation:end -->`).
+
+To set or change the address, copy it from the receiving wallet into
+`address`, build, then scan the QR code on the built page with a wallet and
+check that it shows the same address. The build only checks the address
+format, not its checksum. Use a primary (`4…`) or subaddress (`8…`), not an
+integrated address. To switch currency, change `name`, `ticker` and
+`uri_scheme`, and add an address pattern for the new scheme to
+`DONATION_ADDRESS_RE` in `build.py`. Use `--donation-json` to build with
+other settings without editing the file.
+
+The QR code is an opaque black-on-white PNG with its quiet zone inside the
+image. Dark mode, forced colours and page-recolouring extensions change the
+page around it but not the code, so it stays scannable.
 
 ## Obtainium links
 

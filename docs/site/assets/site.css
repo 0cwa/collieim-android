@@ -218,11 +218,51 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .community-action{margin-top:10px;color:var(--link);font-weight:600;text-decoration:underline;text-underline-offset:.22em}
 /* Donate shares the Matrix/forum row grammar: icon column, Sora title, actions. */
 .community-donations{display:flex;gap:16px;align-items:flex-start;margin-top:0;padding:20px 4px 0;border-top:1px solid var(--rule)}
-.community-donations .ico{width:40px;height:40px;flex:none;color:var(--icon);margin-top:2px}
+.community-donations>.ico{width:40px;height:40px;flex:none;color:var(--icon);margin-top:2px}
 .community-donations h3{font:300 1.375rem/1.3 Sora,sans-serif;color:var(--ink)}
 .donation-actions{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:6px}
 .community-donations a{display:inline-block;min-height:24px;font-weight:600}
 .community-donations .nowrap{white-space:nowrap}
+
+/* Crypto donation: one disclosure under the donation links. The QR image is an
+   opaque PNG with its own white quiet zone, so dark mode, forced colours and
+   page-recolouring extensions can tint the page but never the code. */
+.crypto-donate{margin-top:14px}
+.crypto-donate summary{display:inline-flex;align-items:center;gap:6px;min-height:24px;color:var(--link);font-weight:600;cursor:pointer;list-style:none;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}
+.crypto-donate summary::-webkit-details-marker{display:none}
+.crypto-donate summary:hover{text-decoration-thickness:2px}
+.crypto-donate summary .ico{width:16px;height:16px;transition:transform .2s var(--ease)}
+.crypto-donate[open] summary .ico{transform:rotate(180deg)}
+.crypto-panel{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 20px;align-items:start;margin-top:14px;padding:16px;border:1px solid var(--card-line);border-radius:16px;background:var(--card);color:var(--ink-2)}
+.crypto-donate .qr-thumb{position:relative;display:block;min-height:0;border-radius:10px;background:#fff;box-shadow:0 0 0 1px var(--card-line);transition:transform .2s var(--ease)}
+.crypto-donate .qr-thumb:hover{transform:translateY(-1px)}
+.qr-thumb img,.qr-dialog img{height:auto;background:#fff;image-rendering:pixelated}
+.qr-thumb img{border-radius:10px}
+.qr-zoom{position:absolute;right:-8px;bottom:-8px;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--gold-2);color:var(--bark);box-shadow:0 4px 10px -4px rgba(36,19,13,.6)}
+.qr-zoom .ico{width:16px;height:16px}
+.crypto-label{color:var(--ink);font-weight:500;font-size:.95rem}
+.address-row{display:flex;align-items:flex-start;gap:8px;margin-top:6px}
+.crypto-donate .address,.qr-dialog .address{display:block;flex:1;min-width:0;padding:10px 12px;border:1px solid var(--card-line);border-radius:10px;background:var(--page);color:var(--ink);font:400 .875rem/1.5 ui-monospace,SFMono-Regular,"Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;letter-spacing:.02em;overflow-wrap:anywhere;word-break:break-all;-webkit-user-select:all;user-select:all}
+.address-row .address{cursor:copy}
+.address-edge{color:var(--icon);font-weight:700}
+.copy-button{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 14px;border:1px solid var(--ink);border-radius:999px;background:transparent;color:var(--ink);font:500 .9rem/1 Manrope,sans-serif;cursor:pointer;transition:background-color .2s,border-color .2s,color .2s}
+.copy-button:hover{background:var(--page)}
+.copy-button.is-copied{border-color:var(--forest);background:var(--forest);color:var(--mist)}
+.copy-button .ico{width:18px;height:18px}
+.copy-button[hidden]{display:none}
+/* Success shows on the button; the status line stays for screen readers and
+   becomes visible only when copying fails. */
+.copy-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.copy-status.is-error{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal;margin-top:6px;color:var(--ink);font-size:.875rem}
+.crypto-hint{margin-top:8px;font-size:.875rem;line-height:1.45}
+.crypto-donate .wallet-link{margin-top:8px}
+.qr-dialog{width:min(92vw,480px);max-height:94vh;padding:0;border:0;border-radius:24px;background:var(--page);color:var(--ink);box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+.qr-dialog::backdrop{background:rgba(27,14,9,.75)}
+.qr-dialog-body{display:grid;justify-items:center;gap:16px;padding:24px}
+.qr-dialog h3{text-align:center}
+.qr-dialog img{width:min(100%,62vh);border-radius:12px}
+.qr-dialog .address{width:100%;flex:none}
+@media (forced-colors:active){.crypto-donate .address,.qr-dialog .address,.copy-button{border-color:CanvasText}.qr-zoom{border:1px solid CanvasText}}
 
 /* ---------- footer ---------- */
 .foot{background:var(--bark);color:var(--mist);padding-block:36px 44px}
@@ -313,8 +353,13 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .also strong{font-weight:600}
   /* Community rows keep their icons but give the reading column more width. */
   .links li,.community-donations{gap:14px;padding-inline:0}
-  .links .ico,.community-donations .ico{width:28px;height:28px;margin-top:2px}
+  .links .ico,.community-donations>.ico{width:28px;height:28px;margin-top:2px}
   .donation-actions{flex-direction:column;align-items:flex-start;gap:8px}
+  .crypto-panel{grid-template-columns:minmax(0,1fr);padding:14px}
+  .crypto-donate .qr-thumb{order:2;justify-self:start}
+  .address-row{flex-direction:column;align-items:stretch}
+  .copy-button{align-self:flex-start}
+  .qr-dialog-body{padding:18px}
   .upcoming-intro{margin-top:16px}
   .upcoming-status{margin-top:12px;line-height:1.5}
   .roadmap-list{margin-top:14px}

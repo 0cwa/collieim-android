@@ -41,6 +41,9 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13.5 6.5L19 12l-5.5 5.5"/></symbol>
   <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v12M6.5 10.5L12 16l5.5-5.5M5 20h14"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="12" rx="2"/><path d="M15.5 8.5V5.5a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5"/></symbol>
 </svg>
 <a class="skip" href="#main">Skip to content</a>
 
@@ -161,6 +164,37 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
           <a href="https://github.com/sponsors/0cwa">Donate on GitHub <span class="nowrap">Sponsors →</span></a>
           <a href="https://liberapay.com/Collie/">Donate on Liberapay →</a>
         </div>
+        <!-- donation:start -->
+        <details class="crypto-donate">
+          <summary><span>Donate with <span class="nowrap">{{DONATION_NAME}} ({{DONATION_TICKER}})</span></span><svg class="ico" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="crypto-panel">
+            <a class="qr-thumb" href="{{DONATION_QR}}" data-qr-open aria-label="Enlarge the {{DONATION_NAME}} QR code">
+              <img src="{{DONATION_QR}}" alt="" width="{{DONATION_QR_THUMB}}" height="{{DONATION_QR_THUMB}}" loading="lazy">
+              <span class="qr-zoom" aria-hidden="true"><svg class="ico"><use href="#i-expand"/></svg></span>
+            </a>
+            <div class="crypto-address">
+              <p class="crypto-label" id="donation-address-label">{{DONATION_NAME}} address</p>
+              <div class="address-row">
+                <code class="address" data-copy-text="{{DONATION_ADDRESS}}" title="Click to copy">{{DONATION_ADDRESS_HTML}}</code>
+                <button class="copy-button" type="button" data-copy-text="{{DONATION_ADDRESS}}" aria-describedby="donation-address-label" hidden>
+                  <svg class="ico" aria-hidden="true"><use href="#i-copy"/></svg><span>Copy</span>
+                </button>
+              </div>
+              <p class="copy-status" role="status"></p>
+              <p class="crypto-hint">After pasting, check that the first and last six characters match.</p>
+              <a class="wallet-link" href="{{DONATION_URI}}">Open in a wallet app →</a>
+            </div>
+          </div>
+          <dialog class="qr-dialog" aria-labelledby="qr-dialog-title">
+            <div class="qr-dialog-body">
+              <h3 id="qr-dialog-title">Scan to donate {{DONATION_NAME}}</h3>
+              <img src="{{DONATION_QR}}" alt="QR code for Collie’s {{DONATION_NAME}} address" width="{{DONATION_QR_LARGE}}" height="{{DONATION_QR_LARGE}}" loading="lazy">
+              <code class="address">{{DONATION_ADDRESS_HTML}}</code>
+              <form method="dialog"><button class="button quiet" type="submit">Close</button></form>
+            </div>
+          </dialog>
+        </details>
+        <!-- donation:end -->
       </div>
     </div>
   </section>
@@ -255,6 +289,69 @@ FORM: User-pinned direction (palette, fonts, dark hero with lichen cards), no ro
     if (!event.target.closest('.site-header')) close();
   });
   matchMedia('(min-width: 861px)').addEventListener('change', close);
+})();
+(() => {
+  // Copy the donation address from the address itself or its button.
+  const status = document.querySelector('.copy-status');
+  let reset;
+  const copy = async (text, source) => {
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+    } catch {
+      // Older browsers and non-HTTPS previews: copy the selected address.
+      const field = Object.assign(document.createElement('textarea'), { value: text, readOnly: true });
+      field.style.cssText = 'position:fixed;opacity:0';
+      document.body.append(field);
+      field.select();
+      try { copied = document.execCommand('copy'); } catch { copied = false; }
+      field.remove();
+    }
+    const button = source.closest('.address-row')?.querySelector('.copy-button');
+    if (!copied) {
+      getSelection().selectAllChildren(source.closest('.address-row')?.querySelector('.address') ?? source);
+      if (status) {
+        status.classList.add('is-error');
+        status.textContent = 'Could not copy. The address is selected; copy it with your keyboard or menu.';
+      }
+      return;
+    }
+    if (status) {
+      status.classList.remove('is-error');
+      status.textContent = 'Address copied.';
+    }
+    if (button) {
+      button.classList.add('is-copied');
+      button.querySelector('span').textContent = 'Copied';
+      button.querySelector('use').setAttribute('href', '#i-check');
+    }
+    clearTimeout(reset);
+    reset = setTimeout(() => {
+      if (status) status.textContent = '';
+      if (button) {
+        button.classList.remove('is-copied');
+        button.querySelector('span').textContent = 'Copy';
+        button.querySelector('use').setAttribute('href', '#i-copy');
+      }
+    }, 2500);
+  };
+  for (const el of document.querySelectorAll('[data-copy-text]')) {
+    el.hidden = false;
+    el.addEventListener('click', () => copy(el.dataset.copyText, el));
+  }
+  // Show the QR code large in a dialog; without dialog support the link opens the image.
+  const dialog = document.querySelector('.qr-dialog');
+  const opener = document.querySelector('[data-qr-open]');
+  if (dialog && opener && typeof dialog.showModal === 'function') {
+    opener.addEventListener('click', event => {
+      event.preventDefault();
+      dialog.showModal();
+    });
+    dialog.addEventListener('click', event => {
+      if (event.target === dialog) dialog.close();
+    });
+  }
 })();
 </script>
 </body>

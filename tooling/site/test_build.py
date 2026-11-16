@@ -315,5 +315,88 @@ class ObtainiumTest(unittest.TestCase):
             self.assertNotIn('{{', page)
 
 
+# Format-valid but made up: the base58 alphabet repeated, not a real wallet.
+TEST_ADDRESS = '4A' + ('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz' * 2)[:93]
+
+
+def png_pixels(data):
+    """Decode the 8-bit grayscale PNGs the build writes."""
+    import struct
+    import zlib
+    width, height = struct.unpack('>II', data[16:24])
+    pos, idat = 8, b''
+    while pos < len(data):
+        length, kind = struct.unpack('>I4s', data[pos:pos + 8])
+        if kind == b'IDAT':
+            idat += data[pos + 8:pos + 8 + length]
+        pos += 12 + length
+    raw = zlib.decompress(idat)
+    rows = [raw[y * (width + 1):(y + 1) * (width + 1)] for y in range(height)]
+    assert all(row[0] == 0 for row in rows)  # filter type None
+    return width, [row[1:] for row in rows]
+
+
+class DonationTest(unittest.TestCase):
+    def build_with(self, donation, source_html=None):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        root = Path(directory.name)
+        settings = root / 'donation.json'
+        settings.write_text(json.dumps(donation))
+        if source_html is None:
+            build.build(root / 'out', 'v1.2', 'owner/repo', [], settings)
+        else:
+            source = root / 'source'
+            (source / 'assets').mkdir(parents=True)
+            (source / 'assets/site.css').write_text('body{}')
+            (source / 'index.html').write_text(source_html)
+            with patch.object(build, 'SOURCE', source):
+                build.build(root / 'out', 'v1.2', 'owner/repo', [], settings)
+        return root / 'out'
+
+    def monero(self, address=TEST_ADDRESS, **changes):
+        return {'name': 'Monero', 'ticker': 'XMR', 'uri_scheme': 'monero', 'address': address, **changes}
+
+    def test_repository_settings_are_valid(self):
+        build.load_donation(build.DONATION_JSON)  # raises on a malformed address
+
+    def test_without_an_address_the_block_and_qr_are_left_out(self):
+        out = self.build_with(self.monero(''), '<p>a</p>\n  <!-- donation:start -->\n<a href="{{DONATION_URI}}">x</a>\n  <!-- donation:end -->\n<p>b</p>')
+        page = (out / 'index.html').read_text()
+        self.assertEqual('<p>a</p>\n<p>b</p>', page)
+        self.assertFalse((out / build.DONATION_QR).exists())
+
+    def test_real_page_shows_address_uri_and_a_matching_qr_code(self):
+        out = self.build_with(self.monero())
+        page = (out / 'index.html').read_text()
+        self.assertNotIn('{{', page)
+        self.assertNotIn('donation:start', page)
+        self.assertIn(f'data-copy-text="{TEST_ADDRESS}"', page)
+        self.assertIn(f'href="monero:{TEST_ADDRESS}"', page)
+        self.assertIn(f'<span class="address-edge">{TEST_ADDRESS[:6]}</span>', page)
+        self.assertIn(f'<span class="address-edge">{TEST_ADDRESS[-6:]}</span>', page)
+        width, rows = png_pixels((out / build.DONATION_QR).read_bytes())
+        qr = build.QrCode.encode_text(f'monero:{TEST_ADDRESS}', build.QrCode.Ecc.MEDIUM)
+        modules = qr.get_size() + 2 * build.QR_BORDER
+        self.assertEqual(modules * build.QR_SCALE, width)
+        self.assertIn(f'width="{modules * 3}"', page)
+        half = build.QR_SCALE // 2
+        for y in range(modules):
+            for x in range(modules):
+                dark = qr.get_module(x - build.QR_BORDER, y - build.QR_BORDER)
+                self.assertEqual(0 if dark else 255, rows[y * build.QR_SCALE + half][x * build.QR_SCALE + half])
+
+    def test_malformed_addresses_and_unknown_currencies_fail_the_build(self):
+        for donation in (
+            self.monero(TEST_ADDRESS[:-1]),
+            self.monero('0' + TEST_ADDRESS[1:]),
+            self.monero(TEST_ADDRESS[:-1] + 'l'),
+            self.monero(uri_scheme='bitcoin'),
+            self.monero(name='<b>Monero</b>'),
+        ):
+            with self.subTest(donation=donation), self.assertRaises(SystemExit):
+                self.build_with(donation, '<p>x</p>')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -21,6 +21,8 @@ import im.molly.unifiedpush.UnifiedPushDistributor
 import org.signal.core.util.Util.writeTextToClipboard
 import org.signal.core.util.concurrent.SignalExecutors
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import org.signal.storage.keyvalue.KeyValuePersistenceException
 import org.thoughtcrime.securesms.R
 import org.signal.core.util.ThreadUtil
@@ -133,9 +135,11 @@ class UnifiedPushSettingsViewModel(private val application: Application) : ViewM
 
   fun setMollySocket(mollySocket: MollySocket, disclosure: RelayDisclosure.Snapshot?) {
     viewModelScope.launch {
-      if (!RelayDisclosure.selectRelayAndComplete(disclosure, mollySocket) { authorization ->
+      val completed = RelayDisclosure.selectRelayAndComplete(disclosure, mollySocket) { authorization ->
           AppDependencies.jobManager.add(UnifiedPushRefreshJob(authorization))
-        }) {
+        }
+      currentCoroutineContext().ensureActive()
+      if (!completed) {
         showStaleDisclosure()
       }
       refresh()

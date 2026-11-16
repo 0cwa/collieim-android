@@ -219,6 +219,7 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 /* Donate shares the Matrix/forum row grammar: icon column, Sora title, actions. */
 .community-donations{display:flex;gap:16px;align-items:flex-start;margin-top:0;padding:20px 4px 0;border-top:1px solid var(--rule)}
 .community-donations>.ico{width:40px;height:40px;flex:none;color:var(--icon);margin-top:2px}
+.community-donations>.community-copy{flex:1;min-width:0}
 .community-donations h3{font:300 1.375rem/1.3 Sora,sans-serif;color:var(--ink)}
 .donation-actions{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:6px}
 .community-donations a{display:inline-block;min-height:24px;font-weight:600}
@@ -227,15 +228,18 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 /* Crypto donation: one disclosure under the donation links. The QR image is an
    opaque PNG with its own white quiet zone, so dark mode, forced colours and
    page-recolouring extensions can tint the page but never the code. */
-.crypto-donate{margin-top:14px}
+.crypto-donate{margin-top:4px}
 .crypto-donate summary{display:inline-flex;align-items:center;gap:6px;min-height:24px;color:var(--link);font-weight:600;cursor:pointer;list-style:none;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.22em}
 .crypto-donate summary::-webkit-details-marker{display:none}
 .crypto-donate summary:hover{text-decoration-thickness:2px}
 .crypto-donate summary .ico{width:16px;height:16px;transition:transform .2s var(--ease)}
 .crypto-donate[open] summary .ico{transform:rotate(180deg)}
-.crypto-panel{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 20px;align-items:start;margin-top:14px;padding:16px;border:1px solid var(--card-line);border-radius:16px;background:var(--card);color:var(--ink-2)}
+.crypto-panel{display:flex;flex-wrap:wrap;gap:16px 20px;align-items:flex-start;margin-top:14px;padding:16px;border:1px solid var(--card-line);border-radius:16px;background:var(--card);color:var(--ink-2)}
+/* Wrap by the panel's available width: the community column is narrow even
+   on tablets. Keep the address readable, with the QR beside it or below. */
+.crypto-address{flex:1 1 16rem;min-width:0}
 /* The enlarge cue sits under the code, never on it or its quiet zone. */
-.crypto-donate .qr-thumb{display:grid;justify-items:center;gap:6px;min-height:0;text-decoration:none}
+.crypto-donate .qr-thumb{display:grid;flex:0 1 177px;min-width:0;order:2;justify-items:center;gap:6px;min-height:0;text-decoration:none}
 .qr-thumb img,.qr-dialog img{height:auto;background:#fff;image-rendering:pixelated}
 .qr-thumb img{border-radius:10px;box-shadow:0 0 0 1px var(--card-line);transition:transform .2s var(--ease)}
 .qr-thumb:hover img{transform:translateY(-1px)}
@@ -243,9 +247,9 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
 .qr-thumb:hover .qr-zoom{text-decoration-thickness:2px}
 .qr-zoom .ico{width:16px;height:16px}
 .crypto-label{color:var(--ink);font-weight:500;font-size:.95rem}
-.address-row{display:flex;align-items:flex-start;gap:8px;margin-top:6px}
+.address-row{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;margin-top:6px}
 .crypto-donate .address,.qr-dialog .address{display:block;flex:1;min-width:0;padding:10px 12px;border:1px solid var(--card-line);border-radius:10px;background:var(--page);color:var(--ink);font:400 .875rem/1.5 ui-monospace,SFMono-Regular,"Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;letter-spacing:.02em;overflow-wrap:anywhere;word-break:break-all;-webkit-user-select:all;user-select:all}
-.address-row .address{cursor:copy}
+.address-row .address{flex:1 1 16rem;cursor:copy}
 .address-edge{color:var(--icon);font-weight:700}
 .copy-button{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 14px;border:1px solid var(--ink);border-radius:999px;background:transparent;color:var(--ink);font:500 .9rem/1 Manrope,sans-serif;cursor:pointer;transition:background-color .2s,border-color .2s,color .2s}
 .copy-button:hover{background:var(--page)}
@@ -359,9 +363,7 @@ h3{font:300 1.25rem/1.3 Sora,sans-serif;letter-spacing:-.015em}
   .links li,.community-donations{gap:14px;padding-inline:0}
   .links .ico,.community-donations>.ico{width:28px;height:28px;margin-top:2px}
   .donation-actions{flex-direction:column;align-items:flex-start;gap:8px}
-  .crypto-panel{grid-template-columns:minmax(0,1fr);padding:14px}
-  .crypto-donate .qr-thumb{order:2;justify-self:start}
-  .address-row{flex-direction:column;align-items:stretch}
+  .crypto-panel{padding:14px}
   .copy-button{align-self:flex-start}
   .qr-dialog-body{padding:18px}
   .upcoming-intro{margin-top:16px}

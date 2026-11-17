@@ -59,9 +59,19 @@ class CollieUpdateProfileTest {
   }
 
   @Test
+  fun `Beta accepts long engineering-valid versions while Stable retains its length limit`() {
+    val longVersion = "8.36.0-" + "1".repeat(74)
+    assertEquals(81, longVersion.length)
+    assertTrue(CollieUpdateProfile.TRAILBLAZER_BETA.isValidVersionName(longVersion))
+    assertEquals("https://github.com/0cwa/collieim-android/releases/tag/trailblazer-v$longVersion", CollieUpdateProfile.TRAILBLAZER_BETA.releasePage(longVersion))
+    assertTrue(CollieUpdateProfile.STABLE.isValidVersionName("1".repeat(75) + ".36.0"))
+    assertFalse(CollieUpdateProfile.STABLE.isValidVersionName("1".repeat(76) + ".36.0"))
+  }
+
+  @Test
   fun `neither product accepts a version that changes the release URL`() {
     for (profile in CollieUpdateProfile.entries) {
-      for (version in listOf("../8.35.2", "8.35.2?x=y", "8.35.2#other", "https://example.org", "8.35.2/other", "8.35.2%2f..", "8.35.2\n", "8.35.2-" + "1".repeat(80))) {
+      for (version in listOf("../8.35.2", "8.35.2?x=y", "8.35.2#other", "https://example.org", "8.35.2/other", "8.35.2%2f..", "8.35.2\n")) {
         assertThrows(IllegalArgumentException::class.java) { profile.releasePage(version) }
       }
     }

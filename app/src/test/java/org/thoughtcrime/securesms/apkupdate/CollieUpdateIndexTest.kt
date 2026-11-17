@@ -54,6 +54,18 @@ class CollieUpdateIndexTest {
   }
 
   @Test
+  fun `Beta index accepts an engineering-valid long version`() {
+    val longVersion = "8.36.0-" + "1".repeat(74)
+    val root = JsonUtils.getMapper().readTree(metadata(beta, versionCode = 200, versionName = longVersion))
+    val versions = root.path("packages").path(beta.packageName).path("versions") as ObjectNode
+    val next = versions.elements().next().deepCopy<ObjectNode>()
+    (next.path("manifest") as ObjectNode).put("versionCode", 201).put("versionName", "8.36.1")
+    (next.path("file") as ObjectNode).put("name", "/${beta.packageName}_201.apk").put("sha256", "cd".repeat(32))
+    versions.set<JsonNode>("cd".repeat(32), next)
+    assertEquals(CollieUpdateIndex.Update(201, "8.36.1", beta), parse(root.toString(), current = 199, profile = beta).update)
+  }
+
+  @Test
   fun `Beta index rejects development versions and unsafe release destinations`() {
     for (version in listOf("8.36.0-dev", "8.36.0-1-port-unvalidated", "8.36.0+LOCAL", "8.36.0?redirect=other", "8.36.0/other")) {
       assertThrows(IOException::class.java) { parse(metadata(beta, versionName = version), profile = beta) }

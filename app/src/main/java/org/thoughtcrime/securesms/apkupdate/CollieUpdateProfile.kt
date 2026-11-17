@@ -33,9 +33,8 @@ internal enum class CollieUpdateProfile(
   );
 
   fun isValidVersionName(versionName: String): Boolean {
-    if (versionName.length > 80) return false
     return when (this) {
-      STABLE -> STABLE_VERSION_NAME.matches(versionName)
+      STABLE -> versionName.length <= 80 && STABLE_VERSION_NAME.matches(versionName)
       TRAILBLAZER_BETA -> BETA_VERSION_NAME.matches(versionName) && !DEVELOPMENT_VERSION.containsMatchIn(versionName)
     }
   }

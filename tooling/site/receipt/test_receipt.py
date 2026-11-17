@@ -2,6 +2,7 @@
 import copy
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import tempfile
@@ -74,6 +75,50 @@ class ReceiptTests(unittest.TestCase):
         self.assertIn(removed, result['removed'])
         self.assertIn(changed['features'][0]['_record_path'], result['changed'])
         self.assertEqual(freeze.freeze(self.data, previous)['reconciliation']['status'], 'unchanged')
+        renamed = copy.deepcopy(self.data)
+        renamed['release_headline'] = 'A reviewed different headline'
+        renamed['features'].reverse()
+        result = freeze.freeze(renamed, previous)['reconciliation']
+        self.assertEqual(result['status'], 'review-needed')
+        self.assertIn('release_headline', result['manifest_changed'])
+        self.assertIn('subject_order', result['manifest_changed'])
+
+    def test_reconciliation_flags_valid_source_change(self):
+        original = copy.deepcopy(self.data)
+        original['features'] = []
+        original['release_changes'] = []
+        previous = freeze.freeze(original)
+        changed = copy.deepcopy(original)
+        changed['release'] = changed['release_base_tag']
+        changed['source'] = changed['release_base']
+        result = freeze.freeze(changed, previous)['reconciliation']
+        self.assertEqual(result['status'], 'review-needed')
+        self.assertIn('source', result['manifest_changed'])
+        self.assertIn('release', result['manifest_changed'])
+
+    def test_release_change_must_be_in_range_and_touch_cited_path(self):
+        unrelated = subprocess.check_output(['git', 'rev-parse', '13f86f9c0c^{commit}'], cwd=render.ROOT, text=True).strip()
+        for commit in (self.data['release_base'], unrelated):
+            bad = copy.deepcopy(self.data)
+            bad['release_changes'][0]['change'] = commit
+            with self.subTest(commit=commit), self.assertRaises(ValueError):
+                freeze.freeze(bad)
+
+    def test_asset_change_rejected_at_render(self):
+        receipt = freeze.freeze(self.data)
+        scratch = Path.home() / 'agent-scratch/collieim-android/receipt-tests'
+        scratch.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=scratch) as directory:
+            root = Path(directory).resolve()
+            for name in receipt['asset_hashes']:
+                target = root / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(render.ROOT / name, target)
+            with patch.object(render, 'ROOT', root):
+                render.render(receipt, 'app')
+                (root / 'docs/site/assets/collie-icon.svg').write_text('<svg/>')
+                with self.assertRaisesRegex(ValueError, 'assets differ'):
+                    render.render(receipt, 'app')
 
     def test_editorial_revision_reads_git_objects_not_working_files(self):
         scratch = Path.home() / 'agent-scratch/collieim-android/receipt-tests'
@@ -104,6 +149,87 @@ class ReceiptTests(unittest.TestCase):
                 loaded, resolved = freeze.load_editorial(manifest, revision)
             self.assertEqual(resolved, revision)
             self.assertEqual(loaded['features'][0]['title'], 'Committed subject')
+            subject.unlink()
+            subject.symlink_to('../changes/example.json')
+            with patch.object(render, 'ROOT', root):
+                loaded, _ = freeze.load_editorial(manifest, revision)
+            self.assertEqual(loaded['features'][0]['title'], 'Committed subject')
+            subject.unlink()
+            subject.symlink_to('/nonexistent-outside-record')
+            with patch.object(render, 'ROOT', root):
+                loaded, _ = freeze.load_editorial(manifest, revision)
+            self.assertEqual(loaded['features'][0]['title'], 'Committed subject')
+
+    def test_tags_are_explicit_even_with_conflicting_branches(self):
+        scratch = Path.home() / 'agent-scratch/collieim-android/receipt-tests'
+        scratch.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=scratch) as directory:
+            root = Path(directory).resolve()
+            env = {k: v for k, v in os.environ.items() if not k.startswith('GIT_')}
+            env.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM='1')
+            def git(*args):
+                return subprocess.run(['git', *args], cwd=root, env=env, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout.strip()
+            git('init', '--initial-branch=main')
+            git('config', 'user.name', 'Test Author')
+            git('config', 'user.email', 'test@example.com')
+            git('config', 'commit.gpgsign', 'false')
+            git('commit', '--allow-empty', '-m', 'First')
+            source = git('rev-parse', 'HEAD')
+            git('tag', 'v9.9.8')
+            git('branch', 'v9.9.9')
+            data = copy.deepcopy(self.data)
+            data.update(source=source, release='v9.9.9', release_base=source, release_base_tag='v9.9.8', features=[], release_changes=[])
+            with patch.object(render, 'ROOT', root):
+                with self.assertRaises(subprocess.CalledProcessError):
+                    render.validate(data)
+                git('tag', 'v9.9.9')
+                git('commit', '--allow-empty', '-m', 'Second')
+                git('branch', '-f', 'v9.9.9', 'HEAD')
+                self.assertEqual(render.validate(data)['source'], source)
+
+    def test_metrics_ignore_local_config_and_worktree_attributes(self):
+        scratch = Path.home() / 'agent-scratch/collieim-android/receipt-tests'
+        scratch.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=scratch) as directory:
+            root = Path(directory).resolve()
+            env = {k: v for k, v in os.environ.items() if not k.startswith('GIT_')}
+            env.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM='1')
+            def git(*args):
+                return subprocess.run(['git', *args], cwd=root, env=env, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).stdout.strip()
+            git('init', '--initial-branch=main')
+            git('config', 'user.name', 'Test Author')
+            git('config', 'user.email', 'test@example.com')
+            git('config', 'commit.gpgsign', 'false')
+            source_file = root / 'app/src/main/code.txt'
+            source_file.parent.mkdir(parents=True)
+            source_file.write_text('one\ntwo\n')
+            (root / '.gitattributes').write_text('*.txt text\n')
+            git('add', '.')
+            git('commit', '-m', 'Base')
+            base = git('rev-parse', 'HEAD')
+            source_file.write_text('one\nthree\n')
+            git('add', '.')
+            git('commit', '-m', 'Update')
+            source = git('rev-parse', 'HEAD')
+            with patch.object(render, 'ROOT', root):
+                expected = metrics.release_metrics(base, source)
+                self.assertEqual(expected['production'], [1, 1])
+                git('config', 'diff.algorithm', 'histogram')
+                (root / '.git/info/attributes').write_text('*.txt binary\n')
+                (root / '.gitattributes').write_text('*.txt binary\n')
+                with patch.dict(os.environ, {'GIT_ATTR_SOURCE': base, 'GIT_CONFIG_COUNT': '1', 'GIT_CONFIG_KEY_0': 'diff.algorithm', 'GIT_CONFIG_VALUE_0': 'patience'}):
+                    self.assertEqual(metrics.release_metrics(base, source), expected)
+                (root / '.git/info/attributes').write_text('')
+                (root / '.gitattributes').write_text('*.txt binary\n')
+                source_file.write_text('one\nfour\n')
+                git('add', '.')
+                git('commit', '-m', 'Binary attributes')
+                binary_source = git('rev-parse', 'HEAD')
+                (root / '.gitattributes').write_text('*.txt text\n')
+                (root / '.git/info/attributes').write_text('*.txt text\n')
+                binary = metrics.release_metrics(source, binary_source)
+                self.assertIn('app/src/main/code.txt', binary['binary_paths'])
+                self.assertEqual(binary['production'], [0, 0])
 
     def test_editorial_text_is_escaped(self):
         data = copy.deepcopy(self.data)

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Recompute per-change Git churn; counts are not additive across features."""
+"""Recompute Git changes with isolated configuration and source-tree attributes."""
 import json
+import os
+from pathlib import Path
 import re
 import subprocess
+import tempfile
 import render
 
 
@@ -35,16 +38,39 @@ def parse_metrics(raw):
     return result
 
 
+def isolated_diff(source, arguments):
+    """Use an empty bare repository sharing only objects, never local config/attributes."""
+    env = {k: v for k, v in os.environ.items() if not k.startswith('GIT_')}
+    env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull,
+               GIT_ATTR_NOSYSTEM='1', GIT_ATTR_SOURCE=source,
+               GIT_NO_LAZY_FETCH='1', LC_ALL='C')
+    common = subprocess.check_output(['git', 'rev-parse', '--path-format=absolute', '--git-common-dir'],
+                                     cwd=render.ROOT, env=env, text=True).strip()
+    objects = Path(common) / 'objects'
+    scratch = Path.home() / 'agent-scratch/collieim-android/receipt-tests'
+    scratch.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='receipt-git-', dir=scratch) as directory:
+        repo = Path(directory) / 'objects.git'
+        subprocess.run(['git', '-c', 'init.templateDir=', 'init', '--quiet', '--bare', str(repo)],
+                       cwd=directory, env=env, check=True)
+        (repo / 'objects/info/alternates').write_text(str(objects.resolve()) + '\n', encoding='utf-8')
+        command = ['git', '--git-dir', str(repo), '-c', 'core.attributesFile=' + os.devnull,
+                   '-c', 'diff.algorithm=myers', *arguments]
+        return subprocess.check_output(command, cwd=directory, env=env)
+
+
 def change_metrics(commit):
-    parents = subprocess.check_output(['git', 'rev-list', '--parents', '-n', '1', commit], cwd=render.ROOT, text=True).split()
+    parents = isolated_diff(commit, ['rev-list', '--parents', '-n', '1', commit]).split()
     if len(parents) != 2:
         raise ValueError('Metrics require a single-parent change')
-    raw = subprocess.check_output(['git', 'diff-tree', '--root', '--no-commit-id', '--no-renames', '-r', '--numstat', '-z', commit], cwd=render.ROOT)
+    raw = isolated_diff(commit, ['diff-tree', '--no-commit-id', '--no-ext-diff', '--no-textconv',
+                                 '--no-renames', '--diff-algorithm=myers', '-r', '--numstat', '-z', commit, '--'])
     return parse_metrics(raw)
 
 
 def release_metrics(base, source):
-    raw = subprocess.check_output(['git', '-c', 'diff.external=', 'diff', '--no-ext-diff', '--no-textconv', '--no-renames', '--numstat', '-z', base, source, '--'], cwd=render.ROOT)
+    raw = isolated_diff(source, ['diff', '--no-ext-diff', '--no-textconv', '--no-renames',
+                                  '--diff-algorithm=myers', '--numstat', '-z', base, source, '--'])
     return parse_metrics(raw)
 
 

@@ -50,7 +50,7 @@ def validate(data):
         if not isinstance(c.get('diagram'), dict) or not all(isinstance(c['diagram'].get(k), str) and c['diagram'][k] for k in keys):
             raise ValueError('Incomplete release illustration')
     source = data['source']
-    tag_commit = subprocess.check_output(['git', 'rev-parse', '--verify', data['release'] + '^{commit}'], cwd=ROOT, text=True).strip()
+    tag_commit = subprocess.check_output(['git', 'rev-parse', '--verify', 'refs/tags/' + data['release'] + '^{commit}'], cwd=ROOT, text=True).strip()
     if tag_commit != source:
         raise ValueError('Release tag does not match source')
     for feature in data['features']:
@@ -69,16 +69,30 @@ def validate(data):
         for path in feature.get('absent_paths', []):
             if subprocess.run(['git', 'cat-file', '-e', source + ':' + path], cwd=ROOT, stderr=subprocess.DEVNULL).returncode == 0:
                 raise ValueError('Expected removed path is present in release tree')
-    if subprocess.check_output(['git', 'rev-parse', '--verify', data['release_base_tag'] + '^{commit}'], cwd=ROOT, text=True).strip() != data['release_base']:
+    if subprocess.check_output(['git', 'rev-parse', '--verify', 'refs/tags/' + data['release_base_tag'] + '^{commit}'], cwd=ROOT, text=True).strip() != data['release_base']:
         raise ValueError('Release baseline does not match tag')
+    release_commits = set(subprocess.check_output(['git', 'rev-list', data['release_base'] + '..' + source], cwd=ROOT, text=True).splitlines())
     for change in data['release_changes']:
         if not re.fullmatch(r'[0-9a-f]{40}', change.get('change', '')):
             raise ValueError('Invalid release change commit')
-        subprocess.run(['git', 'merge-base', '--is-ancestor', change['change'], source], cwd=ROOT, check=True)
+        if change['change'] not in release_commits:
+            raise ValueError('Release change is outside the comparison range')
+        parents = subprocess.check_output(['git', 'rev-list', '--parents', '-n', '1', change['change']], cwd=ROOT, text=True).split()
+        if len(parents) != 2:
+            raise ValueError('Release change evidence must be a single-parent commit')
+        touched = subprocess.check_output(['git', 'diff-tree', '--no-commit-id', '--name-only', '-r', '--no-renames', change['change'], '--', change['path']], cwd=ROOT, text=True).strip()
+        if not touched:
+            raise ValueError('Release change did not touch its cited path')
         changed = subprocess.check_output(['git', 'diff', '--name-only', data['release_base'], source, '--', change['path']], cwd=ROOT, text=True).strip()
         if not changed:
             raise ValueError('Release entry has no change at its cited path')
     return data
+
+
+def asset_hashes():
+    import hashlib
+    paths = ('docs/site/assets/fonts/manrope.ttf', 'docs/site/assets/fonts/sora.ttf', 'docs/site/assets/art/landscape-hero.svg', 'docs/site/assets/collie-icon.svg')
+    return {path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest() for path in paths}
 
 
 def render(receipt, layout):
@@ -86,6 +100,8 @@ def render(receipt, layout):
     from urllib.parse import quote
     if receipt.get('receipt_version') != 1:
         raise ValueError('Unsupported frozen receipt')
+    if receipt.get('asset_hashes') != asset_hashes():
+        raise ValueError('Receipt assets differ from this renderer checkout')
     data = receipt['editorial']
     e = html.escape
     fonts = ROOT / 'docs/site/assets/fonts'

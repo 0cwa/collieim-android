@@ -1240,6 +1240,12 @@ object BackupRepository {
     val stopwatch = Stopwatch("import")
     val eventTimer = EventTimer()
 
+    // Link-and-sync follows local account registration; do not import a different account's archive.
+    if (backupMode.isLinkAndSync && SignalStore.account.aci != selfData.aci) {
+      Log.w(TAG, "[import] Link backup account does not match the current account")
+      return ImportResult.Failure
+    }
+
     val header = frameReader.getHeader()
     if (header == null) {
       Log.e(TAG, "[import] Backup is missing header!")

@@ -1,0 +1,14 @@
+{
+  "title": "Recipient settings before device lookup",
+  "summary": "Recipient settings are updated before linked-device lookup.",
+  "origin": "Adapted by 0cwa from Miha Zupan's Molly patch.",
+  "change": "1a0c18c32c5286e9061839cd37d96e432888fd05",
+  "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsViewModel.kt",
+  "upstream": "https://github.com/MihaZupan/mollyim-android/blob/735d54df2b5dc71694039e5f8daeb60fa4a6d85b/patches/theme.patch",
+  "limit": "This describes a specific ordering change, not overall reliability.",
+  "source_blob": "95aa57482acaaa0e265dad63612b81a0734de333",
+  "placement": "hidden",
+  "category": "Connection",
+  "visual": "connection",
+  "display_title": "Recipient settings before device lookup"
+}

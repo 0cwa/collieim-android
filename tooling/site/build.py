@@ -2,7 +2,8 @@
 """Build the collie.im website into an output directory.
 
 The page source is docs/site/. This script copies it, fills in the latest
-release tag and the APK link, and fails if a placeholder is left behind.
+release tag and the APK link, and generates unlinked patch/release pages from
+reviewed source evidence. It fails if a placeholder or stale source record remains.
 
     python3 tooling/site/build.py --out _site            # asks GitHub for the latest release
     python3 tooling/site/build.py --out _site --tag v1.2  # offline, fixed tag
@@ -23,6 +24,7 @@ from urllib.parse import quote
 from pathlib import Path
 
 from qrcodegen import QrCode
+from receipt import pipeline
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "docs" / "site"
@@ -192,6 +194,45 @@ def latest_release(repo: str) -> str:
     return release["tag_name"]
 
 
+
+def published_tags(releases):
+    """Only published non-draft identities; summaries remain editorial."""
+    from datetime import datetime
+    tags = {}
+    if not isinstance(releases, list):
+        raise ValueError('Release index must be an array')
+    for release in releases:
+        if release.get('draft') is not False or not release.get('published_at'):
+            continue
+        tag = release.get('tag_name', '')
+        if not TAG_RE.fullmatch(tag):
+            raise ValueError('Invalid published release tag')
+        when = datetime.fromisoformat(release['published_at'].replace('Z', '+00:00'))
+        if when.tzinfo is None:
+            raise ValueError('Published release timestamp must include timezone')
+        tags[tag] = max(tags.get(tag, when), when)
+    return sorted(tags, key=lambda tag: (tags[tag], tag), reverse=True)
+
+
+def fetch_releases(repo, max_pages=5):
+    """Bound discovery to 500 entries; fail instead of silently truncating."""
+    releases = []
+    for page in range(1, max_pages + 1):
+        req = urllib.request.Request(
+            f'https://api.github.com/repos/{repo}/releases?per_page=100&page={page}',
+            headers={'Accept': 'application/vnd.github+json', 'User-Agent': 'collie-site-build'})
+        token = os.environ.get('GITHUB_TOKEN')
+        if token:
+            req.add_header('Authorization', f'Bearer {token}')
+        with urllib.request.urlopen(req, timeout=30) as response:
+            batch = json.load(response)
+        if not isinstance(batch, list):
+            raise ValueError('GitHub release index must be an array')
+        releases.extend(batch)
+        if len(batch) < 100:
+            return published_tags(releases)
+    raise ValueError('Release index exceeded 500 entries; review discovery bound before publishing')
+
 def validate_output(out: Path) -> Path:
     """Only replace disposable directories, never source or checkout files."""
     requested = Path(os.path.abspath(out))
@@ -213,7 +254,7 @@ def validate_output(out: Path) -> Path:
     return resolved
 
 
-def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None, donation_json: Path = DONATION_JSON) -> None:
+def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None, donation_json: Path = DONATION_JSON, published: list[str] | None = None) -> None:
     out = validate_output(out)
     if not TAG_RE.match(tag):
         raise SystemExit(f"unexpected release tag: {tag!r}")
@@ -267,6 +308,7 @@ def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None, don
     missing = [str(ref.relative_to(out)) for ref in refs if not ref.is_file() and not (ref / "index.html").is_file()]
     if missing:
         raise SystemExit(f"missing local files: {missing}")
+    pipeline.build(out, published=published)
     print(f"built {out} for {tag}")
 
 
@@ -277,10 +319,21 @@ def main() -> int:
     ap.add_argument("--repo", default=REPO)
     ap.add_argument("--roadmap-json", type=Path, help="offline JSON array of discussion nodes (number, title, category.slug, labels.nodes)")
     ap.add_argument("--donation-json", type=Path, default=DONATION_JSON, help="donation settings; default: tooling/site/donation.json")
+    ap.add_argument("--receipt-preview", type=Path, help="opt in to nonpublished pilot pages from a frozen receipt; never selects a release")
+    ap.add_argument('--releases-json', type=Path, help='offline GitHub release array; --tag alone uses the reviewed release index')
     args = ap.parse_args()
     roadmap = json.loads(args.roadmap_json.read_text(encoding="utf-8")) if args.roadmap_json else None
-    build(args.out, args.tag or latest_release(args.repo), args.repo, roadmap, args.donation_json)
+    published = published_tags(json.loads(args.releases_json.read_text())) if args.releases_json else (
+        None if args.tag else fetch_releases(args.repo))
+    build(args.out, args.tag or latest_release(args.repo), args.repo, roadmap, args.donation_json, published)
+    if args.receipt_preview:
+        build_receipt_preview(args.out, args.receipt_preview)
     return 0
+
+
+def build_receipt_preview(out: Path, frozen: Path) -> None:
+    """Compatibility route set for local draft previews."""
+    pipeline.build(out, receipt=json.loads(frozen.read_text(encoding='utf-8')), routes='pilot')
 
 
 if __name__ == "__main__":

@@ -182,6 +182,7 @@ class BackupAliasImportTest {
     val db = SignalDatabase.writableDatabase
     assertEquals(contactByAci.toLong(), db.rawQuery("SELECT recipient_id FROM mention WHERE _id = 997", null).readToSingleInt().toLong())
     assertEquals(db.rawQuery("SELECT thread_id FROM message WHERE _id = 997", null).readToSingleInt(), db.rawQuery("SELECT thread_id FROM mention WHERE _id = 997", null).readToSingleInt())
+    assertEquals(1, db.rawQuery("SELECT COUNT(*) FROM thread WHERE _id = (SELECT thread_id FROM message WHERE _id = 997) AND recipient_id = ?", arrayOf(contactByAci.serialize())).readToSingleInt())
     for (name in listOf("mention_recipient_id_thread_id_index", "message_thread_story_parent_story_scheduled_date_latest_revision_id_index", "message_thread_unread_count_index")) {
       assertEquals(1, db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = 'index' AND name = ?", arrayOf(name)).readToSingleInt())
     }

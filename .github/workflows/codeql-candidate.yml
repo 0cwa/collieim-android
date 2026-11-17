@@ -21,7 +21,6 @@ jobs:
     env:
       APPROVED_COMMIT: ${{ inputs.source_commit }}
       APPROVED_TREE: ${{ inputs.source_tree }}
-      CODEQL_COMPILE_INPUTS: ${{ runner.temp }}/codeql-evidence/compiler-inputs.jsonl
       CODEQL_ACTION_DIFF_INFORMED_QUERIES: 'false'
       CODEQL_OVERLAY_DATABASE_MODE: 'none'
     steps:
@@ -110,6 +109,7 @@ jobs:
         shell: bash
         env:
           GRADLE_USER_HOME: ${{ runner.temp }}/codeql-gradle-home
+          CODEQL_COMPILE_INPUTS: ${{ runner.temp }}/codeql-evidence/compiler-inputs.jsonl
         run: |
           set -euo pipefail
           ./gradlew --no-daemon --no-build-cache --rerun-tasks --dependency-verification=strict -Pkotlin.incremental=false -I "$GITHUB_WORKSPACE/policy/tools/codeql/compile-inputs.gradle" :app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac
@@ -139,6 +139,7 @@ jobs:
         env:
           CODEQL_PATH: ${{ steps.init.outputs.codeql-path }}
           DB_LOCATIONS: ${{ steps.analyze.outputs.db-locations }}
+          CODEQL_COMPILE_INPUTS: ${{ runner.temp }}/codeql-evidence/compiler-inputs.jsonl
         run: |
           set -euo pipefail
           db=$(printf '%s' "$DB_LOCATIONS" | jq -er '."java-kotlin" // .java')

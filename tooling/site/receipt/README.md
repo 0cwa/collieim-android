@@ -1,33 +1,40 @@
-# Development receipt pilot
+# Patch and release pages
 
-This is an experimental, versioned development receipt. It is not a release plan, source-build receipt, membership approval, or publishing authorization. Ordinary website builds exclude the pilot; an explicit nonpublished preview option is documented below. There is no merge gate.
+The normal site build generates `/patches/` and `/releases/` without adding homepage or navigation links. The reviewed edition remains pinned in `pilot.json`; a newly published release does not change its patch descriptions or source identity. Membership remains unknown. These pages do not approve an APK or release.
 
-`pilot.json` names a source tag and baseline, reviewed subject records, and release change records. The human-readable filenames are internal references, not public labels. Subject records describe selected capabilities at the chosen source; change records describe selected release outcomes. Records carry reviewed text and source evidence. Editorial review remains responsible for benefits, attribution, selection and limitations.
+## Authoring
 
-The same manifest contains an ordered `release_history` of published release tags. The renderer links these to their release notes; it does not fetch or infer a release list. For a later edition, review the selected release and its evidence, update the ordered history, and freeze again. An empty history renders an empty state. This list is an editorial archive, not an approved membership manifest.
+Add a short reviewed JSON record under `subjects/` (continuing app patches) or `changes/` (release differences). Include the benefit, original/adaptation credits, change commit, file evidence and meaningful limitations. Human-readable filenames become anchors. Add the record to `pilot.json` when the reviewed source tag contains it. Selecting a new edition requires reviewing that tag, baseline and every continuing claim; the builder never treats `main` as shipped source.
 
-Freeze the current working records and render both views:
+Re-freeze after a source-record, manifest or ordering change, in a checkout containing the named tags and change ancestry:
 
 ```sh
-python3 tooling/site/receipt/freeze.py --out /path/receipt.json
-python3 tooling/site/receipt/render.py --receipt /path/receipt.json --layout app --out /path/app.html
-python3 tooling/site/receipt/render.py --receipt /path/receipt.json --layout release --out /path/release.html
+python3 tooling/site/receipt/freeze.py --previous tooling/site/receipt/source-receipt.json --out tooling/site/receipt/source-receipt.json
+python3 tooling/site/receipt/freeze.py --check
 ```
 
-For a reproducible committed editorial snapshot, pass `--editorial-revision <commit>` to `freeze.py`. The manifest and records are read from that Git commit, and the resolved commit is recorded in the receipt. Without that option the records come from the working tree and the receipt says so with a null editorial revision. The receipt records hashes of the renderer’s fonts and artwork; rendering rejects mismatched assets. Rebuilding from the same frozen receipt, matching assets and renderer revision produces identical HTML; rendering itself does not query Git or the network.
+Review the reconciliation report in the receipt and commit the records and receipt together. Added, removed, replaced, changed and reordered records are reported. The Git validator checks exact source blobs, absent paths, tag identities and ancestry; release entries must cite a single-parent commit touching a file that differs across the pinned range. Missing objects fail with instructions; freezing never fetches. Benefits, selection, attribution and behavior claims require editorial review.
 
-Freezing verifies the release and baseline tags, recorded change ancestry, selected source blobs and listed absent paths. A release entry must cite a single-parent commit in the comparison range that touched its path, and that path must also differ in the final tree. Merge-resolution-only changes require separately reviewed evidence; the pilot does not infer them. It does not prove behavior, attribution or approved membership. The pilot always records membership as unknown. A future adapter requires the release owner's approved interface; this development receipt does not replace release approvals.
+## Source and presentation contracts
 
-Pass `--previous /path/previous-receipt.json` to compare record paths and canonical content hashes. Added, removed and changed records, manifest changes and editorial order changes are reported for review, including a rename as a removal plus an addition. The report does not infer whether a capability disappeared or approve its replacement. Source-bound file mismatches fail validation. Recorded paths, hashes and source revisions are evidence of what was read, not proof of semantic claims.
+`source-receipt.json` is a committed **v2 source-only receipt** produced by the Git validator. It preserves the reviewed records, canonical hashes, pinned identities, deterministic tree-diff metrics, classification/method and Git version. Normal builds compare the records and manifest against this snapshot and fail with the changed paths/fields if they differ. This committed, reviewed evidence is the shallow/offline build's trust boundary; CI does not re-prove Android ancestry or download Android history. Source changes require the re-freeze above. A deliberate edit to both evidence and its hashes still requires source review; hashes are not signatures or semantic proof.
 
-`python3 tooling/site/receipt/metrics.py` recomputes historical per-change churn from Git. The frozen receipt separately stores the final baseline-to-release tree difference. Counts are additions and removals, not effort or quality; shared commits must not be summed across subjects. Path rules classify production, tests, translations, generated and other, with binary paths listed separately. The diff uses an isolated temporary bare repository sharing only source objects, a pinned Myers algorithm, and attributes from the selected source tree; local Git configuration, info attributes and working-tree attributes are excluded. The Git version and method are recorded. Missing objects fail rather than triggering a fetch. Path heuristics are versioned but cannot identify every generated file or translation.
+Presentation changes need no source re-freeze. The renderer consumes the frozen source data without Git, network or inference. Each build writes `patches/build.json` with the source receipt hash, release-index input, presentation/asset hashes, route configuration and HTML hashes. The same source data, release index and presentation inputs produce identical HTML.
 
-Before public release, review the design and source claims, establish exact Signal and Molly baselines, connect to an approved membership interface, and verify keyboard and screen-reader behavior. No current receipt grants publication approval.
+Legacy **v1 receipts remain asset-bound**: rendering still rejects changed asset hashes. They are not silently migrated. Re-freeze reviewed source records to create v2; unsupported schema or metric-method versions fail explicitly. `--editorial-revision <commit>` still reads records from immutable Git objects when producing a receipt.
 
-## Website preview
+## Automatic updates
 
-The renderer shares the site's actual palette/theme foundations and self-hosted fonts. Story-specific composition lives in `stories.css`; both stylesheets and the used artwork are pinned by the frozen asset hashes. Re-freeze after an intentional style change.
+The existing website CI builds these routes on website changes and its daily schedule. Live builds fetch up to five GitHub release pages (500 entries), accept only non-draft releases with a publication timestamp, and sort notes links by publication time. Published prereleases are included. API failures, invalid identities and the pagination bound fail the build. Future releases appear as **notes links only**; patch copy, credits, source pins and metrics remain editor-owned. The homepage's existing latest-release/discussion behavior is unchanged. Deployment conditions and permissions are unchanged; PR builds do not deploy.
 
-For a **nonpublished draft build only**, add `--receipt-preview /path/receipt.json` to the existing `tooling/site/build.py` command. This adds `pilot/release.html` and `pilot/app.html` to the disposable output. Ordinary builds have no pilot routes. It never selects a current release, resolves membership, or updates release approval. Do not deploy this output. The six older entries remain explicit GitHub release-note links, not receipt stories.
+Offline full build, using the reviewed release-note list:
 
-Release stories explain selected changes; the app-wide view explains selected continuing capabilities. Both prioritize current users and retain unknown membership and evidence limits. Screenshot evidence belongs in PR user-attachments, never repository proof directories.
+```sh
+python3 tooling/site/build.py --out /path/site --tag v8.35.1-3-rc2 --roadmap-json /path/discussions.json
+```
+
+Add `--releases-json /path/releases.json` for a captured GitHub release array (`tag_name`, `draft`, `published_at`). `fixtures/releases.json` exercises a future published prerelease, a draft and an unpublished record; its versions are test data.
+
+For the old local draft routes, add `--receipt-preview /path/receipt.json`; this also writes `pilot/app.html` and `pilot/release.html` with explicit links for that route set. No generated HTML or screenshots belong in the repository. Screenshot evidence belongs in PR attachments.
+
+Production line counts remain inside closed Changes details. They compare exact pinned trees with `path-rules-v1`, exclude tests and are not summed across patches. The diff isolates Git config/attributes and uses `isolated-myers-source-attributes-v1`. No Signal/Molly baseline counts are inferred. Runtime behavior, keyboard, assistive technology and forced-color validation remain separate evidence.

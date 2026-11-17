@@ -11,6 +11,7 @@ from unittest.mock import patch
 import freeze
 import render
 import metrics
+import evidence
 
 
 class ReceiptTests(unittest.TestCase):
@@ -119,9 +120,11 @@ class ReceiptTests(unittest.TestCase):
                     self.assertNotIn(item['display_title'], page)
                     self.assertNotIn(item['path'], page)
         for count in (0, 1, 8):
-            varied = copy.deepcopy(receipt)
-            varied['editorial']['release_changes'] = (varied['editorial']['release_changes'] * 4)[:count]
-            page = render.render(varied, 'release')
+            varied = copy.deepcopy(self.data)
+            varied['release_changes'] = (varied['release_changes'] * 4)[:count]
+            for i, item in enumerate(varied['release_changes']):
+                varied['release_changes'][i] = dict(item, _record_path=f'changes/varied-{i}.json')
+            page = render.render(freeze.freeze(varied), 'release')
             self.assertEqual(page.count('class="edition-story"'), count)
             if not count:
                 self.assertIn('No selected release story is available', page)
@@ -219,6 +222,8 @@ class ReceiptTests(unittest.TestCase):
 
     def test_asset_change_rejected_at_render(self):
         receipt = freeze.freeze(self.data)
+        receipt['receipt_version'] = 1
+        receipt['asset_hashes'] = render.asset_hashes()
         scratch = Path.home() / 'agent-scratch/collieim-android/receipt-tests'
         scratch.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(dir=scratch) as directory:
@@ -258,18 +263,18 @@ class ReceiptTests(unittest.TestCase):
             git('commit', '-m', 'Fixture')
             revision = git('rev-parse', 'HEAD')
             subject.write_text(json.dumps({'title': 'Uncommitted replacement'}))
-            with patch.object(render, 'ROOT', root):
+            with patch.object(evidence, 'ROOT', root):
                 loaded, resolved = freeze.load_editorial(manifest, revision)
             self.assertEqual(resolved, revision)
             self.assertEqual(loaded['features'][0]['title'], 'Committed subject')
             subject.unlink()
             subject.symlink_to('../changes/example.json')
-            with patch.object(render, 'ROOT', root):
+            with patch.object(evidence, 'ROOT', root):
                 loaded, _ = freeze.load_editorial(manifest, revision)
             self.assertEqual(loaded['features'][0]['title'], 'Committed subject')
             subject.unlink()
             subject.symlink_to('/nonexistent-outside-record')
-            with patch.object(render, 'ROOT', root):
+            with patch.object(evidence, 'ROOT', root):
                 loaded, _ = freeze.load_editorial(manifest, revision)
             self.assertEqual(loaded['features'][0]['title'], 'Committed subject')
 
@@ -324,7 +329,7 @@ class ReceiptTests(unittest.TestCase):
             git('add', '.')
             git('commit', '-m', 'Update')
             source = git('rev-parse', 'HEAD')
-            with patch.object(render, 'ROOT', root):
+            with patch.object(evidence, 'ROOT', root):
                 expected = metrics.release_metrics(base, source)
                 self.assertEqual(expected['production'], [1, 1])
                 git('config', 'diff.algorithm', 'histogram')

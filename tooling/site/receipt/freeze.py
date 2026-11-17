@@ -2,19 +2,24 @@
 """Resolve a development receipt from pinned Git objects; not release approval."""
 import argparse
 import copy
-import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
-import metrics
-import render
+try:
+    from . import metrics
+except ImportError:
+    import metrics
+try:
+    from . import evidence
+except ImportError:
+    import evidence
 
 
-def load_editorial(manifest_path=render.DATA, revision=None):
+def load_editorial(manifest_path=evidence.DATA, revision=None):
     """Read reviewed records from a working tree or one explicit Git commit."""
-    root = render.ROOT.resolve()
+    root = evidence.ROOT.resolve()
     # In revision mode, use lexical repository-relative names. Resolving a
     # working-tree symlink would read a different object than the named path.
     manifest_path = Path(os.path.abspath(manifest_path))
@@ -23,7 +28,7 @@ def load_editorial(manifest_path=render.DATA, revision=None):
     if revision:
         revision_oid = subprocess.check_output(
             ['git', 'rev-parse', '--verify', '--end-of-options', revision + '^{commit}'],
-            cwd=root, text=True).strip()
+            cwd=root, env=dict(os.environ, GIT_NO_LAZY_FETCH='1'), text=True).strip()
         base.relative_to(root)
 
     def read(path):
@@ -31,7 +36,7 @@ def load_editorial(manifest_path=render.DATA, revision=None):
         path.relative_to(base)
         if revision_oid:
             relative = path.relative_to(root).as_posix()
-            return subprocess.check_output(['git', 'show', revision_oid + ':' + relative], cwd=root)
+            return subprocess.check_output(['git', 'show', revision_oid + ':' + relative], cwd=root, env=dict(os.environ, GIT_NO_LAZY_FETCH='1'))
         resolved = path.resolve()
         resolved.relative_to(base.resolve())
         return resolved.read_bytes()
@@ -53,27 +58,19 @@ def load_editorial(manifest_path=render.DATA, revision=None):
     return data, revision_oid
 
 
-def record_hashes(data):
-    result = {}
-    for item in data['features'] + data['release_changes']:
-        path = item['_record_path']
-        if path in result:
-            raise ValueError('Duplicate record path')
-        editorial = {key: value for key, value in item.items() if key != '_record_path'}
-        raw = json.dumps(editorial, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
-        result[path] = hashlib.sha256(raw).hexdigest()
-    return result
+record_hashes = evidence.record_hashes
 
 
 def freeze(data, previous=None, editorial_revision=None):
-    render.validate(data)
+    try:
+        evidence.validate(data)
+    except subprocess.CalledProcessError as error:
+        raise ValueError('Source objects or refs unavailable. Re-freeze in a source checkout with the pinned release/baseline tags and change ancestry; site builds use the committed source-receipt.json.') from error
     hashes = record_hashes(data)
-    manifest = {key: copy.deepcopy(value) for key, value in data.items() if key not in ('features', 'release_changes')}
-    manifest['subject_order'] = [item['_record_path'] for item in data['features']]
-    manifest['release_order'] = [item['_record_path'] for item in data['release_changes']]
+    manifest = evidence.manifest(data)
     reconciliation = {'status': 'not-compared', 'added': [], 'removed': [], 'changed': [], 'manifest_changed': []}
     if previous is not None:
-        if previous.get('receipt_version') != 1 or 'record_hashes' not in previous:
+        if previous.get('receipt_version') not in (1, 2) or 'record_hashes' not in previous:
             raise ValueError('Unsupported previous receipt')
         old = previous['record_hashes']
         prior_manifest = previous.get('manifest')
@@ -87,18 +84,17 @@ def freeze(data, previous=None, editorial_revision=None):
         }
 
     return {
-        'receipt_version': 1,
+        'receipt_version': 2,
         'membership': copy.deepcopy(data['membership']),
         'editorial': copy.deepcopy(data),
         'editorial_revision': editorial_revision,
         'record_hashes': hashes,
         'manifest': manifest,
-        'asset_hashes': render.asset_hashes(),
         'reconciliation': reconciliation,
         'release_metrics': metrics.release_metrics(data['release_base'], data['source']),
         'classification': 'path-rules-v1',
         'diff_method': 'isolated-myers-source-attributes-v1',
-        'git_version': subprocess.check_output(['git', '--version'], cwd=render.ROOT, text=True).strip(),
+        'git_version': subprocess.check_output(['git', '--version'], cwd=evidence.ROOT, text=True).strip(),
     }
 
 
@@ -108,11 +104,17 @@ def encode(receipt):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input', type=Path, default=render.DATA)
+    parser.add_argument('--input', type=Path, default=evidence.DATA)
     parser.add_argument('--editorial-revision', help='Read the manifest and records from this Git commit')
     parser.add_argument('--previous', type=Path, help='Compare editorial records with a previous frozen receipt')
-    parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--out', type=Path)
+    parser.add_argument('--check', action='store_true', help='Check committed source receipt against records without Git')
     args = parser.parse_args()
+    if args.check:
+        evidence.load_snapshot(args.input)
+        return
+    if not args.out:
+        parser.error('--out is required unless --check is used')
     data, revision = load_editorial(args.input, args.editorial_revision)
     previous = json.loads(args.previous.read_text(encoding='utf-8')) if args.previous else None
     args.out.write_bytes(encode(freeze(data, previous, revision)))

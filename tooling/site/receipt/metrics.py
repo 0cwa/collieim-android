@@ -6,7 +6,10 @@ from pathlib import Path
 import re
 import subprocess
 import tempfile
-import render
+try:
+    from . import evidence
+except ImportError:
+    import evidence
 
 
 def classify(path):
@@ -45,7 +48,7 @@ def isolated_diff(source, arguments):
                GIT_ATTR_NOSYSTEM='1', GIT_ATTR_SOURCE=source,
                GIT_NO_LAZY_FETCH='1', LC_ALL='C')
     common = subprocess.check_output(['git', 'rev-parse', '--path-format=absolute', '--git-common-dir'],
-                                     cwd=render.ROOT, env=env, text=True).strip()
+                                     cwd=evidence.ROOT, env=env, text=True).strip()
     objects = Path(common) / 'objects'
     scratch = Path.home() / 'agent-scratch/collieim-android/receipt-tests'
     scratch.mkdir(parents=True, exist_ok=True)
@@ -77,7 +80,7 @@ def release_metrics(base, source):
 def main():
     import freeze
     data, _ = freeze.load_editorial()
-    render.validate(data)
+    evidence.validate(data)
     changes = sorted({f['change'] for f in data['features']})
     print(json.dumps({commit: change_metrics(commit) for commit in changes}, indent=2, sort_keys=True))
 

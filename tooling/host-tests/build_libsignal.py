@@ -127,8 +127,9 @@ def validate_library(path):
             and int.from_bytes(header[16:18], "little") == 3
             and int.from_bytes(header[18:20], "little") == 62,
             "Host JNI must be an x86-64 Linux ELF shared library")
-    dependencies = run(["ldd", str(path)], capture=True)
-    require("not found" not in dependencies, "Host JNI has unresolved shared-library dependencies")
+    dependencies = run(["ldd", "-r", str(path)], capture=True)
+    require("not found" not in dependencies and "undefined symbol:" not in dependencies,
+            "Host JNI has unresolved shared-library dependencies or relocations")
     symbols = {line.split()[-1] for line in run(["nm", "-D", "--defined-only", str(path)], capture=True).splitlines() if line.split()}
     require("Java_org_signal_libsignal_internal_Native_initializeLibrary" in symbols,
             "Host JNI lacks production JNI exports; build with upstream desktop thin LTO")

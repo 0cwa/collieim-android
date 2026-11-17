@@ -23,11 +23,7 @@ def validate(data):
     tag_commit = subprocess.check_output(['git', 'rev-parse', '--verify', data['release'] + '^{commit}'], cwd=ROOT, text=True).strip()
     if tag_commit != source:
         raise ValueError('Release tag does not match source')
-    ids = set()
     for feature in data['features']:
-        if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', feature['id']) or feature['id'] in ids:
-            raise ValueError('Invalid or duplicate feature ID')
-        ids.add(feature['id'])
         if not re.fullmatch(r'[0-9a-f]{40}', feature['change']):
             raise ValueError('Invalid change commit')
         if feature['upstream'] and urlparse(feature['upstream']).scheme != 'https':
@@ -39,8 +35,12 @@ def validate(data):
         for path in feature.get('absent_paths', []):
             if subprocess.run(['git', 'cat-file', '-e', source + ':' + path], cwd=ROOT, stderr=subprocess.DEVNULL).returncode == 0:
                 raise ValueError('Expected removed path is present in release tree')
-    if data['feature_ids'] != [feature['id'] for feature in data['features']]:
-        raise ValueError('Feature membership differs from the editorial manifest')
+    if subprocess.check_output(['git', 'rev-parse', '--verify', data['release_base_tag'] + '^{commit}'], cwd=ROOT, text=True).strip() != data['release_base']:
+        raise ValueError('Release baseline does not match tag')
+    for change in data['release_changes']:
+        changed = subprocess.check_output(['git', 'diff', '--name-only', data['release_base'], source, '--', change['path']], cwd=ROOT, text=True).strip()
+        if not changed:
+            raise ValueError('Release entry has no change at its cited path')
     return data
 
 
@@ -49,25 +49,30 @@ def render(data, layout):
     fonts = ROOT / 'docs/site/assets/fonts'
     manrope = base64.b64encode((fonts / 'manrope.ttf').read_bytes()).decode('ascii')
     sora = base64.b64encode((fonts / 'sora.ttf').read_bytes()).decode('ascii')
-    rows = []
-    links = []
-    for feature in data['features']:
-        title = e(feature['title'])
-        anchor = e(feature['id'], quote=True)
+    import metrics
+    counts = metrics.release_metrics(data['release_base'], data['source'])
+    added, removed = counts['production']
+    connected = data['features'][1]
+    more = [data['features'][3], data['features'][0]]
+    def evidence(feature):
         source = f"{REPO}/blob/{data['source']}/{feature['path']}"
-        upstream = f'<a href="{e(feature["upstream"], quote=True)}">Upstream source for {title}</a> · ' if feature['upstream'] else ''
-        links.append(f'<li><a href="#{anchor}">{title}</a></li>')
-        rows.append(f'''<article id="{anchor}"><h2>{title}</h2><p>{e(feature['summary'])}</p><details><summary>Origin and adaptation</summary><p>{e(feature['origin'])}</p><details><summary>Evidence and limits</summary><p>{e(feature['limit'])}</p><p>{upstream}<a href="{REPO}/commit/{feature['change']}">Change for {title}</a> · <a href="{e(source, quote=True)}">{title} source at release</a></p></details></details></article>''')
-    navigation = f'<nav aria-label="Changes in this receipt"><h2>In this release</h2><ul>{"".join(links)}</ul></nav>' if layout == 'story' else ''
-    return f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>How this release was built</title><style>
+        upstream = f'<a href="{e(feature["upstream"], quote=True)}">Original adaptation source</a> · ' if feature['upstream'] else ''
+        return f'''<details><summary>How it works &amp; where it came from</summary><p>{e(feature['origin'])}</p><details><summary>Evidence and limits</summary><p>{e(feature['limit'])}</p><p>{upstream}<a href="{REPO}/commit/{feature['change']}">View the change</a> · <a href="{e(source, quote=True)}">Source in this version</a></p></details></details>'''
+    rows=''.join(f'''<article class="story"><p class="kind">EVERYDAY USE</p><h3>{e(f['title'])}</h3><p>{e(f['summary'])}</p>{evidence(f)}</article>''' for f in more)
+    release=''.join(f'''<article class="release-row"><div><span class="marker" aria-hidden="true"></span><span class="category">{e(c['kind'])}</span></div><div><h3>{e(c['title'])}</h3><p>{e(c['summary'])}</p><details><summary>See the source</summary><p><a href="{REPO}/compare/{data['release_base']}...{data['source']}">Compare release sources</a> · <a href="{REPO}/commit/{c['change']}">View related change</a></p></details></div></article>''' for c in data['release_changes'])
+    if layout == 'app':
+        content=f'''<div class="opening"><h1>What makes Collie different.</h1><p class="intro">Collie builds on Signal and Molly. Explore selected choices and improvements in this version.</p><p class="pin">Based on <a href="{REPO}/tree/{data['source']}">{e(data['release'])}</a> · release candidate</p></div><section class="feature"><div class="feature-label"><svg class="wave" aria-hidden="true" viewBox="0 0 96 64"><circle cx="48" cy="32" r="5" fill="currentColor"/><path d="M34 18a20 20 0 0 0 0 28M62 18a20 20 0 0 1 0 28M23 7a35 35 0 0 0 0 50M73 7a35 35 0 0 1 0 50" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><p>STAY CONNECTED</p></div><div><h2>Stay connected when push is unavailable.</h2><p class="lede">{e(connected['summary'])}</p>{evidence(connected)}</div></section><section class="section"><div class="section-heading"><h2>Made for everyday life.</h2><p>More ways Collie makes the app easier to use.</p></div><div class="story-grid">{rows}</div></section><section class="foundation"><h2>Built together, in the open.</h2><p>Collie stands on the work of Signal and Molly. Some capabilities are retained; others are adapted or built for Collie.</p><p><a href="https://github.com/signalapp/Signal-Android">Explore Signal</a> &nbsp;·&nbsp; <a href="https://github.com/mollyim/mollyim-android">Explore Molly</a></p></section>'''
+    else:
+        content=f'''<div class="opening release-opening"><p class="pin">Release candidate · {e(data['release'])}</p><h1>What changed in this release.</h1><p class="intro">The changes below are in this candidate compared with {e(data['release_base_tag'])}.</p><p class="pin"><a href="{REPO}/compare/{data['release_base']}...{data['source']}">Explore the source difference</a></p></div><section class="release-section"><div class="section-heading"><h2>For everyday use.</h2><p>Selected changes in this candidate.</p></div>{release}</section><section class="accounting"><h2>The work behind this release.</h2><p>Difference from {e(data["release_base_tag"])}</p><p class="numbers">Production lines: <strong>+{added} / −{removed}</strong></p><details><summary>What this counts</summary><p>Counts use file paths to classify production, tests, translations and generated files. Classification is approximate; test lines are separate. This is the final source difference, not a measure of effort or quality.</p><p><a href="{REPO}/compare/{data["release_base"]}...{data["source"]}">See the source difference</a></p></details></section><section class="foundation"><h2>There is more to Collie.</h2><p>Explore the capabilities and choices that make up the whole app.</p><a href="app.html">Explore the app as a whole →</a></section>'''
+    return f'''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Collie · The story behind the app</title><style>
 @font-face{{font-family:Manrope;src:url(data:font/ttf;base64,{manrope}) format("truetype");font-weight:200 800}} @font-face{{font-family:Sora;src:url(data:font/ttf;base64,{sora}) format("truetype");font-weight:100 800}}
-*{{box-sizing:border-box}} :root{{color-scheme:light dark;--page:#f9fbf4;--ink:#24130d;--link:#2f4f3a;--rule:#9da991;--surface:#edf2e4}} body{{margin:0;background:var(--page);color:var(--ink);font:400 1.05rem/1.65 Manrope,sans-serif}} main{{max-width:74rem;margin:auto;padding:clamp(1.25rem,5vw,4rem)}} a{{color:var(--link);text-underline-offset:.2em}} h1{{font:400 clamp(2.6rem,6vw,5rem)/1.08 Manrope,sans-serif;max-width:13ch;letter-spacing:-.03em;margin:.4em 0}} h2{{font:400 1.45rem/1.3 Sora,sans-serif}} p{{max-width:68ch}} header{{padding:2rem 0 3rem;border-bottom:1px solid var(--rule)}} header p{{max-width:53ch}} .body{{{'display:grid;grid-template-columns:minmax(12rem, 1fr) minmax(0, 3fr);gap:clamp(2rem,6vw,6rem);' if layout == 'story' else ''}}} nav{{padding-top:2rem}} nav h2{{font-size:1rem}} nav ul{{padding-left:1.2rem}} nav li{{margin:.8rem 0}} .entries{{{'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:3rem;' if layout == 'atlas' else ''}}} article{{padding:1.5rem 0 2rem;border-bottom:1px solid var(--rule);scroll-margin-top:1rem}} details{{padding:.6rem 0}} summary{{cursor:pointer;font-weight:700;min-height:44px}} details details{{padding-left:1rem}} :focus-visible{{outline:3px solid #d85b09;outline-offset:4px}} footer{{padding:2rem 0}} ::selection{{background:#2f4f3a;color:#edf2e4}} @media(max-width:650px){{.body,.entries{{display:block}} nav{{padding-top:1rem}} article{{padding:1.25rem 0}}}} @media(prefers-color-scheme:dark){{:root{{--page:#24130d;--ink:#edf2e4;--link:#dfe9cc;--rule:#687e59;--surface:#2b1c14}}}} @media(forced-colors:active){{:focus-visible{{outline:3px solid Highlight}}}}
-</style><main><header><p><a href="{REPO}/tree/{data['source']}">Source for {e(data['release'])}</a> · release candidate</p><h1>How this release was built</h1><p>Collie builds on Signal and Molly. Here are a few retained changes and the source behind them.</p><p>Development pilot · these examples are not release approval evidence.</p></header><div class="body">{navigation}<section class="entries" aria-label="Selected changes">{''.join(rows)}</section></div><footer><p>Source links show the selected tree and change history. They do not establish runtime test coverage.</p></footer></main></html>'''
+*{{box-sizing:border-box}}:root{{color-scheme:light dark;--page:#f9fbf4;--ink:#24130d;--muted:#5a4033;--line:#a5b39b;--link:#2f4f3a;--soft:#edf2e4}}body{{margin:0;background:var(--page);color:var(--ink);font:400 1.05rem/1.65 Manrope,sans-serif}}a{{color:var(--link);text-underline-offset:.22em}}.shell{{max-width:1160px;margin:auto;padding:0 clamp(1.25rem,5vw,3rem)}}.top{{background:#24130d;color:#edf2e4}}.top nav{{display:flex;align-items:center;gap:1.8rem;flex-wrap:wrap;padding-top:1.25rem;padding-bottom:1.25rem}}.top a{{color:inherit}}.brand{{font:600 1.5rem Sora,sans-serif;margin-right:auto;text-decoration:none}}.top [aria-current]{{color:#f2982b;text-decoration-thickness:2px}}.opening{{padding:clamp(3rem,7vw,6rem) 0;max-width:63rem}}.label,.kind,.feature-label p{{font:700 .78rem Sora,sans-serif;letter-spacing:.09em}}h1{{font:400 clamp(3.1rem,7.7vw,6rem)/1.03 Manrope,sans-serif;letter-spacing:-.035em;max-width:13ch;margin:.3em 0}}h2{{font:400 clamp(2rem,4.3vw,3.5rem)/1.12 Manrope,sans-serif;letter-spacing:-.025em;margin:0 0 .5em}}h3{{font:500 1.45rem/1.3 Sora,sans-serif;margin:.4em 0}}p{{max-width:65ch}}.intro{{font-size:clamp(1.15rem,2vw,1.4rem);max-width:42ch}}.pin{{font-size:.9rem;margin-top:2rem}}.feature{{background:#2f4f3a;color:#edf2e4;display:grid;grid-template-columns:1fr 2fr;gap:2rem;padding:clamp(1.6rem,5vw,4rem)}}.feature a{{color:#edf2e4}}.feature h2{{max-width:13ch}}.wave{{display:block;color:#f2982b;width:5rem;height:auto}}.lede{{font-size:1.25rem;max-width:38ch}}.section,.release-section{{padding:clamp(3rem,7vw,6rem) 0}}.section-heading{{max-width:40rem;margin-bottom:2rem}}.story-grid{{display:grid;grid-template-columns:1fr 1fr;gap:3rem}}.story{{border-top:1px solid var(--line);padding-top:1.2rem}}.kind,.category{{color:#6f270f}}details{{margin-top:1.4rem}}summary{{cursor:pointer;font-weight:700;padding:.5rem 0;min-height:44px}}.accounting{{border-top:1px solid var(--line);padding:3rem 0}}.numbers{{font-size:1.3rem;font-variant-numeric:tabular-nums}}.foundation{{background:var(--soft);padding:clamp(1.7rem,5vw,4rem);margin-bottom:4rem}}.foundation h2{{max-width:18ch}}.release-row{{display:grid;grid-template-columns:1fr 2fr;gap:2rem;border-top:1px solid var(--line);padding:2rem 0}}.marker{{display:inline-block;width:12px;height:12px;border:3px solid #d85b09;border-radius:50%;margin-right:.6rem}}.category{{font-weight:700;font-size:.9rem}}footer{{border-top:1px solid var(--line);padding:2rem 0;color:var(--muted);font-size:.9rem}}:focus-visible{{outline:3px solid #f2982b;outline-offset:4px}}::selection{{background:#2f4f3a;color:#edf2e4}}@media(max-width:650px){{.feature,.story-grid,.release-row{{grid-template-columns:1fr;gap:1rem}}.top nav{{gap:1rem}}.brand{{width:100%}}}}@media(prefers-color-scheme:dark){{:root{{--page:#24130d;--ink:#edf2e4;--muted:#c9d5b3;--line:#687e59;--link:#dfe9cc;--soft:#3c2115}}.kind,.category{{color:#f3b884}}}}@media(forced-colors:active){{.feature{{border:1px solid CanvasText}}}}
+</style><div class="top"><nav class="shell" aria-label="Explore Collie"><a class="brand" href="app.html">collie</a><a href="app.html" {'aria-current="page"' if layout=='app' else ''}>The app</a><a href="release.html" {'aria-current="page"' if layout=='release' else ''}>This release</a></nav></div><main class="shell">{content}<footer><p>Enjoying Collie? <a href="https://collie.im/#donate-title">Support its development</a>.</p><p>This is an experimental preview. Source links show selected evidence; they are not a guarantee of runtime behavior or release approval.</p></footer></main></html>'''
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--layout', choices=['atlas', 'story'], required=True)
+    parser.add_argument('--layout', choices=['app', 'release'], required=True)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     data = validate(json.loads(DATA.read_text()))

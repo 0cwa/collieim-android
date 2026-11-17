@@ -19,11 +19,7 @@ def classify(path):
     return 'other'
 
 
-def change_metrics(commit):
-    parents = subprocess.check_output(['git', 'rev-list', '--parents', '-n', '1', commit], cwd=render.ROOT, text=True).split()
-    if len(parents) != 2:
-        raise ValueError('Metrics require a single-parent change')
-    raw = subprocess.check_output(['git', 'diff-tree', '--root', '--no-commit-id', '--no-renames', '-r', '--numstat', '-z', commit], cwd=render.ROOT)
+def parse_metrics(raw):
     result = {category: [0, 0] for category in ('production', 'tests', 'translations', 'generated', 'other')}
     result['binary_paths'] = []
     for entry in raw.split(b'\0'):
@@ -37,6 +33,19 @@ def change_metrics(commit):
             bucket[0] += int(added)
             bucket[1] += int(removed)
     return result
+
+
+def change_metrics(commit):
+    parents = subprocess.check_output(['git', 'rev-list', '--parents', '-n', '1', commit], cwd=render.ROOT, text=True).split()
+    if len(parents) != 2:
+        raise ValueError('Metrics require a single-parent change')
+    raw = subprocess.check_output(['git', 'diff-tree', '--root', '--no-commit-id', '--no-renames', '-r', '--numstat', '-z', commit], cwd=render.ROOT)
+    return parse_metrics(raw)
+
+
+def release_metrics(base, source):
+    raw = subprocess.check_output(['git', 'diff', '--no-renames', '--numstat', '-z', base, source], cwd=render.ROOT)
+    return parse_metrics(raw)
 
 
 def main():

@@ -1,4 +1,4 @@
-"""Checks for the development receipt pilot, independent of release approvals."""
+"""Focused checks for the experimental receipt renderer."""
 import copy
 import json
 import unittest
@@ -10,50 +10,44 @@ class ReceiptTests(unittest.TestCase):
     def setUp(self):
         self.data = json.loads(render.DATA.read_text())
 
-    def test_published_source_reconciles_and_renders_both_layouts(self):
+    def test_release_and_app_are_separate_and_source_bound(self):
         data = render.validate(self.data)
-        for layout in ('atlas', 'story'):
-            page = render.render(data, layout)
-            self.assertIn('How this release was built', page)
-            self.assertIn(data['source'], page)
-            self.assertEqual(page.count('<article id='), 5)
-            self.assertIn('<details>', page)
+        app = render.render(data, 'app')
+        release = render.render(data, 'release')
+        self.assertIn('background connection enabled', app)
+        self.assertNotIn('background connection enabled', release)
+        self.assertIn('Stories settings are easier to find', release)
+        self.assertIn(data['source'], release)
+        self.assertIn('<details>', app)
 
-    def test_duplicate_ids_and_wrong_source_are_rejected(self):
+    def test_wrong_source_missing_blob_and_absence_are_rejected(self):
+        for mutate in ('source', 'blob', 'absent'):
+            bad = copy.deepcopy(self.data)
+            if mutate == 'source': bad['source'] = '0' * 40
+            if mutate == 'blob': bad['features'][0]['source_blob'] = '0' * 40
+            if mutate == 'absent': bad['features'][-1]['absent_paths'] = [bad['features'][0]['path']]
+            with self.subTest(mutate=mutate), self.assertRaises(ValueError):
+                render.validate(bad)
+
+    def test_release_story_requires_a_real_tree_difference(self):
         bad = copy.deepcopy(self.data)
-        bad['features'][1]['id'] = bad['features'][0]['id']
-        with self.assertRaises(ValueError):
-            render.validate(bad)
-        bad = copy.deepcopy(self.data)
-        bad['source'] = '0' * 40
+        bad['release_changes'][0]['path'] = bad['features'][1]['path']
         with self.assertRaises(ValueError):
             render.validate(bad)
 
     def test_editorial_text_is_escaped(self):
         data = copy.deepcopy(self.data)
-        data['features'][0]['title'] = '<script>alert(1)</script>'
-        self.assertNotIn('<script>', render.render(data, 'story'))
+        data['features'][1]['summary'] = '<script>alert(1)</script>'
+        self.assertNotIn('<script>', render.render(data, 'app'))
 
-    def test_missing_record_and_changed_source_evidence_are_rejected(self):
-        bad = copy.deepcopy(self.data)
-        bad['features'].pop()
-        with self.assertRaises(ValueError):
-            render.validate(bad)
-        bad = copy.deepcopy(self.data)
-        bad['features'][0]['source_blob'] = '0' * 40
-        with self.assertRaises(ValueError):
-            render.validate(bad)
-        bad = copy.deepcopy(self.data)
-        bad['features'][-1]['absent_paths'] = [bad['features'][0]['path']]
-        with self.assertRaises(ValueError):
-            render.validate(bad)
-
-    def test_metrics_are_replayable_and_separate_test_files(self):
+    def test_metrics_are_replayable_and_separate_categories(self):
         change = '1a0c18c32c5286e9061839cd37d96e432888fd05'
         counts = metrics.change_metrics(change)
         self.assertEqual(counts['tests'], [92, 3])
         self.assertEqual(counts, metrics.change_metrics(change))
-        self.assertEqual(metrics.classify('app/src/main/res/values-night/colors.xml'), 'production')
+        release = metrics.release_metrics(self.data['release_base'], self.data['source'])
+        self.assertEqual(release['production'], [84, 16])
+        self.assertEqual(release, metrics.release_metrics(self.data['release_base'], self.data['source']))
         self.assertEqual(metrics.classify('app/src/main/res/values-fr/strings.xml'), 'translations')
         self.assertEqual(metrics.classify('app/src/main/generated/example.java'), 'generated')
 

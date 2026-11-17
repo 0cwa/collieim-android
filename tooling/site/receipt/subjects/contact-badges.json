@@ -1,7 +1,7 @@
 {
   "title": "Contact badges",
   "summary": "See your contacts’ profile badges in their settings.",
-  "origin": "Restored from Molly 8.19.2-4 with compatibility work.",
+  "origin": "Restored by 0cwa from Molly 8.19.2-4 with compatibility work.",
   "change": "73e1bb04bba7b11e24b44c4d8855cd0a2ad393e0",
   "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt",
   "upstream": "https://github.com/0cwa/mollyim-android/commit/c9b1814e1d4692c5d4ca0e3abc80008faa2a1db3",
@@ -10,5 +10,6 @@
   "placement": "standard",
   "category": "Contacts",
   "visual": "personal",
-  "display_title": "Contact badges"
+  "display_title": "Contact badges",
+  "change_type": "Restoration"
 }

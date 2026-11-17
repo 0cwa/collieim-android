@@ -28,6 +28,23 @@ class ReceiptTests(unittest.TestCase):
         self.assertEqual(first['membership']['status'], 'unknown')
         self.assertEqual(first['release_metrics']['production'], [84, 16])
 
+    def test_patch_interface_keeps_counts_in_release_scope(self):
+        receipt = freeze.freeze(self.data)
+        app = render.render(receipt, 'app')
+        release = render.render(receipt, 'release')
+        for page in (app, release):
+            self.assertNotIn('Source and evidence', page)
+            self.assertNotIn('<figure', page)
+            self.assertNotIn('class="opening"', page)
+        self.assertIn('aria-label="Patch index"', app)
+        self.assertIn('Adaptation', app)
+        self.assertIn('Restoration', app)
+        self.assertNotIn('Production lines:', app)
+        self.assertIn('Production lines:', release)
+        self.assertIn('class="added">+84', release)
+        self.assertIn('class="removed">−16', release)
+        self.assertIn('tests excluded', release)
+
     def test_reordering_and_extra_items_do_not_drop_stories(self):
         data = copy.deepcopy(self.data)
         data['features'].reverse()
@@ -104,7 +121,7 @@ class ReceiptTests(unittest.TestCase):
             frozen = root / 'receipt.json'
             frozen.write_bytes(freeze.encode(freeze.freeze(self.data)))
             site.build_receipt_preview(root, frozen)
-            self.assertIn('Inside Collie', (root / 'pilot/app.html').read_text())
+            self.assertIn('Patch explorer', (root / 'pilot/app.html').read_text())
             self.assertIn('Release membership is unknown.', (root / 'pilot/release.html').read_text())
             self.assertFalse((root / 'index.html').exists())
 

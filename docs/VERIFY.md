@@ -27,6 +27,37 @@ git diff --stat "$BASE...$HEAD"
 
 The PR check requires one lowercase `Layer: <feature>` trailer on every non-merge commit; fast lint and that trailer check are required, while unit tests and a debug APK build run but are not required checks.
 
+## Catch trailer mistakes locally
+
+Install the local checks once per clone, and rerun the installer after hook updates:
+
+```sh
+python3 tooling/git-hooks/install.py
+```
+
+The installer copies `commit-msg`, `pre-push` and their validator into Git's active hooks directory. The default directory is shared by this clone's worktrees, so the checks stay active after switching to branches without the tooling. Existing unrelated hooks are preserved: installation stops before writing anything if a destination is already in use. A configured `core.hooksPath` is respected; if it points to a shared directory, these checks also apply to other repositories using that directory.
+
+`commit-msg` rejects a missing, duplicate or malformed layer before creating a commit. Keep all trailers in one final paragraph:
+
+```text
+Explain what changed and why.
+
+Layer: website
+Co-authored-by: Name <name@example.com>
+```
+
+A blank line between `Layer:` and `Co-authored-by:` makes Git ignore the layer. The check uses Git's trailer parser, including its handling of editor comments. Ordinary merge commits are exempt, as in CI.
+
+`pre-push` checks every non-merge commit in `origin/main..HEAD` for each branch being pushed, including commits already published on that branch. Fetch `origin/main` before pushing; a missing base blocks the push with a fetch instruction. Branch deletions and tags are left to their existing workflows. To check the same range manually:
+
+```sh
+git fetch origin main
+python3 tooling/git-hooks/collie_check_layer_trailers.py range origin/main HEAD
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/git-hooks -p 'test_*.py'
+```
+
+The native [`commit-msg` hook](https://git-scm.com/docs/githooks#_commit_msg) runs after the message is available; `pre-commit` runs earlier and cannot validate the final message. A pre-commit framework could run a commit-message check, but these two hooks need only Git and Python 3, which CI already uses. Hooks are local and can be bypassed, so the required **Layer trailers** PR check remains the final guard and runs the same validator.
+
 ## Verify a Signal upgrade
 
 Take `OLD` from `canonicalVersionName` in `app/build.gradle.kts` and `NEW` from the Signal tag under review. Fetch both tags and inspect the complete upstream change:

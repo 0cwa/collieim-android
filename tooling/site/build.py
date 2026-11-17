@@ -16,9 +16,13 @@ import os
 import re
 import shutil
 import sys
+import struct
 import urllib.request
+import zlib
 from urllib.parse import quote
 from pathlib import Path
+
+from qrcodegen import QrCode
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "docs" / "site"
@@ -36,6 +40,71 @@ ROADMAP_TITLES = {
     54: "On-device voice message transcription",
     106: "Send a text with its own timer",
 }
+
+
+DONATION_JSON = Path(__file__).with_name("donation.json")
+DONATION_QR = Path("assets") / "donate-qr.png"
+# Format checks only; the wallet the address came from is the checksum authority.
+DONATION_ADDRESS_RE = {
+    "monero": re.compile(r"^[48][1-9A-HJ-NP-Za-km-z]{94}$"),
+}
+DONATION_MARKER_RE = re.compile(r"[ \t]*<!-- donation:(?:start|end) -->\n")
+DONATION_BLOCK_RE = re.compile(r"[ \t]*<!-- donation:start -->.*?<!-- donation:end -->\n?", re.DOTALL)
+QR_SCALE = 12  # pixels per module in the PNG; the page scales it down for the thumbnail
+QR_BORDER = 4  # quiet zone in modules, part of the image so page colours never touch the code
+
+
+def load_donation(path: Path) -> dict | None:
+    """Return the checked donation settings, or None when no address is set."""
+    donation = json.loads(path.read_text(encoding="utf-8"))
+    address = donation.get("address", "").strip()
+    if not address:
+        return None
+    scheme = donation.get("uri_scheme", "")
+    pattern = DONATION_ADDRESS_RE.get(scheme)
+    if pattern is None:
+        raise SystemExit(f"no address check for donation URI scheme {scheme!r}; add one to DONATION_ADDRESS_RE")
+    if not pattern.match(address):
+        raise SystemExit(f"donation address does not look like a {donation.get('name', scheme)} address")
+    for key in ("name", "ticker"):
+        if not re.fullmatch(r"[A-Za-z0-9 ]{1,24}", donation.get(key, "")):
+            raise SystemExit(f"donation {key} must be 1-24 letters, digits or spaces")
+    uri = f"{scheme}:{address}"
+    # Optional label the sender's wallet shows; it is not part of the transaction.
+    recipient = donation.get("recipient_name", "")
+    if recipient:
+        if not re.fullmatch(r"[A-Za-z0-9 ]{1,32}", recipient):
+            raise SystemExit("donation recipient_name must be 1-32 letters, digits or spaces")
+        uri += "?recipient_name=" + quote(recipient)
+    return {"name": donation["name"], "ticker": donation["ticker"], "address": address, "uri": uri}
+
+
+def qr_png(text: str) -> tuple[bytes, int]:
+    """Encode text as an opaque black-on-white PNG; returns (bytes, width in modules)."""
+    qr = QrCode.encode_text(text, QrCode.Ecc.MEDIUM)
+    modules = qr.get_size() + 2 * QR_BORDER
+    rows = []
+    for y in range(modules):
+        row = bytes(
+            0 if qr.get_module(x - QR_BORDER, y - QR_BORDER) else 255
+            for x in range(modules)
+            for _ in range(QR_SCALE)
+        )
+        rows.extend([b"\x00" + row] * QR_SCALE)
+    size = modules * QR_SCALE
+
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+    png = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 0, 0, 0, 0))
+    png += chunk(b"IDAT", zlib.compress(b"".join(rows), 9)) + chunk(b"IEND", b"")
+    return png, modules
+
+
+def render_address(address: str) -> str:
+    """Mark the first and last six characters, the part people compare after pasting."""
+    head, middle, tail = address[:6], address[6:-6], address[-6:]
+    return f'<span class="address-edge">{head}</span>{middle}<span class="address-edge">{tail}</span>'
 
 
 def is_priority(node: dict) -> bool:
@@ -144,13 +213,14 @@ def validate_output(out: Path) -> Path:
     return resolved
 
 
-def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None) -> None:
+def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None, donation_json: Path = DONATION_JSON) -> None:
     out = validate_output(out)
     if not TAG_RE.match(tag):
         raise SystemExit(f"unexpected release tag: {tag!r}")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
         raise SystemExit("unexpected repository name")
     upcoming = render_roadmap(fetch_roadmap(repo) if roadmap is None else roadmap, repo)
+    donation = load_donation(donation_json)
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(SOURCE, out, ignore=shutil.ignore_patterns("*.md"))
@@ -163,8 +233,25 @@ def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None) -> 
             safe="",
         ),
     }
+    if donation:
+        png, modules = qr_png(donation["uri"])
+        (out / DONATION_QR).write_bytes(png)
+        values.update({
+            "DONATION_NAME": donation["name"],
+            "DONATION_TICKER": donation["ticker"],
+            "DONATION_ADDRESS": donation["address"],
+            "DONATION_ADDRESS_HTML": render_address(donation["address"]),
+            "DONATION_URI": html.escape(donation["uri"]),
+            "DONATION_QR": DONATION_QR.as_posix(),
+            "DONATION_QR_THUMB": str(modules * 3),
+            "DONATION_QR_LARGE": str(modules * 8),
+        })
     for page in out.rglob("*.html"):
         rendered = page.read_text(encoding="utf-8")
+        if donation:
+            rendered = DONATION_MARKER_RE.sub("", rendered)
+        else:
+            rendered = DONATION_BLOCK_RE.sub("", rendered)
         for key, value in values.items():
             rendered = rendered.replace("{{" + key + "}}", value)
         left = re.findall(r"\{\{[A-Z_]+\}\}", rendered)
@@ -189,9 +276,10 @@ def main() -> int:
     ap.add_argument("--tag", help="release tag to show; default: ask GitHub for the latest release")
     ap.add_argument("--repo", default=REPO)
     ap.add_argument("--roadmap-json", type=Path, help="offline JSON array of discussion nodes (number, title, category.slug, labels.nodes)")
+    ap.add_argument("--donation-json", type=Path, default=DONATION_JSON, help="donation settings; default: tooling/site/donation.json")
     args = ap.parse_args()
     roadmap = json.loads(args.roadmap_json.read_text(encoding="utf-8")) if args.roadmap_json else None
-    build(args.out, args.tag or latest_release(args.repo), args.repo, roadmap)
+    build(args.out, args.tag or latest_release(args.repo), args.repo, roadmap, args.donation_json)
     return 0
 
 

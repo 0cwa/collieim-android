@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "profile": "collie-android-v1",
+  "snapshots": [
+    {
+      "language": "java-kotlin",
+      "source_sha256": "6cdca2ff41b274158bda744e596d5db78dd337e0c4e1fce5958b600f6527556b",
+      "analysis_config_sha256": "61d120d00ff16b9c25303e245d6a08b286b9836f3c29a822b81d03f9f9601e0e",
+      "manifest": ".github/codeql/review-snapshots/java-kotlin-6cdca2ff.json",
+      "manifest_sha256": "67ea95ba8e9909ff608b7b54fbfeb2bd25514bbdebb3ed27869a0206d0e9e824"
+    },
+    {
+      "language": "java-kotlin",
+      "source_sha256": "51692f162b60b48f84837d61166e8b9f9c596afd24203b60133edffa266c427d",
+      "analysis_config_sha256": "61d120d00ff16b9c25303e245d6a08b286b9836f3c29a822b81d03f9f9601e0e",
+      "manifest": ".github/codeql/review-snapshots/java-kotlin-6cdca2ff.json",
+      "manifest_sha256": "67ea95ba8e9909ff608b7b54fbfeb2bd25514bbdebb3ed27869a0206d0e9e824"
+    }
+  ]
+}

@@ -72,6 +72,7 @@ gradle.projectsEvaluated {
   allprojects {
     hostJniDirectory?.let { directory ->
       val library = directory.resolve("libsignal_jni_testing_amd64.so")
+      val probe = rootProject.file("tooling/host-tests/InitializeNative.java")
       tasks.withType<Test>().configureEach {
         classpath = files(directory) + classpath
         // Security CI requires tests to execute on this candidate. Compilation
@@ -82,6 +83,16 @@ gradle.projectsEvaluated {
           check(library.isFile) {
             "Missing host libsignal JNI. Run python3 tooling/host-tests/build_libsignal.py first."
           }
+          val java = javaLauncher.get().executablePath.asFile.absolutePath
+          val command = listOf(java) + allJvmArgs + listOf("-cp", classpath.asPath, probe.absolutePath)
+          val process = ProcessBuilder(command).apply {
+            directory(workingDir)
+            environment().clear()
+            environment().putAll(environment.mapValues { it.value.toString() })
+            redirectErrorStream(true)
+          }.start()
+          val output = process.inputStream.bufferedReader().use { it.readText() }
+          check(process.waitFor() == 0) { "Host libsignal JNI failed to initialize in the test JVM environment:\n$output" }
         }
       }
     }

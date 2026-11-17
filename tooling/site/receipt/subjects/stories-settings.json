@@ -10,5 +10,9 @@
   "placement": "standard",
   "category": "Navigation",
   "visual": "navigation",
-  "display_title": "Find Stories in Settings"
+  "display_title": "Find Stories in Settings",
+  "navigation_path": [
+    "Settings",
+    "Stories"
+  ]
 }

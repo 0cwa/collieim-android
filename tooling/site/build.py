@@ -277,10 +277,27 @@ def main() -> int:
     ap.add_argument("--repo", default=REPO)
     ap.add_argument("--roadmap-json", type=Path, help="offline JSON array of discussion nodes (number, title, category.slug, labels.nodes)")
     ap.add_argument("--donation-json", type=Path, default=DONATION_JSON, help="donation settings; default: tooling/site/donation.json")
+    ap.add_argument("--receipt-preview", type=Path, help="opt in to nonpublished pilot pages from a frozen receipt; never selects a release")
     args = ap.parse_args()
     roadmap = json.loads(args.roadmap_json.read_text(encoding="utf-8")) if args.roadmap_json else None
     build(args.out, args.tag or latest_release(args.repo), args.repo, roadmap, args.donation_json)
+    if args.receipt_preview:
+        build_receipt_preview(args.out, args.receipt_preview)
     return 0
+
+
+def build_receipt_preview(out: Path, frozen: Path) -> None:
+    """Opt-in draft only; ordinary site builds have no receipt routes."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("collie_receipt_render", Path(__file__).with_name("receipt") / "render.py")
+    renderer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(renderer)
+    receipt = json.loads(frozen.read_text(encoding="utf-8"))
+    pages = {layout: renderer.render(receipt, layout) for layout in ("release", "app")}
+    target = out / "pilot"
+    target.mkdir(exist_ok=True)
+    for layout, page in pages.items():
+        (target / (layout + ".html")).write_text(page, encoding="utf-8")
 
 
 if __name__ == "__main__":

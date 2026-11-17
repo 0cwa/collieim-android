@@ -1,0 +1,7 @@
+# Selected source story previews
+
+Two contact sheets retain actual browser-rendered HTML. Columns, left to right: 1280px default (scaled to half size), 390px default, and 390px with the first source disclosure expanded. These are website captures, not Android app screenshots. The renderer caps captures at 4000px; mobile release views omit the archive/footer ending. Complete HTML can be reproduced with freeze.py, then render.py --layout release and --layout app, as documented in tooling/site/receipt/README.md. Expanded captures change only the first story’s native details element to open in a scratch copy.
+
+Validation: 18 receipt tests and 32 website tests passed. Browser-rendered DOM checks at 320, 390 and 1280 CSS pixels found no page-level horizontal overflow. Computed text foreground/background checks found no WCAG AA contrast failures in visible text (4.5:1 normal, 3:1 large), including light/dark renderer requests. Headings, a single main landmark and descriptive disclosure names were inspected from the rendered DOM. This is a limited automated check, not an accessibility certification.
+
+Gaps: actual keyboard activation, assistive-technology reading/announcement, forced-color emulation, 200% text enlargement and browser zoom remain unverified. The separate headless browser launcher failed before exposing automation; the built-in HTML renderer supplied captures and DOM checks. No executed Android behavior checks are attached to these stories. Notification delivery and battery effects remain unmeasured. Membership is unknown.

@@ -64,6 +64,50 @@ class ReceiptTests(unittest.TestCase):
         self.assertIn(data['release_headline'], render.render(receipt, 'release'))
         self.assertIn(data['release_status'], render.render(receipt, 'app'))
 
+    def test_preview_boundaries_and_variable_content(self):
+        receipt = freeze.freeze(self.data)
+        for layout in ('app', 'release'):
+            page = render.render(receipt, layout)
+            self.assertIn('Release membership is unknown.', page)
+            self.assertIn('No executed behavior check is attached', page)
+            self.assertNotIn('Featured<br>Release candidate', page)
+            for item in self.data['features']:
+                if item['placement'] == 'hidden':
+                    self.assertNotIn(item['display_title'], page)
+                    self.assertNotIn(item['path'], page)
+        for count in (0, 1, 8):
+            varied = copy.deepcopy(receipt)
+            varied['editorial']['release_changes'] = (varied['editorial']['release_changes'] * 4)[:count]
+            page = render.render(varied, 'release')
+            self.assertEqual(page.count('class="edition-story"'), count)
+            if not count:
+                self.assertIn('No selected release story is available', page)
+        receipt['membership']['status'] = 'approved'
+        with self.assertRaisesRegex(ValueError, 'adapter'):
+            render.render(receipt, 'release')
+
+    def test_opt_in_site_preview_preserves_scope(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('site_build', Path(render.ROOT) / 'tooling/site/build.py')
+        site = importlib.util.module_from_spec(spec)
+        import sys
+        with patch.dict(sys.modules):
+            sys.path.insert(0, str(Path(render.ROOT) / 'tooling/site'))
+            try:
+                spec.loader.exec_module(site)
+            finally:
+                sys.path.pop(0)
+        scratch = Path.home() / 'agent-scratch/collieim-android/receipt-tests'
+        scratch.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=scratch) as directory:
+            root = Path(directory)
+            frozen = root / 'receipt.json'
+            frozen.write_bytes(freeze.encode(freeze.freeze(self.data)))
+            site.build_receipt_preview(root, frozen)
+            self.assertIn('Inside Collie', (root / 'pilot/app.html').read_text())
+            self.assertIn('Release membership is unknown.', (root / 'pilot/release.html').read_text())
+            self.assertFalse((root / 'index.html').exists())
+
     def test_invalid_source_and_visual_evidence_are_rejected(self):
         for mutation in ('source', 'blob', 'support', 'absent', 'visual', 'membership', 'release_path', 'missing_copy'):
             bad = copy.deepcopy(self.data)

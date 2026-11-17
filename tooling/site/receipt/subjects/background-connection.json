@@ -11,7 +11,7 @@
   "category": "Connection",
   "visual": "connection",
   "display_title": "A background connection when push is unavailable",
-  "visible_limit": "Notification delivery has not been measured.",
+  "visible_limit": "Notification delivery and battery effects have not been measured.",
   "diagram": {
     "caption": "“Stay connected in background” setting",
     "cases": [

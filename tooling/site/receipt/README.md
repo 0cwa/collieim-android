@@ -1,6 +1,6 @@
 # Development receipt pilot
 
-This is an experimental, versioned development receipt. It is not a release plan, source-build receipt, membership approval, or publishing authorization. The pilot is not connected to the site build or a merge gate.
+This is an experimental, versioned development receipt. It is not a release plan, source-build receipt, membership approval, or publishing authorization. Ordinary website builds exclude the pilot; an explicit nonpublished preview option is documented below. There is no merge gate.
 
 `pilot.json` names a source tag and baseline, reviewed subject records, and release change records. The human-readable filenames are internal references, not public labels. Subject records describe selected capabilities at the chosen source; change records describe selected release outcomes. Records carry reviewed text and source evidence. Editorial review remains responsible for benefits, attribution, selection and limitations.
 
@@ -23,3 +23,9 @@ Pass `--previous /path/previous-receipt.json` to compare record paths and canoni
 `python3 tooling/site/receipt/metrics.py` recomputes historical per-change churn from Git. The frozen receipt separately stores the final baseline-to-release tree difference. Counts are additions and removals, not effort or quality; shared commits must not be summed across subjects. Path rules classify production, tests, translations, generated and other, with binary paths listed separately. The diff uses an isolated temporary bare repository sharing only source objects, a pinned Myers algorithm, and attributes from the selected source tree; local Git configuration, info attributes and working-tree attributes are excluded. The Git version and method are recorded. Missing objects fail rather than triggering a fetch. Path heuristics are versioned but cannot identify every generated file or translation.
 
 Before public release, review the design and source claims, establish exact Signal and Molly baselines, connect to an approved membership interface, and verify keyboard and screen-reader behavior. No current receipt grants publication approval.
+
+## Website preview
+
+The renderer shares the site's actual palette/theme foundations and self-hosted fonts. Story-specific composition lives in `stories.css`; both stylesheets and the used artwork are pinned by the frozen asset hashes. Re-freeze after an intentional style change.
+
+For a **nonpublished draft build only**, add `--receipt-preview /path/receipt.json` to the existing `tooling/site/build.py` command. This adds `pilot/release.html` and `pilot/app.html` to the disposable output. Ordinary builds have no pilot routes. It never selects a current release, resolves membership, or updates release approval. Do not deploy this output. The six older entries remain explicit GitHub release-note links, not receipt stories.

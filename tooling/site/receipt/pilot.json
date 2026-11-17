@@ -5,7 +5,7 @@
   "release_base": "0619e003d255f88f0e8791e2d7413d1d0d99564f",
   "release_base_tag": "v8.35.1-3-rc1",
   "release_status": "Release candidate",
-  "release_headline": "A clearer unlock screen. Stories back in Settings.",
+  "release_headline": "An updated unlock layout. Stories in Settings.",
   "release_history": [
     "v8.35.1-3-rc1",
     "v8.35.1-2-rc1",
@@ -29,5 +29,5 @@
     "changes/unlock-prompt.json",
     "changes/stories-settings.json"
   ],
-  "app_headline": "What Collie adds."
+  "app_headline": "Inside Collie"
 }

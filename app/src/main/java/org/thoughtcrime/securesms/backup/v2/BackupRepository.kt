@@ -1520,7 +1520,7 @@ object BackupRepository {
         }
         transactionEnded = true
       }
-      if (!transactionSuccessful || !transactionEnded) {
+      if (transactionStarted && (!transactionSuccessful || !transactionEnded)) {
         // The transaction may have cached IDs from tables that were rolled back.
         cleanup { RecipientIds.clearCache() }
         cleanup { AppDependencies.recipientCache.clear() }

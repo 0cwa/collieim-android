@@ -44,6 +44,7 @@ import org.signal.libsignal.zkgroup.profiles.ProfileKey
 import org.signal.storage.keyvalue.KeyValueDataSet
 import org.signal.storage.keyvalue.KeyValueStore
 import org.signal.storage.keyvalue.MockKeyValuePersistentStorage
+import org.signal.storage.keyvalue.ReleaseChannelValues
 import org.thoughtcrime.securesms.backup.v2.importer.ChatItemArchiveImporter
 import org.thoughtcrime.securesms.backup.v2.processor.ChatItemArchiveProcessor
 import org.thoughtcrime.securesms.crypto.ProfileKeyUtil
@@ -243,6 +244,10 @@ class BackupRollbackCleanupIsolationTest {
   }
 
   @Test fun `foreign key setup failure does not end caller transaction`() {
+    val releaseChannel = spyk(ReleaseChannelValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor())))
+    val releaseRecipient = RecipientId.from(123)
+    releaseChannel.setReleaseChannelRecipientId(releaseRecipient)
+    every { SignalStore.releaseChannel } returns releaseChannel
     val real = SignalDatabase.writableDatabase
     real.beginTransaction()
     val wrapped = spyk(real)
@@ -256,6 +261,8 @@ class BackupRollbackCleanupIsolationTest {
       assertTrue(thrown === setupFailure)
       assertTrue("The caller still owns its transaction", real.inTransaction())
       verify(exactly = 0) { wrapped.endTransaction() }
+      assertEquals(releaseRecipient, releaseChannel.releaseChannelRecipientId)
+      verify(exactly = 0) { releaseChannel.clearReleaseChannelRecipientId() }
     } finally {
       if (real.inTransaction()) real.endTransaction()
       real.forceForeignKeyConstraintsEnabled(true)
@@ -263,6 +270,10 @@ class BackupRollbackCleanupIsolationTest {
   }
 
   @Test fun `failed transaction start restores foreign keys without ending a transaction`() {
+    val releaseChannel = spyk(ReleaseChannelValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet()), DirectExecutor())))
+    val releaseRecipient = RecipientId.from(123)
+    releaseChannel.setReleaseChannelRecipientId(releaseRecipient)
+    every { SignalStore.releaseChannel } returns releaseChannel
     val real = SignalDatabase.writableDatabase
     val wrapped = spyk(real)
     val startFailure = UnsupportedOperationException("synthetic transaction start failure")
@@ -274,6 +285,8 @@ class BackupRollbackCleanupIsolationTest {
     assertTrue(thrown === startFailure)
     assertFalse(real.inTransaction())
     verify(exactly = 0) { wrapped.endTransaction() }
+    assertEquals(releaseRecipient, releaseChannel.releaseChannelRecipientId)
+    verify(exactly = 0) { releaseChannel.clearReleaseChannelRecipientId() }
     assertEquals(1, real.rawQuery("PRAGMA foreign_keys", null).readToSingleInt())
   }
 }

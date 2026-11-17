@@ -29,3 +29,5 @@ Before public release, review the design and source claims, establish exact Sign
 The renderer shares the site's actual palette/theme foundations and self-hosted fonts. Story-specific composition lives in `stories.css`; both stylesheets and the used artwork are pinned by the frozen asset hashes. Re-freeze after an intentional style change.
 
 For a **nonpublished draft build only**, add `--receipt-preview /path/receipt.json` to the existing `tooling/site/build.py` command. This adds `pilot/release.html` and `pilot/app.html` to the disposable output. Ordinary builds have no pilot routes. It never selects a current release, resolves membership, or updates release approval. Do not deploy this output. The six older entries remain explicit GitHub release-note links, not receipt stories.
+
+Release stories explain selected changes; the app-wide view explains selected continuing capabilities. Both prioritize current users and retain unknown membership and evidence limits. Screenshot evidence belongs in PR user-attachments, never repository proof directories.

@@ -105,7 +105,7 @@ class InAppPaymentRecurringContextJobTest {
 
   @Test
   fun `Given user is unregistered, when I run then I expect failure`() {
-    every { mockSignalStore.account.isRegistered } returns true
+    every { mockSignalStore.account.isRegistered } returns false
 
     val iap = insertInAppPayment()
     val job = InAppPaymentRecurringContextJob.create(iap)
@@ -178,7 +178,7 @@ class InAppPaymentRecurringContextJobTest {
     val activeSubscription = inAppPaymentsTestRule.createActiveSubscription()
     inAppPaymentsTestRule.initializeActiveSubscriptionMock(activeSubscription = activeSubscription)
 
-    val iap = insertInAppPayment()
+    val iap = insertInAppPayment(type = InAppPaymentType.RECURRING_DONATION)
     val job = InAppPaymentRecurringContextJob.create(iap)
     job.onAdded()
 
@@ -215,7 +215,7 @@ class InAppPaymentRecurringContextJobTest {
   }
 
   @Test
-  fun `Given non-recurring IAP, when I run, then I expect failure`() {
+  fun `Given non-recurring IAP, when I run, then no receipt is requested`() {
     val iap = insertInAppPayment(
       type = InAppPaymentType.ONE_TIME_GIFT
     )
@@ -223,7 +223,8 @@ class InAppPaymentRecurringContextJobTest {
     val job = InAppPaymentRecurringContextJob.create(iap)
 
     val result = job.run()
-    assertThat(result.isFailure).isTrue()
+    assertThat(result.isSuccess).isTrue()
+    verify(exactly = 0) { AppDependencies.donationsService.submitReceiptCredentialRequestSync(any(), any()) }
   }
 
   @Test
@@ -279,13 +280,13 @@ class InAppPaymentRecurringContextJobTest {
   }
 
   @Test
-  fun `Given no available subscription, when I run, then I expect retry`() {
+  fun `Given no available backup subscription, when I run, then I expect failure`() {
     val iap = insertInAppPayment()
     val job = InAppPaymentRecurringContextJob.create(iap)
     inAppPaymentsTestRule.initializeActiveSubscriptionMock(activeSubscription = ActiveSubscription(null, null))
 
     val result = job.run()
-    assertThat(result.isRetry).isTrue()
+    assertThat(result.isFailure).isTrue()
   }
 
   @Test
@@ -459,6 +460,7 @@ class InAppPaymentRecurringContextJobTest {
     }
 
     val iap = insertInAppPayment(
+      type = InAppPaymentType.RECURRING_DONATION,
       badge = BadgeList.Badge(id = "2000")
     )
 
@@ -614,7 +616,7 @@ class InAppPaymentRecurringContextJobTest {
   }
 
   private fun insertInAppPayment(
-    type: InAppPaymentType = InAppPaymentType.RECURRING_DONATION,
+    type: InAppPaymentType = InAppPaymentType.RECURRING_BACKUP,
     state: InAppPaymentTable.State = InAppPaymentTable.State.TRANSACTING,
     subscriberId: SubscriberId? = SubscriberId.generate(),
     paymentSourceType: PaymentSourceType = PaymentSourceType.Stripe.CreditCard,

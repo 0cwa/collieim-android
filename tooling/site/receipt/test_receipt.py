@@ -43,7 +43,33 @@ class ReceiptTests(unittest.TestCase):
         self.assertIn('Production lines:', release)
         self.assertIn('class="added">+84', release)
         self.assertIn('class="removed">−16', release)
-        self.assertIn('tests excluded', release)
+        self.assertIn('Tests excluded', release)
+
+        from html.parser import HTMLParser
+        class Counts(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.details = []
+                self.in_summary = False
+                self.in_style = False
+                self.counts = []
+            def handle_starttag(self, tag, attrs):
+                if tag == 'style': self.in_style = True
+                if tag == 'details': self.details.append(dict(attrs))
+                if tag == 'summary': self.in_summary = True
+            def handle_endtag(self, tag):
+                if tag == 'style': self.in_style = False
+                if tag == 'details': self.details.pop()
+                if tag == 'summary': self.in_summary = False
+            def handle_data(self, text):
+                if not self.in_style and ('+84' in text or '−16' in text):
+                    self.counts.append((list(self.details), self.in_summary))
+        counts = Counts()
+        counts.feed(release)
+        self.assertEqual(len(counts.counts), 2)
+        for ancestors, in_summary in counts.counts:
+            self.assertFalse(in_summary)
+            self.assertTrue(any(d.get('class') == 'comparison' and 'open' not in d for d in ancestors))
 
     def test_reordering_and_extra_items_do_not_drop_stories(self):
         data = copy.deepcopy(self.data)
@@ -86,7 +112,7 @@ class ReceiptTests(unittest.TestCase):
         for layout in ('app', 'release'):
             page = render.render(receipt, layout)
             self.assertIn('Release membership is unknown.', page)
-            self.assertIn('No executed behavior check is attached', page)
+            self.assertIn('Behavior checks have not been run', page)
             self.assertNotIn('Featured<br>Release candidate', page)
             for item in self.data['features']:
                 if item['placement'] == 'hidden':

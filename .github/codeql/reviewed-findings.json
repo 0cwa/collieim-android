@@ -497,9 +497,9 @@
         "end_line": 120,
         "end_column": 7
       },
-      "source_sha256": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59",
+      "source_sha256": "7c232cd0a55800d55690950d73cecf5ab125af055e37f94281efbdca31e5599a",
       "reviewed_sources": {
-        ".github/workflows/codeql-candidate.yml": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59"
+        ".github/workflows/codeql-candidate.yml": "7c232cd0a55800d55690950d73cecf5ab125af055e37f94281efbdca31e5599a"
       },
       "rule": "actions/cache-poisoning/poisonable-step",
       "level": "error",
@@ -509,7 +509,7 @@
       "message": "Potential cache poisoning in the context of the default branch due to privilege checkout of untrusted code from [inputs.source_commit](1). ([workflow_dispatch](2)).",
       "tool_version": "2.27.4",
       "category": "/language:actions/",
-      "context_sha256": "6f3b9bb7ec0cd89c0e763ab3ef217c9db78dd3782ac8e05e5b0dab5a3a7c2dec"
+      "context_sha256": "7317feef601f5c15dbc92dfbeede05d7a176c364fdf1d73e8384a23c0ad85a91"
     },
     {
       "id": "actions-candidate-02",
@@ -524,9 +524,9 @@
         "end_line": 154,
         "end_column": 7
       },
-      "source_sha256": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59",
+      "source_sha256": "7c232cd0a55800d55690950d73cecf5ab125af055e37f94281efbdca31e5599a",
       "reviewed_sources": {
-        ".github/workflows/codeql-candidate.yml": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59"
+        ".github/workflows/codeql-candidate.yml": "7c232cd0a55800d55690950d73cecf5ab125af055e37f94281efbdca31e5599a"
       },
       "rule": "actions/cache-poisoning/poisonable-step",
       "level": "error",
@@ -536,7 +536,7 @@
       "message": "Potential cache poisoning in the context of the default branch due to privilege checkout of untrusted code from [inputs.source_commit](1). ([workflow_dispatch](2)).",
       "tool_version": "2.27.4",
       "category": "/language:actions/",
-      "context_sha256": "8db906a8a658875ce9c6208bb2ecb17ec8b97daa8bcc9d4cc088645501720eaa"
+      "context_sha256": "ad7a753a678c54cc86ab866e096f00c93fc7dbd3b6f6ed221360b5cf0a238146"
     },
     {
       "id": "actions-candidate-03",
@@ -551,9 +551,9 @@
         "end_line": 40,
         "end_column": 7
       },
-      "source_sha256": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59",
+      "source_sha256": "7c232cd0a55800d55690950d73cecf5ab125af055e37f94281efbdca31e5599a",
       "reviewed_sources": {
-        ".github/workflows/codeql-candidate.yml": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59"
+        ".github/workflows/codeql-candidate.yml": "7c232cd0a55800d55690950d73cecf5ab125af055e37f94281efbdca31e5599a"
       },
       "rule": "actions/untrusted-checkout/medium",
       "level": "warning",

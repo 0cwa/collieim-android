@@ -22,17 +22,81 @@ import java.util.zip.ZipOutputStream
 
 class CollieUpdateIndexTest {
   @get:Rule val temporary = TemporaryFolder()
+  private val stable = CollieUpdateProfile.STABLE
+  private val beta = CollieUpdateProfile.TRAILBLAZER_BETA
   private val signedFixture: ByteArray get() = fixture("collie-entry.jar")
   private val indexFixture: ByteArray get() = fixture("collie-index-v2.json")
 
   @Test
   fun `production signed entry authenticates the matching index and Collie release`() {
-    val descriptor = CollieUpdateIndex.readEntry(ByteArrayInputStream(signedFixture), temporary.root, 0)
-    val result = CollieUpdateIndex.readIndex(ByteArrayInputStream(indexFixture), descriptor, 177704, 35, setOf("arm64-v8a"))
+    val descriptor = CollieUpdateIndex.readEntry(stable, ByteArrayInputStream(signedFixture), temporary.root, 0)
+    val result = CollieUpdateIndex.readIndex(stable, ByteArrayInputStream(indexFixture), descriptor, 177704, 35, setOf("arm64-v8a"))
     assertEquals(1794370488000L, result.timestamp)
-    assertEquals(CollieUpdateIndex.Update(177705, "8.35.1-3-rc2"), result.update)
+    assertEquals(CollieUpdateIndex.Update(177705, "8.35.1-3-rc2", stable), result.update)
     assertEquals("https://github.com/0cwa/collieim-android/releases/tag/v8.35.1-3-rc2", result.update!!.releasePage)
     assertTrue("Temporary archive must be removed", temporary.root.listFiles().isNullOrEmpty())
+  }
+
+  @Test
+  fun `shared repository signer does not authorize the stable index for Beta`() {
+    val descriptor = CollieUpdateIndex.readEntry(beta, ByteArrayInputStream(signedFixture), temporary.root, 0)
+    assertThrows(IOException::class.java) {
+      CollieUpdateIndex.readIndex(beta, ByteArrayInputStream(indexFixture), descriptor, 1, 35, setOf("arm64-v8a"))
+    }
+  }
+
+  @Test
+  fun `Beta uses its own package version sequence and release destination`() {
+    val result = parse(metadata(beta, versionCode = 200, versionName = "8.36.0-beta1+build2"), current = 199, profile = beta)
+    assertEquals(CollieUpdateIndex.Update(200, "8.36.0-beta1+build2", beta), result.update)
+    assertEquals("https://github.com/0cwa/collieim-android/releases/tag/trailblazer-v8.36.0-beta1+build2", result.update!!.releasePage)
+    assertNull(parse(metadata(beta, versionCode = 200), current = 200, profile = beta).update)
+  }
+
+  @Test
+  fun `Beta index accepts an engineering-valid long version`() {
+    val longVersion = "8.36.0-" + "1".repeat(74)
+    val root = JsonUtils.getMapper().readTree(metadata(beta, versionCode = 200, versionName = longVersion))
+    val versions = root.path("packages").path(beta.packageName).path("versions") as ObjectNode
+    val next = versions.elements().next().deepCopy<ObjectNode>()
+    (next.path("manifest") as ObjectNode).put("versionCode", 201).put("versionName", "8.36.1")
+    (next.path("file") as ObjectNode).put("name", "/${beta.packageName}_201.apk").put("sha256", "cd".repeat(32))
+    versions.set<JsonNode>("cd".repeat(32), next)
+    assertEquals(CollieUpdateIndex.Update(201, "8.36.1", beta), parse(root.toString(), current = 199, profile = beta).update)
+  }
+
+  @Test
+  fun `Beta index rejects development versions and unsafe release destinations`() {
+    for (version in listOf("8.36.0-dev", "8.36.0-1-port-unvalidated", "8.36.0+LOCAL", "8.36.0?redirect=other", "8.36.0/other")) {
+      assertThrows(IOException::class.java) { parse(metadata(beta, versionName = version), profile = beta) }
+    }
+  }
+
+  @Test
+  fun `each profile rejects the other repository package signer and APK identity`() {
+    for ((profile, other) in listOf(stable to beta, beta to stable)) {
+      val json = metadata(profile)
+      for (modified in listOf(
+        metadata(other),
+        json.replace("\"address\":\"${profile.repositoryUrl}\"", "\"address\":\"${other.repositoryUrl}\""),
+        json.replace("\"packages\":{\"${profile.packageName}\"", "\"packages\":{\"${other.packageName}\""),
+        json.replace("\"preferredSigner\":\"${profile.apkCertificate}\"", "\"preferredSigner\":\"${other.apkCertificate}\""),
+        json.replace("\"sha256\":[\"${profile.apkCertificate}\"]", "\"sha256\":[\"${other.apkCertificate}\"]"),
+        json.replace("\"packageName\":\"${profile.packageName}\"", "\"packageName\":\"${other.packageName}\""),
+        json.replace("/${profile.packageName}_177705.apk", "/${other.packageName}_177705.apk")
+      )) {
+        assertThrows("${profile.channelName} must reject another product's identity", IOException::class.java) { parse(modified, profile = profile) }
+      }
+    }
+  }
+
+  @Test
+  fun `both products follow only the default channel in their own repository`() {
+    for (profile in CollieUpdateProfile.entries) {
+      assertEquals(profile, parse(metadata(profile), profile = profile).update!!.profile)
+      assertNull(parse(metadata(profile).replace("\"manifest\":", "\"releaseChannels\":[\"Beta\"],\"manifest\":"), profile = profile).update)
+      assertEquals(profile, parse(metadata(profile).replace("\"manifest\":", "\"releaseChannels\":[],\"manifest\":"), profile = profile).update!!.profile)
+    }
   }
 
   @Test
@@ -50,9 +114,9 @@ class CollieUpdateIndexTest {
       val entry = jar.getJarEntry("entry.json")
       jar.getInputStream(entry).use { it.readBytes() }
       val certificates = requireNotNull(entry.codeSigners).single().signerCertPath.certificates
-      assertTrue("Fixture must contain the pinned certificate only in the claimed chain", certificates.drop(1).any { digest(it.encoded) == CollieUpdateIndex.REPOSITORY_CERTIFICATE })
+      assertTrue("Fixture must contain the pinned certificate only in the claimed chain", certificates.drop(1).any { digest(it.encoded) == stable.repositoryCertificate })
     }
-    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(forged), temporary.root) }
+    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(forged), temporary.root, stable.repositoryCertificate) }
   }
 
   @Test
@@ -60,48 +124,48 @@ class CollieUpdateIndexTest {
     val tampered = rewriteFixture { name, bytes ->
       if (name == "entry.json") bytes.toString(Charsets.UTF_8).replace("1794370488000", "1794370488001").toByteArray() else bytes
     }
-    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(tampered), temporary.root) }
+    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(tampered), temporary.root, stable.repositoryCertificate) }
   }
 
   @Test
   fun `removing signature files cannot make an entry trusted`() {
     val stripped = rewriteFixture { name, bytes -> if (name.endsWith(".RSA") || name.endsWith(".SF")) null else bytes }
-    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(stripped), temporary.root) }
+    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(stripped), temporary.root, stable.repositoryCertificate) }
   }
 
   @Test
   fun `unsigned entry is rejected`() {
     assertThrows(IOException::class.java) {
-      CollieUpdateIndex.verifyArchive(ByteArrayInputStream(zip("entry.json" to byteArrayOf(1))), temporary.root)
+      CollieUpdateIndex.verifyArchive(ByteArrayInputStream(zip("entry.json" to byteArrayOf(1))), temporary.root, stable.repositoryCertificate)
     }
   }
 
   @Test
   fun `duplicate names are rejected even with different case`() {
     val duplicate = zip("entry.json" to byteArrayOf(1), "ENTRY.JSON" to byteArrayOf(2))
-    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(duplicate), temporary.root) }
+    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(duplicate), temporary.root, stable.repositoryCertificate) }
   }
 
   @Test
   fun `compressed response size is bounded`() {
     assertThrows(IOException::class.java) {
-      CollieUpdateIndex.verifyArchive(ByteArrayInputStream(ByteArray(CollieUpdateIndex.MAX_ARCHIVE_BYTES + 1)), temporary.root)
+      CollieUpdateIndex.verifyArchive(ByteArrayInputStream(ByteArray(CollieUpdateIndex.MAX_ARCHIVE_BYTES + 1)), temporary.root, stable.repositoryCertificate)
     }
   }
 
   @Test
   fun `signature metadata expansion is bounded before verification`() {
     val bomb = zip("META-INF/MANIFEST.MF" to ByteArray(CollieUpdateIndex.MAX_EXPANDED_BYTES + 1), "entry.json" to byteArrayOf(1))
-    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(bomb), temporary.root) }
+    assertThrows(IOException::class.java) { CollieUpdateIndex.verifyArchive(ByteArrayInputStream(bomb), temporary.root, stable.repositoryCertificate) }
   }
 
   @Test
   fun `index digest exact size and signed generation all bind the downloaded bytes`() {
-    val descriptor = CollieUpdateIndex.readEntry(ByteArrayInputStream(signedFixture), temporary.root, 0)
+    val descriptor = CollieUpdateIndex.readEntry(stable, ByteArrayInputStream(signedFixture), temporary.root, 0)
     val changed = indexFixture.clone().also { it[0] = ' '.code.toByte() }
-    assertThrows(IOException::class.java) { CollieUpdateIndex.readIndex(ByteArrayInputStream(changed), descriptor, 1, 35, setOf("arm64-v8a")) }
-    assertThrows(IOException::class.java) { CollieUpdateIndex.readIndex(ByteArrayInputStream(indexFixture.copyOf(indexFixture.size - 1)), descriptor, 1, 35, setOf("arm64-v8a")) }
-    assertThrows(IOException::class.java) { CollieUpdateIndex.readIndex(ByteArrayInputStream(indexFixture + byteArrayOf(1)), descriptor, 1, 35, setOf("arm64-v8a")) }
+    assertThrows(IOException::class.java) { CollieUpdateIndex.readIndex(stable, ByteArrayInputStream(changed), descriptor, 1, 35, setOf("arm64-v8a")) }
+    assertThrows(IOException::class.java) { CollieUpdateIndex.readIndex(stable, ByteArrayInputStream(indexFixture.copyOf(indexFixture.size - 1)), descriptor, 1, 35, setOf("arm64-v8a")) }
+    assertThrows(IOException::class.java) { CollieUpdateIndex.readIndex(stable, ByteArrayInputStream(indexFixture + byteArrayOf(1)), descriptor, 1, 35, setOf("arm64-v8a")) }
     assertThrows(IOException::class.java) { parse(timestamp = 1794370488001) }
   }
 
@@ -113,12 +177,12 @@ class CollieUpdateIndexTest {
 
   @Test
   fun `older repository generation is rejected`() {
-    assertThrows(IOException::class.java) { CollieUpdateIndex.readEntry(ByteArrayInputStream(signedFixture), temporary.root, 1794370488001) }
+    assertThrows(IOException::class.java) { CollieUpdateIndex.readEntry(stable, ByteArrayInputStream(signedFixture), temporary.root, 1794370488001) }
   }
 
   @Test
   fun `signed entry cannot change download origin path format or size limits`() {
-    val entry = CollieUpdateIndex.verifyArchive(ByteArrayInputStream(signedFixture), temporary.root).toString(Charsets.UTF_8)
+    val entry = CollieUpdateIndex.verifyArchive(ByteArrayInputStream(signedFixture), temporary.root, stable.repositoryCertificate).toString(Charsets.UTF_8)
     for (modified in listOf(
       entry.replace("/index-v2.json", "https://example.org/index-v2.json"),
       entry.replace("/index-v2.json", "/../index-v2.json"),
@@ -142,7 +206,7 @@ class CollieUpdateIndexTest {
   @Test
   fun `APK signer hash and filename must match policy`() {
     for (modified in listOf(
-      metadata().replace(CollieUpdateIndex.APK_CERTIFICATE, "00".repeat(32)),
+      metadata().replace(stable.apkCertificate, "00".repeat(32)),
       metadata().replace("\"sha256\":\"${"ab".repeat(32)}\"", "\"sha256\":\"${"cd".repeat(32)}\""),
       metadata().replace("/im.collie.app_177705.apk", "/../other.apk")
     )) assertThrows(IOException::class.java) { parse(modified) }
@@ -152,7 +216,7 @@ class CollieUpdateIndexTest {
   fun `release tag cannot add a path query fragment or different URL`() {
     for (version in listOf("../8.35.2", "8.35.2?x=y", "8.35.2#other", "https://example.org", "8.35.2/other", "8.35.2%2f..", "8.35.2\n")) {
       assertThrows(IOException::class.java) { parse(metadata().replace("8.35.1-3-rc2", version.replace("\n", "\\n"))) }
-      assertThrows(IllegalArgumentException::class.java) { CollieUpdateIndex.releasePage(version) }
+      assertThrows(IllegalArgumentException::class.java) { stable.releasePage(version) }
     }
   }
 
@@ -180,7 +244,7 @@ class CollieUpdateIndexTest {
   @Test
   fun `highest eligible version wins and duplicate version codes are rejected`() {
     val root = JsonUtils.getMapper().readTree(metadata())
-    val versions = root.path("packages").path(CollieUpdateIndex.PACKAGE_NAME).path("versions") as ObjectNode
+    val versions = root.path("packages").path(stable.packageName).path("versions") as ObjectNode
     val next = versions.elements().next().deepCopy<ObjectNode>()
     (next.path("manifest") as ObjectNode).put("versionCode", 177706).put("versionName", "8.35.2")
     (next.path("file") as ObjectNode).put("name", "/im.collie.app_177706.apk").put("sha256", "cd".repeat(32))
@@ -199,18 +263,18 @@ class CollieUpdateIndexTest {
         entries[entry.name] = input.readBytes()
       }
     }
-    assertArrayEquals(entries.getValue("entry.json"), CollieUpdateIndex.verifyArchive(ByteArrayInputStream(signedFixture), temporary.root))
+    assertArrayEquals(entries.getValue("entry.json"), CollieUpdateIndex.verifyArchive(ByteArrayInputStream(signedFixture), temporary.root, stable.repositoryCertificate))
   }
 
-  private fun parse(json: String = metadata(), current: Long = 177704, timestamp: Long = 1794370488000): CollieUpdateIndex.Result {
-    return CollieUpdateIndex.parseVerifiedIndex(json.toByteArray(), timestamp, current, 35, setOf("arm64-v8a"))
+  private fun parse(json: String = metadata(), current: Long = 177704, timestamp: Long = 1794370488000, profile: CollieUpdateProfile = stable): CollieUpdateIndex.Result {
+    return CollieUpdateIndex.parseVerifiedIndex(profile, json.toByteArray(), timestamp, current, 35, setOf("arm64-v8a"))
   }
 
-  private fun metadata(): String = """
-    {"repo":{"address":"https://repo.collie.im/fdroid/repo","timestamp":1794370488000},
-    "packages":{"im.collie.app":{"metadata":{"preferredSigner":"${CollieUpdateIndex.APK_CERTIFICATE}"},
-    "versions":{"${"ab".repeat(32)}":{"file":{"name":"/im.collie.app_177705.apk","size":100,"sha256":"${"ab".repeat(32)}"},
-    "manifest":{"versionCode":177705,"versionName":"8.35.1-3-rc2","signer":{"sha256":["${CollieUpdateIndex.APK_CERTIFICATE}"]},
+  private fun metadata(profile: CollieUpdateProfile = stable, versionCode: Long = 177705, versionName: String = "8.35.1-3-rc2"): String = """
+    {"repo":{"address":"${profile.repositoryUrl}","timestamp":1794370488000},
+    "packages":{"${profile.packageName}":{"metadata":{"preferredSigner":"${profile.apkCertificate}"},
+    "versions":{"${"ab".repeat(32)}":{"file":{"name":"/${profile.packageName}_$versionCode.apk","size":100,"sha256":"${"ab".repeat(32)}"},
+    "manifest":{"packageName":"${profile.packageName}","versionCode":$versionCode,"versionName":"$versionName","signer":{"sha256":["${profile.apkCertificate}"]},
     "usesSdk":{"minSdkVersion":27},"nativecode":["arm64-v8a"]}}}}}}
   """.trimIndent()
 

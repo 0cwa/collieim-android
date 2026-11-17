@@ -5,7 +5,7 @@
   "features": [
     {
       "title": "Contact badges",
-      "summary": "Contact settings show recipient badges with accessible names.",
+      "summary": "See your contacts’ profile badges in their settings.",
       "origin": "Restored from Molly 8.19.2-4 with compatibility work.",
       "change": "73e1bb04bba7b11e24b44c4d8855cd0a2ad393e0",
       "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt",
@@ -15,7 +15,7 @@
     },
     {
       "title": "Stay connected when push is unavailable",
-      "summary": "When the selected push method is unavailable, Collie keeps its background connection enabled.",
+      "summary": "Designed to keep a background connection enabled when the selected push method is unavailable.",
       "origin": "Adapted by 0cwa from Miha Zupan's Molly patch.",
       "change": "06f42fec565a0b12461c9fe1a67075c22e13a0d7",
       "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/data/DataAndStorageSettingsRepository.kt",
@@ -46,7 +46,7 @@
     {
       "title": "Legacy payment-send job omitted",
       "summary": "The legacy MobileCoin payment-send job is not present in this release source, and its old job name maps to a failing job.",
-      "origin": "Collie retained Molly\u2019s exclusion during the Signal 8.35.1 port.",
+      "origin": "Collie retained Molly’s exclusion during the Signal 8.35.1 port.",
       "change": "6e7f532bef620efc54e5693bbac52f1ed8a275eb",
       "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/JobManagerFactories.java",
       "upstream": null,
@@ -62,7 +62,7 @@
   "release_changes": [
     {
       "title": "A clearer unlock screen",
-      "summary": "The password prompt keeps its action bar clear of the screen edges.",
+      "summary": "The password form is positioned below the action bar.",
       "change": "d49b1e4b31",
       "path": "app/src/main/java/org/thoughtcrime/securesms/PassphrasePromptActivity.java",
       "origin": "Implemented by 0cwa for Collie."
@@ -72,7 +72,7 @@
       "summary": "Stories has an entry on the main Settings screen.",
       "change": "451aea2f27",
       "path": "feature/app-settings/src/main/java/org/signal/appsettings/home/AppSettingsScreen.kt",
-      "origin": "Implemented by 0cwa for Collie."
+      "origin": "Restored by 0cwa in Collie."
     }
   ]
 }

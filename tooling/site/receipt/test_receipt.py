@@ -16,11 +16,11 @@ class ReceiptTests(unittest.TestCase):
         release = render.render(data, 'release')
         self.assertIn('background connection enabled', app)
         self.assertNotIn('background connection enabled', release)
-        self.assertIn('Stories settings are easier to find', release)
+        self.assertIn('Find Stories in Settings', release)
         self.assertIn(data['source'], release)
         self.assertIn('<details>', app)
         self.assertIn('whole app', app)
-        self.assertIn('Implemented by 0cwa for Collie.', release)
+        self.assertIn('Restored by 0cwa in Collie.', release)
 
     def test_wrong_source_missing_blob_and_absence_are_rejected(self):
         for mutate in ('source', 'blob', 'absent'):

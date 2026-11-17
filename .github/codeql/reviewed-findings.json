@@ -492,14 +492,14 @@
       "location": {
         "uri": ".github/workflows/codeql-candidate.yml",
         "uri_base_id": "%SRCROOT%",
-        "start_line": 108,
+        "start_line": 107,
         "start_column": 9,
         "end_line": 120,
         "end_column": 7
       },
-      "source_sha256": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f",
+      "source_sha256": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59",
       "reviewed_sources": {
-        ".github/workflows/codeql-candidate.yml": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f"
+        ".github/workflows/codeql-candidate.yml": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59"
       },
       "rule": "actions/cache-poisoning/poisonable-step",
       "level": "error",
@@ -509,7 +509,7 @@
       "message": "Potential cache poisoning in the context of the default branch due to privilege checkout of untrusted code from [inputs.source_commit](1). ([workflow_dispatch](2)).",
       "tool_version": "2.27.4",
       "category": "/language:actions/",
-      "context_sha256": "a572a80ca3f14f767c5ac7f604e19b5d808b89a176e32c1a4891b00d5f306838"
+      "context_sha256": "6f3b9bb7ec0cd89c0e763ab3ef217c9db78dd3782ac8e05e5b0dab5a3a7c2dec"
     },
     {
       "id": "actions-candidate-02",
@@ -521,12 +521,12 @@
         "uri_base_id": "%SRCROOT%",
         "start_line": 137,
         "start_column": 9,
-        "end_line": 153,
+        "end_line": 154,
         "end_column": 7
       },
-      "source_sha256": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f",
+      "source_sha256": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59",
       "reviewed_sources": {
-        ".github/workflows/codeql-candidate.yml": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f"
+        ".github/workflows/codeql-candidate.yml": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59"
       },
       "rule": "actions/cache-poisoning/poisonable-step",
       "level": "error",
@@ -536,7 +536,7 @@
       "message": "Potential cache poisoning in the context of the default branch due to privilege checkout of untrusted code from [inputs.source_commit](1). ([workflow_dispatch](2)).",
       "tool_version": "2.27.4",
       "category": "/language:actions/",
-      "context_sha256": "1442d4a5c406643e7d9ab05c50a3deb25c5e952fe7c10edcdefe7d47626b99f6"
+      "context_sha256": "8db906a8a658875ce9c6208bb2ecb17ec8b97daa8bcc9d4cc088645501720eaa"
     },
     {
       "id": "actions-candidate-03",
@@ -546,14 +546,14 @@
       "location": {
         "uri": ".github/workflows/codeql-candidate.yml",
         "uri_base_id": "%SRCROOT%",
-        "start_line": 34,
+        "start_line": 33,
         "start_column": 9,
-        "end_line": 41,
+        "end_line": 40,
         "end_column": 7
       },
-      "source_sha256": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f",
+      "source_sha256": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59",
       "reviewed_sources": {
-        ".github/workflows/codeql-candidate.yml": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f"
+        ".github/workflows/codeql-candidate.yml": "0c6141caf0a277e038ba2fa7bb5b50b1f495592d49d6189a4cc06580e1d71f59"
       },
       "rule": "actions/untrusted-checkout/medium",
       "level": "warning",

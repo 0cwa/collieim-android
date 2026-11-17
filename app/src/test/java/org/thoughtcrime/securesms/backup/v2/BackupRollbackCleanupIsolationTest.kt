@@ -241,4 +241,39 @@ class BackupRollbackCleanupIsolationTest {
       real.forceForeignKeyConstraintsEnabled(true)
     }
   }
+
+  @Test fun `foreign key setup failure does not end caller transaction`() {
+    val real = SignalDatabase.writableDatabase
+    real.beginTransaction()
+    val wrapped = spyk(real)
+    val setupFailure = UnsupportedOperationException("synthetic foreign key setup failure")
+    every { SignalDatabase.writableDatabase } returns wrapped
+    every { wrapped.setForeignKeyConstraintsEnabled(false) } throws setupFailure
+    try {
+      val thrown = assertThrows(UnsupportedOperationException::class.java) {
+        BackupRepository.importLocal({ byteArrayOf().inputStream() }, 0, BackupRepository.SelfData(expected, null, null, profileKey), backupId, backupKey)
+      }
+      assertTrue(thrown === setupFailure)
+      assertTrue("The caller still owns its transaction", real.inTransaction())
+      verify(exactly = 0) { wrapped.endTransaction() }
+    } finally {
+      if (real.inTransaction()) real.endTransaction()
+      real.forceForeignKeyConstraintsEnabled(true)
+    }
+  }
+
+  @Test fun `failed transaction start restores foreign keys without ending a transaction`() {
+    val real = SignalDatabase.writableDatabase
+    val wrapped = spyk(real)
+    val startFailure = UnsupportedOperationException("synthetic transaction start failure")
+    every { SignalDatabase.writableDatabase } returns wrapped
+    every { wrapped.beginTransaction() } throws startFailure
+    val thrown = assertThrows(UnsupportedOperationException::class.java) {
+      BackupRepository.importLocal({ byteArrayOf().inputStream() }, 0, BackupRepository.SelfData(expected, null, null, profileKey), backupId, backupKey)
+    }
+    assertTrue(thrown === startFailure)
+    assertFalse(real.inTransaction())
+    verify(exactly = 0) { wrapped.endTransaction() }
+    assertEquals(1, real.rawQuery("PRAGMA foreign_keys", null).readToSingleInt())
+  }
 }

@@ -8,10 +8,12 @@
 #        COLLIE_BUILD_CACHE=1        host only: also reuse Gradle task outputs. Fine for your own
 #                                    release build; never for a build that verifies another.
 #        COLLIE_BUILD_HOME           host only: persistent Gradle home (default
-#                                    ~/.cache/collie-build/gradle). Dependencies are seeded
-#                                    read-only from ~/.gradle/caches, so nothing is re-downloaded.
+#                                    ~/.cache/collie-build/gradle). Each build gets a fresh
+#                                    Gradle user home; dependencies are seeded read-only from
+#                                    ~/.gradle/caches.
 #        COLLIE_BUILD_EDITION=stable|beta   stable (default), or the TrailBlazer Beta package.
 set -euo pipefail
+export GIT_NO_REPLACE_OBJECTS=1
 
 case "${COLLIE_BUILD_EDITION:-stable}" in
   stable) task=:app:assembleProdWebsiteRelease; apk_dir=app/build/outputs/apk/prodWebsite/release ;;
@@ -28,6 +30,7 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
   exit 1
 fi
 commit=$(git rev-parse HEAD)
+python3 tooling/reproducible-builds/verify-release-prep.py
 dockerfile=tooling/reproducible-builds/Dockerfile
 mkdir -p "$out"
 
@@ -43,12 +46,20 @@ if [ "${BUILD_MODE:-container}" = host ]; then
   done
   home=${COLLIE_BUILD_HOME:-$HOME/.cache/collie-build/gradle}
   mkdir -p "$home"
-  cp tooling/gradle.properties.docker "$home/gradle.properties"   # same flags the image uses
-  [ -e "$home/wrapper" ] || ln -s "$HOME/.gradle/wrapper" "$home/wrapper"
-  cache_flag=--no-build-cache; [ "${COLLIE_BUILD_CACHE:-0}" = 1 ] && cache_flag=--build-cache
+  home=$(realpath "$home")
+  build_home=$(mktemp -d "$home/release-home.XXXXXXXX")
+  trap 'rm -rf -- "$build_home"' EXIT
+  cp tooling/gradle.properties.docker "$build_home/gradle.properties"
+  ln -s "$HOME/.gradle/wrapper" "$build_home/wrapper"
+  cache_flag=--no-build-cache
+  if [ "${COLLIE_BUILD_CACHE:-0}" = 1 ]; then
+    mkdir -p "$home/caches/build-cache-1" "$build_home/caches"
+    ln -s "$home/caches/build-cache-1" "$build_home/caches/build-cache-1"
+    cache_flag=--build-cache
+  fi
   env JAVA_HOME="$jdk" ANDROID_HOME="$sdk" ANDROID_SDK_ROOT="$sdk" ANDROID_NDK_HOME="$sdk/ndk/$ndk" \
-      GRADLE_USER_HOME="$home" GRADLE_RO_DEP_CACHE="$HOME/.gradle/caches" \
-      ./gradlew --no-daemon "$cache_flag" "$task"
+      GRADLE_USER_HOME="$build_home" GRADLE_RO_DEP_CACHE="$HOME/.gradle/caches" \
+      ./gradlew --no-daemon --gradle-user-home "$build_home" "$cache_flag" "$task"
   cp "$apk_dir"/*.apk "$out/"
 else
   engine=${CONTAINER:-docker}
@@ -56,7 +67,7 @@ else
   ignore=()
   [ "$engine" = podman ] && ignore=(--ignorefile tooling/reproducible-builds/Dockerfile.dockerignore)
   "$engine" build "${ignore[@]}" -f "$dockerfile" --target builder -t "$image" .
-  "$engine" run --rm -v "$out:/out" --entrypoint sh "$image" -c '
+  "$engine" run --rm -e GIT_NO_REPLACE_OBJECTS=1 -v "$out:/out" --entrypoint sh "$image" -c '
     set -eu
     ./gradlew --no-daemon "$1"
     cp "$2"/*.apk /out/

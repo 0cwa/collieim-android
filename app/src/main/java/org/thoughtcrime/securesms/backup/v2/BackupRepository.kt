@@ -1248,6 +1248,8 @@ object BackupRepository {
     SignalStore.backup.hasInvalidBackupVersion = false
     val selfId: RecipientId
 
+    var foreignKeysDisabled = false
+    var transactionStarted = false
     var transactionSuccessful = false
     var importFailure: Throwable? = null
     try {
@@ -1256,9 +1258,11 @@ object BackupRepository {
 
       Log.d(TAG, "[import] Disabling foreign keys...")
       SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(false)
+      foreignKeysDisabled = true
 
       Log.d(TAG, "[import] Acquiring transaction...")
       SignalDatabase.writableDatabase.beginTransaction()
+      transactionStarted = true
 
       Log.d(TAG, "[import] Inside transaction.")
       stopwatch.split("get-transaction")
@@ -1505,7 +1509,7 @@ object BackupRepository {
 
       var transactionEnded = false
       cleanup {
-        if (SignalDatabase.writableDatabase.inTransaction()) {
+        if (transactionStarted && SignalDatabase.writableDatabase.inTransaction()) {
           SignalDatabase.writableDatabase.endTransaction()
         }
         transactionEnded = true
@@ -1518,9 +1522,11 @@ object BackupRepository {
         cleanup { SignalDatabase.threads.clearCache() }
         cleanup { SignalStore.releaseChannel.clearReleaseChannelRecipientId() }
       }
-      cleanup {
-        Log.d(TAG, "[import] Re-enabling foreign keys...")
-        SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+      if (foreignKeysDisabled) {
+        cleanup {
+          Log.d(TAG, "[import] Re-enabling foreign keys...")
+          SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+        }
       }
       cleanupFailure?.let { failure ->
         val primary = importFailure

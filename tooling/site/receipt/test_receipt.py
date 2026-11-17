@@ -42,7 +42,20 @@ class ReceiptTests(unittest.TestCase):
             if f['placement'] != 'hidden':
                 self.assertIn(f['display_title'], app)
         self.assertIn(extra['display_title'], release)
-        self.assertEqual(release.count('class="release-story"'), len(data['release_changes']))
+        self.assertEqual(release.count('class="edition-story"'), len(data['release_changes']))
+
+    def test_release_archive_is_ordered_and_data_driven(self):
+        data = copy.deepcopy(self.data)
+        data['release_history'] = ['v2-rc1', 'v1-rc1']
+        page = render.render(freeze.freeze(data), 'release')
+        self.assertLess(page.index('/releases/tag/v2-rc1'), page.index('/releases/tag/v1-rc1'))
+        self.assertEqual(page.count('class="history-card"'), 2)
+        data['release_history'] = []
+        self.assertIn('Earlier releases will appear here.', render.render(freeze.freeze(data), 'release'))
+        for history in ([data['release']], ['v1-rc1', 'v1-rc1'], ['v1-rc1/../../bad']):
+            data['release_history'] = history
+            with self.assertRaisesRegex(ValueError, 'release history'):
+                freeze.freeze(data)
 
     def test_release_copy_is_data_driven(self):
         data = copy.deepcopy(self.data)
@@ -91,6 +104,7 @@ class ReceiptTests(unittest.TestCase):
         changed = copy.deepcopy(original)
         changed['release'] = changed['release_base_tag']
         changed['source'] = changed['release_base']
+        changed['release_history'] = []
         result = freeze.freeze(changed, previous)['reconciliation']
         self.assertEqual(result['status'], 'review-needed')
         self.assertIn('source', result['manifest_changed'])

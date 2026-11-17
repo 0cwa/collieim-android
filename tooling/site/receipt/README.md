@@ -4,6 +4,8 @@ This is an experimental, versioned development receipt. It is not a release plan
 
 `pilot.json` names a source tag and baseline, reviewed subject records, and release change records. The human-readable filenames are internal references, not public labels. Subject records describe selected capabilities at the chosen source; change records describe selected release outcomes. Records carry reviewed text and source evidence. Editorial review remains responsible for benefits, attribution, selection and limitations.
 
+The same manifest contains an ordered `release_history` of published release tags. The renderer links these to their release notes; it does not fetch or infer a release list. For a later edition, review the selected release and its evidence, update the ordered history, and freeze again. An empty history renders an empty state. This list is an editorial archive, not an approved membership manifest.
+
 Freeze the current working records and render both views:
 
 ```sh

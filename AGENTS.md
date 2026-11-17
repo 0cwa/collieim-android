@@ -6,6 +6,7 @@
 - Add nothing to the repo root; put new files under `docs/`, `tooling/` or `.github/`.
 - Releases: `docs/RELEASING.md`. Build and publish the APK first. Tooling changes go in separate PRs and never delay a release.
 - For changes to screens, navigation, UI behavior, or user-facing feature flows, capture relevant screenshots from the actual running app on an API 35 emulator before merging. Show before and after and affected states when useful to explain the change; choose evidence appropriate to the change, without requiring a fixed matrix. Link the retained screenshots in the PR description so reviewers can inspect them. Screen security (FLAG_SECURE) blanks screenshots: turn it off for the capture and restore it afterward. Use relevant tests or runtime evidence for changes without a UI effect.
+- Website UI changes also require browser screenshots at affected viewport widths, embedded in the PR description before handoff or merge.
 - Instrumentation: install the app and test APKs from the same build. A run that collected 0 tests failed.
 - Put new UI only where the request says. If it doesn't say, ask.
 - Ported upstream changes keep their original author (`git am`, or a `Co-authored-by:` trailer).

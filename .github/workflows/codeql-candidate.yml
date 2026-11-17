@@ -1,0 +1,205 @@
+name: Candidate Java and Kotlin CodeQL
+on:
+  workflow_dispatch:
+    inputs:
+      source_commit:
+        description: Independently approved full source commit
+        type: string
+        required: true
+      source_tree:
+        description: Independently approved full source tree
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  analyze:
+    if: github.repository == '0cwa/collieim-android' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      APPROVED_COMMIT: ${{ inputs.source_commit }}
+      APPROVED_TREE: ${{ inputs.source_tree }}
+      CODEQL_COMPILE_INPUTS: ${{ runner.temp }}/codeql-evidence/compiler-inputs.jsonl
+      CODEQL_ACTION_DIFF_INFORMED_QUERIES: 'false'
+      CODEQL_OVERLAY_DATABASE_MODE: 'none'
+    steps:
+      - name: Validate approved identity format
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$APPROVED_COMMIT" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$APPROVED_TREE" =~ ^[0-9a-f]{40}$ ]]
+      - name: Check out exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.source_commit }}
+          path: source
+          persist-credentials: false
+          lfs: false
+      - name: Check out trusted CodeQL policy
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: 0cwa/collie-release-engineering
+          ref: 9393b27993887dbd8d043a4fb3201ad39f5159f7
+          path: policy
+          sparse-checkout: tools/codeql
+          persist-credentials: false
+          lfs: false
+      - name: Check out trusted app analysis configuration
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          path: trusted-config
+          sparse-checkout: .github/codeql
+          persist-credentials: false
+          lfs: false
+      - name: Verify candidate and record inputs
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$APPROVED_COMMIT"
+          test "$(git rev-parse HEAD^{tree})" = "$APPROVED_TREE"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          mkdir -p "$RUNNER_TEMP/codeql-evidence"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/codeql-evidence/source.txt"
+          sha256sum gradle/verification-metadata.xml gradle/wrapper/gradle-wrapper.properties build-inputs/native-lock.json > "$RUNNER_TEMP/codeql-evidence/source-inputs.sha256"
+      - name: Verify trusted policy inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C policy rev-parse HEAD)" = 9393b27993887dbd8d043a4fb3201ad39f5159f7
+          test "$(git -C trusted-config rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git -C policy status --porcelain --untracked-files=all)"
+          test -z "$(git -C trusted-config status --porcelain --untracked-files=all)"
+          sha256sum policy/tools/codeql/compile-inputs.gradle policy/tools/codeql/compiled-files.ql policy/tools/codeql/qlpack.yml policy/tools/codeql/codeql-pack.lock.yml policy/tools/codeql/report.py policy/tools/codeql/review_snapshots.py policy/tools/codeql/compile_scope.py trusted-config/.github/codeql/codeql-config.yml > "$RUNNER_TEMP/codeql-evidence/trusted-policy.sha256"
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Initialize CodeQL for traced Java and Kotlin
+        id: init
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066
+        with:
+          tools: linked
+          languages: java-kotlin
+          build-mode: manual
+          source-root: source
+          config-file: trusted-config/.github/codeql/codeql-config.yml
+          db-location: ${{ runner.temp }}/codeql-db
+          trap-caching: false
+          dependency-caching: false
+      - name: Verify CodeQL and resolve the pinned query pack
+        shell: bash
+        env:
+          CODEQL_PATH: ${{ steps.init.outputs.codeql-path }}
+          CODEQL_VERSION: ${{ steps.init.outputs.codeql-version }}
+        run: |
+          set -euo pipefail
+          test "$CODEQL_VERSION" = 2.27.4
+          "$CODEQL_PATH" pack ci "$GITHUB_WORKSPACE/policy/tools/codeql"
+          "$CODEQL_PATH" query compile "$GITHUB_WORKSPACE/policy/tools/codeql/compiled-files.ql"
+          "$CODEQL_PATH" version --format=json > "$RUNNER_TEMP/codeql-evidence/codeql-version.json"
+          "$CODEQL_PATH" resolve packs --format=json > "$RUNNER_TEMP/codeql-evidence/resolved-packs.json"
+          "$CODEQL_PATH" resolve queries --format=json -- codeql/java-queries:codeql-suites/java-security-extended.qls > "$RUNNER_TEMP/codeql-evidence/resolved-security-extended.json"
+          jq -e 'type == "array" and length > 0' "$RUNNER_TEMP/codeql-evidence/resolved-security-extended.json" > /dev/null
+      - name: Trace a fresh Android compilation
+        working-directory: source
+        shell: bash
+        env:
+          GRADLE_USER_HOME: ${{ runner.temp }}/codeql-gradle-home
+        run: |
+          set -euo pipefail
+          ./gradlew --no-daemon --no-build-cache --rerun-tasks --dependency-verification=strict -Pkotlin.incremental=false -I "$GITHUB_WORKSPACE/policy/tools/codeql/compile-inputs.gradle" :app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac
+          test -s "$CODEQL_COMPILE_INPUTS"
+          test "$(git rev-parse HEAD)" = "$APPROVED_COMMIT"
+          test "$(git rev-parse HEAD^{tree})" = "$APPROVED_TREE"
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Recheck trusted policy after the build
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum --check "$RUNNER_TEMP/codeql-evidence/trusted-policy.sha256"
+          test "$(git -C policy rev-parse HEAD)" = 9393b27993887dbd8d043a4fb3201ad39f5159f7
+          test -z "$(git -C policy status --porcelain --untracked-files=all)"
+          test -z "$(git -C trusted-config status --porcelain --untracked-files=all)"
+      - name: Analyze without publishing to code scanning
+        id: analyze
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066
+        with:
+          category: /language:java-kotlin
+          checkout_path: ${{ github.workspace }}/source
+          output: ${{ runner.temp }}/codeql-sarif
+          upload: never
+          upload-database: false
+      - name: Gate compiler extraction and findings
+        shell: bash
+        env:
+          CODEQL_PATH: ${{ steps.init.outputs.codeql-path }}
+          DB_LOCATIONS: ${{ steps.analyze.outputs.db-locations }}
+        run: |
+          set -euo pipefail
+          db=$(printf '%s' "$DB_LOCATIONS" | jq -er '."java-kotlin" // .java')
+          test -d "$db"
+          "$CODEQL_PATH" query run --database "$db" --output "$RUNNER_TEMP/codeql-evidence/extracted.bqrs" "$GITHUB_WORKSPACE/policy/tools/codeql/compiled-files.ql"
+          "$CODEQL_PATH" bqrs decode --format=csv --output "$RUNNER_TEMP/codeql-evidence/extracted.csv" "$RUNNER_TEMP/codeql-evidence/extracted.bqrs"
+          printf '%s\n' '{"schema":1,"reviews":[]}' > "$RUNNER_TEMP/codeql-evidence/reviews.json"
+          python3 policy/tools/codeql/report.py "$RUNNER_TEMP/codeql-sarif" --language java-kotlin --reviews "$RUNNER_TEMP/codeql-evidence/reviews.json" --source-root source --compiler-inputs "$CODEQL_COMPILE_INPUTS" --extracted-inputs "$RUNNER_TEMP/codeql-evidence/extracted.csv" --output "$RUNNER_TEMP/codeql-evidence/audit.json" --summary "$RUNNER_TEMP/codeql-evidence/audit.md"
+          test -s "$CODEQL_COMPILE_INPUTS"
+          test -s "$RUNNER_TEMP/codeql-evidence/extracted.csv"
+          jq -e '.passed == true and .compiler_scope.passed == true and (.compiler_scope.java.expected | length > 0) and (.compiler_scope.kotlin.expected | length > 0)' "$RUNNER_TEMP/codeql-evidence/audit.json" > /dev/null
+      - name: Record complete gated evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYMANIFEST'
+          import hashlib, json, os
+          from pathlib import Path
+          temp = Path(os.environ['RUNNER_TEMP'])
+          evidence, sarif = temp / 'codeql-evidence', temp / 'codeql-sarif'
+          sarifs = sorted(sarif.rglob('*.sarif'))
+          if not sarifs:
+              raise SystemExit('no SARIF files')
+          required = ['source.txt', 'source-inputs.sha256', 'trusted-policy.sha256',
+                      'compiler-inputs.jsonl', 'codeql-version.json', 'resolved-packs.json',
+                      'resolved-security-extended.json', 'extracted.bqrs', 'extracted.csv',
+                      'reviews.json', 'audit.json', 'audit.md']
+          for name in required:
+              p = evidence / name
+              if p.is_symlink() or not p.is_file() or not p.stat().st_size:
+                  raise SystemExit('missing or empty evidence: ' + name)
+          files = {}
+          for label, directory in [('evidence', evidence), ('sarif', sarif)]:
+              for path in sorted(directory.rglob('*')):
+                  if path.is_symlink():
+                      raise SystemExit('symlink in evidence')
+                  if path.is_file():
+                      if not path.stat().st_size:
+                          raise SystemExit('empty evidence file')
+                      with path.open('rb') as stream:
+                          digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+                      files[label + '/' + path.relative_to(directory).as_posix()] = {'sha256': digest, 'bytes': path.stat().st_size}
+          record = {'schema': 1, 'gate': 'passed', 'source_commit': os.environ['APPROVED_COMMIT'],
+                    'source_tree': os.environ['APPROVED_TREE'], 'workflow_commit': os.environ['GITHUB_SHA'],
+                    'policy_commit': '9393b27993887dbd8d043a4fb3201ad39f5159f7',
+                    'run_id': os.environ['GITHUB_RUN_ID'], 'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                    'completion': 'verify job success and artifact digest independently after run completion',
+                    'approval': 'external approval required; not represented by this record',
+                    'coverage': 'tracked observed compiler inputs only; generated, ignored, untracked and external sources are outside this comparison',
+                    'trust': 'approved candidate build executes as runner user; no compiler-time byte or sandbox guarantee',
+                    'query_resolution': 'separately resolved security-extended suite; compare with analysis evidence and logs',
+                    'files': files}
+          with (evidence / 'manifest.json').open('x', encoding='utf-8') as output:
+              output.write(json.dumps(record, indent=2, sort_keys=True) + '\n')
+          PYMANIFEST
+      - name: Preserve analysis evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: candidate-codeql-java-kotlin-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/codeql-sarif
+            ${{ runner.temp }}/codeql-evidence
+          if-no-files-found: error
+          retention-days: 14

@@ -3,8 +3,12 @@ package org.thoughtcrime.securesms.sms
 import android.app.Application
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -16,6 +20,7 @@ import org.signal.core.util.JsonUtils
 import org.thoughtcrime.securesms.attachments.Attachment
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment
 import org.thoughtcrime.securesms.database.AttachmentTable
+import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.jobmanager.Job
 import org.thoughtcrime.securesms.jobmanager.JobManager
 import org.thoughtcrime.securesms.jobmanager.JsonJobData
@@ -36,6 +41,19 @@ import java.util.concurrent.atomic.AtomicLong
 @RunWith(RobolectricTestRunner::class)
 @Config(application = Application::class)
 class UploadDependencyGraphTest {
+  @Before fun setUpDatabase() {
+    val database = mockk<SignalDatabase>(relaxed = true)
+    val attachments = mockk<AttachmentTable>(relaxed = true)
+    mockkObject(SignalDatabase)
+    every { SignalDatabase.instance } returns database
+    every { database.attachmentTable } returns attachments
+    every { attachments.getUploadCandidate(any()) } returns null
+  }
+
+  @After fun tearDownDatabase() {
+    unmockkObject(SignalDatabase)
+  }
+
   private val jobManager = mockk<JobManager> {
     every { startChain(any<Job>()) } answers {
       val job = args.first() as Job
@@ -71,6 +89,7 @@ class UploadDependencyGraphTest {
     val deferredQueue = testSubject.consumeDeferredQueue()
 
     // THEN
+    assertEquals(5, deferredQueue.size)
     deferredQueue.forEach { assertValidJobChain(it, 4) }
   }
 
@@ -93,6 +112,7 @@ class UploadDependencyGraphTest {
     val deferredQueue = testSubject.consumeDeferredQueue()
 
     // THEN
+    assertEquals(5, deferredQueue.size)
     deferredQueue.forEach { assertValidJobChain(it, 4) }
   }
 

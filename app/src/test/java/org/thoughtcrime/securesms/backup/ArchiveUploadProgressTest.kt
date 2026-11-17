@@ -234,6 +234,7 @@ class ArchiveUploadProgressTest {
   @Test
   fun `onMessageBackupFinishedEarly - with pending media reverts to upload media`() {
     backsUpMedia = true
+    hasPendingArchiveUpload = true
     every { AppDependencies.jobManager.areQueuesEmpty(any()) } returns false
     pendingArchiveUploadBytes = 2000
     setUploadProgress(ArchiveUploadProgressState(state = State.UploadBackupFile, backupFileTotalBytes = 100))

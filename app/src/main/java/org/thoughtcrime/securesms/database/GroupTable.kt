@@ -1667,9 +1667,8 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
 
     return if (RemappedRecords.getInstance().areAnyRemapped(ids)) {
       if (shouldRetry) {
-        Log.w(TAG, "Found remapped records where we shouldn't. Clearing cache and trying again.")
+        Log.w(TAG, "Found remapped records where we shouldn't. Clearing recipient IDs and trying again.")
         RecipientIds.clearCache()
-        RemappedRecords.getInstance().resetCache()
         getV2GroupMembers(decryptedGroup, false)
       } else {
         throw IllegalStateException("Remapped records in group membership!")

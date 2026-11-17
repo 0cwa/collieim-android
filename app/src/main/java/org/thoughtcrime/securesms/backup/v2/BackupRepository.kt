@@ -1315,7 +1315,6 @@ object BackupRepository {
       }
 
       RecipientIds.clearCache()
-      SignalDatabase.remappedRecords.clearCache()
       AppDependencies.recipientCache.clear()
       AppDependencies.recipientCache.clearSelf()
       SignalDatabase.threads.clearCache()
@@ -1486,7 +1485,6 @@ object BackupRepository {
       SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
     }
 
-    SignalDatabase.remappedRecords.clearCache()
     SignalDatabase.remappedRecords.trimStaleMappings()
     AppDependencies.recipientCache.clear()
     AppDependencies.recipientCache.warmUp()

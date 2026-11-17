@@ -289,4 +289,59 @@ class BackupRollbackCleanupIsolationTest {
     verify(exactly = 0) { releaseChannel.clearReleaseChannelRecipientId() }
     assertEquals(1, real.rawQuery("PRAGMA foreign_keys", null).readToSingleInt())
   }
+
+  @Test fun `transaction start that acquires then throws is cleaned up`() {
+    val real = SignalDatabase.writableDatabase
+    val wrapped = spyk(real)
+    val startFailure = UnsupportedOperationException("synthetic failure after transaction acquisition")
+    every { SignalDatabase.writableDatabase } returns wrapped
+    every { wrapped.beginTransaction() } answers {
+      real.beginTransaction()
+      throw startFailure
+    }
+    // Make a leaked transaction fail immediately instead of waiting for the production retry timeout.
+    every { wrapped.setForeignKeyConstraintsEnabled(true) } answers {
+      if (real.inTransaction()) throw UnsupportedOperationException("transaction still active")
+      real.setForeignKeyConstraintsEnabled(true)
+    }
+    try {
+      val thrown = assertThrows(UnsupportedOperationException::class.java) {
+        BackupRepository.importLocal({ byteArrayOf().inputStream() }, 0, BackupRepository.SelfData(expected, null, null, profileKey), backupId, backupKey)
+      }
+      assertTrue(thrown === startFailure)
+      assertFalse("The importer must release the transaction it acquired", real.inTransaction())
+      verify(exactly = 1) { wrapped.endTransaction() }
+      assertEquals(1, real.rawQuery("PRAGMA foreign_keys", null).readToSingleInt())
+    } finally {
+      if (real.inTransaction()) real.endTransaction()
+      real.forceForeignKeyConstraintsEnabled(true)
+    }
+  }
+
+  @Test fun `ambiguous nested acquisition failure does not end caller transaction`() {
+    val real = SignalDatabase.writableDatabase
+    real.beginTransaction()
+    val wrapped = spyk(real)
+    val startFailure = UnsupportedOperationException("synthetic nested acquisition failure")
+    every { SignalDatabase.writableDatabase } returns wrapped
+    // Exercise a nested begin even though real foreign-key changes ordinarily reject an active transaction.
+    justRun { wrapped.setForeignKeyConstraintsEnabled(false) }
+    every { wrapped.beginTransaction() } answers {
+      real.beginTransaction()
+      throw startFailure
+    }
+    every { wrapped.setForeignKeyConstraintsEnabled(true) } throws UnsupportedOperationException("transaction still active")
+    try {
+      val thrown = assertThrows(UnsupportedOperationException::class.java) {
+        BackupRepository.importLocal({ byteArrayOf().inputStream() }, 0, BackupRepository.SelfData(expected, null, null, profileKey), backupId, backupKey)
+      }
+      assertTrue(thrown === startFailure)
+      verify(exactly = 0) { wrapped.endTransaction() }
+      real.endTransaction()
+      assertTrue("The caller's outer transaction must remain active", real.inTransaction())
+    } finally {
+      while (real.inTransaction()) real.endTransaction()
+      real.forceForeignKeyConstraintsEnabled(true)
+    }
+  }
 }

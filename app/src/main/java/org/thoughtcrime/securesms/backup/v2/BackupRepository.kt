@@ -1253,7 +1253,10 @@ object BackupRepository {
     SignalStore.backup.hasInvalidBackupVersion = false
     val selfId: RecipientId
 
+    val importDatabase = SignalDatabase.writableDatabase
     var foreignKeysDisabled = false
+    var transactionAttempted = false
+    var transactionAlreadyActive = true
     var transactionStarted = false
     var transactionSuccessful = false
     var importFailure: Throwable? = null
@@ -1262,11 +1265,13 @@ object BackupRepository {
       // SQLite optimizes deletes if there's no foreign keys, triggers, or WHERE clause, so that's the environment we're gonna create.
 
       Log.d(TAG, "[import] Disabling foreign keys...")
-      SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(false)
+      importDatabase.forceForeignKeyConstraintsEnabled(false)
       foreignKeysDisabled = true
 
       Log.d(TAG, "[import] Acquiring transaction...")
-      SignalDatabase.writableDatabase.beginTransaction()
+      transactionAlreadyActive = importDatabase.inTransaction()
+      transactionAttempted = true
+      importDatabase.beginTransaction()
       transactionStarted = true
 
       Log.d(TAG, "[import] Inside transaction.")
@@ -1515,8 +1520,9 @@ object BackupRepository {
 
       var transactionEnded = false
       cleanup {
-        if (transactionStarted && SignalDatabase.writableDatabase.inTransaction()) {
-          SignalDatabase.writableDatabase.endTransaction()
+        val mayOwnNewTransaction = transactionStarted || (transactionAttempted && !transactionAlreadyActive)
+        if (mayOwnNewTransaction && importDatabase.inTransaction()) {
+          importDatabase.endTransaction()
         }
         transactionEnded = true
       }
@@ -1531,7 +1537,7 @@ object BackupRepository {
       if (foreignKeysDisabled) {
         cleanup {
           Log.d(TAG, "[import] Re-enabling foreign keys...")
-          SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+          importDatabase.forceForeignKeyConstraintsEnabled(true)
         }
       }
       cleanupFailure?.let { failure ->

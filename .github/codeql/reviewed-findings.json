@@ -483,6 +483,86 @@
         "end_line": null,
         "end_column": 73
       }
+    },
+    {
+      "id": "actions-candidate-01",
+      "disposition": "false-positive",
+      "reason": "Candidate-only cache finding: the trusted workflow sets cache-mode: none on the only job and disables CodeQL trap/dependency caching; GitHub documents cache-mode none as disabling cache restore/save. This supports a provider-action cache-boundary false-positive judgment for this workflow revision, subject to independent review of the provider semantics and full candidate execution boundary. It does not establish absence of database, log, artifact, runner, or other mutable-state risks.",
+      "language": "actions",
+      "location": {
+        "uri": ".github/workflows/codeql-candidate.yml",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 108,
+        "start_column": 9,
+        "end_line": 120,
+        "end_column": 7
+      },
+      "source_sha256": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f",
+      "reviewed_sources": {
+        ".github/workflows/codeql-candidate.yml": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f"
+      },
+      "rule": "actions/cache-poisoning/poisonable-step",
+      "level": "error",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "Potential cache poisoning in the context of the default branch due to privilege checkout of untrusted code from [inputs.source_commit](1). ([workflow_dispatch](2)).",
+      "tool_version": "2.27.4",
+      "category": "/language:actions/",
+      "context_sha256": "37f893a18bdd5729a768547868998aa80d9f6cc849b5a3e41aa047e309449616"
+    },
+    {
+      "id": "actions-candidate-02",
+      "disposition": "false-positive",
+      "reason": "Same exact rationale as the first cache finding: this second finding is a distinct cache-affecting step in the same cache-mode:none job. The proposal depends on the same documented provider semantics and does not establish safety of other mutable state.",
+      "language": "actions",
+      "location": {
+        "uri": ".github/workflows/codeql-candidate.yml",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 137,
+        "start_column": 9,
+        "end_line": 153,
+        "end_column": 7
+      },
+      "source_sha256": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f",
+      "reviewed_sources": {
+        ".github/workflows/codeql-candidate.yml": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f"
+      },
+      "rule": "actions/cache-poisoning/poisonable-step",
+      "level": "error",
+      "security_severity": "7.5",
+      "query_kind": "path-problem",
+      "query_precision": "high",
+      "message": "Potential cache poisoning in the context of the default branch due to privilege checkout of untrusted code from [inputs.source_commit](1). ([workflow_dispatch](2)).",
+      "tool_version": "2.27.4",
+      "category": "/language:actions/",
+      "context_sha256": "92a2315bdfd81ea26b5ced25f81dc5fac1982600e0cc1655a1cdca7a3fc6224b"
+    },
+    {
+      "id": "actions-candidate-03",
+      "disposition": "intentional-use",
+      "reason": "The workflow intentionally checks out an externally specified full candidate commit for a manually dispatched analysis. This is only acceptable after independent approval of the exact source commit, source tree, workflow revision, and trusted policy before dispatch; SHA formatting and input labels alone do not establish approval or make candidate build code safe. Candidate Gradle tasks execute as the runner user, so review remains required for that execution boundary.",
+      "language": "actions",
+      "location": {
+        "uri": ".github/workflows/codeql-candidate.yml",
+        "uri_base_id": "%SRCROOT%",
+        "start_line": 34,
+        "start_column": 9,
+        "end_line": 41,
+        "end_column": 7
+      },
+      "source_sha256": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f",
+      "reviewed_sources": {
+        ".github/workflows/codeql-candidate.yml": "521ee1a856e43b923f5d6e35beee94e0712998fd05b07ebf7e8876b835d5bb0f"
+      },
+      "rule": "actions/untrusted-checkout/medium",
+      "level": "warning",
+      "security_severity": "5.0",
+      "query_kind": "problem",
+      "query_precision": "medium",
+      "message": "Potential unsafe checkout of untrusted pull request on non-privileged workflow.",
+      "tool_version": "2.27.4",
+      "category": "/language:actions/"
     }
   ]
 }

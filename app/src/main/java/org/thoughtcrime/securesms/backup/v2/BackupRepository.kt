@@ -1252,6 +1252,7 @@ object BackupRepository {
     val selfId: RecipientId
 
     var transactionSuccessful = false
+    var importFailure: Throwable? = null
     try {
       // Removing all the data from the various tables is *very* expensive (i.e. can take *several* minutes) if we don't do some pre-work.
       // SQLite optimizes deletes if there's no foreign keys, triggers, or WHERE clause, so that's the environment we're gonna create.
@@ -1471,18 +1472,43 @@ object BackupRepository {
 
       SignalDatabase.writableDatabase.setTransactionSuccessful()
       transactionSuccessful = true
+    } catch (failure: Throwable) {
+      importFailure = failure
+      throw failure
     } finally {
-      if (SignalDatabase.writableDatabase.inTransaction()) {
-        SignalDatabase.writableDatabase.endTransaction()
+      var cleanupFailure: Throwable? = null
+      fun cleanup(action: () -> Unit) {
+        try {
+          action()
+        } catch (failure: Throwable) {
+          val previous = cleanupFailure
+          if (previous == null) cleanupFailure = failure else if (previous !== failure) previous.addSuppressed(failure)
+        }
       }
 
-      if (!transactionSuccessful) {
-        Log.w(TAG, "[import] Transaction failed, clearing release channel recipient ID from key-value store.")
-        SignalStore.releaseChannel.clearReleaseChannelRecipientId()
+      var transactionEnded = false
+      cleanup {
+        if (SignalDatabase.writableDatabase.inTransaction()) {
+          SignalDatabase.writableDatabase.endTransaction()
+        }
+        transactionEnded = true
       }
-
-      Log.d(TAG, "[import] Re-enabling foreign keys...")
-      SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+      if (!transactionSuccessful || !transactionEnded) {
+        // The transaction may have cached IDs from tables that were rolled back.
+        cleanup { RecipientIds.clearCache() }
+        cleanup { AppDependencies.recipientCache.clear() }
+        cleanup { AppDependencies.recipientCache.clearSelf() }
+        cleanup { SignalDatabase.threads.clearCache() }
+        cleanup { SignalStore.releaseChannel.clearReleaseChannelRecipientId() }
+      }
+      cleanup {
+        Log.d(TAG, "[import] Re-enabling foreign keys...")
+        SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+      }
+      cleanupFailure?.let { failure ->
+        val primary = importFailure
+        if (primary == null) throw failure else if (primary !== failure) primary.addSuppressed(failure)
+      }
     }
 
     SignalDatabase.remappedRecords.trimStaleMappings()

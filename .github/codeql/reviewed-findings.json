@@ -509,7 +509,7 @@
       "message": "Potential cache poisoning in the context of the default branch due to privilege checkout of untrusted code from [inputs.source_commit](1). ([workflow_dispatch](2)).",
       "tool_version": "2.27.4",
       "category": "/language:actions/",
-      "context_sha256": "37f893a18bdd5729a768547868998aa80d9f6cc849b5a3e41aa047e309449616"
+      "context_sha256": "a572a80ca3f14f767c5ac7f604e19b5d808b89a176e32c1a4891b00d5f306838"
     },
     {
       "id": "actions-candidate-02",
@@ -536,7 +536,7 @@
       "message": "Potential cache poisoning in the context of the default branch due to privilege checkout of untrusted code from [inputs.source_commit](1). ([workflow_dispatch](2)).",
       "tool_version": "2.27.4",
       "category": "/language:actions/",
-      "context_sha256": "92a2315bdfd81ea26b5ced25f81dc5fac1982600e0cc1655a1cdca7a3fc6224b"
+      "context_sha256": "1442d4a5c406643e7d9ab05c50a3deb25c5e952fe7c10edcdefe7d47626b99f6"
     },
     {
       "id": "actions-candidate-03",

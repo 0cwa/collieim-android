@@ -153,7 +153,9 @@ object MollySocketRepository {
 
   private fun MollySocketDevice.isLinked(): Boolean? {
     return runBlocking { LinkDeviceRepository.loadDevices() }?.any {
-      it.id == deviceId && it.name == DEVICE_NAME
+      // A linked device can change its own name, and an unreadable name has a fallback value.
+      // Neither means its credential was revoked: keep tracking it until its ID is gone.
+      it.id == deviceId
     }
   }
 
@@ -201,7 +203,7 @@ object MollySocketRepository {
 
     val postBody = JsonUtils.toJson(requestData).toRequestBody(MEDIA_TYPE_JSON)
     val request = Request.Builder().url(url).post(postBody).build()
-    val client = AppDependencies.okHttpClient.newBuilder().build()
+    val client = AppDependencies.okHttpClient.newBuilder().followRedirects(false).followSslRedirects(false).build()
 
     client.newCall(request).execute().use { response ->
       if (!response.isSuccessful) {

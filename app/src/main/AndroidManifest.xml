@@ -275,27 +275,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="signaldonations.org" />
-                <data android:pathPrefix="/stripe/return/ideal" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="sgnl" />
-                <data android:host="ideal" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="https" />
                 <data android:host="signal.me" />
             </intent-filter>
 
@@ -418,8 +397,6 @@
             android:exported="false"
             android:theme="@style/Theme.Signal.DayNight.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
-
-
 
         <activity
             android:name=".calls.new.NewCallActivity"
@@ -754,7 +731,6 @@
             android:exported="false"
             android:theme="@style/TextSecure.DialogActivity" />
 
-
         <activity
             android:name=".registration.ui.RegistrationActivity"
             android:exported="false"
@@ -887,13 +863,6 @@
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
             android:exported="false"
             android:theme="@style/Theme.Signal.DayNight.NoActionBar" />
-
-        <activity
-            android:name=".components.settings.app.subscription.donate.CheckoutFlowActivity"
-            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
-            android:exported="false"
-            android:theme="@style/Theme.Signal.DayNight.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".backup.v2.ui.subscription.MessageBackupsCheckoutActivity"
@@ -1284,7 +1253,6 @@
             android:name=".messages.IncomingMessageObserver$ProcessLifetimeHintService"
             android:enabled="true"
             android:exported="false" />
-
 
         <service
             android:name=".components.voice.VoiceNotePlaybackService"

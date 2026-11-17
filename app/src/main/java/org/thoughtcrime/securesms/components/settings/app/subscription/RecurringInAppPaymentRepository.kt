@@ -9,19 +9,16 @@ import org.signal.core.util.logging.Log
 import org.signal.donations.PaymentSourceType
 import org.signal.network.NetworkResult
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
-import org.thoughtcrime.securesms.badges.Badges
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository.requireSubscriberType
 import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository.toPaymentSourceType
 import org.thoughtcrime.securesms.components.settings.app.subscription.RecurringInAppPaymentRepository.cancelActiveSubscriptionIfNecessarySync
 import org.thoughtcrime.securesms.components.settings.app.subscription.RecurringInAppPaymentRepository.cancelActiveSubscriptionSync
 import org.thoughtcrime.securesms.components.settings.app.subscription.RecurringInAppPaymentRepository.getActiveSubscriptionSync
 import org.thoughtcrime.securesms.components.settings.app.subscription.RecurringInAppPaymentRepository.rotateSubscriberIdSync
-import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData
 import org.thoughtcrime.securesms.jobs.InAppPaymentKeepAliveJob
-import org.thoughtcrime.securesms.jobs.InAppPaymentRecurringContextJob
 import org.thoughtcrime.securesms.jobs.MultiDeviceSubscriptionSyncRequestJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
@@ -29,7 +26,6 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
 import org.thoughtcrime.securesms.subscription.LevelUpdate
 import org.thoughtcrime.securesms.subscription.LevelUpdateOperation
-import org.thoughtcrime.securesms.subscription.Subscription
 import org.whispersystems.signalservice.api.storage.IAPSubscriptionId
 import org.whispersystems.signalservice.api.subscriptions.ActiveSubscription
 import org.whispersystems.signalservice.api.subscriptions.IdempotencyKey
@@ -38,8 +34,6 @@ import org.whispersystems.signalservice.internal.EmptyResponse
 import org.whispersystems.signalservice.internal.ServiceResponse
 import org.whispersystems.signalservice.internal.push.SubscriptionsConfiguration
 import java.math.BigDecimal
-import java.util.Locale
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -84,6 +78,8 @@ object RecurringInAppPaymentRepository {
    */
   @WorkerThread
   fun getActiveSubscriptionSync(type: InAppPaymentSubscriberRecord.Type): NetworkResult<ActiveSubscription> {
+    require(type == InAppPaymentSubscriberRecord.Type.BACKUP) { "Signal donations are not supported." }
+
     if (type == InAppPaymentSubscriberRecord.Type.BACKUP && SignalStore.backup.backupTierInternalOverride == MessageBackupTier.PAID) {
       Log.d(TAG, "Returning mock paid subscription.")
       return NetworkResult.Success(MOCK_PAID_SUBSCRIPTION)
@@ -104,28 +100,6 @@ object RecurringInAppPaymentRepository {
   }
 
   /**
-   * Gets a list of subscriptions available via the donations configuration.
-   */
-  @CheckResult
-  fun getSubscriptions(): Single<List<Subscription>> {
-    return Single
-      .fromCallable { donationsService.getDonationsConfiguration(Locale.getDefault()) }
-      .subscribeOn(Schedulers.io())
-      .timeout(InAppPaymentsRepository.DONATIONS_CONFIGURATION_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-      .flatMap { it.flattenResult() }
-      .map { config ->
-        config.getSubscriptionLevels().map { (level, levelConfig) ->
-          Subscription(
-            id = level.toString(),
-            level = level,
-            badge = Badges.fromServiceBadge(levelConfig.badge!!),
-            prices = config.getSubscriptionAmounts(level)
-          )
-        }
-      }
-  }
-
-  /**
    * Syncs the user account record, dispatches on the io thread-pool
    */
   @CheckResult
@@ -142,6 +116,8 @@ object RecurringInAppPaymentRepository {
    */
   @WorkerThread
   fun rotateSubscriberIdSync(subscriberType: InAppPaymentSubscriberRecord.Type) {
+    require(subscriberType == InAppPaymentSubscriberRecord.Type.BACKUP) { "Signal donations are not supported." }
+
     Log.d(TAG, "Rotating SubscriberId due to alternate payment processor...", true)
     if (InAppPaymentsRepository.getSubscriber(subscriberType) != null) {
       cancelActiveSubscriptionSync(subscriberType)
@@ -167,6 +143,8 @@ object RecurringInAppPaymentRepository {
    */
   @WorkerThread
   fun ensureSubscriberIdSync(subscriberType: InAppPaymentSubscriberRecord.Type, isRotation: Boolean = false, iapSubscriptionId: IAPSubscriptionId? = null) {
+    require(subscriberType == InAppPaymentSubscriberRecord.Type.BACKUP) { "Signal donations are not supported." }
+
     Log.d(TAG, "Ensuring SubscriberId for type $subscriberType exists on Signal service {isRotation?$isRotation}...", true)
 
     val subscriberId = if (isRotation) {
@@ -207,6 +185,8 @@ object RecurringInAppPaymentRepository {
    */
   @WorkerThread
   fun cancelActiveSubscriptionSync(subscriberType: InAppPaymentSubscriberRecord.Type) {
+    require(subscriberType == InAppPaymentSubscriberRecord.Type.BACKUP) { "Signal donations are not supported." }
+
     Log.d(TAG, "Canceling active subscription...", true)
     val localSubscriber = InAppPaymentsRepository.requireSubscriber(subscriberType)
 
@@ -235,6 +215,8 @@ object RecurringInAppPaymentRepository {
    */
   @WorkerThread
   fun cancelActiveSubscriptionIfNecessarySync(subscriberType: InAppPaymentSubscriberRecord.Type) {
+    require(subscriberType == InAppPaymentSubscriberRecord.Type.BACKUP) { "Signal donations are not supported." }
+
     val shouldCancel = InAppPaymentsRepository.getShouldCancelSubscriptionBeforeNextSubscribeAttempt(subscriberType)
     if (shouldCancel) {
       cancelActiveSubscriptionSync(subscriberType)
@@ -261,63 +243,6 @@ object RecurringInAppPaymentRepository {
     return Single.fromCallable {
       InAppPaymentsRepository.getLatestPaymentMethodType(subscriberType).toPaymentSourceType()
     }.subscribeOn(Schedulers.io())
-  }
-
-  /**
-   * Sets the subscription level as per the data in the InAppPayment.
-   *
-   * This method mutates the [InAppPaymentTable.InAppPayment] and thus returns a new instance.
-   */
-  @CheckResult
-  @WorkerThread
-  fun setSubscriptionLevelSync(inAppPayment: InAppPaymentTable.InAppPayment): InAppPaymentTable.InAppPayment {
-    val subscriptionLevel = inAppPayment.data.level.toString()
-    val subscriberType = inAppPayment.type.requireSubscriberType()
-    val subscriber = InAppPaymentsRepository.requireSubscriber(subscriberType)
-
-    getOrCreateLevelUpdateOperation(TAG, subscriptionLevel).use { operation ->
-      SignalDatabase.inAppPayments.update(
-        inAppPayment = inAppPayment.copy(
-          subscriberId = subscriber.subscriberId,
-          data = inAppPayment.data.newBuilder().redemption(
-            redemption = InAppPaymentData.RedemptionState(
-              stage = InAppPaymentData.RedemptionState.Stage.INIT
-            )
-          ).build()
-        )
-      )
-
-      Log.d(TAG, "Attempting to set user subscription level to $subscriptionLevel", true)
-
-      val response = SignalNetwork.donationsService.updateSubscriptionLevel(
-        subscriber.subscriberId,
-        subscriptionLevel,
-        subscriber.currency!!.currencyCode,
-        operation.idempotencyKey.serialize(),
-        subscriberType.lock
-      )
-
-      if (response.status == 200 || response.status == 204) {
-        Log.d(TAG, "Successfully set user subscription to level $subscriptionLevel with response code ${response.status}", true)
-        onSubscriptionLevelSet(subscriberType)
-      } else {
-        if (response.applicationError.isPresent) {
-          Log.w(TAG, "Failed to set user subscription to level $subscriptionLevel with response code ${response.status}", response.applicationError.get(), true)
-          SignalStore.inAppPayments.clearLevelOperations()
-        } else {
-          Log.w(TAG, "Failed to set user subscription to level $subscriptionLevel", response.executionError.orElse(null), true)
-        }
-
-        response.resultOrThrow
-        error("Should never get here.")
-      }
-    }
-
-    Log.d(TAG, "Enqueuing request response job chain.", true)
-    val freshPayment = SignalDatabase.inAppPayments.getById(inAppPayment.id)!!
-    InAppPaymentRecurringContextJob.createJobChain(freshPayment).enqueue()
-
-    return freshPayment
   }
 
   /**

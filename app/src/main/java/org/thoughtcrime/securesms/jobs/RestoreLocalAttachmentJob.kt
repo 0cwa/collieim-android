@@ -8,12 +8,12 @@ import android.net.Uri
 import org.signal.core.models.backup.MediaName
 import org.signal.core.models.database.AttachmentId
 import org.signal.core.util.Base64
-import org.signal.core.util.StreamUtil
 import org.signal.core.util.androidx.DocumentFileInfo
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.protocol.InvalidMacException
 import org.signal.libsignal.protocol.InvalidMessageException
 import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgress
+import org.thoughtcrime.securesms.backup.v2.withEncryptedBackupSnapshot
 import org.thoughtcrime.securesms.backup.v2.local.ArchiveFileSystem
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.AttachmentTable.LocalRestorableAttachment
@@ -25,7 +25,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.mms.MmsException
 import org.whispersystems.signalservice.api.crypto.AttachmentCipherInputStream
 import org.whispersystems.signalservice.api.crypto.AttachmentCipherInputStream.IntegrityCheck
-import org.whispersystems.signalservice.api.crypto.AttachmentCipherInputStream.StreamSupplier
 import java.io.IOException
 
 /**
@@ -146,32 +145,28 @@ class RestoreLocalAttachmentJob private constructor(
       return Result.success()
     }
 
-    val streamSupplier = StreamSupplier {
-      ArchiveFileSystem.openInputStream(context, restoreUri) ?: throw IOException("Unable to open stream for $restoreUri")
-    }
-
     try {
-      val iv = ByteArray(16)
-      streamSupplier.openStream().use { StreamUtil.readFully(it, iv) }
-      AttachmentCipherInputStream.createForAttachment(
-        streamSupplier = streamSupplier,
-        streamLength = size,
-        plaintextLength = attachment.size,
-        combinedKeyMaterial = attachment.metadata.localBackupKey.key,
-        integrityCheck = IntegrityCheck.forPlaintextHash(
-          plaintextHash = Base64.decode(attachment.dataHash)
-        ),
-        incrementalDigest = null,
-        incrementalMacChunkSize = 0
-      ).use { input ->
-        SignalDatabase
-          .attachments
-          .finalizeAttachmentAfterDownload(
-            mmsId = attachment.mmsId,
-            attachmentId = attachment.attachmentId,
-            inputStream = input,
-            archiveRestore = true
-          )
+      val snapshot = AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(AppDependencies.application)
+      withEncryptedBackupSnapshot(snapshot, size, { ArchiveFileSystem.openInputStream(context, restoreUri) ?: throw IOException("Unable to open stream for $restoreUri") }) { file ->
+        AttachmentCipherInputStream.createForAttachment(
+          file = file,
+          plaintextLength = attachment.size,
+          combinedKeyMaterial = attachment.metadata.localBackupKey.key,
+          integrityCheck = IntegrityCheck.forPlaintextHash(
+            plaintextHash = Base64.decode(attachment.dataHash)
+          ),
+          incrementalDigest = null,
+          incrementalMacChunkSize = 0
+        ).use { input ->
+          SignalDatabase
+            .attachments
+            .finalizeAttachmentAfterDownload(
+              mmsId = attachment.mmsId,
+              attachmentId = attachment.attachmentId,
+              inputStream = input,
+              archiveRestore = true
+            )
+        }
       }
     } catch (e: InvalidMessageException) {
       Log.w(TAG, "Experienced an InvalidMessageException while trying to read attachment.", e)

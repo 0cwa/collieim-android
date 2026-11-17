@@ -26,7 +26,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.signal.archive.stream.EncryptedBackupReader
-import org.signal.archive.stream.EncryptedBackupReader.Companion.MAC_SIZE
 import org.signal.core.models.ServiceId
 import org.signal.core.models.backup.MessageBackupKey
 import org.signal.core.models.database.AttachmentId
@@ -34,11 +33,8 @@ import org.signal.core.util.Hex
 import org.signal.core.util.ThreadUtil
 import org.signal.core.util.bytes
 import org.signal.core.util.concurrent.SignalExecutors
-import org.signal.core.util.copyTo
 import org.signal.core.util.logging.Log
-import org.signal.core.util.readNBytesOrThrow
 import org.signal.core.util.roundedString
-import org.signal.core.util.stream.LimitedInputStream
 import org.signal.libsignal.zkgroup.profiles.ProfileKey
 import org.signal.network.api.SvrBApi
 import org.signal.network.service.ArchiveError
@@ -65,11 +61,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
-import java.util.zip.GZIPInputStream
-import javax.crypto.Cipher
-import javax.crypto.CipherInputStream
-import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.SecretKeySpec
 
 class InternalBackupPlaygroundViewModel : ViewModel() {
 
@@ -233,28 +224,20 @@ class InternalBackupPlaygroundViewModel : ViewModel() {
         else -> throw IOException("Failed to read forward secrecy metadata! $result")
       }
 
-      val encryptedStream = tempBackupFile.inputStream().apply {
-        EncryptedBackupReader.readForwardSecrecyMetadata(this)
-      }
-      val iv = encryptedStream.readNBytesOrThrow(16)
       val backupKey = SignalStore.backup.messageBackupKey
       val keyMaterial = backupKey.deriveBackupSecrets(Recipient.self().aci.get(), forwardSecrecyToken)
-      val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding").apply {
-        init(Cipher.DECRYPT_MODE, SecretKeySpec(keyMaterial.aesKey, "AES"), IvParameterSpec(iv))
-      }
-
-      val plaintextStream = GZIPInputStream(
-        CipherInputStream(
-          LimitedInputStream(
-            wrapped = encryptedStream,
-            maxBytes = tempBackupFile.length() - MAC_SIZE - tempBackupFile.inputStream().use { EncryptedBackupReader.getForwardSecrecyPrefixDataLength(it) }
-          ),
-          cipher
-        )
-      )
+      val prefixLength = tempBackupFile.inputStream().use { EncryptedBackupReader.getForwardSecrecyPrefixDataLength(it) }
 
       Log.d(TAG, "Copying...")
-      plaintextStream.copyTo(outputStream)
+      outputStream.use { output ->
+        EncryptedBackupReader.copyAuthenticatedPlaintext(
+          aesKey = keyMaterial.aesKey,
+          macKey = keyMaterial.macKey,
+          encryptedLength = tempBackupFile.length() - prefixLength,
+          dataStream = { tempBackupFile.inputStream().apply { EncryptedBackupReader.readForwardSecrecyMetadata(this) } },
+          outputStream = output
+        )
+      }
       Log.d(TAG, "Done!")
     }
   }

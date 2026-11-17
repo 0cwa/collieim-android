@@ -8,9 +8,31 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.thoughtcrime.securesms.database.MessageTable
+import org.signal.core.util.eventbus.EventBus
 import org.junit.Test
 
 class FullBackupExporterTest {
+
+  @Test
+  fun `table export progress crosses integer boundary`() {
+    val cursor = mockk<Cursor>(relaxUnitFun = true) {
+      every { moveToNext() } returnsMany listOf(true, true, false)
+      every { columnCount } returns 0
+    }
+    val db = mockk<SQLiteDatabase> {
+      every { rawQuery("SELECT * FROM synthetic", null) } returns cursor
+    }
+    val output = mockk<BackupFrameOutputStream>(relaxUnitFun = true)
+    val progress = mutableListOf<Long>()
+    val subscription = EventBus.default.subscribe(BackupEvent::class.java) { progress.add(it.count) }
+    try {
+      val result = FullBackupExporter.exportTable("synthetic", db, output, null, null, Int.MAX_VALUE.toLong() - 1, Long.MAX_VALUE) { false }
+      assertEquals(Int.MAX_VALUE.toLong() + 1, result)
+      assertEquals(listOf(Int.MAX_VALUE.toLong(), Int.MAX_VALUE.toLong() + 1), progress)
+    } finally {
+      subscription.unsubscribe()
+    }
+  }
 
   @Test
   fun `started disappearing messages are excluded even with substantial time remaining`() {

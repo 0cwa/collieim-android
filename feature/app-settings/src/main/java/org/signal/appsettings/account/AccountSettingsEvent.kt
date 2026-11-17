@@ -23,7 +23,6 @@ sealed interface AccountSettingsEvent {
   data object PaymentsClicked : AccountSettingsEvent
 
   /** User opened the donation management screen. */
-  data object ManageDonationsClicked : AccountSettingsEvent
 
   /** The user tapped the Signal Login card, which asks for the screen lock before showing the account and recovery keys. */
   data object AccountAndRecoveryClicked : AccountSettingsEvent

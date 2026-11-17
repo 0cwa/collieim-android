@@ -1,6 +1,5 @@
 package org.thoughtcrime.securesms.util
 
-import org.signal.donations.StripeApi
 import org.thoughtcrime.securesms.BuildConfig
 
 object Environment {
@@ -38,15 +37,6 @@ object Environment {
 
     @JvmStatic
     fun isNewFormatSupportedForLocalBackup(): Boolean = true
-  }
-
-  object Donations {
-    @JvmStatic
-    @get:JvmName("getStripeConfiguration")
-    val STRIPE_CONFIGURATION = StripeApi.Configuration(
-      baseUrl = BuildConfig.STRIPE_BASE_URL,
-      publishableKey = BuildConfig.STRIPE_PUBLISHABLE_KEY
-    )
   }
 
   object Calling {

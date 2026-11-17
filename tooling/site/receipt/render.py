@@ -80,11 +80,12 @@ def validate(data):
         parents = subprocess.check_output(['git', 'rev-list', '--parents', '-n', '1', change['change']], cwd=ROOT, text=True).split()
         if len(parents) != 2:
             raise ValueError('Release change evidence must be a single-parent commit')
-        touched = subprocess.check_output(['git', '--literal-pathspecs', 'diff-tree', '--no-commit-id', '--name-only', '-r', '--no-renames', change['change'], '--', change['path']], cwd=ROOT, text=True).strip()
-        if not touched:
+        expected = change['path'].encode('utf-8')
+        touched = subprocess.check_output(['git', '--literal-pathspecs', 'diff-tree', '--no-commit-id', '--name-only', '-z', '-r', '--no-renames', change['change'], '--', change['path']], cwd=ROOT).split(b'\0')
+        if expected not in touched:
             raise ValueError('Release change did not touch its cited path')
-        changed = subprocess.check_output(['git', '--literal-pathspecs', 'diff', '--name-only', data['release_base'], source, '--', change['path']], cwd=ROOT, text=True).strip()
-        if not changed:
+        changed = subprocess.check_output(['git', '--literal-pathspecs', 'diff', '--name-only', '-z', '--no-renames', data['release_base'], source, '--', change['path']], cwd=ROOT).split(b'\0')
+        if expected not in changed:
             raise ValueError('Release entry has no change at its cited path')
     return data
 

@@ -46,12 +46,27 @@
       "upstream": null,
       "limit": "The release tree contains the entry; this pilot has not run the navigation test.",
       "source_blob": "5f083bc8983abb2159fbfbd0e86bddd82e59f45e"
+    },
+    {
+      "id": "legacy-payment-send",
+      "title": "Legacy payment-send job omitted",
+      "summary": "The legacy MobileCoin payment-send job is not present in this release source, and its old job name maps to a failing job.",
+      "origin": "Collie retained Molly\u2019s exclusion during the Signal 8.35.1 port.",
+      "change": "6e7f532bef620efc54e5693bbac52f1ed8a275eb",
+      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/JobManagerFactories.java",
+      "upstream": null,
+      "limit": "This evidence concerns the named legacy job. Other payment-related source and generated profile references remain; the pilot has not tested payment flows.",
+      "source_blob": "b071fae224916e7ce80b74fd130c3befda6490a3",
+      "absent_paths": [
+        "app/src/main/java/org/thoughtcrime/securesms/jobs/PaymentSendJob.java"
+      ]
     }
   ],
   "feature_ids": [
     "contact-badges",
     "push-readiness",
     "recipient-update-order",
-    "stories-settings-navigation"
+    "stories-settings-navigation",
+    "legacy-payment-send"
   ]
 }

@@ -16,7 +16,7 @@ class ReceiptTests(unittest.TestCase):
             page = render.render(data, layout)
             self.assertIn('How this release was built', page)
             self.assertIn(data['source'], page)
-            self.assertEqual(page.count('<article>'), 4)
+            self.assertEqual(page.count('<article id='), 5)
             self.assertIn('<details>', page)
 
     def test_duplicate_ids_and_wrong_source_are_rejected(self):
@@ -39,16 +39,23 @@ class ReceiptTests(unittest.TestCase):
         bad['features'].pop()
         with self.assertRaises(ValueError):
             render.validate(bad)
+        bad = copy.deepcopy(self.data)
+        bad['features'][0]['source_blob'] = '0' * 40
+        with self.assertRaises(ValueError):
+            render.validate(bad)
+        bad = copy.deepcopy(self.data)
+        bad['features'][-1]['absent_paths'] = [bad['features'][0]['path']]
+        with self.assertRaises(ValueError):
+            render.validate(bad)
 
     def test_metrics_are_replayable_and_separate_test_files(self):
         change = '1a0c18c32c5286e9061839cd37d96e432888fd05'
         counts = metrics.change_metrics(change)
         self.assertEqual(counts['tests'], [92, 3])
         self.assertEqual(counts, metrics.change_metrics(change))
-        bad = copy.deepcopy(self.data)
-        bad['features'][0]['source_blob'] = '0' * 40
-        with self.assertRaises(ValueError):
-            render.validate(bad)
+        self.assertEqual(metrics.classify('app/src/main/res/values-night/colors.xml'), 'production')
+        self.assertEqual(metrics.classify('app/src/main/res/values-fr/strings.xml'), 'translations')
+        self.assertEqual(metrics.classify('app/src/main/generated/example.java'), 'generated')
 
 
 if __name__ == '__main__':

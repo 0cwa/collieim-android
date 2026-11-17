@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
 """Recompute per-change Git churn; counts are not additive across features."""
 import json
+import re
 import subprocess
 import render
 
 
 def classify(path):
     lower = path.lower()
+    if '/generated/' in lower or lower.endswith(('.pb.java', '.pb.kt')):
+        return 'generated'
     if '/src/test/' in lower or '/src/androidtest/' in lower or '/tests/' in lower:
         return 'tests'
-    if '/res/values-' in lower or '/translations/' in lower:
+    if re.search(r'/res/values-[a-z]{2,3}(?:-r[a-z]{2})?/', lower) or '/translations/' in lower:
         return 'translations'
-    # Unclassified paths are intentionally not asserted to be production code.
+    if '/src/main/' in lower:
+        return 'production'
     return 'other'
 
 
@@ -20,7 +24,8 @@ def change_metrics(commit):
     if len(parents) != 2:
         raise ValueError('Metrics require a single-parent change')
     raw = subprocess.check_output(['git', 'diff-tree', '--root', '--no-commit-id', '--no-renames', '-r', '--numstat', '-z', commit], cwd=render.ROOT)
-    result = {'tests': [0, 0], 'translations': [0, 0], 'other': [0, 0], 'binary_paths': []}
+    result = {category: [0, 0] for category in ('production', 'tests', 'translations', 'generated', 'other')}
+    result['binary_paths'] = []
     for entry in raw.split(b'\0'):
         if not entry:
             continue

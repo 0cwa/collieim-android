@@ -1502,6 +1502,10 @@ object BackupRepository {
       }
       stopwatch.split("fk-check")
 
+      // Reject an imported self belonging to another account before committing destructive SQL.
+      if (SignalDatabase.recipients.getRecord(selfId).aci != selfData.aci) {
+        throw IllegalStateException("Imported backup self does not match the requested account")
+      }
       SignalDatabase.writableDatabase.setTransactionSuccessful()
       transactionSuccessful = true
     } catch (failure: Throwable) {

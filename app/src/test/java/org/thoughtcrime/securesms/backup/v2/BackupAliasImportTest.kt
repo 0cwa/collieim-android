@@ -194,4 +194,26 @@ class BackupAliasImportTest {
     `staged import merges contact aliases without changing real self`()
   }
 
+  @Test fun `import rejects a mismatched self before committing SQL`() {
+    val db = SignalDatabase.writableDatabase
+    db.execSQL("INSERT INTO recipient (_id, aci) VALUES (73, 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa')")
+    val originalSelf = Recipient.self().id
+    assertEquals(73L, originalSelf.toLong())
+    var checks = 0
+    every { reader.hasNext() } answers {
+      if (checks++ == 0) {
+        true
+      } else {
+        assertTrue(db.inTransaction())
+        db.execSQL("UPDATE recipient SET aci = ? WHERE _id = ?", arrayOf(replacement.toString(), Recipient.self().id.toLong()))
+        false
+      }
+    }
+    val failure = assertThrows(IllegalStateException::class.java) {
+      BackupRepository.importLocal({ byteArrayOf().inputStream() }, 0, BackupRepository.SelfData(expected, null, null, profileKey), backupId, backupKey)
+    }
+    assertTrue(failure.message?.contains("Imported backup self") == true)
+    assertEquals(expected, SignalDatabase.recipients.getRecord(originalSelf).aci)
+    assertEquals(originalSelf, Recipient.self().id)
+  }
 }

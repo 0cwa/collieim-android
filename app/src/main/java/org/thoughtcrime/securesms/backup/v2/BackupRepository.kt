@@ -112,6 +112,8 @@ import org.thoughtcrime.securesms.crypto.AppAttachmentSecretStore
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.BackupMediaSnapshotTable.ArchiveMediaItem
 import org.thoughtcrime.securesms.database.KyberPreKeyTable
+import org.thoughtcrime.securesms.database.MentionTable
+import org.thoughtcrime.securesms.database.MessageTable
 import org.thoughtcrime.securesms.database.OneTimePreKeyTable
 import org.thoughtcrime.securesms.database.SearchTable
 import org.thoughtcrime.securesms.database.SessionTable
@@ -1315,6 +1317,25 @@ object BackupRepository {
         SignalDatabase.writableDatabase.execSQL(table.statement)
       }
 
+      // Recipient and thread alias merges can execute indexed queries while frames are imported.
+      // Restore these non-unique indexes on the empty tables before processing any frames.
+      val importIndexNames = setOf(
+        "mention_recipient_id_thread_id_index",
+        "message_thread_story_parent_story_scheduled_date_latest_revision_id_index",
+        "message_thread_unread_count_index"
+      )
+      val importIndexes = indexMetadata.filter { it.name in importIndexNames }
+      importIndexes.forEach { SignalDatabase.writableDatabase.execSQL(it.statement) }
+      val missingIndexNames = importIndexNames - importIndexes.map { it.name }.toSet()
+      if (missingIndexNames.isNotEmpty()) {
+        val currentDefinitions = MentionTable.CREATE_INDEXES + MessageTable.CREATE_INDEXS
+        missingIndexNames.forEach { name ->
+          val indexName = Regex("\\b${Regex.escape(name)}\\s+ON\\b", RegexOption.IGNORE_CASE)
+          val definition = currentDefinitions.single { indexName.containsMatchIn(it) }
+          SignalDatabase.writableDatabase.execSQL(definition)
+        }
+      }
+
       RecipientIds.clearCache()
       AppDependencies.recipientCache.clear()
       AppDependencies.recipientCache.clearSelf()
@@ -1446,8 +1467,10 @@ object BackupRepository {
 
       Log.d(TAG, "[import] --- Recreating indices ---")
       for (index in indexMetadata) {
-        Log.d(TAG, "[import] Creating index ${index.name}...")
-        SignalDatabase.writableDatabase.execSQL(index.statement)
+        if (index.name !in importIndexNames) {
+          Log.d(TAG, "[import] Creating index ${index.name}...")
+          SignalDatabase.writableDatabase.execSQL(index.statement)
+        }
       }
       stopwatch.split("recreate-indices")
 

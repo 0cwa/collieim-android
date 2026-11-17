@@ -11,8 +11,10 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isNotEmpty
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.spyk
+import io.mockk.unmockkStatic
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -24,10 +26,12 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.core.database.SqlUtil
 import org.signal.core.database.deleteAll
+import org.signal.core.database.forceForeignKeyConstraintsEnabled
 import org.signal.core.database.update
 import org.signal.core.database.withinTransaction
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.readToList
+import org.signal.core.util.readToSingleInt
 import org.signal.core.util.requireLong
 import org.signal.libsignal.zkgroup.groups.GroupMasterKey
 import org.signal.storageservice.storage.protos.groups.Member
@@ -39,6 +43,8 @@ import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.testutil.RecipientTestRule
 import org.thoughtcrime.securesms.testing.TestSignalSQLiteDatabase
 import java.security.SecureRandom
+import java.util.concurrent.Executor
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
 
 @RunWith(RobolectricTestRunner::class)
@@ -269,12 +275,62 @@ class GroupTableTest {
     val v2Group = insertPushGroup()
     insertThread(v2Group)
 
+    // A valid remap points from a recipient that no longer exists. Preserve the old group
+    // reference to model a legacy database that still needs its group membership repaired.
+    val db = groupTable.writableDatabase
+    val foreignKeysEnabled = db.rawQuery("PRAGMA foreign_keys", null).readToSingleInt() != 0
+    db.forceForeignKeyConstraintsEnabled(false)
+    try {
+      db.execSQL("DELETE FROM recipient WHERE _id = ?", arrayOf(alice.toLong()))
+    } finally {
+      db.forceForeignKeyConstraintsEnabled(foreignKeysEnabled)
+    }
     groupTable.writableDatabase.withinTransaction {
       RemappedRecords.getInstance().addRecipient(alice, bob)
     }
 
-    val groupRecord = groupTable.getGroup(v2Group).get()
-    assertEquals(setOf(recipients.self, bob), groupRecord.members.toSet())
+    // Cleanup must preserve this mapping even if it runs before the group lookup.
+    SignalDatabase.remappedRecords.trimStaleMappings()
+    assertEquals(bob, SignalDatabase.remappedRecords.getRecipientMapping(alice))
+    val trims = AtomicInteger()
+    val controlled = RemappedRecords(Executor { it.run() }, Runnable {
+      trims.incrementAndGet()
+      SignalDatabase.remappedRecords.trimStaleMappings()
+    })
+    mockkStatic(RemappedRecords::class)
+    try {
+      every { RemappedRecords.getInstance() } returns controlled
+      val groupRecord = groupTable.getGroup(v2Group).get()
+      assertEquals(1, trims.get())
+      assertEquals(setOf(recipients.self, bob), groupRecord.members.toSet())
+      db.query("PRAGMA foreign_key_check").use { assertEquals(0, it.count) }
+    } finally {
+      unmockkStatic(RemappedRecords::class)
+    }
+  }
+
+  @Test
+  fun staleRemapCanBeTrimmedBetweenGroupSnapshotAndResolution() {
+    val v2Group = insertPushGroup()
+    insertThread(v2Group)
+    groupTable.writableDatabase.withinTransaction {
+      RemappedRecords.getInstance().addRecipient(alice, bob)
+    }
+
+    val trims = AtomicInteger()
+    val controlled = RemappedRecords(Executor { it.run() }, Runnable {
+      trims.incrementAndGet()
+      SignalDatabase.remappedRecords.trimStaleMappings()
+    })
+    mockkStatic(RemappedRecords::class)
+    try {
+      every { RemappedRecords.getInstance() } returns controlled
+      val groupRecord = groupTable.getGroup(v2Group).get()
+      assertEquals(1, trims.get())
+      assertEquals(setOf(recipients.self, alice), groupRecord.members.toSet())
+    } finally {
+      unmockkStatic(RemappedRecords::class)
+    }
   }
 
   @Test

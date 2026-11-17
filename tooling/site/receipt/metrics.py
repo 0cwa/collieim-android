@@ -44,12 +44,14 @@ def change_metrics(commit):
 
 
 def release_metrics(base, source):
-    raw = subprocess.check_output(['git', 'diff', '--no-renames', '--numstat', '-z', base, source], cwd=render.ROOT)
+    raw = subprocess.check_output(['git', '-c', 'diff.external=', 'diff', '--no-ext-diff', '--no-textconv', '--no-renames', '--numstat', '-z', base, source, '--'], cwd=render.ROOT)
     return parse_metrics(raw)
 
 
 def main():
-    data = render.validate(json.loads(render.DATA.read_text()))
+    import freeze
+    data, _ = freeze.load_editorial()
+    render.validate(data)
     changes = sorted({f['change'] for f in data['features']})
     print(json.dumps({commit: change_metrics(commit) for commit in changes}, indent=2, sort_keys=True))
 

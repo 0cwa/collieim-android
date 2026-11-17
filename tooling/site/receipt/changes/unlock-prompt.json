@@ -1,0 +1,17 @@
+{
+  "title": "A clearer unlock screen",
+  "summary": "The password form is positioned below the action bar.",
+  "change": "d49b1e4b310d909b47e9c3abd65ab07428ee4518",
+  "path": "app/src/main/java/org/thoughtcrime/securesms/PassphrasePromptActivity.java",
+  "origin": "Implemented by 0cwa for Collie.",
+  "category": "Unlocking",
+  "visual": "clearance",
+  "display_title": "Room below the action bar",
+  "diagram": {
+    "top": "Action bar",
+    "gap": "Clearance",
+    "bottom": "Password form",
+    "caption": "Layout diagram · not an app screenshot"
+  },
+  "change_type": "Layout fix"
+}

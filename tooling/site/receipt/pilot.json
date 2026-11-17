@@ -1,78 +1,25 @@
 {
-  "version": 1,
+  "version": 2,
   "release": "v8.35.1-3-rc2",
   "source": "cc55c02bef64b2980c5f384a6a04f52ffb7bef92",
-  "features": [
-    {
-      "title": "Contact badges",
-      "summary": "See your contacts’ profile badges in their settings.",
-      "origin": "Restored from Molly 8.19.2-4 with compatibility work.",
-      "change": "73e1bb04bba7b11e24b44c4d8855cd0a2ad393e0",
-      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt",
-      "upstream": "https://github.com/0cwa/mollyim-android/commit/c9b1814e1d4692c5d4ca0e3abc80008faa2a1db3",
-      "limit": "The restoration commit also includes other changes; ancestry does not prove every line is unchanged.",
-      "source_blob": "9ac39e6b4762fef1e0a8e2a05031927ccdc2a696"
-    },
-    {
-      "title": "Stay connected when push is unavailable",
-      "summary": "Designed to keep a background connection enabled when the selected push method is unavailable.",
-      "origin": "Adapted by 0cwa from Miha Zupan's Molly patch.",
-      "change": "06f42fec565a0b12461c9fe1a67075c22e13a0d7",
-      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/data/DataAndStorageSettingsRepository.kt",
-      "upstream": "https://github.com/MihaZupan/mollyim-android/blob/735d54df2b5dc71694039e5f8daeb60fa4a6d85b/patches/push.patch",
-      "limit": "The source describes connection behavior. This pilot has not measured notification delivery or battery use.",
-      "source_blob": "312b26548d58259347f4bec3ab4ff4db90197f9d"
-    },
-    {
-      "title": "Recipient settings before device lookup",
-      "summary": "Recipient settings are updated before linked-device lookup.",
-      "origin": "Adapted by 0cwa from Miha Zupan's Molly patch.",
-      "change": "1a0c18c32c5286e9061839cd37d96e432888fd05",
-      "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsViewModel.kt",
-      "upstream": "https://github.com/MihaZupan/mollyim-android/blob/735d54df2b5dc71694039e5f8daeb60fa4a6d85b/patches/theme.patch",
-      "limit": "This describes a specific ordering change, not overall reliability.",
-      "source_blob": "95aa57482acaaa0e265dad63612b81a0734de333"
-    },
-    {
-      "title": "Stories settings navigation",
-      "summary": "The Stories entry is available from the main Settings screen.",
-      "origin": "Restored by 0cwa in Collie.",
-      "change": "451aea2f27bcce179844ff3e9f8a4f0484c012fc",
-      "path": "feature/app-settings/src/main/java/org/signal/appsettings/home/AppSettingsScreen.kt",
-      "upstream": null,
-      "limit": "The release tree contains the entry; this pilot has not run the navigation test.",
-      "source_blob": "5f083bc8983abb2159fbfbd0e86bddd82e59f45e"
-    },
-    {
-      "title": "Legacy payment-send job omitted",
-      "summary": "The legacy MobileCoin payment-send job is not present in this release source, and its old job name maps to a failing job.",
-      "origin": "Collie retained Molly’s exclusion during the Signal 8.35.1 port.",
-      "change": "6e7f532bef620efc54e5693bbac52f1ed8a275eb",
-      "path": "app/src/main/java/org/thoughtcrime/securesms/jobs/JobManagerFactories.java",
-      "upstream": null,
-      "limit": "This evidence concerns the named legacy job. Other payment-related source and generated profile references remain; the pilot has not tested payment flows.",
-      "source_blob": "b071fae224916e7ce80b74fd130c3befda6490a3",
-      "absent_paths": [
-        "app/src/main/java/org/thoughtcrime/securesms/jobs/PaymentSendJob.java"
-      ]
-    }
-  ],
   "release_base": "0619e003d255f88f0e8791e2d7413d1d0d99564f",
   "release_base_tag": "v8.35.1-3-rc1",
-  "release_changes": [
-    {
-      "title": "A clearer unlock screen",
-      "summary": "The password form is positioned below the action bar.",
-      "change": "d49b1e4b31",
-      "path": "app/src/main/java/org/thoughtcrime/securesms/PassphrasePromptActivity.java",
-      "origin": "Implemented by 0cwa for Collie."
-    },
-    {
-      "title": "Stories settings are easier to find",
-      "summary": "Stories has an entry on the main Settings screen.",
-      "change": "451aea2f27",
-      "path": "feature/app-settings/src/main/java/org/signal/appsettings/home/AppSettingsScreen.kt",
-      "origin": "Restored by 0cwa in Collie."
-    }
-  ]
+  "release_status": "Release candidate",
+  "release_headline": "A clearer unlock screen. Stories back in Settings.",
+  "membership": {
+    "status": "unknown",
+    "reason": "Release membership has not been confirmed by an approved authority."
+  },
+  "subjects": [
+    "subjects/contact-badges.json",
+    "subjects/background-connection.json",
+    "subjects/recipient-update-order.json",
+    "subjects/stories-settings.json",
+    "subjects/legacy-payment-send.json"
+  ],
+  "release_records": [
+    "changes/unlock-prompt.json",
+    "changes/stories-settings.json"
+  ],
+  "app_headline": "Connection, contacts and the choices behind Collie."
 }

@@ -1,0 +1,14 @@
+{
+  "title": "Stories settings navigation",
+  "summary": "The Stories entry is available from the main Settings screen.",
+  "origin": "Restored by 0cwa in Collie.",
+  "change": "451aea2f27bcce179844ff3e9f8a4f0484c012fc",
+  "path": "feature/app-settings/src/main/java/org/signal/appsettings/home/AppSettingsScreen.kt",
+  "upstream": null,
+  "limit": "The release tree contains the entry; this pilot has not run the navigation test.",
+  "source_blob": "5f083bc8983abb2159fbfbd0e86bddd82e59f45e",
+  "placement": "standard",
+  "category": "Navigation",
+  "visual": "navigation",
+  "display_title": "Find Stories in Settings"
+}

@@ -11,6 +11,7 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.Runs
 import io.mockk.every
@@ -39,6 +40,7 @@ import org.signal.appsettings.updates.AppUpdatesSettingsState
 import im.molly.app.base.ApkInfo
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateNotifications
 import org.thoughtcrime.securesms.apkupdate.ApkUpdateRefreshListener
+import org.thoughtcrime.securesms.BuildConfig
 import org.signal.storage.keyvalue.ApkUpdateValues
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobs.ApkUpdateJob
@@ -183,6 +185,37 @@ class AppUpdatesSettingsViewModelTest {
   }
 
   @Test
+  fun `Beta package opens only its own release namespace`() = runTest(testDispatcher) {
+    every { apkUpdateValues.availableVersionCode } returns ApkInfo.versionCode.toLong() + 1
+    every { apkUpdateValues.availableVersionName } returns "8.36.0-beta1"
+    val viewModel = createViewModel(applicationId = "im.collie.app.trailblazer")
+
+    viewModel.onEvent(AppUpdatesSettingsEvent.ViewReleaseClicked)
+
+    assertThat(viewModel.state.value.availableVersionName).isEqualTo("8.36.0-beta1")
+    assertThat(openedReleases).containsExactly("https://github.com/0cwa/collieim-android/releases/tag/trailblazer-v8.36.0-beta1")
+  }
+
+  @Test
+  fun `unsupported package ignores saved candidates and update actions`() = runTest(testDispatcher) {
+    updatesEnabled = true
+    every { apkUpdateValues.availableVersionCode } returns ApkInfo.versionCode.toLong() + 1
+    every { apkUpdateValues.availableVersionName } returns "8.35.2"
+    val viewModel = createViewModel(applicationId = "im.collie.app.staging")
+
+    viewModel.onEvent(AppUpdatesSettingsEvent.AutoUpdateToggled(true))
+    viewModel.onEvent(AppUpdatesSettingsEvent.ViewReleaseClicked)
+    viewModel.onEvent(AppUpdatesSettingsEvent.CheckForUpdatesClicked)
+
+    assertThat(viewModel.state.value.isAutoUpdateSupported).isFalse()
+    assertThat(viewModel.state.value.availableVersionName).isNull()
+    assertThat(openedReleases).isEmpty()
+    verify(exactly = 0) { TextSecurePreferences.setUpdateApkEnabled(any(), any()) }
+    verify(exactly = 0) { AppDependencies.jobManager.add(ofType<ApkUpdateJob>()) }
+    verify(exactly = 0) { ApkUpdateRefreshListener.scheduleIfAllowed(any()) }
+  }
+
+  @Test
   fun `already installed and invalid stored releases cannot be opened`() = runTest(testDispatcher) {
     every { apkUpdateValues.availableVersionCode } returns ApkInfo.versionCode.toLong()
     every { apkUpdateValues.availableVersionName } returns "8.35.2"
@@ -232,7 +265,7 @@ class AppUpdatesSettingsViewModelTest {
     assertThat(navigationEvents).containsExactly(AppSettingsNavigationEvent.NavigateBack())
   }
 
-  private fun createViewModel(isAutoUpdateSupported: Boolean = true): AppUpdatesSettingsViewModel {
-    return AppUpdatesSettingsViewModel(parentEventEmitter = { navigationEvents += it }, isAutoUpdateSupported = isAutoUpdateSupported, openRelease = { openedReleases += it })
+  private fun createViewModel(isAutoUpdateSupported: Boolean = true, applicationId: String = BuildConfig.APPLICATION_ID): AppUpdatesSettingsViewModel {
+    return AppUpdatesSettingsViewModel(parentEventEmitter = { navigationEvents += it }, isAutoUpdateSupported = isAutoUpdateSupported, openRelease = { openedReleases += it }, applicationId = applicationId)
   }
 }

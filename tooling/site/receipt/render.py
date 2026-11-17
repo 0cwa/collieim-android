@@ -80,10 +80,10 @@ def validate(data):
         parents = subprocess.check_output(['git', 'rev-list', '--parents', '-n', '1', change['change']], cwd=ROOT, text=True).split()
         if len(parents) != 2:
             raise ValueError('Release change evidence must be a single-parent commit')
-        touched = subprocess.check_output(['git', 'diff-tree', '--no-commit-id', '--name-only', '-r', '--no-renames', change['change'], '--', change['path']], cwd=ROOT, text=True).strip()
+        touched = subprocess.check_output(['git', '--literal-pathspecs', 'diff-tree', '--no-commit-id', '--name-only', '-r', '--no-renames', change['change'], '--', change['path']], cwd=ROOT, text=True).strip()
         if not touched:
             raise ValueError('Release change did not touch its cited path')
-        changed = subprocess.check_output(['git', 'diff', '--name-only', data['release_base'], source, '--', change['path']], cwd=ROOT, text=True).strip()
+        changed = subprocess.check_output(['git', '--literal-pathspecs', 'diff', '--name-only', data['release_base'], source, '--', change['path']], cwd=ROOT, text=True).strip()
         if not changed:
             raise ValueError('Release entry has no change at its cited path')
     return data

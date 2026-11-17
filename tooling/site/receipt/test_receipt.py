@@ -104,6 +104,12 @@ class ReceiptTests(unittest.TestCase):
             with self.subTest(commit=commit), self.assertRaises(ValueError):
                 freeze.freeze(bad)
 
+    def test_release_pathspec_is_not_treated_as_a_pattern(self):
+        bad = copy.deepcopy(self.data)
+        bad['release_changes'][1]['path'] = ':(glob)**/*.kt'
+        with self.assertRaisesRegex(ValueError, 'did not touch'):
+            freeze.freeze(bad)
+
     def test_asset_change_rejected_at_render(self):
         receipt = freeze.freeze(self.data)
         scratch = Path.home() / 'agent-scratch/collieim-android/receipt-tests'

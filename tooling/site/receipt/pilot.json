@@ -65,14 +65,14 @@
       "summary": "The password prompt keeps its action bar clear of the screen edges.",
       "change": "d49b1e4b31",
       "path": "app/src/main/java/org/thoughtcrime/securesms/PassphrasePromptActivity.java",
-      "kind": "Everyday use"
+      "origin": "Implemented by 0cwa for Collie."
     },
     {
       "title": "Stories settings are easier to find",
       "summary": "Stories has an entry on the main Settings screen.",
       "change": "451aea2f27",
       "path": "feature/app-settings/src/main/java/org/signal/appsettings/home/AppSettingsScreen.kt",
-      "kind": "Everyday use"
+      "origin": "Implemented by 0cwa for Collie."
     }
   ]
 }

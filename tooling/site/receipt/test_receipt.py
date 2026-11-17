@@ -19,6 +19,8 @@ class ReceiptTests(unittest.TestCase):
         self.assertIn('Stories settings are easier to find', release)
         self.assertIn(data['source'], release)
         self.assertIn('<details>', app)
+        self.assertIn('whole app', app)
+        self.assertIn('Implemented by 0cwa for Collie.', release)
 
     def test_wrong_source_missing_blob_and_absence_are_rejected(self):
         for mutate in ('source', 'blob', 'absent'):

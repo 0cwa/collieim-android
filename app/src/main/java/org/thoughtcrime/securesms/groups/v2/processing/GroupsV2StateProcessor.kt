@@ -826,7 +826,7 @@ class GroupsV2StateProcessor private constructor(
             Log.i(TAG, "Added by a blocked user. Leaving group.")
             AppDependencies.jobManager.add(LeaveGroupV2Job(groupId))
             return
-          } else if ((addedBy.isSystemContact || addedBy.isProfileSharing) && !addedBy.isHidden) {
+          } else if ((addedBy.isSystemContact || addedBy.isProfileSharing) && !addedBy.isHidden && !addedBy.isBlocked) {
             Log.i(TAG, "Group 'adder' is trusted. contact: " + addedBy.isSystemContact + ", profileSharing: " + addedBy.isProfileSharing)
             Log.i(TAG, "Added to a group and auto-enabling profile sharing and redownloading avatar if needed")
             SignalDatabase.recipients.setProfileSharing(Recipient.externalGroupExact(groupId).id, true)

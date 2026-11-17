@@ -83,11 +83,6 @@ class AccountSettingsViewModel(
           _actions.send(AccountSettingsAction.NavigateToPayments)
         }
       }
-      AccountSettingsEvent.ManageDonationsClicked -> {
-        if (_state.value.showDonationManagement) {
-          _actions.send(AccountSettingsAction.NavigateToManageDonations)
-        }
-      }
       AccountSettingsEvent.ModifyPinClicked -> {
         _actions.send(if (_state.value.hasPin) AccountSettingsAction.LaunchChangePinFlow else AccountSettingsAction.LaunchCreatePinFlow)
       }
@@ -265,7 +260,6 @@ class AccountSettingsViewModel(
 
   private suspend fun refresh() {
     val isPhoneNumberless = accountRepository.isPhoneNumberless()
-    val showDonationManagement = withContext(Dispatchers.IO) { AppSettingsRepository.shouldShowManageDonations() }
 
     _state.update {
       it.copy(
@@ -276,7 +270,6 @@ class AccountSettingsViewModel(
         userUnregistered = accountRepository.isUserUnregistered(),
         clientDeprecated = accountRepository.isClientDeprecated(),
         canOpenLinkedDevices = accountRepository.canOpenLinkedDevices(),
-        showDonationManagement = showDonationManagement,
         isPhoneNumberless = isPhoneNumberless,
         // Held onto across refreshes so a resume doesn't drop the list back to its loading state.
         signalLogin = if (isPhoneNumberless) it.signalLogin ?: SignalLogin(maxTotpApps = accountRepository.getMaxTotpApps(), maxTwoFactorMethods = accountRepository.getMaxTwoFactorMethods()) else null

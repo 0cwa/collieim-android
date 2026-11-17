@@ -7,6 +7,8 @@ package org.thoughtcrime.securesms.backup.v2.ui.subscription
 
 import android.content.Context
 import android.content.Intent
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.IntentCompat
 import androidx.core.os.bundleOf
@@ -15,7 +17,6 @@ import org.signal.core.util.getParcelableExtraCompat
 import org.signal.donations.InAppPaymentType
 import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
 import org.thoughtcrime.securesms.components.FragmentWrapperActivity
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.CheckoutFlowActivity.Result
 import org.thoughtcrime.securesms.components.settings.app.subscription.donate.InAppPaymentProcessorAction
 
 /**
@@ -43,6 +44,12 @@ class MessageBackupsCheckoutActivity : FragmentWrapperActivity() {
   override fun getFragment(): Fragment = MessageBackupsFlowFragment.create(
     IntentCompat.getSerializableExtra(intent, TIER, MessageBackupTier::class.java)
   )
+
+  @Parcelize
+  data class Result(
+    val action: InAppPaymentProcessorAction,
+    val inAppPaymentType: InAppPaymentType
+  ) : Parcelable
 
   class Contract : ActivityResultContract<MessageBackupTier?, Result?>() {
 

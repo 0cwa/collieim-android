@@ -54,7 +54,7 @@ public final class PushChallengeRequest {
     long duration = System.currentTimeMillis() - startTime;
 
     if (challenge.isPresent()) {
-      Log.i(TAG, String.format(Locale.US, "Received a push challenge \"%s\" in %d ms", challenge.get(), duration));
+      Log.i(TAG, String.format(Locale.US, "Received a push challenge in %d ms", duration));
     } else {
       Log.w(TAG, String.format(Locale.US, "Did not received a push challenge in %d ms", duration));
     }

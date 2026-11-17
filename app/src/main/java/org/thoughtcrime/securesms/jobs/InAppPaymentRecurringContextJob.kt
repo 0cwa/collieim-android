@@ -144,6 +144,10 @@ class InAppPaymentRecurringContextJob private constructor(
   }
 
   override fun onRun() {
+    if (SignalDatabase.inAppPayments.getById(inAppPaymentId)?.type != InAppPaymentType.RECURRING_BACKUP) {
+      return
+    }
+
     InAppPaymentsRepository.resolveLock(inAppPaymentId).withLock {
       doRun()
     }

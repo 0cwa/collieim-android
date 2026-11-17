@@ -125,7 +125,7 @@ class InAppPaymentRedemptionJob private constructor(
       Log.w(TAG, "A permanent failure occurred.")
 
       val inAppPayment = SignalDatabase.inAppPayments.getById(InAppPaymentTable.InAppPaymentId(jobData.inAppPaymentId))
-      if (inAppPayment != null && inAppPayment.data.error == null) {
+      if (inAppPayment != null && inAppPayment.type == InAppPaymentType.RECURRING_BACKUP && inAppPayment.data.error == null) {
         SignalDatabase.inAppPayments.update(
           inAppPayment.copy(
             notified = false,
@@ -163,6 +163,7 @@ class InAppPaymentRedemptionJob private constructor(
 
     if (giftBadge.requireGiftBadge().redemptionState == GiftBadge.RedemptionState.REDEEMED) {
       Log.w(TAG, "GiftMessage with ID $messageId has already been redeemed. Exiting.", true)
+      return
     }
 
     val credentialBytes = giftBadge.requireGiftBadge().redemptionToken.toByteArray()
@@ -187,6 +188,12 @@ class InAppPaymentRedemptionJob private constructor(
     val inAppPayment = SignalDatabase.inAppPayments.getById(inAppPaymentId)
     if (inAppPayment == null) {
       Log.w(TAG, "InAppPayment with ID $inAppPaymentId not found. Failing.", true)
+      return
+    }
+
+    // A queued donation redemption from an older version must not contact the service.
+    // Gift-message redemption has a separate path; backup subscriptions remain supported.
+    if (inAppPayment.type != InAppPaymentType.RECURRING_BACKUP) {
       return
     }
 

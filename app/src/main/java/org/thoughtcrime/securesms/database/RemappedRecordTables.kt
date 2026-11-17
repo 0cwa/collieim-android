@@ -10,6 +10,7 @@ import org.signal.core.database.withinTransaction
 import org.signal.core.models.recipients.RecipientId
 import org.signal.core.util.logging.Log
 import org.signal.core.util.readToList
+import org.signal.core.util.readToSingleObject
 import org.signal.core.util.requireLong
 import org.thoughtcrime.securesms.database.RemappedRecordTables.SharedColumns.ID
 import org.thoughtcrime.securesms.database.RemappedRecordTables.SharedColumns.NEW_ID
@@ -53,6 +54,18 @@ class RemappedRecordTables internal constructor(context: Context?, databaseHelpe
       )
     """
   }
+
+  fun getRecipientMapping(oldId: RecipientId): RecipientId? =
+    getMapping(Recipients.TABLE_NAME, oldId.toLong())?.let { RecipientId.from(it) }
+
+  fun getThreadMapping(oldId: Long): Long? = getMapping(Threads.TABLE_NAME, oldId)
+
+  private fun getMapping(table: String, oldId: Long): Long? = readableDatabase
+    .select(NEW_ID)
+    .from(table)
+    .where("$OLD_ID = ?", oldId)
+    .run()
+    .readToSingleObject { it.requireLong(NEW_ID) }
 
   fun getAllRecipientMappings(): Map<RecipientId, RecipientId> {
     val recipientMap: MutableMap<RecipientId, RecipientId> = HashMap()
@@ -118,14 +131,10 @@ class RemappedRecordTables internal constructor(context: Context?, databaseHelpe
       .run()
   }
 
-  fun deleteThreadMapping(oldId: Long) {
+  fun deleteThreadMapping(oldId: Long, expectedNewId: Long) {
     writableDatabase.delete(Threads.TABLE_NAME)
-      .where("$OLD_ID = ?", oldId)
+      .where("$OLD_ID = ? AND $NEW_ID = ?", oldId, expectedNewId)
       .run()
-  }
-
-  fun clearCache() {
-    RemappedRecords.getInstance().resetCache()
   }
 
   private fun hasInvalidEntries(table: String, sourceTable: String): Boolean {
@@ -172,7 +181,7 @@ class RemappedRecordTables internal constructor(context: Context?, databaseHelpe
       OLD_ID to mapping.oldId,
       NEW_ID to mapping.newId
     )
-    databaseHelper.signalWritableDatabase.insert(table, null, values)
+    databaseHelper.signalWritableDatabase.insertOrThrow(table, null, values)
   }
 
   private class Mapping(val oldId: Long, val newId: Long)

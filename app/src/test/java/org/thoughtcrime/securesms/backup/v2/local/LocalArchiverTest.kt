@@ -11,7 +11,10 @@ import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import io.mockk.every
+import io.mockk.verify
 import okio.ByteString.Companion.toByteString
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -26,7 +29,11 @@ import org.signal.archive.stream.EncryptedBackupWriter
 import org.signal.core.models.backup.BackupId
 import org.signal.core.models.backup.MessageBackupKey
 import org.signal.core.util.Util
+import org.thoughtcrime.securesms.dependencies.AppDependencies
+import org.thoughtcrime.securesms.testutil.MockAppDependenciesRule
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.util.UUID
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -38,7 +45,17 @@ class LocalArchiverTest {
   @get:Rule
   val temporaryFolder = TemporaryFolder()
 
+  @get:Rule
+  val appDependencies = MockAppDependenciesRule()
+
   private val context: Context = ApplicationProvider.getApplicationContext()
+
+  @Before
+  fun setUpSnapshot() {
+    every { AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(any()) } answers {
+      File(temporaryFolder.root, UUID.randomUUID().toString())
+    }
+  }
 
   @Test
   fun `canDecryptMainArchive returns true for valid key`() {
@@ -48,6 +65,7 @@ class LocalArchiverTest {
     writeSnapshotFiles(snapshot, messageBackupKey)
 
     assertThat(LocalArchiver.canDecryptMainArchive(snapshot, messageBackupKey)).isTrue()
+    verify(exactly = 1) { AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(context) }
   }
 
   @Test
@@ -59,6 +77,7 @@ class LocalArchiverTest {
     writeSnapshotFiles(snapshot, validKey)
 
     assertThat(LocalArchiver.canDecryptMainArchive(snapshot, wrongKey)).isFalse()
+    verify(exactly = 1) { AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(context) }
   }
 
   @Test
@@ -79,6 +98,7 @@ class LocalArchiverTest {
     writeSnapshotFiles(snapshot, messageBackupKey, corruptMainArchive = true)
 
     assertThat(LocalArchiver.canDecryptMainArchive(snapshot, messageBackupKey)).isFalse()
+    verify(exactly = 1) { AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(context) }
   }
 
   @Test

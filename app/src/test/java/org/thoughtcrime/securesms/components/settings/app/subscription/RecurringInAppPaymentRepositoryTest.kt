@@ -2,6 +2,7 @@ package org.thoughtcrime.securesms.components.settings.app.subscription
 
 import android.app.Application
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEqualTo
 import io.mockk.every
 import io.mockk.mockk
@@ -72,32 +73,19 @@ class RecurringInAppPaymentRepositoryTest {
   }
 
   @Test
-  fun `when I getDonationsConfiguration then I expect a set of three Subscription objects`() {
-    inAppPaymentsTestRule.initializeDonationsConfigurationMock()
-
-    val testObserver = RecurringInAppPaymentRepository.getSubscriptions().test()
-    rxRule.defaultScheduler.triggerActions()
-
-    testObserver
-      .assertComplete()
-      .assertValueCount(1)
-      .assertValue { it.size == 3 }
-  }
-
-  @Test
   fun `Given I do not need to rotate my subscriber id, when I ensureSubscriberId, then I use the same subscriber id`() {
     val initialSubscriber = createSubscriber()
     val ref = InAppPaymentsTestRule.mockLocalSubscriberAccess(initialSubscriber)
 
     RecurringInAppPaymentRepository.ensureSubscriberIdSync(
-      subscriberType = InAppPaymentSubscriberRecord.Type.DONATION,
+      subscriberType = InAppPaymentSubscriberRecord.Type.BACKUP,
       isRotation = false
     )
 
     val newSubscriber = ref.get()
 
-    assertThat(newSubscriber).isNotEqualTo(initialSubscriber)
-    verify { AppDependencies.donationsService.createSubscriber(any()) }
+    assertThat(checkNotNull(newSubscriber).subscriberId).isEqualTo(initialSubscriber.subscriberId)
+    verify(exactly = 1) { AppDependencies.donationsService.createSubscriber(initialSubscriber.subscriberId) }
     verify(inverse = true) { AppDependencies.donationsService.putSubscription(any()) }
   }
 
@@ -107,7 +95,7 @@ class RecurringInAppPaymentRepositoryTest {
     val ref = InAppPaymentsTestRule.mockLocalSubscriberAccess(initialSubscriber)
 
     RecurringInAppPaymentRepository.ensureSubscriberIdSync(
-      subscriberType = InAppPaymentSubscriberRecord.Type.DONATION,
+      subscriberType = InAppPaymentSubscriberRecord.Type.BACKUP,
       isRotation = true
     )
 
@@ -122,7 +110,7 @@ class RecurringInAppPaymentRepositoryTest {
   fun `Given no current subscriber, when I rotateSubscriberId, then I do not try to cancel subscription`() {
     val ref = InAppPaymentsTestRule.mockLocalSubscriberAccess()
 
-    val testObserver = RecurringInAppPaymentRepository.rotateSubscriberId(InAppPaymentSubscriberRecord.Type.DONATION).test()
+    val testObserver = RecurringInAppPaymentRepository.rotateSubscriberId(InAppPaymentSubscriberRecord.Type.BACKUP).test()
 
     rxRule.defaultScheduler.triggerActions()
     testObserver.assertComplete()
@@ -138,7 +126,7 @@ class RecurringInAppPaymentRepositoryTest {
     val initialSubscriber = createSubscriber()
     val ref = InAppPaymentsTestRule.mockLocalSubscriberAccess(initialSubscriber)
 
-    val testObserver = RecurringInAppPaymentRepository.rotateSubscriberId(InAppPaymentSubscriberRecord.Type.DONATION).test()
+    val testObserver = RecurringInAppPaymentRepository.rotateSubscriberId(InAppPaymentSubscriberRecord.Type.BACKUP).test()
 
     rxRule.defaultScheduler.triggerActions()
     testObserver.assertComplete()
@@ -152,10 +140,10 @@ class RecurringInAppPaymentRepositoryTest {
   private fun createSubscriber(): InAppPaymentSubscriberRecord {
     return InAppPaymentSubscriberRecord(
       subscriberId = SubscriberId.generate(),
-      currency = Currency.getInstance("USD"),
-      type = InAppPaymentSubscriberRecord.Type.DONATION,
+      currency = null,
+      type = InAppPaymentSubscriberRecord.Type.BACKUP,
       requiresCancel = false,
-      paymentMethodType = InAppPaymentData.PaymentMethodType.CARD,
+      paymentMethodType = InAppPaymentData.PaymentMethodType.GOOGLE_PLAY_BILLING,
       iapSubscriptionId = null
     )
   }

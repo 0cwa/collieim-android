@@ -12,19 +12,30 @@ pluginManagement {
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
-    // Collie native repository: reviewed source input, NOT PUBLISHED.
+    // RingRTC stays on the original immutable repository.
     exclusiveContent {
       forRepository {
         maven {
-          name = "CollieNativeInputs"
+          name = "CollieNativeInputsV1"
           url = uri("https://repo.collie.im/native-inputs/v1/maven/")
+          metadataSources { mavenPom(); ignoreGradleMetadataRedirection() }
+        }
+      }
+      filter {
+        includeModule("im.collie.native", "ringrtc-android")
+      }
+    }
+    exclusiveContent {
+      forRepository {
+        maven {
+          name = "CollieNativeInputsV2"
+          url = uri("https://repo.collie.im/native-inputs/v2/maven/")
           metadataSources { mavenPom(); ignoreGradleMetadataRedirection() }
         }
       }
       filter {
         includeModule("im.collie.native", "libsignal-android")
         includeModule("im.collie.native", "libsignal-client")
-        includeModule("im.collie.native", "ringrtc-android")
       }
     }
     google {

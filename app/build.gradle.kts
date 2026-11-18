@@ -662,7 +662,7 @@ fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").
 val nativeAcceptanceFile = rootProject.file("build-inputs/native-publication.json")
 val nativeAcceptanceText = if (nativeAcceptanceFile.isFile) nativeAcceptanceFile.readText() else ""
 val nativeInputsAccepted = nativeAcceptanceText.contains("\"status\": \"ACCEPTED\"") &&
-  nativeAcceptanceText.contains("\"evidence_sha256\": \"c250fabb3deaf9b1266b23bba60f9a094636b5359c1efd3a4520114eb5a11948\"")
+  nativeAcceptanceText.contains("\"evidence_sha256\": \"20b21855db0175409618156f0247aa25503fcb256f1c3075959d33c87244f3c4\"")
 if (!nativeInputsAccepted) {
   throw GradleException("Direct Android builds BLOCKED: accepted native publication evidence is absent or differs; see docs/BUILD.md")
 }

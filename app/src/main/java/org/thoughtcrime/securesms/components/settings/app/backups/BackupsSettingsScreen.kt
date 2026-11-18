@@ -163,7 +163,7 @@ private fun BackupsSettingsContent(
             OtherWaysToBackUpHeading()
           }
 
-          BackupState.None -> {
+          is BackupState.None -> {
             if (backupsSettingsState.isLinkedDevice) {
               BackupsOffLinkedDeviceRow(onLearnMoreClick = onLearnMoreClick)
             } else {

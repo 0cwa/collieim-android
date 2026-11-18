@@ -69,7 +69,7 @@ class BackupsSettingsScreenTest {
     composeTestRule.onNodeWithText("Signal Secure Backups").assertIsDisplayed()
   }
 
-  private fun setContent(state: BackupsSettingsState = BackupsSettingsState(backupState = BackupState.None, lastBackupAt = Duration.ZERO, isLinkedDevice = false)) {
+  private fun setContent(state: BackupsSettingsState = BackupsSettingsState(backupState = BackupState.None(featureSupported = true), lastBackupAt = Duration.ZERO, isLinkedDevice = false)) {
     composeTestRule.setContent {
       SignalTheme {
         BackupsSettingsScreen(state = state, onEvent = { events += it })

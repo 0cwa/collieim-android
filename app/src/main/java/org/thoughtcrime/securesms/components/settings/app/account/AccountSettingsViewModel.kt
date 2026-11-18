@@ -83,11 +83,7 @@ class AccountSettingsViewModel(
           _actions.send(AccountSettingsAction.NavigateToLinkedDevices)
         }
       }
-      AccountSettingsEvent.PaymentsClicked -> {
-        if (_state.value.isPrimaryDevice && _state.value.showPayments) {
-          _actions.send(AccountSettingsAction.NavigateToPayments)
-        }
-      }
+      AccountSettingsEvent.PaymentsClicked -> Unit
       AccountSettingsEvent.ManageDonationsClicked -> {
         if (_state.value.showDonationManagement) {
           _actions.send(AccountSettingsAction.NavigateToManageDonations)

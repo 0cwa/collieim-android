@@ -16,9 +16,6 @@ sealed interface AccountSettingsAction {
   /** Open the linked-device list. */
   data object NavigateToLinkedDevices : AccountSettingsAction
 
-  /** Open Payments. */
-  data object NavigateToPayments : AccountSettingsAction
-
   /** Open existing donation management. */
   data object NavigateToManageDonations : AccountSettingsAction
 

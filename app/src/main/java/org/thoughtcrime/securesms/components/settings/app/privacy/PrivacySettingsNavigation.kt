@@ -35,6 +35,14 @@ fun EntryProviderScope<NavKey>.registerPrivacyRoutes(parentEventEmitter: (AppSet
   detailEntry<AppSettingsRoute.PrivacyRoute.ScreenLock> {
     LegacyPrivacyRedirect(parentEventEmitter)
   }
+
+  detailEntry<AppSettingsRoute.PrivacyRoute.Advanced> {
+    AdvancedPrivacySettingsEntry(parentEventEmitter = parentEventEmitter)
+  }
+
+  detailEntry<AppSettingsRoute.PrivacyRoute.ExpiringMessages> {
+    ExpireTimerSettingsEntry(config = ExpireTimerSettingsViewModel.Config(), parentEventEmitter = parentEventEmitter)
+  }
 }
 
 @Composable
@@ -43,13 +51,5 @@ private fun LegacyPrivacyRedirect(parentEventEmitter: (AppSettingsNavigationEven
   LaunchedEffect(Unit) {
     context.startActivity(AppSettingsActivity.privacy(context))
     parentEventEmitter.navigateBack()
-  }
-
-  detailEntry<AppSettingsRoute.PrivacyRoute.Advanced> {
-    AdvancedPrivacySettingsEntry(parentEventEmitter = parentEventEmitter)
-  }
-
-  detailEntry<AppSettingsRoute.PrivacyRoute.ExpiringMessages> {
-    ExpireTimerSettingsEntry(config = ExpireTimerSettingsViewModel.Config(), parentEventEmitter = parentEventEmitter)
   }
 }

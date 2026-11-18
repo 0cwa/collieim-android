@@ -99,7 +99,7 @@ class BackupsSettingsViewModel(
         val state = _state.value
         when (state.backupState) {
           is BackupState.Error -> Unit
-          BackupState.None -> {
+          is BackupState.None -> {
             if (!state.isLinkedDevice) {
               _actions.send(BackupsSettingsAction.LaunchCheckout)
             }

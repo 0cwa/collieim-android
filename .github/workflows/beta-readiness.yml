@@ -35,12 +35,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: 0cwa/collie-release-engineering
-          ref: e99456b0b61b13b189b7df4bba31b856bf78e324
+          ref: ee8dd193a430402aa6f964ff8a496958ec58fa73
           path: trusted-engineering
           fetch-depth: 0
           persist-credentials: false
       - name: Verify the pinned verifier checkout
-        run: test "$(git -C "$GITHUB_WORKSPACE/trusted-engineering" rev-parse HEAD)" = e99456b0b61b13b189b7df4bba31b856bf78e324
+        run: test "$(git -C "$GITHUB_WORKSPACE/trusted-engineering" rev-parse HEAD)" = ee8dd193a430402aa6f964ff8a496958ec58fa73
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12.14'

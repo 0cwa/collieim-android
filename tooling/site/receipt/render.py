@@ -27,6 +27,20 @@ def asset_hashes():
     return {path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest() for path in paths}
 
 
+def newer_releases(receipt):
+    """Published releases newer than the reviewed edition, newest first.
+
+    Live builds pass ``published_releases`` newest first. When the reviewed
+    release is missing from that index it cannot be ordered against the others,
+    so the newest published release is treated as newer.
+    """
+    published = receipt.get('published_releases')
+    if not published:
+        return []
+    release = receipt['editorial']['release']
+    return published[:published.index(release)] if release in published else published[:1]
+
+
 ROUTES = {
     'pilot': {'app': 'app.html', 'release': 'release.html'},
     'permanent': {'app': '../patches/', 'release': '../releases/'},
@@ -79,29 +93,36 @@ def render(receipt, layout, routes='pilot'):
         tone = 'adaptation' if kind == 'Adaptation' else 'layout' if kind == 'Layout fix' else 'restoration'
         return f'''<article class="{'edition-story' if release else 'subject'}" id="{e(anchor(item))}"><div class="patch-kind {tone}">{e(kind)}<span>{e(item['category'])}</span></div><div class="story-copy"><h2>{e(item['display_title'])}</h2><p>{e(item['summary'])}</p>{limit}<p class="origin">{e(item['origin'])}</p>{evidence(item)}</div></article>'''
     visible = [f for f in data['features'] if f['placement'] != 'hidden']
+    newer = newer_releases(receipt)
+    notes = lambda tag: f'{REPO}/releases/tag/{quote(tag, safe="")}'
     selected = ''.join(story(c, True) for c in data['release_changes']) or '<p>No selected release story is available for this version.</p>'
 
     if layout == 'release':
         title = "What’s new in Collie"
-        history = ''.join(f'<li><a class="history-card" href="{REPO}/releases/tag/{quote(tag, safe="")}"><strong>{e(tag)}</strong><span>Release notes ↗</span></a></li>' for tag in receipt.get('published_releases', data.get('release_history', [])) if tag != data['release'])
+        history = ''.join(f'<li><a class="history-card" href="{REPO}/releases/tag/{quote(tag, safe="")}"><strong>{e(tag)}</strong><span>Release notes ↗</span></a></li>' for tag in receipt.get('published_releases', data.get('release_history', [])) if tag != data['release'] and tag not in newer[:1])
         archive = f'<ol class="history-list">{history}</ol>' if history else '<p>Earlier releases will appear here.</p>'
         added, removed = receipt['release_metrics']['production']
         comparison = f'''<details class="comparison"><summary>Changes</summary><div class="evidence"><p>Difference from <a href="{REPO}/tree/{data['release_base']}">{e(data['release_base_tag'])}</a></p><p class="metric">Production lines: <span class="added">+{added}<span class="sr-only"> added</span></span> / <span class="removed">−{removed}<span class="sr-only"> removed</span></span></p><p>Tests excluded. Path-based estimate.</p><p><a href="{REPO}/compare/{data['release_base']}...{source}">Source diff</a></p></div></details>'''
+        latest = f'''<section class="newest" id="newest" aria-labelledby="newest-title"><h2 id="newest-title">{e(newer[0])}</h2>
+          <p>The newest release. This page doesn’t describe its changes yet; the release notes do.</p>
+          <a href="{notes(newer[0])}">Read the {e(newer[0])} release notes</a>
+          <p class="newest-next">Below: what changed in {version}, the last release described here.</p></section>''' if newer else ''
         content = f'''<header class="page-heading"><h1>{title}</h1></header>
-        <div class="spread release-spread"><section class="current-edition" id="current-edition">
+        <div class="spread release-spread"><div class="release-main">{latest}<section class="current-edition" id="current-edition">
           <header class="edition-title"><h2>{version}</h2><p>{e(data['release_headline'])}</p>
           <a href="{REPO}/releases/tag/{quote(data['release'], safe='')}">Full release notes</a></header>
           <p class="range">Selected changes since <a href="{REPO}/tree/{data['release_base']}">{e(data['release_base_tag'])}</a></p>
           {selected}{comparison}{foundation_credit}
-        </section><aside class="history" id="earlier-releases"><h2>Other releases</h2><p>Read the notes for your version.</p>{archive}
+        </section></div><aside class="history" id="earlier-releases"><h2>Other releases</h2><p>Read the notes for your version.</p>{archive}
           <a class="related" href="{app_url}">Explore patches across versions →</a></aside></div>'''
     elif layout == 'app':
         title = 'Patch explorer'
+        newer_note = f'<p class="newer">Newer release: <a href="{notes(newer[0])}">{e(newer[0])}</a>. These descriptions haven’t been checked against it yet.</p>' if newer else ''
         index = ''.join(f'<li><a href="#{e(anchor(f))}">{e(f["category"])}<span aria-hidden="true">↓</span></a></li>' for f in visible)
         subjects = ''.join(story(f) for f in visible)
         content = f'''<header class="page-heading"><h1>{title}</h1></header>
         <div class="spread patch-spread"><aside class="patch-index">
-          <div class="index-cover"><h2>Inside Collie</h2><p>Selected patches in <strong>{version}</strong>, including changes carried forward from earlier versions.</p>{foundation_credit}</div>
+          <div class="index-cover"><h2>Inside Collie</h2><p>Selected patches in <strong>{version}</strong>, including changes carried forward from earlier versions.</p>{foundation_credit}{newer_note}</div>
           <nav aria-label="Patch index"><ul>{index}</ul></nav>
           <a class="related" href="{release_url}">Read the release log →</a>
         </aside><div class="patch-reading">{subjects}</div></div>'''

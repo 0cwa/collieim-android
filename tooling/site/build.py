@@ -308,8 +308,24 @@ def build(out: Path, tag: str, repo: str, roadmap: list[dict] | None = None, don
     missing = [str(ref.relative_to(out)) for ref in refs if not ref.is_file() and not (ref / "index.html").is_file()]
     if missing:
         raise SystemExit(f"missing local files: {missing}")
-    pipeline.build(out, published=published)
+    report_behind(pipeline.build(out, published=published))
     print(f"built {out} for {tag}")
+
+
+def report_behind(manifest: dict) -> None:
+    """Remind editors when the reviewed patch pages trail a published release.
+
+    The site still builds and deploys; the pages say which release they describe.
+    """
+    newer = manifest.get("newer_releases") or []
+    if not newer:
+        return
+    message = (f"Patch pages describe {manifest['reviewed_release']}; newer published release(s): {', '.join(newer)}. "
+               "Review the records in tooling/site/receipt/ and re-freeze (see its README).")
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        print(f"::notice title=Patch pages behind latest release::{message}")
+    else:
+        print(f"note: {message}", file=sys.stderr)
 
 
 def main() -> int:

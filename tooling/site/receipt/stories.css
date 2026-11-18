@@ -23,7 +23,7 @@ summary::marker { color: var(--icon) }
 .spread { display: grid; align-items: start; gap: clamp(28px, 5vw, 72px); padding-bottom: 54px }
 .patch-spread { grid-template-columns: minmax(230px, .85fr) minmax(0, 2fr) }
 .release-spread { grid-template-columns: minmax(0, 2fr) minmax(230px, .85fr) }
-.index-cover { background: var(--forest) var(--landscape) right bottom / 100% 90px no-repeat; color: var(--mist); padding: 24px 28px 72px; border-radius: 2px 20px 2px 2px }
+.index-cover { background: var(--forest) var(--landscape) right bottom / 100% 90px no-repeat; color: var(--mist); padding: 24px 28px 96px; border-radius: 2px 20px 2px 2px }
 .index-cover p { margin-top: .85rem }
 .index-cover strong { font-weight: 650; white-space: normal; overflow-wrap: anywhere }
 .index-cover a { color: inherit }
@@ -53,6 +53,13 @@ summary::marker { color: var(--icon) }
 .conditions div { padding-block: 8px; border-bottom: 1px solid var(--rule) }
 .conditions dt { font-weight: 650 }
 .conditions dd { margin: 0 }
+.newest { background: var(--forest) var(--landscape) right bottom / 100% 72px no-repeat; color: var(--mist); padding: 22px 28px 76px; margin-bottom: 32px; border-radius: 2px 20px 2px 2px; overflow-wrap: anywhere }
+.newest h2 { font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 550 }
+.newest p { margin-top: 6px; max-width: 58ch; text-wrap: pretty }
+.newest a { display: inline-block; margin-top: 10px; padding-block: 6px; color: inherit; font-weight: 650 }
+.newest .newest-next { margin-top: 14px; font-size: .9rem }
+.newest :focus-visible, .newer :focus-visible { outline-color: var(--gold-2) }
+.index-cover .newer { margin-top: 1rem; padding-top: .85rem; text-wrap: pretty; border-top: 1px solid color-mix(in srgb, currentColor 35%, transparent) }
 .edition-title { border-top: 3px solid var(--icon); padding-top: 16px; overflow-wrap: anywhere }
 .edition-title h2 { font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 550 }
 .edition-title p { margin: 4px 0; font-size: 1.15rem }
@@ -74,6 +81,7 @@ footer { border-top: 1px solid var(--rule); background: var(--card); padding-blo
 @media (max-width: 740px) {
   .spread { grid-template-columns: 1fr; gap: 24px }
   .index-cover { padding: 18px 20px 30px; background-size: 100% 30px }
+  .newest { padding: 18px 20px 44px; background-size: 100% 36px; margin-bottom: 24px }
   .index-cover .foundation { margin-top: 6px }
   .patch-index ul { display: flex; flex-wrap: wrap; gap: 0 18px }
   .patch-index li a { gap: 6px; padding-block: 10px }
@@ -81,7 +89,7 @@ footer { border-top: 1px solid var(--rule); background: var(--card); padding-blo
   .subject, .edition-story { padding-block: 18px 12px }
 }
 @media (forced-colors: active) {
-  .index-cover, .edition-title, .history { background-image: none; border: 1px solid CanvasText }
+  .index-cover, .newest, .edition-title, .history { background-image: none; border: 1px solid CanvasText }
   .patch-kind::before { border-color: CanvasText }
   :focus-visible { outline-color: Highlight }
 }

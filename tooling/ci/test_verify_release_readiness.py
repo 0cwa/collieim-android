@@ -133,7 +133,7 @@ class ReleaseReadinessTest(unittest.TestCase):
                     folder = child
                 entry = {"path": parts[-1], "mode": "100644", "type": "blob", "sha": f"{index:040x}"}
                 if path in (".github/actions/disk-cleanup", "tooling/ci", "tooling/git-hooks", "tooling/host-tests",
-                            "tooling/reproducible-builds", "buildSrc", "gradle/wrapper"):
+                            "tooling/reproducible-builds", "buildSrc", "build-logic", "gradle/wrapper"):
                     entry.update(mode="040000", type="tree")
                 by_parent[folder].append(entry)
                 if commit == SHA:
@@ -156,7 +156,7 @@ class ReleaseReadinessTest(unittest.TestCase):
                          (gate.MAINTENANCE_BRANCH, "push", policy))
         for path in (gate.WORKFLOW_PATH, ".github/scripts/check-unit-test-results.py",
                      ".github/ci-required-tests.json", ".github/ci-required-tests-stable-8.35.json",
-                     "gradlew", "gradle/wrapper"):
+                     "gradlew", "gradle/wrapper", "build-logic"):
             with self.subTest(replaced_input=path):
                 entry = candidate_inputs[path]
                 original = entry["sha"]

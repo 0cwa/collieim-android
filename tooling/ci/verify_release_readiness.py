@@ -31,6 +31,7 @@ TRUSTED_CI_PATHS = (
     "build.gradle.kts",
     "settings.gradle.kts",
     "buildSrc",
+    "build-logic",
     "gradlew",
     "gradle/wrapper",
 )

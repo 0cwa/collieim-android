@@ -10,6 +10,14 @@ concurrency:
   group: pr-checks-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  stable-tag-ref:
+    name: Stable tag ref marker
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/release/stable/8.35'
+    permissions: {}
+    runs-on: ubuntu-24.04
+    steps:
+      - run: test "$GITHUB_REF" = refs/tags/release/stable/8.35
+
   layer-trailers:
     name: Layer trailers
     if: github.event_name == 'pull_request'

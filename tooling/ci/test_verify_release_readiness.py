@@ -105,6 +105,23 @@ class ReleaseReadinessTest(unittest.TestCase):
         with self.assertRaises(gate.Failure):
             gate.select_run([run_record()], REPO, SHA, stable)
 
+    def test_newer_confirmed_tag_does_not_supplant_branch_or_hide_an_unknown_failure(self):
+        branch = gate.MAINTENANCE_BRANCH
+        older_branch = run_record(head_branch=branch)
+        newer_alias = run_record(id=101, head_branch=branch, event="workflow_dispatch", conclusion="failure")
+        marker = {"name": "Stable tag ref marker", "run_id": 101, "run_attempt": 2,
+                  "head_sha": SHA, "status": "completed", "conclusion": "success"}
+        # A failed tag dispatch is positively identified; no branch fallback is allowed without proof.
+        only_marker = lambda run: gate.is_confirmed_tag_dispatch(run, [marker])
+        self.assertEqual(gate.select_run([older_branch, newer_alias], REPO, SHA, branch, only_marker),
+                         older_branch)
+        for changes in ({"head_sha": "b" * 40}, {"run_attempt": 1}, {"conclusion": "skipped"}):
+            with self.subTest(changes=changes), self.assertRaisesRegex(gate.Failure, "has not succeeded"):
+                gate.select_run([older_branch, newer_alias], REPO, SHA, branch,
+                                lambda run: gate.is_confirmed_tag_dispatch(run, [{**marker, **changes}]))
+        with self.assertRaisesRegex(gate.Failure, "has not succeeded"):
+            gate.select_run([older_branch, {**newer_alias, "event": "push"}], REPO, SHA, branch, only_marker)
+
     def test_job_without_attempt_cannot_authorize_release(self):
         records = jobs()
         records[0].pop("run_attempt")
@@ -191,7 +208,13 @@ class ReleaseReadinessTest(unittest.TestCase):
         def reader(endpoint, **kwargs):
             calls.append(endpoint)
             if "/actions/runs?" in endpoint:
-                return page("workflow_runs", [run_record(head_branch=gate.MAINTENANCE_BRANCH)])
+                branch = gate.MAINTENANCE_BRANCH
+                return page("workflow_runs", [run_record(head_branch=branch),
+                            run_record(head_branch=branch, id=101, event="workflow_dispatch")])
+            if "/runs/101/attempts/2/jobs?" in endpoint:
+                return page("jobs", [{"id": 900, "name": "Stable tag ref marker", "head_sha": SHA,
+                                      "run_id": 101, "run_attempt": 2, "status": "completed",
+                                      "conclusion": "success"}])
             if "/attempts/2/jobs?" in endpoint:
                 return page("jobs", jobs())
             if "/actions/runs/100/artifacts?" in endpoint:

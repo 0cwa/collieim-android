@@ -82,7 +82,7 @@ def flatten_pages(pages, key):
     return values
 
 
-def select_run(runs, repository, sha, branch):
+def select_run(runs, repository, sha, branch, confirmed_tag=None):
     require(branch in RELEASE_SOURCE_BRANCHES, "Unsupported release source branch")
     eligible = [run for run in runs if
                 run.get("head_sha") == sha
@@ -97,7 +97,9 @@ def select_run(runs, repository, sha, branch):
     require(eligible, f"No trusted {WORKFLOW_PATH} run on {branch} exists for release commit {sha}")
     require(all(type(run.get("id")) is int and run["id"] > 0 for run in eligible), "Invalid workflow run ID")
     # An older passing attempt/run must not hide a newer failed or pending one.
-    latest = max(eligible, key=lambda run: run["id"])
+    latest = next((run for run in sorted(eligible, key=lambda run: run["id"], reverse=True)
+                   if confirmed_tag is None or run["event"] != "workflow_dispatch" or not confirmed_tag(run)), None)
+    require(latest is not None, f"No trusted branch run on {branch} exists for release commit {sha}")
     require(latest.get("status") == "completed" and latest.get("conclusion") == "success",
             f"Latest CI run {latest['id']} for {sha} has not succeeded")
     require(type(latest.get("run_attempt")) is int and latest["run_attempt"] > 0, "Missing workflow run attempt")
@@ -206,17 +208,46 @@ def verify_maintenance_route(repository, run, unit_job, policy_blob, reader, arc
     return route
 
 
+def is_confirmed_tag_dispatch(run, jobs):
+    markers = [job for job in jobs if job.get("name") == "Stable tag ref marker"]
+    if len(markers) != 1:
+        return False
+    job = markers[0]
+    return (job.get("head_sha") == run["head_sha"] and job.get("run_id") == run["id"] and
+            job.get("run_attempt") == run["run_attempt"] and job.get("status") == "completed" and
+            job.get("conclusion") == "success")
+
+
 def verify(repository, sha, branch="main", reader=api, *, trusted_main=None, archive_reader=read_route_archive):
     require(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository) is not None, "Invalid repository")
     require(re.fullmatch(r"[0-9a-f]{40}", sha) is not None, "Use the exact lowercase release commit SHA")
     require(branch in RELEASE_SOURCE_BRANCHES, "Unsupported release source branch")
     policy_blob = bind_main_policy(repository, sha, trusted_main, reader) if branch == MAINTENANCE_BRANCH else None
     endpoint = f"repos/{repository}/actions/runs?head_sha={sha}&per_page=100"
-    runs = flatten_pages(reader(endpoint, paginate=True), "workflow_runs")
-    run = select_run(runs, repository, sha, branch)
+    attempts = {}
+
+    def read_attempt(run):
+        run_id, attempt = run["id"], run["run_attempt"]
+        key = (run_id, attempt)
+        if key not in attempts:
+            attempts[key] = flatten_pages(reader(f"repos/{repository}/actions/runs/{run_id}/attempts/{attempt}/jobs?per_page=100",
+                                                 paginate=True), "jobs")
+        return attempts[key]
+
+    def confirmed_tag(run):
+        # An unclassified pending, cancelled or failed dispatch does not justify a fallback.
+        return (run.get("status") == "completed" and type(run.get("run_attempt")) is int and
+                run["run_attempt"] > 0 and is_confirmed_tag_dispatch(run, read_attempt(run)))
+
+    reject_tag_dispatch = confirmed_tag if branch == MAINTENANCE_BRANCH else None
+
+    def latest_run():
+        runs = flatten_pages(reader(endpoint, paginate=True), "workflow_runs")
+        return select_run(runs, repository, sha, branch, reject_tag_dispatch)
+
+    run = latest_run()
     run_id, attempt = run["id"], run["run_attempt"]
-    jobs = flatten_pages(reader(f"repos/{repository}/actions/runs/{run_id}/attempts/{attempt}/jobs?per_page=100",
-                                paginate=True), "jobs")
+    jobs = read_attempt(run)
     verified_jobs = verify_jobs(run, jobs, sha)
     route = None
     if policy_blob is not None:
@@ -224,7 +255,7 @@ def verify(repository, sha, branch="main", reader=api, *, trusted_main=None, arc
         route = verify_maintenance_route(repository, run, unit_job, policy_blob, reader, archive_reader)
     # A rerun can start while the job pages are being read. Read current state
     # again, including newer runs, before creating a successful evidence record.
-    current = select_run(flatten_pages(reader(endpoint, paginate=True), "workflow_runs"), repository, sha, branch)
+    current = latest_run()
     require((current["id"], current["run_attempt"], current["event"]) == (run_id, attempt, run["event"]), "CI changed during verification; retry")
     return {"schema": 1, "status": "EXACT_COMMIT_CI_PASSED", "repository": repository,
             "source_commit": sha, "source_branch": branch, "workflow_path": WORKFLOW_PATH,

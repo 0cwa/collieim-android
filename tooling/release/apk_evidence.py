@@ -13,17 +13,27 @@ from publication import (
 )
 
 
-def build_artifact(github, source, run_id, *, legacy, approved=None):
+RELEASE_SOURCE_BRANCHES = ("main", "release/stable/8.35")
+
+
+def build_artifact(github, source, run_id, *, legacy, approved=None, source_branch="main"):
+    require(source_branch in RELEASE_SOURCE_BRANCHES, "Unsupported release source branch")
+    require(not legacy or source_branch == "main", "Legacy build evidence must come from main")
+    if approved:
+        require(approved["source_branch"] == source_branch and
+                approved["workflow_path"] == ".github/workflows/pr.yml" and
+                approved["workflow_id"] == 413670842,
+                "Approved CI has a different source branch or workflow")
     require(run_id is None or positive(run_id), "Build run ID must be positive")
     workflow = "build-release.yml" if legacy else "pr.yml"
-    query = urlencode({"head_sha": source, "branch": "main", "per_page": 100})
+    query = urlencode({"head_sha": source, "branch": source_branch, "per_page": 100})
     runs = github.api(f"actions/workflows/{workflow}/runs?{query}")["workflow_runs"]
     allowed_events = {"workflow_dispatch"} if legacy else {"push", "workflow_dispatch"}
     candidates = [
         run for run in runs
         if (run_id is None or run["id"] == run_id)
         and run["path"] == f".github/workflows/{workflow}"
-        and run["head_sha"] == source and run["head_branch"] == "main"
+        and run["head_sha"] == source and run["head_branch"] == source_branch
         and run["head_repository"]["full_name"] == REPOSITORY
         and run["event"] in allowed_events
     ]
@@ -32,7 +42,9 @@ def build_artifact(github, source, run_id, *, legacy, approved=None):
     require(run["status"] == "completed" and run["conclusion"] == "success",
             f"Source build run {run['id']} has not passed")
     if approved:
+        require(run["workflow_id"] == approved["workflow_id"], "Approved CI workflow identity changed")
         require(run["run_attempt"] == approved["run_attempt"], "Approved CI attempt changed before artifact selection")
+        require(run["event"] == approved["workflow_event"], "Approved CI event changed before artifact selection")
 
     job_name = f"Build {source} (0)" if legacy else "Unsigned production build"
     jobs = github.api(f"actions/runs/{run['id']}/attempts/{run['run_attempt']}/jobs?per_page=100")["jobs"]
@@ -47,6 +59,7 @@ def build_artifact(github, source, run_id, *, legacy, approved=None):
     require(len(artifacts) == 1, f"Run {run['id']} needs one unexpired {artifact_name} artifact")
     artifact = artifacts[0]
     if approved:
+        require(job.get("run_attempt") == run["run_attempt"], "Build job belongs to a different attempt")
         expected_job = next(entry for entry in approved["jobs"] if entry["name"] == job_name)
         require(job["id"] == expected_job["id"] and job["started_at"] <= artifact["created_at"] <= job["completed_at"],
                 "Build artifact does not belong to the approved CI job")
@@ -63,6 +76,7 @@ def main():
     parser.add_argument("--build-tools", type=Path)
     parser.add_argument("--github-output", type=Path, required=True)
     parser.add_argument("--ci-report", type=Path)
+    parser.add_argument("--source-branch", choices=RELEASE_SOURCE_BRANCHES)
     parser.add_argument("--bound-build")
     parser.add_argument("--legacy-build-run", type=int)
     parser.add_argument("--published-sha256")
@@ -73,8 +87,14 @@ def main():
         if args.ci_report:
             approved = read_json(args.ci_report)
             source = approved["source_commit"]
-            run_id, artifact_id = build_artifact(github, source, approved["run_id"], legacy=False, approved=approved)
-            build = {"source_commit": source, "build_run_id": run_id, "artifact_id": artifact_id}
+            source_branch = approved["source_branch"]
+            require(args.source_branch is None or args.source_branch == source_branch,
+                    "Requested branch differs from the approved CI report")
+            run_id, artifact_id = build_artifact(
+                github, source, approved["run_id"], legacy=False, approved=approved, source_branch=source_branch,
+            )
+            build = {"source_commit": source, "source_branch": source_branch, "run_attempt": approved["run_attempt"],
+                     "build_run_id": run_id, "artifact_id": artifact_id}
             with args.github_output.open("a", encoding="utf-8") as output:
                 print(f"bound_build={json.dumps(build, separators=(',', ':'))}", file=output)
             return 0
@@ -84,14 +104,18 @@ def main():
         state = release_state(github.release(args.tag))
         require(state["tag_name"] == args.tag and not state["draft"], "Expected a published release for this tag")
         source = release.signed_tag_identity(args.tag)["source_commit"]
+        source_branch = args.source_branch or "main"
         if args.bound_build:
             build = json.loads(args.bound_build)
+            require(build["source_branch"] == source_branch, "Approved CI differs from the requested source branch")
+            require(positive(build["run_attempt"]), "Invalid approved build run attempt")
             require(build["source_commit"] == source, "Approved CI source differs from the signed tag")
             run_id, artifact_id = build["build_run_id"], build["artifact_id"]
             require(positive(run_id) and positive(artifact_id), "Invalid approved build run or artifact ID")
         else:
+            require(source_branch == "main", "Maintenance verification requires the approved build binding")
             run_id, artifact_id = build_artifact(
-                github, source, args.legacy_build_run, legacy=args.legacy_build_run is not None,
+                github, source, args.legacy_build_run, legacy=args.legacy_build_run is not None, source_branch=source_branch,
             )
         canonical = [asset for asset in release.asset_list(state["id"]) if asset["name"] == "collie.apk"]
         require(len(canonical) == 1, "Expected one published collie.apk")

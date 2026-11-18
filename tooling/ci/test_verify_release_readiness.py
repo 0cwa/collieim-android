@@ -9,7 +9,7 @@ REPO = "0cwa/collieim-android"
 
 def run_record(**changes):
     return {"id": 100, "run_attempt": 2, "path": gate.WORKFLOW_PATH,
-            "head_sha": SHA, "head_branch": "main", "event": "push",
+            "head_sha": SHA, "head_branch": "main", "event": "push", "workflow_id": gate.WORKFLOW_ID,
             "repository": {"full_name": REPO}, "head_repository": {"full_name": REPO},
             "status": "completed", "conclusion": "success", **changes}
 
@@ -42,7 +42,7 @@ class ReleaseReadinessTest(unittest.TestCase):
 
     def test_foreign_stale_or_untrusted_runs_cannot_authorize_release(self):
         for changes in ({"head_sha": "b" * 40}, {"event": "pull_request"},
-                        {"head_branch": "topic"}, {"path": ".github/workflows/other.yml"},
+                        {"head_branch": "topic"}, {"path": ".github/workflows/other.yml"}, {"workflow_id": 7},
                         {"repository": {"full_name": "other/repo"}},
                         {"head_repository": {"full_name": "fork/collieim-android"}}):
             with self.subTest(changes=changes), self.assertRaises(gate.Failure):
@@ -83,11 +83,80 @@ class ReleaseReadinessTest(unittest.TestCase):
                 gate.flatten_pages(invalid, "jobs")
 
     def test_rerun_during_verification_fails(self):
-        for latest in (run_record(run_attempt=3), run_record(id=101)):
+        for latest in (run_record(run_attempt=3), run_record(id=101), run_record(event="workflow_dispatch")):
             responses = iter([page("workflow_runs", [run_record()]), page("jobs", jobs()),
                               page("workflow_runs", [latest])])
             with self.subTest(latest=latest), self.assertRaises(gate.Failure):
                 gate.verify(REPO, SHA, reader=lambda *args, **kwargs: next(responses))
+
+    def test_stable_ref_has_no_wildcard_or_branch_fallback(self):
+        stable = gate.MAINTENANCE_BRANCH
+        stable_run = run_record(head_branch=stable, event="workflow_dispatch")
+        self.assertEqual(gate.select_run([run_record(), stable_run], REPO, SHA, stable), stable_run)
+        for branch in ("release/stable/8.36", "release/stable/*", "refs/heads/" + stable):
+            with self.subTest(branch=branch), self.assertRaises(gate.Failure):
+                gate.select_run([run_record(head_branch=branch)], REPO, SHA, branch)
+        with self.assertRaises(gate.Failure):
+            gate.select_run([run_record()], REPO, SHA, stable)
+
+    def test_job_without_attempt_cannot_authorize_release(self):
+        records = jobs()
+        records[0].pop("run_attempt")
+        with self.assertRaisesRegex(gate.Failure, "different run attempt"):
+            gate.verify_jobs(run_record(), records, SHA)
+
+    def test_maintenance_binding_compares_objects_and_protected_main_history(self):
+        policy = "b" * 40
+        live_main = "c" * 40
+        prefix = f"repos/{REPO}"
+        api_responses = {
+            f"{prefix}/git/ref/heads/main": {"object": {"sha": live_main}},
+            f"{prefix}/compare/{policy}...{live_main}": {"status": "ahead", "merge_base_commit": {"sha": policy}},
+        }
+        for number, commit in enumerate((SHA, policy), 1):
+            directories = {"": f"{number:040x}"}
+            api_responses[f"{prefix}/git/commits/{commit}"] = {"sha": commit, "tree": {"sha": directories[""]}}
+            by_parent = {"": []}
+            for index, path in enumerate(gate.TRUSTED_CI_PATHS, 20):
+                parts = path.split("/")
+                folder = ""
+                for part in parts[:-1]:
+                    child = f"{folder}/{part}" if folder else part
+                    if child not in directories:
+                        oid = f"{number * 100 + len(directories):040x}"
+                        directories[child] = oid
+                        by_parent[folder].append({"path": part, "mode": "040000", "type": "tree", "sha": oid})
+                        by_parent[child] = []
+                    folder = child
+                by_parent[folder].append({"path": parts[-1], "mode": "100644", "type": "blob", "sha": f"{index:040x}"})
+            for parent, values in by_parent.items():
+                oid = directories[parent]
+                api_responses[f"{prefix}/git/trees/{oid}"] = {"sha": oid, "truncated": False, "tree": values}
+            if commit == SHA:
+                candidate_workflow = by_parent[".github/workflows"][0]
+        calls = []
+
+        def reader(endpoint, **kwargs):
+            calls.append(endpoint)
+            if "/actions/runs?" in endpoint:
+                return page("workflow_runs", [run_record(head_branch=gate.MAINTENANCE_BRANCH)])
+            if "/attempts/2/jobs?" in endpoint:
+                return page("jobs", jobs())
+            return api_responses[endpoint]
+
+        result = gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
+        self.assertEqual((result["source_branch"], result["workflow_event"], result["trusted_main"]),
+                         (gate.MAINTENANCE_BRANCH, "push", policy))
+        candidate_workflow["sha"] = "d" * 40
+        calls.clear()
+        with self.assertRaisesRegex(gate.Failure, "differs from trusted main"):
+            gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
+        self.assertFalse(any("/actions/" in endpoint for endpoint in calls))
+        api_responses[f"{prefix}/compare/{policy}...{live_main}"]["status"] = "diverged"
+        with self.assertRaisesRegex(gate.Failure, "outside protected main"):
+            gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
+        with self.assertRaisesRegex(gate.Failure, "requires an immutable"):
+            gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader)
 
     def test_input_validation_precedes_api_calls(self):
         def forbidden(*args, **kwargs):

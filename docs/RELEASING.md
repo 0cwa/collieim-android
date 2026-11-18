@@ -11,12 +11,19 @@ numeric revision such as `-4`, and an optional `-alphaN`, `-betaN` or `-rcN`
 suffix. Development labels, custom suffixes and `+build` metadata cannot enter
 this publication path.
 
-1. **Prepare.** Merge a PR that sets `releaseVersionName` and `releaseVersionCode` in `gradle.properties` and adds `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (plain ASCII, at most 500 bytes), and add `distribution/release-notes/<version>.md` to `collie-release-engineering` main. The exact source commit must pass the existing main-branch test and production-build gate in `tooling/ci/verify_release_readiness.py`. These workflows do not authorize a maintenance branch.
+1. **Prepare.** Merge a PR that sets `releaseVersionName` and `releaseVersionCode` in `gradle.properties` and adds `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (plain ASCII, at most 500 bytes), and add `distribution/release-notes/<version>.md` to `collie-release-engineering` main. The exact source commit must pass `tooling/ci/verify_release_readiness.py` on `main` or the exact `release/stable/8.35` branch. The maintenance route requires the CI workflow and its verification inputs to match the trusted main revision. Pass the same source branch to prerelease publication and promotion, which both run on `main`.
 2. **Build, sign, upload.** On the maintainer machine run the release helper, `release/release.sh v<version> [--build-on local|github]`. It builds `origin/main` with `tooling/reproducible-builds/build-release.sh` (here, or on GitHub via `build-release.yml`), signs `collie.apk` with the APK key, tags with the publication key (`.github/release-signers`), uploads the APK to a draft release and starts `release.yml` on main.
 3. **Prerelease.** `release.yml` verifies the approved SSH-signed annotated tag, source version, production APK identity and certificate, exact-commit CI, and release notes. It uploads the four identical profile copies (`collie-foss`, `molly-continued`, `molly-foss-continued`, `molly-minimal`) and `publication.json` while the release is still a draft, then explicitly publishes a prerelease without changing Latest. It never replaces an existing asset or demotes a full release on retry.
 4. **Full release.** An independent rebuild must match the published APK first:
-   - built locally: `gh workflow run promote.yml --ref main -f tag=v<version>` verifies the publication record, rebuilds its exact source commit on GitHub, compares APK payloads with `apkdiff.py`, and rechecks the signed tag and every asset identity before explicitly making that same release full and Latest;
+   - built locally: `gh workflow run promote.yml --ref main -f tag=v<version> -f source_branch=<branch>` verifies the publication record, rebuilds its exact source commit on GitHub, compares APK payloads with `apkdiff.py`, and rechecks the signed tag and every asset identity before explicitly making that same release full and Latest;
    - built on GitHub: use the maintainer's independent local verification procedure, `release/verify-local.sh v<version>`. `promote.yml` refuses this build origin because a second GitHub build is not independent. The public workflow does not enforce or attest to the private verifier's implementation. Local builds use the machine's pinned JDK, SDK and NDK (`BUILD_MODE=host` in `build-release.sh`).
+
+Use `--source-branch release/stable/8.35 --trusted-main <full-main-sha>` when
+running the CI verifier locally for the maintenance branch. The verifier
+accepts only the owning repository's PR checks workflow on a push or manual
+run, and requires successful Unit tests, Unsigned production build and
+Security readiness jobs for the same SHA and attempt. The existing historical
+verify-only path still uses main.
 
 `collie-release-engineering` picks up full releases on its schedule and updates the F-Droid repo and Pages.
 

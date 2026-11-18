@@ -2,7 +2,7 @@ name: PR checks
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, release/stable/8.35]
   workflow_dispatch:
 permissions:
   contents: read

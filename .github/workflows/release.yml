@@ -24,6 +24,12 @@ on:
       legacy_build_run:
         description: Original build run ID for an older release (verify-only)
         type: string
+      source_branch:
+        description: Branch supplying the exact signed tag commit's CI evidence
+        type: choice
+        options: [main, release/stable/8.35]
+        default: main
+        required: true
 permissions:
   contents: read
   actions: read
@@ -32,6 +38,8 @@ concurrency:
   cancel-in-progress: false
 env:
   TAG: ${{ inputs.tag }}
+  SOURCE_BRANCH: ${{ inputs.source_branch }}
+  TRUSTED_MAIN: ${{ github.sha }}
   BUILT_ON: ${{ inputs.built_on }}
   GH_TOKEN: ${{ github.token }}
   GH_REPO: ${{ github.repository }}
@@ -76,10 +84,10 @@ jobs:
         run: |
           python3 tooling/ci/verify_release_readiness.py \
             --repository "$GH_REPO" --sha "$SOURCE_COMMIT" \
+            --source-branch "$SOURCE_BRANCH" --trusted-main "$TRUSTED_MAIN" \
             --report "$RUNNER_TEMP/release-evidence/ci.json"
       - name: Record the artifact from the approved production CI attempt
         id: bind-build
-        continue-on-error: true
         run: |
           python3 tooling/release/apk_evidence.py --ci-report "$RUNNER_TEMP/release-evidence/ci.json" \
             --github-output "$GITHUB_OUTPUT"
@@ -117,7 +125,7 @@ jobs:
     needs: [policy-tests, publish]
     if: >-
       !cancelled() && github.event_name == 'workflow_dispatch' &&
-      github.repository == '0cwa/collieim-android' &&
+      github.repository == '0cwa/collieim-android' && github.ref == 'refs/heads/main' &&
       (needs.publish.result == 'success' || (inputs.verify_only && needs.policy-tests.result == 'success'))
     runs-on: ubuntu-24.04
     permissions:
@@ -137,7 +145,7 @@ jobs:
         run: |
           bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           args=(--tag "$TAG" --scratch "$RUNNER_TEMP/verify-release" --build-tools "$bt"
-                --github-output "$GITHUB_OUTPUT")
+                --github-output "$GITHUB_OUTPUT" --source-branch "$SOURCE_BRANCH")
           if [[ "$VERIFY_ONLY" != true ]]; then
             if [[ -z "$BOUND_BUILD" || -z "$PUBLISHED_SHA256" ]]; then
               echo "::error::Publication could not bind the approved CI artifact and released APK"

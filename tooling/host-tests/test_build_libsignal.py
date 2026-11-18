@@ -57,6 +57,11 @@ class HostLibraryTests(unittest.TestCase):
             with self.assertRaisesRegex(builder.Failure, "unresolved"):
                 builder.validate_library(self.library)
 
+    def test_unresolved_dynamic_relocation_is_rejected(self):
+        with patch.object(builder, "run", return_value="undefined symbol: missing_symbol"):
+            with self.assertRaisesRegex(builder.Failure, "unresolved"):
+                builder.validate_library(self.library)
+
     def test_missing_production_exports_are_rejected(self):
         with patch.object(builder, "run", side_effect=["libc.so => /lib/libc.so", "0001 T JNI_OnLoad"]):
             with self.assertRaisesRegex(builder.Failure, "production JNI exports"):

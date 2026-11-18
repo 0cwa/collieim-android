@@ -1198,26 +1198,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
     bodyText.setOverflowText(null);
     bodyText.setMaxLength(-1);
 
-    if (messageRecord instanceof InMemoryMessageRecord.DeletedMessageTombstone) {
-      String          deletedMessage = context.getString(R.string.ConversationItem_delete_for_everyone_question);
-      SpannableString italics        = new SpannableString(deletedMessage);
-      italics.setSpan(new StyleSpan(android.graphics.Typeface.ITALIC), 0, deletedMessage.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-      int textColor = hasWallpaper ? colorizer.getOutgoingDeleteTextColor(context)
-                                   : ThemeUtil.getThemedColor(context, R.attr.signal_text_primary);
-      italics.setSpan(new ForegroundColorSpan(textColor),
-                      0,
-                      deletedMessage.length(),
-                      Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-      bodyText.setText(italics);
-      bodyText.setVisibility(View.VISIBLE);
-      bodyText.setOverflowText(null);
-      bodyText.setOnClickListener(v -> {
-        if (eventListener != null) {
-          eventListener.onInMemoryMessageClicked((InMemoryMessageRecord) messageRecord);
-        }
-      });
-    } else if (conversationMessage.getDeletedByRecipient() != null) {
+    if (conversationMessage.getDeletedByRecipient() != null) {
       bodyText.setText(getDeletedMessageText(conversationMessage, hasWallpaper));
       bodyText.setVisibility(View.VISIBLE);
       bodyText.setOverflowText(null);

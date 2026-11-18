@@ -86,6 +86,7 @@ import org.thoughtcrime.securesms.jobs.RefreshOwnProfileJob
 import org.thoughtcrime.securesms.jobs.RotateCertificateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.thoughtcrime.securesms.megaphone.SignalLoginReminderSchedule
 import org.thoughtcrime.securesms.megaphone.TwoFactorReminderSchedule
 import org.thoughtcrime.securesms.pin.SvrRepository
@@ -507,18 +508,21 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
 
         when (val result = LocalArchiver.import(snapshotFileSystem, selfData, messageBackupKey)) {
           is Result.Success -> {
-            AppDependencies.jobManager.add(LocalBackupRestoreMediaJob.create(rootUri))
-
-            // The entered recovery key decrypted the backup the user chose to restore, so it always becomes the
-            // account's AEP -- even if the backup was made by a different account.
+            // The entered recovery key becomes the AEP for the account that imported the backup.
             withRegistrationDataOperationLock {
-              UnifiedPushAccountTransition.withTransition {
+              val generation = synchronized(UnifiedPushLifecycle.monitor) {
+                check(SignalStore.account.aci == selfAci) { "Account changed during local backup restore" }
+                UnifiedPushLifecycle.currentGeneration()
+              }
+              UnifiedPushAccountTransition.withTransition(expectedGeneration = generation) {
+                check(SignalStore.account.aci == selfAci) { "Account changed during local backup restore" }
                 val aepChanged = adoptAccountEntropyPool(aep)
                 updateInProgressRegistrationDataWhileOperationLocked { this.accountEntropyPool = aep.value }
                 if (aepChanged) {
                   Log.i(TAG, "V2 restore changed the account's AEP. Refreshing state derived from the master key.")
                   BackupRepository.refreshMasterKeyDependents()
                 }
+                AppDependencies.jobManager.add(LocalBackupRestoreMediaJob.create(rootUri))
               }
             }
 
@@ -803,14 +807,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
    * overwrites the identity keys and AEP in [SignalStore.account] with the backup's. This puts back only that state.
    */
   private fun restoreCommittedAccountAfterV1Restore(inProgressData: RegistrationData, accountData: AccountData) {
-    val accountEntropyPool = inProgressData.accountEntropyPool.takeIf { it.isNotEmpty() }?.let { AccountEntropyPool(it) }
-    if (accountEntropyPool != null) {
-      if (accountData.linkedDeviceData != null) {
-        SignalStore.account.setAccountEntropyPoolFromPrimaryDevice(accountEntropyPool)
-      } else {
-        SignalStore.account.restoreAccountEntropyPool(accountEntropyPool)
-      }
-    }
+    applyAccountEntropyPool(inProgressData)
 
     val aci = ACI.parseOrThrow(accountData.aci)
     val pni = PNI.parseOrNull(accountData.pni)

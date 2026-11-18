@@ -9,6 +9,7 @@ import im.molly.unifiedpush.model.ConnectionResult
 import im.molly.unifiedpush.model.LinkStatus
 import im.molly.unifiedpush.model.MollySocketDevice
 import im.molly.unifiedpush.model.Response
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
@@ -40,6 +41,9 @@ import org.whispersystems.signalservice.api.push.SignalServiceAddress
 import org.whispersystems.signalservice.internal.push.DeviceLimitExceededException
 import java.io.IOException
 import java.net.MalformedURLException
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutionException
 
 object MollySocketRepository {
 
@@ -192,9 +196,10 @@ object MollySocketRepository {
     device: MollySocketDevice,
     endpoint: String,
     ping: Boolean = false,
+    accountId: String,
   ): ConnectionResult? {
     val requestData = ConnectionRequest(
-      uuid = SignalStore.account.requireAci().toString(),
+      uuid = accountId,
       deviceId = device.deviceId,
       password = device.password,
       endpoint = endpoint,
@@ -217,6 +222,65 @@ object MollySocketRepository {
       Log.d(TAG, "Status: $status")
 
       return status
+    }
+  }
+
+  /**
+   * Enqueues one credential request through the account handoff and keeps it registered through response parsing.
+   * [consume] must only parse the response. Its caller must separately guard publication against later rejection or
+   * account/route replacement; receiving a response does not authorize publishing it.
+   */
+  internal fun <T> executeBoundCall(
+    client: okhttp3.OkHttpClient,
+    request: Request,
+    handoff: UnifiedPushLifecycle.CredentialSendHandoff,
+    accountEpoch: Long,
+    validUnderLifecycleMonitor: () -> Boolean,
+    consume: (okhttp3.Response) -> T,
+  ): T? {
+    val result = CompletableFuture<okhttp3.Response>()
+    val callbackDelivered = CountDownLatch(1)
+    val call = client.newCall(request)
+    val tracked = object : UnifiedPushLifecycle.CredentialSendHandoff.Call {
+      override fun enqueue() {
+        call.enqueue(object : okhttp3.Callback {
+          override fun onFailure(call: okhttp3.Call, e: IOException) {
+            try { result.completeExceptionally(e) } finally { callbackDelivered.countDown() }
+          }
+          override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+            try { if (!result.complete(response)) response.close() } finally { callbackDelivered.countDown() }
+          }
+        })
+      }
+
+      override fun cancel() {
+        call.cancel()
+      }
+    }
+    if (!handoff.start(accountEpoch, tracked, validUnderLifecycleMonitor)) return null
+    try {
+      val response = try {
+        result.get()
+      } catch (e: InterruptedException) {
+        // A cancelled OkHttp call may still be queued or finishing on its dispatcher. Keep the
+        // handoff registered until its callback arrives, and close any response racing interruption.
+        result.whenComplete { response, _ -> response?.close() }
+        result.cancel(false)
+        call.cancel()
+        Thread.currentThread().interrupt()
+        throw IOException("Credential request was interrupted", e)
+      } catch (e: ExecutionException) {
+        throw (e.cause as? IOException ?: IOException("Credential request failed", e.cause))
+      }
+      return response.use(consume)
+    } finally {
+      // Completion of the future can wake this thread before the OkHttp callback has returned.
+      // Keep the call registered through callback delivery even if this thread is interrupted.
+      var interrupted = Thread.interrupted()
+      while (true) {
+        try { callbackDelivered.await(); break } catch (_: InterruptedException) { interrupted = true }
+      }
+      try { handoff.finish(tracked) } finally { if (interrupted) Thread.currentThread().interrupt() }
     }
   }
 }

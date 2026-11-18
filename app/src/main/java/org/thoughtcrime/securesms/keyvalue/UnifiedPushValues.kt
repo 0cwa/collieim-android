@@ -48,6 +48,9 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
     private const val UNIFIEDPUSH_RETRY_SCHEDULED = "up.retryScheduled"
     private const val UNIFIEDPUSH_LAST_RECEIVED_TIME = "up.lastRecvTime"
     const val UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING = "up.account.transition.pending"
+    private const val LINK_RESTORE_PENDING = "up.account.linkRestore.pending"
+    private const val ENDPOINT_TRANSITION_PENDING = "up.endpoint.transition.pending"
+    private const val ENDPOINT_APPLIED_TOKEN = "up.endpoint.transition.appliedToken"
   }
 
   public override fun onFirstEverAppLaunch() = Unit
@@ -99,6 +102,28 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
       .apply()
   }
 
+  val hasIncompleteEndpointTransition: Boolean get() = getBoolean(ENDPOINT_TRANSITION_PENDING, false)
+  val appliedEndpointToken: String? get() = getString(ENDPOINT_APPLIED_TOKEN, null)
+
+  /** Records relay-only recovery separately from the account-registration marker. */
+  fun setIncompleteEndpointTransition(pending: Boolean) {
+    store.beginWrite()
+      .putBoolean(ENDPOINT_TRANSITION_PENDING, pending)
+      .putString(ENDPOINT_APPLIED_TOKEN, null)
+      .commitAndWaitForPersistence()
+  }
+
+  /** Persist the complete tuple and its event identity before acknowledging the sealed pending record. */
+  fun setEndpointRegistrationDurably(endpoint: String?, p256dh: String?, auth: String?, instance: String?, token: String) {
+    store.beginWrite()
+      .putString(UNIFIEDPUSH_ENDPOINT, endpoint)
+      .putString(UNIFIEDPUSH_ENDPOINT_P256DH, p256dh)
+      .putString(UNIFIEDPUSH_ENDPOINT_AUTH, auth)
+      .putString(UNIFIEDPUSH_ENDPOINT_INSTANCE, instance)
+      .putString(ENDPOINT_APPLIED_TOKEN, token)
+      .commitAndWaitForPersistence()
+  }
+
   /**
    * Epoch of the encrypted enrollment the server has proven it imported (0: none). While it is set the receiver
    * accepts no plaintext wake. It is set only when an event proves it, never by an export.
@@ -131,6 +156,17 @@ class UnifiedPushValues(store: KeyValueStore) : SignalStoreValues(store) {
   /** Durable fail-closed marker for identity writes that may have stopped before coherent registration completed. */
   val hasIncompleteAccountTransition: Boolean
     get() = getBoolean(UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING, false)
+
+  /** A linked-device import can have changed local data and needs an explicit recovery route. */
+  val hasIncompleteLinkRestore: Boolean get() = getBoolean(LINK_RESTORE_PENDING, false)
+
+  /** The writer owns both markers; persist them together so startup cannot see a half-committed restore. */
+  fun setLinkRestoreTransition(pending: Boolean) {
+    store.beginWrite()
+      .putBoolean(UNIFIEDPUSH_ACCOUNT_TRANSITION_PENDING, pending)
+      .putBoolean(LINK_RESTORE_PENDING, pending)
+      .commitAndWaitForPersistence()
+  }
 
   /** Acknowledges the marker write before identity mutation or readiness publication. */
   fun setIncompleteAccountTransition(pending: Boolean) {

@@ -42,6 +42,9 @@ import org.thoughtcrime.securesms.service.KeyCachingService
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.thoughtcrime.securesms.testutil.SystemOutLogger
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, application = Application::class)
@@ -51,6 +54,7 @@ class UnifiedPushDisclosureRefreshJobTest {
   private val application: Application get() = ApplicationProvider.getApplicationContext()
   private val values = UnifiedPushValues(KeyValueStore(MockKeyValuePersistentStorage.withDataSet(KeyValueDataSet())))
   private var accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+  @Volatile private var unauthorized = false
   private val device = MollySocketDevice(2, "SYNTHETIC-RELAY-PASSWORD")
   private val relayUrl = "https://relay.example.invalid/"
   private val vapid = "fixture-vapid"
@@ -69,7 +73,7 @@ class UnifiedPushDisclosureRefreshJobTest {
     every { aci.toString() } answers { accountId }
     every { signalStore.account.aci } returns aci
     every { signalStore.account.isRegistered } returns true
-    every { signalStore.account.isUnauthorizedReceived } returns false
+    every { signalStore.account.isUnauthorizedReceived } answers { unauthorized }
     every { signalStore.account.hasAciIdentityKey() } returns true
     every { signalStore.account.servicePassword } returns "SYNTHETIC-SERVICE-PASSWORD"
     every { signalStore.account.deviceId } returns 1
@@ -87,7 +91,7 @@ class UnifiedPushDisclosureRefreshJobTest {
     every { UnifiedPushDistributor.registerApp(any()) } returns Unit
     every { UnifiedPushDistributor.checkIfActive() } returns true
     every { MollySocketRepository.getDeviceStatus(device) } returns LinkStatus.LINKED
-    every { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) } returns null
+    every { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any(), any()) } returns null
   }
 
   @After fun tearDown() {
@@ -97,7 +101,33 @@ class UnifiedPushDisclosureRefreshJobTest {
 
   @Test fun `authorized setup refresh registers only its selected relay`() {
     run(UnifiedPushRefreshJob(authorization()))
-    verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(match { it.toString() == relayUrl }, device, values.endpoint!!, false) }
+    verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(match { it.toString() == relayUrl }, device, values.endpoint!!, false, accountId) }
+  }
+
+  @Test fun `ordinary refresh does not admit an already rejected account`() {
+    unauthorized = true
+    val job = UnifiedPushRefreshJob().apply { setContext(application) }
+    assertTrue(runCatching { job.onRun() }.exceptionOrNull() is IOException)
+    verifyNoCredentialedWork()
+  }
+
+  @Test fun `an account rejected while refresh is in flight sends no credential`() {
+    val entered = CountDownLatch(1)
+    val resume = CountDownLatch(1)
+    every { MollySocketRepository.getDeviceStatus(device) } answers {
+      entered.countDown()
+      check(resume.await(5, TimeUnit.SECONDS))
+      LinkStatus.LINKED
+    }
+    val worker = thread { run(UnifiedPushRefreshJob(authorization())) }
+    try {
+      assertTrue(entered.await(5, TimeUnit.SECONDS))
+      unauthorized = true
+    } finally {
+      resume.countDown()
+      worker.join(5000)
+    }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any(), any()) }
   }
 
   @Test fun `queued setup for a previous account is dropped before any registration`() {
@@ -125,7 +155,7 @@ class UnifiedPushDisclosureRefreshJobTest {
     val job = UnifiedPushRefreshJob(authorization())
     UnifiedPushAccountTransition.withTransition { values.endpoint = "https://push.example.invalid/renewed" }
     run(job)
-    verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(any(), device, "https://push.example.invalid/renewed", false) }
+    verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(any(), device, "https://push.example.invalid/renewed", false, accountId) }
   }
 
   @Test fun `temporarily unready lifecycle retains the existing bounded job retry`() {
@@ -134,10 +164,10 @@ class UnifiedPushDisclosureRefreshJobTest {
     val failure = runCatching { job.onRun() }.exceptionOrNull()
     assertTrue(failure is IOException)
     assertTrue(job.onShouldRetry(failure as IOException))
-    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any(), any()) }
     UnifiedPushLifecycle.resetForTests()
     job.onRun()
-    verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+    verify(exactly = 1) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any(), any()) }
   }
 
   @Test fun `serialized setup keeps its binding without serializing a credential`() {
@@ -147,14 +177,14 @@ class UnifiedPushDisclosureRefreshJobTest {
     val restored = UnifiedPushRefreshJob.Factory().create(Job.Parameters.Builder().build(), bytes)
     values.mollySocketUrl = "https://replacement-relay.example.invalid"
     run(restored)
-    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any(), any()) }
   }
 
   @Test fun `existing background and legacy serialized refreshes continue without a prompt`() {
     run(UnifiedPushRefreshJob())
     val legacy = JsonJobData.Builder().putBoolean("ping", false).putBoolean("fromNewEndpoint", false).serialize()
     run(UnifiedPushRefreshJob.Factory().create(Job.Parameters.Builder().build(), legacy))
-    verify(exactly = 2) { MollySocketRepository.registerDeviceOnServer(any(), device, values.endpoint!!, false) }
+    verify(exactly = 2) { MollySocketRepository.registerDeviceOnServer(any(), device, values.endpoint!!, false, accountId) }
   }
 
   private fun run(job: UnifiedPushRefreshJob) {
@@ -167,7 +197,7 @@ class UnifiedPushDisclosureRefreshJobTest {
     verify(exactly = 0) { MollySocketRepository.getDeviceStatus(any()) }
     verify(exactly = 0) { MollySocketRepository.createDevice() }
     verify(exactly = 0) { MollySocketRepository.removeDevice(any()) }
-    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any(), any()) }
   }
 
   private fun authorization() = RelayDisclosure.RefreshAuthorization(

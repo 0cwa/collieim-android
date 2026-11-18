@@ -3,7 +3,6 @@ package im.molly.unifiedpush
 import android.app.Application
 import im.molly.unifiedpush.model.MollySocketDevice
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.unmockkObject
@@ -19,7 +18,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.signal.core.models.ServiceId
 import org.signal.core.util.logging.Log
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
@@ -40,9 +38,6 @@ class MollySocketRedirectTest {
     mockkObject(AppDependencies)
     mockkStatic(AppDependencies::class)
     every { AppDependencies.okHttpClient } returns OkHttpClient()
-    val aci = mockk<ServiceId.ACI>()
-    every { aci.toString() } returns "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
-    every { signalStore.account.requireAci() } returns aci
   }
 
   @After fun tearDown() {
@@ -65,14 +60,15 @@ class MollySocketRedirectTest {
                   if (line.isEmpty()) break
                   if (line.startsWith("Content-Length:", ignoreCase = true)) length = line.substringAfter(':').trim().toInt()
                 }
-                repeat(length) { check(input.read() >= 0) }
+                val body = CharArray(length) { input.read().also { check(it >= 0) }.toChar() }.concatToString()
+                check(body.contains("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"))
                 val reply = "HTTP/1.1 $code Redirect\r\nLocation: http://localhost:${target.localPort}/capture\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
                 socket.getOutputStream().write(reply.toByteArray())
               }
             } catch (t: Throwable) { failure.set(t) }
           }
           val sourceUrl = "http://127.0.0.1:${source.localPort}/relay".toHttpUrl()
-          val result = MollySocketRepository.registerDeviceOnServer(sourceUrl, MollySocketDevice(2, "synthetic-password"), "https://push.example.invalid")
+          val result = MollySocketRepository.registerDeviceOnServer(sourceUrl, MollySocketDevice(2, "synthetic-password"), "https://push.example.invalid", accountId = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
           assertNull(result)
           server.join(5000)
           assertEquals(false, server.isAlive)

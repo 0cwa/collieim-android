@@ -493,7 +493,7 @@ class UnifiedPushRefreshJobTest {
     assertEquals(created, storedDevice)
     assertEquals(RegistrationStatus.PENDING, unifiedPush.registrationStatus)
     verify(exactly = 1) { MollySocketRepository.createDevice() }
-    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any()) }
+    verify(exactly = 0) { MollySocketRepository.registerDeviceOnServer(any(), any(), any(), any(), any()) }
   }
 
   @Test

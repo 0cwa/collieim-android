@@ -9,12 +9,209 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * Orders UnifiedPush effects against account identity changes. The monitor is also the receiver's replay lock.
  * This object intentionally has no SignalStore or AppDependencies access; callers supply persistence and snapshots.
  */
 object UnifiedPushLifecycle {
+
+  /**
+   * Serializes credential-call admission with an account rejection. This is separate from structural
+   * leases: cleanup may still need those after credential sends have been stopped. Callers must bind
+   * [epoch] to the authenticated connection attempt and revalidate the route before starting a call.
+   * The start operation must only enqueue work; cancellation happens after the handoff lock is released.
+   */
+  internal class CredentialSendHandoff {
+    internal interface Call {
+      fun enqueue()
+      fun cancel()
+    }
+
+    class AccountLease<T : Any> internal constructor(
+      internal val owner: CredentialSendHandoff,
+      val epoch: Long,
+      val snapshot: T,
+    ) : AutoCloseable {
+      internal var closed = false
+      override fun close() = owner.releaseAccount(this)
+    }
+
+    private val lock = Any()
+    private var epoch: Long? = null
+    private var attempt: Long? = null
+    private var attemptRejected = false
+    private var changingAccount = false
+    private var admitted = false
+    private var accountReady = false
+    private var accountLeaseCount = 0
+    private var drain: CountDownLatch? = null
+    private var authorizationVersion = Any()
+    private val calls = LinkedHashMap<Call, Any>()
+
+    /** Close admission and cancel old calls; the owner must drain work before completing the change. */
+    fun beginAccountChange(newEpoch: Long) {
+      checkLockOrder()
+      val revoked = synchronized(lock) {
+        check(!changingAccount) { "Account ownership change is incomplete" }
+        require(newEpoch > 0 && (epoch == null || newEpoch > checkNotNull(epoch))) { "Account epoch must advance" }
+        val old = calls.keys.toList()
+        authorizationVersion = Any()
+        epoch = newEpoch
+        attempt = null
+        attemptRejected = false
+        admitted = false
+        accountReady = false
+        changingAccount = true
+        old
+      }
+      cancelAll(revoked)
+    }
+
+    /** Call only after old structural/account leases have drained and the new account is coherent. */
+    fun completeAccountChange(newEpoch: Long, allowSends: Boolean) {
+      checkLockOrder()
+      synchronized(lock) {
+        check(epoch == newEpoch && changingAccount && calls.isEmpty() && accountLeaseCount == 0) { "Old account work has not drained" }
+        admitted = allowSends
+        accountReady = true
+        changingAccount = false
+      }
+    }
+
+    /** Account callbacks remain available when only the push route is unavailable; capture must only read local state. */
+    fun <T : Any> acquireAccountLease(expectedEpoch: Long? = null, capture: () -> T?): AccountLease<T>? {
+      checkLockOrder()
+      return synchronized(lock) {
+        val currentEpoch = epoch
+        if (changingAccount || !accountReady || currentEpoch == null || (expectedEpoch != null && currentEpoch != expectedEpoch)) return@synchronized null
+        val snapshot = synchronized(monitor) { capture() } ?: return@synchronized null
+        accountLeaseCount++
+        AccountLease(this, currentEpoch, snapshot)
+      }
+    }
+
+    /** Wait outside both locks after closing account admission and cancelling old calls. */
+    @Throws(InterruptedException::class)
+    fun awaitAccountWorkDrained() {
+      checkLockOrder()
+      val signal = synchronized(lock) {
+        check(changingAccount) { "Account ownership is not changing" }
+        if (calls.isEmpty() && accountLeaseCount == 0) null else drain ?: CountDownLatch(1).also { drain = it }
+      }
+      signal?.await()
+    }
+
+    /** Register and enqueue under one handoff; [validUnderLifecycleMonitor] must be a short local check. */
+    fun start(expectedEpoch: Long, call: Call, validUnderLifecycleMonitor: () -> Boolean): Boolean {
+      checkLockOrder()
+      var enqueueFailure: Throwable? = null
+      val started = synchronized(lock) {
+        if (changingAccount || !admitted || epoch != expectedEpoch) return@synchronized false
+        val valid = synchronized(monitor) { validUnderLifecycleMonitor() }
+        if (!valid) return@synchronized false
+        check(!calls.containsKey(call)) { "Credential call already admitted" }
+        calls[call] = authorizationVersion
+        try {
+          call.enqueue()
+          true
+        } catch (failure: Throwable) {
+          // Enqueue failure alone does not prove the underlying call never started. Keep the
+          // cleanup token until its owner has evidence that the call is terminal.
+          admitted = false
+          enqueueFailure = failure
+          false
+        }
+      }
+      enqueueFailure?.let { failure ->
+        try { call.cancel() } catch (cancelFailure: Throwable) { failure.addSuppressed(cancelFailure) }
+        throw failure
+      }
+      return started
+    }
+
+    fun finish(call: Call) {
+      checkLockOrder()
+      synchronized(lock) { calls.remove(call); signalDrainedLocked() }
+    }
+
+    /** A revoked call stays stale after reauthorization. A later publication still needs atomic ownership. */
+    fun isCurrent(expectedEpoch: Long, call: Call, validUnderLifecycleMonitor: () -> Boolean): Boolean {
+      checkLockOrder()
+      return synchronized(lock) {
+        if (changingAccount || !admitted || epoch != expectedEpoch || calls[call] !== authorizationVersion) return@synchronized false
+        synchronized(monitor) { validUnderLifecycleMonitor() }
+      }
+    }
+
+    private fun releaseAccount(lease: AccountLease<*>) {
+      checkLockOrder()
+      synchronized(lock) {
+        if (lease.closed) return
+        lease.closed = true
+        accountLeaseCount--
+        check(accountLeaseCount >= 0)
+        signalDrainedLocked()
+      }
+    }
+
+    private fun signalDrainedLocked() {
+      if (calls.isEmpty() && accountLeaseCount == 0) {
+        drain?.countDown()
+        drain = null
+      }
+    }
+
+    /** Registers the particular connection attempt whose result may alter send authorization. */
+    fun beginAttempt(expectedEpoch: Long, attemptId: Long): Boolean {
+      checkLockOrder()
+      return synchronized(lock) {
+        if (changingAccount || epoch != expectedEpoch || attemptId <= 0 || (attempt != null && attemptId <= checkNotNull(attempt))) return@synchronized false
+        attempt = attemptId
+        attemptRejected = false
+        true
+      }
+    }
+
+    fun authorize(expectedEpoch: Long, attemptId: Long): Boolean {
+      checkLockOrder()
+      return synchronized(lock) {
+        if (changingAccount || epoch != expectedEpoch || attempt != attemptId || attemptRejected) return@synchronized false
+        admitted = true
+        true
+      }
+    }
+
+    /** A stale connection result must never revoke a successor account or connection attempt. */
+    fun reject(expectedEpoch: Long, attemptId: Long): Boolean {
+      checkLockOrder()
+      val revoked = synchronized(lock) {
+        if (changingAccount || epoch != expectedEpoch || attempt != attemptId || attemptRejected) return false
+        attemptRejected = true
+        admitted = false
+        authorizationVersion = Any()
+        calls.keys.toList()
+      }
+      cancelAll(revoked)
+      return true
+    }
+
+    private fun cancelAll(revoked: List<Call>) {
+      var firstFailure: Throwable? = null
+      revoked.forEach { call ->
+        try { call.cancel() } catch (failure: Throwable) {
+          if (firstFailure == null) firstFailure = failure else firstFailure?.addSuppressed(failure)
+        }
+      }
+      firstFailure?.let { throw it }
+    }
+
+    private fun checkLockOrder() {
+      check(!Thread.holdsLock(monitor)) { "Credential handoff must precede the lifecycle monitor" }
+    }
+  }
 
   @JvmField
   val monitor = Any()
@@ -27,6 +224,8 @@ object UnifiedPushLifecycle {
   private var generation = 0L
   private var transitionGeneration: Long? = null
   private var invalidationPending = false
+  private var pendingEndpointToken: String? = null
+  private var consumedEndpointToken: String? = null
   private var leaseCount = 0
   private var drainSignal: CountDownLatch? = null
   private val pendingFetchAdmissions = LinkedHashSet<FetchAdmission>()
@@ -36,6 +235,33 @@ object UnifiedPushLifecycle {
     val generation: Long,
     val inheritedIncompleteMarker: Boolean,
   )
+
+  internal class WriterReservation internal constructor(val generation: Long) : AutoCloseable {
+    // 0 reserved, 1 claimed, 2 close requested while claimed, 3 released.
+    private val state = AtomicInteger(0)
+    internal fun claim() {
+      check(state.compareAndSet(0, 1)) { "UnifiedPush writer reservation already used or released" }
+    }
+    internal fun finishClaim() {
+      while (true) {
+        val current = state.get()
+        check(current == 1 || current == 2) { "UnifiedPush writer claim is not active" }
+        if (state.compareAndSet(current, 3)) {
+          transitionWriter.release()
+          return
+        }
+      }
+    }
+    override fun close() {
+      while (true) {
+        when (state.get()) {
+          0 -> if (state.compareAndSet(0, 3)) { transitionWriter.release(); return }
+          1 -> if (state.compareAndSet(1, 2)) return
+          else -> return
+        }
+      }
+    }
+  }
 
   class Lease<T : Any> internal constructor(
     internal val owner: UnifiedPushLifecycle,
@@ -97,17 +323,20 @@ object UnifiedPushLifecycle {
   data class TransitionResult<T>(
     val value: T,
     val generation: Long,
+    val retainedMarker: Boolean,
   )
 
   /** Called after SignalStore initialization and before startup jobs or push work can run. */
   @JvmStatic
-  fun initialize(incompleteTransition: Boolean, legacyContextIsCoherent: Boolean) {
+  fun initialize(incompleteTransition: Boolean, legacyContextIsCoherent: Boolean, pendingEndpoint: String? = null) {
     synchronized(monitor) {
       check(leaseCount == 0 && transitionGeneration == null) { "Cannot initialize UnifiedPush lifecycle while work is active" }
       initialized = true
       generation = nextGeneration(generation)
-      invalidationPending = false
-      ready = !incompleteTransition && legacyContextIsCoherent
+      invalidationPending = pendingEndpoint != null
+      pendingEndpointToken = pendingEndpoint
+      consumedEndpointToken = null
+      ready = !incompleteTransition && legacyContextIsCoherent && pendingEndpoint == null
     }
   }
 
@@ -239,6 +468,16 @@ object UnifiedPushLifecycle {
 
   fun isReady(): Boolean = synchronized(monitor) { isReadyLocked() }
 
+  /** Inspect durable transition state after any current writer has finished, without starting a transition. */
+  internal suspend fun <T> readAfterTransitions(read: () -> T): T = withContext(NonCancellable + Dispatchers.IO) {
+    transitionWriter.acquire()
+    try {
+      read()
+    } finally {
+      transitionWriter.release()
+    }
+  }
+
   /** Must be called from inside [monitor]. */
   fun isReadyLocked(): Boolean {
     check(Thread.holdsLock(monitor))
@@ -254,6 +493,21 @@ object UnifiedPushLifecycle {
     revokeFetchAdmissionsForTransitionLocked()
   }
 
+  /** Every accepted endpoint event gets an opaque token, including identical tuples. */
+  internal fun noteEndpointPendingLocked(token: String) {
+    check(Thread.holdsLock(monitor))
+    require(token.isNotEmpty())
+    pendingEndpointToken = token
+    invalidateLocked()
+  }
+
+  /** Called only after the exact pending record was durably applied and conditionally removed. */
+  internal fun noteEndpointConsumedLocked(token: String) {
+    check(Thread.holdsLock(monitor))
+    check(transitionGeneration != null)
+    consumedEndpointToken = token
+  }
+
   fun hasPendingInvalidationLocked(): Boolean {
     check(Thread.holdsLock(monitor))
     return invalidationPending
@@ -261,13 +515,30 @@ object UnifiedPushLifecycle {
 
   fun currentGeneration(): Long = synchronized(monitor) { generation }
 
+  /** Reserve the writer without waiting while a lease is still held; callers release that lease before draining. */
+  internal fun reserveTransitionForLeaseLocked(lease: Lease<*>): WriterReservation? {
+    check(Thread.holdsLock(monitor))
+    if (!isReadyLocked() || lease.closed || lease.generation != generation) return null
+    val next = nextGeneration(generation)
+    if (!transitionWriter.tryAcquire()) return null
+    try {
+      generation = next
+      ready = false
+      revokeFetchAdmissionsForTransitionLocked()
+      return WriterReservation(generation)
+    } catch (failure: Throwable) {
+      transitionWriter.release()
+      throw failure
+    }
+  }
+
   fun processInstanceId(): String = processInstanceId
 
   /**
-   * Marks push work unavailable, durably records the incomplete transition, drains old account-credentialed work,
-   * then runs the mutation without holding [monitor]. Any exception leaves the lifecycle unavailable and leaves the
-   * durable marker set. A caller that intentionally stages registration can retain that marker with
-   * [keepIncompleteMarker].
+   * Closes push admission, attempts to persist the incomplete transition, drains old work, and runs the mutation
+   * without holding [monitor]. Exceptions leave this process unavailable. A durable marker cannot be guaranteed
+   * if persistence fails, including when a failed clear cannot be repaired; callers must handle that indeterminate
+   * recovery state. A caller staging registration can retain a successfully persisted marker with [keepIncompleteMarker].
    */
   suspend fun <T> withTransition(
     hasIncompleteMarker: () -> Boolean = { false },
@@ -277,6 +548,8 @@ object UnifiedPushLifecycle {
     keepIncompleteMarker: Boolean = false,
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
+    retainMarkerWhenNotReady: Boolean = false,
+    commitReceipt: AtomicReference<T?>? = null,
     afterTransitionStarted: () -> Unit = {},
     block: suspend () -> T,
   ): T = withTransitionAndGeneration(
@@ -287,6 +560,8 @@ object UnifiedPushLifecycle {
     keepIncompleteMarker = keepIncompleteMarker,
     completesAccountRegistration = completesAccountRegistration,
     completesInvalidation = completesInvalidation,
+    retainMarkerWhenNotReady = retainMarkerWhenNotReady,
+    commitReceipt = commitReceipt,
     afterTransitionStarted = afterTransitionStarted,
     block = block,
   ).value
@@ -296,7 +571,7 @@ object UnifiedPushLifecycle {
    * later reacquire work only for this result; reading [currentGeneration] after return could instead
    * authorize the operation under a competing account transition.
    */
-  suspend fun <T> withTransitionAndGeneration(
+  internal suspend fun <T> withTransitionAndGeneration(
     hasIncompleteMarker: () -> Boolean = { false },
     persistIncompleteMarker: (Boolean) -> Unit,
     readyAfter: () -> Boolean,
@@ -304,41 +579,102 @@ object UnifiedPushLifecycle {
     keepIncompleteMarker: Boolean = false,
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
+    retainMarkerWhenNotReady: Boolean = false,
+    commitReceipt: AtomicReference<T?>? = null,
     afterTransitionStarted: () -> Unit = {},
+    beforeWriterRelease: () -> Unit = {},
+    writerReservation: WriterReservation? = null,
+    requireCleanMarker: Boolean = false,
     block: suspend () -> T,
   ): TransitionResult<T> {
     require(!keepIncompleteMarker || !completesAccountRegistration) {
       "A transition cannot both retain the incomplete marker and complete registration"
     }
+    require(writerReservation == null || expectedGeneration == writerReservation.generation) {
+      "Reserved writer must use its own generation"
+    }
 
     var ownership: TransitionOwnership? = null
+    var reservationClaimed = false
+    var transitionFailure: Throwable? = null
+    var transitionPublished = false
     try {
       // Store ownership before leaving NonCancellable. withContext has a prompt cancellation guarantee when
       // dispatching back to the caller; cancellation there must still reach cleanup with the acquired token.
       withContext(NonCancellable + Dispatchers.IO) {
-        ownership = beginTransition(hasIncompleteMarker, persistIncompleteMarker, expectedGeneration, afterTransitionStarted)
+        writerReservation?.let { it.claim(); reservationClaimed = true }
+        ownership = beginTransition(hasIncompleteMarker, persistIncompleteMarker, expectedGeneration, afterTransitionStarted, beforeWriterRelease, writerReservation != null, requireCleanMarker)
       }
       val token = checkNotNull(ownership)
       val result = block()
+      var retainedMarker = false
       if (keepIncompleteMarker) {
-        finishTransition(token, readyAfter = false, completesInvalidation = false)
+        retainedMarker = true
+        withContext(NonCancellable + Dispatchers.IO) {
+          beforeWriterRelease()
+          finishTransition(token, readyAfter = false, completesInvalidation = false)
+          transitionPublished = true
+          commitReceipt?.set(result)
+        }
       } else {
         val canStartPushWork = readyAfter()
         val preserveInheritedMarker = token.inheritedIncompleteMarker && !completesAccountRegistration
         val incompleteFullRegistration = completesAccountRegistration && !canStartPushWork
-        if (preserveInheritedMarker || incompleteFullRegistration) {
-          finishTransition(token, readyAfter = false, completesInvalidation = false)
+        val incompleteOwnedOperation = retainMarkerWhenNotReady && !canStartPushWork
+        if (preserveInheritedMarker || incompleteFullRegistration || incompleteOwnedOperation) {
+          retainedMarker = true
+          withContext(NonCancellable + Dispatchers.IO) {
+            beforeWriterRelease()
+            finishTransition(token, readyAfter = false, completesInvalidation = false)
+            transitionPublished = true
+            commitReceipt?.set(result)
+          }
         } else {
-          withContext(NonCancellable + Dispatchers.IO) { persistIncompleteMarker(false) }
-          finishTransition(token, canStartPushWork, completesInvalidation || completesAccountRegistration)
+          // The durable marker and in-memory publication are one non-cancellable commit point.
+          // Otherwise prompt cancellation after the write could leave disk open while memory fails closed.
+          withContext(NonCancellable + Dispatchers.IO) {
+            try {
+              persistIncompleteMarker(false)
+              beforeWriterRelease()
+              finishTransition(token, canStartPushWork, completesInvalidation || completesAccountRegistration)
+              transitionPublished = true
+              commitReceipt?.set(result)
+            } catch (failure: Throwable) {
+              // A persistence failure may have happened after the write reached disk. Attempt to
+              // restore the closed marker before allowing this failed owner to release the writer.
+              try {
+                persistIncompleteMarker(true)
+              } catch (repairFailure: Throwable) {
+                if (repairFailure !== failure) failure.addSuppressed(repairFailure)
+              }
+              throw failure
+            }
+          }
         }
       }
-      return TransitionResult(result, token.generation)
+      return TransitionResult(result, token.generation, retainedMarker)
     } catch (failure: Throwable) {
+      transitionFailure = failure
       ownership?.let(::failTransition)
       throw failure
     } finally {
-      if (ownership != null) transitionWriter.release()
+      try {
+        if (ownership != null && !transitionPublished) withContext(NonCancellable) {
+          withContext(Dispatchers.IO) { beforeWriterRelease() }
+        }
+      } catch (cleanupFailure: Throwable) {
+        // The writer is held and this transition has not published readiness.
+        synchronized(monitor) { ready = false }
+        ownership?.let(::failTransition)
+        if (transitionFailure != null) {
+          if (cleanupFailure !== transitionFailure) transitionFailure.addSuppressed(cleanupFailure)
+        } else {
+          throw cleanupFailure
+        }
+      } finally {
+        if (reservationClaimed) checkNotNull(writerReservation).finishClaim()
+        else if (ownership != null && writerReservation == null) transitionWriter.release()
+      }
     }
   }
 
@@ -347,11 +683,15 @@ object UnifiedPushLifecycle {
     persistIncompleteMarker: (Boolean) -> Unit,
     expectedGeneration: Long?,
     afterTransitionStarted: () -> Unit,
+    beforeWriterRelease: () -> Unit,
+    writerReserved: Boolean,
+    requireCleanMarker: Boolean,
   ): TransitionOwnership {
-    transitionWriter.acquire()
+    if (!writerReserved) transitionWriter.acquire()
     var token: TransitionOwnership? = null
     try {
       val inheritedIncompleteMarker = hasIncompleteMarker()
+      if (requireCleanMarker && inheritedIncompleteMarker) throw IncompleteAccountTransitionException()
       val drain = synchronized(monitor) {
         if (expectedGeneration != null && generation != expectedGeneration) {
           throw StaleLifecycleGenerationException()
@@ -361,6 +701,7 @@ object UnifiedPushLifecycle {
         initialized = true
         ready = false
         transitionGeneration = next
+        consumedEndpointToken = null
         token = TransitionOwnership(next, inheritedIncompleteMarker)
         revokeFetchAdmissionsForTransitionLocked()
         if (leaseCount == 0) null else CountDownLatch(1).also { drainSignal = it }
@@ -368,14 +709,27 @@ object UnifiedPushLifecycle {
 
       try {
         persistIncompleteMarker(true)
-      } finally {
-        afterTransitionStarted()
+      } catch (persistenceFailure: Throwable) {
+        try {
+          afterTransitionStarted()
+        } catch (notificationFailure: Throwable) {
+          if (notificationFailure !== persistenceFailure) persistenceFailure.addSuppressed(notificationFailure)
+        }
+        throw persistenceFailure
       }
+      afterTransitionStarted()
       drain?.await()
       return checkNotNull(token)
     } catch (failure: Throwable) {
       token?.let(::failTransition)
-      transitionWriter.release()
+      if (token != null) {
+        try {
+          beforeWriterRelease()
+        } catch (cleanupFailure: Throwable) {
+          if (cleanupFailure !== failure) failure.addSuppressed(cleanupFailure)
+        }
+      }
+      if (!writerReserved) transitionWriter.release()
       throw failure
     }
   }
@@ -394,7 +748,11 @@ object UnifiedPushLifecycle {
   private fun finishTransition(token: TransitionOwnership, readyAfter: Boolean, completesInvalidation: Boolean) {
     synchronized(monitor) {
       check(transitionGeneration == token.generation) { "UnifiedPush lifecycle transition ownership changed" }
-      if (completesInvalidation && readyAfter) invalidationPending = false
+      if (completesInvalidation && readyAfter && (pendingEndpointToken == null || consumedEndpointToken == pendingEndpointToken)) {
+        invalidationPending = false
+        pendingEndpointToken = null
+      }
+      consumedEndpointToken = null
       transitionGeneration = null
       ready = readyAfter && !invalidationPending
     }
@@ -435,6 +793,8 @@ object UnifiedPushLifecycle {
       ready = initiallyReady
       generation = 1
       invalidationPending = false
+      pendingEndpointToken = null
+      consumedEndpointToken = null
       drainSignal = null
       pendingFetchAdmissions.clear()
       activeFetchAdmissions.clear()
@@ -442,4 +802,6 @@ object UnifiedPushLifecycle {
   }
 
   class StaleLifecycleGenerationException : IllegalStateException("Account context changed before the transition could commit")
+
+  class IncompleteAccountTransitionException : IllegalStateException("Account registration is incomplete")
 }

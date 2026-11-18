@@ -7,9 +7,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import java.util.concurrent.Callable
+import java.util.concurrent.atomic.AtomicReference
 import org.signal.core.util.concurrent.SignalExecutors
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import im.molly.unifiedpush.receiver.UnifiedPushReceiver
+import im.molly.unifiedpush.receiver.LockedPushState
+import android.content.Context
 
 /** SignalStore-facing setup for the dependency-free lifecycle coordinator. */
 object UnifiedPushAccountTransition {
@@ -41,51 +44,100 @@ object UnifiedPushAccountTransition {
 
   /** Legacy stores have no transition marker. They remain usable only when registered identity and credentials agree. */
   @JvmStatic
-  fun initializeFromSignalStore() {
+  fun initializeFromSignalStore(context: Context) {
     val values = SignalStore.unifiedpush
-    val marker = values.hasIncompleteAccountTransition
-    UnifiedPushLifecycle.initialize(
-      incompleteTransition = marker,
-      legacyContextIsCoherent = !marker && hasCoherentRegisteredContext(),
-    )
+    val marker = values.hasIncompleteAccountTransition || values.hasIncompleteLinkRestore
+    LockedPushState.withPendingLock {
+      val pending = when {
+        // Startup is on the main thread. Do not wait for the Keystore here; the recovery worker
+        // will read and associate the actual event token before it can acknowledge this barrier.
+        LockedPushState.hasPending(context) -> "pending-endpoint-at-startup"
+        values.hasIncompleteEndpointTransition -> "incomplete-endpoint-transition"
+        else -> null
+      }
+      UnifiedPushLifecycle.initialize(
+        incompleteTransition = marker,
+        legacyContextIsCoherent = !marker && hasCoherentRegisteredContext(),
+        pendingEndpoint = pending,
+      )
+    }
   }
 
   suspend fun <T> withTransition(
     expectedGeneration: Long? = null,
     keepIncompleteMarker: Boolean = false,
+    linkRestore: Boolean = false,
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
+    retainMarkerWhenNotReady: Boolean = false,
+    commitReceipt: AtomicReference<T?>? = null,
     readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
     block: suspend () -> T,
   ): T = withTransitionAndGeneration(
     expectedGeneration = expectedGeneration,
     keepIncompleteMarker = keepIncompleteMarker,
+    linkRestore = linkRestore,
     completesAccountRegistration = completesAccountRegistration,
     completesInvalidation = completesInvalidation,
+    retainMarkerWhenNotReady = retainMarkerWhenNotReady,
+    commitReceipt = commitReceipt,
     readyAfter = readyAfter,
     block = block,
   ).value
 
   /** Runs a transition and returns the generation owned by that transition, not a later global sample. */
-  suspend fun <T> withTransitionAndGeneration(
+  internal suspend fun <T> withTransitionAndGeneration(
     expectedGeneration: Long? = null,
     keepIncompleteMarker: Boolean = false,
+    linkRestore: Boolean = false,
     completesAccountRegistration: Boolean = false,
     completesInvalidation: Boolean = false,
+    writerReservation: UnifiedPushLifecycle.WriterReservation? = null,
+    requireCleanMarker: Boolean = false,
+    retainMarkerWhenNotReady: Boolean = false,
+    commitReceipt: AtomicReference<T?>? = null,
     readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
     block: suspend () -> T,
   ): UnifiedPushLifecycle.TransitionResult<T> {
+    var markerStore: UnifiedPushValues? = null
     val result = UnifiedPushLifecycle.withTransitionAndGeneration(
-      hasIncompleteMarker = SignalStore.unifiedpush::hasIncompleteAccountTransition,
-      persistIncompleteMarker = SignalStore.unifiedpush::setIncompleteAccountTransition,
+      hasIncompleteMarker = {
+        SignalStore.unifiedpush.also { markerStore = it }.let { it.hasIncompleteAccountTransition || it.hasIncompleteLinkRestore }
+      },
+      persistIncompleteMarker = { pending ->
+        // A replacement store is not evidence that this transition owns its marker. Keep the
+        // current store closed and fail; account-bound durable ownership is still required.
+        val current = SignalStore.unifiedpush
+        if (!pending && current !== markerStore) {
+          if (linkRestore) current.setLinkRestoreTransition(true) else current.setIncompleteAccountTransition(true)
+          throw IllegalStateException("Account marker store changed during transition")
+        }
+        if (!linkRestore && !pending && current.hasIncompleteLinkRestore) {
+          current.setIncompleteAccountTransition(true)
+          throw IllegalStateException("An interrupted linked-device restore still requires recovery")
+        }
+        if (linkRestore) current.setLinkRestoreTransition(pending) else current.setIncompleteAccountTransition(pending)
+      },
       readyAfter = readyAfter,
       expectedGeneration = expectedGeneration,
       keepIncompleteMarker = keepIncompleteMarker,
       completesAccountRegistration = completesAccountRegistration,
       completesInvalidation = completesInvalidation,
+      writerReservation = writerReservation,
+      requireCleanMarker = requireCleanMarker || linkRestore,
+      retainMarkerWhenNotReady = retainMarkerWhenNotReady,
+      commitReceipt = commitReceipt,
       afterTransitionStarted = {
         if (AppDependencies.isInitialized) {
           AppDependencies.incomingMessageObserver.notifyUnifiedPushFetchStateChanged()
+        }
+      },
+      beforeWriterRelease = {
+        val original = markerStore
+        val current = SignalStore.unifiedpush
+        if (original != null && current !== original) {
+          if (linkRestore) current.setLinkRestoreTransition(true) else current.setIncompleteAccountTransition(true)
+          throw IllegalStateException("Account marker store changed during transition")
         }
       },
       block = block,
@@ -215,17 +267,44 @@ object UnifiedPushAccountTransition {
     return SignalStore.account.isRegistered
   }
 
+  /** An active writer's marker is not evidence of an abandoned restore. */
+  suspend fun isLinkRestoreRecoveryRequired(): Boolean = UnifiedPushLifecycle.readAfterTransitions {
+    SignalStore.unifiedpush.let { it.hasIncompleteLinkRestore || it.hasIncompleteAccountTransition }
+  }
+
   @JvmStatic
   fun <T> withTransitionBlocking(
     keepIncompleteMarker: Boolean = false,
+    linkRestore: Boolean = false,
     completesInvalidation: Boolean = false,
     expectedGeneration: Long? = null,
+    retainMarkerWhenNotReady: Boolean = false,
+    commitReceipt: AtomicReference<T?>? = null,
+    readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
     block: () -> T,
-  ): T = runBlocking {
-    withTransition(
+  ): T = withTransitionBlockingResult(
+    keepIncompleteMarker, linkRestore, completesInvalidation, expectedGeneration,
+    retainMarkerWhenNotReady, commitReceipt, readyAfter, block
+  ).value
+
+  internal fun <T> withTransitionBlockingResult(
+    keepIncompleteMarker: Boolean = false,
+    linkRestore: Boolean = false,
+    completesInvalidation: Boolean = false,
+    expectedGeneration: Long? = null,
+    retainMarkerWhenNotReady: Boolean = false,
+    commitReceipt: AtomicReference<T?>? = null,
+    readyAfter: () -> Boolean = ::hasCoherentRegisteredContext,
+    block: () -> T,
+  ): UnifiedPushLifecycle.TransitionResult<T> = runBlocking {
+    withTransitionAndGeneration(
       keepIncompleteMarker = keepIncompleteMarker,
+      linkRestore = linkRestore,
       completesInvalidation = completesInvalidation,
       expectedGeneration = expectedGeneration,
+      retainMarkerWhenNotReady = retainMarkerWhenNotReady,
+      commitReceipt = commitReceipt,
+      readyAfter = readyAfter,
     ) { block() }
   }
 

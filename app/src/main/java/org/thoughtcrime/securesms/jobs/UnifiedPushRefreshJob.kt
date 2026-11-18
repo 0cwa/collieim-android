@@ -204,6 +204,7 @@ class UnifiedPushRefreshJob private constructor(
       device = device,
       endpoint = endpoint,
       ping = testPing,
+      accountId = lease.snapshot.accountId,
     )
 
     Log.d(TAG, "Registration result: $result")
@@ -280,42 +281,38 @@ class UnifiedPushRefreshJob private constructor(
     return clearDevice(device, lease)
   }
 
-  /**
-   * Close admission before dropping this job's lease, then enter the serialized transition with the
-   * generation observed at invalidation. If another transition won the writer first, this one fails
-   * stale instead of waiting for a transition that is itself draining our lease.
-   */
+  /** Reserve the writer before dropping the lease so another transition cannot take its invalidation. */
   internal fun clearDevice(device: MollySocketDevice, lease: UnifiedPushLifecycle.Lease<UnifiedPushAccountTransition.AccountContext>): Long? {
-    val expectedGeneration = synchronized(UnifiedPushLifecycle.monitor) {
-      if (!UnifiedPushLifecycle.isReadyLocked() || UnifiedPushLifecycle.currentGeneration() != lease.generation ||
-        !UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) || SignalStore.unifiedpush.device != device) {
-        null
-      } else {
-        UnifiedPushLifecycle.invalidateLocked()
-        UnifiedPushLifecycle.currentGeneration()
+    var reservation: UnifiedPushLifecycle.WriterReservation? = null
+    try {
+      synchronized(UnifiedPushLifecycle.monitor) {
+        if (UnifiedPushLifecycle.isReadyLocked() && UnifiedPushLifecycle.currentGeneration() == lease.generation &&
+          UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) && SignalStore.unifiedpush.device == device) {
+          reservation = UnifiedPushLifecycle.reserveTransitionForLeaseLocked(lease)
+        }
       }
-    }
-    lease.close()
-    if (expectedGeneration == null) return null
-
-    var cleared = false
-    val transition = runBlocking {
-      UnifiedPushAccountTransition.withTransitionAndGeneration(
-      expectedGeneration = expectedGeneration,
-      completesInvalidation = true,
-      ) {
-        synchronized(UnifiedPushLifecycle.monitor) {
-          if (UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) && SignalStore.unifiedpush.device == device) {
-            SignalStore.unifiedpush.device = null
-            // Stop dispatching a frame addressed to the removed device while retaining keys, replay, import sequence,
-            // and every pending import identity that an old file can still satisfy.
-            SignalStore.unifiedpush.mutateControl { it.copy(update = null) }
-            cleared = true
+      lease.close()
+      val owned = reservation ?: return null
+      var cleared = false
+      val transition = runBlocking {
+        UnifiedPushAccountTransition.withTransitionAndGeneration(
+          expectedGeneration = owned.generation,
+          writerReservation = owned,
+        ) {
+          synchronized(UnifiedPushLifecycle.monitor) {
+            if (UnifiedPushAccountTransition.accountAndLocalDeviceMatchLocked(lease.snapshot) && SignalStore.unifiedpush.device == device) {
+              SignalStore.unifiedpush.device = null
+              // Preserve keys, replay and pending imports while dropping an update for the removed device.
+              SignalStore.unifiedpush.mutateControl { it.copy(update = null) }
+              cleared = true
+            }
           }
         }
       }
+      return if (cleared) transition.generation else null
+    } finally {
+      reservation?.close()
     }
-    return if (cleared) transition.generation else null
   }
 
   override fun onFailure() = Unit

@@ -3,6 +3,7 @@ package im.molly.unifiedpush.receiver
 import android.content.Context
 import org.signal.core.util.crypto.KeyStoreHelper
 import org.signal.core.util.logging.Log
+import java.security.MessageDigest
 
 /**
  * The two pieces of push state the receiver needs while the app is locked, when SignalStore cannot be read:
@@ -17,9 +18,64 @@ object LockedPushState {
   private const val PENDING = "pending_endpoint"
   private const val PUSH_ARRIVED = "last_push_arrived"
   private const val SEPARATOR = '\n'
+  private val pendingLock = Any()
 
   /** A null URL is the persisted unregister tombstone used while account state is locked or transitioning. */
   data class Endpoint(val url: String?, val p256dh: String?, val auth: String?, val instance: String)
+  internal data class PendingEndpoint(val token: String, val endpoint: Endpoint)
+
+  /** Orders durable pending-record writes and conditional acknowledgement without the lifecycle monitor. */
+  internal fun <T> withPendingLock(block: () -> T): T = synchronized(pendingLock, block)
+
+  internal fun hasPending(context: Context): Boolean = withPendingLock {
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).contains(PENDING)
+  }
+
+  internal fun savePendingVersioned(context: Context, token: String, endpoint: Endpoint): Boolean = withPendingLock {
+    try {
+      require(token.isNotEmpty() && SEPARATOR !in token)
+      val fields = listOf(token, endpoint.url.orEmpty(), endpoint.p256dh.orEmpty(), endpoint.auth.orEmpty(), endpoint.instance)
+      require(endpoint.instance.isNotEmpty() && fields.none { SEPARATOR in it })
+      val sealed = KeyStoreHelper.seal(fields.joinToString(SEPARATOR.toString()).toByteArray(Charsets.UTF_8))
+      context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(PENDING, sealed.serialize()).commit()
+    } catch (e: Exception) {
+      Log.w(TAG, "Could not keep the endpoint received while locked.", e)
+      false
+    } catch (e: AssertionError) {
+      // The Keystore helper can wrap cryptographic and serialization failures in AssertionError.
+      if (e.cause is InterruptedException) Thread.currentThread().interrupt()
+      Log.w(TAG, "Could not keep the endpoint received while locked.", e)
+      false
+    }
+  }
+
+  internal fun peekPendingVersioned(context: Context): PendingEndpoint? = withPendingLock {
+    try {
+      // A corrupted preference can have the wrong stored type. Treat that exactly like any
+      // other unreadable record: keep it present so admission stays closed for recovery.
+      val value = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(PENDING, null) ?: return@withPendingLock null
+      val fields = String(KeyStoreHelper.unseal(KeyStoreHelper.SealedData.fromString(value)), Charsets.UTF_8).split(SEPARATOR)
+      // Legacy records had no token; bind their exact sealed bytes to a deterministic local token.
+      val token = if (fields.size == 4) MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) } else fields.firstOrNull()
+      val offset = if (fields.size == 4) 0 else 1
+      if ((fields.size != 4 && fields.size != 5) || token.isNullOrEmpty()) return@withPendingLock null
+      PendingEndpoint(token, Endpoint(fields[offset].ifEmpty { null }, fields[offset + 1].ifEmpty { null }, fields[offset + 2].ifEmpty { null }, fields[offset + 3]))
+    } catch (e: Exception) {
+      Log.w(TAG, "Could not read the endpoint received while locked.", e)
+      null
+    } catch (e: AssertionError) {
+      // SealedData.fromString reports malformed serialized data as an AssertionError.
+      // Leave the record present so startup keeps admission closed.
+      if (e.cause is InterruptedException) Thread.currentThread().interrupt()
+      Log.w(TAG, "Could not read the endpoint received while locked.", e)
+      null
+    }
+  }
+
+  internal fun clearPendingVersioned(context: Context, token: String): Boolean = withPendingLock {
+    if (peekPendingVersioned(context)?.token != token) return@withPendingLock false
+    context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(PENDING).commit()
+  }
 
   @JvmStatic
   fun isEncryptedEnrollment(context: Context): Boolean =

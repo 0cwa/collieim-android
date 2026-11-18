@@ -28,8 +28,11 @@ import org.thoughtcrime.securesms.R;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.service.LocalBackupListener;
 import org.thoughtcrime.securesms.util.BackupUtil;
+import org.thoughtcrime.securesms.util.WindowUtil;
 import org.signal.core.util.Util;
 import org.thoughtcrime.securesms.util.text.AfterTextChanged;
+
+import java.util.Objects;
 
 public class BackupDialog {
 
@@ -49,6 +52,7 @@ public class BackupDialog {
                                           .setNegativeButton(android.R.string.cancel, null)
                                           .create();
 
+    WindowUtil.initializeScreenshotSecurity(context, Objects.requireNonNull(dialog.getWindow()));
     dialog.setOnShowListener(created -> {
       if (backupDirectoryDisplayName != null) {
         TextView folderName = dialog.findViewById(R.id.backup_enable_dialog_folder_name);

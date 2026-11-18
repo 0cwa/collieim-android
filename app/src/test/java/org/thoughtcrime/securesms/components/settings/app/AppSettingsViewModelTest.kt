@@ -77,8 +77,6 @@ class AppSettingsViewModelTest {
     every { AppSettingsRepository.showInternalPreferences() } returns false
     every { AppSettingsRepository.showPayments() } returns true
     every { AppSettingsRepository.showAppUpdates() } returns false
-    every { AppSettingsRepository.likelyCanManageDonations() } returns false
-    coEvery { AppSettingsRepository.canManageDonations() } returns null
     every { AppSettingsRepository.getBackupFailureState() } answers { backupFailureState }
     every { AppSettingsRepository.markBackupFailedIndicatorClicked() } just Runs
     every { AppSettingsRepository.markBackupAlreadyRedeemedIndicatorClicked() } just Runs

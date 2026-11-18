@@ -74,7 +74,6 @@ class EditProfileViewModelTest {
     every { EditProfileRepository.markUsernameLinkTooltipSeen() } just Runs
     every { EditProfileRepository.hasBadges() } returns false
     every { EditProfileRepository.refreshOwnProfile() } just Runs
-    coEvery { EditProfileRepository.getSustainerBadge() } returns sustainerBadge
     coEvery { EditProfileRepository.deleteUsername() } returns UsernameDeleteResult.SUCCESS
     coEvery { EditProfileRepository.readAvatar(any()) } returns byteArrayOf(1, 2, 3)
     coEvery { EditProfileRepository.setAvatar(any(), any()) } returns EditProfileRepository.SaveResult.SUCCESS
@@ -183,26 +182,13 @@ class EditProfileViewModelTest {
   }
 
   @Test
-  fun `badges invites a user without badges to become a Sustainer`() = runTest(testDispatcher) {
+  fun `badges does not offer a donation checkout to a user without badges`() = runTest(testDispatcher) {
     val viewModel = createViewModel()
 
     viewModel.onEvent(EditProfileEvent.BadgesClicked)
 
     assertThat(navigationEvents).isEmpty()
-    assertThat(viewModel.state.value.dialog).isEqualTo(EditProfileState.Dialog.BecomeASustainer)
-    assertThat(viewModel.state.value.sustainerBadge).isEqualTo(sustainerBadge)
-  }
-
-  @Test
-  fun `BecomeASustainerClicked closes the sheet and opens subscriptions`() = runTest(testDispatcher) {
-    val viewModel = createViewModel()
-    val actions = collectActions(viewModel.actions)
-
-    viewModel.onEvent(EditProfileEvent.BadgesClicked)
-    viewModel.onEvent(EditProfileEvent.BecomeASustainerClicked)
-
     assertThat(viewModel.state.value.dialog).isEqualTo(EditProfileState.Dialog.None)
-    assertThat(actions).containsExactly(EditProfileAction.OpenSubscriptions)
   }
 
   @Test

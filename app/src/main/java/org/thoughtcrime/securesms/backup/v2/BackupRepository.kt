@@ -112,6 +112,8 @@ import org.thoughtcrime.securesms.crypto.AppAttachmentSecretStore
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.BackupMediaSnapshotTable.ArchiveMediaItem
 import org.thoughtcrime.securesms.database.KyberPreKeyTable
+import org.thoughtcrime.securesms.database.MentionTable
+import org.thoughtcrime.securesms.database.MessageTable
 import org.thoughtcrime.securesms.database.OneTimePreKeyTable
 import org.thoughtcrime.securesms.database.SearchTable
 import org.thoughtcrime.securesms.database.SessionTable
@@ -1189,19 +1191,22 @@ object BackupRepository {
     backupKey: MessageBackupKey?,
     cancellationSignal: () -> Boolean = { false }
   ): ImportResult {
-    val frameReader = if (backupKey == null) {
-      PlainTextBackupReader(inputStreamFactory(), length)
-    } else {
+    if (backupKey == null) {
+      return PlainTextBackupReader(inputStreamFactory(), length).use { reader ->
+        import(reader, selfData, backupMode = BackupMode.REMOTE, cancellationSignal = cancellationSignal)
+      }
+    }
+
+    val snapshot = AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(AppDependencies.application)
+    return withEncryptedBackupSnapshot(snapshot, length, inputStreamFactory) { file ->
       EncryptedBackupReader.createForLocalOrLinking(
         key = backupKey,
         aci = selfData.aci,
         length = length,
-        dataStream = inputStreamFactory
-      )
-    }
-
-    return frameReader.use { reader ->
-      import(reader, selfData, backupMode = BackupMode.REMOTE, cancellationSignal = cancellationSignal)
+        dataStream = file::inputStream
+      ).use { reader ->
+        import(reader, selfData, backupMode = BackupMode.REMOTE, cancellationSignal = cancellationSignal)
+      }
     }
   }
 
@@ -1243,16 +1248,21 @@ object BackupRepository {
     SignalStore.backup.hasInvalidBackupVersion = false
     val selfId: RecipientId
 
+    var foreignKeysDisabled = false
+    var transactionStarted = false
     var transactionSuccessful = false
+    var importFailure: Throwable? = null
     try {
       // Removing all the data from the various tables is *very* expensive (i.e. can take *several* minutes) if we don't do some pre-work.
       // SQLite optimizes deletes if there's no foreign keys, triggers, or WHERE clause, so that's the environment we're gonna create.
 
       Log.d(TAG, "[import] Disabling foreign keys...")
       SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(false)
+      foreignKeysDisabled = true
 
       Log.d(TAG, "[import] Acquiring transaction...")
       SignalDatabase.writableDatabase.beginTransaction()
+      transactionStarted = true
 
       Log.d(TAG, "[import] Inside transaction.")
       stopwatch.split("get-transaction")
@@ -1306,8 +1316,25 @@ object BackupRepository {
         SignalDatabase.writableDatabase.execSQL(table.statement)
       }
 
+      // Alias merges can use these indexes while backup frames are imported.
+      val importIndexNames = setOf(
+        "mention_recipient_id_thread_id_index",
+        "message_thread_story_parent_story_scheduled_date_latest_revision_id_index",
+        "message_thread_unread_count_index"
+      )
+      val importIndexes = indexMetadata.filter { it.name in importIndexNames }
+      importIndexes.forEach { SignalDatabase.writableDatabase.execSQL(it.statement) }
+      val missingIndexNames = importIndexNames - importIndexes.map { it.name }.toSet()
+      if (missingIndexNames.isNotEmpty()) {
+        val currentDefinitions = MentionTable.CREATE_INDEXES + MessageTable.CREATE_INDEXS
+        missingIndexNames.forEach { name ->
+          val indexName = Regex("\\b${Regex.escape(name)}\\s+ON\\b", RegexOption.IGNORE_CASE)
+          val definition = currentDefinitions.single { indexName.containsMatchIn(it) }
+          SignalDatabase.writableDatabase.execSQL(definition)
+        }
+      }
+
       RecipientIds.clearCache()
-      SignalDatabase.remappedRecords.clearCache()
       AppDependencies.recipientCache.clear()
       AppDependencies.recipientCache.clearSelf()
       SignalDatabase.threads.clearCache()
@@ -1438,8 +1465,10 @@ object BackupRepository {
 
       Log.d(TAG, "[import] --- Recreating indices ---")
       for (index in indexMetadata) {
-        Log.d(TAG, "[import] Creating index ${index.name}...")
-        SignalDatabase.writableDatabase.execSQL(index.statement)
+        if (index.name !in importIndexNames) {
+          Log.d(TAG, "[import] Creating index ${index.name}...")
+          SignalDatabase.writableDatabase.execSQL(index.statement)
+        }
       }
       stopwatch.split("recreate-indices")
 
@@ -1464,21 +1493,47 @@ object BackupRepository {
 
       SignalDatabase.writableDatabase.setTransactionSuccessful()
       transactionSuccessful = true
+    } catch (failure: Throwable) {
+      importFailure = failure
+      throw failure
     } finally {
-      if (SignalDatabase.writableDatabase.inTransaction()) {
-        SignalDatabase.writableDatabase.endTransaction()
+      var cleanupFailure: Throwable? = null
+      fun cleanup(action: () -> Unit) {
+        try {
+          action()
+        } catch (failure: Throwable) {
+          val previous = cleanupFailure
+          if (previous == null) cleanupFailure = failure else if (previous !== failure) previous.addSuppressed(failure)
+        }
       }
 
-      if (!transactionSuccessful) {
-        Log.w(TAG, "[import] Transaction failed, clearing release channel recipient ID from key-value store.")
-        SignalStore.releaseChannel.clearReleaseChannelRecipientId()
+      var transactionEnded = false
+      cleanup {
+        if (transactionStarted && SignalDatabase.writableDatabase.inTransaction()) {
+          SignalDatabase.writableDatabase.endTransaction()
+        }
+        transactionEnded = true
       }
-
-      Log.d(TAG, "[import] Re-enabling foreign keys...")
-      SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+      if (!transactionSuccessful || !transactionEnded) {
+        // The transaction may have cached IDs from tables that were rolled back.
+        cleanup { RecipientIds.clearCache() }
+        cleanup { AppDependencies.recipientCache.clear() }
+        cleanup { AppDependencies.recipientCache.clearSelf() }
+        cleanup { SignalDatabase.threads.clearCache() }
+        cleanup { SignalStore.releaseChannel.clearReleaseChannelRecipientId() }
+      }
+      if (foreignKeysDisabled) {
+        cleanup {
+          Log.d(TAG, "[import] Re-enabling foreign keys...")
+          SignalDatabase.writableDatabase.forceForeignKeyConstraintsEnabled(true)
+        }
+      }
+      cleanupFailure?.let { failure ->
+        val primary = importFailure
+        if (primary == null) throw failure else if (primary !== failure) primary.addSuppressed(failure)
+      }
     }
 
-    SignalDatabase.remappedRecords.clearCache()
     SignalDatabase.remappedRecords.trimStaleMappings()
     AppDependencies.recipientCache.clear()
     AppDependencies.recipientCache.warmUp()
@@ -1654,7 +1709,7 @@ object BackupRepository {
       plaintextSize = attachment.size,
       mediaName = attachment.requireMediaName()
     )
-      .map { archiveCdn -> SignalDatabase.attachments.setArchiveCdn(attachmentId = attachment.attachmentId, archiveCdn = archiveCdn) }
+      .map { archiveCdn -> SignalDatabase.attachments.setArchiveCdnForIdentity(attachment.dataHash!!, attachment.remoteKey!!, archiveCdn) }
       .also { Log.i(TAG, "archiveMediaResult: ${it.describe()}") }
   }
 

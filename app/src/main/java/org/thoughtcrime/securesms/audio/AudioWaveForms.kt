@@ -44,7 +44,15 @@ object AudioWaveForms {
       return Single.error(IllegalArgumentException("No uri from attachment"))
     }
 
-    val cacheKey = uri.toString()
+    val versioned = if (attachment is DatabaseAttachment) SignalDatabase.attachments.getUploadSource(attachment.attachmentId) else null
+    if (attachment is DatabaseAttachment && versioned == null) return Single.error(IOException("Attachment data unavailable"))
+    val source = versioned?.second
+    val currentAttachment = versioned?.first ?: attachment
+    val cacheKey = if (source == null) uri.toString() else {
+      val digest = java.security.MessageDigest.getInstance("SHA-256")
+      digest.update(source.file.absolutePath.toByteArray(Charsets.UTF_8))
+      uri.toString() + ":" + org.signal.core.util.Base64.encodeWithPadding(digest.digest(source.random))
+    }
     val cachedInfo = cache.get(cacheKey)
     if (cachedInfo != null) {
       Log.i(TAG, "Loaded wave form from cache $cacheKey")
@@ -65,11 +73,11 @@ object AudioWaveForms {
       pending[cacheKey]!!
     }
 
-    Single.fromCallable { attachment.audioHash?.let { checkDatabaseCache(cacheKey, it.audioWaveForm) } ?: Miss }
+    Single.fromCallable { currentAttachment.audioHash?.let { checkDatabaseCache(cacheKey, it.audioWaveForm) } ?: Miss }
       .flatMap { result ->
         if (result !is Success) {
           if (attachment is DatabaseAttachment) {
-            Single.fromCallable { generateWaveForm(context, uri, cacheKey, attachment.attachmentId) }
+            Single.fromCallable { generateWaveForm(cacheKey, attachment.attachmentId, source!!) }
           } else {
             Single.fromCallable { generateWaveForm(context, uri, cacheKey) }
           }
@@ -80,12 +88,15 @@ object AudioWaveForms {
       .map { result ->
         if (result is Success) {
           result.audioFileInfo
+        } else if (result is SourceChanged) {
+          throw AudioSourceChangedException()
         } else {
           throw IOException("Unable to generate wave form")
         }
       }
       .subscribeOn(Schedulers.io())
       .observeOn(Schedulers.io())
+      .doFinally { synchronized(pending) { if (pending[cacheKey] === pendingSubject) pending.remove(cacheKey) } }
       .subscribe(pendingSubject)
 
     return pendingSubject
@@ -107,24 +118,22 @@ object AudioWaveForms {
     return Miss
   }
 
-  private fun generateWaveForm(context: Context, uri: Uri, cacheKey: String, attachmentId: AttachmentId): CacheCheckResult {
+  private fun generateWaveForm(cacheKey: String, attachmentId: AttachmentId, source: org.thoughtcrime.securesms.database.AttachmentTable.DataFileInfo): CacheCheckResult {
     try {
-      val startTime = System.currentTimeMillis()
-      SignalDatabase.attachments.writeAudioHash(attachmentId, AudioWaveFormData())
-
-      Log.i(TAG, "Starting wave form generation ($cacheKey)")
-      val fileInfo: AudioFileInfo = AudioWaveFormGenerator.generateWaveForm(context, uri)
-      Log.i(TAG, "Audio wave form generation time ${System.currentTimeMillis() - startTime} ms ($cacheKey)")
-
-      SignalDatabase.attachments.writeAudioHash(attachmentId, fileInfo.toDatabaseProtobuf())
+      val input = org.thoughtcrime.securesms.video.videoconverter.mediadatasource.MediaDataSourceMediaInput(SignalDatabase.attachments.mediaDataSourceFor(source))
+      val fileInfo = AudioWaveFormGenerator.generateWaveForm(input)
+      if (!SignalDatabase.attachments.writeAudioHashIfUnchanged(attachmentId, source, fileInfo.toDatabaseProtobuf())) return SourceChanged
       cache.put(cacheKey, fileInfo)
-
       return Success(fileInfo)
     } catch (e: Throwable) {
       Log.w(TAG, "Failed to create audio wave form for $cacheKey", e)
-      return Failure
+      return if (!SignalDatabase.attachments.isDataFileVersionCurrent(attachmentId, source)) SourceChanged else Failure
     }
   }
+
+  @androidx.annotation.VisibleForTesting
+  internal fun sourceChangedOnDecodeForTest(attachmentId: AttachmentId, source: org.thoughtcrime.securesms.database.AttachmentTable.DataFileInfo): Boolean =
+    generateWaveForm("version-check", attachmentId, source) is SourceChanged
 
   private fun generateWaveForm(context: Context, uri: Uri, cacheKey: String): CacheCheckResult {
     try {
@@ -160,6 +169,9 @@ object AudioWaveForms {
 
   private sealed class CacheCheckResult
   private class Success(val audioFileInfo: AudioFileInfo) : CacheCheckResult()
+  private object SourceChanged : CacheCheckResult()
   private object Failure : CacheCheckResult()
   private object Miss : CacheCheckResult()
 }
+
+class AudioSourceChangedException : RuntimeException("Attachment changed during waveform generation")

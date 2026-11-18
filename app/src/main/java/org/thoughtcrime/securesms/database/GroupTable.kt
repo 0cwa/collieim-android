@@ -375,25 +375,25 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
     val query = getGroupQueryWhereStatement(inputQuery, includeInactive, excludeV1, excludeMms)
     //language=sql
     val statement = """
-      ${joinedGroupSelect(inputQuery)}
+      ${joinedGroupSelect(includeTitleSearchRank = true)}
       WHERE ${query.where}
       ORDER BY $TITLE_SEARCH_RANK DESC, $TITLE COLLATE NOCASE ASC
     """
 
-    val cursor = databaseHelper.signalReadableDatabase.query(statement, query.whereArgs)
+    val cursor = databaseHelper.signalReadableDatabase.query(statement, arrayOf(buildCaseInsensitiveGlobPattern(inputQuery)) + query.whereArgs)
     return Reader(cursor)
   }
 
   private fun queryGroupsByRecency(groupQuery: GroupQuery): Reader {
     val query = getGroupQueryWhereStatement(groupQuery.searchQuery, groupQuery.includeInactive, !groupQuery.includeV1, !groupQuery.includeMms)
     val sql = """
-      ${joinedGroupSelect(groupQuery.searchQuery)}
+      ${joinedGroupSelect(includeTitleSearchRank = true)}
       INNER JOIN ${ThreadTable.TABLE_NAME} ON ${ThreadTable.TABLE_NAME}.${ThreadTable.RECIPIENT_ID} = $TABLE_NAME.$RECIPIENT_ID
       WHERE ${query.where} 
       ORDER BY  $TITLE_SEARCH_RANK DESC, ${ThreadTable.TABLE_NAME}.${ThreadTable.DATE} DESC
     """
 
-    return Reader(databaseHelper.signalReadableDatabase.rawQuery(sql, query.whereArgs))
+    return Reader(databaseHelper.signalReadableDatabase.rawQuery(sql, arrayOf(buildCaseInsensitiveGlobPattern(groupQuery.searchQuery)) + query.whereArgs))
   }
 
   fun queryGroups(groupQuery: GroupQuery): Reader {
@@ -1667,9 +1667,8 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
 
     return if (RemappedRecords.getInstance().areAnyRemapped(ids)) {
       if (shouldRetry) {
-        Log.w(TAG, "Found remapped records where we shouldn't. Clearing cache and trying again.")
+        Log.w(TAG, "Found remapped records where we shouldn't. Clearing recipient IDs and trying again.")
         RecipientIds.clearCache()
-        RemappedRecords.getInstance().resetCache()
         getV2GroupMembers(decryptedGroup, false)
       } else {
         throw IllegalStateException("Remapped records in group membership!")
@@ -1680,12 +1679,11 @@ class GroupTable(context: Context?, databaseHelper: SignalDatabase?) :
   }
 
   //language=sql
-  private fun joinedGroupSelect(titleSearchQuery: String? = null): String {
-    val titleSearchRankColumn = if (titleSearchQuery == null) {
-      ""
+  private fun joinedGroupSelect(includeTitleSearchRank: Boolean = false): String {
+    val titleSearchRankColumn = if (includeTitleSearchRank) {
+      ", ($TITLE GLOB ?) as $TITLE_SEARCH_RANK"
     } else {
-      val glob = buildCaseInsensitiveGlobPattern(titleSearchQuery)
-      ", ($TITLE GLOB '$glob') as $TITLE_SEARCH_RANK"
+      ""
     }
 
     return """

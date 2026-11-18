@@ -71,7 +71,7 @@ class LimitedInputStream(private val wrapped: InputStream, private val maxBytes:
     }
 
     val bytesRemaining: Long = maxBytes - totalBytesRead
-    val bytesToRead: Int = min(length, Math.toIntExact(bytesRemaining))
+    val bytesToRead: Int = min(length.toLong(), bytesRemaining).toInt()
     val bytesRead = wrapped.read(destination, offset, bytesToRead)
 
     if (bytesRead > 0) {
@@ -100,8 +100,8 @@ class LimitedInputStream(private val wrapped: InputStream, private val maxBytes:
       return wrapped.available()
     }
 
-    val bytesRemaining = Math.toIntExact(maxBytes - totalBytesRead)
-    return min(bytesRemaining, wrapped.available())
+    val bytesRemaining = maxBytes - totalBytesRead
+    return min(bytesRemaining, wrapped.available().toLong()).toInt()
   }
 
   override fun markSupported(): Boolean {

@@ -451,6 +451,13 @@ public class BlobProvider {
     return new File(getOrCreateDirectory(context, directory), buildFileName(id));
   }
 
+  /** Returns a single-session file path after startup cleanup has completed. */
+  @WorkerThread
+  public File forNonAutoEncryptingInitializedSessionOnDisk(@NonNull Context context) {
+    waitUntilInitialized();
+    return forNonAutoEncryptingSingleSessionOnDisk(context);
+  }
+
   /**
    * Returns a {@link File} within the appropriate directory to persist between multiple
    * process lifetimes. Unlike other blobs, this is just a file reference and no

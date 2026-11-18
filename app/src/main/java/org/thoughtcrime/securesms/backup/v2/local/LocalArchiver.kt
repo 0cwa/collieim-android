@@ -27,8 +27,10 @@ import org.signal.libsignal.crypto.Aes256Ctr32
 import org.thoughtcrime.securesms.backup.LocalExportProgress
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.ImportResult
+import org.thoughtcrime.securesms.backup.v2.withEncryptedBackupSnapshot
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
+import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.protos.LocalBackupCreationProgress
 import org.whispersystems.signalservice.api.crypto.AttachmentCipherOutputStream
@@ -270,13 +272,16 @@ object LocalArchiver {
 
       val mainStreamLength = snapshotFileSystem.mainLength() ?: return ArchiveResult.failure(RestoreFailure.MainStream)
 
-      val importResult = BackupRepository.importLocal(
-        mainStreamFactory = { snapshotFileSystem.mainInputStream()!! },
-        mainStreamLength = mainStreamLength,
-        selfData = selfData,
-        backupId = backupId,
-        messageBackupKey = messageBackupKey
-      )
+      val snapshot = AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(AppDependencies.application)
+      val importResult = withEncryptedBackupSnapshot(snapshot, mainStreamLength, { snapshotFileSystem.mainInputStream() ?: throw IOException("Missing main archive stream") }) { file ->
+        BackupRepository.importLocal(
+          mainStreamFactory = file::inputStream,
+          mainStreamLength = mainStreamLength,
+          selfData = selfData,
+          backupId = backupId,
+          messageBackupKey = messageBackupKey
+        )
+      }
 
       if (importResult is ImportResult.Failure) {
         Log.w(TAG, "Local backup import failed")
@@ -297,13 +302,16 @@ object LocalArchiver {
       val backupId = getBackupId(snapshotFileSystem, messageBackupKey) ?: return false
       val mainStreamLength = snapshotFileSystem.mainLength() ?: return false
 
-      EncryptedBackupReader.createForLocalOrLinking(
-        key = messageBackupKey,
-        backupId = backupId,
-        length = mainStreamLength,
-        dataStream = { snapshotFileSystem.mainInputStream() ?: error("Missing main archive stream") }
-      ).use { reader ->
-        reader.getHeader() != null
+      val snapshot = AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(AppDependencies.application)
+      withEncryptedBackupSnapshot(snapshot, mainStreamLength, { snapshotFileSystem.mainInputStream() ?: throw IOException("Missing main archive stream") }) { file ->
+        EncryptedBackupReader.createForLocalOrLinking(
+          key = messageBackupKey,
+          backupId = backupId,
+          length = mainStreamLength,
+          dataStream = file::inputStream
+        ).use { reader ->
+          reader.getHeader() != null
+        }
       }
     } catch (e: Exception) {
       Log.w(TAG, "Unable to verify local backup archive", e)

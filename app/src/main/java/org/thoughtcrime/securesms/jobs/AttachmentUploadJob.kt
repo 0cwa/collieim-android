@@ -10,6 +10,9 @@ import okhttp3.internal.http2.StreamResetException
 import org.signal.core.models.database.AttachmentId
 import org.signal.core.util.Base64
 import org.signal.core.util.Util
+import org.signal.core.util.crypto.AttachmentSecretProvider
+import org.signal.core.util.crypto.ModernDecryptingPartInputStream
+import okio.ByteString.Companion.toByteString
 import org.signal.core.util.concurrent.SignalExecutors
 import org.signal.core.util.eventbus.EventBus
 import org.signal.core.util.inRoundedDays
@@ -27,6 +30,7 @@ import org.thoughtcrime.securesms.attachments.Attachment
 import org.thoughtcrime.securesms.attachments.AttachmentUploadUtil
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
+import org.thoughtcrime.securesms.crypto.AppAttachmentSecretStore
 import org.thoughtcrime.securesms.database.AttachmentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -50,6 +54,7 @@ import org.whispersystems.signalservice.api.messages.SignalServiceAttachment
 import org.whispersystems.signalservice.api.messages.SignalServiceAttachmentStream
 import org.whispersystems.signalservice.internal.crypto.PaddingInputStream
 import org.whispersystems.signalservice.internal.push.http.ResumableUploadSpec
+import java.io.File
 import java.io.IOException
 import java.net.ProtocolException
 import java.util.concurrent.TimeUnit
@@ -66,8 +71,13 @@ import kotlin.time.toJavaDuration
 class AttachmentUploadJob private constructor(
   parameters: Parameters,
   private val attachmentId: AttachmentId,
-  private var uploadSpec: ResumableUpload?
+  private var uploadSpec: ResumableUpload?,
+  private var snapshot: AttachmentUploadSnapshot.Identity?,
+  private var owner: Pair<String, ByteArray>?,
+  private var ownerIdentity: String?,
+  private var captureOwner: Boolean
 ) : BaseJob(parameters) {
+  private var attemptedSource: AttachmentTable.DataFileInfo? = null
 
   companion object {
     const val KEY = "AttachmentUploadJobV3"
@@ -103,13 +113,30 @@ class AttachmentUploadJob private constructor(
       .setMaxAttempts(Parameters.UNLIMITED)
       .build(),
     attachmentId,
-    null
+    null,
+    null,
+    null,
+    null,
+    true
   )
 
   override fun serialize(): ByteArray {
+    if (captureOwner) {
+      val candidate = SignalDatabase.attachments.getUploadCandidate(attachmentId)
+      owner = candidate?.info?.let { it.file.absolutePath to it.random }
+      ownerIdentity = candidate?.let { SignalDatabase.attachments.uploadOwnerToken(it) }
+      captureOwner = false
+    }
     return AttachmentUploadJobData(
       attachmentId = attachmentId.id,
-      uploadSpec = uploadSpec
+      uploadSpec = uploadSpec,
+      snapshotId = snapshot?.id,
+      snapshotLength = snapshot?.length,
+      snapshotDigest = snapshot?.digest,
+      snapshotSourcePath = snapshot?.sourcePath ?: owner?.first,
+      snapshotSourceRandom = (snapshot?.sourceRandom ?: owner?.second)?.toByteString(),
+      snapshotPlaintextDigest = snapshot?.plaintextDigest,
+      ownerIdentity = ownerIdentity
     ).encode()
   }
 
@@ -132,7 +159,7 @@ class AttachmentUploadJob private constructor(
 
     if (pending) {
       Log.i(TAG, "onAdded() Marking attachment progress as 'started'")
-      database.setTransferState(attachment.mmsId, attachmentId, AttachmentTable.TRANSFER_PROGRESS_STARTED)
+      ownerIdentity?.let { database.markTransferStateIfOwnerMatches(attachmentId, it, AttachmentTable.TRANSFER_PROGRESS_STARTED) }
     }
   }
 
@@ -142,27 +169,33 @@ class AttachmentUploadJob private constructor(
       throw NotPushRegisteredException()
     }
 
-    SignalDatabase.attachments.createRemoteKeyIfNecessary(attachmentId)
+    // A dependency may explicitly hand off the transformed source owner. On
+    // retries, use the serialized owner refreshed after our own guarded writes.
+    val expectedOwner = if (runAttempt == 0 && inputData != null) inputData!!.toString(Charsets.UTF_8) else ownerIdentity
+    ownerIdentity = null
+    val current = SignalDatabase.attachments.getUploadCandidate(attachmentId) ?: throw InvalidAttachmentException("Cannot find the specified attachment.")
+    if (expectedOwner != null && SignalDatabase.attachments.uploadOwnerToken(current) == expectedOwner) ownerIdentity = expectedOwner
+    validateUploadSize(current.attachment)
+    // A recent remote object can be completed by exact candidate CAS even when
+    // ownership was lost; no failure callback may act on that newer row.
+    if (reuseRecentUpload(current, requireComplete = true)) return
+    if (expectedOwner == null || !expectedOwner.startsWith("attachment-owner-v2:")) throw IOException("Upload has no valid owner")
+    var candidate = SignalDatabase.attachments.prepareUploadIfOwned(attachmentId, expectedOwner) ?: throw IOException("Attachment changed before upload began")
+    val databaseAttachment = candidate.attachment
+    attemptedSource = candidate.info
+    ownerIdentity = SignalDatabase.attachments.uploadOwnerToken(candidate)
+    candidate.info?.let { owner = it.file.absolutePath to it.random }
 
-    val databaseAttachment = SignalDatabase.attachments.getAttachment(attachmentId) ?: throw InvalidAttachmentException("Cannot find the specified attachment.")
-
-    if (MediaUtil.isLongTextType(databaseAttachment.contentType) && databaseAttachment.size > MessageUtil.MAX_TOTAL_BODY_SIZE_BYTES) {
-      throw UndeliverableMessageException("Long text attachment is too long! Max size: ${MessageUtil.MAX_TOTAL_BODY_SIZE_BYTES} bytes, Actual size: ${databaseAttachment.size} bytes.")
-    }
-
+    validateUploadSize(databaseAttachment)
     val timeSinceUpload = System.currentTimeMillis() - databaseAttachment.uploadTimestamp
-    if (timeSinceUpload < UPLOAD_REUSE_THRESHOLD && !TextUtils.isEmpty(databaseAttachment.remoteLocation)) {
-      Log.i(TAG, "[$attachmentId] We can re-use an already-uploaded file. It was uploaded $timeSinceUpload ms (${timeSinceUpload.milliseconds.inRoundedDays()} days) ago. Skipping.")
-      SignalDatabase.attachments.setTransferState(databaseAttachment.mmsId, attachmentId, AttachmentTable.TRANSFER_PROGRESS_DONE)
-      if (SignalStore.account.isPrimaryDevice && BackupRepository.shouldCopyAttachmentToArchive(databaseAttachment.attachmentId, databaseAttachment.mmsId)) {
-        Log.i(TAG, "[$attachmentId] The re-used file was not copied to the archive. Copying now.")
-        AppDependencies.jobManager.add(CopyAttachmentToArchiveJob(attachmentId))
-      }
-      return
-    } else if (databaseAttachment.uploadTimestamp > 0) {
+    if (reuseRecentUpload(candidate)) return
+    if (databaseAttachment.uploadTimestamp > 0) {
       Log.i(TAG, "[$attachmentId] This file was previously-uploaded, but too long ago to be re-used. Age: $timeSinceUpload ms (${timeSinceUpload.milliseconds.inRoundedDays()} days)")
-      if (databaseAttachment.archiveTransferState != AttachmentTable.ArchiveTransferState.NONE) {
-        SignalDatabase.attachments.clearArchiveData(attachmentId)
+      if (databaseAttachment.archiveTransferState != AttachmentTable.ArchiveTransferState.NONE &&
+        databaseAttachment.archiveTransferState != AttachmentTable.ArchiveTransferState.FINISHED &&
+        databaseAttachment.archiveTransferState != AttachmentTable.ArchiveTransferState.PERMANENT_FAILURE) {
+        candidate = SignalDatabase.attachments.clearArchiveDataIfUnchanged(candidate) ?: throw IOException("Attachment changed before archive reset")
+        ownerIdentity = SignalDatabase.attachments.uploadOwnerToken(candidate)
       }
     }
 
@@ -173,9 +206,30 @@ class AttachmentUploadJob private constructor(
 
     Log.i(TAG, "[$attachmentId] Uploading attachment for message ${databaseAttachment.mmsId}")
     try {
+      val snapshots = snapshots()
+      val sourceInfo = candidate.info ?: throw InvalidAttachmentException("Attachment has no local data")
+      val prepared = try { snapshots.prepare(uploadSpec, snapshot, sourceInfo.length, sourceInfo.file.absolutePath, sourceInfo.random, {
+        ModernDecryptingPartInputStream.createFor(
+          AttachmentSecretProvider.getInstance(context, AppAttachmentSecretStore).getOrCreateAttachmentSecret(), sourceInfo.random, sourceInfo.file, 0
+        )
+      }, { isCanceled }) } catch (e: AttachmentUploadSnapshot.LengthMismatch) {
+        uploadSpec = null
+        snapshots.delete(snapshot)
+        snapshot = null
+        val repaired = SignalDatabase.attachments.repairUploadLengthIfCandidateUnchanged(candidate, e.actualLength)
+        if (repaired != null) {
+          candidate = repaired
+          ownerIdentity = SignalDatabase.attachments.uploadOwnerToken(repaired)
+        }
+        if (repaired != null && e.actualLength == 0L) throw InvalidAttachmentException(e)
+        throw e
+      }
+      uploadSpec = prepared.spec
+      snapshot = prepared.identity
+      val stable = prepared.identity
       val existingSpec = uploadSpec?.let { ResumableUploadSpec.from(it) }
 
-      val ciphertextLength = AttachmentCipherStreamUtil.getCiphertextLength(PaddingInputStream.getPaddedSize(databaseAttachment.size))
+      val ciphertextLength = AttachmentCipherStreamUtil.getCiphertextLength(PaddingInputStream.getPaddedSize(stable.length))
 
       val uploadForm = if (existingSpec == null) {
         when (val result = SignalNetwork.attachmentApi.getAttachmentV4UploadForm(ciphertextLength)) {
@@ -189,18 +243,18 @@ class AttachmentUploadJob private constructor(
       }
 
       val key = existingSpec?.attachmentKey ?: Base64.decode(databaseAttachment.remoteKey!!)
-      val iv = existingSpec?.attachmentIv ?: Util.getSecretBytes(16)
+      val iv = freshOrResumeIv(existingSpec)
 
       val checksumSha256 = if (existingSpec == null) {
-        PartAuthority.getAttachmentStream(context, databaseAttachment.uri!!).use { stream ->
-          AttachmentUploadUtil.computeCiphertextChecksum(key, iv, stream, databaseAttachment.size)
+        snapshots.open(stable).use { stream ->
+          AttachmentUploadUtil.computeCiphertextChecksum(key, iv, stream, stable.length)
         }
       } else {
         null
       }
 
       getAttachmentNotificationIfNeeded(databaseAttachment).use { notification ->
-        buildAttachmentStream(databaseAttachment, notification).use { localAttachment ->
+        buildAttachmentStream(databaseAttachment, notification, snapshots.open(stable), stable.length) { snapshots.visualHash(stable, databaseAttachment.contentType) }.use { localAttachment ->
           val result = runBlocking {
             SignalNetwork.cdnService.uploadAttachment(
               form = uploadForm,
@@ -220,7 +274,12 @@ class AttachmentUploadJob private constructor(
             is RequestResult.ApplicationError -> throw result.cause
           }
 
-          SignalDatabase.attachments.finalizeAttachmentAfterUpload(databaseAttachment.attachmentId, uploadResult)
+          if (!SignalDatabase.attachments.finalizeAttachmentAfterSnapshotUpload(candidate, uploadResult, stable.plaintextDigest)) {
+            uploadSpec = null
+            snapshots.delete(snapshot)
+            snapshot = null
+            throw IOException("Attachment changed during upload")
+          }
           if (SignalStore.backup.backsUpMedia) {
             val messageId = SignalDatabase.attachments.getMessageId(databaseAttachment.attachmentId)
             when {
@@ -250,6 +309,8 @@ class AttachmentUploadJob private constructor(
           }
         }
       }
+      releaseSnapshot(snapshots)
+      uploadSpec = null
     } catch (e: StreamResetException) {
       val lastReset = SignalStore.misc.lastNetworkResetDueToStreamResets
       val now = System.currentTimeMillis()
@@ -271,8 +332,12 @@ class AttachmentUploadJob private constructor(
         val actualLength = SignalDatabase.attachments.getAttachmentStream(attachmentId, 0).use { it.readLength() }
         if (actualLength != databaseAttachment.size) {
           Log.w(TAG, "[$attachmentId] Length was incorrect! Will update. Previous: ${databaseAttachment.size}, Newly-Calculated: $actualLength")
-          SignalDatabase.attachments.updateAttachmentLength(attachmentId, actualLength)
+          SignalDatabase.attachments.repairUploadLengthIfCandidateUnchanged(candidate, actualLength)?.let {
+            candidate = it
+            ownerIdentity = SignalDatabase.attachments.uploadOwnerToken(it)
+          }
           uploadSpec = null
+          releaseSnapshot(snapshots())
         } else {
           Log.i(TAG, "[$attachmentId] Length was correct. No action needed. Will retry.")
         }
@@ -306,6 +371,30 @@ class AttachmentUploadJob private constructor(
     }
   }
 
+  private fun validateUploadSize(attachment: DatabaseAttachment) {
+    if (MediaUtil.isLongTextType(attachment.contentType) && attachment.size > MessageUtil.MAX_TOTAL_BODY_SIZE_BYTES) {
+      throw UndeliverableMessageException("Long text attachment is too long! Max size: ${MessageUtil.MAX_TOTAL_BODY_SIZE_BYTES} bytes, Actual size: ${attachment.size} bytes.")
+    }
+  }
+
+  private fun reuseRecentUpload(candidate: AttachmentTable.UploadCandidate, requireComplete: Boolean = false): Boolean {
+    val attachment = candidate.attachment
+    val age = System.currentTimeMillis() - attachment.uploadTimestamp
+    if (age >= UPLOAD_REUSE_THRESHOLD || TextUtils.isEmpty(attachment.remoteLocation)) return false
+    if (requireComplete) {
+      val key = attachment.remoteKey ?: return false
+      val validKey = try { Base64.decode(key).size == 64 } catch (_: IOException) { false } catch (_: IllegalArgumentException) { false }
+      if (!validKey || attachment.remoteDigest?.size != 32) return false
+    }
+    Log.i(TAG, "[$attachmentId] Reusing an upload from $age ms ago.")
+    if (!SignalDatabase.attachments.markUploadedIfUnchanged(candidate)) throw IOException("Attachment changed before upload reuse")
+    if (SignalStore.account.isPrimaryDevice && BackupRepository.shouldCopyAttachmentToArchive(attachment.attachmentId, attachment.mmsId)) {
+      AppDependencies.jobManager.add(CopyAttachmentToArchiveJob(attachmentId))
+    }
+    if (snapshot != null) releaseSnapshot(snapshots())
+    return true
+  }
+
   private fun getAttachmentNotificationIfNeeded(attachment: Attachment): AttachmentProgressService.Controller? {
     return if (attachment.size >= AttachmentUploadUtil.FOREGROUND_LIMIT_BYTES) {
       AttachmentProgressService.start(context, context.getString(R.string.AttachmentUploadJob_uploading_media))
@@ -319,14 +408,8 @@ class AttachmentUploadJob private constructor(
   }
 
   override fun onFailure() {
-    val database = SignalDatabase.attachments
-    val databaseAttachment = database.getAttachment(attachmentId)
-    if (databaseAttachment == null) {
-      Log.i(TAG, "[$attachmentId] Could not find attachment in DB for upload job upon failure/cancellation.")
-      return
-    }
-
-    database.setTransferProgressFailed(attachmentId, databaseAttachment.mmsId)
+    if (snapshot != null) releaseSnapshot(snapshots())
+    ownerIdentity?.let { SignalDatabase.attachments.markTransferStateIfOwnerMatches(attachmentId, it, AttachmentTable.TRANSFER_PROGRESS_FAILED) }
   }
 
   override fun getNextRunAttemptBackoff(pastAttemptCount: Int, exception: java.lang.Exception): Long {
@@ -338,20 +421,34 @@ class AttachmentUploadJob private constructor(
   }
 
   override fun onShouldRetry(exception: Exception): Boolean {
-    return exception is IOException && exception !is NotPushRegisteredException && exception !is UploadTooLargeException
+    return isAttachmentUploadRetryable(exception)
   }
 
+  internal fun releaseSnapshot(store: AttachmentUploadSnapshot) {
+    store.delete(snapshot)
+    snapshot = null
+  }
+
+  private fun snapshots(): AttachmentUploadSnapshot = AttachmentUploadSnapshot(
+    File(context.cacheDir, "attachment-upload-snapshots"),
+    AttachmentSecretProvider.getInstance(context, AppAttachmentSecretStore).getOrCreateAttachmentSecret()
+  )
+
   @Throws(InvalidAttachmentException::class)
-  private fun buildAttachmentStream(attachment: Attachment, notification: AttachmentProgressService.Controller?): SignalServiceAttachmentStream {
-    if (attachment.uri == null || attachment.size == 0L) {
+  private fun buildAttachmentStream(attachment: Attachment, notification: AttachmentProgressService.Controller?, input: java.io.InputStream, length: Long, visualHash: () -> String?): SignalServiceAttachmentStream {
+    if (attachment.uri == null || length == 0L) {
+      input.close()
       throw InvalidAttachmentException(IOException("Outgoing attachment has no data!"))
     }
 
-    return try {
+    return withUploadInput(input) {
       AttachmentUploadUtil.buildSignalServiceAttachmentStream(
         context = context,
         attachment = attachment,
         cancellationSignal = { isCanceled },
+        inputStream = input,
+        inputLength = length,
+        snapshotVisualHash = visualHash,
         progressListener = object : SignalServiceAttachment.ProgressListener {
           override fun onAttachmentProgress(progress: AttachmentTransferProgress) {
             SignalExecutors.BOUNDED_IO.execute {
@@ -365,8 +462,6 @@ class AttachmentUploadJob private constructor(
           }
         }
       )
-    } catch (e: IOException) {
-      throw InvalidAttachmentException(e)
     }
   }
 
@@ -381,8 +476,23 @@ class AttachmentUploadJob private constructor(
       return AttachmentUploadJob(
         parameters = parameters,
         attachmentId = AttachmentId(data.attachmentId),
-        data.uploadSpec
+        data.uploadSpec,
+        if (data.snapshotId != null && data.snapshotLength != null && data.snapshotDigest != null && data.snapshotSourcePath != null && data.snapshotSourceRandom != null && data.snapshotPlaintextDigest != null)
+          AttachmentUploadSnapshot.Identity(data.snapshotId, data.snapshotLength, data.snapshotDigest, data.snapshotSourcePath, data.snapshotSourceRandom.toByteArray(), data.snapshotPlaintextDigest) else null,
+        if (data.snapshotSourcePath != null && data.snapshotSourceRandom != null) data.snapshotSourcePath to data.snapshotSourceRandom.toByteArray() else null,
+        data.ownerIdentity,
+        false
       )
     }
   }
+}
+
+internal fun isAttachmentUploadRetryable(exception: Exception): Boolean =
+  exception is IOException && exception !is NotPushRegisteredException && exception !is UploadTooLargeException
+
+internal fun <T> withUploadInput(input: java.io.InputStream, action: () -> T): T = try {
+  action()
+} catch (e: Throwable) {
+  try { input.close() } catch (closeError: IOException) { e.addSuppressed(closeError) }
+  throw e
 }

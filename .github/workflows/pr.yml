@@ -24,15 +24,11 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
-          missing=0
-          for c in $(git rev-list --no-merges "$BASE..HEAD"); do
-            layer=$(git log -1 --format='%(trailers:key=Layer,valueonly,separator=%x2C)' "$c")
-            if ! [[ "$layer" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
-              echo "::error::$(git log -1 --format='%h %s' "$c") needs one 'Layer: <feature>' trailer (lowercase, hyphens)"
-              missing=1
-            fi
-          done
-          exit $missing
+          git show "$BASE:tooling/git-hooks/collie_check_layer_trailers.py" > "$RUNNER_TEMP/collie_check_layer_trailers.py"
+          python3 "$RUNNER_TEMP/collie_check_layer_trailers.py" range "$BASE" HEAD
+      - name: Check commit and push hooks against real Git repositories
+        if: ${{ hashFiles('tooling/git-hooks/test_*.py') != '' }}
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tooling/git-hooks -p 'test_*.py'
 
   fastlane-metadata:
     name: Fastlane metadata
@@ -216,6 +212,8 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/disk-cleanup
       - name: Build the exact candidate with the release recipe
+        env:
+          COLLIE_BUILD_EDITION: ${{ github.base_ref == 'trailblazer-beta' && 'beta' || 'stable' }}
         run: |
           git rev-parse HEAD HEAD^{tree}
           tooling/reproducible-builds/build-release.sh "$RUNNER_TEMP/production-build"

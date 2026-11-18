@@ -1,8 +1,12 @@
 name: Publish prerelease
-# Run after `collie-private/release/release.sh` has pushed a signed tag and uploaded the
-# signed collie.apk to a draft release. Checks the tag signature, APK certificate, version
-# and release notes, uploads the profile copies, and publishes the draft as a prerelease.
+# Run after the maintainer pushes a signed tag and uploads collie.apk to a draft.
+# This entry point publishes Collie only; TrailBlazer has a separate identity.
 on:
+  pull_request:
+    paths:
+      - tooling/release/**
+      - .github/workflows/release.yml
+      - .github/workflows/promote.yml
   workflow_dispatch:
     inputs:
       tag:
@@ -13,93 +17,166 @@ on:
         type: choice
         options: [local, github]
         required: true
+      verify_only:
+        description: Check an existing published release without changing it
+        type: boolean
+        default: false
+      legacy_build_run:
+        description: Original build run ID for an older release (verify-only)
+        type: string
 permissions:
-  contents: write
+  contents: read
   actions: read
 concurrency:
-  group: release-${{ inputs.tag }}
+  group: ${{ github.event_name == 'workflow_dispatch' && (inputs.verify_only && format('verify-release-{0}', inputs.tag) || 'release-im.collie.app') || format('release-policy-pr-{0}', github.event.pull_request.number) }}
+  cancel-in-progress: false
 env:
   TAG: ${{ inputs.tag }}
   BUILT_ON: ${{ inputs.built_on }}
   GH_TOKEN: ${{ github.token }}
   GH_REPO: ${{ github.repository }}
-  APK_CERT_SHA256: f8cc0c0c052e5635c26fcd293c2b0af3e87d61ff7f2df3602a9af6e91f73c826
-  PACKAGE_ID: im.collie.app
-  PROFILE_COPIES: collie-foss molly-continued molly-foss-continued molly-minimal
+  GH_HOST: github.com
 jobs:
-  publish:
+  policy-tests:
+    name: Release publication policy
     runs-on: ubuntu-24.04
     steps:
-      - name: Check out trusted signer list from the default branch
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest discover -s tooling/release -p 'test_*.py' -v
+
+  publish:
+    needs: policy-tests
+    if: github.event_name == 'workflow_dispatch' && !inputs.verify_only && github.repository == '0cwa/collieim-android' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      bound_build: ${{ steps.bind-build.outputs.bound_build }}
+      published_sha256: ${{ steps.publish.outputs.published_sha256 }}
+    steps:
+      - name: Check out the exact trusted workflow and signer policy
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.repository.default_branch }}
+          ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Tag is signed by the release key
+      - name: Verify the signed source, draft state and APK identity
+        id: identity
         run: |
-          [[ "$TAG" =~ ^v[0-9A-Za-z.+-]+$ ]] || { echo "::error::bad tag name $TAG"; exit 1; }
-          git fetch --depth=1 origin "refs/tags/$TAG:refs/tags/$TAG"
-          [ "$(git cat-file -t "$TAG")" = tag ] || { echo "::error::$TAG is not an annotated tag"; exit 1; }
-          cp .github/release-signers "$RUNNER_TEMP/release-signers"
-          git -c gpg.ssh.allowedSignersFile="$RUNNER_TEMP/release-signers" verify-tag "$TAG"
+          mkdir -p "$RUNNER_TEMP/release-evidence"
+          bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          python3 tooling/release/publication.py inspect --tag "$TAG" --purpose publish \
+            --scratch "$RUNNER_TEMP/release-assets" --build-tools "$bt" \
+            --output "$RUNNER_TEMP/release-evidence/before.json" --github-output "$GITHUB_OUTPUT"
       - name: Exact tag commit passed tests and the production build
-        run: |
-          source_commit=$(git rev-parse "$TAG^{commit}")
-          python3 tooling/ci/verify_release_readiness.py \
-            --repository "$GH_REPO" --sha "$source_commit" \
-            --report "$RUNNER_TEMP/release-ci-evidence.json"
-      - name: Retain the exact-commit CI evidence
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: release-ci-evidence-${{ github.run_id }}
-          path: ${{ runner.temp }}/release-ci-evidence.json
-          retention-days: 30
-          if-no-files-found: error
-      - name: Tag source declares this version
-        id: version
-        run: |
-          props=$(git show "$TAG^{commit}:gradle.properties")
-          name=$(sed -n 's/^releaseVersionName=//p' <<<"$props")
-          code=$(sed -n 's/^releaseVersionCode=//p' <<<"$props")
-          [ "v$name" = "$TAG" ] || { echo "::error::gradle.properties releaseVersionName=$name does not match $TAG"; exit 1; }
-          echo "name=$name" >> "$GITHUB_OUTPUT"
-          echo "code=$code" >> "$GITHUB_OUTPUT"
-      - name: Tag source has the store changelog for this version
         env:
-          CODE: ${{ steps.version.outputs.code }}
+          SOURCE_COMMIT: ${{ steps.identity.outputs.source_commit }}
         run: |
-          git cat-file -e "$TAG^{commit}:fastlane/metadata/android/en-US/changelogs/$CODE.txt" \
-            || { echo "::error::add fastlane/metadata/android/en-US/changelogs/$CODE.txt before tagging"; exit 1; }
+          python3 tooling/ci/verify_release_readiness.py \
+            --repository "$GH_REPO" --sha "$SOURCE_COMMIT" \
+            --report "$RUNNER_TEMP/release-evidence/ci.json"
+      - name: Record the artifact from the approved production CI attempt
+        id: bind-build
+        continue-on-error: true
+        run: |
+          python3 tooling/release/apk_evidence.py --ci-report "$RUNNER_TEMP/release-evidence/ci.json" \
+            --github-output "$GITHUB_OUTPUT"
       - name: Release notes exist in the release-engineering repo
         env:
-          VERSION: ${{ steps.version.outputs.name }}
+          VERSION: ${{ steps.identity.outputs.version_name }}
         run: |
           curl -fsSL "https://raw.githubusercontent.com/0cwa/collie-release-engineering/main/distribution/release-notes/$VERSION.md" \
             -o "$RUNNER_TEMP/notes.md" \
             || { echo "::error::add distribution/release-notes/$VERSION.md to collie-release-engineering main"; exit 1; }
-      - name: Uploaded APK is signed, versioned and named correctly
-        env:
-          NAME: ${{ steps.version.outputs.name }}
-          CODE: ${{ steps.version.outputs.code }}
+          printf '\n\n[Source-to-APK verification run](%s/%s/actions/runs/%s)\n' \
+            "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" >> "$RUNNER_TEMP/notes.md"
+      - name: Record exact assets and publish a prerelease without changing Latest
+        id: publish
         run: |
-          cd "$RUNNER_TEMP"
-          gh release download "$TAG" --pattern collie.apk
           bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
-          "$bt/apksigner" verify --print-certs collie.apk | tee certs.txt
-          # Output format differs between build-tools versions, so compare the distinct digests.
-          digests=$(grep -o 'certificate SHA-256 digest: [0-9a-f]\{64\}' certs.txt | awk '{print $NF}' | sort -u)
-          [ "$digests" = "$APK_CERT_SHA256" ] \
-            || { echo "::error::collie.apk is not signed only with the Collie release certificate (found: $digests)"; exit 1; }
-          "$bt/aapt2" dump badging collie.apk | head -1 | tee badging.txt
-          grep -q "package: name='$PACKAGE_ID' versionCode='$CODE' versionName='$NAME'" badging.txt \
-            || { echo "::error::APK identity does not match $PACKAGE_ID $CODE $NAME"; exit 1; }
-      - name: Upload profile copies
+          python3 tooling/release/publication.py publish \
+            --identity "$RUNNER_TEMP/release-evidence/before.json" --built-on "$BUILT_ON" \
+            --notes "$RUNNER_TEMP/notes.md" --scratch "$RUNNER_TEMP/release-assets" --build-tools "$bt" \
+            --output "$RUNNER_TEMP/release-evidence/published.json"
+          digest=$(jq -er '.identity.assets[] | select(.name == "collie.apk") | .sha256' \
+            "$RUNNER_TEMP/release-evidence/published.json")
+          echo "published_sha256=$digest" >> "$GITHUB_OUTPUT"
+      - name: Retain publication and exact-commit CI evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-evidence/*.json
+          retention-days: 30
+          if-no-files-found: warn
+
+  verify:
+    name: Verify published APK byte for byte
+    needs: [policy-tests, publish]
+    if: >-
+      !cancelled() && github.event_name == 'workflow_dispatch' &&
+      github.repository == '0cwa/collieim-android' &&
+      (needs.publish.result == 'success' || (inputs.verify_only && needs.policy-tests.result == 'success'))
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Bind the published asset and existing build to the signed tag
+        id: proof
+        env:
+          VERIFY_ONLY: ${{ inputs.verify_only }}
+          BOUND_BUILD: ${{ needs.publish.outputs.bound_build }}
+          PUBLISHED_SHA256: ${{ needs.publish.outputs.published_sha256 }}
+          LEGACY_RUN: ${{ inputs.verify_only && inputs.legacy_build_run || '' }}
         run: |
-          cd "$RUNNER_TEMP"
-          for name in $PROFILE_COPIES; do cp collie.apk "$name.apk"; done
-          gh release upload "$TAG" --clobber $(printf '%s.apk ' $PROFILE_COPIES)
-      - name: Publish as prerelease
+          bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          args=(--tag "$TAG" --scratch "$RUNNER_TEMP/verify-release" --build-tools "$bt"
+                --github-output "$GITHUB_OUTPUT")
+          if [[ "$VERIFY_ONLY" != true ]]; then
+            if [[ -z "$BOUND_BUILD" || -z "$PUBLISHED_SHA256" ]]; then
+              echo "::error::Publication could not bind the approved CI artifact and released APK"
+              exit 1
+            fi
+            args+=(--bound-build "$BOUND_BUILD" --published-sha256 "$PUBLISHED_SHA256")
+          elif [[ -n "$LEGACY_RUN" ]]; then
+            args+=(--legacy-build-run "$LEGACY_RUN")
+          fi
+          python3 tooling/release/apk_evidence.py "${args[@]}"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.proof.outputs.build_run_id }}
+          artifact-ids: ${{ steps.proof.outputs.artifact_id }}
+          path: ${{ runner.temp }}/release-source-build
+      - name: Reconstruct and compare the exact signed download
+        env:
+          SOURCE_COMMIT: ${{ steps.proof.outputs.source_commit }}
+          BUILD_RUN: ${{ steps.proof.outputs.build_run_id }}
+          BUILD_ARTIFACT: ${{ steps.proof.outputs.artifact_id }}
+          PUBLISHED_APK: ${{ steps.proof.outputs.published_apk }}
+          LEGACY_RUN: ${{ inputs.verify_only && inputs.legacy_build_run || '' }}
         run: |
-          cd "$RUNNER_TEMP"
-          printf '\n\n---\nBuilt on: %s. Reproducibility: not yet verified.\n' "$BUILT_ON" >> notes.md
-          gh release edit "$TAG" --notes-file notes.md --prerelease --draft=false
+          cd "$RUNNER_TEMP/release-source-build"
+          if [[ -z "$LEGACY_RUN" ]]; then
+            test "$(cat source-commit.txt)" = "$SOURCE_COMMIT"
+          fi
+          shopt -s nullglob
+          apks=(*.apk)
+          test "${#apks[@]}" -eq 1
+          result=$(env -u GH_TOKEN bash "$GITHUB_WORKSPACE/tooling/release/verify-apk-match.sh" "${apks[0]}" "$PUBLISHED_APK")
+          printf '%s\n' "$result"
+          {
+            printf '## Byte-for-byte match for %s\n\n' "$TAG"
+            printf 'The published APK matches the build from [source commit `%s`](%s/%s/commit/%s).\n\n' \
+              "$SOURCE_COMMIT" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$SOURCE_COMMIT"
+            printf '[Unsigned build run](%s/%s/actions/runs/%s) · [APK artifact %s](%s/%s/actions/runs/%s/artifacts/%s)\n\n' \
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$BUILD_RUN" \
+              "$BUILD_ARTIFACT" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$BUILD_RUN" "$BUILD_ARTIFACT"
+            printf '```text\n%s\n```\n' "$result"
+          } >> "$GITHUB_STEP_SUMMARY"

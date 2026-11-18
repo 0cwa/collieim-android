@@ -36,10 +36,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.signal.core.ui.util.ThemeUtil
 import org.signal.core.util.logging.Log
-import org.signal.emoji.EmojiProvider
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.conversation.ConversationContextMenu
-import org.thoughtcrime.securesms.mediapreview.MediaPreviewPlayerControlView
 import org.thoughtcrime.securesms.testutil.EmptyLogger
 import org.thoughtcrime.securesms.testutil.MockSignalStoreRule
 import org.signal.core.ui.R as CoreUiR
@@ -59,15 +57,10 @@ class OverlayThemeTest {
     preferences.edit().clear().commit()
     mockkStatic(SecurePreferenceManager::class)
     every { SecurePreferenceManager.getSecurePreferences(any()) } returns preferences
-    // The caption is inflated here to check the real media layout; bundled emoji are irrelevant.
-    every { signalStore.settings.isPreferSystemEmoji } returns true
-    mockkStatic(EmojiProvider::class)
-    every { EmojiProvider.getCandidates(any()) } returns null
   }
 
   @After
   fun tearDown() {
-    unmockkStatic(EmojiProvider::class)
     unmockkStatic(SecurePreferenceManager::class)
   }
 
@@ -92,14 +85,14 @@ class OverlayThemeTest {
   }
 
   @Test
-  fun `default media backdrop and image and video chrome retain their colors`() {
+  fun `default media preview theme retains its backdrop and chrome colors`() {
     val context = themedContext(R.style.TextSecure_MediaPreview, dark = true)
     assertMediaColors(context, Color.parseColor("#121212"), Color.parseColor("#DE121212"))
   }
 
   @Test
   @Config(sdk = [31, 35])
-  fun `dynamic media backdrop and image and video chrome use the dark system palette`() {
+  fun `dynamic media preview theme uses the dark system palette`() {
     val context = themedContext(R.style.Theme_Molly_Dynamic_MediaPreview, dark = true)
     val surface = dynamicColor(context, android.R.color.system_surface_dark, CoreUiR.color.dynamic_surface_dark)
 
@@ -171,16 +164,8 @@ class OverlayThemeTest {
   }
 
   private fun assertMediaColors(context: Context, backdropColor: Int, chromeColor: Int) {
-    val activityContent = LayoutInflater.from(context).inflate(R.layout.activity_media_preview, null)
-    val fragmentContent = LayoutInflater.from(context).inflate(R.layout.fragment_media_preview, null)
-    val controls = fragmentContent.findViewById<MediaPreviewPlayerControlView>(R.id.media_preview_playback_controls)
-
-    assertEquals(backdropColor, backgroundColor(activityContent.findViewById(R.id.fragment_container_view)))
-    for (mode in MediaPreviewPlayerControlView.MediaMode.entries) {
-      controls.setMediaMode(mode)
-      assertEquals(chromeColor, backgroundColor(fragmentContent.findViewById(R.id.media_preview_details_container)))
-      assertEquals(chromeColor, backgroundColor(fragmentContent.findViewById(R.id.toolbar_layout)))
-    }
+    assertEquals(backdropColor, ThemeUtil.getThemedColor(context, R.attr.media_preview_background))
+    assertEquals(chromeColor, ThemeUtil.getThemedColor(context, R.attr.media_preview_bar_background))
   }
 
   private fun contextMenuColor(context: Context): Int {

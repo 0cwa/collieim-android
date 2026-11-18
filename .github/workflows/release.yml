@@ -76,6 +76,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/release-evidence"
           bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           python3 tooling/release/publication.py inspect --tag "$TAG" --purpose publish \
+            --source-branch "$SOURCE_BRANCH" \
             --scratch "$RUNNER_TEMP/release-assets" --build-tools "$bt" \
             --output "$RUNNER_TEMP/release-evidence/before.json" --github-output "$GITHUB_OUTPUT"
       - name: Exact tag commit passed tests and the production build
@@ -106,6 +107,7 @@ jobs:
           bt=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
           python3 tooling/release/publication.py publish \
             --identity "$RUNNER_TEMP/release-evidence/before.json" --built-on "$BUILT_ON" \
+            --source-branch "$SOURCE_BRANCH" \
             --notes "$RUNNER_TEMP/notes.md" --scratch "$RUNNER_TEMP/release-assets" --build-tools "$bt" \
             --output "$RUNNER_TEMP/release-evidence/published.json"
           digest=$(jq -er '.identity.assets[] | select(.name == "collie.apk") | .sha256' \

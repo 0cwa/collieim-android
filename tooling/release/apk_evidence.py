@@ -8,12 +8,9 @@ import sys
 from urllib.parse import urlencode
 
 from publication import (
-    Failure, GitHub, PACKAGE, Publication, REPOSITORY, SHA256, positive, release_state,
+    Failure, GitHub, PACKAGE, Publication, RELEASE_SOURCE_BRANCHES, REPOSITORY, SHA256, positive, release_state,
     read_json, require, version_properties,
 )
-
-
-RELEASE_SOURCE_BRANCHES = ("main", "release/stable/8.35")
 
 
 def build_artifact(github, source, run_id, *, legacy, approved=None, source_branch="main"):

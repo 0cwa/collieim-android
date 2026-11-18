@@ -313,6 +313,26 @@ class PublicationTests(unittest.TestCase):
                         code=999999, name="8.36.0", certificate="c" * 64), prerelease=True)
         self.assertEqual(self.publish()["status"], "PRERELEASE_PUBLISHED")
 
+    def test_maintenance_publication_rejects_switching_to_main(self):
+        branch = "release/stable/8.35"
+        result = self.helper.publish(self.inspect(), "local", "Human release notes", branch)
+        self.assertEqual(result["identity"]["publication"]["source_branch"], branch)
+        snapshot = self.inspect("promote")
+        with self.assertRaisesRegex(p.Failure, "Requested branch differs"):
+            self.helper.promote(snapshot, self.rebuilt(), RUN, source_branch="main")
+        self.assertEqual(self.inspect("promote"), snapshot)
+        with self.assertRaisesRegex(p.Failure, "Source branch differs"):
+            self.helper.publish(snapshot, "local", "Human release notes", "main")
+        result = self.helper.promote(snapshot, self.rebuilt(), RUN, source_branch=branch)
+        self.assertEqual(result["identity"]["publication"]["source_branch"], branch)
+
+    def test_historical_record_keeps_main_route_without_rewriting_record(self):
+        result = self.publish()
+        record = result["identity"]["publication"]
+        self.assertNotIn("source_branch", record)
+        self.assertEqual(p.publication_source_branch(record), "main")
+        self.assertEqual(self.inspect("promote")["publication"], record)
+
     def test_successful_promotion_keeps_every_immutable_asset(self):
         self.publish()
         expected = self.inspect("promote")
@@ -556,6 +576,15 @@ class PromotionWorkflowTests(unittest.TestCase):
         self.assertIn('needs: [check, build]', final)
         self.assertIn('artifact-ids: ${{ needs.check.outputs.identity_artifact_id }}', final)
         self.assertNotIn('name: promotion-identity-${{ github.run_id }}-${{ github.run_attempt }}', final)
+
+    def test_promotion_uses_publication_route_for_both_ci_checks(self):
+        workflow = (ROOT / ".github/workflows/promote.yml").read_text()
+        check, final = workflow.split("  compare-and-promote:", 1)
+        self.assertNotIn("inputs.source_branch", workflow)
+        self.assertIn("source_branch: ${{ steps.identity.outputs.source_branch }}", check)
+        self.assertIn("SOURCE_BRANCH: ${{ steps.identity.outputs.source_branch }}", check)
+        self.assertIn("SOURCE_BRANCH: ${{ needs.check.outputs.source_branch }}", final)
+        self.assertIn('cmp "$RUNNER_TEMP/promotion-evidence/ci.json" "$RUNNER_TEMP/promotion-evidence/final-ci.json"', final)
 
     def test_final_promotion_refreshes_exact_source_ci_after_rebuild(self):
         workflow = (ROOT / '.github/workflows/promote.yml').read_text()

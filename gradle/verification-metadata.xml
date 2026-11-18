@@ -10552,5 +10552,21 @@
             <sha256 value="ab10045f321d1023e3c810625a209c0c8e007db7622fa4a0fdfcf1156e115b8b" origin="Pinned local native artifact; not independent reproducibility proof"/>
          </artifact>
       </component>
+      <component group="im.collie.native" name="libsignal-android" version="0.107.0-collie.1">
+         <artifact name="libsignal-android-0.107.0-collie.1.aar">
+            <sha256 value="6d6c59ff67b6a0a328b66b737f92f679000eebdd92681aaa802ee7c9f2a9e897" origin="Pinned local native artifact; not independent reproducibility proof"/>
+         </artifact>
+         <artifact name="libsignal-android-0.107.0-collie.1.pom">
+            <sha256 value="03cfa3b4200a333feb1a2028c75be6f3473a711875a52dc084268c85fd123bce" origin="Pinned local native artifact; not independent reproducibility proof"/>
+         </artifact>
+      </component>
+      <component group="im.collie.native" name="libsignal-client" version="0.107.0-collie.1">
+         <artifact name="libsignal-client-0.107.0-collie.1.jar">
+            <sha256 value="76b20e6893ee3da7d63f34992f7960cef0694322ddef8c2d7dbf6214d3dcfa5d" origin="Pinned local native artifact; not independent reproducibility proof"/>
+         </artifact>
+         <artifact name="libsignal-client-0.107.0-collie.1.pom">
+            <sha256 value="1d1377bf39c5f32ca446d5ea0cb60d6095ef2fc9dc6c57974f67b55fd1ca77fe" origin="Pinned local native artifact; not independent reproducibility proof"/>
+         </artifact>
+      </component>
    </components>
 </verification-metadata>

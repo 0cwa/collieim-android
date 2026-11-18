@@ -1,37 +1,37 @@
 {
   "schema": 1,
   "kind": "native-publication-plan",
-  "status": "NOT PUBLISHED",
-  "operator_approval": "REQUIRED",
+  "status": "PUBLISHED_AND_READ_BACK",
+  "operator_approval": "RECORDED",
   "trust": "accepted trusted-local binary inputs; independent native reproduction NOT RUN",
-  "repository": "https://repo.collie.im/native-inputs/v1/maven/",
-  "lock_sha256": "557e20c3f8c1d6290af3007bb8eba5469e5a77f569b8efc7dc2edc1e68ba7856",
-  "stage_receipt_sha256": "4ee680e6a7139b0a87c877369b68a63d5d3d33a9a6d7c9a3242f50edb1744f24",
-  "verification_sha256": "687fb1544cc1600748129ced52932b8ff8867f0e11bc70f008690a94854f5401",
+  "repository": "https://repo.collie.im/native-inputs/v2/maven/",
+  "lock_sha256": "a6dbdecc3b6c2a859a5b74fa92567107f906da20912fa39a2c1486980e5d4ea5",
+  "stage_receipt_sha256": "77e1304271d3d73f9fd70e567a51bd957407a9a56611892318252fc8237aed35",
+  "verification_sha256": "b2b0031541f1058a474b54888659959df43c967af9e6aa9b67015c16518b7f58",
   "files": [
     {
-      "path": "im/collie/native/libsignal-android/0.106.1-collie.1/libsignal-android-0.106.1-collie.1.aar",
-      "url": "https://repo.collie.im/native-inputs/v1/maven/im/collie/native/libsignal-android/0.106.1-collie.1/libsignal-android-0.106.1-collie.1.aar",
-      "bytes": 215587114,
-      "sha256": "4247031a753f73f12753d04f14d9316436bbf07af2097c1b897feedd360dbd9a"
+      "path": "im/collie/native/libsignal-android/0.107.0-collie.1/libsignal-android-0.107.0-collie.1.aar",
+      "url": "https://repo.collie.im/native-inputs/v2/maven/im/collie/native/libsignal-android/0.107.0-collie.1/libsignal-android-0.107.0-collie.1.aar",
+      "bytes": 217811391,
+      "sha256": "6d6c59ff67b6a0a328b66b737f92f679000eebdd92681aaa802ee7c9f2a9e897"
     },
     {
-      "path": "im/collie/native/libsignal-android/0.106.1-collie.1/libsignal-android-0.106.1-collie.1.pom",
-      "url": "https://repo.collie.im/native-inputs/v1/maven/im/collie/native/libsignal-android/0.106.1-collie.1/libsignal-android-0.106.1-collie.1.pom",
-      "bytes": 1718,
-      "sha256": "94432b6fefcb0eeaae4622dc3d381b4ed1ae7c2a453967db6f416a636c25ad87"
+      "path": "im/collie/native/libsignal-android/0.107.0-collie.1/libsignal-android-0.107.0-collie.1.pom",
+      "url": "https://repo.collie.im/native-inputs/v2/maven/im/collie/native/libsignal-android/0.107.0-collie.1/libsignal-android-0.107.0-collie.1.pom",
+      "bytes": 1721,
+      "sha256": "03cfa3b4200a333feb1a2028c75be6f3473a711875a52dc084268c85fd123bce"
     },
     {
-      "path": "im/collie/native/libsignal-client/0.106.1-collie.1/libsignal-client-0.106.1-collie.1.jar",
-      "url": "https://repo.collie.im/native-inputs/v1/maven/im/collie/native/libsignal-client/0.106.1-collie.1/libsignal-client-0.106.1-collie.1.jar",
-      "bytes": 1003356,
-      "sha256": "c361b8e905c770b838535fdac5a0bdf0f995f8ed6ce0a6837cb4c7360e8c5a79"
+      "path": "im/collie/native/libsignal-client/0.107.0-collie.1/libsignal-client-0.107.0-collie.1.jar",
+      "url": "https://repo.collie.im/native-inputs/v2/maven/im/collie/native/libsignal-client/0.107.0-collie.1/libsignal-client-0.107.0-collie.1.jar",
+      "bytes": 1019839,
+      "sha256": "76b20e6893ee3da7d63f34992f7960cef0694322ddef8c2d7dbf6214d3dcfa5d"
     },
     {
-      "path": "im/collie/native/libsignal-client/0.106.1-collie.1/libsignal-client-0.106.1-collie.1.pom",
-      "url": "https://repo.collie.im/native-inputs/v1/maven/im/collie/native/libsignal-client/0.106.1-collie.1/libsignal-client-0.106.1-collie.1.pom",
-      "bytes": 1693,
-      "sha256": "cb706c8229ba35967c285a4f28e0049769e904b9cc9fbbb6c97d37596690cd23"
+      "path": "im/collie/native/libsignal-client/0.107.0-collie.1/libsignal-client-0.107.0-collie.1.pom",
+      "url": "https://repo.collie.im/native-inputs/v2/maven/im/collie/native/libsignal-client/0.107.0-collie.1/libsignal-client-0.107.0-collie.1.pom",
+      "bytes": 1696,
+      "sha256": "1d1377bf39c5f32ca446d5ea0cb60d6095ef2fc9dc6c57974f67b55fd1ca77fe"
     },
     {
       "path": "im/collie/native/ringrtc-android/2.74.0-collie.1/ringrtc-android-2.74.0-collie.1.aar",

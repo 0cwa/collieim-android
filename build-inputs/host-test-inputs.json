@@ -7,7 +7,7 @@
   "resource": "libsignal_jni_testing_amd64.so",
   "public_url": null,
   "complete_host_build_recipe": "tooling/host-tests/build_libsignal.py",
-  "prepared_libsignal_tree": "de930179286b4fe68875475c1b0678615e180908",
+  "prepared_libsignal_tree": "7865de9051f53b286424a514061b5aaf4335eef0",
   "generated_resources": "build/host-tests/resources",
   "generated_receipt": "build/host-tests/receipt.json",
   "gradle_property": "collieHostJniDir",

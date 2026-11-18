@@ -136,6 +136,8 @@ public abstract class PassphraseRequiredActivity extends PassphraseActivity impl
       return STATE_UI_BLOCKING_UPGRADE;
     } else if (isRegistrationFlow()) {
       return STATE_NORMAL;
+    } else if (SignalStore.unifiedpush().getHasIncompleteLinkRestore()) {
+      return STATE_RESUME_LINKING_REG;
     } else if (!SignalStore.registration().getHasPromptedPushRegistration()) {
       return STATE_WELCOME_PUSH_SCREEN;
     } else if (shouldResumeLinkingRegistration()) {

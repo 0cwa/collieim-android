@@ -190,6 +190,10 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
     Unit
   }
 
+  override suspend fun isLinkAndSyncRecoveryRequired(): Boolean = withContext(Dispatchers.IO) {
+    im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition.isLinkRestoreRecoveryRequired()
+  }
+
   override suspend fun clearLocalDataAndRestart() = withContext(Dispatchers.Main) {
     Log.w(TAG, "[clearLocalDataAndRestart] Wiping all local app data and attempting to relaunch.")
     AppUtil.clearAllDataAndRestart(context)
@@ -643,7 +647,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
 
     launch(Dispatchers.IO) {
       try {
-        when (val result = BackupRepository.restoreRemoteBackup()) {
+        when (val result = BackupRepository.restoreRemoteBackup(stagedForRegistration = true)) {
           is RemoteRestoreResult.Success -> {
             // The restore adopted the account's existing SVRB chain, so there's nothing left for BackupMessagesJob to re-init.
             SignalStore.backup.backupSecretRestoreRequired = false
@@ -654,6 +658,9 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
                 restoredProfileKey = SignalDatabase.recipients.getRecord(result.selfRecipientId).profileKey?.let { ProfileKey(it) }
               )
             )
+          }
+          RemoteRestoreResult.RecoveryRequired -> {
+            send(RemoteBackupRestoreProgress.GenericError(IllegalStateException("Restored account requires recovery")))
           }
           RemoteRestoreResult.NetworkError -> {
             send(RemoteBackupRestoreProgress.NetworkError())
@@ -709,6 +716,7 @@ class AppRegistrationStorageController(private val context: Context) : StorageCo
         when (val result = BackupRepository.restoreLinkAndSyncBackup(TransferArchiveResponse(cdn = cdn, key = key), MessageBackupKey(ephemeralBackupKeyBytes))) {
           is RemoteRestoreResult.Success -> send(LinkAndSyncProgress.Complete)
           RemoteRestoreResult.Canceled -> Log.i(TAG, "[restoreLinkAndSyncBackup] Restore canceled.")
+          RemoteRestoreResult.RecoveryRequired -> send(LinkAndSyncProgress.RecoveryRequired)
           else -> {
             Log.w(TAG, "[restoreLinkAndSyncBackup] Link-and-sync restore did not succeed: $result")
             send(LinkAndSyncProgress.Failed())

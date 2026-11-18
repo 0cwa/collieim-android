@@ -15,7 +15,8 @@ import org.signal.core.util.ByteSize
  */
 data class MessageSyncScreenState(
   val stage: Stage = Stage.Preparing,
-  val showSyncFailedDialog: Boolean = false
+  val showSyncFailedDialog: Boolean = false,
+  val showRecoveryRequired: Boolean = false
 ) {
 
   /** Whether we've moved past cancelable progress into non-cancelable finalization. */

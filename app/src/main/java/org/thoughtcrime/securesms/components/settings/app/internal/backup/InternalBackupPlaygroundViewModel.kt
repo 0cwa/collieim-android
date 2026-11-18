@@ -329,6 +329,7 @@ class InternalBackupPlaygroundViewModel : ViewModel() {
         }
 
         RemoteRestoreResult.Canceled,
+        RemoteRestoreResult.RecoveryRequired,
         RemoteRestoreResult.Failure,
         RemoteRestoreResult.PermanentSvrBFailure,
         RemoteRestoreResult.NetworkError -> {

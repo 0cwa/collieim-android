@@ -30,7 +30,8 @@ class RegistrationViewModel(
   val repository: RegistrationRepository,
   private val savedStateHandle: SavedStateHandle,
   startDestination: RegistrationRoute? = null,
-  private val startFresh: Boolean = false
+  private val startFresh: Boolean = false,
+  forceStartDestination: Boolean = false
 ) : EventDrivenViewModel<RegistrationFlowEvent>(TAG, shouldLogEvents = false) {
 
   companion object {
@@ -57,7 +58,11 @@ class RegistrationViewModel(
 
   init {
     if (startDestination != null) {
-      _state.value = _state.value.copy(isRestoringNavigationState = false)
+      _state.value = if (forceStartDestination) {
+        _state.value.copy(backStack = listOf(startDestination), isRestoringNavigationState = false)
+      } else {
+        _state.value.copy(isRestoringNavigationState = false)
+      }
     } else {
       _state.value = _state.value.copy(isRestoringNavigationState = true)
       viewModelScope.launch {

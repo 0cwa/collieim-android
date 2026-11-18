@@ -9,6 +9,7 @@ import kotlin.time.Duration
 
 sealed interface RegisterLinkDeviceResult {
   data object Success : RegisterLinkDeviceResult
+  data object RecoveryRequired : RegisterLinkDeviceResult
   data object IncorrectVerification : RegisterLinkDeviceResult
   data object MissingCapability : RegisterLinkDeviceResult
   data object MaxLinkedDevices : RegisterLinkDeviceResult

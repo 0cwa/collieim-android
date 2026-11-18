@@ -27,6 +27,9 @@ sealed interface LinkAndSyncProgress {
   /** The link-and-sync restore completed (or there was nothing to restore). */
   data object Complete : LinkAndSyncProgress
 
+  /** The import may have changed local state and must not be retried or completed normally. */
+  data object RecoveryRequired : LinkAndSyncProgress
+
   /** The link-and-sync restore failed. Linking still succeeded, so callers may choose to continue. */
   data class Failed(val cause: Throwable? = null) : LinkAndSyncProgress
 

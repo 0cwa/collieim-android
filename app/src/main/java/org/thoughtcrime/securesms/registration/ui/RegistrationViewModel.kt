@@ -48,6 +48,7 @@ import org.signal.storage.keyvalue.isTerminal
 import org.signal.storage.keyvalue.isWantingManualRemoteRestore
 import org.signal.storage.protos.LinkedDeviceInfo
 import org.signal.storage.protos.RestoreDecisionState
+import org.thoughtcrime.securesms.backup.v2.RemoteRestoreResult
 import org.thoughtcrime.securesms.backup.v2.BackupRepository
 import org.thoughtcrime.securesms.backup.v2.RestoreTimestampResult
 import org.thoughtcrime.securesms.dependencies.AppDependencies
@@ -1184,7 +1185,10 @@ class RegistrationViewModel : ViewModel() {
       Log.i(TAG, "Primary has given Linked device an ephemeral backup key, waiting for backup...")
       val result = RegistrationRepository.waitForLinkAndSyncBackupDetails()
       if (result != null) {
-        BackupRepository.restoreLinkAndSyncBackup(result, MessageBackupKey(message.ephemeralBackupKey!!.toByteArray()))
+        val restore = BackupRepository.restoreLinkAndSyncBackup(result, MessageBackupKey(message.ephemeralBackupKey!!.toByteArray()))
+        if (restore == RemoteRestoreResult.RecoveryRequired) {
+          return RegisterLinkDeviceResult.RecoveryRequired
+        }
       } else {
         Log.w(TAG, "Unable to get transfer archive data, continuing with linking process")
       }

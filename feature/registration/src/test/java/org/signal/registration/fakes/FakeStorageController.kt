@@ -29,6 +29,7 @@ import java.time.LocalDateTime
  * V2 backup and restore it successfully. Methods that no flow under test should reach fail loudly.
  */
 class FakeStorageController : StorageController {
+  override suspend fun isLinkAndSyncRecoveryRequired(): Boolean = false
 
   /** Guards [inProgressData], whose read-modify-write updates arrive concurrently from multiple [kotlinx.coroutines.Dispatchers.IO] threads. */
   private val dataLock = Any()

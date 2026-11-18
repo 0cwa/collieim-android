@@ -88,7 +88,12 @@ class RegistrationActivity : PassphraseRequiredActivity() {
   override fun onCreate(savedInstanceState: Bundle?, ready: Boolean) {
     super.onCreate(savedInstanceState, ready)
 
-    val startDestination = IntentCompat.getParcelableExtra(intent, START_DESTINATION_EXTRA, RegistrationRoute::class.java)
+    val linkRestoreRecovery = SignalStore.unifiedpush.hasIncompleteLinkRestore
+    val startDestination = if (linkRestoreRecovery) {
+      RegistrationRoute.MessageSync
+    } else {
+      IntentCompat.getParcelableExtra(intent, START_DESTINATION_EXTRA, RegistrationRoute::class.java)
+    }
     val startFresh = intent.getBooleanExtra(START_FRESH_EXTRA, false)
     val isReRegistration = intent.getBooleanExtra(IS_REREGISTRATION_EXTRA, false)
 
@@ -97,11 +102,13 @@ class RegistrationActivity : PassphraseRequiredActivity() {
         Surface(modifier = Modifier.fillMaxSize()) {
           RegistrationNavHost(
             startDestination = startDestination,
+            forceStartDestination = linkRestoreRecovery,
             startFresh = startFresh,
             modifier = Modifier
               .fillMaxSize()
               .navigationBarsPadding(),
             onRegistrationComplete = {
+              if (SignalStore.unifiedpush.hasIncompleteLinkRestore) return@RegistrationNavHost
               if (SignalStore.account.isPrimaryDevice && SignalStore.account.isMultiDevice) {
                 SignalStore.misc.shouldShowLinkedDevicesReminder = isReRegistration
               }

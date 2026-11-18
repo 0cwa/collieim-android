@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -69,7 +70,7 @@ fun MessageSyncScreen(
 ) {
   val layoutParams = RegistrationScaffold.rememberLayoutParams()
 
-  if (!state.showSyncFailedDialog) {
+  if (!state.showSyncFailedDialog && !state.showRecoveryRequired) {
     KeepScreenOnEffect()
   }
 
@@ -80,7 +81,15 @@ fun MessageSyncScreen(
     }
   }
 
-  if (state.showSyncFailedDialog) {
+  if (state.showRecoveryRequired) {
+    AlertDialog(
+      onDismissRequest = {},
+      title = { Text(stringResource(R.string.MessageSyncScreen__recovery_title)) },
+      text = { Text(stringResource(R.string.MessageSyncScreen__recovery_body)) },
+      confirmButton = {},
+      properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+    )
+  } else if (state.showSyncFailedDialog) {
     Dialogs.SimpleAlertDialog(
       title = stringResource(R.string.MessageSyncScreen__couldnt_restore_messages),
       body = stringResource(R.string.MessageSyncScreen__your_messages_couldnt_be_transferred),

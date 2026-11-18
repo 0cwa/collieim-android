@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.signal.core.ui.compose.EventDrivenViewModel
@@ -65,7 +66,18 @@ class MessageSyncViewModel(
   private fun startRestore() {
     restoreJob?.cancel()
     restoreJob = viewModelScope.launch {
-      repository.restoreLinkAndSyncBackup().collect { progress ->
+      if (repository.isLinkAndSyncRecoveryRequired()) {
+        _state.update { it.copy(showSyncFailedDialog = false, showRecoveryRequired = true) }
+        return@launch
+      }
+      repository.restoreLinkAndSyncBackup().takeWhile { progress ->
+        if (progress is LinkAndSyncProgress.RecoveryRequired) {
+          _state.update { it.copy(showSyncFailedDialog = false, showRecoveryRequired = true) }
+          false
+        } else {
+          true
+        }
+      }.collect { progress ->
         when (progress) {
           is LinkAndSyncProgress.Waiting -> Unit
           is LinkAndSyncProgress.Downloading -> _state.update {
@@ -85,6 +97,9 @@ class MessageSyncViewModel(
             Log.w(TAG, "[MessageSync] Link-and-sync failed; prompting the user to retry or continue without messages.", progress.cause)
             _state.update { it.copy(showSyncFailedDialog = true) }
           }
+          is LinkAndSyncProgress.RecoveryRequired -> {
+            _state.update { it.copy(showSyncFailedDialog = false, showRecoveryRequired = true) }
+          }
           is LinkAndSyncProgress.RelinkRequired -> {
             Log.w(TAG, "[MessageSync] Primary requested re-link; wiping local data and restarting.")
             repository.clearLocalDataAndRestart()
@@ -95,7 +110,7 @@ class MessageSyncViewModel(
   }
 
   private fun finish(cancelDownload: Boolean = false) {
-    if (finishJob != null) {
+    if (finishJob != null || _state.value.showRecoveryRequired) {
       return
     }
 
@@ -103,6 +118,11 @@ class MessageSyncViewModel(
       _state.update { it.copy(stage = Stage.Finishing) }
       if (cancelDownload) {
         restoreJob?.cancelAndJoin()
+      }
+      if (_state.value.showRecoveryRequired || repository.isLinkAndSyncRecoveryRequired()) {
+        _state.update { it.copy(showSyncFailedDialog = false, showRecoveryRequired = true) }
+        finishJob = null
+        return@launch
       }
       repository.restoreLinkedDeviceFromStorageService()
       parentEventEmitter.navigateTo(RegistrationRoute.FullyComplete)
@@ -115,6 +135,10 @@ class MessageSyncViewModel(
 
   @VisibleForTesting
   suspend fun applyEvent(state: MessageSyncScreenState, event: MessageSyncScreenEvent, stateEmitter: (MessageSyncScreenState) -> Unit) {
+    if (state.showRecoveryRequired || _state.value.showRecoveryRequired) {
+      stateEmitter(_state.value)
+      return
+    }
     val result = when (event) {
       MessageSyncScreenEvent.LearnMoreClick -> {
         _actions.trySend(MessageSyncScreenAction.OpenLearnMoreArticle)
@@ -124,17 +148,19 @@ class MessageSyncViewModel(
         Log.i(TAG, "[MessageSync] User cancelled message sync; awaiting restore cancellation, then restoring from storage service and completing.")
         stateEmitter(state.copy(stage = Stage.Finishing))
         finish(cancelDownload = true)
-        state.copy(stage = Stage.Finishing)
+        return
       }
       MessageSyncScreenEvent.RetryClick -> {
         Log.i(TAG, "[MessageSync] User retrying link-and-sync after a failure.")
+        stateEmitter(state.copy(showSyncFailedDialog = false, stage = Stage.Preparing))
         startRestore()
-        state.copy(showSyncFailedDialog = false, stage = Stage.Preparing)
+        return
       }
       MessageSyncScreenEvent.ContinueWithoutMessagesClick -> {
         Log.i(TAG, "[MessageSync] User continuing without message history after a failed link-and-sync.")
+        stateEmitter(state.copy(showSyncFailedDialog = false, stage = Stage.Finishing))
         finish()
-        state.copy(showSyncFailedDialog = false, stage = Stage.Finishing)
+        return
       }
     }
     stateEmitter(result)

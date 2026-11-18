@@ -146,6 +146,7 @@ import org.thoughtcrime.securesms.jobs.UploadAttachmentToArchiveJob
 import org.thoughtcrime.securesms.keyvalue.BackupValues
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import im.molly.unifiedpush.lifecycle.UnifiedPushAccountTransition
+import im.molly.unifiedpush.lifecycle.UnifiedPushLifecycle
 import org.thoughtcrime.securesms.keyvalue.protos.ArchiveUploadProgressState
 import org.thoughtcrime.securesms.logsubmit.SubmitDebugLogRepository
 import org.thoughtcrime.securesms.net.SignalNetwork
@@ -1118,13 +1119,7 @@ object BackupRepository {
       return ImportResult.Failure
     }
 
-    return frameReader.use { reader ->
-      // Restored identity data is only staged here. Keep push unavailable until the local registration
-      // commit explicitly verifies and publishes the restored account context.
-      UnifiedPushAccountTransition.withTransitionBlocking(keepIncompleteMarker = true) {
-        import(reader, selfData, backupMode = BackupMode.LOCAL, cancellationSignal = { false })
-      }
-    }
+    return import(frameReader, selfData, backupMode = BackupMode.LOCAL, finalization = ImportFinalization.STAGED_REGISTRATION, cancellationSignal = { false })
   }
 
   /**
@@ -1138,7 +1133,8 @@ object BackupRepository {
     selfData: SelfData,
     backupKey: MessageBackupKey?,
     forwardSecrecyToken: BackupForwardSecrecyToken,
-    cancellationSignal: () -> Boolean = { false }
+    cancellationSignal: () -> Boolean = { false },
+    stagedForRegistration: Boolean = false,
   ): ImportResult {
     try {
       val frameReader = if (backupKey == null) {
@@ -1153,9 +1149,8 @@ object BackupRepository {
         )
       }
 
-      return frameReader.use { reader ->
-        import(reader, selfData, backupMode = BackupMode.REMOTE, cancellationSignal = cancellationSignal)
-      }
+      val finalization = if (stagedForRegistration) ImportFinalization.STAGED_REGISTRATION else ImportFinalization.CONTINUE_SAME_ACCOUNT
+      return import(frameReader, selfData, backupMode = BackupMode.REMOTE, finalization = finalization, cancellationSignal = cancellationSignal)
     } catch (e: IOException) {
       Log.w(TAG, "Unable to restore signal backup", e)
       return ImportResult.Failure
@@ -1181,9 +1176,7 @@ object BackupRepository {
       dataStream = inputStreamFactory
     )
 
-    return frameReader.use { reader ->
-      import(reader, selfData, backupMode = BackupMode.LINK_SYNC, cancellationSignal = cancellationSignal)
-    }
+    return import(frameReader, selfData, backupMode = BackupMode.LINK_SYNC, finalization = ImportFinalization.CONTINUE_SAME_ACCOUNT, cancellationSignal = cancellationSignal)
   }
 
   /**
@@ -1197,9 +1190,7 @@ object BackupRepository {
     cancellationSignal: () -> Boolean = { false }
   ): ImportResult {
     if (backupKey == null) {
-      return PlainTextBackupReader(inputStreamFactory(), length).use { reader ->
-        import(reader, selfData, backupMode = BackupMode.REMOTE, cancellationSignal = cancellationSignal)
-      }
+      return import(PlainTextBackupReader(inputStreamFactory(), length), selfData, backupMode = BackupMode.REMOTE, finalization = ImportFinalization.CONTINUE_SAME_ACCOUNT, cancellationSignal = cancellationSignal)
     }
 
     val snapshot = AppDependencies.blobs.forNonAutoEncryptingInitializedSessionOnDisk(AppDependencies.application)
@@ -1209,8 +1200,8 @@ object BackupRepository {
         aci = selfData.aci,
         length = length,
         dataStream = file::inputStream
-      ).use { reader ->
-        import(reader, selfData, backupMode = BackupMode.REMOTE, cancellationSignal = cancellationSignal)
+      ).let { reader ->
+        import(reader, selfData, backupMode = BackupMode.REMOTE, finalization = ImportFinalization.CONTINUE_SAME_ACCOUNT, cancellationSignal = cancellationSignal)
       }
     }
   }
@@ -1226,37 +1217,166 @@ object BackupRepository {
   ): ImportResult {
     val frameReader = PlainTextBackupReader(inputStreamFactory(), length)
 
-    return frameReader.use { reader ->
-      import(reader, selfData, backupMode = BackupMode.PLAINTEXT_EXPORT, cancellationSignal = cancellationSignal)
+    return import(frameReader, selfData, backupMode = BackupMode.PLAINTEXT_EXPORT, finalization = ImportFinalization.CONTINUE_SAME_ACCOUNT, cancellationSignal = cancellationSignal)
+  }
+
+  /** Finalization is chosen by the entry point, never inferred from the archive's data. */
+  internal enum class ImportFinalization { STAGED_REGISTRATION, CONTINUE_SAME_ACCOUNT }
+
+  /** Redacted comparison value; never log this object or its credential material. */
+  private class ImportAccountSnapshot(
+    private val aci: String,
+    private val pni: String?,
+    private val e164: String?,
+    private val deviceId: Int,
+    private val password: String,
+    private val publicIdentity: ByteArray,
+  ) {
+    fun matchesAccount(expectedAci: String): Boolean = aci == expectedAci
+
+    fun matches(other: ImportAccountSnapshot?): Boolean = other != null &&
+      aci == other.aci && pni == other.pni && e164 == other.e164 && deviceId == other.deviceId &&
+      password == other.password && publicIdentity.contentEquals(other.publicIdentity)
+  }
+
+  private fun captureImportAccount(): ImportAccountSnapshot? {
+    val account = SignalStore.account
+    if (!account.isRegistered || !account.hasAciIdentityKey()) return null
+    val aci = account.aci?.toString() ?: return null
+    val password = account.servicePassword ?: return null
+    if (account.deviceId < 1) return null
+    return ImportAccountSnapshot(aci, account.pni?.toString(), account.e164, account.deviceId, password, account.aciIdentityKey.publicKey.serialize())
+  }
+
+  /**
+   * Staged boundary for all V2 import entry points. This protects participating push work only;
+   * it does not establish global account isolation until every identity writer joins the account owner.
+   */
+  internal fun runV2ImportBoundary(finalization: ImportFinalization, expectedAci: String, linkRestore: Boolean = false, operation: () -> ImportResult): ImportResult {
+    var initial: ImportAccountSnapshot? = null
+    var imported = false
+    val commitReceipt = java.util.concurrent.atomic.AtomicReference<ImportResult?>()
+    val result = try {
+      UnifiedPushAccountTransition.withTransitionBlockingResult(
+        keepIncompleteMarker = finalization == ImportFinalization.STAGED_REGISTRATION,
+        linkRestore = linkRestore,
+        retainMarkerWhenNotReady = true,
+        commitReceipt = commitReceipt,
+        readyAfter = { imported && initial?.matches(captureImportAccount()) == true },
+      ) {
+        if (finalization == ImportFinalization.CONTINUE_SAME_ACCOUNT) {
+          initial = captureImportAccount()
+          // A coherent existing account must not import an archive for another account.
+          if (initial?.matchesAccount(expectedAci) != true) return@withTransitionBlockingResult ImportResult.Failure
+        }
+        operation().also { imported = it is ImportResult.Success }
+      }
+    } catch (failure: InterruptedException) {
+      Thread.currentThread().interrupt()
+      if (commitReceipt.get() is ImportResult.Success) throw ImportCommittedAfterCancellationException(failure)
+      throw failure
+    } catch (failure: CancellationException) {
+      if (commitReceipt.get() is ImportResult.Success) throw ImportCommittedAfterCancellationException(failure)
+      throw failure
+    } catch (failure: Exception) {
+      if (finalization == ImportFinalization.CONTINUE_SAME_ACCOUNT) {
+        throw ImportRecoveryRequiredException(failure)
+      }
+      throw failure
     }
+    if (finalization == ImportFinalization.CONTINUE_SAME_ACCOUNT && result.retainedMarker) {
+      // A failed SQL transaction may still have written account/backup values in another store.
+      throw ImportRecoveryRequiredException()
+    }
+    return result.value
+  }
+
+  private fun validatedImportHeader(frameReader: BackupImportReader): BackupInfo? {
+    val header = frameReader.getHeader()
+    if (header == null) {
+      Log.e(TAG, "[import] Backup is missing header!")
+      SignalStore.backup.hasInvalidBackupVersion = false
+      return null
+    }
+    if (header.version > VERSION) {
+      Log.e(TAG, "[import] Backup version is newer than we understand: ${header.version}")
+      SignalStore.backup.hasInvalidBackupVersion = true
+      return null
+    }
+    SignalStore.backup.hasInvalidBackupVersion = false
+    return header
+  }
+
+  /** Reader finalization is part of the owned operation, before admission can reopen. */
+  internal fun runV2OwnedReader(reader: BackupImportReader, operation: (BackupImportReader) -> ImportResult): ImportResult =
+    reader.use(operation)
+
+  /** The imported self record must belong to the account named by the import request. */
+  internal fun verifyImportedSelf(result: ImportResult, expectedAci: ACI, validateCurrentSelf: Boolean = false): ImportResult {
+    if (result is ImportResult.Success) {
+      val imported = SignalDatabase.recipients.getRecord(result.selfRecipientId)
+      if (imported.aci != expectedAci) {
+        throw IllegalStateException("Imported backup self does not match the requested account")
+      }
+      if (validateCurrentSelf) {
+        if (SignalStore.account.aci != expectedAci) {
+          throw IllegalStateException("Current account changed during backup import")
+        }
+        val current = SignalDatabase.recipients.getRecord(Recipient.self().id)
+        if (current.id != imported.id || current.aci != expectedAci) {
+          throw IllegalStateException("Current self does not match the imported account")
+        }
+      }
+    }
+    return result
   }
 
   private fun import(
     frameReader: BackupImportReader,
     selfData: SelfData,
     backupMode: BackupMode,
+    finalization: ImportFinalization,
+    cancellationSignal: () -> Boolean
+  ): ImportResult {
+    // A rejected header cannot have changed the database; don't strand an already-registered user.
+    // Local restores historically enter the staging barrier even when the header is rejected.
+    var readerOwned = false
+    try {
+      // Link-and-sync follows local account registration; do not import a different account's archive.
+      if (backupMode.isLinkAndSync && SignalStore.account.aci != selfData.aci) {
+        Log.w(TAG, "[import] Link backup account does not match the current account")
+        return ImportResult.Failure
+      }
+
+      val header = if (finalization == ImportFinalization.CONTINUE_SAME_ACCOUNT) {
+        validatedImportHeader(frameReader) ?: return ImportResult.Failure
+      } else null
+      return runV2ImportBoundary(finalization, selfData.aci.toString(), linkRestore = backupMode == BackupMode.LINK_SYNC) {
+        readerOwned = true
+        runV2OwnedReader(frameReader) { reader ->
+          val checkedHeader = header ?: validatedImportHeader(reader) ?: return@runV2OwnedReader ImportResult.Failure
+          if (SignalStore.account.aci != selfData.aci) {
+            throw IllegalStateException("Current account changed during backup import")
+          }
+          val result = importWithoutOwnership(reader, selfData, backupMode, checkedHeader, cancellationSignal)
+          verifyImportedSelf(result, selfData.aci, validateCurrentSelf = true)
+        }
+      }
+    } finally {
+      if (!readerOwned) frameReader.close()
+    }
+  }
+
+  private fun importWithoutOwnership(
+    frameReader: BackupImportReader,
+    selfData: SelfData,
+    backupMode: BackupMode,
+    header: BackupInfo,
     cancellationSignal: () -> Boolean
   ): ImportResult {
     val stopwatch = Stopwatch("import")
     val eventTimer = EventTimer()
 
-    // Link-and-sync follows local account registration; do not import a different account's archive.
-    if (backupMode.isLinkAndSync && SignalStore.account.aci != selfData.aci) {
-      Log.w(TAG, "[import] Link backup account does not match the current account")
-      return ImportResult.Failure
-    }
-
-    val header = frameReader.getHeader()
-    if (header == null) {
-      Log.e(TAG, "[import] Backup is missing header!")
-      SignalStore.backup.hasInvalidBackupVersion = false
-      return ImportResult.Failure
-    } else if (header.version > VERSION) {
-      Log.e(TAG, "[import] Backup version is newer than we understand: ${header.version}")
-      SignalStore.backup.hasInvalidBackupVersion = true
-      return ImportResult.Failure
-    }
-    SignalStore.backup.hasInvalidBackupVersion = false
     val selfId: RecipientId
 
     val importDatabase = SignalDatabase.writableDatabase
@@ -1367,6 +1487,8 @@ object BackupRepository {
 
       // Add back self after clearing data
       selfId = SignalDatabase.recipients.getAndPossiblyMerge(selfData.aci, selfData.pni, selfData.e164, pniVerified = true, changeSelf = true)
+      // Frame processors resolve Recipient.self() independently; bind that identity before they run.
+      verifyImportedSelf(ImportResult.Success(header.backupTimeMs, selfId), selfData.aci, validateCurrentSelf = true)
       SignalDatabase.recipients.setProfileKey(selfId, selfData.profileKey)
       SignalDatabase.recipients.setProfileSharing(selfId, true)
 
@@ -1508,10 +1630,8 @@ object BackupRepository {
       }
       stopwatch.split("fk-check")
 
-      // Reject an imported self belonging to another account before committing destructive SQL.
-      if (SignalDatabase.recipients.getRecord(selfId).aci != selfData.aci) {
-        throw IllegalStateException("Imported backup self does not match the requested account")
-      }
+      // A mismatched imported self must abort the destructive transaction before it can commit.
+      verifyImportedSelf(ImportResult.Success(header.backupTimeMs, selfId), selfData.aci, validateCurrentSelf = true)
       SignalDatabase.writableDatabase.setTransactionSuccessful()
       transactionSuccessful = true
     } catch (failure: Throwable) {
@@ -1909,7 +2029,7 @@ object BackupRepository {
     val profileKey: ProfileKey
   )
 
-  suspend fun restoreRemoteBackup(): RemoteRestoreResult {
+  suspend fun restoreRemoteBackup(stagedForRegistration: Boolean = false): RemoteRestoreResult {
     val context = AppDependencies.application
     ArchiveRestoreProgress.onRestorePending()
 
@@ -1917,13 +2037,16 @@ object BackupRepository {
       DataRestoreConstraint.isRestoringData = true
       return withContext(Dispatchers.IO) {
         val result = BackupProgressService.start(context, context.getString(R.string.BackupProgressService_title)).use {
-          restoreRemoteBackup(controller = it, cancellationSignal = { !isActive })
+          restoreRemoteBackup(controller = it, cancellationSignal = { !isActive }, stagedForRegistration = stagedForRegistration)
         }
         if (result !is RemoteRestoreResult.Success) {
           ArchiveRestoreProgress.onRestoreFailed()
         }
         return@withContext result
       }
+    } catch (e: ImportRecoveryRequiredException) {
+      ArchiveRestoreProgress.onRestoreFailed()
+      return RemoteRestoreResult.RecoveryRequired
     } catch (e: CancellationException) {
       ArchiveRestoreProgress.onRestoreCanceled()
       throw e
@@ -1932,7 +2055,7 @@ object BackupRepository {
     }
   }
 
-  private suspend fun restoreRemoteBackup(controller: BackupProgressService.Controller, cancellationSignal: () -> Boolean): RemoteRestoreResult {
+  private suspend fun restoreRemoteBackup(controller: BackupProgressService.Controller, cancellationSignal: () -> Boolean, stagedForRegistration: Boolean): RemoteRestoreResult {
     ArchiveRestoreProgress.onRestoringDb()
 
     val progressListener = object : ProgressListener {
@@ -2023,7 +2146,8 @@ object BackupRepository {
       selfData = selfData,
       backupKey = SignalStore.backup.messageBackupKey,
       forwardSecrecyToken = forwardSecrecyToken,
-      cancellationSignal = cancellationSignal
+      cancellationSignal = cancellationSignal,
+      stagedForRegistration = stagedForRegistration,
     )
 
     return when (result) {
@@ -2056,6 +2180,9 @@ object BackupRepository {
         }
         return@withContext result
       }
+    } catch (e: ImportRecoveryRequiredException) {
+      ArchiveRestoreProgress.onRestoreFailed()
+      return RemoteRestoreResult.RecoveryRequired
     } catch (e: CancellationException) {
       ArchiveRestoreProgress.onRestoreCanceled()
       throw e
@@ -2325,6 +2452,14 @@ data class StagedBackupKeyRotations(
   val mediaRootBackupKey: MediaRootBackupKey
 )
 
+/** The caller was cancelled after the import's in-process commit point; it must not assume rollback. */
+class ImportCommittedAfterCancellationException(cause: Throwable) : CancellationException("The import committed before cancellation was delivered") {
+  init { initCause(cause) }
+}
+
+/** The import or its finalization left account state requiring recovery before use. */
+class ImportRecoveryRequiredException(cause: Throwable? = null) : IllegalStateException("The restored account requires recovery before it can be used", cause)
+
 sealed class ImportResult {
   data class Success(val backupTime: Long, val selfRecipientId: RecipientId) : ImportResult()
   data object Failure : ImportResult()
@@ -2332,6 +2467,7 @@ sealed class ImportResult {
 
 sealed interface RemoteRestoreResult {
   data class Success(val selfRecipientId: RecipientId) : RemoteRestoreResult
+  data object RecoveryRequired : RemoteRestoreResult
   data object NetworkError : RemoteRestoreResult
   data object Canceled : RemoteRestoreResult
   data object Failure : RemoteRestoreResult

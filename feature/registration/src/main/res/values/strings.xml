@@ -486,6 +486,8 @@
     <!-- Body of the dialog shown when restoring messages fails, offering to retry or continue without message history -->
     <string name="MessageSyncScreen__your_messages_couldnt_be_transferred">Your messages couldn\'t be transferred from your other device. You can try again, or continue without your message history.</string>
     <!-- Button that retries the failed message restore -->
+    <string name="MessageSyncScreen__recovery_title">Restore could not be completed</string>
+    <string name="MessageSyncScreen__recovery_body">The restore could not safely finish. Contact support before clearing this app\'s data or linking this device again.</string>
     <string name="MessageSyncScreen__try_again">Try again</string>
     <!-- Button that finishes linking without restoring message history after a failed restore -->
     <string name="MessageSyncScreen__continue_without_messages">Continue without messages</string>

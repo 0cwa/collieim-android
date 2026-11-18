@@ -68,6 +68,9 @@ interface StorageController {
    */
   suspend fun clearLocalDataAndRestart()
 
+  /** True when a restore left account state that must not be used to finish linking. */
+  suspend fun isLinkAndSyncRecoveryRequired(): Boolean
+
   /**
    * Reads the persisted [RegistrationData] proto that is currently in the process of being worked on.
    * Returns a default empty [RegistrationData] if nothing has been written yet.

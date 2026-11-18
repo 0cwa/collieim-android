@@ -224,7 +224,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
                 Logger.setTarget(SqlCipherLogTarget.INSTANCE);
               })
               .addBlocking("signal-store", () -> SignalStore.init(this))
-              .addBlocking("unified-push-lifecycle", UnifiedPushAccountTransition::initializeFromSignalStore)
+              .addBlocking("unified-push-lifecycle", () -> UnifiedPushAccountTransition.initializeFromSignalStore(this))
               .addBlocking("logging", () -> {
                 initializeLogging(false);
                 Log.i(TAG, "onCreateUnlock()");

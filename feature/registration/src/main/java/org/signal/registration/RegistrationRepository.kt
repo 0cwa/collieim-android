@@ -1477,6 +1477,8 @@ class RegistrationRepository(
    * Wipes all local app data and relaunches the app. Used when the primary asks a freshly-linked device to
    * re-link, which leaves this device's partial local registration invalid.
    */
+  suspend fun isLinkAndSyncRecoveryRequired(): Boolean = storageController.isLinkAndSyncRecoveryRequired()
+
   suspend fun clearLocalDataAndRestart() {
     storageController.clearLocalDataAndRestart()
   }

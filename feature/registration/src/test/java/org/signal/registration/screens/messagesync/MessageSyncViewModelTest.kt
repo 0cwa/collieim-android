@@ -12,6 +12,7 @@ import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -26,6 +27,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
@@ -114,6 +116,68 @@ class MessageSyncViewModelTest {
 
     coVerify { mockRepository.restoreLinkedDeviceFromStorageService() }
     assertThat(emittedParentEvents).contains(RegistrationFlowEvent.NavigateToScreen(RegistrationRoute.FullyComplete))
+  }
+
+  @Test
+  fun `recovery result refuses retry continue and cancellation`() = runTest(testDispatcher) {
+    every { mockRepository.restoreLinkAndSyncBackup() } returns flowOf(LinkAndSyncProgress.RecoveryRequired)
+    val viewModel = createViewModel()
+    assertThat(viewModel.state.value.showRecoveryRequired).isTrue()
+    for (event in listOf(MessageSyncScreenEvent.RetryClick, MessageSyncScreenEvent.ContinueWithoutMessagesClick, MessageSyncScreenEvent.CancelClick)) {
+      viewModel.applyEvent(viewModel.state.value, event) {}
+    }
+    verify(exactly = 1) { mockRepository.restoreLinkAndSyncBackup() }
+    coVerify(exactly = 0) { mockRepository.restoreLinkedDeviceFromStorageService() }
+    assertThat(emittedParentEvents).doesNotContain(RegistrationFlowEvent.NavigateToScreen(RegistrationRoute.FullyComplete))
+  }
+
+  @Test
+  fun `cancel after partial restore does not complete linking`() = runTest(testDispatcher) {
+    every { mockRepository.restoreLinkAndSyncBackup() } returns MutableSharedFlow()
+    val viewModel = createViewModel()
+    coEvery { mockRepository.isLinkAndSyncRecoveryRequired() } returns true
+    viewModel.applyEvent(viewModel.state.value, MessageSyncScreenEvent.CancelClick) {}
+    assertThat(viewModel.state.value.showRecoveryRequired).isTrue()
+    coVerify(exactly = 0) { mockRepository.restoreLinkedDeviceFromStorageService() }
+    assertThat(emittedParentEvents).doesNotContain(RegistrationFlowEvent.NavigateToScreen(RegistrationRoute.FullyComplete))
+  }
+
+  @Test
+  fun `completion emitted after recovery does not navigate`() = runTest(testDispatcher) {
+    every { mockRepository.restoreLinkAndSyncBackup() } returns flowOf(LinkAndSyncProgress.RecoveryRequired, LinkAndSyncProgress.Complete)
+    val viewModel = createViewModel()
+    assertThat(viewModel.state.value.showRecoveryRequired).isTrue()
+    coVerify(exactly = 0) { mockRepository.restoreLinkedDeviceFromStorageService() }
+    assertThat(emittedParentEvents).doesNotContain(RegistrationFlowEvent.NavigateToScreen(RegistrationRoute.FullyComplete))
+  }
+
+  @Test
+  fun `relink emitted after recovery does not wipe local data`() = runTest(testDispatcher) {
+    every { mockRepository.restoreLinkAndSyncBackup() } returns flowOf(LinkAndSyncProgress.RecoveryRequired, LinkAndSyncProgress.RelinkRequired)
+    val viewModel = createViewModel()
+    assertThat(viewModel.state.value.showRecoveryRequired).isTrue()
+    coVerify(exactly = 0) { mockRepository.clearLocalDataAndRestart() }
+    coVerify(exactly = 0) { mockRepository.restoreLinkedDeviceFromStorageService() }
+  }
+
+  @Test
+  fun `actual cancel event keeps recovery state and does not navigate`() = runTest(testDispatcher) {
+    every { mockRepository.restoreLinkAndSyncBackup() } returns MutableSharedFlow()
+    val viewModel = createViewModel()
+    coEvery { mockRepository.isLinkAndSyncRecoveryRequired() } returns true
+    viewModel.onEvent(MessageSyncScreenEvent.CancelClick)
+    runCurrent()
+    assertThat(viewModel.state.value.showRecoveryRequired).isTrue()
+    coVerify(exactly = 0) { mockRepository.restoreLinkedDeviceFromStorageService() }
+    assertThat(emittedParentEvents).doesNotContain(RegistrationFlowEvent.NavigateToScreen(RegistrationRoute.FullyComplete))
+  }
+
+  @Test
+  fun `persisted recovery prevents starting restore after recreation`() = runTest(testDispatcher) {
+    coEvery { mockRepository.isLinkAndSyncRecoveryRequired() } returns true
+    val viewModel = createViewModel()
+    assertThat(viewModel.state.value.showRecoveryRequired).isTrue()
+    verify(exactly = 0) { mockRepository.restoreLinkAndSyncBackup() }
   }
 
   @Test

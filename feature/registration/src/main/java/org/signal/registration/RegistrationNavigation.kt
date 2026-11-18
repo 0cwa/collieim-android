@@ -441,12 +441,13 @@ fun RegistrationNavHost(
   startFresh: Boolean = false,
   permissionsState: MultiplePermissionsState? = null,
   startDestination: RegistrationRoute? = null,
+  forceStartDestination: Boolean = false,
   modifier: Modifier = Modifier,
   onRegistrationComplete: () -> Unit = {}
 ) {
   val context = LocalContext.current
   val viewModel: RegistrationViewModel = registrationViewModel ?: viewModel {
-    RegistrationViewModel(RegistrationRepository.create(context), createSavedStateHandle(), startDestination, startFresh)
+    RegistrationViewModel(RegistrationRepository.create(context), createSavedStateHandle(), startDestination, startFresh, forceStartDestination)
   }
 
   val registrationState by viewModel.state.collectAsStateWithLifecycle()

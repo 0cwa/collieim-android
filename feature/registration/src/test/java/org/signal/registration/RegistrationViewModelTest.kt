@@ -53,6 +53,13 @@ class RegistrationViewModelTest {
     Dispatchers.resetMain()
   }
 
+  @Test
+  fun `recovery route overrides restored navigation state`() = runTest(testDispatcher) {
+    val saved = SavedStateHandle(mapOf("registration_state" to RegistrationFlowState(backStack = listOf(RegistrationRoute.Welcome))))
+    val viewModel = RegistrationViewModel(mockRepository, saved, startDestination = RegistrationRoute.MessageSync, forceStartDestination = true)
+    assertThat(viewModel.state.value.backStack).isEqualTo(listOf(RegistrationRoute.MessageSync))
+  }
+
   // ==================== Restore Flow State Tests ====================
 
   @Test

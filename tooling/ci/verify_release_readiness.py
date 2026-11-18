@@ -20,12 +20,18 @@ RELEASE_SOURCE_BRANCHES = ("main", MAINTENANCE_BRANCH)
 TRUSTED_CI_PATHS = (
     WORKFLOW_PATH,
     ".github/actions/disk-cleanup",
+    ".github/ci-required-tests.json",
+    ".github/scripts/check-unit-test-results.py",
     "tooling/ci",
     "tooling/git-hooks",
     "tooling/host-tests",
     "tooling/gradle.properties.docker",
     "tooling/reproducible-builds",
     "build.gradle.kts",
+    "settings.gradle.kts",
+    "buildSrc",
+    "gradlew",
+    "gradle/wrapper",
 )
 REQUIRED_JOBS = ("Unit tests", "Unsigned production build", "Security readiness")
 

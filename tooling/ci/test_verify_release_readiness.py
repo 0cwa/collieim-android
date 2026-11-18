@@ -113,6 +113,7 @@ class ReleaseReadinessTest(unittest.TestCase):
             f"{prefix}/git/ref/heads/main": {"object": {"sha": live_main}},
             f"{prefix}/compare/{policy}...{live_main}": {"status": "ahead", "merge_base_commit": {"sha": policy}},
         }
+        candidate_inputs = {}
         for number, commit in enumerate((SHA, policy), 1):
             directories = {"": f"{number:040x}"}
             api_responses[f"{prefix}/git/commits/{commit}"] = {"sha": commit, "tree": {"sha": directories[""]}}
@@ -128,12 +129,16 @@ class ReleaseReadinessTest(unittest.TestCase):
                         by_parent[folder].append({"path": part, "mode": "040000", "type": "tree", "sha": oid})
                         by_parent[child] = []
                     folder = child
-                by_parent[folder].append({"path": parts[-1], "mode": "100644", "type": "blob", "sha": f"{index:040x}"})
+                entry = {"path": parts[-1], "mode": "100644", "type": "blob", "sha": f"{index:040x}"}
+                if path in (".github/actions/disk-cleanup", "tooling/ci", "tooling/git-hooks", "tooling/host-tests",
+                            "tooling/reproducible-builds", "buildSrc", "gradle/wrapper"):
+                    entry.update(mode="040000", type="tree")
+                by_parent[folder].append(entry)
+                if commit == SHA:
+                    candidate_inputs[path] = entry
             for parent, values in by_parent.items():
                 oid = directories[parent]
                 api_responses[f"{prefix}/git/trees/{oid}"] = {"sha": oid, "truncated": False, "tree": values}
-            if commit == SHA:
-                candidate_workflow = by_parent[".github/workflows"][0]
         calls = []
 
         def reader(endpoint, **kwargs):
@@ -147,11 +152,17 @@ class ReleaseReadinessTest(unittest.TestCase):
         result = gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
         self.assertEqual((result["source_branch"], result["workflow_event"], result["trusted_main"]),
                          (gate.MAINTENANCE_BRANCH, "push", policy))
-        candidate_workflow["sha"] = "d" * 40
-        calls.clear()
-        with self.assertRaisesRegex(gate.Failure, "differs from trusted main"):
-            gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
-        self.assertFalse(any("/actions/" in endpoint for endpoint in calls))
+        for path in (gate.WORKFLOW_PATH, ".github/scripts/check-unit-test-results.py",
+                     ".github/ci-required-tests.json", "gradlew", "gradle/wrapper"):
+            with self.subTest(replaced_input=path):
+                entry = candidate_inputs[path]
+                original = entry["sha"]
+                entry["sha"] = "d" * 40
+                calls.clear()
+                with self.assertRaisesRegex(gate.Failure, f"differs from trusted main: {path}"):
+                    gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
+                self.assertFalse(any("/actions/" in endpoint for endpoint in calls))
+                entry["sha"] = original
         api_responses[f"{prefix}/compare/{policy}...{live_main}"]["status"] = "diverged"
         with self.assertRaisesRegex(gate.Failure, "outside protected main"):
             gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)

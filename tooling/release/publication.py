@@ -218,7 +218,7 @@ class Publication:
     def run(self, command, *, cwd=None):
         return subprocess.check_output(list(map(str, command)), cwd=cwd or self.root, text=True).strip()
 
-    def tag_identity(self, tag):
+    def signed_tag_identity(self, tag):
         stable_tag(tag)
         self.run(["git", "fetch", "--no-tags", "--depth=1", "origin", "refs/tags/" + tag])
         tag_object = self.run(["git", "rev-parse", "FETCH_HEAD"])
@@ -241,10 +241,15 @@ class Publication:
         source = self.run(["git", "rev-parse", tag_object + "^{commit}"])
         require(SHA1.fullmatch(source) is not None and fields["object"] == source,
                 "Signed tag target differs from the resolved source commit")
+        return {"tag_object": tag_object, "source_commit": source}
+
+    def tag_identity(self, tag):
+        identity = self.signed_tag_identity(tag)
+        source = identity["source_commit"]
         version = version_properties(self.run(["git", "show", source + ":gradle.properties"]), tag)
         self.run(["git", "cat-file", "-e", source + ":fastlane/metadata/android/en-US/changelogs/" +
                   str(version["version_code"]) + ".txt"])
-        return {"tag_object": tag_object, "source_commit": source, **version}
+        return {**identity, **version}
 
     def downloaded(self, asset):
         path = self.scratch / (asset["sha256"] + (".apk" if asset["name"].lower().endswith(".apk") else ".json"))

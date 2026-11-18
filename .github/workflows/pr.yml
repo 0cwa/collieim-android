@@ -2,7 +2,7 @@ name: PR checks
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, release/stable/8.35]
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,6 +10,14 @@ concurrency:
   group: pr-checks-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  stable-tag-ref:
+    name: Stable tag ref marker
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/tags/release/stable/8.35'
+    permissions: {}
+    runs-on: ubuntu-24.04
+    steps:
+      - run: test "$GITHUB_REF" = refs/tags/release/stable/8.35
+
   layer-trailers:
     name: Layer trailers
     if: github.event_name == 'pull_request'
@@ -168,6 +176,11 @@ jobs:
       - name: Combine and verify all unit test results
         env:
           SHARD_RESULT: ${{ needs.unit-test-shards.result }}
+          CI_TEST_POLICY: >-
+            ${{ ((github.event_name == 'pull_request' && github.base_ref == 'release/stable/8.35') ||
+                 ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+                  github.ref == 'refs/heads/release/stable/8.35')) &&
+                '.github/ci-required-tests-stable-8.35.json' || '.github/ci-required-tests.json' }}
         run: |
           for shard in app-0 app-1 modules; do
             mkdir -p "build/shards/$shard"
@@ -178,17 +191,35 @@ jobs:
           mkdir -p build/ci
           mkdir -p build/host-tests
           cp build/shards/modules/build/host-tests/receipt.json build/host-tests/receipt.json
-          cp .github/ci-required-tests.json build/ci/ci-required-tests.json
+          cp "$CI_TEST_POLICY" build/ci/ci-required-tests.json
           git rev-parse HEAD > build/ci/source-commit.txt
           git rev-parse HEAD^{tree} > build/ci/source-tree.txt
           for shard in app-0 app-1 modules; do
             cmp "build/shards/$shard/build/ci/source-commit.txt" build/ci/source-commit.txt
             cmp "build/shards/$shard/build/ci/source-tree.txt" build/ci/source-tree.txt
           done
-          python3 .github/scripts/check-unit-test-results.py \
+          python3 .github/scripts/check-unit-test-results.py --policy "$CI_TEST_POLICY" \
             --shard-root build/shards/app-0 --shard-root build/shards/app-1 \
             --shard-root build/shards/modules --json-output build/ci/unit-test-results.json
           test "$SHARD_RESULT" = success
+          if [[ "$GITHUB_REF" == refs/heads/release/stable/8.35 ]]; then
+            test "$CI_TEST_POLICY" = .github/ci-required-tests-stable-8.35.json
+            jq -n \
+              --arg commit "$(cat build/ci/source-commit.txt)" --arg ref "$GITHUB_REF" \
+              --arg event "$GITHUB_EVENT_NAME" --argjson id "$GITHUB_RUN_ID" --argjson attempt "$GITHUB_RUN_ATTEMPT" \
+              --arg policy "$CI_TEST_POLICY" --arg blob "$(git hash-object build/ci/ci-required-tests.json)" \
+              '{schema: 1, source_commit: $commit, source_ref: $ref, event: $event,
+                run_id: $id, run_attempt: $attempt, policy_path: $policy, policy_blob: $blob}' \
+              > build/ci/stable-source-route.json
+          fi
+      - name: Keep the exact Stable branch route and policy for this attempt
+        if: github.ref == 'refs/heads/release/stable/8.35'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: stable-ci-route-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/stable-source-route.json
+          retention-days: 14
+          if-no-files-found: error
       - name: Keep combined unit test results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

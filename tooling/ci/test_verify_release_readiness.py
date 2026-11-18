@@ -1,5 +1,7 @@
 """Exercise the release boundary with missing, stale and failed CI evidence."""
 import unittest
+import json
+from pathlib import Path
 
 import verify_release_readiness as gate
 
@@ -153,7 +155,8 @@ class ReleaseReadinessTest(unittest.TestCase):
         self.assertEqual((result["source_branch"], result["workflow_event"], result["trusted_main"]),
                          (gate.MAINTENANCE_BRANCH, "push", policy))
         for path in (gate.WORKFLOW_PATH, ".github/scripts/check-unit-test-results.py",
-                     ".github/ci-required-tests.json", "gradlew", "gradle/wrapper"):
+                     ".github/ci-required-tests.json", ".github/ci-required-tests-stable-8.35.json",
+                     "gradlew", "gradle/wrapper"):
             with self.subTest(replaced_input=path):
                 entry = candidate_inputs[path]
                 original = entry["sha"]
@@ -168,6 +171,22 @@ class ReleaseReadinessTest(unittest.TestCase):
             gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
         with self.assertRaisesRegex(gate.Failure, "requires an immutable"):
             gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader)
+
+    def test_stable_inventory_only_changes_suite_requirements(self):
+        root = Path(__file__).resolve().parents[2]
+        default = json.loads((root / ".github/ci-required-tests.json").read_text())
+        stable = json.loads((root / ".github/ci-required-tests-stable-8.35.json").read_text())
+        self.assertEqual(stable["required_tasks"], default["required_tasks"])
+        self.assertEqual(
+            {s["class"].split(".")[-1]: s["min_executed"] for s in stable["security_suites"]},
+            {"ResettableLazyTests": 4, "SignalBaseIdentityKeyStoreTest": 3,
+             "KeyCachingServiceTest": 5, "MollyBackupPreferencesTest": 11,
+             "UnifiedPushReceiverTest": 6, "UnifiedPushRefreshJobTest": 3},
+        )
+        workflow = (root / gate.WORKFLOW_PATH).read_text()
+        self.assertIn("github.base_ref == 'release/stable/8.35'", workflow)
+        self.assertIn("github.ref == 'refs/heads/release/stable/8.35'", workflow)
+        self.assertIn("check-unit-test-results.py --policy \"$CI_TEST_POLICY\"", workflow)
 
     def test_input_validation_precedes_api_calls(self):
         def forbidden(*args, **kwargs):

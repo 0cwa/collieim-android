@@ -168,6 +168,11 @@ jobs:
       - name: Combine and verify all unit test results
         env:
           SHARD_RESULT: ${{ needs.unit-test-shards.result }}
+          CI_TEST_POLICY: >-
+            ${{ ((github.event_name == 'pull_request' && github.base_ref == 'release/stable/8.35') ||
+                 ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+                  github.ref == 'refs/heads/release/stable/8.35')) &&
+                '.github/ci-required-tests-stable-8.35.json' || '.github/ci-required-tests.json' }}
         run: |
           for shard in app-0 app-1 modules; do
             mkdir -p "build/shards/$shard"
@@ -178,14 +183,14 @@ jobs:
           mkdir -p build/ci
           mkdir -p build/host-tests
           cp build/shards/modules/build/host-tests/receipt.json build/host-tests/receipt.json
-          cp .github/ci-required-tests.json build/ci/ci-required-tests.json
+          cp "$CI_TEST_POLICY" build/ci/ci-required-tests.json
           git rev-parse HEAD > build/ci/source-commit.txt
           git rev-parse HEAD^{tree} > build/ci/source-tree.txt
           for shard in app-0 app-1 modules; do
             cmp "build/shards/$shard/build/ci/source-commit.txt" build/ci/source-commit.txt
             cmp "build/shards/$shard/build/ci/source-tree.txt" build/ci/source-tree.txt
           done
-          python3 .github/scripts/check-unit-test-results.py \
+          python3 .github/scripts/check-unit-test-results.py --policy "$CI_TEST_POLICY" \
             --shard-root build/shards/app-0 --shard-root build/shards/app-1 \
             --shard-root build/shards/modules --json-output build/ci/unit-test-results.json
           test "$SHARD_RESULT" = success

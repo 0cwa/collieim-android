@@ -21,6 +21,7 @@ TRUSTED_CI_PATHS = (
     WORKFLOW_PATH,
     ".github/actions/disk-cleanup",
     ".github/ci-required-tests.json",
+    ".github/ci-required-tests-stable-8.35.json",
     ".github/scripts/check-unit-test-results.py",
     "tooling/ci",
     "tooling/git-hooks",

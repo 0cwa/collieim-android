@@ -20,19 +20,19 @@ import org.thoughtcrime.securesms.notifications.NotificationIds
 
 object ApkUpdateNotifications {
   /** A user action opens only the official release page. No APK is downloaded or installed here. */
-  fun showUpdateAvailable(context: Context, versionName: String): Boolean {
+  internal fun showUpdateAvailable(context: Context, update: CollieUpdateIndex.Update): Boolean {
     val manager = ServiceUtil.getNotificationManager(context)
     val channel = manager.getNotificationChannel(NotificationChannels.getInstance().APP_UPDATES)
     if (!manager.areNotificationsEnabled() || channel == null || channel.importance == NotificationManager.IMPORTANCE_NONE) return false
     val pendingIntent = PendingIntent.getActivity(
       context,
       0,
-      Intent(Intent.ACTION_VIEW, Uri.parse(CollieUpdateIndex.releasePage(versionName))),
+      Intent(Intent.ACTION_VIEW, Uri.parse(update.releasePage)),
       PendingIntentFlags.immutable()
     )
     val notification = NotificationCompat.Builder(context, NotificationChannels.getInstance().APP_UPDATES)
       .setContentTitle(context.getString(R.string.ApkUpdateNotifications_prompt_install_title))
-      .setContentText(context.getString(R.string.CollieUpdates__available_notification, versionName))
+      .setContentText(context.getString(R.string.CollieUpdates__available_notification, update.versionName))
       .setSmallIcon(R.drawable.ic_notification)
       .setColor(ContextCompat.getColor(context, R.color.notification_background_ultramarine))
       .setPriority(NotificationCompat.PRIORITY_DEFAULT)

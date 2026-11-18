@@ -24,6 +24,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.BuildConfig
+import org.thoughtcrime.securesms.apkupdate.CollieUpdateProfile
 import org.thoughtcrime.securesms.util.SignalE164Util
 
 /**
@@ -60,7 +61,7 @@ object AppSettingsRepository {
 
   fun showPayments(): Boolean = false
 
-  fun showAppUpdates(): Boolean = BuildConfig.MANAGE_COLLIE_UPDATES
+  fun showAppUpdates(): Boolean = BuildConfig.MANAGE_COLLIE_UPDATES && CollieUpdateProfile.forApplicationId(BuildConfig.APPLICATION_ID) != null
 
   /** A quick guess at whether the user can manage donations in the app, before [canManageDonations] has an answer. */
   fun likelyCanManageDonations(): Boolean = SignalStore.inAppPayments.isLikelyASustainer() || InAppDonations.hasAtLeastOnePaymentMethodAvailable()

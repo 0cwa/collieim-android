@@ -50,9 +50,8 @@ The releases retain Signal's messaging and calling features and Molly's addition
 
 - Passphrase encryption for the local message database and automatic locking.
 - Clearing sensitive data from memory and the option to disable debug logging.
-- Linked devices, including Android tablets.
 - Blocking messages and calls from unknown contacts.
-- Disappearing call history and scheduled local backups.
+- Scheduled local backups.
 - Proxy and Tor support.
 - WebSocket and UnifiedPush notifications as alternatives to Google's push service.
 

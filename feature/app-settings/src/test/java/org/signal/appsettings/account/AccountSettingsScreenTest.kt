@@ -64,6 +64,8 @@ class AccountSettingsScreenTest {
   val composeTestRule = createComposeRule()
 
   private val events = mutableListOf<AccountSettingsEvent>()
+  private val interactionEvents: List<AccountSettingsEvent>
+    get() = events.filterNot { it == AccountSettingsEvent.ScreenResumed }
 
   @Test
   fun givenANormalRegisteredUserWithAPin_whenIClickModifyPin_thenIExpectModifyPinEvent() {
@@ -71,7 +73,7 @@ class AccountSettingsScreenTest {
 
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_MODIFY_PIN).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.ModifyPinClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.ModifyPinClicked)
   }
 
   @Test
@@ -123,7 +125,7 @@ class AccountSettingsScreenTest {
       .assertIsEnabled()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.PinRemindersToggled(false))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.PinRemindersToggled(false))
   }
 
   @Test
@@ -144,7 +146,7 @@ class AccountSettingsScreenTest {
       .assertIsEnabled()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.RegistrationLockToggled(false))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.RegistrationLockToggled(false))
   }
 
   @Test
@@ -165,7 +167,7 @@ class AccountSettingsScreenTest {
       .assertIsEnabled()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.AdvancedPinSettingsClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.AdvancedPinSettingsClicked)
   }
 
   @Test
@@ -179,7 +181,7 @@ class AccountSettingsScreenTest {
       .assertIsEnabled()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.ChangePhoneNumberClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.ChangePhoneNumberClicked)
   }
 
   @Test(expected = AssertionError::class)
@@ -200,7 +202,7 @@ class AccountSettingsScreenTest {
       .assertIsEnabled()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.TransferAccountClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.TransferAccountClicked)
   }
 
   @Test
@@ -214,7 +216,7 @@ class AccountSettingsScreenTest {
       .assertIsEnabled()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.RequestAccountDataClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.RequestAccountDataClicked)
   }
 
   @Test
@@ -228,7 +230,7 @@ class AccountSettingsScreenTest {
       .assertHasClickAction()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.UpdateSignalClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.UpdateSignalClicked)
   }
 
   @Test
@@ -242,7 +244,7 @@ class AccountSettingsScreenTest {
       .assertHasClickAction()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.ReRegisterClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.ReRegisterClicked)
   }
 
   @Test
@@ -255,7 +257,7 @@ class AccountSettingsScreenTest {
       .assertIsDisplayed()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.DeleteAllDataClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.DeleteAllDataClicked)
   }
 
   @Test
@@ -290,7 +292,7 @@ class AccountSettingsScreenTest {
       .assertIsEnabled()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.DisablePinRemindersConfirmed)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.DisablePinRemindersConfirmed)
   }
 
   @Test
@@ -299,7 +301,7 @@ class AccountSettingsScreenTest {
 
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.PIN_KEYBOARD_TOGGLE).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.PinKeyboardToggled)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.PinKeyboardToggled)
   }
 
   @Test
@@ -313,7 +315,7 @@ class AccountSettingsScreenTest {
       .assertIsEnabled()
       .performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.DeleteAccountClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.DeleteAccountClicked)
   }
 
   @Test
@@ -381,7 +383,7 @@ class AccountSettingsScreenTest {
 
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.CARD_SIGNAL_LOGIN).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.AccountAndRecoveryClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.AccountAndRecoveryClicked)
   }
 
   @Test
@@ -391,7 +393,7 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_SET_UP_TWO_FACTOR).performClick()
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.MENU_ITEM_AUTHENTICATOR_APP).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.AddTotpAppClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.AddTotpAppClicked)
   }
 
   @Test
@@ -418,7 +420,7 @@ class AccountSettingsScreenTest {
     composeTestRule.onAllNodesWithTag(AccountSettingsTestTags.BUTTON_METHOD_MENU)[0].performClick()
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.MENU_ITEM_REMOVE).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.RemoveMethodClicked(method))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.RemoveMethodClicked(method))
   }
 
   /** Authenticator apps and passkeys share one list, so a row's subtitle is what says which kind it is. */
@@ -441,7 +443,7 @@ class AccountSettingsScreenTest {
     composeTestRule.onAllNodesWithTag(AccountSettingsTestTags.BUTTON_METHOD_MENU)[0].performClick()
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.MENU_ITEM_RENAME).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.RenameMethodClicked(METHODS[0]))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.RenameMethodClicked(METHODS[0]))
   }
 
   @Test
@@ -452,7 +454,7 @@ class AccountSettingsScreenTest {
     composeTestRule.onAllNodesWithTag(AccountSettingsTestTags.BUTTON_METHOD_MENU)[0].performClick()
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.MENU_ITEM_REMOVE).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.RemoveMethodClicked(METHODS[0]))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.RemoveMethodClicked(METHODS[0]))
   }
 
   @Test
@@ -462,7 +464,7 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.DIALOG_CONFIRM_REMOVE_METHOD).assertIsDisplayed()
     composeTestRule.onNodeWithTag(Dialogs.TEST_TAG_ALERT_DIALOG_CONFIRM_BUTTON).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.RemoveMethodConfirmed(METHODS[0]))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.RemoveMethodConfirmed(METHODS[0]))
   }
 
   @Test
@@ -472,7 +474,7 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.DIALOG_CONFIRM_REMOVE_METHOD).assertIsDisplayed()
     composeTestRule.onNodeWithTag(Dialogs.TEST_TAG_ALERT_DIALOG_CONFIRM_BUTTON).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.RemoveMethodConfirmed(METHODS[1]))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.RemoveMethodConfirmed(METHODS[1]))
   }
 
   @Test
@@ -482,7 +484,7 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_SET_UP_TWO_FACTOR).performClick()
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.MENU_ITEM_PASSKEY).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.AddPasskeyClicked)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.AddPasskeyClicked)
   }
 
   /** A device with no way to run a passkey ceremony shouldn't be offered one. */
@@ -503,8 +505,8 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.DIALOG_MAX_TOTP_APPS_REACHED).assertIsDisplayed()
     composeTestRule.onNodeWithTag(Dialogs.TEST_TAG_ALERT_DIALOG_DISMISS_BUTTON).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690"))
-    assertThat(events).contains(AccountSettingsEvent.DialogDismissed)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690"))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.DialogDismissed)
   }
 
   @Test
@@ -514,8 +516,8 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.DIALOG_MAX_TWO_FACTOR_METHODS_REACHED).assertIsDisplayed()
     composeTestRule.onNodeWithTag(Dialogs.TEST_TAG_ALERT_DIALOG_DISMISS_BUTTON).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690"))
-    assertThat(events).contains(AccountSettingsEvent.DialogDismissed)
+    assertThat(interactionEvents).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690"))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.DialogDismissed)
   }
 
   @Test
@@ -525,7 +527,7 @@ class AccountSettingsScreenTest {
     scrollTo(AccountSettingsTestTags.LINK_SIGNAL_LOGIN_LEARN_MORE)
     clickLink(AccountSettingsTestTags.LINK_SIGNAL_LOGIN_LEARN_MORE)
 
-    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11197884108826"))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11197884108826"))
   }
 
   @Test
@@ -535,7 +537,7 @@ class AccountSettingsScreenTest {
     scrollTo(AccountSettingsTestTags.LINK_TWO_FACTOR_LEARN_MORE)
     clickLink(AccountSettingsTestTags.LINK_TWO_FACTOR_LEARN_MORE)
 
-    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690"))
+    assertThat(interactionEvents).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690"))
   }
 
   @Test

@@ -79,7 +79,7 @@ class AppSettingsNavigationTest {
   @Config(qualifiers = "w800dp-h700dp")
   fun `a split-pane window pops stacked detail`() {
     setContent(defaultDetailRoute = AppSettingsRoute.ChatsRoute.Chats)
-    router.navigator.processEvent(ListDetailEvents.Push(AppSettingsRoute.ChatsRoute.Reactions))
+    router.navigator.processEvent(ListDetailEvents.Push(AppSettingsRoute.ChatFoldersRoute.ChatFolders))
     composeTestRule.waitForIdle()
 
     router.onEvent(AppSettingsNavigationEvent.NavigateBack())
@@ -146,7 +146,7 @@ class AppSettingsNavigationTest {
           detailEntries = {
             detailEntry<AppSettingsRoute.ChatsRoute.Chats> { Text("Chats") }
             detailEntry<AppSettingsRoute.AppearanceRoute.Appearance> { Text("Appearance") }
-            detailEntry<AppSettingsRoute.ChatsRoute.Reactions> { Text("Reactions") }
+            detailEntry<AppSettingsRoute.ChatFoldersRoute.ChatFolders> { Text("Chat folders") }
           }
         )
       }

@@ -449,6 +449,12 @@ class ConversationViewModel(
       .observeOn(AndroidSchedulers.mainThread())
   }
 
+  fun deleteLocallyDeletedMessagesForEveryone(messages: List<LocallyDeletedMessage>) {
+    viewModelScope.launch {
+      repository.deleteLocallyDeletedMessagesForEveryone(messages)
+    }
+  }
+
   fun updateThreadHeader() {
     pagingController.onDataItemChanged(ConversationElementKey.threadHeader)
   }

@@ -424,7 +424,7 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
   @Override
   public @NonNull SignalWebSocket.AuthenticatedWebSocket provideAuthWebSocket(@NonNull Supplier<SignalServiceConfiguration> signalServiceConfigurationSupplier, @NonNull Supplier<Network> libSignalNetworkSupplier) {
     SleepTimer                   sleepTimer    = new AdaptiveSleepTimer(context);
-    SignalWebSocketHealthMonitor healthMonitor = new SignalWebSocketHealthMonitor(sleepTimer, true);
+    SignalWebSocketHealthMonitor healthMonitor = new SignalWebSocketHealthMonitor();
 
     WebSocketFactory authFactory = () -> {
       DynamicCredentialsProvider credentialsProvider = new DynamicCredentialsProvider();
@@ -457,7 +457,7 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
   @Override
   public @NonNull SignalWebSocket.UnauthenticatedWebSocket provideUnauthWebSocket(@NonNull Supplier<SignalServiceConfiguration> signalServiceConfigurationSupplier, @NonNull Supplier<Network> libSignalNetworkSupplier) {
     SleepTimer                   sleepTimer    = new AdaptiveSleepTimer(context);
-    SignalWebSocketHealthMonitor healthMonitor = new SignalWebSocketHealthMonitor(sleepTimer, false);
+    SignalWebSocketHealthMonitor healthMonitor = new SignalWebSocketHealthMonitor();
 
     WebSocketFactory unauthFactory = () -> {
       Network network = libSignalNetworkSupplier.get();

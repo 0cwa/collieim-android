@@ -37,9 +37,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.signal.appsettings.account.AccountSettingsAction
 import org.signal.appsettings.account.AccountSettingsEvent
+import org.signal.appsettings.account.AccountSettingsState
 import org.signal.appsettings.account.AccountSettingsState.Dialog
 import org.signal.appsettings.account.AccountSettingsState.LoadState
 import org.signal.appsettings.account.TwoFactorMethod
+import org.signal.appsettings.account.TwoFactorMethodNamed
+import org.signal.appsettings.routes.AppSettingsNavigationEvent
+import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.core.models.MasterKey
 import org.signal.libsignal.net.MfaKeyKind
 import org.signal.libsignal.net.RequestResult
@@ -72,6 +76,7 @@ class AccountSettingsViewModelTest {
 
   private val repository = mockk<AccountSettingsRepository>(relaxUnitFun = true)
   private val twoFactorMethodService = mockk<TwoFactorMethodService>(relaxUnitFun = true)
+  private val navigationEvents = mutableListOf<AppSettingsNavigationEvent>()
 
   @Before
   fun setUp() {
@@ -206,7 +211,7 @@ class AccountSettingsViewModelTest {
     viewModel.onEvent(AccountSettingsEvent.RegistrationLockConfirmed)
 
     assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.None)
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.ShowRegistrationLockDisableFailed)
+    assertThat(viewModel.state.value.snackbar).isEqualTo(AccountSettingsState.Snackbar.RegistrationLockDisableFailed)
   }
 
   @Test
@@ -230,7 +235,7 @@ class AccountSettingsViewModelTest {
 
     viewModel.onEvent(AccountSettingsEvent.DataWipeFailed)
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.ShowDataWipeFailed)
+    assertThat(viewModel.state.value.snackbar).isEqualTo(AccountSettingsState.Snackbar.DeleteAllDataFailed)
   }
 
   @Test
@@ -263,7 +268,7 @@ class AccountSettingsViewModelTest {
 
     viewModel.onEvent(AccountSettingsEvent.PinCreated)
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.ShowPinCreatedConfirmation)
+    assertThat(viewModel.state.value.snackbar).isEqualTo(AccountSettingsState.Snackbar.PinCreated)
   }
 
   @Test
@@ -347,7 +352,7 @@ class AccountSettingsViewModelTest {
 
     viewModel.onEvent(AccountSettingsEvent.AddTotpAppAuthenticated)
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.NavigateToTotpSetup)
+    assertThat(navigationEvents.last()).isEqualTo(AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.AccountRoute.TotpSetup))
   }
 
   /** The app limit is the more specific of the two, so it's what an account with room to spare overall is told about. */
@@ -404,7 +409,7 @@ class AccountSettingsViewModelTest {
 
     viewModel.onEvent(AccountSettingsEvent.AddPasskeyAuthenticated)
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.NavigateToPasskeySetup)
+    assertThat(navigationEvents.last()).isEqualTo(AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.AccountRoute.PasskeySetup))
   }
 
   /** Passkeys share the one overall limit with apps, and have no tighter limit of their own. */
@@ -433,7 +438,7 @@ class AccountSettingsViewModelTest {
 
     viewModel.onEvent(AccountSettingsEvent.RenameMethodClicked(TOTP_APP))
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.NavigateToRenameMethod(TOTP_APP))
+    assertThat(navigationEvents.last()).isEqualTo(AppSettingsNavigationEvent.NavigateToScreen(TOTP_APP.toRenameRoute()))
   }
 
   /** Ids only mean anything within a kind, so a passkey sharing an id with an app must carry its kind through. */
@@ -447,7 +452,7 @@ class AccountSettingsViewModelTest {
 
     viewModel.onEvent(AccountSettingsEvent.RenameMethodClicked(PASSKEY))
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.NavigateToRenameMethod(PASSKEY))
+    assertThat(navigationEvents.last()).isEqualTo(AppSettingsNavigationEvent.NavigateToScreen(PASSKEY.toRenameRoute()))
   }
 
   /** Removing a second factor is guarded by the screen lock, so nothing happens until the user gets past it. */
@@ -488,7 +493,7 @@ class AccountSettingsViewModelTest {
     viewModel.onEvent(AccountSettingsEvent.RemoveMethodClicked(TOTP_APP))
     viewModel.onEvent(AccountSettingsEvent.AuthenticationFailed)
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.ShowAuthenticationFailed)
+    assertThat(viewModel.state.value.snackbar).isEqualTo(AccountSettingsState.Snackbar.AuthenticationRequired)
     assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.None)
     coVerify(exactly = 0) { twoFactorMethodService.removeMethod(any()) }
   }
@@ -518,7 +523,25 @@ class AccountSettingsViewModelTest {
 
     coVerify { twoFactorMethodService.removeMethod(TOTP_APP.id) }
     assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.None)
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.ShowMethodRemoved(TwoFactorMethod.Kind.AUTHENTICATOR_APP))
+    assertThat(viewModel.state.value.snackbar).isEqualTo(AccountSettingsState.Snackbar.MethodRemoved(TwoFactorMethod.Kind.AUTHENTICATOR_APP))
+  }
+
+  @Test
+  fun `MethodNamed for a new method says it was set up`() = runTest(testDispatcher) {
+    val viewModel = createViewModel()
+
+    viewModel.onEvent(AccountSettingsEvent.MethodNamed(TwoFactorMethodNamed(TwoFactorMethod.Kind.PASSKEY, renamed = false)))
+
+    assertThat(viewModel.state.value.snackbar).isEqualTo(AccountSettingsState.Snackbar.MethodSetUp(TwoFactorMethod.Kind.PASSKEY))
+  }
+
+  @Test
+  fun `MethodNamed for a rename says it was renamed`() = runTest(testDispatcher) {
+    val viewModel = createViewModel()
+
+    viewModel.onEvent(AccountSettingsEvent.MethodNamed(TwoFactorMethodNamed(TwoFactorMethod.Kind.AUTHENTICATOR_APP, renamed = true)))
+
+    assertThat(viewModel.state.value.snackbar).isEqualTo(AccountSettingsState.Snackbar.MethodRenamed(TwoFactorMethod.Kind.AUTHENTICATOR_APP))
   }
 
   /** The dialog dismisses itself before it confirms, so the removal has to survive the dismissal that lands first. */
@@ -536,7 +559,7 @@ class AccountSettingsViewModelTest {
 
     coVerify { twoFactorMethodService.removeMethod(TOTP_APP.id) }
     assertThat(viewModel.state.value.dialog).isEqualTo(Dialog.None)
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.ShowMethodRemoved(TwoFactorMethod.Kind.AUTHENTICATOR_APP))
+    assertThat(viewModel.state.value.snackbar).isEqualTo(AccountSettingsState.Snackbar.MethodRemoved(TwoFactorMethod.Kind.AUTHENTICATOR_APP))
   }
 
   /** The list is what tells the user the app is gone, so it has to be read again rather than assumed. */
@@ -567,7 +590,7 @@ class AccountSettingsViewModelTest {
     viewModel.onEvent(AccountSettingsEvent.MethodRemovalAuthenticated(TOTP_APP))
     viewModel.onEvent(AccountSettingsEvent.RemoveMethodConfirmed(TOTP_APP))
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.ShowMethodRemovalFailed(TwoFactorMethod.Kind.AUTHENTICATOR_APP))
+    assertThat(viewModel.state.value.snackbar).isEqualTo(AccountSettingsState.Snackbar.MethodRemovalFailed(TwoFactorMethod.Kind.AUTHENTICATOR_APP))
     assertThat(viewModel.state.value.signalLogin!!.twoFactorMethods).containsExactly(TOTP_APP)
   }
 
@@ -604,7 +627,7 @@ class AccountSettingsViewModelTest {
 
     viewModel.onEvent(AccountSettingsEvent.SignalLoginDetailsAuthenticated)
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.NavigateToSignalLoginDetails)
+    assertThat(navigationEvents.last()).isEqualTo(AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.AccountRoute.SignalLoginDetails))
   }
 
   @Test
@@ -624,7 +647,7 @@ class AccountSettingsViewModelTest {
 
     viewModel.onEvent(AccountSettingsEvent.DeleteAccountAuthenticated)
 
-    assertThat(actions.last()).isEqualTo(AccountSettingsAction.NavigateToDeleteAccount)
+    assertThat(navigationEvents.last()).isEqualTo(AppSettingsNavigationEvent.NavigateToScreen(AppSettingsRoute.AccountRoute.DeleteAccount))
   }
 
   /** The service's view of [methods], which is what the view model actually has to map. */
@@ -643,11 +666,18 @@ class AccountSettingsViewModelTest {
     }
   )
 
-  private fun createViewModel(): AccountSettingsViewModel = AccountSettingsViewModel(repository, arePasskeysSupported = true, twoFactorMethodService = twoFactorMethodService)
+  private fun createViewModel(): AccountSettingsViewModel = AccountSettingsViewModel(parentEventEmitter = { navigationEvents += it }, accountRepository = repository, arePasskeysSupported = true, twoFactorMethodService = twoFactorMethodService)
 
   private fun TestScope.collectActions(actions: Flow<AccountSettingsAction>): List<AccountSettingsAction> {
     val collected = mutableListOf<AccountSettingsAction>()
     backgroundScope.launch { actions.toList(collected) }
     return collected
   }
+
+  private fun TwoFactorMethod.toRenameRoute() = AppSettingsRoute.AccountRoute.RenameTwoFactorMethod(
+    methodId = id,
+    methodKind = kind,
+    methodName = name,
+    methodCreatedAt = createdAt
+  )
 }

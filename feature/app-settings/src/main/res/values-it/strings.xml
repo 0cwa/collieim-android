@@ -1017,8 +1017,8 @@
     <string name="UsernameLinkSettingsScreen__camera_needed">Signal deve accedere alla tua fotocamera per scansionare i codici QR</string>
 
     <!-- ManageStorageSettingsScreen -->
-    <string name="preferences__storage">Memoria</string>
-    <string name="preferences_storage__storage_usage">Utilizzo memoria</string>
+    <string name="preferences__storage">Spazio di archiviazione</string>
+    <string name="preferences_storage__storage_usage">Utilizzo spazio di archiviazione</string>
     <!-- Setting section title header for storage optimization -->
     <string name="ManageStorageSettingsFragment__on_device_storage">Spazio di archiviazione di Signal</string>
     <!-- Setting row title for storage optimization -->
@@ -1026,7 +1026,7 @@
     <!-- Setting row explanation for storage optimization -->
     <string name="ManageStorageSettingsFragment__unused_media_will_be_offloaded">I media inutilizzati verranno trasferiti su un backup remoto, ma potrai scaricarli in qualsiasi momento dal tuo backup.</string>
     <!-- Settings section title header show above manage settings options for automatic chat history management (deleting) -->
-    <string name="ManageStorageSettingsFragment_chat_limit">Limiti messaggi chat</string>
+    <string name="ManageStorageSettingsFragment_chat_limit">Limiti per le chat</string>
     <!-- Setting title for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
     <string name="ManageStorageSettingsFragment_apply_limits_title">Applica i limiti ai dispositivi collegati</string>
     <!-- Setting description for syncing automated chat limit trimming (deleting messages automatically by length or date) to linked devices -->
@@ -1037,9 +1037,9 @@
     <string name="preferences_storage__delete_message_history">Vuoi eliminare la cronologia messaggi?</string>
     <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device">Questo eliminerà definitivamente tutta la cronologia dei messaggi e i contenuti multimediali dal tuo dispositivo.</string>
     <!-- Dialog message warning about delete chat message history will delete everything everywhere including linked devices -->
-    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device_linked_device">Quest\'azione rimuoverà per sempre tutta la cronologia dei messaggi e media da questo dispositivo ed eventuali altri dispositivi collegati.</string>
+    <string name="preferences_storage__this_will_delete_all_message_history_and_media_from_your_device_linked_device">Quest\'azione eliminerà definitivamente tutta la cronologia dei messaggi e i contenuti multimediali da questo dispositivo ed eventuali dispositivi collegati.</string>
     <string name="preferences_storage__are_you_sure_you_want_to_delete_all_message_history">Confermi di voler eliminare tutta la cronologia dei messaggi?</string>
-    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone">Tutta la cronologia dei messaggi verrà rimossa definitivamente. Questa azione non può essere annullata.</string>
+    <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone">Tutta la cronologia dei messaggi verrà rimossa definitivamente. Quest\'azione non può essere annullata.</string>
     <!-- Secondary warning dialog message about deleting all chat message history from everything everywhere including linked devices -->
     <string name="preferences_storage__all_message_history_will_be_permanently_removed_this_action_cannot_be_undone_linked_device">Tutta la cronologia messaggi verrà rimossa definitivamente da tutti i dispositivi. Quest\'azione non può essere annullata.</string>
     <string name="preferences_storage__delete_all_now">Elimina tutto ora</string>
@@ -1054,15 +1054,15 @@
 
     <!-- MutedNotificationsScreen -->
     <!-- Description for toggle row to control call settings while muted -->
-    <string name="MutedNotificationsFragment__calls_body">Squilla o invia una notifica quando viene avviata una chiamata mentre questa chat è silenziata.</string>
+    <string name="MutedNotificationsFragment__calls_body">Fai squillare o ricevi una notifica quando viene avviata una chiamata mentre questa chat è silenziata.</string>
     <!-- Description for toggle row to control call settings while muted -->
-    <string name="MutedNotificationsFragment__calls_body_global">Squilla o invia una notifica quando viene avviata una chiamata nelle chat silenziate.</string>
+    <string name="MutedNotificationsFragment__calls_body_global">Fai squillare o invia una notifica quando viene avviata una chiamata nelle chat silenziate.</string>
     <!-- Description for toggle row to control mentions settings while muted -->
-    <string name="MutedNotificationsFragment__mentions_body">Invia una notifica quando una persona ti menziona mentre questa chat è silenziata.</string>
+    <string name="MutedNotificationsFragment__mentions_body">Ricevi una notifica quando una persona ti menziona mentre questa chat è silenziata.</string>
     <!-- Description for toggle row to control mentions settings while muted -->
     <string name="MutedNotificationsFragment__mentions_body_global">Ricevi una notifica quando ti menzionano nelle chat silenziate.</string>
     <!-- Description for toggle row to control replies settings while muted -->
-    <string name="MutedNotificationsFragment__replies_body">Invia una notifica quando una persona risponde al tuo messaggio mentre questa chat è silenziata.</string>
+    <string name="MutedNotificationsFragment__replies_body">Ricevi una notifica quando una persona risponde al tuo messaggio mentre questa chat è silenziata.</string>
     <!-- Description for toggle row to control replies settings while muted -->
     <string name="MutedNotificationsFragment__replies_body_global">Ricevi una notifica quando una persona risponde ai tuoi messaggi nelle chat silenziate.</string>
     <!-- Header to describe screen that shows while muted settings -->
@@ -1109,7 +1109,7 @@
     <string name="NotificationsSettingsScreen__replies">Risposte</string>
     <string name="NotificationsSettingsScreen__silent">Silenzioso</string>
     <!-- Option in settings to turn on unread reminders -->
-    <string name="NotificationsSettingsScreen__unread_reminders">Promemoria non letti</string>
+    <string name="NotificationsSettingsScreen__unread_reminders">Promemoria da leggere</string>
     <string name="arrays__default">Predefinito</string>
     <string name="arrays__high">Alta</string>
     <!-- Setting title that represent an abstract priority to assign to notifications as the max/highest priority a notification can be within the system. -->
@@ -1130,7 +1130,7 @@
     <string name="preferences__fast">Veloce</string>
     <string name="preferences__five_times">Cinque volte</string>
     <string name="preferences__green">Verde</string>
-    <string name="preferences__led_color">Colore del LED</string>
+    <string name="preferences__led_color">Colore LED</string>
     <string name="preferences__magenta">Magenta</string>
     <string name="preferences__never">Mai</string>
     <string name="preferences__normal">Normale</string>
@@ -1168,4 +1168,75 @@
     <string name="SelectRecipientsFragment__add">Aggiungi</string>
     <!-- Title for add recipients to notification profile screen in create flow -->
     <string name="SelectRecipientsScreen__allowed_notifications">Notifiche permesse</string>
+
+    <!-- AdvancedPrivacySettingsScreen -->
+    <string name="preferences__advanced">Avanzate</string>
+    <string name="preferences_advanced__always_relay_calls">Inoltra sempre le chiamate</string>
+    <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Inoltra le chiamate attraverso i server di Signal per non rivelare il tuo indirizzo IP ai tuoi contatti. Abilitandolo verrà ridotta la qualità della chiamata.</string>
+    <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
+    <string name="preferences_communication__category_censorship_circumvention">Raggiro della censura</string>
+    <!-- Title of the \'censorship circumvention\' toggle switch -->
+    <string name="preferences_communication__censorship_circumvention">Raggiro della censura</string>
+    <string name="preferences_communication__censorship_circumvention_if_enabled_signal_will_attempt_to_circumvent_censorship">Se attivo, Signal cercherà di raggirare la censura. Non attivare questa funzione se non ti trovi in un luogo in cui Signal è soggetto a censura.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that we automatically enabled it because we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_has_been_activated_based_on_your_accounts_phone_number">Il raggiro della censura è stato attivato sulla base del tuo numero di telefono.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you disabled it even though we believe you\'re in a censored country -->
+    <string name="preferences_communication__censorship_circumvention_you_have_manually_disabled">Hai disabilitato manualmente il raggiro della censura.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re already connected to the Signal service -->
+    <string name="preferences_communication__censorship_circumvention_is_not_necessary_you_are_already_connected">Il raggiro della censura non è necessario; sei già connesso al servizio Signal.</string>
+    <!-- Summary text for \'censorship circumvention\' toggle. Indicates that you cannot use it because you\'re not connected to the internet -->
+    <string name="preferences_communication__censorship_circumvention_can_only_be_activated_when_connected_to_the_internet">Il raggiro della censura può essere attivato solo se si è connessi a Internet.</string>
+    <string name="preferences_communication__category_sealed_sender">Mittente schermato</string>
+    <string name="AdvancedPrivacySettingsFragment__show_status_icon">Mostra icona di stato</string>
+    <string name="AdvancedPrivacySettingsFragment__show_an_icon">Mostra un\'icona nei dettagli del messaggio quando sono stati consegnati utilizzando il mittente schermato.</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone">Permetti da chiunque</string>
+    <string name="preferences_communication__sealed_sender_allow_from_anyone_description">Abilita il mittente schermato per i messaggi in arrivo da non-contatti e persone con cui non hai condiviso il tuo profilo.</string>
+    <!-- Preference title for automatic key verification -->
+    <string name="preferences_automatic_key_verification">Verifica automatica della chiave</string>
+    <!-- Preference summary for automatic key verification -->
+    <string name="preferences_automatic_key_verification_body">Quando attivi questa opzione, Signal proverà a verificare in automatico la crittografia delle tue chat individuali.</string>
+
+    <!-- ExpireTimerSettingsScreen -->
+    <!-- Title of the screen for choosing a disappearing messages timer -->
+    <string name="ExpireTimerSettingsScreen__disappearing_messages">Messaggi temporanei</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_new_chats_started_by_you_will_disappear_after_they_have_been_seen">Una volta abilitati, i nuovi messaggi inviati e ricevuti in nuove chat avviate da te scompariranno dopo essere stati visti.</string>
+    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_this_chat_will_disappear_after_they_have_been_seen">Una volta abilitati, i nuovi messaggi inviati e ricevuti in questa chat scompariranno dopo essere stati visti.</string>
+    <string name="ExpireTimerSettingsFragment__off">Off</string>
+    <string name="ExpireTimerSettingsFragment__4_weeks">4 settimane</string>
+    <string name="ExpireTimerSettingsFragment__1_week">1 settimana</string>
+    <string name="ExpireTimerSettingsFragment__1_day">1 giorno</string>
+    <string name="ExpireTimerSettingsFragment__8_hours">8 ore</string>
+    <string name="ExpireTimerSettingsFragment__1_hour">1 ora</string>
+    <string name="ExpireTimerSettingsFragment__5_minutes">5 minuti</string>
+    <string name="ExpireTimerSettingsFragment__30_seconds">30 secondi</string>
+    <string name="ExpireTimerSettingsFragment__custom_time">Tempo personalizzato</string>
+    <string name="ExpireTimerSettingsFragment__save">Salva</string>
+
+    <!-- AccountSettingsScreen -->
+    <!-- Snackbar shown after the user creates a PIN -->
+    <string name="AccountSettingsScreen__pin_created">PIN creato.</string>
+    <!-- Snackbar shown when wiping all of the app\'s data on this device fails -->
+    <string name="AccountSettingsScreen__delete_all_data_failed">Impossibile eliminare i dati</string>
+    <string name="preferences_app_protection__failed_to_enable_registration_lock">Impossibile abilitare il blocco registrazione.</string>
+    <string name="preferences_app_protection__failed_to_disable_registration_lock">Impossibile disabilitare il blocco registrazione.</string>
+
+    <!-- AdvancedPinSettingsScreen -->
+    <!-- Title of toolbar for the advanced pin settings screen -->
+    <string name="preferences__advanced_pin_settings_title">Impostazioni PIN avanzate</string>
+    <string name="preferences__enable_pin">Abilita PIN</string>
+    <string name="preferences__pins_keep_information_stored_with_signal_encrypted_so_only_you_can_access_it">I PIN mantengono le informazioni memorizzate con Signal crittografate in modo che solo tu possa accedervi. Il profilo, le impostazioni e i contatti verranno ripristinati quando reinstalli. Non avrai bisogno del tuo PIN per aprire l\'app.</string>
+    <string name="preferences__disable_pin">Disabilita PIN</string>
+    <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">Se disabiliti il PIN, perderai tutti i dati quando ti registri nuovamente con Signal a meno che tu non esegua manualmente il backup e il ripristino. Non è possibile attivare il Blocco registrazione mentre il PIN è disabilitato.</string>
+    <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">I PIN sono richiesti per il blocco registrazione. Per disabilitare i PIN, disabilita prima il blocco registrazione.</string>
+    <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">Annota la frase di recupero per i pagamenti</string>
+    <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">Prima di disattivare il PIN, salva la frase di recupero per assicurarti di poter recuperare il tuo account dei pagamenti.</string>
+    <string name="ApplicationPreferencesActivity_record_phrase">Annota frase</string>
+    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_title">Crea una nuova chiave di ripristino</string>
+    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_body">Devi creare e registrare una chiave di ripristino prima di poter disabilitare il tuo PIN.</string>
+    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
+    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">Crea una chiave</string>
+    <string name="ApplicationPreferencesActivity_pin_created">PIN creato.</string>
+    <string name="ApplicationPreferencesActivity_pin_disabled">PIN disabilitato.</string>
 </resources>

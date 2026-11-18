@@ -50,6 +50,7 @@ import org.thoughtcrime.securesms.database.GroupTable
 import org.thoughtcrime.securesms.database.RecipientTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.ThreadTable
+import org.thoughtcrime.securesms.database.groupRecord
 import org.thoughtcrime.securesms.database.model.GroupRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.DecryptedGroupV2Context
 import org.thoughtcrime.securesms.database.model.databaseprotos.member
@@ -207,7 +208,7 @@ class GroupsV2StateProcessorTest {
   }
 
   @Test
-  fun `when local revision matches server revision, then return consistent or ahead`() {
+  fun `when local revision matches server revision, then request logs from the next revision and return consistent or ahead`() {
     given {
       localState(
         revision = 5,
@@ -215,7 +216,7 @@ class GroupsV2StateProcessorTest {
       )
       changeSet {
       }
-      apiCallParameters(requestedRevision = 5, includeFirst = false)
+      apiCallParameters(requestedRevision = 6, includeFirst = false)
       joinedAtRevision = 0
     }
 
@@ -226,6 +227,8 @@ class GroupsV2StateProcessorTest {
 
     assertThat(result.updateStatus, "local and server match revisions")
       .isEqualTo(GroupUpdateResult.UpdateStatus.GROUP_CONSISTENT_OR_AHEAD)
+
+    verify { groupsV2API.getGroupHistoryPage(any(), 6, any(), false, 0) }
   }
 
   @Test
@@ -261,7 +264,7 @@ class GroupsV2StateProcessorTest {
           }
         }
       }
-      apiCallParameters(requestedRevision = 5, includeFirst = false)
+      apiCallParameters(requestedRevision = 6, includeFirst = false)
       joinedAtRevision = 0
       expectTableUpdate = true
     }
@@ -303,7 +306,7 @@ class GroupsV2StateProcessorTest {
           }
         }
       }
-      apiCallParameters(requestedRevision = 5, includeFirst = false)
+      apiCallParameters(requestedRevision = 6, includeFirst = false)
       joinedAtRevision = 0
       expectTableUpdate = true
     }
@@ -351,7 +354,7 @@ class GroupsV2StateProcessorTest {
           }
         }
       }
-      apiCallParameters(requestedRevision = 100, includeFirst = false)
+      apiCallParameters(requestedRevision = 101, includeFirst = false)
       joinedAtRevision = 0
       expectTableUpdate = true
     }
@@ -393,7 +396,7 @@ class GroupsV2StateProcessorTest {
       targetRevision = 6,
       timestamp = 0,
       signedGroupChange = signedChange,
-      serverGuid = UUID.randomUUID().toString()
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
     )
 
     assertThat(result.latestServer)
@@ -432,7 +435,7 @@ class GroupsV2StateProcessorTest {
       targetRevision = 6,
       timestamp = 0,
       signedGroupChange = signedChange,
-      serverGuid = UUID.randomUUID().toString()
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
     )
 
     assertThat(result.latestServer)
@@ -464,7 +467,7 @@ class GroupsV2StateProcessorTest {
           fullSnapshot(serverState)
         }
       }
-      apiCallParameters(1, false)
+      apiCallParameters(2, false)
       joinedAtRevision = 0
       expectTableUpdate = true
     }
@@ -481,7 +484,7 @@ class GroupsV2StateProcessorTest {
       targetRevision = 2,
       timestamp = 0,
       signedGroupChange = signedChange,
-      serverGuid = UUID.randomUUID().toString()
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
     )
 
     assertThat(result.updateStatus, "local should update to server")
@@ -492,7 +495,7 @@ class GroupsV2StateProcessorTest {
         assertThat(it.revision, "revision matches server").isEqualTo(2)
       }
 
-    verify { groupsV2API.getGroupHistoryPage(secretParams, 1, any(), false, 0) }
+    verify { groupsV2API.getGroupHistoryPage(secretParams, 2, any(), false, 0) }
 
     unmockkStatic(DecryptedGroupUtil::class)
   }
@@ -523,7 +526,7 @@ class GroupsV2StateProcessorTest {
       targetRevision = 2,
       timestamp = 0,
       signedGroupChange = signedChange,
-      serverGuid = UUID.randomUUID().toString()
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
     )
   }
 
@@ -551,7 +554,7 @@ class GroupsV2StateProcessorTest {
       targetRevision = GroupsV2StateProcessor.LATEST,
       timestamp = 0,
       signedGroupChange = signedChange,
-      serverGuid = UUID.randomUUID().toString()
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
     )
 
     assertThat(result.updateStatus, "local should update to server")
@@ -634,8 +637,67 @@ class GroupsV2StateProcessorTest {
       .isNotNull()
       .transform { it.members }
       .contains(member(otherAci))
+    assertThat(result.latestServer!!.isPlaceholderGroup, "placeholder replaced by server state").isFalse()
 
     verify { groupTable.update(masterKey, result.latestServer!!, null) }
+  }
+
+  @Test
+  fun `when a join-via-link placeholder is replaced by the full server state, then the next update pages from the following revision`() {
+    given {
+      localState(
+        revision = 1,
+        members = listOf(member(selfAci)),
+        isPlaceholderGroup = true
+      )
+      changeSet {
+        changeLog(2) {
+          fullSnapshot(
+            title = "Breaking Signal for Science",
+            members = listOf(member(otherAci), member(selfAci, joinedAt = 2))
+          )
+        }
+      }
+      apiCallParameters(requestedRevision = 2, includeFirst = true)
+      joinedAtRevision = 2
+      expectTableUpdate = true
+    }
+
+    val firstResult = processor.updateLocalGroupToRevision(
+      targetRevision = GroupsV2StateProcessor.LATEST,
+      timestamp = 0
+    )
+
+    val savedState = firstResult.latestServer!!
+
+    given {
+      localState = savedState
+      groupRecord = groupRecord(masterKey, savedState)
+      changeSet {
+        changeLog(3) {
+          change {
+            setNewTitle("Science for Breaking Signal")
+          }
+        }
+      }
+      apiCallParameters(requestedRevision = 3, includeFirst = false)
+      expectTableUpdate = true
+    }
+
+    val secondResult = processor.updateLocalGroupToRevision(
+      targetRevision = GroupsV2StateProcessor.LATEST,
+      timestamp = 0
+    )
+
+    assertThat(secondResult.updateStatus, "local should update to server")
+      .isEqualTo(GroupUpdateResult.UpdateStatus.GROUP_UPDATED)
+    assertThat(secondResult.latestServer?.title).isEqualTo("Science for Breaking Signal")
+
+    verifyOrder {
+      groupsV2API.getGroupHistoryPage(secretParams, 2, any(), true, 0)
+      groupsV2API.getGroupHistoryPage(secretParams, 3, any(), false, 0)
+    }
+    verify(exactly = 1) { groupsV2API.getGroupJoinedAt(any()) }
   }
 
   @Test
@@ -887,7 +949,7 @@ class GroupsV2StateProcessorTest {
           }
         }
       }
-      apiCallParameters(requestedRevision = 8, includeFirst = false)
+      apiCallParameters(requestedRevision = 9, includeFirst = false)
       joinedAtRevision = 0
       expectTableUpdate = true
     }
@@ -1063,7 +1125,7 @@ class GroupsV2StateProcessorTest {
       )
       changeSet {
       }
-      apiCallParameters(requestedRevision = 5, includeFirst = false)
+      apiCallParameters(requestedRevision = 6, includeFirst = false)
       joinedAtRevision = 0
       expectTableUpdate = true
     }
@@ -1092,7 +1154,7 @@ class GroupsV2StateProcessorTest {
         revision = 5,
         members = selfAndOthers
       )
-      apiCallParameters(requestedRevision = 5, includeFirst = false)
+      apiCallParameters(requestedRevision = 6, includeFirst = false)
       joinedAtRevision = 0
       expectTableUpdate = true
     }
@@ -1130,7 +1192,7 @@ class GroupsV2StateProcessorTest {
       targetRevision = 6,
       timestamp = 0,
       signedGroupChange = signedChange,
-      serverGuid = UUID.randomUUID().toString()
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
     )
 
     assertThat(result.updateStatus).isEqualTo(GroupUpdateResult.UpdateStatus.GROUP_UPDATED)
@@ -1165,7 +1227,7 @@ class GroupsV2StateProcessorTest {
       targetRevision = 6,
       timestamp = 0,
       signedGroupChange = signedChange,
-      serverGuid = UUID.randomUUID().toString()
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
     )
 
     assertThat(result.updateStatus).isEqualTo(GroupUpdateResult.UpdateStatus.GROUP_UPDATED)
@@ -1237,7 +1299,7 @@ class GroupsV2StateProcessorTest {
       )
       changeSet {
       }
-      apiCallParameters(requestedRevision = 5, includeFirst = false)
+      apiCallParameters(requestedRevision = 6, includeFirst = false)
       joinedAtRevision = 0
     }
 
@@ -1250,7 +1312,7 @@ class GroupsV2StateProcessorTest {
       targetRevision = 6,
       timestamp = 0,
       signedGroupChange = signedChange,
-      serverGuid = UUID.randomUUID().toString()
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
     )
 
     assertThat(result.updateStatus, "terminated group should not accept P2P changes")
@@ -1270,7 +1332,7 @@ class GroupsV2StateProcessorTest {
       )
     }
 
-    every { groupsV2API.getGroupHistoryPage(any(), 5, any(), false, 0) } throws NonSuccessfulResponseCodeException(500)
+    every { groupsV2API.getGroupHistoryPage(any(), 6, any(), false, 0) } throws NonSuccessfulResponseCodeException(500)
 
     try {
       processor.updateLocalGroupToRevision(
@@ -1296,7 +1358,7 @@ class GroupsV2StateProcessorTest {
       )
     }
 
-    every { groupsV2API.getGroupHistoryPage(any(), 1, any(), false, 0) } throws NotInGroupException()
+    every { groupsV2API.getGroupHistoryPage(any(), 2, any(), false, 0) } throws NotInGroupException()
     every { groupsV2API.getGroupJoinedAt(any()) } returns NetworkResult.StatusCodeError(NotInGroupException())
     every { groupsV2API.getGroupAsResult(any(), any()) } returns NetworkResult.StatusCodeError(NotInGroupException())
     justRun { profileAndMessageHelper.leaveGroupLocally(any()) }
@@ -1312,7 +1374,7 @@ class GroupsV2StateProcessorTest {
         targetRevision = 3,
         timestamp = 0,
         signedGroupChange = signedChange,
-        serverGuid = UUID.randomUUID().toString()
+        triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
       )
     } finally {
       verify(exactly = 0) { groupTable.update(any<GroupMasterKey>(), any<DecryptedGroup>(), any(), any()) }
@@ -1331,7 +1393,7 @@ class GroupsV2StateProcessorTest {
       expectTableUpdate = true
     }
 
-    every { groupsV2API.getGroupHistoryPage(any(), 1, any(), false, 0) } throws NotInGroupException()
+    every { groupsV2API.getGroupHistoryPage(any(), 2, any(), false, 0) } throws NotInGroupException()
     every { groupsV2API.getGroupJoinedAt(any()) } returns NetworkResult.StatusCodeError(NotInGroupException())
     every { groupsV2API.getGroupAsResult(any(), any()) } returns NetworkResult.StatusCodeError(NotInGroupException())
 
@@ -1345,7 +1407,7 @@ class GroupsV2StateProcessorTest {
       targetRevision = 3,
       timestamp = 0,
       signedGroupChange = signedChange,
-      serverGuid = UUID.randomUUID().toString()
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = false)
     )
 
     assertThat(result.updateStatus, "local should force-apply the kick")
@@ -1378,7 +1440,7 @@ class GroupsV2StateProcessorTest {
           }
         }
       }
-      apiCallParameters(requestedRevision = 5, includeFirst = false)
+      apiCallParameters(requestedRevision = 6, includeFirst = false)
       expectTableUpdate = true
     }
 
@@ -1390,7 +1452,7 @@ class GroupsV2StateProcessorTest {
     assertThat(result.updateStatus, "local should update to server")
       .isEqualTo(GroupUpdateResult.UpdateStatus.GROUP_UPDATED)
 
-    verify { groupsV2API.getGroupHistoryPage(secretParams, 5, any(), false, 0) }
+    verify { groupsV2API.getGroupHistoryPage(secretParams, 6, any(), false, 0) }
     verify(exactly = 0) { groupsV2API.getGroupJoinedAt(any()) }
   }
 
@@ -1409,7 +1471,7 @@ class GroupsV2StateProcessorTest {
           }
         }
       }
-      apiCallParameters(requestedRevision = 3, includeFirst = false)
+      apiCallParameters(requestedRevision = 4, includeFirst = false)
       expectTableUpdate = true
     }
 
@@ -1421,7 +1483,39 @@ class GroupsV2StateProcessorTest {
     assertThat(result.updateStatus, "local should update to server")
       .isEqualTo(GroupUpdateResult.UpdateStatus.GROUP_UPDATED)
 
-    verify { groupsV2API.getGroupHistoryPage(secretParams, 3, any(), false, 0) }
+    verify { groupsV2API.getGroupHistoryPage(secretParams, 4, any(), false, 0) }
+    verify(exactly = 0) { groupsV2API.getGroupJoinedAt(any()) }
+  }
+
+  @Test
+  fun `when local state is a full member at revision 0, then page from revision 1 without first state or joined at revision`() {
+    given {
+      localState(
+        revision = 0,
+        title = "Fdsa",
+        members = listOf(member(otherAci), member(selfAci, joinedAt = 0))
+      )
+      changeSet {
+        changeLog(1) {
+          change {
+            setNewTitle("Asdf")
+          }
+        }
+      }
+      apiCallParameters(requestedRevision = 1, includeFirst = false)
+      expectTableUpdate = true
+    }
+
+    val result = processor.updateLocalGroupToRevision(
+      targetRevision = GroupsV2StateProcessor.LATEST,
+      timestamp = 0
+    )
+
+    assertThat(result.updateStatus, "local should update to server")
+      .isEqualTo(GroupUpdateResult.UpdateStatus.GROUP_UPDATED)
+
+    verify { groupsV2API.getGroupHistoryPage(secretParams, 1, any(), false, 0) }
+    verify(exactly = 0) { groupsV2API.getGroupHistoryPage(secretParams, 0, any(), any(), any()) }
     verify(exactly = 0) { groupsV2API.getGroupJoinedAt(any()) }
   }
 
@@ -1519,7 +1613,7 @@ class GroupsV2StateProcessorTest {
       expectTableUpdate = true
     }
 
-    every { groupsV2API.getGroupHistoryPage(any(), 5, any(), false, 0) } throws NotInGroupException()
+    every { groupsV2API.getGroupHistoryPage(any(), 6, any(), false, 0) } throws NotInGroupException()
 
     val result = processor.updateLocalGroupToRevision(
       targetRevision = GroupsV2StateProcessor.LATEST,
@@ -1536,7 +1630,7 @@ class GroupsV2StateProcessorTest {
       }
 
     verifyOrder {
-      groupsV2API.getGroupHistoryPage(secretParams, 5, any(), false, 0)
+      groupsV2API.getGroupHistoryPage(secretParams, 6, any(), false, 0)
       groupsV2API.getGroupJoinedAt(any())
       groupsV2API.getGroupHistoryPage(secretParams, 8, any(), true, 0)
     }
@@ -1551,7 +1645,7 @@ class GroupsV2StateProcessorTest {
       )
     }
 
-    every { groupsV2API.getGroupHistoryPage(any(), 5, any(), false, 0) } throws NotInGroupException()
+    every { groupsV2API.getGroupHistoryPage(any(), 6, any(), false, 0) } throws NotInGroupException()
     every { groupsV2API.getGroupJoinedAt(any()) } returns NetworkResult.StatusCodeError(NotInGroupException())
     every { groupsV2API.getGroupAsResult(any(), any()) } returns NetworkResult.StatusCodeError(NotInGroupException())
     justRun { profileAndMessageHelper.leaveGroupLocally(any()) }
@@ -1576,7 +1670,7 @@ class GroupsV2StateProcessorTest {
       )
     }
 
-    every { groupsV2API.getGroupHistoryPage(any(), 5, any(), false, 0) } throws GroupNotFoundException()
+    every { groupsV2API.getGroupHistoryPage(any(), 6, any(), false, 0) } throws GroupNotFoundException()
     every { groupsV2API.getGroupJoinedAt(any()) } returns NetworkResult.StatusCodeError(GroupNotFoundException())
     every { groupsV2API.getGroupAsResult(any(), any()) } returns NetworkResult.StatusCodeError(GroupNotFoundException())
     justRun { profileAndMessageHelper.leaveGroupLocally(any()) }
@@ -1663,7 +1757,7 @@ class GroupsV2StateProcessorTest {
           }
         }
       }
-      apiCallParameters(requestedRevision = 5, includeFirst = false)
+      apiCallParameters(requestedRevision = 6, includeFirst = false)
       joinedAtRevision = 0
       expectTableUpdate = true
     }
@@ -1704,7 +1798,7 @@ class GroupsV2StateProcessorTest {
           }
         }
       }
-      apiCallParameters(requestedRevision = 5, includeFirst = false)
+      apiCallParameters(requestedRevision = 6, includeFirst = false)
       joinedAtRevision = 0
       expectTableUpdate = true
     }
@@ -1762,6 +1856,56 @@ class GroupsV2StateProcessorTest {
     verify { StorageSyncHelper.scheduleSyncForDataChange() }
 
     unmockkStatic(StorageSyncHelper::class)
+  }
+
+  @Test
+  fun `when triggering message is sent by self, then setProfileSharing receives sentBySelf true`() {
+    givenFreshRev0GroupEditedBySelf()
+
+    processor.updateLocalGroupToRevision(
+      targetRevision = 0,
+      timestamp = 0,
+      triggeringMessage = TriggeringMessage(serverGuid = UUID.randomUUID().toString(), receivedTime = null, sentBySelf = true)
+    )
+
+    verify { profileAndMessageHelper.setProfileSharing(any(), any(), any(), true) }
+    unmockkStatic(StorageSyncHelper::class)
+  }
+
+  @Test
+  fun `when there is no triggering message, then setProfileSharing receives sentBySelf false`() {
+    givenFreshRev0GroupEditedBySelf()
+
+    processor.updateLocalGroupToRevision(
+      targetRevision = 0,
+      timestamp = 0
+    )
+
+    verify { profileAndMessageHelper.setProfileSharing(any(), any(), any(), false) }
+    unmockkStatic(StorageSyncHelper::class)
+  }
+
+  private fun givenFreshRev0GroupEditedBySelf() {
+    given {
+      changeSet {
+        changeLog(0) {
+          fullSnapshot(title = "Fresh", members = selfAndOthers)
+          change {
+            editorServiceIdBytes = selfAci.toByteString()
+          }
+        }
+      }
+      apiCallParameters(requestedRevision = 0, includeFirst = true)
+      joinedAtRevision = 0
+      expectTableCreate = true
+    }
+
+    every { recipientTable.getOrInsertFromGroupId(groupId) } returns RecipientId.from(100)
+    justRun { recipientTable.rotateStorageId(any()) }
+    justRun { profileAndMessageHelper.setProfileSharing(any(), any(), any(), any()) }
+    every { groupTable.create(any<GroupMasterKey>(), any<DecryptedGroup>(), any<ReceivedGroupSendEndorsements>(), any<ByteArray>()) } returns groupId
+    mockkStatic(StorageSyncHelper::class)
+    justRun { StorageSyncHelper.scheduleSyncForDataChange() }
   }
 
   @Test
@@ -1902,5 +2046,75 @@ class GroupsV2StateProcessorTest {
       newLocalState,
       needsAvatarFetch = true
     )
+  }
+
+  @Test
+  fun `when self is the editor at joinedAtRevision, then setProfileSharing does not enable profile sharing`() {
+    val joinedAtRevision = 1
+    val newLocalState = DecryptedGroup(
+      revision = joinedAtRevision,
+      members = listOf(member(otherAci), member(selfAci, joinedAt = joinedAtRevision))
+    )
+    val addedBySelfChange = DecryptedGroupChange(
+      revision = joinedAtRevision,
+      editorServiceIdBytes = selfAci.toByteString()
+    )
+    val groupStateDiff = GroupStateDiff(previousGroupState = null, changedGroupState = newLocalState, change = addedBySelfChange)
+
+    mockkObject(Recipient)
+    every { Recipient.externalPush(selfAci) } returns Recipient(id = RecipientId.from(2), isSelf = true, isProfileSharing = true)
+    every { Recipient.externalGroupExact(groupId) } returns Recipient(id = RecipientId.from(3))
+
+    profileAndMessageHelper.setProfileSharing(groupStateDiff, newLocalState, needsAvatarFetch = false)
+
+    verify(exactly = 0) { recipientTable.setProfileSharing(any(), any()) }
+  }
+
+  @Test
+  fun `when self is the editor at joinedAtRevision and sent by self, then setProfileSharing enables profile sharing`() {
+    val joinedAtRevision = 1
+    val groupRecipientId = RecipientId.from(3)
+    val newLocalState = DecryptedGroup(
+      revision = joinedAtRevision,
+      members = listOf(member(otherAci), member(selfAci, joinedAt = joinedAtRevision))
+    )
+    val addedBySelfChange = DecryptedGroupChange(
+      revision = joinedAtRevision,
+      editorServiceIdBytes = selfAci.toByteString()
+    )
+    val groupStateDiff = GroupStateDiff(previousGroupState = null, changedGroupState = newLocalState, change = addedBySelfChange)
+
+    mockkObject(Recipient)
+    every { Recipient.externalPush(selfAci) } returns Recipient(id = RecipientId.from(2), isSelf = true, isProfileSharing = true)
+    every { Recipient.externalGroupExact(groupId) } returns Recipient(id = groupRecipientId)
+    justRun { recipientTable.setProfileSharing(groupRecipientId, true) }
+
+    profileAndMessageHelper.setProfileSharing(groupStateDiff, newLocalState, needsAvatarFetch = false, sentBySelf = true)
+
+    verify(exactly = 1) { recipientTable.setProfileSharing(groupRecipientId, true) }
+  }
+
+  @Test
+  fun `when a system contact is the editor at joinedAtRevision, then setProfileSharing enables profile sharing`() {
+    val joinedAtRevision = 1
+    val groupRecipientId = RecipientId.from(3)
+    val newLocalState = DecryptedGroup(
+      revision = joinedAtRevision,
+      members = listOf(member(otherAci), member(selfAci, joinedAt = joinedAtRevision))
+    )
+    val addedByContactChange = DecryptedGroupChange(
+      revision = joinedAtRevision,
+      editorServiceIdBytes = otherAci.toByteString()
+    )
+    val groupStateDiff = GroupStateDiff(previousGroupState = null, changedGroupState = newLocalState, change = addedByContactChange)
+
+    mockkObject(Recipient)
+    every { Recipient.externalPush(otherAci) } returns Recipient(id = RecipientId.from(2), contactUri = Uri.parse("content://contacts/2"))
+    every { Recipient.externalGroupExact(groupId) } returns Recipient(id = groupRecipientId)
+    justRun { recipientTable.setProfileSharing(groupRecipientId, true) }
+
+    profileAndMessageHelper.setProfileSharing(groupStateDiff, newLocalState, needsAvatarFetch = false)
+
+    verify(exactly = 1) { recipientTable.setProfileSharing(groupRecipientId, true) }
   }
 }

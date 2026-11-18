@@ -22,6 +22,10 @@ import org.signal.appsettings.account.AccountSettingsState.Dialog
 import org.signal.appsettings.account.AccountSettingsState.LoadState
 import org.signal.appsettings.account.AccountSettingsState.SignalLogin
 import org.signal.appsettings.account.TwoFactorMethod
+import org.signal.appsettings.routes.AppSettingsNavigationEvent
+import org.signal.appsettings.routes.AppSettingsRoute
+import org.signal.appsettings.routes.navigateBack
+import org.signal.appsettings.routes.navigateTo
 import org.signal.core.ui.compose.EventDrivenViewModel
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.net.MfaKeyKind
@@ -37,6 +41,7 @@ import org.thoughtcrime.securesms.components.settings.app.AppSettingsRepository
  * deletion all live.
  */
 class AccountSettingsViewModel(
+  private val parentEventEmitter: (AppSettingsNavigationEvent) -> Unit,
   private val accountRepository: AccountSettingsRepository,
   arePasskeysSupported: Boolean,
   private val twoFactorMethodService: TwoFactorMethodService = SignalNetwork.twoFactorMethodService
@@ -69,7 +74,7 @@ class AccountSettingsViewModel(
         refresh()
       }
       AccountSettingsEvent.NavigateBackClicked -> {
-        _actions.send(AccountSettingsAction.NavigateBack)
+        parentEventEmitter.navigateBack()
       }
       AccountSettingsEvent.LinkedDevicesClicked -> {
         if (_state.value.canOpenLinkedDevices) {
@@ -86,7 +91,7 @@ class AccountSettingsViewModel(
       }
       AccountSettingsEvent.PinCreated -> {
         refresh()
-        _actions.send(AccountSettingsAction.ShowPinCreatedConfirmation)
+        _state.update { it.copy(snackbar = AccountSettingsState.Snackbar.PinCreated) }
       }
       is AccountSettingsEvent.PinRemindersToggled -> {
         applyPinRemindersToggled(event.enabled)
@@ -110,25 +115,32 @@ class AccountSettingsViewModel(
         _actions.send(AccountSettingsAction.AuthenticateToViewSignalLoginDetails)
       }
       AccountSettingsEvent.SignalLoginDetailsAuthenticated -> {
-        _actions.send(AccountSettingsAction.NavigateToSignalLoginDetails)
+        parentEventEmitter.navigateTo(AppSettingsRoute.AccountRoute.SignalLoginDetails)
       }
       AccountSettingsEvent.AddTotpAppClicked -> {
         applyAddTotpAppClicked()
       }
       AccountSettingsEvent.AddTotpAppAuthenticated -> {
-        _actions.send(AccountSettingsAction.NavigateToTotpSetup)
+        parentEventEmitter.navigateTo(AppSettingsRoute.AccountRoute.TotpSetup)
       }
       AccountSettingsEvent.AddPasskeyClicked -> {
         applyAddPasskeyClicked()
       }
       AccountSettingsEvent.AddPasskeyAuthenticated -> {
-        _actions.send(AccountSettingsAction.NavigateToPasskeySetup)
+        parentEventEmitter.navigateTo(AppSettingsRoute.AccountRoute.PasskeySetup)
       }
       is AccountSettingsEvent.LearnMoreClicked -> {
         _actions.send(AccountSettingsAction.OpenSupportArticle(event.url))
       }
       is AccountSettingsEvent.RenameMethodClicked -> {
-        _actions.send(AccountSettingsAction.NavigateToRenameMethod(event.method))
+        parentEventEmitter.navigateTo(
+          AppSettingsRoute.AccountRoute.RenameTwoFactorMethod(
+            methodId = event.method.id,
+            methodKind = event.method.kind,
+            methodName = event.method.name,
+            methodCreatedAt = event.method.createdAt
+          )
+        )
       }
       is AccountSettingsEvent.RemoveMethodClicked -> {
         _actions.send(AccountSettingsAction.AuthenticateToRemoveMethod(event.method))
@@ -137,22 +149,22 @@ class AccountSettingsViewModel(
         applyMethodRemovalAuthenticated(event.method)
       }
       AccountSettingsEvent.AuthenticationFailed -> {
-        _actions.send(AccountSettingsAction.ShowAuthenticationFailed)
+        _state.update { it.copy(snackbar = AccountSettingsState.Snackbar.AuthenticationRequired) }
       }
       is AccountSettingsEvent.RemoveMethodConfirmed -> {
         applyRemoveMethodConfirmed(event.method)
       }
       AccountSettingsEvent.AdvancedPinSettingsClicked -> {
-        _actions.send(AccountSettingsAction.NavigateToAdvancedPinSettings)
+        parentEventEmitter.navigateTo(AppSettingsRoute.AccountRoute.AdvancedPinSettings)
       }
       AccountSettingsEvent.ChangePhoneNumberClicked -> {
-        _actions.send(AccountSettingsAction.NavigateToChangePhoneNumber)
+        parentEventEmitter.navigateTo(AppSettingsRoute.ChangeNumberRoute.Start)
       }
       AccountSettingsEvent.TransferAccountClicked -> {
-        _actions.send(AccountSettingsAction.NavigateToDeviceTransfer)
+        parentEventEmitter.navigateTo(AppSettingsRoute.AccountRoute.OldDeviceTransfer)
       }
       AccountSettingsEvent.RequestAccountDataClicked -> {
-        _actions.send(AccountSettingsAction.NavigateToExportAccountData)
+        parentEventEmitter.navigateTo(AppSettingsRoute.AccountRoute.ExportAccountData)
       }
       AccountSettingsEvent.UpdateSignalClicked -> {
         _actions.send(AccountSettingsAction.OpenPlayStore)
@@ -168,16 +180,23 @@ class AccountSettingsViewModel(
         _actions.send(AccountSettingsAction.WipeAllData)
       }
       AccountSettingsEvent.DataWipeFailed -> {
-        _actions.send(AccountSettingsAction.ShowDataWipeFailed)
+        _state.update { it.copy(snackbar = AccountSettingsState.Snackbar.DeleteAllDataFailed) }
       }
       AccountSettingsEvent.DeleteAccountClicked -> {
         _actions.send(AccountSettingsAction.AuthenticateToDeleteAccount)
       }
       AccountSettingsEvent.DeleteAccountAuthenticated -> {
-        _actions.send(AccountSettingsAction.NavigateToDeleteAccount)
+        parentEventEmitter.navigateTo(AppSettingsRoute.AccountRoute.DeleteAccount)
       }
       AccountSettingsEvent.DialogDismissed -> {
         _state.update { it.copy(dialog = Dialog.None) }
+      }
+      is AccountSettingsEvent.MethodNamed -> {
+        val kind = event.result.kind
+        _state.update { it.copy(snackbar = if (event.result.renamed) AccountSettingsState.Snackbar.MethodRenamed(kind) else AccountSettingsState.Snackbar.MethodSetUp(kind)) }
+      }
+      AccountSettingsEvent.SnackbarDismissed -> {
+        _state.update { it.copy(snackbar = AccountSettingsState.Snackbar.None) }
       }
     }
   }
@@ -208,13 +227,8 @@ class AccountSettingsViewModel(
     refresh()
 
     if (!success) {
-      _actions.send(
-        if (dialog.enable) {
-          AccountSettingsAction.ShowRegistrationLockEnableFailed
-        } else {
-          AccountSettingsAction.ShowRegistrationLockDisableFailed
-        }
-      )
+      val snackbar = if (dialog.enable) AccountSettingsState.Snackbar.RegistrationLockEnableFailed else AccountSettingsState.Snackbar.RegistrationLockDisableFailed
+      _state.update { it.copy(snackbar = snackbar) }
     }
   }
 
@@ -245,12 +259,12 @@ class AccountSettingsViewModel(
 
     when (val result = twoFactorMethodService.removeMethod(method.id)) {
       is RequestResult.Success -> {
-        _actions.send(AccountSettingsAction.ShowMethodRemoved(method.kind))
+        _state.update { it.copy(snackbar = AccountSettingsState.Snackbar.MethodRemoved(method.kind)) }
         refreshTwoFactorMethods()
       }
       is RequestResult.RetryableNetworkError, is RequestResult.ApplicationError -> {
         Log.w(TAG, "Couldn't remove the second factor. Leaving it in the list, where it still is.")
-        _actions.send(AccountSettingsAction.ShowMethodRemovalFailed(method.kind))
+        _state.update { it.copy(snackbar = AccountSettingsState.Snackbar.MethodRemovalFailed(method.kind)) }
       }
       is RequestResult.NonSuccess -> error("Code branch is unreachable")
     }

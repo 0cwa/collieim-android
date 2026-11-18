@@ -197,6 +197,8 @@ class ReleaseReadinessTest(unittest.TestCase):
                 if path in (".github/actions/disk-cleanup", "tooling/ci", "tooling/git-hooks", "tooling/host-tests",
                             "tooling/reproducible-builds", "buildSrc", "build-logic", "gradle/wrapper"):
                     entry.update(mode="040000", type="tree")
+                if commit == SHA and path == gate.CLASSIC_WEBVIEW_CHECKER:
+                    entry["sha"] = gate.CLASSIC_WEBVIEW_CHECKER_BLOB
                 by_parent[folder].append(entry)
                 if commit == SHA:
                     candidate_inputs[path] = entry
@@ -231,7 +233,9 @@ class ReleaseReadinessTest(unittest.TestCase):
                          (gate.MAINTENANCE_BRANCH, "push", policy))
         for path in (gate.WORKFLOW_PATH, ".github/scripts/check-unit-test-results.py",
                      ".github/ci-required-tests.json", ".github/ci-required-tests-stable-8.35.json",
-                     "gradlew", "gradle/wrapper", "build-logic"):
+                     "gradlew", "gradle/wrapper", "build-logic",
+                     ".github/scripts/check-archive-device-results.py", gate.CLASSIC_WEBVIEW_CHECKER,
+                     "tooling/fastlane/check_metadata.py"):
             with self.subTest(replaced_input=path):
                 entry = candidate_inputs[path]
                 original = entry["sha"]

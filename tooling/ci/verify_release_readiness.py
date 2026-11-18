@@ -20,6 +20,11 @@ WORKFLOW_PATH = ".github/workflows/pr.yml"
 WORKFLOW_ID = 413670842
 MAINTENANCE_BRANCH = "release/stable/8.35"
 MAINTENANCE_POLICY = ".github/ci-required-tests-stable-8.35.json"
+# The published Classic candidate retains the four-screen WebView evidence
+# contract after removing its donation surfaces. Bind that reviewed script
+# separately from the six-screen checker on main.
+CLASSIC_WEBVIEW_CHECKER = ".github/scripts/check-webview-acceptance.py"
+CLASSIC_WEBVIEW_CHECKER_BLOB = "e448152de272f7403b329ad8822c52df4142f7de"
 RELEASE_SOURCE_BRANCHES = ("main", MAINTENANCE_BRANCH)
 TRUSTED_CI_PATHS = (
     WORKFLOW_PATH,
@@ -27,6 +32,9 @@ TRUSTED_CI_PATHS = (
     ".github/ci-required-tests.json",
     MAINTENANCE_POLICY,
     ".github/scripts/check-unit-test-results.py",
+    ".github/scripts/check-archive-device-results.py",
+    CLASSIC_WEBVIEW_CHECKER,
+    "tooling/fastlane/check_metadata.py",
     "tooling/ci",
     "tooling/git-hooks",
     "tooling/host-tests",
@@ -163,7 +171,8 @@ def bind_main_policy(repository, sha, trusted_main, reader):
     policy = path_objects(trusted_main)
     candidate = path_objects(sha)
     for path in TRUSTED_CI_PATHS:
-        require(policy[path] == candidate[path], f"Maintenance CI input differs from trusted main: {path}")
+        expected = (policy[path][0], "blob", CLASSIC_WEBVIEW_CHECKER_BLOB) if path == CLASSIC_WEBVIEW_CHECKER else policy[path]
+        require(expected == candidate[path], f"Maintenance CI input differs from trusted main: {path}")
     return policy[MAINTENANCE_POLICY][2]
 
 

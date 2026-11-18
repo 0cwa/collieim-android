@@ -410,6 +410,8 @@ androidComponents {
     variant.androidResources.ignoreAssetsPatterns.add("libsignal-testing.md")
   }
   onVariants(selector().withBuildType("beta")) { variant ->
+    // Share the release stubs for debug-only screens.
+    checkNotNull(variant.sources.kotlin).addStaticSourceDirectory("src/release/java")
     variant.packaging.jniLibs.excludes.add("**/libsignal_jni_testing.so")
     variant.androidResources.ignoreAssetsPatterns.add("libsignal-testing.md")
   }

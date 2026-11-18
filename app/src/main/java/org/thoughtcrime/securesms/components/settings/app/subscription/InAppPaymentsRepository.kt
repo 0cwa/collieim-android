@@ -10,7 +10,6 @@ import androidx.annotation.WorkerThread
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.processors.PublishProcessor
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -38,17 +37,13 @@ import org.thoughtcrime.securesms.components.settings.app.subscription.donate.In
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationError
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.DonationErrorSource
 import org.thoughtcrime.securesms.components.settings.app.subscription.errors.toDonationError
-import org.thoughtcrime.securesms.components.settings.app.subscription.manage.DonationRedemptionJobStatus
-import org.thoughtcrime.securesms.components.settings.app.subscription.manage.NonVerifiedMonthlyDonation
 import org.thoughtcrime.securesms.database.DatabaseObserver.InAppPaymentObserver
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.database.model.databaseprotos.InAppPaymentData
-import org.thoughtcrime.securesms.database.model.databaseprotos.PendingOneTimeDonation
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.jobmanager.Job
-import org.thoughtcrime.securesms.jobs.InAppPaymentAuthCheckJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.thoughtcrime.securesms.recipients.Recipient
@@ -60,7 +55,6 @@ import org.whispersystems.signalservice.internal.push.DonationProcessor
 import org.whispersystems.signalservice.internal.push.exceptions.InAppPaymentProcessorError
 import java.security.SecureRandom
 import java.util.Currency
-import java.util.Optional
 import java.util.concurrent.locks.Lock
 import kotlin.jvm.optionals.getOrNull
 import kotlin.time.Duration
@@ -498,69 +492,6 @@ object InAppPaymentsRepository {
     }
   }
 
-  /**
-   * Returns the given Stripe payment moved to [InAppPaymentTable.State.WAITING_FOR_AUTHORIZATION], or null if it is
-   * recurring and we have no subscriber to attach.
-   */
-  @WorkerThread
-  fun toWaitingForAuthorization(
-    inAppPayment: InAppPaymentTable.InAppPayment,
-    stripeIntentId: String,
-    stripeClientSecret: String
-  ): InAppPaymentTable.InAppPayment? {
-    val subscriberId = if (inAppPayment.type.recurring) {
-      getSubscriber(inAppPayment.type.requireSubscriberType())?.subscriberId ?: return null
-    } else {
-      null
-    }
-
-    return inAppPayment.copy(
-      state = InAppPaymentTable.State.WAITING_FOR_AUTHORIZATION,
-      subscriberId = subscriberId,
-      data = inAppPayment.data.newBuilder().waitForAuth(
-        waitForAuth = InAppPaymentData.WaitingForAuthorizationState(
-          stripeIntentId = stripeIntentId,
-          stripeClientSecret = stripeClientSecret,
-          enteredAt = System.currentTimeMillis()
-        )
-      ).build()
-    )
-  }
-
-  /**
-   * REQUIRES_ACTION at process start means the action dialog died with the process.
-   */
-  @JvmStatic
-  @WorkerThread
-  fun recoverAbandonedPayments() {
-    var hasStripeRecovery = false
-
-    for (payment in SignalDatabase.inAppPayments.getAllRequiresAction()) {
-      val stripeRequiresAction = payment.data.stripeRequiresAction
-      val waitingForAuth = stripeRequiresAction?.let { toWaitingForAuthorization(payment, it.stripeIntentId, it.stripeClientSecret) }
-      if (waitingForAuth != null) {
-        Log.i(TAG, "Moving abandoned InAppPayment::${payment.id.serialize()} to WAITING_FOR_AUTHORIZATION.", true)
-        SignalDatabase.inAppPayments.update(waitingForAuth)
-        hasStripeRecovery = true
-      } else {
-        Log.i(TAG, "Cancelling abandoned InAppPayment::${payment.id.serialize()} left in REQUIRES_ACTION.", true)
-        SignalDatabase.inAppPayments.update(
-          inAppPayment = payment.copy(
-            state = InAppPaymentTable.State.END,
-            notified = true,
-            data = payment.data.copy(
-              error = InAppPaymentData.Error(type = InAppPaymentData.Error.Type.SETUP_CANCELLED)
-            )
-          )
-        )
-      }
-    }
-
-    if (hasStripeRecovery) {
-      InAppPaymentAuthCheckJob.enqueueIfNeeded()
-    }
-  }
-
   @JvmStatic
   @WorkerThread
   fun setShouldCancelSubscriptionBeforeNextSubscribeAttempt(subscriber: InAppPaymentSubscriberRecord, shouldCancel: Boolean) {
@@ -716,60 +647,6 @@ object InAppPaymentsRepository {
     return SignalDatabase.inAppPayments.hasPendingDonation()
   }
 
-  /**
-   * Emits a stream of status updates for donations of the given type. Only One-time donations and recurring donations are currently supported.
-   */
-  fun observeInAppPaymentRedemption(type: InAppPaymentType): Observable<DonationRedemptionJobStatus> {
-    val fromDatabase: Observable<DonationRedemptionJobStatus> = Observable.create { emitter ->
-      val observer = InAppPaymentObserver {
-        val latestInAppPayment = SignalDatabase.inAppPayments.getLatestInAppPaymentByType(type)
-        emitter.onNext(Optional.ofNullable(latestInAppPayment))
-      }
-
-      AppDependencies.databaseObserver.registerInAppPaymentObserver(observer)
-      emitter.setCancellable { AppDependencies.databaseObserver.unregisterObserver(observer) }
-
-      val latestInAppPayment = SignalDatabase.inAppPayments.getLatestInAppPaymentByType(type)
-      emitter.onNext(Optional.ofNullable(latestInAppPayment))
-    }.switchMap { inAppPaymentOptional ->
-      val inAppPayment = inAppPaymentOptional.getOrNull() ?: return@switchMap Observable.just(DonationRedemptionJobStatus.None)
-      val paymentSourceType = inAppPayment.data.paymentMethodType.toPaymentSourceType()
-
-      val value = when (inAppPayment.state) {
-        InAppPaymentTable.State.CREATED -> error("This should have been filtered out.")
-        InAppPaymentTable.State.WAITING_FOR_AUTHORIZATION, InAppPaymentTable.State.REQUIRES_ACTION -> {
-          DonationRedemptionJobStatus.PendingExternalVerification(
-            paymentSourceType = paymentSourceType,
-            pendingOneTimeDonation = inAppPayment.toPendingOneTimeDonation(),
-            nonVerifiedMonthlyDonation = inAppPayment.toNonVerifiedMonthlyDonation()
-          )
-        }
-
-        InAppPaymentTable.State.PENDING, InAppPaymentTable.State.TRANSACTING, InAppPaymentTable.State.REQUIRED_ACTION_COMPLETED -> {
-          if (inAppPayment.data.redemption?.keepAlive == true) {
-            DonationRedemptionJobStatus.PendingKeepAlive(paymentSourceType)
-          } else if (inAppPayment.data.redemption?.stage == InAppPaymentData.RedemptionState.Stage.REDEMPTION_STARTED) {
-            DonationRedemptionJobStatus.PendingReceiptRedemption(paymentSourceType)
-          } else {
-            DonationRedemptionJobStatus.PendingReceiptRequest(paymentSourceType)
-          }
-        }
-
-        InAppPaymentTable.State.END -> {
-          if (type.recurring && inAppPayment.data.error != null) {
-            DonationRedemptionJobStatus.FailedSubscription
-          } else {
-            DonationRedemptionJobStatus.None
-          }
-        }
-      }
-
-      Observable.just(value)
-    }
-
-    return fromDatabase.distinctUntilChanged()
-  }
-
   fun scheduleSyncForAccountRecordChange() {
     SignalExecutors.BOUNDED.execute {
       scheduleSyncForAccountRecordChangeSync()
@@ -779,43 +656,6 @@ object InAppPaymentsRepository {
   private fun scheduleSyncForAccountRecordChangeSync() {
     SignalDatabase.recipients.markNeedsSync(Recipient.self().id)
     StorageSyncHelper.scheduleSyncForDataChange()
-  }
-
-  private fun InAppPaymentTable.InAppPayment.toPendingOneTimeDonation(): PendingOneTimeDonation? {
-    if (type.recurring) {
-      return null
-    }
-
-    return PendingOneTimeDonation(
-      paymentMethodType = when (data.paymentMethodType) {
-        InAppPaymentData.PaymentMethodType.UNKNOWN -> PendingOneTimeDonation.PaymentMethodType.CARD
-        InAppPaymentData.PaymentMethodType.GOOGLE_PAY -> PendingOneTimeDonation.PaymentMethodType.CARD
-        InAppPaymentData.PaymentMethodType.CARD -> PendingOneTimeDonation.PaymentMethodType.CARD
-        InAppPaymentData.PaymentMethodType.SEPA_DEBIT -> PendingOneTimeDonation.PaymentMethodType.SEPA_DEBIT
-        InAppPaymentData.PaymentMethodType.IDEAL -> PendingOneTimeDonation.PaymentMethodType.IDEAL
-        InAppPaymentData.PaymentMethodType.PAYPAL -> PendingOneTimeDonation.PaymentMethodType.PAYPAL
-        InAppPaymentData.PaymentMethodType.GOOGLE_PLAY_BILLING -> error("One-time donation do not support purchase via Google Play Billing.")
-      },
-      amount = data.amount!!,
-      badge = data.badge!!,
-      timestamp = insertedAt.inWholeMilliseconds,
-      error = null,
-      pendingVerification = true,
-      checkedVerification = data.waitForAuth?.checkedVerification ?: false
-    )
-  }
-
-  private fun InAppPaymentTable.InAppPayment.toNonVerifiedMonthlyDonation(): NonVerifiedMonthlyDonation? {
-    if (!type.recurring) {
-      return null
-    }
-
-    return NonVerifiedMonthlyDonation(
-      timestamp = insertedAt.inWholeMilliseconds,
-      price = data.amount!!.toFiatMoney(),
-      level = data.level.toInt(),
-      checkedVerification = data.waitForAuth?.checkedVerification ?: false
-    )
   }
 
   /**

@@ -18,8 +18,8 @@ plugins {
 val staticIps = Properties().apply { file("static-ips.properties").reader().use { load(it) } }
 staticIps.stringPropertyNames().forEach { rootProject.extra[it] = staticIps.getProperty(it) }
 
-val canonicalVersionCode = 1777
-val canonicalVersionName = "8.35.1"
+val canonicalVersionCode = 1778
+val canonicalVersionName = "8.35.2"
 val currentHotfixVersion = 0
 val maxHotfixVersions = 100
 val mollyRevision = 1
@@ -108,6 +108,13 @@ android {
       // MOLLY: Reduce memory pressure by limiting the number of test classes per runner
       all { task ->
         task.forkEvery = 64
+        providers.gradleProperty("collieAppTestShard").orNull?.toInt()?.let { shard ->
+          require(shard in 0..1)
+          task.include { element ->
+            val className = element.relativePath.pathString.substringBefore('$').removeSuffix(".class")
+            element.isDirectory || Math.floorMod(className.hashCode(), 2) == shard
+          }
+        }
       }
     }
   }
@@ -232,8 +239,6 @@ android {
 
     // MOLLY: Rely on the built-in variables FLAVOR and BUILD_TYPE instead of BUILD_*_TYPE
     buildConfigField("String", "BADGE_STATIC_ROOT", "\"https://updates2.signal.org/static/badges/\"")
-    buildConfigField("String", "STRIPE_BASE_URL", "\"https://api.stripe.com/v1\"")
-    buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D\"")
     buildConfigField("boolean", "TRACING_ENABLED", "false")
 
     ndk {
@@ -340,7 +345,6 @@ android {
       buildConfigField("String", "RECAPTCHA_PROOF_URL", "\"https://signalcaptchas.org/staging/challenge/generate.html\"")
       buildConfigField("org.signal.libsignal.net.Network.Environment", "LIBSIGNAL_NET_ENV", "org.signal.libsignal.net.Network.Environment.STAGING")
       buildConfigField("int", "LIBSIGNAL_LOG_LEVEL", "org.signal.libsignal.protocol.logging.SignalProtocolLogger.DEBUG")
-      buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD\"")
     }
   }
 
@@ -638,7 +642,7 @@ fun getLastCommitTimestamp(): String = providers.gradleProperty("collieBuildTime
 
 fun getGitHash(): String = providers.gradleProperty("collieBuildRevision").get()
 
-fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").getOrElse("8.35.1-1-port-unvalidated")
+fun requireCommitTag(): String = providers.gradleProperty("releaseVersionName").getOrElse("${canonicalVersionName}-${mollyRevision}-port-unvalidated")
 
 // Publication migration gate: remove only with reviewed public native inputs and
 // direct-source acceptance. The legacy operator route is retained in engineering.

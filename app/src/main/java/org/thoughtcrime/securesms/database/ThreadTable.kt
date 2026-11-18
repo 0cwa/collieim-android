@@ -1494,7 +1494,7 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
           } else {
             Log.i(TAG, "There's a remap for $candidateId -> ${remapped.get()}, but it's not associated with $recipient. Deleting old remap and throwing.")
             writableDatabase.withinTransaction {
-              RemappedRecords.getInstance().deleteThread(candidateId)
+              RemappedRecords.getInstance().deleteThread(candidateId, remapped.get())
             }
             throw IllegalArgumentException("Candidate threadId ($candidateId) is not associated with recipient ($recipient)")
           }

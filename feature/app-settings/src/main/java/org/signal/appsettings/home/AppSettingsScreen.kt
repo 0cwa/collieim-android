@@ -95,7 +95,6 @@ fun AppSettingsScreen(
   containerColor: Color = if (rememberIsSplitPaneSettings()) SignalTheme.colors.colorSurface4 else MaterialTheme.colorScheme.background,
   contentColor: Color = MaterialTheme.colorScheme.contentColorFor(containerColor).takeOrElse { MaterialTheme.colorScheme.onSurface },
   selectedRoute: AppSettingsRoute? = null,
-  donationLabel: String? = null,
   donationContent: (@Composable () -> Unit)? = null,
   avatar: @Composable () -> Unit = {},
   banner: @Composable () -> Unit = {}
@@ -260,35 +259,6 @@ fun AppSettingsScreen(
         item {
           if (donationContent != null) {
             donationContent()
-          } else {
-            Rows.TextRow(
-              text = {
-                Text(
-                  text = donationLabel ?: stringResource(R.string.AppSettingsScreen__donate_to_signal),
-                  modifier = Modifier.weight(1f)
-                )
-
-                if (state.hasExpiredGiftBadge) {
-                  Icon(
-                    painter = painterResource(CoreUiR.drawable.symbol_info_fill_24),
-                    tint = colorResource(CoreUiR.color.signal_accent_primary),
-                    contentDescription = null
-                  )
-                }
-              },
-              icon = {
-                Icon(
-                  painter = SignalIcons.Heart.painter,
-                  contentDescription = null,
-                  tint = MaterialTheme.colorScheme.onSurface
-                )
-              },
-              onClick = { onEvent(AppSettingsEvent.DonateClicked) },
-              onLongClick = { onEvent(AppSettingsEvent.DonateLongClicked) },
-              modifier = Modifier
-                .selectionHighlight(selectedRoute is AppSettingsRoute.DonationsRoute)
-                .testTag(AppSettingsTestTags.ROW_DONATE)
-            )
           }
         }
 

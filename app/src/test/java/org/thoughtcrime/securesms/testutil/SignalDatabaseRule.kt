@@ -14,7 +14,6 @@ import org.junit.rules.ExternalResource
 import org.signal.core.util.PartAuthorityUris
 import org.thoughtcrime.securesms.BuildConfig
 import org.thoughtcrime.securesms.database.DatabaseTable
-import org.thoughtcrime.securesms.database.RemappedRecordsTestHelper
 import org.thoughtcrime.securesms.database.SQLiteDatabase
 import org.thoughtcrime.securesms.database.SearchTable
 import org.thoughtcrime.securesms.database.SignalDatabase
@@ -37,7 +36,6 @@ class SignalDatabaseRule : ExternalResource() {
     PartAuthorityUris.init(BuildConfig.APPLICATION_ID)
 
     RecipientIds.clearCache()
-    RemappedRecordsTestHelper.resetInstance()
     DatabaseTable.clearTableReferencesForTests()
 
     signalDatabase = inMemorySignalDatabase()
@@ -67,7 +65,6 @@ class SignalDatabaseRule : ExternalResource() {
     unmockkObject(SignalDatabase)
     signalDatabase.close()
     RecipientIds.clearCache()
-    RemappedRecordsTestHelper.resetInstance()
     DatabaseTable.clearTableReferencesForTests()
   }
 

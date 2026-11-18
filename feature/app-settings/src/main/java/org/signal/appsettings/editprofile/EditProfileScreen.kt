@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,14 +31,12 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import org.signal.appsettings.AppSettingsLazyColumn
 import org.signal.appsettings.R
-import org.signal.core.ui.compose.BottomSheets
 import org.signal.core.ui.compose.Buttons
 import org.signal.core.ui.compose.DayNightPreviews
 import org.signal.core.ui.compose.Dialogs
@@ -81,8 +78,6 @@ private const val DISABLED_ALPHA = 0.4f
  * screen that edits it.
  *
  * @param avatar the user's avatar, drawn in an 80dp box. It may draw beyond the box, such as a badge on its corner.
- * @param sustainerBadgePreview the user's avatar wearing [EditProfileState.sustainerBadge], drawn in an 80dp box in
- *   [EditProfileState.Dialog.BecomeASustainer].
  */
 @Composable
 fun EditProfileScreen(
@@ -90,7 +85,6 @@ fun EditProfileScreen(
   onEvent: (EditProfileEvent) -> Unit,
   modifier: Modifier = Modifier,
   avatar: @Composable () -> Unit = {},
-  sustainerBadgePreview: @Composable () -> Unit = {}
 ) {
   LifecycleResumeEffect(Unit) {
     onEvent(EditProfileEvent.ScreenResumed)
@@ -207,7 +201,7 @@ fun EditProfileScreen(
     Dialogs.IndeterminateProgressDialog()
   }
 
-  EditProfileDialog(dialog = state.dialog, onEvent = onEvent, sustainerBadgePreview = sustainerBadgePreview)
+  EditProfileDialog(dialog = state.dialog, onEvent = onEvent)
 }
 
 @Composable
@@ -372,7 +366,6 @@ private fun UsernameLinkTooltip(onDismiss: () -> Unit) {
 private fun EditProfileDialog(
   dialog: EditProfileState.Dialog,
   onEvent: (EditProfileEvent) -> Unit,
-  sustainerBadgePreview: @Composable () -> Unit
 ) {
   when (dialog) {
     EditProfileState.Dialog.None -> Unit
@@ -414,10 +407,6 @@ private fun EditProfileDialog(
       )
     }
 
-    EditProfileState.Dialog.BecomeASustainer -> {
-      BecomeASustainerSheet(onEvent = onEvent, badgePreview = sustainerBadgePreview)
-    }
-
     EditProfileState.Dialog.Deprecated -> {
       Dialogs.SimpleAlertDialog(
         title = stringResource(R.string.EditProfileFragment_deprecated_dialog_title),
@@ -428,70 +417,6 @@ private fun EditProfileDialog(
         onDeny = { onEvent(EditProfileEvent.DialogDismissed) },
         onDismissRequest = { onEvent(EditProfileEvent.DialogDismissed) }
       )
-    }
-  }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun BecomeASustainerSheet(
-  onEvent: (EditProfileEvent) -> Unit,
-  badgePreview: @Composable () -> Unit
-) {
-  BottomSheets.BottomSheet(
-    onDismissRequest = { onEvent(EditProfileEvent.DialogDismissed) },
-    dragHandle = { BottomSheets.Handle() }
-  ) {
-    BecomeASustainerSheetContent(onEvent = onEvent, badgePreview = badgePreview)
-  }
-}
-
-/** The content of [BecomeASustainerSheet], apart from the sheet around it so it can be tested on its own. */
-@VisibleForTesting
-@Composable
-internal fun BecomeASustainerSheetContent(
-  onEvent: (EditProfileEvent) -> Unit,
-  badgePreview: @Composable () -> Unit = {}
-) {
-  Column(
-    horizontalAlignment = Alignment.CenterHorizontally,
-    modifier = Modifier
-      .fillMaxWidth()
-      .verticalScroll(rememberScrollState())
-      .horizontalGutters()
-      .padding(bottom = 32.dp)
-      .testTag(EditProfileTestTags.BECOME_A_SUSTAINER_SHEET)
-  ) {
-    Box(
-      modifier = Modifier
-        .padding(top = 16.dp)
-        .size(80.dp)
-    ) {
-      badgePreview()
-    }
-
-    Text(
-      text = stringResource(R.string.BecomeASustainerFragment__get_badges),
-      style = MaterialTheme.typography.titleLarge,
-      textAlign = TextAlign.Center,
-      modifier = Modifier.padding(top = 16.dp)
-    )
-
-    Text(
-      text = stringResource(R.string.BecomeASustainerFragment__signal_is_a_non_profit),
-      style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      textAlign = TextAlign.Center,
-      modifier = Modifier.padding(top = 8.dp)
-    )
-
-    Buttons.LargeTonal(
-      onClick = { onEvent(EditProfileEvent.BecomeASustainerClicked) },
-      modifier = Modifier
-        .padding(top = 32.dp)
-        .testTag(EditProfileTestTags.BUTTON_BECOME_A_SUSTAINER)
-    ) {
-      Text(text = stringResource(R.string.EditProfileScreen__become_a_sustainer))
     }
   }
 }
@@ -541,13 +466,6 @@ private fun EditProfileScreenTooltipPreview() {
 @Composable
 private fun EditProfileScreenCantEditPreview() {
   EditProfileScreen(state = previewState.copy(canEdit = false), onEvent = {})
-}
-
-@PreviewWrapper(SignalPreviewWrapper::class)
-@DayNightPreviews
-@Composable
-private fun EditProfileScreenBecomeASustainerPreview() {
-  EditProfileScreen(state = previewState.copy(dialog = EditProfileState.Dialog.BecomeASustainer), onEvent = {})
 }
 
 @PreviewWrapper(SignalPreviewWrapper::class)

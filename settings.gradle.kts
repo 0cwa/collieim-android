@@ -139,5 +139,10 @@ project(":core-gms:tasks").projectDir = file("core/gms/tasks")
 project(":screener").projectDir = file("tooling/screener")
 project(":lintchecks").projectDir = file("tooling/lintchecks")
 project(":fast-lint").projectDir = file("tooling/fast-lint")
+val encryptedPushFuzzProject = file("tooling/fuzz-encrypted-push")
+if (encryptedPushFuzzProject.resolve("build.gradle.kts").isFile) {
+  include(":fuzz-encrypted-push")
+  project(":fuzz-encrypted-push").projectDir = encryptedPushFuzzProject
+}
 
 rootProject.name = "Molly"

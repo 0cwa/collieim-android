@@ -104,8 +104,7 @@ class AccountSettingsFragment : ComposeFragment() {
 
     AccountSettingsScreen(
       state = state,
-      onEvent = viewModel::onEvent,
-      donationManagementLabel = stringResource(R.string.AppSettingsFragment__manage_existing_signal_donations)
+      onEvent = viewModel::onEvent
     )
   }
 
@@ -127,10 +126,6 @@ class AccountSettingsFragment : ComposeFragment() {
 
       AccountSettingsAction.NavigateToPayments -> {
         findNavController().safeNavigate(R.id.action_accountSettingsFragment_to_paymentsActivity)
-      }
-
-      AccountSettingsAction.NavigateToManageDonations -> {
-        findNavController().safeNavigate(R.id.action_accountSettingsFragment_to_manageDonationsFragment)
       }
 
       AccountSettingsAction.LaunchCreatePinFlow -> {

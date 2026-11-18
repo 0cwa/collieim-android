@@ -33,7 +33,7 @@ import org.thoughtcrime.securesms.backup.v2.MessageBackupTier
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsFlowViewModel
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsStage
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsType
-import org.thoughtcrime.securesms.components.settings.app.subscription.donate.InAppPaymentCheckoutDelegate
+import org.thoughtcrime.securesms.backup.v2.ui.subscription.BackupPaymentErrorHandler
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
@@ -41,7 +41,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 /**
  * BottomSheet that encapsulates the common logic for updating someone to paid tier.
  */
-abstract class UpgradeToPaidTierBottomSheet : ComposeBottomSheetDialogFragment(), InAppPaymentCheckoutDelegate.ErrorHandlerCallback {
+abstract class UpgradeToPaidTierBottomSheet : ComposeBottomSheetDialogFragment(), BackupPaymentErrorHandler.ErrorHandlerCallback {
 
   companion object {
     const val RESULT_KEY = "UpgradeToPaidTierBottomSheet.RESULT_KEY"
@@ -69,7 +69,7 @@ abstract class UpgradeToPaidTierBottomSheet : ComposeBottomSheetDialogFragment()
     )
   }
 
-  private val errorHandler = InAppPaymentCheckoutDelegate.ErrorHandler()
+  private val errorHandler = BackupPaymentErrorHandler.ErrorHandler()
 
   override val peekHeightPercentage: Float = 1f
 

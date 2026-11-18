@@ -13,6 +13,28 @@ import org.signal.core.util.readNBytesOrThrow
 class LimitedInputStreamTest {
 
   @Test
+  fun `large limits allow small buffered reads`() {
+    val inputStream = LimitedInputStream(byteArrayOf(1, 2, 3).inputStream(), maxBytes = Int.MAX_VALUE.toLong() + 1)
+    val buffer = ByteArray(2)
+
+    assertEquals(2, inputStream.read(buffer))
+    assertEquals(1, buffer[0].toInt())
+    assertEquals(2, buffer[1].toInt())
+    assertEquals(1, inputStream.read(buffer))
+    assertEquals(3, buffer[0].toInt())
+    assertEquals(-1, inputStream.read(buffer))
+  }
+
+  @Test
+  fun `available works with a large limit`() {
+    val inputStream = LimitedInputStream(byteArrayOf(1, 2, 3).inputStream(), maxBytes = Int.MAX_VALUE.toLong() + 1)
+
+    assertEquals(3, inputStream.available())
+    inputStream.read()
+    assertEquals(2, inputStream.available())
+  }
+
+  @Test
   fun `when I fully read the stream via a buffer, I should only get maxBytes`() {
     val inputStream = LimitedInputStream(ByteArray(100).inputStream(), maxBytes = 75)
     val data = inputStream.readFully()

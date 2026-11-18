@@ -75,7 +75,6 @@ fun AppSettingsEntry(
     state = state,
     onEvent = viewModel::onEvent,
     selectedRoute = selectedRoute,
-    donationLabel = stringResource(R.string.preferences__donate_to_signal),
     donationContent = {
       DonationLinks()
     },

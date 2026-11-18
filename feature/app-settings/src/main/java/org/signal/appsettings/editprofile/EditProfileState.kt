@@ -5,8 +5,6 @@
 
 package org.signal.appsettings.editprofile
 
-import org.signal.core.models.badges.Badge
-
 data class EditProfileState(
   /** The user's profile name, or empty if they haven't set one. */
   val profileName: String = "",
@@ -25,8 +23,6 @@ data class EditProfileState(
   val busy: Boolean = false,
   /** Whether the user's avatar is showing full screen, over the profile. */
   val showAvatarPreview: Boolean = false,
-  /** The badge a Sustainer gets, shown in [Dialog.BecomeASustainer] once it's loaded. */
-  val sustainerBadge: Badge? = null,
   val dialog: Dialog = Dialog.None,
   val snackbar: Snackbar = Snackbar.None
 ) {
@@ -36,7 +32,7 @@ data class EditProfileState(
     get() = username != null && usernameSyncState != UsernameSyncState.USERNAME_AND_LINK_CORRUPTED
 
   override fun toString(): String {
-    return "EditProfileState(profileNameLength=${profileName.length}, aboutLength=${about.length}, hasAboutEmoji=${aboutEmoji.isNotEmpty()}, hasUsername=${username != null}, usernameSyncState=$usernameSyncState, showUsernameLinkTooltip=$showUsernameLinkTooltip, canEdit=$canEdit, busy=$busy, showAvatarPreview=$showAvatarPreview, hasSustainerBadge=${sustainerBadge != null}, dialog=$dialog, snackbar=$snackbar)"
+    return "EditProfileState(profileNameLength=${profileName.length}, aboutLength=${about.length}, hasAboutEmoji=${aboutEmoji.isNotEmpty()}, hasUsername=${username != null}, usernameSyncState=$usernameSyncState, showUsernameLinkTooltip=$showUsernameLinkTooltip, canEdit=$canEdit, busy=$busy, showAvatarPreview=$showAvatarPreview, dialog=$dialog, snackbar=$snackbar)"
   }
 
   /** Whether the username and its link match what the service has. */
@@ -63,8 +59,6 @@ data class EditProfileState(
     /** Explains that this version of the app is too old to change the profile, and offers to update. */
     data object Deprecated : Dialog
 
-    /** A sheet explaining badges to a user who doesn't have any, and inviting them to become a Sustainer. */
-    data object BecomeASustainer : Dialog
   }
 
   sealed interface Snackbar {

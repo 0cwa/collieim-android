@@ -66,8 +66,16 @@ public final class AttachmentCompressionJob extends BaseJob {
 
   private static final String KEY_ATTACHMENT_ID = "row_id";
   private static final String KEY_MMS           = "mms";
+  private static final String KEY_OWNER         = "owner_v2";
   private static final String KEY_MMS_SUBSCRIPTION_ID = "mms_subscription_id";
 
+  private static final class StaleVersionException extends IOException {
+    StaleVersionException() { super("Attachment changed during compression"); }
+  }
+
+  private AttachmentTable.DataFileInfo attemptedSource;
+  private @Nullable String ownerIdentity;
+  private boolean captureOwner = true;
   private final AttachmentId attachmentId;
   private final boolean      mms;
   private final int          mmsSubscriptionId;
@@ -111,7 +119,13 @@ public final class AttachmentCompressionJob extends BaseJob {
 
   @Override
   public @Nullable byte[] serialize() {
+    if (captureOwner) {
+      AttachmentTable.UploadCandidate candidate = SignalDatabase.attachments().getUploadCandidate(attachmentId);
+      ownerIdentity = candidate != null ? SignalDatabase.attachments().uploadOwnerToken(candidate) : null;
+      captureOwner = false;
+    }
     return new JsonJobData.Builder().putLong(KEY_ATTACHMENT_ID, attachmentId.id)
+                                    .putString(KEY_OWNER, ownerIdentity)
                                     .putBoolean(KEY_MMS, mms)
                                     .putInt(KEY_MMS_SUBSCRIPTION_ID, mmsSubscriptionId)
                                     .serialize();
@@ -138,7 +152,7 @@ public final class AttachmentCompressionJob extends BaseJob {
 
     if (pending) {
       Log.i(TAG, "onAdded() Marking attachment progress as 'started'");
-      database.setTransferState(attachment.mmsId, attachmentId, AttachmentTable.TRANSFER_PROGRESS_STARTED);
+      if (ownerIdentity != null) database.markTransferStateIfOwnerMatches(attachmentId, ownerIdentity, AttachmentTable.TRANSFER_PROGRESS_STARTED);
     }
   }
 
@@ -146,12 +160,11 @@ public final class AttachmentCompressionJob extends BaseJob {
   public void onRun() throws Exception {
     Log.d(TAG, "Running for: " + attachmentId);
 
-    AttachmentTable    database           = SignalDatabase.attachments();
-    DatabaseAttachment databaseAttachment = database.getAttachment(attachmentId);
-
-    if (databaseAttachment == null) {
-      throw new UndeliverableMessageException("Cannot find the specified attachment.");
-    }
+    AttachmentTable database = SignalDatabase.attachments();
+    AttachmentTable.UploadCandidate captured = database.getUploadCandidate(attachmentId);
+    if (captured == null) throw new UndeliverableMessageException("Cannot find the specified attachment.");
+    if (ownerIdentity == null || !ownerIdentity.equals(database.uploadOwnerToken(captured))) throw new StaleVersionException();
+    DatabaseAttachment databaseAttachment = captured.getAttachment();
 
     TransformProperties transformProperties = databaseAttachment.transformProperties;
 
@@ -162,12 +175,17 @@ public final class AttachmentCompressionJob extends BaseJob {
 
     if (transformProperties.shouldSkipTransform()) {
       Log.i(TAG, "Skipping at the direction of the TransformProperties.");
+      setOutputData(ownerIdentity.getBytes(java.nio.charset.StandardCharsets.UTF_8));
       return;
     }
 
+    AttachmentTable.DataFileInfo source = captured.getInfo();
+    if (source == null) throw new UndeliverableMessageException("Cannot find attachment data to compress.");
+    attemptedSource = source;
     MediaConstraints mediaConstraints = new PushMediaConstraints(SentMediaQuality.fromCode(transformProperties.sentMediaQuality));
 
-    compress(database, mediaConstraints, databaseAttachment);
+    compress(database, mediaConstraints, databaseAttachment, source);
+    setOutputData(Objects.requireNonNull(ownerIdentity).getBytes(java.nio.charset.StandardCharsets.UTF_8));
   }
 
   @Override
@@ -179,7 +197,7 @@ public final class AttachmentCompressionJob extends BaseJob {
       return;
     }
 
-    database.setTransferProgressFailed(attachmentId, databaseAttachment.mmsId);
+    if (ownerIdentity != null) database.markTransferStateIfOwnerMatches(attachmentId, ownerIdentity, AttachmentTable.TRANSFER_PROGRESS_FAILED);
   }
 
   @Override
@@ -189,42 +207,51 @@ public final class AttachmentCompressionJob extends BaseJob {
 
   private void compress(@NonNull AttachmentTable attachmentDatabase,
                         @NonNull MediaConstraints constraints,
-                        @NonNull DatabaseAttachment attachment)
-      throws UndeliverableMessageException
+                        @NonNull DatabaseAttachment attachment,
+                        @NonNull AttachmentTable.DataFileInfo source)
+      throws UndeliverableMessageException, StaleVersionException
   {
     try {
       if (attachment.isSticker()) {
         Log.d(TAG, "Sticker, not compressing.");
       } else if (MediaUtil.isVideo(attachment)) {
         Log.i(TAG, "Compressing video.");
-        attachment = transcodeVideoIfNeededToDatabase(context, attachmentDatabase, attachment, constraints, EventBus.getDefault(), this::isCanceled);
+        attachment = transcodeVideoIfNeededToDatabase(context, attachmentDatabase, attachment, source, constraints, EventBus.getDefault(), this::isCanceled);
         if (!isConstraintsSatisfied(context, attachment, constraints)) {
           throw new UndeliverableMessageException("Size constraints could not be met on video!");
         }
       } else if (constraints.canResize(attachment.contentType)) {
         Log.i(TAG, "Compressing image.");
-        try (MediaStream converted = compressImage(context, attachment, constraints)) {
-          attachmentDatabase.updateAttachmentData(attachment, converted);
+        try (MediaStream converted = compressImage(context, attachment, attachmentDatabase.inputStreamFactoryFor(source), constraints)) {
+          ownerIdentity = attachmentDatabase.updateAttachmentDataIfOwned(attachment, converted, source, false, Objects.requireNonNull(ownerIdentity), Long.MAX_VALUE);
+          if (ownerIdentity == null) throw new StaleVersionException();
         }
-        attachmentDatabase.markAttachmentAsTransformed(attachmentId, false);
       } else if (isConstraintsSatisfied(context, attachment, constraints)) {
         Log.i(TAG, "Not compressing.");
-        attachmentDatabase.markAttachmentAsTransformed(attachmentId, false);
+        ownerIdentity = attachmentDatabase.markAttachmentAsTransformedIfOwned(attachmentId, source, false, ownerIdentity);
+        if (ownerIdentity == null) throw new StaleVersionException();
       } else {
         throw new UndeliverableMessageException("Size constraints could not be met!");
       }
+    } catch (StaleVersionException e) {
+      throw e;
+    } catch (UndeliverableMessageException e) {
+      if (!attachmentDatabase.isDataFileVersionCurrent(attachment.attachmentId, source)) throw new StaleVersionException();
+      throw e;
     } catch (IOException | MmsException e) {
+      if (!attachmentDatabase.isDataFileVersionCurrent(attachment.attachmentId, source)) throw new StaleVersionException();
       throw new UndeliverableMessageException(e);
     }
   }
 
-  private static @NonNull DatabaseAttachment transcodeVideoIfNeededToDatabase(@NonNull Context context,
+  private @NonNull DatabaseAttachment transcodeVideoIfNeededToDatabase(@NonNull Context context,
                                                                               @NonNull AttachmentTable attachmentDatabase,
                                                                               @NonNull DatabaseAttachment attachment,
+                                                                              @NonNull AttachmentTable.DataFileInfo source,
                                                                               @NonNull MediaConstraints constraints,
                                                                               @NonNull EventBus eventBus,
                                                                               @NonNull TranscoderCancelationSignal cancelationSignal)
-      throws UndeliverableMessageException
+      throws UndeliverableMessageException, StaleVersionException
   {
 
     if (cancelationSignal.isCanceled()) {
@@ -239,6 +266,8 @@ public final class AttachmentCompressionJob extends BaseJob {
       if (transformProperties != null && transformProperties.getVideoEdited()) {
         throw new UndeliverableMessageException("Video edited, but transcode is not available");
       }
+      ownerIdentity = markUnchangedVideoIfValid(attachmentDatabase, attachment, source, isConstraintsSatisfied(context, attachment, constraints), Objects.requireNonNull(ownerIdentity));
+      if (ownerIdentity == null) throw new StaleVersionException();
       return attachment;
     }
 
@@ -247,7 +276,7 @@ public final class AttachmentCompressionJob extends BaseJob {
         notification.setIndeterminate(true);
       }
 
-      try (MediaDataSource dataSource = attachmentDatabase.mediaDataSourceFor(attachment.attachmentId, false)) {
+      try (MediaDataSource dataSource = attachmentDatabase.mediaDataSourceFor(source)) {
         if (dataSource == null) {
           throw new UndeliverableMessageException("Cannot get media data source for attachment.");
         }
@@ -312,7 +341,8 @@ public final class AttachmentCompressionJob extends BaseJob {
 
             final long plaintextLength = ModernEncryptingPartOutputStream.getPlaintextLength(file.length());
             try (MediaStream mediaStream = new MediaStream(postProcessor.processWithMdatLength(plaintextLength, mdatLength), MimeTypes.VIDEO_MP4, 0, 0, true)) {
-              attachmentDatabase.updateAttachmentData(attachment, mediaStream);
+              ownerIdentity = attachmentDatabase.updateAttachmentDataIfOwned(attachment, mediaStream, source, true, Objects.requireNonNull(ownerIdentity), Math.min(constraints.getVideoMaxSize(), constraints.getMaxAttachmentSize()));
+              if (ownerIdentity == null) throw new StaleVersionException();
               faststart = true;
             } catch (VideoPostProcessingException e) {
               Log.w(TAG, "Exception thrown during post processing.", e);
@@ -326,7 +356,8 @@ public final class AttachmentCompressionJob extends BaseJob {
 
             if (!faststart) {
               try (MediaStream mediaStream = new MediaStream(ModernDecryptingPartInputStream.createFor(attachmentSecret, file, 0), MimeTypes.VIDEO_MP4, 0, 0, false)) {
-                attachmentDatabase.updateAttachmentData(attachment, mediaStream);
+                ownerIdentity = attachmentDatabase.updateAttachmentDataIfOwned(attachment, mediaStream, source, false, Objects.requireNonNull(ownerIdentity), Math.min(constraints.getVideoMaxSize(), constraints.getMaxAttachmentSize()));
+                if (ownerIdentity == null) throw new StaleVersionException();
               }
             }
           } finally {
@@ -335,14 +366,13 @@ public final class AttachmentCompressionJob extends BaseJob {
             }
           }
 
-          attachmentDatabase.markAttachmentAsTransformed(attachment.attachmentId, faststart);
-
           return Objects.requireNonNull(attachmentDatabase.getAttachment(attachment.attachmentId));
         } else {
           Log.i(TAG, "Transcode was not required");
         }
       }
     } catch (VideoSourceException | EncodingException | MemoryFileException e) {
+      if (!attachmentDatabase.isDataFileVersionCurrent(attachment.attachmentId, source)) throw new StaleVersionException();
       if (e instanceof EncodingException) {
         EncodingException ee = (EncodingException) e;
         Log.w(TAG, "Video encoding failed"
@@ -362,7 +392,10 @@ public final class AttachmentCompressionJob extends BaseJob {
           throw new UndeliverableMessageException("Failed to transcode and cannot skip due to editing", e);
         }
       }
+    } catch (StaleVersionException e) {
+      throw e;
     } catch (IOException | MmsException e) {
+      if (!attachmentDatabase.isDataFileVersionCurrent(attachment.attachmentId, source)) throw new StaleVersionException();
       if (e instanceof CodecUnavailableException) {
         Log.w(TAG, "All video codecs exhausted for this content: " + e.getMessage(), e);
       } else {
@@ -370,6 +403,7 @@ public final class AttachmentCompressionJob extends BaseJob {
       }
       throw new UndeliverableMessageException("Failed to transcode", e);
     } catch (RuntimeException e) {
+      if (!attachmentDatabase.isDataFileVersionCurrent(attachment.attachmentId, source)) throw new StaleVersionException();
       Log.w(TAG, "Video transcode failed with runtime exception", e);
       if (e.getCause() instanceof IOException) {
         throw new UndeliverableMessageException("Failed to transcode", e);
@@ -377,7 +411,21 @@ public final class AttachmentCompressionJob extends BaseJob {
         throw e;
       }
     }
+    ownerIdentity = markUnchangedVideoIfValid(attachmentDatabase, attachment, source, isConstraintsSatisfied(context, attachment, constraints), Objects.requireNonNull(ownerIdentity));
+    if (ownerIdentity == null) throw new StaleVersionException();
     return attachment;
+  }
+
+  @androidx.annotation.VisibleForTesting
+  public static @Nullable String markUnchangedVideoIfValid(@NonNull AttachmentTable database,
+                                                @NonNull DatabaseAttachment attachment,
+                                                @NonNull AttachmentTable.DataFileInfo source,
+                                                boolean constraintsSatisfied,
+                                                @NonNull String owner)
+      throws UndeliverableMessageException
+  {
+    if (!constraintsSatisfied) throw new UndeliverableMessageException("Size constraints could not be met on video!");
+    return database.markAttachmentAsTransformedIfOwned(attachment.attachmentId, source, false, owner);
   }
 
   private static boolean isConstraintsSatisfied(@NonNull Context context,
@@ -398,6 +446,7 @@ public final class AttachmentCompressionJob extends BaseJob {
   @WorkerThread
   private static MediaStream compressImage(@NonNull Context context,
                                            @NonNull Attachment attachment,
+                                           @NonNull org.signal.glide.common.io.InputStreamFactory source,
                                            @NonNull MediaConstraints mediaConstraints)
       throws UndeliverableMessageException
   {
@@ -413,7 +462,7 @@ public final class AttachmentCompressionJob extends BaseJob {
       for (int size : mediaConstraints.getImageDimensionTargets()) {
         result = ImageCompressionUtil.compressWithinConstraints(context,
                                                                 attachment.contentType,
-                                                                new DecryptableUri(uri),
+                                                                source,
                                                                 size,
                                                                 mediaConstraints.getImageMaxSize(),
                                                                 mediaConstraints.getImageCompressionQualitySetting());
@@ -455,10 +504,13 @@ public final class AttachmentCompressionJob extends BaseJob {
     public @NonNull AttachmentCompressionJob create(@NonNull Parameters parameters, @Nullable byte[] serializedData) {
       JsonJobData data = JsonJobData.deserialize(serializedData);
 
-      return new AttachmentCompressionJob(parameters,
+      AttachmentCompressionJob job = new AttachmentCompressionJob(parameters,
                                           new AttachmentId(data.getLong(KEY_ATTACHMENT_ID)),
                                           data.getBoolean(KEY_MMS),
                                           data.getInt(KEY_MMS_SUBSCRIPTION_ID));
+      job.ownerIdentity = data.getStringOrDefault(KEY_OWNER, null);
+      job.captureOwner = false;
+      return job;
     }
   }
 }

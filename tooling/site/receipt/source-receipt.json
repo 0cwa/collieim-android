@@ -5,22 +5,6 @@
     "app_headline": "Inside Collie",
     "features": [
       {
-        "_record_path": "subjects/contact-badges.json",
-        "category": "Contacts",
-        "change": "73e1bb04bba7b11e24b44c4d8855cd0a2ad393e0",
-        "change_type": "Restoration",
-        "display_title": "Contact badges",
-        "limit": "The restoration commit also includes other changes; ancestry does not prove every line is unchanged.",
-        "origin": "Restored by 0cwa from Molly 8.19.2-4 with compatibility work.",
-        "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt",
-        "placement": "standard",
-        "source_blob": "9ac39e6b4762fef1e0a8e2a05031927ccdc2a696",
-        "summary": "See your contacts’ profile badges in their settings.",
-        "title": "Contact badges",
-        "upstream": "https://github.com/0cwa/mollyim-android/commit/c9b1814e1d4692c5d4ca0e3abc80008faa2a1db3",
-        "visual": "personal"
-      },
-      {
         "_record_path": "subjects/background-connection.json",
         "category": "Connection",
         "change": "06f42fec565a0b12461c9fe1a67075c22e13a0d7",
@@ -38,13 +22,13 @@
             }
           ]
         },
-        "display_title": "A background connection when push is unavailable",
+        "display_title": "When push is unavailable",
         "limit": "The source describes connection behavior. This pilot has not measured notification delivery or battery use.",
         "origin": "Adapted by 0cwa from Miha Zupan's Molly patch.",
         "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/app/data/DataAndStorageSettingsRepository.kt",
         "placement": "lead",
         "source_blob": "312b26548d58259347f4bec3ab4ff4db90197f9d",
-        "summary": "Designed to keep a background connection enabled when the selected push method is unavailable.",
+        "summary": "If your chosen push service is unavailable, Collie keeps “Stay connected in background” switched on. When push is available, you can choose.",
         "supporting_paths": [
           {
             "blob": "05d1107963bdd997b549388f5bd1f8ba10933f69",
@@ -59,8 +43,24 @@
         ],
         "title": "Stay connected when push is unavailable",
         "upstream": "https://github.com/MihaZupan/mollyim-android/blob/735d54df2b5dc71694039e5f8daeb60fa4a6d85b/patches/push.patch",
-        "visible_limit": "Notification delivery and battery effects have not been measured.",
+        "visible_limit": "Notification delivery and battery use are unmeasured.",
         "visual": "connection"
+      },
+      {
+        "_record_path": "subjects/contact-badges.json",
+        "category": "Contacts",
+        "change": "73e1bb04bba7b11e24b44c4d8855cd0a2ad393e0",
+        "change_type": "Restoration",
+        "display_title": "Profile badges in contact settings",
+        "limit": "The restoration commit also includes other changes; ancestry does not prove every line is unchanged.",
+        "origin": "0cwa brought badges back from Molly 8.19.2-4 and updated them for Collie.",
+        "path": "app/src/main/java/org/thoughtcrime/securesms/components/settings/conversation/individual/IndividualSettingsScreen.kt",
+        "placement": "standard",
+        "source_blob": "9ac39e6b4762fef1e0a8e2a05031927ccdc2a696",
+        "summary": "Open a contact’s settings to see the badges they display on their profile.",
+        "title": "Contact badges",
+        "upstream": "https://github.com/0cwa/mollyim-android/commit/c9b1814e1d4692c5d4ca0e3abc80008faa2a1db3",
+        "visual": "personal"
       },
       {
         "_record_path": "subjects/recipient-update-order.json",
@@ -82,8 +82,8 @@
         "category": "Navigation",
         "change": "451aea2f27bcce179844ff3e9f8a4f0484c012fc",
         "change_type": "Restoration",
-        "display_title": "Find Stories in Settings",
-        "limit": "The release tree contains the entry; this pilot has not run the navigation test.",
+        "display_title": "Stories in Settings",
+        "limit": "The entry appears in the source. Navigation has not been tested for this preview.",
         "navigation_path": [
           "Settings",
           "Stories"
@@ -92,7 +92,7 @@
         "path": "feature/app-settings/src/main/java/org/signal/appsettings/home/AppSettingsScreen.kt",
         "placement": "standard",
         "source_blob": "5f083bc8983abb2159fbfbd0e86bddd82e59f45e",
-        "summary": "The Stories entry is available from the main Settings screen.",
+        "summary": "Open Settings and choose Stories from the main list.",
         "title": "Stories settings navigation",
         "upstream": null,
         "visual": "navigation"
@@ -135,10 +135,10 @@
           "gap": "Clearance",
           "top": "Action bar"
         },
-        "display_title": "Room below the action bar",
+        "display_title": "More room for your password",
         "origin": "Implemented by 0cwa for Collie.",
         "path": "app/src/main/java/org/thoughtcrime/securesms/PassphrasePromptActivity.java",
-        "summary": "The password form is positioned below the action bar.",
+        "summary": "On the unlock screen, the password form now sits below the toolbar.",
         "title": "A clearer unlock screen",
         "visual": "clearance"
       },
@@ -153,15 +153,15 @@
           "note": "Restored entry",
           "to": "Stories"
         },
-        "display_title": "A direct place to find Stories",
+        "display_title": "Stories returns to Settings",
         "origin": "Restored by 0cwa in Collie.",
         "path": "feature/app-settings/src/main/java/org/signal/appsettings/home/AppSettingsScreen.kt",
-        "summary": "Stories has an entry on the main Settings screen.",
+        "summary": "You can open Stories directly from the main Settings list again.",
         "title": "Stories settings are easier to find",
         "visual": "navigation"
       }
     ],
-    "release_headline": "An updated unlock layout. Stories in Settings.",
+    "release_headline": "Unlock screen layout and Stories settings",
     "release_history": [
       "v8.35.1-3-rc1",
       "v8.35.1-2-rc1",
@@ -185,7 +185,7 @@
     "release": "v8.35.1-3-rc2",
     "release_base": "0619e003d255f88f0e8791e2d7413d1d0d99564f",
     "release_base_tag": "v8.35.1-3-rc1",
-    "release_headline": "An updated unlock layout. Stories in Settings.",
+    "release_headline": "Unlock screen layout and Stories settings",
     "release_history": [
       "v8.35.1-3-rc1",
       "v8.35.1-2-rc1",
@@ -201,8 +201,8 @@
     "release_status": "Release candidate",
     "source": "cc55c02bef64b2980c5f384a6a04f52ffb7bef92",
     "subject_order": [
-      "subjects/contact-badges.json",
       "subjects/background-connection.json",
+      "subjects/contact-badges.json",
       "subjects/recipient-update-order.json",
       "subjects/stories-settings.json",
       "subjects/legacy-payment-send.json"
@@ -216,19 +216,28 @@
   "receipt_version": 2,
   "reconciliation": {
     "added": [],
-    "changed": [],
-    "manifest_changed": [],
+    "changed": [
+      "changes/stories-settings.json",
+      "changes/unlock-prompt.json",
+      "subjects/background-connection.json",
+      "subjects/contact-badges.json",
+      "subjects/stories-settings.json"
+    ],
+    "manifest_changed": [
+      "release_headline",
+      "subject_order"
+    ],
     "removed": [],
-    "status": "not-compared"
+    "status": "review-needed"
   },
   "record_hashes": {
-    "changes/stories-settings.json": "1a3a328b25563b7a1106828d538924d407d284337b056cace78321dab1245eef",
-    "changes/unlock-prompt.json": "e9b49e4a98e8209d581e2c6adc3b7c7491fc13fcf5977ed91829435f02a295ee",
-    "subjects/background-connection.json": "84a5feb38cf1c2ae23a3230b4f5f12564a1447728c02282d8e3c3bfe135c7721",
-    "subjects/contact-badges.json": "778d9a88d9b473489b54cd05377f4c61666080c2499919f3b7fec0f3ac2daed1",
+    "changes/stories-settings.json": "f8d55f568d7a41713ab623028e9f14c8eb401341e58659dd42bbf683482feae9",
+    "changes/unlock-prompt.json": "f771e03ee00ed8eeb085ab6b51061ded42b3dd856f69fb0f0a5c5857a976d819",
+    "subjects/background-connection.json": "7a6831c858e39ade4c866b67ec9c4d8f65041c9c87a6b8d253cece937f139e62",
+    "subjects/contact-badges.json": "a99c9982a4ef3b811bcc75a979bcb7e190666df16d6f728af632a6c3a01d9e93",
     "subjects/legacy-payment-send.json": "4583c15467ecb9dd52255fb07fe7118b1fc3b0f77ab2af41bcf13df8eddcc67b",
     "subjects/recipient-update-order.json": "b519de3aaa379f3b4e82eac1fddc80d229285b6520708e70e339fb84c0b9d14c",
-    "subjects/stories-settings.json": "85ad65b53572bb34c35549305c8aec1b803124aa2f43bd9285055218047ecd80"
+    "subjects/stories-settings.json": "e3666201be093cf88c0e04f24d1fa47ceed09496bd5dbde10f8038915bebbce9"
   },
   "release_metrics": {
     "binary_paths": [],

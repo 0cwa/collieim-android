@@ -159,7 +159,9 @@ class ReceiptTests(unittest.TestCase):
             bad = copy.deepcopy(self.data)
             if mutation == 'source': bad['source'] = '0' * 40
             if mutation == 'blob': bad['features'][0]['source_blob'] = '0' * 40
-            if mutation == 'support': bad['features'][1]['supporting_paths'][0]['blob'] = '0' * 40
+            if mutation == 'support':
+                supported = next(item for item in bad['features'] if item.get('supporting_paths'))
+                supported['supporting_paths'][0]['blob'] = '0' * 40
             if mutation == 'absent': bad['features'][-1]['absent_paths'] = [bad['features'][0]['path']]
             if mutation == 'visual': bad['features'][0]['visual'] = 'unknown'
             if mutation == 'membership': bad['membership']['status'] = 'confirmed'

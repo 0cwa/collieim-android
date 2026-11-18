@@ -317,15 +317,20 @@ def report_behind(manifest: dict) -> None:
 
     The site still builds and deploys; the pages say which release they describe.
     """
+    messages = []
+    if manifest.get("reviewed_release_published") is False:
+        messages.append(("Patch pages describe an unpublished release",
+                         f"Patch pages describe {manifest['reviewed_release']}, which is not a published release yet."))
     newer = manifest.get("newer_releases") or []
-    if not newer:
-        return
-    message = (f"Patch pages describe {manifest['reviewed_release']}; newer published release(s): {', '.join(newer)}. "
-               "Review the records in tooling/site/receipt/ and re-freeze (see its README).")
-    if os.environ.get("GITHUB_ACTIONS") == "true":
-        print(f"::notice title=Patch pages behind latest release::{message}")
-    else:
-        print(f"note: {message}", file=sys.stderr)
+    if newer:
+        messages.append(("Patch pages behind latest release",
+                         f"Patch pages describe {manifest['reviewed_release']}; newer published release(s): {', '.join(newer)}. "
+                         "Review the records in tooling/site/receipt/ and re-freeze (see its README)."))
+    for title, message in messages:
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            print(f"::notice title={title}::{message}")
+        else:
+            print(f"note: {message}", file=sys.stderr)
 
 
 def main() -> int:

@@ -109,8 +109,14 @@ class SourcePipelineTests(unittest.TestCase):
         self.assertEqual(newer(None), [])
         self.assertEqual(newer(['v8.35.1-3-rc2', 'v8.35.1-3-rc1']), [])
         self.assertEqual(newer(['v9.1', 'v9.0', 'v8.35.1-3-rc2']), ['v9.1', 'v9.0'])
-        # A reviewed release missing from the published index cannot be ordered; the newest published leads.
-        self.assertEqual(newer(['v9.1', 'v9.0']), ['v9.1'])
+        # An unpublished reviewed release: only tags before the first known-older release are newer.
+        self.assertEqual(newer(['v9.1', 'v9.0']), ['v9.1', 'v9.0'])
+        self.assertEqual(newer(['v9.1', 'v8.35.1-3-rc1', 'v8.35.1-2-rc1']), ['v9.1'])
+        self.assertEqual(newer(['v8.35.1-3-rc1', 'v8.35.1-2-rc1']), [])
+        unpublished = copy.deepcopy(self.receipt)
+        unpublished['published_releases'] = ['v8.35.1-3-rc1']
+        self.assertIs(render.reviewed_release_published(unpublished), False)
+        self.assertIsNone(render.reviewed_release_published(self.receipt))
         current = pipeline.build(self.out, published=['v8.35.1-3-rc2', 'v8.35.1-3-rc1'])
         self.assertEqual(current['newer_releases'], [])
         for name in ('releases/index.html', 'patches/index.html'):
@@ -119,6 +125,10 @@ class SourcePipelineTests(unittest.TestCase):
             self.assertNotIn('class="newer"', text)
 
     def test_build_reports_when_reviewed_pages_trail_a_release(self):
+        err = io.StringIO()
+        with patch.dict(os.environ, {'GITHUB_ACTIONS': ''}), patch('sys.stderr', err):
+            build.report_behind({'reviewed_release': 'v8.35.1-3-rc2', 'newer_releases': [], 'reviewed_release_published': False})
+        self.assertIn('v8.35.1-3-rc2, which is not a published release yet', err.getvalue())
         manifest = {'reviewed_release': 'v8.35.1-3-rc2', 'newer_releases': ['v9.1', 'v9.0']}
         for actions, stream in (('true', 'stdout'), ('', 'stderr')):
             out, err = io.StringIO(), io.StringIO()

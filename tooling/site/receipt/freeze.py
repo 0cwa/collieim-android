@@ -84,7 +84,9 @@ def update_pins(manifest_path=evidence.DATA):
     manifest_path = Path(os.path.abspath(manifest_path))
     base = manifest_path.parent
     data = json.loads(manifest_path.read_text(encoding='utf-8'))
-    report = []
+    # Resolve everything before writing anything, so a failure leaves the files
+    # untouched and the review hints are printed on the run that succeeds.
+    report, writes = [], []
     for tag_key, id_key in (('release', 'source'), ('release_base_tag', 'release_base')):
         commit = _git_id('refs/tags/' + data.get(tag_key, '') + '^{commit}')
         if commit is None:
@@ -93,7 +95,7 @@ def update_pins(manifest_path=evidence.DATA):
             report.append(f'{manifest_path.name}: {id_key} {data.get(id_key) or "(empty)"} -> {commit} from {data[tag_key]}')
             data[id_key] = commit
     if report:
-        _write_json(manifest_path, data)
+        writes.append((manifest_path, data))
     source = data['source']
     for name in data.get('subjects', []):
         path = base / PurePosixPath(name)
@@ -111,7 +113,9 @@ def update_pins(manifest_path=evidence.DATA):
                 holder[id_key] = blob
                 changed = True
         if changed:
-            _write_json(path, record)
+            writes.append((path, record))
+    for path, value in writes:
+        _write_json(path, value)
     return report
 
 
@@ -165,6 +169,10 @@ def main():
     parser.add_argument('--check', action='store_true', help='Check committed source receipt against records without Git')
     parser.add_argument('--update-pins', action='store_true', help='Fill source/baseline commits from tags and file IDs from the source tree, then report each change')
     args = parser.parse_args()
+    if args.check and (args.update_pins or args.out or args.previous or args.editorial_revision):
+        parser.error('--check only reads the committed receipt; run it separately')
+    if args.previous and not args.out:
+        parser.error('--previous needs --out')
     if args.check:
         evidence.load_snapshot(args.input)
         return

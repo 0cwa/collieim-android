@@ -31,14 +31,29 @@ def newer_releases(receipt):
     """Published releases newer than the reviewed edition, newest first.
 
     Live builds pass ``published_releases`` newest first. When the reviewed
-    release is missing from that index it cannot be ordered against the others,
-    so the newest published release is treated as newer.
+    release is not published yet (tagged, drafted, or still in development),
+    only releases listed before the first one known to be older (its baseline
+    or release history) count as newer.
     """
     published = receipt.get('published_releases')
     if not published:
         return []
-    release = receipt['editorial']['release']
-    return published[:published.index(release)] if release in published else published[:1]
+    data = receipt['editorial']
+    if data['release'] in published:
+        return published[:published.index(data['release'])]
+    older = set(data.get('release_history', [])) | {data['release_base_tag']}
+    newer = []
+    for tag in published:
+        if tag in older:
+            break
+        newer.append(tag)
+    return newer
+
+
+def reviewed_release_published(receipt):
+    """None without a live release index; otherwise whether the reviewed tag is published."""
+    published = receipt.get('published_releases')
+    return None if published is None else receipt['editorial']['release'] in published
 
 
 ROUTES = {

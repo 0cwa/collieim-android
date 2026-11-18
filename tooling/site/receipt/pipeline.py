@@ -31,6 +31,7 @@ def build(out, receipt=None, published=None, routes='permanent'):
         'published_releases': receipt.get('published_releases', receipt['editorial'].get('release_history', [])),
         'reviewed_release': receipt['editorial']['release'],
         'newer_releases': render.newer_releases(receipt),
+        'reviewed_release_published': render.reviewed_release_published(receipt),
         'presentation': files, 'assets': render.asset_hashes(), 'routes': render.ROUTES[routes],
         'outputs': outputs,
     }

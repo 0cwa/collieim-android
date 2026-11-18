@@ -189,7 +189,9 @@ class ReceiptTests(unittest.TestCase):
         self.assertIn('subject_order', result['manifest_changed'])
 
     def test_update_pins_fills_ids_and_reports_changed_files(self):
-        with tempfile.TemporaryDirectory(dir=Path.home() / 'agent-scratch') as temp:
+        scratch = Path.home() / 'agent-scratch'
+        scratch.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=scratch) as temp:
             copy_dir = Path(temp) / 'receipt'
             shutil.copytree(evidence.DATA.parent, copy_dir, ignore=shutil.ignore_patterns('__pycache__', '*.py', '*.css'))
             originals = {p: p.read_bytes() for p in copy_dir.rglob('*.json')}
@@ -210,10 +212,17 @@ class ReceiptTests(unittest.TestCase):
             # Restored pins match the reviewed files byte for byte, and a second run changes nothing.
             self.assertEqual({p: p.read_bytes() for p in copy_dir.rglob('*.json')}, originals)
             self.assertEqual(freeze.update_pins(copy_dir / 'pilot.json'), [])
-            record['path'] = 'no/such/file.kt'
+            # A later failure must not leave earlier records rewritten (and their hints lost).
+            record['supporting_paths'][1]['blob'] = stale
             lead.write_text(json.dumps(record, indent=2, ensure_ascii=False) + '\n')
+            pending = lead.read_bytes()
+            later = copy_dir / 'subjects/legacy-payment-send.json'
+            broken = json.loads(later.read_text())
+            broken['path'] = 'no/such/file.kt'
+            later.write_text(json.dumps(broken, indent=2, ensure_ascii=False) + '\n')
             with self.assertRaisesRegex(ValueError, 'no/such/file.kt is not in'):
                 freeze.update_pins(copy_dir / 'pilot.json')
+            self.assertEqual(lead.read_bytes(), pending)
             manifest['source'], manifest['release'] = self.data['source'], 'v0.0-missing'
             (copy_dir / 'pilot.json').write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n')
             with self.assertRaisesRegex(ValueError, 'fetch tags'):

@@ -81,11 +81,7 @@ class AccountSettingsViewModel(
           _actions.send(AccountSettingsAction.NavigateToLinkedDevices)
         }
       }
-      AccountSettingsEvent.PaymentsClicked -> {
-        if (_state.value.isPrimaryDevice && _state.value.showPayments) {
-          _actions.send(AccountSettingsAction.NavigateToPayments)
-        }
-      }
+      AccountSettingsEvent.PaymentsClicked -> Unit
       AccountSettingsEvent.ModifyPinClicked -> {
         _actions.send(if (_state.value.hasPin) AccountSettingsAction.LaunchChangePinFlow else AccountSettingsAction.LaunchCreatePinFlow)
       }

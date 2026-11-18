@@ -6,7 +6,6 @@
 package org.thoughtcrime.securesms.components.settings.app.account
 
 import android.app.Activity
-import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.runtime.Composable
@@ -22,7 +21,6 @@ import org.signal.appsettings.account.TwoFactorMethodNamed
 import org.signal.appsettings.routes.AppSettingsNavigationEvent
 import org.signal.appsettings.routes.AppSettingsRoute
 import org.signal.appsettings.routes.navigateTo
-import org.thoughtcrime.securesms.payments.preferences.PaymentsActivity
 import org.signal.core.ui.biometrics.rememberBiometricsAuthentication
 import org.signal.core.ui.compose.CollectActions
 import org.signal.core.ui.navigation.ResultEffect
@@ -88,7 +86,6 @@ fun AccountSettingsEntry(parentEventEmitter: (AppSettingsNavigationEvent) -> Uni
   CollectActions(viewModel.actions) { action ->
     when (action) {
       AccountSettingsAction.NavigateToLinkedDevices -> parentEventEmitter.navigateTo(AppSettingsRoute.LinkDeviceRoute.LinkDevice)
-      AccountSettingsAction.NavigateToPayments -> context.startActivity(Intent(context, PaymentsActivity::class.java))
       AccountSettingsAction.LaunchCreatePinFlow -> pinFlowLauncher.launch(CreateSvrPinActivity.getIntentForPinCreate(context))
       AccountSettingsAction.LaunchChangePinFlow -> pinFlowLauncher.launch(CreateSvrPinActivity.getIntentForPinChangeFromSettings(context))
       AccountSettingsAction.AuthenticateToViewSignalLoginDetails -> signalLoginBiometrics.withBiometricsAuthentication {

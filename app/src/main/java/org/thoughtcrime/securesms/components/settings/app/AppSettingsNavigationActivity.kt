@@ -156,7 +156,7 @@ class AppSettingsNavigationActivity : PassphraseRequiredActivity() {
       AppSettingsRoute.DataAndStorageRoute.DataAndStorage -> AppSettingsActivity.manageStorage(this)
       AppSettingsRoute.PrivacyRoute.Privacy, AppSettingsRoute.PrivacyRoute.ScreenLock -> AppSettingsActivity.privacy(this)
       AppSettingsRoute.LinkDeviceRoute.LinkDevice -> AppSettingsActivity.linkedDevices(this)
-      AppSettingsRoute.Payments -> Intent(this, PaymentsActivity::class.java)
+      AppSettingsRoute.Payments -> return true
       AppSettingsRoute.AppearanceRoute.Wallpaper -> ChatWallpaperActivity.createIntent(this)
       AppSettingsRoute.PrivacyRoute.BlockedUsers -> Intent(this, BlockedUsersActivity::class.java)
       AppSettingsRoute.AccountRoute.OldDeviceTransfer -> Intent(this, OldDeviceTransferActivity::class.java)

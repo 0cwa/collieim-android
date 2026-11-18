@@ -65,13 +65,6 @@
             app:popEnterAnim="@anim/fragment_close_enter"
             app:popExitAnim="@anim/fragment_close_exit" />
         <action
-            android:id="@+id/action_appSettingsFragment_to_paymentsActivity"
-            app:destination="@id/paymentsActivity"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_close_enter"
-            app:popExitAnim="@anim/fragment_close_exit" />
-        <action
             android:id="@+id/action_appSettingsFragment_to_appearanceSettingsFragment"
             app:destination="@id/appearanceSettingsFragment"
             app:enterAnim="@anim/fragment_open_enter"
@@ -179,13 +172,6 @@
         <action
             android:id="@+id/action_accountSettingsFragment_to_linkDeviceFragment"
             app:destination="@id/linkDeviceFragment"
-            app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit"
-            app:popEnterAnim="@anim/fragment_close_enter"
-            app:popExitAnim="@anim/fragment_close_exit" />
-        <action
-            android:id="@+id/action_accountSettingsFragment_to_paymentsActivity"
-            app:destination="@id/paymentsActivity"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_close_enter"
@@ -404,6 +390,12 @@
             android:id="@+id/action_linkDeviceFragment_to_linkDeviceIntroBottomSheet"
             app:destination="@id/linkDeviceIntroBottomSheet" />
         <action
+            android:id="@+id/action_linkDeviceFragment_to_linkDeviceFinishedSheet"
+            app:destination="@id/linkDeviceFinishedSheet" />
+        <action
+            android:id="@+id/action_linkDeviceFragment_to_linkDeviceLearnMoreBottomSheet"
+            app:destination="@id/linkDeviceLearnMoreBottomSheet" />
+        <action
             android:id="@+id/action_linkDeviceFragment_to_editDeviceNameFragment"
             app:destination="@id/editDeviceNameFragment"
             app:enterAnim="@anim/fragment_open_enter"
@@ -436,14 +428,14 @@
             app:popExitAnim="@anim/fragment_close_exit" />
     </dialog>
     <dialog
+        android:id="@+id/linkDeviceFinishedSheet"
+        android:name="org.thoughtcrime.securesms.linkdevice.LinkDeviceFinishedSheet" />
+    <dialog
+        android:id="@+id/linkDeviceLearnMoreBottomSheet"
+        android:name="org.thoughtcrime.securesms.linkdevice.LinkDeviceLearnMoreBottomSheetFragment" />
+    <dialog
         android:id="@+id/linkDeviceSyncBottomSheet"
         android:name="org.thoughtcrime.securesms.linkdevice.LinkDeviceSyncBottomSheet" />
-
-    <!-- Payments -->
-    <activity
-        android:id="@+id/paymentsActivity"
-        android:name="org.thoughtcrime.securesms.payments.preferences.PaymentsActivity"
-        android:label="payments_activity" />
 
     <!-- region Appearance settings and Subpages -->
     <fragment

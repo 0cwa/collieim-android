@@ -188,6 +188,37 @@ class ReceiptTests(unittest.TestCase):
         self.assertIn('release_headline', result['manifest_changed'])
         self.assertIn('subject_order', result['manifest_changed'])
 
+    def test_update_pins_fills_ids_and_reports_changed_files(self):
+        with tempfile.TemporaryDirectory(dir=Path.home() / 'agent-scratch') as temp:
+            copy_dir = Path(temp) / 'receipt'
+            shutil.copytree(evidence.DATA.parent, copy_dir, ignore=shutil.ignore_patterns('__pycache__', '*.py', '*.css'))
+            originals = {p: p.read_bytes() for p in copy_dir.rglob('*.json')}
+            manifest = json.loads((copy_dir / 'pilot.json').read_text())
+            manifest['source'] = ''
+            (copy_dir / 'pilot.json').write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n')
+            lead = copy_dir / 'subjects/background-connection.json'
+            record = json.loads(lead.read_text())
+            stale = record['supporting_paths'][0]['blob']
+            record['source_blob'] = ''
+            record['supporting_paths'][1]['blob'] = stale
+            lead.write_text(json.dumps(record, indent=2, ensure_ascii=False) + '\n')
+            report = freeze.update_pins(copy_dir / 'pilot.json')
+            self.assertEqual(len(report), 3)
+            self.assertIn('source (empty) -> ' + self.data['source'], report[0])
+            self.assertTrue(any('(empty) -> ' + self.data['features'][0]['source_blob'] in line for line in report))
+            self.assertTrue(any(f'review: git diff {stale} ' in line for line in report))
+            # Restored pins match the reviewed files byte for byte, and a second run changes nothing.
+            self.assertEqual({p: p.read_bytes() for p in copy_dir.rglob('*.json')}, originals)
+            self.assertEqual(freeze.update_pins(copy_dir / 'pilot.json'), [])
+            record['path'] = 'no/such/file.kt'
+            lead.write_text(json.dumps(record, indent=2, ensure_ascii=False) + '\n')
+            with self.assertRaisesRegex(ValueError, 'no/such/file.kt is not in'):
+                freeze.update_pins(copy_dir / 'pilot.json')
+            manifest['source'], manifest['release'] = self.data['source'], 'v0.0-missing'
+            (copy_dir / 'pilot.json').write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n')
+            with self.assertRaisesRegex(ValueError, 'fetch tags'):
+                freeze.update_pins(copy_dir / 'pilot.json')
+
     def test_reconciliation_flags_valid_source_change(self):
         original = copy.deepcopy(self.data)
         original['features'] = []

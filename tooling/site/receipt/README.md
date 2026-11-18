@@ -4,14 +4,16 @@ The normal site build generates `/patches/` and `/releases/` without adding home
 
 ## Authoring
 
-Add a short reviewed JSON record under `subjects/` (continuing app patches) or `changes/` (release differences). Include the benefit, original/adaptation credits, change commit, file evidence and meaningful limitations. Human-readable filenames become anchors. Add the record to `pilot.json` when the reviewed source tag contains it. Selecting a new edition requires reviewing that tag, baseline and every continuing claim; the builder never treats `main` as shipped source.
+Add a short reviewed JSON record under `subjects/` (continuing app patches) or `changes/` (release differences). Include the benefit, original/adaptation credits, change commit, file path and meaningful limitations. Human-readable filenames become anchors. Add the record to `pilot.json` when the reviewed source tag contains it. Selecting a new edition requires reviewing that tag, baseline and every continuing claim; the builder never treats `main` as shipped source.
 
-Re-freeze after a source-record, manifest or ordering change, in a checkout containing the named tags and change ancestry:
+To describe a newer release, set `release`, `release_base_tag`, `release_status`, `release_headline` and `release_history` in `pilot.json`, and edit or add records. Leave commit and file IDs to the tool. In a checkout containing the named tags and change ancestry, run:
 
 ```sh
-python3 tooling/site/receipt/freeze.py --previous tooling/site/receipt/source-receipt.json --out tooling/site/receipt/source-receipt.json
+python3 tooling/site/receipt/freeze.py --update-pins --previous tooling/site/receipt/source-receipt.json --out tooling/site/receipt/source-receipt.json
 python3 tooling/site/receipt/freeze.py --check
 ```
+
+`--update-pins` fills `source` and `release_base` from the tags and each record's `source_blob`/`blob` from the source tree, rewriting only values that differ. It prints one line per change. A line ending in `review: git diff <old> <new>` means that file changed since the record was reviewed: read that diff and correct the record's claims before committing. A path missing from the release fails, so the record must be updated or removed. Without `--update-pins`, freezing still fails on any mismatched ID.
 
 Review the reconciliation report in the receipt and commit the records and receipt together. Added, removed, replaced, changed and reordered records are reported. The Git validator checks exact source blobs, absent paths, tag identities and ancestry; release entries must cite a single-parent commit touching a file that differs across the pinned range. Missing objects fail with instructions; freezing never fetches. Benefits, selection, attribution and behavior claims require editorial review.
 

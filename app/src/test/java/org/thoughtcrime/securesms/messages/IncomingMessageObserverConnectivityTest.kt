@@ -68,7 +68,7 @@ class IncomingMessageObserverConnectivityTest {
     every { store.registration.restoreDecisionState } returns RestoreDecisionState(RestoreDecisionState.State.COMPLETED)
     every { auth.state } returns Observable.never()
     every { auth.stateSnapshot } returns WebSocketConnectionState.DISCONNECTED
-    every { auth.shouldSendKeepAlives() } returns false
+    every { auth.hasKeepAliveTokens() } returns false
     every { auth.connect() } answers { connected.countDown() }
     every { auth.registerKeepAliveToken(any()) } answers { auth.connect() }
     UnifiedPushLifecycle.resetForTests(initiallyReady = false)

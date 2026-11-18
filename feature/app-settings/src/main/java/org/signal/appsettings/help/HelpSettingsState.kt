@@ -14,5 +14,16 @@ data class HelpSettingsState(
   /** The installed app version, shown on the version row and copied when it is long-pressed. */
   val versionName: String = "",
   val logEnabled: Boolean = true,
-  val showAppUpdates: Boolean = false
-)
+  val showAppUpdates: Boolean = false,
+  /** The snackbar to show, or [Snackbar.None]. */
+  val snackbar: Snackbar = Snackbar.None
+) {
+
+  /** Whichever snackbar the screen is showing, if any. */
+  sealed interface Snackbar {
+    data object None : Snackbar
+
+    /** The version was copied to the clipboard. */
+    data object VersionCopied : Snackbar
+  }
+}

@@ -75,6 +75,9 @@ sealed interface AccountSettingsEvent {
   /** The user tapped the rename option in [method]'s overflow menu. */
   data class RenameMethodClicked(val method: TwoFactorMethod) : AccountSettingsEvent
 
+  /** The name screen reported that a second factor was named, as described by [result]. */
+  data class MethodNamed(val result: TwoFactorMethodNamed) : AccountSettingsEvent
+
   /** The user tapped the remove option in [method]'s overflow menu, which asks for the screen lock first. */
   data class RemoveMethodClicked(val method: TwoFactorMethod) : AccountSettingsEvent
 
@@ -122,4 +125,7 @@ sealed interface AccountSettingsEvent {
 
   /** Dismisses whatever is in [AccountSettingsState.dialog]. */
   data object DialogDismissed : AccountSettingsEvent
+
+  /** The snackbar finished showing. */
+  data object SnackbarDismissed : AccountSettingsEvent
 }

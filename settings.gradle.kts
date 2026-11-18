@@ -114,6 +114,7 @@ include(":lib:signal-login")
 include(":lib:password-manager")
 include(":lib:storage")
 include(":lib:remote-config")
+include(":lib:locale")
 
 // Feature modules
 include(":feature:app-settings")
@@ -123,6 +124,7 @@ include(":feature:media-send")
 include(":feature:chat-settings")
 include(":feature:media-keyboard")
 include(":feature:media-viewer")
+include(":feature:media-overview")
 
 // Testing/Lint modules
 include(":screener")

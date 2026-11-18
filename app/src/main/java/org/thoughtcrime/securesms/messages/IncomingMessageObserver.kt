@@ -295,7 +295,7 @@ class IncomingMessageObserver(
 
   private fun isConnectionAvailable(): Boolean {
     val hasNetwork = internetConnection.isOnline
-    return !SignalStore.account.isUnauthorizedReceived && SignalStore.account.isRegistered && (authWebSocket.stateSnapshot == WebSocketConnectionState.CONNECTED || (authWebSocket.shouldSendKeepAlives() && hasNetwork))
+    return !SignalStore.account.isUnauthorizedReceived && SignalStore.account.isRegistered && (authWebSocket.stateSnapshot == WebSocketConnectionState.CONNECTED || (authWebSocket.hasKeepAliveTokens() && hasNetwork))
   }
 
   /** Conditions are evaluated outside of [connectionLock] so notifiers never block on them. We only park if nothing signaled since the version we evaluated against. */

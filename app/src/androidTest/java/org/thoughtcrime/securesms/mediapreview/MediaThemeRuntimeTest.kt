@@ -16,7 +16,6 @@ import android.os.Process
 import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -127,16 +126,6 @@ class MediaThemeRuntimeTest {
   }
 
   @Test
-  fun legacyImageStaysDarkAndUpdatesItsPaletteWithoutRestarting() {
-    assertLegacyPaletteRoundTrip(Sample.IMAGE, SettingsValues.Theme.LIGHT)
-  }
-
-  @Test
-  fun legacyVideoUpdatesItsPaletteWithoutRestarting() {
-    assertLegacyPaletteRoundTrip(Sample.VIDEO, SettingsValues.Theme.DARK)
-  }
-
-  @Test
   fun composeImageUpdatesItsLightPaletteWithoutRestarting() {
     assertComposePaletteRoundTrip(Sample.IMAGE, SettingsValues.Theme.LIGHT)
   }
@@ -144,46 +133,6 @@ class MediaThemeRuntimeTest {
   @Test
   fun composeVideoUpdatesItsDarkPaletteWithoutRestarting() {
     assertComposePaletteRoundTrip(Sample.VIDEO, SettingsValues.Theme.DARK)
-  }
-
-  private fun assertLegacyPaletteRoundTrip(sample: Sample, appTheme: SettingsValues.Theme) {
-    selectTheme(appTheme, dynamic = false)
-    val processId = Process.myPid()
-    val intent = mediaIntent(sample, MediaPreviewActivity::class.java)
-    ActivityScenario.launch<MediaPreviewActivity>(intent).use { scenario ->
-      var previousActivity: Activity? = null
-      for ((index, dynamic) in listOf(false, true, false).withIndex()) {
-        val captureName = "media-legacy-${sample.name.lowercase()}-$index-dynamic-$dynamic"
-        if (index > 0) {
-          changeRetainedPalette(scenario, appTheme, dynamic)
-        }
-        val activity = awaitReady(scenario, dynamic, captureName) { media ->
-          val details = media.findViewById<View>(R.id.media_preview_details_container)
-          val caption = media.findViewById<TextView>(R.id.media_preview_caption)
-          decodedMediaReady(media, sample) && details?.isShown == true && details.alpha == 1f && caption?.text?.toString() == CAPTION
-        }
-        assertSame(harness.application, activity.application)
-        assertEquals(processId, Process.myPid())
-        if (previousActivity != null) assertNotSame(previousActivity, activity)
-
-        val surface = if (dynamic) ContextCompat.getColor(activity, android.R.color.system_surface_dark) else Color.parseColor("#121212")
-        val sampleYs = IntArray(2)
-        var chromeUnderlayY = 0
-        scenario.onActivity { media ->
-          assertEquals(Configuration.UI_MODE_NIGHT_YES, media.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK)
-          assertEquals(surface, backgroundColor(media.findViewById(R.id.fragment_container_view)))
-          assertEquals(ColorUtils.setAlphaComponent(surface, 222), backgroundColor(media.findViewById(R.id.media_preview_details_container)))
-          assertEquals(ColorUtils.setAlphaComponent(surface, 222), backgroundColor(media.findViewById(R.id.toolbar_layout)))
-          assertEquals(sample == Sample.VIDEO, media.findViewById<View>(R.id.exo_duration_viewgroup).isShown)
-          sampleYs[0] = centerYOnScreen(media.findViewById(R.id.toolbar))
-          sampleYs[1] = centerYOnScreen(media.findViewById(R.id.media_preview_caption))
-          val toolbar = media.findViewById<View>(R.id.toolbar_layout)
-          chromeUnderlayY = centerYOnScreen(toolbar) + toolbar.height / 2 + 8
-        }
-        assertScreenshot(activity, captureName, sample, surface, sampleYs, chromeUnderlayY)
-        previousActivity = activity
-      }
-    }
   }
 
   private fun assertComposePaletteRoundTrip(sample: Sample, appTheme: SettingsValues.Theme) {
@@ -336,12 +285,6 @@ class MediaThemeRuntimeTest {
     is ColorStateListDrawable -> background.colorStateList.defaultColor
     is MaterialShapeDrawable -> background.fillColor!!.defaultColor
     else -> error("Unexpected background $background")
-  }
-
-  private fun centerYOnScreen(view: View): Int {
-    val location = IntArray(2)
-    view.getLocationOnScreen(location)
-    return location[1] + view.height / 2
   }
 
   private fun assertScreenshot(activity: Activity, name: String, sample: Sample, surface: Int, sampleYs: IntArray, chromeUnderlayY: Int? = null, composeContent: Boolean = false) {

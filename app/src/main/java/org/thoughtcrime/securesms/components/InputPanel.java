@@ -114,6 +114,12 @@ public class InputPanel extends ConstraintLayout
   private RecordTime               recordTime;
   private ValueAnimator            quoteAnimator;
   private ValueAnimator            editMessageAnimator;
+  private ValueAnimator            editModeRevealAnimator;
+  private float                    editModeReveal;
+  private int                      editMessageTitleTopMargin;
+  private int                      editMessageThumbnailHeight;
+  private int                      editMessageCancelStartMargin;
+  private int                      editMessageCancelHiddenStartMargin;
   private Stub<VoiceNoteDraftView> voiceNoteDraftViewStub;
 
   private @Nullable Listener listener;
@@ -189,6 +195,13 @@ public class InputPanel extends ConstraintLayout
 
     editMessageCancel.setOnClickListener(v -> exitEditMessageMode());
 
+    MarginLayoutParams cancelParams = (MarginLayoutParams) editMessageCancel.getLayoutParams();
+
+    editMessageTitleTopMargin          = ((MarginLayoutParams) editMessageTitle.getLayoutParams()).topMargin;
+    editMessageThumbnailHeight         = editMessageThumbnail.getLayoutParams().height;
+    editMessageCancelStartMargin       = cancelParams.getMarginStart();
+    editMessageCancelHiddenStartMargin = -cancelParams.width;
+
     quickCameraToggle.setVisibility(View.GONE);
   }
 
@@ -203,7 +216,8 @@ public class InputPanel extends ConstraintLayout
     linkPreview.setMaxDescriptionHeight(LinkPreviewView.NO_MAX_DESCRIPTION_HEIGHT);
     super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 
-    int overflow          = getMeasuredHeight() - (MeasureSpec.getSize(heightMeasureSpec) - reservedTopSpace);
+    int settledHeight     = getMeasuredHeight() - linkPreview.getMeasuredHeight() + linkPreview.getContentHeight();
+    int overflow          = settledHeight - (MeasureSpec.getSize(heightMeasureSpec) - reservedTopSpace);
     int descriptionHeight = linkPreview.getDescriptionHeight();
     if (overflow > 0 && descriptionHeight > 0) {
       linkPreview.setMaxDescriptionHeight(descriptionHeight - overflow);
@@ -364,34 +378,48 @@ public class InputPanel extends ConstraintLayout
   }
 
   public boolean hasLinkPreview() {
-    return linkPreviewStub.getVisibility() == View.VISIBLE;
+    return linkPreviewStub.getVisibility() == View.VISIBLE && !linkPreviewStub.get().isAnimatingOut();
   }
 
   public void setLinkPreviewLoading() {
-    LinkPreviewView linkPreview = requireLinkPreview();
-    linkPreview.setVisibility(View.VISIBLE);
+    LinkPreviewView linkPreview = showLinkPreview();
     linkPreview.setLoading();
   }
 
   public void setLinkPreviewNoPreview(@Nullable LinkPreviewRepository.Error customError) {
-    LinkPreviewView linkPreview = requireLinkPreview();
-    linkPreview.setVisibility(View.VISIBLE);
+    LinkPreviewView linkPreview = showLinkPreview();
     linkPreview.setNoPreview(customError);
   }
 
   public void setLinkPreview(@NonNull RequestManager requestManager, @NonNull Optional<LinkPreview> preview) {
     if (preview.isPresent()) {
-      LinkPreviewView linkPreview = requireLinkPreview();
-      linkPreview.setVisibility(View.VISIBLE);
+      LinkPreviewView linkPreview = showLinkPreview();
       linkPreview.setLinkPreview(requestManager, preview.get(), true);
-    } else {
-      linkPreviewStub.setVisibility(View.GONE);
+    } else if (linkPreviewStub.resolved()) {
+      LinkPreviewView linkPreview = linkPreviewStub.get();
+      if (isLaidOut()) {
+        linkPreview.animateOut();
+      } else {
+        linkPreview.cancelSizeAnimation();
+        linkPreview.setVisibility(View.GONE);
+      }
     }
 
     if (linkPreviewStub.resolved()) {
       int cornerRadius = quoteViewStub.getVisibility() == VISIBLE ? readDimen(R.dimen.message_corner_collapse_radius) : readDimen(R.dimen.message_corner_radius);
       linkPreviewStub.get().setCorners(cornerRadius, cornerRadius);
     }
+  }
+
+  private @NonNull LinkPreviewView showLinkPreview() {
+    LinkPreviewView linkPreview = requireLinkPreview();
+    if (isLaidOut()) {
+      linkPreview.animateToContentHeight();
+    } else {
+      linkPreview.cancelSizeAnimation();
+    }
+    linkPreview.setVisibility(View.VISIBLE);
+    return linkPreview;
   }
 
   private @NonNull LinkPreviewView requireLinkPreview() {
@@ -515,11 +543,7 @@ public class InputPanel extends ConstraintLayout
 
     int maxWidth = composeContainer.getWidth() - mediaKeyboard.getWidth();
     if (!fromEditMessageMode) {
-      maxWidth -= editMessageCancel.getWidth();
-      if (editMessageCancel.getLayoutParams() instanceof MarginLayoutParams) {
-        MarginLayoutParams layoutParams = (MarginLayoutParams) editMessageCancel.getLayoutParams();
-        maxWidth -= layoutParams.leftMargin;
-      }
+      maxWidth -= editMessageCancelStartMargin - editMessageCancelHiddenStartMargin;
     }
     composeTextContainer.measure(MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST), MeasureSpec.UNSPECIFIED);
     int finalHeight = composeTextContainer.getMeasuredHeight();
@@ -589,20 +613,70 @@ public class InputPanel extends ConstraintLayout
   private void updateEditModeUi() {
     if (inEditMessageMode()) {
       ViewUtil.focusAndShowKeyboard(composeText);
-      editMessageTitle.setVisibility(View.VISIBLE);
-      editMessageThumbnail.setVisibility(View.VISIBLE);
-      editMessageCancel.setVisibility(View.VISIBLE);
       if (listener != null) {
         listener.onEnterEditMode();
       }
     } else {
-      editMessageTitle.setVisibility(View.GONE);
-      editMessageThumbnail.setVisibility(View.GONE);
-      editMessageCancel.setVisibility(View.GONE);
       if (listener != null) {
         listener.onExitEditMode();
       }
     }
+    animateEditModeReveal(inEditMessageMode());
+  }
+
+  private void animateEditModeReveal(boolean visible) {
+    if (editModeRevealAnimator != null) {
+      editModeRevealAnimator.cancel();
+    }
+
+    if (editModeReveal == (visible ? 1f : 0f)) {
+      return;
+    }
+
+    if (visible) {
+      editMessageTitle.setVisibility(View.VISIBLE);
+      editMessageThumbnail.setVisibility(View.VISIBLE);
+      editMessageCancel.setVisibility(View.VISIBLE);
+    }
+
+    editMessageTitle.measure(MeasureSpec.makeMeasureSpec(composeContainer.getWidth(), MeasureSpec.AT_MOST), MeasureSpec.UNSPECIFIED);
+    int titleHeight = editMessageTitle.getMeasuredHeight();
+
+    editModeRevealAnimator = ValueAnimator.ofFloat(editModeReveal, visible ? 1f : 0f)
+                                          .setDuration(QUOTE_REVEAL_DURATION_MILLIS);
+    editModeRevealAnimator.addUpdateListener(animation -> {
+      editModeReveal = (float) animation.getAnimatedValue();
+      applyEditModeReveal(titleHeight);
+    });
+    editModeRevealAnimator.addListener(new AnimationCompleteListener() {
+      @Override
+      public void onAnimationEnd(Animator animation) {
+        if (editModeReveal == 0f) {
+          editMessageTitle.setVisibility(View.GONE);
+          editMessageThumbnail.setVisibility(View.GONE);
+          editMessageCancel.setVisibility(View.GONE);
+        }
+      }
+    });
+    editModeRevealAnimator.start();
+  }
+
+  private void applyEditModeReveal(int titleHeight) {
+    MarginLayoutParams titleParams = (MarginLayoutParams) editMessageTitle.getLayoutParams();
+    titleParams.height    = editModeReveal == 1f ? ViewGroup.LayoutParams.WRAP_CONTENT : Math.round(titleHeight * editModeReveal);
+    titleParams.topMargin = Math.round(editMessageTitleTopMargin * editModeReveal);
+    editMessageTitle.setLayoutParams(titleParams);
+    editMessageTitle.setAlpha(editModeReveal);
+
+    ViewGroup.LayoutParams thumbnailParams = editMessageThumbnail.getLayoutParams();
+    thumbnailParams.height = Math.round(editMessageThumbnailHeight * editModeReveal);
+    editMessageThumbnail.setLayoutParams(thumbnailParams);
+    editMessageThumbnail.setAlpha(editModeReveal);
+
+    MarginLayoutParams cancelParams = (MarginLayoutParams) editMessageCancel.getLayoutParams();
+    cancelParams.setMarginStart(Math.round(editMessageCancelHiddenStartMargin + (editMessageCancelStartMargin - editMessageCancelHiddenStartMargin) * editModeReveal));
+    editMessageCancel.setLayoutParams(cancelParams);
+    editMessageCancel.setAlpha(editModeReveal);
   }
 
   public boolean inEditMessageMode() {

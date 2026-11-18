@@ -45,18 +45,6 @@
     <string mollyify="true" name="ApplicationPreferencesActivity_this_will_permanently_unlock_signal_and_message_notifications">This will permanently unlock Collie and message notifications.</string>
     <string name="ApplicationPreferencesActivity_disable">Disable</string>
     <string name="ApplicationPreferencesActivity_error_connecting_to_server">Error connecting to server!</string>
-    <string name="ApplicationPreferencesActivity_pins_are_required_for_registration_lock">PINs are required for registration lock. To disable PINs, please first disable registration lock.</string>
-    <string name="ApplicationPreferencesActivity_pin_created">PIN created.</string>
-    <string name="ApplicationPreferencesActivity_pin_disabled">PIN disabled.</string>
-    <string name="ApplicationPreferencesActivity_record_payments_recovery_phrase">Record payments recovery phrase</string>
-    <string name="ApplicationPreferencesActivity_record_phrase">Record phrase</string>
-    <string name="ApplicationPreferencesActivity_before_you_can_disable_your_pin">Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.</string>
-    <!-- The title of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_title">Create a new recovery key</string>
-    <!-- The body of a dialog letting the user know they have to rotate their recovery key if they want to disable PINs -->
-    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_body">You must create and record a new recovery key before you can disable your PIN.</string>
-    <!-- The confirmation button for a dialog letting the user know they have to rotate their recovery key if they want to disable PINs. If they click the button, they will be taken to a flow to rotate their key. -->
-    <string name="AdvancedPinSettingsFragment_rotate_aep_dialog_positive_button">Create key</string>
 
     <!-- NumericKeyboardView -->
     <string name="NumericKeyboardView__1" translatable="false">1</string>
@@ -378,8 +366,6 @@
     <!-- Conversation message shown when someone deletes their own message. Placeholder is the name of the person. -->
     <string name="ConversationItem_s_deleted_this_message">%1$s deleted this message</string>
     <string name="ConversationItem_you_deleted_this_message">You deleted this message</string>
-    <!-- Tappable text shown on a locally-deleted message tombstone, prompting the user to promote it to a delete-for-everyone -->
-    <string name="ConversationItem_delete_for_everyone_question">Delete for everyone?</string>
     <!-- Conversation message when a message has been deleted by an admin. The placeholder is the admin\'s name. -->
     <string name="ConversationItem_admin_s_deleted_this_message">Admin %1$s deleted this message</string>
     <!-- Dialog error message shown when user can\'t download a message from someone else due to a permanent failure (e.g., unable to decrypt), placeholder is other\'s name -->
@@ -534,6 +520,8 @@
     <string name="ConversationFragment_deleting_messages">Deleting messages…</string>
     <string name="ConversationFragment_delete_for_me">Delete for me</string>
     <string name="ConversationFragment_delete_for_everyone">Delete for everyone</string>
+    <!-- Snackbar text shown after the user deletes one or more messages only for themselves -->
+    <string name="ConversationFragment__deleted_for_me">Deleted for me</string>
     <!-- Title of dialog confirming whether to delete the message -->
     <plurals name="ConversationFragment_delete_selected_title">
         <item quantity="one">Delete selected message?</item>
@@ -2942,28 +2930,15 @@
     <string mollyify="true" name="KeyCachingService_lock">Lock Collie</string>
 
     <!-- MediaPreviewActivity -->
-    <string name="MediaPreviewActivity_you">You</string>
-    <string name="MediaPreviewActivity_unssuported_media_type">Unsupported media type</string>
-    <string name="MediaPreviewActivity_draft">Draft</string>
-    <string name="MediaPreviewActivity_media_delete_confirmation_title">Delete message?</string>
-    <string name="MediaPreviewActivity_media_delete_confirmation_message">This will permanently delete this message.</string>
-    <string name="MediaPreviewActivity_s_to_s">%1$s to %2$s</string>
-    <!-- All media preview title when viewing media send by you to another recipient (allows changing of \'You\' based on context) -->
-    <string name="MediaPreviewActivity_you_to_s">You to %1$s</string>
-    <!-- All media preview title when viewing media sent by another recipient to you (allows changing of \'You\' based on context) -->
-    <string name="MediaPreviewActivity_s_to_you">%1$s to you</string>
     <string name="MediaPreviewActivity_media_no_longer_available">Media no longer available.</string>
     <!-- Notifying the user that the device has encountered a technical issue and is unable to render a video. -->
     <string name="MediaPreviewActivity_unable_to_play_media">Unable to play media.</string>
     <!-- Toast shown when there is an error finding a media-based message -->
     <string name="MediaPreviewActivity_error_finding_message">Error finding message.</string>
     <string name="MediaPreviewActivity_cant_find_an_app_able_to_share_this_media">Can\'t find an app able to share this media.</string>
-    <string name="MediaPreviewActivity_dismiss_due_to_error">Close</string>
     <string name="MediaPreviewFragment_edit_media_error">Media Error</string>
     <!-- This is displayed as a toast notification when we encounter an error deleting a message, including potentially on other people\'s devices -->
     <string name="MediaPreviewFragment_media_delete_error">Error Deleting Message, Message May Still Exist</string>
-    <!-- A suffix to be attached to truncated captions that the user may tap onto to view the entire text caption -->
-    <string name="MediaPreviewFragment_read_more_overflow_text">Read More</string>
     <string name="MediaPreviewFragment_share">Share</string>
 
     <!-- MessageNotifier -->
@@ -3746,16 +3721,8 @@
     <string name="preferences__stories">Stories</string>
     <string name="preferences__payments">Payments</string>
     <string name="preferences__linked_devices">Linked devices</string>
-    <string name="preferences__disable_pin">Disable PIN</string>
-    <string name="preferences__enable_pin">Enable PIN</string>
-    <string name="preferences__if_you_disable_the_pin_you_will_lose_all_data">If you disable the PIN, you will lose all data when you re-register Signal unless you manually back up and restore. You can not turn on Registration Lock while the PIN is disabled.</string>
-    <string name="preferences__pins_keep_information_stored_with_signal_encrypted_so_only_you_can_access_it">PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.</string>
-    <!-- Title of toolbar for the advanced pin settings screen -->
-    <string name="preferences__advanced_pin_settings_title">Advanced PIN settings</string>
     <string name="preferences__submit_debug_log">Submit debug log</string>
 
-    <string name="preferences_advanced__relay_all_calls_through_the_signal_server_to_avoid_revealing_your_ip_address">Relay all calls through the Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.</string>
-    <string name="preferences_advanced__always_relay_calls">Always relay calls</string>
     <!-- Option in settings to turn on unread reminders -->
     <string name="preferences_notifications__unread">Unread reminders</string>
     <!-- Heading for the \'censorship circumvention\' section of privacy preferences -->
@@ -4170,11 +4137,6 @@
     <string name="reminder_cds_permanent_error_body">Signal\'s private contact discovery can\'t process your phone\'s contacts.</string>
     <!-- Label for a button in a banner to learn more about why we cannot process the user\'s contacts -->
     <string name="reminder_cds_permanent_error_learn_more">Learn more</string>
-
-    <!-- media_preview -->
-    <string name="media_preview__save_title">Save</string>
-    <string name="media_preview__edit_title">Edit</string>
-
 
     <!-- media_preview_activity -->
     <!-- Content description of images or videos when viewing media -->
@@ -5055,22 +5017,7 @@
 
     <!-- AdvancedPrivacySettingsFragment -->
     <string name="AdvancedPrivacySettingsFragment__sealed_sender_link" translatable="false">https://signal.org/blog/sealed-sender</string>
-    <string name="AdvancedPrivacySettingsFragment__show_status_icon">Show status icon</string>
-    <string name="AdvancedPrivacySettingsFragment__show_an_icon">Show an icon in message details when they were delivered using sealed sender.</string>
 
-    <!-- ExpireTimerSettingsFragment -->
-    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_new_chats_started_by_you_will_disappear_after_they_have_been_seen">When enabled, new messages sent and received in new chats started by you will disappear after they have been seen.</string>
-    <string name="ExpireTimerSettingsFragment__when_enabled_new_messages_sent_and_received_in_this_chat_will_disappear_after_they_have_been_seen">When enabled, new messages sent and received in this chat will disappear after they have been seen.</string>
-    <string name="ExpireTimerSettingsFragment__off">Off</string>
-    <string name="ExpireTimerSettingsFragment__4_weeks">4 weeks</string>
-    <string name="ExpireTimerSettingsFragment__1_week">1 week</string>
-    <string name="ExpireTimerSettingsFragment__1_day">1 day</string>
-    <string name="ExpireTimerSettingsFragment__8_hours">8 hours</string>
-    <string name="ExpireTimerSettingsFragment__1_hour">1 hour</string>
-    <string name="ExpireTimerSettingsFragment__5_minutes">5 minutes</string>
-    <string name="ExpireTimerSettingsFragment__30_seconds">30 seconds</string>
-    <string name="ExpireTimerSettingsFragment__custom_time">Custom time</string>
-    <string name="ExpireTimerSettingsFragment__save">Save</string>
 
 
     <!-- ChatColorSelectionFragment -->

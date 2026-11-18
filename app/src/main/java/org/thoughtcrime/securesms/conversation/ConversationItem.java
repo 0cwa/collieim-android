@@ -112,7 +112,6 @@ import org.thoughtcrime.securesms.conversation.v2.items.SenderNameWithLabelView;
 import org.thoughtcrime.securesms.conversation.v2.items.V2ConversationItemUtils;
 import org.thoughtcrime.securesms.database.AttachmentTable;
 import org.thoughtcrime.securesms.database.MediaTable;
-import org.thoughtcrime.securesms.database.model.InMemoryMessageRecord;
 import org.thoughtcrime.securesms.database.model.MessageRecord;
 import org.thoughtcrime.securesms.database.model.MmsMessageRecord;
 import org.thoughtcrime.securesms.database.model.Quote;
@@ -125,7 +124,6 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore;
 import org.thoughtcrime.securesms.linkpreview.LinkPreview;
 import org.thoughtcrime.securesms.mediapreview.MediaIntentFactory;
 import org.thoughtcrime.securesms.mediapreview.MediaPreviewCache;
-import org.thoughtcrime.securesms.mediapreview.MediaPreviewFragment;
 import org.thoughtcrime.securesms.mms.ImageSlide;
 import org.thoughtcrime.securesms.mms.PartAuthority;
 import org.thoughtcrime.securesms.mms.Slide;
@@ -154,6 +152,7 @@ import org.signal.core.ui.util.SpanUtil;
 import org.thoughtcrime.securesms.util.UrlClickHandler;
 import org.thoughtcrime.securesms.util.VibrateUtil;
 import org.signal.core.ui.util.ViewUtil;
+import org.thoughtcrime.securesms.util.views.CachedStubInflater;
 import org.thoughtcrime.securesms.util.views.NullableStub;
 import org.thoughtcrime.securesms.video.inline.InlineVideoCell;
 import org.thoughtcrime.securesms.video.inline.InlineVideoHost;
@@ -348,13 +347,13 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
     this.contactPhoto              = findViewById(R.id.contact_photo);
     this.contactPhotoHolder        = findViewById(R.id.contact_photo_container);
     this.bodyBubble                = findViewById(R.id.body_bubble);
-    this.mediaThumbnailStub        = new NullableStub<>(findViewById(R.id.image_view_stub));
-    this.audioViewStub             = new Stub<>(findViewById(R.id.audio_view_stub));
-    this.documentViewStub          = new Stub<>(findViewById(R.id.document_view_stub));
-    this.sharedContactStub         = new Stub<>(findViewById(R.id.shared_contact_view_stub));
-    this.linkPreviewStub           = new Stub<>(findViewById(R.id.link_preview_stub));
-    this.stickerStub               = new Stub<>(findViewById(R.id.sticker_view_stub));
-    this.revealableStub            = new Stub<>(findViewById(R.id.revealable_view_stub));
+    this.mediaThumbnailStub        = new NullableStub<>(findViewById(R.id.image_view_stub), CachedStubInflater.INSTANCE);
+    this.audioViewStub             = new Stub<>(findViewById(R.id.audio_view_stub), CachedStubInflater.INSTANCE);
+    this.documentViewStub          = new Stub<>(findViewById(R.id.document_view_stub), CachedStubInflater.INSTANCE);
+    this.sharedContactStub         = new Stub<>(findViewById(R.id.shared_contact_view_stub), CachedStubInflater.INSTANCE);
+    this.linkPreviewStub           = new Stub<>(findViewById(R.id.link_preview_stub), CachedStubInflater.INSTANCE);
+    this.stickerStub               = new Stub<>(findViewById(R.id.sticker_view_stub), CachedStubInflater.INSTANCE);
+    this.revealableStub            = new Stub<>(findViewById(R.id.revealable_view_stub), CachedStubInflater.INSTANCE);
     this.linkPreviewActionStub     = ViewUtil.findStubById(this, R.id.conversation_item_link_preview_action);
     this.callToActionStub          = ViewUtil.findStubById(this, R.id.conversation_item_call_to_action_stub);
     this.quoteView                 = findViewById(R.id.quote_view);
@@ -2866,7 +2865,7 @@ public final class ConversationItem extends RelativeLayout implements BindableCo
         performClick();
       } else if ((!canPlayContent || inlinePlaybackEnded) && mediaItem != null && eventListener != null) {
         eventListener.onPlayInlineContent(conversationMessage);
-      } else if (MediaPreviewFragment.isContentTypeSupported(slide.getContentType()) && slide.getDisplayUri() != null) {
+      } else if (MediaUtil.isImageOrVideoType(slide.getContentType()) && slide.getDisplayUri() != null) {
         AttachmentDownloadJob.downloadAttachmentIfNeeded((DatabaseAttachment) slide.asAttachment());
         launchMediaPreview(v, slide);
       } else if (slide.getUri() != null) {

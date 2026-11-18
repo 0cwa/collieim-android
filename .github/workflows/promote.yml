@@ -14,7 +14,6 @@ concurrency:
   cancel-in-progress: false
 env:
   TAG: ${{ inputs.tag }}
-  TRUSTED_MAIN: ${{ github.sha }}
   GH_TOKEN: ${{ github.token }}
   GH_REPO: ${{ github.repository }}
   GH_HOST: github.com
@@ -28,6 +27,7 @@ jobs:
     outputs:
       source_commit: ${{ steps.identity.outputs.source_commit }}
       source_branch: ${{ steps.identity.outputs.source_branch }}
+      trusted_main: ${{ steps.identity.outputs.trusted_main }}
       identity_artifact_id: ${{ steps.identity-artifact.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -46,6 +46,7 @@ jobs:
         env:
           SOURCE_COMMIT: ${{ steps.identity.outputs.source_commit }}
           SOURCE_BRANCH: ${{ steps.identity.outputs.source_branch }}
+          TRUSTED_MAIN: ${{ steps.identity.outputs.trusted_main }}
         run: |
           python3 tooling/ci/verify_release_readiness.py --repository "$GH_REPO" --sha "$SOURCE_COMMIT" \
             --source-branch "$SOURCE_BRANCH" --trusted-main "$TRUSTED_MAIN" \
@@ -88,6 +89,7 @@ jobs:
         env:
           SOURCE_COMMIT: ${{ needs.check.outputs.source_commit }}
           SOURCE_BRANCH: ${{ needs.check.outputs.source_branch }}
+          TRUSTED_MAIN: ${{ needs.check.outputs.trusted_main }}
         run: |
           python3 tooling/ci/verify_release_readiness.py --repository "$GH_REPO" --sha "$SOURCE_COMMIT" \
             --source-branch "$SOURCE_BRANCH" --trusted-main "$TRUSTED_MAIN" \

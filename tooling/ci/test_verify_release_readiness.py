@@ -1,7 +1,10 @@
 """Exercise the release boundary with missing, stale and failed CI evidence."""
 import unittest
+import hashlib
+import io
 import json
 from pathlib import Path
+from zipfile import ZipFile
 
 import verify_release_readiness as gate
 
@@ -18,7 +21,8 @@ def run_record(**changes):
 
 def jobs():
     return [{"id": index, "name": name, "run_id": 100, "head_sha": SHA,
-             "run_attempt": 2, "status": "completed", "conclusion": "success"}
+              "run_attempt": 2, "status": "completed", "conclusion": "success",
+             "started_at": "2026-11-18T00:00:00Z", "completed_at": "2026-11-18T00:03:00Z"}
             for index, name in enumerate(gate.REQUIRED_JOBS, 1)]
 
 
@@ -107,6 +111,47 @@ class ReleaseReadinessTest(unittest.TestCase):
         with self.assertRaisesRegex(gate.Failure, "different run attempt"):
             gate.verify_jobs(run_record(), records, SHA)
 
+    def stable_route_fixture(self, **changes):
+        run = run_record(head_branch=gate.MAINTENANCE_BRANCH, event="workflow_dispatch")
+        blob = "d" * 40
+        route = {"schema": 1, "source_commit": SHA, "source_ref": f"refs/heads/{gate.MAINTENANCE_BRANCH}",
+                 "event": "workflow_dispatch", "run_id": 100, "run_attempt": 2,
+                 "policy_path": gate.MAINTENANCE_POLICY, "policy_blob": blob}
+        route.update(changes)
+        buffer = io.BytesIO()
+        with ZipFile(buffer, "w") as archive:
+            archive.writestr("stable-source-route.json", json.dumps(route))
+        data = buffer.getvalue()
+        metadata = {"id": 1234, "name": "stable-ci-route-100-2", "expired": False, "size_in_bytes": len(data),
+                    "created_at": "2026-11-18T00:02:00Z", "digest": "sha256:" + hashlib.sha256(data).hexdigest()}
+        return run, blob, route, metadata, data
+
+    def test_maintenance_route_rejects_short_name_tag_and_wrong_attempt_or_policy(self):
+        unit_job = next(job for job in jobs() if job["name"] == "Unit tests")
+        for changes in ({}, {"source_ref": f"refs/tags/{gate.MAINTENANCE_BRANCH}"},
+                        {"run_attempt": 1}, {"policy_path": ".github/ci-required-tests.json"},
+                        {"policy_blob": "b" * 40}, {"event": "push"}, {"source_commit": "b" * 40}):
+            run, blob, route, metadata, data = self.stable_route_fixture(**changes)
+
+            def check():
+                return gate.verify_maintenance_route(
+                    REPO, run, unit_job, blob, lambda *a, **kw: page("artifacts", [metadata]), lambda _: data,
+                )
+
+            with self.subTest(changes=changes):
+                if changes:
+                    with self.assertRaisesRegex(gate.Failure, "exact branch ref"):
+                        check()
+                else:
+                    self.assertEqual(check(), route)
+                    metadata["created_at"] = "2026-11-18T00:04:00Z"
+                    with self.assertRaisesRegex(gate.Failure, "exact Unit tests attempt"):
+                        check()
+                    metadata["created_at"] = "2026-11-18T00:02:00Z"
+                    metadata["digest"] = "sha256:" + "b" * 64
+                    with self.assertRaisesRegex(gate.Failure, "digest or size differs"):
+                        check()
+
     def test_maintenance_binding_compares_objects_and_protected_main_history(self):
         policy = "b" * 40
         live_main = "c" * 40
@@ -149,9 +194,16 @@ class ReleaseReadinessTest(unittest.TestCase):
                 return page("workflow_runs", [run_record(head_branch=gate.MAINTENANCE_BRANCH)])
             if "/attempts/2/jobs?" in endpoint:
                 return page("jobs", jobs())
+            if "/actions/runs/100/artifacts?" in endpoint:
+                return page("artifacts", [metadata])
             return api_responses[endpoint]
 
-        result = gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy)
+        _, _, route, metadata, data = self.stable_route_fixture(
+            event="push", policy_blob=candidate_inputs[gate.MAINTENANCE_POLICY]["sha"],
+        )
+        result = gate.verify(REPO, SHA, gate.MAINTENANCE_BRANCH, reader, trusted_main=policy,
+                             archive_reader=lambda _: data)
+        self.assertEqual(result["stable_route"], route)
         self.assertEqual((result["source_branch"], result["workflow_event"], result["trusted_main"]),
                          (gate.MAINTENANCE_BRANCH, "push", policy))
         for path in (gate.WORKFLOW_PATH, ".github/scripts/check-unit-test-results.py",

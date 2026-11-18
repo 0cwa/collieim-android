@@ -77,6 +77,7 @@ def main():
     parser.add_argument("--bound-build")
     parser.add_argument("--legacy-build-run", type=int)
     parser.add_argument("--published-sha256")
+    parser.add_argument("--allow-draft", action="store_true")
     args = parser.parse_args()
 
     try:
@@ -99,7 +100,10 @@ def main():
         require(args.tag and args.scratch and args.build_tools, "Verification requires a tag and paths")
         release = Publication(Path(__file__).resolve().parents[2], args.scratch, args.build_tools, github)
         state = release_state(github.release(args.tag))
-        require(state["tag_name"] == args.tag and not state["draft"], "Expected a published release for this tag")
+        require(not args.allow_draft or (args.bound_build and args.published_sha256),
+                "Draft APK proof requires the bound build and expected APK digest")
+        require(state["tag_name"] == args.tag and (not state["draft"] or args.allow_draft),
+                "Expected an eligible release for this tag")
         source = release.signed_tag_identity(args.tag)["source_commit"]
         source_branch = args.source_branch or "main"
         if args.bound_build:

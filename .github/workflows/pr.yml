@@ -194,6 +194,24 @@ jobs:
             --shard-root build/shards/app-0 --shard-root build/shards/app-1 \
             --shard-root build/shards/modules --json-output build/ci/unit-test-results.json
           test "$SHARD_RESULT" = success
+          if [[ "$GITHUB_REF" == refs/heads/release/stable/8.35 ]]; then
+            test "$CI_TEST_POLICY" = .github/ci-required-tests-stable-8.35.json
+            jq -n \
+              --arg commit "$(cat build/ci/source-commit.txt)" --arg ref "$GITHUB_REF" \
+              --arg event "$GITHUB_EVENT_NAME" --argjson id "$GITHUB_RUN_ID" --argjson attempt "$GITHUB_RUN_ATTEMPT" \
+              --arg policy "$CI_TEST_POLICY" --arg blob "$(git hash-object build/ci/ci-required-tests.json)" \
+              '{schema: 1, source_commit: $commit, source_ref: $ref, event: $event,
+                run_id: $id, run_attempt: $attempt, policy_path: $policy, policy_blob: $blob}' \
+              > build/ci/stable-source-route.json
+          fi
+      - name: Keep the exact Stable branch route and policy for this attempt
+        if: github.ref == 'refs/heads/release/stable/8.35'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: stable-ci-route-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/stable-source-route.json
+          retention-days: 14
+          if-no-files-found: error
       - name: Keep combined unit test results
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

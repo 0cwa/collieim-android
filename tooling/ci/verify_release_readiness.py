@@ -7,21 +7,25 @@ source-to-binary provenance or replace the signed-tag/APK checks.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import io
 import json
 from pathlib import Path
 import re
 import subprocess
 import sys
+from zipfile import BadZipFile, ZipFile
 
 WORKFLOW_PATH = ".github/workflows/pr.yml"
 WORKFLOW_ID = 413670842
 MAINTENANCE_BRANCH = "release/stable/8.35"
+MAINTENANCE_POLICY = ".github/ci-required-tests-stable-8.35.json"
 RELEASE_SOURCE_BRANCHES = ("main", MAINTENANCE_BRANCH)
 TRUSTED_CI_PATHS = (
     WORKFLOW_PATH,
     ".github/actions/disk-cleanup",
     ".github/ci-required-tests.json",
-    ".github/ci-required-tests-stable-8.35.json",
+    MAINTENANCE_POLICY,
     ".github/scripts/check-unit-test-results.py",
     "tooling/ci",
     "tooling/git-hooks",
@@ -158,14 +162,55 @@ def bind_main_policy(repository, sha, trusted_main, reader):
     candidate = path_objects(sha)
     for path in TRUSTED_CI_PATHS:
         require(policy[path] == candidate[path], f"Maintenance CI input differs from trusted main: {path}")
+    return policy[MAINTENANCE_POLICY][2]
 
 
-def verify(repository, sha, branch="main", reader=api, *, trusted_main=None):
+def read_route_archive(endpoint):
+    result = subprocess.run(["gh", "api", "--hostname", "github.com", "--method", "GET", endpoint],
+                            capture_output=True, timeout=30, check=False)
+    require(result.returncode == 0, "Cannot read the Stable CI route artifact")
+    return result.stdout
+
+
+def unique_object(pairs):
+    value = dict(pairs)
+    require(len(value) == len(pairs), "Duplicate Stable route record keys")
+    return value
+
+
+def verify_maintenance_route(repository, run, unit_job, policy_blob, reader, archive_reader):
+    run_id, attempt = run["id"], run["run_attempt"]
+    name = f"stable-ci-route-{run_id}-{attempt}"
+    endpoint = f"repos/{repository}/actions/runs/{run_id}/artifacts?name={name}&per_page=100"
+    matches = flatten_pages(reader(endpoint, paginate=True), "artifacts")
+    require(len(matches) == 1 and matches[0]["name"] == name, "Missing or ambiguous Stable CI route artifact")
+    artifact = matches[0]
+    require(artifact.get("expired") is False and type(artifact.get("size_in_bytes")) is int and
+            0 < artifact["size_in_bytes"] <= 65536, "Invalid Stable CI route artifact")
+    require(unit_job["started_at"] <= artifact["created_at"] <= unit_job["completed_at"],
+            "Stable CI route artifact does not belong to the exact Unit tests attempt")
+    data = archive_reader(f"repos/{repository}/actions/artifacts/{artifact['id']}/zip")
+    require(len(data) == artifact["size_in_bytes"] and
+            artifact.get("digest") == "sha256:" + hashlib.sha256(data).hexdigest(),
+            "Stable CI route artifact digest or size differs")
+    with ZipFile(io.BytesIO(data)) as archive:
+        members = archive.infolist()
+        require(len(members) == 1 and members[0].filename == "stable-source-route.json" and
+                members[0].file_size <= 4096, "Unexpected Stable CI route archive")
+        route = json.loads(archive.read(members[0]), object_pairs_hook=unique_object)
+    require(route == {
+        "schema": 1, "source_commit": run["head_sha"], "source_ref": f"refs/heads/{MAINTENANCE_BRANCH}",
+        "event": run["event"], "run_id": run_id, "run_attempt": attempt,
+        "policy_path": MAINTENANCE_POLICY, "policy_blob": policy_blob,
+    }, "Stable CI route does not match the exact branch ref, run attempt and test policy")
+    return route
+
+
+def verify(repository, sha, branch="main", reader=api, *, trusted_main=None, archive_reader=read_route_archive):
     require(re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository) is not None, "Invalid repository")
     require(re.fullmatch(r"[0-9a-f]{40}", sha) is not None, "Use the exact lowercase release commit SHA")
     require(branch in RELEASE_SOURCE_BRANCHES, "Unsupported release source branch")
-    if branch == MAINTENANCE_BRANCH:
-        bind_main_policy(repository, sha, trusted_main, reader)
+    policy_blob = bind_main_policy(repository, sha, trusted_main, reader) if branch == MAINTENANCE_BRANCH else None
     endpoint = f"repos/{repository}/actions/runs?head_sha={sha}&per_page=100"
     runs = flatten_pages(reader(endpoint, paginate=True), "workflow_runs")
     run = select_run(runs, repository, sha, branch)
@@ -173,6 +218,10 @@ def verify(repository, sha, branch="main", reader=api, *, trusted_main=None):
     jobs = flatten_pages(reader(f"repos/{repository}/actions/runs/{run_id}/attempts/{attempt}/jobs?per_page=100",
                                 paginate=True), "jobs")
     verified_jobs = verify_jobs(run, jobs, sha)
+    route = None
+    if policy_blob is not None:
+        unit_job = next(job for job in jobs if job["name"] == "Unit tests")
+        route = verify_maintenance_route(repository, run, unit_job, policy_blob, reader, archive_reader)
     # A rerun can start while the job pages are being read. Read current state
     # again, including newer runs, before creating a successful evidence record.
     current = select_run(flatten_pages(reader(endpoint, paginate=True), "workflow_runs"), repository, sha, branch)
@@ -181,6 +230,7 @@ def verify(repository, sha, branch="main", reader=api, *, trusted_main=None):
             "source_commit": sha, "source_branch": branch, "workflow_path": WORKFLOW_PATH,
             "workflow_event": run["event"], "workflow_id": WORKFLOW_ID,
             "trusted_main": trusted_main if branch == MAINTENANCE_BRANCH else None,
+            **({"stable_route": route} if route is not None else {}),
             "run_id": run_id, "run_attempt": attempt,
             "run_url": f"https://github.com/{repository}/actions/runs/{run_id}",
             "jobs": verified_jobs,
@@ -203,7 +253,7 @@ def main():
             json.dump(evidence, output, indent=2, sort_keys=True)
             output.write("\n")
         print(f"Release commit {args.sha} passed CI: {evidence['run_url']}")
-    except (Failure, OSError, KeyError, TypeError, ValueError) as exc:
+    except (Failure, OSError, KeyError, TypeError, ValueError, BadZipFile, subprocess.TimeoutExpired) as exc:
         print(f"Release CI gate failed: {exc}", file=sys.stderr)
         return 1
     return 0

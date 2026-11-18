@@ -315,16 +315,19 @@ class PublicationTests(unittest.TestCase):
 
     def test_maintenance_publication_rejects_switching_to_main(self):
         branch = "release/stable/8.35"
-        result = self.helper.publish(self.inspect(), "local", "Human release notes", branch)
-        self.assertEqual(result["identity"]["publication"]["source_branch"], branch)
+        policy = "a" * 40
+        result = self.helper.publish(self.inspect(), "local", "Human release notes", branch, policy)
+        self.assertEqual(p.publication_route(result["identity"]["publication"]), (branch, policy))
         snapshot = self.inspect("promote")
         with self.assertRaisesRegex(p.Failure, "Requested branch differs"):
             self.helper.promote(snapshot, self.rebuilt(), RUN, source_branch="main")
         self.assertEqual(self.inspect("promote"), snapshot)
-        with self.assertRaisesRegex(p.Failure, "Source branch differs"):
+        with self.assertRaisesRegex(p.Failure, "Source branch or trusted policy differs"):
             self.helper.publish(snapshot, "local", "Human release notes", "main")
+        with self.assertRaisesRegex(p.Failure, "trusted policy differs"):
+            self.helper.publish(snapshot, "local", "Human release notes", branch, "b" * 40)
         result = self.helper.promote(snapshot, self.rebuilt(), RUN, source_branch=branch)
-        self.assertEqual(result["identity"]["publication"]["source_branch"], branch)
+        self.assertEqual(p.publication_route(result["identity"]["publication"]), (branch, policy))
 
     def test_historical_record_keeps_main_route_without_rewriting_record(self):
         result = self.publish()
@@ -584,7 +587,19 @@ class PromotionWorkflowTests(unittest.TestCase):
         self.assertIn("source_branch: ${{ steps.identity.outputs.source_branch }}", check)
         self.assertIn("SOURCE_BRANCH: ${{ steps.identity.outputs.source_branch }}", check)
         self.assertIn("SOURCE_BRANCH: ${{ needs.check.outputs.source_branch }}", final)
+        self.assertIn("TRUSTED_MAIN: ${{ steps.identity.outputs.trusted_main }}", check)
+        self.assertIn("TRUSTED_MAIN: ${{ needs.check.outputs.trusted_main }}", final)
         self.assertIn('cmp "$RUNNER_TEMP/promotion-evidence/ci.json" "$RUNNER_TEMP/promotion-evidence/final-ci.json"', final)
+
+    def test_prerelease_compares_draft_bytes_before_mutation(self):
+        workflow = (ROOT / ".github/workflows/release.yml").read_text()
+        publish, verify = workflow.split("  verify:", 1)
+        self.assertIn("--allow-draft --tag", publish)
+        self.assertIn("--bound-build", publish)
+        self.assertIn('result=$(env -u GH_TOKEN bash', publish)
+        self.assertLess(publish.index("verify-apk-match.sh"), publish.index("publication.py publish"))
+        self.assertIn("inputs.verify_only", verify)
+        self.assertIn("--legacy-build-run", verify)
 
     def test_final_promotion_refreshes_exact_source_ci_after_rebuild(self):
         workflow = (ROOT / '.github/workflows/promote.yml').read_text()

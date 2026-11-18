@@ -186,8 +186,15 @@ object QuickRegistrationRepository {
     Log.d(TAG, "Waiting for restore method")
     while (retries-- > 0 && result !is NetworkResult.Success && coroutineContext.isActive) {
       Log.d(TAG, "Waiting, remaining tries: $retries")
-      result = SignalNetwork.provisioningApi.waitForRestoreMethod(restoreMethodToken)
-      Log.d(TAG, "Result: $result")
+      val response = SignalNetwork.provisioningApi.waitForRestoreMethod(restoreMethodToken)
+      result = response
+      val outcome = when (response) {
+        is NetworkResult.Success -> "success"
+        is NetworkResult.StatusCodeError -> "status error"
+        is NetworkResult.NetworkError -> "network error"
+        is NetworkResult.ApplicationError -> "application error"
+      }
+      Log.d(TAG, "Result: $outcome")
     }
 
     if (result is NetworkResult.Success) {

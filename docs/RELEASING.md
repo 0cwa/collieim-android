@@ -59,6 +59,27 @@ releases need no new record to contribute to the version floor. A legacy
 prerelease without this record is not eligible for this automated promotion
 path, and is never rewritten to invent evidence after publication.
 
+## Public source-to-APK verification
+
+New prerelease notes link to the verification summary in the publication run.
+After publication, a read-only job takes the unsigned APK from the existing
+exact-commit production CI run. It downloads the published `collie.apk`,
+recreates the signing-related ZIP formatting and copies the existing APK
+signature data onto the CI build. The check succeeds only if the reconstructed
+APK and the public download match byte for byte. The summary shows the exact
+source commit, the original build run and both signed SHA-256 hashes.
+
+The check uses an existing artifact and needs no signing key. Independent
+release promotion still follows step 4. To check an older release whose
+original GitHub build used the standalone unsigned build workflow, run:
+
+```sh
+gh workflow run release.yml --ref main -f verify_only=true -f built_on=github \
+  -f tag=v8.35.1-3-rc2 -f legacy_build_run=42893881886
+```
+
+The verification job reports an expired artifact as a failure.
+
 Downloads verify the GitHub SHA256 and declared byte count, with a 2 GB maximum
 per asset and an 8 GB fetch budget per helper invocation. Equal-digest profile
 copies share a cache. If public history exceeds the budget, review a bounded

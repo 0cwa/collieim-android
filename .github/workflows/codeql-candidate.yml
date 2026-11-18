@@ -112,7 +112,7 @@ jobs:
           CODEQL_COMPILE_INPUTS: ${{ runner.temp }}/codeql-evidence/compiler-inputs.jsonl
         run: |
           set -euo pipefail
-          ./gradlew --no-daemon --no-build-cache --rerun-tasks --dependency-verification=strict -Pkotlin.incremental=false -I "$GITHUB_WORKSPACE/policy/tools/codeql/compile-inputs.gradle" :app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac
+          ./gradlew --no-daemon --no-configuration-cache --no-build-cache --rerun-tasks --dependency-verification=strict -Pkotlin.incremental=false -I "$GITHUB_WORKSPACE/policy/tools/codeql/compile-inputs.gradle" :app:compileProdWebsiteDebugKotlin :app:compileProdWebsiteDebugJavaWithJavac
           test -s "$CODEQL_COMPILE_INPUTS"
           test "$(git rev-parse HEAD)" = "$APPROVED_COMMIT"
           test "$(git rev-parse HEAD^{tree})" = "$APPROVED_TREE"
